@@ -41,7 +41,7 @@ Main Design Concepts
 \f1\b \cf0 \
 Group
 \f0\b0 \
-A Group is a collection of Nodes represented as a linked list. A new Node may be added to the head or tail of the group. The Nodes within a Group may be controlled together. The Nodes in a Group may be both Synths and other Groups. At startup there is a top level group with an ID of zero that defines the root of the tree, and a 'default group' with an ID of 1 which is the default group for all new Nodes. See 
+A Group is a collection of Nodes represented as a linked list. A new Node may be added to the head or tail of the group. The Nodes within a Group may be controlled together. The Nodes in a Group may be both Synths and other Groups. At startup there is a top level group with an ID of zero that defines the root of the tree. If the server was booted from within SCLang (as opposed to from the command line) there will also be a 'default group' with an ID of 1 which is the default target for all new Nodes. See 
 \f1\b RootNode
 \f0\b0  and 
 \f1\b default_group

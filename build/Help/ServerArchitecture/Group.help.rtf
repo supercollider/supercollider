@@ -27,9 +27,8 @@ For more on the crucial distinction between client objects and server nodes, see
 \f0\b NodeMessaging
 \f2\b0 .\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 N.B. 
+\f0\b N.B. 
 \f2\b0 Group is a subclass of 
 \f0\b Node
 \f2\b0 , and thus many of its most useful and important methods are documented in the 
@@ -46,7 +45,7 @@ For more on the crucial distinction between client objects and server nodes, see
 \f0\b Server
 \f2\b0  is booted there is a top level group with an ID of zero that defines the root of the tree. This is represented by a subclass of Group: 
 \f0\b RootNode
-\f2\b0 . There is also a 
+\f2\b0 . If the Server was booted from within SCLang (as opposed to from the command lione) there will also be a 
 \f0\b default_group
 \f2\b0  with an ID of 1. This group is the default enclosing group for all Nodes, i.e. it's what you get if you don't specify. In general you should create new Nodes within the default group of a Server rather than in its RootNode. See 
 \f0\b default_group
@@ -384,6 +383,7 @@ s.boot;\
 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "help-Group-moto-rev"\cf0 , \{ \cf3 arg\cf0  out=0,freq=100,ffreq=120;\
 	\cf3 var\cf0  x;\
 	x = \cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 0, 10, freq), [0,0.1], 0.1), \
@@ -417,6 +417,7 @@ l = \cf3 Array\cf0 .fill(3,\{\
 \});\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // set all controls that match "ffreq" in all nodes in g to 90\cf0 \
 g.set(\cf5 "ffreq"\cf0 ,300);\
 \

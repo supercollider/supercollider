@@ -20,7 +20,7 @@ When a
 \f0\b Server
 \f1\b0  is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of Group: 
 \f0\b RootNode
-\f1\b0 .) There is also a 
+\f1\b0 .) If the Server was booted from within SCLang there will also be  a 
 \f0\b default group
 \f1\b0  with an ID of 1, which is the default group for all Nodes when using object style. This group is what you will get if you supply a Server as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.  \
 \
@@ -39,22 +39,18 @@ The default group serves an important purpose: It provides a predictable basic N
 \f2\fs18 \cf2 Server\cf0 .internal.boot;\
 \
 \{ \cf2 SinOsc\cf0 .ar(mul: 0.2) \}.scope(1);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 \
 // watch the post window;\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Server\cf0 .internal.queryAllNodes; \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // our SinOsc synth is within the default group (ID 1)\cf0 \
 \cf4 // the scope node comes after the default group, so no problems\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 Server\cf0 .internal.quit;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
-Note that the default group is persistent: It is created in Server's initTree method (execute along with any code stored in its tree instance variable; see 
+Note that the default group is persistent: It is created in Server's initTree method (executed along with any code stored in its tree instance variable; see 
 \f0\b Server 
 \f1\b0 for more detail) and is recreated upon reboot, after pressing Cmd-., and after all nodes are freed. When using osc messages this means \ul that a target node of id 1 can always \ul \ulc0 be used\ulnone :
 \f2\fs18 \
@@ -77,15 +73,13 @@ For instance, if one were to place an 'effects' synth after the default group an
 recording synth\
 effects synth\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 In the above example the recording synth might not capture the output of the effects synth since it comes later in the node order.\
+\f1\b0 In the above example the recording synth might not capture the output of the effects synth since it comes later in the node order.\
 \
 A better method in this case is to create a group within the default group and place the effects synth after that.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 default group [\
+\f0\b default group [\
 	source group [\
 		source synth1\
 		source synth2\
@@ -94,9 +88,8 @@ A better method in this case is to create a group within the default group and p
 ]\
 recording synth\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 See also: 
+\f1\b0 See also: 
 \f0\b RootNode, NodeMessaging 
 \f1\b0 and 
 \f0\b Order-of-execution\
