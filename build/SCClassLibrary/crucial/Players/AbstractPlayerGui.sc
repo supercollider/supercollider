@@ -114,7 +114,7 @@ AbstractPlayerGui : ObjectGui {
 		);
 		
 		layout.removeOnClose(
-			Updater(Tempo,{ // any change to Tempo
+			Updater(Tempo.default,{ // any change to Tempo
 				durv.label_("dur:" + this.durationString);	
 			}).update;
 		);

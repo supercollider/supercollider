@@ -49,7 +49,7 @@ PlayerSocket : AbstractPlayerProxy {
 		bundle.send(this.server, atTime );
 	}
 	qspawnPlayer { arg player,releaseTime=0.0,onTrigger;
-		this.spawnPlayer(player,releaseTime,onTrigger,BeatSched.tdeltaTillNext(round))
+		this.spawnPlayer(player,releaseTime,onTrigger,BeatSched.tdeltaTillNext(round).postln)
 	}
 	
 	releaseVoice { arg releaseTime=0.0;

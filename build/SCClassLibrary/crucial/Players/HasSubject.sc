@@ -12,37 +12,40 @@ HasSubject : AbstractPlayer {
 	
 	stop { super.stop; subject.stop }
 	children { ^[subject] }
-//	didSpawn { arg patchIn,synthArgi;
-//		super.didSpawn(patchIn,synthArgi);
-//		subject.didSpawn;
-//	}
+
 	numChannels { ^subject.tryPerform(\numChannels) ? 1 }
 	guiClass { ^HasSubjectGui }
 }
 
 AbstractPlayerEffect : HasSubject {
 
-	var <childGroup,effectGroup;
+	var <group,subjectGroup,effectGroup;
 	
-	//two effect layers have problems with childGroup not yet created
-	makePatchOut { arg group,private,bus,bundle;
-		childGroup = Group.basicNew;
-		bundle.add( childGroup.addToHead(group) );
-		effectGroup = group;//Group.tail(group);
-		//effectGroup = Group.tail(group);
+	prepareToBundle { arg agroup,bundle;
+		readyForPlay = false;
+		
+		group = agroup.asGroup;
+		subjectGroup = Group.basicNew;
+		effectGroup = Group.basicNew;
+		bundle.add( subjectGroup.addToTail(group) );
+		bundle.add( effectGroup.addAfterMsg(subjectGroup) );
 
-		server = effectGroup.server;
-		this.topMakePatchOut(effectGroup,private,bus,bundle);
-		this.childrenMakePatchOut(childGroup,true,bundle);
+		this.loadDefFileToBundle(bundle,effectGroup.server);
+
+		subject.prepareToBundle(subjectGroup,bundle);
+
+		readyForPlay = true;
 	}
-	
-	childrenMakePatchOut { arg argchildGroup,private;
-		subject.setPatchOut(AudioPatchOut(subject,childGroup,patchOut.bus.copy));
-		// but children make their own
-		subject.childrenMakePatchOut(childGroup,true);
+
+	makePatchOut { arg parentGroup,private,bus;
+		server = group.server;
+		this.topMakePatchOut(effectGroup,private,bus);
+		// share my bus
+		subject.makePatchOut(subjectGroup,private,patchOut.bus.copy);
 	}
+
 	free {
-		childGroup.free;
+		subjectGroup.free;
 		effectGroup.free;
 		super.free;
 	}
@@ -59,9 +62,9 @@ PlayerAmp : AbstractPlayerEffect {
 			ReplaceOut.ar(i_bus,
 					In.ar(i_bus,this.numChannels) * amp
 				)
-		})//.insp("synthdef",this)
+		})
 	}
-	// asks 3 times ?
+
 	defName { ^this.class.name.asString ++ this.numChannels.asString }
 	synthDefArgs { ^[0,patchOut.synthArg,1,amp] }
 	amp_ { arg v; 
@@ -206,11 +209,9 @@ StreamKrDur : HasSubject { // Synthless, above player
 		^super.new(values).durations_(durations.loadDocument).lag_(lag).skdinit
 	}
 	skdinit {
-		tempo = Tempo.default;
+		tempo = TempoClock.default;
 		/* for musical accuracy, need to run ahead and use OSCSched
 		to deliver.
-		changing tempo while playing will screw it up and sync will be
-		lost between other StreamKr.
 		*/
 		routine = Routine({
 					var dur,val;
@@ -223,7 +224,8 @@ StreamKrDur : HasSubject { // Synthless, above player
 					},{
 						// send the message...	
 						bus.value_(val);
-						tempo.beats2secs(dur).wait
+						dur.yield;
+						//tempo.beats2secs(dur).wait
 					});
 				});
 	}
@@ -235,9 +237,14 @@ StreamKrDur : HasSubject { // Synthless, above player
 		bundle.addMessage(this,\didSpawn);
 	}
 	didSpawn {
+		var nextDur;
 		bus = patchOut.bus;
 		routine.reset;
-		SystemClock.play(routine)
+		tempo.schedAbs(0.0,{
+			nextDur = routine.next;
+			tempo.dsched(nextDur,routine);
+		});
+		//SystemClock.play(routine)
 	}
 	instrArgRate { ^\control }
 	instrArgFromControl { arg control;

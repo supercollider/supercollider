@@ -3,16 +3,17 @@
 // my initDefArg is the tempo bus index
 
 TempoPlayer : KrPlayer { //Synthless
-	var tempoBus,<tempo;
+	var tempoBus,<>tempo;
 
 	*new { arg tempo;
-		^super.newCopyArgs(tempo)
+		^super.new.tempo_(tempo ?? {Tempo.default})
 	}
 	
-// add a secret arg
-//	kr {
-//		^In.kr( tempoBus.index, 1)
-//	}
+	 /*add a secret arg
+	kr {
+		^In.kr( tempoBus.index, 1)
+	}*/
+	
 	prepareToBundle { arg group,bundle;
 		readyForPlay = true;
 		tempoBus.prepareToBundle(group,bundle);	
