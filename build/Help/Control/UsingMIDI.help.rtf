@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
-\red0\green0\blue255;}
+\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs40 \cf0 Notes on MIDI support in SuperCollider
@@ -137,7 +137,7 @@ As of December 2004, there is an alternate technique to supply multiple response
 		event = \cf2 MIDIIn\cf0 .waitNoteOn;\
 		[event.status, event.b, event.c].postln;\
 	\}\
-\});\
+\}).play;\
 \
 r.stop;		\cf3 // stop responding \cf0 \
 
@@ -200,7 +200,12 @@ off = \cf2 Routine\cf0 (\{\
 		notes[event.b].set(\cf4 \\gate\cf0 , 0);\
 	\}\
 \}).play;\
-)
+\
+q = \{ on.stop; off.stop; \};\
+)\
+\
+\cf5 // when done:\cf6 \
+q.value;
 \f1\fs24 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 \cf0 \
@@ -250,7 +255,7 @@ There are significant limitations, discussed in the helpfile. This is not really
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f3\i \cf0 dewdrop_lib
-\f1\i0  is a third party library providing a number of useful performance features, available from <\cf5 \ul http://www.dewdrop-world.net\cf0 \ulnone >. The library provides a user-extensible framework of MIDI responder classes designed for multiport, multichannel applications. \
+\f1\i0  is a third party library providing a number of useful performance features, available from <\cf7 \ul http://www.dewdrop-world.net\cf0 \ulnone >. The library provides a user-extensible framework of MIDI responder classes designed for multiport, multichannel applications. \
 \
 Among its features:\
 \
