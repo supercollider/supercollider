@@ -2,8 +2,8 @@
 {\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;\red163\green146\blue90;\red191\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
-\red0\green115\blue0;}
+\red0\green115\blue0;\red96\green96\blue96;\red0\green0\blue0;\red191\green0\blue0;\red0\green115\blue0;
+\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs36 \cf0 NodeProxy		
@@ -648,6 +648,7 @@ a.clear;\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //must have 'out' or 'i_out' argument to work properly\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf6 "who"\cf0 , \{ \cf4 arg\cf0  freq, gate=1, out=0, ffreq=800; \
 	\cf4 var\cf0  env;\
 	env = \cf4 Env\cf0 .asr(0.01, 0.1, 0.5);\
@@ -657,50 +658,54 @@ a.clear;\
 \}).load(s);\
 \
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 \
+\
 \
 (\
-\cf8 SynthDescLib\cf7 .read;\
-a = \cf8 NodeProxy\cf7 .audio(s, 2);\
+\cf4 SynthDescLib\cf0 .read;\
+a = \cf4 NodeProxy\cf0 .audio(s, 2);\
 a.fadeTime = 2;\
-a.play; \cf9 //monitor output\cf7 \
-b = \cf8 NodeProxy\cf7 .audio(s,2);\
+a.play; \cf3 //monitor output\cf0 \
+b = \cf4 NodeProxy\cf0 .audio(s,2);\
 )\
 \
-\cf9 //play the pattern silently in b\cf7 \
-b.source = \cf8 Pbind\cf7 (\cf10 \\instrument\cf7 , \cf10 \\who\cf7 , \cf10 \\freq\cf7 , 500, \cf10 \\ffreq\cf7 , 700, \cf10 \\legato\cf7 , 0.02);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 //play the pattern silently in b\cf0 \
+b.source = \cf4 Pbind\cf0 (\cf5 \\instrument\cf0 , \cf5 \\who\cf0 , \cf5 \\freq\cf0 , 500, \cf5 \\ffreq\cf0 , 700, \cf5 \\legato\cf0 , 0.02);\
 \
-\cf9 //play b out through a:\cf7 \
+\cf3 //play b out through a:\cf0 \
 a.source = b;\
 \
-\cf9 //filter b with ring modulation:\cf7 \
-a.source = \{  b.ar  * \cf8 SinOsc\cf7 .ar(\cf8 SinOsc\cf7 .kr(0.2, 300, 330))  \}; \cf9 //filter the input of the pattern\cf7 \
-a.source = \{  b.ar * \cf8 LFCub\cf7 .ar([2, 8], add: -0.5)  \}; \cf9 //filter the input of the pattern\cf7 \
+\cf3 //filter b with ring modulation:\cf0 \
+a.source = \{  b.ar  * \cf4 SinOsc\cf0 .ar(\cf4 SinOsc\cf0 .kr(0.2, 300, 330))  \}; \cf3 //filter the input of the pattern\cf0 \
+a.source = \{  b.ar * \cf4 LFCub\cf0 .ar([2, 8], add: -0.5)  \}; \cf3 //filter the input of the pattern\cf0 \
 \
 a.source = b;\
 \
-\cf9 //map b to another proxy\cf7 \
-c = \cf8 NodeProxy\cf7 .control(s, 1).fadeTime_(1);\
-c.source = \{ \cf8 SinOsc\cf7 .kr(2, 0, 400, 700) \};\
-b.map(\cf10 \\ffreq\cf7 , c);\
-\cf0 c.source = \{ \cf4 SinOsc\cf0 .kr(\cf4 SinOsc\cf0 .kr(0.2, 0, 10, 10), 0, 400, 700) \};\
+\cf3 //map b to another proxy\cf0 \
+c = \cf4 NodeProxy\cf0 .control(s, 1).fadeTime_(1);\
+c.source = \{ \cf4 SinOsc\cf0 .kr(2, 0, 400, 700) \};\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 \
+\cf8 //now you can simply embed a control node proxy into a pattern:\cf7 \
+\cf8 //(this works not for \\degree, \\midinote, etc.)\cf0 \
+b.source = \cf4 Pbind\cf0 (\cf5 \\instrument\cf0 , \cf5 \\who\cf0 , \cf5 \\freq\cf0 , 500, \cf5 \\ffreq\cf0 , c, \cf5 \\legato\cf0 , 0.02);\
+\
+c.source = \{ \cf4 SinOsc\cf0 .kr(\cf4 SinOsc\cf0 .kr(0.2, 0, 10, 10), 0, 400, 700) \};\
 \
 c.source = \{ \cf4 LFNoise1\cf0 .kr(5, 1300, 1500) \};\
 c.source = \{ \cf4 MouseX.kr(\cf0 100, 5500, 1) \};\
 \
-(\cf7 \
-b.source = \cf8 Pbind\cf7 (\
-			\cf10 \\instrument\cf7 , \cf10 \\who\cf7 , \
-			\cf10 \\freq\cf7 , \cf8 Pseq\cf7 ([600, 390, 300],\cf8 inf\cf7 ),\
-			\cf10 \\legato\cf7 , 0.1,\
-			\cf10 \\ffreq\cf7 , 800,\
-			\cf10 \\dur\cf7 , \cf8 Pseq\cf7 ([1, 0.5, 0.75, 0.125]*0.25, \cf8 inf\cf7 )\
-		);\
+(\
+b.source = \cf4 Pbind\cf0 (\
+			\cf5 \\instrument\cf0 , \cf5 \\who\cf0 , \
+			\cf5 \\freq\cf0 , \cf4 Pseq\cf0 ([600, 390, 300],\cf4 inf\cf0 ),\
+			\cf5 \\legato\cf0 , 0.1,\
+			\cf5 \\ffreq\cf0 , Pseq([c, 100, c, 100, 300, 600], inf), \cf8 // use it in a pattern\cf7 \
+			\cf9 \\dur\cf7 , \cf10 Pseq\cf7 ([1, 0.5, 0.75, 0.125]*0.4, \cf10 inf\cf7 )\
+\cf0 		);\
 )\
 \
-\cf9 //remove the mapping\cf0 \
-b.unmap(\cf5 \\ffreq\cf0 );\
 \
 \
 b[2] = \cf4 Pbind\cf0 (\cf5 \\instrument\cf0 , \cf5 \\who\cf0 , \cf5 \\freq\cf0 , 620, \cf5 \\legato\cf0 , 0.1, \\dur, 0.1);\
@@ -709,10 +714,10 @@ b[4] = \cf4 Pbind\cf0 (\cf5 \\instrument\cf0 , \cf5 \\who\cf0 , \cf5 \\freq\cf0 
 b[1] = \{ \cf4 WhiteNoise\cf0 .ar([0.01,0.01]) \}; \
 b[4] = \{ \cf4 arg\cf0  ffreq=800; \cf4 Resonz\cf0 .ar(\cf4 WhiteNoise\cf0 .ar([1,1]), ffreq, 0.05) \}; \
 \
-\
-b.map(\cf5 \\ffreq\cf0 , c);\
+\cf7 \
+b.map(\cf9 \\ffreq\cf7 , c); \cf8 // map the control to the proxy\cf7 \
 b.removeLast;\
-b.removeLast;\
+\cf0 b.removeLast;\
 a.source = \{  b.ar * \cf4 WhiteNoise.ar(0.1, 1)\cf0   \}; \
 a.source = \{  b.ar * \cf4 WhiteNoise\cf0 .ar(0.1, 1) + (b.ar * \cf4 SinOsc\cf0 .ar(\cf4 SinOsc\cf0 .kr(0.01, 0, 50, 330)))  \}; \
 \
