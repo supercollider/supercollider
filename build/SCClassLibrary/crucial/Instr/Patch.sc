@@ -10,18 +10,6 @@ Patch : AbstractPlayer  {
 		^super.new.loadSubject(name).createArgs(loadPath(args) ?? {[]})
 	}
 
-	//act like a simple ugen function
-	ar { 	arg ... overideArgs;	^this.valueArray(overideArgs) }
-	value { arg ... overideArgs;  ^this.valueArray(overideArgs) }
-	valueArray { arg  overideArgs;  
-		// each arg is valued as it is passed into the instr function
-		^instr.valueArray(args.collect({ arg a,i; 
-									(overideArgs.at(i) ? a).value; 
-							})  
-			)
-	}
-	
-	
 	loadSubject { arg name;
 		instr = name.asInstr;
 		if(instr.isNil,{
@@ -40,28 +28,27 @@ Patch : AbstractPlayer  {
 				?? 
 				{ //  or auto-create a suitable control...
 					spec = instr.specs.at(i);
-					
 					// should check for argName match too...
-					proto = spec.defaultControl(instr.initAt(i));
-					
-					//ControlPrototypes.forSpec(spec,instr.argNames.at(i));
-					//proto.tryPerform('spec_',spec); 
-					// make sure it does the spec
+					//proto = spec.defaultControl(instr.defArgAt(i));
+					spec.defaultControl(0.2);
 					proto
 				};
-			patchIn = PatchIn.newByRate(instr.specs.at(i).rate);
-			patchIns = patchIns.add(patchIn);
-
-			// although input is control, arg could overide that
-			if(instr.specs.at(i).rate != \scalar
-				and: {ag.instrArgRate != \scalar}
-			,{
-				argsForSynth = argsForSynth.add(ag);
-				synthPatchIns = synthPatchIns.add(patchIn);
-			});
+				
+//			patchIn = PatchIn.newByRate(instr.specs.at(i).rate);
+//			patchIns = patchIns.add(patchIn);
+//
+//			// although input is control, arg could overide that
+//			if(instr.specs.at(i).rate != \scalar
+//				and: {ag.instrArgRate != \scalar}
+//			,{
+//				argsForSynth = argsForSynth.add(ag);
+//				synthPatchIns = synthPatchIns.add(patchIn);
+//			});
 			
 			ag		
 		});
+		this.dump;
+		this.halt;
 	}
 	
 	numChannels { ^instr.numChannels }
@@ -135,6 +122,19 @@ Patch : AbstractPlayer  {
 	}
 	*/
 	
+	
+	
+	//act like a simple ugen function
+	ar { 	arg ... overideArgs;	^this.valueArray(overideArgs) }
+	value { arg ... overideArgs;  ^this.valueArray(overideArgs) }
+	valueArray { arg  overideArgs;  
+		// each arg is valued as it is passed into the instr function
+		^instr.valueArray(
+				args.collect({ arg a,i; (overideArgs.at(i) ? a).value; })  
+			)
+	}
+
+
 	storeParamsOn { arg stream;
 		stream.storeArgs([this.instr.name,enpath(args)]);
 	}

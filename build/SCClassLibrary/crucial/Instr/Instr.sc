@@ -127,7 +127,6 @@ Instr  {
 		nn=func.def.prototypeFrame;
 		^nn.at(i) ?? {specs.at(i).default}
 	}
-	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).default}) }
 	
 	/*  server support */
 	defName {

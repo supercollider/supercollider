@@ -128,13 +128,27 @@ Sample {
 	bufChannelsKr {
 		^BufChannels.kr(this.bufnumKr)
 	}
+/*	
+	pchRatioKr {
+		this.bufRateScaleKr  * this.tempoPlayer * 
+		can't kr the tempoPlayer until we have a server.
+		can't get a tempo bus until we have a server
+	}
 	
-	//pchRatioKr
-		// add a TempoBus, read from it
-		// store somewhere that it needs it
-	
-
-
+	tempoPlayer {
+		// add a control on the tempo bus
+		// return In.kr(
+		^(tempoPlayer ?? {
+			tempoPlayer = TempoPlayer.new;
+		})
+	}
+*/
+	pchRatioKr { arg temp;
+		//ISSUE fixes the synthDef but doesn't let anyone know
+		// could tell the def its fixed
+		// or keep a buffer on server with buffnums -> tempos
+		^this.bufRateScaleKr * temp * tempo.reciprocal
+	}
 	storeParamsOn { arg stream;
 		stream << "(";
 		[ soundFilePath ,tempo ].storeItemsOn(stream);
