@@ -3762,6 +3762,9 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
                 (scenv+i)->mIsStatic = false;
                 (scenv+i)->mIsSelected = false;
 				(scenv+i)->mNumConnection = 0;
+				(scenv+i)->mRect.height = mThumbSizeY;
+				(scenv+i)->mRect.width = mThumbSize;
+
 			}
 		} else { //meaning size < mTabSize
 			memcpy(scenv, *arr, size * sizeof(SCEnvObject));
@@ -3778,7 +3781,8 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 			(scenv+i)->mIsStatic = false;
 			(scenv+i)->mIsSelected = false;
 			(scenv+i)->mNumConnection = 0;
-
+			(scenv+i)->mRect.height = mThumbSizeY;
+			(scenv+i)->mRect.width = mThumbSize;
 		}	
 	}
 	
@@ -4099,7 +4103,6 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             err = slotIntVal(slot, &mThumbSizeY);
             if(mSelectedIndex < 0) return errNone;
             (&mEnvObj[mSelectedIndex])->mRect.height = mThumbSizeY;
-            
             refresh();
             return errNone;
         } 
