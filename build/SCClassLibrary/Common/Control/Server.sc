@@ -226,22 +226,60 @@ Server : Model {
 	}
 	
 	////
-	makeWindow {
-		var w, active;
+	makeWindow { arg w;
+		var active,booter,running,booting,stopped;
 		var countsViews, ctlr;
 		
 		if (window.notNil, { ^window.front });
 		
-		w = window = SCWindow(name.asString ++ " server", Rect(10, named.values.indexOf(this) * 140 + 10, 190, 120));
-		w.view.decorator = FlowLayout(w.view.bounds);
+		if(w.isNil,{
+			w = window = SCWindow(name.asString ++ " server", Rect(10, named.values.indexOf(this) * 140 + 10, 190, 120));
+			w.view.decorator = FlowLayout(w.view.bounds);
+		});
 		
-		active = SCButton(w, Rect(0,0, 80, 24));
-		active.states = [["Stopped", Color.white, Color.red],
-					["Booting...",Color.black,Color.yellow],
-					["Running", Color.black, Color.green]];
-		if(serverRunning,{ active.setProperty(\value,2); });
+//		active = SCButton(w, Rect(0,0, 80, 24));
+//		active.states = [["Stopped", Color.white, Color.red(0.1)],
+//					["Booting...",Color.black,Color.yellow(0.5)],
+//					["Running", Color.black, Color.red(0.9)]];
+//		active.setProperty(\enabled,false);	
+//		if(serverRunning,{ active.setProperty(\value,2); });
+		if(isLocal,{
+			booter = SCButton(w, Rect(0,0, 50, 24));
+			booter.states = [["Boot", Color.white, Color.grey(0.5)],
+						   ["Quit", Color.white, Color.grey(0.5)]];
+			
+			booter.action = { arg view; 
+				if(view.value == 1, {
+					booting.value;
+					this.boot;
+				});
+				if(view.value == 0,{
+					this.quit;
+				});
+			};
+		});
+		
+		active = SCStaticText(w, Rect(0,0, 80, 24));
+		active.string = this.name.asString;
+		active.align = \center;
+		active.font = Font("Helvetica-Bold", 16);
+		active.background = Color.black;
+		if(serverRunning,running,stopped);		
 		
 		if (isLocal, {
+			running = {
+				active.stringColor_(Color.red);
+				booter.setProperty(\value,1);
+			};
+			stopped = {
+				active.stringColor_(Color.grey(0.3));
+				booter.setProperty(\value,0);
+			};
+			booting = {
+				active.stringColor_(Color.yellow(0.9));
+				//booter.setProperty(\value,0);
+			};
+			
 			w.onClose = {
 				//OSCresponder.removeAddr(addr);
 				//this.stopAliveThread;
@@ -249,29 +287,24 @@ Server : Model {
 				window = nil;
 				ctlr.remove;
 			};
-			active.action = { arg view; 
-				view.value.postln;
-				if(view.value == 1, {
-					this.boot;
-				});
-				if(view.value == 0,{
-					this.quit;
-				});
-				if(view.value == 2,{
-					// try abort boot ?
-					// this.quit;
-					view.setProperty(\value, 0);
-				});
-			};
 		},{	
-			active.enabled = false; // look but don't touch
+			running = {
+				active.background = Color.red;
+			};
+			stopped = {
+				active.background = Color.black;
+			};
+			booting = {
+				active.background = Color.yellow;
+			};
 			w.onClose = {
 				// but do not remove other responders
 				this.stopAliveThread;
 				ctlr.remove;
 			};
 		});
-		
+		if(serverRunning,running,stopped);
+			
 		w.view.decorator.nextLine;
 
 		countsViews = 
@@ -293,16 +326,13 @@ Server : Model {
 		w.front;
 
 		ctlr = SimpleController(this)
-			.put(\serverRunning, {
-				active.setProperty(\value, if(serverRunning,2,0) );
-			})
+			.put(\serverRunning, {	if(serverRunning,running,stopped) })
 			.put(\counts,{
 				countsViews.at(0).string = numUGens;
 				countsViews.at(1).string = numSynths;
 				countsViews.at(2).string = numGroups;
 				countsViews.at(3).string = numSynthDefs;
 			});	
-		
 		this.startAliveThread;
 	}
 }
