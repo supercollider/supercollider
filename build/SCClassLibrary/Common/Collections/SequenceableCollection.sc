@@ -273,25 +273,9 @@ SequenceableCollection : Collection {
 		^((this + amount) % octave).sort
 	}
 	mode { arg degree, octave=12;
-		var transpose;
-		transpose = this.at(degree);
-		^((this - transpose) % octave)
+		^(rotate(this, degree.neg) - this.wrapAt(degree)) % octave
 	}
-	zxmode { arg degree, octave=12;
-		var transpose, i=0, j, size, newColl;
 
-		transpose = this.at(degree);
-		size = this.size;
-		newColl = this.class.new(size);
-		j = degree;
-		while ({ i < size },{
-			newColl.add((this.at(j) - transpose) % octave);
-			j = j + 1;
-			if (j >= size, { j = 0 });
-		});
-		^newColl;
-	}
-	
 	// supports a variation of Mikael Laurson's rhythm lists.
 	convertRhythm {
 		var list, tie;
