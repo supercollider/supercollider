@@ -12,6 +12,7 @@
                 openCode = id; 
                 postWindowToFront = id; 
                 runMain = id; 
+                selectLineWindow = id; 
                 shiftLeft = id; 
                 shiftRight = id; 
                 stopMain = id; 
