@@ -25,8 +25,7 @@ Pref : Pattern {
 				p = this.newCopyArgs(key, pattern, TempoClock.default);
 				this.put(key, p);
 			}, {
-				p.pattern_(pattern);
-				p.changed_(true); 
+				p.pattern_(pattern).changed_(true); 
 			});
 			
 		}, { 
@@ -55,7 +54,7 @@ Pref : Pattern {
 			toBeChanged = nil;
 			scheduledForChange = false;
 			nil
-		})
+		}, 1.0)
 		
 	}
 	
@@ -72,7 +71,11 @@ Pref : Pattern {
 	}
 	
 	constrainStream { arg str;
-		^Pfindur(this.timeToNextBeat, str).asStream
+		^Pseq([
+			Pfindur(this.timeToNextBeat, str),
+			pattern.asStream
+		]).asStream
+		 
 	}
 	
 }
@@ -87,7 +90,7 @@ Prefn : Pref {
 
 RefStream : Pstr {
 	
-	var <parent, <changed=false; 
+	var <parent, <changed; 
 	
 	*new { arg parent;
 		^super.new.makeDependant(parent);
@@ -96,7 +99,7 @@ RefStream : Pstr {
 	makeDependant { arg argParent;
 		parent = argParent;
 		this.pattern = argParent.pattern;
-		super.resetPat;
+		this.resetPat;
 	}
 
 	key { ^parent.key }
@@ -105,10 +108,10 @@ RefStream : Pstr {
 	next { arg inval;
 	
 		var outval;
-		if(changed.not and: {parent.changed}) {
+		if(changed.not and: { parent.changed }) {
 			changed = true; 
-			parent.schedForChange(this);
 			stream = parent.constrainStream(stream); 
+			parent.schedForChange(this);
 		};
 		outval = stream.next(inval);
 		^outval
