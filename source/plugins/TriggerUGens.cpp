@@ -403,8 +403,6 @@ void SendTrig_Ctor(SendTrig *unit)
 	SETCALC(SendTrig_next);
 
 	unit->m_prevtrig = 0.f;
-	
-	ZOUT0(0) = 0.f;
 }
 
 void SendTrig_next(SendTrig *unit, int inNumSamples)
