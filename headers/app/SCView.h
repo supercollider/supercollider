@@ -83,9 +83,9 @@ public:
 	virtual void drawDisabled(SCRect inDamage);
         virtual void drawDragHilite(SCRect inDamage);
 	virtual void drawIfNecessary(SCRect inDamage);
-	virtual void mouseBeginTrack(SCPoint where, int modifiers);
-	virtual void mouseTrack(SCPoint where, int modifiers);
-	virtual void mouseEndTrack(SCPoint where, int modifiers);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseOver(SCPoint where);
 	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	virtual void keyUp(int character, int modifiers, unsigned short keycode);
@@ -262,7 +262,7 @@ public:
 	SCSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 
 	virtual void draw(SCRect inDamage);
-	virtual void mouseTrack(SCPoint where, int modifiers);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	
 	double value() { return mValue; }
 	bool setValue(double inValue, bool send);
@@ -290,8 +290,8 @@ public:
 	SCRangeSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 
 	virtual void draw(SCRect inDamage);
-	virtual void mouseBeginTrack(SCPoint where, int modifiers);
-	virtual void mouseTrack(SCPoint where, int modifiers);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	
 	bool setValue(double inLo, double inHi, bool send);
 
@@ -325,7 +325,7 @@ public:
 	SC2DSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 
 	virtual void draw(SCRect inDamage);
-	virtual void mouseTrack(SCPoint where, int modifiers);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	
 	bool setValue(double inLo, double inHi, bool send);
 
@@ -354,7 +354,7 @@ public:
 	SCCartesianView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 
 	virtual void draw(SCRect inDamage);
-	virtual void mouseTrack(SCPoint where, int modifiers);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	
 	bool setValue(double inLo, double inHi, bool send);
 
@@ -403,9 +403,9 @@ public:
         virtual ~SCButton();
 
 	virtual void draw(SCRect inDamage);
-	virtual void mouseTrack(SCPoint where, int modifiers);
-	virtual void mouseEndTrack(SCPoint where, int modifiers);
-	
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+    virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+
 	bool setValue(int inValue, bool send);
 
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -433,7 +433,7 @@ public:
         virtual ~SCPopUpMenu();
 
 	virtual void draw(SCRect inDamage);
-	virtual void mouseBeginTrack(SCPoint where, int modifiers);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	
 	bool setValue(int inValue, bool send);
 	virtual void setMenuItemChosen(int inItem) { setValue(inItem, true); }
@@ -460,11 +460,13 @@ class SCMultiSliderView : public SCView
 public:	
 	SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
         virtual ~SCMultiSliderView();
+
 	virtual void draw(SCRect inDamage);
-	virtual void mouseBeginTrack(SCPoint where, int modifiers);
-        virtual void mouseEndTrack(SCPoint where, int modifiers);
-	virtual void mouseTrack(SCPoint where, int modifiers);
-	void setSelection(SCPoint where);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+    virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	
+    void setSelection(SCPoint where);
 	bool setValue(int inX, double inY, bool send);
         //virtual void setPoint(int x, double y, bool send);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -522,10 +524,10 @@ public:
 	SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 	virtual ~SCEnvelopeView();
 	virtual void draw(SCRect inDamage);
-	virtual void mouseBeginTrack(SCPoint where, int modifiers);
-	virtual void mouseEndTrack(SCPoint where, int modifiers);
-
-	virtual void mouseTrack(SCPoint where, int modifiers);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+    
 	void setSelection(SCPoint where, bool fixed, bool checkForConnection);
 	bool setValue(int indx, double x, double y, bool send);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -576,10 +578,10 @@ public:
 	SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 
 	virtual void draw(SCRect inDamage);
-	virtual void mouseBeginTrack(SCPoint where, int modifiers);
-	virtual void mouseTrack(SCPoint where, int modifiers);
-	virtual void mouseEndTrack(SCPoint where, int modifiers);
-	virtual void keyDown(int character, int modifiers);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);	
+    virtual void keyDown(int character, int modifiers);
 	virtual void keyUp(int character, int modifiers);
         
 protected:
@@ -625,7 +627,7 @@ public:
 	virtual void draw(SCRect inDamage);
         virtual bool shouldDim();
 
-	virtual void mouseTrack(SCPoint where, int modifiers);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	//virtual void mouseEndTrack(SCPoint where, int modifiers);
 	
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -647,7 +649,7 @@ public:
         
 	virtual void draw(SCRect inDamage);
         virtual bool shouldDim();
-	virtual void mouseBeginTrack(SCPoint where, int modifiers);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
         
 protected:
 };
@@ -678,10 +680,28 @@ public:
         
 	virtual void draw(SCRect inDamage);
 
-	virtual void mouseBeginTrack(SCPoint where, int modifiers);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 
 protected:
 };
 SCView* NewSCDragBoth(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
+
+//felix
+class SCTabletView : public SCView
+{
+public:	
+	SCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+        virtual ~SCTabletView();
+        
+	virtual void draw(SCRect inDamage);
+        //virtual bool shouldDim();
+    
+    virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+
+	//virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	//virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+        
+};
+SCView* NewSCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 

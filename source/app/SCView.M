@@ -283,18 +283,18 @@ NSMenu* SCView::contextMenu(SCPoint inPoint)
 	return 0;
 }
 
-void SCView::mouseBeginTrack(SCPoint where, int modifiers)
+void SCView::mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
-	mouseTrack(where, modifiers);
+	mouseTrack(where, modifiers,theEvent);
 }
 
-void SCView::mouseTrack(SCPoint where, int modifiers)
+void SCView::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
 }
 
-void SCView::mouseEndTrack(SCPoint where, int modifiers)
+void SCView::mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
-	mouseTrack(where, modifiers);
+	mouseTrack(where, modifiers,theEvent);
 }
 
 void SCView::mouseOver(SCPoint where)
@@ -1192,7 +1192,7 @@ void SCSlider::calcThumbRect()
     }
 }
 
-void SCSlider::mouseTrack(SCPoint where, int modifiers)
+void SCSlider::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
@@ -1352,7 +1352,7 @@ void SCRangeSlider::calcRangeRect()
     }
 }
 
-void SCRangeSlider::mouseBeginTrack(SCPoint where, int modifiers)
+void SCRangeSlider::mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     mAnchor = where;
     // sc.solar: allow drag
@@ -1427,7 +1427,7 @@ void SCRangeSlider::adjustHiFromPoint(SCPoint where)
     setValue(lo, hi, true);
 }
 
-void SCRangeSlider::mouseTrack(SCPoint where, int modifiers)
+void SCRangeSlider::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
@@ -1587,7 +1587,7 @@ void SC2DSlider::calcThumbRect()
     mThumbRect = SCMakeRect(mBounds.x + x + 1, mBounds.y + mBounds.height - y - 1 - THUMBSIZE, THUMBSIZE, THUMBSIZE);   
 }
 
-void SC2DSlider::mouseTrack(SCPoint where, int modifiers)
+void SC2DSlider::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
@@ -1726,7 +1726,7 @@ bool SCButton::setValue(int inValue, bool send)
 }
 
 
-void SCButton::mouseTrack(SCPoint where, int modifiers)
+void SCButton::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
 	if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
@@ -1739,7 +1739,7 @@ void SCButton::mouseTrack(SCPoint where, int modifiers)
 	}
 }
 
-void SCButton::mouseEndTrack(SCPoint where, int modifiers)
+void SCButton::mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     bool inside = hit(where);
     if (inside) setValue(mValue+1, true);
@@ -1934,7 +1934,7 @@ bool SCPopUpMenu::setValue(int inValue, bool send)
 }
 
 
-void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers)
+void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {	
 	if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
@@ -2313,16 +2313,16 @@ void SCMultiSliderView::setSelection(SCPoint where)
     refresh();
 }
 
-void SCMultiSliderView::mouseBeginTrack(SCPoint where, int modifiers)
+void SCMultiSliderView::mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
 	mPrevPoint = where;
-	mouseTrack(where, modifiers);
+	mouseTrack(where, modifiers,theEvent);
 }
-void SCMultiSliderView::mouseEndTrack(SCPoint where, int modifiers){
+void SCMultiSliderView::mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent){
     sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
-    mouseTrack(where, modifiers);
+    mouseTrack(where, modifiers,theEvent);
 }
-void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers)
+void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
@@ -2609,17 +2609,17 @@ void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
     sendMessage(method, 3, args, 0);
 }
 
-void SCUserView::mouseBeginTrack(SCPoint where, int modifiers)
+void SCUserView::mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     mouseAction(getsym("mouseBeginTrack"), where, modifiers);
 }
 
-void SCUserView::mouseTrack(SCPoint where, int modifiers)
+void SCUserView::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     mouseAction(getsym("mouseTrack"), where, modifiers);
 }
 
-void SCUserView::mouseEndTrack(SCPoint where, int modifiers)
+void SCUserView::mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     mouseAction(getsym("mouseEndTrack"), where, modifiers);
 }
@@ -3133,10 +3133,10 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
     */ 
     refresh();
 }
-void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers){
+void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent){
     sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
     if (modifiers & NSShiftKeyMask) {
-        mouseTrack(where, modifiers);
+        mouseTrack(where, modifiers,theEvent);
     }
     if(!mIsFixedSelection){
      if(mSelectedIndex >= 0){
@@ -3150,13 +3150,13 @@ void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers){
     setValueFromPoint(where);
    // mouseTrack(where, modifiers);
 }
-void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers)
+void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
 	//mPrevPoint = where;
-	mouseTrack(where, modifiers);
+	mouseTrack(where, modifiers,theEvent);
 }
 
-void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers)
+void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
@@ -3582,7 +3582,7 @@ int SCNumberBox::setProperty(PyrSymbol *symbol, PyrSlot *slot)
        return SCStaticText::setProperty(symbol, slot);
 }
 
-void SCNumberBox::mouseTrack(SCPoint where, int modifiers)
+void SCNumberBox::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
@@ -3648,7 +3648,7 @@ bool SCDragSource::shouldDim()
 
 int ivxSCDragSource_object;
 
-void SCDragSource::mouseBeginTrack(SCPoint where, int modifiers)
+void SCDragSource::mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     beginDrag(where);
 }
@@ -3736,10 +3736,77 @@ void SCDragBoth::draw(SCRect inDamage)
 
 int ivxSCDragBoth_object;
 
-void SCDragBoth::mouseBeginTrack(SCPoint where, int modifiers)
+void SCDragBoth::mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     beginDrag(where);
 }
+
+
+////////////////////////////////////////////////
+#import "TabletEvents.h"
+
+SCView* NewSCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCTabletView(inParent, inObj, inBounds);
+}
+
+SCTabletView::SCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SCView(inParent, inObj, inBounds)
+{
+}
+
+SCTabletView::~SCTabletView()
+{
+}
+
+void SCTabletView::draw(SCRect inDamage)
+{
+        SCView::draw(inDamage);
+        
+        //SCRect bounds = mBounds;
+}
+void SCTabletView::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
+{
+    // get  x, y, pressure, tiltx, tilty, deviceID, buttonNumber,clickCount
+    PyrSlot args[8];
+
+    // x y
+    NSPoint loc = [theEvent locationInWindow];
+    SetFloat(args+0, loc.x - mBounds.x);
+    SetFloat(args+1, loc.y - mBounds.y);
+
+    //pressure
+    SetFloat(args+2, (float)[theEvent pressure]);
+    
+    // tilt
+    NSPoint tilt;
+    tilt = (NSPoint)[theEvent tilt];
+    SetFloat(args+3, tilt.x); 
+    SetFloat(args+4, tilt.y); 
+    
+    SetInt(args+5,[theEvent deviceID]);
+    SetInt(args+6,[theEvent buttonNumber]);
+    SetInt(args+7,[theEvent clickCount]);
+    
+    switch( [theEvent type] )
+    {
+        case kEventMouseDown:
+            sendMessage(getsym("mouseDown"), 8, args, 0);
+            break;
+        case kEventMouseUp:
+            sendMessage(getsym("mouseUp"), 8, args, 0);
+            break;
+        case kEventMouseDragged:
+            sendMessage(getsym("mouseDragged"), 8, args, 0);
+            break;
+        default:
+            // won't happen
+            sendMessage(getsym("doAction"), 8, args, 0);
+    }
+
+}
+
+ 
 
 ////////////////////////////////////////////////
 
@@ -3751,13 +3818,13 @@ SCViewMaker::SCViewMaker(const char* inName, SCViewCtor inCtor)
 
 SCView* MakeSCView(PyrObject* inObj, SCContainerView *inParent, SCRect inBounds,const char *classname)
 {
-       // const char *classname = inObj->classptr->name.us->name;
-        SCViewMaker* maker = gSCViewMakers;
+    // const char *classname = inObj->classptr->name.us->name;
+    SCViewMaker* maker = gSCViewMakers;
 	while (maker) {
-            if (strcmp(classname, maker->mName) == 0) {
-                    return (maker->mCtor)(inParent, inObj, inBounds);
-            }
-            maker = maker->mNext;
+        if (strcmp(classname, maker->mName) == 0) {
+            return (maker->mCtor)(inParent, inObj, inBounds);
+        }
+        maker = maker->mNext;
 	}
 	return 0;
 }
@@ -3786,6 +3853,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCPopUpMenu", NewSCPopUpMenu);
     new SCViewMaker("SCMultiSliderView", NewSCMultiSliderView);
     new SCViewMaker("SCEnvelopeView", NewSCEnvelopeView);
+    new SCViewMaker("SCTabletView", NewSCTabletView);
 
 }
 
@@ -3811,7 +3879,6 @@ int prSCView_New(struct VMGlobals *g, int numArgsPushed)
 	SCRect bounds;
 	int err = slotGetSCRect(args+2, &bounds);
 	if (err) return err;
-	
 	SCView *view = MakeSCView(args[0].uo, parent, bounds,args[3].uoc->name.us->name);
 	if (!view) return errFailed;
 

@@ -130,6 +130,8 @@ static NSString *sSCObjType = @"SuperCollider object address";
 	return view->contextMenu(scpoint);
 }
 
+-(void)rightMouseDown:(NSEvent*)theEvent { [self mouseDown:theEvent]; }
+-(void)otherMouseDown:(NSEvent*)theEvent { [self mouseDown:theEvent]; }
 - (void)mouseDown:(NSEvent *)theEvent
 {
     BOOL keepOn = YES;
@@ -145,12 +147,12 @@ static NSString *sSCObjType = @"SuperCollider object address";
 		mDragStarted = NO;
 		mMenuView = 0;
         view->makeFocus(true);
-        view->mouseBeginTrack(scpoint, modifiers);
+        view->mouseBeginTrack(scpoint, modifiers,theEvent);
         [self displayIfNeeded];
         
         while (keepOn && !mDragStarted && !mMenuView) {
-            theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |
-                    NSLeftMouseDraggedMask];
+            theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |NSRightMouseUp | NSOtherMouseUp |
+                    NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged ];
             mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
             //isInside = [self mouse:mouseLoc inRect:[self bounds]];
             scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
@@ -158,10 +160,14 @@ static NSString *sSCObjType = @"SuperCollider object address";
             int evtype = [theEvent type];
             switch ([theEvent type]) {
                 case NSLeftMouseDragged:
-                        view->mouseTrack(scpoint, modifiers);
+                case NSRightMouseDragged:
+                case NSOtherMouseDragged:
+                        view->mouseTrack(scpoint, modifiers,theEvent);
                         break;
                 case NSLeftMouseUp:
-                        view->mouseEndTrack(scpoint, modifiers);
+                case NSRightMouseUp:
+                case NSOtherMouseUp:
+                        view->mouseEndTrack(scpoint, modifiers,theEvent);
                         keepOn = NO;
                         break;
                 default:
@@ -176,6 +182,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 	mMenuView = 0;
     return;
 }
+//scrollWheel:(NSEvent*)theEvent;
 
 - (void)setSCObject: (struct PyrObject*)inObject;
 {
