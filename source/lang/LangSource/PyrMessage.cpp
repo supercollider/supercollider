@@ -167,9 +167,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
 				selector = meth->selectors.us;
-				index = methraw->specialIndex;
-				classVarIndex = meth->constants.us->u.classobj->classIndex.ui;
-				recvrSlot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
+				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
 							
 				classobj = classOfSlot(recvrSlot);
 				
@@ -331,9 +329,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					g->sp += mmax;
 				}
 				selector = meth->selectors.us;
-				index = methraw->specialIndex;
-				classVarIndex = meth->constants.us->u.classobj->classIndex.ui;
-				recvrSlot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
+				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
 							
 				classobj = classOfSlot(recvrSlot);
 				
@@ -490,9 +486,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
 				selector = meth->selectors.us;
-				index = methraw->specialIndex;
-				classVarIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				recvrSlot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
+				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
 							
 				classobj = classOfSlot(recvrSlot);
 				
@@ -655,9 +649,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					g->sp += mmax;
 				}
 				selector = meth->selectors.us;
-				index = methraw->specialIndex;
-				classVarIndex = meth->constants.us->u.classobj->classVarIndex.ui;
-				recvrSlot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
+				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
 				
 				classobj = classOfSlot(recvrSlot);
 				
@@ -1195,7 +1187,7 @@ void returnFromBlock(VMGlobals *g)
 	//if (gTraceInterpreter) postfl("<-returnFromBlock\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
-	CallStackSanity(g, str);
+	CallStackSanity(g, "returnFromBlock");
 #endif
 }
 
