@@ -1,7 +1,7 @@
 
 FlowLayout {
-	var <>bounds, <>margin, <>gap;
-	var left, top, maxHeight; 
+	var <bounds, <>margin, <>gap;
+	var <left, <top, maxHeight,<maxRight; 
 	
 	*new { arg bounds, margin, gap;
 		^super.newCopyArgs(bounds, margin, gap).init
@@ -12,36 +12,42 @@ FlowLayout {
 		this.reset;
 	}
 	reset {
-		left = bounds.left + margin.x;
+		maxRight = left = bounds.left + margin.x;
 		top = bounds.top + margin.y;
-		maxHeight = 0;
+		maxHeight  = 0;
 	}
 	place { arg view;
-		var height, width;
-		width = view.bounds.width;
-		height = view.bounds.height;
+		var height, width,vbounds;
+		vbounds = view.bounds;
+		width = vbounds.width;
+		height = vbounds.height;
 		if ((left + width) > (bounds.right - margin.x), { this.nextLine });
 		
 		view.bounds = Rect(left, top, width, height);
-		
+
+		maxRight = max(maxRight,left + width);		
 		left = left + width + gap.x;
 		maxHeight = max(maxHeight, height);
 	}
 	nextLine {
-		left = margin.x;
+		left = bounds.left + margin.x;
 		top = top + maxHeight + gap.y;
 		maxHeight = 0;
 	}
 	innerBounds {
-		^bounds.insetBy(margin.x,margin.y)
+		^bounds.insetBy(margin.x * 2,margin.y * 2)
 	}
-	used { //round up to nearest rect
-		^Rect(bounds.left,bounds.top,bounds.width,(top + maxHeight) - bounds.top + margin.y)
-	}
-	remaining {// round down to nearest rect
-		var t;
-		^Rect(bounds.left,t = top + maxHeight,bounds.width,bounds.height - t)
-	}
+	bounds_ { arg b;
+		var d;
+		left = left + ( d = (b.left - bounds.left));
+		maxRight = maxRight + (d);
+		top = top + (d = (b.top - bounds.top));
+		maxHeight = maxHeight + (d);
+		bounds = b;
+		// and then you need to re-place all views
+		// nextLine will be broken, see FlowView
+	}	
+
 }
 
 
