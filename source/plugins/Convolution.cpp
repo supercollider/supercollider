@@ -21,29 +21,17 @@
 //Convolution by sick lincoln for sc3 
 //see ch18 http://www.dspguide.com/ch18.htm Steven W Smith
 
-#include "SC_PlugIn.h"
-#include <sndfile.h>
-#include "SCComplex.h"
-
-// not ready for altivec yet..
-#undef __VEC__
-#define __VEC__ 0
+#include "FFT_UGens.h"
 
 #if __VEC__
-	#include <vecLib/vecLib.h>
 	FFTSetup fftsetup[32];
 #else
 extern "C" {
-	#include "fftlib.h"
-	static float *cosTable[32];
+	float *cosTable[32];
 }
 #endif
 
-#include <string.h>
-
-static InterfaceTable *ft;
-
-static float *fftWindow[32];
+float *fftWindow[32];
 
 struct Convolution : Unit
 {
@@ -55,24 +43,10 @@ struct Convolution : Unit
 };
 
 
-struct SCComplexBuf 
-{
-	float dc, nyq;
-	SCComplex bin[1];
-};
-
-struct SCPolarBuf 
-{
-	float dc, nyq;
-	SCPolar bin[1];
-};
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
         void Convolution_next(Convolution *unit, int wrongNumSamples);
         void Convolution_Ctor(Convolution *unit);
         void Convolution_Dtor(Convolution *unit);
@@ -82,39 +56,13 @@ extern "C"
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-SCPolarBuf* ToPolarApx(SndBuf *buf);
-SCPolarBuf* ToPolarApx(SndBuf *buf)
-{
-	if (buf->coord == coord_Complex) {
-		SCComplexBuf* p = (SCComplexBuf*)buf->data;
-		int numbins = buf->samples - 2 >> 1;
-		for (int i=0; i<numbins; ++i) {
-			p->bin[i].ToPolarApxInPlace();
-		}
-		buf->coord = coord_Polar;
-	}
-	return (SCPolarBuf*)buf->data;
-}
-
-SCComplexBuf* ToComplexApx(SndBuf *buf);
-SCComplexBuf* ToComplexApx(SndBuf *buf)
-{
-	if (buf->coord == coord_Polar) {
-		SCPolarBuf* p = (SCPolarBuf*)buf->data;
-		int numbins = buf->samples - 2 >> 1;
-		for (int i=0; i<numbins; ++i) {
-			p->bin[i].ToComplexApxInPlace();
-		}
-		buf->coord = coord_Complex;
-	}
-	return (SCComplexBuf*)buf->data;
-}
-
-
 void DoWindowing(int log2n, float * fftbuf, int bufsize);
 void DoWindowing(int log2n, float * fftbuf, int bufsize)
 {
 	float *win = fftWindow[log2n];
+	
+	//printf("fail? %i %d /n", log2n, win);
+	
 	if (!win) return;
 	float *in = fftbuf - 1;
 	win--;
@@ -274,7 +222,6 @@ int numbins = unit->m_fftsize >> 1; //unit->m_fftsize - 2 >> 1;
 }
 
 
-
 float* create_cosTable(int log2n);
 float* create_cosTable(int log2n)
 {
@@ -320,7 +267,6 @@ void init_ffts()
 		cosTable[i] = 0;
 		fftWindow[i] = 0;
 	}
-        //used to be up to 13
 	for (int i=3; i<15; ++i) {
 		cosTable[i] = create_cosTable(i);
 		fftWindow[i] = create_fftwindow(i);
@@ -328,73 +274,10 @@ void init_ffts()
 #endif
 }
 
-
-void load(InterfaceTable *inTable)
+//void initConvolution(InterfaceTable *it);
+void initConvolution(InterfaceTable *it)
 {
-	ft = inTable;
-
-	//init_SCComplex(inTable);
 	init_ffts();
-        
-        DefineDtorUnit(Convolution);
+	DefineDtorUnit(Convolution);
 }
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-////DEBUG CODE
-
-/*
-
-       int firsttime;	//debug variable
-       
-       
-        unit->firsttime=0;
-       
- int j;
-        
-        
-        ++unit->firsttime;     
-       
-        if(unit->firsttime==10) 
-        {
-        
-        
-        for(j=0; j<unit->m_fftsize; ++j)
-        printf("%i val %f   %f \n",j, unit->m_fftbuf1[j], unit->m_fftbuf2[j]);
-        
-        } 
-
-
-           
-         
-        if(unit->firsttime==10) 
-        {
-        
-        
-        for(j=0; j<unit->m_fftsize; ++j)
-        printf("%i val %f   %f \n",j, unit->m_fftbuf1[j], unit->m_outbuf[j]);
-        
-        }   
-*/
-      
-   ////////DISCARDED
-   
-          
-                 		
-		//unit->m_fftsndbuf->coord = coord_Complex;
-
-
-/*
-	SCComplexBuf *p1 = (SCComplexBuf*)(unit->m_fftbuf1);
-	SCComplexBuf *p2 = (SCComplexBuf*)(unit->m_fftbuf2);
-	
-        
-        p1->dc *= 0.0; //p2->dc;
-	p1->nyq *= 0.0; //p2->nyq;
-        
-	for (int i=0; i<numbins; ++i) {
-                p1->bin[i] *= 0.0; //p2->bin[i];
-	}
-  */         
-                  
 
