@@ -54,7 +54,10 @@ SCView {  // abstract class
 		_SCView_Focus
 		^this.primitiveFailed
 	}
-
+	hasFocus{
+		_SCView_HasFocus
+		^this.primitiveFailed
+	}
 	id {
 		^this.getProperty(\id)
 	}
@@ -1146,7 +1149,8 @@ SCMultiSliderView : SCView {
 SCEnvelopeView : SCMultiSliderView {
 	var connection, <>allConnections, doOnce;
 	var <>items;
-
+	var < fixedSelection = false;
+	
 	value_ { arg val;
 		if(val.at(1).size != val.at(0).size,{
 			// otherwise its a fatal crash
@@ -1278,6 +1282,11 @@ SCEnvelopeView : SCMultiSliderView {
 		});		
 		this.value_([arrx,arry]);
 	}	
+	
+	fixedSelection_{arg bool;
+		fixedSelection =  bool;
+		this.setProperty(\setFixedSelection, bool);
+	}
 }
 
 Gradient {
