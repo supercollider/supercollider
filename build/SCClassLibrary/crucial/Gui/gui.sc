@@ -8,7 +8,7 @@
 	}
 	
 	topGui { arg ... args; 
-		^this.guiClass.new(this).performList(\gui,args);
+		^this.guiClass.new(this).performList(\topGui,args);
 	}
 	
 	smallGui { arg  ... args;

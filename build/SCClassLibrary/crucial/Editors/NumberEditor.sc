@@ -96,15 +96,15 @@ KrNumberEditor : Editor {
 				});
 		});
 		if(needsValueSetNow,{ patchIn.value = value });
-	}		
-	free {
+	}
+	stop {
 		//patchOut.free;
 		if(patchOut.notNil and: {patchOut.updater.notNil},{
 			patchOut.updater.remove;
 			patchOut.updater = nil;
 		});
 	}
-	
+	free { this.stop }	
 	guiClass { ^NumberEditorGui }
 
 }

@@ -21,7 +21,7 @@
 		});
 	}
 
-	guiClass { ^PlayerPoolGui }}PatchSwitcher : PlayerPool {
+	guiClass { ^PlayerPoolGui }}/*PatchSwitcher : PlayerPool {
 
 	var <>inputs,ip,proxyMatches;
 	var connectedInputs,inputGroup;
@@ -74,7 +74,7 @@
 				var inputProxy,input;
 				# inputProxy , input = inpinp;
 				if((input.isPlaying ? false).not,{
-					input.spawnOnToBundle(inputGroup,bundle: bundle);
+					input.spawnOnToBundle(inputGroup,bundle: bundle).insp("input spawnd to bun");
 				});
 				inputProxy.initValue = input.synthArg;
 			});
@@ -86,7 +86,7 @@
 					var inputProxy,input,argName;
 					# inputProxy , input, argName = inpinp;
 					// haven't yet set the nodeControl of patchIn of inputProxy
-					inputProxy.setNodeControl( NodeControl(input.synth,argName) );
+					inputProxy.setNodeControl( NodeControl(input.synth,argName).insp("nodecon") );
 					input.connectTo( inputProxy )
 				});
 			});
@@ -113,5 +113,5 @@
 		bundle.send(this.server,atTime);
 	}
 }
-
+*/
 

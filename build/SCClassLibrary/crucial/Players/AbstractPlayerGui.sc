@@ -14,16 +14,31 @@ AbstractPlayerGui : ObjectGui {
 			view = layout;
 			this.writeName(layout);
 			this.guiBody(layout);
-		}).background_(Color.blue(0.5,0.15));
+		},bounds).background_(Color.blue(0.5,0.15));
 		this.enableKeyDowns;
 		if(lay.isNil,{
 			layout.resizeToFit.front;
 			view.focus;
 		})
 	}
-	//deprec
-	topGui { arg layout,bounds ... args;
-		^this.performList(\gui,[layout,bounds] ++ args);
+	topGui { arg lay,bounds ... args;
+		var layout;
+		layout=this.guify(lay,bounds);
+		// top level controls
+		this.synthConsole(layout);
+		this.saveConsole(layout);
+		layout.startRow;
+		this.performList(\gui,[layout,bounds] ++ args);
+		/*layout.flow({ arg layout;
+			view = layout;
+			this.writeName(layout);
+			this.guiBody(layout);
+		}).background_(Color.blue(0.5,0.15));*/
+		this.enableKeyDowns;
+		if(lay.isNil,{
+			layout.resizeToFit.front;
+			view.focus;
+		})
 	}	
 	
 	smallGui { arg layout,bounds;
