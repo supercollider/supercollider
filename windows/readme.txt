@@ -8,20 +8,22 @@ to build SC3 with the free Microsoft compiler toolkit ($$$todo).
 let's call ROOT the folder that contains the SuperCollider3 folder (which, in turn,
 contains "build", "doc", "English.lproj", etc...
 
-folders must be like that :
+folders must thus be like that :
 
 ROOT\SuperCollider3\build
 ROOT\SuperCollider3\doc
 
+IMPORTANT NOTE :
+you do NOT need to build any of the support libs listes below, neither do you need
+to download binary distributions of these... all compilations are taken care of by the msvc projects.
 
 libsndfile
 -----------
-- you do NOT need to build libsndfile. this is taken care of by the msvc project.
-
-- ($$$todo) sc3 is known to build with libsndfile-1.0.11.tar.gz. please report
-issues (or better, fix them) with newer versions.
+- reminder : you do NOT need to build libsndfile. this is taken care of by the msvc project.
 
 1) go to "http://www.mega-nerd.com/libsndfile/" and download the .tar.gz package
+($$$todo) sc3 is known to build with libsndfile-1.0.11.tar.gz. please report issues 
+(or better, fix them) with newer versions.
 
 2) uncompress it in ROOT and rename its libsndfile-x.y.zz (eg : libsndfile-1.0.11)  folder to "libsndfile". so that the folders are like that :
 
@@ -35,7 +37,7 @@ to the "ROOT\libsndfile\src\" folder
 
 portaudio + asio
 ----------------------
-- you do NOT need to build portaudio. this is taken care of by the msvc project.
+- reminder : you do NOT need to build portaudio. this is taken care of by the msvc project.
 
 1) go to "http://www.portaudio.com/" and download pa_snapshot_v19.tar.gz
 (main page --> CVS (left menu) --> pa_snapshot_v19.tar.gz in the "v19-devel" branch section)
@@ -74,14 +76,23 @@ ROOT\portaudio\pa_win\msvc\common\asiosys.h"
 
 portmidi
 -----------
+- reminder : you do NOT need to build portmidi. this is taken care of by the msvc project.
+
 1) go to the "http://www-2.cs.cmu.edu/~music/portmusic/portmidi/" web folder
 retrieve the latest version (known to work with portmidi17nov04.zip )
 
-2) 
+2) extract the zip file to ROOT so that folders look like that :
+
+...
+ROOT\portmidi\pm_common\
+ROOT\portmidi\portmidi.dsp\
+...
 
 
-pthread-win32 ()
----------------------------------------------------------------------------------------------
+
+pthread-win32
+------------------------
+- reminder : you do NOT need to build pthread-win32. this is taken care of by the msvc project.
 
 1) go to : "ftp://sources.redhat.com/pub/pthreads-win32" and get "pthreads-snap-yyyy-mm-dd.tar.gz".
 (known to work with "pthreads-snap-2005-01-25.tar.gz")
@@ -95,7 +106,6 @@ ROOT\pthread-win32\attr.c
 
 
 NOTE : the home page is "http://sources.redhat.com/pthreads-win32"
-
 
 
 ----------------------------------------------------------------------------------------------------
