@@ -459,8 +459,8 @@ void PerformOSCBundle(OSC_Packet* inPacket)
 
     VMGlobals *g = gMainVMGlobals;
     ++g->sp; SetObject(g->sp, g->process);
-    ++g->sp; SetObject(g->sp, replyObj);
     ++g->sp; SetFloat(g->sp, seconds);
+    ++g->sp; SetObject(g->sp, replyObj);
     
     int numMsgs = 0;
     char *data = inPacket->mData + 16;
@@ -488,7 +488,8 @@ void PerformOSCMessage(int inSize, char *inData, ReplyAddress *inReply)
     ++g->sp; SetObject(g->sp, g->process);
     ++g->sp; SetFloat(g->sp, elapsedTime());	// time
     ++g->sp; SetObject(g->sp, replyObj);
-    ++g->sp; SetObject(g->sp, arrayObj);
+    ++g->sp; SetObject(g->sp, arrayObj);	
+	
     runInterpreter(g, s_recvoscmsg, 4);
 
 }
