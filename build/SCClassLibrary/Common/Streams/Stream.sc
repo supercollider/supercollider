@@ -247,13 +247,13 @@ CleanupStream : Stream {
 	*new { arg stream, cleanup;
 		^super.newCopyArgs(stream, cleanup)
 	}
-	next { arg val;
-		val = stream.next(val);
-		if (val.isNil) {
-			cleanup.value(this);
+	next { arg inval;
+		var outval = stream.next(inval);
+		if (outval.isNil) {
+			cleanup.value(this, inval);
 			cleanup = nil;
 		}
-		^val
+		^outval
 	}
 	reset {
 		stream.reset
