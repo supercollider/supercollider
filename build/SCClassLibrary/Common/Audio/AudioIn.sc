@@ -55,7 +55,15 @@ In : MultiOutUGen {
 	}
 }
 
-InFeedback : In {}
+InFeedback : MultiOutUGen {	
+	*ar { arg bus = 0, numChannels = 1;
+		^this.multiNew('audio', numChannels, bus)
+	}
+	init { arg numChannels ... argBus;
+		inputs = argBus.asArray;
+		^this.initOutputs(numChannels, rate)
+	}
+}
 
 InTrig : MultiOutUGen {	
 	*kr { arg bus = 0, numChannels = 1;
