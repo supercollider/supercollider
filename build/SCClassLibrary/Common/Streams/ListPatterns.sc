@@ -333,12 +333,11 @@ Pswitch1 : Pswitch {
 Ptuple : ListPattern {
 	asStream { 
 		^Routine.new({ arg inval;
-			var item, streams, tuple, outval;
-						
-			streams = list.collect({ arg item; item.asStream });
-			
+									
 			repeats.value.do({ arg j;
-				var sawNil = false;
+				var item, streams, tuple, outval, sawNil = false;
+				
+				streams = list.collect({ arg item; item.asStream });
 								
 				while ({
 					tuple = Array.new(streams.size);
