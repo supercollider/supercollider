@@ -69,6 +69,9 @@ SCView {  // abstract class
 		_SCView_FindByID
 		^this.primitiveFailed
 	}
+	
+	isClosed { ^dataptr.isNil }
+	notClosed { ^dataptr.notNil }
 	remove {
 		if(dataptr.notNil,{
 			parent.prRemoveChild(this);
@@ -227,6 +230,10 @@ SCContainerView : SCView { // abstract class
 	add { arg child;
 		children = children.add(child);
 		if (decorator.notNil, { decorator.place(child); });
+	}
+	
+	removeAll {
+		children.copy.do {|child| child.remove };
 	}
 	
 	prRemoveChild { arg child;
