@@ -24,7 +24,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef SC_WIN32
+# include <winsock2.h>
+#else
 #include <netinet/in.h>
+#endif                 
 #include "sc_msg_iter.h"
 
 typedef void (*ReplyFunc)(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
