@@ -186,11 +186,9 @@ a = \cf3 LocalClient\cf0 (\cf4 \\default\cf0 , \cf3 nil\cf0 ); \cf2 //addr is ni
 b = \cf3 Client\cf0 (\cf4 \\default\cf0 , \cf3 NetAddr\cf0 (\cf5 "127.0.0.1"\cf0 , 57120));\
 \
 \cf2 // store some client functions to be accessible from outside (analogous to SynthDef)\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 ClientFunc\cf0 (\cf4 \\ok\cf0 , \{ \cf3 arg\cf0  ... args; args.postln \});\
 \cf3 ClientFunc\cf0 (\cf4 \\yes\cf0 , \{ \cf3 arg\cf0  ... args; \cf4 \\ok2\cf0 .postln \});\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // start the local client\cf0 \
 a.start;\
 \
@@ -249,7 +247,8 @@ b = \cf3 Client\cf0 .new;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 ClientFunc\cf0 (\cf4 \\chat\cf0 , \{ \cf3 arg\cf0  str; \{ d.string =  d.string ++ str ++ Char.nl \}.defer \});\
 \
-e.keyDownAction_(\{\'ca\cf3 arg\cf0  char;\
+e.keyDownAction_(\{\'ca\cf3 arg\cf0  doc, char;\
+	char.postln;\
 	 if(char === \cf3 Char.tab\cf0 ) \
 	 \{ \
 	 	b.send(\cf4 \\chat\cf0 , n + ":" + e.currentLine); \
