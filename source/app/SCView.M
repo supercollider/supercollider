@@ -222,8 +222,8 @@ Layout::Layout()
 
 SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: mNext(0), mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
-	mVisible(true), mEnabled(true), mCanFocus(true), mDragHilite(false),
-        mBackground(0)
+	mVisible(true), mEnabled(true), mCanFocus(true),
+        mBackground(0), mDragHilite(false)
 {
 	if (inParent) inParent->add(this);
 	// store myself into sc object.
@@ -253,7 +253,8 @@ void SCView::keyDown(int character, int modifiers)
         ++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetChar(g->sp, character); 
         ++g->sp;  SetInt(g->sp, modifiers); 
-        runInterpreter(g, method, 3);
+        ++g->sp;  SetInt(g->sp, character); 
+        runInterpreter(g, method, 4);
         g->canCallOS = false;
     }
     pthread_mutex_unlock (&gLangMutex);
@@ -833,8 +834,8 @@ SCTopView::SCTopView(PyrObject* inObj, SCRect inBounds)
 	: SCCompositeView(0, inObj, inBounds), mFocusView(0), mDragView(0)
 {
     mTop = this;
-    float ltgry = 0.8;
-    float dkgry = 0.5;
+    //float ltgry = 0.8;
+    //float dkgry = 0.5;
     //mBackground = new SolidColorBackground(
     //                SCMakeColor(ltgry, ltgry, ltgry, 1.0));
 }
@@ -1650,7 +1651,7 @@ SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 }
 
 SCPopUpMenu::SCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mMenuH(0), mValue(0)
+	: SCView(inParent, inObj, inBounds), mValue(0), mMenuH(0)
 {
 	mStringColor = SCMakeColor(0,0,0,1);
 	//mArrowColor = SCMakeColor(0,0,0,0);
@@ -1746,7 +1747,7 @@ void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers)
 		float screenHeight = [[NSScreen mainScreen] frame].size.height;
 		p.y = screenHeight - p.y;
 		
-		int val = PopUpMenuSelect(mMenuH, p.y, p.x, mValue + 1);
+		int val = PopUpMenuSelect(mMenuH, (short)p.y, (short)p.x, mValue + 1);
 		if (val == 0) return;
 		val = (val & 0xFFFF) - 1;
 		setValue(val, true);	
