@@ -6,22 +6,21 @@
 PublicProxySpace : ProxySpace {
 
 	var <>sendingKeys, <>listeningKeys, <>public=true;
-	var <>addressList, <>nickname, <>action;
-	var <>channel;
+	var <>addresses, <>channel, <>nickname, <>action, <>logSelf=false;
 	
-	classvar <>listeners, <resp;
+	classvar <listeningSpaces, <resp;
 	
-	*initClass { listeners = IdentitySet.new }
-
 	join { arg channelName, nick=\anybody; 
 		channel = channelName;
 		nickname = nick;
-		listeners.add(this)
+		if(listeningSpaces.isNil or: { listeningSpaces.includes(this).not }) {
+			listeningSpaces = listeningSpaces.add(this)
+		}
 	}
 	
 	leave { 
 		channel = nil;
-		listeners.remove(this);
+		listeningSpaces.remove(this);
 	}
 	
 	put { arg key, obj; 
@@ -45,13 +44,16 @@ PublicProxySpace : ProxySpace {
 	 	d = Document(name.asString);
 	 	d.bounds_(bounds ? Rect(10, 400, 600, 500));
 	 	d.background_(color ? Color.new255(180, 160, 180));
+	 	d.string_("//" + Date.getDate.asString ++ "\n\n\n");
 	 	action = { arg ps, nickname, key, str;
 	 		defer { 
 	 			str = "~" ++ key ++ " = " ++ str;
 	 			if(str.last !== $;) {Êstr = str ++ $; };
 	 			d.selectedString_(
 	 				"\n" ++ "//" + nickname
-	 				++ " ________________________________________________\n\n"
+	 				+ "______"
+	 				+ Date.getDate.hourStamp 
+	 				+ "________________________________________________\n\n"
 	 				++ str
 	 				++ "\n\n"
 	 			);
@@ -61,7 +63,7 @@ PublicProxySpace : ProxySpace {
 	 }
 	 
 	 *get { arg channelName;
-	 	^listeners.selectAs({ |p| p.channel === channelName }, Array);
+	 	^listeningSpaces.select { |p| p.channel === channelName };
 	 }
 	 
 	 *startListen { arg addr; // normally nil
@@ -70,13 +72,13 @@ PublicProxySpace : ProxySpace {
 			var channel, nickname, key, str, proxyspace, obj, listeningKeys;
 			#nickname, channel, key, str = msg[1..4];
 			proxyspace = this.get(channel);
-			proxyspace.do { arg proxyspace;
+			proxyspace.do { arg proxyspace; // don't listen to myself
 				if(proxyspace.nickname !== nickname and: { proxyspace.listensTo(key) })
 				{
 					proxyspace.action.value(proxyspace, nickname, key, str);
 					obj = str.asString.interpret;
 					if(obj.notNil) {
-						proxyspace.remotePut(key, obj);
+						proxyspace.localPut(key, obj);
 					};
 				};
 			};
@@ -92,17 +94,12 @@ PublicProxySpace : ProxySpace {
 		resp = nil;
 	}
 	
-	*clearAll {
-		this.stopListen;
-		super.clearAll; // check this again
-	}
-
-	
+		
 	// private implementation //
 	
 	
 	
-	remotePut { arg key, obj;
+	localPut { arg key, obj;
 		if(currentEnvironment === this) {
 				this.at(key).put(nil, obj);
 		} {
@@ -115,10 +112,11 @@ PublicProxySpace : ProxySpace {
 	broadcast { arg name, key, obj;
 		var str, b;
 		str = obj.asCompileString;
+		if(logSelf) {Êaction.value(this, nickname, key, str) };
 		if(str.size > 8125) {Ê"string too large to publish".postln; ^this };
 		if(channel.isNil or: { nickname.isNil }) { Error("first join a channel, please").throw };
 		b = ['/proxyspace', nickname, channel, key, str];
-		addressList.do { arg addr; addr.sendBundle(nil, b) };
+		addresses.do { arg addr; addr.sendBundle(nil, b) };
 	}
 	
 	sendsTo { arg key;
