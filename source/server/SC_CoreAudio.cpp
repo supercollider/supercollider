@@ -155,6 +155,42 @@ void initializeScheduler()
 }
 #endif // SC_AUDIO_API_JACK
 
+// =====================================================================
+// Timing (PortAudio)
+
+#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+
+static inline int64 GetCurrentOSCTime()
+{
+/*	struct timeval tv;
+	uint64 s, f;
+	gettimeofday(&tv, 0); 
+
+	s = (uint64)tv.tv_sec + (uint64)kSECONDS_FROM_1900_to_1970;
+	f = (uint64)((double)tv.tv_usec * kMicrosToOSCunits);
+
+	return (s << 32) + f;
+*/
+// TODO
+    return 0;
+}
+
+int32 timeseed()
+{
+	int64 time = GetCurrentOSCTime();
+	return Hash((int32)(time >> 32) + Hash((int32)time));
+}
+
+int64 oscTimeNow()
+{
+	return GetCurrentOSCTime();
+}
+
+void initializeScheduler()
+{
+}
+#endif // SC_AUDIO_API_PORTAUDIO
+
 double gSampleRate, gSampleDur;
 
 
@@ -1583,3 +1619,212 @@ void SC_CoreAudioDriver::JackSampleRateChanged(double sampleRate)
 #endif
 }
 #endif // SC_AUDIO_API_JACK
+
+// =====================================================================
+// Audio driver (PortAudio)
+
+#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+
+// =====================================================================
+// SC_CoreAudioDriver (PortAudio)
+
+#define PRINT_PORTAUDIO_ERROR( function, errorcode )\
+        scprintf( "SC_CoreAudioDriver: PortAudio failed at %s with error: '%s'\n",\
+                #function, Pa_GetErrorText( errorcode ) )
+
+void SC_CoreAudioDriver::DriverInitialize()
+{
+    PaError paerror = Pa_Initialize();
+    if( paerror != paNoError )
+        PRINT_PORTAUDIO_ERROR( Pa_Initialize, paerror );
+        
+    mStream = 0;
+}
+
+void SC_CoreAudioDriver::DriverRelease()
+{
+	if( mStream ){
+        PaError paerror = Pa_CloseStream( mStream );
+        if( paerror != paNoError )
+            PRINT_PORTAUDIO_ERROR( Pa_CloseStream, paerror );
+    }
+    Pa_Terminate();
+}
+
+static int SC_PortAudioStreamCallback( const void *input, void *output,
+    unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
+    PaStreamCallbackFlags statusFlags, void *userData )
+{
+    SC_CoreAudioDriver *driver = (SC_CoreAudioDriver*)userData;
+
+    return driver->PortAudioCallback( input, output, frameCount, timeInfo, statusFlags );
+}
+
+
+int SC_CoreAudioDriver::PortAudioCallback( const void *input, void *output,
+            unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
+            PaStreamCallbackFlags statusFlags )
+{
+    World *world = mWorld;
+
+    (void) frameCount, timeInfo, statusFlags; // suppress unused parameter warnings
+    
+	try {
+        int64 oscTime = 0; // FIXME -> PortAudioTimeToHostTime( mStream, timeInfo.outputBufferDacTime );
+		mOSCbuftime = oscTime;
+		
+		mFromEngine.Free();
+		mToEngine.Perform();
+		
+		int numInputs = mInputChannelCount;
+		int numOutputs = mOutputChannelCount;
+		const float **inBuffers = (const float**)input;
+		float **outBuffers = (float**)output;
+
+		int numSamples = NumSamplesPerCallback();
+		int bufFrames = mWorld->mBufLength;
+		int numBufs = numSamples / bufFrames;
+
+		float *inBuses = mWorld->mAudioBus + mWorld->mNumOutputs * bufFrames;
+		float *outBuses = mWorld->mAudioBus;
+		int32 *inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
+		int32 *outTouched = mWorld->mAudioBusTouched;
+
+		int minInputs = std::min<size_t>(numInputs, mWorld->mNumInputs);
+		int minOutputs = std::min<size_t>(numOutputs, mWorld->mNumOutputs);
+
+		int bufFramePos = 0;
+
+		int64 oscInc = mOSCincrement;
+		double oscToSamples = mOSCtoSamples;
+	
+		// main loop
+		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames)
+		{
+			int32 bufCounter = mWorld->mBufCounter;
+			int32 *tch;
+			
+			// copy+touch inputs
+			tch = inTouched;
+			for (int k = 0; k < minInputs; ++k)
+			{
+				const float *src = inBuffers[k] + bufFramePos;
+				float *dst = inBuses + k * bufFrames;
+				for (int n = 0; n < bufFrames; ++n) *dst++ = *src++;
+				*tch++ = bufCounter;
+			}
+
+
+			// run engine
+/*
+			int64 schedTime;
+			int64 nextTime = oscTime + oscInc;
+			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
+				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				SC_ScheduledEvent event = mScheduler.Remove();
+				event.Perform();
+				world->mSampleOffset = 0;
+			}
+*/
+
+            // hack for now, schedule events as soon as they arrive
+            
+            int64 schedTime;
+            int64 nextTime = oscTime + oscInc;
+            while ((schedTime = mScheduler.NextTime()) != kMaxInt64) {
+                world->mSampleOffset = 0;
+				SC_ScheduledEvent event = mScheduler.Remove();
+				event.Perform();
+				world->mSampleOffset = 0;
+			}
+
+			World_Run(world);
+
+			// copy touched outputs
+			tch = outTouched;
+			for (int k = 0; k < minOutputs; ++k) {
+				float *dst = outBuffers[k] + bufFramePos;
+				if (*tch++ == bufCounter) {
+					float *src = outBuses + k * bufFrames;
+					for (int n = 0; n < bufFrames; ++n) *dst++ = *src++;
+				} else {
+					for (int n = 0; n < bufFrames; ++n) *dst++ = 0.0f;
+				}
+			}
+
+			// update buffer time
+			mOSCbuftime = nextTime;
+		}
+	} catch (std::exception& exc) {
+		scprintf("SC_CoreAudioDriver: exception in real time: %s\n", exc.what());
+	} catch (...) {
+		scprintf("SC_CoreAudioDriver: unknown exception in real time\n");
+	}
+
+	double cpuUsage = (double)Pa_GetStreamCpuLoad(mStream); 
+	mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
+	if (cpuUsage > mPeakCPU || --mPeakCounter <= 0)
+	{
+		mPeakCPU = cpuUsage;
+		mPeakCounter = mMaxPeakCounter;
+	}
+
+	mAudioSync.Signal();
+
+    return paContinue;
+}
+
+
+// ====================================================================
+// NOTE: for now, in lieu of a mechanism that passes generic options to
+// the platform driver, we rely on the PortAudio default device environment variables
+bool SC_CoreAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
+{
+    char *env;
+    
+	// create inputs according to SC_PORTAUDIO_INPUTS (default 2)
+	env = getenv("SC_PORTAUDIO_INPUTS");
+	if (env == 0) env = "2";
+	mInputChannelCount = std::max(2, atoi(env));
+
+	// create outputs according to SC_PORTAUDIO_OUTPUTS (default 2)
+	env = getenv("SC_PORTAUDIO_OUTPUTS");
+	if (env == 0) env = "2";
+	mOutputChannelCount = std::max(2, atoi(env));
+
+    *outNumSamples = mWorld->mBufLength;
+    *outSampleRate = 44100.;
+
+    PaError paerror = Pa_OpenDefaultStream( &mStream, mInputChannelCount, mOutputChannelCount,
+            paFloat32 | paNonInterleaved, *outSampleRate, *outNumSamples, SC_PortAudioStreamCallback, this );
+    if( paerror != paNoError )
+        PRINT_PORTAUDIO_ERROR( Pa_OpenDefaultStream, paerror );
+
+    return paerror == paNoError;
+}
+
+bool SC_CoreAudioDriver::DriverStart()
+{
+	if (!mStream)
+		return false;
+
+    PaError paerror = Pa_StartStream( mStream );
+    if( paerror != paNoError )
+        PRINT_PORTAUDIO_ERROR( Pa_StartStream, paerror );
+
+	return paerror == paNoError;
+}
+
+bool SC_CoreAudioDriver::DriverStop()
+{
+    if (!mStream)
+		return false;
+
+    PaError paerror = Pa_StopStream(mStream);
+    if( paerror != paNoError )
+        PRINT_PORTAUDIO_ERROR( Pa_StopStream, paerror );
+
+	return paerror == paNoError;
+}
+
+#endif // SC_AUDIO_API_PORTAUDIO

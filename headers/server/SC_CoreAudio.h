@@ -31,6 +31,11 @@
 
 #define SC_AUDIO_API_COREAUDIO	1
 #define SC_AUDIO_API_JACK		2
+#define SC_AUDIO_API_PORTAUDIO  3
+
+#ifdef SC_WIN32
+# define SC_AUDIO_API SC_AUDIO_API_PORTAUDIO
+#endif
 
 #ifndef SC_AUDIO_API
 # define SC_AUDIO_API SC_AUDIO_API_COREAUDIO
@@ -44,6 +49,10 @@
 #if SC_AUDIO_API == SC_AUDIO_API_JACK
 # include <jack/jack.h>
 class SC_JackPortList;
+#endif
+
+#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+#include "portaudio.h"
 #endif
 
 class SC_AudioDriver
@@ -126,6 +135,11 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 	SC_JackPortList		*mOutputList;
 #endif // SC_AUDIO_API_JACK
 
+#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+    int mInputChannelCount, mOutputChannelCount;
+    PaStream *mStream;
+#endif // SC_AUDIO_API_PORTAUDIO
+
 	// Driver interface methods
 	void DriverInitialize();
 	void DriverRelease();
@@ -183,6 +197,12 @@ public:
 	void JackBufferSizeChanged(int numSamples);
 	void JackSampleRateChanged(double sampleRate);
 #endif // SC_AUDIO_API_JACK
+
+#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+    int PortAudioCallback( const void *input, void *output,
+            unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
+            PaStreamCallbackFlags statusFlags );
+#endif // SC_AUDIO_API_PORTAUDIO
 };
 
 #endif
