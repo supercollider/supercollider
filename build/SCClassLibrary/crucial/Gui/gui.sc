@@ -121,6 +121,9 @@
 	asPageLayout { arg title,bounds;
 		^MultiPageLayout.on(this.asView,bounds)
 	}
+	asFlowView { arg bounds;
+		^FlowView(this,bounds)
+	}
 }	
 + SCContainerView {
 	asPageLayout { arg title,bounds;
