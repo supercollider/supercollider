@@ -19,8 +19,12 @@
 
 
 +SimpleNumber {
-	prepareForProxySynthDef {
-		^{ Control.names([\value]).kr([this])  }
+	prepareForProxySynthDef { arg proxy;
+		^if(proxy.rate === 'audio', {
+			{Line.ar(1,1,0)} //??
+		}, { 
+			{Control.names([\value]).kr([this])} 
+		})
 	}
 }
 
@@ -61,10 +65,6 @@
 		});)
 	}
 }
-
-
-
-
 
 
 
