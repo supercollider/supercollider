@@ -597,6 +597,7 @@ Server : Model {
 				probing.add(nodeID);
 				this.sendMsg("/n_query",nodeID);
 			};
+			("\nnodes on" + name ++ ":").postln;
 			
 			report = { arg nodeID=0;
 				var child,synth;
