@@ -31,7 +31,7 @@ Score {
 	
 	play { arg server;
 		var size, osccmd, timekeep, inserver, rout, sortedScore;
-		sortedScore = score.quickSort({ arg a, b; a[0] < b[0] }).postcs;
+		sortedScore = score.quickSort({ arg a, b; a[0] < b[0] });
 		isPlaying.not.if({
 			inserver = server ? Server.default;
 			size = sortedScore.size;
