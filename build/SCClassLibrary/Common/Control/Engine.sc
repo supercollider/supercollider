@@ -62,6 +62,7 @@ LRUNumberAllocator
 		array = Array.newClear(size);
 		for(lo, hi-1, { arg i, j; array.put(j, i) });
 		head = size-1;
+		tail=0;
 	}
 	free { arg id;
 		var nextIndex;		
