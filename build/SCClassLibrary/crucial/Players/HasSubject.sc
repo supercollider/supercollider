@@ -154,7 +154,6 @@ StreamKrDur : HasSubject { // Synthless, above player
 							(dur = durst.next).notNil;
 					},{
 						// send the message...	
-						[bus.index,val].postln;
 						bus.value_(val);
 						tempo.beats2secs(dur).wait
 					});
