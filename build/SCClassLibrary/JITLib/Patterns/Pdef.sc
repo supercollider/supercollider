@@ -1,127 +1,118 @@
-
-
-
-Tdef : Task {
+StreamPlayerReference {
 	
-	*new { arg key, func, clock;
-		var res;
-		res = this.at(key);
-		if(res.isNil, { 
-				res = super.new(func, clock);
-				this.put(key, res)
-		}, {
-			if(func.notNil, {
-				res.stream = Routine(func)
-			});
-		})
-		^res
-	}
-	*at { arg key;
-		^Library.at(this, key)
-	}
-	*put { arg key, obj;
-		Library.put(this, key, obj)
-	}
+	var <>quant=1.0, isPlaying=false;
+	var <player;
+	
 
-}
-
-Pdef : EventStreamPlayer {
-	
-	classvar <all, <>defaultEvent, <defaultStream;
-	var isPlaying=false, <>quant=1.0;
-	
-	
-	
-	*new { arg key, pat, event;
+	*new { arg key ... argList;
 		var res, stream;
 		res = this.at(key);
-		stream = pat.asStream;
 		if(res.isNil, {
-				res = super.new(stream ? this.defaultStream, event ? this.defaultEvent);
+				res = super.new.initPlayer(argList);
 				this.put(key, res)
 		}, {
-			if(stream.notNil, { res.stream = stream });
-			if(event.notNil, { res.event = event });
+			res.sched({ res.setProperties(argList) });
 		});
 		^res
-	}
-	*at { arg key;
-		^all.at(key)
-	}
-	*put { arg key, obj;
-		all.put(key, obj)
-	}
-	*initClass {
-		defaultStream = Pbind(\freq, \rest).asStream;
-		CmdPeriod.add(this);
-		this.clear;
-	}
-	
-	*cmdPeriod { all.do({ arg item; item.stop }) }
-	
-	*remove { arg key;
-		all.removeAt(key).stop;
-	}
-	*removeAll { all.do({ arg item; item.stop }); this.clear }
-	*clear { all = () }
-	
-	
-		
-	isPlaying { ^isPlaying } // override superclass 
-	
-	stream_ { arg str;
-		if(clock.isKindOf(TempoClock), { 
-			clock.play({ 	
-				this.prSetStream(str); nil 
-			}, 1) 
-		}, {
-				this.prSetStream(str);
-		});
 	}
 	
 	play { arg argClock, doReset = false, argQuant;
-		if (isPlaying, { "alrready playing".postln; ^this });
-		super.play(argClock, doReset, argQuant ? quant);
+		if (isPlaying, { "reference already playing".postln; ^this });
+		player.play(argClock, doReset, argQuant ? quant);
 		isPlaying = true;
 	}
 	
-	stop {  stream = nil; isPlaying = false; }
+	clock { ^player.clock }
+	stop {  player.stop; isPlaying = false; }
 	pause { this.stop }
 	
-	// use like a stream
+	*put { this.subclassResponsibility(thisMethod) }
+	*at { this.subclassResponsibility(thisMethod) }
+	setProperties { this.subclassResponsibility(thisMethod) }
+	initPlayer { this.subclassResponsibility(thisMethod) }
 	
-	asStream {
-		^Routine.new({ arg inval;
-			var val;
-			this.refresh;
-			while({
-				val = stream.next(inval);
-				val.notNil;
-			}, {
-				val.yield;
-			})
-		
+	sched { arg func;
+		var clock;
+		clock = this.clock;
+		if(clock.isKindOf(TempoClock), { 
+			clock.play({ 	
+				func.value; nil 
+			}, quant) 
+		}, func);
+	}
+
+}
+
+Tdef : StreamPlayerReference {
+	classvar <>all;
+	
+	*initClass {
+		CmdPeriod.add(this);
+		this.clear;
+	}
+	*cmdPeriod { this.all.do({ arg item; item.stop }) }
+	
+	*remove { arg key;
+		this.all.removeAt(key).stop;
+	}
+	*removeAll { this.all.do({ arg item; item.stop }); this.clear }
+	*clear { all = () }
+	*at { arg key;
+		^this.all.at(key)
+	}
+	*put { arg key, obj;
+		this.all.put(key, obj)
+	}
+	initPlayer { arg argList;
+		var func;
+		#func = argList;
+		player = Task.new(func ? { 1.yield });
+	}
+	
+	setProperties { arg argList;
+		var func;
+		#func = argList;
+		if(func.notNil, { 
+			this.prSetStream(Routine.new(func));
 		})
 	}
-	
-	embedInStream { arg stream;
-		^this.asStream.embedInStream(stream)
-	}
-	
-	collect { arg func;
-		^this.asStream.collect(func)
-	}
-	
 	// private 
 	prSetStream { arg str;
 			var old;
-			old = stream;
-			super.stream = str;
+			old = player.stream;
+			player.stream = str;
 			if(isPlaying and: { old.isNil }, { isPlaying = false; this.play });
 	}
-	
+
+
 }
 
-
-
+Pdef : Tdef {
+	classvar <all, <>defaultEvent, <defaultStream;
+	
+	*initClass {
+		CmdPeriod.add(this);
+		this.clear;
+	}
+	*clear { all = () }
+	
+	initPlayer { arg argList;
+		var pat, event, stream;
+		#pat, event = argList;
+		player = EventStreamPlayer.new(
+			stream.asStream ? this.class.defaultStream, 
+			event ? this.class.defaultEvent
+		);
+	}
+	
+	setProperties { arg argList;
+		var pat, event, stream;
+		#pat, event = argList;
+		stream = pat.asStream;
+		if(event.notNil, { player.event = event });
+		if(stream.notNil, { this.prSetStream(stream) });
+	}
+	
+	
+}
 
