@@ -1,13 +1,13 @@
 Document {
 
 	classvar <dir="", <wikiDir="", <allDocuments, <>current;
-	classvar <>globalKeyDownAction, <>initAction;
+	classvar <>globalKeyDownAction, <> globalKeyUpAction, <>initAction;
 	
 	classvar <>autoRun = true;
 	classvar <>wikiBrowse = true;
 
 	//don't change the order of these vars:
-	var <dataptr, <>keyDownAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction;
+	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction;
 	
 	var <>path, title, visible, <background, <stringColor, <>onClose;
 	var unused;
@@ -317,7 +317,12 @@ Document {
 		this.class.globalKeyDownAction.value(this,character, modifiers, keycode);
 		keyDownAction.value(this,character, modifiers, keycode);
 	}
-	
+
+	keyUp {arg character, modifiers, keycode;
+		this.class.globalKeyUpAction.value(this,character, modifiers, keycode);
+		keyUpAction.value(this,character, modifiers, keycode);
+	}
+		
 	== { arg doc;
 		^if(path.isNil or: { doc.path.isNil }) { doc === this } {
 			path == doc.path
@@ -327,6 +332,10 @@ Document {
 //private-----------------------------------
 	prSetName { arg argName;
 		_TextWindow_SetName
+		^this.primitiveFailed
+	}
+	prGetFiletName {
+		_TextWindow_GetFileName
 		^this.primitiveFailed
 	}
 	prGetBounds { arg argBounds;
@@ -409,7 +418,7 @@ Document {
 		//allDocuments = allDocuments.add(this);
 		var doc;
 		doc = this.prinitByIndex(idx);
-		if(doc.isNil,{this = nil; ^nil});
+		if(doc.isNil,{^nil});
 		this.prAdd;
 	}
 	prinitByIndex { arg idx;
@@ -423,7 +432,7 @@ Document {
 	
 	initLast {
 		this.prGetLastIndex;
-		if(dataptr.isNil,{ this = nil; ^nil});
+		if(dataptr.isNil,{^nil});
 		this.prAdd;
 	}
 	
@@ -449,7 +458,7 @@ Document {
 	
 		title = argTitle;
 		this.prinitByString(title, str, makeListener);
-		if(dataptr.isNil,{ this = nil; ^nil});
+		if(dataptr.isNil,{^nil});
 		this.prAdd;
 	
 	}
