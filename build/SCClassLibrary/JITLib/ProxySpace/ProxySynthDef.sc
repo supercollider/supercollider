@@ -89,13 +89,13 @@ ProxySynthDef : SynthDef {
 }
 
 EnvGate {
-	*new { arg level=1, gate, fadeTime, doneAction=2;
+	*new { arg i_level=1, gate, fadeTime, doneAction=2;
 		var synthGate, synthFadeTime;
 		synthGate = gate ?? { Control.names('gate').kr(1.0) };
 		synthFadeTime = fadeTime ?? { Control.names('fadeTime').kr(0.02) };
 		^EnvGen.kr(
 			Env.new(#[0,1,0],#[1,1],'sin',1), 
-			synthGate, level, 0.0, synthFadeTime, doneAction
+			synthGate, i_level, 0.0, synthFadeTime, doneAction
 		)
 	}
 }

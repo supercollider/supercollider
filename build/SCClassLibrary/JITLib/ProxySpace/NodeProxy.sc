@@ -127,9 +127,7 @@ BusPlug : AbstractFunction {
 	
 	
 	isNeutral {
-		^if(bus.isNil, { true }, {
-			bus.index.isNil && bus.numChannels.isNil
-		})
+		^bus.isNil or: { bus.index.isNil and: { bus.numChannels.isNil } }
 	}
 	
 	prepareOutput { } //see subclass
