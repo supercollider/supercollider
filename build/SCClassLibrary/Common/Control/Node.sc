@@ -247,21 +247,23 @@ Group : Node {
 	}
 	
 	do { arg function;
-		var node;
+		var node, nextNode;
 		node = head;
 		while({ node.notNil }, {
+			nextNode = node.next;
 			function.value(node);
-			node = node.next;
-		});		     
+			node = nextNode;
+		});			
 	}
 	
 	deepDo { arg function;
-		var node;
+		var node, nextNode;
 		node = head;
 		while({ node.notNil }, {
-			node.deepDo(function);
+			nextNode = node.next;
 			function.value(node);
-			node = node.next;
+			node.deepDo(function);
+			node = nextNode;
 		});
 	}
 		
@@ -334,7 +336,7 @@ Synth : Node {
 		^this.new(defName, args, synthToReplace, \addReplace)
 	}
 	
-	*newPaused {arg defName,args,target,addAction=\addToTail;
+	*newPaused { arg defName,args,target,addAction=\addToTail;
 		var bundle, synth;
 		bundle = List.new;
 		synth = this.newMsg(bundle, defName,args,target,addAction);
@@ -342,6 +344,7 @@ Synth : Node {
 		synth.server.listSendBundle(nil, bundle);
 		^synth
 	}
+
 		
 	*after { arg aNode,defName,args;	
 		^this.prNew(defName, aNode.server).addAfter(aNode,args) 
@@ -456,10 +459,8 @@ RootNode : Group {
 	moveToHead {}
 	moveToTail{}
 	
-	deepDo {} 
 	
-	stop {	this.freeAll;	}
-	clear { this.nodeWatcher.clear }
+	stop { this.freeAll;	}
 	*stop { arg server;
 		var r;
 		if (server.isNil, {
