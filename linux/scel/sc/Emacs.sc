@@ -57,6 +57,32 @@ EmacsInterface {
 
 			result
 		})
+		.put(\symbolTable, { | fileName |
+			var result, file;
+			var t;
+
+			t = Main.elapsedTime;
+
+			result = IdentitySet.new;
+			
+			Class.allClasses.do { | class |
+				if (class.isMetaClass.not) {
+					result.add(class.name);
+				};
+				class.methods.do { | method |
+					result.add(method.name);
+				};
+			};
+
+			file = File(fileName, "w");
+			result.collectAs({ |s| s.asString }, Array).storeLispOn(file);
+			file.close;
+
+			t = Main.elapsedTime - t;
+			("Emacs: Built symbol table in" + t.asString + "seconds").postln;
+
+			true
+		})
 		.put(\classDefinitions, { | name |
 			var result, class, files;
 

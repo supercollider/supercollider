@@ -87,12 +87,6 @@
      ;;      sclang-method-definition-regexp
      ))))
 
-(defvar sclang-symbol-table nil
-  "List of all defined symbols.")
-
-(defvar sclang-symbol-history nil
-  "List of recent symbols read from the minibuffer.")
-
 ;; =====================================================================
 ;; regexp building
 ;; =====================================================================
@@ -161,14 +155,51 @@
 ;; symbol table access
 ;; =====================================================================
 
+(defcustom sclang-use-symbol-table t
+  "*Retrieve symbol table upon library initialization.
+
+Symbol table retrieval is performed each time the library is
+recompiled. This takes some time and the symbol table has to be held
+in memory, so it might be necessary to disable this option on
+low-resource systems."
+  :group 'sclang-interface
+  :version "21.3"
+  :type 'boolean)
+
+(defvar sclang-symbol-table nil
+  "List of all defined symbols.")
+
+(defvar sclang-symbol-history nil
+  "List of recent symbols read from the minibuffer.")
+
+(defvar sclang--symbol-table-file nil)
+
 (sclang-set-command-handler
  'symbolTable
- (lambda (data)
-   (setq sclang-symbol-table (sort data 'string<))
-   (sclang-update-font-lock)))
+ (lambda (arg)
+   (when sclang-use-symbol-table
+     (let ((file sclang--symbol-table-file))
+       (when (and arg file (file-exists-p file))
+	 (with-current-buffer (get-buffer-create "*SCLang Symbols*")
+	   (erase-buffer)
+	   (insert-file-contents file)
+	   (delete-file file)
+	   (setq sclang--symbol-table-file nil)
+	   (goto-char (point-min))
+	   (let ((table (condition-case nil
+			    (read (current-buffer))
+			  (error nil))))
+	     (unless table (message "SCLang: Couldn't retrieve symbol table."))
+	     (setq sclang-symbol-table (sort table #'string<))
+	     (sclang-update-font-lock))))))))
 
-;; (add-hook 'sclang-library-startup-hook
-;; 	  (lambda () (sclang-perform-command 'symbolTable)))
+(add-hook 'sclang-library-startup-hook
+	  (lambda ()
+	    (when sclang-use-symbol-table
+	      (let ((file (make-temp-file "sclang-symbol-table.")))
+		(when (and file (file-exists-p file))
+		  (setq sclang--symbol-table-file file)
+		  (sclang-perform-command 'symbolTable file))))))
 
 (defun sclang-make-symbol-completion-table ()
   (mapcar (lambda (s) (cons s nil)) sclang-symbol-table))
@@ -178,22 +209,21 @@
        (lambda (assoc) (funcall predicate (car assoc)))))
 
 (defun sclang-get-symbol (string)
-  (car (member string sclang-symbol-table)))
+  (if sclang-use-symbol-table
+      (car (member string sclang-symbol-table))
+    string))
 
 (defun sclang-read-symbol (prompt &optional default predicate require-match inherit-input-method)
-  (let ((symbol (sclang-get-symbol default)))
-    (completing-read (sclang-make-prompt-string prompt symbol)
-		     (sclang-make-symbol-completion-table)
-		     (sclang-mak*e-symbol-completion-predicate predicate)
-		     require-match nil
-		     'sclang-symbol-history symbol
-		     inherit-input-method)))
-
-(defun sclang-get-symbol (string) string)
-
-(defun sclang-read-symbol (prompt &optional default predicate require-match inherit-input-method)
-  (read-string (sclang-make-prompt-string prompt default) nil
-	       'sclang-symbol-history default inherit-input-method))
+  (if sclang-use-symbol-table
+      (let ((symbol (sclang-get-symbol default)))
+	(completing-read (sclang-make-prompt-string prompt symbol)
+			 (sclang-make-symbol-completion-table)
+			 (sclang-make-symbol-completion-predicate predicate)
+			 require-match nil
+			 'sclang-symbol-history symbol
+			 inherit-input-method))
+    (read-string (sclang-make-prompt-string prompt default) nil
+		 'sclang-symbol-history default inherit-input-method)))
 
 ;; =====================================================================
 ;; buffer movement

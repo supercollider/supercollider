@@ -8,7 +8,6 @@
 MAINTAINERCLEANFILES =	\
 	Makefile.in	\
 	aclocal.m4	\
-	autom4te.cache	\
 	config.cache	\
 	config.guess	\
 	config.h.in	\
@@ -71,8 +70,8 @@ DiskIO_UGens_la_SOURCES		= DiskIO_UGens.cpp
 DiskIO_UGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
 # FFT_UGens
-FFT_UGens_la_SOURCES		= FFT_UGens.cpp				\
-				fftlib.c fftlib.h			\
+FFT_UGens_la_SOURCES		= FFT_UGens.cpp \
+				fftlib.c fftlib.h \
 				SCComplex.cpp SCComplex.h
 FFT_UGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 

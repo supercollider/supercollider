@@ -5,16 +5,21 @@
 ## CVS:         $Id$
 ## ====================================================================
 
+DISTCLEANFILES		= sclang.cfg sclang.cfg.tmp
 MAINTAINERCLEANFILES	= Makefile.in
 
-linuxlibdir		= $(pkgdatadir)/SCClassLibrary/Linux
-linuxlib_DATA		= extMain.sc
+.PHONY: sclang.cfg
 
-EXTRA_DIST		= sclang.cfg
+sclang.cfg:
+	rm -f sclang.cfg sclang.cfg.tmp
+	sed -e 's,@SC_LIB_DIR\@,$(SC_LIB_DIR),g' $(srcdir)/sclang.cfg.in > sclang.cfg.tmp
+	mv sclang.cfg.tmp sclang.cfg
 
-install-data-local:
-	@if test -n "${HOME}" -a ! -e "${HOME}/.sclang.cfg"; then \
-		$(INSTALL_DATA) sclang.cfg "${HOME}/.sclang.cfg"; \
-	fi
+install-data-local: sclang.cfg
+	$(mkinstalldirs) $(SC_LIB_DIR)/Linux
+	$(INSTALL_DATA) $(srcdir)/extMain.sc $(SC_LIB_DIR)/Linux/extMain.sc
+
+uninstall-local:
+	rm -f $(libdir)/Linux/extMain.sc
 
 ## EOF ================================================================

@@ -26,8 +26,8 @@ the only things you need to do are
 
     +$SC_LIB_DIR/Emacs
 
-  and setting the synthesis server program in ~/.sclang.sc (see the
-  example sclang.cfg and sclang.sc in the distribution).
+  and setting the synthesis server program in ~/.sclang.sc (see
+  examples/sclang.cfg and examples/sclang.sc in the distribution).
 
 installation (detailed)
 ------------------------

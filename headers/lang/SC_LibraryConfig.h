@@ -54,7 +54,13 @@ protected:
 		kEnd
 	};
 
-	bool parseLine(const char* fileName, int lineNumber, const char* line, SC_LibraryConfig* libConf);
+	enum
+	{
+		kMaxIncludeDepth = 10
+	};
+
+    bool read(int depth, const char* fileName, SC_LibraryConfig* libConf);
+	bool parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LibraryConfig* libConf);
 	static void defaultErrorFunc(const char* fmt, ...);
 
 private:

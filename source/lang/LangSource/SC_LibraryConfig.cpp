@@ -200,6 +200,11 @@ void SC_LibraryConfigFile::close()
 
 bool SC_LibraryConfigFile::read(const char* fileName, SC_LibraryConfig* libConf)
 {
+	return read(0, fileName, libConf);
+}
+
+bool SC_LibraryConfigFile::read(int depth, const char* fileName, SC_LibraryConfig* libConf)
+{
 	if (!mFile) return false;
 
 	bool error = false;
@@ -213,7 +218,7 @@ bool SC_LibraryConfigFile::read(const char* fileName, SC_LibraryConfig* libConf)
 		if (eof || (c == '\n')) {
 			line.finish();
 			// go on if line parse failed
-            error |= parseLine(fileName, lineNumber, line.getData(), libConf);
+            error |= parseLine(depth, fileName, lineNumber, line.getData(), libConf);
             line.reset();
 			lineNumber++;
 			if (eof) break;
@@ -225,7 +230,7 @@ bool SC_LibraryConfigFile::read(const char* fileName, SC_LibraryConfig* libConf)
 	return error;
 }
 
-bool SC_LibraryConfigFile::parseLine(const char* fileName, int lineNumber, const char* line, SC_LibraryConfig* libConf)
+bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LibraryConfig* libConf)
 {
 	char action = 0;
 	SC_StringBuffer path;
@@ -252,7 +257,7 @@ bool SC_LibraryConfigFile::parseLine(const char* fileName, int lineNumber, const
 				}
 				break;
 			case kAction:
-				if ((c == '+') || (c == '-')) {
+				if ((c == '+') || (c == '-') || (c == ':')) {
 					action = c;
 					state = kPath;
 				} else {
@@ -327,6 +332,19 @@ bool SC_LibraryConfigFile::parseLine(const char* fileName, int lineNumber, const
 		return false;
 	}
 
+	if (action == ':') {
+		if (++depth > kMaxIncludeDepth) {
+			(*mErrorFunc)("%s,%d: maximum include depth of %d exceeded\n", fileName, lineNumber, kMaxIncludeDepth);
+			return false;
+		}
+		SC_LibraryConfigFile file(mErrorFunc);
+		if (!file.open(realPath)) return true;
+		const char* fileName = basename(realPath);
+		bool success = file.read(depth, fileName, libConf);
+		file.close();
+		return success;
+	}
+	
 	char* str = strdup(realPath);
 	if (str == 0) {
 		(*mErrorFunc)("%s,%d: memory allocation failure\n", fileName, lineNumber);
@@ -335,9 +353,10 @@ bool SC_LibraryConfigFile::parseLine(const char* fileName, int lineNumber, const
 
 	if (action == '+') {
 		libConf->addIncludedDirectory(str);
-	} else {
+	} else if (action == '-') {
 		libConf->addExcludedDirectory(str);
 	}
+
 	return true;
 }
 

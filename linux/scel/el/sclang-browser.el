@@ -27,6 +27,7 @@
   (define-key map "\t" 'sclang-browser-next-link)
   (define-key map [backtab] 'sclang-browser-previous-link)
   (define-key map [(shift tab)] 'sclang-browser-previous-link)
+  (define-key map [?q] 'sclang-browser-quit)
   map)
 
 (defvar sclang-browser-mode-map (sclang-browser-fill-keymap (make-sparse-keymap)))
@@ -126,7 +127,7 @@ Commands:
 (defun sclang-browser-quit ()
   (interactive)
   (when (eq major-mode 'sclang-browser-mode)
-    (View-quit)))
+    (kill-buffer (current-buffer))))
 
 (defun sclang-browser-make-link (link-text &optional link-data link-function)
   (let ((map (make-sparse-keymap)))

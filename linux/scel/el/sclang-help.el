@@ -149,7 +149,7 @@
 	    (set-buffer-modified-p nil)
 	    (goto-char (point-min))
 	    (sclang-init-help-mode file)))
-	(switch-to-buffer buffer t))
+	(switch-to-buffer buffer))
     (sclang-message "Help file not found")))
 
 (defun sclang-find-help (topic)

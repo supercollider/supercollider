@@ -72,19 +72,15 @@ bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* file
 	SC_LibraryConfigFile file(&::post);
 	if (!fileName) fileName = filePath;
 	if (file.open(filePath)) {
-		bool err = SC_LibraryConfig::readLibraryConfig(file, fileName);
+		bool success = SC_LibraryConfig::readLibraryConfig(file, fileName);
 		file.close();
-		return err;
+		return success;
 	}
 	return false;
 }
 
 bool SC_LanguageClient::readDefaultLibraryConfig()
 {
-	// try to read
-	//    $PWD/.sclang.cfg $HOME/.sclang.cfg /etc/sclang.cfg
-	// in this order.
-
 	char* paths[3] = { ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg" };
 
 	char ipath[PATH_MAX];

@@ -21,7 +21,6 @@ do_bootstrap()
 	&& autoheader \
 	&& automake --add-missing --foreign \
 	&& autoconf
-    set +x
 }
 
 do_bootstrap

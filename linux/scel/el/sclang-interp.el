@@ -316,8 +316,7 @@ Change this if \"cat\" has a non-standard name or location."
 (defun sclang--create-command-fifo ()
   (setq sclang--command-fifo (make-temp-name
 			      (expand-file-name
-			       (concat temporary-file-directory
-				       "sclang-command-fifo."))))
+			       "sclang-command-fifo." temporary-file-directory)))
   (sclang--delete-command-fifo)
   (let ((res (call-process sclang-mkfifo-program
 			   nil t t
@@ -508,7 +507,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 	  (insert line)
 	  (insert "\n"))
 	(set-buffer-modified-p nil)))
-    (switch-to-buffer buffer t)))
+    (switch-to-buffer buffer)))
 
 (add-hook 'sclang-library-startup-hook 
 	  (lambda () (and sclang-show-workspace-on-startup

@@ -74,6 +74,8 @@
      ["Show Post Buffer"	sclang-show-post-buffer]
      ["Clear Post Buffer"	sclang-clear-post-buffer]
      "-"
+     ["Switch To Workspace"	sclang-switch-to-workspace]
+     "-"
      ["Evaluate Region"		sclang-eval-region]
      ["Evaluate Line"		sclang-eval-region-or-line]
      ["Evaluate Defun"		sclang-eval-defun]
@@ -105,7 +107,7 @@
   (define-key map "\C-\M-x"	'sclang-eval-defun)
   (define-key map "\C-c\C-e"	'sclang-eval-expression)
   ;; language information
-  ;;   (define-key map "\M-\t"	'sclang-complete-symbol)
+  (define-key map "\M-\t"	'sclang-complete-symbol)
   (define-key map "\C-c:"	'sclang-find-definitions)
   (define-key map "\C-c;"	'sclang-find-references)
   (define-key map "\C-c}"	'sclang-pop-definition-mark)
