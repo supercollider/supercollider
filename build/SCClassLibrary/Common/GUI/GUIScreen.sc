@@ -2,7 +2,7 @@
 SCWindow {
 	classvar <>allWindows;
 	
-	var dataptr, <name, <>onClose, <view;
+	var dataptr, <name, <>onClose, <view,<userCanClose=true;
 	
 	*new { arg name = "panel", bounds, resizable = true, border = true;
 		^super.new.initSCWindow(name, bounds, resizable, border)
@@ -41,6 +41,10 @@ SCWindow {
 	}
 	endFullScreen {
 		_SCWindow_EndFullScreen
+		^this.primitiveFailed
+	}
+	userCanClose_ { arg boo;
+		_SCWindow_SetShouldClose
 		^this.primitiveFailed
 	}
 	front {
