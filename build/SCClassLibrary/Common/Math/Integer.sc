@@ -66,6 +66,14 @@ Integer : SimpleNumber {
 		_AsDigit
 		^this.primitiveFailed
 	}
+	asBinaryDigits { arg numDigits = 8;
+		var array;
+		array = Array.new(numDigits);
+		numDigits.do({ arg i;
+			array.addFirst(this >> i & 1) 
+		});
+		^array
+	}
 	
 	nextPowerOfTwo { _NextPowerOfTwo }
 	isPowerOfTwo { _IsPowerOfTwo }
