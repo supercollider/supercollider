@@ -615,10 +615,6 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 
 	if (meth->ownerclass.uoc == class_object) {
 		// lookup instance specific method
-                int localA = class_object->classIndex.ui;
-                int localB = cvxUniqueMethods;
-                int localC = g->classvars[class_object->classIndex.ui].ui;
-                int localD = g->classvars[class_object->classIndex.ui].uo->size;
 		uniqueMethodSlot = g->classvars[class_object->classIndex.ui].uo->slots + cvxUniqueMethods;
 		if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
 			arraySlot = uniqueMethodSlot->uo->slots + ivxIdentDict_array;
@@ -692,10 +688,6 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 	
 	if (meth->ownerclass.uoc == class_object) {
 		// lookup instance specific method
-                int localA = class_object->classIndex.ui;
-                int localB = cvxUniqueMethods;
-                int localC = g->classvars[class_object->classIndex.ui].ui;
-                int localD = g->classvars[class_object->classIndex.ui].uo->size;
 		uniqueMethodSlot = g->classvars[class_object->classIndex.ui].uo->slots + cvxUniqueMethods;
 		if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
 			arraySlot = uniqueMethodSlot->uo->slots + ivxIdentDict_array;
