@@ -29,6 +29,7 @@
 #include <Carbon/Carbon.h>
 
 extern PyrSymbol *s_draw;
+extern PyrSymbol *s_scview;
 
 @implementation SCGraphView
 
@@ -299,7 +300,8 @@ const int circDiam = 20;
     NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
     [pboard declareTypes: [NSArray arrayWithObject: sSCObjType] owner: self];
     
-    NSData *data = [NSData dataWithBytes: slot length: sizeof(PyrSlot)];
+	int fakeData;
+    NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
     
     [pboard setData: data forType: sSCObjType];
     
@@ -330,7 +332,19 @@ const int circDiam = 20;
 			PyrObject *classvars = g->classvars[classIndex].uo;
 			SetObject(classvars->slots+0, pstrobj);
 			g->gc->GCWrite(classvars, pstrobj);
+			
+			PyrSymbol *method = getsym("importDrag");
+			//g->canCallOS = true;
+			++g->sp;  SetObject(g->sp, s_scview->u.classobj); 
+			runInterpreter(g, method, 1);
+			//g->canCallOS = false;
+			
 		pthread_mutex_unlock (&gLangMutex);
+		
+		int fakeData;
+		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];		
+		[pboard setData: data forType: sSCObjType];
+		
 	} else {
         return NSDragOperationNone;
 	}
@@ -402,13 +416,7 @@ const int circDiam = 20;
     if (view) {
         bool flag = view->canReceiveDrag();
         if (flag) {
-            PyrSlot slot;
             mTopView->setDragView(view);
-            
-            NSPasteboard *pb = [dragInfo draggingPasteboard];
-            NSData* data = [pb dataForType: sSCObjType];
-            [data getBytes: &slot];
-            
             view->receiveDrag();
         } else {
             mTopView->setDragView(0);

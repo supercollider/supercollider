@@ -1,6 +1,8 @@
+
 SCView {  // abstract class
-	classvar <>currentDrag, <>globalKeyDownAction, <>globalKeyUpAction;
-	
+	classvar <>currentDrag;
+	classvar <>globalKeyDownAction, <>globalKeyUpAction;
+
 	var dataptr, <parent, <>action, <background, <>keyDownAction, <>keyUpAction, <>keyTyped;
 	
 	*new { arg parent, bounds;
@@ -96,10 +98,10 @@ SCView {  // abstract class
 		
 	handleKeyDownBubbling { arg view, key, modifiers, unicode;
 		// nil from keyDownAction --> pass it on
-		this.keyDownAction.value(view, key, modifiers, unicode) ?? {
+		if (this.keyDownAction.value(view, key, modifiers, unicode).isNil, {
 			// call local keydown action of parent view
 			this.parent.handleKeyDownBubbling(view, key, modifiers, unicode);
-		};
+		});
 	}
 	
 	// sc.solar addition
@@ -113,10 +115,10 @@ SCView {  // abstract class
 		
 	handleKeyUpBubbling { arg view, key, modifiers;
 		// nil from keyUpAction --> pass it on
-		this.keyUpAction.value(view, key, modifiers) ?? {
+		if (this.keyUpAction.value(view, key, modifiers).isNil, {
 			// call local keyUp action of parent view
 			this.parent.handleKeyUpBubbling(view, key, modifiers);
-		};
+		});
 	}
 
 	// get the view parent tree up to the SCTopView
@@ -174,6 +176,12 @@ SCView {  // abstract class
 			// setProperty returns true if action needs to be called.
 			this.doAction;
 		});
+	}
+	
+	*importDrag { 
+		// this is called when an NSString is the drag object.
+		// we compile it to an SCObject.
+		currentDrag = currentDrag.interpret;
 	}
 }
 
