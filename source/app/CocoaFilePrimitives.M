@@ -322,9 +322,8 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
         nsextension = nsStringFromPyrSlot(extension);
         while (pname = [direnum nextObject]) {
             if (![[pname pathExtension] isEqualToString:nsextension]) {
-                //[direnum skipDescendents]; /* don't enumerate this directory */
+                //[direnum skipDescendents]; don't enumerate this directory
             //} else {
-            /*
                 PyrString* pyrPathString = newPyrString(g->gc,[pname cString],0,true);
                 
                 PyrSlot slot;
@@ -387,7 +386,7 @@ messages.
 int prAllocInit(struct VMGlobals *g, int numArgsPushed);
 int prAllocInit(struct VMGlobals *g, int numArgsPushed)
 {
-    //PyrSlot *receiver = g->sp - 3;
+    PyrSlot *receiver = g->sp - 3;
     PyrSlot *classname = g->sp - 2;
    // PyrSlot *initname = g->sp - 1;
     //PyrSlot *args  = g->sp;
@@ -451,7 +450,7 @@ int prObjDo(struct VMGlobals *g, int numArgsPushed)
 int prDealloc(struct VMGlobals *g, int numArgsPushed);
 int prDealloc(struct VMGlobals *g, int numArgsPushed)
 {
-    PyrSlot *receiver = g->sp - 1;
+    //PyrSlot *receiver = g->sp - 1;
     PyrSlot *dataptr = g->sp;
     
     // have to put them in a specific pool so they can be released on command
