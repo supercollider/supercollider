@@ -240,7 +240,7 @@ PauseStream : Stream
 	}
 	reset { ^originalStream.reset }
 	stop {  stream = nil }
-	removeFromScheduler { this.stop }
+	removedFromScheduler { this.stop }
 	
 	pause { stream = nil }
 	resume { arg argClock, quant=1.0; 

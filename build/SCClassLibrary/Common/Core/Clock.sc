@@ -105,7 +105,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.primitiveFailed
 	}
 	clear {
-		queue.pairsDo { arg time, item; item.removeFromScheduler };
+		queue.pairsDo { arg time, item; item.removedFromScheduler };
 		^this.prClear;
 	}
 

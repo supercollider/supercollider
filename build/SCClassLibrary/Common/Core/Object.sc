@@ -127,7 +127,7 @@ Object {
 	reset { ^this }
 	stop { ^this }
 	free { ^this }
-	removeFromScheduler {}
+	removedFromScheduler {}
 	isPlaying { ^false }
 	embedInStream { ^this.yield; }
 	asStream { ^this }
