@@ -144,8 +144,8 @@ void SC_StringBuffer::growBy(size_t request)
 	size_t oldSize = getSize();
 	size_t newCapacity = mCapacity + ((request + (size_t)kGrowAlign) & (size_t)~kGrowMask);
 
-// 	post("%s: mCapacity %u, request %u, newCapacity %u\n",
-// 		 __PRETTY_FUNCTION__, mCapacity, request, newCapacity);
+// 	fprintf(stderr, "%s: mCapacity %u, request %u, newCapacity %u\n",
+// 			__PRETTY_FUNCTION__, mCapacity, request, newCapacity);
 	assert((newCapacity >= (mCapacity + request)) && ((newCapacity & kGrowMask) == 0));
 
 	char* newData = (char*)realloc(mData, newCapacity);
@@ -327,7 +327,7 @@ void SC_LibraryConfigFile::read(const char* fileName, LibraryConfig* libConf)
     SC_StringBuffer line;
 
     while (true) {
-		char c = fgetc(mFile);
+		int c = fgetc(mFile);
 		bool eof = c == EOF;
 
 		if (eof || (c == '\n')) {
@@ -402,7 +402,7 @@ void SC_LanguageClient::init(const Options& opt)
 	tmpBuf.reset();
 	tmpBuf.printf("%s/%s", homeDir, kSC_LibraryConfigFileName);
 	tmpBuf.finish();
-	
+
 	SC_LibraryConfigFile configFile;
 	if (configFile.open(tmpBuf.getData())) {
 		extern LibraryConfig* gLibraryConfig;
@@ -415,7 +415,7 @@ void SC_LanguageClient::init(const Options& opt)
 			);
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// change to runtime directory
 	if (opt.mRuntimeDir) chdir(opt.mRuntimeDir);
 }
