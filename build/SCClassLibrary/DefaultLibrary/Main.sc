@@ -7,10 +7,6 @@ Main : Process {
 		// make server window
 		Server.internal.makeWindow;
 		Server.local.makeWindow;
-		Server.local.options.numOutputBusChannels = 8;
-		Server.local.options.numInputBusChannels = 8;
-		Server.local.options.memSize = 8192;
-		Server.internal.options.memSize = 8192;
 		
 		"~/scwork/startup.rtf".loadPaths;
 	}

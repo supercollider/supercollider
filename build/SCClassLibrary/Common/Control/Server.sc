@@ -3,8 +3,8 @@ ServerOptions
 {
 	var <>numAudioBusChannels=128;
 	var <>numControlBusChannels=4096;
-	var <>numInputBusChannels=2;
-	var <>numOutputBusChannels=2;
+	var <>numInputBusChannels=8;
+	var <>numOutputBusChannels=8;
 	var <>numBuffers=1024;
 	
 	var <>maxNodes=1024;
@@ -13,7 +13,7 @@ ServerOptions
 	var <>blockSize = 64;
 	var <>hardwareBufferSize = 0;
 	
-	var <>memSize = 2048;
+	var <>memSize = 8192;
 	var <>numRGens = 64;
 	var <>numWireBufs = 64;
 
@@ -37,10 +37,10 @@ ServerOptions
 		if (numControlBusChannels != 4096, { 
 			o = o ++ " -c " ++ numControlBusChannels;
 		});
-		if (numInputBusChannels != 2, { 
+		if (numInputBusChannels != 8, { 
 			o = o ++ " -i " ++ numInputBusChannels;
 		});
-		if (numOutputBusChannels != 2, { 
+		if (numOutputBusChannels != 8, { 
 			o = o ++ " -o " ++ numOutputBusChannels;
 		});
 		if (numBuffers != 1024, { 
@@ -58,7 +58,7 @@ ServerOptions
 		if (hardwareBufferSize != 0, {
 			o = o ++ " -Z " ++ hardwareBufferSize;
 		});
-		if (memSize != 2048, {
+		if (memSize != 8192, {
 			o = o ++ " -m " ++ memSize;
 		});
 		if (numRGens != 64, {

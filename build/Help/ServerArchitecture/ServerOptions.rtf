@@ -57,11 +57,11 @@ The following two options need not correspond to the available number of hardwar
 \f0\b \
 \
 numInputBusChannels - 
-\f1\b0 The number of audio input bus channels. The default is 2.\
+\f1\b0 The number of audio input bus channels. The default is 8.\
 
 \f0\b \
 numOutputBusChannels - 
-\f1\b0 The number of audio output bus channels. The default is 2.
+\f1\b0 The number of audio output bus channels. The default is 8.
 \f0\b \
 \
 \
@@ -99,7 +99,7 @@ hardwareBufferSize -
 memSize - 
 \f1\b0 The number of kilobytes of real time memory allocated to the server. This memory is used to allocate synths and any memory that unit generators themselves allocate (for instance in the case of delay ugens which do not use buffers, such as 
 \f0\b CombN
-\f1\b0 ), and is separate from the memory used for buffers. Setting this too low is a common cause of 'exception in real time: alloc failed' errors. The default is 2048.
+\f1\b0 ), and is separate from the memory used for buffers. Setting this too low is a common cause of 'exception in real time: alloc failed' errors. The default is 8192.
 \f0\b \
 \
 numRGens - 
@@ -171,6 +171,7 @@ o.memSize = 4096;\
 \
 \cf4 // Create a new Server on the local machine using o for its options\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 t = Server\cf0 (\cf2 \\Local2\cf0 , \cf3 NetAddr\cf0 (\cf5 "127.0.0.1"\cf0 , 57111), o);\
 t.makeWindow;\
 t.boot;\
