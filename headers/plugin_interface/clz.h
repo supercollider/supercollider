@@ -43,8 +43,13 @@ static int CLZ( int arg )
 {
     asm{
         bsr    eax, arg
+        jnz    non_zero
+        mov    arg, 32
+        jmp    end
+non_zero:
         xor    eax, 31
         mov    arg, eax
+end:
     }
     return arg;
 }
