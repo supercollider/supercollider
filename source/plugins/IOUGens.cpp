@@ -73,9 +73,6 @@ extern "C"
 	void LagControl_next_k(LagControl *unit, int inNumSamples);
 	void LagControl_next_1(LagControl *unit, int inNumSamples);
 
-	void ControlTrig_Ctor(Unit *inUnit);
-	void ControlTrig_next_k(Unit *unit, int inNumSamples);
-
 	void InTrig_Ctor(IOUnit *unit);
 	void InTrig_next_k(IOUnit *unit, int inNumSamples);
 
@@ -247,21 +244,6 @@ void LagControl_Ctor(LagControl* unit)
 		float lag = ZIN0(i);
 		unit->m_b1[i] = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
 	}
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-void ControlTrig_next_k(Unit *unit, int inNumSamples)
-{
-	float *out = OUT(0);
-	*out = (unit->mWorld->mBufCounter == unit->mParent->mControlTouched) ? 1.f : 0.f;
-}
-
-void ControlTrig_Ctor(Unit* unit)
-{
-	//Print("Control_Ctor\n");
-	SETCALC(ControlTrig_next_k);
-	ControlTrig_next_k(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

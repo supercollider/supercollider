@@ -72,12 +72,6 @@ LagControl : Control {
 	}
 }
 
-ControlTrig : UGen {
-	*kr {
-		^this.multiNew('control')
-	}
-}
-
 In : MultiOutUGen {	
 	*ar { arg bus = 0, numChannels = 1;
 		^this.multiNew('audio', numChannels, bus)

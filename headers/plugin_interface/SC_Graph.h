@@ -35,7 +35,6 @@ struct Graph
 	uint32 mNumControls;
 	float *mControls;
 	float **mMapControls;
-	int mControlTouched;
 		
 	uint32 mNumUnits;
 	struct Unit **mUnits;

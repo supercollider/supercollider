@@ -136,8 +136,6 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 		}
 	}
 
-	graph->mControlTouched = inWorld->mBufCounter;
-
 	// set up scalar values
 	Wire *graphWires = graph->mWire;
 	int numConstants = inGraphDef->mNumConstants;
@@ -326,7 +324,6 @@ void Graph_SetControl(Graph* inGraph, uint32 inIndex, float inValue)
 {
 	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
 	inGraph->mControls[inIndex] = inValue;
-	inGraph->mControlTouched = inGraph->mNode.mWorld->mBufCounter;
 }
 
 void Graph_SetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, float inValue)
