@@ -102,6 +102,11 @@ struct ExpRand : public Unit
 {
 };
 
+struct TCoin : public Unit
+{
+	float m_trig;
+};
+
 struct LFClipNoise : public Unit
 {
 	float mLevel;
@@ -177,6 +182,10 @@ extern "C"
 	void NRand_Ctor(NRand* unit);
 	void ExpRand_Ctor(ExpRand *unit);
 
+	void TCoin_Ctor(TCoin *unit);
+	void TCoin_next_k(TCoin *unit, int inNumSamples);
+	void TCoin_next(TCoin *unit, int inNumSamples);
+	
 	void TIRand_next(TIRand *unit, int inNumSamples);
 	void TIRand_Ctor(TIRand *unit);
 
@@ -603,6 +612,59 @@ void TIRand_next(TIRand* unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void TCoin_Ctor(TCoin* unit)
+{	
+	if (unit->mCalcRate == calc_FullRate) {
+		SETCALC(TCoin_next);
+	} else {
+		SETCALC(TCoin_next_k);
+	}
+	unit->m_trig = ZIN0(1);
+}
+
+void TCoin_next_k(TCoin* unit, int inNumSamples)
+{	
+	float trig = ZIN0(1);
+	float level = 0.f;
+	RGET
+	if (trig > 0.f && unit->m_trig <= 0.f) {
+		
+		if(fcoin(s1,s2,s3) > ZIN0(0)) {
+			level = trig;
+		}
+	}
+	
+	RPUT
+	ZOUT0(0) = level;
+	unit->m_trig = trig;
+	
+}
+
+void TCoin_next(TCoin* unit, int inNumSamples)
+{	
+	float *trig = ZIN(1);
+	float *out = ZOUT(0);
+	float level;
+	float prevtrig = unit->m_trig;
+	float probability = ZIN0(0);
+	RGET
+	LOOP(inNumSamples, 
+		float curtrig = ZXP(trig);
+		if (prevtrig <= 0.f && curtrig > 0.f) {
+			if(fcoin(s1,s2,s3) > probability) {
+					level = curtrig;
+			}
+		}
+		prevtrig = curtrig;
+		level = ZOUT0(0);
+	)
+	RPUT
+	unit->m_trig = prevtrig;
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void RandSeed_Ctor(RandSeed* unit)
 {	
 	unit->m_trig = 0.;
@@ -983,6 +1045,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(NRand);
 	DefineSimpleUnit(LinRand);
 	DefineSimpleUnit(ExpRand);
+	DefineSimpleUnit(TCoin);
 	DefineSimpleUnit(RandSeed);
 	DefineSimpleUnit(RandID);
 }
