@@ -242,25 +242,29 @@ The above examples are in 'object style'. Should you prefer to work in 'messagin
 \f0\b ReplaceOut
 \f1\b0  overwrites all data regardless.) Thus depending on node order, the data on a given bus may be from the current cycle or be one cycle old. 
 \f0\b In.ar
-\f1\b0  checks the timestamp of any data it reads in and ignores any data from the previous cycle. This is fine for audio data, as it avoids feedback, but for control data it is useful to be able to read data from any place in the node order. For this reason 
+\f1\b0  checks the timestamp of any data it reads in and zeros any data from the previous cycle. This is fine for audio data, as it avoids feedback, but for control data it is useful to be able to read data from any place in the node order. For this reason 
 \f0\b In.kr
-\f1\b0  also reads data with a timestamp that is one cycle old.\
+\f1\b0  also reads data that is older than the current cycle.\
 \
-In some cases we might also want to read audio from a bus independant of the current node order. This is the purpose of 
+In some cases we might also want to read audio from a node later in the current node order. This is the purpose of 
 \f0\b InFeedback
 \f1\b0 . The delay introduced by this is at maximum one block size, which equals about 0.0014 sec at the default block size and sample rate.\
 \
-The variably mixing and overwriting behaviour of the output ugens can make order of execution crucial when using 
+The variably mixing and overwriting behaviour of the output ugens, and the fact that 
+\f0\b In.ar
+\f1\b0  zeros old data, can make order of execution crucial when using 
 \f0\b In.kr
 \f1\b0  or 
 \f0\b InFeedback.ar
 \f1\b0 . (No pun intended.) For example with a node order like the following the InFeedback ugen in Synth 2 will only receive data from Synth 1 (-> = write out; <- = read in):\
 \
-Synth 1 -> busA\
+Synth 1 -> busA					this synth overwrites the output of Synth3 before it reaches Synth 2\
 Synth 2 (with InFeedback) <- busA \
 Synth 3 -> busA\
 \
 If Synth 1 were moved after Synth 2 then Synth 2's InFeedback would receive a mix of the output from Synth 1 and Synth 3. This would also be true if Synth 2 came after Synth1 and Synth 3. In both cases data from Synth 1 and Synth 3 would have the same time stamp (either current or from the previous cycle), so nothing would be overwritten.\
+\
+(As well, if any In.ar wrote to busA earlier in the node order than Synth 2, it would zero the bus before Synth 3's data reached Synth 2. This is true even it there were no node before Synth 2 writing to busA.)\
 \
 Because of this it is often useful to allocate a separate bus for feedback. With the following arrangement Synth 2 will receive data from Synth3 regardless of Synth 1's position in the node order.
 \f2\fs18 \cf3 \

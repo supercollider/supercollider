@@ -1,13 +1,12 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red191\green0\blue0;\red0\green115\blue0;\red96\green96\blue96;\red0\green115\blue0;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 In
-\fs28 				read signal from a bus\
+\fs28 				read a signal from a bus\
 
 \f1\b0\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -38,7 +37,7 @@
 
 \f2\fs24 \cf0 In.kr is functionally similar to 
 \f0\b InFeedback. 
-\f2\b0 That is it reads all data on the bus for the current cycle, and all data with a timestamp that is one cycle old. This allows for it to receive data from later in the node order. In.ar reads only data from the current cycle. Note that since the various out ugens 
+\f2\b0 That is it reads all data on the bus whether it is from the current cycle or not. This allows for it to receive data from later in the node order. In.ar reads only data from the current cycle, and will zero data from earlier cycles. Because of this and the fact that the various out ugens 
 \f3\i mix
 \f2\i0  their output with data from the current cycle but 
 \f3\i overwrite
@@ -70,30 +69,30 @@ To read in audio from your audio hardware see
 \cf0 \ul read from an audio bus\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ulnone \
-\cf3 	
+	
 \f1\fs18 (\
-	s = \cf4 Server\cf3 .local;\
+	s = \cf2 Server\cf0 .local;\
 	s.boot;\
 	)\
 	\
 	(\
-	\cf4 SynthDef\cf3 (\cf5 "help-PinkNoise"\cf3 , \{ \cf4 arg\cf3  out=0; \
-		\cf4 Out\cf3 .ar(out, \cf4 PinkNoise\cf3 .ar(0.1)) \
+	\cf2 SynthDef\cf0 (\cf3 "help-PinkNoise"\cf0 , \{ \cf2 arg\cf0  out=0; \
+		\cf2 Out\cf0 .ar(out, \cf2 PinkNoise\cf0 .ar(0.1)) \
 	\}).send(s);\
 	\
-	\cf4 SynthDef\cf3 (\cf5 "help-In"\cf3 , \{ \cf4 arg\cf3  out=0, in=0;\
-		\cf4 var\cf3  input;\
-			input = \cf4 In\cf3 .ar(in, 1);\
-			\cf4 Out\cf3 .ar(out, input);\
+	\cf2 SynthDef\cf0 (\cf3 "help-In"\cf0 , \{ \cf2 arg\cf0  out=0, in=0;\
+		\cf2 var\cf0  input;\
+			input = \cf2 In\cf0 .ar(in, 1);\
+			\cf2 Out\cf0 .ar(out, input);\
 \
 	\}).send(s);\
 	)\
 	\
-	\cf6 //play noise on the right channel\cf3 \
-	\cf4 Synth\cf3 (\cf5 "help-PinkNoise"\cf3 , [\cf7 \\out\cf3 , 1]);\
+	\cf4 //play noise on the right channel\cf0 \
+	\cf2 Synth\cf0 (\cf3 "help-PinkNoise"\cf0 , [\cf5 \\out\cf0 , 1]);\
 	 \
-	\cf6 //read the input and play it out on the left channel\cf3 \
-	\cf4 Synth\cf3 (\cf5 "help-In"\cf3 , [\cf7 \\out\cf3 , 0, \cf7 \\in\cf3 , 1]); \cf0 \
+	\cf4 //read the input and play it out on the left channel\cf0 \
+	\cf2 Synth\cf0 (\cf3 "help-In"\cf0 , [\cf5 \\out\cf0 , 0, \cf5 \\in\cf0 , 1]); \
 									\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -102,13 +101,13 @@ To read in audio from your audio hardware see
 \f1\fs18 \ulnone \
 \
 	(\
-	\cf2 SynthDef\cf0 (\cf8 "help-InKr"\cf0 ,\{ \cf2 arg\cf0  out=0, in=0;\
+	\cf2 SynthDef\cf0 (\cf3 "help-InKr"\cf0 ,\{ \cf2 arg\cf0  out=0, in=0;\
 		\cf2 Out\cf0 .ar(out,\
 			\cf2 SinOsc\cf0 .ar(In.kr(in, 1), 0, 0.1)\
 		)\
 	\}).send(s);\
-	S\cf2 ynthDef\cf0 (\cf8 "help-lfo"\cf0 , \{ \cf2 arg\cf0  out=0; \
-		\cf2 Out\cf0 .kr(out, \cf8 LFNoise1.kr(0.3, 200, 800)\cf0 ) \
+	S\cf2 ynthDef\cf0 (\cf3 "help-lfo"\cf0 , \{ \cf2 arg\cf0  out=0; \
+		\cf2 Out\cf0 .kr(out, \cf3 LFNoise1.kr(0.3, 200, 800)\cf0 ) \
 	\}).send(s);\
 	)\
 	\
@@ -116,7 +115,7 @@ To read in audio from your audio hardware see
 	b = \cf2 Bus\cf0 .control(s,1);\
 	b.set(800);\
 	\
-	\cf2 Synth\cf0 (\cf8 "help-InKr"\cf0 ,[\cf9 \\in\cf0 , b.index]); \
+	\cf2 Synth\cf0 (\cf3 "help-InKr"\cf0 ,[\cf5 \\in\cf0 , b.index]); \
 	b.set(400);\
 	b.set(300);\
 	Synth("help-lfo", [\\out, b.index]);\
@@ -126,37 +125,35 @@ To read in audio from your audio hardware see
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \ulnone 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	\cf3 (\
-	\cf4 SynthDef\cf3 (\cf5 "help-Infreq"\cf3 , \{ \cf4 arg\cf3  bus;\
-		\cf4 Out\cf3 .ar(0, \cf4 FSinOsc\cf3 .ar(\cf4 In\cf3 .kr(bus), 0, 0.5));\
+	(\
+	\cf2 SynthDef\cf0 (\cf3 "help-Infreq"\cf0 , \{ \cf2 arg\cf0  bus;\
+		\cf2 Out\cf0 .ar(0, \cf2 FSinOsc\cf0 .ar(\cf2 In\cf0 .kr(bus), 0, 0.5));\
 	\}).send(s);\
 	\
-	\cf4 SynthDef\cf3 (\cf5 "help-Outfreq"\cf3 , \{ \cf4 arg\cf3  freq = 200, bus;\
-		\cf4 Out\cf3 .kr(bus, \cf4 SinOsc\cf3 .kr(1, 0, freq/40, freq));\
+	\cf2 SynthDef\cf0 (\cf3 "help-Outfreq"\cf0 , \{ \cf2 arg\cf0  freq = 200, bus;\
+		\cf2 Out\cf0 .kr(bus, \cf2 SinOsc\cf0 .kr(1, 0, freq/40, freq));\
 	\}).send(s);\
 	\
-	b = \cf4 Bus\cf3 .control(s,1);\
+	b = \cf2 Bus\cf0 .control(s,1);\
 	)\
 	\
-	\cf6 // add the first control Synth at the tail of the default server; no audio yet\cf3 \
-	x = \cf4 Synth\cf3 .tail(s, \cf5 "help-Outfreq"\cf3 , [\cf7 \\bus\cf3 , b.index]);\
+	\cf4 // add the first control Synth at the tail of the default server; no audio yet\cf0 \
+	x = \cf2 Synth\cf0 .tail(s, \cf3 "help-Outfreq"\cf0 , [\cf5 \\bus\cf0 , b.index]);\
 	\
-	\cf6 // add the sound producing Synth BEFORE it; It receives x's data from the previous cycle\cf3 \
-	y = \cf4 Synth\cf3 .before(x, \cf5 "help-Infreq"\cf3 , [\cf7 \\bus\cf3 , b.index]);\
+	\cf4 // add the sound producing Synth BEFORE it; It receives x's data from the previous cycle\cf0 \
+	y = \cf2 Synth\cf0 .before(x, \cf3 "help-Infreq"\cf0 , [\cf5 \\bus\cf0 , b.index]);\
 	\
-	\cf6 // add another control Synth before y, at the head of the server\cf3 \
-	\cf6 // It now overwrites x's cycle old data before y receives it\cf3 \
-	z = \cf4 Synth\cf3 .head(s, \cf5 "help-Outfreq"\cf3 , [\cf7 \\bus\cf3 , b.index, \cf7 \\freq\cf3 , 800]);\
+	\cf4 // add another control Synth before y, at the head of the server\cf0 \
+	\cf4 // It now overwrites x's cycle old data before y receives it\cf0 \
+	z = \cf2 Synth\cf0 .head(s, \cf3 "help-Outfreq"\cf0 , [\cf5 \\bus\cf0 , b.index, \cf5 \\freq\cf0 , 800]);\
 	\
-	\cf6 // get another bus\cf3 \
-	c = \cf4 Bus\cf3 .control(s, 1);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 	\
-	\cf6 // now y receives x's data even though z is still there\cf3 \
-	y.set(\cf7 \\bus\cf3 , c.index); x.set(\cf7 \\bus\cf3 , c.index);\
+	\cf4 // get another bus\cf0 \
+	c = \cf2 Bus\cf0 .control(s, 1);\
+	\
+	\cf4 // now y receives x's data even though z is still there\cf0 \
+	y.set(\cf5 \\bus\cf0 , c.index); x.set(\cf5 \\bus\cf0 , c.index);\
 	\
 	x.free; y.free; z.free;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf3 	}
+\f2\fs24 \cf0 	}
