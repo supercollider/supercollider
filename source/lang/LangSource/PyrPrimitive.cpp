@@ -1987,7 +1987,7 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 	int i, j;
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
-	
+		
 	meth = frame->method.uom;
 	methraw = METHRAW(meth);
 	
@@ -2022,18 +2022,15 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 	}
 	
 	if (NotNil(&frame->caller)) {
-		//SetNil(debugFrameObj->slots + 3);
 		MakeDebugFrame(g, frame->caller.uof, debugFrameObj->slots + 3);
-		//postbuf("Caller:\n");
-		//dumpObjectSlot(debugFrameObj->slots + 3);
 	} else {
 		SetNil(debugFrameObj->slots + 3);
 	}
 	
-	if (NotNil(&frame->context)) {
+	if (frame->context.utag == tagObj && frame->context.uof == frame) {
+		SetObject(debugFrameObj->slots + 4,  debugFrameObj);
+	} else if (NotNil(&frame->context)) {
 		MakeDebugFrame(g, frame->context.uof, debugFrameObj->slots + 4);
-		//postbuf("Context:\n");
-		//dumpObjectSlot(debugFrameObj->slots + 4);
 	} else {
 		SetNil(debugFrameObj->slots + 4);
 	}
