@@ -465,6 +465,8 @@ void compilePushInt(int value);
 void compileAssignVar(PyrParseNode *node, PyrSymbol* varName, bool drop);
 void compilePushVar(PyrParseNode *node, PyrSymbol *varName);
 bool isAnInlineableBlock(PyrParseNode *node);
+bool isAnInlineableAtomicLiteralBlock(PyrParseNode *node);
+bool isAtomicLiteral(PyrParseNode *node);
 bool isWhileTrue(PyrParseNode *node);
 void installByteCodes(PyrBlock *block);
 

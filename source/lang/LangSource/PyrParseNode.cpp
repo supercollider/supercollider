@@ -2069,7 +2069,32 @@ bool isAnInlineableBlock(PyrParseNode *node)
 	return res;
 }
 
-bool isLiteral(PyrParseNode *node)
+bool isAnInlineableAtomicLiteralBlock(PyrParseNode *node)
+{
+	bool res = false;
+	if (node->mClassno == pn_PushLitNode) {
+		PyrPushLitNode *anode;
+		PyrBlockNode *bnode;
+		anode = (PyrPushLitNode*)node;
+		if (anode->mSlot.utag == tagPtr 
+				&& (bnode = (PyrBlockNode*)(anode->mSlot.uo))->mClassno == pn_BlockNode) {
+			if (bnode->mArglist || bnode->mVarlist) {
+				post("WARNING: FunctionDef contains variable declarations and so"
+				" will not be inlined.\n");
+				if (bnode->mArglist) nodePostErrorLine((PyrParseNode*)bnode->mArglist);
+				else nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
+				
+			} else {
+				if (bnode->mBody->mClassno == pn_DropNode && ((PyrDropNode*)bnode->mBody)->mExpr2->mClassno == pn_BlockReturnNode) {
+					res = isAtomicLiteral(((PyrDropNode*)bnode->mBody)->mExpr1);
+				} else res = false;
+			}
+		}
+	}
+	return res;
+}
+
+bool isAtomicLiteral(PyrParseNode *node)
 {
 	bool res = false;
 	if (node->mClassno == pn_PushLitNode) {
@@ -2490,7 +2515,7 @@ void compileSwitchMsg(PyrCallNode* node)
 		for (; argnode; argnode = nextargnode) {
 			nextargnode = argnode->mNext;
 			if (nextargnode != NULL) {
-				if (!isLiteral(argnode)) {
+				if (!isAtomicLiteral(argnode) && !isAnInlineableAtomicLiteralBlock(argnode)) {
 					canInline = false;
 					break;
 				}
@@ -2537,9 +2562,18 @@ void compileSwitchMsg(PyrCallNode* node)
 			if (nextargnode != NULL) {
 				ByteCodes byteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)nextargnode, 0x6666, true);
 				
-				PyrSlot *key = &((PyrPushLitNode*)argnode)->mSlot;
+				PyrSlot *key;
 				PyrSlot value;
 				SetInt(&value, offset);
+				PyrPushLitNode* keyargnode = (PyrPushLitNode*)argnode;
+				if (isAtomicLiteral(argnode)) {
+					key = &keyargnode->mSlot;
+				} else {
+					PyrBlockNode *bnode = (PyrBlockNode*)keyargnode->mSlot.uo;
+					PyrDropNode *dropnode = (PyrDropNode*)bnode->mBody;
+					PyrPushLitNode* litnode = (PyrPushLitNode*)dropnode->mExpr1;
+					key = &litnode->mSlot;
+				}
 				
 				int index = arrayAtIdentityHashInPairs(array, key);
 				PyrSlot *slot = array->slots + index;
