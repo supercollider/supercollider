@@ -23,13 +23,19 @@
 #include "InitAlloc.h"
 #include <stdarg.h>
 
+
+static FILE *postfile = stdout;
+
+void setPostFile(FILE *file) { postfile = file; }
+
+
 void postfl(const char *fmt, ...);
 void postfl(const char *fmt, ...)
 {
 	va_list vargs;
 	va_start(vargs, fmt); 
-	vfprintf(stdout, fmt, vargs);
-        fflush(stdout);
+	vfprintf(postfile, fmt, vargs);
+        fflush(postfile);
 }
 
 extern "C" {
@@ -38,8 +44,8 @@ extern "C" {
 
 int vpost(const char *fmt, va_list vargs)
 {
-	vfprintf(stdout, fmt, vargs);
-        fflush(stdout);
+	vfprintf(postfile, fmt, vargs);
+        fflush(postfile);
 }
 
 void post(const char *fmt, ...);
@@ -47,36 +53,36 @@ void post(const char *fmt, ...)
 {
 	va_list vargs;
 	va_start(vargs, fmt); 
-	vfprintf(stdout, fmt, vargs);
-    //fflush(stdout);
+	vfprintf(postfile, fmt, vargs);
+    //fflush(postfile);
 }
 
 void error(const char *fmt, ...);
 void error(const char *fmt, ...)
 {
-	fprintf(stdout, "ERROR: ");
+	fprintf(postfile, "ERROR: ");
 	va_list vargs;
 	va_start(vargs, fmt); 
-	vfprintf(stdout, fmt, vargs);
-        fflush(stdout);
+	vfprintf(postfile, fmt, vargs);
+        fflush(postfile);
 }
 
 void postText(const char *text, long length);
 void postText(const char *text, long length)
 {
-	fwrite(text, sizeof(char), length, stdout);
+	fwrite(text, sizeof(char), length, postfile);
 }
 
 void postChar(char c);
 void postChar(char c)
 {	
-	fputc(c, stdout);
+	fputc(c, postfile);
 }
 
 void flushPostBuf();
 void flushPostBuf()
 {
-	fflush(stdout);
+	fflush(postfile);
 }
 
 long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
@@ -134,7 +140,7 @@ int main()
 	schedInit();
 
 	compileLibrary();
-	runLibrary(s_run); fflush(stdout);
+	runLibrary(s_run); fflush(postfile);
                 
 	return 0;
 }
