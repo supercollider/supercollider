@@ -473,8 +473,13 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			post(" %02X    SendMsg '%s'\n", op2, selector->name);
 			break;
 			
+		// TailCallReturnFromFunction
+		case 176 :  
+			post("       TailCallReturnFromFunction\n");
+			break;
+
 		// SuperMsg
-		case 176 :  case 177 :  case 178 :  case 179 :  
+		case 177 :  case 178 :  case 179 :  
 		case 180 :  case 181 :  case 182 :  case 183 :  
 		case 184 :  case 185 :  case 186 :  case 187 :  
 		case 188 :  case 189 :  case 190 :  case 191 :
@@ -565,7 +570,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			post(" %02X    SpecialBinaryOpWithAdverb\n", op2);
 			break;
 		case 255 :
-			post("       Unused2\n");
+			post("       TailCallReturnFromMethod\n");
 			break;
 	}
 	return ip;
@@ -1018,7 +1023,10 @@ char* byteCodeString(int code)
 			case 172 :  case 173 :  case 174 :  case 175 :
 				return "SendMsg";
 				
-			case 176 :  case 177 :  case 178 :  case 179 :  
+			case 176 :  
+				return "TailCallReturnFromFunction";
+			
+			case 177 :  case 178 :  case 179 :  
 			case 180 :  case 181 :  case 182 :  case 183 :  
 			case 184 :  case 185 :  case 186 :  case 187 :  
 			case 188 :  case 189 :  case 190 :  case 191 :
@@ -1061,7 +1069,7 @@ char* byteCodeString(int code)
 			case 252 :  return "JumpFwd"; // JumpFwd
 			case 253 :  return "JumpBak"; // JumpBak
 			case 254 :  return "PushPosInt"; // PushPosInt
-			case 255 :  return "PushNegInt"; // PushNegInt
+			case 255 :  return "TailCallReturnFromMethod"; // TailCallReturnFromMethod
 		}
 	return "unknown opcode";	
 }

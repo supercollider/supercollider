@@ -908,7 +908,7 @@ int processident(char *token)
 	PyrSymbol *sym;
 	
 	PyrSlot slot;
-	PyrSlotNode *node;
+	PyrParseNode *node;
 	
 	c = token[0];
 	zzval = -1;
@@ -923,11 +923,17 @@ int processident(char *token)
 	}*/
 
 	if (token[0] == '_') {
-		sym = getsym(token);
-		SetSymbol(&slot, sym);
-		node = newPyrSlotNode(&slot);
-		zzval = (int)node;
-		return PRIMITIVENAME;
+		if (token[1] == 0) {
+			node = newPyrCurryArgNode();
+			zzval = (int)node;
+			return CURRYARG;
+		} else {
+			sym = getsym(token);
+			SetSymbol(&slot, sym);
+			node = newPyrSlotNode(&slot);
+			zzval = (int)node;
+			return PRIMITIVENAME;
+		}
 	}
 	if (token[0] >= 'A' && token[0] <= 'Z') {
 		sym = getsym(token);
@@ -1670,7 +1676,7 @@ void compileFileSym(PyrSymbol *fileSym)
 			if (!parseFailed && gRootParseNode) {
 				//postfl("Compiling nodes %08X\n", gRootParseNode);fflush(stdout);
 				compilingCmdLine = false;
-				compileNodeList(gRootParseNode);
+				compileNodeList(gRootParseNode, true);
 				//postfl("done compiling\n");fflush(stdout);
 			} else {
 				compileErrors++;
@@ -1760,7 +1766,7 @@ bool parseOneClass(PyrSymbol *fileSym)
 	res = true;
 	token = yylex();
 	if (token == CLASSNAME) {
-		className = ((PyrSlotNode*)zzval)->slot.us;
+		className = ((PyrSlotNode*)zzval)->mSlot.us;
 		// I think this is wrong: zzval is space pool alloced
 		//pyrfree((PyrSlot*)zzval);
 		token = yylex();
@@ -1774,7 +1780,7 @@ bool parseOneClass(PyrSymbol *fileSym)
 			token = yylex();  // get super class
 			if (token == 0) return false;
 			if (token == CLASSNAME) {
-				superClassName = ((PyrSlotNode*)zzval)->slot.us;
+				superClassName = ((PyrSlotNode*)zzval)->mSlot.us;
 				// I think this is wrong: zzval is space pool alloced
 				//pyrfree((PyrSlot*)zzval);
 				token = yylex();

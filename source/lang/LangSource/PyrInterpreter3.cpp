@@ -387,6 +387,7 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 	g->thread = g->process->mainThread.uot;
 	
 	// these will be set up when the run method is called
+	g->tailCall = 0;
 	g->method = NULL;
 	g->block = NULL;
 	g->frame = NULL;
@@ -518,6 +519,7 @@ void Interpret(VMGlobals *g)
 	bcpair[prevop][op1] ++;
 	prevop = op1;
 #endif
+	//printf("op1 %d\n", op1);
 	//postfl("sp %08X   frame %08X  caller %08X  ip %08X\n", sp, g->frame, g->frame->caller.uof, g->frame->caller.uof->ip.ui);
 	//postfl("sp %08X   frame %08X   diff %d    caller %08X\n", sp, g->frame, ((int)sp - (int)g->frame)>>3, g->frame->caller.uof);
 #if DEBUGINTERPRETER
@@ -631,7 +633,7 @@ void Interpret(VMGlobals *g)
 			g->gc->GCWrite(tframe, slot);
 			break;
 		case 9 : // opExtended, opStoreClassVar
-			op2 = ip[1]; // get class var literal level
+			op2 = ip[1]; // get index of class name literal
 			op3 = ip[2]; // get class var index
 			ip += 2;
 			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
@@ -683,6 +685,7 @@ void Interpret(VMGlobals *g)
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialUnaryArithMsg(g, -1);
+			g->tailCall = 0;
 			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
@@ -871,6 +874,7 @@ void Interpret(VMGlobals *g)
 		case 107 : // push one and add
 			if (((PyrSlot*)sp)->utag == tagInt) {
 				((PyrSlot*)sp)->ui++;
+				g->tailCall = 0;
 			} else {
 				*++sp = gSpecialValues[svOne];
 				g->sp = (PyrSlot*)sp; g->ip = ip; 
@@ -1598,8 +1602,12 @@ void Interpret(VMGlobals *g)
 						
 			goto class_lookup;
 			
+		case 176 : // opcTailCallReturnFromFunction
+			//post("tailCall 2\n");
+			g->tailCall = 2;
+			break;
 		// opSuperMsg
-		case 176 :  
+		case 177 :  
 			// special case for this as only arg
 			op2 = ip[1]; ip++; // get selector index
 			*++sp = g->receiver.uf;
@@ -1610,7 +1618,7 @@ void Interpret(VMGlobals *g)
 						
 			goto msg_lookup;
 		
-		case 177 :  case 178 :  case 179 :  
+		case 178 :  case 179 :  
 		case 180 :  case 181 :  case 182 :  case 183 :  
 		case 184 :  case 185 :  case 186 :  case 187 :  
 		case 188 :  case 189 :  case 190 :  case 191 :
@@ -1650,15 +1658,19 @@ void Interpret(VMGlobals *g)
 		case 208 :  // opNeg
 			if (IsFloat((PyrSlot*)sp)) {
 				*sp = -*sp;
+				g->tailCall = 0;
 			} else if (((PyrSlot*)sp)[0].utag == tagInt) {
 				((PyrSlot*)sp)[0].ui = -((PyrSlot*)sp)[0].ui;
+				g->tailCall = 0;
 			} else goto unary_send;
 			break;
 		case 209 : // opNot
 			if (((PyrSlot*)sp)[0].utag == tagTrue) {
 				((PyrSlot*)sp)[0].utag = tagFalse;
+				g->tailCall = 0;
 			} else if (((PyrSlot*)sp)[0].utag == tagFalse) {
 				((PyrSlot*)sp)[0].utag = tagTrue;
+				g->tailCall = 0;
 			} else goto unary_send;
 			break;
 		case 210 : // opIsNil
@@ -1667,6 +1679,7 @@ void Interpret(VMGlobals *g)
 			} else {
 				*sp = gSpecialValues[svFalse];
 			}
+			g->tailCall = 0;
 			break;
 		case 211 : // opNotNil
 			if (((PyrSlot*)sp)[0].utag != tagNil) {
@@ -1674,6 +1687,7 @@ void Interpret(VMGlobals *g)
 			} else {
 				((PyrSlot*)sp)[0].utag = tagFalse;
 			}
+			g->tailCall = 0;
 			break;
 
 		case 212 :  case 213 :  case 214 :  case 215 :  
@@ -1692,6 +1706,7 @@ void Interpret(VMGlobals *g)
 			if (((PyrSlot*)sp)[-1].utag == tagInt) {
 				if (((PyrSlot*)sp)[0].utag == tagInt) {
 					--sp; ((PyrSlot*)sp)[0].ui += ((PyrSlot*)sp)[1].ui;
+					g->tailCall = 0;
 				} else {
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opAdd;
@@ -1711,6 +1726,7 @@ void Interpret(VMGlobals *g)
 			if (((PyrSlot*)sp)[-1].utag == tagInt) {
 				if (((PyrSlot*)sp)[0].utag == tagInt) {
 					--sp; ((PyrSlot*)sp)[0].ui -= ((PyrSlot*)sp)[1].ui;
+					g->tailCall = 0;
 				} else {
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opSub;
@@ -1730,6 +1746,7 @@ void Interpret(VMGlobals *g)
 			if (((PyrSlot*)sp)[-1].utag == tagInt) {
 				if (((PyrSlot*)sp)[0].utag == tagInt) {
 					--sp; ((PyrSlot*)sp)[0].ui *= ((PyrSlot*)sp)[1].ui;
+					g->tailCall = 0;
 				} else {
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opMul;
@@ -1886,17 +1903,9 @@ void Interpret(VMGlobals *g)
 			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
-		case 255 : // opcUnused2
-			/*
-			// special case for this as only arg
-			numArgsPushed = ip[1]; ip++; 
-			*++sp = g->receiver.uf;
-			selector = gSpecialOpcodes[opmNew];
-			slot = (PyrSlot*)sp;
-			classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
-						
-			goto msg_lookup;
-			*/
+		case 255 : // opcTailCallReturnFromMethod
+			//post("tailCall 1\n");
+			g->tailCall = 1;
 			break;
 			
 			////////////////////////////////////
@@ -2044,6 +2053,8 @@ void Interpret(VMGlobals *g)
 						break;
 				} // switch (meth->methType)
 			} // end handle message
+			//if (g->tailCall) post("tailCall 0 A\n");
+			g->tailCall = 0;
 			continue;
 			
 			////////////////////////////////////
@@ -2185,6 +2196,8 @@ void Interpret(VMGlobals *g)
 				} // switch (meth->methType)
 			} // end handle message
 			numKeyArgsPushed = 0;
+			//if (g->tailCall) post("tailCall 0 B\n");
+			g->tailCall = 0;
 	} // switch(op1)
 	} // end while(true)
 	g->sp = (PyrSlot*)sp; g->ip = ip; 
@@ -2265,6 +2278,9 @@ void DumpStack(VMGlobals *g, PyrSlot *sp)
 	int i;
 	PyrSlot *slot;
 	char str[128];
+#if BCSTAT
+	dumpbcstat();
+#endif
 	postfl("STACK:\n");
 	slot = sp - 64;
 	if (slot < g->gc->Stack()->slots) slot = g->gc->Stack()->slots;
@@ -2272,9 +2288,6 @@ void DumpStack(VMGlobals *g, PyrSlot *sp)
 		slotString(slot, str);
 		post("   %2d  %s\n", i, str);
 	}
-#if BCSTAT
-	dumpbcstat();
-#endif
 }
 
 

@@ -183,6 +183,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				break;
 		}
 	}
+	g->tailCall = 0;
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendMessageWithKeys");
@@ -372,6 +373,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				
 		}
 	}
+	g->tailCall = 0;
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendMessage");
@@ -510,6 +512,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				break;
 		}
 	}
+	g->tailCall = 0;
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendSuperMessageWithKeys");
@@ -700,6 +703,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				
 		}
 	}
+	g->tailCall = 0;
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendSuperMessage");
@@ -886,6 +890,26 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 		meth->callMeter.ui++;
 	}
 #endif
+	
+	int tailCall = g->tailCall;
+	if (tailCall) {
+		/*if (g->method) {
+			postfl("tailCall %d   %s-%s -> %s-%s\n", 
+				tailCall,
+				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		} else {
+			postfl("tailCall %d    top -> %s-%s\n", 
+				tailCall,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		}*/
+		if (tailCall == 1) {
+			returnFromMethod(g);
+		} else {
+			returnFromBlock(g);
+		}
+	}
+
 	g->execMethod = 10;
 	
 	proto = meth->prototypeFrame.uo;
@@ -1030,12 +1054,33 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 		meth->callMeter.ui++;
 	}
 #endif
+	
+	int tailCall = g->tailCall;
+	if (tailCall) {
+		/*if (g->method) {
+			postfl("tailCall %d   %s-%s -> %s-%s\n", 
+				tailCall,
+				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		} else {
+			postfl("tailCall %d    top -> %s-%s\n", 
+				tailCall,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		}*/
+		if (tailCall == 1) {
+			returnFromMethod(g);
+		} else {
+			returnFromBlock(g);
+		}
+	}
+
 	g->execMethod = 20;
 	
 	proto = meth->prototypeFrame.uo;
 	methraw = METHRAW(meth);
 	numtemps = methraw->numtemps;
 	numargs = methraw->numargs;
+	
 	caller = g->frame;
 	//postfl("executeMethod allArgsPushed %d numKeyArgsPushed %d\n", allArgsPushed, numKeyArgsPushed);
 		
@@ -1192,6 +1237,7 @@ void returnFromMethod(VMGlobals *g)
 	homeContext = curframe->context.uof->homeContext.uof;
 	if (homeContext == NULL) {
 		null_return:
+		if (g->tailCall) return; // do nothing.
 		/*
 		post("return all the way out. sd %d\n", g->sp - g->gc->Stack()->slots);
 		postfl("%s-%s\n", 
@@ -1213,7 +1259,7 @@ void returnFromMethod(VMGlobals *g)
 		if (returnFrame == NULL) goto null_return;
 		
 		// make sure homeContext is a caller and find earliest stack frame
-		{
+		/*{
 			PyrFrame *tempFrame = curframe; 
 			while (tempFrame != homeContext) {
 				tempFrame = tempFrame->caller.uof;
@@ -1226,7 +1272,7 @@ void returnFromMethod(VMGlobals *g)
 					return;
 				}
 			}
-		}
+		}*/
 		
 		{
 			PyrFrame *tempFrame = curframe;

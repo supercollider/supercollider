@@ -124,6 +124,7 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;
 	
 	send_normal_2:
@@ -222,6 +223,7 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;
 	
 	send_normal_2:
@@ -320,6 +322,7 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;
 	
 	send_normal_2:
@@ -362,6 +365,7 @@ int prAddInt(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;		
 	
 	send_normal_2:
@@ -406,6 +410,7 @@ int prAddFloat(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;		
 	
 	send_normal_2:
@@ -448,6 +453,7 @@ int prSubInt(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;		
 	
 	send_normal_2:
@@ -492,6 +498,7 @@ int prSubFloat(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;		
 	
 	send_normal_2:
@@ -534,6 +541,7 @@ int prMulInt(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;		
 	
 	send_normal_2:
@@ -578,6 +586,7 @@ int prMulFloat(VMGlobals *g, int numArgsPushed)
 	}
 	g->sp-- ; // drop
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;		
 	
 	send_normal_2:

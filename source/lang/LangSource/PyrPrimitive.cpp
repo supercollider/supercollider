@@ -818,6 +818,25 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	
+	int tailCall = g->tailCall;
+	if (tailCall) {
+		/*if (g->method) {
+			postfl("tailCall %d   %s-%s -> %s-%s\n", 
+				tailCall,
+				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		} else {
+			postfl("tailCall %d    top -> %s-%s\n", 
+				tailCall,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		}*/
+		if (tailCall == 1) {
+			returnFromMethod(g);
+		} else {
+			returnFromBlock(g);
+		}
+	}
+
 	g->execMethod = 30;
 
 	args = g->sp - numArgsPushed + 1;
@@ -940,6 +959,25 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	PyrFrame *homeContext;
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
+	
+	int tailCall = g->tailCall;
+	if (tailCall) {
+		/*if (g->method) {
+			postfl("tailCall %d   %s-%s -> %s-%s\n", 
+				tailCall,
+				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		} else {
+			postfl("tailCall %d    top -> %s-%s\n", 
+				tailCall,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		}*/
+		if (tailCall == 1) {
+			returnFromMethod(g);
+		} else {
+			returnFromBlock(g);
+		}
+	}
 	
 	g->execMethod = 40;
 
@@ -1091,6 +1129,25 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	PyrSlot *curEnvirSlot;
+	
+	int tailCall = g->tailCall;
+	if (tailCall) {
+		/*if (g->method) {
+			postfl("tailCall %d   %s-%s -> %s-%s\n", 
+				tailCall,
+				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		} else {
+			postfl("tailCall %d    top -> %s-%s\n", 
+				tailCall,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		}*/
+		if (tailCall == 1) {
+			returnFromMethod(g);
+		} else {
+			returnFromBlock(g);
+		}
+	}
 		
 	g->execMethod = 50;
 
@@ -1228,6 +1285,25 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	PyrSlot *curEnvirSlot;
+	
+	int tailCall = g->tailCall;
+	if (tailCall) {
+		/*if (g->method) {
+			postfl("tailCall %d   %s-%s -> %s-%s\n", 
+				tailCall,
+				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		} else {
+			postfl("tailCall %d    top -> %s-%s\n", 
+				tailCall,
+				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		}*/
+		if (tailCall == 1) {
+			returnFromMethod(g);
+		} else {
+			returnFromBlock(g);
+		}
+	}
 	
 	g->execMethod = 60;
 
@@ -2489,10 +2565,10 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 		meth = GetFunctionCompileContext(g);
 		if (!meth) return errFailed;
 		
-		((PyrBlockNode*)gRootParseNode)->isTopLevel = true;
+		((PyrBlockNode*)gRootParseNode)->mIsTopLevel = true;
 		
 		SetNil(&slotResult);
-		COMPILENODE(gRootParseNode, &slotResult);
+		COMPILENODE(gRootParseNode, &slotResult, true);
 
 		if (slotResult.utag != tagObj 
 			|| slotResult.uo->classptr != class_fundef) {
@@ -2698,6 +2774,8 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	PyrThread *oldthread;
 	PyrGC *gc;
 	PyrFrame *frame;
+	
+	g->tailCall = 0; // ?? prevent a crash. is there a way to allow a TCO ?
 	
 	oldthread = g->thread;
 	if (newthread == oldthread) return;

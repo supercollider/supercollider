@@ -32,201 +32,206 @@ extern int textpos;
 
 void dumpNodeList(PyrParseNode *node)
 {
-	for (; node; node = node->next) {
+	for (; node; node = node->mNext) {
 		DUMPNODE(node, 0);
 	}
 }
 
-void dumpPyrPushNameNode(PyrPushNameNode* node, int level)
+void PyrCurryArgNode::dump(int level)
 {
-	postfl("%2d PushName '%s'\n", level, node->varName.us->name);
-	DUMPNODE(node->next, level);
+	postfl("%2d CurryArg %d\n", level, mArgNum);
 }
 
-void dumpPyrSlotNode(PyrSlotNode* node, int level)
+void PyrSlotNode::dump(int level)
 {
-	postfl("%2d SlotNode\n", level);
-	dumpPyrSlot(&node->slot); 
-	DUMPNODE(node->next, level);
+	if (mClassno == pn_PushLitNode)
+		dumpPushLit(level);
+	else if (mClassno == pn_PushNameNode)
+		postfl("%2d PushName '%s'\n", level, mSlot.us->name);
+	else if (mClassno == pn_LiteralNode)
+		dumpLiteral(level);
+	else {
+		postfl("%2d SlotNode\n", level);
+		dumpPyrSlot(&mSlot); 
+	}
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrPushKeyArgNode(PyrPushKeyArgNode* node, int level)
+void PyrPushKeyArgNode::dump(int level)
 {
 	postfl("%2d PushKeyArgNode\n", level);
-	DUMPNODE(node->selector, level+1);
-	DUMPNODE(node->expr, level+1);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mSelector, level+1);
+	DUMPNODE(mExpr, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrClassExtNode(PyrClassExtNode* node, int level)
+void PyrClassExtNode::dump(int level)
 {
-	postfl("%2d ClassExt '%s'\n", level, node->className->slot.us->name);
-	DUMPNODE(node->methods, level+1);
-	DUMPNODE(node->next, level);
+	postfl("%2d ClassExt '%s'\n", level, mClassName->mSlot.us->name);
+	DUMPNODE(mMethods, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrClassNode(PyrClassNode* node, int level)
+void PyrClassNode::dump(int level)
 {
-	postfl("%2d Class '%s'\n", level, node->className->slot.us->name);
-	DUMPNODE(node->superClassName, level+1);
-	DUMPNODE(node->varlists, level+1);
-	DUMPNODE(node->methods, level+1);
-	DUMPNODE(node->next, level);
+	postfl("%2d Class '%s'\n", level, mClassName->mSlot.us->name);
+	DUMPNODE(mSuperClassName, level+1);
+	DUMPNODE(mVarlists, level+1);
+	DUMPNODE(mMethods, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrMethodNode(PyrMethodNode* node, int level)
+void PyrMethodNode::dump(int level)
 {
-	postfl("%2d MethodNode '%s'  %s\n", level, node->methodName->slot.us->name,
-		node->primitiveName?node->primitiveName->slot.us->name:"");
-	DUMPNODE(node->arglist, level+1);
-	DUMPNODE(node->body, level+1);
-	DUMPNODE(node->next, level);
+	postfl("%2d MethodNode '%s'  %s\n", level, mMethodName->mSlot.us->name,
+		mPrimitiveName ? mPrimitiveName->mSlot.us->name:"");
+	DUMPNODE(mArglist, level+1);
+	DUMPNODE(mBody, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrArgListNode(PyrArgListNode* node, int level)
+void PyrArgListNode::dump(int level)
 {
 	postfl("%2d ArgList\n", level);
-	DUMPNODE(node->varDefs, level+1);
-	DUMPNODE(node->rest, level+1);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mVarDefs, level+1);
+	DUMPNODE(mRest, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrVarListNode(PyrVarListNode* node, int level)
+void PyrVarListNode::dump(int level)
 {
 	postfl("%2d VarList\n", level);
-	DUMPNODE(node->varDefs, level+1);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mVarDefs, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrVarDefNode(PyrVarDefNode* node, int level)
+void PyrVarDefNode::dump(int level)
 {
-	postfl("%2d VarDef '%s'\n", level, node->varName->slot.us->name);
-	DUMPNODE(node->defVal, level);
-	DUMPNODE(node->next, level);
+	postfl("%2d VarDef '%s'\n", level, mVarName->mSlot.us->name);
+	DUMPNODE(mDefVal, level);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrCallNode(PyrCallNode* node, int level)
+void PyrCallNode::dump(int level)
 {
-	postfl("%2d Call '%s'\n", level, node->selector->slot.us->name);
-	DUMPNODE(node->arglist, level+1);
-	DUMPNODE(node->keyarglist, level+1);
-	DUMPNODE(node->next, level);
+	postfl("%2d Call '%s'\n", level, mSelector->mSlot.us->name);
+	DUMPNODE(mArglist, level+1);
+	DUMPNODE(mKeyarglist, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrBinopCallNode(PyrBinopCallNode* node, int level)
+void PyrBinopCallNode::dump(int level)
 {
-	postfl("%2d BinopCall '%s'\n", level, node->selector->slot.us->name);
-	DUMPNODE(node->arg1, level+1);
-	DUMPNODE(node->arg2, level+1);
-	DUMPNODE(node->arg3, level+1);
-	DUMPNODE(node->next, level);
+	postfl("%2d BinopCall '%s'\n", level, mSelector->mSlot.us->name);
+	DUMPNODE(mArg1, level+1);
+	DUMPNODE(mArg2, level+1);
+	DUMPNODE(mArg3, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrDropNode(PyrDropNode* node, int level)
+void PyrDropNode::dump(int level)
 {
 	postfl("%2d Drop (\n", level);
-	DUMPNODE(node->expr1, level+1);
+	DUMPNODE(mExpr1, level+1);
 	postfl(" -> %2d Drop\n", level);
-	DUMPNODE(node->expr2, level+1);
+	DUMPNODE(mExpr2, level+1);
 	postfl(") %2d Drop\n", level);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrPushLitNode(PyrPushLitNode* node, int level)
+void PyrSlotNode::dumpPushLit(int level)
 {
 	postfl("%2d PushLit\n", level);
-	if (node->literalSlot.utag != tagPtr) dumpPyrSlot(&node->literalSlot);
+	if (mSlot.utag != tagPtr) dumpPyrSlot(&mSlot);
 	else {
-		DUMPNODE((PyrParseNode*)node->literalSlot.uo, level);
+		DUMPNODE((PyrParseNode*)mSlot.uo, level);
 	}
-	DUMPNODE(node->next, level);
 }
 
-void dumpPyrLiteralNode(PyrLiteralNode* node, int level)
+void PyrSlotNode::dumpLiteral(int level)
 {
 	postfl("%2d Literal\n", level);
-	if (node->literalSlot.utag != tagPtr) dumpPyrSlot(&node->literalSlot);
+	if (mSlot.utag != tagPtr) dumpPyrSlot(&mSlot);
 	else {
-		DUMPNODE((PyrParseNode*)node->literalSlot.uo, level);
+		DUMPNODE((PyrParseNode*)mSlot.uo, level);
 	}
-	DUMPNODE(node->next, level);
 }
 
-void dumpPyrReturnNode(PyrReturnNode* node, int level)
+void PyrReturnNode::dump(int level)
 {
 	postfl("%2d Return (\n", level);
-	DUMPNODE(node->expr, level+1);
+	DUMPNODE(mExpr, level+1);
 	postfl(") %2d Return \n", level);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrBlockReturnNode(PyrBlockReturnNode* node, int level)
+void PyrBlockReturnNode::dump(int level)
 {
 	postfl("%2d FuncReturn\n", level);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrAssignNode(PyrAssignNode* node, int level)
+void PyrAssignNode::dump(int level)
 {
-	postfl("%2d Assign '%s'\n", level, node->varName->slot.us->name);
-	DUMPNODE(node->varName, level+1);
-	DUMPNODE(node->expr, level+1);
-	DUMPNODE(node->next, level);
+	postfl("%2d Assign '%s'\n", level, mVarName->mSlot.us->name);
+	DUMPNODE(mVarName, level+1);
+	DUMPNODE(mExpr, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrSetterNode(PyrSetterNode* node, int level)
+void PyrSetterNode::dump(int level)
 {
-	//postfl("%2d Assign '%s'\n", level, node->varName->slot.us->name);
-	DUMPNODE(node->selector, level+1);
-	DUMPNODE(node->expr1, level+1);
-	DUMPNODE(node->expr2, level+1);
+	//postfl("%2d Assign '%s'\n", level, mVarName->mSlot.us->name);
+	DUMPNODE(mSelector, level+1);
+	DUMPNODE(mExpr1, level+1);
+	DUMPNODE(mExpr2, level+1);
 }
 
-void dumpPyrMultiAssignNode(PyrMultiAssignNode* node, int level)
+void PyrMultiAssignNode::dump(int level)
 {
 	postfl("%2d MultiAssign\n", level);
-	DUMPNODE(node->varList, level+1);
-	DUMPNODE(node->expr, level+1);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mVarList, level+1);
+	DUMPNODE(mExpr, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrMultiAssignVarListNode(PyrMultiAssignVarListNode* node, int level)
+void PyrMultiAssignVarListNode::dump(int level)
 {
 	postfl("%2d MultiAssignVarList\n", level);
-	DUMPNODE(node->varNames, level+1);
-	DUMPNODE(node->rest, level+1);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mVarNames, level+1);
+	DUMPNODE(mRest, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrDynDictNode(PyrDynDictNode* node, int level)
+void PyrDynDictNode::dump(int level)
 {
 	postfl("%2d DynDict\n", level);
-	DUMPNODE(node->elems, level+1);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mElems, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrDynListNode(PyrDynListNode* node, int level)
+void PyrDynListNode::dump(int level)
 {
 	postfl("%2d DynList\n", level);
-	DUMPNODE(node->elems, level+1);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mElems, level+1);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrLitListNode(PyrLitListNode* node, int level)
+void PyrLitListNode::dump(int level)
 {
 	postfl("%2d LitList\n", level);
-	postfl(" %2d elems\n", level);
-	DUMPNODE(node->elems, level+1);
-	postfl(" %2d next\n", level);
-	DUMPNODE(node->next, level);
+	postfl(" %2d mElems\n", level);
+	DUMPNODE(mElems, level+1);
+	postfl(" %2d mNext\n", level);
+	DUMPNODE(mNext, level);
 }
 
-void dumpPyrBlockNode(PyrBlockNode* node, int level)
+void PyrBlockNode::dump(int level)
 {
 	postfl("%2d Func\n", level);
-	DUMPNODE(node->arglist, level+1);
-	DUMPNODE(node->body, level+1);
-	DUMPNODE(node->next, level);
+	DUMPNODE(mArglist, level+1);
+	DUMPNODE(mBody, level+1);
+	DUMPNODE(mNext, level);
 }
 
 void dumpPyrSlot(PyrSlot* slot)
@@ -252,7 +257,7 @@ void slotString(PyrSlot *slot, char *str)
 			if (slot->uo) {
 				if (isKindOf(slot->uo, class_class)) {
 					sprintf(str, "class %s (%08X)", 
-						((PyrClass*)slot->uo)->name.us->name, (long)slot->uo);
+						((PyrClass*)slot->uo)->name.us->name, (uint32)slot->uo);
 				} else if (slot->uo->classptr == class_string) {
 					char str2[48];
 					int len;

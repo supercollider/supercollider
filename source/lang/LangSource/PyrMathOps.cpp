@@ -275,6 +275,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 	}
 	
 	g->sp[0].ucopy = res.ucopy;
+	g->tailCall = 0;
 	return errNone;
 	
 	send_normal_1:
@@ -878,6 +879,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 	g->sp -= numArgsPushed - 1; // drop
 	g->sp[0].ucopy = res.ucopy;
 	g->numpop = 0;
+	g->tailCall = 0;
 	return errNone;
 	
 	send_normal_2:
