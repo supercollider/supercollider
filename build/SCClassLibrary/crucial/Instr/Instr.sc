@@ -72,7 +72,11 @@ Instr  {
 		^Library.putList([this.name,instr.name,instr].flatten )
 	}
 	*at { arg  name;
-		^(Library.atList([this.name] ++ name.asArray)
+		if(name.isString or: {name.isKindOf(Symbol)},{
+			name = [name.asSymbol];
+		});
+
+		^(Library.atList([this.name,name].flatten)
 			??
 		{ 	
 			// if not previously loaded, try loading the file

@@ -1,9 +1,9 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs38 \cf0 Sample
@@ -13,140 +13,238 @@
 
 \f2\fs24 \cf0 This class can be used as an argument to a Patch.  It will take care of all the troubles of loading, allocating, measuring, and even beat synchronizing of a small sound file.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	Sample.new(soundFilePath,tempo)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
 It will not play by itself, but it holds all the intelligence to allow other things to play it very easily.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \
-s = \cf2 Server\cf0 .local;\
-l = \cf2 Sample\cf0 (\cf3 "sounds/a11wlk01.wav"\cf0 );\
+(\cf2 \
 \
-b = \cf2 List\cf0 .new; \cf4 // bundle\
-\cf0 l.prepareForPlay(s,b);\
-b.postln;\
-s.listSendBundle(nil,b);\
+\cf3 Patch\cf2 (\{ \cf3 arg\cf2  sample;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf3 "help-Sample"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
-	\cf2 Out\cf0 .ar(out,\
-		\cf2 PlayBuf\cf0 .ar(1,bufnum,\cf2 BufRateScale\cf0 .kr(bufnum))\
-	)\
-\}).play(s,[\\out,0,\cf5 \\\cf0 bufnum,l.bufnum]);\
+	\cf3 PlayBuf\cf2 .ar(sample.numChannels,\
+			sample.bufnum,\
+			sample.sampleRate / 44100,\
+			1.0,\
+			0.0,\
+			0.0)\
 \
+\},[\
+	\cf3 Sample\cf2 (\cf4 "sounds/a11wlk01.wav"\cf2 )\
+]).play\
 \
-\
+\cf0 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 When used in a Patch, it does its job quite effortlessly:\
+\f2\fs24 \cf0 In this case the SynthDef created is one-time-only use, the buffer number and sample rate are embedded in the SynthDef as constants. The def name was calculated as f-431886303O8NEut\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Using the various xxxxxIr and xxxxxKr methods, you can cause the SynthDef to be reusable, so that extra synthDefs aren't needed to be sent to the server.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Within the Instr function you use these methods on your Sample object\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	
+\f0\b bufnum
+\f2\b0 \
+		an integer of the current sample's bufnum, embedded into the SynthDef as a constant.\
+	
+\f0\b bufnumIr
+\f2\b0 \
+		at the start of the synth, this will get the dynamic bufferID of your Sample object.\
+		this Instr will reuse SynthDefs where possible.  Multiple synths may use the same\
+		basic sample synthDef for many voices with no need to compile new SynthDefs\
+		and send to the server.\
+	
+\f0\b bufnumKr
+\f2\b0 \
+		a dynamically modulateable bufferID.  note that you can simply load a different sound\
+		into the buffer while playing, and you rarely need to modulate the buffer number.\
+		as long as you used bufFramesKr etc. your synth should still work\
+		\
+	
+\f0\b sampleRate
+\f2\b0 \
+		a float of the current sample's sample rate, embedded into the SynthDef as a constant.\
+	
+\f0\b sampleRateKr
+\f2\b0 \
+		a kr rate signal that will change if you load a different sample into the buffer,even\
+		while playing.\
+\
+	
+\f0\b bufRateScaleKr
+\f2\b0 \
+		the nominal pitchRatio value needed to play at the original pitch\
+		\
+	
+\f0\b bufFramesKr
+\f2\b0 \
+		a kr rate signal with the number of frames of the current sample\
+	
+\f0\b bufSamplesKr
+\f2\b0 \
+		a kr rate signal with the number of samples of the current sample (?)\
+\
+	
+\f0\b bufDurKr
+\f2\b0 \
+		duration in seconds\
+	
+\f0\b duration
+\f2\b0 \
+		duration in seconds of current sample, embedded into SynthDef as a constant.\
+		\
+	
+\f0\b bufChannelsKr
+\f2\b0 \
+		number of channels of the current sample.  you cannot use this to modulate\
+		a PlayBuf.\
+	
+\f0\b numChannels
+\f2\b0 \
+		integer, number of channels of the current sample.  this will be embedded\
+		into the SynthDef as a constant.  the SynthDef will still be reusable for \
+		all samples of the same numChannels.
+\f1\fs18 \
+\
+(\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Instr\cf2 (\cf4 "help-Sample"\cf2 ,\{ \cf3 arg\cf2  sample;\
+	\cf3 PlayBuf\cf2 .ar(sample.numChannels,\
+				sample.bufnumIr, \cf5 // finds the buffer number when the synth starts\
+\cf2 				sample.sampleRateKr / 44100,\
+				1.0,0.0,0.0);\
+\});\
+\
+\cf3 Patch\cf2 (\cf4 "help-Sample"\cf2 ,[\
+	\cf3 Sample\cf2 (\cf4 "sounds/a11wlk01.wav"\cf2 )\
+]).play\
+\cf0 \
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 The def name was : help-SampleO8NEut\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \
-NOT FINISHED\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 You can build up a library of Instr functions and exploit them with Patch.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf3 Instr\cf2 ([\cf6 \\help\cf2 ,\cf6 \\Sample\cf2 ],\{ \cf3 arg\cf2  sample,pchRatio=1.0,start=0.0;\
+	\cf3 PlayBuf\cf2 .ar(sample.numChannels,\
+				sample.bufnumIr, \cf5 // finds the buffer number when the synth starts\
+\cf2 				sample.sampleRateKr / 44100 * pchRatio,\
+				1.0,\
+				start * sample.bufFramesKr,\
+				1.0); \cf5 // loop\
+\cf2 \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
 \
-sample.bufnumir\
-sample.bufnumkr\
-sample.sampleRate\
-sample.sampleRateir\
-sample.sampleRatekr\
-\
-\
-(\
-\
-Instr([\\help,\\Sample],\{ arg sample;\
-	\cf2 PlayBuf\cf0 .ar(sample.numChannels,sample.bufnum,sample.sampleRate / 44100,1.0,0.0,0.0);\
-\},outSpec: \\mono );\
-\
-\
-Patch([\\help,\\Sample],\
+this Patch object:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+p = \cf7 Patch\cf0 ([\\help,\\Sample],\
 [\
-	\cf2 Sample\cf0 (\cf3 "sounds/\cf0 a11wlk01.wav\cf3 "\cf0 )\
-]).play\
+	\cf7 Sample\cf0 (\cf8 "sounds/a11wlk01.wav"\cf0 )\
+]);\
 \
+// edit controls on the gui\
+p.topGui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\
+save it,  and this will fully restore the complete sound.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+Patch.new(\
+	[ 'help', 'Sample' ], [ Sample.new("sounds/a11wlk01.wav", 1.6347258775994), \
+		0.46511627906977, 0.17441860465116 ]\
 )\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs24 \cf0 this Patch object:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf0 \
-\cf6 p = \cf7 Patch\cf6 ([\cf8 \\help\cf6 ,\cf8 \\Sample\cf6 ],\
-[\
-	\cf7 Sample\cf6 (\cf9 "sounds/a11wlk01.wav"\cf6 )\
-]);\
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs24 \cf0 can be saved, and will fully encapsulate this complete sound.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf0 \
-p.topGui\
 \
 \
 \
 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // helpSampleo8NEut\
-// same synth def name as above\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //beatlock\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf2 arg\cf0  sample,tempo;\
-	tempo.insp("handed in to Instr function");\
-	\cf2 PlayBuf\cf0 .ar(sample.numChannels,sample.bufnum,\
-		sample.sampleRate / 44100 * tempo * sample.tempo.reciprocal,\
+\cf9 //beatlock\
+\cf7 Instr\cf0 ([\cf10 \\help\cf0 ,\cf10 \\Sample\cf0 ],\{ \cf7 arg\cf0  sample,tempo;\
+	\cf7 PlayBuf\cf0 .ar(\
+		sample.numChannels,\
+		sample.bufnumKr,\
+		sample.sampleRateKr / 44100 * tempo * sample.tempo.reciprocal,\
 		1.0,0.0,1.0);\
 \},[\
-	\cf5 \\sample\cf0 ,\
-	\cf5 \\tempo\cf0 \
-],\
-	\cf5 \\mono\cf0 \
-);\
+	\cf10 \\sample\cf0 ,\
+	\cf10 \\tempo\cf0 \
+]);\
 \
 \
-\cf2 Patch\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\
+\cf7 p = Patch\cf0 ([\cf10 \\help\cf0 ,\cf10 \\Sample\cf0 ],\
 [\
-	\cf2 Sample\cf0 (\cf3 "sounds/a11wlk01.wav"\cf0 ),\
-	\cf2 TempoPlayer\cf0 .new\
-]).play\
+	\cf7 Sample\cf0 (\cf8 "sounds/a11wlk01.wav"\cf0 ),\
+	\cf7 TempoPlayer\cf0 .new\
+]);\
+\
+// move the tempo slider\
+p.topGui\
 \
 )\
 \
-\
-\
-\
-\
-\
-\
-\
-\
-Sample.new(soundFilePath,tempo);\
-\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 bufnum\
+\f2\fs24 \cf0 This will embed the sample's tempo into the SynthDef as a constant.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
 \
-soundFilePath\
-sampleRate\
-end\
+
+\f0\b soundFilePath
+\f2\b0 \
+
+\f0\b end
+\f2\b0 \
 	signal.size - 1\
 	the last indexable position in the signal\
-numChannels\
-duration\
-totalMemory\
+
+\f0\b duration
+\f2\b0 \
+
+\f0\b totalMemory
+\f2\b0 \
 	numFrames * numChannels\
 \
 \
@@ -155,65 +253,50 @@ totalMemory\
 The following methods are relevant if the sample is some kind of loop.\
 \
 \
-tempo\
+
+\f0\b tempo
+\f2\b0 \
 	beats per second the original recording is regarded to have.\
-beats\
+
+\f0\b beats
+\f2\b0 \
 	number of beats\
-beatsize\
+
+\f0\b beatsize
+\f2\b0 \
 	the number of samples per beat\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs24 \cf0 \
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \
-sample.playBuf\
-\
-\
-\
- \cf4 // click on load to browse your hardrive for a different sample\
-\
-\cf0 \
-( \cf4 // move the tempo knob \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Patch\cf0 (\{\cf2 arg\cf0  sample;\
-	\cf2 PlayBuf\cf0 .ar(sample.signal,sample.sampleRate,sample.pchRatioKr,0,0,sample.end);\
-\},\
-[\
-	\cf2 Sample\cf0 (\cf3 ":Sounds:floating_1"\cf0 )\
-]).topGui\
-)\
-\
+\cf5 /***\
 \
 ( \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // hit load and select a rhythm\
+// hit load and select a rhythm\
 // will stay beat locked and the beat will flow despite the cutting\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 q = rrand(8,32);\
+q = rrand(8,32);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Patch\cf0 (\{\cf2 arg\cf0  gate,env,sample,pchRatio;\
-	\cf2 var\cf0  pchRatioKr,start;\
+Patch(\{arg gate,env,sample,pchRatio;\
+	var pchRatioKr,start;\
 	pchRatioKr = sample.pchRatioKr * pchRatio;\
-	start = \cf2 LFSaw\cf0 .kr(\cf2 GetTempo\cf0 .kr * sample.beats.reciprocal, sample.end * 0.5, sample.end * 0.5);\
+	start = LFSaw.kr(GetTempo.kr * sample.beats.reciprocal, sample.end * 0.5, sample.end * 0.5);\
 	\
-	\cf2 ReTrigger2\cf0 .ar(\{ \
-		\cf2 PlayBuf\cf0 .ar(sample.signal,sample.sampleRate,pchRatioKr,start.poll,0,sample.end);\
+	ReTrigger2.ar(\{ \
+		PlayBuf.ar(sample.signal,sample.sampleRate,pchRatioKr,start.poll,0,sample.end);\
 	\},gate,env,sample.numChannels)\
 \},\
 [\
-	\cf2 Stream2Trig\cf0 (\
+	Stream2Trig(\
 		1.0,\
-		\cf2 Pseq\cf0 (\cf2 Array\cf0 .geom(8.rand,2 ** -5,  2.0).scramble,\cf2 inf\cf0 )\
+		Pseq(Array.geom(8.rand,2 ** -5,  2.0).scramble,inf)\
 	),\
-	\cf2 Env\cf0 .asr(release:0.1),\
-	\cf2 Sample\cf0 (\cf3 ":Sounds:floating_1"\cf0 ),\
-	\cf2 StreamKrDur\cf0 (\
-		\cf2 Pslide\cf0 (\cf2 Array\cf0 .series(q,0.0,4.0 / q),\cf2 inf\cf0 ,rrand(3,5),rrand(1,6)),\
+	Env.asr(release:0.1),\
+	Sample(":Sounds:floating_1"),\
+	StreamKrDur(\
+		Pslide(Array.series(q,0.0,4.0 / q),inf,rrand(3,5),rrand(1,6)),\
 		rrand(0.125,0.5)\
 	)\
 ]).topGui\
@@ -221,29 +304,27 @@ sample.playBuf\
 )\
 \
 \
-( \cf4 // will stay beat locked and the beat will flow despite the cutting\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 q = rrand(8,32);\
+( // will stay beat locked and the beat will flow despite the cutting\
+q = rrand(8,32);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Patch\cf0 (\{\cf2 arg\cf0  gate,env,sample,pchRatio;\
-	\cf2 var\cf0  pchRatioKr,start;\
+Patch(\{arg gate,env,sample,pchRatio;\
+	var pchRatioKr,start;\
 	pchRatioKr = sample.pchRatioKr * pchRatio;\
-	start = \cf2 LFSaw\cf0 .kr(\cf2 GetTempo\cf0 .kr * sample.beats.reciprocal, sample.end * 0.5, sample.end * 0.5);\
+	start = LFSaw.kr(GetTempo.kr * sample.beats.reciprocal, sample.end * 0.5, sample.end * 0.5);\
 	\
-	\cf2 ReTrigger2\cf0 .ar(\{ \
-		\cf2 PlayBuf\cf0 .ar(sample.signal,sample.sampleRate,pchRatioKr,start.poll,0,sample.end);\
+	ReTrigger2.ar(\{ \
+		PlayBuf.ar(sample.signal,sample.sampleRate,pchRatioKr,start.poll,0,sample.end);\
 	\},gate,env,sample.numChannels)\
 \},\
 [\
-	\cf2 Stream2Trig\cf0 (\
+	Stream2Trig(\
 		1.0,\
-		\cf2 Pseq\cf0 (\cf2 Array\cf0 .geom(8.rand,2 ** -5,  2.0).scramble,\cf2 inf\cf0 )\
+		Pseq(Array.geom(8.rand,2 ** -5,  2.0).scramble,inf)\
 	),\
-	\cf2 Env\cf0 .asr(release:0.1),\
-	\cf2 Sample\cf0 (\cf3 ":Sounds:floating_1"\cf0 ),\
-	\cf2 StreamKrDur\cf0 (\
-		\cf2 Pslide\cf0 (\cf2 Array\cf0 .series(q,-2.0,2.0 / q).scramble,\cf2 inf\cf0 ,rrand(3,5),rrand(2,5)),\
+	Env.asr(release:0.1),\
+	Sample(":Sounds:floating_1"),\
+	StreamKrDur(\
+		Pslide(Array.series(q,-2.0,2.0 / q).scramble,inf,rrand(3,5),rrand(2,5)),\
 		rrand(0.125,1.0)\
 	)\
 ]).topGui\
@@ -251,45 +332,41 @@ sample.playBuf\
 )\
 \
 \
-( \cf4 \
-\cf2 Patch\cf0 (\{\cf2 arg\cf0  gate,env,sample;\
-	\cf2 var\cf0  p;\
-	p = \cf2 PlayBuf\cf0 .ar(sample.signal,sample.sampleRate,sample.pchRatioKr,0,0,sample.end);\
-	\cf2 Enveloper2\cf0 .ar(p,gate,env,sample.numChannels)\
+( \
+Patch(\{arg gate,env,sample;\
+	var p;\
+	p = PlayBuf.ar(sample.signal,sample.sampleRate,sample.pchRatioKr,0,0,sample.end);\
+	Enveloper2.ar(p,gate,env,sample.numChannels)\
 \},\
 [\
-	\cf2 Stream2Trig\cf0 (`([1,0,1,0,0,1,0,1]),`(\cf2 Array\cf0 .fill(8,\{ 2 ** rrand(-5,-1) \}))),\
-	\cf2 Env\cf0 .perc(release:0.2),\
-	\cf2 Sample\cf0 (\cf3 ":Sounds:floating_1"\cf0 )\
+	Stream2Trig(`([1,0,1,0,0,1,0,1]),`(Array.fill(8,\{ 2 ** rrand(-5,-1) \}))),\
+	Env.perc(release:0.2),\
+	Sample(":Sounds:floating_1")\
 ]).topGui\
 \
 )\
 \
 (\
-\cf2 Patch\cf0 (\{\cf2 arg\cf0  gate,env,sample,startBeat;\
-	\cf2 var\cf0  p,s,e;\
+Patch(\{arg gate,env,sample,startBeat;\
+	var p,s,e;\
 	p = sample.pchRatioKr;\
 	s = startBeat * sample.beatsize;\
-	e = s + \cf2 LFNoise1\cf0 .kr(0.2,9000.0,5000.0);\
-	\cf2 Enveloper\cf0 .ar(\{ \cf2 PlayBuf\cf0 .ar(sample.signal,sample.sampleRate,p,s,s,e); \},gate,env,4,sample.numChannels)\
+	e = s + LFNoise1.kr(0.2,9000.0,5000.0);\
+	Enveloper.ar(\{ PlayBuf.ar(sample.signal,sample.sampleRate,p,s,s,e); \},gate,env,4,sample.numChannels)\
 \},\
 [\
-	\cf2 Stream2Trig\cf0 (`(\cf2 Array\cf0 .fill(128.rand,\{[1,0.125,0,0].choose\})),`(\cf2 Array\cf0 .fill(128.rand,\{ 2 ** rrand(-7,-1) \}))),\
-	\cf2 Env\cf0 .perc(release:3.0),\
-	s = \cf2 Sample\cf0 (\cf3 ":Sounds:floating_1"\cf0 ),\
-	\cf2 StreamKrDur\cf0 ( \cf2 Pfunc\cf0 (\{ s.beats.rand.round(0.25) \}),\cf2 Pfunc\cf0 (\{ 2 ** rrand(-4,2)\}))\
+	Stream2Trig(`(Array.fill(128.rand,\{[1,0.125,0,0].choose\})),`(Array.fill(128.rand,\{ 2 ** rrand(-7,-1) \}))),\
+	Env.perc(release:3.0),\
+	s = Sample(":Sounds:floating_1"),\
+	StreamKrDur( Pfunc(\{ s.beats.rand.round(0.25) \}),Pfunc(\{ 2 ** rrand(-4,2)\}))\
 ]).topGui\
 \
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
-\
+\f2\fs24 \cf5 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
-Under sc3 this class becomes invaluable in that it will handle all the drudgery \
-of allocating and messaging to the server to ready the sound for play buff use.  \
-And discarding it later.\
-\
+\f1\fs18 \cf5 \
+***/\cf2 \
 }

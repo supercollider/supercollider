@@ -67,7 +67,7 @@ InstrSynthDef : SynthDef {
 			})
 		});
 		name = name ++ fixedID.hash.asFileSafeString;
-		name.postln;
+		("InstrSynthDef made:" + name ).postln;
 	}
 	
 	// fixed arg, NOT addConstant (which is what the UGen will do)

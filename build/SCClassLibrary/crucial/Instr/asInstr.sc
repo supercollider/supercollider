@@ -1,21 +1,25 @@
 
++ Instr {
+	asInstr {}
+}
 
-+ Object { // string, symbol, array
++ Object { // symbol, array
 	asInstr {
 		^Instr.at(this)
 	}
 }
 
-+ Instr {
-	asInstr {}
-}
+//+ String {
+//	asInstr {
+//		^Instr.at(this.asSymbol)
+//	}
+//}
 
-+ Class {
++ Class { // eg. SinOsc the class becomes a UGenInstr
 
 	asInstr {
 		^UGenInstr(this)	
 	}
-	
 }
 
 + Function {

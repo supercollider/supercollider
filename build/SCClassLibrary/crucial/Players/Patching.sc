@@ -165,7 +165,6 @@ ScalarPatchOut : PatchOut {
 	init {}
 	rate { ^\scalar }
 	synthArg {
-		//["initial ",source.value,source].postln;
 	 	^source.synthArg
 	 }
 	audio { arg audioPatchIn,needsValueSetNow=false;
@@ -183,7 +182,7 @@ ScalarPatchOut : PatchOut {
 					});
 	}
 	scalar { arg scalarPatchIn;
-		thisMethod.notYetImplemented;
+		//thisMethod.notYetImplemented;
 	}
 	free {
 		updater.remove;

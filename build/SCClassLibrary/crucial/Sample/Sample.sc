@@ -8,7 +8,8 @@ Sample {
 	
 	var <beatsize,<size,<end;
 	
-	var <>forArgName;
+	// while building the synth def...
+	var <>forArgName,bufnumControl;
 	
 	*new { arg soundFilePath,tempo;
 		^super.new.readHeader(soundFilePath).tempo_(tempo)
@@ -81,10 +82,9 @@ Sample {
 	prepareForPlay { arg group,bundle;
 		patchOut = ScalarPatchOut(this);
 		buffer = Buffer.new(group.asGroup.server,-1,this.numChannels);
+		// to do, what if i'm empty ?
 		bundle.add( buffer.allocReadMsg(this.soundFilePath,0,-1,0,false) )
 	}
-	// return yourself
-	//initDefArg { ^SampleProxy(this)  }	
 	free {  
 		buffer.free; 
 		buffer = nil;
@@ -92,6 +92,48 @@ Sample {
 		readyForPlay = false;
 	}
 	bufnum { ^buffer.bufnum }
+	bufnumIr {
+		// add a secret ir control
+		^bufnumControl ?? {
+			UGen.buildSynthDef.addIr('__bufnum__',buffer.bufnum);
+			bufnumControl = Control.names(['__bufnum__']).ir([buffer.bufnum]);
+		}
+	}
+	bufnumKr {
+		// add a secret kr control
+		^bufnumControl ?? {
+			UGen.buildSynthDef.addKr('__bufnum__',buffer.bufnum);
+			bufnumControl = Control.names(['__bufnum__']).kr([buffer.bufnum]);
+		}
+	}
+	sampleRateKr {
+		^BufSampleRate.kr(this.bufnumKr)
+	}
+// no ir yet
+//	sampleRateIr {
+//		^BufSampleRate.ir(this.bufnumIr)
+//	}
+	bufRateScaleKr {
+		^BufRateScale.kr(this.bufnumKr)
+	}
+	bufFramesKr {
+		^BufFrames.kr(this.bufnumKr)
+	}
+	bufSamplesKr {
+		^BufSamples.kr(this.bufnumKr)
+	}
+	bufDurKr {
+		^BufDur.kr(this.bufnumKr)
+	}
+	bufChannelsKr {
+		^BufChannels.kr(this.bufnumKr)
+	}
+	
+	//pchRatioKr
+		// add a TempoBus, read from it
+		// store somewhere that it needs it
+	
+
 
 	storeParamsOn { arg stream;
 		stream << "(";

@@ -85,14 +85,15 @@ AbstractPlayer : AbstractFunction  {
 				},{
 					// already have a patchOut
 					this.prepareForPlay(group,bundle);
-					["-play prepared",bundle].postln;
+					//["-play prepared",bundle].postln;
 					if(bundle.notEmpty,{
 						server.listSendBundle(nil,bundle);
 					});
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
-					// tacked on
-					// need a fully fledged OSCMessage
+					// tacked on and we can combine with the spawn message
+					
+					// need a fully fledged OSCMessage that can figure it out
 					0.1.wait;
 					
 					this.spawnAtTime(atTime);
