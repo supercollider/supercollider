@@ -1025,7 +1025,7 @@ void EnvGen_Ctor(EnvGen *unit)
 	// level0, numstages, releaseNode, loopNode,
 	// [level, dur, shape, curve]
 		
-	unit->m_level = ZIN0(4);
+	unit->m_level = ZIN0(5);
 	unit->m_counter = 0;
 	unit->m_stage = -1;
 	unit->m_prevGate = 0.f;
@@ -1132,7 +1132,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 					
 			counter  = (int32)(dur * SAMPLERATE);
 			counter  = sc_max(1, counter);
-		//Print("stageOffset %d   endLevel %g   dur %g   shape %d   curve %g\n", stageOffset, endLevel, dur, unit->m_shape, curve);
+		//Print("stageOffset %d   level %g   endLevel %g   dur %g   shape %d   curve %g\n", stageOffset, level, endLevel, dur, unit->m_shape, curve);
 		//Print("SAMPLERATE %g\n", SAMPLERATE);
 			if (counter == 1) unit->m_shape = 1; // shape_Linear
 		//Print("new counter = %d  shape = %d\n", counter, unit->m_shape);

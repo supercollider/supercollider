@@ -14,6 +14,7 @@ Server.internal.quit;\
 \
 \
 s = \cf2 Server\cf0 .local; \cf3 // get the default server\
+\cf0 s = \cf2 Server\cf0 .internal; \cf3 // get the default server\
 \cf0 \
 (\
 \cf2 SynthDef\cf0 (\cf4 "pink"\cf0 , \{\
@@ -72,6 +73,9 @@ s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \
 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "white"\cf0 , 2002, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
+\
+Server.internal.sendBundle(0, [\cf4 "/s_new"\cf0 , \cf4 "white"\cf0 , 2002, 0]);\
+Server.internal.sendBundle(1, [\cf4 "/n_free"\cf0 , 2002]);\
 \
 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "brown"\cf0 , 2002, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
@@ -143,7 +147,7 @@ s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/glissine2.scsyndef"\cf0 );\
 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "glissine2"\cf0 , 2003, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2003);\
 \
-\
+s = Server.local;\
 (\
 \cf2 SynthDef\cf0 (\cf4 "env2"\cf0 , \{ \cf2 arg\cf0  freq=800, gate = 1;\
 	\cf2 var\cf0  out, eg, fc, osc, rq;\

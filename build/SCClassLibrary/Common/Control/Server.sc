@@ -38,6 +38,19 @@ Server : Model {
 	sendBundle { arg time ... args;
 		addr.performList(\sendBundle, time, args);
 	}
+	sendSynthDef { arg name;
+		var file, buffer;
+		file = File("synthdefs/" ++ name ++ ".scsyndef","r");
+		if (file.isNil, { ^nil });
+		buffer = Int8Array.newClear(file.length);
+		file.read(buffer);
+		file.close;
+		this.sendMsg("/d_recv", buffer);
+
+	}
+	loadSynthDef { arg name;
+		this.sendMsg("/d_load", "synthdefs/" ++ name ++ ".scsyndef");
+	}
 	
 	serverRunning_ { arg val;
 		if (val != serverRunning, {
@@ -155,7 +168,7 @@ Server : Model {
 			4.wait;
 			loop({
 				this.status;
-				0.2.wait;
+				0.7.wait;
 				this.serverRunning = alive;
 				alive = false;
 			});

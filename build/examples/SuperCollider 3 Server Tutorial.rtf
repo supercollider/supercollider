@@ -1,0 +1,240 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SuperCollider 3 Server Tutorial\
+
+\f1\b0\fs24 \
+To follow this tutorial you should read the first two sections of the 
+\f0\b SuperCollider 3 Synth Server Architecture
+\f1\b0  document, which are the 
+\f0\b Introduction
+\f1\b0  and 
+\f0\b Main Design Concepts
+\f1\b0 , the 
+\f0\b Glossary
+\f1\b0  would also be useful. \
+\
+There are two parts to SuperCollider. One part is the language application and another is  a synthesis server that can run either inside the language application, or as a separate program on the same machine, or run on a different computer across a network connection. The language application sends command messages to the server using a subset of the Open Sound Control protocol.\
+\
+
+\f0\b\fs28 Booting a Server\
+
+\f1\b0\fs24 \
+In order to run sound we need to start a server running. The easiest way to start a server is to click on one of the "Start Server" buttons in the server windows. Sometimes though it is useful to start a server under program control. To do this we need to get or create a server object and tell it to "boot". Two servers, internal and local, are predefined.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 // this expression will get the internal server object.\
+\cf0 s = \cf3 Server\cf0 .internal;\
+\
+\cf2 // this expression will get a server object for running on the local host machine.\
+\cf0 s = \cf3 Server\cf0 .local;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+To boot the server you send it the boot message.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 Server.local.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+To quit the server send it the quit message.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 Server.local.quit;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+We can also create a server to run. To create a server object we need to provide the IP address or the server and a port number. Port numbers are somewhat arbitrary but they should not conflict with common protocols like telnet, ftp http, etc. The IP address 127.0.0.1 is defined to mean the local host. This is the IP address to use for running a server on your own machine.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 // create a server object that will run on the local host using port #58009\
+\cf0 s = \cf3 Server\cf0 (\cf4 "127.0.0.1"\cf0 , 58009); \
+\
+s.boot; \cf2 //start the server\
+\cf0 \
+s.quit; \cf2 // quit the server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+It is not possible to boot a server on a remote machine, but if you have one running already or you know of one running, you can send messages to it. You create the server object using the IP address of the machine running the server and the port it is using.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 // create a server object for talking to the server running on a machine having \
+// IP address 192.168.0.47 using port #57110\
+\cf0 s = \cf3 Server\cf0 (\cf4 "192.168.0.47"\cf0 , 57110); \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+
+\f0\b\fs28 Making Sound\
+
+\f1\b0\fs24 \
+Now lets make some audio. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s = \cf3 Server\cf0 .local; // assign it to interpreter variable 's' \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+Boot it.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+Create a SynthDef. A SynthDef is a description of a processing module that you want to run on the server. It can read audio from the server's audio buses, read control from the control buses and write control or audio back to buses. Here we will create a sine oscillator and send it to audio control bus zero.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\cf3 SynthDef\cf0 (\cf4 "sine"\cf0 , \{\
+	\cf3 var\cf0  osc;\
+	osc = \cf3 SinOsc\cf0 .ar(800, 0, 0.1); \cf2 // 800 Hz sine oscillator\
+\cf0 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
+\cf0 \}).writeDefFile;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+Send the SynthDef to the server.  \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s.sendSynthDef(\cf4 "sine"\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Start the sound. The /s_new command creates a new Synth which is an instance of the "sine" SynthDef. Each synth running on the server needs to have a unique ID. Here we give it an ID of 1000. Each synth needs to be installed in a Group. We install it in group zero which is the top level group.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "sine"\cf0 , 1000, 0);
+\f1\fs24 \
+\
+Stop the sound.\
+
+\f2\fs18 \
+s.sendMsg(\cf4 "/n_free"\cf0 , 1000);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Stop the server.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+s.quit;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \
+Using Arguments\
+\
+
+\f1\b0\fs24 It is useful to be able to specify parameters of a synth when it is created. Here a frequency argument is added to the sine SynthDef so that we can create it 
+\f0\b\fs28 \
+
+\f1\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s = \cf3 Server\cf0 .local; // assign it to interpreter variable 's' \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s.boot;\
+\
+(\
+\cf3 SynthDef\cf0 (\cf4 "sine"\cf0 , \{ arg freq;\
+	\cf3 var\cf0  osc;\
+	osc = \cf3 SinOsc\cf0 .ar(freq, 0, 0.1); \cf2 // 800 Hz sine oscillator\
+\cf0 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
+\cf0 \}).writeDefFile;\
+)\
+\
+s.sendSynthDef(\cf4 "sine"\cf0 );\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Play a 900 Hz sine wave.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "sine"\cf0 , 1000, 0, "freq", 900);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s.sendMsg(\cf4 "/n_free"\cf0 , 1000);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Play a 1000 Hz sine wave.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "sine"\cf0 , 1001, 0, "freq", 1000);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s.sendMsg(\cf4 "/n_free"\cf0 , 1001);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Playing three voices at once\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+(\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "sine"\cf0 , 1000, 0, "freq", 800);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "sine"\cf0 , 1001, 0, "freq", 1001);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "sine"\cf0 , 1002, 0, "freq", 1202);\
+)\
+\
+(\
+s.sendMsg(\cf4 "/n_free"\cf0 , 1000);\
+s.sendMsg(\cf4 "/n_free"\cf0 , 1001);\
+s.sendMsg(\cf4 "/n_free"\cf0 , 1002);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \
+\
+\
+Adding an Effect Dynamically\
+\
+Chaining Effects\
+\
+Using Control Buses\
+\
+Mapping an Argument to a Control Bus\
+\
+Gating Envelopes\
+\
+Adding a GUI\
+\
+Sequencing with Routines\
+\
+Sequencing with Patterns\
+\
+\
+}

@@ -108,7 +108,8 @@ Env {
 	}
 	asArray {
 		var contents, curvesArray;
-		contents = [levels.at(0), times.size, releaseNode ? -1, loopNode ? -1];
+		contents = [levels.at(0), times.size, 
+				releaseNode ? -99, loopNode ? -99];
 		curvesArray = curves.asArray;
 		times.size.do({ arg i;
 			contents = contents ++ [

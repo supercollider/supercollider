@@ -486,8 +486,21 @@ void World_Cleanup(World *world)
 	}
 	delete world->mNRTLock;
 	World_Free(world, world->mTopGroup);
+	
+	for (int i=0; i<world->mNumSndBufs; ++i) {
+		SndBuf *nrtbuf = world->mSndBufsNonRealTimeMirror + i;
+		SndBuf * rtbuf = world->mSndBufs + i;
+		
+		if (nrtbuf->data) free(nrtbuf->data);
+		if (rtbuf->data && rtbuf->data != nrtbuf->data) free(rtbuf->data);
+		
+		if (nrtbuf->sndfile) sf_close(nrtbuf->sndfile);
+		if (rtbuf->sndfile && rtbuf->sndfile != nrtbuf->sndfile) sf_close(rtbuf->sndfile);
+	}
+		
 	free(world->mSndBufsNonRealTimeMirror);
 	free(world->mSndBufs);
+	
 	free(world->mControlBusTouched);
 	free(world->mAudioBusTouched);
 	free(world->mControlBus);

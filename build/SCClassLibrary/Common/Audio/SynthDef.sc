@@ -20,7 +20,7 @@ SynthDef {
 		children = children.add(ugen)
 	}
 	removeUGen { arg ugen;
-		children = children.remove(ugen)
+		children.remove(ugen)
 	}
 	
 	build { arg func;

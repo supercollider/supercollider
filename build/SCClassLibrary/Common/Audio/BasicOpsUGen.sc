@@ -59,21 +59,21 @@ BinaryOpUGen : BasicOpUGen {
 			
 			// create a MulAdd if possible.
 			if (a.isKindOf(BinaryOpUGen) && { a.operator == '*' }, {
-				if (MulAdd.canMulAdd(a.inputs.at(0), a.inputs.at(1), b), {
+				if (MulAdd.canBeMulAdd(a.inputs.at(0), a.inputs.at(1), b), {
 					buildSynthDef.removeUGen(a);
 					^MulAdd.new(a.inputs.at(0), a.inputs.at(1), b)
 				});
-				if (MulAdd.canMulAdd(a.inputs.at(1), a.inputs.at(0), b), {
+				if (MulAdd.canBeMulAdd(a.inputs.at(1), a.inputs.at(0), b), {
 					buildSynthDef.removeUGen(a);
 					^MulAdd.new(a.inputs.at(1), a.inputs.at(0), b)
 				});
 			});
 			if (b.isKindOf(BinaryOpUGen) && { b.operator == '*' }, {
-				if (MulAdd.canMulAdd(b.inputs.at(0), b.inputs.at(1), a), {
+				if (MulAdd.canBeMulAdd(b.inputs.at(0), b.inputs.at(1), a), {
 					buildSynthDef.removeUGen(b);
 					^MulAdd.new(b.inputs.at(0), b.inputs.at(1), a)
 				});
-				if (MulAdd.canMulAdd(b.inputs.at(1), b.inputs.at(0), a), {
+				if (MulAdd.canBeMulAdd(b.inputs.at(1), b.inputs.at(0), a), {
 					buildSynthDef.removeUGen(b);
 					^MulAdd.new(b.inputs.at(1), b.inputs.at(0), a)
 				});
