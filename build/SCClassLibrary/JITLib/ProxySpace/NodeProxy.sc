@@ -101,7 +101,7 @@ NodeProxy : AbstractFunction {
 			(nChan div: divider).do({ arg i;
 			bundle.add([9, "proxyOut-linkDefAr-"++divider, 
 					server.nextNodeID, 1, monitorGroup.nodeID,
-					\i_busOut, busIndex+(i*divider), \i_busIn, bus.index + (i*divider)
+					\i_busOut, busIndex + (i*divider), \i_busIn, bus.index + (i*divider)
 					]);
 			});
 		
@@ -365,11 +365,11 @@ NodeProxy : AbstractFunction {
 			
 	prepareForPlayToBundle { arg bundle;
 				
-				group = Group.prNew(server);
+				group = Group.basicNew(server);
 				NodeWatcher.register(group);
 				group.isPlaying = true; //force isPlaying.
 				//add the message to the preparation part of the bundle
-				bundle.addPrepare(group.newMsg(server,\addToHead));
+				bundle.add(group.newMsg(server, \addToHead));
 	}
 	
 	
