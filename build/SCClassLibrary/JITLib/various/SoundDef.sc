@@ -1,4 +1,5 @@
-//referenceable wrapper for a SynthDef.
+
+//globally referenceable wrapper for a SynthDef.
 
 SoundDef {
 	var <obj, <synthDef, <servers;
@@ -6,7 +7,7 @@ SoundDef {
 	
 	*new { arg key, obj;
 		if(obj.isNil, { ^all.at(key) });
-		^super.newCopyArgs(obj, obj.prepareForPlay.asSynthDef).toLib(key.asSymbol)
+		^super.newCopyArgs(obj, obj.asSynthDef).toLib(key.asSymbol) //add some preparation later
 	}
 	
 	*initClass {
@@ -15,7 +16,7 @@ SoundDef {
 	
 	toLib { arg key;
 		var old, local;
-		synthDef.name = "soundDef_" ++ key;
+		if(synthDef.name.isNil,{ synthDef.name ? "soundDef_" ++ key });
 		servers = IdentitySet.new;
 		local = Server.local;
 		old = this.class.at(key);
@@ -34,6 +35,9 @@ SoundDef {
 		^all.at(key)
 	}
 	
+	newMsg { arg args, target, addActionNumber=1;
+		^[9,synthDef.name,-1,addActionNumber,target.asTarget.nodeID]++args
+	}
 	
 	asDefName {
 		^synthDef.name
@@ -44,16 +48,16 @@ SoundDef {
 	
 	send { arg server;
 		if(servers.includes(server).not, {
-			synthDef.send(server);
 			servers.add(server);
-		})
+		});
+		synthDef.send(server);
 	}
 	
 	load { arg server;
 		if(servers.includes(server).not, {
-			synthDef.load(server);
 			servers.add(server);
-		})
+		});
+		synthDef.load(server);
 	}
 	
 	play { arg args, target;
