@@ -53,11 +53,11 @@ Symbol {
 	// the implementations have been replaced by primitives
 	envirGet { 
 		_Symbol_envirGet
-		//^currentEnvironment.at(this) 
+		^currentEnvironment.at(this) 
 	}
 	envirPut { arg aValue;
 		_Symbol_envirPut
-		//^currentEnvironment.put(this, aValue) 
+		^currentEnvironment.put(this, aValue) 
 	}
 
 	draw { 
