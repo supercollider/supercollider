@@ -480,22 +480,34 @@ NodeProxy : BusPlug {
 	
 	}
 	
+	controlNames {
+		var all; // Set doesn't work, because equality undefined for ControlName
+		all = Array.new;
+		objects.do {Ê|el|
+			var cn;
+			cn = el.controlNames.reject { |item| 
+				all.any { |cn| cn.name === item.name }
+			};
+			all = all.addAll(cn) 
+		};
+		^all
+	}
+	
 	// derive names and default args from synthDefs
 	supplementNodeMap { arg keys, replaceOldKeys=false;
-		objects.do { |obj|
-				var controlNames, excluded;
-				controlNames = obj.controlNames.asCollection;
-				excluded = #[\out, \i_out, \gate];
-				controlNames.do { arg cn,i;
-					var name;
-					name = cn.name; 
+		var controlNames, excluded;
+		controlNames = this.controlNames;
+		excluded = #[\out, \i_out, \gate];
+		controlNames.do { |el|
+					var key;
+					key = el.name; 
 					if (
-						excluded.includes(name).not 
-						and: { replaceOldKeys or: { nodeMap.at(name).isNil } }
-						and: { keys.isNil or: { keys.includes(name) } }
-					) { nodeMap.set(name, cn.defaultValue) }
-				};
-		};
+						excluded.includes(key).not 
+						and: { replaceOldKeys or: { nodeMap.at(key).isNil } }
+						and: { keys.isNil or: { keys.includes(key) } }
+					) { nodeMap.set(key, el.defaultValue) }
+		}
+
 	}		
 	generateUniqueName {
 			^asString(this.identityHash.abs)

@@ -189,11 +189,16 @@
 	makeProxyControl { ^this.deepCopy } //already wrapped, but needs to be copied
 	
 	/* these adverbial extendible interfaces are for supporting different role schemes.
-	it is called by Association, so ~out = \filter -> ... will call this */
+	it is called by Association, so ~out = \filter -> ... will call this. The first arg passed is 	the value of the association */
 
 	*initClass {
-		proxyControlClasses = (filter: SynthDefControl);
+		proxyControlClasses = (
+			filter: SynthDefControl, 
+			set: StreamControl
+		);
+		
 		buildMethods = ( 		
+		
 		filter: #{ arg func, proxy, channelOffset=0, index;
 			var ok, ugen;
 			if(proxy.isNeutral) { 
@@ -211,6 +216,17 @@
 					XOut.kr(out, e, SynthDef.wrap(func, nil, [In.kr(out, proxy.numChannels)]))				};
 			}.buildForProxy( proxy, channelOffset, index )
 		
+		},
+		set: #{ arg pattern, proxy, channelOffset=0, index;
+			var args;
+			args = proxy.controlNames.collect(_.name);
+			args = args.removeAll(#[\out, \i_out, \gate, \fadeTime]);
+			Pbindf(
+				pattern,
+				\type, \set,
+				\id, Pfunc { proxy.group.nodeID },
+				\args, args
+			).buildForProxy( proxy, channelOffset, index )
 		}
 		
 		)
