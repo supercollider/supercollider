@@ -18,6 +18,7 @@
 \f1\fs18 \
 \
 s.boot; \cf3 // start the server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (\
 \cf2 SynthDef\cf0 (\cf4 "help-Diskin"\cf0 , \{ arg bufnum = 0;\
@@ -32,19 +33,24 @@ s.boot; \cf3 // start the server\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // allocate a disk i/o buffer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/b_alloc"\cf0 , 0, 65536, 1);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // open an input file for this buffer, leave it open\cf0 \
 s.sendMsg(\cf4 "/b_read"\cf0 , 0, \cf4 "sounds/a11wlk01-44.1.aiff"\cf0 , 0, 65536, 0, 1);\
 \
 \cf3 // create a diskin node\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "help-Diskin"\cf0 , x = s.nextNodeID, 1, 1);\cf3 \
 \
 \cf0 s.sendMsg(\cf4 "/b_close"\cf0 , 0); \cf3 // close the file (very important!)\
 \
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // again \
 // don't need to reallocate and Synth is still reading\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/b_read"\cf0 , 0, \cf4 "sounds/a11wlk01-44.1.aiff"\cf0 , 0, 0, 0, 1);\
 \
 s.sendMsg(\cf4 "/n_free"\cf0 , x); \cf3 // stop reading\
@@ -68,6 +74,7 @@ x = \{ \cf2 DiskIn\cf0 .ar(1, b.bufnum) \}.play;\
 \
 b.close;	\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // again\
 // note the like named instance method, but different arguments\cf0 \
 b.cueSoundFile(\cf4 "sounds/a11wlk01-44.1.aiff"\cf0 , 0);	\
@@ -92,22 +99,27 @@ r = \cf2 Routine\cf0 (\{\
 r.stop; x.free; b.close; b.free; \cf3 // you need to do all these to properly cleanup\cf4 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // cue and play right away\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "help-Diskin"\cf0 , \{ \cf2 arg\cf0  bufnum = 0;\
 	\cf2 Out\cf0 .ar(0, \cf2 DiskIn\cf0 .ar(1, bufnum));\
 \}).send(s);\
-		\
+)\
+(		\
 x = \cf2 Synth\cf0 .basicNew(\cf4 "help-Diskin"\cf0 );\
-m = \{ \cf2 arg\cf0  buf; x.addToHeadMsg(s, [\cf5 \\bufnum\cf0 ,buf.bufnum])\};\
+m = \{ \cf2 arg\cf0  buf; x.addToHeadMsg(nil, [\cf5 \\bufnum\cf0 ,buf.bufnum])\};\
 \
 b = \cf2 Buffer\cf0 .cueSoundFile(s,\cf4 "sounds/a11wlk01-44.1.aiff"\cf0 ,0,1, completionMessage: m);\
 \
 )		\
 		\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 See 
+\f2\fs24 \cf0 See 
 \f0\b PlayBuf
 \f2\b0  for playing a soundfile loaded into memory.}
