@@ -297,7 +297,7 @@ Object {
 	
 	// compatibility with sequenceable collection
 	
-	obtain { arg index, default;  ^if(index == 0) {Êthis } {Êdefault } }
+	obtain { arg index, default;  ^if(index == 0) { this } { default } }
 	
 	instill { arg index, item, default;
 		^if(index == 0) { item } {
