@@ -95,19 +95,20 @@ With Buffer methods that take a completionsMessage, it is also possible to pass 
 \cf0 			y.newMsg(s,\cf4 \\addToTail\cf0 ,[\cf4 \\bufnum\cf0 ,buffer.bufnum])\
 		\});\
 	\
-	\
+	)\
 	\cf5 // when done...\
 \cf0 	y.free;\
 	b.free;\
 	\
-	)\
+	\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 	Buffer.cueSoundFile(server, path, startFrame, numChannels, \
 							bufferSize,completionMessage);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	\
+\f1\b0 \cf0 	\
 		Allocate a buffer and preload a soundfile for use with DiskIn.\
 		\
 		
@@ -176,8 +177,9 @@ instance methods:
 
 \f0\b \cf0 	read(path,fileStartFrame, numFrames, bufStartFrame, leaveOpen, \
 										completionMessage);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	
+\f1\b0 \cf0 	
 \f0\b readMsg(path,fileStartFrame, numFrames, bufStartFrame, leaveOpen, \
 										completionMessage);\
 
@@ -215,10 +217,12 @@ instance methods:
 \f0\b 	\
 
 \f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	cueSoundFile(path,fileStartFrame, bufferSize,completionMessage);\
+\f0\b \cf0 	cueSoundFile(path,fileStartFrame, bufferSize,completionMessage);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	
+\f1\b0 \cf0 	
 \f0\b cueSoundFileMsg(path,fileStartFrame, bufferSize,completionMessage);\
 
 \f1\b0 \
@@ -253,13 +257,16 @@ instance methods:
 		see 
 \f0\b SoundFile
 \f1\b0  for headerFormat and sampleFormat\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	free(completionMessage)
+\f0\b \cf0 	free(completionMessage)
 \f1\b0 \
 
 \f0\b 	freeMsg(completionMessage)
@@ -291,8 +298,9 @@ instance methods:
 
 \f0\b 	set(index,float ... morePairs)\
 	setMsg(index,float ... morePairs)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 		set the sample at index to float\
+\f1\b0 \cf0 		set the sample at index to float\
 		additional pairs of indices and floats may be included in the same message\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -301,11 +309,13 @@ instance methods:
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	setn(startAt,values ... morePairs)\
+\f0\b \cf0 	setn(startAt,values ... morePairs)\
 	setnMsg(startAt,values ... morePairs)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	\
+\f1\b0 \cf0 	\
 		values should be an array of floats.  starting at the index startAt, sets\
 		each sample to the corresponding value.\
 		additional pairs of starting indices and float arrays may be included\
@@ -332,19 +342,23 @@ instance methods:
 
 \f1\fs24 \cf0 			\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	fill(startAt,numFrames,value ... more)\
+\f0\b \cf0 	fill(startAt,numFrames,value ... more)\
 	fillMsg(startAt,numFrames,value ... more)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 		\
+\f1\b0 \cf0 		\
 		starting at the index startAt, set the next numFrames samples to value.\
 		additional triplets may be included in the same message.\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	copyTo(buf, numSamples, dstSamplePos, srcSamplePos)\
+\f0\b \cf0 	copyTo(buf, numSamples, dstSamplePos, srcSamplePos)\
 	copyToMsg(buf, numSamples, dstSamplePos, srcSamplePos)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 		\
+\f1\b0 \cf0 		\
 		starting at the sample index srcSamplePos, copy numSamples samples\
 		from this to the destination buffer buf starting at dstSamplePos.\
 		if numSamples is negative, the maximum number of samples possible is\
@@ -383,12 +397,14 @@ instance methods:
 		b.free;\
 		c.free;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	close(completionMessage)\
+\f0\b \cf0 	close(completionMessage)\
 	closeMsg(completionMessage)\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 		after using a Buffer with DiskOut, close the soundfile and write the\
+\f1\b0 \cf0 		after using a Buffer with DiskOut, close the soundfile and write the\
 		header information.\
 		\
 		

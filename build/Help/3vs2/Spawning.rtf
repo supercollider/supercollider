@@ -22,7 +22,7 @@ In SC3 one can create Synths at any time simply by executing blocks of code.\
 \f2\fs18 x = \cf3 SynthDef\cf0 (\cf4 "Help-SynthDef"\cf0 , \
 		\{ \cf3 arg\cf0  out=0;\
 			 \cf3 Out\cf0 .ar(out, \cf3 PinkNoise\cf0 .ar(0.1))\
-		\}).play; \
+		\}).play; \cf5 // SynthDef-play returns a Synth object.\cf0 \
 	) \
 \
 \cf2 // then do this\cf0 \
@@ -48,7 +48,7 @@ Clocks, such as
 \f2\fs18 \cf3 	(\cf0 \
 	\cf3 SystemClock\cf0 .sched(2.0,\{ \
 		\cf4 "2.0 seconds later"\cf0 .postln; \cf2 // this could be any code, including Synth creation\cf0 \
-		\cf3 nil \cf5 // this means don't repeat\cf0  \
+		\cf3 nil \cf2 // this means don't repeat\cf0  \
 	\});\
 	)
 \f1\fs24 \
