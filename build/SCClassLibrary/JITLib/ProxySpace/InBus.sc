@@ -124,10 +124,6 @@ Monitor {
 		}
 	}
 	
-	toggle {
-		if(group.isPlaying) { this.stop } { this.play };
-	}
-	
 	vol_ { arg invol;
 		vol = invol ? vol;
 		group.set(\vol, vol);
