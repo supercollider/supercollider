@@ -11,7 +11,7 @@ ObjectGui : SCViewAdapter { // Controller
 		^new
 	}
 	
-	guify { arg layout,title,width=500,height=500;
+	guify { arg layout,title,width,height;
 		layout = layout ?? {
 			//FlowView.new(nil,Rect(10,10,width,height));
 			MultiPageLayout(title ?? {model.asString.copyRange(0,50)},width,height);
