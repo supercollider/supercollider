@@ -255,15 +255,15 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
         SetObject(idarray->slots+idarray->size++, namearraySo);
         g->gc->GCWrite(idarray, namearraySo);
 
-    PyrObject* idarrayDe = newPyrArray(g->gc, numSrc * sizeof(SInt32), 0 , true);
+    PyrObject* idarrayDe = newPyrArray(g->gc, numDst * sizeof(SInt32), 0 , true);
         SetObject(idarray->slots+idarray->size++, idarrayDe);
         g->gc->GCWrite(idarray, idarrayDe);
 
-    PyrObject* namearrayDe = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
+    PyrObject* namearrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
         SetObject(idarray->slots+idarray->size++, namearrayDe);
         g->gc->GCWrite(idarray, namearrayDe);
 
-    PyrObject* devarrayDe = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
+    PyrObject* devarrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
         SetObject(idarray->slots+idarray->size++, devarrayDe);       
         g->gc->GCWrite(idarray, devarrayDe);
 
