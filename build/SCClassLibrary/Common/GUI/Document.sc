@@ -153,6 +153,9 @@ Document {
 	prisEditable_{arg editable=true;
 		_TextWindow_SetEditable
 	}
+	removeUndo{
+		_TextWindow_RemoveUndo
+	}
 	
 // state info
 	isEdited {
@@ -297,8 +300,7 @@ Document {
 		doc = this.prGetLastIndex;
 		if(doc.isNil,{ this = nil; ^nil});
 		isListener = false;
-		^this.prAdd;
-	
+		this.prAdd;
 	}
 	
 	prGetLastIndex {
@@ -306,18 +308,19 @@ Document {
 	}
 	//private open
 	initFromPath { arg apath, selectionStart, selectionLength;
-		var stpath;
+		var stpath, doc;
 		path = apath;
 		stpath = this.class.standardizePath(path);
-		this.propen(stpath, selectionStart, selectionLength);
-		^this.prAdd;
+		doc = this.propen(stpath, selectionStart, selectionLength);
+		if(doc.isNil,{ this = nil; ^nil});
+		this.prAdd;
 	}
 	propen { arg path, selectionStart=0, selectionLength=0;
 		_OpenTextFile
 	}
 	//private newTextWindow
 	initByString{arg str, argTitle, makeListener;
-		
+	
 		title = argTitle;
 		if(makeListener, {
 			allDocuments.do({arg doc; doc.prisListener(false)})
