@@ -66,6 +66,45 @@ extern bool compiledOK;
 	}
 }
 
+- (void) keyUp: (NSEvent*) event
+{
+    NSString *characters = [event characters];
+    if ([characters isEqual: @"\03"]) {
+    } else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
+    } else {
+        //call lang
+		if(compiledOK){
+			unsigned int modifiers = [event modifierFlags];
+			unichar character = 0;
+			if([characters length] > 0) {
+				character = [characters characterAtIndex: 0];
+			}
+			unsigned int keycode = [event keyCode];
+				
+			MyDocument * doc = [self delegate];			
+			PyrObject * pobj = [doc getSCObject];
+			PyrSymbol *method = getsym("keyUp");
+
+			if (pobj) {
+				pthread_mutex_lock (&gLangMutex);
+				if(NotNil(pobj->slots+1)){
+					VMGlobals *g = gMainVMGlobals;
+					g->canCallOS = true;
+					++g->sp;  SetObject(g->sp, pobj); 
+					++g->sp;  SetChar(g->sp, character); 
+					++g->sp;  SetInt(g->sp, modifiers); 
+					++g->sp;  SetInt(g->sp, character); 
+					++g->sp;  SetInt(g->sp, keycode); 
+					runInterpreter(g, method, 5);
+					g->canCallOS = false;
+				}
+				pthread_mutex_unlock (&gLangMutex);
+			}
+		}
+		[super keyUp: event];
+    }
+}
+
 - (void) keyDown: (NSEvent*) event
 {
     NSString *characters = [event characters];
@@ -104,7 +143,6 @@ extern bool compiledOK;
 				pthread_mutex_unlock (&gLangMutex);
 			}
 		}
-		//(character, modifiers,[event keyCode]
 		[super keyDown: event];
     }
 }

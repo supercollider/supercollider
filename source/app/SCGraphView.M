@@ -88,15 +88,27 @@ extern PyrSymbol *s_closed;
 - (void) keyUp: (NSEvent*) event
 {
     NSString *characters = [event characters];
+    unsigned int modifiers = [event modifierFlags];
     unichar character = 0;
     if([characters length] > 0) {
         character = [characters characterAtIndex: 0];
     }
 
     if (mTopView) {
+
+		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+			| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
+        if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
+            return;
+        } else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) {
+			return;
+        } // other tab keys avail for user 
+
         SCView *view = mTopView->focusView();
         if (view) {
-            view->keyUp(character, [event modifierFlags],[event keyCode]);
+            view->keyUp(character, modifiers,[event keyCode]);
+        } else {
+            mTopView->keyUp(character,modifiers,[event keyCode]);
         }
     }
 }
