@@ -54,9 +54,7 @@
 	enpath {
 		^Document.abrevPath(this)
 	}
-	openDocument {
-		^Document.open(this)
-	}
+
 	guiDocument {
 		var doc;
 		doc = this.loadDocument;
