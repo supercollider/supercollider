@@ -82,6 +82,7 @@ Collection {
 		aCollection.do({ arg item; if (this.includes(item).not, {^false}) });
 		^true 
 	}
+	
 	collect { arg function;
 		^this.collectAs(function, this.species);
 	}
@@ -113,6 +114,33 @@ Collection {
 		this.do({ arg elem, i; if (function.value(elem, i), { ^elem }) })
 		^nil;
 	}
+	detectIndex { arg function;
+		this.do({ arg elem, i; if (function.value(elem, i), { ^i }) })
+		^nil;
+	}
+	lastForWhich { arg function;
+		var prev;
+		this.do({ arg elem, i; 
+			if (function.value(elem, i), { 
+				prev = elem;
+			},{
+				^prev
+			}) 
+		});
+		^prev
+	}
+	lastIndexForWhich { arg function;
+		var prev;
+		this.do({ arg elem, i; 
+			if (function.value(elem, i), { 
+				prev = i;
+			},{
+				^prev
+			}) 
+		});
+		^prev
+	}
+
 	inject { arg thisValue, function;
 		var nextValue;
 		nextValue = thisValue;
@@ -156,6 +184,7 @@ Collection {
 		})
 		^sum;
 	}
+	
 	maxItem { arg function;
 		var maxValue, maxElement;
 		if (function.isNil, { // optimized version if no function
@@ -214,6 +243,70 @@ Collection {
 			^minElement;
 		})
 	}
+	maxValue { arg function;//	// must supply a function
+		var maxValue, maxElement;
+		this.do({ arg elem, i; 
+				var val;
+				if (maxValue.isNil, {
+					maxValue = function.value(elem, i);
+					maxElement = elem; 
+				},{ 
+					val = function.value(elem, i);
+					if (val > maxValue, {
+						maxValue = val;
+						maxElement = elem; 
+					})
+				})		
+		});
+		^maxValue;
+	}
+	minValue { arg function;
+		var maxValue, maxElement;
+		this.do({ arg elem, i; var val;
+				if (maxValue.isNil, {
+					maxValue = function.value(elem, i);
+					maxElement = elem; 
+				},{ 
+					val = function.value(elem, i);
+					if (val > maxValue, {
+						maxValue = val;
+						maxElement = elem; 
+					})
+				})		
+		});
+		^maxValue;
+	}
+	
+	// set theory methods by Fredrik Olofsson <f@fredrikolofsson.com>
+	// union - the set of all elements that are either in A or in B or in both
+	union { arg aCollection; 
+		^if(aCollection.size > this.size,{
+			aCollection.reject({ arg item; this.includes(item) }).addAll(this) 
+		},{
+			this.reject({ arg item; 
+				aCollection.includes(item) 
+			}).addAll(aCollection) 
+		})
+	}
+	//   in both sets A and B
+	intersection { arg aCollection; 
+		^this.select({ arg item; aCollection.includes(item) }) 
+	}
+	//  in A but not in B
+	difference { arg aCollection; ^this.removeAll(aCollection) }
+	//  in either A or B but not in both
+	symmetricDifference { arg aCollection; 
+		var c; 
+		c=this.copy; 
+		this.removeAll(aCollection); 
+		aCollection.removeAll(c); 
+		^this.addAll(aCollection) 
+	}
+	//  true if every element in A is also contained in B
+	isSubset { arg aCollection; ^aCollection.includesAll(this) }
+
+
+
 	asArray { ^Array.new(this.size).addAll(this); }
 	asBag { ^Bag.new(this.size).addAll(this); }
 	asList { ^List.new(this.size).addAll(this); }
