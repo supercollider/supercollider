@@ -15,7 +15,6 @@ PlayBuf : MultiOutUGen {
 
 ReadBuf : MultiOutUGen {	
 	*ar { arg numChannels, bufnum=0, offset=0.0;
-		//[\PlayBuf_ar, bufnum, rate, offset, interpolationType, channelOffset, numChannels].postln;
 		^this.multiNew('audio', numChannels, bufnum, offset)
 	}
 	
