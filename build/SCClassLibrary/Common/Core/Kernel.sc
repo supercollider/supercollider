@@ -188,7 +188,7 @@ Process {
 			if (class.notNil, {
 				method = class.findMethod(words.at(1).asSymbol);
 				if (method.notNil, {
-					class.filenameSymbol.asString.openTextFile(method.charPos, -1);
+					method.filenameSymbol.asString.openTextFile(method.charPos, -1);
 				});
 			});
 		},{
