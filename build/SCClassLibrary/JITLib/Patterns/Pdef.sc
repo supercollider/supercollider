@@ -1,6 +1,6 @@
 StreamPlayerReference {
 	
-	var <>quant=1.0, isPlaying=false;
+	var <>quant=1.0, <>isPlaying=false;
 	var <player;
 	
 
@@ -11,7 +11,7 @@ StreamPlayerReference {
 				res = super.new.initPlayer(argList);
 				this.put(key, res)
 		}, {
-			res.sched({ res.setProperties(argList) });
+			res.setProperties(argList);
 		});
 		^res
 	}
@@ -43,6 +43,7 @@ StreamPlayerReference {
 
 }
 
+
 Tdef : StreamPlayerReference {
 	classvar <>all;
 	
@@ -73,15 +74,20 @@ Tdef : StreamPlayerReference {
 		var func;
 		#func = argList;
 		if(func.notNil, { 
-			this.prSetStream(Routine.new(func));
+			this.stream = Routine.new(func);
 		})
 	}
-	// private 
-	prSetStream { arg str;
-			var old;
-			old = player.stream;
-			player.stream = str;
-			if(isPlaying and: { old.isNil }, { isPlaying = false; this.play });
+	 
+	stream_ { arg str;
+			if(isPlaying)
+				{ 
+					if(player.isPlaying)
+					 { this.sched({ player.stream = str })  }
+			 		 { player.stream = str; player.play(quant: quant) }
+				}
+			 	{ 
+			 		player.stream = str
+			 	}
 	}
 
 
@@ -93,6 +99,7 @@ Pdef : Tdef {
 	*initClass {
 		CmdPeriod.add(this);
 		this.clear;
+		defaultStream = Pbind(\freq, \rest).asStream;
 	}
 	*clear { all = () }
 	
@@ -110,9 +117,37 @@ Pdef : Tdef {
 		#pat, event = argList;
 		stream = pat.asStream;
 		if(event.notNil, { player.event = event });
-		if(stream.notNil, { this.prSetStream(stream) });
+		if(stream.notNil, { this.stream = stream });
 	}
 	
+	event_ { arg inEvent; player.event = inEvent }
+	
+	// use like a stream
+	
+	asStream {
+		^Routine.new({ arg inval;
+			var val;
+			player.refresh;
+			while({
+				val = player.stream.next(inval);
+				val.notNil;
+			}, {
+				val.yield;
+			})
+		
+		})
+	}
+	
+	mute { player.mute }
+	unmute { player.unmute }
+	
+	embedInStream { arg stream;
+		^this.asStream.embedInStream(stream)
+	}
+	
+	collect { arg func;
+		^this.asStream.collect(func)
+	}
 	
 }
 
