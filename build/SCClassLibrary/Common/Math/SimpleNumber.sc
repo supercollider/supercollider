@@ -53,7 +53,7 @@ SimpleNumber : Number {
 	isPositive { ^this >= 0 }
 	isNegative { ^this < 0 }
 	isStrictlyPositive { ^this > 0 }
-	isNaN { ^(this >= 0 and: { this <= 0 }).not }
+	isNaN { ^(this >= 0 or: { this <= 0 }).not }
 
 	rectWindow { _RectWindow; ^this.primitiveFailed }
 	hanWindow { _HanWindow; ^this.primitiveFailed }
