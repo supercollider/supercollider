@@ -826,7 +826,19 @@ SCMultiSliderView : SCView {
 	
 
 }
+SCEnvelopeView : SCMultiSliderView {
+	xvalues {//returns array
+		^this.getProperty(\xvalues, Array.newClear(this.size))
+	}
+	yvalues {//returns array
+		^this.getProperty(\value, Array.newClear(this.size))
+	}
+	value_ {arg val;
+		this.size = val.at(0).size;
+		^this.setProperty(\value, val)
+	}
 
+}
 
 
 Gradient {

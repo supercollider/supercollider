@@ -494,6 +494,55 @@ protected:
 		SCPoint mPrevPoint;
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+// SCEnvelopeView by jan truetzschler
+struct SCEnvObject {
+    SCColor mColor;
+    SCRect mRect;
+    double x, y;
+    bool mIsSelected, mIsVisible, mIsStatic;
+};
+typedef struct SCEnvObject SCEnvObject;
+
+class SCEnvelopeView : public SCView
+{
+public:	
+	SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+        virtual ~SCEnvelopeView();
+	virtual void draw(SCRect inDamage);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers);
+	virtual void mouseTrack(SCPoint where, int modifiers);
+	void setSelection(SCPoint where);
+	bool setValue(int indx, double x, double y, bool send);
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+        void setVisibleSize();
+        virtual bool canReceiveDrag();
+        virtual void receiveDrag();
+
+protected:
+
+	void setValueFromPoint(SCPoint point);
+	//SCRect calcThumbRect(int xIn, double valIn, float xoffset);
+	void setEnvRect(int inIndx, double valX, double valY);
+	int mThumbSize, mThumbSizeY; // size of the rect
+        int mTabSize, mVisibleSize, mActiveSize; // size of the table
+        SCColor mFillColor, mSelectedColor;
+        SCColor mStrokeColor;
+	SCRect mThumbRect;
+	double mCurrentY, mCurrentX, mAbsoluteX;
+        int mCurrentIndex, mStartIndex, mSelectionSize;
+        double mStepSize, mStepScale;
+        SCEnvObject * mEnvObj;
+        //DrawBackground* mKnob;
+        float mXOffset ; //space between points
+        bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal, mIsFilled;
+        int mSelectedIndex;
+        SCPoint mPrevPoint;
+    
+};
+SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
+
 //
 
 class SCUserView : public SCView

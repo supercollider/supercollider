@@ -2398,6 +2398,466 @@ void SCMultiSliderView::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
+
+//////////////////////////////////////////////////////////////////////////////////
+//SCEnvelopeView by jan trutzschler feb.02.03
+int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr);
+int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
+{
+    int len;
+    if (*arr) {
+		delete [] *arr;
+		*arr = 0;
+	}
+    if (isKindOf((slot->uo->slots[0]).uo, class_array)) {
+            int size = (slot->uo->slots[0]).uo->size;
+            *arr = new SCEnvObject[size];
+            return errNone;
+    }
+    return errWrongType;
+}
+
+SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCEnvelopeView(inParent, inObj, inBounds);
+}
+
+SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SCView(inParent, inObj, inBounds), mStepSize(0.), mStepScale(0.), mThumbSize(12), mXOffset(1)
+{
+        mActiveSize = 1;
+        mTabSize = (int) (inBounds.width / mThumbSize);
+        mCurrentIndex = mStartIndex = 0;
+        mThumbSizeY = mThumbSize;
+        mSelectionSize = 1;
+        mCurrentY = 0.0;
+        mCurrentX = 0.0;
+        mEnvObj = new SCEnvObject [mTabSize];
+        memset(mEnvObj, 0, mTabSize * sizeof(SCEnvObject));
+
+        mFillColor = SCMakeColor(0,0,0,1); // black
+        mStrokeColor = SCMakeColor(0,0,0,1); // black
+        mSelectedColor = SCMakeColor(0,0,0,1); // black
+        mIsFilled = mDrawLinesActive = false;
+        mDrawRectsActive = true;
+        setVisibleSize();
+        mSelectedIndex = 0;
+        mAbsoluteX = 0.0;
+
+}
+SCEnvelopeView::~SCEnvelopeView()
+{
+    delete [] mEnvObj;
+
+}
+
+void SCEnvelopeView::draw(SCRect inDamage)
+{
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+    CGContextSaveGState(cgc);
+    CGRect rect = SCtoCGRect(mBounds);
+    CGContextClipToRect(cgc, rect);
+
+    int xpixels = mVisibleSize;
+    int xstart = mStartIndex;
+       
+    if (mBackground) mBackground->draw(cgc, rect);
+    QDDrawBevelRect(cgc, rect, 1, true);
+    
+    CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
+    CGContextSetRGBStrokeColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
+    
+    CGRect drawRect;
+    float yval = 0;
+    float tsize = mXOffset;  
+    SCColor fillcolor;
+    SCEnvObject * envobj;
+    if(mDrawRectsActive)
+    {
+        int j = 0;
+        for(int i = xstart; i < xpixels; i++){
+            envobj = &mEnvObj[i];
+            drawRect = SCtoCGRect(envobj->mRect);
+            fillcolor = envobj->mColor;
+            CGContextSetRGBFillColor(cgc, fillcolor.red, fillcolor.green, fillcolor.blue, fillcolor.alpha);
+            CGContextFillRect (cgc, drawRect);
+            CGContextStrokeRect(cgc,drawRect);
+        }
+    }
+
+    //draw lines
+    if (mDrawLinesActive) {
+        float xadd, gcx, gcy;
+        if(mThumbSize > 1) xadd =  mThumbSize * 0.5; 
+        else xadd = 0;  
+        int j = 0;    
+       // CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
+       //if(mIsHorizontal)
+
+        for(int i = xstart; i < xpixels; i++){
+            envobj = &mEnvObj[i];
+            if(envobj->mIsVisible){
+                drawRect = SCtoCGRect(envobj->mRect);
+                gcx =  drawRect.origin.x + xadd;
+                gcy =  drawRect.origin.y + xadd;
+                if(i == xstart) 
+                CGContextMoveToPoint(cgc, gcx, gcy);
+                else
+                CGContextAddLineToPoint(cgc, gcx, gcy);
+            }
+            }
+
+        CGContextStrokePath(cgc);
+    }
+    //draw selection:
+    CGContextRestoreGState(cgc);
+    
+}
+
+bool SCEnvelopeView::setValue(int indx,  double xIn, double yIn, bool send)
+{
+    bool changed = true;
+    indx = sc_clip(indx, 0, mTabSize - 1);
+    xIn = sc_clip(xIn, 0., 1.);
+    yIn = sc_clip(yIn, 0., 1.);
+
+    if(!(&mEnvObj[indx])->mIsStatic){
+    if (mStepSize > 0.) {
+        yIn = floor(yIn * mStepScale + 0.5) * mStepSize;
+    }
+        mCurrentIndex = indx;
+       // if (changed) {
+      
+        setEnvRect(indx, xIn, yIn);
+        mCurrentY = yIn;
+        if (send) sendMessage(s_doaction, 0, 0, 0); 
+        refresh();
+    }
+    return changed;
+       // }
+}
+    
+
+
+
+
+void SCEnvelopeView::setValueFromPoint(SCPoint where)
+{
+    int indx = mSelectedIndex;
+    double x = (double) (where.x - mBounds.x - 1 - mThumbSize/2) / (mBounds.width - mThumbSize - 2);
+    double y = (double) 1.0 - (where.y - mBounds.y - 1 - mThumbSizeY/2) / (mBounds.height - mThumbSizeY - 2);
+    if(indx >= 0)
+    setValue(indx, x, y, true);
+}
+
+
+void SCEnvelopeView::setEnvRect(int indexIn, double valXIn, double valYIn)
+{    
+    double x,y, thumbx, thumby;
+        SCEnvObject * envob = &mEnvObj[indexIn];
+        envob->x = valXIn;
+        envob->y = valYIn;
+        thumby = mThumbSizeY;
+        thumbx = mThumbSize;
+
+        x = valXIn * (mBounds.width - thumbx - 2);
+        y = valYIn * (mBounds.height - thumby - 2);
+        y = mBounds.y + mBounds.height - y - 1 - thumby; 
+        x = mBounds.x + x + 1;
+        if(envob->mIsVisible){
+            envob->mRect.x = x;
+            envob->mRect.y = y;
+        } else {
+        envob->mRect = SCMakeRect( x, y, thumbx, thumby);
+        envob->mIsVisible = true;
+        envob->mColor = mFillColor;
+        }
+  //  return SCMakeRect( x, y, thumbx, thumby);   
+}
+void SCEnvelopeView::setSelection(SCPoint where)
+{
+    SCEnvObject * envo;
+    int i = 0;
+    bool sel = false;
+    //single selection
+    (&mEnvObj[mSelectedIndex])->mIsSelected = false;
+    (&mEnvObj[mSelectedIndex])->mColor = mFillColor;
+    //
+    mSelectedIndex = -1;
+    for(int i=0; i< mVisibleSize; i++) {
+        envo = &mEnvObj[i];
+        sel = SCPointInRect(where, envo->mRect);
+        if(sel){
+            envo->mIsSelected = true;
+            envo->mIsSelected = false;
+            envo->mColor = mSelectedColor;
+            mSelectedIndex = i;
+            return;
+        } 
+    }
+   /*
+   multiple selection
+     if(!sel) {
+        (&mEnvObj[mSelectedIndex])->mIsSelected = false;
+        (&mEnvObj[mSelectedIndex])->mColor = mFillColor;
+        mSelectedIndex = -1;
+    }
+    */ 
+    refresh();
+}
+
+void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers)
+{
+	//mPrevPoint = where;
+	//mouseTrack(where, modifiers);
+}
+
+void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers)
+{
+    if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+    } else if (modifiers & NSShiftKeyMask) {
+            setSelection(where);
+           /* mActiveSize++;
+            if(mActiveSize < mTabSize) {
+                mSelectedIndex = mActiveSize - 1;
+                mEnvObj[mSelectedIndex].mIsSelected = true;
+                mEnvObj[mSelectedIndex].mIsStatic = false;
+            }else {
+            mActiveSize = mTabSize;
+            }
+            */
+            refresh();
+            //setVisibleSize();
+           // setValueFromPoint(where);
+            sendMessage(getsym("doAction"), 0, 0, 0);
+    } else if (modifiers & NSControlKeyMask) {
+        mAbsoluteX = where.x; //absolute y mouse position
+        mEnvObj[mSelectedIndex].mIsSelected = false;
+        mSelectedIndex = -1;
+        sendMessage(getsym("doMetaAction"), 0, 0, 0);
+    } else {
+        setValueFromPoint(where);
+    }
+}
+
+void SCEnvelopeView::setVisibleSize()
+{
+    float offset;
+    float scaledsize;
+    /*
+    if(mThumbSize > 0.0) {
+        if(mXOffset < 1.0) offset = 0;
+        else offset = mXOffset;
+        scaledsize = (float) (mTabSize - mStartIndex) * mThumbSize;
+        if (scaledsize <= mBounds.width) mVisibleSize = mTabSize;
+        else mVisibleSize = (int) mBounds.width / mThumbSize;
+    } else {
+        mVisibleSize = 0;
+    }
+    */
+    mVisibleSize = mActiveSize;
+}
+
+
+int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+        char *name = symbol->name;
+        if (strcmp(name, "step")==0) {
+            err = slotDoubleVal(slot, &mStepSize);
+            if (!err) {
+                mStepScale = 1. / mStepSize;
+		//bool changed = setValue(mX, mY, false);
+                //SetBool(slot, changed);
+            }
+            return errNone;
+        }
+        if (strcmp(name, "thumbSize")==0) {
+            err = slotIntVal(slot, &mThumbSize);
+            setVisibleSize();
+            refresh();
+            return errNone;
+        } 
+        if (strcmp(name, "thumbWidth")==0) {
+            err = slotIntVal(slot, &mThumbSizeY);
+            //setVisibleSize();
+            refresh();
+            return errNone;
+        } 
+        if (strcmp(name, "selectedIndex")==0) {
+            err = slotIntVal(slot, &mSelectedIndex);
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "fillColor")==0) {
+            err = slotColorVal(slot, &mFillColor);
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "strokeColor")==0) {
+            err = slotColorVal(slot, &mStrokeColor);
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "selectionColor")==0) {
+            err = slotColorVal(slot, &mSelectedColor);
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "startIndex")==0) {
+            err = slotIntVal(slot, &mStartIndex);
+           
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "isStatic")==0) {
+           (&mEnvObj[mSelectedIndex])->mIsStatic = IsTrue(slot); 
+            refresh();
+            return errNone;
+        }
+ 
+        
+        if (strcmp(name, "drawLines")==0) {
+            mDrawLinesActive = IsTrue(slot); 
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "drawRects")==0) {
+            mDrawRectsActive = IsTrue(slot); 
+            refresh();
+            return errNone;
+        }
+
+        if (symbol == s_x) {
+            slotIntVal(slot, &mCurrentIndex);
+            mCurrentIndex  = sc_clip(mCurrentIndex, 0, mTabSize - 1);
+            int maxSize = mTabSize - mCurrentIndex;
+            if(mSelectionSize > maxSize) mSelectionSize = maxSize;
+            refresh();
+            return errNone;
+	}
+	if (symbol == s_y) {
+            slotDoubleVal(slot, &mCurrentY);
+            mCurrentY = sc_clip(mCurrentIndex, 0.0, 1.0);
+            refresh();
+            return errNone;
+	}
+        if (symbol == s_value) {
+            if (!isKindOfSlot(slot, class_array)) return errWrongType;
+            int size = (slot->uo->slots[0]).uo->size;
+
+            if(size != mTabSize) {
+                err = allocSlotEnvObjArray(slot, &mEnvObj);
+                mTabSize = size;
+            } 
+            double x, y;
+            PyrDoubleArray * xarr;
+            PyrDoubleArray * yarr;
+            xarr = ((PyrDoubleArray*)(slot->uo->slots[0].uo));
+            yarr = ((PyrDoubleArray*)(slot->uo->slots[1].uo));
+
+            for(int i=0; i<size; i++){
+                x = xarr->d[i];
+                y = yarr->d[i];
+               // mEnvObj[i].x = x;
+               // mEnvObj[i].y = y;
+                (&mEnvObj[i])->mIsVisible = false;
+                (&mEnvObj[i])->mIsStatic = false;
+                (&mEnvObj[i])->mIsSelected = false;
+                setEnvRect(i, x, y);
+                    //post("set x: %f ,y:  %f \n", x, y);
+            }
+            mActiveSize = size;
+            setVisibleSize();
+            refresh();
+            return errNone;
+	}
+        
+        if (strcmp(name, "selectionSize")==0) {
+            slotIntVal(slot, &mSelectionSize);
+            refresh();
+            return errNone;
+        }
+	
+        return SCView::setProperty(symbol, slot);
+}
+
+int SCEnvelopeView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+
+	char *name = symbol->name;
+        if (strcmp(name, "step")==0) {
+            SetFloat(slot, mStepSize);
+            return errNone;
+        }
+        if (strcmp(name, "xvalues")==0) {
+            int len;
+              
+            if (isKindOfSlot(slot, class_array)) {
+                len = slot->uo->size;
+                if(len > mTabSize)  return errWrongType;
+                for(int i=0; i<len; i++)
+                    ((double*)(slot->uo->slots))[i] = mEnvObj[i].x;
+                
+                }
+            return errNone;
+        }
+        if (symbol == s_x) {
+            SetInt(slot, mCurrentIndex);
+           return errNone;
+	}
+	if (symbol == s_y) {
+            SetFloat(slot, mCurrentY);
+           return errNone;
+	}
+        if (symbol == s_value) {
+            int len;
+            if (isKindOfSlot(slot, class_array)) {
+                len = slot->uo->size;
+                if(len > mTabSize)  return errWrongType;
+                for(int i=0; i<len; i++){
+                    ((double*)(slot->uo->slots))[i] = mEnvObj[i].y;
+                }
+                }
+            return errNone;
+	}
+        if (strcmp(name, "xvalues")==0) {
+           int len;
+            if (isKindOfSlot(slot, class_array)) {
+                len = slot->uo->size;
+                if(len > mTabSize)  return errWrongType;
+                for(int i=0; i<len; i++){
+                    ((double*)(slot->uo->slots))[i] = mEnvObj[i].x;
+                }
+                }
+            return errNone;
+	}
+        if (strcmp(name, "selectionSize")==0) {
+            SetInt(slot, mSelectionSize);
+            return errNone;
+        }
+        if (strcmp(name, "absoluteX")==0) {
+            SetInt(slot, (int) mAbsoluteX);
+            return errNone;
+        }
+
+
+        return SCView::getProperty(symbol, slot);
+}
+
+bool SCEnvelopeView::canReceiveDrag()
+{
+    PyrSlot result;
+    sendMessage(s_canReceiveDrag, 0, 0, &result);
+    return IsTrue(&result);
+}
+
+void SCEnvelopeView::receiveDrag()
+{
+    sendMessage(s_receiveDrag, 0, 0, 0);
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2839,6 +3299,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCUserView", NewSCUserView);
     new SCViewMaker("SCPopUpMenu", NewSCPopUpMenu);
     new SCViewMaker("SCMultiSliderView", NewSCMultiSliderView);
+    new SCViewMaker("SCEnvelopeView", NewSCEnvelopeView);
 
 }
 
