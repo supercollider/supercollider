@@ -54,6 +54,7 @@ Bus {
 	// get, getn
 
 	free {
+		if(index.isNil,{ (this.asString + " has already been freed").warn; ^this });
 		if(rate == \audio,{
 			server.audioBusAllocator.free(index);
 		},{
@@ -70,6 +71,10 @@ Bus {
 	value_ { arg value;
 		this.fill(value,numChannels);
 	}
-	
+	printOn { arg stream; stream << this.class.name << "(" <<* [server.name,rate,index,numChannels]  <<")" }
+//	== { arg aBus;
+//		^(aBus.class === this.class 
+//		and: {aBus.index == index} and: {aBus.rate == rate} and: {aBus.server == server})
+//	}
 }
 

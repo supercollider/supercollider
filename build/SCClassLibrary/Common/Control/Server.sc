@@ -303,6 +303,7 @@ Server : Model {
 		// this brutally kills them all off		
 		//	ps -axo pid,command | grep -i "[s]csynth" | awk '{system("kill " $1)}'
 		unixCmd("ps axo pid,command | grep -i \"[s]csynth\" | awk '{system(\"kill \" $1)}'");
+		this.quitAll;
 	}
 	freeAll {
 		this.sendMsg("/g_freeAll",0);
@@ -374,6 +375,7 @@ Server : Model {
 					this.quit;
 				});
 			};
+			booter.setProperty(\value,serverRunning.binaryValue);
 		});
 		
 		active = SCStaticText(w, Rect(0,0, 80, 24));

@@ -41,6 +41,9 @@ PowerOfTwoAllocator
 			freeLists.put(sizeClass, node);
 		});
 	}
+	blocks {
+		^array.select({ arg b; b.notNil })
+	}
 }
 		
 LRUNumberAllocator

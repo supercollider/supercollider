@@ -10,8 +10,8 @@
 }
 
 + Integer {
-	asBus { arg rate,numChannels,server;
-		^Bus.new(rate,this,numChannels,server)
+	asBus { arg rate = \control,numChannels=1,server;
+		^Bus.new(rate,this,numChannels,server ? Server.local)
 	}
 }
 
