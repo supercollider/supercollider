@@ -233,16 +233,20 @@ void midiListEndpoints()
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed);
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 { 
-    char *x, *y;
     PyrSlot *a = g->sp;
-    x = (char*) malloc(1280);
-    y = (char *)malloc(1280);
-    sprintf(x, "");
     int numSrc = MIDIGetNumberOfSources();
-	post("numSrc %d\n",  numSrc);
+    //post("numSrc %d\n",  numSrc);
+    if(numSrc == 0){SetNil(a); return errNone;}
+ 
+    PyrObject* idarraySo = newPyrArray(g->gc, numSrc * sizeof(SInt32), 0 , true);
+    PyrObject* namearraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
+    PyrObject* devarraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
 
-        sprintf(y, "[ [ ");
-        strcat(x,y);
+    PyrObject* idarrayDe = newPyrArray(g->gc, numSrc * sizeof(SInt32), 0 , true);
+    PyrObject* namearrayDe = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
+    PyrObject* devarrayDe = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
+    
+    PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
 
     for (int i=0; i<numSrc; ++i) {
         MIDIEndpointRef src = MIDIGetSource(i);
@@ -256,24 +260,28 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
         MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
         SInt32 id;
         MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &id);
+                                
 		char cendname[1024], cdevname[1024];
 		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
 		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+                
+                PyrString *string = newPyrString(g->gc, cendname, 0, true);
+                SetObject(namearraySo->slots+i, string);
+                namearraySo->size++;
+                PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
+                SetObject(devarraySo->slots+i, devstring);
+                devarraySo->size++;
+		SetInt(idarraySo->slots+i, id);
+		idarraySo->size++;
   //             post("in %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
         CFRelease(devname);
         CFRelease(endname);
-        if (i + 1 == numSrc) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
-        else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
-        strcat(x,y);
+
     }
-        sprintf(y, "], [ ");
-        strcat(x,y);
-
-
-        int numDst = MIDIGetNumberOfDestinations();
+        
+    int numDst = MIDIGetNumberOfDestinations();
 
 //	post("numDst %d\n",  numDst);
-
     for (int i=0; i<numDst; ++i) {
         MIDIEndpointRef dst = MIDIGetDestination(i);
 		MIDIEntityRef ent;
@@ -290,19 +298,32 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
 		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
 //		post("out %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
+                PyrString *string = newPyrString(g->gc, cendname, 0, true);
+                SetObject(namearrayDe->slots+i, string);
+                namearrayDe->size++;
+                PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
+                SetObject(devarrayDe->slots+i, devstring);
+                devarrayDe->size++;
+                SetInt(idarrayDe->slots+i, id);
+		idarrayDe->size++;
         CFRelease(devname);
         CFRelease(endname);
-        if (i + 1 == numDst) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
-        else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
-         strcat(x,y);
+        
      }
-        sprintf(y, "] ] ");
-        strcat(x,y);
-       SetObject( a,newPyrString(g->gc, x, 0, true) ); // push string onto return stack
-
-        free(x);
-        free(y);
-	return errNone;
+        SetObject(idarray->slots+0, idarraySo);
+        idarray->size++;
+        SetObject(idarray->slots+1, devarraySo);
+        idarray->size++;
+        SetObject(idarray->slots+2, namearraySo);
+        idarray->size++;
+        SetObject(idarray->slots+3, idarrayDe);
+        idarray->size++;
+        SetObject(idarray->slots+4, devarrayDe);
+        idarray->size++;
+        SetObject(idarray->slots+5, namearrayDe);
+        idarray->size++;
+        SetObject(a, idarray);
+      	return errNone;
 }
 
 
