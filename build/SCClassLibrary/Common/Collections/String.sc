@@ -120,6 +120,17 @@ String[char] : RawArray {
 	beginsWith { arg string;
 		^this.containsStringAt(0, string)
 	}
+	findAll { arg string, ignoreCase = false, offset=0;
+		var indices, i=0;
+		while { 
+			i = this.find(string, ignoreCase, offset); 
+			i.notNil
+		}{
+			indices = indices.add(i);
+			offset = i + 1;
+		}
+		^indices
+	}
 	
 
 	escapeChar { arg charToEscape; // $"
