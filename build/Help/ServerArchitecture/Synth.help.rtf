@@ -195,10 +195,12 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 
 \f1\fs24 \cf0 					replace the target,\
 					in the same group,\
-					on the same server\
+					on the same server,\
+					keeping the same nodeID\
 					\
 		
-\f0\b Synth.replace(nodeToReplace, synthDefName,[ index1,arg1,... indexN,argN  ])\
+\f0\b Synth.replace(nodeToReplace, synthDefName,\
+							[ index1,arg1,... indexN,argN  ])\
 
 \f1\b0 				returns a new synth by replacing a node \
 				\
