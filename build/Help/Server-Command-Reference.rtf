@@ -123,7 +123,7 @@ Loads a file of synth definitions from a buffer in the message. Resident definit
 \f1\b0 					
 \f0\b load synth definition
 \f1\b0 \
-	string - pathname of file. \
+	string - pathname of file. Can be a pattern like "synthdefs/perc-*"\
 	bytes - an OSC message to execute upon completion. (optional)\
 \
 Loads a file of synth definitions. Resident definitions with the same names are overwritten. \
@@ -802,7 +802,7 @@ These messages are sent as notification of some event to all clients who have re
 	int - next node ID, -1 if no next node.\
 	int - 1 if the node is a group, 0 if it is a synth\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
-\cf0 \ul 	The following two arguments are only sent if the node is a group.\
+\cf0 \ul \ulc0 	The following two arguments are only sent if the node is a group.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 \cf0 \ulnone 	int - the ID of the head node, -1 if there is no head node.\
 	int - the ID of the tail node, -1 if there is no tail node.\
