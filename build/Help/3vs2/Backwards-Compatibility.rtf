@@ -24,7 +24,7 @@ Both of these will create synth nodes on the default server. Note that neither r
 \f2\fs20 \cf0 \{ \cf2 Out\cf0 .ar(1, \cf2 SinOsc\cf0 .ar(440, 0, 0.5)) \}.play;
 \f1\fs24 \
 \
-In general, one should be aware of this distinction when using this code. When copying such code for reuse with other SC3 classes (for example in a reusable SynthDef), it will usually be necessary to add an Out.ar. Although useful for quick testing these methods are generally inferior to SynthDef.play, as the latter is more direct, requires no modifications for general reuse, and has slightly less overhead. (Although this is insignificant in most cases, it could be relevant when large numbers of defs or nodes are being created.) \
+In general, one should be aware of this distinction when using this code. When copying such code for reuse with other SC3 classes (for example in a reusable SynthDef), it will usually be necessary to add an Out.ar. Although useful for quick testing these methods are generally inferior to SynthDef.play, as the latter is more direct, requires no modifications for general reuse, has greater general flexibility and has slightly less overhead. (Although this is insignificant in most cases, it could be relevant when large numbers of defs or nodes are being created.) \
 \
 Like SynthDef.play, Function.play does return a Synth object which can then be messaged, etc. However, since Function.play creates an arbitrarily named SynthDef, one cannot reuse the resulting def, at least not without reading its name from the post window, or getting it from the Synth object.\
 \
@@ -51,9 +51,8 @@ y.free;\
 \
 In addition a number of other classes  and methods have been added to improve compatibility. These are listed below. In general there are equivalent or better ways of doing the same things in SC3.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 GetFileDialog
+\f0\b GetFileDialog
 \f1\b0   			use CocoaDialog\
 
 \f0\b GetStringDialog

@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
+\red96\green96\blue96;\red0\green115\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Function
@@ -19,13 +20,14 @@ Because it inherits from AbstractFunction, Functions can respond to math operati
 creating a new Function. For example:\
 \
 
-\f2 (\
-var a, b, c;\
-a = \{ [100, 200, 300].choose \};	// a Function\
-b = \{ 10.rand + 1 \};	// another Function\
-c = a + b; 	// c is a Function.\
-c.value.postln;	// evaluate c and print the result\
-)\
+\f2\fs20 \cf2 (\
+\cf3 var\cf2  a, b, c;\
+a = \{ [100, 200, 300].choose \};	\cf4 // a Function\cf2 \
+b = \{ 10.rand + 1 \};	\cf4 // another Function\cf2 \
+c = a + b; 	\cf4 // c is a Function.\cf2 \
+c.value.postln;	\cf4 // evaluate c and print the result\cf2 \
+)
+\fs24 \cf0 \
 
 \f1 \
 
@@ -49,7 +51,8 @@ Get the FunctionDef definition of the Function.\
 Evaluates the FunctionDef referred to by the Function. The Function is passed the args given.\
 \
 
-\f2 \{ arg a, b; (a * b).postln \}.value(3, 10);\
+\f2\fs20 \cf2 \{ \cf3 arg\cf2  a, b; (a * b).postln \}.value(3, 10);
+\fs24 \cf0 \
 
 \f1 \
 
@@ -61,15 +64,198 @@ then it is unpacked and appended to the other arguments (if any) to the Function
 If the last argument is not an Array or List then this is the same as the 'value' method.\
 \
 
-\f2 \{ arg a, b, c; ((a * b) + c).postln \}.valueArray([3, 10, 7]);\
+\f2\fs20 \cf2 \{ \cf3 arg\cf2  a, b, c; ((a * b) + c).postln \}.valueArray([3, 10, 7]);\
 
-\f1 \
+\f1 \cf2 \
 
-\f2 \{ arg a, b, c, d; [a, b, c, d].postln \}.valueArray([1, 2, 3]);\
+\f2 \cf2 \{ \cf3 arg\cf2  a, b, c, d; [a, b, c, d].postln \}.valueArray([1, 2, 3]);\
 
-\f1 \
+\f1 \cf2 \
 
-\f2 \{ arg a, b, c, d; [a, b, c, d].postln \}.valueArray(9, [1, 2, 3]);\
+\f2 \cf2 \{ \cf3 arg\cf2  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, [1, 2, 3]);\
 \
-\{ arg a, b, c, d; [a, b, c, d].postln \}.valueArray(9, 10, [1, 2, 3]);\
-}
+\{ \cf3 arg\cf2  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, 10, [1, 2, 3]);\
+
+\fs24 \cf0 \
+
+\f0\b valueEnvir(...args)\
+
+\f1\b0 \
+As value above. Unsupplied argument names are looked up in the current 
+\f0\b Environment
+\f1\b0 .\
+\
+
+\f2\fs20 \cf2 (\
+\cf3 Environment\cf2 .use(\{\
+~a = 3;\
+~b = 10;\
+\{ \cf3 arg\cf2  a, b; (a * b).postln \}.valueEnvir;\
+\});\
+)
+\fs24 \cf0 \
+
+\f1 \
+
+\f0\b valueArrayEnvir(..args..)\
+
+\f1\b0 \
+Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, \
+then it is unpacked and appended to the other arguments (if any) to the Function. \
+If the last argument is not an Array or List then this is the same as the 'value' method. Unsupplied argument names are looked up in the current 
+\f0\b Environment
+\f1\b0 .\
+\
+
+\f0\b loop
+\f1\b0 \
+\
+Repeat this function. Useful with 
+\f0\b Task
+\f1\b0  and Clocks.\
+\
+
+\f2\fs20 \cf2 t = \cf3 Task\cf2 (\{ \{ \cf5 "I'm loopy"\cf2 .postln; 1.wait;\}.loop \});\
+t.start;\
+t.stop;
+\f1\fs24 \cf0 \
+
+\f0\b \
+defer(delta)\
+
+\f1\b0 \
+Delay the evaluation of this Function by 
+\f0\b delta
+\f1\b0  in seconds. Uses 
+\f0\b AppClock
+\f1\b0 .\
+\
+
+\f2\fs20 \cf2 \{ \cf5 "2 seconds have passed."\cf2 .postln; \}.defer(2);
+\f1\fs24 \cf0 \
+\
+
+\f0\b dup(n)\
+
+\f1\b0 \
+Return an Array consisting of the results of n evaluations of this Function.\
+\
+
+\f2\fs20 \cf2 x = \{ 4.rand; \}.dup(4);\
+x.postln;
+\f1\fs24 \cf0 \
+\
+
+\f0\b\fs28 \ul Audio Support\
+
+\f2\b0\fs24 \ulnone \
+
+\f0\b play(target, outbus, fadetime)\
+
+\f1\b0 \
+This is probably the simplest way to get audio in SC3. It wraps the Function in a 
+\f0\b SynthDef
+\f1\b0  (adding an 
+\f0\b Out
+\f1\b0  ugen if needed), creates and starts a new 
+\f0\b Synth
+\f1\b0  with it, and returns the Synth object. Arguments in the 
+\f0\b FunctionDef
+\f1\b0  become arguments in the resulting SynthDef.\
+
+\f0\b \
+target 
+\f1\b0 - a node or server. If target is:\
+			a 
+\f0\b Group
+\f1\b0 \
+				add to the tail of that group\
+			a 
+\f0\b Synth
+\f1\b0 \
+				add to the tail of that synth's group\
+			a 
+\f0\b Server
+\f1\b0 \
+				add to the tail of the 
+\f0\b RootNode
+\f1\b0  of that server\
+			nil\
+				add to the tail of the RootNode of the defaultServer\
+
+\f0\b outbus 
+\f1\b0 - the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
+
+\f0\b fadeTime
+\f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click.\
+
+\f2 \
+
+\fs20 \cf2 x = \{ \cf3 arg\cf2  freq = 440; \cf3 SinOsc\cf2 .ar(freq, 0, 0.3) \}.play; \cf4 // this returns a Synth object;\cf2 \
+x.set(\cf6 \\freq\cf2 , 220);\
+x.defName; \cf4 // see the name of the resulting SynthDef (derived from the Functions hash value)\cf2 \
+x.free;\cf7 \
+
+\f1\fs24 \cf0 \
+Many of the examples in SC3 make use of the Function.play syntax. Note that reusing such code in a 
+\f0\b SynthDef
+\f1\b0  requires the addition of an 
+\f0\b Out
+\f1\b0  ugen.\
+
+\f2 \
+
+\fs20 \cf4 // the following two lines produce equivalent results\cf2 \
+\{ \cf3 SinOsc\cf2 .ar(440, 0, 0.3) \}.play(fadeTime: 0.0); \
+\cf3 SynthDef\cf2 (\cf5 "help-FuncPlay"\cf2 , \{ \cf3 Out\cf2 .ar(0, \cf3 SinOsc\cf2 .ar(440, 0, 0.3))\}).play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. For further discussion see the 
+\f0\b play
+\f1\b0 , and 
+\f0\b Backwards-Compatibility
+\f1\b0  helpfiles.\
+\
+
+\f0\b\fs28 \ul Conversion\
+
+\fs24 \ulnone \
+asSynthDef(lags, prependArgs, outClass, fadetime)\
+
+\f1\b0 \
+Returns a SynthDef based on this Function, adding an Out ugen if needed.\
+
+\f0\b \
+lags 
+\f1\b0 - An Array of lagtimes for the function's arguments (see 
+\f0\b SynthDef
+\f1\b0  for more details).\
+
+\f0\b outClass
+\f1\b0  - The class of the output ugen as a symbol. The default is \cf6 \\Out\cf0 .\
+
+\f0\b fadeTime
+\f1\b0  - a fadein time. The default is 0.\
+
+\f0\b \
+\
+asDefName\
+
+\f1\b0 \
+Performs asSynthDef (see above), sends the resulting def to the local server and returns the SynthDefs name. This is asynchronous.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 x = \{ \cf3 SinOsc\cf2 .ar(440, 0, 0.3) \}.asDefName; \cf4 // this must complete first\cf2 \
+y = \cf3 Synth\cf2 .new(x);\cf0 \
+\
+
+\f0\b\fs24 asRoutine\
+\
+
+\f1\b0 Returns a 
+\f0\b Routine
+\f1\b0  using this as its func argument.}
