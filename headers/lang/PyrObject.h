@@ -212,6 +212,8 @@ extern PyrSymbol *s_env;
 extern PyrSymbol *s_audio, *s_control, *s_scalar;
 extern PyrSymbol *s_run;
 extern PyrSymbol *s_next;
+extern PyrSymbol *s_at;
+extern PyrSymbol *s_put;
 extern PyrSymbol *s_value;
 extern PyrSymbol *s_ugen, *s_outputproxy;
 extern PyrSymbol *s_new, *s_ref;
