@@ -60,7 +60,10 @@ SynthDefContainer {
 	}
 	
 	playToBundle { arg bundle, extraArgs, group;
-		^Synth.newToBundle(bundle, synthDef.name, extraArgs, group, \addToTail); 
+		var synth;
+		synth = Synth.basicNew(synthDef.name,group.server,-1);
+		bundle.add(synth.newMsg(group,\addToTail,extraArgs));
+		^synth 
 	}
 	stopClientProcessToBundle {}
 	stop {} //these are more efficiently done by group messages
