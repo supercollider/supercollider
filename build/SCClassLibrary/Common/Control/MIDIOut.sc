@@ -81,11 +81,16 @@ MIDIIn {
 		bend.value(src, chan, val);
 	}
 	*connect { arg inport=0, device=0;
-		var uid;
+		var uid,source;
 		if(device.isNumber, {
 			if(device >= 0, {
 				if(MIDIClient.initialized.not,{ MIDIClient.init });
-				uid = MIDIClient.sources.at(device).uid
+				source = MIDIClient.sources.at(device);
+				if(source.isNil,{ 
+					"MIDIClient failed to init".warn;
+				},{
+					uid = MIDIClient.sources.at(device).uid;
+				})
 			},{
 				uid = device;
 			});
