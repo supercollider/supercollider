@@ -137,6 +137,13 @@ Buffer {
 			 ++ more;
 	}
 	
+	gen { arg genCommand, genArgs, normalize=true,asWavetable=true,clearFirst=true;
+		server.listSendMsg(["/b_gen",bufnum,genCommand,
+			normalize.binaryValue 
+			+ (asWavetable.binaryValue * 2) 
+			+ (clearFirst.binaryValue * 4)]
+			++ genArgs)
+	}
 	sine1 { arg amplitudes,normalize=false,asWavetable=false,clearFirst=false;
 		server.listSendMsg(["/b_gen",bufnum,"sine1",
 			normalize.binaryValue 
