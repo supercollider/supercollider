@@ -98,6 +98,15 @@ ExpRand : UGen {
 	}
 }
 
+TCoin : UGen {
+	*ar { arg prob, in;
+		^this.multiNew('audio', prob, in)
+	}
+	*kr { arg prob, in;
+		^this.multiNew('control', prob, in)
+	}
+}
+
 WhiteNoise : UGen {
 	
 	*ar { arg mul = 1.0, add = 0.0;
@@ -175,6 +184,14 @@ LFNoise2 : LFNoise0 {
 LFClipNoise : LFNoise0 {
 }
 
+Hasher : UGen {
+	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in).madd(mul, add)
+	}
+	*kr { arg in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', in).madd(mul, add)
+	}
+}
 
 Dust : UGen {
 	
