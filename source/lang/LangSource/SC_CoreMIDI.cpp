@@ -455,8 +455,8 @@ int prRestartMIDI(VMGlobals *g, int numArgsPushed)
     return errNone;	
 }
 
-void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, int aval, int bval, float late);
-void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, int aval, int bval, float late)
+void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late);
+void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late)
 {
     MIDIPacketList mpktlist;
     MIDIPacketList * pktlist = &mpktlist;
@@ -465,7 +465,7 @@ void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, 
     float  latency =  1000000 * late ; //ms to nano 
     UInt64  utime = AudioConvertNanosToHostTime( AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) + (UInt64)latency);
     ByteCount nData = (ByteCount) length;
-    pk->data[0] = (Byte) chan + (status & 0xF0);
+    pk->data[0] = (Byte) (hiStatus & 0xF0) | (loStatus & 0x0F); 
     pk->data[1] = (Byte) aval;
     pk->data[2] = (Byte) bval;
     pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk,(MIDITimeStamp) utime,nData,pk->data);
@@ -475,22 +475,22 @@ void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, 
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed);
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 {
-        //port, uid, len, status, chan , a, b, latency
+        //port, uid, len, hiStatus, loStatus, a, b, latency
 	//PyrSlot *m = g->sp - 8;
 	PyrSlot *p = g->sp - 7;
         
 	PyrSlot *u = g->sp - 6;
 	PyrSlot *l = g->sp - 5;
         
-	PyrSlot *s = g->sp - 4;
-	PyrSlot *c = g->sp - 3;
+	PyrSlot *his = g->sp - 4;
+	PyrSlot *los = g->sp - 3;
         
     PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
     PyrSlot *plat = g->sp;
 
         
-	int err, outputIndex, uid, length, chan, status, aval, bval;
+	int err, outputIndex, uid, length, hiStatus, loStatus, aval, bval;
     float late;
 	err = slotIntVal(p, &outputIndex);
 	if (err) return err;
@@ -500,9 +500,9 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
         err = slotIntVal(l, &length);
 	if (err) return err;
-        err = slotIntVal(s, &status);
+        err = slotIntVal(his, &hiStatus);
 	if (err) return err;
-        err = slotIntVal(c, &chan);
+        err = slotIntVal(los, &loStatus);
 	if (err) return err;
         err = slotIntVal(a, &aval);
 	if (err) return err;
@@ -518,7 +518,7 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 		
 	if (!dest) return errFailed;
 
-    sendmidi(outputIndex, dest, length, chan, status, aval, bval, late);
+    sendmidi(outputIndex, dest, length, hiStatus, loStatus, aval, bval, late);
     return errNone;
 }
 

@@ -131,8 +131,8 @@ MIDIOut {
 		^super.newCopyArgs(port, uid);
 	}
 		
-	write { arg len, hiStatus, chan, a=0, b=0;
-		this.send(port, uid, len, hiStatus, chan, a, b);
+	write { arg len, hiStatus, loStatus, a=0, b=0;
+		this.send(port, uid, len, hiStatus, loStatus, a, b);
 	}
 	
 	noteOn { arg chan, note=60, veloc=64;
@@ -159,7 +159,17 @@ MIDIOut {
 	allNotesOff { arg chan;
 		this.control(chan, 123, 0);
 	}
-	send {arg outport, uid, len, stat, chan, a=0, b=0, latency=0.1; //in ms
+	midiClock { 
+		this.write(1, 16rF0, 16r08);
+	}
+	startClock {
+		this.write(1, 16rF0, 16r0A);
+	}
+	stopClock {
+		this.write(1, 16rF0, 16r0C);
+	}
+	
+	send {arg outport, uid, len, hiStatus, loStatus, a=0, b=0, latency=0.1; //in ms
 		_SendMIDIOut		
 	}
 }
