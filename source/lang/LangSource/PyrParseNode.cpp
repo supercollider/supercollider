@@ -1161,6 +1161,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 	int i, j, numArgs, numVars, methType, funcVarArgs, firstKeyIndex;
 	int index, numSlots, numArgNames;
 	bool hasPrimitive = false;
+	bool hasVarExprs = false;
 	PyrVarDefNode *vardef;
 	PyrObject *proto;
 	PyrSymbolArray *argNames, *varNames;
@@ -1311,7 +1312,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 				PyrSlot *slot, litval;
 				slot = method->prototypeFrame.uo->slots + i;
 				//compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
-				vardef->hasExpr(&litval);
+				if (vardef->hasExpr(&litval)) hasVarExprs = true;
 				*slot = litval;
 			}
 			if (funcVarArgs) {
@@ -1368,14 +1369,16 @@ void PyrMethodNode::compile(PyrSlot *result)
 		for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 			PyrSlot *slot, litval;
 			slot = method->prototypeFrame.uo->slots + i + numArgs + funcVarArgs;
-			vardef->hasExpr(&litval);
+			if (vardef->hasExpr(&litval)) hasVarExprs = true;
 			//compilePyrLiteralNode(vardef->mDefVal, &litval);
 			*slot = litval;
 		}
 	}
 	
 	methType = methNormal;
-	if (hasPrimitive) {
+	if (hasVarExprs) {
+		methType = methNormal;
+	} else if (hasPrimitive) {
 		methType = methPrimitive;
 		/*
 		if (getPrimitiveNumArgs(methraw->specialIndex) != numArgs) {
@@ -3734,6 +3737,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 	PyrSymbolArray *argNames, *varNames;
 	PyrSlot *slotResult;
 	PyrSlot dummy;
+	bool hasVarExprs = false;
 	
 	//postfl("->block\n");
 	slotResult = (PyrSlot*)result;
@@ -3895,7 +3899,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 		for (i=0; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 			PyrSlot *slot, litval;
 			slot = block->prototypeFrame.uo->slots + i;
-			vardef->hasExpr(&litval);
+			if (vardef->hasExpr(&litval)) hasVarExprs = true;
 			//compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
 			*slot = litval;
 		}
@@ -3911,7 +3915,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 		for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 			PyrSlot *slot, litval;
 			slot = block->prototypeFrame.uo->slots + i + numArgs + funcVarArgs;
-			vardef->hasExpr(&litval);
+			if (vardef->hasExpr(&litval)) hasVarExprs = true;
 			//compilePyrLiteralNode(vardef->mDefVal, &litval);
 			*slot = litval;
 		}
@@ -3919,9 +3923,8 @@ void PyrBlockNode::compile(PyrSlot* result)
 	methraw->methType = methBlock;
 	
 	// compile body
-
 	initByteCodes();
-	if (mBody->mClassno == pn_BlockReturnNode) {
+	if (!hasVarExprs && mBody->mClassno == pn_BlockReturnNode) {
 		compileOpcode(opPushSpecialValue, opsvNil);
 	} else {		
 		SetTailBranch branch(true);
