@@ -33,8 +33,8 @@ AbstractPlayControl {
 		bundle.addAction(this, \stop);
 	}
 	
-	controlNames { ^[] }
-	controlValues { ^[] }
+	controlNames { ^nil } // normally empty, function returns names.
+	controlValues { ^nil }
 	
 	play { this.subclassResponsibility(thisMethod) }
 	stop { this.subclassResponsibility(thisMethod) }
@@ -142,9 +142,8 @@ PatternControl : StreamControl {
 }
 
 SynthControl : AbstractPlayControl {
-	var <server, <nodeID;
+	var <server, <>nodeID;
 	var canReleaseSynth=true, canFreeSynth=true;
-	
 	
 	
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
@@ -184,6 +183,7 @@ SynthControl : AbstractPlayControl {
 			nodeID = nil;
 		};
 	}
+	
 	
 	pause { arg clock, quant=1;
 		this.run(clock, quant, false); 
@@ -252,8 +252,6 @@ SynthDefControl : SynthControl {
 	}
 	
 	name { ^synthDef.name }
-	controlNames { ^source.def.argNames }
-	controlValues { ^source.def.prototypeFrame }
 	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
 		parents.do { arg proxy; proxy.wakeUpToBundle(bundle, checkedAlready) }
@@ -262,6 +260,7 @@ SynthDefControl : SynthControl {
 		if(parents.isNil) { parents = IdentitySet.new };
 		parents.add(proxy);
 	}
-	
+	controlNames { ^source.argNames } // normally empty, function returns names.
+	controlValues { ^source.defaultArgs }
 }
 

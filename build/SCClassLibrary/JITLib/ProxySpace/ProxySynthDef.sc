@@ -11,6 +11,7 @@ ProxySynthDef : SynthDef {
 	
 	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
+		var hasGateArg=false, hasOutArg=false;
 		name = "temp__" ++ name;		
 		def = super.new(name, { 
 			var  out, outCtl;
@@ -23,7 +24,12 @@ ProxySynthDef : SynthDef {
 			isScalar = rate === 'scalar';
 			numChannels = output.numChannels;
 			// check for out key. this is used by internal control.
-			if(isScalar.not and: { func.def.argNames.asArray.includes(\out) })
+			func.def.argNames.do { arg name;
+				if(name === \out) { hasOutArg = true };
+				if(name === \gate) { hasGateArg = true };
+			};
+			
+			if(isScalar.not and: hasOutArg)
 			{ 
 				"out argument is provided internally!".error; 
 				^nil 
@@ -39,7 +45,10 @@ ProxySynthDef : SynthDef {
 						};
 			
 			hasOwnGate = canFree && hasOwnGate; //only counts when it can actually free synth.
-			
+			if(hasOwnGate.not && hasGateArg) {
+				"supplied gate overrides inner gate.".error;
+				^nil 
+			};
 			//"gate detection:".postln;
 			//[\makeFadeEnv, makeFadeEnv, \canFree, canFree, \hasOwnGate, hasOwnGate].debug;
 			

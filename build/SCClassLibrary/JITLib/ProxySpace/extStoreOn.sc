@@ -17,7 +17,11 @@
 		^(envir ? currentEnvironment).findKeyForValue(this) 
 		//don't want to add a slot yet. not optimized
 	}
-	
+	storeOn { arg stream;
+		var key;
+		key = this.key;
+		if(key.notNil) {Êstream << "~" << key } { super.storeOn(stream) };
+	}
 }
 
 +BinaryOpPlug {
@@ -49,14 +53,16 @@
 + ProxySpace {
 	
 	storeOn { arg stream, keys;
-		var proxies;
-		if(clock.isKindOf(TempoBusClock)) { stream << "p.makeTempoClock;"; stream.nl.nl };
+		var proxies, hasGlobalClock;
+		hasGlobalClock = clock.isKindOf(TempoBusClock);
+		if(hasGlobalClock) { stream << "p.makeTempoClock(" << clock.tempo << ");"; stream.nl.nl };
 		// find keys for all parents
 		if(keys.notNil) {
 			proxies = IdentitySet.new;
 			keys.do { arg key; envir[key].getFamily(proxies) };
 			keys = proxies.collect { arg item; item.key(envir) }; 
 		} { keys = envir.keys };
+		// if(hasGlobalClock) { keys.remove(\tempo) };
 		// add all objects to compilestring
 		keys.do { arg key; 
 			var proxy, str, multiline;

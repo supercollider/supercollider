@@ -6,8 +6,10 @@ EnvironmentRedirect {
 	classvar <>saveEnvir, <>saveTopEnvir;
 	
 	*new { arg name;
-		^super.newCopyArgs(Environment.new, name)
+		^super.newCopyArgs(nil, name).clear
 	}
+	
+	clear { envir = Environment.new(32, nil, Environment.new) }
 	
 	*push { arg name;
 		^this.new(name).push;

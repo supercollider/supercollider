@@ -8,7 +8,8 @@
 	
 	//objects can define their own wrapper classes dependant on 
 	//how they play, stop, build, etc. see SynthDefControl for example
-	//the original (wrapped) object can be reached by the .source message 
+	//the original (wrapped) object can be reached by the .source message
+	//for objects that only create ugen graphs, define prepareForProxySynthDef(proxy)
 	
 	proxyControlClass {
 		^SynthDefControl
@@ -40,6 +41,7 @@
 	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }
 	
 	argNames { ^nil }
+	defaultArgs { ^nil }
 	numChannels { ^1 } 
 	clear { }
 	//support for unop / binop proxy
@@ -52,13 +54,9 @@
 +Function {
 	prepareForProxySynthDef { ^this }
 	argNames { ^def.argNames }
+	defaultArgs { ^def.prototypeFrame }
 }
 
-+SequenceableCollection {
-	prepareForProxySynthDef { arg proxy;
-		^{ this.collect({ arg item; item.value(proxy) }) }
-	}
-}
 
 +SimpleNumber {
 	prepareForProxySynthDef { arg proxy;
@@ -71,12 +69,9 @@
 }
 
 +BusPlug {
-	buildForProxy { arg proxy, channelOffset=0, nameEnd;
-		var ok;
-		ok = proxy.initBus(this.rate, this.numChannels);
-		^if(ok) {
-			^{ this.value(proxy) }.buildForProxy(proxy, channelOffset, nameEnd) 
-		}
+	prepareForProxySynthDef { arg proxy;
+		proxy.initBus(this.rate, this.numChannels);
+		^{ this.value(proxy) }
 	}
 
 }
@@ -84,8 +79,8 @@
 //needs a visit: lazy init + channelOffset
 
 +Bus {
-	makeProxyControl { arg channelOffset=0;
-		^BusPlug.for(this).makeProxyControl(channelOffset);
+	prepareForProxySynthDef { arg proxy;
+		^BusPlug.for(this).prepareForProxySynthDef(proxy);
 	}
 }
 
@@ -112,7 +107,7 @@
 
 
 +AbstractPlayControl {
-	makeProxyControl {} //already wrapped
+	makeProxyControl { ^this.deepCopy } //already wrapped, but needs to be copied
 }
 
 
@@ -150,11 +145,11 @@
 	}
 	
 	buildForProxy { arg proxy, channelOffset=0;
-		var player, ok, index, server, event, numChannels, rate;
+		var player, ok, index, server, numChannels, rate;
 		player = this.asEventStreamPlayer;
 		ok = if(proxy.isNeutral) { 
 			rate = player.event.at(\rate) ? 'audio';
-			numChannels = player.event.at(\numChannels) ? 2;
+			numChannels = player.event.at(\numChannels) ? NodeProxy.defaultNumAudio;
 			proxy.initBus(rate, numChannels);
 		} {
 			rate = proxy.rate; // if proxy is initialized, it is user's responsibility
@@ -164,23 +159,15 @@
 		^if(ok) { 
 				index = proxy.index;
 				server = proxy.server;
-				
-				// event = player.event;
-				event = Event.default;
-				event.use({
-					
+				player.event.use({
 					~channelOffset = channelOffset; // default value
-					//~addAction = 1;
+					~out = { ~channelOffset % numChannels + index };
+					~server = { server };
 					~finish = {
-						~out = ~channelOffset % numChannels + index;
-						~server = server;
-						~group = proxy.group.asNodeID;
-						~freq = ~freq.value + ~detune;
-						~amp = ~amp.value;
-						~sustain = ~sustain.value;
+						~out = ~out.value;
+						~group = proxy.group.asNodeID;// group shouldn't be assigned by the user
 					}
 				});
-				player.event = event;
 			^player
 		} { nil }
 
@@ -243,7 +230,7 @@
 	hasGateControl {
 		if(controlNames.isNil) { ^false };
 		^controlNames.any { arg cn; 
-			cn.notNil and: { cn.name == "gate" } and: { cn.rate !== 'scalar' } 
+			cn.notNil and: { cn.name == 'gate' } and: { cn.rate !== 'scalar' } 
 		};
 	}
 }

@@ -19,14 +19,14 @@ InBus {
 			index = Array.fill(numChannels, { arg i; startIndex + (i % n) });
 			numChannels = 1;
 		};
-		out = if(offset.isKindOf(UGen)) {
-					if(rate === 'audio')
-						{ XInFeedback.ar(index, numChannels) }
-						{ XIn.kr(index, numChannels) }
-			} {
+		out = if(offset.isInteger) {
 					if(rate === 'audio')
 						{ InFeedback.ar(index, numChannels) }
 						{ In.kr(index, numChannels) }
+			} {
+					if(rate === 'audio')
+						{ XInFeedback.ar(index, numChannels) }
+						{ XIn.kr(index, numChannels) }
 			};
 		
 		// ar -> kr is not a problem so much (mainly with triggers). there is no A2K ugen

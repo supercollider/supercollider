@@ -4,7 +4,7 @@
 ProxySpace : EnvironmentRedirect {
 	classvar <>all; //access
 	
-	var <server, <clock, <fadeTime, <>awake=true;
+	var <server, <clock, <fadeTime, <>awake=true, tempoProxy;
 	
 	*initClass {
 		all = IdentitySet.new;
@@ -40,9 +40,8 @@ ProxySpace : EnvironmentRedirect {
 		proxy.fadeTime = 0.0;
 		proxy.source = tempo;
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
-		super.put(\tempo, proxy);
+		envir.parent.put(\tempo, proxy);
 	}
-	
 	
 	
 	makeProxy { arg key;
@@ -101,16 +100,19 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	free { arg fadeTime;
-		this.do({ arg proxy; proxy.free(fadeTime) });
+		this.do { arg proxy; proxy.free(fadeTime) };
+		tempoProxy.free;
 	}
 	
 	clear {
 		this.do({ arg proxy; proxy.clear });
-		envir.makeEmpty;
+		tempoProxy.clear;
+		super.clear;
 	}
 	
 	release { arg fadeTime;
 		this.do({ arg proxy; proxy.release(fadeTime) });
+		tempoProxy.free;
 	}
 	
 	remove { ^all.remove(this) }
