@@ -204,7 +204,7 @@ Object {
 	} 
 	
 	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
-	notYetImplemented { NotYetImplemented(nil, this).throw; }
+	notYetImplemented { NotYetImplementedError(nil, this).throw; }
 	
 	dumpBackTrace { _DumpBackTrace }
 	getBackTrace { _GetBackTrace }
