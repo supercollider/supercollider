@@ -51,25 +51,13 @@
 }
 
 
-  /*
--(void)getPaths
-{
-    NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
-
-    NSArray *urls = [docctl URLsFromRunningOpenPanel];
-    if(urls) {
-        [self returnPaths: urls];
-    } else {
-        [self cancel];
-    }
-}
-*/
 -(void)getPaths
 {  
     if (!openPanel) {
 		openPanel = [NSOpenPanel openPanel];
 		[openPanel retain];
 	}
+	[openPanel setAllowsMultipleSelection: YES];
     if(NSOKButton == [openPanel runModalForTypes: nil]) {
          [self returnPaths: [openPanel URLs]];
     } else {
