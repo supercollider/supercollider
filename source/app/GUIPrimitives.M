@@ -607,6 +607,25 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 					break;
 				}
 			}
+			
+			// trim whitespace
+			int start = underlineRange.location;
+			int end = underlineRange.location + underlineRange.length;
+			for (int i=start; i<end; ++i) {
+				int c = [string characterAtIndex: i];
+				if (!isspace(c)) break;
+				underlineRange.location ++;
+				underlineRange.length --;
+			}
+
+			start = underlineRange.location + underlineRange.length - 1;
+			end = underlineRange.location;
+			for (int i=start; i>=end; --i) {
+				int c = [string characterAtIndex: i];
+				if (!isspace(c)) break;
+				underlineRange.length --;
+			}
+			
 			if ((int)underlineRange.length > 0) {
 				[doc selectRangeStart: underlineRange.location size: underlineRange.length];
 				SetTrue(a);
