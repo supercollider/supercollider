@@ -629,7 +629,7 @@ void TCoin_next_k(TCoin* unit, int inNumSamples)
 	RGET
 	if (trig > 0.f && unit->m_trig <= 0.f) {
 		
-		if(fcoin(s1,s2,s3) > ZIN0(0)) {
+		if(frand(s1,s2,s3) < ZIN0(0)) {
 			level = trig;
 		}
 	}
@@ -644,19 +644,19 @@ void TCoin_next(TCoin* unit, int inNumSamples)
 {	
 	float *trig = ZIN(1);
 	float *out = ZOUT(0);
-	float level;
+	float level = 0.f;
 	float prevtrig = unit->m_trig;
 	float probability = ZIN0(0);
 	RGET
 	LOOP(inNumSamples, 
 		float curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) {
-			if(fcoin(s1,s2,s3) > probability) {
+			if(frand(s1,s2,s3) < probability) {
 					level = curtrig;
 			}
 		}
 		prevtrig = curtrig;
-		level = ZOUT0(0);
+		ZXP(out) = level; 
 	)
 	RPUT
 	unit->m_trig = prevtrig;
