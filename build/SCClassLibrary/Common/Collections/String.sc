@@ -164,6 +164,10 @@ String[char] : RawArray {
 		^" " ++ this ++ " "
 	}
 
+	scramble {
+		^this.as(Array).scramble.as(String)
+	}
+
 	compile { ^thisProcess.interpreter.compile(this); }
 	interpret { ^thisProcess.interpreter.interpret(this); } 
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
