@@ -54,19 +54,26 @@ end:
     return arg;
 }
 
-#else
+#elif defined(__ppc__) || defined(__powerpc__) || defined(__PPC__)
 
-static __inline__ int CLZ(int arg) {
-#if defined(__ppc__) || defined(__PPC__)
-         __asm__ volatile("cntlzw %0, %1" : "=r" (arg) : "r" (arg));
-#elif defined(__i386__)
-         __asm__ volatile("bsrl %0, %0\n\txorl $31,%0\n" : "=r" (arg) : 
-"0" (arg)
-);
-#endif
-         return arg;
+static __inline__ int32 CLZ(int32 arg) {
+	__asm__ volatile("cntlzw %0, %1" : "=r" (arg) : "r" (arg));
+	return arg;
 }
 
+#elif defined(__i386__) || defined(__x86_64__)
+static __inline__ int32 CLZ(int32 arg) {
+	if (arg) {
+		__asm__ volatile("bsrl %0, %0\nxorl $31, %0\n"
+						 : "=r" (arg) : "0" (arg));
+	} else {
+		arg = 32;
+	}
+	return arg;
+}
+
+#else
+# error "clz.h: Unsupported architecture"
 #endif
 
 // count trailing zeroes

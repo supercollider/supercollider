@@ -1,3 +1,20 @@
+// copyright 2003 stefan kersten <steve@k-hornz.de>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as
+// published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+// USA
+
 #include "SC_TerminalClient.h"
 
 #include <PyrObject.h>
@@ -50,7 +67,9 @@ static char gInputInterpretPrintDelimiter = 0x0c;		// ^L
 
 static FILE* gPostFile = stdout;
 
-// // SC_StringBuffer
+// =====================================================================
+// SC_StringBuffer
+// =====================================================================
 
 const size_t kGrowAlign = 256;
 const size_t kGrowMask = kGrowAlign-1;
@@ -145,7 +164,10 @@ void SC_StringBuffer::growBy(size_t request)
 	}
 }
 
-// // SC_LibraryConfigFile
+// =====================================================================
+// SC_LibraryConfigFile
+//    simple library configuration file parser
+// =====================================================================
 
 const char* kSC_LibraryConfigFileName = ".sclang.cfg";
 
@@ -323,7 +345,9 @@ void SC_LibraryConfigFile::read(const char* fileName, LibraryConfig* libConf)
     }
 }
 
-// // SC_TerminalClient
+// =====================================================================
+// SC_TerminalClient
+// =====================================================================
 
 SC_TerminalClient::SC_TerminalClient()
 	: mShouldBeRunning(false), mExitCode(0), mScratch(0)
@@ -675,7 +699,9 @@ void* SC_TerminalClient::tickThreadFunc(void* data)
 	return 0;
 }
 
-// // Library functions
+// =====================================================================
+// Library functions
+// =====================================================================
 
 void setPostFile(FILE* file)
 {
