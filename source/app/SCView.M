@@ -2827,7 +2827,7 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, double step)
         y = valIn * (mBounds.height - thumby - 2);
         y = mBounds.y + mBounds.height - y - 1 - thumby; 
         x = mBounds.x + x + 1;
-        if(mIsFilled) thumby = mBounds.width - y;
+        if(mIsFilled) thumby = mBounds.height;
     } else {
         thumbx = mThumbSizeY;
 		if(mElasticMode){
