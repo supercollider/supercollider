@@ -268,7 +268,7 @@ NodeProxy : BusPlug {
 	}
 	
 	init {
-		nodeMap = ProxyNodeMap.new.proxy_(this); 
+		nodeMap = ProxyNodeMap.new; 
 		objects = Order.new;
 		loaded = false;
 	}
@@ -401,8 +401,8 @@ NodeProxy : BusPlug {
 	linkNodeMap {
 		var index;
 		index = this.index;
-		if(index.isNil) { Error("couldn't allocate bus").throw };
-		nodeMap.set(\out, index, \i_out, index);
+		if(index.notNil) { nodeMap.set(\out, index, \i_out, index) };
+		nodeMap.proxy = this;
 	}
 	
 	bus_ { arg inBus;
@@ -437,27 +437,34 @@ NodeProxy : BusPlug {
 	
 	// applying the settings to nodes //
 	
-	sendNodeMap { arg bundle;
-		bundle = bundle ? MixedBundle.new;
+	sendNodeMap {
+		var bundle;
+		bundle = MixedBundle.new;
 		nodeMap.addToBundle(bundle, group);
 		bundle.schedSend(server, clock);
 	}
 	
-	nodeMap_ { arg map; // keep fadeTime?
-		var bundle, args;
+	nodeMap_ { arg map, xfade=true;
+		var bundle, old, oldargs, fadeTime;
+		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
 		bundle = MixedBundle.new;
-		args = nodeMap.unsetArgs.debug;
+		old = nodeMap;
 		nodeMap = map;
 		this.linkNodeMap;
-		if(this.isPlaying) { 
-			if(args.notNil) { bundle.add(["/n_set", group.nodeID] ++ args) };
-			this.sendNodeMap(bundle) 
+		if(this.isPlaying) {
+			if(xfade) { this.sendEach(nil,true) }
+			{
+			oldargs = nodeMap.unsetArgs; 
+			if(oldargs.notNil) { bundle.add(["/n_set", group.nodeID] ++ oldargs) }; // unmap old
+			nodeMap.addToBundle(bundle, group); // map new
+			bundle.schedSend(server, clock);
+			}
 		};
 	}
 	
 	fadeToMap { arg map, interpolKeys;
 		var fadeTime, values;
-		fadeTime = this.fadeTime;
+		fadeTime = this.fadeTime; // todo: old args
 		if(interpolKeys.notNil) { 
 			values = interpolKeys.asCollection.collect { arg item; map.settings[item].value };
 			this.lineAt(interpolKeys, values) 
@@ -485,23 +492,19 @@ NodeProxy : BusPlug {
 	}
 	
 	// derive names and default args from synthDefs
-	supplementNodeMap { arg keys;
+	supplementNodeMap { arg keys, replaceOldKeys=false;
 		objects.do { |obj|
-				var names, values;
-				names = obj.controlNames.asArray;
-				values = obj.controlValues.asArray;
-				names.do { arg name,i;
-					var value;
-					value = values[i];
-					name = name.asSymbol; 
-					if (nodeMap.at(name).isNil and: { keys.isNil or: { keys.includes(name) } })
-						{ 
-							if(value.isSequenceableCollection) {
-								nodeMap.setn(name, value)
-							} {
-								nodeMap.set(name, value)
-							} 
-						}
+				var controlNames, excluded;
+				controlNames = obj.controlNames.asCollection;
+				excluded = #[\out, \i_out, \gate];
+				controlNames.do { arg cn,i;
+					var name;
+					name = cn.name; 
+					if (
+						excluded.includes(name).not 
+						and: { replaceOldKeys or: { nodeMap.at(name).isNil } }
+						and: { keys.isNil or: { keys.includes(name) } }
+					) { nodeMap.set(name, cn.defaultValue) }
 				};
 		};
 	}		
@@ -568,7 +571,7 @@ NodeProxy : BusPlug {
 		
 		this.put(i) { arg out;
 			var e;
-			e = EnvGate.new;
+			e = EnvGate.new * Control.names(["wet"++i]).kr(1.0);
 			if(this.rate === 'audio') {
 				XOut.ar(out, e, SynthDef.wrap(func, nil, [In.ar(out, this.numChannels)]))
 			} {
@@ -845,7 +848,7 @@ NodeProxy : BusPlug {
 	release { arg fadeTime; this.free(fadeTime, false) }
 	
 	
-	set { arg ... args;
+	set { arg ... args; // pairs of keys or indices and value
 		nodeMap.set(*args);
 		if(this.isPlaying) { 
 			server.sendBundle(server.latency, [15, group.nodeID] ++ args); 
@@ -858,8 +861,7 @@ NodeProxy : BusPlug {
 	}
 	
 	// map to a control proxy
-	map { arg key, proxy ... args;
-		args = [key,proxy]++args;
+	map { arg ... args; // key, proxy ... args; 
 		nodeMap.map(*args);
 		if(this.isPlaying) { 
 			nodeMap.updateBundle;
@@ -968,7 +970,6 @@ NodeProxy : BusPlug {
 			ctlIndex = ctlBus.index;
 			bundle = ["/n_map", id];
 			keys.do { arg key, i; bundle = bundle.addAll([key, ctlIndex + i]) };
-			this.supplementNodeMap;
 			missing = keys.select { arg key; nodeMap.settings[key].isNil };
 			if(missing.notEmpty) { 
 				this.supplementNodeMap(missing); 
