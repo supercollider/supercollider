@@ -27,6 +27,9 @@
 	}
 }
 
+
+
+/*
 //for now:
 +Patch {
 	defArgs {
@@ -39,6 +42,7 @@
 	}
 
 }
+*/
 
 /*
 +AbstractFunction {
@@ -89,8 +93,9 @@
 + Pattern {
 	prepareForProxySynthDef { arg proxy;
 		var eventStream;
-		eventStream = Pevent(this, 
-			Event.protoEvent.put(\bus, proxy.outbus)
+		eventStream = Pevent(
+			this.collect({ arg item; item.put(\bus, proxy.outbus) }), 
+			Event.protoEvent
 		);
 			eventStream.play;
 		^0.0
