@@ -238,7 +238,7 @@ s.loadSynthDef(\cf4 "wah"\cf0 );\
 \
 g = \cf3 Group\cf0 .new;\
 \
-3.do(\{\
+l = Array.fill(3,\{\
 	\cf5 // random freq for each synth, added to g at the head\
 \cf0 	\cf3 Synth\cf0 (\cf4 "moto-rev"\cf0 ,[\cf4 "out"\cf0 ,0,\cf4 "freq"\cf0 ,rrand(10,120)],g,\cf2 \\addToHead\cf0 );\
 \});\
@@ -250,11 +250,10 @@ g = \cf3 Group\cf0 .new;\
 \
 g.set(\cf4 "freq"\cf0 ,80);\
 \
-\
 r = \cf3 Routine\cf0 (\{\
 	\cf3 inf\cf0 .do(\{\
 		\cf5 //iterate over nodes in g\
-\cf0 		g.do(\{ \cf3 arg\cf0  node;\
+\cf0 		l.do(\{ \cf3 arg\cf0  node;\
 			node.set(\cf4 "freq"\cf0 ,rrand(10,120));\
 			1.0.wait;\
 		\});\
@@ -292,7 +291,7 @@ x.free;\
 \cf0 g.isPlaying.postln;\
 \
 \
-3.do(\{\
+l = Array.fill(3,\{\
 	\cf5 // random freq for each synth, added to g at the head\
 \cf0 	s = \cf3 Synth\cf0 (\cf4 "moto-rev"\cf0 ,[\cf4 "out"\cf0 ,0,\cf4 "freq"\cf0 ,rrand(10,1200)],g,\cf2 \\addToHead\cf0 );\
 \});\
@@ -303,6 +302,10 @@ x.free;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 g.free;\
 \
+// the synths are freed, but need to free the nodeIDs\
+l.do(\{ arg sy;\
+	sy.free(sendFlag: false) // no need to send a message\
+\});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 //g.free will free the group AND all the nodes in one go.\
