@@ -149,7 +149,7 @@ funretval	:
 		;			
 
 blocklist1	: blockliteral
-			| blocklist blockliteral
+			| blocklist1 blockliteral
 				{ 
 					$$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$2); 
 				}
@@ -161,7 +161,7 @@ blocklist	:	{ $$ = 0; }
 
 msgsend : name blocklist1
 			{ 
-				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 0, 0); 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$2, 0, 0); 
 			}
 		| name '(' arglist1 optkeyarglist ')' blocklist
 			{ 
