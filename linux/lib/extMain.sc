@@ -1,15 +1,12 @@
 + Main {
 	startup {
 		super.startup;
-
+		
+		// Document setup
+		Document.startup;
+		
 		// Server setup
 		Server.program = "scsynth";
-		Server.internal.options.numOutputBusChannels = 8;
-		Server.internal.options.numInputBusChannels = 8;
-		Server.internal.options.memSize = 8192;
-		Server.local.options.numOutputBusChannels = 8;
-		Server.local.options.numInputBusChannels = 8;
-		Server.local.options.memSize = 8192;
 		this.makeServerWindows;
 
 		// set the 's' interpreter variable to the default server.

@@ -18,6 +18,7 @@
 EmacsDocument : Document
 {
 	classvar documentMap;
+	var title, path;
 	var <isEdited, <isListener, <envir;
 
 	*initClass {
@@ -91,13 +92,11 @@ EmacsDocument : Document
 	}
 
 	//document setup
-	title {
-		^title
-	}
-	title_ { | name, completionFunc |
-		Emacs.sendToLisp(\_documentRename, [this, name], {
+	title_ { | argName, completionFunc |
+		Emacs.sendToLisp(\_documentRename, [this, argName], {
 			completionFunc.value(this);
-		})
+		});
+		super.title_(argName);
 	}
 
 	background_ {arg color, rangestart= -1, rangesize = 0;
@@ -204,10 +203,16 @@ EmacsDocument : Document
 		dataptr = nil;
 	}
 
-	prSetName { | argName |
-		title = argName;
+	prGetTitle {
+		^title
 	}
-	prSetPath { | argPath |
+	prSetTitle { | argTitle |
+		title = argTitle;
+	}
+	prGetFileName {
+		^path
+	}
+	prSetFileName { | argPath |
 		path = argPath;
 		if (path.notNil) {
 			path = this.class.standardizePath(path);
