@@ -215,11 +215,10 @@ void Node_StateMsg(Node* inNode, int inState)
 	NodeEndMsg msg;
 	msg.mWorld = inNode->mWorld;
 	msg.mNodeID = inNode->mID;
-	if (inNode->mParent) {
-		msg.mGroupID = inNode->mParent->mNode.mID;
-	} else {
-		msg.mGroupID = LONG_MIN;
-	}
+	msg.mGroupID = inNode->mParent ? inNode->mParent->mNode.mID : -1 ;
+	msg.mPrevNodeID = inNode->mPrev ? inNode->mPrev->mID : -1 ;
+	msg.mNextNodeID = inNode->mNext ? inNode->mNext->mID : -1 ;
+	
 	msg.mState = inState;
 	inNode->mWorld->hw->mNodeEnds.Write(msg);
 }

@@ -48,6 +48,8 @@ struct NodeEndMsg {
 	World *mWorld;
 	int32 mNodeID;
 	int32 mGroupID;
+	int32 mPrevNodeID;
+	int32 mNextNodeID;
 	int32 mState;
 	
 	void Perform();

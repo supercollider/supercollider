@@ -642,12 +642,16 @@ void NodeEndMsg::Perform()
 			packet.adds("/n_move");
 			break;
 	}
-	packet.maketags(3);
+	packet.maketags(5);
 	packet.addtag(',');
+	packet.addtag('i');
+	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
 	packet.addi(mNodeID);
 	packet.addi(mGroupID);
+	packet.addi(mPrevNodeID);
+	packet.addi(mNextNodeID);
 
 	ReplyAddress *users = mWorld->hw->mUsers;
 	int numUsers = mWorld->hw->mNumUsers;
