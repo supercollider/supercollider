@@ -206,11 +206,9 @@ Pchain : Pattern {
 		};
 	}
 	storeOn { arg stream;
-		stream << "(" <<< patterns[0];
-		(patterns.size - 1).do {|i|
-			stream << " <> " <<< patterns[i]
-		};
-		stream << ")"
+			stream << "("; 
+			patterns.do { |item,i|  if(i != 0) { stream << " <> " }; stream <<< item; }; 
+			stream << ")"
 	}
 }
 
