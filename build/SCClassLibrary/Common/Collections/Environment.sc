@@ -1,5 +1,6 @@
 
 Environment : IdentityDictionary {
+	classvar <>saveEnvir;
 	
 	*new { arg size=8; ^super.new(size) }
 	*make { arg function;
@@ -31,7 +32,18 @@ Environment : IdentityDictionary {
 		^result
 	}
 	
-	eventAt { arg key; ^this.at(key) }	
+	eventAt { arg key; ^this.at(key) }
+	
+	*pop {
+		if(saveEnvir.notNil) { currentEnvironment = saveEnvir };
+	}
+	pop { this.class.pop }
+	push {
+		this.class.pop;
+		if(currentEnvironment.notNil) { this.class.saveEnvir = currentEnvironment };
+		currentEnvironment = this;
+	}
+	
 }
 
 // Events are returned by Pattern Streams
