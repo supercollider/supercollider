@@ -14,7 +14,7 @@ BusPlug : AbstractFunction {
 	}
 	
 	*for { arg bus;
-		bus = bus.asBus.as(SharedBus);
+		bus = bus.asBus;
 		^this.new(bus.server).bus_(bus)
 	}
 	
@@ -86,15 +86,14 @@ BusPlug : AbstractFunction {
 								this.class.defaultNumControl							})
 		});
 		this.freeBus;
-		bus = SharedBus.alloc(rate, server, numChannels);
+		bus = Bus.alloc(rate, server, numChannels);
 		this.makeBusArg;
 	}
 	
 	freeBus {
 		if(bus.notNil, { 
 			bus.setAll(0); // clean up
-			bus.releaseBus; // free shared bus
-			//bus.free;
+			bus.free;
 		});
 		bus = nil;
 		this.makeBusArg;
@@ -467,7 +466,7 @@ NodeProxy : BusPlug {
 		this.rebuild;
 	}
 		
-	bus_ { arg inBus; // should be a SharedBus, or releaseBus should be implemented in Bus
+	bus_ { arg inBus;
 		if(server != inBus.server, { "can't change the server".inform; ^this });
 		super.bus_(inBus);
 		this.linkNodeMap;
