@@ -78,30 +78,25 @@ Sfin : Stream {
 }
 
 Stri : Sfin {
-	*new { arg  start=0.0, step=0.125, min=0.0, max=1.0, count=1.0;
+	*new { arg count, start=0.0, step=0.125, min=0.0, max=1.0;
 		^super.new(count, Ptri(min, max, step, start, inf))
 	}
 }
 
 Sbrown : Sfin {
-	*new { arg  lo=0.0, hi=1.0,  step=0.125, count=1.0;
+	*new { arg count, lo=0.0, hi=1.0,  step=0.125;
 		^super.new(count, Pbrown(lo, hi, step, inf))
 	}
 
 }
 
 Swhite : Sfin {
-	*new { arg  lo=0.0, hi=1.0, count=1.0;
+	*new { arg count, lo=0.0, hi=1.0;
 		^super.new(count, Pwhite(lo, hi, inf))
 	}
 
 }
 
-Srand : Sfin {
-	*new { arg  list, count=1.0;
-		^super.new(count, Pbrown(list, inf))
-	}
-}
 
 
 
