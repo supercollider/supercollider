@@ -221,6 +221,15 @@ LFNoise2 : LFNoise0 {
 LFClipNoise : LFNoise0 {
 }
 
+LFDNoise0 : LFNoise0 {
+}
+
+LFDNoise1 : LFNoise0 {
+}
+
+LFDNoise3 : LFNoise0 {
+}
+
 Hasher : UGen {
 	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in).madd(mul, add)
