@@ -200,7 +200,7 @@ Server : Model {
 			if(serverRunning.not,{
 				"server failed to start".error;
 			}, onComplete);
-		}).play;
+		}).play(AppClock);
 	}
 	
 	addStatusWatcher {
