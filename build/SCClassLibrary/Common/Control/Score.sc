@@ -74,7 +74,7 @@ Score {
 			sectionlist = sectionlist.add(item);
 			}
 		};
-		//sectionlist = sectionlist.add([end - start, [\c_set, 0, 0]]);
+		sectionlist = sectionlist.add([end - start, [\c_set, 0, 0]]); // add dummy command
 		if(configevents.notNil, 
 			{if(configevents.isArray, 
 				{if(configevents[0] == 0.0,
