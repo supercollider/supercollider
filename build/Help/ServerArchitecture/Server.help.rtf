@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;
-\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Server
@@ -16,12 +16,14 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b ClientVsServer
 \f1\b0  for more details on the distinction.) It forwards osc-messages and keeps a number of allocators that keep track of id's for nodes, buses and buffers. The server application is a commandline program, so all commands apart from the osc-messages are unix commands.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \ul Class Methods
+\f0\b\fs30 \cf0 \ul Class Methods
 \f1\b0\fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *new(name, address, options, clientID)
+\f0\b \cf0 *new(name, address, options, clientID)
 \f1\b0 \
 	\
 		
@@ -57,7 +59,13 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b *internal
 \f1\b0 \
 		returns the local server, stored in classvar local (created already on initClass)\
-\
+
+\f0\b \
+*default
+\f1\b0 \
+		returns the default server, default: local. this can be set to any server and any synths are created\
+		on this server.\
+		\
 
 \f0\b *quitAll
 \f1\b0 \
@@ -74,12 +82,14 @@ A Server object is the client-side representation of a server app and is used to
 		free all nodes in all servers\
 		\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \ul Instance Methods
+\f0\b\fs30 \cf0 \ul Instance Methods
 \f1\b0\fs24 \ulnone \
 			\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b sendMsg(arg1, arg2, arg3, ... argN)
+\f0\b \cf0 sendMsg(arg1, arg2, arg3, ... argN)
 \f1\b0 \
 \
 		send an osc message to the server.\
@@ -205,28 +215,27 @@ A Server object is the client-side representation of a server app and is used to
 		1 - print the parsed contents of the message.\
 		2 - print the contents in hexadecimal.\
 		3 - print both the parsed and hexadecimal representations of the contents.\
-	
+	\
+\
+\
+\
+
 \f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul \ulc0 Scope Support
+\f0\b\fs30 \cf0 \ul Scope Support
 \f1\b0\fs24 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 \
 
 \f1\b0 This only works with the internal server, and currently only on OSX.\
-\
-
-\f0\b NOTE: 
-\f1\b0 Server.scope uses 
-\f0\b InFeedback
-\f1\b0 , but you are still responsible for order of execution. If you add synths earlier in the node order which write to the same busses as those after the scope synth, the output of the later synths will be overwritten before they reach the scope. You can access the current scope synth using Server.scopeSynth in order to use it as a target, etc. See 
-\f0\b Order-of-execution
-\f1\b0  for more detail on this issue.\
+see
+\f0\b  [Stethoscope] 
+\f1\b0 for details\
 
 \f0\b \
-scope(numChannels, startingChannel, bufsize, zoom)
+scope(numChannels, index, bufsize, zoom, rate)
 \f1\b0 \
 		Opens a scope window showing the audio output of the Server. \
 		\
@@ -235,7 +244,7 @@ scope(numChannels, startingChannel, bufsize, zoom)
 \f1\b0 - the number of channels to be scoped out. \
 			The default is this server's options' numOutputBusChannels.\
 		
-\f0\b startingChannel 
+\f0\b index 
 \f1\b0 - the first channel to be output. The default is 0.\
 		
 \f0\b bufsize 
@@ -243,19 +252,20 @@ scope(numChannels, startingChannel, bufsize, zoom)
 		
 \f0\b zoom
 \f1\b0  - a zoom value for the scope's X axis. Larger values show more. The default is 1.\
-		\
-
-\f0\b scopeSynth\
 		
-\f1\b0 Returns the current scope synth so that it can be used as a target. Nodes added or moved after \
-		the scope synth in the order of nodes may not show up in the scope. (See note above.)\
+\f0\b rate
+\f1\b0  - whether to display audio or control rate buses (either \\audio or \\control)\
 		\
+\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \ul Recording Support
+\f0\b\fs30 \cf0 \ul Recording Support
 \fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the 
+\f1\b0 \cf0 The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the 
 \f0\b DiskOut
 \f1\b0  helpfile for more info. For non-realtime recording, see the 
 \f0\b Non-Realtime-Synthesis
@@ -263,15 +273,23 @@ scope(numChannels, startingChannel, bufsize, zoom)
 \
 
 \f0\b NOTE:
-\f1\b0  These methods do not take care of order-of-execution issues. 
+\f1\b0  
 \f0\b record
-\f1\b0  creates the recording synth at the tail of the Server's RootNode and uses 
+\f1\b0  creates the recording synth at the tail of the Server's default node and uses 
 \f0\b In.ar
-\f1\b0 . Thus if you add nodes after the recording synth their output will not be captured. Solutions to this problem include using \cf3 \\addToHead\cf0 , creating a group and adding all synths to that, and using Server.recordNode to get the recording synth for use as a target. For more detail on this subject see 
+\f1\b0 . Thus if you add nodes after the recording synth their output will not be captured. To avoid this, either use Synth objects (which use the default node as target) or use target nodeID 1, when using an osc message.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf3 \
+example: s.sendMsg("/s_new", "default", 1900, 1,1);
+\f1\fs24 \cf0 \
+\
+For more detail on this subject see 
 \f0\b Order-of-execution
 \f1\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 prepareForRecord(path, headerFormat, sampleFormat, numChannels)\
 
 \f1\b0 		Allocates the necessary buffer, etc. for recording the server's output. (See record below.)\
@@ -315,27 +333,27 @@ prepareForRecord(path, headerFormat, sampleFormat, numChannels)\
 \f1\b0 Returns the current recording synth so that it can be used as a target. Nodes added or moved after \
 		the recording synth in the order of nodes will not be recorded.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\
 
-\f2\fs18 \cf0 s.boot; \cf2 // start the server\cf0 \
+\f2\fs18 s.boot; \cf2 // start the server\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // something to record\cf0 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 SynthDef\cf0 (\cf5 "bubbles"\cf0 , \{\
-	\cf4 var\cf0  f, zout;\
-	f = \cf4 LFSaw\cf0 .kr(0.4, 0, 24, \cf4 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf2 // glissando function\cf0 \
-	zout = \cf4 CombN\cf0 .ar(\cf4 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf2 // echoing sine wave\cf0 \
-	\cf4 Out\cf0 .ar(0, zout);\
+\cf3 SynthDef\cf0 (\cf4 "bubbles"\cf0 , \{\
+	\cf3 var\cf0  f, zout;\
+	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf2 // glissando function\cf0 \
+	zout = \cf3 CombN\cf0 .ar(\cf3 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf2 // echoing sine wave\cf0 \
+	\cf3 Out\cf0 .ar(0, zout);\
 \}).send(s);\
-\cf4 SynthDef\cf0 (\cf5 "tpulse"\cf0 , \{ \cf4 arg\cf0  out=0,freq=700,sawFreq=440.0; \
-	\cf4 Out\cf0 .ar(out, \cf4 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) ) \
+\cf3 SynthDef\cf0 (\cf4 "tpulse"\cf0 , \{ \cf3 arg\cf0  out=0,freq=700,sawFreq=440.0; \
+	\cf3 Out\cf0 .ar(out, \cf3 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) ) \
 \}).send(s);\
 \
 )\
 \
-x = \cf4 Synth\cf0 .new(\cf5 "bubbles"\cf0 );\
+x = \cf3 Synth\cf0 .new(\cf4 "bubbles"\cf0 );\
 \
 s.prepareForRecord("testout.aiff"); \cf2 // you have to call this first\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -347,8 +365,13 @@ s.pauseRecording; \cf2 // pausable\
 s.record \cf2 // start again\
 \
 // add another synth, making sure the node gets added BEFORE the recording synth\
-\cf0 y = \cf4 Synth\cf0 .before(s.recordNode, \cf5 "tpulse"\cf0 ); \cf2 \
+\cf0 y = \cf3 Synth\cf0 .before(s.recordNode, \cf4 "tpulse"\cf0 ); \cf2 \
 \cf0 \
 s.stopRecording; \cf2 // this closes the file and deallocates the buffer recording node, etc.\
 \
-\cf0 x.free; y.free; \cf2 // stop the synths}
+\cf0 x.free; y.free; \cf2 // stop the synths\
+\
+\
+\
+\
+}
