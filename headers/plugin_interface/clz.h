@@ -182,13 +182,13 @@ inline uint32 BitReverse(uint32 x)
 inline uint32 RotateRight (uint32 x, uint32 s)
 {
 	s = s & 31;
-	return (x << 32-s) | (x >> s);
+	return (x << (32-s)) | (x >> s);
 }
    
 inline uint32 RotateLeft (uint32 x, uint32 s)
 {
 	s = s & 31;
-	return (x >> 32-s) | (x << s);
+	return (x >> (32-s)) | (x << s);
 }
 
 #endif

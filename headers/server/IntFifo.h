@@ -46,6 +46,8 @@ public:
 		// we don't really need a compare and swap, but this happens to call 
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mWriteHead, next, &mWriteHead);
+#elif defined SC_WIN32
+    InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
 		mWriteHead = next;
 #endif
@@ -61,6 +63,8 @@ public:
 		// we don't really need a compare and swap, but this happens to call 
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mReadHead, next, &mReadHead);
+#elif defined SC_WIN32
+    InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
 		mReadHead = next;
 #endif

@@ -46,4 +46,8 @@
 #define IN SC_IN
 #define OUT SC_OUT
 
+#ifdef _MSC_VER
+#include <xmath.h>
+#endif //_MSC_VER
+
 #endif
