@@ -27,7 +27,6 @@
 #include "SC_HiddenWorld.h"
 #include "SC_Wire.h"
 #include "SC_WireSpec.h"
-#include "SC_BufSpec.h"
 #include <stdio.h>
 #include <string.h>
 #include "SC_Prototypes.h"
