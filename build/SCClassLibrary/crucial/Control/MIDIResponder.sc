@@ -17,7 +17,7 @@ MIDIResponder {
 
 ResponderArray {
 	var <>array;
-	*new { arg ... array;
+	*new { arg array;
 		^super.new.array_(array)
 	}
 	add { arg thing;
