@@ -880,7 +880,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 			}*/
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
 			
-				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				world->mSampleOffset = (int)floor((double)(schedTime - oscTime) * oscToSamples + 0.5);
 				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
 				else if (world->mSampleOffset >= world->mBufLength) world->mSampleOffset = world->mBufLength-1;
 
@@ -1697,7 +1697,7 @@ void SC_JackDriver::Run()
 			int64 nextTime = oscTime + oscInc;
 			
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
-				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				world->mSampleOffset = (int)floor((double)(schedTime - oscTime) * oscToSamples + 0.5);
 				if (world->mSampleOffset < 0)
 					world->mSampleOffset = 0;
 				else if (world->mSampleOffset >= world->mBufLength)

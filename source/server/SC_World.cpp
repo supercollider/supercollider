@@ -556,7 +556,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 			int64 nextTime = oscTime + oscInc;
 			                        
 			while (schedTime <= nextTime) {
-				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				world->mSampleOffset = (int)floor((double)(schedTime - oscTime) * oscToSamples + 0.5);
 				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
 				else if (world->mSampleOffset >= bufLength) world->mSampleOffset = bufLength-1;
 	
