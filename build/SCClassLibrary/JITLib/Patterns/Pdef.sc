@@ -114,9 +114,13 @@ PatternProxy : Pattern {
 		keys.do { arg key; 
 			var item;
 			item = this.all[key];
-			if(item.notNil) {
-				stream << item.class.name << "(" <<<* item.repositoryArgs << ");";
-				stream << Char.nl;
+			if(item.notNil and: { item.source !== this.default }) {
+				stream << item.class.name << "(" <<<* item.repositoryArgs << ")";
+				if(item.envir.notNil and: { item.envir.notEmpty }) {
+					stream << "\n.envir_(" <<< item.envir << ")"
+				};
+				
+				stream << ";\n"
 			};
 		};
 	}
