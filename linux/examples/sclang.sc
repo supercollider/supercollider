@@ -3,7 +3,8 @@
 // content:		example sclang startup file
 // author:		stefan kersten <steve@k-hornz.de>
 // =====================================================================
-// usage:		install as ~/.sclang.sc
+// NOTE:		this is just an example not needed for
+//				regular operation of sclang!
 // =====================================================================
 
 // set up Server to use a different executable
