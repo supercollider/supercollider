@@ -87,7 +87,7 @@ EnvironmentRedirect {
         ^envir.choose
      }
      
-     makeDocument { arg title, string, backcolor,stringcolor;
+     makeDocument { arg title, string, backcolor, stringcolor;
      	var doc;
      	doc = Document.new("", "untitled proxyspace", false)
      		.background_(backcolor ? rgb(223, 223, 223))
@@ -98,6 +98,7 @@ EnvironmentRedirect {
      linkDoc { arg doc, instantPush=true;
      	doc = doc ? Document.current;
      	if(instantPush) {this.push};
-     	doc.toFrontAction_({ this.push });
+     	doc	.toFrontAction_({ this.push })
+     		.endFrontAction_({ this.pop });
      }
 }
