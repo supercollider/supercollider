@@ -31,11 +31,11 @@ NodeProxy : AbstractFunction {
 	clear {
 		nodeMap = ProxyNodeMap.new;
 		synthDefs = Array.new;
-		this.free;
-		group = nil;
 		this.initParents;
+		this.free;
 		if(outbus.notNil, { outbus.free });
 		outbus = nil;
+		group = nil;
 	}
 
 	initParents {
@@ -84,17 +84,16 @@ NodeProxy : AbstractFunction {
 		if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
 		
 		msg = List.new;
-		playGroup = Group.newMsg(msg, server);
+		playGroup = Group.newToBundle(msg, server);
 		nChan = nChan ? this.numChannels;
 		nChan = nChan.min(this.numChannels);
 		this.wakeUpParentsToBundle(msg);
 		
-		
 		nChan.do({ arg i;
-			Synth.newMsg(msg, "proxyOut-linkDefAr", 
-				[\i_busOut, outBus+i, \i_busIn, outbus.index+i], playGroup, \addToTail);
+			msg.add([9, "proxyOut-linkDefAr", server.nextNodeID, 1,group.asNodeID,
+				\i_busOut, outBus+i, \i_busIn, outbus.index+i]);
 		});
-		//server.listSendBundle(nil, msg);
+		
 		this.schedSendOSC(msg)
 		^playGroup
 	}
@@ -136,7 +135,8 @@ NodeProxy : AbstractFunction {
 	}
 	
 	isPlaying { 
-		^(group.notNil and: {group.isPlaying})
+		//^(group.notNil and: group.isPlaying)
+		^(group.notNil and: {group.isPlaying} and: {server.nodeIsPlaying(group.nodeID)})
 	}
 	
 	printOn { arg stream;
@@ -254,7 +254,7 @@ NodeProxy : AbstractFunction {
 	}
 			
 	schedSendOSC { arg msg, onCompletion;
-					//msg.asCompileString.postln;
+					msg.asCompileString.postln;
 					if(clock.notNil, {
 						clock.sched(0, { 
 							server.listSendBundle(nil, msg); 
@@ -268,7 +268,7 @@ NodeProxy : AbstractFunction {
 	
 	prepareForPlayMsg { arg msg, freeAll=true;
 					if(this.isPlaying.not, {
-						group = Group.newMsg(msg, server, \addToHead);
+						group = Group.newToBundle(msg, server, \addToHead);
 						group.prIsPlaying(true);
 					}, {
 						if(freeAll, {
@@ -282,22 +282,22 @@ NodeProxy : AbstractFunction {
 				
 				if(freeAll, {
 					synthDefs.do({ arg synthDef;
-						Synth.newMsg(msg, synthDef.name, extraArgs, group); 
+						Synth.newToBundle(msg, synthDef.name, extraArgs, group); 
 					});
 					nodeMap.updateMsg(msg, group);
 					
 				}, {
-					synth = Synth.newMsg(msg, synthDefs.last.name, extraArgs, group); 
+					synth = Synth.newToBundle(msg, synthDefs.last.name, extraArgs, group); 
 					nodeMap.updateMsg(msg, synth);
 				});	
 	}
 	
-	freeAllMsg { arg msg;
+	freeAllMsg { arg msg;//revist
 					if(autoRelease, {
-							group.addMsg(msg, 15, [\synthGate, 0.0]); //n_set
-							group.freeAll(false);
+							group.msgToBundle(msg, 15, [\synthGate, 0.0]); //n_set
+							//group.freeAll(false);
 					});
-					//group.addMsg(msg, 24); //g_freeAll
+					//group.msgToBundle(msg, 24); //g_freeAll
 					//	}, {
 	}
 	
