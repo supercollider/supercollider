@@ -21,7 +21,7 @@ OSCresponder {
 			match = all.findMatch(responder);
 			if (match.isNil, { ^false });
 		});
-		match.value(time, msg); 
+		match.value(time, msg, addr); 
 		^true
 	}
 	*add { arg responder;
@@ -39,8 +39,8 @@ OSCresponder {
 		});
 	}
 	
-	value { arg time, msg;
-		action.value(time, this, msg);
+	value { arg time, msg, addr;
+		action.value(time, this, msg, addr);
 	}
 	== { arg that;
 		^(cmdName == that.cmdName) and: { addr == that.addr }
