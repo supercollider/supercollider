@@ -55,7 +55,7 @@ Score {
 	}
 	
 	recordNRT { arg oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, headerFormat = 
-		"AIFF", sampleFormat = "int16", options, completionString;
+		"AIFF", sampleFormat = "int16", options, completionString="";
 		this.class.recordNRT(
 			score, oscFilePath, outputFilePath, inputFilePath, 
 			sampleRate, headerFormat, sampleFormat, options, completionString
