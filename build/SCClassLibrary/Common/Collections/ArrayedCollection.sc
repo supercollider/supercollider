@@ -233,6 +233,18 @@ ArrayedCollection : SequenceableCollection {
 		^this.primitiveFailed 
 		//	^(this / this.sum)
 	}
+	asciiPlot {
+		// draw the waveform down the page as asterisks
+		var lo, hi, scale, pt;
+		lo = this.minItem; 
+		hi = this.maxItem;
+		scale = 72 / (hi - lo);
+		this.size.do({ arg i;
+			pt = ((this.at(i) - lo) * scale).asInteger;
+			pt.do({ " ".post; });
+			"*\n".post;
+		});
+	}
 }
 
 RawArray : ArrayedCollection {
