@@ -100,6 +100,7 @@ NodeMap {
 				settings.do({ arg item; item.addToBundle(bundle) });
 				bundle = bundle.reject({ arg item; item.size == 2 }); //remove unused
 				upToDate = true;
+				[bundle, \madeNewBundle].debug;
 			});
 			
 			bundle.do({ arg item;
@@ -113,7 +114,7 @@ NodeMap {
 			this.updateBundle(target);
 			inBundle.addAll(bundle);
 	}
-	/*
+	
 	copy {
 		var res, nset;
 		res = this.class.new;
@@ -121,7 +122,7 @@ NodeMap {
 		settings.keysValuesDo({ arg key, val; nset.put(key, val.copy) });
 		^res
 	}
-	*/
+	
 
 }
 
