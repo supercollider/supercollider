@@ -316,7 +316,7 @@ void compilePyrClassExtNode(PyrClassExtNode* node, void *result)
 {
 	PyrClass *classobj = node->className->slot.us->u.classobj;
 	if (!classobj) {
-		error("Class extension for nonexisting class '%s'\n", node->className->slot.us->name);
+		error("Class extension for nonexisting class '%s'\n     In file:'%s'", node->className->slot.us->name,gCompilingFileSym->name);
 		return;
 	}
 	gCurrentClass = classobj;
