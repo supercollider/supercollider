@@ -61,7 +61,7 @@ Pdefn : Pattern {
 		^inval
 	}
 	
-	storeArgs { ^[key,pattern] }
+	storeArgs { ^[key] } // assume it was created globally
 	
 	timeToNextBeat {
 		var t;
@@ -120,7 +120,6 @@ Tdef : Pdefn {
 
 	*default { ^Routine({ loop { 1.wait } }) }
 	
-	storeArgs { ^[key,pattern.routineFunc] }
 	
 	constrainStream { arg str;
 		^if(quant.notNil and: { str.notNil }) {
@@ -132,8 +131,9 @@ Tdef : Pdefn {
 	}
 	
 	playOnce { arg argClock, doReset = false, quant;
-		^PauseStream.new(this.asStream)
-			.play(argClock ? clock, doReset, quant ? this.quant)
+		var str;
+		str = if(offset == 0, {Êthis }, { Pseq([offset, this]) }).asStream;
+		^PauseStream.new(str).play(argClock ? clock, doReset, quant ? this.quant)
 	}
 	play { arg argClock, doReset = false, quant;
 		isPlaying = true;
@@ -181,8 +181,6 @@ Pdef : Tdef {
 	}
 		
 	*default { ^Pbind(\freq, \rest) }
-	
-	storeArgs { ^[key, if(pattern.class === PlazyEnvir)Ê{ pattern.func } { pattern }] }
 	
 	
 	constrainStream { arg str;
@@ -236,6 +234,7 @@ Pdef : Tdef {
 		phraseEvent.use {
 			~library = all;
 			~prPlay = ~play;
+			~synthDef = \default;
 			~play = #{
 				var pat, event, recursionLevel;
 				pat = ~library.at(~instrument);
@@ -243,7 +242,7 @@ Pdef : Tdef {
 					event = Event.new.parent_(currentEnvironment.copy);
 					recursionLevel = ~recursionLevel;
 						if(recursionLevel.isNil) {
-							event.put(\instrument, \default); // avoid recursion
+							event.put(\instrument, ~synthDef); // avoid recursion
 						} {
 							if(recursionLevel > 0) {
 								event.put(\recursionLevel, recursionLevel - 1);
