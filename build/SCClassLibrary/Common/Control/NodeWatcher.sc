@@ -56,22 +56,6 @@ AbstractNodeWatcher {
 
 }
 
-NodeIDWatcher : AbstractNodeWatcher {
-	var <>nodeAllocator;
-	
-	*new { arg server;
-		^super.new(server).nodeAllocator_(server.nodeAllocator);
-	}
-	cmds {  ^#["/n_end"] }
-
-	n_end { arg nodeID;
-		//postln("ended" + nodeID);
-		nodeAllocator.free(nodeID);
-	
-	}
-	
-}
-
 
 
 BasicNodeWatcher : AbstractNodeWatcher {
