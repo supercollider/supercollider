@@ -1626,15 +1626,14 @@ int prArrayExtendWrap(struct VMGlobals *g, int numArgsPushed)
 	if (b->utag != tagInt) return errWrongType;
 		
 	obj1 = a->uo;
-	slots = obj1->slots;
 	size = b->ui;
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
 	obj2->size = size;
+	slots = obj2->slots;
 	// copy first part of list
-	memcpy(obj2->slots, slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+	memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
 	if (size > obj1->size) {
 		// copy second part
-		slots = obj2->slots;
 		m = obj1->size;
 		for (i=0,j=m; j<size; ++i,++j) {
 			slots[j].ucopy = slots[i].ucopy;
@@ -1655,18 +1654,46 @@ int prArrayExtendFold(struct VMGlobals *g, int numArgsPushed)
 	if (b->utag != tagInt) return errWrongType;
 		
 	obj1 = a->uo;
-	slots = obj1->slots;
 	size = b->ui;
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
 	obj2->size = size;
+	slots = obj2->slots;
 	// copy first part of list
-	memcpy(obj2->slots, slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+	memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
 	if (size > obj1->size) {
 		// copy second part
-		slots = obj2->slots;
 		m = obj1->size;
 		for (i=0,j=m; j<size; ++i,++j) {
 			slots[j].ucopy = slots[sc_fold(j,0,m)].ucopy;
+		}
+	}
+	a->uo = obj2;
+	return errNone;
+}
+
+int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *slots, last;
+	PyrObject *obj1, *obj2;
+	int i, j, m, size;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	if (b->utag != tagInt) return errWrongType;
+		
+	obj1 = a->uo;
+	size = b->ui;
+	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
+	obj2->size = size;
+	slots = obj2->slots;
+	// copy first part of list
+	memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+	if (size > obj1->size) {
+		// copy second part
+		m = obj1->size;
+		last.ucopy = slots[m-1].ucopy;
+		for (i=0,j=m; j<size; ++i,++j) {
+			slots[j].ucopy = last.ucopy;
 		}
 	}
 	a->uo = obj2;
@@ -2051,6 +2078,7 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayRotate", prArrayRotate, 2, 0);
 	definePrimitive(base, index++, "_ArrayExtendWrap", prArrayExtendWrap, 2, 0);
 	definePrimitive(base, index++, "_ArrayExtendFold", prArrayExtendFold, 2, 0);
+	definePrimitive(base, index++, "_ArrayExtendLast", prArrayExtendLast, 2, 0);
 	definePrimitive(base, index++, "_ArrayLace", prArrayLace, 2, 0);
 	definePrimitive(base, index++, "_ArrayStutter", prArrayStutter, 2, 0);
 	definePrimitive(base, index++, "_ArraySlide", prArraySlide, 3, 0);

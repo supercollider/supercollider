@@ -204,6 +204,10 @@ Array[slot] : ArrayedCollection {
 		_ArrayExtendFold
 		^this.primitiveFailed 
 	}
+	clipExtend { arg length;
+		_ArrayExtendLast
+		^this.primitiveFailed 
+	}
 	slide { arg windowLength=3, stepSize=1;
 		_ArraySlide 
 		^this.primitiveFailed 
