@@ -477,4 +477,7 @@ Object {
 		file.close;
 	}
 
+	isInputUGen { ^false }
+	isOutputUGen { ^false }
+	isControlUGen { ^false }
 }

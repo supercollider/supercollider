@@ -35,6 +35,7 @@ Control : MultiOutUGen {
 		});
 		^this.initOutputs(values.size, rate)
 	}
+	*isControlUGen { ^true }
 }
 
 TrigControl : Control {}
@@ -72,7 +73,11 @@ LagControl : Control {
 	}
 }
 
-In : MultiOutUGen {	
+AbstractIn : MultiOutUGen {
+ 	*isInputUGen { ^true }
+}
+
+In : AbstractIn {	
 	*ar { arg bus = 0, numChannels = 1;
 		^this.multiNew('audio', numChannels, bus)
 	}
@@ -85,7 +90,7 @@ In : MultiOutUGen {
 	}
 }
 
-LagIn : MultiOutUGen {	
+LagIn : AbstractIn {	
 	*kr { arg bus = 0, numChannels = 1, lag = 0.1;
 		^this.multiNew('control', numChannels, bus, lag)
 	}
@@ -95,7 +100,7 @@ LagIn : MultiOutUGen {
 	}
 }
 
-InFeedback : MultiOutUGen {	
+InFeedback : AbstractIn {	
 	*ar { arg bus = 0, numChannels = 1;
 		^this.multiNew('audio', numChannels, bus)
 	}
@@ -105,7 +110,7 @@ InFeedback : MultiOutUGen {
 	}
 }
 
-InTrig : MultiOutUGen {	
+InTrig : AbstractIn {	
 	*kr { arg bus = 0, numChannels = 1;
 		^this.multiNew('control', numChannels, bus)
 	}
@@ -130,6 +135,7 @@ AbstractOut : UGen {
  		^nil
  	}
  	
+ 	*isOutputUGen { ^true }
  	*replaceZeroesWithSilence { arg array;
  		// this replaces zeroes with audio rate silence.
  		// sub collections are deep replaced
@@ -165,6 +171,7 @@ Out : AbstractOut {
 		this.multiNewList(['control', bus] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
+	*numFixedArgs { ^1 }
 }
 
 ReplaceOut : Out {}
@@ -180,6 +187,7 @@ XOut : AbstractOut {
 		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
+	*numFixedArgs { ^2 }
 	checkInputs {
  		if (rate == 'audio', {
  			for(2, inputs.size - 1, { arg i;
@@ -201,7 +209,7 @@ SharedOut : AbstractOut {
 	}
 }
 
-SharedIn : MultiOutUGen {	
+SharedIn : AbstractIn {	
 	*kr { arg bus = 0, numChannels = 1;
 		^this.multiNew('control', numChannels, bus)
 	}
