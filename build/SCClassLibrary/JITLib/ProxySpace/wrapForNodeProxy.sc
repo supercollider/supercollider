@@ -180,12 +180,6 @@
 	}
 }
 
-+StreamPlayerReference {
-	proxyControlClass {
-		^StreamControl
-	}
-	buildForProxy {}
-}
 
 +Pdef {
 	
