@@ -70,6 +70,19 @@ inline vint32 vload( int32 a, int32 b, int32 c, int32 d )
         return temp.vi;
 }
 
+inline vector float vec_float_1( void )
+{
+	return vec_ctf( vec_splat_u32(1), 0); 
+}
+
+inline vector float vec_reciprocal( vector float v ) 
+{
+	vector float reciprocal = vec_re( v ); 
+	return vec_madd( reciprocal, vec_nmsub( reciprocal, v, vec_float_1()), reciprocal ); //Newton Rapheson refinement 
+}
+
+#define vec_div(a, b)  vec_mul(a, vec_reciprocal(b))
+
 // seed = ((seed & mask) << shift1) ^ (((seed << shift2) ^ seed) >> shift3);
 
 #define define_trshifts \

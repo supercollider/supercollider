@@ -4172,6 +4172,19 @@ void vmul_aa(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+void vdiv_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_div(vec_ld(i, va), vec_ld(i, vb)), i, vout);
+	}
+}
+
 
 void vadd_ia(BinaryOpUGen *unit, int inNumSamples)
 {
@@ -4210,6 +4223,19 @@ void vmul_ia(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+void vdiv_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_div(zva, vec_ld(i, vb)), i, vout);
+	}
+}
+
 
 void vadd_ai(BinaryOpUGen *unit, int inNumSamples)
 {
@@ -4240,6 +4266,19 @@ void vmul_ai(BinaryOpUGen *unit, int inNumSamples)
 	vfloat32 *vout = (vfloat32*)OUT(0);
 	vfloat32 *va = (vfloat32*)IN(0);
 	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_mul(vec_ld(i, va), zvb), i, vout);
+	}
+}
+
+void vdiv_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vec_reciprocal(vload(ZIN0(1)));
 	int len = inNumSamples << 2;
 	define_vzero;
 	
@@ -4354,6 +4393,47 @@ void vmul_ak(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+void vdiv_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		if (xb == 0.f) {
+			// don't divide by zero
+			define_vzero;
+			for (int i=0; i<len; i += 16) {
+				vec_st(vzero, i, vout);
+			}
+		} else if (xb == 1.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_ld(i, va), i, vout);
+			}
+		} else {
+			vfloat32 vxb = vec_reciprocal(vload(xb));
+			define_vzero;
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_mul(vec_ld(i, va), vxb), i, vout);
+			}
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		define_vzero;
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_div(vec_ld(i, va), vxb), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
 
 void vadd_ka(BinaryOpUGen *unit, int inNumSamples)
 {
@@ -4452,6 +4532,43 @@ void vmul_ka(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+void vdiv_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	if (xa == nextA) {
+		if (xa == 0.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vzero, i, vout);
+			}
+		} else if (xa == 1.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_reciprocal(vec_ld(i, vb)), i, vout);
+			}
+		} else {
+			vfloat32 vxa = vload(xa);
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_div(vxa, vec_ld(i, vb)), i, vout);
+			}
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_div(vxa, vec_ld(i, vb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
 #endif
 
 
@@ -4531,7 +4648,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opAdd : func = &vadd_aa; break;
 						case opSub : func = &vsub_aa; break;
 						case opMul : func = &vmul_aa; break;
-						case opFDiv : func = &div_aa; break;
+						case opFDiv : func = &vdiv_aa; break;
 						case opMod : func = &mod_aa; break;
 						case opEQ  : func = &eq_aa; break;
 						case opNE  : func = &neq_aa; break;
@@ -4577,7 +4694,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opAdd : func = &vadd_ak; break;
 						case opSub : func = &vsub_ak; break;
 						case opMul : func = &vmul_ak; break;
-						case opFDiv : func = &div_ak; break;
+						case opFDiv : func = &vdiv_ak; break;
 						case opMod : func = &mod_ak; break;
 						case opEQ  : func = &eq_ak; break;
 						case opNE  : func = &neq_ak; break;
@@ -4623,7 +4740,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opAdd : func = &vadd_ai; break;
 						case opSub : func = &vsub_ai; break;
 						case opMul : func = &vmul_ai; break;
-						case opFDiv : func = &div_ai; break;
+						case opFDiv : func = &vdiv_ai; break;
 						case opMod : func = &mod_ai; break;
 						case opEQ  : func = &eq_ai; break;
 						case opNE  : func = &neq_ai; break;
@@ -4671,7 +4788,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 					case opAdd : func = &vadd_ka; break;
 					case opSub : func = &vsub_ka; break;
 					case opMul : func = &vmul_ka; break;
-					case opFDiv : func = &div_ka; break;
+					case opFDiv : func = &vdiv_ka; break;
 					case opMod : func = &mod_ka; break;
 					case opEQ  : func = &eq_ka; break;
 					case opNE  : func = &neq_ka; break;
@@ -4722,7 +4839,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 					case opAdd : func = &vadd_ia; break;
 					case opSub : func = &vsub_ia; break;
 					case opMul : func = &vmul_ia; break;
-					case opFDiv : func = &div_ia; break;
+					case opFDiv : func = &vdiv_ia; break;
 					case opMod : func = &mod_ia; break;
 					case opEQ  : func = &eq_ia; break;
 					case opNE  : func = &neq_ia; break;
