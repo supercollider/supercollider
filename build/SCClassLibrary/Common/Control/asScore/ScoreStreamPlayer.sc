@@ -19,7 +19,7 @@ ScoreStreamPlayer : EventStreamPlayer {
 		event.put(\type, (event.type ++ \_score).asSymbol);
 //		this.debug(event[\type]);
 		
-		while({absTime<= maxTime}, {this.next(i);i=i+1;});
+		while({absTime<= maxTime and: stream.notNil}, {this.next(i);i=i+1;});
 		stream = nil;
 		^score;
 	}
