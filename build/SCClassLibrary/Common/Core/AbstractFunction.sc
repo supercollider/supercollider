@@ -171,11 +171,10 @@ AbstractFunction {
 	expexp { arg inMin, inMax, outMin, outMax;
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax])
 	}
-	
 	// function composition
 	<> { arg that;
-		//^{|...args| this.valueArray(that.valueArray(args)) }
-		^CompositeFunction.new(this, that)
+		// function composition
+		^{|...args| this.value(that.valueArray(args)) }
 	}
 	
 	// embed in ugen graph
@@ -243,40 +242,6 @@ BinaryOpFunction : AbstractFunction {
 	}
 }
 
-CompositeFunction : AbstractFunction {
-	var operands;
-	
-	*new { arg ... args; 
-		^super.newCopyArgs(args) 
-	}
-	<> { arg obj; this.class.new(*operands.add(obj)) }
-
-	value { arg ... args;
-		operands.reverseDo { |item| args = item.valueArray(args) }
-		^args
-	}
-	valueArray { arg args;
-		operands.reverseDo { |item| args = item.valueArray(args) }
-		^args
-	}
-	valueEnvir { arg ... args;
-		operands.reverseDo { |item| args = item.valueArrayEnvir(args) }
-		^args
-	}
-	valueArrayEnvir { arg ... args; 
-		operands.reverseDo { |item| args = item.valueArrayEnvir(args) }
-		^args
-	}
-	functionPerformList { arg selector, arglist;
-		^this.performList(selector, arglist)
-	}
-	storeOn { arg stream;
-			stream << "("; 
-			operands.do { |item,i|  if(i != 0) { stream << " <> " }; stream <<< item; }; 
-			stream << ")"
-	}
-}
-
 NAryOpFunction : AbstractFunction {
 	var selector, a, arglist;
 	
@@ -304,4 +269,3 @@ NAryOpFunction : AbstractFunction {
 	}
 	
 }
-
