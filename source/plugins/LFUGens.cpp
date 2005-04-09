@@ -129,6 +129,11 @@ struct Unwrap : public Unit
 	float m_range, m_half, m_offset, m_prev;
 };
 
+struct AmpComp : public Unit
+{
+	// nothing
+};
+
 struct InRange : public Unit
 {
 	// nothing
@@ -258,6 +263,9 @@ extern "C"
 
 	void Unwrap_next(Unwrap* unit, int inNumSamples);
 	void Unwrap_Ctor(Unwrap* unit);
+
+	void AmpComp_next(AmpComp *unit, int inNumSamples);
+	void AmpComp_Ctor(AmpComp* unit);
 
 	void InRange_next(InRange *unit, int inNumSamples);
 	void InRange_Ctor(InRange* unit);
@@ -1386,6 +1394,29 @@ void Unwrap_Ctor(Unwrap* unit)
 	else unit->m_offset = 0.f;
 	
 	Unwrap_next(unit, 1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void AmpComp_next(AmpComp *unit, int inNumSamples)
+{
+	
+	float *out = ZOUT(0);
+	float *freq = ZIN(0);
+	float root = ZIN0(1);
+	float xb = ZIN0(2);
+	
+	LOOP(inNumSamples, 
+		float xa = root / ZXP(freq);
+		ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
+	);
+}
+
+void AmpComp_Ctor(AmpComp* unit)
+{
+	SETCALC(AmpComp_next);
+	AmpComp_next(unit, 1);
+	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3389,6 +3420,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Fold);
 	DefineSimpleUnit(Clip);
 	DefineSimpleUnit(Unwrap);
+	DefineSimpleUnit(AmpComp);
 	DefineSimpleUnit(InRange);
 	DefineSimpleUnit(InRect);
 	DefineSimpleUnit(LinExp);

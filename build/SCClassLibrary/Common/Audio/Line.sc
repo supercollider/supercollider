@@ -32,6 +32,15 @@ LinLin : UGen {
 	*kr { arg in=0.0, srclo = 0.0, srchi = 1.0, dstlo = 1.0, dsthi = 2.0;
 		^this.multiNew('control',  in, srclo, srchi, dstlo, dsthi)
 	}
+}
+
+AmpComp : UGen {
+	*ar { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333; 
+		^this.multiNew('audio', freq, root, exp)
+	}
+	*kr { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333; 
+		^this.multiNew('control', freq, root, exp)
+	}
 }	
 
 K2A : UGen { // control rate to audio rate converter
