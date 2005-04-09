@@ -131,7 +131,7 @@ struct Unwrap : public Unit
 
 struct AmpComp : public Unit
 {
-	// nothing
+	float m_rootmul, m_exponent;
 };
 
 struct InRange : public Unit
@@ -1403,6 +1403,20 @@ void AmpComp_next(AmpComp *unit, int inNumSamples)
 	
 	float *out = ZOUT(0);
 	float *freq = ZIN(0);
+	float rootmul = unit->m_rootmul;
+	float xb = unit->m_exponent;
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(freq);
+		ZXP(out) = xa >= 0.f ? pow(xa, xb) * rootmul : -pow(-xa, xb) * rootmul;
+	);
+}
+
+void AmpComp_next_kk(AmpComp *unit, int inNumSamples)
+{
+	
+	float *out = ZOUT(0);
+	float *freq = ZIN(0);
 	float root = ZIN0(1);
 	float xb = ZIN0(2);
 	
@@ -1414,7 +1428,14 @@ void AmpComp_next(AmpComp *unit, int inNumSamples)
 
 void AmpComp_Ctor(AmpComp* unit)
 {
-	SETCALC(AmpComp_next);
+	if(INRATE(1) != calc_ScalarRate || INRATE(2) != calc_ScalarRate) {
+		SETCALC(AmpComp_next_kk);
+	} else {
+		float exp = ZIN0(2);
+		unit->m_rootmul = pow(ZIN0(1), exp);
+		unit->m_exponent = -1.f * exp;
+		SETCALC(AmpComp_next);
+	}
 	AmpComp_next(unit, 1);
 	
 }
