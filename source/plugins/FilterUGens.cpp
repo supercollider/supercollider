@@ -496,8 +496,8 @@ void Lag_next(Lag *unit, int inNumSamples)
 		unit->m_lag = lag;
 		LOOP(inNumSamples, 
 			float y0 = ZXP(in); 
-			ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 			b1 += b1_slope;
+			ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 		);
 	}
 	unit->m_y1 = zapgremlins(y1);
