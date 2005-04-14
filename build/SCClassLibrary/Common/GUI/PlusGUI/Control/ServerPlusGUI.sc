@@ -71,7 +71,7 @@
 		w.view.keyDownAction = { arg ascii, char;
 			case 
 			{char === $n} { this.queryAllNodes }
-			{char === $ } { this.boot }
+			{char === $ } { if(serverRunning.not) { this.boot } }
 			{char === $s and: {this.inProcess}} { this.scope }
 			{char == $d} {
 				if(dumping) {
