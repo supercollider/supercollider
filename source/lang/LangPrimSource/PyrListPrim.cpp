@@ -262,6 +262,7 @@ int prIdentDict_Put(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;	// key
 	c = g->sp;		// value
 	if(IsNil(b)) return errWrongType;
+	if(IsNil(c)) return errFailed; // will call removeAt
 	return identDictPut(g, a->uo, b, c);
 }	
 

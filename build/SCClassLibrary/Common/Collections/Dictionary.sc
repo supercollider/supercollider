@@ -18,10 +18,12 @@ Dictionary : Set {
 	add { arg anAssociation;
 		this.put(anAssociation.key, anAssociation.value);
 	}
-	put { arg key, obj;
+	put { arg key, value;
 		var atKey;
-		var index = this.scanFor(key);
-		array.put(index+1, obj);
+		var index;
+		value ?? { this.removeAt(key); ^this };
+		index = this.scanFor(key);
+		array.put(index+1, value);
 		if ( array.at(index).isNil, {
 			array.put(index, key);
 			size = size + 1;
@@ -299,11 +301,12 @@ IdentityDictionary : Dictionary {
 	}
 	put { arg key, value;
 		_IdentDict_Put
+		value ?? { this.removeAt(key); ^this };
 		^this.primitiveFailed
 		/*
 		var index, atKey;
 		index = this.scanFor(key);
-		array.put(index+1, obj);
+		array.put(index+1, value);
 		if ( array.at(index).isNil, {
 			array.put(index, key);
 			size = size + 1;
@@ -318,7 +321,7 @@ IdentityDictionary : Dictionary {
 		var index, atKey, prev;
 		index = this.scanFor(key);
 		prev = array.at(index + 1);
-		array.put(index+1, obj);
+		array.put(index+1, value);
 		if ( array.at(index).isNil, {
 			array.put(index, key);
 			size = size + 1;
