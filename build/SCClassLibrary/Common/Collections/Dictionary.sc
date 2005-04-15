@@ -360,9 +360,9 @@ IdentityDictionary : Dictionary {
 			if (func.notNil) {
 				^func.functionPerformList(\value, this, selector, args);
 			};
+			^nil
 		};
-		^nil
-		//^this.superPerformList(\doesNotUnderstand, selector, args);
+		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
 	
 	// not the fastest way, but the simplest
