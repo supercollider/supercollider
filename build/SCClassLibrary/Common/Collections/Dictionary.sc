@@ -361,7 +361,8 @@ IdentityDictionary : Dictionary {
 				^func.functionPerformList(\value, this, selector, args);
 			};
 		};
-		^this.superPerformList(\doesNotUnderstand, selector, args);
+		^nil
+		//^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
 	
 	// not the fastest way, but the simplest
