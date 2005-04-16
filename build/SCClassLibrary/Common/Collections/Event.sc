@@ -16,7 +16,8 @@ Event : Environment {
 		^defaultParentEvent.copy.put(\type, \rest).put(\dur, dur)
 	}
 	
-	next { ^this.copy }
+	next { arg inval; ^composeEvents(inval, this) }
+	
 	delta {
 		_Event_Delta
 		^this.primitiveFailed;
