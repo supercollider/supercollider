@@ -160,6 +160,8 @@ Object {
 	asStream { ^this }
 	
 	eventAt { ^nil }
+	composeEvents { arg event; ^event.copy }
+	
 	finishEvent {}
 	atLimit { ^false }
 	

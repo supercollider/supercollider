@@ -37,6 +37,7 @@ Environment : IdentityDictionary {
 	}
 	
 	eventAt { arg key; ^this.at(key) }
+	composeEvents { arg event; ^this.copy.putAll(event) }
 	
 	*pop {
 		if(stack.notEmpty) { currentEnvironment = stack.pop };
