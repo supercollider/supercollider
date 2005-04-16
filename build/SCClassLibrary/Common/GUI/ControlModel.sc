@@ -204,11 +204,11 @@ FaderWarp : Warp {
 	//  useful mapping for amplitude faders
 	map { arg value;
 		// maps a value from [0..1] to spec range
-		^value.squared
+		^value.squared * spec.range + spec.minval
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		^value.sqrt
+		^((value - spec.minval) / spec.range).sqrt
 	}
 }
 
@@ -216,11 +216,13 @@ DbFaderWarp : Warp {
 	//  useful mapping for amplitude faders
 	map { arg value;
 		// maps a value from [0..1] to spec range
-		^value.squared.ampdb
+		^(value.squared * (spec.maxval.dbamp - spec.minval.dbamp) + spec.minval.dbamp).ampdb
+//		^value.squared.ampdb
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		^value.dbamp.sqrt
+		^((value.dbamp - spec.minval.dbamp) / (spec.maxval.dbamp - spec.minval.dbamp)).sqrt
+//		^value.dbamp.sqrt
 	}
 }
 
