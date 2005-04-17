@@ -41,9 +41,8 @@ when the event type
 \
 (\
 s.boot;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDescLib\cf0 .read;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "pgrain"\cf0 , \
 	\{ \cf2 arg\cf0  out = 0, freq=800, sustain=0.001, amp=0.5, pan = 0;\
 		\cf2 var\cf0  window;\
@@ -102,9 +101,11 @@ s.boot;\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // the pattern that is found in Pdef.all (or your own defined library) is truncated in time\cf0 \
 \cf5 // using the sustain provided by the outer pattern.\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 	\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \cf5 // phrase event from global library\cf0 \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
@@ -114,8 +115,10 @@ s.boot;\
 ).play\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // multichannel expansion is propagated into the subpatterns\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 	\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \cf5 // phrase event from global library\cf0 \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
@@ -125,8 +128,10 @@ s.boot;\
 ).play\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // various instruments and synthdefs can be used on the same level\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 		\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \
 		\cf4 \\instrument\cf0 , \cf2 Pseq\cf0 ([\cf4 \\sweep\cf0 , \cf4 \\default\cf0 , \cf4 \\sweep2\cf0 , \cf4 \\sweep3\cf0 , \cf4 \\pgrain\cf0 , \cf4 \\pgrain\cf0 ], \cf2 inf\cf0 ),\
@@ -139,9 +144,11 @@ s.boot;\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // of course also a patten can be used directly in a Pdef\cf0 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep\cf0 , \
 	\cf2 Pbind\cf0 (\
 		\cf4 \\instrument\cf0 , \cf2 Pseq\cf0 ([\cf4 \\pgrain\cf0 , \cf4 \\noiseGrain\cf0 ],\cf2 inf\cf0 ),\
@@ -152,15 +159,18 @@ s.boot;\
 )\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // play directly, emebdded in stream (see Pdef.help)\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pn\cf0 (\cf2 Pdef\cf0 (\cf4 \\sweep\cf0 ), 2).play;\
-\cf2 Pdef\cf0 (\cf4 \\sweep\cf0 ).playOnce; \cf5 // play without changing player state (see [\cf5 \ul \ulc5 Pdef.help\cf5 \ulnone ])\
+\cf2 Pdef\cf0 (\cf4 \\sweep\cf0 ).fork; \cf5 // play without changing player state (see [\cf5 \ul \ulc5 Pdef.help\ulnone ])\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // play within a pattern\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 	\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
@@ -171,6 +181,7 @@ s.boot;\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 //////// recursion examples //////////\cf0 \
 \
 \cf5 // the given pattern can be recursively applied to itself \cf0 \
@@ -183,6 +194,7 @@ s.boot;\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep\cf0 , \{\'ca\cf2 arg\cf0  dur=1, n=4, freq=440, ratio=0.3;\
 	\cf2 Pbind\cf0 (\
 		\cf4 \\instrument\cf0 , \cf4 \\pgrain\cf0 ,\
@@ -193,6 +205,7 @@ s.boot;\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // no recursion\cf0 \
 (\
 	\cf2 Pbind\cf0 (\
@@ -239,6 +252,7 @@ s.boot;\
 \
 \cf5 // to block this recursion, or modify it, assign legato explicitly:\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep\cf0 , \{\'ca\cf2 arg\cf0  dur=1, n=4, ratio=0.5, freq=440;\
 	\cf2 var\cf0  legato;\
 	freq = freq.value;\
@@ -252,6 +266,7 @@ s.boot;\
 \});\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // recursion over one level: degree is assigned to each phrase,\cf0 \
 \cf5 // because freq is calculated internally and overrides degree on the second level\cf0 \
 (\
@@ -267,6 +282,7 @@ s.boot;\
 \
 \cf5 // recursion over two levels\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 	\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
@@ -275,8 +291,10 @@ s.boot;\
 ).play\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // recursion over three levels with variable number of grains\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 	\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
@@ -287,13 +305,17 @@ s.boot;\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // "zoom" in\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 TempoClock\cf0 .default.tempo = 0.2;\
 \cf2 TempoClock\cf0 .default.tempo = 1.0;\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // recursion over variable levels\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 	\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
@@ -305,8 +327,10 @@ s.boot;\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // replace the frequency based pattern with a degree based pattern\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep\cf0 , \{\'ca\cf2 arg\cf0  sustain=1, n=8, degree=0, ratio=1;\
 	\cf2 Pbind\cf0 (\
 		\cf4 \\instrument\cf0 , \cf4 \\pgrain\cf0 ,\
@@ -317,8 +341,10 @@ s.boot;\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // drunken master\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 	\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
@@ -333,8 +359,10 @@ s.boot;\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // pass in a synthDef from the outside\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep\cf0 , \{\'ca\cf2 arg\cf0  sustain=1, n=8, degree=0, ratio=1;\
 	\cf2 Pbind\cf0 (\
 		\cf4 \\dur\cf0 , sustain.value / n,\
@@ -355,10 +383,12 @@ s.boot;\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // use a different parent event in the inner pattern\cf0 \
 (\
 e = \cf2 Event\cf0 .default;\
 e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep\cf0 , \{\'ca\cf2 arg\cf0  sustain=1, n=8, degree=0, ratio=1;\
 	\cf2 Pbind\cf0 (\
 		\cf4 \\parent\cf0 , e, \cf5 // replace by some other event\cf0 \
@@ -381,9 +411,11 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // pass in a pattern from outside\cf0 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep\cf0 , \{\'ca\cf2 arg\cf0  sustain=1, n=8, degree=0, ratio=1;\
 	n = n.value;\
 	\cf2 Pbind\cf0 (\
@@ -398,7 +430,7 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 \cf2 Pbind\cf0 (\
 	\cf4 \\type\cf0 , \cf4 \\phrase\cf0 , \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
-	\cf4 \\n\cf0 , #\{ \cf2 Pshuf\cf0 ([2, 4, 3, 8, 16, 32], \cf2 inf\cf0 ) \}, \cf5 //  use a function to insulate from embedInStream\cf0 \
+	\cf4 \\n\cf0 , \{ \cf2 Pshuf\cf0 ([2, 4, 3, 8, 16, 32], \cf2 inf\cf0 ) \}, \cf5 //  use a function to insulate from embedInStream\cf0 \
 	\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([-5, 0, -2], \cf2 inf\cf0 ),\
 	\cf4 \\recursionLevel\cf0 , \cf2 Prand\cf0 ([0, 1],\cf2 inf\cf0 )\
 ).play\
@@ -407,9 +439,11 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // recursion inside the pattern definition\cf0 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep2\cf0 , \{\'ca\cf2 arg\cf0  sustain=1, n=2, degree=0, ratio=1;\
 	\cf2 Pbind\cf0 (\
 		\cf4 \\type, \\phrase, \cf0 \
@@ -431,11 +465,12 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 )\
 \
 \
-\cf5 // crossfading instruments while they play\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // instruments do not crossfade while they play (to make phrasing more efficient).\cf0 \
 \
-\cf2 Pdef\cf0 (\cf4 \\sweep\cf0 ).fadeTime = 2;\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\
 	\cf4 \\type, \\phrase, \cf0 \
 	\cf4 \\instrument\cf0 , \cf4 \\sweep\cf0 ,\
@@ -446,8 +481,10 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 ).play\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // change pattern definition while playing:\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\sweep\cf0 ,\
 	\cf2 Pbind\cf0 (\
 		\cf4 \\instrument\cf0 , \cf4 \\pgrain\cf0 ,\
@@ -459,8 +496,10 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // koch "snowflake"\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\koch\cf0 , \{\'ca\cf2 arg\cf0  dur=1, freq=440;\
 	\cf2 Pbind\cf0 (\
 		\cf4 \\dur\cf0 , dur.value / 3,\
@@ -502,10 +541,12 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 /////////// soundfile example ( doesn't work properly yet )\cf0 \
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 \\play_from_to\cf0 , \{ \cf2 arg\cf0  out, bufnum, from=0.0, to=1.0, sustain=1.0;\
 	\cf2 var\cf0  env;\
 	env = \cf2 EnvGen\cf0 .ar(\cf2 Env\cf0 .linen(0.01, sustain, 0.01), 1, doneAction:2);\
@@ -521,8 +562,10 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 \
 s.sendMsg(\cf3 "/b_allocRead"\cf0 , 170, \cf3 "sounds/a11wlk01.wav"\cf0 );\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // this plays it straight\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\poch\cf0 , \{\'ca\cf2 arg\cf0  sustain=1.0, from=0.0, to=1.0, n=3;\
 		\cf2 var\cf0  step;\
 		sustain = sustain.value;\
@@ -549,8 +592,10 @@ s.sendMsg(\cf3 "/b_allocRead"\cf0 , 170, \cf3 "sounds/a11wlk01.wav"\cf0 );\
 ).play\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // now turn round the middle part\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\poch\cf0 , \{\'ca\cf2 arg\cf0  sustain=1.0, from=0.0, to=1.0, n=3;\
 		\cf2 var\cf0  step, f, t, i;\
 		sustain = sustain.value;\
