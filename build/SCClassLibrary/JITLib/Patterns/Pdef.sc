@@ -55,7 +55,7 @@ PatternProxy : Pattern {
 	
 		
 	embedInStream { arg inval;
-		var pat, stream, outval, event;
+		var pat, stream, outval;
 		pat = pattern;
 		
 		stream = pattern.asStream;
