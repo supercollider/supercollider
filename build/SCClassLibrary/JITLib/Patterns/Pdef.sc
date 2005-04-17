@@ -371,8 +371,10 @@ Pdef : EventPatternProxy {
 				rest = freq.isKindOf(Symbol); // check for outer rests
 				if(rest) { ~freq = freq };
 				pat = all.at(~instrument);
+				
 				if(pat.notNil and: { embeddingLevel < 8 })
 				{
+					pat = pat.pattern; // optimization. outer pattern takes care for replacement
 					// preserve information from outer pattern, but not delta.
 					outerEvent = currentEnvironment.copy;
 					recursionLevel = ~recursionLevel;
@@ -391,7 +393,6 @@ Pdef : EventPatternProxy {
 						} {
 							// play pattern in the ordinary way
 							~type = \note;
-							outerEvent.put(\instrument, ~synthDef ? \default);
 						};
 					} {	// avoid recursion, if instrument not set.
 						outerEvent.put(\embeddingLevel, embeddingLevel + 1);
@@ -399,6 +400,7 @@ Pdef : EventPatternProxy {
 					};
 					pat = Pfindur(~sustain.value, pat);
 					outerEvent.put(\delta, nil); // block delta modification by Ppar
+					outerEvent.put(\instrument, ~synthDef ? \default);
 				
 					pat.play(thisThread.clock, outerEvent, 0.0);
 				} {
