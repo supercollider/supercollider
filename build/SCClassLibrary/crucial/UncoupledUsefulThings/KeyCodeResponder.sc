@@ -221,7 +221,8 @@ KeyCodeResponderStack {
 	}
 }
 
-SimpleKDRUnit { // exact single modifier match only
+SimpleKDRUnit { // matches if the modifier combo (or single) is present,
+			// but does NOT FAIL if others are also present
 
 	 var <>requireMask,<>function;
 	 
@@ -229,13 +230,12 @@ SimpleKDRUnit { // exact single modifier match only
 		^super.newCopyArgs(modifier,function)
 	}
 	value { arg char,modifier,unicode,keycode;
+		//[modifier,requireMask,modifier & requireMask, (modifier & requireMask) == requireMask].debug;
 		if((modifier & requireMask) == requireMask,{function.value(char,modifier,unicode,keycode)})
 	}
 	== { arg that;
-		^that respondsTo: \requireMask 
-			and: { that.requireMask == requireMask }
+		^that.requireMask == requireMask and: {this.class === that.class }
 	}
-	hash { ^requireMask.hash }
 }
 
 
@@ -259,13 +259,12 @@ KDRMaskTester : SimpleKDRUnit {
 		})
 	}
 	== { arg aResponder;
-		^aResponder respondsTo: #[\requireMask, \denyMask]
-			and: { aResponder.requireMask == requireMask and: {
+		^(this.class === aResponder.class) and: {
+			(aResponder.requireMask == requireMask and: {
 				aResponder.denyMask == denyMask
-			}}
+			})
+		}
 	}
-	hash { ^requireMask.hash bitXor: denyMask.hash }
-	
 }
 
 
