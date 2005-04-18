@@ -1,18 +1,77 @@
 
-// should share a superclass with KeyCodeResonder
+// should share a superclass with KeyCodeResponder
 
 UnicodeResponder {
 
 	classvar global;
-	
 	var <>dict;
 	
 	*new { ^super.new.clear }
-	
+
+	// view.keyDownAction = unicodeResponder
 	value { arg view,char,modifier,unicode,keycode;
 		^this.at(unicode).value(unicode,modifier)
 	}
 
+	// k.normal( unicode => { } )
+	normal { arg ... assns; 
+		assns.do({ arg as;
+			this.register(as.key,false,false,false,false,as.value)
+		})
+	}
+	shift { arg ... assns; 
+		assns.do({ arg as;
+			this.register(as.key,true,false,false,false,as.value)
+		})
+	}
+	control { arg ... assns; 
+		assns.do({ arg as;
+			this.register(as.key,false,false,true,false,as.value)
+		})
+	}
+	option { arg ... assns; 
+		assns.do({ arg as;
+			this.register(as.key,false,false,false,true,as.value)
+		})
+	}
+	// true/false/nil
+	register { arg unicode,shift,caps,opt,cntl,function;
+		var require=0,deny=0;
+		require = [];
+		deny = [];
+		if(shift.notNil,{
+			if(shift,{
+				require = require.add(KeyCodeResponder.shiftModifier);
+			},{
+				deny = deny.add( KeyCodeResponder.shiftModifier );
+			})
+		});
+		if(caps.notNil,{
+			if(caps,{
+				require = require.add(KeyCodeResponder.capsModifier);
+			},{
+				deny = deny.add(KeyCodeResponder.capsModifier);
+			})
+		});
+		if(opt.notNil,{
+			if(opt,{
+				require = require.add(KeyCodeResponder.optionModifier);
+			},{
+				deny = deny.add(KeyCodeResponder.optionModifier);
+			})
+		});
+		if(cntl.notNil,{
+			if(cntl,{
+				require = require.add(KeyCodeResponder.controlModifier);
+			},{
+				deny = deny.add(KeyCodeResponder.controlModifier);
+			})
+		});
+		this.pushForUnicode(unicode,require,deny,function);
+	}
+	
+	
+	// matches if the modifier is present
 	registerUnicode { arg modifier,unicode,function;
 		var kdr;
 		kdr = dict.at(unicode);
@@ -22,34 +81,34 @@ UnicodeResponder {
 		});
 		kdr.addSimple(modifier,function);
 	}
-	normal { arg ... assns; 
-		assns.do({ arg as;
-			this.registerUnicode(0,as.key,as.value)
-		})
-	}
-	shift { arg ... assns; 
-		assns.do({ arg as;
-			this.registerUnicode(131072,as.key,as.value)
-		})
-	}
-	control { arg ... assns; 
-		assns.do({ arg as;
-			this.registerUnicode(262144,as.key,as.value)
-		})
-	}
-	option { arg ... assns; 
-		assns.do({ arg as;
-			this.registerUnicode(524288,as.key,as.value)
-		})
-	}
-	registerUnicodeAll { arg ... sets;
-		sets.do({ arg set;
-			this.performList(\registerUnicode,set)
-		})
+
+	// you can concatenate responders !  let each part of your application add their own
+	// key commands
+	++ { arg that;
+		var new,keys;
+		if(that.isNil,{ ^this });
+		if(that.class !== this.class,{ die("Can't mix responder classes:", this.class, that.class) });
+		// that overides this
+		new = this.class.new;
+		new.dict = dict.copy;
+		that.dict.keysValuesDo({ arg unicode,kdrstack;
+			new.put(unicode, kdrstack ++ this.at(unicode))
+		});
+		^new
 	}
 	
 	
-	/** GLOBAL **/	
+	/** GLOBAL 
+	  * installs itself in SCView.globalKeyDownAction
+	  */	
+	*register { arg unicode,shift,caps,opt,cntl,function;
+		this.global.register(unicode,shift,caps,opt,cntl,function);
+	}
+	*clear { this.global.clear }
+	*remove { SCView.globalKeyDownAction = nil; }
+
+
+	// less useful
 	*registerUnicode { arg modifier,ascii,function;
 		this.global.registerUnicode(modifier,ascii, function)
 	}
@@ -57,64 +116,24 @@ UnicodeResponder {
 		sets.do({ arg set;
 			this.performList(\registerUnicode,set)
 		})
-	}	
-	*value { arg view,char,modifiers,unicode,keycode;
-		^this.at(unicode).value(char,modifiers,unicode,keycode)
 	}
-	*global { 
-		^global ?? {
-				global = this.new;
-				SCView.globalKeyDownAction = global;
-				global
-		} 
-	}
-
 	*registerAll { arg ... sets;
 		sets.do({ arg set;
 			this.performList(\register,set)
 		})
 	}
 
-	*register { arg unicode,shift,caps,opt,cntl,function;
-		this.global.register(unicode,shift,caps,opt,cntl,function);
-	}
-	register { arg unicode,shift,caps,opt,cntl,function;
-		var require=0,deny=0;
-		if(shift.notNil,{
-			if(shift,{
-				require = require + KeyCodeResponder.shiftModifier;
-			},{
-				deny = deny + KeyCodeResponder.shiftModifier;
-			})
-		});
-		if(caps.notNil,{
-			if(caps,{
-				require = require + KeyCodeResponder.capsModifier;
-			},{
-				deny = deny + KeyCodeResponder.capsModifier;
-			})
-		});
-		if(opt.notNil,{
-			if(opt,{
-				require = require + KeyCodeResponder.optionModifier;
-			},{
-				deny = deny + KeyCodeResponder.optionModifier;
-			})
-		});
-		if(cntl.notNil,{
-			if(cntl,{
-				require = require + KeyCodeResponder.controlModifier;
-			},{
-				deny = deny + KeyCodeResponder.controlModifier;
-			})
-		});
-		this.pushForUnicode(unicode,require,deny,function);
+
+	// private
+
+	registerUnicodeAll { arg ... sets;
+		sets.do({ arg set;
+			this.performList(\registerUnicode,set)
+		})
 	}
 
 	clear { dict = IdentityDictionary.new }
-	*clear { this.global.clear }
 	remove { this.clear }
-	*remove { SCView.globalKeyDownAction = nil; }
 	
 	*tester {
 		this.clear;
@@ -122,7 +141,15 @@ UnicodeResponder {
 			ActionButton.new(l,
 			"while focused on this button, press keys and modifiers to post a code template").focus
 				.keyDownAction_({ arg v,c,m,u,k;
-					("UnicodeResponder.registerUnicode(" + m + "," + u + ",{      });// " + c ).postln;
+					"k = UnicodeResponder.new;".postln;
+					if(c.isPrint,{
+						("// "++c++" :").postln;
+					},{
+						("//  "++c.asAscii++" :").postln;
+					});
+					("k.register(  " + u + " ,             ,{").postln;
+					"".postln;
+					"});".postln;
 				});
 		})
 	}
@@ -142,22 +169,20 @@ UnicodeResponder {
 			kdr = KeyCodeResponderStack.new;
 			this.put(unicode,kdr);
 		});
-		kdr.add(requireMask,denyMask,function);
+		kdr.addMaskTester(requireMask,denyMask,function);
 	}
 	*resetUnicode { arg unicode;
 		this.at(unicode).reset
 	}
-	++ { arg that;
-		var new,keys;
-		if(that.isNil,{ ^this });
-		if(that.class !== this.class,{ die("Can't mix resonder classes:", this.class, that.class) });
-		// that overides this
-		new = this.class.new;
-		new.dict = dict.copy;
-		that.dict.keysValuesDo({ arg unicode,kdrstack;
-			new.put(unicode, kdrstack ++ this.at(unicode))
-		});
-		^new
+	*value { arg view,char,modifiers,unicode,keycode;
+		^this.at(unicode).value(char,modifiers,unicode,keycode)
+	}
+	*global { 
+		^global ?? {
+				global = this.new;
+				SCView.globalKeyDownAction = global;
+				global
+		} 
 	}
 }
 
