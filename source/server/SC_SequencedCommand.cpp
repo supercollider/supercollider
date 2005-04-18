@@ -554,8 +554,8 @@ bool BufReadCmd::Stage2()
 	SF_INFO fileinfo;
 
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
-	int samplesToEnd = buf->frames - mBufOffset;
-	if (samplesToEnd <= 0) return true;
+	int framesToEnd = buf->frames - mBufOffset;
+	if (framesToEnd <= 0) return true;
 
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
@@ -565,9 +565,17 @@ bool BufReadCmd::Stage2()
 		scprintf(str);
 		return false;
 	}
+	if (fileinfo.channels != buf->channels) {
+		char str[256];
+		sf_close(sf);
+		sprintf(str, "channel mismatch. File'%s' has %d channels. Buffer has %d channels.\n", mFilename, fileinfo.channels, buf->channels);
+		SendFailure(&mReplyAddress, "/b_read", str);
+		scprintf(str);
+		return false;
+	}
 	if (mNumFrames < 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
 	
-	if (mNumFrames > samplesToEnd) mNumFrames = samplesToEnd;
+	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
 
 	sf_seek(sf, mFileOffset, SEEK_SET);
 	if (mNumFrames > 0) {
@@ -640,8 +648,8 @@ void BufWriteCmd::CallDestructor()
 bool BufWriteCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
-	int samplesToEnd = buf->frames - mBufOffset;
-	if (samplesToEnd < 0) samplesToEnd = 0;
+	int framesToEnd = buf->frames - mBufOffset;
+	if (framesToEnd < 0) framesToEnd = 0;
 	mFileInfo.samplerate = (int)buf->samplerate;
 	mFileInfo.channels = buf->channels;
 
@@ -658,7 +666,7 @@ bool BufWriteCmd::Stage2()
 
 	if (mNumFrames < 0 || mNumFrames > buf->frames) mNumFrames = buf->frames;
 	
-	if (mNumFrames > samplesToEnd) mNumFrames = samplesToEnd;
+	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
 
 	if (mNumFrames > 0) {
 		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
