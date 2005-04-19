@@ -134,6 +134,11 @@ struct AmpComp : public Unit
 	float m_rootmul, m_exponent;
 };
 
+struct AmpCompA : public Unit
+{
+	double m_scale, m_offset;
+};
+
 struct InRange : public Unit
 {
 	// nothing
@@ -266,6 +271,9 @@ extern "C"
 
 	void AmpComp_next(AmpComp *unit, int inNumSamples);
 	void AmpComp_Ctor(AmpComp* unit);
+	
+	void AmpCompA_next(AmpCompA *unit, int inNumSamples);
+	void AmpCompA_Ctor(AmpCompA* unit);
 
 	void InRange_next(InRange *unit, int inNumSamples);
 	void InRange_Ctor(InRange* unit);
@@ -1437,6 +1445,59 @@ void AmpComp_Ctor(AmpComp* unit)
 		SETCALC(AmpComp_next);
 	}
 	AmpComp_next(unit, 1);
+	
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+const double AMPCOMP_K = 3.5041384 * 10e15;
+const double AMPCOMP_C1 = 20.598997 * 20.598997;
+const double AMPCOMP_C2 = 107.65265 * 107.65265;
+const double AMPCOMP_C3 = 737.86223 * 737.86223;
+const double AMPCOMP_C4 = 12194.217 * 12194.217;
+const double AMPCOMP_MINLEVEL = -0.1575371167435;
+
+double AmpCompA_calcLevel(double freq)
+{
+		double r = freq * freq;
+		double level = (AMPCOMP_K * r * r * r * r);
+		double n1 = AMPCOMP_C1 + r;
+		double n2 = AMPCOMP_C4 + r;
+		level = level / (
+							n1 * n1 *
+							(AMPCOMP_C2 + r) * 
+							(AMPCOMP_C3 + r) *
+							n2 * n2
+						);
+		level = 1. - sqrt(level);
+		return level;
+}
+
+void AmpCompA_next(AmpCompA *unit, int inNumSamples)
+{
+	
+	float *out = ZOUT(0);
+	float *freq = ZIN(0);
+	
+	double scale = unit->m_scale;
+	double offset = unit->m_offset;
+	
+	LOOP(inNumSamples,
+		ZXP(out) = AmpCompA_calcLevel(ZXP(freq)) * scale + offset;
+	);
+}
+
+void AmpCompA_Ctor(AmpCompA* unit)
+{
+	double rootFreq = ZIN0(1);
+	double rootLevel = AmpCompA_calcLevel(rootFreq);
+	float minLevel = ZIN0(2);
+	unit->m_scale = (ZIN0(3) - minLevel) / (rootLevel - AMPCOMP_MINLEVEL);
+	unit->m_offset = minLevel - unit->m_scale * AMPCOMP_MINLEVEL;
+	
+	SETCALC(AmpCompA_next);
+	AmpCompA_next(unit, 1);
 	
 }
 
@@ -3442,6 +3503,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Clip);
 	DefineSimpleUnit(Unwrap);
 	DefineSimpleUnit(AmpComp);
+	DefineSimpleUnit(AmpCompA);
 	DefineSimpleUnit(InRange);
 	DefineSimpleUnit(InRect);
 	DefineSimpleUnit(LinExp);

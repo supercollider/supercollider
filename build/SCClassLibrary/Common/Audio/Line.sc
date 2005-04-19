@@ -41,6 +41,15 @@ AmpComp : UGen {
 	*kr { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333; 
 		^this.multiNew('control', freq, root, exp)
 	}
+}
+
+AmpCompA : UGen {
+	*ar { arg freq = 1000, root = 0, minAmp = 0.32, rootAmp = 1.0; 
+		^this.multiNew('audio', freq, root, minAmp, rootAmp)
+	}
+	*kr { arg freq = 1000, root = 0, minAmp = 0.32, rootAmp = 1.0;
+		^this.multiNew('control', freq, root, minAmp, rootAmp)
+	}
 }	
 
 K2A : UGen { // control rate to audio rate converter
