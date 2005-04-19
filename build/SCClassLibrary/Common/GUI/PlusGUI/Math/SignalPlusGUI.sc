@@ -1,6 +1,6 @@
 
 
-+ ArrayedCollection{
++ ArrayedCollection {
 	
 	plot { arg name, bounds, discrete=false, numChannels = 1;
 		var plotter, txt, chanArray, unlaced, val, minval, maxval, window, thumbsize, zoom, width, 
@@ -90,7 +90,8 @@
 }
 
 + Function {
-	plot { arg duration  = 0.01, server, bounds;
+
+	loadToFloatArray { arg duration = 0.01, server, action;
 		var buffer, def, synth, name, value, numChannels;
 		server = server ? Server.default;
 		server.isLocal.not.if({"Function-plot only works with a localhost server".warn; ^nil });
@@ -112,13 +113,22 @@
 			synth = Synth.basicNew(name, server);
 			OSCpathResponder(server.addr, ['/n_end', synth.nodeID], { 
 				buffer.loadToFloatArray(action: { |array, buf| 
-					{array.plot(bounds: bounds, numChannels: buf.numChannels) }.defer;
+					action.value(array, buf);
 					buffer.free;
 				});
 			}).add.removeWhenDone;
 			server.listSendMsg(synth.newMsg);
 		});
 	}
+	
+	plot { arg duration  = 0.01, server, bounds;
+		this.loadToFloatArray(duration, server, { |array, buf|
+			{
+				array.plot(bounds: bounds, numChannels: buf.numChannels) 
+			}.defer;
+		})
+	}
+
 
 }
 
