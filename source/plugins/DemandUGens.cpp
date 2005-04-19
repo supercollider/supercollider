@@ -1330,6 +1330,7 @@ void Dwhite_next(Dwhite *unit, int inNumSamples)
 			OUT0(0) = NAN;
 			return;
 		}
+		unit->m_repeatCount++;
 		float x = unit->mParent->mRGen->frand() * unit->m_range + unit->m_lo;
 		OUT0(0) = x;
 	} else {
@@ -1360,6 +1361,7 @@ void Diwhite_next(Diwhite *unit, int inNumSamples)
 			OUT0(0) = NAN;
 			return;
 		}
+		unit->m_repeatCount++;
 		float x = unit->mParent->mRGen->irand(unit->m_range) + unit->m_lo;
 		OUT0(0) = x;
 	} else {
@@ -1391,6 +1393,7 @@ void Dbrown_next(Dbrown *unit, int inNumSamples)
 			OUT0(0) = NAN;
 			return;
 		}
+		unit->m_repeatCount++;
 		OUT0(0) = unit->m_val;
 		float x = unit->m_val + unit->mParent->mRGen->frand2() * unit->m_step;
 		unit->m_val = sc_fold(x, unit->m_lo, unit->m_hi);
