@@ -127,4 +127,24 @@ TriggerUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 UnaryOpUGens_la_SOURCES		= UnaryOpUGens.cpp
 UnaryOpUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
+# ======================================================================
+# install rules
+
+install-pluginLTLIBRARIES: $(plugin_LTLIBRARIES)
+	mkdir -p $(DESTDIR)/$(plugindir)
+	list='$(plugin_LTLIBRARIES)'; \
+	for file in $$list; do \
+	    basefile=`basename $$file .la`; \
+	    srcfile=$$basefile.so; \
+	    dstfile=$$basefile$(SC_PLUGIN_EXT); \
+	    $(INSTALL_PROGRAM) .libs/$$srcfile $(DESTDIR)/$(plugindir)/$$dstfile; \
+	done
+
+uninstall-pluginLTLIBRARIES:
+	list='$(plugin_LTLIBRARIES)'; \
+	for file in $$list; do \
+	    srcfile=`basename $$file .la`$(SC_PLUGIN_EXT); \
+	    rm -f $(DESTDIR)/$(plugindir)/$$srcfile; \
+	done
+
 ## EOF ================================================================

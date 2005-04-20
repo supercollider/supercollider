@@ -110,6 +110,7 @@ bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* file
 		file.close();
 		return success;
 	}
+	SC_LibraryConfig::freeLibraryConfig();
 	return false;
 }
 
@@ -124,10 +125,7 @@ bool SC_LanguageClient::readDefaultLibraryConfig()
 	for (int i=0; i < 3; i++) {
 		snprintf(ipath, PATH_MAX, paths[i]);
 		if (unixStandardizePath(ipath, opath)) {
-			SC_LibraryConfigFile file(&::post);
-			if (!file.open(opath)) continue;
-			bool success = SC_LibraryConfig::readLibraryConfig(file, opath);
-			file.close();
+			bool success = readLibraryConfig(opath, ipath);
 			if (success) return true;
 		}
 	}

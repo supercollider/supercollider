@@ -7,11 +7,12 @@ dnl ===================================================================
 
 # initialize autoconf
 AC_PREREQ(2.52)
-AC_INIT(source/server/scsynth_main.cpp)
+AC_INIT(SuperCollider,3.0)
+AC_CONFIG_SRCDIR(source/server/scsynth_main.cpp)
 AC_CANONICAL_TARGET
 
 # initialize automake
-AM_INIT_AUTOMAKE(SuperCollider,3.0)
+AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 
 # shared library versions
@@ -240,7 +241,7 @@ fi
 # ======================================================================
 
 # various definitions
-SC_PLUGIN_DIR='"$(pkglibdir)/plugins"'
+SC_PLUGIN_DIR='$(libdir)/SuperCollider/plugins'
 AC_SUBST(SC_PLUGIN_DIR)
 
 SC_PLUGIN_EXT=".so"
@@ -336,8 +337,10 @@ fi
 AM_CONDITIONAL(WITH_SCLANG, $WITH_SCLANG)
 
 # installation directories
-AC_SUBST(SC_LIB_DIR)
-SC_LIB_DIR='$(pkgdatadir)/SCClassLibrary'
+SC_DATA_DIR='$(datadir)/SuperCollider'
+AC_SUBST(SC_DATA_DIR)
+SC_EXTENSION_DIR='$(datadir)/SuperCollider/Extensions'
+AC_SUBST(SC_EXTENSION_DIR)
 
 # alsa sequencer support
 AC_SUBST(SC_ALSA_LIBS)

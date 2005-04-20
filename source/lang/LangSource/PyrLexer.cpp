@@ -1998,8 +1998,8 @@ bool passOne_ProcessDir(char *dirname, int level)
 
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
- 	  post("\texcluding dir: '%s'\n", dirname);
- 	  return success;
+		post("\texcluding dir: '%s'\n", dirname);
+		return success;
  	}
 #endif
 
@@ -2025,18 +2025,7 @@ bool passOne_ProcessDir(char *dirname, int level)
 		strcat(entrypathname, "/");
 		strcat(entrypathname, (char*)de->d_name);
 
-        bool isDirectory = false;
-
-#ifdef SC_DARWIN
-		isDirectory = (de->d_type == DT_DIR);
-#endif // SC_DARWIN
-#ifdef SC_LINUX
-		{
-			isDirectory = sc_DirectoryExists(entrypathname);
-		}
-#endif // SC_LINUX
-
-        if (isDirectory) {
+        if (sc_DirectoryExists(entrypathname)) {
             success = passOne_ProcessDir(entrypathname, level + 1);
         } else {
             success = passOne_ProcessOneFile(entrypathname, level + 1);
@@ -2122,13 +2111,15 @@ void sc_GetUserHomeDirectory(char *str, int size)
 void sc_GetSystemExtensionDirectory(char *str, int size);
 void sc_GetSystemExtensionDirectory(char *str, int size)
 {
-  strncpy(str, 
-#ifdef SC_DARWIN
-	  "/Library/Application Support/SuperCollider/Extensions",
+	strncpy(str,
+#if defined(SC_DATA_DIR)
+		SC_DATA_DIR "/Extensions",
+#elif defined(SC_DARWIN)
+		"/Library/Application Support/SuperCollider/Extensions",
 #else
-	  "/usr/local/share/SuperCollider/Extensions",
+		"/usr/local/share/SuperCollider",
 #endif
-	  size);
+		size);
 }
 
 // Get the System level 'Extensions' directory.
@@ -2167,11 +2158,18 @@ void sc_AppendToPath(char *path, const char *component)
 static void sc_InitCompileDirectories(void);
 static void sc_InitCompileDirectories(void)
 {
-  getcwd(gCompileDir, MAXPATHLEN-32);
-  sc_AppendToPath(gCompileDir,"SCClassLibrary");
+	getcwd(gCompileDir, MAXPATHLEN-32);
+	sc_AppendToPath(gCompileDir,"SCClassLibrary");
 
-  sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
-  sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
+#ifdef SC_DATA_DIR
+	if (!sc_DirectoryExists(gCompileDir)) {
+		strncpy(gCompileDir, SC_DATA_DIR, MAXPATHLEN-32);
+		sc_AppendToPath(gCompileDir,"SCClassLibrary");
+	}
+#endif
+
+	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
+	sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
 }
 
 bool passOne()

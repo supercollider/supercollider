@@ -128,7 +128,7 @@ bool SC_LibraryConfig::readLibraryConfig(SC_LibraryConfigFile& file, const char*
 {
 	freeLibraryConfig();
 	gLibraryConfig = new SC_LibraryConfig();
-	return file.read(fileName, gLibraryConfig);
+	return file.read(fileName, gLibraryConfig);	
 }
 
 void SC_LibraryConfig::freeLibraryConfig()
@@ -136,7 +136,7 @@ void SC_LibraryConfig::freeLibraryConfig()
 	if (gLibraryConfig) {
 		delete gLibraryConfig;
 		gLibraryConfig = 0;
-	}	
+	}
 }
 
 #ifndef SC_WIN32

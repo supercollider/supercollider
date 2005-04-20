@@ -195,13 +195,9 @@ int SC_TerminalClient::run(int argc, char** argv)
 	// read library configuration file 
 	bool success;
 	if (opt.mLibraryConfigFile) {
-		success = readLibraryConfig(opt.mLibraryConfigFile, opt.mLibraryConfigFile);
+		readLibraryConfig(opt.mLibraryConfigFile, opt.mLibraryConfigFile);
 	} else {
-		success = readDefaultLibraryConfig();
-	}
-	if (!success) {
-		::post("%s: error reading library configuration file\n", getName());
-		return 1;
+		readDefaultLibraryConfig();
 	}
 
 	// initialize runtime
