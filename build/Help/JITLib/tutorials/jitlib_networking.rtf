@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green0\blue0;
-\red191\green0\blue0;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 networked programming
@@ -28,9 +28,10 @@
 \f2\i before you start:
 \f1\i0 \
 				remember to synchronize your system clocks. This can be done by:\
-				SystemPreferences>Date&Time: set
+				in OS X: SystemPreferences>Date&Time: set
 \f2\i  "Set Date & Time automatically"  
 \f1\i0 to true.\
+				in linux: set the ntp clock\
 				a local time server is better than the apple time server.\
 					if you cannot sync the time, you can set the server latency to nil.\
 					This will break the pattern's functionality though.\
@@ -62,11 +63,11 @@
 		b) from each client, initialize the default node and set notify to true:\
 			 	\
 			 
-\f3\fs18 	\cf4 s.boot; \cf5 // this will initialize the tree and start notification\cf4 \
+\f3\fs18 	s.boot; \cf4 // this will initialize the tree and start notification\cf0 \
 			 	\
-			 	\cf5 // if needed, a server window can be created:\cf4 \
+			 	\cf4 // if needed, a server window can be created:\cf0 \
 			 	s.makeWindow;
-\f1\fs24 \cf0 \
+\f1\fs24 \
 		\
 		c) preallocate a range of busses in each client. \
 			If there is conflicts, increase the number of busses in the server options before booting:
@@ -112,7 +113,7 @@
 \f3\fs18 p = \cf2 ProxySpace\cf0 .push(s);\
 				~shared1.ar(2);\
 				~shared2.ar(2);\
-				~sharedkr.kr(1); \cf6 // or other names.\
+				~sharedkr.kr(1); \cf4 // or other names.\
 			\
 			
 \f1\fs24 \cf0 then do (c) like in (1), just take care that the shared busses are taking number space\
