@@ -8,7 +8,7 @@
 MAINTAINERCLEANFILES	= Makefile.in
 
 if WITH_LIBRARY
-linuxlibdir		= $(pkgdatadir)/SCClassLibrary/Linux
+linuxlibdir		= $(SC_EXTENSION_DIR)/linux
 linuxlib_DATA		= \
 	LID.sc \
 	extMain.sc

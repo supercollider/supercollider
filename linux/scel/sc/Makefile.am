@@ -8,7 +8,7 @@
 MAINTAINERCLEANFILES	= Makefile.in
 
 if WITH_LIBRARY
-sceldir			= $(pkgdatadir)/SCClassLibrary/Linux/SCEL
+sceldir			= $(SC_EXTENSION_DIR)/scel
 scel_DATA		= \
 	Emacs.sc \
 	EmacsDocument.sc \
