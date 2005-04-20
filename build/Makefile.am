@@ -18,20 +18,17 @@ EXTRA_DIST		= \
 
 # install class library
 if WITH_LIBRARY
+SC_CLASS_LIBRARY = SCClassLibrary
 install-data-local:
-	@echo "*** installing class library ***"; \
-	cd "$(srcdir)"; \
-	for f in `find SCClassLibrary -name '*.sc'`; do \
-		d=`echo $$f | sed -e 's,/[^/]*$$,,'`; \
-		echo "==> $$f"; \
-		$(mkinstalldirs) $(pkgdatadir)/$$d >/dev/null; \
-		$(INSTALL_DATA) $$f $(pkgdatadir)/$$f >/dev/null; \
-	done;
-
+	@echo "*** installing class library ***" ; \
+	cd "$(srcdir)" ; \
+	find $(SC_CLASS_LIBRARY) -name CVS -prune -o -type d -print0 | \
+		xargs -0 -i $(mkinstalldirs) $(SC_DATA_DIR)/{} ; \
+	find $(SC_CLASS_LIBRARY) -name '*.sc' -print0 | \
+		xargs -0 -i $(INSTALL_DATA) {} $(SC_DATA_DIR)/{} ;
 uninstall-local:
-	@for f in `find $(SC_LIB_DIR) -name '*.sc'`; do \
-		rm -f $$f; \
-	done;
+	@find $(SC_CLASS_LIBRARY) -name '*.sc' -print0 | \
+		xargs -0 -i rm -f $(SC_DATA_DIR)/{} ;
 endif # WITH_LIBRARY
 
 ## EOF ================================================================
