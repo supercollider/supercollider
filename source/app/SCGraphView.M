@@ -220,11 +220,11 @@ void damageFunc(SCRect inRect, void* inData)
     [view setNeedsDisplayInRect: SCtoNSRect(inRect)];
 }
 
-void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
+void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, void* inData)
 {
     SCGraphView *view = (SCGraphView*)inData;
     NSPoint point = NSMakePoint(where.x, where.y);
-    [view beginDragFrom: point of: inSlot ];
+    [view beginDragFrom: point of: inSlot string: inString];
 }
 
 - (unsigned int)draggingSourceOperationMaskForLocal: (BOOL)flag
@@ -377,18 +377,19 @@ const int circDiam = 20;
 }
 
 
-- (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot
+- (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string
 {
     NSImage *image = [self makeDragImage: slot];
     
     NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
-    [pboard declareTypes: [NSArray arrayWithObject: sSCObjType] owner: self];
+    [pboard declareTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType] owner: self];
     
 	int fakeData;
     NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
     
     [pboard setData: data forType: sSCObjType];
-    
+    [pboard setString: string forType: NSStringPboardType];
+	
     NSSize imageSize = [image size];
     where.x -= circDiam / 2;
     where.y += circDiam / 4;

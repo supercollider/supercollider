@@ -45,7 +45,7 @@
 - (void)willClose;
 - (void)setWindowShouldClose:(BOOL)boo;
 - (BOOL)windowShouldClose;
-- (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot;
+- (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string;
 
 - (NSMenu*) menuForEvent:(NSEvent*)event;
 - (void)startMenuTracking: (SCView*) inView;

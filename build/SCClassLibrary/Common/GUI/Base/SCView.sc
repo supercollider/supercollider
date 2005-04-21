@@ -1,6 +1,6 @@
 
 SCView {  // abstract class
-	classvar <>currentDrag;
+	classvar <>currentDrag, <>currentDragString;
 	classvar <>globalKeyDownAction, <>globalKeyUpAction;
 
 	var dataptr, <parent, <>action, <background, <>keyDownAction, <>keyUpAction, <>keyTyped;
@@ -158,9 +158,18 @@ SCView {  // abstract class
 		};
 	}
 
-	canReceiveDrag {
-		^false;
+
+	beginDrag {
+		currentDrag = if (beginDragAction.isNil) 
+		{	
+			this.getDragObject
+		}{
+			beginDragAction.value(this)
+		};
+		currentDragString = currentDrag.asCompileString;
 	}
+	getDragObject { ^nil }
+	canReceiveDrag { ^false }
 
 	// get the view parent tree up to the SCTopView
 	getParents {
@@ -219,13 +228,10 @@ SCView {  // abstract class
 	}
 	
 	*importDrag { 
+		\importDrag.postln;
 		// this is called when an NSString is the drag object.
 		// we compile it to an SCObject.
 		currentDrag = currentDrag.interpret;
-	}
-	*exportDrag {
-		// this is called when an SCObject is dragged onto a text window
-		^currentDrag.asCompileString
 	}
 }
 
@@ -336,12 +342,8 @@ SCSlider : SCSliderBase
 		if (unicode == 16rF702, { this.decrement; ^this });
 	}
 	
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			this.value, 
-		{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^this.value
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
@@ -449,12 +451,8 @@ SCRangeSlider : SCSliderBase {
 		if (unicode == 16rF701, { this.decrement; ^this });
 		if (unicode == 16rF702, { this.decrement; ^this });
 	}
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			Point(this.lo, this.hi);, 
-		{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^Point(this.lo, this.hi)
 	}	
 	canReceiveDrag {
 		^currentDrag.isKindOf(Point);
@@ -506,12 +504,8 @@ SC2DSlider : SCSliderBase {
 		if (unicode == 16rF701, { this.decrementY; ^this });
 		if (unicode == 16rF702, { this.decrementX; ^this });
 	}
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			Point(this.x, this.y), 
-		{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^Point(this.x, this.y)
 	}
 	canReceiveDrag {
 		^currentDrag.isKindOf(Point);
@@ -591,12 +585,8 @@ SCButton : SCControlView {
 		^super.properties ++ #[\value, \font, \states]
 	}
 	
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			this.value, 
-		{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^this.value
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber or: { currentDrag.isKindOf(Function) };
@@ -661,12 +651,8 @@ SCPopUpMenu : SCControlView {
 		^super.properties ++ #[\value, \font, \items, \stringColor]
 	}
 
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			this.value, 
-		{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^this.value
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
@@ -793,12 +779,8 @@ SCNumberBox : SCStaticTextBase {
 	properties {
 		^super.properties ++ #[\boxColor]
 	}
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			object.asFloat, 
-		{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^object.asFloat
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
@@ -886,12 +868,8 @@ SCListView : SCControlView {
 		^super.properties ++ #[\value, \font, \items, \stringColor]
 	}
 
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			this.value, 
-		{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^this.value
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
@@ -911,17 +889,13 @@ SCDragView : SCStaticTextBase {
 		v.object = \something;
 		^v
 	}
+	getDragObject { 
+		^object
+	}
 }
 
 SCDragSource : SCDragView {
 	
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			{ object },
-			{
-				beginDragAction.value(this);
-			});
-	}
 }
 
 SCDragSink : SCDragView
@@ -939,14 +913,6 @@ SCDragSink : SCDragView
 }
 
 SCDragBoth : SCDragSink {
-	
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			object, 
-		{
-			beginDragAction.value(this);
-		});
-	}
 }
 
 
@@ -1109,11 +1075,8 @@ SCMultiSliderView : SCView {
 		this.doAction;
 		currentDrag = nil;
 	}
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			this.defaultDrag,{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^this.defaultDrag
 	}
 	
 	defaultDrag {
@@ -1255,12 +1218,8 @@ SCEnvelopeView : SCMultiSliderView {
 			this.value_(currentDrag);
 		});
 	}
-	beginDrag { 
-		currentDrag = if (beginDragAction.isNil, 
-			this.value, 
-		{
-			beginDragAction.value(this);
-		});
+	getDragObject { 
+		^this.value
 	}
 	addValue{arg xval, yval;
 		var arr, arrx, arry, aindx;

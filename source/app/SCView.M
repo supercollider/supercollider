@@ -706,15 +706,21 @@ void SCView::beginDrag(SCPoint where)
     sendMessage(s_beginDrag, 0, 0, 0);
     
     PyrSlot slot;
+    PyrSlot stringSlot;
+	NSString *string = 0;
     pthread_mutex_lock (&gLangMutex);
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
         slot.ucopy = g->classvars->slots[classVarIndex].ucopy;
+        stringSlot.ucopy = g->classvars->slots[classVarIndex+1].ucopy;
+		if (isKindOfSlot(&stringSlot, class_string)) {
+			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
+		}
     }
     pthread_mutex_unlock (&gLangMutex);
     
-    mTop->beginDragCallback(where, &slot);
+    mTop->beginDragCallback(where, &slot, string);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1154,9 +1160,9 @@ void SCTopView::addDamage(SCRect inRect)
     //mDamage = SCRectUnion(mDamage, inRect);
 }
 
-void SCTopView::beginDragCallback(SCPoint where, PyrSlot* slot)
+void SCTopView::beginDragCallback(SCPoint where, PyrSlot* slot, NSString* string)
 {
-    (*mDragCallback)(where, slot, mHostData);
+    (*mDragCallback)(where, slot, string, mHostData);
 }
 
 void SCView::refreshFocus()

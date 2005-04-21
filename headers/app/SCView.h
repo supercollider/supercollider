@@ -224,7 +224,7 @@ protected:
 
 // tell host to draw stuff.
 typedef void (*DamageCallback)(SCRect inRect, void *inData);
-typedef void (*DragCallback)(SCPoint where, PyrSlot* inSlot, void *inData);
+typedef void (*DragCallback)(SCPoint where, PyrSlot* inSlot, NSString* inString, void *inData);
 
 class SCTopView : public SCCompositeView
 {
@@ -237,7 +237,7 @@ public:
 
 	void resetFocus();
 	void addDamage(SCRect inRect);
-	void beginDragCallback(SCPoint where, PyrSlot* slot);
+	void beginDragCallback(SCPoint where, PyrSlot* slot, NSString* string);
 	
 	void setDamageCallback(DamageCallback inFunc, void *inHostData)
             { mDamageCallback = inFunc; mHostData = inHostData; }
