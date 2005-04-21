@@ -6,12 +6,20 @@ TabFileReader {
 		^super.newCopyArgs(stream)
 	}
 	
-	read {
+	*read { arg path, skipEmptyLines=false; 
+		var f, table; 
+		f = File(path, "r"); 
+		if (f.isOpen.not) { warn("TabFileReader: file" + path + "not found.") ^nil };
+		table = this.new(f).read(skipEmptyLines);
+		f.close;
+		^table;
+	}
+	read { arg skipEmptyLines=false; 
 		var string, record, table, c;
 		
 		string = String.new;
 		while ({
-			c = stream.get;
+			c = stream.getChar;
 			c.notNil
 		},{
 			if (c == $\t, {
@@ -19,13 +27,20 @@ TabFileReader {
 				string = String.new;
 			},{
 			if (c == $\n or: { c == $\r }, {
-				table = table.add(record);
+				record = record.add(string);
+				string = String.new; 
+								// or line is not empty
+				if (skipEmptyLines.not or: { (record != [ "" ]) })
+				{ 	table = table.add(record); };
+				
 				record = nil;
 			},{
 				string = string.add(c);
 			})});
+			
 		});
+		if (string.notEmpty) { record = record.add(string); };
+		if (record.notNil) { table = table.add(record); };
 		^table
-	}
+	}	
 }
-
