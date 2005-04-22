@@ -382,7 +382,7 @@ const int circDiam = 20;
     NSImage *image = [self makeDragImage: slot];
     
     NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
-    [pboard declareTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType] owner: self];
+    [pboard declareTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, nil] owner: self];
     
 	int fakeData;
     NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
