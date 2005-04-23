@@ -46,7 +46,7 @@ Number : Magnitude {
 	forSeries { arg second, last, function;
 		// called by generator expression
 		// compiler replaces this with special byte codes.
-		var step;
+		var step, j=0;
 		if (second.isNil) { 
 			last = last ? inf; 
 			step = if (this < last, 1, -1);
