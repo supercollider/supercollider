@@ -201,7 +201,8 @@ extern "C"
 	void TIRand_next(TIRand *unit, int inNumSamples);
 	void TIRand_Ctor(TIRand *unit);
 
-	void TRand_next(TRand *unit, int inNumSamples);
+	void TRand_next_a(TRand *unit, int inNumSamples);
+	void TRand_next_k(TRand *unit, int inNumSamples);
 	void TRand_Ctor(TRand *unit);
 
 	void TExpRand_next(TExpRand *unit, int inNumSamples);
@@ -560,18 +561,7 @@ void Rand_Ctor(Rand* unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TRand_Ctor(TRand* unit)
-{	
-	float lo = ZIN0(0);
-	float hi = ZIN0(1);
-	float range = hi - lo;
-	RGen& rgen = *unit->mParent->mRGen;	
-	ZOUT0(0) = rgen.frand() * range + lo;
-	SETCALC(TRand_next);
-	unit->m_trig = ZIN0(2);
-}
-
-void TRand_next(TRand* unit, int inNumSamples)
+void TRand_next_k(TRand* unit, int inNumSamples)
 {	
 	float trig = ZIN0(2);
 	if (trig > 0.f && unit->m_trig <= 0.f) {
@@ -584,6 +574,42 @@ void TRand_next(TRand* unit, int inNumSamples)
 		ZOUT0(0) = unit->m_value;
 	}
 	unit->m_trig = trig;
+}
+
+void TRand_next_a(TRand* unit, int inNumSamples)
+{	
+	float *trig = ZIN(2);
+	float prev = unit->m_trig;
+	float *out = ZOUT(0);
+	float outval = unit->m_value;
+	float val;
+	LOOP(inNumSamples,
+		
+		val = ZXP(trig);
+		if (val > 0.f &&  prev <= 0.f) {
+			float lo = ZIN0(0);
+			float hi = ZIN0(1);
+			float range = hi - lo;
+			RGen& rgen = *unit->mParent->mRGen;	
+			ZXP(out) = outval = rgen.frand() * range + lo;
+		} else {
+			ZXP(out) = outval;
+		};
+		prev = val;
+	)
+	unit->m_trig = val;
+	unit->m_value = outval;
+}
+
+void TRand_Ctor(TRand* unit)
+{	
+	float lo = ZIN0(0);
+	float hi = ZIN0(1);
+	float range = hi - lo;
+	RGen& rgen = *unit->mParent->mRGen;	
+	ZOUT0(0) = rgen.frand() * range + lo;
+	if(unit->mCalcRate == calc_FullRate){ SETCALC(TRand_next_a); } else { SETCALC(TRand_next_k); }
+	unit->m_trig = ZIN0(2);
 }
 
 
