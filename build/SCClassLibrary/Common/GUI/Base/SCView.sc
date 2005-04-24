@@ -228,7 +228,6 @@ SCView {  // abstract class
 	}
 	
 	*importDrag { 
-		\importDrag.postln;
 		// this is called when an NSString is the drag object.
 		// we compile it to an SCObject.
 		currentDrag = currentDrag.interpret;
