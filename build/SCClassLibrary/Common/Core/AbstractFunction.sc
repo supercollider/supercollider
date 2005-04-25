@@ -174,7 +174,7 @@ AbstractFunction {
 	// function composition
 	<> { arg that;
 		// function composition
-		^{|...args| this.value(that.valueArray(args)) }
+		^{|...args| this.value(that.value(*args)) }
 	}
 	
 	// embed in ugen graph

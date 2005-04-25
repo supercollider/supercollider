@@ -126,8 +126,6 @@ Stream : AbstractFunction {
 			nexty = stream.next;
 		});
 	}
-	
-	<> { arg stream; ^CompositeStream.new(this, stream) }
 
 	++ { arg stream; ^this.appendStream(stream) }
 	
