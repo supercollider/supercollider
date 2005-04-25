@@ -36,7 +36,7 @@ PatternProxy : Pattern {
 	source { ^pattern }
 	
 	pattern_ { arg pat; this.source_(pat) }
-	offset_ { arg val; quant = quant.instil(1, val) }
+	offset_ { arg val; quant = quant.instill(1, val) }
 	offset { arg val; ^quant.obtain(1) }
 
 	envir_ { arg argEnvir;
@@ -47,6 +47,9 @@ PatternProxy : Pattern {
 	set { arg ... args; 
 		if(envir.isNil) { this.envir = () };
 		args.pairsDo { arg key, val; envir.put(key, val) };
+	}
+	unset { arg ... args;
+		if(envir.notNil) { args.do { arg key; envir.removeAt(key) } };
 	}
 	
 	get { arg key;
