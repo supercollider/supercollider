@@ -219,7 +219,8 @@ BusPlug : AbstractFunction {
 	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }
 	
 	stop { arg fadeTime=0.1;
-		monitor.stop(fadeTime)
+		monitor.stop(fadeTime);
+		monitor = nil;
 	}
 	
 	scope { arg bufsize = 4096, zoom; if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } }
@@ -520,12 +521,6 @@ NodeProxy : BusPlug {
 
 	}
 	
-	/*
-	supplementNodeMapFromServer { arg keys;
-			controlNames = this.controlNames;
-	
-	}
-	*/
 	
 	generateUniqueName {
 			^server.clientID.asString ++ this.identityHash.abs
