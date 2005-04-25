@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red0\green0\blue191;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs18 \cf0 \
@@ -11,7 +12,8 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 TExpRand.kr(lo, hi, trig)\
+\fs24 \cf0 TExpRand.ar(lo, hi, trig)\
+TExpRand.kr(lo, hi, trig)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 \
@@ -23,16 +25,23 @@ lo and hi must both have the same sign and be non-zero.\
 \f0 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf3 "help-TExpRand"\cf0 , \{ \cf2 arg\cf0  out=0;\
-	\cf2 var\cf0  trig;\
-	trig = \cf2 Dust\cf0 .kr(10);\
-	\cf2 Out\cf0 .ar(out, \
-		\cf2 SinOsc\cf0 .ar(\
-			\cf2 TExpRand\cf0 .kr(300.0, 3000.0, trig),0,0.2 \
-		)\
-	)\
-\}).play;\
+\fs18 \cf0 \
+\
+(\cf2 \
+\{ \
+	\cf3 var\cf2  trig = \cf3 Dust\cf2 .kr(10);\
+	\cf3 SinOsc\cf2 .ar(\
+			\cf3 TExpRand\cf2 .kr(300.0, 3000.0, trig) \
+		) * 0.1\
+\}.play;\
+\cf0 )\
+\
+(\
+\{ \
+	\cf4 var\cf0  trig = \cf4 Dust\cf0 .ar(MouseX.kr(1, 8000, 1));\
+	\cf4 SinOsc\cf0 .ar(\
+			\cf4 TExpRand\cf0 .ar(300.0, 3000.0, trig)\
+		) * 0.1\
+\}.play;\
 )\
 }
