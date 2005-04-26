@@ -226,6 +226,31 @@ Stream : AbstractFunction {
 			});
 		}
 	}
+	loop { 
+		^FuncStream.new({ arg inval;
+			var outval;
+			outval = this.next(inval);
+			if(outval.isNil) {  this.reset; outval = this.next(inval) };
+			outval
+		}, { this.reset })  
+	}
+	repeat { arg repeats = inf;
+		var n;
+		if(inf === repeats) { ^this.loop };
+		n = repeats - 1;
+		^FuncStream.new({ arg inval;
+			var outval;
+			outval = this.next(inval);
+			if(n > 0) {
+					if(outval.isNil) {  
+						n = n - 1; 
+						this.reset;
+						outval = this.next(inval) 
+					};
+					outval
+			} { nil }
+		}, {	n = repeats; this.reset })
+	}
 	
 	
 }
