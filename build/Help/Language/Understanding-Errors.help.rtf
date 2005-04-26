@@ -2,7 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;\red0\green115\blue0;
+}
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f0\b\fs40 \cf0 Understanding errors 
@@ -30,6 +31,7 @@ For example:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 1.blech  \cf2 // no class implements this method; therefore you'll get an error\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 // error text\cf0 \
 ERROR: Message 'blech' not understood.\
@@ -98,8 +100,9 @@ Here is a slightly more complex example, showing how you can use the variables l
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 ERROR: Message 'ecky_ecky_phtang' not understood.\
+\f2\fs18 \cf0 ERROR: Message 'ecky_ecky_phtang' not understood.\
 RECEIVER:\
    Integer 6\
 ARGS:\
@@ -128,8 +131,9 @@ CALL STACK:\
 		arg this = <instance of Routine>\
 		arg inval = 1542.075067\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Reading from the bottom this time, to trace the flow in chronological order: this time, execution did not begin with the command line, but with a routine commencing within the scheduler (Routine(\{...\}).play). Note that there are two calls identified as "FunctionDef in closed FunctionDef" and that they can be distinguished by the variables contained within. The earlier call (second from the bottom) defines the variable "a" while the other defines "b." To locate the error in the code, then, you should look for a function defining the variable "b" that is 
+\f1\fs24 \cf0 Reading from the bottom this time, to trace the flow in chronological order: this time, execution did not begin with the command line, but with a routine commencing within the scheduler (Routine(\{...\}).play). Note that there are two calls identified as "FunctionDef in closed FunctionDef" and that they can be distinguished by the variables contained within. The earlier call (second from the bottom) defines the variable "a" while the other defines "b." To locate the error in the code, then, you should look for a function defining the variable "b" that is 
 \f3\i called
 \f1\i0  within another function defining "a" inside a routine. \
 \
@@ -165,11 +169,13 @@ You can also catch exceptions that occur within functions by executing the funct
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 oops\
+\f2\fs18 \cf0 oops\
 next line\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 protect -
@@ -183,8 +189,9 @@ next line\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 oops  \cf2 // without protect, this would not be posted\cf0 \
+\f2\fs18 \cf0 oops  \cf2 // without protect, this would not be posted\cf0 \
 ERROR: Message 'blech' not understood.\
 RECEIVER:\
    Integer 1\
@@ -195,33 +202,39 @@ Instance of Array \{    (02207560, gc=01, fmt=01, flg=11, set=00)\
 CALL STACK:\
 	DoesNotUnderstandError-reportError\
 		arg this = <instance of DoesNotUnderstandError>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \
 Prior to August 2004, try and protect do not return the value of the function to the caller if there is no error.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 try \{ 1+1 \}\
+\f2\fs18 \cf0 try \{ 1+1 \}\
 \
 a Function\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 More recent builds (since early August 2004) do return the function's value. Non-error objects can be thrown using the class 
 \f0\b Exception
 \f1\b0 .\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 try \{ 1+1 \}\
+\f2\fs18 \cf0 try \{ 1+1 \}\
 2
 \f1\fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 // can't add a Point to an integer - binary op failed error\cf0 \
 \cf2 // result of catch func is returned instead\cf0 \
 try \{ 1+\cf3 Point\cf0 (0, 0) \} \{ 2*5 \}\
 10\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs32 \cf0 3. Common primitive errors \
@@ -240,79 +253,93 @@ Solution: write your GUI updates as follows.
 \f0\b defer
 \f1\b0  schedules the function on AppClock.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \{ myGUIObject.value_(newValue) \}.defer; \
+\f2\fs18 \cf0 \{ myGUIObject.value_(newValue) \}.defer; \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 - Attempted write to immutable object. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 #[0, 1, 2].put(1, 3)\
+\f2\fs18 \cf0 #[0, 1, 2].put(1, 3)\
 \
 ERROR: Primitive '_BasicPut' failed.\
 Attempted write to immutable object.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 #[0, 1, 2] is a literal array. Literal arrays cannot be manipulated--they can only be indexed. They cannot be changed internally. \
 \
 Solution: copy the array first.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 #[0, 1, 2].copy.put(1, 3)\
+\f2\fs18 \cf0 #[0, 1, 2].copy.put(1, 3)\
 \
 [ 0, 3, 2 ] \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 - Index not an Integer.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 #[0, 1, 2].at(\\1)\
+\f2\fs18 \cf0 #[0, 1, 2].at(\\1)\
 \
 ERROR: Primitive '_BasicAt' failed.\
 Index not an Integer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Arrays can be indexed only with integers (or, in builds since August 2004, floats).\
 \
 Solution: use .asInteger\'d1note that if the object cannot be converted into an integer, you'll get a "Does not understand" error!\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 #[0, 1, 2].at(\\1.asInteger)\
+\f2\fs18 \cf0 #[0, 1, 2].at(\\1.asInteger)\
 1\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 - Index out of range.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 [0, 1, 2].put(5, 5)\
+\f2\fs18 \cf0 [0, 1, 2].put(5, 5)\
 \
 ERROR: Primitive '_BasicPut' failed.\
 Index out of range.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Arrays have a finite size. If you try to put an object into an array slot but the slot does not exist because the array is too small, you'll get this error. \
 \
 Solution: extend the array.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 [0, 1, 2].extend(6).put(5, 5)\
+\f2\fs18 \cf0 [0, 1, 2].extend(6).put(5, 5)\
 \
 [ 0, 1, 2, nil, nil, 5 ]\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Note that if the argument to extend() is smaller than the array, then the array will be truncated. If you're not sure, use max:
+\f1\fs24 \cf0 Note that if the argument to extend() is smaller than the array, then the array will be truncated. If you're not sure, use max:
 \f2\fs18 \
 \
 i = rrand(5, 10);\
@@ -324,27 +351,31 @@ Why i+1? An array with size 4 allows 0, 1, 2 and 3 as indexes (4 elements starti
 \
 If it's a new array, use .newClear instead of .new.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf5 a = \cf6 Array\cf5 .new(4);\
+\f2\fs18 \cf0 a = \cf3 Array\cf0 .new(4);\
 a.put(3, 1);\
-\cf0 ERROR: Primitive '_BasicPut' failed.\
+ERROR: Primitive '_BasicPut' failed.\
 Index out of range.\
 \
-\cf5 a = \cf6 Array\cf5 .newClear(4);\
+a = \cf3 Array\cf0 .newClear(4);\
 a.put(3, 1);\
-\cf0 [ nil, nil, nil, 1 ]\
+[ nil, nil, nil, 1 ]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs32 \cf0 4. A common warning\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 WARNING: FunctionDef contains variable declarations and so will not be inlined.\
+\f2\fs18 \cf0 WARNING: FunctionDef contains variable declarations and so will not be inlined.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 \cf0 This warning can be safely ignored. Your code will still run, even if you get this warning. \
 \
@@ -361,10 +392,10 @@ Inlining is a compiler optimization that takes the operations inside a function 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 BYTECODES: (16)\
-  0   40       PushLiteral Float 0.9   3FECCCCC CCCCCCCD  \cf7 // \{ 0.9.coin \}\cf0 \
+  0   40       PushLiteral Float 0.9   3FECCCCC CCCCCCCD  \cf2 // \{ 0.9.coin \}\cf0 \
   1   0D 2C    SendSpecialUnaryArithMsgX 'coin'\
   3   F9 00 09 JumpIfFalsePushNil 9  (15)\
-  6   2C 0A    PushInt 10							  \cf7 // \{ 10.rand.postln \}\cf0 \
+  6   2C 0A    PushInt 10							  \cf2 // \{ 10.rand.postln \}\cf0 \
   8   0D 25    SendSpecialUnaryArithMsgX 'rand'\
  10   C1 38    SendSpecialMsg 'postln'\
  12   FD 00 0D JumpBak 13  (0)\
@@ -381,8 +412,8 @@ If, however, one of the functions defines a variable, then that function require
 
 \f2\fs18 \cf2 // not inlined\cf0 \
 \{ while \{ 0.9.coin \} \{\
-\cf5     \cf6 var\cf5  a;	\cf7 // variable here prevents optimization\cf5 \
-\cf0     a = 10.rand;\
+    \cf3 var\cf0  a;	\cf2 // variable here prevents optimization\cf0 \
+    a = 10.rand;\
     a.postln\
   \}\
 \}.def.dumpByteCodes;\
@@ -436,4 +467,28 @@ Sometimes, there's no way around un-optimized code. To wit, \
 The first routine can be optimized because there is no variable declaration inside the loop. But, the synth variable changes on each iteration, meaning that by the time the first release happens, you don't have access anymore to the first note. Thus the first note will never terminate. \
 \
 In the second case, each note has its own synth variable, so the notes will be terminated as expected. You get a warning, but it's better because the results are correct.\
+\
+\
+A solution to the above problem is to use a function with local variables. \
+\
+
+\f2\fs18 \cf5 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf6 Routine\cf5 (\{\
+	\cf6 var\cf5  func;\
+	func = \{ \
+		\cf6 var\cf5  synth; \cf7 // this variable is local to the function\cf5 \
+    		synth = \cf6 Synth\cf5 (\cf8 "default"\cf5 );\
+    		[\cf9 \\play\cf5 , synth].postln;\
+    		\cf6 thisThread\cf5 .clock.sched(4.5, \{ \
+    			synth.free;\
+    			[\cf9 \\free\cf5 , synth].postln;  \
+    		\});\
+    	\};\
+    	\{ func.value; 1.wait; \}.loop\
+\}).play;\
+)\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f1\fs24 \cf0 \
 }
