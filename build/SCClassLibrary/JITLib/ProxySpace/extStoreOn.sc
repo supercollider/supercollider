@@ -18,8 +18,7 @@
 		//don't want to add a slot yet. not optimized
 	}
 	storeOn { arg stream;
-		var key;
-		key = this.key;
+		var key = this.key;
 		if(key.notNil) { stream << "~" << key } { super.storeOn(stream) };
 	}
 }
@@ -28,15 +27,16 @@
 
 	storeOn { arg stream;
 		var astr, bstr, opstr;
+		var basic = operator.isBasicOperator;
 		astr = if(a.isKindOf(NodeProxy))
 			{ "~" ++ a.key } { a.asCompileString };
 		bstr = if(b.isKindOf(NodeProxy))
 			{ "~" ++ b.key } { b.asCompileString };
 		if(b.isKindOf(AbstractOpPlug)){ bstr = "(" ++ bstr ++ ")" };
-		opstr = if(operator.isBasicOperator.not) 
+		opstr = if(basic.not) 
 			{ "." ++ operator ++ "(" } { " " ++ operator ++ " " };
 		stream << astr  << opstr  << bstr;
-		if(operator.isBasicOperator.not) { stream << ")" };
+		if(basic.not) { stream << ")" };
 	}
 }
 
