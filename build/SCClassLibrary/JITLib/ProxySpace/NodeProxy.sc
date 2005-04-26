@@ -902,78 +902,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) 
 		{ this.sendEach(nil, true) } 
 		{ "not playing".inform }
-	}
-	
-	
-	
-	//////////////   behave like my bus //////////////////
-	
-	gate { arg level=1.0, dur=0;
-		if(bus.notNil && this.isPlaying, { bus.gate(level, dur, group) }) 
-		{ "not playing".inform };
-	}
-	
-	line { arg level=1.0, dur=1.0;
-		if(bus.notNil && this.isPlaying, { group.freeAll; bus.line(level, dur, group) })
-		{ "not playing".inform };
-	}
-	
-	xline { arg level=1.0, dur=1.0;
-		if(bus.notNil && this.isPlaying, { group.freeAll; bus.xline(level, dur, group) })
-		{ "not playing".inform };
-	}
-	
-	env { arg env;
-		if(bus.notNil && this.isPlaying, { group.freeAll; bus.env(env) })
-		{ "not playing".inform };
-	}
-		
-	gateAt { arg key, level=1.0, dur=1.0;
-		this.group.set(key, level); 
-		SystemClock.sched(dur, { this.group.set(key, nodeMap[key].value); nil });
-	}
-	
-	lineAt { arg key, level=1.0, dur;
-		this.performAtControl(\line, key, level, dur);
-	}
-	
-	xlineAt { arg key, level=1.0, dur;
-		this.performAtControl(\xline, key, level, dur);
-	}
-	
-	// private
-	performAtControl { arg action, keys, levels=1.0, durs;
-		var ctlBus, bundle, id, setArgs, setBundle, ctlIndex, missing;
-		if(this.isPlaying) {
-			durs = durs ? this.fadeTime;
-			id = group.nodeID;
-			keys = keys.asArray; levels = levels.asArray; durs = durs.asArray;
-
-			ctlBus = Bus.alloc('control', server, keys.size);
-			ctlIndex = ctlBus.index;
-			bundle = ["/n_map", id];
-			keys.do { arg key, i; bundle = bundle.addAll([key, ctlIndex + i]) };
-			missing = keys.select { arg key; nodeMap[key].isNil };
-			if(missing.notEmpty) { 
-				this.supplementNodeMap(missing); 
-				nodeMap.addToBundle(bundle, group) 
-			};
-			server.sendBundle(server.latency, bundle);
-				
-			ctlBus.perform(action, levels, durs);
-			ctlBus.free;
-				
-			setArgs = [keys, levels].flop.flat;
-				// set the node map
-			nodeMap.set(*setArgs);
-				// finally set it to that vealue
-			server.sendBundle(server.latency + durs.maxItem, 
-					 ["/n_map", id] ++ [keys, -1].flop.flat,
-					 ["/n_set", id] ++ setArgs
-				);
-		} { "not playing".inform };
-	}
-	
+	}	
 	
 }
 
