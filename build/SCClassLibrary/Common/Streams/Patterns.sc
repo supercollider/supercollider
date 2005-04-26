@@ -77,7 +77,7 @@ Pattern : AbstractFunction {
 	clump { arg n; ^Pclump(n, this) }
 	flatten { arg n = 1; ^Pflatten(n, this) }
 	
-	repeat { arg n; ^Pn(this, n) }
+	repeat { arg n=inf; ^Pn(this, n) }
 	keep { arg n; ^Pfin(n, this) }
 	drop { arg n; ^Pdrop(n, this) }
 	stutter { arg n; ^Pstutter(n, this) }
