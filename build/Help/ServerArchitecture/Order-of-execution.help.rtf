@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f0\b\fs40 \cf0 Order of execution \
@@ -41,13 +41,13 @@ The effect synth will not hear the source synth, and you won't get the results y
 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f2\fs18 \cf2 // execute the following and watch the post window\cf3 \
-s === \cf4 Server\cf3 .default;\
-s === \cf4 Server\cf3 .local;\
-\cf4 Server\cf3 .default = \cf4 Server\cf3 .internal; s === \cf4 Server\cf3 .default;
+\f2\fs18 \cf2 // execute the following and watch the post window\cf0 \
+s === \cf3 Server\cf0 .default;\
+s === \cf3 Server\cf0 .local;\
+\cf3 Server\cf0 .default = \cf3 Server\cf0 .internal; s === \cf3 Server\cf0 .default;
 \f1\fs24 \
 
-\f2\fs18 \cf4 Server\cf3 .default = \cf4 Server\cf3 .local; \cf2 // return it to the local server
+\f2\fs18 \cf3 Server\cf0 .default = \cf3 Server\cf0 .local; \cf2 // return it to the local server
 \f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
@@ -90,12 +90,12 @@ As noted above, the default target is the
 \
  The following 
 \f0\b Symbols
-\f1\b0  are valid addActions for Synth.new: \cf5 \\addToHead\cf0 , \cf5 \\addToTail\cf0 , \cf5 \\addBefore\cf0 , \cf5 \\addAfter\cf0 , \cf5 \\addReplace\cf0 .\
+\f1\b0  are valid addActions for Synth.new: \cf4 \\addToHead\cf0 , \cf4 \\addToTail\cf0 , \cf4 \\addBefore\cf0 , \cf4 \\addAfter\cf0 , \cf4 \\addReplace\cf0 .\
 \
 
 \f0\b 	Synth.new(defName, args, target, addAction)
 \f1\b0 \
-		if target is a Synth the  \cf5 \\addToHead\cf0 , and \cf5 \\addToTail\cf0  methods will apply to that Synths group\
+		if target is a Synth the  \cf4 \\addToHead\cf0 , and \cf4 \\addToTail\cf0  methods will apply to that Synths group\
 		if target is a Server it will resolve to that Server's default group\
 		if target is nil it will resolve to the default group of the default Server\
 	 	 
@@ -159,9 +159,9 @@ If you need to change the order of execution after synths and groups have been c
 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f2\fs18 \cf0 	~fx = \cf6 Synth\cf0 .tail(s, \cf7 "fx"\cf0 );\
-	~src = \cf6 Synth\cf0 .tail(s, \cf7 "src"\cf0 );  \cf8 // effect will not be heard b/c it's earlier\cf0 \
-	~src.moveBefore(~fx);   \cf8 // place the source before the effect\cf0 \
+\f2\fs18 \cf0 	~fx = \cf3 Synth\cf0 .tail(s, \cf5 "fx"\cf0 );\
+	~src = \cf3 Synth\cf0 .tail(s, \cf5 "src"\cf0 );  \cf2 // effect will not be heard b/c it's earlier\cf0 \
+	~src.moveBefore(~fx);   \cf2 // place the source before the effect\cf0 \
 	
 \f1\fs24 \
 \
@@ -213,68 +213,69 @@ So, at the beginning of your program:\
 \f2\fs18 \cf0 s.boot;\
 \
 (\
-l = \cf6 Bus\cf0 .control(s, 1);  \cf8 // get a bus for the LFO--not relevant to order-of-exec\cf0 \
-b = \cf6 Bus\cf0 .audio(s, 2);	\cf8 // assuming stereo--this is to keep the src->fx chain separate from\cf0 \
-				\cf8 // other similar chains\cf0 \
-~synthgroup = \cf6 Group\cf0 .tail(s);\
-~fxgroup = \cf6 Group\cf0 .tail(s);\
+l = \cf3 Bus\cf0 .control(s, 1);  \cf2 // get a bus for the LFO--not relevant to order-of-exec\cf0 \
+b = \cf3 Bus\cf0 .audio(s, 2);	\cf2 // assuming stereo--this is to keep the src->fx chain separate from\cf0 \
+				\cf2 // other similar chains\cf0 \
+~synthgroup = \cf3 Group\cf0 .tail(s);\
+~fxgroup = \cf3 Group\cf0 .tail(s);\
 \
-\cf8 // now you have synthgroup --> fxgroup within the default group of s\cf0 \
+\cf2 // now you have synthgroup --> fxgroup within the default group of s\cf0 \
 \
-\cf8 // make some synthdefs to play with\cf0 \
-\cf6 SynthDef\cf0 (\cf7 "order-of-ex-dist"\cf0 , \{ \cf6 arg\cf0  bus, preGain, postGain;\
-	\cf6 var\cf0  sig;\
-	sig = \cf6 In\cf0 .ar(bus, 2);\
+\cf2 // make some synthdefs to play with\cf0 \
+\cf3 SynthDef\cf0 (\cf5 "order-of-ex-dist"\cf0 , \{ \cf3 arg\cf0  bus, preGain, postGain;\
+	\cf3 var\cf0  sig;\
+	sig = \cf3 In\cf0 .ar(bus, 2);\
 	sig = (sig * preGain).distort;\
-	\cf6 ReplaceOut\cf0 .ar(bus, sig * postGain);\
+	\cf3 ReplaceOut\cf0 .ar(bus, sig * postGain);\
 \}).send(s);\
 \
-\cf6 SynthDef\cf0 (\cf7 "order-of-ex-pulse"\cf0 , \{ \cf6 arg\cf0  freq, bus, ffreq, pan, lfobus;\
-	\cf6 var\cf0  sig, noteLen;\
-	noteLen = \cf6 In\cf0 .kr(lfobus, 1);\
-	sig = \cf6 RLPF\cf0 .ar(\cf6 Pulse\cf0 .ar(freq, 0.2, 0.5), ffreq, 0.3);\
-	\cf6 Out\cf0 .ar(bus, \cf6 Pan2\cf0 .ar(sig, pan)\
-		* \cf6 EnvGen\cf0 .kr(\cf6 Env\cf0 .perc(0.1, 1), timeScale: noteLen, doneAction: 2));\
+\cf3 SynthDef\cf0 (\cf5 "order-of-ex-pulse"\cf0 , \{ \cf3 arg\cf0  freq, bus, ffreq, pan, lfobus;\
+	\cf3 var\cf0  sig, noteLen;\
+	noteLen = \cf3 In\cf0 .kr(lfobus, 1);\
+	sig = \cf3 RLPF\cf0 .ar(\cf3 Pulse\cf0 .ar(freq, 0.2, 0.5), ffreq, 0.3);\
+	\cf3 Out\cf0 .ar(bus, \cf3 Pan2\cf0 .ar(sig, pan)\
+		* \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.1, 1), timeScale: noteLen, doneAction: 2));\
 \}).send(s);\
 \
-\cf6 SynthDef\cf0 (\cf7 "LFNoise1"\cf0 , \{ \cf6 arg\cf0  freq, mul, add, bus;\
-	\cf6 Out\cf0 .kr(bus, \cf6 LFNoise1\cf0 .kr(freq, mul:mul, add:add));\
+\cf3 SynthDef\cf0 (\cf5 "LFNoise1"\cf0 , \{ \cf3 arg\cf0  freq, mul, add, bus;\
+	\cf3 Out\cf0 .kr(bus, \cf3 LFNoise1\cf0 .kr(freq, mul:mul, add:add));\
 \}).send(s);\
 )\
 \
-\cf8 // Place LFO:\cf0 \
+\cf2 // Place LFO:\cf0 \
 \
-~lfo = \cf6 Synth\cf0 .head(s, \cf7 "LFNoise1"\cf0 , [\cf5 \\freq\cf0 , 0.3, \cf5 \\mul\cf0 , 0.68, \cf5 \\add\cf0 , 0.7, \cf5 \\bus\cf0 , l.index]);\
+~lfo = \cf3 Synth\cf0 .head(s, \cf5 "LFNoise1"\cf0 , [\cf4 \\freq\cf0 , 0.3, \cf4 \\mul\cf0 , 0.68, \cf4 \\add\cf0 , 0.7, \cf4 \\bus\cf0 , l.index]);\
 \
-\cf8 // Then place your effect: \cf0 \
+\cf2 // Then place your effect: \cf0 \
 \
-~dist = \cf6 Synth\cf0 .tail(~fxgroup, \cf7 "order-of-ex-dist"\cf0 , [\cf5 \\bus\cf0 , b.index, \cf5 \\preGain\cf0 , 8, \cf5 \\postGain\cf0 , 0.6]);\
+~dist = \cf3 Synth\cf0 .tail(~fxgroup, \cf5 "order-of-ex-dist"\cf0 , [\cf4 \\bus\cf0 , b.index, \cf4 \\preGain\cf0 , 8, \cf4 \\postGain\cf0 , 0.6]);\
 \
-\cf8 // transfer the results to main out, with level scaling\
+\cf2 // transfer the results to main out, with level scaling\
 // play at tail of s's default group (note that Function-play also takes addActions!\cf0 \
 \
-~xfer = \{ \cf6 Out\cf0 .ar(0, 0.25 * \cf6 In\cf0 .ar(b.index, 2)) \}.play(s, addAction: \cf5 \\addToTail\cf0 );   \
+~xfer = \{ \cf3 Out\cf0 .ar(0, 0.25 * \cf3 In\cf0 .ar(b.index, 2)) \}.play(s, addAction: \cf4 \\addToTail\cf0 );   \
 \
-\cf8 // And start your routine:\cf0 \
+\cf2 // And start your routine:\cf0 \
 \
 (\
-r = \cf6 Routine\cf0 (\{\
+r = \cf3 Routine\cf0 (\{\
 	\{\
-		\cf6 Synth\cf0 .tail(~synthgroup, \cf7 "order-of-ex-pulse"\cf0 ,\
-			[\cf5 \\freq\cf0 , rrand(200, 800), \cf5 \\ffreq\cf0 , rrand(1000, 15000), \cf5 \\pan\cf0 , 1.0.rand2,\
-			 \cf5 \\bus\cf0 , b.index, \cf5 \\lfobus\cf0 , l.index]);\
+		\cf3 Synth\cf0 .tail(~synthgroup, \cf5 "order-of-ex-pulse"\cf0 ,\
+			[\cf4 \\freq\cf0 , rrand(200, 800), \cf4 \\ffreq\cf0 , rrand(1000, 15000), \cf4 \\pan\cf0 , 1.0.rand2,\
+			 \cf4 \\bus\cf0 , b.index, \cf4 \\lfobus\cf0 , l.index]);\
 		0.07.wait;\
 	\}.loop;\
-\}).play(\cf6 SystemClock\cf0 );\
+\}).play(\cf3 SystemClock\cf0 );\
 )\
 \
-~dist.run(\cf6 false\cf0 );	\cf8 // proves that the distortion effect is doing something\cf0 \
-~dist.run(\cf6 true\cf0 );\
+~dist.run(\cf3 false\cf0 );	\cf2 // proves that the distortion effect is doing something\cf0 \
+~dist.run(\cf3 true\cf0 );\
 \
-\cf8 // to clean up:\cf0 \
+\cf2 // to clean up:\cf0 \
 (\
-r.stop;\
-[~synthgroup, ~fxgroup, b, l, ~lfo, ~xfer].do(\{ \cf6 arg\cf0  x; x.free \});\
+r.stop;\cf6 \
+[~synthgroup, ~fxgroup, b, l, ~lfo, ~xfer].do(\{ \cf7 arg\cf6  x; x.free \});\
+currentEnvironment.clear; \cf8 // clear all environment variables\cf0 \
 )\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
@@ -341,7 +342,7 @@ If Synth 1 were moved after Synth 2 then Synth 2's InFeedback would receive a mi
 (As well, if any In.ar wrote to busA earlier in the node order than Synth 2, it would zero the bus before Synth 3's data reached Synth 2. This is true even it there were no node before Synth 2 writing to busA.)\
 \
 Because of this it is often useful to allocate a separate bus for feedback. With the following arrangement Synth 2 will receive data from Synth3 regardless of Synth 1's position in the node order.
-\f2\fs18 \cf6 \
+\f2\fs18 \cf3 \
 \
 
 \f1\fs24 \cf0 Synth 1 -> busA\
@@ -351,43 +352,43 @@ Synth 3 -> busB + busA \
 The following example demonstrates this issue with In.kr:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf6 \
+\f2\fs18 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 SynthDef\cf0 (\cf7 "help-Infreq"\cf0 , \{ \cf6 arg\cf0  bus;\
-	\cf6 Out\cf0 .ar(0, \cf6 FSinOsc\cf0 .ar(\cf6 In\cf0 .kr(bus), 0, 0.5));\
+\cf3 SynthDef\cf0 (\cf5 "help-Infreq"\cf0 , \{ \cf3 arg\cf0  bus;\
+	\cf3 Out\cf0 .ar(0, \cf3 FSinOsc\cf0 .ar(\cf3 In\cf0 .kr(bus), 0, 0.5));\
 \}).send(s);\
 \
-\cf6 SynthDef\cf0 (\cf7 "help-Outfreq"\cf0 , \{ \cf6 arg\cf0  freq = 400, bus;\
-	\cf6 Out\cf0 .kr(bus, \cf6 SinOsc\cf0 .kr(1, 0, freq/40, freq));\
+\cf3 SynthDef\cf0 (\cf5 "help-Outfreq"\cf0 , \{ \cf3 arg\cf0  freq = 400, bus;\
+	\cf3 Out\cf0 .kr(bus, \cf3 SinOsc\cf0 .kr(1, 0, freq/40, freq));\
 \}).send(s);\
 \
-b = \cf6 Bus\cf0 .control(s,1);\
+b = \cf3 Bus\cf0 .control(s,1);\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf8 // add the first control Synth at the tail of the default server; no audio yet\cf0 \
-x = \cf6 Synth\cf0 .tail(s, \cf7 "help-Outfreq"\cf0 , [\cf5 \\bus\cf0 , b.index]);\
+\cf2 // add the first control Synth at the tail of the default server; no audio yet\cf0 \
+x = \cf3 Synth\cf0 .tail(s, \cf5 "help-Outfreq"\cf0 , [\cf4 \\bus\cf0 , b.index]);\
 \
-\cf8 // add the sound producing Synth BEFORE it; It receives x's data from the previous cycle\cf0 \
-y = \cf6 Synth\cf0 .before(x, \cf7 "help-Infreq"\cf0 , [\cf5 \\bus\cf0 , b.index]);\
+\cf2 // add the sound producing Synth BEFORE it; It receives x's data from the previous cycle\cf0 \
+y = \cf3 Synth\cf0 .before(x, \cf5 "help-Infreq"\cf0 , [\cf4 \\bus\cf0 , b.index]);\
 \
-\cf8 // add another control Synth before y, at the head of the server\cf0 \
-\cf8 // It now overwrites x's cycle old data before y receives it\cf0 \
-z = \cf6 Synth\cf0 .head(s, \cf7 "help-Outfreq"\cf0 , [\cf5 \\bus\cf0 , b.index, \cf5 \\freq\cf0 , 800]);\
+\cf2 // add another control Synth before y, at the head of the server\cf0 \
+\cf2 // It now overwrites x's cycle old data before y receives it\cf0 \
+z = \cf3 Synth\cf0 .head(s, \cf5 "help-Outfreq"\cf0 , [\cf4 \\bus\cf0 , b.index, \cf4 \\freq\cf0 , 800]);\
 \
-\cf8 // get another bus\cf0 \
-c = \cf6 Bus\cf0 .control(s, 1);\
+\cf2 // get another bus\cf0 \
+c = \cf3 Bus\cf0 .control(s, 1);\
 \
-\cf8 // now y receives x's data even though z is still there\cf0 \
-y.set(\cf5 \\bus\cf0 , c.index); x.set(\cf5 \\bus\cf0 , c.index);\
+\cf2 // now y receives x's data even though z is still there\cf0 \
+y.set(\cf4 \\bus\cf0 , c.index); x.set(\cf4 \\bus\cf0 , c.index);\
 \
 x.free; y.free; z.free;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 	
-\f2\fs18 \cf6 \
+\f2\fs18 \cf3 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f0\b\fs28 \cf0  
