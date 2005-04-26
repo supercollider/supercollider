@@ -166,6 +166,10 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^roundUp(this.beats - offset, quant) + offset;
 	}
 	
+	timeToNextBeat { arg quant=0.0; // logical time to next beat
+		^quant.nextTimeOnGrid(this) - this.beats
+	}
+	
 	beats2bars { arg beats;
 		^(beats - baseBarBeat) * barsPerBeat + baseBar;
 	}
