@@ -52,9 +52,3 @@
 	}
 }
 
-+TempoClock {
-	timeToNextBeat { arg quant=0.0;
-		^quant.nextTimeOnGrid(this) - this.beats
-	}
-}
-
