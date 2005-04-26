@@ -158,12 +158,7 @@ Object {
 	}
 	
 	loop { ^this.repeat(inf) }
-	
-	repeat { arg repeats = inf; 
-		^if(inf === repeats) { this } {
-			Pn(this, repeats).asStream 
-		}
-	}
+	repeat { arg repeats = inf; ^Pn(this, repeats).asStream }
 	
 	asStream { ^this }
 	
