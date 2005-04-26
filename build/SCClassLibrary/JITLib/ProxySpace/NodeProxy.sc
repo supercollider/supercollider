@@ -332,23 +332,10 @@ NodeProxy : BusPlug {
 	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
 			
 			if(obj.isNil) { this.removeAt(index); ^this };
+			if(obj.isSequenceableCollection) { ^this.putAll(obj, index, channelOffset) };
+			if(index.isSequenceableCollection) {^this.putAll({obj} ! index.size, index,channelOffset) };
 			
 			orderIndex = index ? 0;
-			if(obj.isSequenceableCollection) {
-				channelOffset = channelOffset.asArray;
-				if(index.isSequenceableCollection) {
-					obj.do { |item, i| this.put(index.wrapAt(i), item, channelOffset.wrapAt(i)) } 
-				}{
-					obj.do { |item, i| this.put(i + orderIndex, item, channelOffset.wrapAt(i)) }				}
-				^this 
-			};
-			if(index.isSequenceableCollection) { 
-				obj = obj.asArray;
-				channelOffset = channelOffset.asArray;
-				index.do { |index, i| this.put(index, obj.wrapAt(i),channelOffset.wrapAt(i)) } 
-				^this	
-			};
-			
 			container = obj.makeProxyControl(channelOffset, this);
 			container.build(this, orderIndex); // bus allocation happens here
 			
@@ -358,8 +345,8 @@ NodeProxy : BusPlug {
 					{ this.removeAllToBundle(bundle) }
 					{ this.removeToBundle(bundle, index) };
 				objects = objects.put(orderIndex, container);
-			} { 
-				Error("failed to add object to node proxy.").throw;
+			} {
+				Error("failed to add object to node proxy:" + obj).throw;
 				^this 
 			};
 			
@@ -376,6 +363,14 @@ NodeProxy : BusPlug {
 				loaded = false;
 			};
 
+	}
+	
+	putAll { arg list, index=(0), channelOffset = 0;
+				channelOffset = channelOffset.asArray;
+				if(index.isSequenceableCollection) {
+					list.do { |item, i| this.put(index.wrapAt(i), item, channelOffset.wrapAt(i)) } 
+				}{
+					list.do { |item, i| this.put(i + index, item, channelOffset.wrapAt(i)) }				}
 	}
 	
 	putSeries { arg first, second, last, value;
