@@ -41,9 +41,10 @@ AmpComp : UGen {
 	*kr { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333; 
 		^this.multiNew('control', freq, root, exp)
 	}
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-AmpCompA : UGen {
+AmpCompA : AmpComp {
 	*ar { arg freq = 1000, root = 0, minAmp = 0.32, rootAmp = 1.0; 
 		^this.multiNew('audio', freq, root, minAmp, rootAmp)
 	}
