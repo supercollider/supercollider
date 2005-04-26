@@ -6,6 +6,7 @@ Dictionary : Set {
 		aCollection.keysValuesDo({ arg k,v, i; newCollection.put(k,v) });
 		^newCollection
 	}
+	
 	// accessing
 	at { arg key;
 		^array.at(this.scanFor(key) + 1)
@@ -36,6 +37,9 @@ Dictionary : Set {
 				this.put(key, value) 
 			}
 		}
+	}
+	putPairs { arg args;
+		args.pairsDo { |key, val| this.put(key, val) }
 	}
 	
 	associationAt { arg key;
@@ -180,6 +184,14 @@ Dictionary : Set {
 		// the value is at the odd index.
 		^array.at(index + 1); 
 	}
+	order { arg func;
+		var assoc;
+		this.keysValuesDo { arg key, val;
+			assoc = assoc.add(key -> val);
+		};
+		^assoc.order(func)
+	}
+
 	
 	// Pattern support
 	transformEvent { arg event;
