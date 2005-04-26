@@ -2117,7 +2117,7 @@ void sc_GetSystemExtensionDirectory(char *str, int size)
 #elif defined(SC_DARWIN)
 		"/Library/Application Support/SuperCollider/Extensions",
 #else
-		"/usr/local/share/SuperCollider",
+		"/usr/local/share/SuperCollider/Extensions",
 #endif
 		size);
 }
