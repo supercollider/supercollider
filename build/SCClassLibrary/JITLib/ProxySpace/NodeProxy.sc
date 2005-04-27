@@ -332,8 +332,8 @@ NodeProxy : BusPlug {
 	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
 			
 			if(obj.isNil) { this.removeAt(index); ^this };
-			if(obj.isSequenceableCollection) { ^this.putAll(obj, index, channelOffset) };
-			if(index.isSequenceableCollection) {^this.putAll({obj} ! index.size, index,channelOffset) };
+			if(obj.isSequenceableCollection or: { index.isSequenceableCollection }) { 					^this.putAll(obj.asArray, index, channelOffset) 
+			};
 			
 			orderIndex = index ? 0;
 			container = obj.makeProxyControl(channelOffset, this);
@@ -368,14 +368,16 @@ NodeProxy : BusPlug {
 	putAll { arg list, index=(0), channelOffset = 0;
 				channelOffset = channelOffset.asArray;
 				if(index.isSequenceableCollection) {
-					list.do { |item, i| this.put(index.wrapAt(i), item, channelOffset.wrapAt(i)) } 
+					max(list.size, index.size).do { |i| 
+						this.put(index.wrapAt(i), list.wrapAt(i), channelOffset.wrapAt(i)) 
+					} 
 				}{
 					list.do { |item, i| this.put(i + index, item, channelOffset.wrapAt(i)) }				}
 	}
 	
 	putSeries { arg first, second, last, value;
 		last = last ?? {objects.size - 1};
-		this.put((first, second..last), value) 
+		this.putAll(value.asArray, (first, second..last)) 
 	}
 	
 	shouldAddObject { arg obj; ^obj.readyForPlay } // shared node proxy overrides this
