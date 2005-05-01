@@ -24,11 +24,11 @@
 
 PyrClass* newClassObj(PyrClass *classObjSuperClass, 
 	PyrSymbol* className, PyrSymbol* superClassName, 
-	int numInstVars, int numClassVars, int numInstMethods, 
+	int numInstVars, int numClassVars, int numConsts, int numInstMethods, 
 	int instFormat, int instFlags);
 	
 void reallocClassObj(PyrClass* classobj, 
-	int numInstVars, int numClassVars, int numMethods,
+	int numInstVars, int numClassVars, int numConsts, int numMethods,
 	int instFormat, int instFlags);
 
 int numInstVars(PyrClass* classobj);
@@ -36,6 +36,7 @@ int numClassVars(PyrClass* classobj);
 int numSuperInstVars(PyrClass *superclassobj);
 bool classFindInstVar(PyrClass* classobj, PyrSymbol *name, int *index);
 bool classFindClassVar(PyrClass** classobj, PyrSymbol *name, int *index);
+bool classFindConst(PyrClass** classobj, PyrSymbol *name, int *index);
 
 void buildClassTree();
 void indexClassTree(PyrClass *classobj, int numSuperMethods);

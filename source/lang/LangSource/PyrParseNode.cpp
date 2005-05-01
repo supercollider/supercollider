@@ -87,6 +87,7 @@ char* nodename[] = {
 	"DynDictNode",
 	"DynListNode",
 	"LitListNode",
+	"LitDictNode",
 	
 	"StaticVarListNode",
 	"InstVarListNode",
@@ -245,6 +246,10 @@ void compilePushVar(PyrParseNode *node, PyrSymbol *varName)
 					compileByte(index & 255);
 				}
 			} break;
+			case varConst : {
+				PyrSlot *slot = classobj->constValues.uo->slots + index;
+				compilePushConstant(node, slot);
+			} break;
 			case varTemp :
 				vindex = index;
 				if (level == 0) {
@@ -368,6 +373,7 @@ PyrClassNode* newPyrClassNode(PyrSlotNode* className, PyrSlotNode* superClassNam
 	node->mVarTally[varInst] = 0;
 	node->mVarTally[varClass] = 0;
 	node->mVarTally[varTemp] = 0;
+	node->mVarTally[varConst] = 0;
 	//node->mVarTally[varPool] = 0;
 	return node;
 }
@@ -444,9 +450,10 @@ void countClassVarDefs(PyrClassNode* node, int *numClassMethods, int *numInstMet
 	//*numClassMethods = 0;
 	//*numInstMethods = 0;
 
-	node->mVarTally[0] = 0;
-	node->mVarTally[1] = 0;
-	node->mVarTally[2] = 0;
+	node->mVarTally[varInst] = 0;
+	node->mVarTally[varClass] = 0;
+	node->mVarTally[varTemp] = 0;
+	node->mVarTally[varConst] = 0;
 	
 	// count number of variables of each type
 	varlist = node->mVarlists;
@@ -531,8 +538,8 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 {
 	PyrVarListNode* varlist;
 	PyrVarDefNode *vardef;
-	PyrSlot *islot, *cslot;
-	PyrSymbol **inameslot, **cnameslot;
+	PyrSlot *islot, *cslot, *kslot;
+	PyrSymbol **inameslot, **cnameslot, **knameslot;
 	PyrClass *metaclassobj;
 	PyrMethod *method;
 	PyrMethodRaw *methraw;
@@ -561,11 +568,17 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 	if (NotNil(&classobj->cprototype)) {
 		cslot = classobj->cprototype.uo->slots;
 	}
+	if (NotNil(&classobj->constValues)) {
+		kslot = classobj->cprototype.uo->slots;
+	}
 	if (NotNil(&classobj->instVarNames)) {
 		inameslot = classobj->instVarNames.uosym->symbols + node->mNumSuperInstVars;
 	}
 	if (NotNil(&classobj->classVarNames)) {
 		cnameslot = classobj->classVarNames.uosym->symbols;
+	}
+	if (NotNil(&classobj->constNames)) {
+		knameslot = classobj->constNames.uosym->symbols;
 	}
 	instVarIndex = node->mNumSuperInstVars;
 	classVarIndex = 0;
@@ -701,6 +714,17 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 					classVarIndex++;
 				}
 				break;
+			case varConst :
+				vardef = varlist->mVarDefs;
+				for (; vardef; vardef = (PyrVarDefNode*)vardef->mNext) {
+					PyrSlot litslot;
+					compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litslot);
+					*kslot++ = litslot;
+					classobj->constValues.uo->size++;
+					*knameslot++ = vardef->mVarName->mSlot.us;
+					classobj->constNames.uosym->size++;
+				}
+				break;
 		}
 	}
 }
@@ -812,7 +836,7 @@ void PyrClassNode::compile(PyrSlot *result)
 		}
 		// reallocate fields in the class object
 		reallocClassObj(metaclassobj,
-			classClassNumInstVars, 0, 
+			classClassNumInstVars, 0, 0, 
 			numClassMethods, indexType, 0);
 			
 		//postfl("^3 %d %d\n", metaclassobj, class_class);
@@ -827,6 +851,7 @@ void PyrClassNode::compile(PyrSlot *result)
 		reallocClassObj(classobj,
 			mVarTally[varInst] + mNumSuperInstVars, 
 			mVarTally[varClass],
+			mVarTally[varConst],
 			numInstMethods, indexType, 0);
 		
 	} else {
@@ -839,7 +864,7 @@ void PyrClassNode::compile(PyrSlot *result)
 		
 		metaclassobj = newClassObj(class_class, 
 			metaClassName, metaSuperClassName,
-			classClassNumInstVars, 0, numClassMethods, indexType, 0);
+			classClassNumInstVars, 0, 0, numClassMethods, indexType, 0);
 // test			
 		//postfl("^1 %d %d\n", metaclassobj, class_class);
 		//postfl("^2 %d %d\n", metaclassobj->iprototype.uo, class_class->iprototype.uo);
@@ -854,7 +879,7 @@ void PyrClassNode::compile(PyrSlot *result)
 		classobj = newClassObj(metaclassobj, 
 			mClassName->mSlot.us, superClassName,
 			mVarTally[varInst] + mNumSuperInstVars, 
-			mVarTally[varClass], numInstMethods, indexType, 0);
+			mVarTally[varClass], mVarTally[varConst], numInstMethods, indexType, 0);
 	}
 	gCurrentClass = classobj;
 	gCurrentMetaClass = metaclassobj;
@@ -1683,6 +1708,7 @@ void PyrVarDefNode::compileArg(PyrSlot *result)
 	//error("compilePyrVarDefNode: shouldn't get here.\n"); 
 	//compileErrors++;
 }
+
 
 PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist, 
 	PyrParseNode* keyarglist, PyrParseNode* blocklist)
@@ -3376,6 +3402,11 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop)
 					compileByte(index & 255);
 				}
 			} break;
+			case varConst : {
+				error("You may not assign to a constant.");
+				nodePostErrorLine(node);
+				compileErrors++;
+			} break;
 			case varTemp :
 				//compileOpcode(opStoreTempVar, level);
 				//compileByte(index);
@@ -4286,6 +4317,11 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 	if (classFindClassVar(classobj, name, index)) {
 		*varType = varClass;
 		if (gCompilingClass != class_interpreter) gFunctionCantBeClosed = true;
+		return true;
+	}
+	if (classFindConst(classobj, name, index)) {
+		*varType = varConst;
+		//if (gCompilingClass != class_interpreter) gFunctionCantBeClosed = true;
 		return true;
 	}
 	if (name == s_curProcess) {

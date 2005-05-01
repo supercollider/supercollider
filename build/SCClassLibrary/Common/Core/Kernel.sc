@@ -8,6 +8,7 @@ Class {
 	var <name, <nextclass, superclass, <subclasses;
 	var <methods, <instVarNames, <classVarNames;
 	var <iprototype, <cprototype;
+	var <constNames, <constValues;
 	var instanceFormat, instanceFlags;
 	var <classIndex, classFlags, <maxSubclassIndex;
 	var <filenameSymbol, <charPos, <classVarIndex;

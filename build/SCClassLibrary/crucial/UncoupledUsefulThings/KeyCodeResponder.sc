@@ -2,21 +2,18 @@
 
 KeyCodeResponder {
 
-	classvar global, 
-		<>normalModifier=0,<>shiftModifier=131074,<>controlModifier=262145,
-		<>optionModifier=524320,<>functionKeyModifier=8388608,<>capsModifier=65536;
+	classvar global;
+	
+	const normalModifier       = 0;
+	const capsModifier         = 0x00010000;
+	const shiftModifier        = 0x00020000;
+	const controlModifier      = 0x00040000;
+	const optionModifier       = 0x00080000;
+	const functionKeyModifier  = 0x00800000;
 	
 	var <>dict;
 	
 	*new { ^super.new.clear }
-	*setModifiers { arg n,s,c,o,f,caps;
-		normalModifier = n;
-		shiftModifier = s;
-		controlModifier = c;
-		optionModifier = o;
-		functionKeyModifier = f;
-		capsModifier = caps;
-	}
 	
 	normal { arg ... asses; 
 		asses.do({ arg as;

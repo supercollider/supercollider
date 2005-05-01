@@ -353,7 +353,7 @@ char *slotSymString(PyrSlot* slot)
 
 PyrClass* newClassObj(PyrClass *classObjSuperClass, 
 	PyrSymbol* className, PyrSymbol* superClassName, 
-	int numInstVars, int numClassVars, int numInstMethods, 
+	int numInstVars, int numClassVars, int numConsts, int numInstMethods, 
 	int instFormat, int instFlags)
 {
 	PyrClass* classobj, *superclassobj;
@@ -432,6 +432,19 @@ PyrClass* newClassObj(PyrClass *classObjSuperClass,
 		SetNil(&classobj->cprototype);
 	}
 	
+	if (numConsts) {
+		symarray = newPyrSymbolArray(NULL, numConsts, obj_permanent | obj_immutable, false);
+		SetObject(&classobj->constNames, symarray);
+		nilSlots(array->slots, numConsts);
+		
+		array = newPyrArray(NULL, numConsts, obj_permanent | obj_immutable, false);
+		SetObject(&classobj->constValues, array);
+		nilSlots(array->slots, numConsts);
+	} else {
+		SetNil(&classobj->constNames);
+		SetNil(&classobj->constValues);
+	}
+	
 	classFlags = 0;
 	if (instFormat != obj_notindexed) {
 		classFlags |= classHasIndexableInstances;
@@ -451,7 +464,7 @@ PyrClass* newClassObj(PyrClass *classObjSuperClass,
 }
 
 void reallocClassObj(PyrClass* classobj, 
-	int numInstVars, int numClassVars, int numMethods,
+	int numInstVars, int numClassVars, int numConsts, int numMethods,
 	int instFormat, int instFlags)
 {
 	PyrObject* array;
@@ -463,6 +476,9 @@ void reallocClassObj(PyrClass* classobj,
 	freePyrSlot(&classobj->classVarNames);
 	freePyrSlot(&classobj->iprototype);
 	freePyrSlot(&classobj->cprototype);
+	
+	freePyrSlot(&classobj->constNames);
+	freePyrSlot(&classobj->constValues);
 	
 	if (numMethods) {
 		array = newPyrArray(NULL, numMethods, obj_permanent | obj_immutable, false);
@@ -498,6 +514,22 @@ void reallocClassObj(PyrClass* classobj,
 	} else {
 		SetNil(&classobj->classVarNames);
 		SetNil(&classobj->cprototype);
+	}
+	
+	if (numConsts) {
+		//post("reallocClassObj %s numConsts %d\n", classobj->name.us->name, numConsts);
+		symarray = newPyrSymbolArray(NULL, numConsts, obj_permanent | obj_immutable, false);
+		//array->size = numConsts;
+		SetObject(&classobj->constNames, symarray);
+		nilSlots(array->slots, numConsts);
+		
+		array = newPyrArray(NULL, numConsts, obj_permanent | obj_immutable, false);
+		//array->size = numConsts;
+		SetObject(&classobj->constValues, array);
+		nilSlots(array->slots, numConsts);
+	} else {
+		SetNil(&classobj->constNames);
+		SetNil(&classobj->constValues);
 	}
 		
 	superclassobj = classobj->superclass.us->u.classobj;
@@ -658,34 +690,72 @@ bool classFindClassVar(PyrClass** classobj, PyrSymbol *name, int *index)
 	PyrSymbol *cvname;
 	int i, j;
 	char *classname;
-	
+	PyrClass* localclassobj = *classobj;
 	// if this is a Metaclass then we need to search its normal Class for
 	// the class vars
-	classname = (*classobj)->name.us->name;
+	classname = localclassobj->name.us->name;
 	if (strncmp(classname, "Meta_", 5) == 0) {
-		*classobj = getsym(classname+5)->u.classobj;
+		localclassobj = getsym(classname+5)->u.classobj;
 	}
-	for (j=0; *classobj; ++j) {
-		if (NotNil(&(*classobj)->classVarNames)) {
-			cvnames = (*classobj)->classVarNames.uosym;
+	for (j=0; localclassobj; ++j) {
+		if (NotNil(&localclassobj->classVarNames)) {
+			cvnames = localclassobj->classVarNames.uosym;
 			if (cvnames) {
 				for (i=0; i<cvnames->size; ++i) {
 					cvname = cvnames->symbols[i];
 					if (cvname == name) {
+						*classobj = localclassobj;
 						*index = i;
 						return true;
 					}
 				}
 			}
 		}
-		if ((*classobj)->superclass.utag == tagSym) {
-			*classobj = (*classobj)->superclass.us->u.classobj;
+		if (localclassobj->superclass.utag == tagSym) {
+			localclassobj = localclassobj->superclass.us->u.classobj;
 		} else {
-			*classobj = NULL;
+			localclassobj = NULL;
 		}
 	}
 	return false;
 }
+
+bool classFindConst(PyrClass** classobj, PyrSymbol *name, int *index)
+{
+	PyrSymbolArray *knames;
+	PyrSymbol *kname;
+	int i, j;
+	char *classname;
+	PyrClass* localclassobj = *classobj;
+	// if this is a Metaclass then we need to search its normal Class for
+	// the class vars
+	classname = localclassobj->name.us->name;
+	if (strncmp(classname, "Meta_", 5) == 0) {
+		localclassobj = getsym(classname+5)->u.classobj;
+	}
+	for (j=0; localclassobj; ++j) {
+		if (NotNil(&localclassobj->constNames)) {
+			knames = localclassobj->constNames.uosym;
+			if (knames) {
+				for (i=0; i<knames->size; ++i) {
+					kname = knames->symbols[i];
+					if (kname == name) {
+						*classobj = localclassobj;
+						*index = i;
+						return true;
+					}
+				}
+			}
+		}
+		if (localclassobj->superclass.utag == tagSym) {
+			localclassobj = localclassobj->superclass.us->u.classobj;
+		} else {
+			localclassobj = NULL;
+		}
+	}
+	return false;
+}
+
 
 void buildClassTree()
 {
@@ -1196,7 +1266,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	metaClassName->flags |= sym_MetaClass;
 	metaclassobj = newClassObj( class_class, 
 		metaClassName, metaSuperClassName,
-		classClassNumInstVars, 0, 0, obj_notindexed, 0);
+		classClassNumInstVars, 0, 0, 0, obj_notindexed, 0);
 	metaclassobj->classFlags.ui |= classIsIntrinsic;
 		
 	if (metaSuperClassName && classClassNumInstVars) {
@@ -1211,7 +1281,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	
 	classobj = newClassObj(metaclassobj, 
 		className, superClassName,
-		numInstVars + superInstVars, numClassVars, 0, obj_notindexed, 0);
+		numInstVars + superInstVars, numClassVars, 0, 0, obj_notindexed, 0);
 	classobj->classFlags.ui |= classIsIntrinsic;
 
 	//postfl("%s-%s  : %d\n", className->name, superClassName->name, superInstVars);
@@ -1260,7 +1330,7 @@ void initClasses()
 	
 	// build intrinsic classes
 	class_class = NULL;
-	class_object = makeIntrinsicClass(s_object, 0, 0, 5);
+	class_object = makeIntrinsicClass(s_object, 0, 0, 4);
 	class_class = makeIntrinsicClass(s_class, s_object, classClassNumInstVars, 1);
 
 	// now fix class_class ptrs that were just previously installed erroneously
@@ -1273,7 +1343,6 @@ void initClasses()
 		addIntrinsicClassVar(class_object, "currentEnvironment", &o_nil);
 		addIntrinsicClassVar(class_object, "topEnvironment", &o_nil);
 		addIntrinsicClassVar(class_object, "uniqueMethods", &o_nil);
-		addIntrinsicClassVar(class_object, "nl", &o_nil);
 	
 		// declare varNames for Class
 		
@@ -1287,6 +1356,9 @@ void initClasses()
 		addIntrinsicVar(class_class, "classVarNames", &o_nil);
 		addIntrinsicVar(class_class, "iprototype", &o_nil);
 		addIntrinsicVar(class_class, "cprototype", &o_nil);
+
+		addIntrinsicVar(class_class, "constNames", &o_nil);
+		addIntrinsicVar(class_class, "constValues", &o_nil);
 		
 		addIntrinsicVar(class_class, "instanceFormat", &o_nil);
 		addIntrinsicVar(class_class, "instanceFlags", &o_zero);
@@ -2150,7 +2222,7 @@ PyrDoubleArray* newPyrDoubleArray(class PyrGC *gc, int size, int flags, bool col
 	PyrDoubleArray* array;
 
 	int numbytes = size * sizeof(double);
-	if (!gc) array = (PyrDoubleArray*)PyrGC::NewPermanent(size, flags, obj_double);
+	if (!gc) array = (PyrDoubleArray*)PyrGC::NewPermanent(numbytes, flags, obj_double);
 	else array = (PyrDoubleArray*)gc->New(size, flags, obj_double, collect);
 	array->classptr = class_doublearray;
 	return array;

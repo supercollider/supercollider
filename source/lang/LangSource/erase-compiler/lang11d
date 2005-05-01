@@ -90,6 +90,8 @@ classvardecl	: CLASSVAR rwslotdeflist ';'
 					{ $$ = (long)newPyrVarListNode((PyrVarDefNode*)$2, varClass); }
 				| VAR rwslotdeflist ';'
 					{ $$ = (long)newPyrVarListNode((PyrVarDefNode*)$2, varInst); }
+				| CONST constdeflist ';'
+					{ $$ = (long)newPyrVarListNode((PyrVarDefNode*)$2, varConst); }
 				;
 															
 methods		: { $$ = 0; }
@@ -1285,7 +1287,7 @@ funcvardecls1	: funcvardecl
 				;
 
 funcvardecl	: VAR vardeflist ';'
-				{ $$ = (long)newPyrArgListNode((PyrVarDefNode*)$2, NULL); }
+				{ $$ = (long)newPyrVarListNode((PyrVarDefNode*)$2, varLocal); }
 			;
 
 argdecls	: { $$ = 0; }
@@ -1307,7 +1309,15 @@ argdecls	: { $$ = 0; }
 				}
 			;
 				
-								
+constdeflist	: constdef
+				| constdeflist optcomma constdef
+					{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+				;
+
+constdef	: name optequal slotliteral
+				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 0); }
+			;
+											
 slotdeflist0 	: { $$ = 0; }
 				| slotdeflist
 				;

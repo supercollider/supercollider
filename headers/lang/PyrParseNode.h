@@ -30,7 +30,7 @@
 
 enum { rwPrivate=0, rwReadOnly=1, rwWriteOnly=2, rwReadWrite=3 };
 
-enum { varInst, varClass, varTemp, varPseudo };
+enum { varInst, varClass, varTemp, varConst, varPseudo, varLocal };
 
 enum {
 	/* structural units */
@@ -143,7 +143,7 @@ struct PyrClassNode : public PyrParseNode {
 	struct PyrSlotNode* mIndexType;
 	struct PyrVarListNode *mVarlists;
 	struct PyrMethodNode *mMethods;
-	int mVarTally[3];
+	int mVarTally[4];
 	int mNumSuperInstVars;
 } ;
 

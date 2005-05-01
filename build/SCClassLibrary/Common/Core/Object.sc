@@ -1,7 +1,8 @@
 
 Object {
-	classvar <dependantsDictionary, currentEnvironment, topEnvironment, <uniqueMethods; 
-	classvar <nl="\n";
+	classvar <dependantsDictionary, currentEnvironment, topEnvironment, <uniqueMethods;
+	
+	const nl = "\n";
 	
 	*new { arg maxSize = 0; 
 		_BasicNew 

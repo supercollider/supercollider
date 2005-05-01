@@ -29,7 +29,7 @@ This file contains the definitions of the core objects that implement the class 
 #include "PyrObject.h"
 #include "VMGlobals.h"
 
-#define classClassNumInstVars 17
+#define classClassNumInstVars 19
 
 enum { classIsIntrinsic = 1, classHasIndexableInstances = 2 };
 
@@ -45,6 +45,9 @@ struct PyrClass : public PyrObjectHdr
 	PyrSlot classVarNames;
 	PyrSlot iprototype;		// instance prototype
 	PyrSlot cprototype;		// class var prototype
+
+	PyrSlot constNames;
+	PyrSlot constValues;	// const values
 	
 	PyrSlot instanceFormat;
 	PyrSlot instanceFlags;
