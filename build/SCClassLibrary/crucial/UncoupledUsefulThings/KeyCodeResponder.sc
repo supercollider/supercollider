@@ -4,12 +4,12 @@ KeyCodeResponder {
 
 	classvar global;
 	
-	const normalModifier       = 0;
-	const capsModifier         = 0x00010000;
-	const shiftModifier        = 0x00020000;
-	const controlModifier      = 0x00040000;
-	const optionModifier       = 0x00080000;
-	const functionKeyModifier  = 0x00800000;
+	const <normalModifier       = 0;
+	const <capsModifier         = 0x00010000;
+	const <shiftModifier        = 0x00020000;
+	const <controlModifier      = 0x00040000;
+	const <optionModifier       = 0x00080000;
+	const <functionKeyModifier  = 0x00800000;
 	
 	var <>dict;
 	

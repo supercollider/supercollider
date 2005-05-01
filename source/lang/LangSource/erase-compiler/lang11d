@@ -1314,8 +1314,8 @@ constdeflist	: constdef
 					{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
 				;
 
-constdef	: name optequal slotliteral
-				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 0); }
+constdef	: rspec name '=' slotliteral
+				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$2, (PyrParseNode*)$4, $1); }
 			;
 											
 slotdeflist0 	: { $$ = 0; }
@@ -1445,6 +1445,11 @@ rwspec	:  { $$ = rwPrivate; }
 			{ $$ = rwReadWrite; }
 		| '>'
 			{ $$ = rwWriteOnly; }
+		;
+
+rspec	:  { $$ = rwPrivate; }
+		| '<'
+			{ $$ = rwReadOnly; }
 		;
 		
 integer	: INTEGER { $$ = zzval; }

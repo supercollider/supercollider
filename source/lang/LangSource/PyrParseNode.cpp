@@ -723,6 +723,29 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 					classobj->constValues.uo->size++;
 					*knameslot++ = vardef->mVarName->mSlot.us;
 					classobj->constNames.uosym->size++;
+					if (vardef->mFlags & rwReadOnly) {
+						// create getter method
+						method = newPyrMethod();
+						methraw = METHRAW(method);
+                                                methraw->unused1 = 0;
+                                                methraw->unused2 = 0;
+						methraw->numargs = 1;
+						methraw->numvars = 0;
+						methraw->posargs = 1;
+						methraw->varargs = 0;
+						methraw->numtemps = 1;
+						methraw->popSize = 0;
+						SetNil(&method->contextDef);
+						SetNil(&method->varNames);
+						SetObject(&method->ownerclass, metaclassobj);
+						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
+						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
+						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
+
+						methraw->methType = methReturnLiteral;
+						method->selectors.ucopy = litslot.ucopy;
+						addMethod(metaclassobj, method);
+					}
 				}
 				break;
 		}
