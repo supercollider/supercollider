@@ -4002,28 +4002,32 @@ void PyrBlockNode::compile(PyrSlot* result)
 	
 	// compile body
 	initByteCodes();
-	if (!hasVarExprs && mBody->mClassno == pn_BlockReturnNode) {
-		compileOpcode(opPushSpecialValue, opsvNil);
-	} else {		
+	{
 		SetTailBranch branch(true);
 		/*if (compilingCmdLine) {
 			post("block %d\n", gIsTailCodeBranch);
 			DUMPNODE(mBody, 0);
 		}*/
 		SetTailIsMethodReturn mr(false);
-		if (mArglist) {
-			vardef = mArglist->mVarDefs;
-			for (i=0; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
-				vardef->compileArg(&dummy);
+		if (hasVarExprs) {
+			if (mArglist) {
+				vardef = mArglist->mVarDefs;
+				for (i=0; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+					vardef->compileArg(&dummy);
+				}
+			}
+			if (mVarlist) {
+				vardef = mVarlist->mVarDefs;
+				for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+					vardef->compile(&dummy);
+				}
 			}
 		}
-		if (mVarlist) {
-			vardef = mVarlist->mVarDefs;
-			for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
-				vardef->compile(&dummy);
-			}
+		if (mBody->mClassno == pn_BlockReturnNode) {
+			compileOpcode(opPushSpecialValue, opsvNil);
+		} else {		
+			COMPILENODE(mBody, &dummy, true);
 		}
-		COMPILENODE(mBody, &dummy, true);
 	}
 	compileOpcode(opSpecialOpcode, opcFunctionReturn);
 	installByteCodes(block);
