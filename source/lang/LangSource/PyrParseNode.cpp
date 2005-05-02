@@ -569,7 +569,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 		cslot = classobj->cprototype.uo->slots;
 	}
 	if (NotNil(&classobj->constValues)) {
-		kslot = classobj->cprototype.uo->slots;
+		kslot = classobj->constValues.uo->slots;
 	}
 	if (NotNil(&classobj->instVarNames)) {
 		inameslot = classobj->instVarNames.uosym->symbols + node->mNumSuperInstVars;
