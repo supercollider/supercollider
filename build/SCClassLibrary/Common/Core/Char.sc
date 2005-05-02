@@ -1,4 +1,12 @@
 Char : Magnitude {
+
+	const <nl = $\n ;
+	const <ff = $\f ;
+	const <tab = $\t ;
+	const <space = $  ;
+	const <comma = $\, ;
+
+
 	*new { ^this.shouldNotImplement(thisMethod) }
 	// to create a Char use the Integer methods asAscii or asDigit
 
@@ -66,11 +74,6 @@ Char : Magnitude {
 	
 	++ { |that| ^this.asString ++ that }
 
-	*nl { ^$\n }
-	*ff { ^$\f }
-	*tab { ^$\t }
-	*space { ^$  }
-	*comma { ^$\, }
 	*bullet { ^165.asAscii }
 
 	printOn { arg stream;
