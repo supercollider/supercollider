@@ -3,7 +3,9 @@
 		super.startup;
 		
 		// Document setup
-		Document.startup;
+		if (\EmacsDocument.asClass.notNil) {
+			Document.startup;
+		};
 		
 		// Server setup
 		Server.program = "scsynth";
