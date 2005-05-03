@@ -41,7 +41,7 @@ AmpComp : UGen {
 	*kr { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333; 
 		^this.multiNew('control', freq, root, exp)
 	}
-	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^if(rate === \audio) { this.checkSameRateAsFirstInput } }
 }
 
 AmpCompA : AmpComp {
