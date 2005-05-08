@@ -8,6 +8,7 @@ Message {
 	value { arg ... moreArgs;
 		^receiver.performList(selector, args ++ moreArgs);
 	}
+	storeArgs { ^[receiver, selector, args] }
 }
 
 MethodQuote {
@@ -19,4 +20,5 @@ MethodQuote {
 	value { arg receiver ... args;
 		^receiver.performList(selector, args);
 	}
+	storeArgs { ^[selector] }
 }
