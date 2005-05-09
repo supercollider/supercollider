@@ -495,8 +495,8 @@ void Lag_next(Lag *unit, int inNumSamples)
 		float b1_slope = CALCSLOPE(unit->m_b1, b1);
 		unit->m_lag = lag;
 		LOOP(inNumSamples, 
-			float y0 = ZXP(in); 
 			b1 += b1_slope;
+			float y0 = ZXP(in); 
 			ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 		);
 	}
@@ -507,10 +507,10 @@ void Lag_next(Lag *unit, int inNumSamples)
 void Lag_Ctor(Lag* unit)
 {
 	SETCALC(Lag_next);
-	
+		
 	unit->m_lag = 0.f;
 	unit->m_b1 = 0.f;
-	unit->m_y1 = 0.f;
+	unit->m_y1 = ZIN0(0);
 	Lag_next(unit, 1);
 
 }
@@ -540,11 +540,11 @@ void Lag2_next(Lag2 *unit, int inNumSamples)
 		float b1_slope = CALCSLOPE(unit->m_b1, b1);
 		unit->m_lag = lag;
 		LOOP(inNumSamples, 
+			b1 += b1_slope;
 			float y0a = ZXP(in); 
 			y1a = y0a + b1 * (y1a - y0a);
 			y1b = y1a + b1 * (y1b - y1a);
 			ZXP(out) = y1b;
-			b1 += b1_slope;
 		);
 	}
 	unit->m_y1a = zapgremlins(y1a);
@@ -558,8 +558,7 @@ void Lag2_Ctor(Lag2* unit)
 	
 	unit->m_lag = 0.f;
 	unit->m_b1 = 0.f;
-	unit->m_y1a = 0.f;
-	unit->m_y1b = 0.f;
+	unit->m_y1a = unit->m_y1b = ZIN0(0);
 	Lag2_next(unit, 1);
 }
 
@@ -590,12 +589,12 @@ void Lag3_next(Lag3 *unit, int inNumSamples)
 		float b1_slope = CALCSLOPE(unit->m_b1, b1);
 		unit->m_lag = lag;
 		LOOP(inNumSamples, 
+			b1 += b1_slope;
 			float y0a = ZXP(in); 
 			y1a = y0a + b1 * (y1a - y0a);
 			y1b = y1a + b1 * (y1b - y1a);
 			y1c = y1b + b1 * (y1c - y1b);
 			ZXP(out) = y1c;
-			b1 += b1_slope;
 		);
 	}
 	unit->m_y1a = zapgremlins(y1a);
@@ -610,9 +609,7 @@ void Lag3_Ctor(Lag3* unit)
 	
 	unit->m_lag = 0.f;
 	unit->m_b1 = 0.f;
-	unit->m_y1a = 0.f;
-	unit->m_y1b = 0.f;
-	unit->m_y1c = 0.f;
+	unit->m_y1a = unit->m_y1b = unit->m_y1c = ZIN0(0);
 	Lag3_next(unit, 1);
 }
 
