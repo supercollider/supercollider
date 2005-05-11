@@ -94,10 +94,10 @@ struct DiskIOMsg
 #ifndef SC_WIN32
 MsgFifoNoFree<DiskIOMsg, 256> gDiskFifo;
 SC_SyncCondition gDiskFifoHasData;
-#else #ifndef SC_WIN32
+#else // #ifndef SC_WIN32
 MsgFifoNoFree<DiskIOMsg, 256>* pgDiskFifo;
 SC_SyncCondition* pgDiskFifoHasData;
-#endif #ifndef SC_WIN32
+#endif // #ifndef SC_WIN32
 
 void* disk_io_thread_func(void* arg);
 void* disk_io_thread_func(void* arg)

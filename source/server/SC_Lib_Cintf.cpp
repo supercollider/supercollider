@@ -199,7 +199,7 @@ bool PlugIn_LoadDir(char *dirname)
 #ifdef SC_WIN32
 		// no d_type in POSIX dirent, so no directory recursion
 		isDirectory = false;
-#endif SC_WIN32
+#endif // SC_WIN32
 
 		if (isDirectory) {
 			success = PlugIn_LoadDir(entrypathname);

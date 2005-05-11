@@ -461,7 +461,7 @@ SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, vo
 {
 #ifdef SC_WIN32
   throw 0;
-#endif;
+#endif
 	mSocket = inSocket;
 	socklen_t sockAddrLen = sizeof(mReplySockAddr);
 
