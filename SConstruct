@@ -11,18 +11,27 @@ import tarfile
 import types
 
 # ======================================================================
+# setup
+# ======================================================================
+
+EnsureSConsVersion(0, 96)
+EnsurePythonVersion(2, 3)
+SConsignFile()
+
+# ======================================================================
 # constants
 # ======================================================================
 
 PACKAGE = 'SuperCollider'
 VERSION = '3'
+
 PLATFORM = os.uname()[0].lower()
 CPU = os.uname()[4].lower()
 
-SC_FILE_RE = re.compile('.*\.sc$')
-HELP_FILE_RE = re.compile('.*\.(rtf(d)?|sc)$')
-SRC_FILE_RE = re.compile('.*\.(c(pp)|h)$')
 ANY_FILE_RE = re.compile('.*')
+HELP_FILE_RE = re.compile('.*\.(rtf(d)?|sc)$')
+SC_FILE_RE = re.compile('.*\.sc$')
+SRC_FILE_RE = re.compile('.*\.(c(pp)|h)$')
 
 if PLATFORM == 'darwin':
     PLATFORM_SYMBOL = 'SC_DARWIN'
@@ -39,14 +48,6 @@ elif PLATFORM == 'windows':
 else:
     print 'Unknown platform: %s' % PLATFORM
     Exit(1)
-
-# ======================================================================
-# setup
-# ======================================================================
-
-EnsureSConsVersion(0, 96)
-EnsurePythonVersion(2, 3)
-SConsignFile()
 
 # ======================================================================
 # util
@@ -159,16 +160,12 @@ opts.AddOptions(
                DEFAULT_AUDIO_API, ('jack', 'coreaudio', 'portaudio')),
     ('CUSTOMCCFLAGS', 'Custom c compiler flags', ''),
     ('CUSTOMCXXFLAGS', 'Custom c++ compiler flags', ''),
-    BoolOption('CLASSLIBRARY',
-               'Install the class library', 1),
     BoolOption('DEBUG',
                'Build with debugging information', 0),
     PathOption('DESTDIR',
                'Intermediate installation prefix for packaging', '/'),
-    BoolOption('DEV',
-               'Install the development files', 1),
-    BoolOption('DOC',
-               'Install the documentation', 1),
+    BoolOption('DEVELOPMENT',
+               'Build and install the development files', 0),
     BoolOption('LANG',
                'Build the language application', 1),
     BoolOption('LID',
@@ -176,7 +173,7 @@ opts.AddOptions(
     PathOption('PREFIX',
                'Installation prefix', '/usr/local'),
     BoolOption('SCEL',
-               'Install the SCEL user interface', 1),
+               'Enable the SCEL user interface', 1),
     PackageOption('X11',
                   'Build with X11 support', 1)
     )
@@ -187,7 +184,7 @@ opts.AddOptions(
 
 env = Environment(options = opts,
                   PACKAGE = PACKAGE,
-                  VERSION = '3',
+                  VERSION = VERSION,
                   TARBALL = PACKAGE + VERSION + '.tbz2')
 env.Append(
     CCFLAGS = env['CUSTOMCCFLAGS'],
@@ -394,10 +391,10 @@ source/server/SC_World.cpp
 scsynthSources = libscsynthSources + ['source/server/scsynth_main.cpp']
 
 libscsynth = serverEnv.SharedLibrary('scsynth', libscsynthSources)
-env.Alias('install', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
+env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
 
 scsynth = serverEnv.Program('scsynth', scsynthSources)
-env.Alias('install', env.Install(bin_dir(INSTALL_PREFIX), [scsynth]))
+env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [scsynth]))
 
 # ======================================================================
 # source/plugins
@@ -466,7 +463,7 @@ if features['x11']:
     plugins.append(
         macUGensEnv.SharedLibrary('MacUGens', 'source/plugins/MacUGens.cpp'))
 
-env.Alias('install', env.Install(
+env.Alias('install-plugins', env.Install(
     pkg_lib_dir(INSTALL_PREFIX, 'plugins'), plugins))
 
 # ======================================================================
@@ -552,47 +549,51 @@ sclangSources = libsclangSources + ['source/lang/LangSource/cmdLineFuncs.cpp']
 
 if env['LANG']:
     sclang = langEnv.Program('sclang', sclangSources)
-    env.Alias('install', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
-    if env['DEV']:
+    env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
+    if env['DEVELOPMENT']:
         libsclang = langEnv.StaticLibrary('sclang', libsclangSources)
-        env.Alias('install', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
+        env.Alias('install-dev', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
 
 # ======================================================================
 # installation
 # ======================================================================
 
-if env['CLASSLIBRARY'] and 'install' in COMMAND_LINE_TARGETS:
+env.Alias('install-bin', Split('install-plugins install-programs'))
+env.Alias('install-data', Split('install-doc install-elisp install-library'))
+env.Alias('install', Split('install-bin install-data install-dev'))
+
+if 'install-library' in COMMAND_LINE_TARGETS:
     # class library
-    env.Alias('install', install_dir(
+    env.Alias('install-library', install_dir(
         env, 'build/SCClassLibrary',
         pkg_data_dir(INSTALL_PREFIX),
         SC_FILE_RE, 1))
     # help files
-    env.Alias('install', install_dir(
+    env.Alias('install-library', install_dir(
         env, 'build/Help',
         pkg_data_dir(INSTALL_PREFIX),
         HELP_FILE_RE, 1))
-
-if env['CLASSLIBRARY'] and PLATFORM == 'linux':
     # linux extensions
-    env.Alias('install', install_dir(
-        env, 'linux/lib',
-        pkg_extension_dir(INSTALL_PREFIX, 'linux'),
-        SC_FILE_RE, 2))
-
-if env['SCEL']:
+    if PLATFORM == 'linux':
+        env.Alias('install-library', install_dir(
+            env, 'linux/lib',
+            pkg_extension_dir(INSTALL_PREFIX, 'linux'),
+            SC_FILE_RE, 2))
     # scel
-    if env['CLASSLIBRARY']:
-        env.Alias('install', install_dir(
+    if env['SCEL']:
+        env.Alias('install-library', install_dir(
             env, 'linux/scel/sc',
             pkg_extension_dir(INSTALL_PREFIX, 'scel'),
             SC_FILE_RE, 3))
+
+# scel
+if env['SCEL']:
     el_files = glob.glob('linux/scel/el/*.el')
     elc_files = map(lambda f: os.path.splitext(f)[0] + '.elc', el_files)
     elisp_dir = os.path.join(INSTALL_PREFIX, 'share', 'emacs', 'site-lisp')
     env.Command(elc_files, el_files,
                 'emacs -batch -f batch-byte-compile $SOURCES')
-    env.Alias('install', env.Install(elisp_dir, el_files + elc_files))
+    env.Alias('install-elisp', env.Install(elisp_dir, el_files + elc_files))
 
 # example library configuration file
 env.Command('linux/examples/sclang.cfg', 'linux/examples/sclang.cfg.in',
@@ -600,12 +601,12 @@ env.Command('linux/examples/sclang.cfg', 'linux/examples/sclang.cfg.in',
             pkg_classlib_dir(FINAL_PREFIX))
 
 # headers
-if env['DEV']:
+if env['DEVELOPMENT']:
     header_dirs = Split('common plugin_interface server lang')
     if PLATFORM == 'darwin':
         header_dirs += 'app'
     for d in header_dirs:
-        env.Alias('install', install_dir(
+        env.Alias('install-dev', install_dir(
             env, os.path.join('headers', d),
             pkg_include_dir(INSTALL_PREFIX),
             re.compile('.*\.h(h|pp)?'), 1))
@@ -615,13 +616,13 @@ if env['DEV']:
         libsclangEnv.Command('linux/libsclang.pc', 'SConstruct',
                              build_pkgconfig_file)]
     pkgconfig_dir = os.path.join(lib_dir(INSTALL_PREFIX), 'pkgconfig')
-    env.Alias('install', env.Install(pkgconfig_dir, pkgconfig_files))
+    env.Alias('install-dev', env.Install(pkgconfig_dir, pkgconfig_files))
 
 # documentation
-if env['DOC']:
+if 'install-doc' in COMMAND_LINE_TARGETS:
     # TODO: build html documentation?
     doc_dir = os.path.join(data_dir(INSTALL_PREFIX), 'doc', PACKAGE)
-    env.Alias('install', 
+    env.Alias('install-doc',
               install_dir(env, 'doc', doc_dir, ANY_FILE_RE, 0) +
               install_dir(env, 'build/examples', doc_dir, ANY_FILE_RE, 1) +
               install_dir(env, 'build/TestingAndToDo', doc_dir, ANY_FILE_RE, 1))
