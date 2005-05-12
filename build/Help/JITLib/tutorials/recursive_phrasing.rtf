@@ -541,8 +541,10 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 \
 \
 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 /////////// soundfile example ( doesn't work properly yet )\cf0 \
+\cf5 // soundfile example\cf0 \
 \
 \
 (\
@@ -561,6 +563,8 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 )\
 \
 s.sendMsg(\cf3 "/b_allocRead"\cf0 , 170, \cf3 "sounds/a11wlk01.wav"\cf0 );\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // this plays it straight\cf0 \
@@ -622,7 +626,7 @@ s.sendMsg(\cf3 "/b_allocRead"\cf0 , 170, \cf3 "sounds/a11wlk01.wav"\cf0 );\
 	\cf9 \\instrument\cf7 , \cf9 \\poch\cf7 ,\
 	\cf9 \\recursionLevel\cf7 , \cf8 Prand\cf7 ([0, 1, 2, 3], \cf8 inf\cf7 ),\
 	\cf9 \\from\cf7 , 0,\
-	\cf9 \\to\cf7 , 1,\
+	\cf9 \\to\cf7 , \cf8 Prand\cf7 ([-1, 1], \cf8 inf\cf7 ),\
 	\cf9 \\dur\cf7 , 3,\
 	\cf9 \\n\cf7 , \cf8 Prand\cf7 ([1, 2, 3], \cf8 inf\cf7 ),\
 	\cf9 \\bufnum\cf7 , 170,\
