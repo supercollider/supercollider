@@ -35,6 +35,9 @@ LinLin : UGen {
 }
 
 AmpComp : UGen {
+	*ir { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
+		^this.multiNew('scalar', freq, root, exp)
+	}
 	*ar { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333; 
 		^this.multiNew('audio', freq, root, exp)
 	}
@@ -45,6 +48,9 @@ AmpComp : UGen {
 }
 
 AmpCompA : AmpComp {
+	*ir { arg freq = 1000, root = 0, minAmp = 0.32, rootAmp = 1.0; 
+		^this.multiNew('scalar', freq, root, minAmp, rootAmp)
+	}
 	*ar { arg freq = 1000, root = 0, minAmp = 0.32, rootAmp = 1.0; 
 		^this.multiNew('audio', freq, root, minAmp, rootAmp)
 	}
