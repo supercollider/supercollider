@@ -2,7 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-\red191\green0\blue0;}
+\red191\green0\blue0;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs30 \cf0 \
@@ -18,8 +19,7 @@ Recursive phrases and granular composite sounds
 definitions can be used as an instrument that consists of several events (a 
 \f3\i phrase
 \f2\i0 ), \
-such as a cloud of short grains.\
-Furthermore, this scheme can be applied recursively, so that structures like a cloud of clouds can be constructed.\
+such as a cloud of short grains. Furthermore, this scheme can be applied recursively, so that structures like a cloud of clouds can be constructed.\
 \
 when the event type 
 \f0\b \\phrase
@@ -613,4 +613,23 @@ s.sendMsg(\cf3 "/b_allocRead"\cf0 , 170, \cf3 "sounds/a11wlk01.wav"\cf0 );\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf6 // varying recursion\cf7 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 (\
+\cf8 Pbind\cf7 (\
+	\cf9 \\type\cf7 , \cf9 \\phrase\cf7 ,\
+	\cf9 \\instrument\cf7 , \cf9 \\poch\cf7 ,\
+	\cf9 \\recursionLevel\cf7 , \cf8 Prand\cf7 ([0, 1, 2, 3], \cf8 inf\cf7 ),\
+	\cf9 \\from\cf7 , 0,\
+	\cf9 \\to\cf7 , 1,\
+	\cf9 \\dur\cf7 , 3,\
+	\cf9 \\n\cf7 , \cf8 Prand\cf7 ([1, 2, 3], \cf8 inf\cf7 ),\
+	\cf9 \\bufnum\cf7 , 170,\
+	\cf9 \\amp\cf7 , 0.2\
+).play\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 }
