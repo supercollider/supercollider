@@ -150,7 +150,8 @@ SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SC
 	NSRect matrect = SCtoNSRect(mBounds);
 	mTextView = [[SCTextView alloc] initWithFrame:matrect];
 	NSView *view = mTop->GetNSView();		
-	mCocoaToLangAction = [[SCCocoaTextViewResponder alloc] setSCView: this];
+	mCocoaToLangAction = [SCCocoaTextViewResponder alloc];
+	[mCocoaToLangAction setSCView: this];
     [mTextView setAutoresizingMask: 63];
     [[mTextView textContainer] setWidthTracksTextView: YES];
     [mTextView setAllowsUndo: YES];
