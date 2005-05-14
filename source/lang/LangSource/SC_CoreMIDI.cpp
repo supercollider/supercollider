@@ -502,7 +502,7 @@ int prRestartMIDI(VMGlobals *g, int numArgsPushed)
 void freeSysex(MIDISysexSendRequest* pk);
 void freeSysex(MIDISysexSendRequest* pk)
 {
-    free(pk->data);
+    free((void*)pk->data);
     free(pk);
 }
 

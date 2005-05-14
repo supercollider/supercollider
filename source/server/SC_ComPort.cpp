@@ -40,10 +40,6 @@ typedef int socklen_t;
 #include <netinet/tcp.h>
 #endif                  
 
-#ifdef SC_DARWIN
-typedef int socklen_t;
-#endif
-
 #ifdef SC_LINUX
 # include <errno.h>
 # include <unistd.h>

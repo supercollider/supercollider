@@ -21,6 +21,7 @@
 
 #if SC_DARWIN
 #include <Carbon/Carbon.h>
+#include <unistd.h>
 #else
 # ifndef SC_WIN32
 #  include <time.h>

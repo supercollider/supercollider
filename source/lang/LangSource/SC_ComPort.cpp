@@ -30,12 +30,12 @@
 # include <unistd.h>
 #endif
 
-#ifdef SC_DARWIN
-typedef int socklen_t;
-#endif
-
 #ifdef SC_LINUX
 # include <errno.h>
+#endif
+
+#ifdef SC_DARWIN
+#include <errno.h>
 #endif
 
 // sk: determine means of blocking SIGPIPE for send(2) (implementation
