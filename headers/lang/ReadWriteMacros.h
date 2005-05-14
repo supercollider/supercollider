@@ -289,43 +289,52 @@ public:
 
 
 // core routines
+template <>
 inline void SC_IOStream<FILE*>::readData(char *data, int size)
 {
     fread(data, 1, size, s);
 }
 
+template <>
 inline uint8 SC_IOStream<FILE*>::readUInt8()
 {
     return (uint8)fgetc(s);
 }
 
+template <>
 inline void SC_IOStream<FILE*>::writeData(char *data, int size)
 {
     fwrite(data, 1, size, s);
 }
 
+template <>
 inline void SC_IOStream<FILE*>::writeUInt8(uint8 inInt)
 {
     fputc(inInt, s);
 }
 
 // core routines
+template <>
 inline void SC_IOStream<char*>::readData(char *data, int size)
 {
     memcpy(data, s, size);
     s += size;
 }
+
+template <>
 inline uint8 SC_IOStream<char*>::readUInt8()
 {
     return (uint8)*s++;
 }
 
+template <>
 inline void SC_IOStream<char*>::writeData(char *data, int size)
 {
     memcpy(s, data, size);
         s += size;
 }
 
+template <>
 inline void SC_IOStream<char*>::writeUInt8(uint8 inInt)
 {
     *s++ = (inInt & 255);
