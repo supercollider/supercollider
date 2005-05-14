@@ -164,6 +164,26 @@ Event : Environment {
 				bufpos: 0,
 				leaveOpen: 0
 			),
+			midiEvent: (
+				midiEventFunctions: (
+					noteOn:  #{ arg chan=0, midinote=60, amp=0.1;
+							[chan, midinote, asInteger((amp * 127).clip(0, 127)) ] },					noteOff: #{ arg chan=0, midinote=60, amp=0.1;
+							[ chan, midinote, asInteger((amp * 127).clip(0, 127)) ] },
+					polyTouch: #{ arg chan=0, midinote=60, polyTouch=125;
+											[ chan, midinote, polyTouch ] },
+					control: #{ arg chan=0, ctlNum, control=125;
+											[chan, ctlNum, control ] },
+					program:  #{ arg chan=0, progNum=1; [ chan, progNum ] },
+					touch:  #{ arg chan=0, val=125; [ chan, val ] },
+					bend:  #{ arg chan=0, val=125; [ chan, val ] },
+					allNotesOff: #{ arg chan=0; [chan] },
+					smpte:	#{ arg frames=0, seconds=0, minutes=0, hours=0, frameRate=25;
+											[frames, seconds, minutes, hours, frameRate] },
+					songPtr: #{ arg songPtr; [songPtr] },
+					sysex: #{ arg uid, array; [uid, array] } // Int8Array
+				),
+				midicmd: \noteOn
+			),
 			
 			playerEvent: (
 				type: \note,
@@ -255,6 +275,7 @@ Event : Environment {
 							}{
 								hasGate = ~hasGate ? true;
 							};
+						//	~hasGate = hasGate;
 							bndl = msgFunc.valueEnvir.flop;
 							bndl.do {|msgArgs, i|
 								var id, latency;
@@ -329,18 +350,25 @@ Event : Environment {
 						};
 					},
 					off: #{|server|
-						var lag, dur, strum;
+						var lag, dur, strum, hasGate;
 										
 						lag = ~lag + server.latency;
 						strum = ~strum;
-			
+						hasGate = ~hasGate ? true;
+						
 						~id.asArray.do {|id, i|
 							var latency;
 							
 							latency = i * strum + lag;
-							
-							server.sendBundle(latency, [\n_set, id, \gate, 0]); 
+							if(hasGate) {
+								server.sendBundle(latency, [\n_set, id, \gate, 0]); 
+							} {
+								server.sendBundle(latency, [\n_free, id]);
+							}
 						};
+					},
+					finish: #{
+						~finishEvents.do { |item| item.play }
 					},
 					
 					group: #{|server|
@@ -406,7 +434,52 @@ Event : Environment {
 						var lag;
 						lag = ~lag + server.latency;
 						server.sendBundle(lag, [\b_free, ~bufnum]);
-					}
+					},
+					
+					midi: #{
+						var freqs, lag, dur, sustain, strum;
+						var tempo, bndl, midiout, hasHate, midicmd;
+						
+						freqs = ~freq = ~freq.value + ~detune;
+						
+						tempo = ~tempo;
+						if (tempo.notNil) {
+							thisThread.clock.tempo = tempo;
+						};
+										
+						if (freqs.isKindOf(Symbol).not) {
+							~finish.value;
+							~amp = ~amp.value;
+							strum = ~strum;
+							lag = ~lag;
+							sustain = ~sustain = ~sustain.value;
+							midiout = ~midiout;
+							hasHate = ~hasGate ? true;
+							midicmd = ~midicmd;
+							bndl = ~midiEventFunctions[midicmd].valueEnvir.asCollection;
+							
+							bndl = bndl.flop;
+							
+							bndl.do {|msgArgs, i|
+									var latency;
+									
+									latency = i * strum + lag;
+									
+									if(latency == 0.0) {
+										midiout.performList(midicmd, msgArgs)
+									} {
+										thisThread.clock.sched(latency, {
+											midiout.performList(midicmd, msgArgs);
+										})
+									};
+									if(hasHate and: {Êmidicmd === \noteOn }) {
+										thisThread.clock.sched(sustain, { 
+											midiout.noteOff(*msgArgs)
+										});
+									};
+							};
+						}
+					};
 				)
 			)
 		);
@@ -418,7 +491,8 @@ Event : Environment {
 				partialEvents.durEvent, 
 				partialEvents.bufferEvent,
 				partialEvents.serverEvent,
-				partialEvents.playerEvent
+				partialEvents.playerEvent,
+				partialEvents.midiEvent
 			)
 		);
 		
