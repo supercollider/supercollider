@@ -124,6 +124,12 @@ def install_dir(env, src_dir, dst_dir, filter_re, strip_levels=0):
         nodes += env.InstallAs(dst_paths, src_paths)
     return nodes
 
+def is_installing():
+    pat = re.compile('^install.*$')
+    for x in COMMAND_LINE_TARGETS:
+        if pat.match(x): return True
+    return False
+
 def bin_dir(prefix):
     return os.path.join(prefix, 'bin')
 def lib_dir(prefix):
@@ -565,11 +571,13 @@ if env['LANG']:
 # installation
 # ======================================================================
 
-env.Alias('install-bin', Split('install-plugins install-programs'))
-env.Alias('install-data', Split('install-doc install-elisp install-library'))
-env.Alias('install', Split('install-bin install-data install-dev'))
+installEnv = Environment(
+    ALL = ['install-bin', 'install-data'],
+    BIN = ['install-plugins', 'install-programs'],
+    DATA = ['install-doc', 'install-library']
+    )
 
-if 'install-library' in COMMAND_LINE_TARGETS:
+if is_installing():
     # class library
     env.Alias('install-library', install_dir(
         env, 'build/SCClassLibrary',
@@ -601,6 +609,7 @@ if env['SCEL']:
     env.Command(elc_files, el_files,
                 'emacs -batch -f batch-byte-compile $SOURCES')
     env.Alias('install-elisp', env.Install(elisp_dir, el_files + elc_files))
+    installEnv.Append(DATA = 'install-elisp')
 
 # example library configuration file
 env.Command('linux/examples/sclang.cfg', 'linux/examples/sclang.cfg.in',
@@ -624,16 +633,21 @@ if env['DEVELOPMENT']:
                              build_pkgconfig_file)]
     pkgconfig_dir = os.path.join(lib_dir(INSTALL_PREFIX), 'pkgconfig')
     env.Alias('install-dev', env.Install(pkgconfig_dir, pkgconfig_files))
-
+    installEnv.Append(ALL = 'install-dev')
+    
 # documentation
-if 'install-doc' in COMMAND_LINE_TARGETS:
+if is_installing():
     # TODO: build html documentation?
     doc_dir = os.path.join(data_dir(INSTALL_PREFIX), 'doc', PACKAGE)
     env.Alias('install-doc',
               install_dir(env, 'doc', doc_dir, ANY_FILE_RE, 0) +
               install_dir(env, 'build/examples', doc_dir, ANY_FILE_RE, 1) +
               install_dir(env, 'build/TestingAndToDo', doc_dir, ANY_FILE_RE, 1))
-    
+
+env.Alias('install-bin', installEnv['BIN'])
+env.Alias('install-data', installEnv['DATA'])
+env.Alias('install', installEnv['ALL'])
+
 # ======================================================================
 # distribution
 # ======================================================================
