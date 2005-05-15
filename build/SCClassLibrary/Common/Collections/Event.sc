@@ -473,7 +473,7 @@ Event : Environment {
 										})
 									};
 									if(hasHate and: {Êmidicmd === \noteOn }) {
-										thisThread.clock.sched(sustain, { 
+										thisThread.clock.sched(sustain + latency, { 
 											midiout.noteOff(*msgArgs)
 										});
 									};
