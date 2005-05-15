@@ -172,6 +172,8 @@ opts.AddOptions(
                'Build with Linux Input Device support', 0),
     PathOption('PREFIX',
                'Installation prefix', '/usr/local'),
+    BoolOption('RENDEZVOUS',
+               'Enable Zeroconf/Rendezvous.', 1),
     BoolOption('SCEL',
                'Enable the SCEL user interface', 1),
     PackageOption('X11',
@@ -226,8 +228,13 @@ elif env['AUDIOAPI'] == 'portaudio':
         LIBS = ['portaudio']
         )
 
-# howl
-features['howl'], libraries['howl'] = conf.CheckPKG('howl')
+# rendezvous
+if env['RENDEZVOUS']:
+    features['rendezvous'], libraries['rendezvous'] = conf.CheckPKG('howl')
+    if features['rendezvous']:
+        libraries['rendezvous'].Append(CPPDEFINES = ['HAVE_HOWL'])
+else:
+    features['rendezvous'] = False
 
 # asound
 features['alsa'] = env['ALSA'] \
@@ -358,9 +365,9 @@ merge_lib_info(
     libraries['sndfile'], libraries['audioapi'])
 
 # optional features
-if features['howl']:
-    serverEnv.Append(CPPDEFINES = ['USE_RENDEZVOUS', 'HAVE_HOWL'])
-    merge_lib_info(serverEnv, libraries['howl'])
+if features['rendezvous']:
+    serverEnv.Append(CPPDEFINES = ['USE_RENDEZVOUS'])
+    merge_lib_info(serverEnv, libraries['rendezvous'])
 
 libscsynthSources = Split('''
 source/server/Rendezvous.cpp
