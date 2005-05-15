@@ -436,7 +436,7 @@ Event : Environment {
 						server.sendBundle(lag, [\b_free, ~bufnum]);
 					},
 					
-					midi: #{
+					midi: #{|server|
 						var freqs, lag, dur, sustain, strum;
 						var tempo, bndl, midiout, hasHate, midicmd;
 						
@@ -451,9 +451,9 @@ Event : Environment {
 							~finish.value;
 							~amp = ~amp.value;
 							strum = ~strum;
-							lag = ~lag;
+							lag = ~lag + ~server.latency;
 							sustain = ~sustain = ~sustain.value;
-							midiout = ~midiout;
+							midiout = ~midiout.value;
 							hasHate = ~hasGate ? true;
 							midicmd = ~midicmd;
 							bndl = ~midiEventFunctions[midicmd].valueEnvir.asCollection;
