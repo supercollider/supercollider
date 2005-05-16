@@ -45,9 +45,10 @@ String[char] : RawArray {
 	format { arg ... items; ^this.prFormat( items.collect(_.asString) ) }
 	prFormat { arg items; _String_Format ^this.primitiveFailed }
 
-	die { arg ... culprits; 
-		culprits.do({ arg c; c.dump });
-		Error("FATAL ERROR:\n" ++ this).throw; 
+	die { arg ... culprits;
+		("\n\nFATAL ERROR: " ++ this).postln;
+		culprits.do({ arg c; if(c.isString,{c.postln},{c.dump}) });
+		Error(this).throw; 
 	}
 	error { "ERROR:\n".post; this.postln; }
 	warn { "WARNING:\n".post; this.postln }
