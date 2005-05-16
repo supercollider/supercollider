@@ -1,6 +1,5 @@
 
 Insp {
-
 	var <subject,<notes,<name,layout,box,hidden = false;
 	
 	*new { arg subject, notes;
@@ -34,7 +33,7 @@ Insp {
 				});
 				box.startRow;
 				CXObjectInspector(subject).gui(box);
-			},Rect(180,0,775,900));
+			}/*,Rect(180,0,775,900)*/);
 			box.visible = hidden.not;
 
 			nil
@@ -69,28 +68,26 @@ InspManager {
 		if(menu.isNil, {
 			menu = \pleaseWait;
 			{
-				Sheet({ arg f;
-					var h,fb;
-					fb = f.view.bounds;
-					h = SCHLayoutView(f,fb.insetAll(0,0,20,20));
-					menu = CXMenu.newWith([insp.name->{this.showInsp(insp)}]);
-					menu.closeOnSelect = false;
-					menu.gui(h); 
-
-					inspView = SCCompositeView(h,Rect(180,0,fb.width - 200,fb.height - 20));
-					this.showInsp(insp);
-
-				},"-Insp-",SCWindow.screenBounds.insetAll(20,10,100,100))
-				.background_(Color.red(0.2,0.15))
-				.removeOnClose(this);
-				//.window.alpha_(0.96);
+				var h,fb,f,w;
+				f = SCWindow.new("inspect",SCWindow.screenBounds.insetAll(20,10,100,100));
+				h = f.bounds.height - 50;
+				w = f.bounds.width;
+				menu = SCListView.new(f,100@h);
+				menu.items = [insp.name];
+				menu.action = { this.showInsp(insps.at(menu.value)) };
 				
+				inspView = SCCompositeView(f, Rect(120,0,w - 150,h));
+
+				this.showInsp(insp);
+
+				f.onClose = { this.remove; };
+				f.front;				
 				nil; 
 			}.defer;
 		},{
 			{
 				while({menu ==\pleaseWait},{ 0.1.wait });
-				menu.add(insp.name -> { this.showInsp(insp) });
+				menu.items = menu.items.add(insp.name);
 				this.showInsp(insp);
 				nil
 			}.defer;
@@ -104,7 +101,6 @@ InspManager {
 		insp.show(inspView);
 	}
 	remove {
-		//"InspManager-remove window shut".debug;
 		menu = nil;
 		insps.do({ arg in; in.didClose });
 		insps = [];

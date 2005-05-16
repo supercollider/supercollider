@@ -34,6 +34,12 @@
 			Post << this << Char.nl;
 		});
 	}
+	die { arg ... culprits;
+		"\n\nFATAL ERROR:\n".postln;
+		culprits.do({ arg c; if(c.isString,{c.postln},{c.dump}) });
+		this.dump;
+		Error("FATAL ERROR").throw; 
+	}
 }
 
 + Collection {

@@ -5,7 +5,6 @@ PatchGui : AbstractPlayerGui {
 		var bounds, maxHeight,vl;
 		bounds = layout.bounds;
 		maxHeight = bounds.height - 20 - (model.args.size * 15) / model.args.size;
-		//maxHeight.debug;
 		
 		Tile(this.model.instr,layout);
 		//vl = SCVLayoutView(layout.startRow,layout.decorator.indentedRemaining);
@@ -44,7 +43,7 @@ PatchGui : AbstractPlayerGui {
 					Tile(a,layout);
 				},{
 					gui = a.gui(layout);/*
-					ToggleButton(layout,"   ",
+					ToggleButton(layout,"³",
 						{  gui = model.args.at(i).gui(box); },
 						{  gui.remove(true); box.refresh;  },
 						true

@@ -1,18 +1,16 @@
 
 /*
-	to do 
+	to do:
 		change to triple buffering (rather than buffers for each segment)
 		play commands to locate within
 */
-AbstractSFP  : AbstractPlayer {
 
+AbstractSFP  : AbstractPlayer {
 
 	classvar <dir="SoundFiles/";
 
 	var <>file;
 
-	var <transport;
-	
 	var segmentBuffers,sched,lastSynth,nextSynth;
 	
 	*new { arg file;
@@ -42,7 +40,7 @@ AbstractSFP  : AbstractPlayer {
 	firstBeatIsAt_ { arg f; file.firstBeatIsAt_(f); }
 	bpm_ { arg b; this.tempo = b / 60.0 }
 	fileName { ^file.fileName }
-	filePath { ^file.filePath }
+	soundFilePath { ^file.soundFilePath }
 	fileDuration { ^file.fileDuration }
 	// my own path name if i have it else my sound files path name 
 	name { ^super.name ?? {this.fileName} }
@@ -136,18 +134,22 @@ AbstractSFP  : AbstractPlayer {
 	
 }
 
-// only SFP has a real concrete sound file
+/**
+  * SoundFilePlayer
+  * there are (were) other subclasses like SFPLoop, SFPClip that transform an SFP.
+  * only SFP has a real concrete sound file
+  */
 SFP : AbstractSFP  {
 	
 	var tempo, <>firstBeatIsAt=0.0;// will be part of the BeatMap
 		 // and a real concrete tempo
 		 
-	var <found = false,<filePath;
+	var <found = false,<soundFilePath;
 	
 	*new { arg path="no file",tempo,firstBeatIsAtFrame=0;
 		^super.new.init(path).tempo_(tempo).firstBeatIsAt_(firstBeatIsAtFrame)
 	}
-	storeArgs { ^[this.filePath,tempo,firstBeatIsAt] }
+	storeArgs { ^[this.soundFilePath,tempo,firstBeatIsAt] }
 	
 	*getNew { arg receivingFunction;
 		GetFileDialog({ arg ok, path;	
@@ -167,26 +169,26 @@ SFP : AbstractSFP  {
 	init { arg sfilePath;
 		if(sfilePath.isNil,{
 			file = SoundFile.new("no soundfile specified...",numChannels:2);
-			name = filePath = "no soundfile specified";
+			name = soundFilePath = "no soundfile specified";
 		},{
 			// we don't have to check actually
 			if(sfilePath.isString,{
 				file = SoundFile.new;
-				filePath = this.class.standardizePath(sfilePath);
-				name = PathName(filePath).fileName;
-				found = file.openRead(filePath);
+				soundFilePath = this.class.standardizePath(sfilePath);
+				name = PathName(soundFilePath).fileName;
+				found = file.openRead(soundFilePath);
 			},{
 				if(sfilePath.isKindOf(CXSoundFile),{
 					file=sfilePath;
-					filePath = file.path = this.class.standardizePath(file.path);
-					name = PathName(filePath).fileName;
+					soundFilePath = file.path = this.class.standardizePath(file.path);
+					name = PathName(soundFilePath).fileName;
 					found = file.openRead(file.path);
 				},{
 					die("SFP-init : not a path or a SoundFile " + sfilePath)
 				})
 			});
 			if(found.not,{
-				("SFP-init file not found: " + filePath).warn;
+				("SFP-init file not found: " + soundFilePath).warn;
 			});
 		});
 	}
@@ -218,7 +220,7 @@ SFP : AbstractSFP  {
 		sf = Buffer.new(group.server,32768,this.numChannels);
 		bundle.add( 
 			sf.allocMsg(
-				sf.cueSoundFileMsg( this.filePath, startAt * file.sampleRate,32768) 
+				sf.cueSoundFileMsg( this.soundFilePath, startAt * file.sampleRate,32768) 
 			)
 		);
 		parentSegmentBuffers.add( sf );
@@ -238,7 +240,7 @@ SFP : AbstractSFP  {
 	
 	//name { ^this.fileName }
 	fileName { 
-		^PathName(filePath).fileName 
+		^PathName(soundFilePath).fileName 
 	}
 	fileDuration { ^file.duration }
 	timeDuration { ^file.duration }
@@ -254,5 +256,115 @@ SFP : AbstractSFP  {
 	
 	guiClass { ^SFPGui }
 	
+}
+
+/**
+  * Variable speed Sound File Player
+  */
+VSFP : SFP {
+	
+	var tempoClock,myTempo,<pchRatio=1.0;
+	var buff,spawnTask;
+	
+	pchRatio_ { arg p;
+		p = max(p,0.001);
+		if(synth.isPlaying,{
+			this.server.sendBundle(0.05,
+				synth.setMsg(\pchRatio, p);
+			);
+			SystemClock.sched(0.05,{
+				myTempo.tempo = p;
+				pchRatio = p;
+			});
+		},{
+			myTempo.tempo = p;
+			pchRatio = p;
+		})
+	}
+	init { arg path;
+		super.init(path);
+		tempoClock = TempoClock.new;
+		myTempo = Tempo.new(pchRatio,tempoClock);
+		sched = BeatSched.new(SystemClock,myTempo,tempoClock);
+	}
+	preloadData { arg startAt=0,endAt,group,bundle,parentSegmentBuffers;
+		buff = Buffer.new(group.server,44100 * 6,2);
+		bundle.add(
+			buff.allocMsg(
+				// not doing startAt yet
+				//startAt * file.sampleRate
+				buff.readMsg(this.soundFilePath,0,44100 * 6,0,false)
+			)
+		);
+	}
+	asSynthDef {
+		^SynthDef(this.defName,{ arg out = 0, i_bufnum,pchRatio;
+			Out.ar(out,
+				PlayBuf.ar(2,i_bufnum,pchRatio,loop: 1.0)
+			)
+		});
+	}
+	synthDefArgs { 
+		^[\i_bufnum, buff.bufnum,\pchRatio,myTempo.tempo,\out,patchOut.synthArg ]
+	}
+	didSpawn {
+		//super.didSpawn;
+		status = \isPlaying;
+		/*
+		 * the tank tread algorithm
+		 */
+		spawnTask = Routine({
+			var o;
+			var beat = 0,rotator,cursor = 0;
+			rotator = [
+				//[1,2],
+				{
+					this.server.sendBundle(0.1,
+						buff.readMsg(this.soundFilePath,o, 44100 * 4, 0,false)
+					);
+				},
+				//[3,1],
+				{
+					this.server.sendBundle(0.1,
+						buff.readMsg(this.soundFilePath, o, 44100 * 2, 44100 * 4, false),
+						buff.readMsg(this.soundFilePath, o + 88200 , 44100 * 2, 0, false)
+					);
+				},
+				//[2,3]
+				{
+					this.server.sendBundle(0.1,
+						buff.readMsg(this.soundFilePath,o, 44100 * 4, 44100 * 2,false)
+					);
+				}
+			];
+			
+			sched.time = 0;
+			sched.beat = 0;
+
+			// wait 4 beats
+			4.wait;
+			beat = beat + 6;			
+			
+			while({
+				o = beat * 44100;
+				o < file.numFrames
+			},{
+				rotator.at(cursor).value;
+				cursor = (cursor + 1).wrap(0,2);
+				4.wait;
+				beat = beat + 4;
+			});
+			synth.free;
+		});
+		spawnTask.play(tempoClock)
+	}
+	didStop {
+		super.didStop;
+		spawnTask.stop;
+		spawnTask = nil;
+	}
+	currentFrame {
+		^(sched.time % 6 * 44100);
+	}
 }
 

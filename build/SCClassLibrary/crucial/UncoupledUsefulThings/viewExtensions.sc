@@ -13,7 +13,7 @@
 
 	flow { arg func,bounds;
 		var f,comp;
-		f = FlowView(this,bounds ?? { this.bounds });
+		f = FlowView(this,bounds /*?? { this.bounds }*/);
 		func.value(f);
 		f.resizeToFit;
 		^f
@@ -30,6 +30,12 @@
 		func.value(comp);
 		^comp
 	}
+	comp { arg func,bounds;
+		var comp;
+		comp = SCCompositeView(this,bounds ?? { this.bounds });
+		func.value(comp);
+		^comp
+	}		
 }
 
 + FlowView {
@@ -64,6 +70,7 @@
 		//this.reflowAll;
 		^comp
 	}
+	indentedRemaining { ^decorator.indentedRemaining }
 }
 
 + MultiPageLayout {

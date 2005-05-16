@@ -259,17 +259,10 @@ Crucial {
 					<< Char.nl;
 			})
 		});
-		
-		Library.put(\menuItems,\introspection,'gcInfo',{
-			this.gcInfo
+		Library.put(\menuItems,\post,'post Unicode...',{
+			UnicodeResponder.tester;
 		});
-		Library.put(\menuItems,\introspection,'Interpreter-inspect',{
-			thisProcess.interpreter.insp;
-		});
-		Library.put(\menuItems,\introspection,'Interpreter-clearAll',{
-			thisProcess.interpreter.clearAll;
-		});
-
+				
 		Library.put(\menuItems,\introspection,'find class...',{
 			GetStringDialog("Classname or partial string","",{
 				arg ok,string;

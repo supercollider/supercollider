@@ -54,19 +54,19 @@ PlayerSocket : AbstractPlayerProxy {
 
 	spawnPlayer { arg player,releaseTime,beatDelta=0.0;
 		var bundle;
-		lastPlayer.identityHash.debug;
+		//lastPlayer.identityHash.debug;
 		if(status == \isPlaying,{
 			if((player !== lastPlayer) or: (socketStatus == \isSleeping),{ 
 				//socketStatus = \isWaking;
 				bundle = CXBundle.new;
 				this.setSourceToBundle(player,bundle,releaseTime);
 				sched.xschedCXBundle(beatDelta,this.server,bundle);
-			},{
+			}/*,{
 				[player === lastPlayer, socketStatus].debug(this);
-			})
-		},{
+			}*/)
+		}/*,{
 			"not playing".debug(status);
-		});
+		}*/);
 	}
 	qspawnPlayer { arg player,releaseTime;
 		// TODO switch to TempoClock so tempo can change after qspawn sent
@@ -78,7 +78,7 @@ PlayerSocket : AbstractPlayerProxy {
 		var bundle;
 		if(socketStatus == \isWaking,{
 			sched.xblock;
-			"blocked isWaking, setting to isSleeping".debug(thisMethod);
+			//"blocked isWaking, setting to isSleeping".debug(thisMethod);
 			socketStatus = \isSleeping;
 			^this.changed;
 		});
@@ -114,9 +114,9 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 
 	prepareChildrenToBundle { arg bundle;
-		dee.prepareToBundle(socketGroup,bundle,bus: sharedBus);
-		dum.prepareToBundle(socketGroup,bundle,bus: sharedBus);
-		if(source.notNil,{ source.prepareToBundle(socketGroup,bundle,bus: sharedBus) });
+		dee.prepareToBundle(socketGroup,bundle, true, sharedBus, true);
+		dum.prepareToBundle(socketGroup,bundle,true,sharedBus, true);
+		if(source.notNil,{ source.prepareToBundle(socketGroup,bundle,true, sharedBus,true) });
 	}
 	// no synth of my own
 	loadDefFileToBundle { arg bundle,server;

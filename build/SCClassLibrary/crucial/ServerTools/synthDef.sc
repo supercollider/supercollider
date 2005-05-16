@@ -14,6 +14,7 @@
 	prepareToBundle { arg  group,bundle;
 		this.makePatchOut
 	}
+	// personal note: turn this off when using extCXBUNDLe.sc
 	prepareForPlay {	arg group,private,bus;
 		var bundle;
 		bundle = CXBundle.new;
@@ -21,6 +22,7 @@
 		this.prepareToBundle(group,bundle);
 		^bundle.clumpedSendNow(group.server)
 	}
+	
 	spawnToBundle {}
 	spawnOnToBundle {}
 	loadDefFileToBundle {}

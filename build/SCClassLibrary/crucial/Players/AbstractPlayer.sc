@@ -38,7 +38,7 @@ AbstractPlayer : AbstractFunction  {
 		},{
 			sendf = {
 				Routine({ //delay till prepared
-					(this.prepareForPlay(group,false,bus) / 7.0).wait;
+					(this.prepareForPlay(group,false,bus) / 7.0).debug("wait prepare").wait;
 					//this.stateNotificationsToBundle(bundle);
 					this.spawn(atTime,timeOfRequest);
 				}).play(AppClock)
@@ -77,7 +77,7 @@ AbstractPlayer : AbstractFunction  {
 		this.prepareToBundle(agroup,bundle,private,bus);
 		^bundle.clumpedSendNow(group.server)
 	}
-	prepareToBundle { arg agroup,bundle,private = false, bus;
+	prepareToBundle { arg agroup,bundle,private = false, bus, defWasLoaded = false;
 		status = \isPreparing;
 		bundle.addFunction({
 			if(status == \isPreparing,{
@@ -87,8 +87,9 @@ AbstractPlayer : AbstractFunction  {
 		});
 		group = agroup.asGroup;
 		server = group.server;
-		
-		this.loadDefFileToBundle(bundle,server);
+		if(defWasLoaded.not,{
+			this.loadDefFileToBundle(bundle,server);
+		});
 		this.makePatchOut(group,private,bus,bundle);
 		this.makeResourcesToBundle(bundle);
 		//this.makeGroupsToBundle(bundle);
@@ -101,7 +102,7 @@ AbstractPlayer : AbstractFunction  {
 	makeResourcesToBundle {}
 	prepareChildrenToBundle { arg bundle;
 		this.children.do({ arg child;
-			child.prepareToBundle(group,bundle,true);
+			child.prepareToBundle(group,bundle,true,nil,true);
 		});
 	}
 	loadDefFileToBundle { arg bundle,server;
@@ -196,7 +197,7 @@ AbstractPlayer : AbstractFunction  {
 							)
 				},{
 					if(this.rate.isNil,{
-						die("Nil rate :",this);
+						this.die("rate is nil");
 					});
 					this.setPatchOut(
 						ScalarPatchOut(this,group,bus)
@@ -256,7 +257,6 @@ AbstractPlayer : AbstractFunction  {
 	didSpawn {
 		status = \isPlaying;
 	}
-
 	
 	isPlaying { ^synth.isPlaying ? false }
 	cmdPeriod {
@@ -292,7 +292,7 @@ AbstractPlayer : AbstractFunction  {
 			this.freePatchOut(bundle);
 			status = \isStopping;
 		},{
-			status.debug("already stopped");
+			//status.debug("already stopped");
 		})
 	}
 	didStop {		
@@ -408,18 +408,19 @@ AbstractPlayer : AbstractFunction  {
 	group_ { arg g;
 		if(g.notNil,{
 			group = g.asGroup;
+			// if playing, move me
 		})
 	}
 	
 	// notifications only needed for top level play
 	// or for play inside a socket
-	stateNotificationsToBundle { arg b;
+	/*stateNotificationsToBundle { arg b;
 		b.addFunction({
 			playIsStarting = false;
 			status = \isSpawning;
 			NotificationCenter.notify(this,\didPlay);
 		});
-	}
+	}*/
 
 	/** SUBCLASSES SHOULD IMPLEMENT **/
 	//  this works for simple audio function subclasses
@@ -686,10 +687,15 @@ MultiTrackPlayer : MultiplePlayers { // abstract
 	
 }
 
+/**
+  * this is a basic socket that subclasses can then use to spawn players 
+  * on the same bus/group.  This uses a SharedBus which protects itself against
+  * getting .freed until the owner class (this) says its okay to free it.
+  */
 AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 
 	var <>source,
-		<isPlaying = false, <isSleeping = true, // to be deprec
+		<isPlaying = false, <isSleeping = true, // to be deprec in favor of the higher level state tracking
 		sharedBus;
 	var <socketStatus=\isSleeping;
 
@@ -740,7 +746,7 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	}
 	prepareChildrenToBundle { arg bundle;
 		this.children.do({ arg child;
-			child.prepareToBundle(group,bundle,true,sharedBus);
+			child.prepareToBundle(group,bundle,true,sharedBus,true);
 		});
 	}	
 	makeResourcesToBundle { arg bundle;

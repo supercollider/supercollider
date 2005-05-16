@@ -116,11 +116,11 @@ InstrSynthDef : SynthDef {
 		synthArgs = Array(size);
 		secretIrPairs.do({ arg n,i;
 			synthArgs.add(n.at(0)); // secret arg name
-			synthArgs.add(objects.at(n.at(2)).perform(n.at(3)));
+			synthArgs.add(objects.at(n.at(2)).perform(n.at(3))); // value
 		});
 		secretKrPairs.do({ arg n,i;
-			synthArgs.add(n.at(0));
-			synthArgs.add(objects.at(n.at(2)).perform(n.at(3)));
+			synthArgs.add(n.at(0)); // name
+			synthArgs.add(objects.at(n.at(2)).perform(n.at(3))); // initial value
 		});
 		^synthArgs
 	}
@@ -155,7 +155,7 @@ InstrSynthDef : SynthDef {
 			objects.do({ arg obj,argi;
 				// returns 0/i 1/k 2/s tag, adds values if any to stream
 				iks = (3 ** argi) *  obj.addToDefName(stream) + iks;			});
-			stream << iks;//.debug("iks tag");
+			stream << iks;
 		});
 	}
 	*initClass { watchedServers = IdentityDictionary.new }

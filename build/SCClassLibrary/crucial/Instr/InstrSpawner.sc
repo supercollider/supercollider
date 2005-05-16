@@ -3,11 +3,11 @@ InstrSpawner : Patch {
 	
 	classvar <>latency=0.07;
 	
-	var <>deltaPattern,deltaStream,<delta;
+	var <>deltaPattern,<deltaStream,<delta;
 	var streams,sendArray,firstSecretDefArgIndex,spawnTask,<clock,spawnGroup;
 	
-	*new { arg instrName,args,deltaPattern = 1.0;
-		^super.new(instrName,args).deltaPattern_(deltaPattern)
+	*new { arg func,args,deltaPattern = 1.0;
+		^super.new(func,args).deltaPattern_(deltaPattern)
 	}
 	
 	storeArgs { ^[instr.name,args,deltaPattern] }
@@ -48,16 +48,19 @@ InstrSpawner : Patch {
 			},{
 				server.sendBundle(latency,sendArray);
 				delta.wait // we are running slightly ahead of arrival time
-			});					
+			});
 		});
 	}
 	spawnNext {
-		if((delta = deltaStream.next(this)).isNil,{ ^false });
+		if((delta = this.deltaStream.next(this)).isNil,{ ^false });
 		// only sending secret def args the first time !
 		// if sample changes, need to put into sendArray
 		streams.do({ arg s,i;
 			var val;
-			if((val = s.next(this)).isNil ,{ ^false });
+			if((val = s.next(this)).isNil ,{ 						
+				//this.debug("Finished play");
+				 ^false 
+			});
 			sendArray.put(i * 2 + 6,val);
 		});
 		^true
@@ -79,8 +82,8 @@ InstrSpawner : Patch {
 		this.annotate(spawnGroup,"spawnGroup");
 		bundle.add( spawnGroup.addToTailMsg(group) );
 	}
-	prepareToBundle { arg agroup,bundle,private = false, bus;
-		super.prepareToBundle(agroup,bundle,private,bus);
+	prepareToBundle { arg agroup,bundle,private = false, bus,defWasLoaded = false;
+		super.prepareToBundle(agroup,bundle,private,bus,defWasLoaded);
 		
 		streams = Array(argsForSynth.size);
 		sendArray = Array(argsForSynth.size * 2);
@@ -108,6 +111,7 @@ InstrSpawner : Patch {
 			})
 		});
 		sendArray.put(4,spawnGroup.nodeID);
+		// looks like i already did this above
 		sendArray.put(sendArray.size - 1, this.patchOut.synthArg);
 
 		CmdPeriod.add(this);		
@@ -120,7 +124,7 @@ InstrSpawner : Patch {
 	}
 	prepareChildrenToBundle { arg bundle;
 		this.children.do({ arg child;
-			child.prepareToBundle(spawnGroup,bundle,true)
+			child.prepareToBundle(spawnGroup,bundle,true,nil,true)
 		});
 	}
 //	childrenMakePatchOut { arg group,private = true,bundle;
@@ -196,7 +200,7 @@ InstrGateSpawner : InstrSpawner {
 			},{
 				server.sendBundle(latency,sendArray);
 				delta.wait // we are running slightly ahead of arrival time
-			});					
+			});
 		});
 	}
 
@@ -215,7 +219,7 @@ ScurryableInstrGateSpawner : InstrGateSpawner {
 	scurry { arg by=10;
 		// as long as another one isn't in progress
 		if(stepsToDo == 0,{ stepsToDo = by; },{
-			"already scurrying".debug;	
+			"already scurrying".inform;	
 		});
 	}
 	makeTask {
@@ -232,10 +236,8 @@ ScurryableInstrGateSpawner : InstrGateSpawner {
 					server.sendBundle( latency + (Tempo.beats2secs( accumDelta ) ), sendArray );
 					accumDelta = accumDelta + delta;
 					scurried = scurried + 1;
-					//"sending quick".debug;
 					// last time...
 					if(scurried == stepsToDo,{
-						//"last time".debug;
 						stepsToDo = 0;
 						scurried = 0;
 						accumDelta.wait;
@@ -247,10 +249,9 @@ ScurryableInstrGateSpawner : InstrGateSpawner {
 					server.sendBundle(latency, sendArray);
 					delta.wait // we are running slightly ahead of arrival time
 				});
-			});					
+			});
 		});
 	}
-
 }
 
 

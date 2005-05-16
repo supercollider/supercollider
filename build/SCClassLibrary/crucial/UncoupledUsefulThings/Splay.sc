@@ -8,7 +8,7 @@ Splay { // spreads each item out evenly across stereo pan
 			LinPan2.ar(
 				function.value(i), 	
 				//( i * (2/n) - (n - 1 * (2/n)  / 2) )
-				(2 * i - n + 1) / n // thanks jr !
+				(2 * i - n + 1) / n // math by jr
 			);
 		}) * v
 	}
@@ -55,9 +55,7 @@ SplayZ : Splay {
 		}) * v
 	}
 }
-
 // adding a spread ratio and center would be cool - cx
-
 
 
 
@@ -119,9 +117,6 @@ XFaderN  {
 }
 
 
-
-
-
 NumChannels {
 
 	*ar { arg input,numChannels=2,mixdown=true;
@@ -166,8 +161,6 @@ Mono {
 }
 
 
-
-
 // audio function plays continously but is gated by the envelope
 Enveloper2 { 
 		
@@ -181,52 +174,6 @@ Enveloper2 {
 }
 
 
-
-
-
-/* backwards */
-
-
-
-// NB a nil * error means your audio function failed
-// i wont put error checking in here though
-/*
-ReTrigger {//to be deprec ?
-
-	*ar { arg func,trig=0.0,dur=0.3;
-	
-		var env,ts;
-		env=Env.perc(0.0,dur);
-		
-		ts=TSpawn.ar({arg spawn; func.value * EnvGen.kr(env,trig.poll)   },1,trig: trig);
-		// tspawn fails to trigger if the first cycle is already non zero
-		thisSynth.sched(0.0,{ if(trig.poll > 0.0,{ts.source.trigger })});
-		^ts
-	}
-
-}
-
-ReTrigger2 { 
-		// input re.valued each time
-		
-	*ar { arg audio,trig,env,maxVoices,numChannels=1;
-		var ts,amp;
-
-		env ?? {env = Env.adsr};
-		amp = Latch.kr(trig,trig);
-		ts=TSpawn.ar({arg spawn,i,synth; 
-			spawn.releaseAll;
-			(audio.value * EnvGen.kr(env,amp) )
-		},numChannels,nil,trig);
-		// tspawn fails to trigger if the first cycle is already non zero
-		thisSynth.sched(0.0,{ if(trig.poll > 0.0,{ts.source.trigger })});
-		if(maxVoices.notNil,{ ts.source.maxVoices = maxVoices });
-		^ts
-	}
-}
-
-*/
-
 Impulsar {  // see also Trig
 	// this is just one sample impulse at .ar triggered by a .kr trig
 	// K2A.ar(trig)  sounds different, being a whole control period
@@ -239,30 +186,5 @@ Impulsar {  // see also Trig
 		
 		// was this in sc2, sounds different
 		//^ImpulseSequencer.ar({trig.poll},K2A.ar(trig),mul,add)
-		
 	}	
 }
-
-// these supercede ReTrigger
-// audio can be a function or an already playing sound
-
-// audio function re-valued each spawn event
-/*
-Enveloper {  
-	// fixed dur, trigged by trig
-			
-	*ar { arg audio,trig,env,maxVoices,numChannels=1;
-		var ts;
-		env ?? { env = Env.linen(0.01,0.4,0.3) };
-
-		ts=TSpawn.ar({arg spawn; audio.value * EnvGen.kr(env,trig.poll)   },numChannels,trig: trig);
-		// tspawn fails to trigger if the first cycle is already non zero
-		thisSynth.sched(0.0,{ if(trig.poll > 0.0,{ts.source.trigger })});
-		if(maxVoices.notNil,{ ts.source.maxVoices = maxVoices });
-		^ts
-	}
-}
-
-*/
-
-

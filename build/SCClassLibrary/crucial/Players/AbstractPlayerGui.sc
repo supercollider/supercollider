@@ -81,13 +81,15 @@ AbstractPlayerGui : ObjectGui {
 			.print;
 	}
 	
-	synthConsole {arg layout;
+	synthConsole { arg layout;
 		var s;
 		Server.local.gui(layout);
 		s = //SynthConsole(model,layout).play.registerPlayKey.record.pauseableRecord.write({ 
 			// model.timeDuration }).scope.stop.formats.tempo;
 		SynthConsole(model,layout).play.record.stop.free.tempo;
-		
+
+		ServerErrorGui(Server.default).gui(layout);
+
 		//NotificationCenter.register(s,\didRecordOrWrite,model,{ 
 			// NotificationCenter.notify(model,\didRecordOrWrite) });
 	}

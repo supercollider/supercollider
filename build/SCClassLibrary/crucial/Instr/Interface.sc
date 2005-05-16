@@ -60,8 +60,8 @@ Interface : AbstractPlayerProxy {
 		});
 	}
 		
-	prepareToBundle { arg agroup,bundle,private=false,bus;
-		super.prepareToBundle(agroup,bundle,private,bus);
+	prepareToBundle { arg agroup,bundle,private=false,bus,defWasLoaded = false;
+		super.prepareToBundle(agroup,bundle,private,bus,defWasLoaded);
 		environment.use({ onPrepareToBundle.value(this.group,bundle,true,sharedBus); });
 	}
 	// on play
@@ -83,7 +83,7 @@ Interface : AbstractPlayerProxy {
 			CCResponder.add(ccr = { arg src,chan,num,val; 
 				environment.use({ onCC.value(src,chan,num,val); })
 			})
-		})
+		});
 	}
 	didStop {
 		super.didStop;

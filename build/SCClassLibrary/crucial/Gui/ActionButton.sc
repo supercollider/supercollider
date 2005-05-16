@@ -58,16 +58,26 @@ FlowView : SCLayoutView {
 
 	var autoRemoves;
 	
+	*layout { arg f,bounds;
+		var v;
+		v = this.new(nil,bounds);
+		f.value(v);
+		^v
+	}
 	*viewClass { ^SCCompositeView }
 	init { arg parent,bounds;
 		var w;
-		super.init(parent = parent ?? {
-								w = SCWindow.new("",bounds).front;
-								if(bounds.notNil,{ bounds = bounds.moveTo(0,0) });
-								w
-							},
-							bounds ?? {parent.asView.bounds.insetAll(2,2,2,2)});
-		decorator = FlowLayout(this.bounds,Point(2,2),Point(4,4));// after i am placed by parent
+		if(parent.isNil,{ 
+			parent = SCWindow.new("",bounds).front;
+		});
+		bounds = if(bounds.notNil,{
+			bounds.asRect.moveTo(0,0)
+		},{
+			parent.asView.bounds.insetAll(2,2,2,2)
+		});
+		super.init(parent , bounds);
+		// after i am placed by parent...
+		decorator = FlowLayout(this.bounds,Point(2,2),Point(4,4));
 		autoRemoves = IdentitySet.new;
 	}
 
@@ -157,11 +167,14 @@ SCButtonAdapter : SCViewAdapter {
 
 	makeView { arg layout,x,y;
 		var rect;
-		layout = layout.asFlowView;
-		this.view = SCButton(layout,Rect(0,0,x,y ? defaultHeight));
+		//if((layout.isKindOf(SCLayoutView) or: layout.isKindOf(FlowView)).not,{
+		//	layout = layout.asFlowView;
+		//});
+		if(layout.isNil,{ layout = nil.asFlowView; });
+		this.view = SCButton(layout,Rect(0,0,x,y ? defaultHeight)).keyDownAction_({nil})
 	}
 	flowMakeView { arg layout,x,y;
-		this.view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
+		this.view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight)).keyDownAction_({nil});
 	}		
 
 	makeViewWithStringSize { arg layout,stringsize,maxx,maxy;
@@ -195,10 +208,6 @@ SCButtonAdapter : SCViewAdapter {
 		s.at(0).put(1,color);
 		view.states = s;
 	}
-// no align
-//	align_ { arg align;
-//		view.align_(align)
-//	}
 }
 
 ActionButton : SCButtonAdapter { // one state
@@ -214,13 +223,9 @@ ActionButton : SCButtonAdapter { // one state
 		this.makeViewWithStringSize(layout,title.size,maxx,maxy);
 		view.states_([[title,color ?? {Color.black}, 
 			backcolor ?? {Color.new255(205, 201, 201)}]]);
-		this.font_(font ?? {Font("Helvetica",12.0)});
-		environment = currentEnvironment; // the one we are in while building it
-		if(environment.notNil,{
-			view.action_({environment.use(function)});
-		},{
-			view.action_(function);
-		})	
+		view.font_(font ?? {Font("Helvetica",12.0)});
+		view.action_(function);
+		this.keyDownAction = {nil};
 	}
 }
 
@@ -292,8 +297,12 @@ ToggleButton : SCButtonAdapter {
 		view.action_({this.prSetState(state.not)});
 	}
 
-	toggle { arg newState;
-		this.prSetState(newState ? state.not);
+	toggle { arg newState,doAction = true;
+		if(doAction,{ 
+			this.prSetState(newState ? state.not); 
+		},{ 		
+			state = newState ? state.not;
+		});
 		view.setProperty(\value,state.binaryValue);
 	}		
 	passiveToggle { arg newState;

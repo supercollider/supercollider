@@ -255,7 +255,6 @@ Patch : HasPatchIns  {
 	}
 	update { arg changed,changer;
 		var newArgs;
-		changed.debug;
 		// one of my scalar inputs changed
 		if(this.args.includes(changed),{
 			if(this.isPlaying,{
@@ -289,6 +288,8 @@ Patch : HasPatchIns  {
 		if(patchOut.isNil,{ 
 			"PatchOut is nil. Has this been prepared for play ?".die(this,thisMethod.asString);
 		});
+		// would be better to track if def is loaded
+		// this is a needless extra call
 		this.asSynthDef;// make sure it exists
 		
 		this.children.do({ arg child;

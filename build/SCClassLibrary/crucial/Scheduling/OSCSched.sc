@@ -146,7 +146,14 @@ BeatSched {
 		tempo.schedAbs(beat,function);
 		//this.tschedAbs(tempo.beats2secs(beat),function)
 	}
-
+	/*xschedAbs { arg beat,function;
+		if(beat >= this.beat,{ // in the future ?
+			pq.clear;
+			this.xblock;
+			//this.tsched(time,function)
+		});
+	}*/
+	
 	// private
 	tschedAbsNext  {
 		var function,secs;

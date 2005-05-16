@@ -4,11 +4,11 @@ SelectButtonSet  {
 	var butts,<selected=0,<>action,<>colorFunc,<>selectedColor,<>labelArray;
 	
 	*new { arg layout,	
-		buttonSizeX,
-		buttonSizeY,
+		/*buttonSizeX,
+//		buttonSizeY,*/
 		labelArrayOrQnty=10,	// integer generates numerical labels
 		action,				// action.value(selectedIndex,this)
-		color,	
+		color,
 		selectedColor,
 		x=20,y=20;
 		
@@ -18,10 +18,11 @@ SelectButtonSet  {
 	init { arg layout,x,y,arglabelArray,argaction,
 					argcolorFunc,argselectedColor;
 				
-		layout=layout.asPageLayout;
+		//layout=layout.asFlowView;//PageLayout;
+		//layout=layout.asPageLayout;
 		action=argaction;
 		colorFunc=argcolorFunc ?? { Color.white };
-		selectedColor=argselectedColor ?? {Color.green};
+		selectedColor=argselectedColor ?? {Color.red(alpha:0.7)};
 
 		if(arglabelArray.isNumber,{
 			 labelArray=Array.series(arglabelArray,0,1) 
@@ -31,9 +32,9 @@ SelectButtonSet  {
 		
 	   butts=
 		labelArray.collect({ arg la,i;
-			var r;
-			r = layout.layRight(x.max(la.asString.size * 7),y);
-			SCButton(layout,r)
+			//var r;
+			//r = layout.layRight(x.max(la.asString.size * 7),y);
+			SCButton(layout,(x@y))
 				.states_([[la.asString,Color.black,colorFunc.value(i)],
 						[la.asString,Color.black,selectedColor.value(i)]])
 				.action_({this.select(i)})

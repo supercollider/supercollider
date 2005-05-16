@@ -1,7 +1,7 @@
 
 + Nil { // now
 	schedCXBundle { arg bundle,server,timeOfRequest;
-		bundle.send(server,0.0);
+		bundle.send(server,nil); //0.0
 	}
 }
 

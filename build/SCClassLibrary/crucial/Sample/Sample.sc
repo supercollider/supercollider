@@ -1,7 +1,7 @@
 
 BufferProxy { // blank space for delays, loopers etc.
 
-	var <>buffer,<patchOut,<readyForPlay = false,server;
+	var <>buffer,<patchOut,<readyForPlay = false,<server;
 
 	var <>size=0,<>numChannels=1,<>sampleRate=44100.0;
 
@@ -57,7 +57,7 @@ BufferProxy { // blank space for delays, loopers etc.
 		^this
 	}
 
-	bufnum { ^buffer.bufnum }
+	bufnum { ^if(buffer.notNil,{ buffer.bufnum }, nil) }
 	
 	bufnumIr {
 		// add a secret ir control
@@ -155,6 +155,7 @@ AbstractSample : BufferProxy {
 		});
 		^path
 	}
+	abrevPath { ^this.class.abrevPath(this.soundFilePath) }
 	soundFilePath_ { arg string;
 		soundFilePath = string;
 		if(soundFilePath.notNil,{
@@ -209,7 +210,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 		new.load(soundFilePath,tempo,startFrame,endFrame);
 		^new
 	}
-	// you intend to .load into it later
+	// when you intend to .load or record into it later
 	*newClear {  arg numFrames=44100,numChannels=1,sampleRate=44100.0;
 		^super.new(numFrames,numChannels,sampleRate)
 	}
@@ -316,6 +317,8 @@ Sample : AbstractSample { // a small sound loaded from disk
 		beatsize = size / beats;
 		tempo = beats / (size/soundFile.sampleRate);
 	}
+	bpm_ { arg bpm; this.tempo_(bpm / 60.0); }
+	bpm { ^tempo * 60.0; }
 	calculate {
 		if(endFrame != -1,{
 			size = endFrame - startFrame;
@@ -444,14 +447,14 @@ ArrayBuffer : BufferProxy {
 		array.collect({ arg it,i; r.add(i); r.add(it); });
 		b.add( buffer.setMsg( *r ) );
 	}
-	fill { arg value,bundle;
-		array = Array.fill(array.size, value);
-		if(bundle.isNil,{ bundle = CXBundle.new; });
-
-
-
-
-	}
+//	fill { arg value,bundle;
+//		array = Array.fill(array.size, value);
+//		if(bundle.isNil,{ bundle = CXBundle.new; });
+//
+//
+//
+//
+//	}
 }
 
 

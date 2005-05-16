@@ -1,7 +1,7 @@
 
 
 ServerGui : ObjectGui {
-	var status,running,stopped,booting,recorder;
+	var status,running,stopped,booting,recorder, updater;
 	
 	writeName {}
 	guiBody { arg layout;
@@ -9,7 +9,7 @@ ServerGui : ObjectGui {
 		var active,booter;
 		
 		if(model.isLocal,{
-			booter = SCButton(layout, Rect(0,0, 50, 17));
+			booter = SCButton(layout, Rect(0,0, 47, 17));
 			booter.states = [["Boot", Color.black, Color.clear],
 						   ["Quit", Color.black, Color.clear]];
 			booter.font = Font("Helvetica",10);
@@ -28,10 +28,10 @@ ServerGui : ObjectGui {
 			booter.setProperty(\value,model.serverRunning.binaryValue);
 		});
 		
-		active = SCStaticText(layout, Rect(0,0, 80, 17));
+		active = SCStaticText(layout, Rect(0,0, 60, 17));
 		active.string = model.name.asString;
 		active.align = \center;
-		active.font = Font("Helvetica-Bold", 12);
+		active.font = Font("Helvetica-Bold", 11);
 		active.background = Color.black;
 		if(model.serverRunning,running,stopped);		
 		
@@ -66,7 +66,7 @@ ServerGui : ObjectGui {
 		});
 			
 		status = CXLabel(layout,"               ");
-		status.font = Font("Helvetica",9);
+		status.font = Font("Helvetica",11);
 		status.background = Color.black;
 		status.stringColor = Color.green;
 		status.align = \right;
@@ -74,7 +74,7 @@ ServerGui : ObjectGui {
 			model.startAliveThread(0.0,1.0);
 		});
 		
-		recorder = SCButton(layout, Rect(0,0, 72, 17));
+		recorder = SCButton(layout, Rect(0,0, 10, 17));
 		recorder.states = [
 			["*", Color.black, Color.clear],
 			["*", Color.red, Color.gray(0.1)],
@@ -88,17 +88,63 @@ ServerGui : ObjectGui {
 			};
 		};
 		recorder.enabled = false;
-
+		
 		if(model.serverRunning,running,stopped);
+		updater = IdentityDictionary[
+					\serverRunning -> { if(model.serverRunning,running,stopped) },
+					\counts -> { status.label = 
+					model.avgCPU.round(0.1).asString ++ "/" ++ model.peakCPU.round(0.1) ++ "%      "
+					+ model.numUGens ++ "u"
+					+ model.numSynths ++ "s";},
+					\cmdPeriod -> {
+						recorder.setProperty(\value,0);
+					}];
 	}
 	update { arg changer,what;
-		if(what == \serverRunning,{
-			if(model.serverRunning,running,stopped)
-		},{
-			status.label = 
-				model.avgCPU.round(0.1).asString ++ "/" ++ model.peakCPU.round(0.1) ++ "%      "
-				+ model.numUGens ++ "u"
-				+ model.numSynths ++ "s";
-		})
+		updater[what].value;
 	}
 }
+
+ServerErrorGui : ObjectGui {
+	
+	var failer,errors;
+	
+	writeName {}
+	guiBody { arg layout;
+		errors = CXLabel(layout,"                                          ");
+		errors.font = Font("Helvetica-Bold",12);
+		errors.background = Color.grey(0.4,0.8);
+		errors.stringColor = Color.white;
+		errors.align = \left;
+		// Document.listener.front;
+		
+		failer = OSCresponderNode(model.addr, '/fail', { arg time, responder, msg;
+			{
+				var mins,secs;
+				mins = (time/60).round(1);
+				secs = (time%60).round(0.1);
+				if(secs<10,{ secs = "0"++secs.asString; },{ secs=secs.asString;});
+				errors.label = msg[1].asString + msg[2].asString + "("++(mins.asString++":"++secs)++")";
+				//errors.stringColor = Color.white;
+			}.defer
+		});
+		failer.add;
+		if(thisThread.exceptionHandler.notNil,{
+			"There is already an exception handler installed".inform;
+		},{
+			thisThread.exceptionHandler = { |error|
+				if(Error.handling,{ error.dump; this.halt; });
+				Error.handling = true;
+				{ errors.label = error.errorString; nil }.defer;
+				nil.handleError(error);
+			}
+		})
+	}
+	remove {
+		failer.remove;
+		thisThread.exceptionHandler = nil;
+		super.remove;
+	}
+}
+
+

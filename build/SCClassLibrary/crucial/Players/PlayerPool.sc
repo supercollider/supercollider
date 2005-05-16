@@ -50,7 +50,7 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 
 	prepareChildrenToBundle { arg bundle;
 		list.do({ arg child;
-			child.prepareToBundle(socketGroup,bundle,true,sharedBus);
+			child.prepareToBundle(socketGroup,bundle,true,sharedBus,true);
 		});
 	}
 	spawnToBundle { arg bundle;

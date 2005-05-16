@@ -12,7 +12,7 @@ AbstractSinglePlayerEffect : HasSubject {
 		patchOut.bus = sharedBus;
 	}
 	prepareChildrenToBundle { arg bundle;
-		subject.prepareToBundle(this.group,bundle, true,sharedBus);
+		subject.prepareToBundle(this.group,bundle, true,sharedBus,true);
 	}		
 	preparePlayer { arg player,bus;
 		^player.prepareForPlay(this.group,true,sharedBus);
