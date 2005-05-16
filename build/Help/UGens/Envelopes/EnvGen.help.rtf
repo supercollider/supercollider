@@ -10,14 +10,12 @@
 \f0\b\fs26 envelope generator
 \f1\b0\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 superclass: UGen\
+\f0\b\fs24 superclass: UGen\
 \
 	*ar(envelope, gate, levelScale, levelBias, timeScale, doneAction)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 \
+\f2\b0 \
 	Plays back break point envelopes. The envelopes are instances of the Env class. \
 	See the 
 \f0\b Env
@@ -135,6 +133,7 @@ levelScale, levelBias, and timeScale hold their value for the duration of the en
 		\cf2 var\cf0  env, envctl;\
 		\
 		\cf3 // make a dummy 8 segment envelope\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 		env = \cf2 Env.\cf0 newClear(\cf2 8\cf0 );\
 		\
 		\cf3 // create a control argument array\
@@ -161,14 +160,17 @@ levelScale, levelBias, and timeScale hold their value for the duration of the en
 	s.sendBundle(\cf2 nil\cf0 ,[\cf5 \\s_new\cf0 , \cf5 \\env\cf0 , 1003, 2, 1001],[\cf5 \\n_setn\cf0 , 1003, \cf5 \\env\cf0 , f.size] ++ f);\
 	\
 	s.sendMsg(\cf5 \\n_free\cf0 , 1001);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \
+\f2\fs24 \cf0 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 	\
+\f1\fs18 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \
+\f2\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 Forced release of the EnvGen\
@@ -208,6 +210,7 @@ levelScale, levelBias, and timeScale hold their value for the duration of the en
 	
 \f1\fs18 (\
 		\cf2 \{\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf2 		EnvGen\cf0 .kr(\
 					Env.new([ 0.001, 1, 0.5, 0 ], [ 0.01, 0.3, 1 ], -4, 2, nil),\
 					Impulse.kr(10)\
@@ -224,11 +227,41 @@ levelScale, levelBias, and timeScale hold their value for the duration of the en
 				) * \cf2 SinOsc\cf0 .ar(440,0,0.3)\
 		\}.play;\
 	)\
-	\
-	\
-
-\f2\fs24 \
 \
+\
+
+\f0\b\fs24 \cf0 Modulating the levelScale\
+
+\f1\b0\fs18 \cf0 \
+
+\f2\fs24 \cf0 no,it doesn't take a ugen in\
+
+\f1\fs18 \cf0 (\
+	\cf2 \{ \
+		EnvGen\cf0 .kr(\
+				\cf2 Env\cf0 .asr( 0.1, 1.0, 0.5, \cf5 \\welch\cf0  ),\
+				1.0,\
+				FSinOsc.ar(1.0).range(0.0,1.0),\
+				timeScale: 0.1\
+			) * \cf2 SinOsc\cf0 .ar(440,0,0.3)\
+	\}.play;\
+\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 an .ir rate input, a float or an ir rate ugen like Rand would work\
+(
+\f1\fs18 \
+	\cf2 \{ \
+		EnvGen\cf0 .kr(\
+				\cf2 Env\cf0 .asr( 0.1, 1.0, 0.5, \cf5 \\welch\cf0  ),\
+				1.0,\
+				Rand(0.1,1.0),\
+				timeScale: 0.1\
+			) * \cf2 SinOsc\cf0 .ar(440,0,0.3)\
+	\}.play;
+\f2\fs24 \
+)\
 \
 \
 }
