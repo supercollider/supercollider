@@ -2,25 +2,29 @@
 
 KeyCodeResponder {
 
-	classvar global;
-	
-	const <normalModifier       = 0;
-	const <capsModifier         = 0x00010000;
-	const <shiftModifier        = 0x00020000;
-	const <controlModifier      = 0x00040000;
-	const <optionModifier       = 0x00080000;
-	const <functionKeyModifier  = 0x00800000;
+       classvar global;
+ 
+/*  I'll switch to this when I update my own personal sclang, thanks.
+
+       const <normalModifier       = 0;
+       const <capsModifier         = 0x00010000;
+       const <shiftModifier        = 0x00020000;
+       const <controlModifier      = 0x00040000;
+       const <optionModifier       = 0x00080000;
+       const <functionKeyModifier  = 0x00800000; */
+
+ 	classvar <>normalModifier=0,<>shiftModifier=131074,<>controlModifier=262145,
+               <>optionModifier=524320,<>functionKeyModifier=8388608,<>capsModifier=65536;
 	
 	var <>dict;
 	
-	*new { ^super.new.clear }
+	// keycode -> { }, keycode -> { }, ...
 	
 	normal { arg ... asses; 
 		asses.do({ arg as;
 			this.register(as.key,false,false,false,false,as.value)
 		})
 	}
-	
 	shift { arg ... asses; 
 		asses.do({ arg as;
 			this.register(as.key,true,false,false,false,as.value)
@@ -37,14 +41,7 @@ KeyCodeResponder {
 		})
 	}
 	
-	*register { arg keycode,shift,caps,opt,cntl,function;
-		this.global.register(keycode,shift,caps,opt,cntl,function);
-	}
-	*registerAll { arg ... sets;
-		sets.do({ arg set;
-			this.performList(\register,set)
-		})
-	}
+	// true, false or nil
 	register { arg keycode,shift,caps,opt,cntl,function;
 		var require=0,deny=0;
 		require = [];
@@ -80,6 +77,57 @@ KeyCodeResponder {
 		this.pushForKeycode(keycode,require,deny,function);
 	}	
 
+	// true, false or nil
+	*register { arg keycode,shift,caps,opt,cntl,function;
+		this.global.register(keycode,shift,caps,opt,cntl,function);
+	}
+	// [ keycode,shift,caps,opt,cntl,function],[ keycode,shift,caps,opt,cntl,function], ...
+	*registerAll { arg ... sets;
+		sets.do({ arg set;
+			this.performList(\register,set)
+		})
+	}
+
+	clear { dict = IdentityDictionary.new }
+	*clear { this.global.clear }
+	// remove me when you close your window !
+	remove { this.clear }
+	*remove { SCView.globalKeyDownAction = nil; }
+	*resetKeycode { arg keycode;
+		this.at(keycode).reset
+	}
+	
+	*tester {
+		this.clear;
+		Sheet({ arg l;
+			ActionButton.new(l,
+			"while focused on this button, press keys and modifiers to post a code template").focus
+				.keyDownAction_({ arg v,c,m,u,k;
+					//("view:"+v+" char:"+c+" mod:"+m+" unicode:"+u+" keycode:"+k).postln;
+					("KeyCodeResponder.registerKeycode(" + m + "," + k + ",{      });// " + c ).postln;
+				});
+		})
+	}
+	// concatenate responders
+	++ { arg that;
+		var new,keys;
+		if(that.isNil,{ ^this });
+		if(that.class !== this.class,{ 
+			this.die("Can't concatenate KeyCode and Unicode responder classes:", this.class, that.class) 
+		});
+
+		// that overides this
+		new = KeyCodeResponder.new;
+		new.dict = dict.copy;
+		that.dict.keysValuesDo({ arg keycode,kdrstack;
+			new.put(keycode, kdrstack ++ this.at(keycode))
+		});
+		^new
+	}
+	
+	*new { ^super.new.clear }
+
+	/** PRIVATE **/
 	*registerKeycode { arg modifier,keycode,function;
 		this.global.registerKeycode(modifier,keycode, function)
 	}
@@ -103,45 +151,8 @@ KeyCodeResponder {
 		})
 	}
 	
-	clear { dict = IdentityDictionary.new }
-	*clear { this.global.clear }
-	remove { this.clear }
-	*remove { SCView.globalKeyDownAction = nil; }
-	*resetKeycode { arg keycode;
-		this.at(keycode).reset
-	}
-	
-	*tester {
-		this.clear;
-		Sheet({ arg l;
-			ActionButton.new(l,
-			"while focused on this button, press keys and modifiers to post a code template").focus
-				.keyDownAction_({ arg v,c,m,u,k;
-					//("view:"+v+" char:"+c+" mod:"+m+" unicode:"+u+" keycode:"+k).postln;
-					("KeyCodeResponder.registerKeycode(" + m + "," + k + ",{      });// " + c ).postln;
-				});
-		})
-	}
 
-	++ { arg that;
-		var new,keys;
-		if(that.isNil,{ ^this });
-		if(that.class !== this.class,{ 
-			die("Can't concatenate KeyCode/Unicode responder classes:", this.class, that.class) 
-		});
 
-		// that overides this
-		new = KeyCodeResponder.new;
-		new.dict = dict.copy;
-		that.dict.keysValuesDo({ arg keycode,kdrstack;
-			new.put(keycode, kdrstack ++ this.at(keycode))
-		});
-		^new
-	}
-	
-	
-	/** PRIVATE **/
-	
 	/** the actual responder **/
 	value { arg view,char,modifier,unicode,keycode;
 		^this.at(keycode).value(char,modifier,unicode,keycode)
@@ -263,33 +274,3 @@ KDRMaskTester : SimpleKDRUnit {
 		}
 	}
 }
-
-
-// this bit of cleverness now mysteriously fails to work
-// KDRUnit : SimpleKDRUnit {
-//	
-//	var <>denyMask;
-//
-//	*new { arg requireMask,denyMask,function;
-//		^super.new(requireMask,function).denyMask_(denyMask)
-//	}
-//	value { arg char,modifier,unicode,keycode;
-//		// no longer works :(
-//		
-//		//["char",char,"m",modifier,"u",unicode,keycode,"rmask",requireMask,"test",(modifier & requireMask) == requireMask, "dmask",denyMask,"dmask test", (denyMask & modifier) == 0].debug;
-//	
-//		if((modifier & requireMask) == requireMask // all required bits set
-//			and: 
-//		{  (denyMask & modifier) == 0 } // no denied bits present
-//		,{
-//			function.value(char,modifier,unicode,keycode)
-//		})
-//	}
-//	== { arg aResponder;
-//		^(this.class === aResponder.class) and: {
-//			(aResponder.requireMask == requireMask and: {
-//				aResponder.denyMask == denyMask
-//			})
-//		}
-//	}
-//}
