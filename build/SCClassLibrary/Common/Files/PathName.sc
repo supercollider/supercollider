@@ -55,7 +55,16 @@ PathName { 	// AdC, cx
 		});
 		^fileName
 	}
-
+	extension {
+		var fileName;
+		fileName = this.fileName;
+		fileName.reverseDo({ arg char,i;
+			if(char == $.,{
+				^fileName.copyRange(fileName.size - i,fileName.size - 1)
+			})
+		});
+		^""	
+	}
 	pathOnly { 		
 		^fullPath.copyRange(0, this.lastColonIndex);
 	}
