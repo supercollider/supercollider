@@ -88,7 +88,7 @@ DoesNotUnderstandError : MethodError {
 		"RECEIVER:\n".post;
 		receiver.dump;
 		"ARGS:\n".post;
-		args.dump;
+		args.dumpAll;
 		this.dumpBackTrace;
 	}
 }
