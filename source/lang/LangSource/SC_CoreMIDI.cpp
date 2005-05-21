@@ -502,21 +502,7 @@ int prRestartMIDI(VMGlobals *g, int numArgsPushed)
 void freeSysex(MIDISysexSendRequest* pk);
 void freeSysex(MIDISysexSendRequest* pk)
 {
-    free((void*)pk->data);
     free(pk);
-}
-
-void sendsysex(MIDIEndpointRef dest, int size, Byte* data);
-void sendsysex(MIDIEndpointRef dest, int size, Byte* data)
-{
-    MIDISysexSendRequest *pk = (MIDISysexSendRequest*) malloc (sizeof(MIDISysexSendRequest));
-    pk -> destination = dest;
-    pk -> data = data;
-    pk -> bytesToSend = size;
-    pk->completionProc = freeSysex;
-    pk->completionRefCon = nil;
-    
-   	MIDISendSysex(pk);
 }
 
 
@@ -526,9 +512,6 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
     int err, uid, size;
     PyrInt8Array* packet = g->sp->uob;				
     size = packet->size;
-    Byte *data = (Byte *)malloc(size);
-
-    memcpy(data,packet->b, size);
 
     PyrSlot *u = g->sp - 1;
     err = slotIntVal(u, &uid);
@@ -540,7 +523,17 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
     if (mtype != kMIDIObjectType_Destination) return errFailed;            
     if (!dest) return errFailed;
     
-    sendsysex(dest, size, data);
+    MIDISysexSendRequest *pk = (MIDISysexSendRequest*) malloc (sizeof(MIDISysexSendRequest) + size);
+    Byte *data = (Byte *)pk + sizeof(MIDISysexSendRequest);
+
+    memcpy(data,packet->b, size);
+    pk -> destination = dest;
+    pk -> data = data;
+    pk -> bytesToSend = size;
+    pk->completionProc = freeSysex;
+    pk->completionRefCon = 0;
+   	MIDISendSysex(pk);
+	
     return errNone;
 }
 
