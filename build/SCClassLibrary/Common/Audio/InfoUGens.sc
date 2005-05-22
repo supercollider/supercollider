@@ -21,6 +21,7 @@ SampleRate : InfoUGenBase {}
 SampleDur : InfoUGenBase {}
 RadiansPerSample : InfoUGenBase {}
 ControlRate : InfoUGenBase {}
+SubsampleOffset : InfoUGenBase {}
 
 NumOutputBuses : InfoUGenBase {}
 NumInputBuses : InfoUGenBase {}
