@@ -283,6 +283,7 @@ World* World_New(WorldOptions *inOptions)
 		world->mBufCounter = 0;
 		world->mBufLength = inOptions->mBufLength;
 		world->mSampleOffset = 0;
+		world->mSubsampleOffset = 0.f;
 		world->mNumAudioBusChannels = inOptions->mNumAudioBusChannels;
 		world->mNumControlBusChannels = inOptions->mNumControlBusChannels;
 		world->mNumInputs = inOptions->mNumInputBusChannels;

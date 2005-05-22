@@ -178,6 +178,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	}
 	
 	graph->mSampleOffset = inWorld->mSampleOffset;
+	graph->mSubsampleOffset = inWorld->mSubsampleOffset;
 	graph->mRGen = inWorld->mRGen; // defaults to rgen zero.
 	
 	graph->mLocalAudioBusUnit = NULL;

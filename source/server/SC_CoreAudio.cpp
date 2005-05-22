@@ -993,16 +993,21 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 				double diff = (mScheduler.NextTime() - mOSCbuftime)*kOSCtoSecs; 
 				scprintf("rdy %.9f %.9f %.9f\n", (mScheduler.NextTime()-gStartupOSCTime) * kOSCtoSecs, (mOSCbuftime-gStartupOSCTime)*kOSCtoSecs, diff);
 			}*/
-			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
 			
-				world->mSampleOffset = (int)floor((double)(schedTime - oscTime) * oscToSamples + 0.5);
+			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
+				float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
+				float diffTimeFloor = floor(diffTime);
+				world->mSampleOffset = (int)diffTimeFloor;
+				world->mSubsampleOffset = diffTime - diffTimeFloor;
+				
 				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
 				else if (world->mSampleOffset >= world->mBufLength) world->mSampleOffset = world->mBufLength-1;
-
+				
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
 			}
 			world->mSampleOffset = 0;
+			world->mSubsampleOffset = 0.f;
 			
 			World_Run(world);
 	
