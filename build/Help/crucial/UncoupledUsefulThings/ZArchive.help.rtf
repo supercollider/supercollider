@@ -7,27 +7,73 @@
 \f0\b\fs36 \cf0 ZArchive
 \f1\b0\fs24 \
 \
-A safe binary archive format.  Supports large file sizes.\
+superclass: File\
+\
+A safe binary archive format.   Supports large file sizes.\
 \
 Compresses strings and symbols using a string lookup table.\
  (limit: 65536 different strings/symbols maximum)\
 \
 Compresses repeated values\
+\cf0  (limit: 4294967296 consecutive repeated items)\
+\cf0 \
+The text archive written by Object.writeArchive will store an object and\
+restore all of its internal variables.  However, it will break with large file sizes\
+because it actually writes compilable code and there is a limit to that.\
+\
+The binary archives written by Object.writeBinaryArchive will break if the\
+instance variables change in any of the classes you have archived.\
+\
+This class is designed for raw data storage that you manually and explictly control.\
 \
 You manually write to the archive and then should read from the archive in the same\
-order you wrote in.  You can write a Dictionary and then not worry about order.\
+order you wrote in.  You could also write a Dictionary and then not worry about order.\
+This would also let you add or remove fields later without breaking the archives.\
 \
-writeItem -\
+
+\f0\b *write(path)
+\f1\b0 \
+ 	open an archive for writing\
+	 \
+
+\f0\b \cf0 writeItem(item)
+\f1\b0 \cf0  -\
 	this will write a character specifying the class type of the object and then will write the object\
 	in the smallest possible format.  \
-	\
- \
+	Floats, Integers, Strings, Symbols, SequenceableCollections and Dictionaries all have \
+	support to write to the archive.  eg. a Float writes a float to the file.\
+	Strings and Symbols write using a string table, so your 10000 Events with \\degree in them will only\
+	need to save the word "degree" once.\
+	All other objects will be saved asCompileString.\
 \
+
+\f0\b writeClose
+\f1\b0 \
+	finish the write session and close the file.\
+	\
+
+\f0\b *read(path)
+\f1\b0 \
+	open an archive for reading\
+	\
+
+\f0\b \cf0  readItem(expectedClass) -\
+
+\f1\b0 \cf0  	read an item from the file.  If expectedClass is non-nil, it will throw an error if the item is of \
+	 a different class.\
+\
+
+\f0\b \cf0 <>version -\
+
+\f1\b0 \cf0 	you may set the version number so that your various objects can check the version of the archive.\
+	you need to store and retrieve the version number yourself, the ZArchive won't do it automatically.\
+	Its just a convienient variable.\
+	\
 \
 (
 \f2\fs18 \
 \
-a = CXArchive.write("archiveTest");\
+a = ZArchive.write("archiveTest");\
 \
 a.writeItem(1.0.rand);\
 a.writeItem([1,2,3,4,5].choose);\
@@ -65,7 +111,7 @@ a.writeClose;\
 \
 (
 \f2\fs18 \
-b =  CXArchive.read("archiveTest");\
+b =  ZArchive.read("archiveTest");\
 b.readItem.postln;\
 b.readItem.postln;\
 b.readItem.postln;\
@@ -86,7 +132,7 @@ b.close;\
 (
 \f2\fs18 \
 \
-a = CXArchive.write("archiveTest");\
+a = ZArchive.write("archiveTest");\
 \
 a.writeItem(5);\
 a.writeItem( [ Event[ \
@@ -291,7 +337,7 @@ a.writeClose;\
 \f1\fs24 )\
 (
 \f2\fs18 \
-b =  CXArchive.read("archiveTest");\
+b =  ZArchive.read("archiveTest");\
 b.readItem.postln;\
 b.readItem.postln;\
 \
@@ -308,7 +354,7 @@ b.close;\
 
 \f1\b0 (
 \f2\fs18 \
-a = CXArchive.write("archiveTest");\
+a = ZArchive.write("archiveTest");\
 \
 a.writeItem( [ \
 	1,1,1,1,1,1,1,1,1,1,\
@@ -360,13 +406,11 @@ a.writeClose;\
 this is about 42 bytes.\
 \
 Identical objects get reconstituted as equal but independant objects.\
-The purpose of the archiver is not to replicate object trees.  Use the text archiver for that.\
-This is for large data sets.\
  \
 \
 (
 \f2\fs18 \
-b = CXArchive.read("archiveTest");\
+b = ZArchive.read("archiveTest");\
 b.readItem.postln;\
 b.close;\
 
@@ -376,7 +420,7 @@ b.close;\
 (
 \f2\fs18 \
 \
-a = CXArchive.write("archiveTest");\
+a = ZArchive.write("archiveTest");\
 \
 a.writeItem(nil);\
 a.writeItem("word");\
@@ -388,7 +432,7 @@ a.writeClose;\
 \
 (
 \f2\fs18 \
-b =  CXArchive.read("archiveTest");\
+b =  ZArchive.read("archiveTest");\
 b.readItem.postln;\
 b.readItem.postln;\
 // one more\
@@ -402,12 +446,12 @@ b.close;\
 \
 \
 
-\f0\b asCXArchive
+\f0\b asZArchive
 \f1\b0 \
 relative to your Document directory\
 (
 \f2\fs18 \
-a = "archiveTest".asCXArchive;\
+a = "archiveTest".asZArchive;\
 \
 \
 a.writeItem(1.0.rand);\
@@ -450,22 +494,22 @@ a.writeClose;\
 \f1\b0 \
 SomeClass \{\
 \
-	writeCXArchive \{ arg akv;\
+	writeZArchive \{ arg akv;\
 		// turn a path into an archive if needed\
-		akv = akv.asCXArchive;\
+		akv = akv.asZArchive;\
 		\
 		akv.writeItem(columns.size);\
 		// we know the column objects have their own support\
-		columns.do(\{|c| c.writeCXArchive(akv) \});\
+		columns.do(\{|c| c.writeZArchive(akv) \});\
 		\
 		akv.writeItem(name);\
 		akv.writeItem(beats);\
 		akv.writeItem(beatsPerBar);\
 	\}\
-	readCXArchive \{ arg akv;\
+	readZArchive \{ arg akv;\
 		columns = Array.fill( akv.readItem(Integer) ,\{ arg i;\
 			// call the custom column object read\
-			  Tracker.readCXArchive(akv) \
+			  Tracker.readZArchive(akv) \
 		\});\
 \
 		name = akv.readItem; // could be an Integer or a String !\
