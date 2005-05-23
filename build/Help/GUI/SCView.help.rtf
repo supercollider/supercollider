@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fnil\fcharset77 LucidaGrande;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red191\green0\blue0;}
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SCView
@@ -22,8 +22,9 @@ SCView is the abstract superclass for all SC GUI widgets. Currently this system 
 
 \f0\b\fs24 \cf0 resize_(int)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 This setting controls how the widget will behave when it's window or enclosing view is resized. This is illustrated graphically below:
+\f2\b0 \cf0 This setting controls how the widget will behave when it's window or enclosing view is resized. This is illustrated graphically below:
 \f0\b\fs28 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -47,11 +48,13 @@ SCView is the abstract superclass for all SC GUI widgets. Currently this system 
 		9 - fixed to right, fixed to bottom
 \f1\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 resize\
+\f0\b\fs24 \cf0 resize\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 Return an Integer corresponding to the current resize behaviour (see above).\
+\f2\b0 \cf0 Return an Integer corresponding to the current resize behaviour (see above).\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -67,6 +70,7 @@ Register a
 
 \f1\fs18 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // select the slider, type something and watch the post window\cf0 \
 	w = \cf3 SCWindow\cf0 .new;\
 	c = \cf3 SCSlider\cf0 (w,\cf3 Rect\cf0 (0,0,100,30));\
@@ -170,25 +174,30 @@ For various reasons these don't make it through cocoa:\
 
 \f0\b\fs24 \cf0 keyDownAction\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 Return the current keyDownAction function for this view if there is one, otherwise return nil.
+\f2\b0 \cf0 Return the current keyDownAction function for this view if there is one, otherwise return nil.
 \f1\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 *globalKeyDownAction_(func)
+\f0\b\fs24 \cf0 *globalKeyDownAction_(func)
 \fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs24 \
+\f2\b0\fs24 \cf0 \
 A function that is evaluated for every keyDown event on every SCView. See 
 \f0\b keyDownAction_
 \f2\b0  for details.
 \f1\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 focus\
+\f0\b\fs24 \cf0 focus\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 Brings this view into focus.\
+\f2\b0 \cf0 Brings this view into focus.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -207,8 +216,9 @@ A function that is evaluated for every keyDown event on every SCView. See
 
 \f0\b\fs24 \cf0 refresh\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 Under certain circumstances a view will not automatically update its appearance. This forces a redraw.\
+\f2\b0 \cf0 Under certain circumstances a view will not automatically update its appearance. This forces a redraw.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -221,19 +231,20 @@ A function that is evaluated for every keyDown event on every SCView. See
 	w.front;\
 )\
 \
-	\cf5 // won't display change...\
+	\cf2 // won't display change...\
 \cf0 	c.states = [[\cf4 "b"\cf0 ,\cf3 Color\cf0 .red,\cf3 Color\cf0 .black]];\
 	d.states = [[\cf4 "b"\cf0 ,\cf3 Color\cf0 .red,\cf3 Color\cf0 .black]];\
 	\
-	\cf5 //until\
+	\cf2 //until\
 \cf0 	c.refresh;\
 	\
-	\cf5 //needs separate refresh\
+	\cf2 //needs separate refresh\
 \cf0 	d.refresh;\
 	\
-	\cf5 // in some cases might be better to refresh the whole window\
-\cf0 	\cf5 // which does refresh on all damaged areas (it keeps track, doesn't redraw whole thing)\
+	\cf2 // in some cases might be better to refresh the whole window\
+\cf0 	\cf2 // which does refresh on all damaged areas (it keeps track, doesn't redraw whole thing)\
 \cf0 	\
 	c.states = [[\cf4 "a"\cf0 ,\cf3 Color\cf0 .black,\cf3 Color\cf0 .red]];\
 	w.refresh;\
-	w.close;}
+	w.close;\
+}

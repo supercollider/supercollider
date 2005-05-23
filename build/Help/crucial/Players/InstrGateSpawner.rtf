@@ -144,7 +144,7 @@ a chord progression using the current beat: igs.beat\
 		// rq input is a mono kr rate patch\
 		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(\cf2 FSinOsc\cf0 .kr(0.05).range(0.01,1.0),0.0).range(0.01,0.4) \}),\
 		\cf3 //
-\f0\fs24 note that the patch has expanded to stereo because the width input is a stereo kr rate Patch :
+\f0\fs24 \cf3 note that the patch has expanded to stereo because the width input is a stereo kr rate Patch :
 \f2\fs18 \cf0 \
 		\cf2 Patch\cf0 (\{ \
 			\cf2 LFTri\cf0 .kr(\cf2 FSinOsc\cf0 .kr(0.05).range(0.01,1.0),[0.0,0.5],0.5,0.5) \
@@ -167,7 +167,8 @@ a chord progression using the current beat: igs.beat\
 anything that returns a rate of \\stream (a Pattern or Function) will cause an .ir rate input to be created for the synth.\
 \
 \
-// select a new sample while playing\
+// if you click on the sample's filename, you can select a new sample while playing\
+// and it will load it.\
 // note that the old tempo settings persist until the end of the bar\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -237,13 +238,11 @@ waveform display some day...)\
 There is also a problem (currently) on the server whereby it can't accept the OSC commands\
 while it is dealing with loading the sample.  You can use 
 \f2\fs18 ScurryableInstrGateSpawner-scurry,\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf0 a subclass of InstrGateSpawner that can scurry ahead of time, sending OSC bundles\
+\f0\fs24 a subclass of InstrGateSpawner that can scurry ahead of time, sending OSC bundles\
 to keep the server's synthesis thread occupied while the thread that does the soundfile\
 loading is busy.  This issue will probably be resolved on the server.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 See [
 \f1\b Interface]
 \f0\b0  so you can design guis with no sample display or interfaces with no gui at all.\
@@ -258,7 +257,36 @@ to use a slider:\
 or make your own gui and poll the slider:\
 	Pfunc(\{ slider.value \})\
 \
+
+\f1\b \cf0 A metrognome
+\f0\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  nome,layout;\
+nome = \cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  freq,amp;\
+		\cf2 Decay2\cf0 .ar(\
+			\cf2 Impulse.ar(0.0)\cf0 , 0.01,0.11, \
+			\cf2 SinOsc\cf0 .ar( freq, 0, amp )\
+		) * EnvGen.kr(Env.perc,doneAction: 2)\
+	\},[\
+			\cf2 Pseq\cf0 ([ 750, 500, 300, 500, 750, 500, 400, 500, 750, 500, 400, 500, 750, 500, 400, 500 ],\cf2 inf\cf0 ), \
+			\cf2 Pseq\cf0 ([1,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25] * 0.1,\cf2 inf\cf0 )\
+	],1.0);\
 	\
+layout = \cf2 FlowView\cf0 .new;\
+\
+\cf2 ToggleButton\cf0 (layout,\cf4 "Nome"\cf0 ,\{\
+	if(nome.isPlaying.not,\{ nome.play(atTime: 1) \})\
+\},\{\
+	if(nome.isPlaying,\{ nome.stop \})\
+\},maxx: 250);\
+\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 	\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -274,16 +302,18 @@ so InstrGateSpawner has much more simple/efficient event handling, \
 	streamed items are placed directly into the OSC message to be sent\
 	only using the features that are needed for the ugenFunc\
 		no lag, offsetChannel etc.\
-		\
-allows easy patching of players\
+	But as computers and SC get faster, this speed advantage is less significant.\
+	\
+allows easy patching of players into the inputs\
 allows easy patching of Samples and allocates them seamlessly.\
 beat is passed into each stream item\
-	this solves a common 'sync' problem with event stream's note-by-note streaming\
-the usual flexibility of players with regards to patching, saving\
+	this solves a common 'sync' problem with event stream's note-by-note streaming.\
+	but you could use the same solution in a Pfunc and just query the clock to find out the current beat.\
+the usual flexibility of players with regards to saving\
 \
 cons:\
 	can't do Pseq([ Pbind, Pbind ] ) etc.\
-		isn't a pattern, doesn't end with a nil, so you can't sequence sections with it.\
+		it isn't a pattern, doesn't end with a nil, so you can't sequence sections with it.\
 		but it is possible to use CropPlayer and Pseq or PlayerSeqTrack.\
 	can't use pattern filters\
 	can't switch ugenFuncs dynamically\
