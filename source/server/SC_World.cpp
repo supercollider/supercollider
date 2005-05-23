@@ -569,9 +569,14 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 			int64 nextTime = oscTime + oscInc;
 			                        
 			while (schedTime <= nextTime) {
-				world->mSampleOffset = (int)floor((double)(schedTime - oscTime) * oscToSamples + 0.5);
+				float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
+				float diffTimeFloor = floor(diffTime);
+				world->mSampleOffset = (int)diffTimeFloor;
+				world->mSubsampleOffset = diffTime - diffTimeFloor;
+				
 				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
 				else if (world->mSampleOffset >= bufLength) world->mSampleOffset = bufLength-1;
+				
 	
 				PerformOSCBundle(world, &packet);
 				if (nextOSCPacket(cmdFile, &packet, schedTime)) { run = false; break; }

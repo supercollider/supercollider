@@ -1817,11 +1817,14 @@ void SC_JackDriver::Run()
 			int64 nextTime = oscTime + oscInc;
 			
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
-				world->mSampleOffset = (int)floor((double)(schedTime - oscTime) * oscToSamples + 0.5);
-				if (world->mSampleOffset < 0)
-					world->mSampleOffset = 0;
-				else if (world->mSampleOffset >= world->mBufLength)
-					world->mSampleOffset = world->mBufLength - 1;
+				float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
+				float diffTimeFloor = floor(diffTime);
+				world->mSampleOffset = (int)diffTimeFloor;
+				world->mSubsampleOffset = diffTime - diffTimeFloor;
+				
+				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
+				else if (world->mSampleOffset >= world->mBufLength) world->mSampleOffset = world->mBufLength-1;
+				
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
 			}
