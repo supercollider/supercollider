@@ -16,9 +16,7 @@ Plazy : Pattern {
 PlazyEnvir : Plazy {
 	
 	embedInStream { arg inval;
-		^if(inval.isNil) { func.value } {
-			inval.use {  func.valueEnvir }
-		}.embedInStream(inval)
+		^func.valueWithEnvir(inval).embedInStream(inval)
 	}
 }
 
