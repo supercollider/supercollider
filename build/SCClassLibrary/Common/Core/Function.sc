@@ -46,6 +46,19 @@ Function : AbstractFunction {
 	functionPerformList { arg selector, arglist;
 		_ObjectPerformList; 
 		^this.primitiveFailed 
+	}
+		
+	valueWithEnvir { arg envir;
+		var prototypeFrame;
+		if(envir.isNil) { ^this.value };
+		prototypeFrame = def.prototypeFrame.copy;
+		def.argNames.do { |name,i| 
+			var val = envir[name];
+			val !? { prototypeFrame[i] = val };
+		};
+		// evaluate a function, using arguments from the supplied environment
+		// slightly faster than valueEnvir and does not replace the currentEnvironment
+		^this.valueArray(prototypeFrame)
 	}	
 	
 	loop {
