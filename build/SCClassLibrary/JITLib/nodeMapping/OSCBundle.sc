@@ -48,37 +48,46 @@ OSCBundle {
 	}
 	
 
-
 }
 
 MixedBundle : OSCBundle {
 	
-	var <functions; //functions to evaluate on send 
+	var <earlyFunctions; 	//functions to evaluate on send 
+	var <functions; 		// functions to evaluate when the bundle is scheduled on the server
 	
 	addFunction { arg func;
 		functions = functions.add(func);
 	}
-	
 	addSchedFunction { arg func, time=0.0;
-		functions = functions.add({ SystemClock.sched(time, { func.value; nil }) });
+		earlyFunctions = earlyFunctions.add({ SystemClock.sched(time, { func.value; nil }) });
 	}
-	
-	addMessage { arg receiver, selector, args;
+	addEarlyFunction { arg func;
+		earlyFunctions = earlyFunctions.add(func);
+	}
+	addMessage { arg receiver, selector, args; 
 		functions = functions.add( Message(receiver,selector,args) )
+	}
+	addEarlyMessage { arg receiver, selector, args;
+		earlyFunctions = functions.add( Message(receiver,selector,args) )
 	}
 	doFunctions {
 		functions.do({ arg item; item.value }); 
+	}
+	doEarlyFunctions {
+		earlyFunctions.do({ arg item; item.value }); 
 	}
 	
 	// private //
 	
 	prSend { arg server, latency;
-		this.doFunctions;
-		if(messages.notNil, {
+		this.doEarlyFunctions;
+		if(functions.notNil) {
+			SystemClock.sched(latency, { this.doFunctions });
+		};
+		if(messages.notNil) {
 			server.listSendBundle(latency, messages);
-		})
+		};
 	}
-		
 	
 }
 

@@ -26,12 +26,12 @@ AbstractPlayControl {
 
 	
 	playToBundle { arg bundle, args; 
-		bundle.addMessage(this, \play); //no latency (latency is in stream already)
+		bundle.addEarlyMessage(this, \play); //no latency (latency is in stream already)
 		^nil //return a nil object instead of a synth
 	}
 	
 	stopToBundle { arg bundle;
-		bundle.addMessage(this, \stop);
+		bundle.addEarlyMessage(this, \stop);
 	}
 	
 	freeToBundle {}
@@ -58,7 +58,7 @@ StreamControl : AbstractPlayControl {
 	
 	playToBundle { arg bundle;
 		// no latency (latency is in stream already)
-		if(paused.not) { bundle.addMessage(this, \play) } 
+		if(paused.not) { bundle.addEarlyMessage(this, \play) } 
 		^nil // return a nil object instead of a synth
 	}
 	
@@ -123,7 +123,7 @@ PatternControl : StreamControl {
 		var streams;
 		streams = array.copy;
 		array = nil;
-		bundle.addFunction({ this.stopStreams(streams) });
+		bundle.addEarlyFunction({ this.stopStreams(streams) });
 	}
 	
 	pause { array.do { arg item; item.pause }; paused=true }
@@ -136,8 +136,8 @@ PatternControl : StreamControl {
 		var event;
 		if(paused.not and: { stream.isPlaying.not })
 		{
-			//no latency (latency is in stream already)
-			bundle.addFunction({
+			// no latency (latency is in stream already)
+			bundle.addEarlyFunction({
 				var str;
 				str = source.buildForProxy(proxy, channelOffset);
 				if(args.notNil) { 
