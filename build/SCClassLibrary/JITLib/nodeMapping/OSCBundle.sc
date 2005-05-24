@@ -1,6 +1,7 @@
 
 OSCBundle {
-	var <messages, <preparationMessages; //messages to send first on schedSend
+	var <messages, <preparationMessages;
+	var <>safeSizes = false;
 	
 	add { arg msg; messages = messages.add(msg) }
 	addAll { arg mgs; messages = messages.addAll(mgs) }
@@ -13,24 +14,20 @@ OSCBundle {
 	
 	schedSend { arg server, clock, quant;
 			Routine.run {
-				if(preparationMessages.notNil) {
-					server.sync(Condition.new, preparationMessages);
-				};
-				if(clock.isNil, {
+				if(preparationMessages.notNil) { this.doPrepare(server) };
+				if(clock.isNil) {
 						this.prSend(server, server.latency) 
-				}, {
-						clock.schedAbs(quant.nextTimeOnGrid(clock), {
+				} {
+						clock.schedAbs(quant.nextTimeOnGrid(clock),  {
 							this.prSend(server, server.latency);  
 						});
-				});
+				};
 			};
 	}
 	
 	send { arg server, time;
 			Routine.run {
-				if(preparationMessages.notNil) {
-					server.sync(Condition.new, preparationMessages);
-				};
+				this.doPrepare(server);
 				this.prSend(server, time);
 			}
 	}
@@ -38,6 +35,33 @@ OSCBundle {
 	sendAtTime { arg server, atTime, timeOfRequest; // offset by preparation
 		atTime.schedCXBundle(this,server,timeOfRequest ?? { Main.elapsedTime});
 	}
+	
+	doPrepare { arg server;
+		var packetSize = 16, bundle;
+		if(safeSizes) {
+			bundle = [];
+			preparationMessages.do { |msg|
+				var msgSize;
+				msgSize = msg.msgSize; // this is not exactly true, as we'll pack it in a 
+									// bundle later.
+									// 8176 = 8192 - 16:
+				if(msgSize >= 8176) { "Preparation message too big to send via UDP".error };
+				if(packetSize + msgSize > 8192) { 
+					server.sync(Condition.new, bundle);
+					packetSize = 16;
+					bundle = [];
+				};
+				bundle = bundle.add(msg);
+				packetSize = packetSize + msgSize + 4;
+			};
+			if(packetSize > 0) { // send last one
+				server.sync(Condition.new, bundle);
+			}
+		} {
+			server.sync(Condition.new,preparationMessages)
+		}
+	}
+
 	
 	// private //
 	
