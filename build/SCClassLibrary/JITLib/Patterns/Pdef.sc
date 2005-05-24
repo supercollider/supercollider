@@ -1,11 +1,11 @@
 
-// contains numerical patterns
+// contains numerical / value patterns
 
 PatternProxy : Pattern {
-	var <pattern;
-	var <>clock, <>quant, <envir; 	
-						// quant new pattern insertion. can be [quant, offset]
-						// in EventPatternProxy it can be [quant, offset, onset]
+	var <pattern, <envir;
+	var <>clock, <>quant, <>condition=true;
+				// quant new pattern insertion. can be [quant, offset]
+				// in EventPatternProxy it can be [quant, offset, onset]
 	
 	classvar <>defaultQuant;
 	
@@ -27,7 +27,9 @@ PatternProxy : Pattern {
 	source_ { arg obj; 
 		var pat;
 		pat = if(obj.isKindOf(Function)) {
-			Proutine { arg inval; loop { inval = embedInStream(obj.valueEnvir) } };
+			// maybe this should not loop, and behave like Pdef.
+			// problem: inval could be anything, independence must be guaranteed
+			 Proutine { arg inval; loop { inval = embedInStream(obj.valueEnvir) } };
 		} { obj };
 		if(envir.notNil) { pat = Penvir(envir, pat, envir[\isolate] ? false) };
 		
@@ -55,24 +57,30 @@ PatternProxy : Pattern {
 	get { arg key;
 		^if(envir.notNil) { envir[key] } { nil };
 	}
-	
 		
 	embedInStream { arg inval;
-		var pat, stream, outval;
+		var pat, stream, outval, test, count=0;
 		pat = pattern;
-		
+		test = condition;
 		stream = pattern.asStream;
 		while {
-			if((pat !== pattern)) {
+			if((pat !== pattern) and: { test.value(outval, count) }) {
 						pat = pattern;
+						test = condition;
 						stream = this.constrainStream(stream);
+						count = 0;
 			};
 			outval = stream.next(inval);
+			count = count + 1;
 			outval.notNil
 		}{
 			inval = outval.yield;
 		}
 		^inval
+	}
+	
+	count { arg n=1;
+		condition = { |val,i| i % n == 0 }
 	}
 	
 	sched { arg func;
@@ -291,15 +299,16 @@ EventPatternProxy : TaskProxy {
 			};
 			
 			if(fadeTime.isNil) {
-				if(delta < 0.01) { 
+				/*if(delta < 0.01) { 
 					Routine({ arg inval;
 						Event.silent(delta).yield;
 						new.embedInStream(inval)
 					})
 				}{	
+				*/
 					Pseq([ Pfindur(delta, str, tolerance), new ])
 					
-				}
+				//	}
 			}{
 				
 				Ppar([
