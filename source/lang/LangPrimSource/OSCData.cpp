@@ -448,41 +448,6 @@ int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 	return netAddrSend(netAddrSlot->uo, packet.size(), (char*)packet.buf);
 }
 
-int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed);
-int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
-{	
-	PyrSlot* netAddrSlot;
-	PyrSlot* args;
-
-	netAddrSlot = g->sp - numArgsPushed + 1;
-	args = netAddrSlot + 1;
-	
-	scpacket packet;
-	
-	//double time;
-	//int err = slotDoubleVal(args, &time);
-	//if (!err) { SetFloat(args, time); }
-	
-	int numargs = numArgsPushed - 1;
-	makeSynthBundle(&packet, args, numargs, true);
-	SetInt(netAddrSlot, packet.size());
-	return errNone;
-}
-
-int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed);
-int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
-{	
-	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
-	PyrSlot* args = netAddrSlot + 1;
-	scpacket packet;
-	
-	int numargs = numArgsPushed - 1;
-	makeSynthMsgWithTags(&packet, args, numargs);
-	SetInt(netAddrSlot, packet.size());
-	return errNone;
-}
-
-
 
 int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed);
 int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
@@ -522,6 +487,40 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 	int32 msglen = array->size * gFormatElemSize[array->obj_format];
 	
 	return netAddrSend(netAddrObj, msglen, bufptr, false);
+}
+
+int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed);
+int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
+{	
+	PyrSlot* netAddrSlot;
+	PyrSlot* args;
+
+	netAddrSlot = g->sp - numArgsPushed + 1;
+	args = netAddrSlot + 1;
+	
+	scpacket packet;
+	
+	//double time;
+	//int err = slotDoubleVal(args, &time);
+	//if (!err) { SetFloat(args, time); }
+	
+	int numargs = numArgsPushed - 1;
+	makeSynthBundle(&packet, args, numargs, true);
+	SetInt(netAddrSlot, packet.size());
+	return errNone;
+}
+
+int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed);
+int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
+{	
+	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
+	PyrSlot* args = netAddrSlot + 1;
+	scpacket packet;
+	
+	int numargs = numArgsPushed - 1;
+	makeSynthMsgWithTags(&packet, args, numargs);
+	SetInt(netAddrSlot, packet.size());
+	return errNone;
 }
 
 
