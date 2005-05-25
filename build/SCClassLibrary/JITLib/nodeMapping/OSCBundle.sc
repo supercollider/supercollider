@@ -1,7 +1,7 @@
 
 OSCBundle {
 	var <messages, <preparationMessages;
-	var <>safeSizes = false;
+	classvar <>safeSizes = false;
 	
 	add { arg msg; messages = messages.add(msg) }
 	addAll { arg mgs; messages = messages.addAll(mgs) }
@@ -13,8 +13,7 @@ OSCBundle {
 	// eventstreams e.g. take into account the latency internally
 	
 	schedSend { arg server, clock, quant;
-			Routine.run {
-				if(preparationMessages.notNil) { this.doPrepare(server) };
+			this.doPrepare(server, {
 				if(clock.isNil) {
 						this.prSend(server, server.latency) 
 				} {
@@ -22,45 +21,46 @@ OSCBundle {
 							this.prSend(server, server.latency);  
 						});
 				};
-			};
+			});
 	}
 	
-	send { arg server, time;
-			Routine.run {
-				this.doPrepare(server);
-				this.prSend(server, time);
-			}
+	send { arg server, time; 
+		this.doPrepare(server, { this.prSend(server, time) }) 
 	}
 	
 	sendAtTime { arg server, atTime, timeOfRequest; // offset by preparation
 		atTime.schedCXBundle(this,server,timeOfRequest ?? { Main.elapsedTime});
 	}
 	
-	doPrepare { arg server;
-		var packetSize = 16, bundle;
-		if(safeSizes) {
-			bundle = [];
-			preparationMessages.do { |msg|
-				var msgSize;
-				msgSize = server.addr.msgSize(msg); 
-									// this is not exactly true, as we'll pack it in a 
-									// bundle later.
-									// 8172 = 8192 - 16 - 4:
-				if(msgSize >= 8172) { "Preparation message too big to send via UDP".error };
-				if(packetSize + msgSize > 8192) { 
-					server.sync(Condition.new, bundle);
-					packetSize = 16;
-					bundle = [];
+	doPrepare { arg server, onComplete;
+		if(preparationMessages.isNil) { ^onComplete.value };
+		Routine.run {
+			var packetSize = 16, bundle;
+			if(safeSizes) {
+				bundle = [];
+				preparationMessages.do { |msg|
+					var msgSize;
+					msgSize = NetAddr.msgSize(msg); 
+										// this is not exactly true, as we'll pack it in a 
+										// bundle later.
+										// 8172 = 8192 - 16 - 4:
+					if(msgSize >= 8172) { "Preparation message too big to send via UDP".error };
+					if(packetSize + msgSize > 8192) { 
+						server.sync(Condition.new, bundle);
+						packetSize = 16;
+						bundle = [];
+					};
+					bundle = bundle.add(msg);
+					packetSize = packetSize + msgSize + 4;
 				};
-				bundle = bundle.add(msg);
-				packetSize = packetSize + msgSize + 4;
+				if(packetSize > 0) { // send last one
+					server.sync(Condition.new, bundle);
+				}
+			} {
+				server.sync(Condition.new,preparationMessages)
 			};
-			if(packetSize > 0) { // send last one
-				server.sync(Condition.new, bundle);
-			}
-		} {
-			server.sync(Condition.new,preparationMessages)
-		}
+			onComplete.value;
+		};
 	}
 
 	
