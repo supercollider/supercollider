@@ -36,12 +36,12 @@ Gen : AbstractFunction
 	}
 	dropWhile { arg function;
 		var gen = this;
-		while { function.(gen) } { gen = gen.genNext ?? { ^nil } };
+		while { function.(gen.current) } { gen = gen.genNext ?? { ^nil } };
 		^gen
 	}
 	dropUntil { arg function;
 		var gen = this;
-		while { function.(gen).not } { gen = gen.genNext ?? { ^nil } };
+		while { function.(gen.current).not } { gen = gen.genNext ?? { ^nil } };
 		^gen
 	}
 	keep { arg n=1;
@@ -66,7 +66,8 @@ Gen : AbstractFunction
 		^this ++ Gen(item)
 	}
 
-	stutter { arg n; ^GStutter(n, this) }
+	stutter { arg n=2, phase=0; ^GStutter(this, n, phase) }
+	clump { arg n=2; ^GClump(this, n) }
 	
 	// function composition
 	composeUnaryOp { arg argSelector;
@@ -125,7 +126,7 @@ GSeries : Gen
 GGeom : Gen
 {
 	var <>grow, <>n;
-	*new { arg start = 0, grow = 1, n = inf;
+	*new { arg start = 1, grow = 2, n = inf;
 		if (n <= 0) { ^nil }
 		^super.newCopyArgs(start, grow, n)
 	}
@@ -155,7 +156,7 @@ GCyc : Gen
 		^super.newCopyArgs(list @@ index, list, index, step)
 	}
 	next {
-		^this.new(list, index+step, step) 
+		^this.class.new(list, index+step, step) 
 	}
 	storeArgs { ^[list, index, step] }
 }
@@ -170,7 +171,7 @@ GIter : Gen
 		}
 	}
 	next {
-		^this.new(list, index+step, step) 
+		^this.class.new(list, index+step, step) 
 	}
 	storeArgs { ^[list, index, step] }
 }
@@ -189,7 +190,7 @@ GReset : GenFilter
 		^super.newCopyArgs(gen.genCurrent, gen, reset ? gen)
 	}
 	next {
-		^this.new(gen.genNext, reset)
+		^this.class.new(gen.genNext, reset)
 	}
 }
 
@@ -260,7 +261,8 @@ GBinaryOpX : GenFilter
 	*new { arg gen, gen2, selector, prResetGen2;
 		if (gen.isNil) { ^nil };
 		if (gen2.isNil) { ^nil };
-		^super.newCopyArgs(gen.genCurrent.perform(\selector, gen2.genCurrent), gen, gen2, selector, prResetGen2 ? gen2)
+		^super.newCopyArgs(gen.genCurrent.perform(\selector, gen2.genCurrent), 
+			gen, gen2, selector, prResetGen2 ? gen2)
 	}
 	next {
 		var nx2 = gen2.genNext;
@@ -385,13 +387,13 @@ GClump : GenFilter
 		if (n <= 0) { ^nil };
 		n.do {
 			var item;
-			gen = gen.genNext;
 			item = gen.genCurrent;
 			if (item.isNil) {
 				if (clump.isNil) { ^nil }
 				^Gen(clump)
 			};
 			clump = clump.add(item);
+			gen = gen.genNext;
 		};
 		^super.newCopyArgs(clump, gen, n)
 	}
@@ -429,14 +431,17 @@ GLace : Gen
 	}
 	next {
 		var newgens;
-		if (phase >= gens.size) {
-			gens.do {|gen|
+		var phase1 = phase + 1;
+		if (phase1 >= gens.size) {
+			newgens = gens.copy;
+			gens.do {|gen, i|
 				var nx = gen.genNext;
-				nx !? { newgens = newgens ++ nx }
+				if (nx.isNil) { ^nil };
+				newgens[i] = nx;
 			};
 			^this.class.new(newgens, 0)
 		};
-		^this.class.new(gens, phase+1)
+		^this.class.new(gens, phase1)
 	}
 	storeArgs { ^[gens, phase] }
 }
@@ -445,26 +450,71 @@ GBind : Gen
 {
 	var <>protoEvent, <>pairs;
 	*new { arg protoEvent ... pairs;
-		if (pairs.size.odd, { Error("Pbind should have even number of args.\n").throw; });
-		^super.newCopyArgs(pairs)
-	}
-	next {
+		//var event = gen.genCurrent.copy;
 		var event = (parent: protoEvent);
 		var endval = pairs.size - 1;
+		if (pairs.size.odd, { Error("Pbind should have even number of args.\n").throw; });
 		forBy (0, endval, 2) { arg i;
 			var name = pairs[i];
-			var gen = pairs[i+1];		
-			var nx = gen.next;
-			if (nx.isNil) { ^nil };
+			var igen = pairs[i+1];	
 			if (name.isSequenceableCollection) {
-				nx.genCurrent.do { arg val, i;
+				igen.genCurrent.do { arg val, i;
 					event.put(name[i], val);
 				};
 			}{
-				event.put(name, nx.value);
+				event.put(name, igen.genCurrent);
 			};
 		}
-		^this.class.new(event, protoEvent, pairs)
+		^super.newCopyArgs(event, protoEvent, pairs)
+	}
+	next {
+		var endval = pairs.size - 1;
+		pairs = pairs.copy;
+		forBy (0, endval, 2) { arg i;
+			var name = pairs[i];
+			var igen = pairs[i+1];	
+			var nx = igen.next;
+			if (nx.isNil) { ^nil };
+			pairs[i+1] = nx;
+		}
+		^this.class.new(protoEvent, *pairs)
+	}
+}
+
+
+GBindF : GenFilter
+{
+	var <>pairs;
+	*new { arg gen ... pairs;
+		var event = gen.genCurrent.copy;
+		var endval = pairs.size - 1;
+		if (pairs.size.odd, { Error("Pbind should have even number of args.\n").throw; });
+		forBy (0, endval, 2) { arg i;
+			var name = pairs[i];
+			var igen = pairs[i+1];	
+			if (name.isSequenceableCollection) {
+				igen.genCurrent.do { arg val, i;
+					event.put(name[i], val);
+				};
+			}{
+				event.put(name, igen.genCurrent);
+			};
+		}
+		^super.newCopyArgs(event, gen, pairs)
+	}
+	next {
+		var nx = gen.genNext;
+		var endval = pairs.size - 1;
+		if (nx.isNil) { ^nil };
+		pairs = pairs.copy;
+		forBy (0, endval, 2) { arg i;
+			var name = pairs[i];
+			var igen = pairs[i+1];	
+			var inx = igen.next;
+			if (inx.isNil) { ^nil };
+			pairs[i+1] = inx;
+		}
+		^this.class.new(nx, *pairs)
 	}
 }
 
