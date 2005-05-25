@@ -365,23 +365,9 @@ Collection {
 	}
 	isSubsetOf { | that | ^that.includesAll(this) }
 
-	msgSize {
-		^this.inject(0, { | sum, item |
-			sum + 
-			if(item.isKindOf(Symbol)) 
-				{ item = item.asString;  item.size + 4 - (item.size bitAnd: 3) } 
-				{
-					if(item.isString) 
-						{ item.size + 4 - (item.size bitAnd: 3) }
-						{ 4 }
-			};
-			}) + this.size + 4 - (this.size bitAnd: 3)
-    }
-    bundleSize {
-    		// array of messages without timetag
-    		^16 + this.inject(0, { | sum, msg | sum + 4 + msg.msgSize })
-    }
-
+	msgSize { ^NetAddr.msgSize(*this) }
+	bundleSize { ^NetAddr.bundleSize(*this) }
+	
 	asArray { ^Array.new(this.size).addAll(this); }
 	asBag { ^Bag.new(this.size).addAll(this); }
 	asList { ^List.new(this.size).addAll(this); }
