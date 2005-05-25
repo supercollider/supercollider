@@ -39,8 +39,7 @@ OSCBundle {
 			if(safeSizes) {
 				bundle = [];
 				preparationMessages.do { |msg|
-					var msgSize;
-					msgSize = NetAddr.msgSize(msg); 
+					var msgSize = msg.msgSize; 
 										// this is not exactly true, as we'll pack it in a 
 										// bundle later.
 										// 8172 = 8192 - 16 - 4:

@@ -383,6 +383,18 @@ ArrayedCollection : SequenceableCollection {
 	tableRand {
 		^this.blendAt((this.size - 1).asFloat.rand)
 	}
+	
+	// osc bundle support
+	
+	msgSize {
+		_NetAddr_MsgSize; 
+		^this.primitiveFailed 
+	}
+	bundleSize { 
+		// array has the format [time, msg, ...]
+		_NetAddr_BundleSize; 
+		^this.primitiveFailed 
+	}
 }
 
 RawArray : ArrayedCollection {

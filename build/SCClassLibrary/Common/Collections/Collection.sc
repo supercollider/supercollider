@@ -364,9 +364,6 @@ Collection {
 		^result;
 	}
 	isSubsetOf { | that | ^that.includesAll(this) }
-
-	msgSize { ^NetAddr.msgSize(*this) }
-	bundleSize { ^NetAddr.bundleSize(*this) }
 	
 	asArray { ^Array.new(this.size).addAll(this); }
 	asBag { ^Bag.new(this.size).addAll(this); }
