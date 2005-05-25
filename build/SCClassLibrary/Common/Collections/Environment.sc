@@ -40,7 +40,7 @@ Environment : IdentityDictionary {
 	composeEvents { arg event; ^this.copy.putAll(event) }
 	
 	*pop {
-		if(stack.notEmpty) { currentEnvironment = stack.pop };
+		if(stack.notNil and: { stack.notEmpty }) { currentEnvironment = stack.pop };
 	}
 	*push { arg envir;
 		stack = stack.add(currentEnvironment);
