@@ -31,11 +31,18 @@
     (require 'sclang-mode)))
 
 (defcustom sclang-help-directory "~/SuperCollider/Help"
-  "*Directory where the SuperCollider help files are kept."
+  "*Directory where the SuperCollider help files are kept. OBSOLETE."
   :group 'sclang-interface
   :version "21.3"
   :type 'directory
   :options '(:must-match))
+
+(defcustom sclang-help-path (list "/usr/local/share/SuperCollider/Help"
+				  "~/share/SuperCollider/Help")
+  "*List of directories where SuperCollider help files are kept."
+  :group 'sclang-interface
+  :version "21.4"
+  :type '(repeat directory))
 
 (defcustom sclang-help-fill-column fill-column
   "*Column beyond which automatic line-wrapping in RTF help files should happen."
@@ -255,36 +262,37 @@
 
 (defun sclang-index-help-topics ()
   (interactive)
-  (if sclang-help-directory
-      (let ((case-fold-search nil)
-	    (max-specpdl-size 10000)
-	    result)
-	(flet ((push-file
-		(name path)
-		(push (cons
-		       (file-name-nondirectory (replace-match "" nil nil name 1))
-		       path)
-		      result)))
-	  (flet ((index-dir
-		  (dir)
-		  (dolist (file (directory-files dir t "^[^.]" t))
-		    (cond ((file-directory-p file)
-			   (unless (string-match "CVS$" file)
-			     ;; handle XXX.rtfd/TXT.rtf
-			     (if (string-match "\\(\\.rtfd\\)$" file)
-				 (push-file file (concat file "/TXT.rtf"))
-			       ;; recurse into sub-directory
-			       (index-dir file))))
-			  ((string-match "\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)$" file)
-			   (push-file file file))))
-		  result))
-	    (sclang-message "Indexing help topics ...")
-	    (index-dir sclang-help-directory)
-	    (setq sclang-help-topic-alist
-		  (sort result (lambda (a b) (string< (car a) (car b)))))
-	    (sclang-message "Indexing help topics ... Done"))))
-    (setq sclang-help-topic-alist nil)
-    (sclang-message "Help directory is unset")))
+  (setq sclang-help-topic-alist nil)
+  (let ((case-fold-search nil)
+	(max-specpdl-size 10000)
+	result)
+    (flet ((push-file
+	    (name path)
+	    (push (cons
+		   (file-name-nondirectory (replace-match "" nil nil name 1))
+		   path)
+		  result)))
+      (flet ((index-dir
+	      (dir)
+	      (dolist (file (directory-files dir t "^[^.]" t))
+		(cond ((file-directory-p file)
+		       (unless (string-match "CVS$" file)
+			 ;; handle XXX.rtfd/TXT.rtf
+			 (if (string-match "\\(\\.rtfd\\)$" file)
+			     (push-file file (concat file "/TXT.rtf"))
+			   ;; recurse into sub-directory
+			   (index-dir file))))
+		      ((string-match "\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)$" file)
+		       (push-file file file))))
+	      result))
+	(sclang-message "Indexing help topics ...")
+	(dolist (help-directory sclang-help-path)
+	  (condition-case nil
+	      (index-dir help-directory)
+	    (error nil)))
+	(setq sclang-help-topic-alist
+	      (sort result (lambda (a b) (string< (car a) (car b)))))
+	(sclang-message "Indexing help topics ... Done")))))
 
 (defun sclang-edit-help-file ()
   (interactive)
