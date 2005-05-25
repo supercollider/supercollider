@@ -77,8 +77,33 @@ OSCBundle {
 
 MixedBundle : OSCBundle {
 	
-	var <earlyFunctions; 	//functions to evaluate on send 
+	var <earlyFunctions; 	// functions to evaluate on send 
 	var <functions; 		// functions to evaluate when the bundle is scheduled on the server
+	
+	// proposed new interface:
+	
+	// earlyFunctions / functions could be renamed to 
+	// sendFunctions / arrivalFunctions
+	
+	doOnSend { arg func;
+		earlyFunctions = earlyFunctions.add(func);
+	}
+	doOnArrival { arg func;
+		functions = functions.add(func);
+	}
+	sched { arg time=0.0, func;
+		earlyFunctions = earlyFunctions.add({ SystemClock.sched(time, { func.value; nil }) });
+	}
+	
+	valueSend {
+		functions.do({ arg item; item.value }); 
+	}
+	
+	valueArrive {
+		earlyFunctions.do({ arg item; item.value }); 
+	}
+
+	// original interface
 	
 	addFunction { arg func;
 		functions = functions.add(func);
@@ -95,6 +120,8 @@ MixedBundle : OSCBundle {
 	addEarlyMessage { arg receiver, selector, args;
 		earlyFunctions = functions.add( Message(receiver,selector,args) )
 	}
+	
+	
 	doFunctions {
 		functions.do({ arg item; item.value }); 
 	}
