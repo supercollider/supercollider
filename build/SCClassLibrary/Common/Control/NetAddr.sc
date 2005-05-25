@@ -48,15 +48,6 @@ NetAddr {
 		^this.primitiveFailed;
 	}
 	
-	*bundleSize { arg time ... args;
-		_NetAddr_BundleSize; 
-		^this.primitiveFailed;
-	}
-	*msgSize { arg ... args;
-		_NetAddr_BundleSize; 
-		^this.primitiveFailed;
-	}
-	
 	isConnected {
 		^socket.notNil
 	}
