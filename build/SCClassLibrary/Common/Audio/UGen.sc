@@ -122,12 +122,10 @@ UGen : AbstractFunction {
 			var argName;
 			if(in.isValidUGenInput.not,{
 				argName = this.argNameForInputAt(i) ? i;
-				inputs.dump;
 				^"arg: '" ++ argName ++ "' has bad input:" + in;
 			})
 		});
-		^nil 
-
+		^nil
 	}
 	checkSameRateAsFirstInput {
  		if (rate !== inputs.at(0).rate) { 
@@ -142,7 +140,12 @@ UGen : AbstractFunction {
 		^method.argNames.at(i + this.argNamesInputsOffset)
 	}
 	argNamesInputsOffset { ^1 }
-	
+	dumpArgs {
+		" ARGS:".postln;
+		inputs.do({ arg in,ini;
+			("   " ++ (this.argNameForInputAt(ini) ? ini.asString)++":" + in + in.class).postln
+		});
+	}
 	degreeToKey { arg scale, stepsPerOctave=12;
 		^DegreeToKey.kr(scale, this, stepsPerOctave)
 	}

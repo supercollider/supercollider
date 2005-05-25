@@ -18,7 +18,19 @@ BasicOpUGen : UGen {
 		specialIndex = operator.specialIndex;
 	}
 	
-	argNamesInputsOffset { ^1 }
+	argNamesInputsOffset { ^2 }
+	argNameForInputAt { arg i;
+		var method = this.class.class.findMethod('new');
+		if(method.isNil or: {method.argNames.isNil},{ ^nil });
+		^method.argNames.at(i + this.argNamesInputsOffset)
+	}
+	dumpArgs {
+		" ARGS:".postln;
+		("   operator:" + operator).postln;
+		inputs.do({ arg in,ini;
+			("   " ++ (this.argNameForInputAt(ini) ? ini.asString)++":" + in + in.class).postln
+		});
+	}
 
 	dumpName {
 		^synthIndex.asString ++ "_" ++ this.operator

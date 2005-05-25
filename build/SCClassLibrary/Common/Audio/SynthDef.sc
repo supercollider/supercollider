@@ -312,6 +312,7 @@ SynthDef {
 			if ((err = ugen.checkInputs).notNil) { 
 				seenErr = true;
 				(ugen.class.asString + err).postln;
+				ugen.dumpArgs;
 			};
 		};
 		if(seenErr) { Error("SynthDef" + this.name + "build failed").throw };
