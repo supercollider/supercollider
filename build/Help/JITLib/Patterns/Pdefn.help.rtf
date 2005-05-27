@@ -1,9 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
-\f3\fswiss\fcharset77 Helvetica-Oblique;}
+\f3\fswiss\fcharset77 Helvetica-BoldOblique;\f4\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
-\red96\green96\blue96;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
-}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pdefn     		
@@ -142,8 +141,8 @@ Pdefn is similar to [\ul Pdef\ulnone ]  and [\ul Tdef\ulnone ]  . see the other 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\i\fs24 \cf0 Pdefn in expressions
-\f1\i0\fs18 \
+\f3\i\b\fs24 \cf0 Pdefn in expressions
+\f1\i0\b0\fs18 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -173,12 +172,14 @@ t.value;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\i\fs24 \cf0 Embedding Pdefn in other patterns\
+\f3\i\b\fs24 \cf0 Embedding Pdefn in other patterns
+\f4\b0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\i0\fs18 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ([1, 2, 3],\cf2 inf\cf0 ));\
 \
 x = \cf2 Pseq\cf0 ([0, 0, \cf2 Pdefn\cf0 (\cf3 \\x\cf0 )], \cf2 inf\cf0 ).asStream;\
@@ -197,7 +198,9 @@ t.stop;\
 \cf4 // Pdefn can be accessed in multiple streams\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf5 "Pdefhelp"\cf0 , \{ \cf2 arg\cf0  out, freq, sustain=1, amp=1, pan;\
 	\cf2 var\cf0  env, u=1;\
 	env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.03, sustain), 1, doneAction:2);\
@@ -235,7 +238,8 @@ s.boot;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\i\fs24 \cf0 Timing: when does the definition change?\
+\f3\i\b\fs24 \cf0 Timing: when does the definition change?
+\f4\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\i0\fs18 \cf0 \
@@ -248,8 +252,10 @@ s.boot;\
 \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \cf2 Pn\cf0 (\cf2 Pseries\cf0 (0, 1, 8),\cf2 inf\cf0 ));\
 \
 \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 ).quant = \cf2 nil\cf0 ; \cf4 // activate immediately again\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \{\
 	loop \{\
 	5.do \{ \cf2 |i|\cf0 \
@@ -263,12 +269,16 @@ s.boot;\
 \
 \
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\i\fs24 \cf0 Functions as arguments to Pdefn:\
+\f3\i\b\fs24 \cf0 Functions as arguments to Pdefn:\
+(experimental, bound to change!)
+\f4\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\i0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \{ loop \{ yield(0.1.rand.round(0.01) + [2, 3, 9].choose) \} \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -286,14 +296,17 @@ s.boot;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\i\fs24 \cf0 The (inner) environment\
-\
+\f3\i\b\fs24 \cf0 The (inner) environment\
+(experimental, bound to change!)
+\f4\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\i0\fs18 \cf0 \
-\cf6 // set() creates a local environment that overrides the outer currentEnvironment\cf7 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // set() creates a local environment that overrides the outer currentEnvironment\cf0 \
 \
-\cf8 Pdefn\cf7 (\cf9 \\z\cf7 ).set(\cf9 \\a\cf7 , 1, \cf9 \\b\cf7 , 0);\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).set(\cf3 \\a\cf0 , 1, \cf3 \\b\cf0 , 0);\
 \
 \cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \{ \cf2 |a, b|\cf0  (a + b) + 0.1.rand.round(0.01) \}); \cf4 // [1]\cf0 \
 \
@@ -337,14 +350,17 @@ t.nextN(3); \cf4 // Pdefn default value (1) is used\cf0 \
 \
 \cf2 Pdefn\cf0 (\cf3 \\other\cf0 , \cf2 Prand\cf0 ([200, 300, 400], \cf2 inf\cf0 )); \cf4 // assign a pattern to \\other\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 t.nextN(3);\cf4 \
 \cf0 \
 \
-\cf6 // if you want to keep using the currentEnvironment at the same time, \cf7 \
-\cf6 // assign the currentEnvironment to the envir's parent (or proto) field\
-// (this shouldn't be a proxy space of course.)\cf7 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // if you want to keep using the currentEnvironment at the same time, \cf0 \
+\cf4 // assign the currentEnvironment to the envir's parent (or proto) field\
+// (this shouldn't be a proxy space of course.)\cf0 \
 \
-\cf8 Pdefn\cf7 (\cf9 \\z\cf7 ).envir.parent = currentEnvironment;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).envir.parent = currentEnvironment;\
 ~a = 9;\
 ~b = 10; \
 \
