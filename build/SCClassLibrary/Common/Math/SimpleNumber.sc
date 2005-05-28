@@ -107,12 +107,16 @@ SimpleNumber : Number {
 	rrand { arg aNumber, adverb; _RandRange; ^aNumber.performBinaryOpOnSimpleNumber('rrand', this, adverb) }
 	exprand { arg aNumber, adverb; _ExpRandRange; ^aNumber.performBinaryOpOnSimpleNumber('exprand', this, adverb) }
 
-	== { arg aNumber, adverb; _EQ; ^aNumber.performBinaryOpOnSimpleNumber('==', this, adverb) }
-	!= { arg aNumber, adverb; _NE; ^aNumber.performBinaryOpOnSimpleNumber('!=', this, adverb) }
-	< { arg aNumber, adverb; _LT; ^aNumber.performBinaryOpOnSimpleNumber('<', this, adverb) }
-	> { arg aNumber, adverb; _GT; ^aNumber.performBinaryOpOnSimpleNumber('>', this, adverb) }
-	<= { arg aNumber, adverb; _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this, adverb) }
-	>= { arg aNumber, adverb; _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this, adverb) }
+	== { arg aNumber, adverb; _EQ; ^aNumber.compareWithSimpleNumber('==', this, adverb) }
+	!= { arg aNumber, adverb; _NE; ^aNumber.compareWithSimpleNumber('!=', this, adverb) }
+	< { arg aNumber, adverb; _LT; ^aNumber.compareWithSimpleNumber('<', this, adverb) }
+	> { arg aNumber, adverb; _GT; ^aNumber.compareWithSimpleNumber('>', this, adverb) }
+	<= { arg aNumber, adverb; _LE; ^aNumber.compareWithSimpleNumber('<=', this, adverb) }
+	>= { arg aNumber, adverb; _GE; ^aNumber.compareWithSimpleNumber('>=', this, adverb) }
+	
+	compareWithSimpleNumber { arg selector, obj, adverb;
+			this.perform(selector, obj, adverb)
+	}
 	equalWithPrecision { arg that,precision=0.0001;
 		^absdif(this, that) < precision
 	}
