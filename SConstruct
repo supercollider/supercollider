@@ -613,8 +613,8 @@ if env['SCEL']:
 
 # example library configuration file
 env.Command('linux/examples/sclang.cfg', 'linux/examples/sclang.cfg.in',
-            'sed \'s,@SC_LIB_DIR@,%s,g\' < $SOURCE > $TARGET' %
-            pkg_classlib_dir(FINAL_PREFIX))
+            'sed \'s,@PKG_DATA_DIR@,%s,g\' < $SOURCE > $TARGET' %
+            pkg_data_dir(FINAL_PREFIX))
 
 # headers
 if env['DEVELOPMENT']:
