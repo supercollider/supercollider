@@ -22,7 +22,7 @@ Nil {
 	isPlaying { ^false }
 	
 	do {}
-	doReverse {}
+	reverseDo {}
 	collect {}
 	select {}
 	reject {}
