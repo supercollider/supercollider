@@ -373,8 +373,9 @@ ArrayedCollection : SequenceableCollection {
 		if(dimensions.size <= 1) {
 			n.do { |i| array.add(function.valueArray(args.putLast(i))) };
 		} {
+			dimensions = dimensions.drop(1);
 			n.do { |i|
-				var array2 = this.fillND(dimensions.drop(1), function, args.putLast(i)); 
+				var array2 = this.fillND(dimensions, function, args.putLast(i)); 
 				array = array.add(array2);
 			}
 		};
