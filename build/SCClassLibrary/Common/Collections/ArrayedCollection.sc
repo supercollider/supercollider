@@ -369,13 +369,14 @@ ArrayedCollection : SequenceableCollection {
 	*fillND { arg dimensions, function, args=[]; // args are private
 		var n = dimensions.first;
 		var array = this.new(n);
+		var argIndex = args.size;
 		args = args ++ 0;
 		if(dimensions.size <= 1) {
-			n.do { |i| array.add(function.valueArray(args.putLast(i))) };
+			n.do { |i| array.add(function.valueArray(args.put(argIndex, i))) };
 		} {
 			dimensions = dimensions.drop(1);
 			n.do { |i|
-				var array2 = this.fillND(dimensions, function, args.putLast(i)); 
+				var array2 = this.fillND(dimensions, function, args.put(argIndex, i)); 
 				array = array.add(array2);
 			}
 		};
