@@ -366,6 +366,20 @@ ArrayedCollection : SequenceableCollection {
 		};
 		^array
 	}
+	*fillND { arg dimensions, function, args=[]; // args are private
+		var n = dimensions.first;
+		var array = this.new(n);
+		args = args ++ 0;
+		if(dimensions.size <= 1) {
+			n.do { |i| array.add(function.valueArray(args.putLast(i))) };
+		} {
+			n.do { |i|
+				var array2 = this.fillND(dimensions.drop(1), function, args.putLast(i)); 
+				array = array.add(array2);
+			}
+		};
+		^array
+	}
 	
 	// random distribution table
 	
