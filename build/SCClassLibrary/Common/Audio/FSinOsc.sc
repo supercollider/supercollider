@@ -63,6 +63,18 @@ Klank : UGen {
 	argNamesInputsOffset { ^2 }
 }
 
+DynKlank : UGen {
+	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
+		var specs;
+		specs = specificationsArrayRef.asArray.collect(_.value).unbubble;
+		^Ringz.ar(
+				input,
+				specs[0] * freqscale + freqoffset, 
+				specs[2] * decayscale,
+				specs[1] ? #[1.0]
+		).sum
+	}
+}
 
 Blip : UGen {	
 	*ar { arg freq=440.0, numharm = 200.0, mul = 1.0, add = 0.0;
