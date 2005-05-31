@@ -369,15 +369,14 @@ ArrayedCollection : SequenceableCollection {
 	
 	// random distribution table
 	
-	asRandomTable {
+	asRandomTable { arg size;
 		var inc, a, b,res, sum=0;
-		var size = this.size;
+		size = size ?? { this.size };
 		a = this.normalize.collect { |el| sum = sum + el }; // incrementally integrate
-		a = a / sum * size; // divide by sum (maximum value) and scale by new size
+		a = a / sum * (size - 1); // divide by sum (maximum value) and scale by new size
         	b = Array.fill(size, { arg i; a.indexInBetween(i) });  // flip array
-        	b = b / size // rescale to 0..1
+        	b = b / this.size // rescale to 0..1
         	^b
-		
 	}
 	
 	tableRand {
