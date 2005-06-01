@@ -275,7 +275,8 @@ void BufAllocCmd::Stage4()
 #include <string.h>
 
 BufGenCmd::BufGenCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress),
+	mData(0)
 {
 }
 
@@ -431,7 +432,7 @@ void BufZeroCmd::Stage4()
 ///////////////////////////////////////////////////////////////////////////
 
 BufAllocReadCmd::BufAllocReadCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress), mFreeData(0)
+	: SC_SequencedCommand(inWorld, inReplyAddress), mFreeData(0), mFilename(0)
 {
 }
 
@@ -514,7 +515,8 @@ void BufAllocReadCmd::Stage4()
 ///////////////////////////////////////////////////////////////////////////
 
 BufReadCmd::BufReadCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress),
+	mFilename(0)
 {
 }
 
@@ -868,7 +870,7 @@ bool NotifyCmd::Stage2()
 ///////////////////////////////////////////////////////////////////////////
 
 SendFailureCmd::SendFailureCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress), mCmdName(0), mErrString(0)
 {
 }
 
@@ -902,7 +904,7 @@ bool SendFailureCmd::Stage2()
 ///////////////////////////////////////////////////////////////////////////
 
 RecvSynthDefCmd::RecvSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress), mBuffer(0)
 {
 }
 
@@ -954,7 +956,7 @@ void RecvSynthDefCmd::Stage4()
 ///////////////////////////////////////////////////////////////////////////
 
 LoadSynthDefCmd::LoadSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress), mFilename(0)
 {
 }
 
@@ -1006,7 +1008,7 @@ void LoadSynthDefCmd::Stage4()
 ///////////////////////////////////////////////////////////////////////////
 
 LoadSynthDefDirCmd::LoadSynthDefDirCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress), mFilename(0)
 {
 }
 
