@@ -276,14 +276,16 @@ TaskProxy : PatternProxy {
 	play { arg argClock, doReset = false, quant;
 		isPlaying = true;
 		playQuant = quant;
-		if(player.isPlaying.not) { player = this.playOnce(argClock, doReset, quant) }
+		if(player.isNil) { player = this.playOnce(argClock, doReset, quant) } {
+			if(player.isPlaying.not) { player.play(argClock, doReset, quant) }
+		}
 	}
 	
 	fork { arg clock, quant;
 		^this.asStream.play(clock ? thisThread.clock, quant)
 	}
 	
-	stop { player.stop; isPlaying = false }
+	stop { player.stop; isPlaying = false;  }
 	
 	pause { if(player.notNil) { this.sched { player.pause } } }
 	resume { if(player.notNil) { this.sched { player.resume } } }
@@ -388,16 +390,16 @@ EventPatternProxy : TaskProxy {
 	
 	play { arg argClock, protoEvent, quant;
 		isPlaying = true;
+		this.event = protoEvent;
 		if(player.isPlaying.not) {
 			clock = argClock ? TempoClock.default;
-			this.event = protoEvent;
-			player.play(clock, true, quant ? this.quant)
+			player.play(clock, false, quant ? this.quant)
 		}
 	}
 	
 	event_ { arg event;
-		if(player.notNil) { player.event = event } {
-			player = EventStreamPlayer(this.asStream, event) 
+		if(player.isNil) { player = EventStreamPlayer(this.asStream, event) } {
+			event !? { player.event = event }
 		};
 	}
 	event { ^player !? { player.event } }
