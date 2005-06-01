@@ -75,14 +75,13 @@ StreamControl : AbstractPlayControl {
 	readyForPlay { ^stream.notNil }
 
 	play { 
-		if(stream.isPlaying.not){ 
+		if(stream.isPlaying.not) { 
 			stream.stop; stream = stream.copy; stream.play(clock, false, 0.0)
 		} 
 	}
 	stop { stream.stop }
 	
 }
-
 
 
 PatternControl : StreamControl {
@@ -132,13 +131,12 @@ PatternControl : StreamControl {
 		paused=false 
 	}
 	
-	playToBundle { arg bundle, args, proxy, addAction=1; // maybe use args to add them in Event?
-		var event;
+	playToBundle { arg bundle, args, proxy, addAction=1;
 		if(paused.not and: { stream.isPlaying.not })
 		{
 			// no latency (latency is in stream already)
 			bundle.addEarlyFunction({
-				var str;
+				var str, event;
 				str = source.buildForProxy(proxy, channelOffset);
 				if(args.notNil) { 
 					event = str.event;
@@ -153,6 +151,8 @@ PatternControl : StreamControl {
 	stop { this.stopStreams(array.copy); array = nil; }
 	
 }
+
+
 
 SynthControl : AbstractPlayControl {
 	var <server, <>nodeID;
