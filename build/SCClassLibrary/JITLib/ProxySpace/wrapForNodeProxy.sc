@@ -62,11 +62,7 @@
 	
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, 1);
-		^if(proxy.rate === 'audio') {
-			{K2A.ar(Control.ir(this))} 
-		} { 
-			{Control.ir(this)} 
-		}
+		^{ÊDC.multiNewList([proxy.rate] ++ this) };
 	}
 }
 
@@ -74,11 +70,7 @@
 +RawArray {
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, this.size);
-		^if(proxy.rate === 'audio') {
-			{K2A.ar(Control.ir(this))}
-		} { 
-			{Control.ir(this)}
-		}
+		^{ÊDC.multiNewList([proxy.rate] ++ this) };
 	}
 }
 
@@ -248,6 +240,9 @@
 				\id, Pfunc { proxy.group.nodeID },
 				\args, args
 			).buildForProxy( proxy, channelOffset, index )
+		},
+		control: #{ arg values, proxy, channelOffset=0, index;
+			{ Control.kr(values) }.buildForProxy( proxy, channelOffset, index );
 		}
 		
 		)
