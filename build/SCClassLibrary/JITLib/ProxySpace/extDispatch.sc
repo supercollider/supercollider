@@ -15,7 +15,8 @@
 
 + RawArray {
 	encodeForOSC {
-		^this
+		^this	// this is a trick. the dispatcher sends the array flat.
+				// currently, sc cannot send arrays via OSC
 	}
 }
 + Symbol {
