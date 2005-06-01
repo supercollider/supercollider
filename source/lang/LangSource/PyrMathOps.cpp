@@ -169,7 +169,14 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		case tagSym :
-			res.us = a->us; res.utag = tagSym;
+			switch (opcode) {
+				case opAsFloat :
+				case opAsInt :
+					goto send_normal_1;
+				case opIsNil : SetFalse(a); break;
+				case opNotNil : SetTrue(a); break;
+				default : res.us = a->us; res.utag = tagSym;
+			}
 			break;
 		case tagObj :
 			if (isKindOf(a->uo, class_signal)) {
