@@ -63,9 +63,9 @@
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, 1);
 		^if(proxy.rate === 'audio') {
-			{K2A.ar(Control.kr(this))} 
+			{K2A.ar(Control.ir(this))} 
 		} { 
-			{Control.kr(this)} 
+			{Control.ir(this)} 
 		}
 	}
 }
@@ -75,9 +75,9 @@
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, this.size);
 		^if(proxy.rate === 'audio') {
-			{K2A.ar(Control.kr(this))}
+			{K2A.ar(Control.ir(this))}
 		} { 
-			{Control.kr(this)}
+			{Control.ir(this)}
 		}
 	}
 }
