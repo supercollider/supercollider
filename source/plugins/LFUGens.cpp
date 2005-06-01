@@ -164,6 +164,10 @@ struct A2K : public Unit
 
 };
 
+struct DC : public Unit
+{
+};
+
 struct Silent : public Unit
 {
 };
@@ -247,6 +251,9 @@ extern "C"
 	
 	void A2K_next(A2K *unit, int inNumSamples);
 	void A2K_Ctor(A2K* unit);
+	
+	void DC_next(DC *unit, int inNumSamples);
+	void DC_Ctor(DC* unit);
 
 	void Silent_next(Silent *unit, int inNumSamples);
 	void Silent_Ctor(Silent* unit);
@@ -1135,6 +1142,20 @@ void A2K_Ctor(A2K* unit)
 	SETCALC(A2K_next);
 	A2K_next(unit, 1);
 	
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void DC_Ctor(DC* unit)
+{
+	SETCALC(DC_next);
+	DC_next(unit, 1);
+}
+void DC_next(DC *unit, int inNumSamples)
+{
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		OUT0(i) = IN0(i);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3494,6 +3515,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(SyncSaw);
 	DefineSimpleUnit(K2A);
 	DefineSimpleUnit(A2K);
+	DefineSimpleUnit(DC);
 	DefineSimpleUnit(Silent);
 	DefineSimpleUnit(Line);
 	DefineSimpleUnit(XLine);
