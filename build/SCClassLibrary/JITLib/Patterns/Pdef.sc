@@ -3,7 +3,7 @@
 
 PatternProxy : Pattern {
 	var <pattern, <envir;
-	var <>clock, <>quant, <>condition=true;
+	var <>clock, <>quant, <>condition=true, reset;
 				// quant new pattern insertion. can be [quant, offset]
 				// in EventPatternProxy it can be [quant, offset, onset]
 	
@@ -15,6 +15,7 @@ PatternProxy : Pattern {
 	}
 		
 	*default { ^1 } // safe for duration patterns
+	*defaultValue { ^1 }
 	
 	init { arg src;
 		clock = TempoClock.default; 
@@ -25,17 +26,24 @@ PatternProxy : Pattern {
 	constrainStream { ^pattern.asStream }
 	
 	source_ { arg obj; 
-		var pat;
-		pat = if(obj.isKindOf(Function)) {
-			// maybe this should not loop, and behave like Pdef.
-			// problem: inval could be anything, independence must be guaranteed
-			 Proutine { arg inval; loop { inval = embedInStream(obj.valueEnvir) } };
-		} { obj };
-		if(envir.notNil) { pat = Penvir(envir, pat, envir[\isolate] ? false) };
-		
-		this.sched { pattern = pat } 
+		var pat = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
+		if(quant.isNil) { pattern = pat } { this.sched { pattern = pat } }
 	}
+	
 	source { ^pattern }
+	
+	defaultEvent {
+		if(envir.isNil) { envir = () }; 
+		^(parent:envir, forward: { 1 }) // default value: safe time value (better throw error?)
+	}
+	
+	convertFunction { arg func;
+			^Prout {
+				var inval = func.def.prototypeFrame !? { inval = this.defaultEvent };
+				func.postcs;
+				func.value( inval ).embedInStream
+			};
+	}
 	
 	pattern_ { arg pat; this.source_(pat) }
 	offset_ { arg val; quant = quant.instill(1, val) }
@@ -57,18 +65,25 @@ PatternProxy : Pattern {
 	get { arg key;
 		^if(envir.notNil) { envir[key] } { nil };
 	}
-		
+	
+// double code for efficiency ( about 10 % difference )
+
 	embedInStream { arg inval;
-		var pat, stream, outval, test, count=0;
+		var pat, stream, outval, test, resetTest, count=0;
 		pat = pattern;
 		test = condition;
+		resetTest = reset;
 		stream = pattern.asStream;
 		while {
-			if((pat !== pattern) and: { test.value(outval, count) }) {
+			if(
+				(reset !== resetTest) 
+				or: { pat !== pattern and: { test.value(outval, count) } }
+			) {
 						pat = pattern;
 						test = condition;
-						stream = this.constrainStream(stream);
+						resetTest = reset;
 						count = 0;
+						stream = this.constrainStream(stream);
 			};
 			outval = stream.next(inval);
 			count = count + 1;
@@ -79,16 +94,63 @@ PatternProxy : Pattern {
 		^inval
 	}
 	
+// shorter, but less efficient variant
+//	embedInStream { arg inval;
+//		^this.prEmbedStream(inval, pattern, pattern.asStream, reset);
+//	}
+
+	
+	prEmbedStream { arg inval, pat, stream, resetTest;
+		var outval, test, count=0;
+		test = condition;
+		while {
+			if(
+				(reset !== resetTest) 
+				or: { pat !== pattern and: { test.value(outval, count) } }
+			) {
+						pat = pattern;
+						test = condition;
+						resetTest = reset;
+						count = 0;
+						stream = this.constrainStream(stream);
+			};
+			outval = stream.next(inval);
+			count = count + 1;
+			outval.notNil
+		}{
+			inval = outval.yield;
+		}
+		^inval
+	
+	}
+	
+	endless {
+		^Proutine { arg inval;
+			var stream = pattern.asStream;
+			var pat = pattern;
+			var defaultValue = this.class.defaultValue;
+			var resetTest = reset;
+			loop {
+				this.prEmbedStream(inval, pat, stream, resetTest);
+				pat = pattern;
+				inval = defaultValue.yield;
+			}
+		}
+	}
+
+	
 	count { arg n=1;
 		condition = { |val,i| i % n == 0 }
 	}
+	
+	reset { reset = reset ? 0 + 1 }
 	
 	sched { arg func;
 		if(quant.isNil) 
 			{ func.value } 
 			{ clock.schedAbs(quant.nextTimeOnGrid(clock), { func.value; nil }) }
 	}
-
+	
 	storeArgs { ^[pattern] }
 	
 	
@@ -176,30 +238,26 @@ TaskProxy : PatternProxy {
 	
 		
 	source_ { arg obj;
-			pattern = if(obj.isKindOf(Function)) {
-				// this error handling only helps if error is not in substream
-				Prout { |inval|
-					try { 
-						obj.value
-					} { |error|
-						player.removedFromScheduler;
-						error.throw; 
-					}
-				}
-			}{ 
-				obj 
-			};
-			if(envir.notNil) { pattern = Penvir(envir, pattern, envir[\isolate] ? false) };
+			pattern = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 			this.wakeUp;
 			source = obj;
 	}
 	
+	convertFunction {Êarg func;
+			^Prout {
+					var inval = func.def.prototypeFrame !? { this.defaultEvent };
+					try { // this error handling only helps if error is not in substream
+						func.value(inval);
+					} { |error|
+						player.removedFromScheduler;
+						error.throw; 
+					}
+			}
+	}
 		
 	wakeUp { if(isPlaying and: { player.isPlaying.not }) { this.play(quant:playQuant) } }
 	
-
-	*default { ^{ |inval| inval.yield } }
-	
+	*default { ^Pn(this.defaultValue,1) }
 	
 	constrainStream { arg str;
 		^if(quant.notNil and: { str.notNil }) {
@@ -273,8 +331,7 @@ EventPatternProxy : TaskProxy {
 		this.wakeUp;
 	}
 	
-	*default { ^Pn(Event.silent,1) }
-
+	*defaultValue { ^Event.silent }
 
 	constrainStream { arg str;
 		var delta, tolerance, new, quantVal, catchUp, deltaTillCatchUp, forwardTime;
@@ -299,16 +356,7 @@ EventPatternProxy : TaskProxy {
 			};
 			
 			if(fadeTime.isNil) {
-				/*if(delta < 0.01) { 
-					Routine({ arg inval;
-						Event.silent(delta).yield;
-						new.embedInStream(inval)
-					})
-				}{	
-				*/
-					Pseq([ Pfindur(delta, str, tolerance), new ])
-					
-				//	}
+				Pseq([ Pfindur(delta, str, tolerance), new ])
 			}{
 				
 				Ppar([
@@ -326,7 +374,8 @@ EventPatternProxy : TaskProxy {
 	
 	fork { arg argClock, quant, protoEvent; // usual fork arg order: clock, quant, ...
 		argClock = argClock ? thisThread.clock;
-		^EventStreamPlayer(this.asStream, protoEvent).play(argClock, true, quant)
+		this.event = protoEvent;
+		^player.play(argClock, true, quant)
 	}
 	
 	// playing one instance //
@@ -341,11 +390,17 @@ EventPatternProxy : TaskProxy {
 		isPlaying = true;
 		if(player.isPlaying.not) {
 			clock = argClock ? TempoClock.default;
-			player = EventStreamPlayer(this.asStream, protoEvent);
+			this.event = protoEvent;
 			player.play(clock, true, quant ? this.quant)
 		}
 	}
 	
+	event_ { arg event;
+		if(player.notNil) { player.event = event } {
+			player = EventStreamPlayer(this.asStream, event) 
+		};
+	}
+	event { ^player !? { player.event } }
 	
 	storeArgs { ^[source] }
 	
