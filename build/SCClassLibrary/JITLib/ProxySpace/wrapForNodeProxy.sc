@@ -59,12 +59,33 @@
 
 
 +SimpleNumber {
+	
 	prepareForProxySynthDef { arg proxy;
-		^if(proxy.rate === 'audio', {
-			{ Array.fill(proxy.numChannels ? 1, { K2A.ar(this) }) }
-		}, { 
-			{  Control.kr(Array.fill(proxy.numChannels ? 1, { this})) }
-		})
+		proxy.initBus(\control, 1);
+		^if(proxy.rate === 'audio') {
+			{K2A.ar(Control.kr(this))} 
+		} { 
+			{Control.kr(this)} 
+		}
+	}
+}
+
+
++RawArray {
+	prepareForProxySynthDef { arg proxy;
+		proxy.initBus(\control, this.size);
+		^if(proxy.rate === 'audio') {
+			{K2A.ar(Control.kr(this))}
+		} { 
+			{Control.kr(this)}
+		}
+	}
+}
+
++SequenceableCollection {
+	prepareForProxySynthDef { arg proxy;
+		proxy.initBus(\control, this.size);
+		^{ this.collect({ |el| el.prepareForProxySynthDef(proxy).value }) }
 	}
 }
 
@@ -114,46 +135,41 @@
 
 ///////////////////////////// Pattern - Streams ///////////////////////////////////
 
+
 +Stream {
-
-	proxyControlClass {
-		^StreamControl
-	}
-	buildForProxy { 
-		^PauseStream.new(this)
-	}
+	proxyControlClass { ^StreamControl }
+	buildForProxy { ^PauseStream.new(this) }
 }
-
-
 
 +PauseStream {
-	buildForProxy {}
-	
-	proxyControlClass {
-		^StreamControl
+	buildForProxy { ^this }
+	proxyControlClass { ^StreamControl }
+}
+
++PatternProxy {
+	buildForProxy {  arg proxy, channelOffset=0; 
+		^this.endless.buildForProxy(proxy, channelOffset) 
 	}
 }
 
-/*
-+Pdef {
-	buildForProxy { arg proxy, channelOffset=0;
-		isPlaying = true;
-		^super.buildForProxy(proxy, channelOffset);
-	}
-}
-*/
 
 +Pattern {
-	proxyControlClass {
-		^PatternControl
-	}
+	proxyControlClass { ^PatternControl }
 	
 	buildForProxy { arg proxy, channelOffset=0;
-		var player, ok, index, server, numChannels, rate;
-		player = this.asEventStreamPlayer;
+		var player = this.asEventStreamPlayer;
+		var event = player.event.buildForProxy(proxy, channelOffset);
+		^event !? { player };
+	}
+}
+
++ Event {
+	//proxyControlClass { ^StreamControl } // does not yet work as input
+	buildForProxy { arg proxy, channelOffset=0;
+		var ok, index, server, numChannels, rate;
 		ok = if(proxy.isNeutral) { 
-			rate = player.event.at(\rate) ? 'audio';
-			numChannels = player.event.at(\numChannels) ? NodeProxy.defaultNumAudio;
+			rate = this.at(\rate) ? 'audio';
+			numChannels = this.at(\numChannels) ? NodeProxy.defaultNumAudio;
 			proxy.initBus(rate, numChannels);
 		} {
 			rate = proxy.rate; // if proxy is initialized, it is user's responsibility
@@ -163,7 +179,7 @@
 		^if(ok) { 
 				index = proxy.index;
 				server = proxy.server;
-				player.event.use({
+				this.use({
 					~channelOffset = channelOffset; // default value
 					~out = { ~channelOffset % numChannels + index };
 					~server = server; // not safe for server changes yet
@@ -172,12 +188,10 @@
 						~group = proxy.group.asNodeID;// group shouldn't be assigned by the user
 					}
 				});
-			^player
 		} { nil }
-
 	}
-
 }
+
 
 
 /////////// pluggable associations //////////////
