@@ -71,6 +71,19 @@ A2K : UGen { // audio rate to control rate converter. only needed in specific ca
 	}
 }
 
+DC : MultiOutUGen {
+	*ar { arg in;
+		^this.multiNewList(['audio'] ++ in)
+	}
+	*kr { arg in;
+		^this.multiNewList(['control'] ++ in)
+	}
+	init { arg ... argInputs;
+		inputs = argInputs;
+		^this.initOutputs(inputs.size, rate)
+	}
+}
+
 Silent : MultiOutUGen {
 	*ar { arg numChannels = 1;
 		^this.multiNew('audio', numChannels)
