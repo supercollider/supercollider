@@ -73,7 +73,6 @@ struct World
 
 	uint32 mNumUnits, mNumGraphs, mNumGroups;
 	int mSampleOffset; // offset in the buffer of current event time.
-	float mSubsampleOffset; // subsample accurate offset in the buffer of current event time.
 	
 	SC_Lock* mNRTLock;
 	
@@ -85,6 +84,9 @@ struct World
 	int mDumpOSC;
 
 	SC_Lock* mDriverLock;
+	
+	float mSubsampleOffset; // subsample accurate offset in the buffer of current event time.
+
 };
 
 extern "C" {

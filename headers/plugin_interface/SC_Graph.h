@@ -43,11 +43,12 @@ struct Graph
 	struct Unit **mCalcUnits; // excludes i-rate units.
 
 	int mSampleOffset;
-	float mSubsampleOffset;
 	struct RGen* mRGen;
 	
 	struct Unit *mLocalAudioBusUnit;
 	struct Unit *mLocalControlBusUnit;
+	
+	float mSubsampleOffset;
 };
 typedef struct Graph Graph;
 
