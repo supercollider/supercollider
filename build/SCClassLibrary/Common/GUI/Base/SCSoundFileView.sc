@@ -2,6 +2,7 @@ SCSoundFileView : SCScope{
 	var < soundfile;
 	var <>metaAction, <>mouseUpAction, <elasticMode, <drawsWaveForm=true, <readProgress;
 	var <startFrame, <numFrames;
+	var zoomOne, <>dataFrames, viewFrames, scrollRatio, <scrollPos, <>block=64;
 	
 	init{ arg argParent, argBounds;
 		super.init(argParent, argBounds);
@@ -16,6 +17,7 @@ SCSoundFileView : SCScope{
 	}
 
 	read{|startframe=0, frames=0, block=64, closeFile=true|
+		this.block = block;
 		if(soundfile.isOpen.not){
 			if(soundfile.openRead.not){
 				^this
@@ -35,10 +37,11 @@ SCSoundFileView : SCScope{
 		this.addDependant(SoundFileViewProgressWindow(soundfile.path.split.last));
 	}
 	
-	// needs an opended soundfile;
+	// needs an open soundfile;
 	readFileWithTask{|soundfile, startframe=0, frames, block=64, 
 						doneAction, showProgress=true|
 		var zoomx, o, readtime, data, resampleFrames;
+		this.block = block;
 		if(showProgress){		
 			this.makeProgressWindow;
 		};		
@@ -66,6 +69,9 @@ SCSoundFileView : SCScope{
 			};
 			this.setData(data, block, startframe, soundfile.numChannels, soundfile.sampleRate);
 			this.xZoom_(zoomx).drawsWaveForm_(true).refresh;
+
+			this.updateData;
+
 			doneAction.value(this);
 			soundfile.close;
 			this.changed(\progressFinished);
@@ -78,8 +84,9 @@ SCSoundFileView : SCScope{
 			soundfile.sampleRate, 
 			soundfile.numFrames, 
 			soundfile.numChannels]);
+		this.updateData;
 	}
-	
+
 	mouseEndTrack{|x,y|
 		mouseUpAction.value(this, x,y)
 	}
@@ -157,7 +164,7 @@ SCSoundFileView : SCScope{
 	}
 	
 	gridResolution_{|resolution|
-		this.setProperty(\gridResolution, resolution);		
+		this.setProperty(\gridResolution, resolution);	
 	}
 	
 	dataNumSamples{
@@ -171,10 +178,11 @@ SCSoundFileView : SCScope{
 	}
 	
 	data_{|arr|
-		this.setData(arr, 64, 0, soundfile.numChannels, soundfile.sampleRate);		
+		this.setData(arr, 64, 0, soundfile.numChannels, soundfile.sampleRate);
 	}
 	
 	setData{|arr, block=64, startframe = 0, channels=1, samplerate=44100|
+		this.block = block;
 		this.setProperty(\setViewData, [arr, block, startframe, channels, samplerate]);
 	}
 		
@@ -199,7 +207,82 @@ SCSoundFileView : SCScope{
 	timeCursorColor_{|color|
 		this.setProperty(\timeCursorColor, color)		
 	}
+
+	zoom {| factor |	// zoom factor n or 1/n. view width units.
+		this.xZoom = zoomOne.min(this.xZoom * factor);
+		viewFrames = dataFrames * (this.xZoom / zoomOne);
+		if ( (this.x/block) >= (dataFrames - viewFrames), {
+			this.x_(0.max((dataFrames - viewFrames)*block));
+		});
+		this.xZoom = this.xZoom;
+		this.refresh;
+		this.updateScroll
+	}
 	
+	zoomAllOut {
+		viewFrames = dataFrames;
+		this.x_(0); this.xZoom = zoomOne; this.refresh;
+		this.updateScroll;
+	}
+	
+	zoomSelection {| index |	// selection index
+		if ( this.selectionSize(index) > 0, {
+			this.x_(this.selectionStart(index));
+			this.xZoom = this.selectionSize(index) / block / (this.bounds.width-2);
+			this.refresh;
+			this.updateScroll
+		})
+	}
+	
+	scrollTo { | position |		// absolute. from 0 to 1
+		this.x_(soundfile.numFrames * position).refresh;
+		this.updateScroll;
+	}
+	
+	scroll {| amount |	// +/- range. view width units
+		this.x_(this.x + (amount*soundfile.numFrames));
+		this.refresh;
+		this.updateScroll
+	}
+	
+	scrollToStart {
+		this.x_(0).refresh;
+		this.updateScroll
+	}
+	
+	scrollToEnd {
+		this.x_(soundfile.numFrames).refresh;
+		this.updateScroll
+	}
+	
+	selectAll {| index |	// selection index
+		this.setSelectionStart(index, 0); this.setSelectionSize(index, this.soundfile.numFrames)
+	}
+	
+	selectNone {| index |	 // selection index
+		this.setSelectionSize(index, 0)
+	}
+	
+	gridOffset_{|offset|
+		this.setProperty(\gridOffset, offset);		
+	}
+
+/* private methods*/
+
+	updateScroll {
+		scrollRatio = (1 - (this.xZoom / zoomOne)) * dataFrames;
+		scrollPos = if( scrollRatio > 0, { this.x / scrollRatio }, { 0 })
+	}
+	
+	updateData {
+		scrollRatio = 0;
+		scrollPos = 0;
+		dataFrames = this.dataNumSamples/this.soundfile.numChannels;
+		zoomOne = dataFrames / (this.bounds.width-2);
+		viewFrames = dataFrames * (this.xZoom / zoomOne);
+	}
+
+
 }
 
 SoundFileViewProgressWindow{
@@ -211,16 +294,15 @@ SoundFileViewProgressWindow{
 	
 	makeWindow{|name|
 		win = SCWindow.new("reading: " ++ name,
-				 Rect(100,100,300, 40)).front;
+				 Rect(100,100,300, 40), false).front;
 		win.view.decorator = FlowLayout(win.view.bounds);
-		slider = SCSlider(win, Rect(4,4,290,10));
-			//.background_(Color.black).knobColor_(Color.white);	
+		slider = SCRangeSlider(win, Rect(4,4,290,10));
 	}
 	
 	update{|changed, changer|
 		
 		if(changer === \progress){
-			{slider.value_(changed.readProgress)}.defer
+			{slider.lo_(0).hi_(changed.readProgress)}.defer
 			^this
 		};	
 		if(changer === \progressFinished){
