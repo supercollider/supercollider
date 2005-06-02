@@ -40,7 +40,6 @@ PatternProxy : Pattern {
 	convertFunction { arg func;
 			^Prout {
 				var inval = func.def.prototypeFrame !? { inval = this.defaultEvent };
-				func.postcs;
 				func.value( inval ).embedInStream
 			};
 	}
