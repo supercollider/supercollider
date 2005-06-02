@@ -139,6 +139,20 @@
 }
 
 +PatternProxy {
+	buildForProxy { "a numerical pattern does not make sense here.".error; ^nil }
+}
+
++TaskProxy {
+	proxyControlClass { ^StreamControl }
+
+	buildForProxy {  arg proxy, channelOffset=0; 
+		^PauseStream(this.endless.asStream)
+	}
+}
+
++EventPatternProxy {
+	proxyControlClass { ^PatternControl }
+
 	buildForProxy {  arg proxy, channelOffset=0; 
 		^this.endless.buildForProxy(proxy, channelOffset) 
 	}
