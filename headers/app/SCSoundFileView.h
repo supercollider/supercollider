@@ -101,9 +101,9 @@ protected:
 	SCColor mGridColor;
 	bool mGridOn;
 	float mGridResolution;
+ 	int mGridOffset;	
 	SCPoint mAbsolutePosition;
 	bool mIsReadingSoundFile;
-	int mStartFrame;
 	int mCurrentSelection;
 	bool mMoveSelection;
 	int mLastFrame;
@@ -114,6 +114,7 @@ protected:
 	bool mShowTimeCursor;
 	int mTimeCursorPosition;
 	SCColor mTimeCursorColor;
+	int mFramesInBounds;
 };
 
 
