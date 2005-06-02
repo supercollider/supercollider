@@ -66,8 +66,6 @@ PatternProxy : Pattern {
 		^if(envir.notNil) { envir[key] } { nil };
 	}
 	
-// double code for efficiency ( about 10 % difference )
-
 	embedInStream { arg inval;
 		var pat, stream, outval, test, resetTest, count=0;
 		pat = pattern;
@@ -93,47 +91,30 @@ PatternProxy : Pattern {
 		}
 		^inval
 	}
-	
-// shorter, but less efficient variant
-//	embedInStream { arg inval;
-//		^this.prEmbedStream(inval, pattern, pattern.asStream, reset);
-//	}
 
-	
-	prEmbedStream { arg inval, pat, stream, resetTest;
-		var outval, test, count=0;
-		test = condition;
-		while {
-			if(
-				(reset !== resetTest) 
-				or: { pat !== pattern and: { test.value(outval, count) } }
-			) {
-						pat = pattern;
-						test = condition;
-						resetTest = reset;
-						count = 0;
-						stream = this.constrainStream(stream);
-			};
-			outval = stream.next(inval);
-			count = count + 1;
-			outval.notNil
-		}{
-			inval = outval.yield;
-		}
-		^inval
-	
-	}
-	
 	endless {
 		^Proutine { arg inval;
-			var stream = pattern.asStream;
+			var outval, count=0;
 			var pat = pattern;
-			var defaultValue = this.class.defaultValue;
+			var test = condition;
 			var resetTest = reset;
+			var stream = pattern.asStream;
+			var defaultValue = this.class.defaultValue;
 			loop {
-				this.prEmbedStream(inval, pat, stream, resetTest);
-				pat = pattern;
-				inval = defaultValue.yield;
+					if(
+						(reset !== resetTest) 
+						or: { pat !== pattern and: { test.value(outval, count) } }
+					) {
+							pat = pattern;
+							test = condition;
+							resetTest = reset;
+							count = 0;
+							stream = this.constrainStream(stream);
+				};
+				outval = stream.next(inval);
+				count = count + 1;
+				outval = outval ? defaultValue;
+				inval = outval.yield;
 			}
 		}
 	}
