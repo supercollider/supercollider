@@ -66,6 +66,8 @@ int prArrayLace(VMGlobals *g, int numArgsPushed);
 int prArrayContainsSeqColl(VMGlobals *g, int numArgsPushed);
 int prArrayWIndex(VMGlobals *g, int numArgsPushed);
 int prArrayNormalizeSum(VMGlobals *g, int numArgsPushed);
+int prArrayIndexOfGreaterThan(VMGlobals *g, int numArgsPushed);
+
 
 int basicSize(struct VMGlobals *g, int numArgsPushed)
 {
@@ -2224,6 +2226,35 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prArrayIndexOfGreaterThan(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *slots;
+	PyrObject *obj;
+	int i, size, err;
+	double s, w;
+		
+	a = g->sp - 1;
+	b = g->sp;
+	
+	obj = a->uo;
+	
+	size = obj->size;
+	slots = obj->slots;
+	
+	err = slotDoubleVal(b, &s);
+	if (err) return err;
+	
+	for (i=0; i<size; ++i) {
+		err = getIndexedDouble(obj, i, &w);
+		if (err) return err;
+		if (w > s) { break; }
+	}
+	
+	SetInt(a, i);
+	return errNone;
+}
+
+
 void initArrayPrimitives();
 void initArrayPrimitives()
 {
@@ -2282,6 +2313,8 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayContainsSeqColl", prArrayContainsSeqColl, 1, 0);
 	
 	definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
+	definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
+
 }
 
 
