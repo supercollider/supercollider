@@ -153,23 +153,27 @@ SequenceableCollection : Collection {
 		^nil
 	}
 	
+	indexOfGreaterThan { arg val;
+		^this.detectIndex { |item| item > val };
+	}
+	
 	indexIn { arg val; // collection is sorted, returns closest index
 		var i, a, b;
-		var j = this.detectIndex { |item| item > val };
+		var j = this.indexOfGreaterThan(val);
 		if(j.isNil) { ^this.size - 1 };
 		if(j == 0) { ^j };
 		i = j - 1;
 		^if((val - this[i]) < (this[j] - val)) { i } { j }
 	}
 	
-	indexInBetween { arg val; // collection is sorted, returns linearly interpolated index
+	indexInBetween { arg val, start=0; // collection is sorted, returns linearly interpolated index
 		var a, b;
-		var i = this.detectIndex { |item| item > val };
+		var i = this.indexOfGreaterThan(val);
 		if(i.isNil) { ^this.size - 1 };
 		if(i == 0) { ^i };
 		a = this[i-1]; b = this[i];
 		^((val - a) / (b - a)) + i - 1
-	}
+	} 
 	
 	resamp0 { arg newSize;
 		var factor = this.size - 1 / (newSize - 1);

@@ -66,6 +66,10 @@ ArrayedCollection : SequenceableCollection {
 		_ArrayIndexOf
 		^this.primitiveFailed;
 	}
+	indexOfGreaterThan { arg val;
+		_ArrayIndexOfGreaterThan
+		^super.indexOfGreaterThan(val)
+	}
 
 	takeThese { arg func;
 		var i = 0;
