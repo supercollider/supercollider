@@ -382,16 +382,17 @@ ArrayedCollection : SequenceableCollection {
 		};
 		^array
 	}
-	
+
 	// random distribution table
 	
 	asRandomTable { arg size;
-		var inc, a, b,res, sum=0;
+		var inc, a=this, b,res, sum=0;
+		if(size.isNil) { size = this.size } { a = a.resamp1(size) };
 		size = size ?? { this.size };
-		a = this.normalize.collect { |el| sum = sum + el }; // incrementally integrate
-		a = a / sum * (size - 1); // divide by sum (maximum value) and scale by new size
+		a = a.collect { |el| sum = sum + el }; // incrementally integrate
+		a = a.normalize(0, size-1); // divide by sum (maximum value) and scale by max index
         	b = Array.fill(size, { arg i; a.indexInBetween(i) });  // flip array
-        	b = b / this.size // rescale to 0..1
+        	b = b / size // rescale to 0..1
         	^b
 	}
 	
