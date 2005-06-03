@@ -517,7 +517,7 @@ Object {
 	performBinaryOpOnUGen { arg aSelector, thing, adverb;
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	compareWithSimpleNumber { ^false }
+	compareWithSimpleNumber { arg selector; ^selector === '!=' }
 	
 	writeDefFile { arg name, dir;
 		var file;
