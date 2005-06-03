@@ -40,7 +40,11 @@ Number : Magnitude {
 	forBy { arg endValue, stepValue, function; 
 		var i, j=0;
 		i = this;
-		while ({ i <= endValue }, { function.value(i,j); i = i + stepValue; j=j+1; });
+		(stepValue > 0).if({
+			while ({ i <= endValue }, { function.value(i,j); i = i + stepValue; j=j+1; });
+		}, {
+			while ({ i >= endValue }, { function.value(i,j); i = i + stepValue; j=j+1; });
+		});
 	}
 	
 	forSeries { arg second, last, function;
