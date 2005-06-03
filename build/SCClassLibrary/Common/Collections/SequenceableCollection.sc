@@ -171,6 +171,16 @@ SequenceableCollection : Collection {
 		^((val - a) / (b - a)) + i - 1
 	}
 	
+	resamp0 { arg newSize;
+		var factor = this.size - 1 / (newSize - 1);
+		^this.species.fill(newSize, { |i| this.at((i * factor).round(1.0).asInteger) })
+	}
+	
+	resamp1 { arg newSize;
+		var factor = this.size - 1 / (newSize - 1);
+		^this.species.fill(newSize, { |i| this.blendAt(i * factor) })
+	}
+	
 	remove { arg item;
 		var index = this.indexOf(item);
 		^if ( index.notNil, {
