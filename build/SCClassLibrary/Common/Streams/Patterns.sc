@@ -58,6 +58,19 @@ Pattern : AbstractFunction {
 	
 	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
 	
+	// event stream support
+	
+	finishStream { arg stream, inevent;
+		var event, finishEvent;
+		loop {
+			event = inevent.copy.put(\type, \finish).put(\finishEvents, nil);
+			finishEvent = stream.next(event);
+			// no child stream has changed the event, or it is nil
+			if(finishEvent.eventAt(\finishEvents).isNil) { ^inevent };
+			inevent = finishEvent.yield;
+		}
+	}
+	
 	//////////////////////
 	
 	mtranspose { arg n; ^Paddp(\mtranspose, n, this) }
@@ -81,7 +94,7 @@ Pattern : AbstractFunction {
 	drop { arg n; ^Pdrop(n, this) }
 	stutter { arg n; ^Pstutter(n, this) }
 	finDur { arg dur, tolerance = 0.001; ^Pfindur(dur, this, tolerance) }
-	
+	fin { arg n; ^Pfin(n, this) }
 	
 }
 
@@ -279,7 +292,7 @@ Pmono : Pattern {
 		^super.newCopyArgs(name, args, pairs)
 	}
 	
-	storeArgs { ^patternpairs }
+	storeArgs { ^[name, args] ++ patternpairs }
 	embedInStream { arg inevent;
 		var event;
 		var sawNil = false;
@@ -297,7 +310,19 @@ Pmono : Pattern {
 		loop {
 			if (inevent.isNil) { ^nil };
 			event = inevent.copy;
-			if (first) {
+			
+			if(inevent.eventAt(\type) == \finish) {
+					if(first) { ^inevent.put(\type, nil) }; // avoid recursion
+					event[\delta] = 0;
+					event[\id] = id;
+					event[\type] = \off;
+					event.copyToFinishEvents;
+					
+					event[\type] = \finish;
+					event.yield;
+					^inevent				
+			};
+			if (first) { // if already finish here?
 				first = false;
 				event[\type] = \on;
 				name !? { event[\instrument] = name; };
@@ -306,6 +331,7 @@ Pmono : Pattern {
 			};
 			event[\id] = id;
 			args !? { event[\args] = args; };
+			
 			forBy (0, endval, 2) { arg i;
 				var name = streampairs[i];
 				var stream = streampairs[i+1];		
@@ -313,10 +339,11 @@ Pmono : Pattern {
 				if (streamout.isNil) {
 					event[\type] = \off;
 					event[\delta] = 0;
+					
 					inevent = event.yield;
-					^inevent 
+					^inevent;
 				};
-
+				
 				if (name.isSequenceableCollection) {
 					streamout.do { arg val, i;
 						event.put(name[i], val);
@@ -400,7 +427,29 @@ Pwhite : Pattern {
 		});
 		^inval;
 	}
-}	
+}
+
+Pprob : Pattern {
+	var <>hi, <>lo, <>length, <tableSize, <distribution, table;
+	
+	*new { arg distribution, lo=0.0, hi=1.0, length=inf, tableSize;
+		^super.newCopyArgs(hi, lo, length, tableSize).distribution_(distribution);
+	}
+	distribution_ { arg list;
+		var n = tableSize ?? { max(64, list.size) }; // resample, if too small
+		distribution = list;
+		table = distribution.asRandomTable(n);
+	}
+	tableSize_ { arg n;
+		tableSize = n;
+		this.distribution_(distribution);
+	}
+	embedInStream { arg inval;
+		length.value.do {
+			inval = ((table.tableRand * (hi - lo)) + lo).yield;		};
+		^inval;
+	}
+}
 				
 Pstep2add : Pattern {
 	var <>pattern1, <>pattern2;
