@@ -235,14 +235,19 @@ TaskProxy : PatternProxy {
 			}
 	}
 		
-	wakeUp { if(isPlaying and: { player.isPlaying.not }) { this.play(quant:playQuant) } }
+	wakeUp { 
+		player !? { if(player.streamHasEnded) { player.reset } };
+		if(isPlaying and: { player.isPlaying.not }) {
+			this.play(quant:playQuant) 
+		} 
+	}
 	
 	*default { ^Pn(this.defaultValue,1) }
 	
 	constrainStream { arg str;
 		^if(quant.notNil and: { str.notNil }) {
 			Pseq([
-				Pconst(clock.timeToNextBeat(quant), str, 0.001),
+				EmbedOnce(Pconst(clock.timeToNextBeat(quant), str, 0.001)),
 				pattern
 			])
 		} { pattern }.asStream
@@ -253,7 +258,7 @@ TaskProxy : PatternProxy {
 		^PauseStream.new(this.asStream).play(clock, doReset, quant ? this.quant)
 	}
 	
-	play { arg argClock, doReset = true, quant;
+	play { arg argClock, doReset=true, quant;
 		isPlaying = true;
 		playQuant = quant;
 		if(player.isNil) { 
@@ -342,11 +347,11 @@ EventPatternProxy : TaskProxy {
 			};
 			
 			if(fadeTime.isNil) {
-				Pseq([ Pfindur(delta, str, tolerance), new ])
+				Pseq([EmbedOnce(Pfindur(delta, str, tolerance)), new])
 			}{
 				
 				Ppar([
-					PfadeOut(str, fadeTime, delta, tolerance),
+					EmbedOnce(PfadeOut(str, fadeTime, delta, tolerance)),
 					PfadeIn(new, fadeTime, delta, tolerance)
 				])
 			}
@@ -360,8 +365,7 @@ EventPatternProxy : TaskProxy {
 	
 	fork { arg argClock, quant, protoEvent; // usual fork arg order: clock, quant, ...
 		argClock = argClock ? thisThread.clock;
-		this.event = protoEvent;
-		^player.play(argClock, true, quant)
+		^EventStreamPlayer(this.asStream, protoEvent).play(argClock, true, quant)
 	}
 	
 	// playing one instance //
@@ -372,21 +376,14 @@ EventPatternProxy : TaskProxy {
 	
 	// start playing //
 	
-	play { arg argClock, protoEvent, quant;
+	play { arg argClock, protoEvent, quant, doReset=true;
 		isPlaying = true;
-		this.event = protoEvent;
 		if(player.isPlaying.not) {
 			clock = argClock ? TempoClock.default;
-			player.play(clock, true, quant ? this.quant)
+			player = player ?? { EventStreamPlayer(this.asStream, protoEvent) };
+			player.play(clock, doReset, quant ? this.quant)
 		}
 	}
-	
-	event_ { arg event;
-		if(player.isNil) { player = EventStreamPlayer(this.asStream, event) } {
-			event !? { player.event = event }
-		};
-	}
-	event { ^player !? { player.event } }
 	
 	storeArgs { ^[source] }
 	
