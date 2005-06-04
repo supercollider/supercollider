@@ -248,6 +248,19 @@ OneShotStream : Stream {
 	storeArgs { ^[value] }
 }
 
+EmbedOnce : Stream  {
+	var <stream;
+	*new { arg stream;
+		^super.newCopyArgs(stream.asStream)
+	}
+	next { arg inval;
+		var val = stream.next(inval);
+		if(val.isNil) { stream = nil }; // embed once, then release memory
+		^val
+	}
+	storeArgs { ^[stream] }
+}
+
 FuncStream : Stream {
 	var <>nextFunc; // Func is evaluated for each next state
 	var <>resetFunc; // Func is evaluated for each next state
@@ -287,22 +300,23 @@ CleanupStream : Stream {
 
 PauseStream : Stream
 {
-	var <stream, <originalStream, <clock, <nextBeat;
+	var <stream, <originalStream, <clock, <nextBeat, <streamHasEnded=false;
 	
 	*new { arg argStream, clock; 
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default) 
 	}
 	
 	isPlaying { ^stream.notNil }
-	play { arg argClock, doReset = false, quant=0.0;
+	play { arg argClock, doReset = (false), quant=0.0;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
+		streamHasEnded = false;
 		stream = originalStream; 
 		clock.play(this, quant);
 	}
 	reset { ^originalStream.reset }
-	stop {  stream = nextBeat = nil }
+	stop {  stream = nextBeat = nil  }
 	removedFromScheduler { this.stop }
 	
 	pause { stream = nextBeat = nil }
@@ -318,12 +332,12 @@ PauseStream : Stream
 		
 	stream_ { arg argStream; 
 		originalStream = argStream; 
-		if (stream.notNil, { stream = argStream });
+		if (stream.notNil, { stream = argStream; streamHasEnded = argStream.isNil; });
 	}
 
 	next { arg inval; 
 		var nextTime = stream.next(inval);
-		if (nextTime.isNil) { stream = nextBeat = nil }
+		if (nextTime.isNil) { streamHasEnded = stream.notNil; stream = nextBeat = nil }
 			{ nextBeat = inval + nextTime };	// inval is current logical beat
 		^nextTime
 	}
@@ -357,6 +371,7 @@ EventStreamPlayer : PauseStream {
 		if (stream.notNil) { "already playing".postln; ^this };
 		if (doReset) { this.reset };
 		clock = argClock ? clock ? TempoClock.default;
+		streamHasEnded = false;
 		stream = originalStream; 
 		clock.play(this, quant);
 	}
@@ -368,6 +383,7 @@ EventStreamPlayer : PauseStream {
 		var nextTime;
 		var outEvent = stream.next(event);
 		if (outEvent.isNil) {
+			streamHasEnded = stream.notNil;
 			stream = nextBeat = nil;
 			^nil
 		}{
