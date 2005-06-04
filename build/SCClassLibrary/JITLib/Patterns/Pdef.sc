@@ -253,11 +253,15 @@ TaskProxy : PatternProxy {
 		^PauseStream.new(this.asStream).play(clock, doReset, quant ? this.quant)
 	}
 	
-	play { arg argClock, doReset = false, quant;
+	play { arg argClock, doReset = true, quant;
 		isPlaying = true;
 		playQuant = quant;
-		if(player.isNil) { player = this.playOnce(argClock, doReset, quant) } {
-			if(player.isPlaying.not) { player.play(argClock, doReset, quant) }
+		if(player.isNil) { 
+			player = this.playOnce(argClock, doReset, quant) 
+		} {
+			if(player.isPlaying.not) { 
+				player.play(argClock, doReset, quant) 
+			}
 		}
 	}
 	
@@ -373,7 +377,7 @@ EventPatternProxy : TaskProxy {
 		this.event = protoEvent;
 		if(player.isPlaying.not) {
 			clock = argClock ? TempoClock.default;
-			player.play(clock, false, quant ? this.quant)
+			player.play(clock, true, quant ? this.quant)
 		}
 	}
 	
