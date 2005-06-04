@@ -430,7 +430,7 @@ Pwhite : Pattern {
 }
 
 Pprob : Pattern {
-	var <>hi, <>lo, <>length, <tableSize, <distribution, table;
+	var <>hi, <>lo, <>length, <tableSize, <distribution, <table;
 	
 	*new { arg distribution, lo=0.0, hi=1.0, length=inf, tableSize;
 		^super.newCopyArgs(hi, lo, length, tableSize).distribution_(distribution);
