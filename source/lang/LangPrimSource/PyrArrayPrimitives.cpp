@@ -2230,7 +2230,7 @@ int prArrayIndexOfGreaterThan(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj;
-	int i, j, size, err;
+	int i, size, err;
 	double s, w;
 		
 	a = g->sp - 1;
@@ -2239,7 +2239,6 @@ int prArrayIndexOfGreaterThan(struct VMGlobals *g, int numArgsPushed)
 	obj = a->uo;
 	
 	size = obj->size;
-	j = size - 1;
 	slots = obj->slots;
 	
 	err = slotDoubleVal(b, &s);
@@ -2250,12 +2249,12 @@ int prArrayIndexOfGreaterThan(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		
 		if (w > s) {
-			j = i;
-			break;
+			SetInt(a, i);
+			return errNone;
 		}
 	}
 	
-	SetInt(a, j);
+	a->utag = tagNil; a->ui = 0;
 	return errNone;
 }
 
