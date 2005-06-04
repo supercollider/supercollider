@@ -166,13 +166,15 @@ SequenceableCollection : Collection {
 		^if((val - this[i]) < (this[j] - val)) { i } { j }
 	}
 	
-	indexInBetween { arg val, start=0; // collection is sorted, returns linearly interpolated index
-		var a, b;
+	indexInBetween { arg val; // collection is sorted, returns linearly interpolated index
+		var a, b, div;
 		var i = this.indexOfGreaterThan(val);
 		if(i.isNil) { ^this.size - 1 };
 		if(i == 0) { ^i };
 		a = this[i-1]; b = this[i];
-		^((val - a) / (b - a)) + i - 1
+		div = b - a;
+		if(div == 0) { ^i };
+		^((val - a) / div) + i - 1
 	} 
 	
 	resamp0 { arg newSize;
