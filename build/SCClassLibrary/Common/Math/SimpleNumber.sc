@@ -223,11 +223,11 @@ SimpleNumber : Number {
 	series { arg second, last;
 		_SimpleNumberSeries
 		^this.primitiveFailed
-//		var step, size;
-//		second = second ?? { if (this < last) { this + 1 } { this - 1 } };
-//		step = second - this;
-//		size = floor((last - this) / step + 0.001).asInteger + 1;
-//		^Array.series(size, this, step)
+		/* var step, size;
+		second = second ?? { if (this < last) { this + 1 } { this - 1 } };
+		step = second - this;
+		size = floor((last - this) / step + 0.001).asInteger + 1;
+		^Array.series(size, this, step) */
 	}
 	seriesIter { arg second, last;
 		var step, size;
@@ -293,7 +293,22 @@ SimpleNumber : Number {
 	nextTimeOnGrid { arg clock;
 		^clock.nextTimeOnGrid(this, 0);
 	}
-	
+	// a clock format
+	asTimeString { arg precision=0.1;
+		var hours,mins,secs;
+		mins = (this/60).round(1);
+		if(mins >= 60,{ hours = (mins/60).round(1).asString ++ ":"; 
+			mins = mins%60;
+			if(mins < 10 ,{ mins = ")"++ mins.asString; },{ mins = mins.asString; });
+		},{
+			hours = "";
+			mins = mins.asString;
+		});
+		secs = (this%60).round(precision);
+		if(secs<10,{ secs = "0"++secs.asString; },{ secs=secs.asString;});
+		^(hours ++ mins ++ ":" ++ secs);
+	}
+
 	asFraction {|denominator=100, fasterBetter=true| 
 		_AsFraction
 		// asFraction will return a fraction that is the best approximation up to the given
