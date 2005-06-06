@@ -2,7 +2,7 @@ SCSoundFileView : SCScope{
 	var < soundfile;
 	var <>metaAction, <>mouseUpAction, <elasticMode, <drawsWaveForm=true, <readProgress;
 	var <startFrame, <numFrames;
-	var zoomOne, <>dataFrames, viewFrames, scrollRatio, <scrollPos, <>block=64;
+	var zoomOne, <>dataFrames, <viewFrames, <scrollPos, <>block=64;
 	
 	init{ arg argParent, argBounds;
 		super.init(argParent, argBounds);
@@ -208,51 +208,51 @@ SCSoundFileView : SCScope{
 		this.setProperty(\timeCursorColor, color)		
 	}
 
-	zoom {| factor |	// zoom factor n or 1/n. view width units.
+	zoom {| factor |	// zoom factor n or 1/n.
 		this.xZoom = zoomOne.min(this.xZoom * factor);
-		viewFrames = dataFrames * (this.xZoom / zoomOne);
-		if ( (this.x/block) >= (dataFrames - viewFrames), {
-			this.x_(0.max((dataFrames - viewFrames)*block));
+		viewFrames = dataFrames * block * (this.xZoom / zoomOne);
+		if ( this.x > (soundfile.numFrames - viewFrames), {
+			this.x_(soundfile.numFrames - viewFrames) 
 		});
-		this.xZoom = this.xZoom;
 		this.refresh;
 		this.updateScroll
 	}
 	
 	zoomAllOut {
-		viewFrames = dataFrames;
 		this.x_(0); this.xZoom = zoomOne; this.refresh;
+		viewFrames = dataFrames * block * (this.xZoom / zoomOne);
 		this.updateScroll;
 	}
 	
 	zoomSelection {| index |	// selection index
 		if ( this.selectionSize(index) > 0, {
 			this.x_(this.selectionStart(index));
-			this.xZoom = this.selectionSize(index) / block / (this.bounds.width-2);
+			this.xZoom = this.selectionSize(index) / (this.bounds.width-2) / block;
+			viewFrames = dataFrames * block * (this.xZoom / zoomOne);
 			this.refresh;
 			this.updateScroll
 		})
 	}
 	
 	scrollTo { | position |		// absolute. from 0 to 1
-		this.x_(soundfile.numFrames * position).refresh;
+		this.x_((soundfile.numFrames - viewFrames) * position).refresh;
 		this.updateScroll;
 	}
 	
-	scroll {| amount |	// +/- range. view width units
-		this.x_(this.x + (amount*soundfile.numFrames));
-		this.refresh;
+	scroll {| amount |	// +/- range in viewFrames
+		this.x_((this.x + (amount*viewFrames))
+			.clip(0,soundfile.numFrames - viewFrames)).refresh;
 		this.updateScroll
 	}
 	
 	scrollToStart {
 		this.x_(0).refresh;
-		this.updateScroll
+		scrollPos = 0;
 	}
 	
 	scrollToEnd {
-		this.x_(soundfile.numFrames).refresh;
-		this.updateScroll
+		this.x_(soundfile.numFrames  - viewFrames ).refresh;
+		scrollPos = 1;
 	}
 	
 	selectAll {| index |	// selection index
@@ -260,7 +260,8 @@ SCSoundFileView : SCScope{
 	}
 	
 	selectNone {| index |	 // selection index
-		this.setSelectionSize(index, 0)
+		this.setSelectionSize(index, 0); // sends x to 0 when selection is not full width visible? ( thus update scrollPos )
+		this.updateScroll
 	}
 	
 	gridOffset_{|offset|
@@ -270,18 +271,15 @@ SCSoundFileView : SCScope{
 /* private methods*/
 
 	updateScroll {
-		scrollRatio = (1 - (this.xZoom / zoomOne)) * dataFrames;
-		scrollPos = if( scrollRatio > 0, { this.x / scrollRatio }, { 0 })
+		scrollPos = this.x / (soundfile.numFrames - viewFrames)
 	}
 	
 	updateData {
-		scrollRatio = 0;
 		scrollPos = 0;
 		dataFrames = this.dataNumSamples/this.soundfile.numChannels;
 		zoomOne = dataFrames / (this.bounds.width-2);
-		viewFrames = dataFrames * (this.xZoom / zoomOne);
+		viewFrames = dataFrames * block * (this.xZoom / zoomOne);
 	}
-
 
 }
 
