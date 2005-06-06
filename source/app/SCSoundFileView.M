@@ -572,25 +572,22 @@ void SCSoundFileView::draw(SCRect inDamage)
 	
 	float rzreciprocal = 1.f/ ( mResampleFactor * mZoom.x);	
 //	mStartFrameResampled = (int)(mScroll.x / mResampleFactor);	
-	CGRect drawRect;
+	CGRect viewRect, drawRect;
+	viewRect = CGRectMake(mBounds.x + 1.f, mBounds.y + 1.f, mBounds.width - 2.f, mBounds.height - 2.f);
 	for (int i=0; i<kMaxSndSelections; ++i) 
 	{	
 		if ( mSelections[i].size > 0 ) {
 			float selectionstart = ((mSelections[i].start-mScroll.x) * rzreciprocal ) + 1.f + mBounds.x;
 			float selectionsize =  mSelections[i].size * rzreciprocal;
-			if ( selectionstart + selectionsize > mBounds.width + mBounds.x - 1.f)
-				selectionsize = mBounds.x + mBounds.width - 1.f - selectionstart;
-			if ( selectionstart < mBounds.x + 1.f ) {
-				selectionsize =  selectionstart + selectionsize - mBounds.x - 1.f;
-				selectionstart = mBounds.x + 1.f;
-				}
-			
 			drawRect = CGRectMake(selectionstart, 
 									mBounds.y + 1.f, 
 									selectionsize, 
 									mBounds.height - 2.f);	
-			CGContextSetRGBFillColor(cgc, mSelections[i].color.red, mSelections[i].color.green, mSelections[i].color.blue, mSelections[i].color.alpha);
-			CGContextFillRect (cgc, drawRect); 
+			drawRect = CGRectIntersection(drawRect, viewRect);
+			if ( !CGRectIsNull(drawRect) ) {
+				CGContextSetRGBFillColor(cgc, mSelections[i].color.red, mSelections[i].color.green, mSelections[i].color.blue, mSelections[i].color.alpha);
+				CGContextFillRect (cgc, drawRect); 
+			}
 		}
 	}
 	
@@ -640,6 +637,7 @@ void SCSoundFileView::draw(SCRect inDamage)
 	restore:
     CGContextRestoreGState(cgc);
 }
+
 
 
 int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
