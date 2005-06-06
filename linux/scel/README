@@ -14,20 +14,12 @@ by default emacs-lisp files are installed in
 
 SuperCollider files are put in
 
-    $prefix/share/SuperCollider/SCClassLibrary/Emacs
+    $prefix/share/SuperCollider/Extensions/scel
 
-the only things you need to do are
-
-* loading the sclang interface in your ~/.emacs:
+the only thing you need to do is loading the sclang interface in your
+~/.emacs:
 
     (require 'sclang)
-
-* adding the SuperCollider interface code to your library configuration:
-
-    +$SC_LIB_DIR/Emacs
-
-  and setting the synthesis server program in ~/.sclang.sc (see
-  examples/sclang.cfg and examples/sclang.sc in the distribution).
 
 installation (detailed)
 ------------------------
@@ -43,14 +35,10 @@ and then load the library:
 (require 'sclang)
 
 now put all *.sc files in sclang's library path, e.g. if you put them
-in ~/SuperCollider/Emacs/, add the following to ~/.sclang.cfg:
+in a non-standard location, such as ~/SuperCollider/Emacs/, add the
+following to ~/.sclang.cfg:
 
 +~/SuperCollider/Emacs
-
-you will also want to set the server program name, so add the
-following to ~/.sclang.sc:
-
-Server.program = "scsynth"
 
 usage
 ------
@@ -95,10 +83,3 @@ left-clicking on the server name.
 servers instantiated from the language will automatically be available
 in the mode line.
 
-contact
---------
-
-please file bug reports, feature requests, patches, etc. to
-<steve@k-hornz.de>
-
-<sk>

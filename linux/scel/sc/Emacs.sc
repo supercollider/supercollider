@@ -168,13 +168,15 @@ EmacsInterface {
 
 Emacs {
 	classvar outFile, requestHandlers, requestAllocator;
+	classvar <watcher;
 	classvar <menu, <>keys;
 
 	// initialization
 	*initClass {
-		var outFileName;
+		var outFileName, newServer;
 		Class.initClassTree(EmacsInterface);
 		Class.initClassTree(EmacsDocument);
+		Class.initClassTree(Server);
 		requestHandlers = IdentityDictionary.new;
 		requestAllocator = StackNumberAllocator(0, 128);
 		keys = IdentityDictionary.new;
@@ -191,6 +193,16 @@ Emacs {
 			});
 			"Emacs: Initializing lisp interface.".postln;
 			this.sendToLisp(\_init);
+			newServer = { |server|
+				var ctl;
+				ctl = SimpleController(server);
+				ctl[\serverRunning] = { this.updateServer };
+				ctl[\counts] = { this.updateServer };
+			};
+			watcher = SimpleController(Server);
+			watcher[\serverAdded] = newServer;
+			Server.set.do{ |server| newServer.value(server) };
+			this.updateServer;
 		};
 	}
 
@@ -235,6 +247,36 @@ Emacs {
 	// utilities
 	*readFileName { | handler |
 		this.evalLispExpression("(read-file-name \"Enter file name: \")", handler);
+	}
+	*message { | format ... args |
+		this.evalLispExpression(([\message, format] ++ args).asLispString);
+	}
+
+	*updateServer {
+		var result;
+		result = [Server.default.name];
+		Server.set.do { arg server;
+			result = result.add(
+				server.name -> [
+					'running', server.serverRunning,
+					'type',
+					if (server.inProcess) {\internal} {if (server.isLocal) {\local} {\remote}},
+					'address', server.addr.ip,
+					'client-id', server.clientID,
+					'latency', server.latency,
+					'notified', server.notified,
+					'dump-mode', server.dumpMode,
+					'info', [
+						(server.avgCPU ? 0.0).round.clip(0, 100),
+						(server.peakCPU ? 0.0).round.clip(0, 100),
+						server.numUGens ? 0,
+						server.numSynths ? 0,
+						server.numGroups ? 0,
+						server.numSynthDefs ? 0
+					]
+				]);
+		};
+		this.sendToLisp(\_updateServer, result)
 	}
 }
 

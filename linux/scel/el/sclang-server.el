@@ -33,7 +33,8 @@
  '_updateServer
  (lambda (arg)
    (setq sclang-server-alist
-	 (sort arg (lambda (a b) (string< (car a) (car b)))))
+	 (sort (cdr arg) (lambda (a b) (string< (car a) (car b)))))
+   (setq sclang-current-server (car arg))
    (sclang-update-mode-line)))
 
 (defun sclang-get-server (&optional name)
@@ -160,6 +161,12 @@
 ;; =====================================================================
 ;; module setup
 ;; =====================================================================
+
+(add-hook 'sclang-mode-hook
+	  (lambda ()
+	    (when (string= (buffer-name) sclang-post-buffer)
+	      (setq mode-line-format
+		    '("-" sclang-post-buffer-mode-string)))))
 
 (provide 'sclang-server)
 

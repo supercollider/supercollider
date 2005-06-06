@@ -1,3 +1,4 @@
+;;; sclang.el --- IDE for working with the SuperCollider language
 ;; copyright 2003 stefan kersten <steve@k-hornz.de>
 ;;
 ;; This program is free software; you can redistribute it and/or
@@ -15,6 +16,7 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
+;;; Code:
 (defgroup sclang nil
   "IDE for working with the SuperCollider language."
   :group 'languages)
@@ -36,6 +38,7 @@
   :group 'sclang-interface)
 
 (defun sclang-customize ()
+  "Customize sclang variables."
   (interactive)
   (customize-group 'sclang))
 
@@ -54,8 +57,9 @@
     (require 'sclang-language)
     (require 'sclang-document)
     (require 'sclang-mode)
-    (require 'sclang-help)))
+    (require 'sclang-help)
+    (require 'sclang-server)))
 
 (provide 'sclang)
 
-;; EOF
+;;; sclang.el ends here

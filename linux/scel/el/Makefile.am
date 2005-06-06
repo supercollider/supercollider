@@ -17,6 +17,7 @@ lisp_LISP		= \
 	sclang-language.el \
 	sclang-menu.el \
 	sclang-mode.el \
+	sclang-server.el \
 	sclang-util.el
 
 ## EOF ================================================================

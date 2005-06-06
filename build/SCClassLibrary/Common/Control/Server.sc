@@ -143,6 +143,7 @@ Server : Model {
 		set.add(this);
 		this.newAllocators;	
 		bufferArray = Array.newClear(options.numBuffers + 2);
+		Server.changed(\serverAdded, this);
 	}
 	initTree {
 		nodeAllocator = NodeIDAllocator(clientID);	
