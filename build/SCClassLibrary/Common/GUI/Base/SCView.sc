@@ -4,7 +4,7 @@ SCView {  // abstract class
 	classvar <>globalKeyDownAction, <>globalKeyUpAction;
 
 	var dataptr, <parent, <>action, <background, <>keyDownAction, <>keyUpAction, <>keyTyped;
-	var <>beginDragAction;
+	var <>beginDragAction,<>canReceiveDragHandler,<>receiveDragHandler;
 	var <>onClose;
 	
 	*new { arg parent, bounds;
@@ -160,16 +160,23 @@ SCView {  // abstract class
 
 
 	beginDrag {
-		currentDrag = if (beginDragAction.isNil) 
+		currentDrag = if (beginDragAction.notNil) 
 		{	
-			this.getDragObject
-		}{
 			beginDragAction.value(this)
+		}{
+			this.defaultGetDrag
 		};
 		currentDragString = currentDrag.asCompileString;
 	}
-	getDragObject { ^nil }
-	canReceiveDrag { ^false }
+	defaultGetDrag { ^nil }
+	canReceiveDrag {
+		^if(canReceiveDragHandler.notNil,{ canReceiveDragHandler.value(this) },{ this.defaultCanReceiveDrag })
+	}
+	defaultCanReceiveDrag { ^false }
+	receiveDrag {
+		if(receiveDragHandler.notNil,{ receiveDragHandler.value(this) },{ this.defaultReceiveDrag });
+		currentDrag = currentDragString = nil;
+	}
 
 	// get the view parent tree up to the SCTopView
 	getParents {
@@ -228,8 +235,10 @@ SCView {  // abstract class
 	}
 	
 	*importDrag { 
-		// this is called when an NSString is the drag object.
+		// this is called when an NSString is the drag object
+		// from outside of the SC app
 		// we compile it to an SCObject.
+		currentDragString = currentDrag;
 		currentDrag = currentDrag.interpret;
 	}
 }
@@ -248,7 +257,7 @@ SCContainerView : SCView { // abstract class
 	
 	prRemoveChild { arg child;
 		children.remove(child);
-		// ... decorator replace all
+		// ... decorator should re-place all
 	}
 	//bounds_  ... replace all
 
@@ -341,15 +350,14 @@ SCSlider : SCSliderBase
 		if (unicode == 16rF702, { this.decrement; ^this });
 	}
 	
-	getDragObject { 
+	defaultGetDrag { 
 		^this.value
 	}
-	canReceiveDrag {
-		^currentDrag.isNumber;
+	defaultCanReceiveDrag { 
+		^currentDrag.isNumber 
 	}
-	receiveDrag {
+	defaultReceiveDrag {
 		this.valueAction = currentDrag;
-		currentDrag = nil;
 	}
 
 	thumbSize {
@@ -421,7 +429,7 @@ SCRangeSlider : SCSliderBase {
 		this.activeHi_(val);
 	}
 	decrement { 
-		var inc, val; 
+		var inc, val;
 		inc = this.bounds.width.reciprocal;
 		val = this.lo - inc;
 		if (val < 0, {
@@ -450,17 +458,14 @@ SCRangeSlider : SCSliderBase {
 		if (unicode == 16rF701, { this.decrement; ^this });
 		if (unicode == 16rF702, { this.decrement; ^this });
 	}
-	getDragObject { 
-		^Point(this.lo, this.hi)
-	}	
-	canReceiveDrag {
-		^currentDrag.isKindOf(Point);
+	defaultGetDrag { ^Point(this.lo, this.hi) }	
+	defaultCanReceiveDrag {	
+		^currentDrag.isKindOf(Point);	
 	}
-	receiveDrag {
+	defaultReceiveDrag {
 		// changed to x,y instead of lo, hi
 		this.lo = currentDrag.x;
 		this.hi = currentDrag.y;
-		currentDrag = nil;
 	}
 }
 
@@ -503,16 +508,15 @@ SC2DSlider : SCSliderBase {
 		if (unicode == 16rF701, { this.decrementY; ^this });
 		if (unicode == 16rF702, { this.decrementX; ^this });
 	}
-	getDragObject { 
+	defaultGetDrag { 
 		^Point(this.x, this.y)
 	}
-	canReceiveDrag {
+	defaultCanReceiveDrag {
 		^currentDrag.isKindOf(Point);
 	}
-	receiveDrag {
+	defaultReceiveDrag {
 		this.x = currentDrag.x;
 		this.y = currentDrag.y;
-		currentDrag = nil;
 	}
 }
 
@@ -584,19 +588,18 @@ SCButton : SCControlView {
 		^super.properties ++ #[\value, \font, \states]
 	}
 	
-	getDragObject { 
+	defaultGetDrag { 
 		^this.value
 	}
-	canReceiveDrag {
+	defaultCanReceiveDrag {
 		^currentDrag.isNumber or: { currentDrag.isKindOf(Function) };
 	}
-	receiveDrag {
+	defaultReceiveDrag {
 		if (currentDrag.isNumber) {
 			this.valueAction = currentDrag;
 		}{
 			this.action = currentDrag;
 		};
-		currentDrag = nil;
 	}
 }
 
@@ -650,15 +653,14 @@ SCPopUpMenu : SCControlView {
 		^super.properties ++ #[\value, \font, \items, \stringColor]
 	}
 
-	getDragObject { 
+	defaultGetDrag { 
 		^this.value
 	}
-	canReceiveDrag {
+	defaultCanReceiveDrag {
 		^currentDrag.isNumber;
 	}
-	receiveDrag {
+	defaultReceiveDrag {
 		this.valueAction = currentDrag;
-		currentDrag = nil;
 	}
 }
 
@@ -778,16 +780,14 @@ SCNumberBox : SCStaticTextBase {
 	properties {
 		^super.properties ++ #[\boxColor]
 	}
-	getDragObject { 
+	defaultGetDrag { 
 		^object.asFloat
 	}
-	canReceiveDrag {
+	defaultCanReceiveDrag {
 		^currentDrag.isNumber;
 	}
-	receiveDrag {
-		this.valueAction = currentDrag;
-		
-		currentDrag = nil;
+	defaultReceiveDrag {
+		this.valueAction = currentDrag;	
 	}
 }
 
@@ -867,15 +867,14 @@ SCListView : SCControlView {
 		^super.properties ++ #[\value, \font, \items, \stringColor]
 	}
 
-	getDragObject { 
+	defaultGetDrag { 
 		^this.value
 	}
-	canReceiveDrag {
+	defaultCanReceiveDrag {
 		^currentDrag.isNumber;
 	}
-	receiveDrag {
+	defaultReceiveDrag {
 		this.valueAction = currentDrag;
-		currentDrag = nil;
 	}
 }
 
@@ -888,7 +887,7 @@ SCDragView : SCStaticTextBase {
 		v.object = \something;
 		^v
 	}
-	getDragObject { 
+	defaultGetDrag { 
 		^object
 	}
 }
@@ -897,21 +896,16 @@ SCDragSource : SCDragView {
 	
 }
 
-SCDragSink : SCDragView
-{	
-	var <>acceptDrag = true;
-	
-	canReceiveDrag {
-		^acceptDrag.value(this);
-	}
-	receiveDrag {
+SCDragSink : SCDragView {	
+	defaultCanReceiveDrag { ^true;	}
+	defaultReceiveDrag {
 		this.object = currentDrag;
 		this.doAction;
-		currentDrag = nil;
 	}
 }
 
-SCDragBoth : SCDragSink {
+SCDragBoth : SCDragSink {	
+	defaultGetDrag { ^object }
 }
 
 
@@ -944,14 +938,12 @@ SCFuncUserView : SCUserView {
 //by jt v.0.22
 SCMultiSliderView : SCView { 
 
-	var <>acceptDrag = true;
 	var <>metaAction, <>mouseUpAction;
 	var <>size ;
 	var <gap;
-	var < editable = true;
-	var < elasticMode = 0;
+	var <editable = true;
+	var <elasticMode = 0;
 	
-
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers;}
 	mouseTrack { arg x, y, modifiers; 	}
@@ -1060,39 +1052,30 @@ SCMultiSliderView : SCView {
 	indexIsHorizontal_ { arg val;
 		this.setProperty(\isHorizontal,val);	
 	}
-	canReceiveDrag {
-		^acceptDrag.value(this);
-	}
-	receiveDrag {
-		//this.object = currentDrag;
-		if(currentDrag.at(0).isKindOf(Array), { 
+	defaultCanReceiveDrag {	^true; }
+	defaultReceiveDrag {
+		if(currentDrag.at(0).isSequenceableCollection, { 
 			this.value_(currentDrag.at(0));
 			this.reference_(currentDrag.at(1));
 		},{
 			this.value_(currentDrag);
 		});
-		this.doAction;
-		currentDrag = nil;
-	}
-	getDragObject { 
-		^this.defaultDrag
-	}
-	
-	defaultDrag {
-			var setsize, vals, rvals, outval;
-			rvals = this.reference;
-			vals = this.value;
-			if(this.selectionSize > 1, {
-				vals = vals.copyRange(this.index, this.selectionSize + this.index);});
-			if(rvals.isNil, { 
-				^vals 
-			},{
-			if(this.selectionSize > 1, {
-				rvals = rvals.copyRange(this.index, this.selectionSize + this.index);});
-				outval = outval.add(vals);
-				outval = outval.add(rvals);
-			});
-			^outval
+	}	
+	defaultGetDrag {
+		var setsize, vals, rvals, outval;
+		rvals = this.reference;
+		vals = this.value;
+		if(this.selectionSize > 1, {
+			vals = vals.copyRange(this.index, this.selectionSize + this.index);});
+		if(rvals.isNil, { 
+			^vals 
+		},{
+		if(this.selectionSize > 1, {
+			rvals = rvals.copyRange(this.index, this.selectionSize + this.index);});
+			outval = outval.add(vals);
+			outval = outval.add(rvals);
+		});
+		^outval
 	}
 		
 	defaultKeyDownAction { arg key, modifiers, unicode;
@@ -1105,7 +1088,7 @@ SCMultiSliderView : SCView {
 	
 	doMetaAction{ 
 		metaAction.value(this)
-	} //when ctrl click
+	} //on ctrl click
 }
 
 SCEnvelopeView : SCMultiSliderView {
@@ -1142,23 +1125,18 @@ SCEnvelopeView : SCMultiSliderView {
 	setThumbHeight {arg index, height;
 		this.setProperty(\thumbHeight, [index, height]);
 	}
-	
 	thumbHeight_ { arg height;
 		this.setThumbHeight(-1, height);
 	}
-
 	setThumbWidth{ arg index, width;
 		this.setProperty(\thumbWidth, [index, width]);
 	}
-	
 	thumbWidth_ { arg width;
 		this.setThumbWidth(-1, width);
 	}
-	
 	setThumbSize{ arg index, size;
 		this.setProperty(\thumbSize, [index, size]);
 	}
-	
 	thumbSize_ { arg size;
 		this.setThumbSize(-1, size);
 	}
@@ -1197,7 +1175,7 @@ SCEnvelopeView : SCMultiSliderView {
 		^this.getProperty(\lastIndex)
 	}
 
-	setEditable{arg index, boolean;
+	setEditable { arg index, boolean;
 		this.setProperty(\editable, [index,boolean]);		
 	}	
 
@@ -1208,8 +1186,11 @@ SCEnvelopeView : SCMultiSliderView {
 	selectionColor_ { arg acolor;
 		this.setProperty(\selectionColor, acolor)
 	}
-	receiveDrag {
-		if(currentDrag.isKindOf(String), {
+	defaultGetDrag { 
+		^this.value
+	}
+	defaultReceiveDrag {
+		if(currentDrag.isString, {
 			this.addValue;
 			items = items.insert(this.lastIndex + 1, currentDrag);
 			this.strings_(items);		
@@ -1217,10 +1198,7 @@ SCEnvelopeView : SCMultiSliderView {
 			this.value_(currentDrag);
 		});
 	}
-	getDragObject { 
-		^this.value
-	}
-	addValue{arg xval, yval;
+	addValue { arg xval, yval;
 		var arr, arrx, arry, aindx;
 		aindx = this.lastIndex;
 		aindx.postln;
@@ -1241,7 +1219,7 @@ SCEnvelopeView : SCMultiSliderView {
 		this.value_([arrx,arry]);
 	}	
 	
-	fixedSelection_{arg bool;
+	fixedSelection_ { arg bool;
 		fixedSelection =  bool;
 		this.setProperty(\setFixedSelection, bool);
 	}
@@ -1271,3 +1249,4 @@ HiliteGradient {
 // consuming keydown in function 
 // added keyup
 // and SCMultiSlider by jan t.
+// added customizable drag handlers, cx
