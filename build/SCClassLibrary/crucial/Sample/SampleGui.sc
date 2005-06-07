@@ -1,8 +1,15 @@
 
+// new SampleGui by blackrain@spymac.com
+// thanks!
+
 SampleGui : ObjectGui {
 	
-	var <sigG,lastSoundFilePath,maxs,mins,resolution = 128;
+	var lastSoundFilePath;
 	var nameG,tempoG,beatsG;
+
+	var v, d, divs, block = 64;
+	var zin, zout, zyin, zyout, lScroll, rScroll, selectionStartG, selectionSizeG;
+
 	writeName { arg layout;
 		var n;
 		n = model.class.asString;
@@ -15,7 +22,12 @@ SampleGui : ObjectGui {
 			.object_(n);
 	}
 	guiBody { arg layout;
-		var xfade,r,size;
+		var xfade, r, size;
+		
+		divs = 1;
+		zout = 1.1; zin = zout.reciprocal;
+		zyout = 1.1; zyin = zyout.reciprocal;
+		rScroll = 0.01; lScroll = rScroll * -1;
 
 		layout = this.guify(layout,Rect(0,0,700,500),model.asString);
 		nameG = ActionButton(layout,"pathname",{
@@ -29,9 +41,9 @@ SampleGui : ObjectGui {
 				"Sample buffer not loaded".inform;
 			})
 		});
-		ActionButton(layout,"reload buffer",{
+		/*ActionButton(layout,"reload buffer",{
 			model.reloadBuffer;
-		});
+		});*/
 		
 		CXLabel(layout,"bpm:");
 		tempoG=NumberEditor(model.tempo * 60.0,[0,1000])
@@ -44,88 +56,110 @@ SampleGui : ObjectGui {
 		beatsG.smallGui(layout);
 
 		ActionButton(layout,">",{model.play},maxx:70).background_(Color.green(alpha:0.5));
+		// no point in saving until we have editing
 		//ActionButton(layout, "save...",{model.save},maxx:70).background_(Color.white);
-		//ActionButton(layout,"selAll",{sigG.setSelection(0,model.size)},maxx:70);
 
-		size = layout.asView.bounds.width - 50;
-		sigG = SCMultiSliderView(layout, Rect(0, 0, size, 50));
-		sigG.readOnly_(true);
+		size = layout.asView.bounds.width - 220;
 		layout.startRow;
+		v = SCSoundFileView.new(layout, Rect(0, 0, size, 80))
+			.canFocus_(true).gridOn_(true).timeCursorOn_(false);
+		d = SCSlider(layout, Rect(0,0,size,7)).action_({|slider| v.scrollTo(slider.value) });
 
-		SCSlider( layout, Rect(0, 0, size, 12))
-			.action_({arg ex; sigG.setProperty(\xOffset, (ex.value * 4) + 1 )});
-		sigG.thumbSize_(1); 
-		sigG.gap_(0);
-		sigG.colors_(Color.black, Color.grey(0.1,0.8));
-		sigG.showIndex_(true);
-		sigG.action = { arg xb;
-			var start;
-			model.startFrame = start = (xb.index * resolution);
-			model.endFrame = (xb.selectionSize * resolution - start);
+		layout.startRow;
+		CXLabel(layout,"Resolution:");
+		//SCStaticText.new(layout, Rect(0, 0, 40, 18)).string_("Resolution:").align_(\right);
+		SCNumberBox(layout, Rect(0, 0, 30, 18)).value_(block)
+			.action_({|numbox|
+				numbox.value = max(numbox.value,1);
+				if (numbox.value != block, {
+					block = numbox.value;
+					if(model.soundFilePath.notNil, {
+						v.soundfile = SoundFile.new(model.soundFilePath);
+						v.readWithTask( block: block);
+					})
+				})
+
+			});
+		CXLabel(layout,"divs/beat:");
+		//SCStaticText.new(layout, Rect(0, 0, 40, 18)).string_("Divs/beat:").align_(\right);
+		SCNumberBox(layout, Rect(0, 0, 30, 18)).value_(divs)
+			.action_({|numbox|
+				numbox.value = max(numbox.value,1);
+				divs = numbox.value;
+				v.gridResolution_(60/tempoG.value/divs);
+			});
+		SCStaticText.new(layout, Rect(0, 0, 50, 18)).string_("Start:").align_(\right);
+		selectionStartG = SCStaticText.new(layout, Rect(0, 0, 100, 18));
+		SCStaticText.new(layout, Rect(10, 0, 30, 18)).string_("Size:").align_(\right);
+		selectionSizeG = SCStaticText.new(layout, Rect(0, 0, 100, 18));
+	
+		v.mouseUpAction = {
+			selectionStartG.string = v.selectionStart(0);
+			selectionSizeG.string = v.selectionSize(0)
 		};
-		sigG.drawLines_(true);
-		sigG.drawRects_(false);
-		sigG.isFilled_(true);
-		sigG.background_(Color.new255(248, 248, 255,170));
+		//v.keyDownAction = this.keyDownResponder;
+		v.keyDownAction = { arg ascii, char;
+			case		
+				{char === $+} { v.zoom(zin) }		// zoom in
+				{char === $-} { v.zoom(zout) }		// zoom out
+				{char === $'} { v.yZoom = v.yZoom * zyin } // zoom in on y
+				{char === $;} { v.yZoom = v.yZoom * zyout } // zoom out on y
+				{char === $/} { v.yZoom = 1 }		// zoom 1 on y
+				{char === $=} { v.zoomAllOut }		// view all - zoom all out
+				{char === $f} { v.zoomSelection(0) }	// fit selection to view
+				{char === $.} { v.scroll(rScroll) }	// scroll right ->
+				{char === $,} { v.scroll(lScroll) }	// scroll left <-
+				{char === $s} { v.scrollToStart }	// scroll to buffer start
+				{char === $e} { v.scrollToEnd }		// scroll to buffer end
+				{char === $a} { v.selectAll(0) }		// select all
+				{char === $n} { v.selectNone(0) };	// select none
+		
+			d.value = v.scrollPos;	// update scrollbar position
+			selectionStartG.string = v.selectionStart(0);
+			selectionSizeG.string = v.selectionSize(0)
+		};
 
-		
-		this.drawWaveform;
-		
-		SCSlider( layout, Rect(0, 0, size, 12))
-			.action_({arg ex; sigG.setProperty(\startIndex, ex.value * maxs.size )});
-		
-
-		//ActionButton(layout,"!normalize",{model.normalize});
-		//ActionButton(layout,"< -fades- >",{model.inouts});
-		
-		//ActionButton(layout,"crop",{model.crop(sigG.selectionStart,sigG.selectionEnd)});
-		
-		this.update;		
+		this.update;	
 	}
 	update { arg changed,changer;
 		tempoG.value_(model.tempo*60).changed;
 		beatsG.value_(model.beats).changed;
 		if(model.soundFilePath !== lastSoundFilePath,{
 			nameG.label_(model.name).refresh;
-			this.drawWaveform;
-		});
-	}
-	drawWaveform {
-		var file,c,minval=0,maxval=0;
-		maxs = Array.new;
-		mins = Array.new;
-		if(model.soundFilePath.isNil, { ^this });
-		lastSoundFilePath = model.soundFilePath;
-		file = model.soundFile;
-		file.openRead(lastSoundFilePath);
-		//file.numFrames;
-		// what if its stereo ???
-		c = FloatArray.newClear(file.numFrames);
-		file.readData(c);
 
-		file.close;
-		
-		c.do({arg fi, i;
-			if(fi < minval, {minval = fi});
-			if(fi > maxval, {maxval = fi});
-		
-			if(i % resolution == 0,{
-				maxs = maxs.add((1 + maxval ) * 0.5 );
-				mins = mins.add((1 + minval ) * 0.5 );
+			if(model.soundFilePath.isNil, { ^this });
+			lastSoundFilePath = model.soundFilePath;
 			
-				minval = 0;
-				maxval = 0;
-			});
+			v.soundfile = SoundFile.new(lastSoundFilePath);
+			v.readWithTask( block: block, doneAction: { v.gridResolution_(60/tempoG.value/divs) } );
 		});
-		
-		sigG.reference_(maxs); //this is used to draw the upper part of the table
-		sigG.value_(mins);
-		
-		sigG.index_(model.startFrame / resolution);
-		sigG.selectionSize_(model.size / resolution);
-
-		//	sigG.zoom_(ceil(model.size  /  sigG.view.bounds.width ) * 3);
 	}
+	updateSelection {
+		d.value = v.scrollPos;	// update scrollbar position
+		selectionStartG.string = v.selectionStart(0);
+		selectionSizeG.string = v.selectionSize(0)		
+	}
+	/*keyDownResponder {	
+		// grrrr. shift.
+		var kdr;
+		kdr = UnicodeResponder.new;
+		kdr.normal(
+			$+ -> { v.zoom(zin); this.updateScroll; },		// zoom in
+			$- -> { v.zoom(zout); this.updateScroll; },		// zoom out
+			$' -> { v.yZoom = v.yZoom * zyin; this.updateScroll; }, // zoom in on y
+			$; -> { v.yZoom = v.yZoom * zyout;  this.updateScroll; }, // zoom out on y
+			$/ -> { v.yZoom = 1;  this.updateScroll; },		// zoom 1 on y
+			$= -> { v.zoomAllOut;  this.updateScroll; },		// view all - zoom all out
+			$f -> { v.zoomSelection(0);  this.updateScroll; },	// fit selection to view
+			$. -> { v.scroll(rScroll);  this.updateScroll; },	// scroll right ->
+			$, -> { v.scroll(lScroll);  this.updateScroll; },	// scroll left <-
+			$s -> { v.scrollToStart;  this.updateScroll; },	// scroll to buffer start
+			$e -> { v.scrollToEnd;  this.updateScroll; },		// scroll to buffer end
+			$a -> { v.selectAll(0);  this.updateScroll; },		// select all
+			$n -> { v.selectNone(0);  this.updateScroll; });	// select none
+		^kdr
+	}*/
+
 /*
 	selectionStart { ^sigG.selectionStart }
 	selectionEnd {^sigG.selectionEnd }
@@ -141,7 +175,7 @@ SampleGui : ObjectGui {
 	}
 }
 
-
+/**
 		
 WavetableSampleGui : SampleGui {
 	
@@ -189,4 +223,6 @@ WavetableSampleGui : SampleGui {
 	}
 
 }
+
+**/
 
