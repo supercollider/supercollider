@@ -22,7 +22,9 @@ Char : Magnitude {
 		^this.primitiveFailed
 	}
 	asAscii { ^this }
-	
+	// this returns the single unicode value.
+	// ascii is a subset of unicode
+	asUnicode { ^this.ascii }
 	// case conversion
 	toUpper {
 		_ToUpper

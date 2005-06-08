@@ -65,6 +65,7 @@ Integer : SimpleNumber {
 		_AsAscii
 		^this.primitiveFailed
 	}
+	asUnicode { ^this }
 	asDigit {
 		// must be 0 <= this <= 35
 		_AsDigit
