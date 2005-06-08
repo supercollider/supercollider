@@ -1,9 +1,4 @@
 
-+ ZArchive {
-	asZArchive {
-		^this 
-	}
-}
 
 + Object {
 
@@ -75,16 +70,16 @@
 	}
 }				
 
-// raw arrays could cut in half by not having to repeat the class
-//		if(this.isKindOf(RawArray),{ // check the type of this.at(0)
-//			akv.putChar($S);
-//			classname = this.class.name.asString;
-//			akv.putInt8(classname.size);
-//			akv.putString(classname);
-//			akv.putInt32(this.size);
-//			akv.write(this); // do ?
-//	//	}
-		
+/* raw arrays could cut in half by not having to repeat the class
+		if(this.isKindOf(RawArray),{ // check the type of this.at(0)
+			akv.putChar($S);
+			classname = this.class.name.asString;
+			akv.putInt8(classname.size);
+			akv.putString(classname);
+			akv.putInt32(this.size);
+			akv.write(this); // do ?
+		}
+*/		
 
 // classname is written, so you will get the correct class back
 + Dictionary {
