@@ -17,7 +17,7 @@ PatchGui : AbstractPlayerGui {
 				.background_(Color( 0.47843137254902, 0.72941176470588, 0.50196078431373 ))
 				.font_(Font("Helvetica",10))
 				.align_(\left)
-				.acceptDrag_({  
+				.canReceiveDragHandler_({  
 					model.instr.specs.at(i).canAccept(SCView.currentDrag);
 				})
 				.object_(model.instr.argNames.at(i))
@@ -37,21 +37,10 @@ PatchGui : AbstractPlayerGui {
 				});
 
 			box = vl.flow({ arg layout;
-				//layout.asView.setProperty(\maxHeight, maxHeight);
-				
 				if(a.tryPerform('path').notNil,{
 					Tile(a,layout);
 				},{
-					gui = a.gui(layout);/*
-					ToggleButton(layout,"³",
-						{  gui = model.args.at(i).gui(box); },
-						{  gui.remove(true); box.refresh;  },
-						true
-					);
-					layout.startRow;
-					box = layout.flow({ arg box;
-							gui = model.args.at(i).gui(box);
-						})*/
+					gui = a.gui(layout);
 				});
 			})
 		});
