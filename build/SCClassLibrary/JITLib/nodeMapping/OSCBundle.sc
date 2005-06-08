@@ -117,7 +117,7 @@ MixedBundle : OSCBundle {
 		functions = functions.add( Message(receiver,selector,args) )
 	}
 	addEarlyMessage { arg receiver, selector, args;
-		earlyFunctions = functions.add( Message(receiver,selector,args) )
+		earlyFunctions = earlyFunctions.add( Message(receiver,selector,args) )
 	}
 	
 	
