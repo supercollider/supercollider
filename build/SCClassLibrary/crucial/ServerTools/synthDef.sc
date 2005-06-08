@@ -81,7 +81,7 @@
 }
 
 + Spec {
-	canAccept { ^false } // canAcceptDrag or other uses
+	canAccept { ^false } // cancanReceiveDragHandler or other uses
 }
 
 + ControlSpec {

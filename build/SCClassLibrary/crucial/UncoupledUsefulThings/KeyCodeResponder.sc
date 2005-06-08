@@ -4,18 +4,16 @@ KeyCodeResponder {
 
        classvar global;
  
-/*  I'll switch to this when I update my own personal sclang, thanks.
-
        const <normalModifier       = 0;
        const <capsModifier         = 0x00010000;
        const <shiftModifier        = 0x00020000;
        const <controlModifier      = 0x00040000;
        const <optionModifier       = 0x00080000;
-       const <functionKeyModifier  = 0x00800000; */
+       const <functionKeyModifier  = 0x00800000;
 
- 	classvar <>normalModifier=0,<>shiftModifier=131074,<>controlModifier=262145,
-               <>optionModifier=524320,<>functionKeyModifier=8388608,<>capsModifier=65536;
-	
+/* 	classvar <>normalModifier=0,<>shiftModifier=0x00020000,<>controlModifier=0x00040000,
+               <>optionModifier=0x00080000,<>functionKeyModifier=0x00800000,<>capsModifier=0x00010000;
+*/	
 	var <>dict;
 	
 	// keycode -> { }, keycode -> { }, ...
@@ -96,18 +94,40 @@ KeyCodeResponder {
 	*resetKeycode { arg keycode;
 		this.at(keycode).reset
 	}
-	
+		
 	*tester {
 		this.clear;
 		Sheet({ arg l;
 			ActionButton.new(l,
-			"while focused on this button, press keys and modifiers to post a code template").focus
+				"while focused on this button, press keys and modifiers to post a code template").focus
 				.keyDownAction_({ arg v,c,m,u,k;
-					//("view:"+v+" char:"+c+" mod:"+m+" unicode:"+u+" keycode:"+k).postln;
-					("KeyCodeResponder.registerKeycode(" + m + "," + k + ",{      });// " + c ).postln;
+					var words="",boos="";
+					//"k = KeyCodeResponder.new;".postln;
+					"// ".post;
+					[\shift->KeyCodeResponder.shiftModifier, \caps->KeyCodeResponder.capsModifier,
+					\option->KeyCodeResponder.optionModifier, \control->KeyCodeResponder.controlModifier].do({ |modass|
+						if((m & modass.value) == modass.value,{
+							words = words + modass.key;
+							boos = boos + "true,";
+						},{
+							boos = boos + "false,";	
+						});
+					});
+					
+					words.post; " ".post;
+					if(c.isPrint,{
+						c.postln;
+					},{
+						k.postln;
+					});
+					
+					("k.register(  " + k + " , " + boos + "{").postln;
+					"".postln;
+					"});".postln;
 				});
 		})
 	}
+	
 	// concatenate responders
 	++ { arg that;
 		var new,keys;
@@ -229,8 +249,9 @@ KeyCodeResponderStack {
 	}
 }
 
-SimpleKDRUnit { // matches if the modifier combo (or single) is present,
-			// but does NOT FAIL if others are also present
+SimpleKDRUnit { 
+	// matches if the modifier combo (or single) is present,
+	// but does NOT FAIL if others are also present
 
 	 var <>requireMask,<>function;
 	 
@@ -238,7 +259,7 @@ SimpleKDRUnit { // matches if the modifier combo (or single) is present,
 		^super.newCopyArgs(modifier,function)
 	}
 	value { arg char,modifier,unicode,keycode;
-		//[modifier,requireMask,modifier & requireMask, (modifier & requireMask) == requireMask].debug;
+		[modifier,requireMask,modifier & requireMask, (modifier & requireMask) == requireMask].debug("simple");
 		if((modifier & requireMask) == requireMask,{function.value(char,modifier,unicode,keycode)})
 	}
 	== { arg that;
@@ -259,6 +280,8 @@ KDRMaskTester : SimpleKDRUnit {
 		^super.new(r,function).denyMask_(d)
 	}
 	value { arg char,modifier,unicode,keycode;
+		//[modifier & requireMask, requireMask].debug("require");
+		//[denyMask & modifier].debug("deny");
 		if((modifier & requireMask) == requireMask // all required bits set
 			and: 
 		{  (denyMask & modifier) == 0 } // no denied bits present

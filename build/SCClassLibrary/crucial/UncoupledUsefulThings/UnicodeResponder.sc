@@ -1,6 +1,4 @@
 
-// should share a superclass with KeyCodeResponder
-
 UnicodeResponder {
 
 	classvar global;
@@ -8,12 +6,13 @@ UnicodeResponder {
 	
 	*new { ^super.new.clear }
 
+	// use this as your view's keyDownAction in place of a function
 	// view.keyDownAction = unicodeResponder
 	value { arg view,char,modifier,unicode,keycode;
 		^this.at(unicode).value(unicode,modifier)
 	}
 
-	// k.normal( unicode => { } )
+	// ur.normal( unicode -> { } [, unicode -> { } ... ]  )
 	normal { arg ... assns; 
 		assns.do({ arg as;
 			this.register(as.key,false,false,false,false,as.value)
@@ -34,7 +33,7 @@ UnicodeResponder {
 			this.register(as.key,false,false,false,true,as.value)
 		})
 	}
-	// true/false/nil
+	// for combinations: true/false/nil
 	register { arg unicode,shift,caps,opt,cntl,function;
 		var require=0,deny=0;
 		require = [];
@@ -67,23 +66,10 @@ UnicodeResponder {
 				deny = deny.add(KeyCodeResponder.controlModifier);
 			})
 		});
-		this.pushForUnicode(unicode,require,deny,function);
+		this.pushForUnicode(unicode.asUnicode,require,deny,function);
 	}
 	
-	
-	// matches if the modifier is present
-	registerUnicode { arg modifier,unicode,function;
-		var kdr;
-		kdr = dict.at(unicode);
-		if(kdr.isNil,{
-			kdr = KeyCodeResponderStack.new;
-			dict.put(unicode,kdr);
-		});
-		kdr.addSimple(modifier,function);
-	}
-
-	// you can concatenate responders !  let each part of your application add their own
-	// key commands
+	// you can concatenate responders
 	++ { arg that;
 		var new,keys;
 		if(that.isNil,{ ^this });
@@ -102,15 +88,15 @@ UnicodeResponder {
 	  * installs itself in SCView.globalKeyDownAction
 	  */	
 	*register { arg unicode,shift,caps,opt,cntl,function;
-		this.global.register(unicode,shift,caps,opt,cntl,function);
+		this.global.register(unicode.asUnicode,shift,caps,opt,cntl,function);
 	}
 	*clear { this.global.clear }
 	*remove { SCView.globalKeyDownAction = nil; }
 
-
 	// less useful
-	*registerUnicode { arg modifier,ascii,function;
-		this.global.registerUnicode(modifier,ascii, function)
+	// matches only if the modifier is present
+	*registerUnicode { arg modifier,unicode,function;
+		this.global.registerUnicode(modifier,unicode.asUnicode, function)
 	}
 	*registerUnicodeAll { arg ... sets;
 		sets.do({ arg set;
@@ -122,10 +108,20 @@ UnicodeResponder {
 			this.performList(\register,set)
 		})
 	}
+	registerUnicode { arg modifier,unicode,function;
+		var kdr;
+		unicode = unicode.asUnicode;
+		kdr = dict.at(unicode);
+		if(kdr.isNil,{
+			kdr = KeyCodeResponderStack.new;
+			dict.put(unicode,kdr);
+		});
+		kdr.addSimple(modifier,function);
+	}
+
 
 
 	// private
-
 	registerUnicodeAll { arg ... sets;
 		sets.do({ arg set;
 			this.performList(\registerUnicode,set)
@@ -139,15 +135,29 @@ UnicodeResponder {
 		this.clear;
 		Sheet({ arg l;
 			ActionButton.new(l,
-			"while focused on this button, press keys and modifiers to post a code template").focus
+				"while focused on this button, press keys and modifiers to post a code template").focus
 				.keyDownAction_({ arg v,c,m,u,k;
-					"k = UnicodeResponder.new;".postln;
-					if(c.isPrint,{
-						("// "++c++" :").postln;
-					},{
-						("//  "++c.asAscii++" :").postln;
+					var words="",boos="";
+					//"k = UnicodeResponder.new;".postln;
+					"// ".post;
+					[\shift->KeyCodeResponder.shiftModifier, \caps->KeyCodeResponder.capsModifier,
+					\option->KeyCodeResponder.optionModifier, \control->KeyCodeResponder.controlModifier].do({ |modass|
+						if((m & modass.value) == modass.value,{
+							words = words + modass.key;
+							boos = boos + "true,";
+						},{
+							boos = boos + "false,";	
+						});
 					});
-					("k.register(  " + u + " ,             ,{").postln;
+					
+					words.post; " ".post;
+					if(c.isPrint,{
+						c.postln;
+					},{
+						u.postln;
+					});
+					
+					("k.register(  " + u + " , " + boos + "{").postln;
 					"".postln;
 					"});".postln;
 				});
@@ -164,6 +174,7 @@ UnicodeResponder {
 	}
 	pushForUnicode { arg unicode,requireMask,denyMask,function;
 		var kdr;
+		unicode = unicode.asUnicode;
 		kdr = this.at(unicode);
 		if(kdr.isNil,{
 			kdr = KeyCodeResponderStack.new;
@@ -172,18 +183,16 @@ UnicodeResponder {
 		kdr.addMaskTester(requireMask,denyMask,function);
 	}
 	*resetUnicode { arg unicode;
-		this.at(unicode).reset
+		this.at(unicode.asUnicode).reset
 	}
 	*value { arg view,char,modifiers,unicode,keycode;
 		^this.at(unicode).value(char,modifiers,unicode,keycode)
 	}
 	*global { 
 		^global ?? {
-				global = this.new;
-				SCView.globalKeyDownAction = global;
-				global
+			global = this.new;
+			SCView.globalKeyDownAction = global;
+			global
 		} 
 	}
 }
-
-
