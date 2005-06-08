@@ -82,7 +82,7 @@
 	//guiClass { ^DictionaryGui }		
 	guiBody { arg layout;
 		this.keysValuesDo({ arg k,v,i;
-			CXLabel(layout.startRow,k,maxx: 100);
+			CXLabel(layout.startRow,k,minWidth: 100);
 			Tile(v,layout,200);
 		})
 	}

@@ -210,7 +210,7 @@ PageLayout  {
 	
 	classvar <>bgcolor ,<>focuscolor,<>hrcolor;
 	
-	var windows, <>vspacer=3,<>hspacer=5, maxx=0, maxy=0, currx, curry;
+	var windows, <>vspacer=3,<>hspacer=5, minWidth=0, minHeight=0, currx, curry;
 	var <margin; // max area in window we may occupy
 	var <winMaxBounds,tabs=0;
 	var onBoundsExceeded='newWindow',metal;
@@ -244,21 +244,9 @@ PageLayout  {
 	}
 	
 	init { arg title,width,height,posx,posy,arghspacer,argvspacer,argmetal;
-		var w,gwmaxx,gwmaxy;
+		var w,gwminWidth,gwminHeight;
 		hspacer = arghspacer;
 		vspacer = argvspacer;
-		/* attempt to find a suitable position
-		if(posx.isNil,{
-			gwmaxx = GUIWindow.allWindows
-				.maxItem({ arg win; win.bounds.right }).bounds.right;
-			posx = (gwmaxx + x).wrap(0,screenWidth) - x;
-		});
-		if(posy.isNil,{
-			gwmaxy = GUIWindow.allWindows
-				.maxItem({ arg win; win.bounds.bottom }).bounds.bottom;
-			posy = (gwmaxy + y).wrap(0,screenHeight) - y;
-		});
-		*/
 		windows=windows.add
 		(	
 			w=SCWindow.new("< " ++ title.asString ++ " >",
@@ -302,8 +290,8 @@ PageLayout  {
 	startRow { // move to new line if not already there
 		if(currx != margin.left,{
 			currx=margin.left;
-			curry=curry+maxy+vspacer;
-			maxy=0;
+			curry=curry+minHeight+vspacer;
+			minHeight=0;
 			tabs.do({
 				this.layRight(10,10);
 			});
@@ -319,8 +307,8 @@ PageLayout  {
 			this.perform(onBoundsExceeded)
 		});
 			
-		if((x+currx)>maxx,{maxx=x});
-		if(y>maxy,{maxy=y});
+		if((x+currx)>minWidth,{minWidth=x});
+		if(y>minHeight,{minHeight=y});
 		
 		rect=Rect.new(currx,curry,x,y);
 		currx=currx+x+(argSpacer?hspacer);		
@@ -329,8 +317,8 @@ PageLayout  {
 	
 	layDown { arg x, y, sp;
 		var rect;
-		if(x>maxx,{maxx=x});
-		if(y>maxy,{maxy=y});
+		if(x>minWidth,{minWidth=x});
+		if(y>minHeight,{minHeight=y});
 		rect=Rect.new(currx,curry,x,y);
 		curry=curry + y + (sp ? vspacer);
 		^rect	
@@ -475,7 +463,7 @@ PageLayout  {
 			band = Rect.newSides(0,lowest.top,w.bounds.width,lowest.bottom);
 			overlaps = bounds.select({ arg b; b.intersects(band) });
 			
-			maxy = lowest.bottom;
+			minHeight = lowest.bottom;
 			curry = band.top;
 			currx = overlaps.maxValue({ arg b; b.right }) + hspacer;
 		}); //  its all set if there are no views yet

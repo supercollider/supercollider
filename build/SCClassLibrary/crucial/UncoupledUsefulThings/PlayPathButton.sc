@@ -4,12 +4,12 @@ PlayPathButton : SCButtonAdapter { // loads the object at loadDocument and .play
 
 	var <>subject,player,<>action;
 
-	*new { arg layout,path,maxx=150;
+	*new { arg layout,path,minWidth=150;
 		var new;
 		path = path.asString;
 		path.dump;
 		new=super.new;
-		new.makeView(layout,maxx,17);
+		new.makeView(layout,minWidth,17);
 		new.view.action_({new.doAction});
 		new.path_(path);		
 		^new

@@ -32,7 +32,7 @@ SampleGui : ObjectGui {
 		layout = this.guify(layout,Rect(0,0,700,500),model.asString);
 		nameG = ActionButton(layout,"pathname",{
 			this.loadDialog
-		},maxx:140).background_(Color.white);
+		},minWidth:140).background_(Color.white);
 		
 		ActionButton(layout,"query buffer",{
 			if(model.buffer.notNil,{
@@ -55,9 +55,9 @@ SampleGui : ObjectGui {
 					.action_({arg th; model.beats_(th.value).changed(this) });
 		beatsG.smallGui(layout);
 
-		ActionButton(layout,">",{model.play},maxx:70).background_(Color.green(alpha:0.5));
+		ActionButton(layout,">",{model.play},minWidth:70).background_(Color.green(alpha:0.5));
 		// no point in saving until we have editing
-		//ActionButton(layout, "save...",{model.save},maxx:70).background_(Color.white);
+		//ActionButton(layout, "save...",{model.save},minWidth:70).background_(Color.white);
 
 		size = layout.asView.bounds.width - 220;
 		layout.startRow;

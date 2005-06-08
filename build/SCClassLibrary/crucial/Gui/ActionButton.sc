@@ -177,13 +177,13 @@ SCButtonAdapter : SCViewAdapter {
 		this.view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight)).keyDownAction_({nil});
 	}		
 
-	makeViewWithStringSize { arg layout,stringsize,maxx,maxy;
-		// maxx is now dependant on font size !
+	makeViewWithStringSize { arg layout,stringsize,minWidth,minHeight;
+		// minWidth is now dependant on font size !
 		// NSFont-boundingRectForFont
 		// or NSString- (NSSize) sizeWithAttributes: (NSDictionary *) attributes 
 		this.makeView( layout,
-					(stringsize.clip(3,55) * 7.9).max(maxx?20),
-						(maxy ) )
+					(stringsize.clip(3,55) * 7.9).max(minWidth?20),
+						(minHeight ) )
 	}
 	initOneState { arg name,textcolor,backcolor;
 		view.states_([[name,textcolor ? Color.black, backcolor ? Color.white]])
@@ -214,13 +214,13 @@ ActionButton : SCButtonAdapter { // one state
 
 	var <action;
 	
-	*new { arg layout,title,function,maxx=20,maxy,color,backcolor,font;
-		^super.new.init(layout,title,function,maxx,maxy,color,backcolor,font)
+	*new { arg layout,title,function,minWidth=20,minHeight,color,backcolor,font;
+		^super.new.init(layout,title,function,minWidth,minHeight,color,backcolor,font)
 	}
-	init { arg layout,title,function,maxx=20,maxy,color,backcolor,font;
+	init { arg layout,title,function,minWidth=20,minHeight,color,backcolor,font;
 		var environment;
 		title = title.asString;
-		this.makeViewWithStringSize(layout,title.size,maxx,maxy);
+		this.makeViewWithStringSize(layout,title.size,minWidth,minHeight);
 		view.states_([[title,color ?? {Color.black}, 
 			backcolor ?? {Color.new255(205, 201, 201)}]]);
 		view.font_(font ?? {Font("Helvetica",12.0)});
@@ -239,14 +239,14 @@ PopUp : ActionButton { // change to use SCPopUpMenu
 				list,//or list-delivering-function
 				onSelect,// thing,i
 				//optional...
-				menuLabelsFunc,initIndex=0,maxx=100;
+				menuLabelsFunc,initIndex=0,minWidth=100;
 		var b;
 		^b = super.new(
 			layout,
 			title.value 	?? {menuLabelsFunc.value(list.value.at(initIndex),initIndex)} 
 						?? {list.value.at(initIndex).asString},
 			{b.doAction},
-			maxx,
+			minWidth,
 			17
 			)
 			.title_(title)
@@ -279,13 +279,13 @@ ToggleButton : SCButtonAdapter {
 
 	var <state,<>onFunction,<>offFunction;
 	
-	*new { arg layout,title,onFunction,offFunction,init=false,maxx=20,maxy;
-			^super.new.init(layout,init, title,maxx,maxy)
+	*new { arg layout,title,onFunction,offFunction,init=false,minWidth=20,minHeight;
+			^super.new.init(layout,init, title,minWidth,minHeight)
 				.onFunction_(onFunction).offFunction_(offFunction)
 	}
-	init { arg layout,init,title,maxx,maxy;
+	init { arg layout,init,title,minWidth,minHeight;
 		var offc,onc;
-		this.makeViewWithStringSize(layout,title.size,maxx,maxy);
+		this.makeViewWithStringSize(layout,title.size,minWidth,minHeight);
 		offc=Color.new255(154, 205, 50);
 		onc=Color.new255(245, 222, 179);
 		view.states = [

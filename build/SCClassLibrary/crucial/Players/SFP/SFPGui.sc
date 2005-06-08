@@ -34,7 +34,7 @@ SFPGui : AbstractSFPGui {
 		var pathLabel,hf,ch,sr;
 		
 		// click on the path to select a different sound file
-		pathLabel=ActionButton(layout,model.fileName,{ this.replaceFile },maxx:150);
+		pathLabel=ActionButton(layout,model.fileName,{ this.replaceFile },minWidth:150);
 		hf=CXLabel(layout,("__________________"));
 		ch=CXLabel(layout,("_____________"));
 		sr=CXLabel(layout,"_____________");

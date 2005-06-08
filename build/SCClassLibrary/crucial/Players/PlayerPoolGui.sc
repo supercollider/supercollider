@@ -4,12 +4,12 @@ PlayerPoolGui : AbstractPlayerGui {
 	var triggers,guis,rect,selectedBox;
 	
 	guiBody { arg layout; // has a select button
-		var maxx,prev=0,indicators,wrapEvery;
+		var minWidth,prev=0,indicators,wrapEvery;
 		
 		ActionButton(layout,"release",{ this.releaseAll });
 		if(model.list.notEmpty,{
-			maxx = model.list.maxItem({ arg sf; sf.name.asString.size }).name.asString.size * 9;		
-			wrapEvery = (layout.innerBounds.width / (maxx + 100)).asInteger;
+			minWidth = model.list.maxItem({ arg sf; sf.name.asString.size }).name.asString.size * 9;		
+			wrapEvery = (layout.innerBounds.width / (minWidth + 100)).asInteger;
 				
 			triggers = 
 			model.list.collect({arg sf,i;
@@ -22,7 +22,7 @@ PlayerPoolGui : AbstractPlayerGui {
 					this.select(i); 
 				};
 				ind.states = [[" ",Color.green,Color.grey],[" ",Color.grey,Color.green]];
-				Tile(sf,layout,maxx: maxx);
+				Tile(sf,layout,minWidth: minWidth);
 				ind
 			});
 		});

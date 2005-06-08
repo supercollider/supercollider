@@ -166,7 +166,7 @@ Crucial {
 		a = ActionButton(menu.startRow,"     Library Menu Items...     ",{
 			MLIDbrowser(\menuItems)
 				.onSelect_({ arg f; f.value })
-		},maxx: 250)
+		},minWidth: 250)
 		.background_(Color.new255(112, 128, 144))
 		.labelColor_(Color.white);
 
@@ -176,7 +176,7 @@ Crucial {
 		},{
 			Server.default.startAliveThread;
 			Server.default.dumpOSC(0)
-		},Server.default.dumpMode != 0 ,maxx: 250);
+		},Server.default.dumpMode != 0 ,minWidth: 250);
 		
 		
 		if(debugNodeWatcher.isNil,{
@@ -186,14 +186,14 @@ Crucial {
 			debugNodeWatcher.start;
 		},{
 			debugNodeWatcher.stop;
-		},debugNodeWatcher.isWatching,maxx: 250);
+		},debugNodeWatcher.isWatching,minWidth: 250);
 
 		ActionButton(menu.startRow,"Query All Nodes",{
-			Library.at(\menuItems,\tools,'Server Node Report').value;		},maxx: 250);
+			Library.at(\menuItems,\tools,'Server Node Report').value;		},minWidth: 250);
 
 		ActionButton(menu.startRow,"kill all",{
 			Server.killAll;
-		},maxx: 250);
+		},minWidth: 250);
 			
 			
 	
@@ -308,7 +308,7 @@ Crucial {
 
 					f = PageLayout.new;
 					matches.do({ arg cl;
-						CXLabel(f.startRow,cl.name,maxx:200);
+						CXLabel(f.startRow,cl.name,minWidth:200);
 						ActionButton(f.startRow,"source",{
 							cl.openCodeFile;
 						},60);
@@ -471,7 +471,7 @@ Crucial {
 					var sp;
 					sp=Spec.specs.at(spn);
 					f.startRow;
-					CXLabel(f,spn,maxx:100);
+					CXLabel(f,spn,minWidth:100);
 					sp.gui(f);
 				})
 			},"Specs")

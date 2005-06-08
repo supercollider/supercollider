@@ -107,12 +107,12 @@ PopUp : ActionButton {
 				list,//or list-delivering-function
 				onSelect,// thing,i
 				//optional...
-				menuLabelsFunc,initIndex=0,maxx=100,borderStyle=4;
+				menuLabelsFunc,initIndex=0,minWidth=100,borderStyle=4;
 		var b;
 		^b = super.new(
 			layout,
 			title.value ?? {menuLabelsFunc.value(list.value.at(initIndex),initIndex)} ?? {list.value.at(initIndex).asString},
-			{b.doAction},maxx,13, borderStyle)
+			{b.doAction},minWidth,13, borderStyle)
 			.title_(title)
 			.list_(list ?? {[]})
 			.menuLabelsFunc_(menuLabelsFunc)

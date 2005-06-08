@@ -22,7 +22,7 @@ CXObjectInspector : ObjectGui {
 				var iv;
 				if(vert or: {i % 3 == 0},{ layout.startRow; });
 				
-				CXLabel(layout,"@" ++ i,maxx: 40);
+				CXLabel(layout,"@" ++ i,minWidth: 40);
 				iv=model.slotAt(i);
 //				ActionButton(layout,"code->",{
 //					GetStringDialog("enter code to compile and insert at slot " 
@@ -36,10 +36,10 @@ CXObjectInspector : ObjectGui {
 	
 				//ClassNameLabel(iv.class,layout);
 				// drag in / out here
-				InspectorLink(iv,layout,maxx:200);
+				InspectorLink(iv,layout,minWidth:200);
 			});
 			if(model.slotSize > 300,{ 
-				CXLabel(layout,"... slotSize is" ++ model.slotSize.asString,maxx:160).bold;
+				CXLabel(layout,"... slotSize is" ++ model.slotSize.asString,minWidth:160).bold;
 			});
 		});
 		this.dependantsGui(layout);
@@ -73,7 +73,7 @@ CXObjectInspector : ObjectGui {
 	dependantsGui { arg layout;
 		layout.hr;
 		// dependants
-		CXLabel(layout.startRow,"dependants:",maxx:160).bold;
+		CXLabel(layout.startRow,"dependants:",minWidth:160).bold;
 		model.dependants.do({ arg d;
 			InspectorLink(d,layout);
 		});
@@ -111,7 +111,7 @@ ClassGui : CXObjectInspector { // ClassGui
 		layout.hr;
 	
 		// you are here
-		InspectorLink.big(model,layout.startRow,maxx:200);
+		InspectorLink.big(model,layout.startRow,minWidth:200);
 		CXLabel(layout,":",y: 30);
 		supers = model.superclasses;
 		if(supers.notNil,{
@@ -154,7 +154,7 @@ ClassGui : CXObjectInspector { // ClassGui
 		
 		// classVarnames
 		if(model.classVarNames.size > 0,{
-			CXLabel(layout.startRow,"classvars:",maxx:160).bold;
+			CXLabel(layout.startRow,"classvars:",minWidth:160).bold;
 			model.classVarNames.size.do({ arg cvi;
 				var iv;
 				VariableNameLabel(model.classVarNames.at(cvi),layout.startRow);
@@ -166,10 +166,10 @@ ClassGui : CXObjectInspector { // ClassGui
 				
 		//instance vars
 		if(model.instVarNames.size > 0,{
-			CXLabel(layout.startRow,"vars:",maxx:160).bold;
+			CXLabel(layout.startRow,"vars:",minWidth:160).bold;
 			model.instVarNames.size.do({ arg ivi;
 				if(ivi % 8 ==0,{ layout.startRow });
-				VariableNameLabel(model.instVarNames.at(ivi),layout,maxx:100);
+				VariableNameLabel(model.instVarNames.at(ivi),layout,minWidth:100);
 				// iprototype
 			});
 		});		
@@ -177,7 +177,7 @@ ClassGui : CXObjectInspector { // ClassGui
 		// meta_class methods
 		if(model.class.methods.size > 0,{
 			model.class.methods.size.do({arg cmi;
-				MethodLabel.classMethod(model.class.methods.at(cmi),layout.startRow,maxx:160);
+				MethodLabel.classMethod(model.class.methods.at(cmi),layout.startRow,minWidth:160);
 			});
 		});	
 		
@@ -219,15 +219,15 @@ ClassGui : CXObjectInspector { // ClassGui
 		if(class.methods.notNil,{
 			class.methods.do({ arg meth;
 				if(withoutClass,{
-					MethodLabel.withoutClass(meth,f.startRow,maxx:160)
+					MethodLabel.withoutClass(meth,f.startRow,minWidth:160)
 				},{
-					MethodLabel(meth,f.startRow,maxx:200);
+					MethodLabel(meth,f.startRow,minWidth:200);
 				});
 				class.superclasses.do({ arg superclass;
 					var supermethod;
 					supermethod = superclass.findMethod(meth.name);
 					if(supermethod.notNil,{
-						MethodLabel(supermethod,f,maxx:200)
+						MethodLabel(supermethod,f,minWidth:200)
 					});
 				})
 			})
@@ -250,7 +250,7 @@ ClassGui : CXObjectInspector { // ClassGui
 			shown = shown + subclasses.size;
 			subclasses.do({ arg c,i;
 					layout.startRow;
-					CXLabel(layout,"",maxx: indent).background = Color.clear;
+					CXLabel(layout,"",minWidth: indent).background = Color.clear;
 					ClassNameLabel(c,layout,200);
 					indent = indent + 50;
 					//layout.indent(1);
@@ -260,7 +260,7 @@ ClassGui : CXObjectInspector { // ClassGui
 					},{
 						if(c.subclasses.size > 0,{
 							CXLabel(layout,c.subclasses.size.asString 
-								+ " subclasses",maxx:80);
+								+ " subclasses",minWidth:80);
 						});
 					});
 					indent = indent - 50;
@@ -298,18 +298,18 @@ MethodGui : ObjectGui {
 			supers.reverse.do({ arg class;
 				var supermethod;
 				supermethod = class.findMethod(model.name);
-				ClassNameLabel(class,layout.startRow,maxx:300);
+				ClassNameLabel(class,layout.startRow,minWidth:300);
 				if(supermethod.notNil,{
 					//	started = true;
-					MethodLabel(supermethod,layout,maxx:300);
+					MethodLabel(supermethod,layout,minWidth:300);
 				});
 
 			})
 		});	
 		
 		//layout.hr;
-		ClassNameLabel(model.ownerClass,layout.startRow,maxx:300);
-		MethodLabel(model,layout,maxx:300);
+		ClassNameLabel(model.ownerClass,layout.startRow,minWidth:300);
+		MethodLabel(model,layout,minWidth:300);
 
 		// show subclass implementations
 		// other class implementations of this message (command-y)
@@ -319,7 +319,7 @@ MethodGui : ObjectGui {
 		// argNames
 		//prototypeFrame = model.prototypeFrame ?? {[]};
 		
-		/*CXLabel(layout.startRow,"args and defaults:",maxx:160).bold;
+		/*CXLabel(layout.startRow,"args and defaults:",minWidth:160).bold;
 		(model.numArgs - 1).do({ arg i;// first arg is 'this'
 			// TODO ellipsis ... 
 			if(model.argNames.notNil,{
@@ -328,7 +328,7 @@ MethodGui : ObjectGui {
 			});
 		});
 		//if(model.primitiveName.notNil,{
-		//	CXLabel(layout.startRow,"primitiveName:",maxx:160).bold;
+		//	CXLabel(layout.startRow,"primitiveName:",minWidth:160).bold;
 		//	CXLabel(layout,model.primitiveName);
 		//});*/	
 	}

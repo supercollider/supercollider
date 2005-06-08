@@ -191,14 +191,14 @@ SaveConsole : AbstractConsole {
 		ActionButton(layout,"#path",{ path.value.asCompileString.postln })
 	}
 	//dirtyAwareSave
-	save { arg title="save",maxx=100;
+	save { arg title="save",minWidth=100;
 		ActionButton(layout,title,{
 			if(path.value.isNil,{
 		 		this.getPathThen(\doSaveAs);
 		 	},{	
 		 		this.doSave 
 		 	})
-	 	},maxx).background_(
+	 	},minWidth).background_(
 	 		if(path.value.isNil,{ // virgin
 	 			Color(202,255,161) 
 	 		},{

@@ -53,12 +53,12 @@ MLIDbrowser { // MultiLevelIdentityDictionary browser
 	}
 	layTree { arg layout,dict,onSelect,indent=0;
 		dict.keys.asList.do({ arg key;
-			CXLabel(layout,"",maxx: indent * 20).background_(Color.clear);
+			CXLabel(layout,"",minWidth: indent * 20).background_(Color.clear);
 			if(dict.at(key).isKindOf(IdentityDictionary).not,{
-				ActionButton(layout,key.asString,{ onSelect.value(dict.at(key)) },maxx:150);
+				ActionButton(layout,key.asString,{ onSelect.value(dict.at(key)) },minWidth:150);
 				layout.startRow;
 			},{
-				CXLabel(layout,key.asString,maxx:150);
+				CXLabel(layout,key.asString,minWidth:150);
 			layout.startRow;
 			this.layTree(layout,dict.at(key),onSelect,indent + 1);
 			});
