@@ -2259,6 +2259,102 @@ int prArrayIndexOfGreaterThan(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prArrayInterlace(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *slot, *slots1, *slots2;
+	PyrObject *obj1, *obj2, *obj3;
+	PyrClass *classPtr;
+	int i, j, k, clump, numLists, len, size=0, err;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	
+	obj1 = a->uo;
+	slots1 = obj1->slots;
+	numLists = obj1->size;
+	
+	err = slotIntVal(b, &clump);
+	if (err) return err;
+	
+	for (j=0; j<numLists; ++j) {
+		slot = slots1 + j;
+
+		if (slot->utag == tagObj) {
+			classPtr = slot->uo->classptr;
+			if (classPtr == class_array) {
+				len = slot->uo->size;
+				if(j==0 || size>len) { size = len; } 
+			} else {
+				return errFailed; // this primitive only handles Arrays.
+			}
+		}
+		
+	}
+	
+	size = size - (size % clump);
+	
+	obj3 = (PyrObject*)instantiateObject(g->gc, classPtr, size * numLists, false, true);
+	obj3->size = size * numLists;
+	
+	for(i=0; i<size; i+=clump) {
+		for(k=0; k<numLists; ++k) {
+			obj2 = (slots1+k)->uo;
+			for(j=0; j<clump; ++j) {
+				slots2 = obj2->slots;
+				obj3->slots[i*numLists + k*clump + j].ucopy = slots2[i + j].ucopy;
+			}
+		}
+	};
+	a->uo = obj3;
+	
+	return errNone;
+}
+
+
+int prArrayDeInterlace(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *c, *slots, *slots2, *slots3;
+	PyrObject *obj1, *obj2, *obj3;
+	int i, j, k, clump, numLists, size, size3, err;
+	
+	a = g->sp - 2;
+	b = g->sp - 1;
+	c = g->sp;
+	
+	obj1 = a->uo;
+	slots = obj1->slots;
+	size = obj1->size;
+	
+	err = slotIntVal(b, &numLists);
+	if (err) return err;
+	
+	err = slotIntVal(c, &clump);
+	if (err) return err;
+	
+	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, numLists, false, true);
+	obj2->size = numLists;
+	slots2 = obj2->slots;
+	
+	size3 = size / numLists;
+	size3 = size3 - (size3 % clump);
+	if(size3 < 1) return errFailed;
+	
+	for(i=0; i<numLists; ++i) {
+		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size3, false, true);
+		obj3->size = size3;
+		slots3 = obj3->slots;
+		for(j=0; j<size3; j+=clump) {
+			for(k=0; k<clump; ++k) {
+				slots3[j+k].ucopy = slots[i*clump + k + j*numLists].ucopy;
+			}
+		}
+		SetObject(slots2 + i, obj3);
+	}
+	
+	a->uo = obj2;
+	return errNone;
+}
+
 void initArrayPrimitives();
 void initArrayPrimitives()
 {
@@ -2318,6 +2414,8 @@ void initArrayPrimitives()
 	
 	definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
 	definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
+	definePrimitive(base, index++, "_ArrayInterlace", prArrayInterlace, 2, 0);
+	definePrimitive(base, index++, "_ArrayDeInterlace", prArrayDeInterlace, 3, 0);
 
 }
 
