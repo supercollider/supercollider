@@ -418,24 +418,6 @@ Object {
 	dumpStack { _DumpStack }
 	dumpDetailedBackTrace { _DumpDetailedBackTrace }
 	
-	// archiving
-	writeBinaryArchive { arg pathname;
-		_WriteArchive
-		^this.primitiveFailed;
-	}
-	*readBinaryArchive { arg pathname;
-		_ReadArchive
-		^this.primitiveFailed;
-	}
-	asBinaryArchive {
-		_AsArchive
-		^this.primitiveFailed;
-	}
-	
-	writeAsPlist { arg pathname;
-		_Cocoa_SaveAsPlist
-		^this.primitiveFailed;
-	}
 	
 	freeze { 
 		_ObjectDeepFreeze 
@@ -748,7 +730,27 @@ Object {
 		};
 		
 	}
-	
+	// old binary archiving
+	// this will break if the instance vars change !
+	// not recommended
+	writeBinaryArchive { arg pathname;
+		_WriteArchive
+		^this.primitiveFailed;
+	}
+	*readBinaryArchive { arg pathname;
+		_ReadArchive
+		^this.primitiveFailed;
+	}
+	asBinaryArchive {
+		_AsArchive
+		^this.primitiveFailed;
+	}
+	// converts to an os x standard plist with NS Values
+	writeAsPlist { arg pathname;
+		_Cocoa_SaveAsPlist
+		^this.primitiveFailed;
+	}
+
 	// support for Gen
 	genNext { ^nil }
 	genCurrent { ^this }
