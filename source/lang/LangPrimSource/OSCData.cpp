@@ -963,8 +963,8 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);	
-	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 1, 1);	
-	definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 1, 1);	
+	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 1, 0);	
+	definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 1, 0);	
 
 	definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);	
 	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);	
