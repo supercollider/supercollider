@@ -1,6 +1,7 @@
 
 + Object {
-
+	/* rather than write a little gui class for every object
+	 you can just add an extension method guiBody here */
 	guiClass { ^ModelImplementsGuiBody }
 	guiBody {}
 	
@@ -18,9 +19,6 @@
 		},{
 			^Tile(this,args.first.asPageLayout)
 		});
-	}
-	dependantGuis {
-		^this.dependants.select({ arg d; d.isKindOf(this.guiClass) })
 	}
 	insp { arg  ... args;
 		Insp(this,args);

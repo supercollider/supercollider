@@ -63,8 +63,15 @@ SampleGui : ObjectGui {
 		layout.startRow;
 		v = SCSoundFileView.new(layout, Rect(0, 0, size, 80))
 			.canFocus_(true).gridOn_(true).timeCursorOn_(false);
-		d = SCSlider(layout, Rect(0,0,size,7)).action_({|slider| v.scrollTo(slider.value) });
-
+		//d = SCSlider(layout, Rect(0,0,size,7)).action_({|slider| v.scrollTo(slider.value) });
+		d = SC2DSlider(layout, size@30)
+			.action_({|sl| 
+				var y;
+				v.zoomToFrac(y = sl.y * 0.9 + 0.1);
+				v.scrollTo(sl.x);
+				//d.thumbSize = size * y;
+			});
+			
 		layout.startRow;
 		CXLabel(layout,"Resolution:");
 		//SCStaticText.new(layout, Rect(0, 0, 40, 18)).string_("Resolution:").align_(\right);
@@ -135,7 +142,8 @@ SampleGui : ObjectGui {
 		});
 	}
 	updateSelection {
-		d.value = v.scrollPos;	// update scrollbar position
+		//d.x = v.scrollPos;	// update scrollbar position
+		//d.y = v.xZoom;
 		selectionStartG.string = v.selectionStart(0);
 		selectionSizeG.string = v.selectionSize(0)		
 	}

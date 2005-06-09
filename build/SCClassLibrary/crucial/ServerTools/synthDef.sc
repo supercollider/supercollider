@@ -13,13 +13,12 @@
 	prepareToBundle { arg  group,bundle;
 		this.makePatchOut
 	}
-	// personal note: turn this off when using extCXBUNDLe.sc
-	prepareForPlay {	arg group,private,bus;
+	prepareForPlay { arg group,private,bus;
 		var bundle;
-		bundle = CXBundle.new;
+		bundle = MixedBundle.new;
 		group = group.asGroup;
 		this.prepareToBundle(group,bundle);
-		^bundle.clumpedSendNow(group.server)
+		bundle.send(group.server)
 	}
 	
 	spawnToBundle {}
@@ -74,7 +73,7 @@
 
 + SynthDef {
 	prepareToBundle { arg group,bundle;
-		bundle.add(["/d_recv", this.asBytes]);
+		bundle.addPrepare(["/d_recv", this.asBytes]);
 	}
 }
 

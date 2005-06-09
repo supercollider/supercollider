@@ -20,14 +20,14 @@ MethodLabel : ActionButton {
 	// show args and prototypes
 	*new { arg  method,layout,minWidth=100;
 		^super.new(layout,method.ownerClass.name.asString ++ "-" ++ method.name.asString,
-			{method.gui},minWidth,15,nil,Color.new255(245, 222, 179),Font("Monaco",9));
+			{method.gui},minWidth,17,nil,Color.new255(245, 222, 179),Font("Monaco",9));
 	}
 	*withoutClass { arg  method,layout,minWidth=100;
-		^super.new(layout, method.name.asString,{method.gui},minWidth,15,nil,
+		^super.new(layout, method.name.asString,{method.gui},minWidth,17,nil,
 			Color.new255(245, 222, 179),Font("Monaco",9));
 	}
 	*classMethod { arg  method,layout,minWidth=100;
-		^super.new(layout,"*" ++ method.name.asString,{method.gui},minWidth,15,nil,
+		^super.new(layout,"*" ++ method.name.asString,{method.gui},minWidth,17,nil,
 			Color.new255(245, 222, 179),Font("Monaco",9));
 	}
 	
@@ -53,7 +53,7 @@ Tile : ActionButton {
 	*new { arg  target,layout,minWidth=100; 
 		^super.new(layout,target.asString,{ 
 				target.gui; 
-			},minWidth,15, Color.black,Color.new255(152, 251, 152))
+			},minWidth,17, Color.black,Color(0, 0, 0.1,0.2))
 	}
 
 }

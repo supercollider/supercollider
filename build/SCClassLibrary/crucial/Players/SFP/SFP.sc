@@ -206,7 +206,7 @@ SFP : AbstractSFP  {
 			})
 		});	
 	}
-	
+
 	preloadData { arg startAt=0,endAt,group,bundle,parentSegmentBuffers;
 		var sf;
 		// wasteful but...
@@ -218,25 +218,14 @@ SFP : AbstractSFP  {
 		// if they exist, just repark them
 
 		sf = Buffer.new(group.server,32768,this.numChannels);
-		bundle.add( 
+		
+		bundle.addPrepare( 
 			sf.allocMsg(
-				sf.cueSoundFileMsg( this.soundFilePath, startAt * file.sampleRate,32768) 
+				sf.cueSoundFileMsg( this.filePath, startAt * file.sampleRate,32768) 
 			)
 		);
 		parentSegmentBuffers.add( sf );
 	}
-	
-// sc2 version... ah so simple	
-//	ar {  arg  startAt=0,endAt;
-//
-//		startAt = startAt ? 0.0;
-//		if(endAt.notNil,{
-//			 ^DiskIn.ar(preloadCache.at(startAt) ? file,false,this.secs2frames(startAt)) 
-//			 	* EnvGen.kr(Env.linen(0.01,endAt - startAt,0.05,1.0,-2))
-//		},{
-//			 ^DiskIn.ar(preloadCache.at(startAt) ? file,false,this.secs2frames(startAt)) 
-//		})			
-//	}
 	
 	//name { ^this.fileName }
 	fileName { 

@@ -11,7 +11,7 @@ Insp {
 		},{
 			name = subject.asString;
 		});
-		if(name.size > 20,{ name = name.copyRange(0,19) ++ "..."});
+		if(name.size > 45,{ name = name.copyRange(0,45) ++ "..."});
 		if(InspManager.global.notNil,{
 			InspManager.global.watch(this)
 		});
@@ -29,7 +29,11 @@ Insp {
 			box = inspView.flow({ arg box;
 				// what's the calling method ?
 				notes.do({ arg ag;
-					ag.smallGui(box);
+					if(ag.isString or: {ag.isKindOf(Symbol)},{
+						CXLabel(box,ag.asString)
+					},{
+						InspectorLink(ag,box);
+					});
 				});
 				box.startRow;
 				CXObjectInspector(subject).gui(box);
@@ -69,15 +73,18 @@ InspManager {
 			menu = \pleaseWait;
 			{
 				var h,fb,f,w;
-				f = SCWindow.new("inspect",SCWindow.screenBounds.insetAll(20,10,100,100));
+				f = SCWindow.new("inspect",Rect(100,100,1000,900));
+				f.view.background = Color.white;
 				h = f.bounds.height - 50;
 				w = f.bounds.width;
-				menu = SCListView.new(f,100@h);
+				menu = SCListView.new(f,Rect(3,0,200,h));
+				menu.font = Font("Courier",10);
+				menu.background = Color(0.7,0.7,0.7,0.5);
 				menu.items = [insp.name];
 				menu.action = { this.showInsp(insps.at(menu.value)) };
 				
-				inspView = SCCompositeView(f, Rect(120,0,w - 150,h));
-
+				inspView = SCCompositeView(f, Rect(210,0,w - 170,h));
+				inspView.background = Color(0.17,0.1,0.1,0.15);
 				this.showInsp(insp);
 
 				f.onClose = { this.remove; };

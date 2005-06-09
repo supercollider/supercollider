@@ -334,8 +334,8 @@ Patch : HasPatchIns  {
 	valueArray { arg  overideArgs;  
 		// each arg is valued as it is passed into the instr function
 		^instr.valueArray(
-				args.collect({ arg a,i; (overideArgs.at(i) ? a).value; })  
-			)
+			args.collect({ arg a,i; (overideArgs.at(i) ? a).value; })  
+		)
 	}
 	
 	/*storeModifiersOn { arg stream;

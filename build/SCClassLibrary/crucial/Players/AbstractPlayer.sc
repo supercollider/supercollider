@@ -5,59 +5,43 @@ AbstractPlayer : AbstractFunction  {
 	
 	var <synth,<group,<server,<patchOut,<>readyForPlay = false,<>playIsStarting = false,
 		 <status, defName;
-		
-	play { arg agroup,atTime,bus;
-		var bundle,timeOfRequest,sendf;
-		
+
+	play { arg group,atTime,bus;
+		var timeOfRequest;
 		if(this.isPlaying,{ ^this });
 		timeOfRequest = Main.elapsedTime;
-		
 		if(bus.notNil,{ 
 			bus = bus.asBus;
-			if(agroup.isNil,{
+			if(group.isNil,{
 				server = bus.server;
-				group = server.asGroup;
+				this.group = server.asGroup;
 			},{	
-				group = agroup.asGroup;
-				server = group.server;
+				this.group = group.asGroup;
+				server = this.group.server;
 			})
 		},{
-			group = agroup.asGroup;
-			server = group.server;
+			this.group = group.asGroup;
+			server = this.group.server;
 			// leave bus nil
 		});
-		
-		bundle = CXBundle.new;
-
-		if(status == \readyForPlay,{
-			this.makePatchOut(group,false,bus,bundle);
-			this.spawnToBundle(bundle);
-			//this.stateNotificationsToBundle(bundle);
-			sendf = {	 bundle.sendAtTime(this.server,atTime,timeOfRequest); };
-		},{
-			sendf = {
-				Routine({ //delay till prepared
-					(this.prepareForPlay(group,false,bus) / 7.0).debug("wait prepare").wait;
-					//this.stateNotificationsToBundle(bundle);
-					this.spawn(atTime,timeOfRequest);
-				}).play(AppClock)
-			};
-		});
 		if(server.serverRunning.not,{
-			server.startAliveThread(0.1,0.2);
+			server.startAliveThread(0.1,0.4);
 			server.waitForBoot({
-				server.stopAliveThread;
-				if(server.dumpMode == 0,{
-					server.startAliveThread(0.0,1.1);
+				if(server.dumpMode != 0,{ 
+					server.stopAliveThread;
 				});
 				InstrSynthDef.clearCache(server);
 				if(server.isLocal,{
 					InstrSynthDef.loadCacheFromDir(server);
 				});
-				sendf.value;
+				//"prPlay->".debug;
+				this.prPlay(atTime,bus,timeOfRequest);
 				nil
 			});
-		},sendf);
+		},{
+			this.prPlay(atTime,bus,timeOfRequest)
+		});
+		
 		CmdPeriod.add(this);
 		// this gets removed in stopToBundle
 		/*Library.put(AbstractPlayer,\serverDeathWatcher, 
@@ -73,12 +57,25 @@ AbstractPlayer : AbstractFunction  {
 			})
 		);*/
 	}
+	
+	prPlay { arg atTime,bus,timeOfRequest;
+		var bundle;
+		bundle = MixedBundle.new;
+		if(status !== \readyForPlay,{ this.prepareToBundle(group, bundle, false, bus) });
+		this.makePatchOut(group,false,bus,bundle);
+		this.spawnToBundle(bundle);
+		bundle.sendAtTime(this.server,atTime,timeOfRequest);
+	}
+	
 	prepareForPlay { arg agroup,private = false,bus;
 		var bundle;
-		bundle = CXBundle.new;
+		bundle = MixedBundle.new;
 		this.prepareToBundle(agroup,bundle,private,bus);
-		^bundle.clumpedSendNow(group.server)
+	
+		//^bundle.clumpedSendNow(group.server)
+		^bundle.send(group.server)
 	}
+
 	prepareToBundle { arg agroup,bundle,private = false, bus, defWasLoaded = false;
 		status = \isPreparing;
 		bundle.addFunction({
@@ -109,9 +106,8 @@ AbstractPlayer : AbstractFunction  {
 	}
 	loadDefFileToBundle { arg bundle,server;
 		var def,bytes,dn;
-
-		// need to know children numChannels
-		// before i can know mine.
+		// Patch needs to know children numChannels
+		// before it can know its own.
 		this.children.do({ arg child;
 			child.loadDefFileToBundle(bundle,server);
 		});
@@ -122,21 +118,19 @@ AbstractPlayer : AbstractFunction  {
 		},{
 			// save it in the archive of the player or at least the name.
 			// Patches cannot know their defName until they have built
-			//( "building:" + (this.path ? this) ).debug;
 			def = this.asSynthDef;
 			defName = def.name;
 			dn = defName.asSymbol;
 			bytes = def.asBytes;
-			bundle.add(["/d_recv", bytes]);
-			// even if name was nil before (Patch), its set now
-			//("loading def:" + defName).debug;
+			
+			bundle.addPrepare(["/d_recv", bytes]);
+			
 			// InstrSynthDef watches \serverRunning to clear this
 			InstrSynthDef.watchServer(server);
 			Library.put(SynthDef,server,dn,true);
-			// write for next time
-			//def.writeDefFile;
 		});
 	}
+
 	loadBuffersToBundle {}
 	//makeResourcesToBundle { }
 	//freeResourcesToBundle { }
@@ -235,13 +229,21 @@ AbstractPlayer : AbstractFunction  {
 			server = patchOut.server;
 		});
 	}
-	
+
 	spawn { arg atTime,timeOfRequest;
 		var bundle;
-		bundle = CXBundle.new;
+		bundle = MixedBundle.new;
 		this.spawnToBundle(bundle);
 		bundle.sendAtTime(this.server,atTime,timeOfRequest);
 	}
+	spawnOn { arg group,bus, atTime,timeOfRequest;
+		var bundle;
+		bundle = MixedBundle.new;
+		this.spawnOnToBundle(group,bus,bundle);
+		bundle.sendAtTime(this.server,atTime,timeOfRequest);
+	}
+
+
 	spawnToBundle { arg bundle;
 		bundle.addMessage(this,\didSpawn);
 		this.children.do({ arg child;
@@ -253,14 +255,7 @@ AbstractPlayer : AbstractFunction  {
 		bundle.add(
 			synth.addToTailMsg(this.group,this.synthDefArgs)
 		);
-	}
-	
-	spawnOn { arg group,bus, atTime,timeOfRequest;
-		var bundle;
-		bundle = CXBundle.new;
-		this.spawnOnToBundle(group,bus,bundle);
-		bundle.sendAtTime(this.server,atTime,timeOfRequest);
-	}
+	}	
 	spawnOnToBundle { arg agroup,bus,bundle;
 		if(patchOut.isNil,{
 			this.makePatchOut(agroup,true,bus,bundle);
@@ -278,17 +273,16 @@ AbstractPlayer : AbstractFunction  {
 	cmdPeriod {
 		var b;
 		CmdPeriod.remove(this);
-		b = CXBundle.new;
+		b = MixedBundle.new;
 		this.stopToBundle(b);
 		b.doFunctions;
 		// sending the OSC is irrelevant
 	}
-	
 	// these always call children
 	stop { arg atTime,stopSynth = true;
 		var b;
 		if(server.notNil,{		
-			b = CXBundle.new;
+			b = MixedBundle.new;
 			this.stopToBundle(b,stopSynth);
 			b.sendAtTime(server,atTime);
 		});
@@ -322,7 +316,7 @@ AbstractPlayer : AbstractFunction  {
 	run { arg flag=true,atTime;
 		var msg,b;
 		if(synth.notNil,{
-			b = CXBundle.new;
+			b = MixedBundle.new;
 			b.add( synth.runMsg(flag) );
 			b.sendAtTime(server,atTime);
 		});
@@ -332,7 +326,7 @@ AbstractPlayer : AbstractFunction  {
 	}
 	release { arg releaseTime,atTime;
 		var rb;
-		rb = CXBundle.new;
+		rb = MixedBundle.new;
 		this.releaseToBundle(releaseTime,rb);
 		rb.sendAtTime(server,atTime);
 	}
@@ -354,7 +348,7 @@ AbstractPlayer : AbstractFunction  {
 
 	free { arg atTime;
 		var bundle;
-		bundle = CXBundle.new;
+		bundle = MixedBundle.new;
 		this.freeToBundle(bundle);
 		bundle.sendAtTime(server,atTime);
 	}

@@ -3,7 +3,6 @@ CXObjectInspector : ObjectGui {
 
 	writeName { arg layout;
 		ClassNameLabel.newBig(model.class,layout);
-		//CXLabel(layout,model.asString,500,30)
 		SCDragSource(layout,Rect(0,0,500,30))
 			.object_(model)
 			.background_(Color.white)
@@ -12,49 +11,57 @@ CXObjectInspector : ObjectGui {
 	}
 
 	guiBody { arg layout;
-		var vert;
-		this.instVarsGui(layout);
+		var vert,list,listItems,actions;
+		listItems = List.new;
+		actions = List.new;
+		
+		this.instVarsGui(listItems,actions);
 		
 		// slotAt
 		if(model.isArray,{
-			vert = model.slotSize < 26;
-			min(model.slotSize,300).do({arg i;
+			//vert = model.slotSize < 26;
+			min(model.slotSize,1024).do({arg i;
 				var iv;
-				if(vert or: {i % 3 == 0},{ layout.startRow; });
+				//if(vert or: {i % 3 == 0},{ layout.startRow; });
 				
-				CXLabel(layout,"@" ++ i,minWidth: 40);
-				iv=model.slotAt(i);
-//				ActionButton(layout,"code->",{
-//					GetStringDialog("enter code to compile and insert at slot " 
-//						+ i ,"",
-//					{ arg ok,string;
-//						if(ok,{
-//							model.slotPut(i,  string.interpret)
-//						})
-//					})
-//				});
-	
+				listItems.add( ("@" ++ i).as(Array).extend(25,$ ).as(String) ++"=  " + model.slotAt(i).asString );
+				actions.add({ model.slotAt(i).insp(model,"@"++i) });
+				
+				//CXLabel(layout,"@" ++ i,minWidth: 40);
+				//iv=model.slotAt(i);
 				//ClassNameLabel(iv.class,layout);
 				// drag in / out here
-				InspectorLink(iv,layout,minWidth:200);
+				//InspectorLink(iv,layout,minWidth:200);
 			});
 			if(model.slotSize > 300,{ 
 				CXLabel(layout,"... slotSize is" ++ model.slotSize.asString,minWidth:160).bold;
 			});
 		});
+		
+		list = SCListView(layout,500@600);
+		list.font = Font("Courier",10);
+		list.background = Color(0.65,0.75,0.65,0.15);
+		list.items = listItems.array.add("");
+		list.action = { 
+			actions[list.value].value };
+		list.value = list.items.size - 1;
 		this.dependantsGui(layout);
 		this.actionsGui(layout);
 	}
 	
-	instVarsGui { arg layout;
+	instVarsGui { arg listItems,actions;
 		var iNames;
 		//identify which classes they come from, color code by fading
 		iNames=model.class.instVarNames;
 		if(iNames.notNil,{
 			iNames.do({arg v,i;
 				var iv;
-				layout.startRow;
-				VariableNameLabel(v,layout);
+				//layout.startRow;
+				//VariableNameLabel(v,layout);
+				iv=model.instVarAt(i);
+				listItems.add( v.asString.as(Array).extend(25,$ ).as(String) ++ "=  " + iv);
+				actions.add({ iv.insp(model,v) });
+								
 				/*ActionButton(layout,"code->",{
 					GetStringDialog("enter code to compile and insert to " 
 							+ v.asString,"",
@@ -64,9 +71,9 @@ CXObjectInspector : ObjectGui {
 						})
 					})
 				});*/
-				iv=model.instVarAt(i);
+				//iv=model.instVarAt(i);
 				//ClassNameLabel(iv.class,layout);
-				InspectorLink(iv,layout,400);
+				//InspectorLink(iv,layout,400);
 			});
 		});
 	}
@@ -198,7 +205,6 @@ ClassGui : CXObjectInspector { // ClassGui
 		this.dependantsGui(layout);
 	}
 	
-	
 	displayMethodsOf { arg class,f,withoutClass = false;
 		f = f.asFlowView;
 		if(class.methods.notNil,{
@@ -224,8 +230,7 @@ ClassGui : CXObjectInspector { // ClassGui
 				},"Methods of" + class.superclass.name);
 			})
 		});
-	}
-	
+	}	
 	
 	displaySubclassesOf { arg class,layout,shown,limit,indent = 50;
 		var subclasses;
@@ -253,7 +258,6 @@ ClassGui : CXObjectInspector { // ClassGui
 				})
 		});
 	}
-
 }
 
 

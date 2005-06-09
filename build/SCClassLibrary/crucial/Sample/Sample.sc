@@ -30,7 +30,7 @@ BufferProxy { // blank space for delays, loopers etc.
 		buffer = Buffer.new(server,this.size,numChannels);
 		buffer.numFrames = this.size;
 		buffer.numChannels = numChannels;
-		bundle.add( buffer.allocMsg );
+		bundle.addPrepare( buffer.allocMsg );
 		bundle.addFunction({ readyForPlay = true; });
 	}
 	makePatchOut {
@@ -189,16 +189,17 @@ AbstractSample : BufferProxy {
 		buffer = Buffer.new(server,this.size,numChannels);
 		if(soundFilePath.notNil,{
 			// numFrames already set above, no need for an end
-			bundle.add( buffer.allocReadMsg(this.soundFilePath,startFrame) )
+			bundle.addPrepare( buffer.allocReadMsg(this.soundFilePath,startFrame) )
 		},{
 			//buffer.numFrames = this.size;
 			//buffer.numChannels = numChannels;
-			bundle.add( buffer.allocMsg )
+			bundle.addPrepare( buffer.allocMsg )
 		});
 		bundle.addFunction({
 			readyForPlay = true;
 		})
 	}
+
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
@@ -453,14 +454,15 @@ ArrayBuffer : BufferProxy {
 		array.collect({ arg it,i; r.add(i); r.add(it); });
 		b.add( buffer.setMsg( *r ) );
 	}
-//	fill { arg value,bundle;
-//		array = Array.fill(array.size, value);
-//		if(bundle.isNil,{ bundle = CXBundle.new; });
-//
-//
-//
-//
-//	}
+/*	fill { arg value,bundle;
+		array = Array.fill(array.size, value);
+		if(bundle.isNil,{ bundle = MixedBundle.new; });
+
+
+
+
+	} */
+
 }
 
 

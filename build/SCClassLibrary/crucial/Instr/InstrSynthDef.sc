@@ -5,8 +5,6 @@ InstrSynthDef : SynthDef {
 	
 	var <longName;
 	
-	//var <fixedNames,<fixedValues,<fixedPositions;
-
 	// secret because the function doesn't see them
 	// but they are needed to pass into the synth
 	var secretIrPairs, secretKrPairs;
@@ -34,8 +32,6 @@ InstrSynthDef : SynthDef {
 		// restart controls in case of *wrap
 		controlNames = nil;
 		controls = nil;
-		
-		/*fixedNames = fixedValues = fixedPositions = nil;*/
 		
 		// OutputProxy In InTrig Float etc.		
 		outputProxies = this.buildControlsWithObjects(instr,args);

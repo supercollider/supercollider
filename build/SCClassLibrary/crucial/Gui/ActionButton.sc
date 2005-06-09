@@ -241,7 +241,14 @@ ToggleButton : SCButtonAdapter {
 				.onFunction_(onFunction).offFunction_(offFunction)
 	}
 	value { ^state }
-
+	toggle { arg way,doAction = true;
+		if(doAction,{		
+			this.prSetState(way ? state.not)
+		},{
+			state = way ? state.not;
+		});
+		view.setProperty(\value,state.binaryValue);
+	}
 	// private
 	init { arg layout,init,title,minWidth,minHeight;
 		var offc,onc;

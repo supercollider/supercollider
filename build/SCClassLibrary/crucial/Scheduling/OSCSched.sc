@@ -31,7 +31,7 @@ BeatSched {
 	*clear { ^global.clear }
 	*deltaTillNext { arg quantize;	^global.deltaTillNext(quantize) }
 	*tdeltaTillNext { arg quantize; ^global.tdeltaTillNext(quantize) }	
-	xblock { nextTask = nil; } // block any subsequent xscheds
+	xblock { nextTask = nil; } // block any previous xsched
 	time { ^Main.elapsedTime - epoch }
 	time_ { arg seconds; epoch = Main.elapsedTime - seconds; }
 	beat { ^tempo.secs2beats(Main.elapsedTime - epoch) }
