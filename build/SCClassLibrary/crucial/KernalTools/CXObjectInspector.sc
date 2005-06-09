@@ -85,15 +85,7 @@ CXObjectInspector : ObjectGui {
 		ActionButton(layout,"post",{ model.asCompileString.postln });
 		ActionButton(layout,"dump",{ model.dump });
 		ActionButton(layout,":=> var x",{
-			var string = "x";
-			//GetStringDialog("assign to interpreter variable a-z","x",{ arg ok,string;
-				//if(ok,{
-					thisProcess.interpreter.performList((string ++ "_").asSymbol,model);
-					//this.newErrorWindow;
-					//"".postln;
-					//string.postln;
-				//})
-			//})
+			thisProcess.interpreter.performList('x_',model);
 		});
 		ActionButton(layout,"open class file",{
 			model.class.openCodeFile;
@@ -117,23 +109,17 @@ ClassGui : CXObjectInspector { // ClassGui
 		if(supers.notNil,{
 			scale = supers.size;
 			supers.do({ arg sup,i;
-				ClassNameLabel(sup,layout,100,30);//.labelColor_(Color.grey(1.0 - (i / scale))
+				ClassNameLabel(sup,layout,100,30);
 			})
 		});
 
-
 		layout.startRow;
-		//CXLabel(layout,PathName(model.filenameSymbol.asString).asRelativePath);
 		ActionButton(layout, "Source",{
 			model.openCodeFile;
 		}).font_(Font("Monaco",9.0));	
 		ActionButton(layout,"Help",{ 
 			var path;
-			// wtf ?  this works in the interpreter but not here
-			//path = model.name.asString.findHelpFile;
-			//path.insp;
 			model.openHelpFile;
-			//{ model.asClass.insp.openHelpFile; nil; }.defer;
 		});
 
 		// subclasses
@@ -150,7 +136,6 @@ ClassGui : CXObjectInspector { // ClassGui
 			ClassNameLabel(c.asClass,layout,200);
 		});
 		*/
-		
 		
 		// classVarnames
 		if(model.classVarNames.size > 0,{

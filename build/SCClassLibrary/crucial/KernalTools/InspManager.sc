@@ -99,6 +99,7 @@ InspManager {
 		});			
 		currentInsp = insp;
 		insp.show(inspView);
+		menu.value = insps.indexOf(insp);
 	}
 	remove {
 		menu = nil;

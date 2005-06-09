@@ -1,5 +1,4 @@
 
-
 ClassNameLabel : ActionButton {
 
 	*new { arg  class,layout,minWidth=200,minHeight;
