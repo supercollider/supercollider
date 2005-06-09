@@ -26,12 +26,12 @@ AbstractPlayControl {
 
 	
 	playToBundle { arg bundle, args; 
-		bundle.addEarlyMessage(this, \play); //no latency (latency is in stream already)
+		bundle.addOnSendMessage(this, \play); //no latency (latency is in stream already)
 		^nil //return a nil object instead of a synth
 	}
 	
 	stopToBundle { arg bundle;
-		bundle.addEarlyMessage(this, \stop);
+		bundle.addOnSendMessage(this, \stop);
 	}
 	
 	freeToBundle {}
@@ -58,7 +58,7 @@ StreamControl : AbstractPlayControl {
 	
 	playToBundle { arg bundle;
 		// no latency (latency is in stream already)
-		if(paused.not) { bundle.addEarlyMessage(this, \play) } 
+		if(paused.not) { bundle.addOnSendMessage(this, \play) } 
 		^nil // return a nil object instead of a synth
 	}
 	
@@ -76,7 +76,7 @@ StreamControl : AbstractPlayControl {
 
 	play { 
 		if(stream.isPlaying.not) { 
-			stream.stop; stream = stream.copy; stream.play(clock, false, 0.0)
+			/*stream.stop; stream = stream.copy;*/ stream.play(clock, false, 0.0)
 		} 
 	}
 	stop { stream.stop }
@@ -122,7 +122,7 @@ PatternControl : StreamControl {
 		var streams;
 		streams = array.copy;
 		array = nil;
-		bundle.addEarlyFunction({ this.stopStreams(streams) });
+		bundle.onSend({ this.stopStreams(streams) });
 	}
 	
 	pause { array.do { arg item; item.pause }; paused=true }
@@ -135,7 +135,7 @@ PatternControl : StreamControl {
 		if(paused.not and: { stream.isPlaying.not })
 		{
 			// no latency (latency is in stream already)
-			bundle.addEarlyFunction({
+			bundle.onSend({
 				var str, event;
 				str = source.buildForProxy(proxy, channelOffset);
 				if(args.notNil) { 

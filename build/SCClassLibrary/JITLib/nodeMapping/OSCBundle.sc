@@ -76,61 +76,39 @@ OSCBundle {
 
 MixedBundle : OSCBundle {
 	
-	var <earlyFunctions; 	// functions to evaluate on send 
+	var <sendFunctions; 	// functions to evaluate on send 
 	var <functions; 		// functions to evaluate when the bundle is scheduled on the server
 	
-	// proposed new interface:
 	
-	// earlyFunctions / functions could be renamed to 
-	// sendFunctions / arrivalFunctions
-	
-	doOnSend { arg func;
-		earlyFunctions = earlyFunctions.add(func);
+	onSend { arg func;
+		sendFunctions = sendFunctions.add(func);
 	}
-	doOnArrival { arg func;
-		functions = functions.add(func);
-	}
-	sched { arg time=0.0, func;
-		earlyFunctions = earlyFunctions.add({ SystemClock.sched(time, { func.value; nil }) });
-	}
-	
-	valueSend {
-		functions.do({ arg item; item.value }); 
-	}
-	
-	valueArrive {
-		earlyFunctions.do({ arg item; item.value }); 
-	}
-
-	// original interface
-	
 	addFunction { arg func;
 		functions = functions.add(func);
 	}
-	addSchedFunction { arg func, time=0.0;
-		earlyFunctions = earlyFunctions.add({ SystemClock.sched(time, { func.value; nil }) });
+	sched { arg time=0.0, func;
+		sendFunctions = sendFunctions.add({ SystemClock.sched(time, { func.value; nil }) });
 	}
-	addEarlyFunction { arg func;
-		earlyFunctions = earlyFunctions.add(func);
-	}
+	
 	addMessage { arg receiver, selector, args; 
 		functions = functions.add( Message(receiver,selector,args) )
 	}
-	addEarlyMessage { arg receiver, selector, args;
-		earlyFunctions = earlyFunctions.add( Message(receiver,selector,args) )
+	addOnSendMessage { arg receiver, selector, args;
+		sendFunctions = sendFunctions.add( Message(receiver,selector,args) )
 	}
 	
 	
 	doFunctions {
 		functions.do({ arg item; item.value }); 
 	}
-	doEarlyFunctions {
-		earlyFunctions.do({ arg item; item.value }); 
+	doSendFunctions {
+		sendFunctions.do({ arg item; item.value }); 
 	}
 	
 	// private //
+	
 	prSend { arg server, latency;
-		this.doEarlyFunctions;
+		this.doSendFunctions;
 		if(functions.notNil) {
 			SystemClock.sched(latency ? 0.0, { this.doFunctions });
 		};
