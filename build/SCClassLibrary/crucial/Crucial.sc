@@ -13,6 +13,7 @@ Crucial {
 	}
 
 	*initSpecs {
+		// this will be moved somewhere more polite
 		Spec.specs.putAll(			
 		  IdentityDictionary[
 			'audio'->AudioSpec.new,
@@ -131,7 +132,7 @@ Crucial {
 	}	
 	*menu {
 	
-		// this is just everything in Library(\menuItems) functions put up on a menu
+		// this is everything in Library(\menuItems) functions put up on a menu
 		
 		var a,rec,pause;
 		if(menu.notNil,{ menu.close });
@@ -140,28 +141,6 @@ Crucial {
 		
 		Server.default.gui(menu);
 		menu.startRow;
-//		rec = ToggleButton(menu,"*",{
-//			if(Server.default.recordNode.isNil,{
-//				File.saveDialog("Record file...",{ arg path;
-//					Server.prepareForRecord(path,'aiff','int24',2);
-//				},{
-//					rec.passiveToggle(false).changed;
-//				});
-//			},{
-//				Server.default.stopRecording;
-//			})
-//		});
-//		pause = ToggleButton(menu,"||",{
-//			if(Server.default.recordNode.notNil,{
-//				Server.default.record;
-//			},{
-//				pause.passiveToggle(false);
-//			});
-//		},{
-//			Server.default.pause;
-//		});
-//		
-
 
 		a = ActionButton(menu.startRow,"     Library Menu Items...     ",{
 			MLIDbrowser(\menuItems)
@@ -239,11 +218,11 @@ Crucial {
 			})
 		});
 
-//		Library.put(\menuItems,\post,'post color...',{
-//			GetColorDialog("Color",Color.white,{ arg ok,color;
-//				if(ok,{ color.post;})
-//			});
-//		});
+		/*Library.put(\menuItems,\post,'post color...',{
+			GetColorDialog("Color",Color.white,{ arg ok,color;
+				if(ok,{ color.post;})
+			});
+		});*/
 		
 		Library.put(\menuItems,\post,'post path...',{
 			GetFileDialog({ arg ok,loadPath;
@@ -329,7 +308,6 @@ Crucial {
 		});
 		*/
 
-	
 		Library.put(\menuItems,\introspection,\findReferencesToClass,{
 			GetStringDialog("Class name:","",{ arg ok,string;
 				Class.findAllReferences(string.asSymbol).do({ arg ref;
@@ -338,70 +316,69 @@ Crucial {
 			});
 		});
 
+		Library.put(\menuItems,\introspection,'find class-not-found',{
 
-	Library.put(\menuItems,\introspection,'find class-not-found',{
-
-			Class.allClasses.do({ arg class;
-				(class.methods).do({ arg method;
-					var selectors;
-					selectors = method. selectors;
-					selectors.do({ arg lit;
-						if(lit.isKindOf(Symbol) and: { lit.isClassName },{
-							if(lit.asClass.isNil,{
-								lit.post;
-								(30 - lit.asString.size).do({ " ".post; });
-								(class.name.asString ++ "-" ++ 
-									method.name.asString).postln;
-							})
-						})
-					})
-				})
-			});
-	});
-	
-	Library.put(\menuItems,\introspection,'find method-not-found',{
-		/*
-			search for potential method not found errors
-			
-			look through all methods for method selectors that
-				are not defined for any class
-				
-			this finds many false cases,
-			but i found a good 7 or 8 typos in mine and others code
-			
-			// could reject any spec names
-			// any instr names
-			// sound file types
-		*/
-		
-		var allMethodNames;
-		allMethodNames = IdentityDictionary.new;
-		
-		Class.allClasses.do({ arg class;
-			(class.methods).do({ arg method;
-				allMethodNames.put(method.name,true);
-			})
-		});
-		
-		Class.allClasses.do({ arg class;
-			(class.methods).do({ arg method;
-				var selectors;
-				selectors = method.selectors;
-				if(selectors.notNil,{
-					selectors.do({ arg lit;
-						if(lit.isKindOf(Symbol) and: { lit.isClassName.not },{
-							if(allMethodNames.at(lit).isNil,{
-								lit.post;
-								(30 - lit.asString.size).do({ " ".post; });
-								(class.name.asString ++ "-" ++ method.name.asString).postln;
+				Class.allClasses.do({ arg class;
+					(class.methods).do({ arg method;
+						var selectors;
+						selectors = method. selectors;
+						selectors.do({ arg lit;
+							if(lit.isKindOf(Symbol) and: { lit.isClassName },{
+								if(lit.asClass.isNil,{
+									lit.post;
+									(30 - lit.asString.size).do({ " ".post; });
+									(class.name.asString ++ "-" ++ 
+										method.name.asString).postln;
+								})
 							})
 						})
 					})
 				});
-			})
 		});
+	
+		Library.put(\menuItems,\introspection,'find method-not-found',{
+			/*
+				search for potential method not found errors
+			
+				look through all methods for method selectors that
+					are not defined for any class
+				
+				this finds many false cases,
+				but i found a good 7 or 8 typos in mine and others code
+			
+				// could reject any spec names
+				// any instr names
+				// sound file types
+			*/
+		
+			var allMethodNames;
+			allMethodNames = IdentityDictionary.new;
+		
+			Class.allClasses.do({ arg class;
+				(class.methods).do({ arg method;
+					allMethodNames.put(method.name,true);
+				})
+			});
+		
+			Class.allClasses.do({ arg class;
+				(class.methods).do({ arg method;
+					var selectors;
+					selectors = method.selectors;
+					if(selectors.notNil,{
+						selectors.do({ arg lit;
+							if(lit.isKindOf(Symbol) and: { lit.isClassName.not },{
+								if(allMethodNames.at(lit).isNil,{
+									lit.post;
+									(30 - lit.asString.size).do({ " ".post; });
+									(class.name.asString ++ "-" ++ method.name.asString).postln;
+								})
+							})
+						})
+					});
+				})
+			});
 
-	});
+		});
 	
 		//needs a tree browser
 		Library.put(\menuItems,\introspection,'non-nil class variables',{
@@ -412,8 +389,7 @@ Crucial {
 						c.classVars.do({ arg cv,cvi;
 							var iv;
 							if(cv.notNil,{
-								VariableNameLabel(c.classVarNames.at(cvi),
-									f.startRow);
+								VariableNameLabel(c.classVarNames.at(cvi),f.startRow);
 								//ClassNameLabel(cv.class,f);
 								InspectorLink(cv,f);
 							})
@@ -476,7 +452,7 @@ Crucial {
 				})
 			},"Specs")
 		});
-		Library.put(\menuItems,\tools,\audioBusses,{
+		Library.put(\menuItems,\tools,\audioBuses,{
 			Sheet({ arg f;
 				CXLabel(f.startRow,"address");
 				CXLabel(f,"numChannels");
@@ -484,8 +460,43 @@ Crucial {
 					CXLabel(f.startRow,block.address);
 					CXLabel(f,block.size);
 				});
-			},"AudioBusses on default")
+			},"allocated AudioBuses on default")
 		});
+		
+		Library.put(\menuItems,\tools,'Annotated Buses Report',{
+			var a;
+			"Audio Buses:".postln;
+			a = Library.at(AbstractPlayer, \busAnnotations, Server.default,\audio);
+			if(a.notNil,{
+				a.keysValuesDo({ |k,v|
+					[k,v].postln
+				})
+			});
+			"Control Buses:".postln;
+			a = Library.at(AbstractPlayer, \busAnnotations, Server.default,\control);
+			if(a.notNil,{
+				a.keysValuesDo({ |k,v|
+					[k,v].postln
+				})
+			});
+		});
+
+		/*		
+		Library.put(\menuItems,\tools,'Annotated Node Report',{
+			var a;
+			a = Library.at(AbstractPlayer, \busAnnotations, Server.default,\audio);
+			if(a.notNil,{
+				a.keysValuesDo({ |k,v|
+					[k,v].postln
+				})
+			});
+			a = Library.at(AbstractPlayer, \busAnnotations, Server.default,\control);
+			if(a.notNil,{
+				a.keysValuesDo({ |k,v|
+					[k,v].postln
+				})
+			});
+		});*/
 		
 		Library.put(\menuItems,\tools,'Server Node Report',{
 			var probe,probing,resp,nodes,server,report,indent = 0,order=0;
