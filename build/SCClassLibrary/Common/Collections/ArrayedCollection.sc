@@ -419,7 +419,10 @@ ArrayedCollection : SequenceableCollection {
 		^this.primitiveFailed 
 	}
 	bundleSize { 
-		// array has the format [time, msg, ...]
+		// array of messages
+		^([nil] ++ this).prBundleSize;
+	}
+	prBundleSize {
 		_NetAddr_BundleSize; 
 		^this.primitiveFailed 
 	}
