@@ -1,8 +1,10 @@
 
+// abstract  class
 HasPatchIns : AbstractPlayer {
 
 	var <patchIns;
 
+	//  private
 	didSpawn {
 		super.didSpawn;
 		//i know of the synth, i hand out the NodeControls
@@ -50,7 +52,6 @@ HasPatchIns : AbstractPlayer {
 		});
 	}
 	*/
-	
 
 	inputProxies { // just this patch
 		^this.inputs.select({ arg a; a.isKindOf(PlayerInputProxy) })
@@ -83,7 +84,6 @@ HasPatchIns : AbstractPlayer {
 			if(spec.rate == \control /* and: {
 				a.isNumber or: {a.isKindOf(KrNumberEditor)} or: {
 					defaultControl = ControlPrototypes.forSpec(spec,this.argNameAt(i));
-					[a,defaultControl].insp;
 					a.isKindOf(defaultControl.class)
 				}
 			}*/,{ // if

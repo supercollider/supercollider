@@ -29,7 +29,6 @@ InstrSpawner : Patch {
 						//a
 					});
 			synthDef = InstrSynthDef.build(this.instr,initArgs,Out);
-			//synthDef.secretDefArgs(this.args).insp;
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
@@ -163,7 +162,7 @@ InstrSpawner : Patch {
 	}
 
 	isPlaying {
-		^(spawnTask.notNil and: {spawnTask.state == 7})
+		^spawnTask.isPlaying
 	}
 	didStop {
 		super.didStop;
@@ -206,7 +205,7 @@ InstrGateSpawner : InstrSpawner {
 
 	startTask {
 		clock = TempoClock.default;
-		// play without the quantize
+		// like clock.play without the quantize
 		//first event has been sent, sched to the second
 		clock.schedAbs(clock.elapsedBeats + (delta - Tempo.secs2beats(latency)), spawnTask);
 	}
