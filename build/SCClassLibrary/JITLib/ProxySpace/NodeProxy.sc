@@ -332,7 +332,7 @@ NodeProxy : BusPlug {
 	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
 			
 			if(obj.isNil) { this.removeAt(index); ^this };
-			if(obj.isSequenceableCollection or: { index.isSequenceableCollection }) { 					^this.putAll(obj.asArray, index, channelOffset) 
+			if(index.isSequenceableCollection) { 						^this.putAll(obj.asArray, index, channelOffset) 
 			};
 			
 			orderIndex = index ? 0;
@@ -346,7 +346,7 @@ NodeProxy : BusPlug {
 					{ this.removeToBundle(bundle, index) };
 				objects = objects.put(orderIndex, container);
 			} {
-				Error("failed to add object to node proxy:" + obj).throw;
+				format("failed to add % to node proxy: %", obj, this).inform;
 				^this 
 			};
 			
@@ -376,7 +376,7 @@ NodeProxy : BusPlug {
 	}
 	
 	putSeries { arg first, second, last, value;
-		last = last ?? {objects.size - 1};
+		last = last ?? { max(1, max(objects.size, value.size)) - 1 };
 		this.putAll(value.asArray, (first, second..last)) 
 	}
 	
@@ -413,6 +413,11 @@ NodeProxy : BusPlug {
 		index = this.index;
 		if(index.notNil) { nodeMap.set(\out, index, \i_out, index) };
 		nodeMap.proxy = this;
+	}
+	
+	server_ { arg inServer;
+		if(this.isNeutral.not) { Error("can't change the server").throw };
+		server = inServer;
 	}
 	
 	bus_ { arg inBus;
@@ -657,7 +662,7 @@ NodeProxy : BusPlug {
 					// make list of nodeIDs following the index
 					nodes = Array(4);
 					objects.doFrom({ arg obj, i; 
-						var id; id = obj.nodeID;
+						var id = obj.nodeID;
 						if(id.notNil) { nodes = nodes ++ id ++ synthID };
 					}, index + 1);
 					if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
@@ -783,8 +788,7 @@ NodeProxy : BusPlug {
 			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
 			this.stopAllToBundle(bundle);
 			if(freeGroup) { 
-				bundle.addSchedFunction({ group.free }, 
-					(fadeTime ? this.fadeTime) + server.latency); 
+				bundle.sched((fadeTime ? this.fadeTime) + server.latency, { group.free }); 
 			};
 			bundle.send(server);
 		}
