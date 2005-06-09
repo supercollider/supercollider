@@ -23,7 +23,7 @@ EnvEditorGui : ObjectGui {
 		
 		timeScale = times.maxItem * 1.5;
 		levelScale = levels.maxItem * 1.5;
-		ev.value_([times / timeScale,levels / levelScale]);//.insp("initial setting"));
+		ev.value_([times / timeScale,levels / levelScale]);//("initial setting"));
 		ev.action = {
 			var index,levels,times,deltas,sum=0;
 			index = ev.index;
@@ -41,7 +41,6 @@ EnvEditorGui : ObjectGui {
 						});
 			model.putLevel(index,levels.at(index) * levelScale);
 			//visual clip
-			//[ times,levels].insp("times,levels");
 			//ev.value_([ times,levels]);
 			ev.refresh;
 		};

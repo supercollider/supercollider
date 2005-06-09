@@ -26,16 +26,18 @@ NumberEditorGui : EditorGui {
 			//.stringColor_(this.background)
 			.action_({ arg nb;
 				model.activeValue_(nb.value).changed(numv);
-			});		
+			});
+		numv.keyDownAction = {nil};	
 	}
 	slider { arg layout, x=100,y=15;
 		var r;
-		slv = SCSlider(layout, Rect(0,0,100,15));
+		slv = SCSlider(layout, Rect(0,0,100,17));
 		slv.setProperty(\value,model.spec.unmap(model.poll));
 		//slv.background_(this.background);
 		slv.action_({arg th; 
 			model.activeValue_(model.spec.map(th.value)).changed(slv)
 		});
+		slv.keyDownAction = {nil};
 	}
 	update {arg changed,changer; // always has a number box
 		{
@@ -67,6 +69,7 @@ PopUpEditorGui : EditorGui {
 			.action_({ arg nb;
 				model.selectByIndex(popV.value).changed(this)
 			});
+		popV.keyDownAction = {nil};
 		popV.setProperty(\value,model.selectedIndex)
 	}
 	update { arg changed,changer;
@@ -88,6 +91,7 @@ BooleanEditorGui : EditorGui {
 		cb.font = Font("Helvetica",9);
 		cb.setProperty(\value,model.value.binaryValue);
 		cb.action = { model.activeValue_(cb.value != 0,this) };
+		cb.keyDownAction = {nil};
 	}
 	update { arg changed,changer;
 		if(changer !== this,{
