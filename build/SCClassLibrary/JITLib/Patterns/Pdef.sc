@@ -33,8 +33,8 @@ PatternProxy : Pattern {
 	source { ^pattern }
 	
 	defaultEvent {
-		if(envir.isNil) { envir = () }; 
-		^(parent:envir, forward: { 1 }) // default value: safe time value (better throw error?)
+		if(envir.isNil) { envir = (forward: { 1 }) }; 
+		^(parent:envir) // default value: safe time value (better throw error?)
 	}
 	
 	convertFunction { arg func;
@@ -347,7 +347,7 @@ EventPatternProxy : TaskProxy {
 			};
 			
 			if(fadeTime.isNil) {
-				Pseq([EmbedOnce(Pfindur(delta, str, tolerance)), new])
+				Pseq([EmbedOnce(Pfindur(delta.postln, str, tolerance)), new])
 			}{
 				
 				Ppar([
