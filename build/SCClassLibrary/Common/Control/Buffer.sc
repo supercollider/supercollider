@@ -296,9 +296,17 @@ Buffer {
 	freeMsg { arg completionMessage;
 		server.freeBuf(bufnum);
 		server.bufferAllocator.free(bufnum);
-		^["/b_free", bufnum, completionMessage.value(this)]
+		^["/b_free", bufnum, completionMessage.value(this)];
 	}
-		
+	*freeAll { arg server;
+		var b;
+		server = server ? Server.default;
+		server.bufferAllocator.blocks.do({ arg block;
+			b = b.add( ["/b_free",block.address] );
+			server.bufferAllocator.free(block.address);	 
+		});
+		server.sendBundle(b);
+	}		
 	zero { arg completionMessage;
 		server.listSendMsg(this.zeroMsg(completionMessage));
 	}
