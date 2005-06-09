@@ -36,6 +36,12 @@ BufferProxy { // blank space for delays, loopers etc.
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
+	free {
+		var b;
+		b = MixedBundle.new;
+		this.freeToBundle(b);
+		b.sendAtTime(this.server,nil);
+	}
 	freeToBundle { arg bundle;
 		this.freePatchOut(bundle);
 		bundle.addMessage(this,\freeHeavyResources);
