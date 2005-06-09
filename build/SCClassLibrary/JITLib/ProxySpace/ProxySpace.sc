@@ -127,11 +127,8 @@ ProxySpace : LazyEnvir {
 		this.removeNeutral;
 	}
 	
-	removeNeutral { // rejectInPlace should be in envir.select
-		var newEnvir;
-		newEnvir = envir.copy;
-		envir.keysValuesDo { arg key, val; if(val.isNeutral) {  newEnvir.removeAt(key) } };
-		envir = newEnvir;
+	removeNeutral {
+		envir.copy.keysValuesDo { arg key, val; if(val.isNeutral) { envir.removeAt(key) } };
 	}
 	// get a list of all proxies that are not reached either by the list passed in
 	// or (if nil) by the monitoring proxies
