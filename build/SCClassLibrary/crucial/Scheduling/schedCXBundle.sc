@@ -13,7 +13,7 @@
 			now = Main.elapsedTime;
 			if((now - timeOfRequest) <= this,{
 				bundle.send(server,this);
-			},{ //better late than never...
+			},{ // better late than never...
 				bundle.send(server,0.0);
 			});
 		},{
@@ -21,22 +21,33 @@
 		});
 	}
 }
-
+/**
+  * 1 : bar
+  * 2 : half-note
+  * 4 : quarter note
+  * 8 : 8th note
+  * 16 : 16th note
+  */
 + Integer { // at the next N beat
 	schedCXBundle { arg bundle,server,timeOfRequest;
-		var now,nowRound,tdelta;
+		var now,nowRound,tdelta,latencyBeats;
+		latencyBeats = Tempo.secs2beats(server.latency);
 		now = TempoClock.default.elapsedBeats;
-		nowRound = now.roundUp(this.reciprocal);
+		nowRound = (now + latencyBeats).roundUp((this / 4).reciprocal);
 		tdelta = Tempo.beats2secs(nowRound - now);
-		//[now,nowRound,tdelta,nowRound - Tempo.secs2beats(server.latency)].debug;
-		if(tdelta > server.latency,{ // enough time to sched in sclang ?
-			TempoClock.default.schedAbs(nowRound - Tempo.secs2beats(server.latency),{
-				bundle.send(server, server.latency);
-				nil
-			});
-		},{ // send now
-			bundle.send(server, tdelta.max(0.0));
-		});
+
+		// for server.latency seconds you are exposed to error if you are
+		// changing the tempo during that time
+		TempoClock.default.sched( nowRound - now - latencyBeats,{
+			/*SystemClock.sched(server.latency,{
+				var b;
+				b = TempoClock.default.elapsedBeats.debug("the beat");
+				(b % 4).debug;
+				nil;
+			});*/
+			bundle.send(server, server.latency);
+			nil
+		});		
 	}
 }
 

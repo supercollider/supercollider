@@ -1,7 +1,7 @@
 
 TempoGui : ObjectGui {
 
-	var tempoG;
+	var tempoG,gnome;
 	
 	writeName {}
 	guiBody { arg layout;
@@ -9,6 +9,27 @@ TempoGui : ObjectGui {
 			.action_({arg t; model.bpm_(t)});
 			
 		tempoG.gui(layout,nil,true);
+		
+		gnome = Patch({ arg beat,freq,amp;
+			Decay2.ar( 
+				K2A.ar(beat), 0.01,0.11, 
+				SinOsc.ar( freq, 0, amp )
+			)
+		},[
+			BeatClockPlayer.new(4.0),
+			StreamKrDur(
+				Pseq([ 750, 500, 300, 500, 750, 500, 400, 500, 750, 500, 400, 500, 750, 500, 400, 500 ],inf), 
+				1.0),
+			StreamKrDur(
+				Pseq([1,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25] * 0.01,inf),
+				1.0)
+		]);
+
+		ToggleButton(layout,"M",{
+			if(gnome.isPlaying.not,{ gnome.play(atTime: 1) })
+		},{
+			if(gnome.isPlaying,{ gnome.stop })
+		},minHeight: 17, minWidth: 5);
 	}
 	
 	update {

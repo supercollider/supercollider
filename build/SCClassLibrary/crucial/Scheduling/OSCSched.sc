@@ -97,7 +97,6 @@ BeatSched {
 			}
 		);
 	}
-		
 	sched { arg beats,function;
 		tempoClock.dsched(beats,function)
 		//this.tsched(tempo.beats2secs(beats),function)
@@ -111,15 +110,13 @@ BeatSched {
 			}
 		);
 		//this.xtsched(tempo.beats2secs(beats),function)
-	}
-	
+	}	
 	qsched { arg quantize,function;
 		this.sched(this.deltaTillNext(quantize),function)
 	}
 	xqsched { arg quantize,function;
 		this.xsched(this.deltaTillNext(quantize),function )
 	}
-	
 	tschedAbs { arg time,function;
 		if(time >= this.time,{ // in the future ?
 			pq.put(time,function);
@@ -134,7 +131,6 @@ BeatSched {
 			});
 		})			
 	}
-	// will cancel all pending
 	xtschedAbs { arg time,function;
 		if(time >= this.time,{ // in the future ?
 			pq.clear;
