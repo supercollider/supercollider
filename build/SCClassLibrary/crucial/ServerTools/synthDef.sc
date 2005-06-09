@@ -1,5 +1,4 @@
 
-
 + Object {
 	
 	stopToBundle {}
@@ -47,6 +46,29 @@
 + Buffer {
 	synthArg {
 		^bufnum
+	}
+}
+
++ Bus {
+	prepareToBundle { arg group,bundle;
+		if(index.isNil,{
+			bundle.addMessage(this,\alloc)
+		})
+	}
+	addToSynthDef { arg synthDef, name;
+		// my index is not modulatable
+		// actual index to be determined at play time
+		synthDef.addIr(name,0)
+	}
+	instrArgFromControl { arg control;
+		if(rate == \audio,{
+			^In.ar(control,numChannels)
+		},{
+			^In.kr(control,numChannels)
+		})
+	}
+	synthArg {
+		^index
 	}
 }
 
@@ -104,5 +126,3 @@
 		});
 	}
 }
-
-

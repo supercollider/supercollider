@@ -120,11 +120,7 @@ ServerErrorGui : ObjectGui {
 		
 		failer = OSCresponderNode(model.addr, '/fail', { arg time, responder, msg;
 			{
-				var mins,secs;
-				mins = (time/60).round(1);
-				secs = (time%60).round(0.1);
-				if(secs<10,{ secs = "0"++secs.asString; },{ secs=secs.asString;});
-				errors.label = msg[1].asString + msg[2].asString + "("++(mins.asString++":"++secs)++")";
+				errors.label = msg[1].asString + msg[2].asString + "(" ++ time.asTimeString++")";
 				//errors.stringColor = Color.white;
 			}.defer
 		});
@@ -135,7 +131,7 @@ ServerErrorGui : ObjectGui {
 			thisThread.exceptionHandler = { |error|
 				if(Error.handling,{ error.dump; this.halt; });
 				Error.handling = true;
-				{ errors.label = error.errorString; nil }.defer;
+				{ errors.label = error.errorString.copyRange(0,50); nil }.defer;
 				nil.handleError(error);
 			}
 		})
