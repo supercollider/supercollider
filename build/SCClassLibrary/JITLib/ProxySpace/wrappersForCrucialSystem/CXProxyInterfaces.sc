@@ -48,7 +48,7 @@ CXPlayerControl : AbstractPlayControl {
 	freeToBundle { arg bundle, fadeTime;
 //		bundle.addSchedFunction({ source.freeHeavyResources }, fadeTime);
 //		source.freeToBundle(bundle);
-		bundle.addSchedFunction({ source.free }, fadeTime);
+		bundle.sched(fadeTime, { source.free });
 
 	}
 	
