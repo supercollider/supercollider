@@ -1,7 +1,5 @@
 
-
 + Object {
-
 	writeZArchive { arg akv;
 		var thing;
 		thing = this.asCompileString;
@@ -19,7 +17,7 @@
 		new = this.new;
 		akv = args.first;
 		if(akv.isString,{ 
-			akv = ZArchive.read(akv);
+			akv = ZArchive.read(Document.standardizePath(akv));
 			args[0] = akv;
 		 });
 		new.performList(\readZArchive,args);
