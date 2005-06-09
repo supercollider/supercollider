@@ -13,15 +13,15 @@ OSCBundle {
 	// eventstreams e.g. take into account the latency internally
 	
 	schedSend { arg server, clock, quant;
-			this.doPrepare(server, {
-				if(clock.isNil) {
-						this.prSend(server, server.latency) 
-				} {
-						clock.schedAbs(quant.nextTimeOnGrid(clock),  {
-							this.prSend(server, server.latency);  
-						});
-				};
-			});
+		this.doPrepare(server, {
+			if(clock.isNil) {
+				this.prSend(server, server.latency) 
+			} {
+				clock.schedAbs(quant.nextTimeOnGrid(clock),  {
+					this.prSend(server, server.latency);  
+				});
+			};
+		});
 	}
 	
 	send { arg server, time; 
@@ -129,14 +129,13 @@ MixedBundle : OSCBundle {
 	}
 	
 	// private //
-	
 	prSend { arg server, latency;
 		this.doEarlyFunctions;
 		if(functions.notNil) {
-			SystemClock.sched(latency, { this.doFunctions });
+			SystemClock.sched(latency ? 0.0, { this.doFunctions });
 		};
 		if(messages.notNil) {
-			server.listSendBundle(latency, messages);
+			server.listSendBundle(latency ? 0.0, messages);
 		};
 	}
 	
