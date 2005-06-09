@@ -18,3 +18,8 @@
 		^this.group
 	}
 }
++ Integer {
+	asGroup {
+		^Group.basicNew(nil,this)
+	}
+}
