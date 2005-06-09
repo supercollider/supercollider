@@ -217,7 +217,15 @@ SCSoundFileView : SCScope{
 		this.refresh;
 		this.updateScroll
 	}
-	
+	zoomToFrac { arg frac; // 0..1
+		this.xZoom = (frac * zoomOne);
+		viewFrames = dataFrames * block * (this.xZoom / zoomOne);
+		if ( this.x > (soundfile.numFrames - viewFrames), {
+			this.x_(soundfile.numFrames - viewFrames) 
+		});
+		this.refresh;
+		this.updateScroll
+	}
 	zoomAllOut {
 		this.x_(0); this.xZoom = zoomOne; this.refresh;
 		viewFrames = dataFrames * block * (this.xZoom / zoomOne);
