@@ -57,8 +57,8 @@ SoundFile {
 	}
 	
 	openRead{ arg pathName; 
-		pathName = pathName ? path;
-		^this.prOpenRead(pathName);
+		path = pathName ? path;
+		^this.prOpenRead(path);
 	}
 	
 	prOpenRead { arg pathName; 
