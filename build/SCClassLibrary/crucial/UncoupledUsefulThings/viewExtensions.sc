@@ -42,8 +42,7 @@
 
 	flow { arg func,bounds;
 		var f;
-		f = FlowView(this,bounds ?? 
-					{ decorator.indentedRemaining });
+		f = FlowView(this,bounds ?? { decorator.indentedRemaining });
 		func.value(f);
 		f.resizeToFit;
 		this.reflowAll; // annoying and slow
@@ -54,20 +53,14 @@
 
 	horz { arg func,bounds;
 		var comp;
-		comp = SCHLayoutView(this,bounds ?? 
-					{ decorator.indentedRemaining });
+		comp = SCHLayoutView(this,bounds ?? { decorator.indentedRemaining });
 		func.value(comp);
-		//comp.resizeToFit;
-		//this.reflowAll;
 		^comp
 	}
 	vert { arg func,bounds;
 		var comp;
-		comp = SCVLayoutView(this,bounds ?? 
-					{ decorator.indentedRemaining });
+		comp = SCVLayoutView(this,bounds ?? { decorator.indentedRemaining });
 		func.value(comp);
-		//comp.resizeToFit;
-		//this.reflowAll;
 		^comp
 	}
 	indentedRemaining { ^decorator.indentedRemaining }
@@ -82,13 +75,10 @@
 
 + FlowLayout {
 
-	used { //round up to nearest rect
-		^Rect(bounds.left,bounds.top,maxRight 
-					+ margin.x + margin.x
-					- bounds.left,
-					(top + maxHeight 
-						+ margin.y + margin.y
-					) - bounds.top)
+	used { //round out to nearest rect
+		^Rect(bounds.left,bounds.top,
+			maxRight + margin.x /*+ margin.x*/ - bounds.left,
+			(top + maxHeight + margin.y /*+ margin.y*/ ) - bounds.top)
 	}
 	indentedRemaining {
 		var inb;
