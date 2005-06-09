@@ -10,6 +10,12 @@ EnvironmentRedirect {
 	*new { arg envir;
 		^super.newCopyArgs(envir ?? { Environment.new(32, Environment.new) })
 	}
+	*make { arg function;
+		^this.new.make(function)
+	}
+	*use { arg function;
+		^this.new.use(function)
+	}
 	
 	// override in subclasses
 	
@@ -123,7 +129,7 @@ EnvironmentRedirect {
      	if(doc.isKindOf(EnvirDocument), {
      		doc.envir_(this)
      	}, {
-     		if(pushNow) { this.push};
+     		if(pushNow) { this.push };
      		"added actions to current doc".inform;
      		doc	.toFrontAction_({ this.push })
      			.endFrontAction_({ this.pop });
