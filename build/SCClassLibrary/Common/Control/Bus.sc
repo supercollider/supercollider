@@ -134,5 +134,27 @@ Bus {
 	isAudioOut { // audio interface
 		^(rate === \audio and: {index < server.options.firstPrivateBus})
 	}
+	
+	ar {
+		if(rate == \audio,{
+			^In.ar(index,numChannels)
+		},{
+			//"Bus converting control to audio rate".inform;
+			^K2A.ar( In.kr(index,numChannels) )
+		})
+	}
+	kr {
+		if(rate == \audio,{
+			^A2K.kr(index,numChannels)
+		},{
+			^In.kr(index,numChannels)
+		})
+	}
+	play { arg target=0, outbus, fadeTime, addAction=\addToTail;
+		if(this.isAudioOut.not,{ // returns a Synth
+			^{ this.ar }.play(target, outbus, fadeTime, addAction);
+		});
+	}
+	
 }
 
