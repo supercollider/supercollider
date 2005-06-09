@@ -5,12 +5,13 @@ TempoGui : ObjectGui {
 	
 	writeName {}
 	guiBody { arg layout;
+		var gn;
 		tempoG = NumberEditor(model.bpm,[1.0,666.0])
 			.action_({arg t; model.bpm_(t)});
 			
 		tempoG.gui(layout,nil,true);
 		
-		gnome = Patch({ arg beat,freq,amp;
+		/*gnome = Patch({ arg beat,freq,amp;
 			Decay2.ar( 
 				K2A.ar(beat), 0.01,0.11, 
 				SinOsc.ar( freq, 0, amp )
@@ -25,11 +26,15 @@ TempoGui : ObjectGui {
 				1.0)
 		]);
 
-		ToggleButton(layout,"M",{
-			if(gnome.isPlaying.not,{ gnome.play(atTime: 1) })
-		},{
-			if(gnome.isPlaying,{ gnome.stop })
-		},minHeight: 17, minWidth: 5);
+		gn = SCButton(layout,17@17);
+		gn.states = [ ["M",Color.black,Color.white],["M",Color.white,Color.black]];
+		gn.action = {
+			if(gnome.isPlaying.not,{ 
+				gnome.play(atTime: 1) 
+			},{
+				gnome.stop							
+			})
+		};*/
 	}
 	
 	update {
