@@ -1,4 +1,5 @@
-//watches an address for created nodes and ending nodes.
+
+//watches a server address for node-related messages
 
 AbstractNodeWatcher {
 
@@ -32,10 +33,10 @@ AbstractNodeWatcher {
 	cmds { ^nil }
 		
 	respond { arg method, msg;
-				//msg.postln;
-				msg = msg.copy;
-				msg.removeAt(0);
-				this.performList(method, msg)
+		//msg.postln;
+		msg = msg.copy;
+		msg.removeAt(0);
+		this.performList(method, msg)
 	}
 	
 	start {
@@ -87,7 +88,7 @@ BasicNodeWatcher : AbstractNodeWatcher {
 
 ///////////////////////////////////
 //watches registered nodes and sets their isPlaying/isRunning flag. 
-//a node needs to be  registered to be adressed, other nodes are ignored.
+//a node needs to be  registered to be addressed, other nodes are ignored.
 
 NodeWatcher : BasicNodeWatcher {
 	
@@ -123,17 +124,15 @@ NodeWatcher : BasicNodeWatcher {
 		watcher.unregister(node);
 	}
 
-
 	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on"] }
 	respond { arg method, msg;
-						var node, group;
-						node = nodes.at(msg.at(1));
-						if(node.notNil, {
-								group = nodes.at(msg.at(2));
-								this.performList(method, node, group)
-						})
-	}
-	
+		var node, group;
+		node = nodes.at(msg.at(1));
+		if(node.notNil, {
+				group = nodes.at(msg.at(2));
+				this.performList(method, node, group)
+		})
+	}	
 	
 	clear {
 		nodes.do({ arg node; 
@@ -142,7 +141,6 @@ NodeWatcher : BasicNodeWatcher {
 		});
 		nodes = IdentityDictionary.new 
 	}
-	
 	
 	register { arg node;
 		if(server.serverRunning.not, { nodes.removeAll; ^this });
@@ -159,39 +157,29 @@ NodeWatcher : BasicNodeWatcher {
 	//////////////private implementation//////////////
 	
 	n_go { arg node;
-	
 		node.isPlaying = true;
 		node.isRunning = true;
 		node.changed(\n_go);  // notify all the node's dependents of the change
-		
 	}
 	
-	
 	n_end { arg node;
-		
 		this.unregister(node);
 		node.isPlaying = false;
 		node.isRunning = false;
 		node.changed(\n_end);
 	}
 
-	n_off { arg node;
-		
+	n_off { arg node;	
 		node.isRunning = false;
 		node.changed(\n_off);
 	}	
 
 	n_on { arg node;
-		
 		node.isRunning = true;
 		node.changed(\n_on);
 	}
-	
-	
-
 
 }
-
 
 
 DebugNodeWatcher : BasicNodeWatcher {
@@ -199,7 +187,7 @@ DebugNodeWatcher : BasicNodeWatcher {
 	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on"] }
 	
 	//////////////private implementation//////////////
-	
+		
 	doPost { arg action, nodeID, groupID, prevID, nextID;
 		Post << ("[ server: " + server.name + "]" +
 		action + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
@@ -221,8 +209,7 @@ DebugNodeWatcher : BasicNodeWatcher {
 	}	
 
 	n_on { arg nodeID, groupID, prevID, nextID;
-		this.doPost("turned on", nodeID, prevID, nextID);	}
-	
-
+		this.doPost("turned on", nodeID, prevID, nextID);	
+	}
 
 }
