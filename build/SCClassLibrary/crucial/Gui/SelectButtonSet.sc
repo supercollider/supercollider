@@ -5,7 +5,7 @@ SelectButtonSet  {
 	
 	*new { arg layout,	
 		/*buttonSizeX,
-//		buttonSizeY,*/
+		buttonSizeY,*/
 		labelArrayOrQnty=10,	// integer generates numerical labels
 		action,				// action.value(selectedIndex,this)
 		color,

@@ -10,13 +10,9 @@ CXAbstractLabel : SCStaticText {
 	label_ { arg string;
 		this.string_(string);
 	}
-
 	bold { 
 		this.font = Font("Helvetica-Bold",12.0);
 	}
-	//deprec me
-	//backColor_ { arg c; this.background_(c) }
-
 }
 
 CXLabel : CXAbstractLabel {
@@ -27,11 +23,10 @@ CXLabel : CXAbstractLabel {
 		new = super.new(layout,string,x,y,minWidth);
 		new.font_(Font("Helvetica",12.0))
 			.background_(Color.new255(250,250,240))
-			.align_(\center);
+			.align_(\left);
 		^new
 	}
 }
-
 
 VariableNameLabel : CXAbstractLabel {
 	*new { arg name,layout,minWidth=120;
@@ -50,4 +45,3 @@ ArgNameLabel : CXAbstractLabel {
 			.align_(\left)
 	}
 }
-

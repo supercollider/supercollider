@@ -1,9 +1,7 @@
 
-SCViewAdapter { // better name :SCViewHolder
+SCViewHolder {
 	
-	// SCViewAdapter makes it possible to wrap more capabilities by holding, not subclassing
-	// "has a"  not "is a"
-	
+	// SCViewHolder makes it possible to add more capabilities by holding an SCView, not subclassing it
 	var <view;
 	
 	view_ { arg v;
@@ -36,13 +34,19 @@ SCViewAdapter { // better name :SCViewHolder
 	focus { arg flag=true; view.focus(flag) }
 	visible_ { arg boo; view.visible = boo }
 
-	// move lower
+	// should move lower
 	font_ { arg f;
 		view.font = f;
 	}
 }
 
-StartRow : SCViewAdapter {
+/**
+  * a non-visible view that keeps the place in a flow layout
+  * to mark where a row was started.  then when the view is reflowed due to resizing etc.
+  * the layout can do a new row when this is encountered.
+  * this is only added by FlowView.startRow 
+  */
+StartRow : SCViewHolder {
 	*new { arg parent,bounds;
 		var new;
 		new = super.new;
@@ -54,6 +58,9 @@ StartRow : SCViewAdapter {
 	prClose {}
 }
 
+/**
+  * a composite view with a FlowLayout as its decorator
+  */
 FlowView : SCLayoutView {
 
 	var autoRemoves;
@@ -98,13 +105,7 @@ FlowView : SCLayoutView {
 		if(reflow,{ this.reflowAll; });
 
 		used = decorator.used;
-		/*used = this.children.first.bounds;
-		this.children.do({ arg c;
-			used = used.union(c.bounds);
-		});
-		//new = this.clipSetBounds(used);
-		*/
-		// should respect any settings
+		// should respect any settings !
 		//used.width = used.width.clip(this.getProperty(\minWidth),this.getProperty(\maxWidth));
 		//used.height = used.height.clip(this.getProperty(\minHeight),this.getProperty(\maxHeight));
 		
@@ -160,8 +161,8 @@ FlowView : SCLayoutView {
 	}
 }
 
-
-SCButtonAdapter : SCViewAdapter {
+// abstract
+SCButtonAdapter : SCViewHolder {
 
 	classvar <>defaultHeight=17;
 
@@ -188,7 +189,7 @@ SCButtonAdapter : SCViewAdapter {
 	initOneState { arg name,textcolor,backcolor;
 		view.states_([[name,textcolor ? Color.black, backcolor ? Color.white]])
 	}
-	// all state
+	// sets all states
 	label_ { arg string;
 		view.states = view.states.collect({ arg st;
 			st.put(0,string.asString);
@@ -210,7 +211,8 @@ SCButtonAdapter : SCViewAdapter {
 	}
 }
 
-ActionButton : SCButtonAdapter { // one state
+// abreviation for a one state button
+ActionButton : SCButtonAdapter {
 
 	var <action;
 	
@@ -229,51 +231,6 @@ ActionButton : SCButtonAdapter { // one state
 	}
 }
 
-// CXPopUp
-PopUp : ActionButton { // change to use SCPopUpMenu
-	
-	var <>title,<>list,<>menuLabelsFunc,<>onSelect,index=0;
-	
-	*new { arg layout,
-				title,// or function
-				list,//or list-delivering-function
-				onSelect,// thing,i
-				//optional...
-				menuLabelsFunc,initIndex=0,minWidth=100;
-		var b;
-		^b = super.new(
-			layout,
-			title.value 	?? {menuLabelsFunc.value(list.value.at(initIndex),initIndex)} 
-						?? {list.value.at(initIndex).asString},
-			{b.doAction},
-			minWidth,
-			17
-			)
-			.title_(title)
-			.list_(list)
-			.menuLabelsFunc_(menuLabelsFunc)
-			.onSelect_(onSelect)
-	}
-	doAction {
-		CXMenu.newWith(
-			list.value.collect({ arg thing,i;
-				var name;
-				name = menuLabelsFunc.value(thing,i) ?? {thing.asString};
-				name -> {index= i; onSelect.value(thing,i);  this.updateTitle(name);  }
-			})
-		).gui	
-	}
-	passiveSelect { arg i;
-		index = i;
-		this.updateTitle;
-	}
-	updateTitle { arg default="choose...";
-		this.label_(title.value 
-						?? {menuLabelsFunc.value(list.value.at(index),index)} 
-						?? {list.value.at(index).asString} 
-						??  {"choose..."}).refresh
-	}
-}
 
 ToggleButton : SCButtonAdapter {
 
@@ -283,6 +240,9 @@ ToggleButton : SCButtonAdapter {
 			^super.new.init(layout,init, title,minWidth,minHeight)
 				.onFunction_(onFunction).offFunction_(offFunction)
 	}
+	value { ^state }
+
+	// private
 	init { arg layout,init,title,minWidth,minHeight;
 		var offc,onc;
 		this.makeViewWithStringSize(layout,title.size,minWidth,minHeight);
@@ -296,20 +256,6 @@ ToggleButton : SCButtonAdapter {
 		view.setProperty(\value,state.binaryValue);
 		view.action_({this.prSetState(state.not)});
 	}
-
-	toggle { arg newState,doAction = true;
-		if(doAction,{ 
-			this.prSetState(newState ? state.not); 
-		},{ 		
-			state = newState ? state.not;
-		});
-		view.setProperty(\value,state.binaryValue);
-	}		
-	passiveToggle { arg newState;
-		state = newState ? state.not;
-		view.setProperty(\value,state.binaryValue);
-	}
-	value { ^state }
 	prSetState { arg newstate; 
 		state = newstate;
 		if(state,{
@@ -319,13 +265,3 @@ ToggleButton : SCButtonAdapter {
 		});
 	}
 }
-
-//LabelledNumericalView : SCViewAdapter {
-//	
-//	*new { arg parent,rect,name;
-//		^super.new(parent,rect).init(name)
-//	}
-//	*viewClass { ^SCSlider }
-//	init { arg name;}
-//}
-

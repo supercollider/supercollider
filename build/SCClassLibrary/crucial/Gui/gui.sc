@@ -138,7 +138,7 @@
 		^MultiPageLayout.on(this,bounds)
 	}
 }
-+ SCViewAdapter {
++ SCViewHolder {
 	asPageLayout { arg title,bounds;
 		^MultiPageLayout.on(this,bounds)
 	}

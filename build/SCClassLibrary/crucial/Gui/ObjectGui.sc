@@ -1,5 +1,5 @@
 
-ObjectGui : SCViewAdapter { // aka AbstractController
+ObjectGui : SCViewHolder { // aka AbstractController
 
 	var <>model,<dragSource;
 

@@ -1,9 +1,11 @@
 
-CXMenu : SCViewAdapter { // multiple actions
+CXMenu : SCViewHolder { // multiple actions
 
 	var <nameFuncs,<layout,<>backColor,<>stringColor,
 			<>closeOnSelect=true,lastButton,buttonWidth=150,focus = 0;
-
+	/**
+	  * name => { }, name => { }, ...
+	  */
 	*new { arg ... nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
@@ -91,57 +93,5 @@ CXMenu : SCViewAdapter { // multiple actions
 		focus = f.wrap(0,view.children.size - 1);
 		view.children.at( focus ).focus;
 	}
-//	focusNext { arg by=1;
-//		focus = (focus + by).clip(0,view.children.size - 1);
-//		view.children.at( focus ).focus;
-//	}	
 }
-
-/*
-PopUp : ActionButton {
-	
-	var <>title,<>list,<>menuLabelsFunc,<>onSelect,index=0;
-	
-	*new { arg layout,
-				title,// or function
-				list,//or list-delivering-function
-				onSelect,// thing,i
-				//optional...
-				menuLabelsFunc,initIndex=0,minWidth=100,borderStyle=4;
-		var b;
-		^b = super.new(
-			layout,
-			title.value ?? {menuLabelsFunc.value(list.value.at(initIndex),initIndex)} ?? {list.value.at(initIndex).asString},
-			{b.doAction},minWidth,13, borderStyle)
-			.title_(title)
-			.list_(list ?? {[]})
-			.menuLabelsFunc_(menuLabelsFunc)
-			.onSelect_(onSelect)
-	}
-	doAction {
-		CXMenu.newWith(
-			list.value.collect({ arg thing,i;
-				var name;
-				name = menuLabelsFunc.value(thing,i) ?? {thing.asString};
-				name -> {index= i; onSelect.value(thing,i);  this.updateTitle(name);  }
-			})
-		).gui	
-	}
-	updateTitle { arg default="choose...";
-		this.label_(title.value ?? {menuLabelsFunc.value(list.value.at(index),index)} ?? {list.value.at(index).asString} ? "choose...");
-	}
-
-}
-*/
-
-/*
-(
-	f=PageLayout.new;
-	PopUp(f,"choose",[1,2,3,4],{arg int;  int.postln });
-	
-	PopUp(f,nil,[1,2,3,4],{arg int;  int.postln },{arg thing; thing.asString });
-
-
-)	
-*/
 

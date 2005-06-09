@@ -190,7 +190,6 @@ SaveConsole : AbstractConsole {
 	printPath {
 		ActionButton(layout,"#path",{ path.value.asCompileString.postln })
 	}
-	//dirtyAwareSave
 	save { arg title="save",minWidth=100;
 		ActionButton(layout,title,{
 			if(path.value.isNil,{
@@ -250,8 +249,6 @@ SaveConsole : AbstractConsole {
 	}	
 }
 
-
-
 SoundFileFormats { // an interface
 
 	var format='float32';
@@ -268,44 +265,34 @@ SoundFileFormats { // an interface
 	}
 
 	headerFormat {
-	
 		if(format=='float32',{
 			^'Sun'
 		});
-		
 		if(format=='aiff16',{
 			^'AIFF'
 		});
-		
 		if(format=='aiff24',{
 			^'AIFF'
 		});
-		
 		if(format=='wav16',{
 			^'WAV'
 		});
-		
 		^nil
 	}
 	
 	sampleFormat {
-	
 		if(format=='float32',{
 			^'float32'
 		});
-		
 		if(format=='aiff16',{
 			^'int16'
 		});
-		
 		if(format=='aiff24',{
 			^'int24'
 		});
-		
 		if(format=='wav16',{
 			^'int16'
 		});
-		
 		^nil	
 	}
 }

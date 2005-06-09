@@ -105,6 +105,7 @@ MultiPageLayout  {
 			NotificationCenter.notify(this,\didClose);
 		});
 	}
+	onClose_ { arg f; windows.first.onClose = f; }
 	refresh {
 		windows.do({ arg w; w.refresh })
 	}
