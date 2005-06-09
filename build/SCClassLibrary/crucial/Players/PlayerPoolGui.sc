@@ -56,4 +56,3 @@ PlayerPoolGui : AbstractPlayerGui {
 	}
 
 }
-

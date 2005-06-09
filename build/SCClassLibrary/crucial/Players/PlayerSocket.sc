@@ -106,6 +106,7 @@ PlayerSocket : AbstractPlayerProxy {
 		onBat = dum;
 	
 		sharedBus = SharedBus.newFrom(patchOut.bus,this);
+		this.annotate(sharedBus,"Shared Bus");
 		patchOut.bus = sharedBus;
 	}
 	freeResourcesToBundle { arg bundle;
@@ -232,7 +233,7 @@ PlayerEffectSocket : PlayerSocket {
 	
 	setSourceToBundle { arg aplayer,bundle,releaseTime=0.2;
 		aplayer.inputProxies.first.setInputBus(inputBus);
-		//.insp("setting inputbus",inputBus);
+		//("setting inputbus",inputBus);
 		super.setSourceToBundle(aplayer,bundle,releaseTime);
 	}
 }

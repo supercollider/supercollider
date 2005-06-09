@@ -13,6 +13,7 @@ BeatClockPlayer : KrPlayer {
 			// TODO: share by tempoFactor per server
 			// place in a high level group
 			tempoBus = TempoBus(group.asGroup.server,tempoBase);
+			this.annotate(tempoBus,"");
 			tempoBus.prepareToBundle(group,bundle);
 		})
 	}

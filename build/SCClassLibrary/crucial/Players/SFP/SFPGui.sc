@@ -1,14 +1,12 @@
 
 AbstractSFPGui : AbstractPlayerGui {
 
-
 	guiBody { arg layout;
 		this.durationGui(layout);
 		this.sfpBody(layout);
 		layout.startRow;
 		this.underlyingFileGui(layout);
 	}
-
 	tempoGui { arg layout;
 		var n;
 		CXLabel(layout,"tempo:");
@@ -21,11 +19,9 @@ AbstractSFPGui : AbstractPlayerGui {
 			})
 		);
 	}
-	
 	underlyingFileGui { arg layout;
 		model.file.gui(layout);
 	}
-
 }
 
 SFPGui : AbstractSFPGui {
@@ -60,11 +56,6 @@ SFPGui : AbstractSFPGui {
 			});
 		})
 	}
-	
-	underlyingFileGui { arg layout;
-		// it dont get more underlying than me	
-	}
-
+	// it dont get more underlying than me	
+	underlyingFileGui { }
 }
-
-

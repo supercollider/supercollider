@@ -1,11 +1,10 @@
 
 AbstractPlayer : AbstractFunction  { 
 
-	var <path,name,<>dirty=true; 
+	var <path,name;
 	
 	var <synth,<group,<server,<patchOut,<>readyForPlay = false,<>playIsStarting = false,
 		 <status, defName;
-	var serverDeathWatcher; // should be moved to an object only owned by top player
 		
 	play { arg agroup,atTime,bus;
 		var bundle,timeOfRequest,sendf;
@@ -45,10 +44,11 @@ AbstractPlayer : AbstractFunction  {
 			};
 		});
 		if(server.serverRunning.not,{
-			server.startAliveThread(0.1,0.4);
+			server.startAliveThread(0.1,0.2);
 			server.waitForBoot({
-				if(server.dumpMode != 0,{ 
-					server.stopAliveThread;
+				server.stopAliveThread;
+				if(server.dumpMode == 0,{
+					server.startAliveThread(0.0,1.1);
 				});
 				InstrSynthDef.clearCache(server);
 				if(server.isLocal,{
@@ -60,16 +60,18 @@ AbstractPlayer : AbstractFunction  {
 		},sendf);
 		CmdPeriod.add(this);
 		// this gets removed in stopToBundle
-		serverDeathWatcher = Updater(server,{ arg s, message;
-			if(message == \serverRunning and: {s.serverRunning.not},{
-				AppClock.sched(5.0,{ // don't panic to quickly
-					if(s.serverRunning.not,{
-						"Server dead ?".inform;
-						//this.cmdPeriod; // stop everything, she's dead
+		/*Library.put(AbstractPlayer,\serverDeathWatcher, 
+			Updater(server,{ arg s, message;
+				if(message == \serverRunning and: {s.serverRunning.not},{
+					AppClock.sched(5.0,{ // don't panic to quickly
+						if(s.serverRunning.not,{
+							"Server dead ?".inform;
+							//this.cmdPeriod; // stop everything, she's dead
+						})
 					})
-				})
-			});
-		});
+				});
+			})
+		);*/
 	}
 	prepareForPlay { arg agroup,private = false,bus;
 		var bundle;
@@ -142,10 +144,13 @@ AbstractPlayer : AbstractFunction  {
 	makePatchOut { arg agroup,private = false,bus,bundle;
 		group = agroup.asGroup;
 		server = group.server;
+		// shouldn't be top unless you are the top out
 		this.topMakePatchOut(group,private,bus);
+		
 		//this.childrenMakePatchOut(group,true,bundle);
 	}
 	topMakePatchOut { arg agroup,private = false,bus;
+		var b;
 		this.group = agroup;
 		if(patchOut.notNil,{
 			if(bus.notNil,{
@@ -163,15 +168,18 @@ AbstractPlayer : AbstractFunction  {
 						});
 					});
 					patchOut.bus = Bus.audio(group.server,this.numChannels);
+					this.annotate(patchOut.bus,"top player but private");
 				},{
 					if(patchOut.hasBus,{
-						if(patchOut.bus.isAudioOut,{
+						if(patchOut.bus.isAudioOut,{ // means is main audio out
+							//something is wrong here...
 							patchOut.bus.free;
 						},{
 							^patchOut
 						})
 					});
 					patchOut.bus = Bus(\audio,0,this.numChannels,group.server);
+					this.annotate(patchOut.bus,"top player out");
 				})
 			});
 			^patchOut
@@ -181,12 +189,20 @@ AbstractPlayer : AbstractFunction  {
 				if(private,{
 					this.setPatchOut(
 						AudioPatchOut(this,group,bus 
-								?? {Bus.audio(group.server,this.numChannels)})
+								?? {
+									b = Bus.audio(group.server,this.numChannels);
+									this.annotate(b,"top player but private");
+									b
+								})
 						)
 				},{
 					this.setPatchOut(
 						AudioPatchOut(this,group,bus 
-								?? {Bus(\audio,0,this.numChannels,group.server)})
+								?? {
+									b = Bus(\audio,0,this.numChannels,group.server);
+									this.annotate(b,"top player out");
+									b
+								})
 								)
 				})
 			},{
@@ -285,10 +301,14 @@ AbstractPlayer : AbstractFunction  {
 			});
 			if(stopSynth, { this.freeSynthToBundle(bundle); });
 			bundle.addMessage(this,\didStop);
-			// top level only
-			if(serverDeathWatcher.notNil,{
-				bundle.addFunction({ serverDeathWatcher.remove });
-			});
+			/*bundle.addFunction({ // actually if somebody else is playing, you shouldn't remove yet
+				var sdw;
+				sdw = Library.at(AbstractPlayer,\serverDeathWatcher);
+				if(sdw.notNil,{
+					sdw.remove;
+					Library.removeAt(AbstractPlayer,\serverDeathWatcher);
+				});
+			});*/
 			this.freePatchOut(bundle);
 			status = \isStopping;
 		},{
@@ -299,9 +319,12 @@ AbstractPlayer : AbstractFunction  {
 		status = \isStopped;
 		NotificationCenter.notify(this,\didStop);
 	}
-	run { arg flag=true;
+	run { arg flag=true,atTime;
+		var msg,b;
 		if(synth.notNil,{
-			synth.run(flag);
+			b = CXBundle.new;
+			b.add( synth.runMsg(flag) );
+			b.sendAtTime(server,atTime);
 		});
 		// should call children ?
 		// this isn't fully implemented
@@ -459,7 +482,8 @@ AbstractPlayer : AbstractFunction  {
 	}
 
 	addToSynthDef {  arg synthDef,name;
-		// value doesn't matter, just building the synth def
+		// the value doesn't matter, just building the synth def now.
+		// value will be passed to the real synth at play time
 		synthDef.addIr(name, 0); // \out is an .ir bus index
 	}
 
@@ -617,11 +641,24 @@ AbstractPlayer : AbstractFunction  {
 		})
 	}
 
-	annotate { arg node,note;
-		Library.put(AbstractPlayer, node.server, node.nodeID, this.asString ++ ":" ++ note);
+	annotate { arg thing,note;
+		if(thing.isKindOf(Node),{
+			Library.put(AbstractPlayer, \nodeAnnotations, thing.server, thing.nodeID, this.asString ++ ":" ++ note);
+		},{
+			if(thing.isKindOf(Bus),{
+				Library.put(AbstractPlayer, \busAnnotations, thing.server,thing.rate, thing.index, this.asString + thing.asString ++ ":" ++ note);
+			});
+		});			
 	}
-	*getAnnotation { arg node;
-		^Library.at(AbstractPlayer, node.server, node.nodeID) ? "";
+	*getAnnotation { arg thing;
+		^if(thing.isKindOf(Node),{
+			Library.at(AbstractPlayer, \nodeAnnotations, thing.server, thing.nodeID);
+		},{
+			if(thing.isKindOf(Bus),{
+				Library.at(AbstractPlayer, \busAnnotations, thing.server,thing.rate, thing.index);
+			});
+		});			
+		//^Library.at(AbstractPlayer, node.server, node.nodeID) ? "";
 	}
 	
 	// using the arg passing version
@@ -751,7 +788,9 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	}	
 	makeResourcesToBundle { arg bundle;
 		if(patchOut.hasBus,{ // could be a scalar out
+			if(sharedBus.notNil,{ sharedBus.releaseBus(this) });
 			sharedBus = SharedBus.newFrom(patchOut.bus,this);
+			this.annotate(sharedBus,"sharedBus");
 			patchOut.bus = sharedBus;
 		});
 	}

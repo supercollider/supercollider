@@ -98,7 +98,7 @@ AbstractPlayerGui : ObjectGui {
 		var dur,div;
 		dur = model.timeDuration;
 		if(dur.notNil,{
-			^(dur / 60.0).asInteger.asString ++ ":" ++ (dur % 60.0).round(0.01).asString
+			^dur.asTimeString; //(dur / 60.0).asInteger.asString ++ ":" ++ (dur % 60.0).round(0.01).asString
 		},{
 			^"inf"
 		});

@@ -16,6 +16,7 @@ TempoPlayer : KrPlayer { //Synthless
 	
 	makeResourcesToBundle { arg bundle;
 		tempoBus = TempoBus(server,tempo);
+		this.annotate(tempoBus,"Tempo Bus");
 		tempoBus.prepareToBundle(group,bundle);	
 	}	
 	makePatchOut {

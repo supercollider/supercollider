@@ -11,14 +11,14 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 	
 	asSynthDef {
 		^SynthDef(this.defName,{ arg out=0;
-			var inputBusses;
+			var inputBuses;
 			if(players.size > 1,{
-				inputBusses = Control.names(Array.fill(players.size,{ arg i; "in"++i.asString}))
+				inputBuses = Control.names(Array.fill(players.size,{ arg i; "in"++i.asString}))
 							.ir(Array.fill(players.size,0))
 							.collect({ arg in; In.ar(in,this.numChannels) });
 				Out.ar(out,
 					Mix.new(
-						inputBusses
+						inputBuses
 					)
 				)
 			},{

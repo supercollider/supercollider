@@ -78,7 +78,7 @@
 	}
 	didLoadFromPath { arg argpath;
 		path = argpath;
-		dirty = false;
+		//dirty = false;
 	}
 // old style
 	*load { arg obj, warnIfNotFound=true;

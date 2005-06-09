@@ -54,7 +54,7 @@ AbstractPlayerEffect : HasSubject {
 		bundle.addMessage(this,\didSpawn);
 	}
 	preparePlayer { arg player,bus;
-		//if(this.bus != bus,{ "Busses are different !".warn; });
+		//if(this.bus != bus,{ "Buses are different !".warn; });
 		^player.prepareForPlay(subjectGroup,true,bus);	
 	}
 }
