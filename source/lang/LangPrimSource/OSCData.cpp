@@ -492,9 +492,8 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed);
 int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 {	
-	PyrSlot* args = g->sp - 1;
+	PyrSlot* args = g->sp;
 	scpacket packet;
-	
 	int numargs = args->uo->size;
 	if (numargs < 1) return errFailed;
 	makeSynthBundle(&packet, args->uo->slots, numargs, true);
@@ -505,7 +504,7 @@ int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed);
 int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 {	
-	PyrSlot* args = g->sp - 1;
+	PyrSlot* args = g->sp;
 	scpacket packet;
 	
 	int numargs = args->uo->size;
@@ -964,8 +963,8 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);	
-	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 2, 1);	
-	definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 2, 1);	
+	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 1, 1);	
+	definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 1, 1);	
 
 	definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);	
 	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);	
