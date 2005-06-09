@@ -2,7 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fswiss\fcharset77 Helvetica-BoldOblique;\f4\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
-\red96\green96\blue96;}
+\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pdefn     		
@@ -87,7 +88,16 @@ it can be used to store value patterns globally (for event patterns, see
 \f2\b0 \
 			set the default quantisation for new instances (default: nil)\
 			can be a pair [quant, offset]\
-	\ul \
+	\
+	
+\f0\b condition_(func)
+\f2\b0 \
+			provide a condition under which the pattern is switched when a new one is inserted.\
+			the stream value and a count is passed into the function (see example)\
+			the methods 
+\f0\b count_(n) 
+\f2\b0 simply counts up to n and switches the pattern then\
+			\ul \
 	
 \f0\b \ulnone source_	\
 			
@@ -105,7 +115,11 @@ it can be used to store value patterns globally (for event patterns, see
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 	
-\f2\fs24 \
+\f0\b\fs24 reset
+\f2\b0 		\
+			switch the pattern immediately. (stuck conditions can be subverted by this)\
+			\
+\
 	
 \f0\b envir_(event)
 \f2\b0 \
@@ -126,6 +140,16 @@ it can be used to store value patterns globally (for event patterns, see
 \f1\fs18 \
 \
 \
+	
+\f0\b\fs24 endless
+\f2\b0 \
+			returns a Proutine that plays the proxy endlessly, replacing 
+\f0\b nil
+\f2\b0  with a 
+\f0\b default
+\f2\b0 \
+			value (1). This allows to create streams that idle on until a new pattern is inserted.
+\f1\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -179,7 +203,6 @@ t.value;\
 
 \f1\i0\fs18 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ([1, 2, 3],\cf2 inf\cf0 ));\
 \
 x = \cf2 Pseq\cf0 ([0, 0, \cf2 Pdefn\cf0 (\cf3 \\x\cf0 )], \cf2 inf\cf0 ).asStream;\
@@ -198,9 +221,7 @@ t.stop;\
 \cf4 // Pdefn can be accessed in multiple streams\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf5 "Pdefhelp"\cf0 , \{ \cf2 arg\cf0  out, freq, sustain=1, amp=1, pan;\
 	\cf2 var\cf0  env, u=1;\
 	env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.03, sustain), 1, doneAction:2);\
@@ -252,10 +273,8 @@ s.boot;\
 \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \cf2 Pn\cf0 (\cf2 Pseries\cf0 (0, 1, 8),\cf2 inf\cf0 ));\
 \
 \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 ).quant = \cf2 nil\cf0 ; \cf4 // activate immediately again\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \{\
 	loop \{\
 	5.do \{ \cf2 |i|\cf0 \
@@ -268,6 +287,55 @@ s.boot;\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 update condition
+\f2\b0 \
+\
+\
+In order to be able to switch to a new pattern under a certain condition, the instance variable\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b \cf0 condition
+\f2\i0\b0  can be set to a function that returns a boolean. Value and a count index are passed to the function.\
+The condition is always valid for the 
+\f3\i\b next pattern
+\f2\i0\b0  inserted. For stuck conditions, the 
+\f0\b reset
+\f2\b0  message can be used.\
+\
+As counting up (such as 
+\f4\i "every nth event, a swap can happen"
+\f2\i0 ) is a common task, there is a method for this,\
+called 
+\f0\b count(n).
+\f2\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\cf6 z = \cf7 Pbind\cf6 (\cf8 \\degree\cf6 , \cf7 Pdefn\cf6 (\cf8 \\x\cf6 ), \\dur, 0.25).play;\
+\cf7 Pdefn\cf6 (\cf8 \\x\cf6 , \cf7 Pseq\cf6 ((0..5), \cf7 inf\cf6 )).condition_(\{ \cf7 |val, i|\cf6  i.postln % 6 == 0 \});\
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ((0..8), \cf2 inf\cf0 )).condition_(\{ \cf2 |val, i|\cf0  i.postln % 9 == 0 \});\
+\cf6 \
+\
+\cf9 //\cf4  the above is equvalent to:\cf0 \
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ((0..8), \cf2 inf\cf0 )).count(9);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 reset
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // reset to change immediately:\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 ).reset;\
+\
+\
+\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -278,7 +346,6 @@ s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\i0\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \{ loop \{ yield(0.1.rand.round(0.01) + [2, 3, 9].choose) \} \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -297,7 +364,8 @@ s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\i\b\fs24 \cf0 The (inner) environment\
-(experimental, bound to change!)
+\
+when passing a function to 
 \f4\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -306,13 +374,28 @@ s.boot;\
 \cf4 // set() creates a local environment that overrides the outer currentEnvironment\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).set(\cf3 \\a\cf0 , 1, \cf3 \\b\cf0 , 0);\
-\
-\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \{ \cf2 |a, b|\cf0  (a + b) + 0.1.rand.round(0.01) \}); \cf4 // [1]\cf0 \
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).set(\cf3 \\a\cf0 , 1, \cf3 \\b\cf0 , 5);\
+(\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \{ \cf2 |e|\cf0   \
+	loop \{\'cayield((e.a + e.b) + 0.1.rand.round(0.01)) \} \
+\})\
+); \cf4 // [1]\cf0 \
 \
 t = \cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).asStream;\
 \
 t.nextN(3);\
+\
+(\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \{ \cf2 |e|\cf0   \
+	\cf4 //(e.a + e.b) + 0.1.rand.round(0.01) 1\cf0 \
+	\cf2 Pseq\cf0 ([1, 2, e.b], 1)\
+\})\
+); \
+\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \cf2 Pseq\cf0 ([1, 2, 3], 1)); \
+\
+\cf2 e = Pdefn\cf0 (\cf3 \\z\cf0 ).envir\
+d\
 \
 \cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).set(\cf3 \\a\cf0 , 3);\
 \
@@ -324,21 +407,8 @@ t.nextN(3);\
 \
 \cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).envir; \cf4 // post the envir\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // the above [1] is a syntactic shortcut and equivalent to:\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \cf2 Proutine\cf0  \{ \cf2 |inval|\cf0  ((~a + ~b) + 0.1.rand.round(0.01)).embedInStream(inval) \});\
 \
-t.nextN(3);\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // and also to:\cf0 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \{ (~a + ~b) + 0.1.rand.round(0.01) \});\
-\
-t.nextN(3);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // using the "map" message one can map one Pdefn to the other:\cf0 \
@@ -350,7 +420,6 @@ t.nextN(3); \cf4 // Pdefn default value (1) is used\cf0 \
 \
 \cf2 Pdefn\cf0 (\cf3 \\other\cf0 , \cf2 Prand\cf0 ([200, 300, 400], \cf2 inf\cf0 )); \cf4 // assign a pattern to \\other\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 t.nextN(3);\cf4 \
 \cf0 \
 \

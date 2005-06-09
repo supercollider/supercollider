@@ -66,7 +66,21 @@ related: [
 \f2\b0 \
 		set the default quantization value for the class. (default: nil)\
 	\
+	
+\f0\b condition_(func)
+\f2\b0 \
+			provide a condition under which the pattern is switched when a new one is inserted.\
+			the stream value and a count is passed into the function\
+			the methods 
+\f0\b count_(n) 
+\f2\b0 simply counts up to n and switches the pattern then\
 		\
+	
+\f0\b reset
+\f2\b0 		\
+			switch the pattern immediately. (stuck conditions can be subverted by this)\
+\
+\
 	
 \f0\b embedInStream(inval)\
 			
@@ -88,6 +102,15 @@ related: [
 			set arguments in the environment. \
 			If there is none, it is created and the pattern is rebuilt.\
 \
+	
+\f0\b endless
+\f2\b0 \
+			returns a Proutine that plays the proxy endlessly, replacing 
+\f0\b nil
+\f2\b0  with a 
+\f0\b default
+\f2\b0 \
+			value (1). This allows to create streams that idle on until a new pattern is inserted.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
