@@ -223,7 +223,7 @@ TaskProxy : PatternProxy {
 			source = obj;
 	}
 	
-	convertFunction {Êarg func;
+	convertFunction { arg func;
 			^Prout {
 					var inval = func.def.prototypeFrame !? { this.defaultEvent };
 					try { // this error handling only helps if error is not in substream
@@ -283,8 +283,6 @@ TaskProxy : PatternProxy {
 		
 	storeArgs { ^[source] }
 }
-
-
 
 Tdef : TaskProxy {
 	var <>key;
