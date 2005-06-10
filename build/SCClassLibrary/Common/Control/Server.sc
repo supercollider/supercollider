@@ -326,7 +326,7 @@ Server : Model {
 					result = max(result, dt);
 					n = n - 1;
 					if(n > 0) { 
-						SystemClock.sched(wait, {  pingFunc.value; nil }) 
+						SystemClock.sched(wait, {pingFunc.value; nil }) 
 					} {
 						("maximum determined latency of" + name + ":" + result + "s").postln;
 						func.value(result) 
@@ -721,7 +721,7 @@ Server : Model {
 		
 	}
 	storeOn { arg stream;
-		stream << "(Server.named[" << name.asCompileString << "] ?? { Server(" <<<* [name, addr] << ") })" ;
+		stream << "(Server.named[" << name.asCompileString << "] ?? { Server(" <<<* [name, addr, options, clientID] << ") })" ;
 	}
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
