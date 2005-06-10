@@ -13,6 +13,7 @@ reads tab/return delimited files into 2D arrays.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // write a test file:\cf0 \
 f = \cf3 File\cf0 (\cf4 "TabDelTest.sc"\cf0 , \cf4 "w"\cf0 );\
 f.write(\
@@ -20,10 +21,12 @@ f.write(\
 \
 and	then	some	more	in	line	3\
 "\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 );\
 f.close; \
 )\
 	// open file, read and put strings into array, close file. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 x = TabFileReader\cf0 .read(\cf4 "TabDelTest.sc"\cf0 ).postcs;\
 \
 	// can skip empty lines: \
@@ -34,4 +37,31 @@ f = \cf3 File\cf0 (\cf4 "TabDelTest.sc"\cf0 , \cf4 "r"\cf0 ); f.isOpen;\
 t = \cf3 TabFileReader\cf0 (f);	\
 t.read;\
 f.close;\
+\
+(\
+\cf2 // write a test file with numbers:\cf0 \
+f = \cf3 File\cf0 (\cf4 "TabDelTestNum.sc"\cf0 , \cf4 "w"\cf0 );\
+\
+(1..10).do \{ |n| f.write(n.asString ++ Char.tab); \};\
+f.close; \
+)\
+\
+\cf3 x = TabFileReader\cf0 .read(\cf4 "TabDelTestNum.sc"\cf0 ).postcs;\
+x.collect(_.collect(_.interpret));	// convert to numbers.\
+\
+			// or you can do it immediately:\
+\cf3 x = TabFileReader\cf0 .readInterpret(\cf4 "TabDelTestNum.sc"\cf0 ).postcs;\
+\
+(\
+\cf2 // write a test file with numbers:\cf0 \
+f = \cf3 File\cf0 (\cf4 "TabDelTestNum.sc"\cf0 , \cf4 "w"\cf0 );\
+\
+(1..100).do \{ |n| \
+	f.write(n.asString ++ if (n % 10 != 0, Char.tab, Char.nl)); \};\
+f.close; \
+)\
+\
+\
+\cf3 x = TabFileReader\cf0 .readInterpret(\cf4 "TabDelTestNum.sc"\cf0 ).postcs;\
+\
 }
