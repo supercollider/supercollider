@@ -472,7 +472,7 @@ Event : Environment {
 											midiout.performList(midicmd, msgArgs);
 										})
 									};
-									if(hasHate and: {Êmidicmd === \noteOn }) {
+									if(hasHate and: { midicmd === \noteOn }) {
 										thisThread.clock.sched(sustain + latency, { 
 											midiout.noteOff(*msgArgs)
 										});
