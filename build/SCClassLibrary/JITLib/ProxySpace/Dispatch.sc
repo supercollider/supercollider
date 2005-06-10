@@ -179,7 +179,7 @@ Public : EnvirDispatch {
 	
 	avoidTheWorst { arg obj;
 		var str;
-		if(basicSafety.not or: {Êobj.isKindOf(Symbol).not }) { ^true };
+		if(basicSafety.not or: { obj.isKindOf(Symbol).not }) { ^true };
 		str = obj.asString;
 		^str.find("unixCmd").isNil 
 			and: { str.find("File").isNil } 
