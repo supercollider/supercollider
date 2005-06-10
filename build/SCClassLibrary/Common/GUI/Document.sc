@@ -33,16 +33,16 @@ Document {
 //class:
 
 	*dir_ { arg path; path = path.standardizePath;
-		if(path == "") {  dir = path } {
-			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }  {  
+		if(path == "") {dir = path } {
+			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln } {
 				dir = path ++ "/"
 			}
 		}
 	}
 	
 	*wikiDir_ { arg path; path = path.standardizePath;
-		if(path == "") {  wikiDir = path } {
-			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }  {  
+		if(path == "") {wikiDir = path } {
+			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln } {
 				wikiDir = path ++ "/"
 			}
 		}
