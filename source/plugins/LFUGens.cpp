@@ -166,6 +166,7 @@ struct A2K : public Unit
 
 struct DC : public Unit
 {
+float m_val;
 };
 
 struct Silent : public Unit
@@ -1148,14 +1149,16 @@ void A2K_Ctor(A2K* unit)
 
 void DC_Ctor(DC* unit)
 {
+	unit->m_val = IN0(0);
 	SETCALC(DC_next);
-	DC_next(unit, 1);
+	ZOUT0(0) = unit->m_val;
 }
+
 void DC_next(DC *unit, int inNumSamples)
 {
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		OUT0(i) = IN0(i);
-	}
+	float val = unit->m_val;
+	float *out = ZOUT(0);
+	LOOP(inNumSamples, ZXP(out) = val;)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
