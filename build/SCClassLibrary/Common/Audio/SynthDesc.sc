@@ -243,6 +243,7 @@ SynthDescLib {
 		global.read(path);
 	}
 	at { arg i; ^synthDescs.at(i) }
+	*at { arg i; ^global.at(i) }
 
 	send { 
 		servers.do {|server|
