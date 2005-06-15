@@ -125,13 +125,18 @@ Monitor {
 	
 	isPlaying { ^group.isPlaying }
 	
-	stop { arg fadeTime;
+	stop { arg fadeTime=0.1;
 		if(group.isPlaying) {
 			group.release(fadeTime);
-			SystemClock.sched(fadeTime, { 
+			if(fadeTime.isNil) {
 				group.free;
 				group = nil;
-			}); 
+			} {
+				SystemClock.sched(fadeTime, { 
+					group.free;
+					group = nil;
+				})
+			}
 		}
 	}
 	
