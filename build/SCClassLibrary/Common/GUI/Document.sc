@@ -559,27 +559,22 @@ Document {
 EnvirDocument : Document {
 	var <>envir;
 	
-	*new { arg envir, title, string="", pushNow=true;
-		if(pushNow) { envir.push };
-		title = title ?? { "-" + (envir.tryPerform(\name) ? "Untitled Environment") };
-		^super.new(title, string).envir_(envir).background_(rgb(240, 240, 240));
+	*new { arg envir, title="- Untitled Environment", string="";
+		^super.new(title, string).envir_(envir)
 	}
 	
-	*open { arg envir, path, selectionStart=0, selectionLength=0, pushNow=true;
-		var doc;
-		doc = super.open(path, selectionStart, selectionLength);
-		if(doc.notNil) { doc.initEnvirDoc(envir, pushNow) };
-		^doc	}	initEnvirDoc { arg inEnv, pushNow;		this.envir = inEnv;		if (pushNow) { envir.push };
-		this.title = this.title ?? { "-" + (envir.tryPerform(\name) ? "Untitled Environment") }	}
+	*open { arg envir, path, selectionStart=0, selectionLength=0;
+		var doc = super.open(path, selectionStart, selectionLength);
+		^doc !? { doc.envir_(envir) }	}
 	
 	didBecomeKey {
-		envir.push;
+		envir !? { envir.push };
 		this.class.current = this;
 		toFrontAction.value(this);
 	}
 	
 	didResignKey {
-		envir.pop;
+		envir !? { envir.pop };
 		endFrontAction.value(this);
 	}
 
