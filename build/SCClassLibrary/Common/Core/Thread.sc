@@ -31,6 +31,7 @@ Thread : Stream {
 	}
 	seconds_ { arg inSeconds; seconds = inSeconds; beats = clock.secs2beats(inSeconds); }
 	beats_ { arg inBeats; beats = inBeats; seconds = clock.beats2secs(inBeats); }
+	isPlaying { ^state == 5 }
 	
 	randSeed_ { arg seed;
 		// You supply an integer seed.
