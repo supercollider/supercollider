@@ -2,13 +2,13 @@
 ClassNameLabel : ActionButton {
 
 	*new { arg  class,layout,minWidth=200,minHeight;
-		^super.new(layout,class.name.asString,{class.gui},minWidth,minHeight,
+		^super.new(layout,class.name.asString,{class.ginsp},minWidth,minHeight,
 			Color.white,
 			Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 )
 		);
 	}
 	*newBig { arg  class,layout,minWidth=200,minHeight=30;
-		^super.new(layout,class.name.asString,{class.gui},minWidth,minHeight, Color.white,
+		^super.new(layout,class.name.asString,{class.ginsp},minWidth,minHeight, Color.white,
 			Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 ),
 			Font("Helvetica-Bold",18))
 	}
@@ -20,20 +20,20 @@ MethodLabel : ActionButton {
 	// show args and prototypes
 	*new { arg  method,layout,minWidth=100;
 		^super.new(layout,method.ownerClass.name.asString ++ "-" ++ method.name.asString,
-			{method.gui},minWidth,17,nil,Color.new255(245, 222, 179),Font("Monaco",9));
+			{method.ginsp},minWidth,17,nil,Color.new255(245, 222, 179),Font("Monaco",9));
 	}
 	*withoutClass { arg  method,layout,minWidth=100;
-		^super.new(layout, method.name.asString,{method.gui},minWidth,17,nil,
+		^super.new(layout, method.name.asString,{method.ginsp},minWidth,17,nil,
 			Color.new255(245, 222, 179),Font("Monaco",9));
 	}
 	*classMethod { arg  method,layout,minWidth=100;
-		^super.new(layout,"*" ++ method.name.asString,{method.gui},minWidth,17,nil,
+		^super.new(layout,"*" ++ method.name.asString,{method.ginsp},minWidth,17,nil,
 			Color.new255(245, 222, 179),Font("Monaco",9));
 	}
 	
 //	// search by selector link
 //	*browseSelectorLink { arg method,layout;
-//		^super.prNew(layout, "::" ++ method.name.asString,{SelectorBrowser(method.name).gui},100,13,2).background_(Color(160,206,147));
+//		^super.prNew(layout, "::" ++ method.name.asString,{SelectorBrowser(method.name).ginsp},100,13,2).background_(Color(160,206,147));
 //	}
 
 }

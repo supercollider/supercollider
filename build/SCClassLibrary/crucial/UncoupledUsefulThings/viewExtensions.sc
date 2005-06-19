@@ -63,6 +63,12 @@
 		func.value(comp);
 		^comp
 	}
+	comp { arg func,bounds;
+		var comp;
+		comp = SCCompositeView(this,bounds ?? { this.bounds });
+		func.value(comp);
+		^comp
+	}
 	indentedRemaining { ^decorator.indentedRemaining }
 }
 
@@ -70,6 +76,15 @@
 
 	flow { arg func,bounds;
 		^this.view.flow(func,bounds)
+	}
+	vert { arg func,bounds;
+		^this.view.vert(func,bounds)
+	}
+	horz { arg func,bounds;
+		^this.view.horz(func,bounds)
+	}
+	comp { arg func,bounds;
+		^this.view.comp(func,bounds)
 	}
 }
 

@@ -221,7 +221,7 @@ SFP : AbstractSFP  {
 		
 		bundle.addPrepare( 
 			sf.allocMsg(
-				sf.cueSoundFileMsg( this.filePath, startAt * file.sampleRate,32768) 
+				sf.cueSoundFileMsg( this.soundFilePath, startAt * file.sampleRate,32768) 
 			)
 		);
 		parentSegmentBuffers.add( sf );

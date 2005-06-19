@@ -7,6 +7,7 @@ Instr  {
 	
 	*new { arg name, func,specs,outSpec=\audio;
 		var previous;
+		if(func.isNil,{ ^this.at(name) });
 		if(name.isString or: {name.isKindOf(Symbol)},{
 			name = [name.asSymbol];
 		},{
@@ -21,68 +22,7 @@ Instr  {
 		});
 		^super.newCopyArgs(name,func).init(specs,outSpec)//.write;
 	}
-	*initClass {
-		Class.initClassTree(Document);
-		// default is relative to your doc directory
-		if(dir.isNil,{ dir = Document.dir ++ "Instr/"; });
-	}
-	*dir_ { arg p;
-		dir = p.standardizePath ++ "/";
-	}
-	
-	init { arg specs,outsp;
-		this.makeSpecs(specs ? #[]);
-		if(outsp.isNil,{
-			outSpec = nil;
-		},{
-			outSpec = outsp.asSpec;
-		});
-		this.class.put(this);
-	}
-	
-	makeSpecs { arg argspecs;
-		specs =  
-			Array.fill(this.argsSize,{ arg i;
-				var sp,name;
-				name = this.argNameAt(i);
-				sp = argspecs.at(i);
-				if(sp.isSequenceableCollection,{ 
-					// backwards compatibility with old spec style
-					// [\envperc]
-					// [[0,1]]
-					// [StaticSpec()]
-					// [0,1]
-					if(sp.first.isNumber,{
-						sp = sp.asSpec;
-					},{
-						sp = (sp.first ? name).asSpec
-					});
-				},{
-					sp = (sp ? name).asSpec ?? {ControlSpec.new};
-				});
-				//sp.copy; 
-				sp
-			});
-	}
-
-	rate {  
-		^if(outSpec.notNil,{ 
-			outSpec.rate;
-		},{
-			// if you aren't audio, you must specify an outSpec
-			\audio
-		})
-	}
-	numChannels { 
-		^if(outSpec.notNil,{
-			outSpec.numChannels 
-		},{ // if you are more than one channel, you must specify an outSpec
-			1
-		});
-	}
-	path { ^path ?? {dir ++ name.first.asString ++ ".rtf"} }
-	
-	*put { arg instr;
+		*put { arg instr;
 		^Library.putList([this.name,instr.name,instr].flatten )
 	}
 	*at { arg  name;
@@ -95,16 +35,16 @@ Instr  {
 
 		^(Library.atList(fullname = [this.name,name].flatten)
 			??
-		{ 	
-			// if not previously loaded, try loading the file
-			path = (dir ++ [name].flat.first.asString ++ ".rtf");
-			path.loadPath;
-			instr = Library.atList(fullname);
-			if(instr.isKindOf(Instr),{ 
-				instr.path = path; 
-			});
-			instr // or nil, not found
-		}
+			{ 	
+				// if not previously loaded, try loading the file
+				path = (dir ++ [name].flat.first.asString ++ ".rtf");
+				path.loadPath;
+				instr = Library.atList(fullname);
+				if(instr.isKindOf(Instr),{ 
+					instr.path = path; 
+				});
+				instr // or nil, not found
+			}
 		)
 	}
 
@@ -137,6 +77,28 @@ Instr  {
 	next { arg ... inputs;
 		^func.valueArray(inputs)
 	}
+	
+	// set the directory where your library of Instr is to be found
+	*dir_ { arg p;
+		dir = p.standardizePath ++ "/";
+	}
+
+	rate {  
+		^if(outSpec.notNil,{ 
+			outSpec.rate;
+		},{
+			// if you aren't audio, you must specify an outSpec
+			\audio
+		})
+	}
+	numChannels { 
+		^if(outSpec.notNil,{
+			outSpec.numChannels 
+		},{ // if you are more than one channel, you must specify an outSpec
+			1
+		});
+	}
+	path { ^path ?? {dir ++ name.first.asString ++ ".rtf"} }
 
 	maxArgs { ^this.argsSize }
 	argsSize { ^func.def.argNames.size }
@@ -153,6 +115,7 @@ Instr  {
 		nn=func.def.prototypeFrame;
 		^nn.at(i)
 	}
+	//default/initial arg value at input
 	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).tryPerform(\default)})
 		// value or control ?
 		/*?? {this.specs.at(i).defaultControl})*/ 
@@ -237,6 +200,46 @@ Instr  {
 		^Library.global.prNestedValuesFromDict(startAt).flat
 	}
 	asString { ^"Instr " ++ this.name.asString }
+		
+	//private
+	*initClass {
+		Class.initClassTree(Document);
+		// default is relative to your doc directory
+		if(dir.isNil,{ dir = Document.dir ++ "Instr/"; });
+	}
+	init { arg specs,outsp;
+		this.makeSpecs(specs ? #[]);
+		if(outsp.isNil,{
+			outSpec = nil;
+		},{
+			outSpec = outsp.asSpec;
+		});
+		this.class.put(this);
+	}
+	makeSpecs { arg argspecs;
+		specs =  
+			Array.fill(this.argsSize,{ arg i;
+				var sp,name;
+				name = this.argNameAt(i);
+				sp = argspecs.at(i);
+				if(sp.isSequenceableCollection,{ 
+					// backwards compatibility with old spec style
+					// [\envperc]
+					// [[0,1]]
+					// [StaticSpec()]
+					// [0,1]
+					if(sp.first.isNumber,{
+						sp = sp.asSpec;
+					},{
+						sp = (sp.first ? name).asSpec
+					});
+				},{
+					sp = (sp ? name).asSpec ?? {ControlSpec.new};
+				});
+				//sp.copy; 
+				sp
+			});
+	}
 
 	//guiClass { ^InstrGui }
 	guiBody { arg layout;

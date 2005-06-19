@@ -23,6 +23,10 @@
 	insp { arg  ... args;
 		Insp(this,args);
 	}
+	// gui into the Insp tabbed browser
+	ginsp { arg  ... args;
+		Insp(this,args,true);
+	}
 	debug { arg caller;
 		// by using this rather than just postln
 		// you can command-shift-y on debug and find every one you left

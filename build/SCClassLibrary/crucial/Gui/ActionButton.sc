@@ -1,6 +1,8 @@
 
 SCViewHolder {
 	
+	classvar <>consumeKeyDowns = false;// should the view by default consume keydowns
+
 	// SCViewHolder makes it possible to add more capabilities by holding an SCView, not subclassing it
 	var <view;
 	
@@ -29,6 +31,8 @@ SCViewHolder {
 	bounds { ^view.bounds }
 	bounds_ { arg b; view.bounds_(b) }
 	resize_ { arg r; view.resize_(r) }
+	enabled { ^view.enabled }
+	enabled_ { |b| view.enabled_(b) }
 	refresh { view.refresh }
 	background_ { arg b; view.background_(b) }
 	focus { arg flag=true; view.focus(flag) }
@@ -172,10 +176,12 @@ SCButtonAdapter : SCViewHolder {
 		//	layout = layout.asFlowView;
 		//});
 		if(layout.isNil,{ layout = nil.asFlowView; });
-		this.view = SCButton(layout,Rect(0,0,x,y ? defaultHeight)).keyDownAction_({nil})
+		this.view = SCButton(layout,Rect(0,0,x,y ? defaultHeight));
+		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}) });
 	}
 	flowMakeView { arg layout,x,y;
-		this.view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight)).keyDownAction_({nil});
+		this.view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
+		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}); });
 	}		
 
 	makeViewWithStringSize { arg layout,stringsize,minWidth,minHeight;
@@ -227,7 +233,7 @@ ActionButton : SCButtonAdapter {
 			backcolor ?? {Color.new255(205, 201, 201)}]]);
 		view.font_(font ?? {Font("Helvetica",12.0)});
 		view.action_(function);
-		this.keyDownAction = {nil};
+		if(consumeKeyDowns,{ this.keyDownAction = {nil}; });
 	}
 }
 

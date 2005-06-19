@@ -11,7 +11,7 @@ TempoGui : ObjectGui {
 			
 		tempoG.gui(layout,nil,true);
 		
-		/*gnome = Patch({ arg beat,freq,amp;
+		gnome = Patch({ arg beat,freq,amp;
 			Decay2.ar( 
 				K2A.ar(beat), 0.01,0.11, 
 				SinOsc.ar( freq, 0, amp )
@@ -34,7 +34,7 @@ TempoGui : ObjectGui {
 			},{
 				gnome.stop							
 			})
-		};*/
+		};
 	}
 	
 	update {

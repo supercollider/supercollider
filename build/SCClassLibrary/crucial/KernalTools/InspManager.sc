@@ -1,9 +1,9 @@
 
 Insp {
-	var <subject,<notes,<name,layout,box,hidden = false;
+	var <subject,<notes,<guiInstead,<name,layout,box,hidden = false;
 	
-	*new { arg subject, notes;
-		^super.newCopyArgs(subject,notes).init
+	*new { arg subject, notes,guiInstead;
+		^super.newCopyArgs(subject,notes,guiInstead ? false).init
 	}
 	init {
 		if(notes.notEmpty,{
@@ -36,7 +36,11 @@ Insp {
 					});
 				});
 				box.startRow;
-				CXObjectInspector(subject).gui(box);
+				if(guiInstead,{
+					subject.gui(box)
+				},{
+					CXObjectInspector(subject).gui(box);
+				});
 			}/*,Rect(180,0,775,900)*/);
 			box.visible = hidden.not;
 

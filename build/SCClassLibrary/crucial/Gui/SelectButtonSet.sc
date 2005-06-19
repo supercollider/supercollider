@@ -78,11 +78,11 @@ SelectButtonSet  {
 	}
 	colorNormal { arg i;
 		butts.at(i).setProperty(\value, 0);
-		//this.setButtonColor(butts.at(i),colorFunc.value(i))
+		this.setButtonColor(butts.at(i),colorFunc.value(i))
 	}
 	colorSelected { arg i;
 		butts.at(i).setProperty(\value, 1);
-		//this.setButtonColor(butts.at(i),selectedColor.value(i))
+		this.setButtonColor(butts.at(i),selectedColor.value(i))
 	}
 	
 	doAction {  ^action.value(selected,this) }

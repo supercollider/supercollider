@@ -27,7 +27,7 @@ NumberEditorGui : EditorGui {
 			.action_({ arg nb;
 				model.activeValue_(nb.value).changed(numv);
 			});
-		numv.keyDownAction = {nil};	
+		if(consumeKeyDowns,{ numv.keyDownAction = {nil};	});
 	}
 	slider { arg layout, x=100,y=15;
 		var r;
@@ -37,7 +37,7 @@ NumberEditorGui : EditorGui {
 		slv.action_({arg th; 
 			model.activeValue_(model.spec.map(th.value)).changed(slv)
 		});
-		slv.keyDownAction = {nil};
+		if(consumeKeyDowns,{ slv.keyDownAction = {nil}; });
 	}
 	update {arg changed,changer; // always has a number box
 		{
@@ -69,7 +69,7 @@ PopUpEditorGui : EditorGui {
 			.action_({ arg nb;
 				model.selectByIndex(popV.value).changed(this)
 			});
-		popV.keyDownAction = {nil};
+		if(consumeKeyDowns,{ popV.keyDownAction = {nil}; });
 		popV.setProperty(\value,model.selectedIndex)
 	}
 	update { arg changed,changer;
@@ -91,7 +91,7 @@ BooleanEditorGui : EditorGui {
 		cb.font = Font("Helvetica",9);
 		cb.setProperty(\value,model.value.binaryValue);
 		cb.action = { model.activeValue_(cb.value != 0,this) };
-		cb.keyDownAction = {nil};
+		if(consumeKeyDowns,{ cb.keyDownAction = {nil}; });
 	}
 	update { arg changed,changer;
 		if(changer !== this,{

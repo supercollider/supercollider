@@ -302,23 +302,16 @@ MethodGui : ObjectGui {
 
 		// show subclass implementations
 		// other class implementations of this message (command-y)
-		
-		// would rather look at the source code for this...
-		
-		// argNames
-		//prototypeFrame = model.prototypeFrame ?? {[]};
-		
-		/*CXLabel(layout.startRow,"args and defaults:",minWidth:160).bold;
-		(model.numArgs - 1).do({ arg i;// first arg is 'this'
-			// TODO ellipsis ... 
-			if(model.argNames.notNil,{
-				ArgNameLabel(model.argNames.at(i + 1),layout.startRow);
-				CXLabel(layout,prototypeFrame.at(i ));
+		CXLabel(layout.startRow,"References to this message:");
+		Class.findAllReferences(model.name).do({ |r|
+			//r.gui(layout.startRow);
+			//r.debug;
+			if(r.isKindOf(FunctionDef),{
+				InspectorLink(r,layout.startRow);
+			},{
+				MethodLabel(r,layout.startRow);
 			});
 		});
-		//if(model.primitiveName.notNil,{
-		//	CXLabel(layout.startRow,"primitiveName:",minWidth:160).bold;
-		//	CXLabel(layout,model.primitiveName);
-		//});*/	
+		// would rather look at the source code for most things
 	}
 }
