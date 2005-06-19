@@ -25,8 +25,8 @@ ServerOptions
 
 	var <>device = nil;
 
-// max logins
-// session-password
+	// max logins
+	// session-password
 
 	// prevent buffer conflicts in Server-prepareForRecord and Server-scope by
 	// ensuring reserved buffers
@@ -524,8 +524,7 @@ Server : Model {
 		// you can't cause them to quit via OSC (the boot button)
 
 		// this brutally kills them all off		
-		//	ps -axo pid,command | grep -i "[s]csynth" | awk '{system("kill " $1)}'
-		unixCmd("ps axo pid,command | grep -i \"[s]csynth\" | awk '{system(\"kill \" $1)}'");
+		"killall -9 scsynth".unixCmd;
 		this.quitAll;
 	}
 	freeAll {
@@ -640,85 +639,82 @@ Server : Model {
 	
 	// from Crucial
 	queryAllNodes {
-	
-			var probe,probing,resp,nodes,server,report,indent = 0,order=0;
-			var nodeWatcher;
-			
-			nodeWatcher = NodeWatcher.newFrom(this);
-			
-			nodes = IdentityDictionary.new;
-			probing = List.new;
-			
-			probe = { arg nodeID;
-				probing.add(nodeID);
-				this.sendMsg("/n_query",nodeID);
-			};
-			("\nnodes on" + name ++ ":").postln;
-			
-			report = { arg nodeID=0;
-				var child,synth;
-				indent.do({ " ".post });
-				nodes.at(nodeID).use({
-					~order = order;
-					if(~isGroup,{ 
-						("Group(" ++ nodeID ++ ")").postln;
-						child = ~head;
-						indent = indent + 8;
-						while({
-							child > 0
-						},{
-							order = order + 1;
-							report.value(child);
-							child = nodes.at(child).at(\next);
-						});
-						indent = indent - 8;
+		var probe,probing,resp,nodes,server,report,indent = 0,order=0;
+		var nodeWatcher;
+		
+		nodeWatcher = NodeWatcher.newFrom(this);
+		
+		nodes = IdentityDictionary.new;
+		probing = List.new;
+		
+		probe = { arg nodeID;
+			probing.add(nodeID);
+			this.sendMsg("/n_query",nodeID);
+		};
+		("\nnodes on" + name ++ ":").postln;
+		
+		report = { arg nodeID=0;
+			var child,synth;
+			indent.do({ " ".post });
+			nodes.at(nodeID).use({
+				~order = order;
+				if(~isGroup,{ 
+					("Group(" ++ nodeID ++ ")").postln;
+					child = ~head;
+					indent = indent + 8;
+					while({
+						child > 0
 					},{
-						synth = nodeWatcher.nodes.at(nodeID);
-						if(synth.notNil,{ // get defName if available
-							synth.asString.postln;
-						},{
-							("Synth" + nodeID).postln;
-						});
+						order = order + 1;
+						report.value(child);
+						child = nodes.at(child).at(\next);
+					});
+					indent = indent - 8;
+				},{
+					synth = nodeWatcher.nodes.at(nodeID);
+					if(synth.notNil,{ // get defName if available
+						synth.asString.postln;
+					},{
+						("Synth" + nodeID).postln;
 					});
 				});
-			};
-				
-			resp = OSCresponder(this.addr,'/n_info',{ arg a,b,c;
-						var cmd,nodeID,parent,prev,next,isGroup,head,tail;
-						# cmd,nodeID,parent,prev,next,isGroup,head,tail = c;
-						
-						//[cmd,nodeID,parent,prev,next,isGroup,head,tail].debug;
-						
-						nodes.put(nodeID,
-							Environment.make({
-								~nodeID = nodeID;
-								~parent = parent;
-								~prev = prev;
-								~next = next;
-								~isGroup = isGroup == 1;
-								~head = head;
-								~tail = tail;
-							})
-						);
-						
-						if(next > 0,{
-							probe.value(next);
-						});
-						if(isGroup==1,{
-							if(head > 0,{
-								probe.value(head);
-							});
-						});
-						probing.remove(nodeID);
-						if(probing.size == 0,{
-							resp.remove;
-							report.value;
-						});
-					}).add;
+			});
+		};
+			
+		resp = OSCresponder(this.addr,'/n_info',{ arg a,b,c;
+					var cmd,nodeID,parent,prev,next,isGroup,head,tail;
+					# cmd,nodeID,parent,prev,next,isGroup,head,tail = c;
 					
-			probe.value(0);
-
-		
+					//[cmd,nodeID,parent,prev,next,isGroup,head,tail].debug;
+					
+					nodes.put(nodeID,
+						Environment.make({
+							~nodeID = nodeID;
+							~parent = parent;
+							~prev = prev;
+							~next = next;
+							~isGroup = isGroup == 1;
+							~head = head;
+							~tail = tail;
+						})
+					);
+					
+					if(next > 0,{
+						probe.value(next);
+					});
+					if(isGroup==1,{
+						if(head > 0,{
+							probe.value(head);
+						});
+					});
+					probing.remove(nodeID);
+					if(probing.size == 0,{
+						resp.remove;
+						report.value;
+					});
+				}).add;
+				
+		probe.value(0);
 	}
 	storeOn { arg stream;
 		stream << "(Server.named[" << name.asCompileString << "] ?? { Server(" <<<* [name, addr, options, clientID] << ") })" ;
