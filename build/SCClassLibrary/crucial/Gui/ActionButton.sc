@@ -44,6 +44,10 @@ SCViewHolder {
 	}
 }
 
+// backwards compat because i changed the name of the class
+SCViewAdapter : SCViewHolder { }
+
+
 /**
   * a non-visible view that keeps the place in a flow layout
   * to mark where a row was started.  then when the view is reflowed due to resizing etc.
