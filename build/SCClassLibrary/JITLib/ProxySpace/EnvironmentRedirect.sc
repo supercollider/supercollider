@@ -52,7 +52,9 @@ EnvironmentRedirect {
 	}
 	
 	push { 
-		Environment.push(this);
+		if(currentEnvironment !== this) {
+			Environment.push(this)
+		} { "this environment is already current".warn } 
 	}
 	
 	
@@ -134,6 +136,12 @@ EnvironmentRedirect {
      		doc	.toFrontAction_({ this.push })
      			.endFrontAction_({ this.pop });
      	});
+     }
+     
+     unlinkDoc { arg doc;
+     	if(doc.isKindOf(EnvirDocument)) { doc.envir_(nil) ^this };
+     	"removed actions from current doc".inform;
+     	doc.toFrontAction_(nil).endFrontAction_(nil)
      }
      
      // networking
