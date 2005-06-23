@@ -29,14 +29,14 @@ BusPlug : AbstractFunction {
 		2.do { arg i; i = i + 1;
 			SynthDef("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
 				var env;
-				env = EnvGate.new * Lag.kr(vol, 0.05);
+				env = EnvGate(curve:'sin') * Lag.kr(vol, 0.05);
 				Out.ar(out, InFeedback.ar(in, i) * env) 
 			}, [\kr, \ir]).writeDefFile;
 		};
 		2.do { arg i; i = i + 1;
 			SynthDef("system_link_control_" ++ i, { arg out=0, in=16;
 				var env;
-				env = EnvGate.new;
+				env = EnvGate(curve:'lin');
 				Out.kr(out, In.kr(in, i) * env) 
 			}, [\kr, \ir]).writeDefFile;
 		}
@@ -192,20 +192,21 @@ BusPlug : AbstractFunction {
 	
 	
 	play { arg out, numChannels, group, multi=false, vol, fadeTime;  
-		var ok, homeServer, bundle;
-		
-		homeServer = this.homeServer; // multi client support: monitor only locally
-		if(homeServer.serverRunning.not, { "server not running".inform; ^nil });
+		var bundle;
 		bundle = MixedBundle.new;
+		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime);
+		// homeServer: multi client support: monitor only locally
+		bundle.schedSend(this.homeServer, this.clock, this.quant)		^monitor.group
+	}
+	
+	playToBundle { arg bundle, out, numChannels, group, multi=false, vol, fadeTime;
 		this.initBus(\audio, numChannels);
 		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle); };
 		if(monitor.isNil) { monitor = Monitor.new };
-		group = (group ? homeServer).asGroup;
+		group = (group ? this.homeServer).asGroup;
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, 
 				group, multi, vol, fadeTime);
-		bundle.schedSend(homeServer, this.clock, this.quant)
-		^monitor.group
 	}
 	
 	fadeTime { ^0.02 }
@@ -905,6 +906,40 @@ NodeProxy : BusPlug {
 		{ "not playing".inform }
 	}	
 	
+	<-- { arg proxy;
+		var bundle = MixedBundle.new;
+		this.source = proxy;
+		if(proxy.monitorGroup.isPlaying) {
+			proxy.stop(fadeTime: 2.1);
+			if(this.monitorGroup.isPlaying.not) { 
+				this.playToBundle(bundle, fadeTime:0.5) 
+			}
+		};
+		bundle.add(proxy.moveBeforeMsg(this));
+		bundle.send(server, server.latency);
+	}
+	
+	moveBeforeMsg { arg ... proxies;
+		var msg = [], id;
+		if(this.isPlaying.not) { "first proxy not playing.".inform; ^this };
+		id = this.group.nodeID;
+		proxies.do { |el|
+				var id2;
+				if(el.isPlaying) {
+					id2 = el.group.nodeID;
+					msg = msg ++ id ++ id2; 
+					if(el.monitorGroup.notNil) {
+						msg = msg ++ id ++ el.monitorGroup.nodeID
+					};
+					id = id2;
+				}
+		};
+		^["/n_before"] ++ msg
+	}
+	
+	orderNodes { arg ... proxies;
+		server.listSendMsg(nil, this.moveBeforeMsg(proxies));
+	}
 }
 
 
