@@ -438,20 +438,14 @@ Event : Environment {
 					
 					midi: #{|server|
 						var freqs, lag, dur, sustain, strum;
-						var tempo, bndl, midiout, hasHate, midicmd;
+						var bndl, midiout, hasHate, midicmd;
 						
 						freqs = ~freq = ~freq.value + ~detune;
-						
-						tempo = ~tempo;
-						if (tempo.notNil) {
-							thisThread.clock.tempo = tempo;
-						};
-										
+												
 						if (freqs.isKindOf(Symbol).not) {
-							~finish.value;
 							~amp = ~amp.value;
 							strum = ~strum;
-							lag = ~lag + ~server.latency;
+							lag = ~lag + server.latency;
 							sustain = ~sustain = ~sustain.value;
 							midiout = ~midiout.value;
 							hasHate = ~hasGate ? true;
