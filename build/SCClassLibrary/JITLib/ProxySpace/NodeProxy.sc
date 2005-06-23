@@ -909,10 +909,11 @@ NodeProxy : BusPlug {
 	<-- { arg proxy;
 		var bundle = MixedBundle.new;
 		this.source = proxy;
+		
 		if(proxy.monitorGroup.isPlaying) {
-			proxy.stop(fadeTime: 2.1);
+			proxy.stop(fadeTime: 0.5);
 			if(this.monitorGroup.isPlaying.not) { 
-				this.playToBundle(bundle, fadeTime:0.5) 
+				this.playToBundle(bundle, fadeTime:0.1) 
 			}
 		};
 		bundle.add(proxy.moveBeforeMsg(this));
