@@ -33,8 +33,9 @@ PatternProxy : Pattern {
 	source { ^pattern }
 	
 	defaultEvent {
-		if(envir.isNil) { envir = (forward: { 1 }) }; 
-		^(parent:envir) // default value: safe time value (better throw error?)
+	 	// default value: safe time value (better throw error?)
+		if(envir.isNil) { envir = (forward: { 1 }) };
+		^if(envir[\independent] === true) { (parent:envir) } { envir }
 	}
 	
 	convertFunction { arg func;
@@ -54,7 +55,7 @@ PatternProxy : Pattern {
 	}
 	
 	set { arg ... args; 
-		if(envir.isNil) { this.envir = () };
+		if(envir.isNil) { this.envir = (forward: { 1 }) };
 		args.pairsDo { arg key, val; envir.put(key, val) };
 	}
 	unset { arg ... args;
@@ -91,7 +92,7 @@ PatternProxy : Pattern {
 		^inval
 	}
 
-	endless {
+	endless { // waiting room
 		^Proutine { arg inval;
 			var outval, count=0;
 			var pat = pattern;
@@ -316,7 +317,7 @@ EventPatternProxy : TaskProxy {
 		if(item.isKindOf(Function)) // allow functions to be passed in
 			{ source = item; pattern = PlazyEnvir(item) } 
 			{ pattern = source = item };
-		if(envir.notNil) { pattern = pattern <> envir };
+		envir !? { pattern = pattern <> envir };
 		this.wakeUp;
 	}
 	
