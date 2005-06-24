@@ -1,10 +1,9 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf100
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
 \red255\green0\blue0;\red0\green0\blue255;\red153\green102\blue51;\red0\green255\blue0;\red255\green0\blue255;
-\red255\green128\blue0;\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
-}
+\red255\green128\blue0;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs40 \cf0 Debugging tips 
@@ -275,6 +274,7 @@ To use it, you need to quit the currently running local server, then create a ne
 
 \f2\fs18 \cf0 s.quit;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Server\cf0 .default = s = \cf2 Server\cf0 .new(\cf3 'local-debug'\cf0 , \cf2 DebugNetAddr\cf0 (\cf11 "localhost"\cf0 , 57110));\
 s.boot;\
 s.makeWindow;		\cf4 // optional\cf0 \
@@ -354,6 +354,7 @@ Common methods to use are: \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0 	positiveFunc;\
 positiveFunc = \{ \cf2 |a|\cf0 \
 	a.debug(\cf3 'positiveFunc-arg a'\cf0 );\
@@ -374,8 +375,9 @@ Another advantage of .debug is that it's easier to search for debug calls and di
 \
 To print multiple values at one time, wrap them in an array before using .debug or .postcs. Note that if any of the array members are collections, postln will hide them behind the class name: "an Array, a Dictionary" etc. Use postcs if you expect to be posting collections.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 [val1, val2, val3].debug(\cf3 \\myMethod\cf0 );	\cf4 // or, for a non-Crucial way:\cf0 \
+\f2\fs18 \cf0 [val1, val2, val3].debug(\cf3 \\myMethod\cf0 );	\cf4 // or, for a non-Crucial way:\cf0 \
 [\cf3 \\callerTag\cf0 , val1, val2, val3].postcs;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -431,13 +433,16 @@ In a method definition, it's recommended to use "this.dumpBackTrace"; in a free-
 \f1\b0 \cf0 \
 To see the results of a pattern, use the .trace method. Each output value from the pattern gets posted to the main output.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf12 s.boot;\
-\cf13 SynthDescLib\cf12 .global.read;\
+\f2\fs18 \cf0 s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDescLib\cf0 .global.read;\
 \
-p = \cf13 Pbind\cf12 (\cf14 \\degree\cf12 , \cf13 Pwalk\cf12 ((0..14), \cf13 Pstutter\cf12 (\cf13 Pwhite\cf12 (1, 4, \cf13 inf\cf12 ), \cf13 Prand\cf12 (#[-2, -1, 1, 2], \cf13 inf\cf12 )), \cf13 Pseq\cf12 (#[-1, 1], \cf13 inf\cf12 ), 0), \cf14 \\delta\cf12 , 0.25, \cf14 \\sustain\cf12 , 0.2, \cf14 \\instrument\cf12 , \cf14 \\default\cf12 ).trace.play;\
+p = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pwalk\cf0 ((0..14), \cf2 Pstutter\cf0 (\cf2 Pwhite\cf0 (1, 4, \cf2 inf\cf0 ), \cf2 Prand\cf0 (#[-2, -1, 1, 2], \cf2 inf\cf0 )), \cf2 Pseq\cf0 (#[-1, 1], \cf2 inf\cf0 ), 0), \cf3 \\delta\cf0 , 0.25, \cf3 \\sustain\cf0 , 0.2, \cf3 \\instrument\cf0 , \cf3 \\default\cf0 ).trace.play;\
 \
 p.stop;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -518,11 +523,12 @@ a.postcs;		\cf4 // crash--postcs has to walk through the entire collection, whic
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
-Self-referential data structures are usually an indication of poor design. Avoid them.\
+Self-referential data structures are sometimes an indication of poor design. If this is the case, avoid them.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 a = 0;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SystemClock\cf0 .sched(2, \{ a.postln \});	\cf4 // crashes when scheduler fires the function\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -534,6 +540,7 @@ To fix it, make sure the function returns a non-number.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 a = 0;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SystemClock\cf0 .sched(2, \{ a.postln; \cf2 nil\cf0  \});
 \f1\fs24 \
 \
@@ -556,6 +563,7 @@ r = \cf2 Routine\cf0 (\{\
 \}); \
 r.next;	\cf4 // crash\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // vs:\cf0 \
 \
 a = \cf2 Array\cf0 .new;\
