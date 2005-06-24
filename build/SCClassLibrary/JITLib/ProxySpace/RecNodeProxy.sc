@@ -90,11 +90,6 @@ RecNodeProxy : NodeProxy {
 		buffer.free;
 		buffer = nil;
 	}
-	
-	
-	guiClass {
-		^RecNodeProxyGui
-	}
-	
+		
 
 }
