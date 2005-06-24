@@ -28,9 +28,8 @@ ProxySpace.push;\
 a.source = ... is equivalent to ~a = ...\
 a.add(...) a.put(0,...) a[0] = ... ~a[0] = ... are equivalent in cpu load.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\b\fs24 \cf0 A) rebuild and send: 
+\f3\b\fs24 A) rebuild and send: 
 \f2\b0 manual rate\
 the following code requires a rebuild and send of a SynthDef and is thus most cpu-expensive.\
 though fine for slower use (esp.hand-use) for automatisation it is better to build a synthdef and assign it
@@ -41,10 +40,10 @@ though fine for slower use (esp.hand-use) for automatisation it is better to bui
 	~a = \cf2 SynthDef\cf0 (\cf3 \\name\cf0 , \{ someUGenFunction \});\
 	\
 	\
-	\cf4 //the same applies to rebuilding the graphs:\cf0 \
+	\cf4 // the same applies to rebuilding the graphs:\cf0 \
 	~a.rebuild\
 	\
-	\cf4 //this rebuild is also used when setting one of the following properties:\cf0 \
+	\cf4 // this rebuild is also used when setting one of the following properties:\cf0 \
 	server, bus, setRates\
 	\
 
@@ -54,32 +53,32 @@ the following code sends commands to the server to start synths, which is load m
 and depends on the characteristics of the synthdef:
 \f1\fs18 \
 \
-	~a = \cf3 \\synthDefName\cf0 ; \cf4 //the synthdef is already on the server\cf0 \
+	~a = \cf3 \\synthDefName\cf0 ; \cf4 // the synthdef is already on the server\cf0 \
 	~a = \cf2 Pbind\cf0 (\cf3 \\instrument\cf0 , name, \cf3 \\freq\cf0 , ...);\
 	~a = \cf2 Routine\cf0 (\{ loop(\{ s.sendMsg(\cf5 "/s_new"\cf0 , name, ...)\})  \});\
 	\
-	~a.refresh; ~a.wakeUp; \cf4 //waking up a stopped proxy does not require a resend\cf0 \
+	~a.refresh; ~a.wakeUp; \cf4 // waking up a stopped proxy does not require a resend\cf0 \
 	\
 	
 \f2\fs24 these resend the synth with new properies
 \f1\fs18 \
 \
-	~a.send(...) \cf4 //directly sends a message. the mapping bundle of the proxy is cached\cf0 \
+	~a.send(...) \cf4 // directly sends a message. the mapping bundle of the proxy is cached\cf0 \
 	~a.sendAll(...)\
 	\
-				\cf4 //for the following the bundle is recalculated if a new key is assigned.\
-				//if you use the same key with a different value, the bundle is modified\
+				\cf4 // for the following the bundle is recalculated if a new key is assigned.\
+				// if you use the same key with a different value, the bundle is modified\
 				\cf0 \
 	~a.xset(...) ~a.xmap(...) 	\
 	~a.nodeMap_(a map) \
 	~a.fadeToMap(a map)\
 	\
-	\cf4 //synthdefs for these things are on the server already.\cf0 \
+	\cf4 // synthdefs for these things are on the server already.\cf0 \
 	\
 	~a.gate, ~a.env, ~a.line, ~a.xline\
 	\
-	\cf4 //some more calculations have to be made on client side, so if automated, it is better to use\cf0 \
-	\cf4 //the above or a lag in the synth. \cf0 \
+	\cf4 // some more calculations have to be made on client side, so if automated, it is better to use\cf0 \
+	\cf4 // the above or a lag in the synth. \cf0 \
 	\
 	~a.lineAt(key), ~a.xlineAt(key)\
 	 \
@@ -91,13 +90,13 @@ and depends on the characteristics of the synthdef:
 \f1\fs18 \
 \
 \
-	~a.set(\\freq, 400, \\dt, 0.2); ~a.unset(\\freq); \cf4 //if running the bundle will be recalculated\cf0 \
+	~a.set(\\freq, 400, \\dt, 0.2); ~a.unset(\\freq); \cf4 // if running the bundle will be recalculated\cf0 \
 	~a.map(\\freq, ~lfo); ~a.unmap(\\freq);\
 	~a.fadeTime = 2;\
 	~a.gateAt(key)	\
 	\
-	\cf4 //for avoiding bundle recalculation you can directly talk to the group.\cf0 \
-	\cf4 //this setting will not be kept when you exchange the synth\cf0 \
+	\cf4 // for avoiding bundle recalculation you can directly talk to the group.\cf0 \
+	\cf4 // this setting will not be kept when you exchange the synth\cf0 \
 	~a.group.set(\\freq, 500);\
 	 \
 	\
@@ -151,7 +150,7 @@ p = \cf2 ProxySpace\cf0 .push(s.boot);\
 ~mix.read(~s2);\
 ~mix.read(~s3);\
 \
-\cf4 //automatation:\cf0 \
+\cf4 // automation:\cf0 \
 (\
 t = \cf2 Task\cf0 (\{\
 	var dt;\
@@ -167,7 +166,7 @@ t = \cf2 Task\cf0 (\{\
 t.play(\cf2 SystemClock\cf0 );\
 \
 \
-\cf4 //change the sources meanwhile:\cf0 \
+\cf4 // change the sources meanwhile:\cf0 \
 ~s1 = \{ \cf2 Blip\cf0 .ar(105, 100, 0.2) \};\
 ~s2 = \{ \cf2 SinOsc\cf0 .ar(350, 0, 0.1) \};\
 ~s3 = \{ \cf2 Pulse\cf0 .ar(60, 0.2, 0.1) \};\
@@ -181,12 +180,12 @@ t.play(\cf2 SystemClock\cf0 );\
 	\
 t.stop;\
 	\
-\cf4 //note that when restarting ~out, the inputs have to be woken up.\cf0 \
-\cf4 //to avoid this, you can add the inputs to the mix nodeMap parents:\cf0 \
+\cf4 // note that when restarting ~out, the inputs have to be woken up.\cf0 \
+\cf4 // to avoid this, you can add the inputs to the mix nodeMap parents:\cf0 \
 \
 ~mix.nodeMap.parents.putAll( (s1: ~s1, s2: ~s2, s3: ~s3) );\
 \
-\cf4 //also the task can be added to the proxy:\cf0 \
+\cf4 // also the task can be added to the proxy:\cf0 \
 (\
 ~mix.task = \cf2 Routine\cf0 (\{\
 	loop(\{\
