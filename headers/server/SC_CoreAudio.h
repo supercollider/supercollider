@@ -59,6 +59,12 @@ class SC_JackPortList;
 #include "portaudio.h"
 #endif
 
+const double kSecondsToOSCunits = 4294967296.; // pow(2,32)
+const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
+const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
+
+const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
+const double kOSCtoSecs = 2.328306436538696e-10;
 
 struct SC_ScheduledEvent 
 {
@@ -76,6 +82,12 @@ struct SC_ScheduledEvent
 
 typedef MsgFifo<FifoMsg, 1024> EngineFifo;
 
+// Functions to be implemented by the driver backend
+extern "C" {
+	int32 server_timeseed();
+};
+int64 oscTimeNow();
+void initializeScheduler();
 
 class SC_AudioDriver
 {
@@ -150,7 +162,6 @@ public:
 	double GetSampleRate() const { return mSampleRate; }
 	double GetActualSampleRate() const { return mSmoothSampleRate; }	
 };
-
 
 // the following classes should be split out into separate source files.
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO

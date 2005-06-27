@@ -4,19 +4,28 @@
 # AUTHOR:       steve AT k-hornz DOT de
 # ======================================================================
 
-import glob
-import os
-import re
-import tarfile
-import types
-
 # ======================================================================
 # setup
 # ======================================================================
 
-EnsureSConsVersion(0, 96)
-EnsurePythonVersion(2, 3)
+EnsureSConsVersion(0,96)
+EnsurePythonVersion(2,2)
 SConsignFile()
+
+# ======================================================================
+# imports
+# ======================================================================
+
+import glob
+import os
+import re
+import types
+
+try:
+    import tarfile
+    HAVE_TARFILE=1
+except:
+    HAVE_TARFILE=0
 
 # ======================================================================
 # constants
@@ -222,16 +231,19 @@ if env['AUDIOAPI'] == 'jack':
     success, libraries['audioapi'] = conf.CheckPKG('jack')
     if not success: Exit(1)
     libraries['audioapi'].Append(
-        CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_JACK')]
+        CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_JACK')],
+        ADDITIONAL_SOURCES = ['source/server/SC_Jack.cpp']
         )
 elif env['AUDIOAPI'] == 'coreaudio':
     libraries['audioapi'] = Environment(
-        CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_COREAUDIO')]
+        CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_COREAUDIO')],
+        ADDITIONAL_SOURCES = []
         )
 elif env['AUDIOAPI'] == 'portaudio':
     libraries['audioapi'] = Environment(
         CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_PORTAUDIO')],
-        LIBS = ['portaudio']
+        LIBS = ['portaudio'],
+        ADDITIONAL_SOURCES = []
         )
 
 # rendezvous
@@ -399,7 +411,7 @@ source/server/SC_SyncCondition.cpp
 source/server/SC_Unit.cpp
 source/server/SC_UnitDef.cpp
 source/server/SC_World.cpp
-''')
+''') + libraries['audioapi']['ADDITIONAL_SOURCES']
 
 scsynthSources = libscsynthSources + ['source/server/scsynth_main.cpp']
 
@@ -708,13 +720,14 @@ def dist_paths():
     return paths
 
 def build_tar(env, target, source):
-    paths = dist_paths()
-    tarfile_name = str(target[0])
-    tar_name = os.path.splitext(os.path.basename(tarfile_name))[0]
-    tar = tarfile.open(tarfile_name, "w:bz2")
-    for path in paths:
-        tar.add(path, os.path.join(tar_name, path))
-    tar.close()
+    if HAVE_TARFILE:
+        paths = dist_paths()
+        tarfile_name = str(target[0])
+        tar_name = os.path.splitext(os.path.basename(tarfile_name))[0]
+        tar = tarfile.open(tarfile_name, "w:bz2")
+        for path in paths:
+            tar.add(path, os.path.join(tar_name, path))
+        tar.close()
 
 if 'dist' in COMMAND_LINE_TARGETS:
     env.Alias('dist', env['TARBALL'])
