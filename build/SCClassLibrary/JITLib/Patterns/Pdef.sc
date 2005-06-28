@@ -92,14 +92,14 @@ PatternProxy : Pattern {
 		^inval
 	}
 
-	endless { // waiting room
+	endless { arg default;
 		^Proutine { arg inval;
 			var outval, count=0;
 			var pat = pattern;
 			var test = condition;
 			var resetTest = reset;
 			var stream = pattern.asStream;
-			var defaultValue = this.class.defaultValue;
+			default = default ?? { this.class.defaultValue };
 			loop {
 					if(
 						(reset !== resetTest) 
@@ -113,7 +113,7 @@ PatternProxy : Pattern {
 				};
 				outval = stream.next(inval);
 				count = count + 1;
-				outval = outval ? defaultValue;
+				outval = outval ? default;
 				inval = outval.yield;
 			}
 		}
@@ -346,7 +346,7 @@ EventPatternProxy : TaskProxy {
 			};
 			
 			if(fadeTime.isNil) {
-				Pseq([EmbedOnce(Pfindur(delta.postln, str, tolerance)), new])
+				Pseq([EmbedOnce(Pfindur(delta, str, tolerance)), new])
 			}{
 				
 				Ppar([
