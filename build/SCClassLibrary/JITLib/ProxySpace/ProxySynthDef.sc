@@ -6,7 +6,8 @@ ProxySynthDef : SynthDef {
 	
 	*initClass {
 		//clean up any written synthdefs starting with "temp__"
-		unixCmd("rm synthdefs/"++ this.tempPrefix ++ "*");
+		var path = "synthdefs/"++ this.tempPrefix ++ "*";
+		if(pathMatch(path).notEmpty) { unixCmd("rm" + path) };
 	}
 	
 	*tempPrefix { ^"temp__" }
