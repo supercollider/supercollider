@@ -464,18 +464,6 @@ NodeProxy : BusPlug {
 		};
 	}
 	
-	fadeToMap { arg map, interpolKeys;
-		var fadeTime, values;
-		fadeTime = this.fadeTime; // todo: old args
-		if(interpolKeys.notNil) { 
-			values = interpolKeys.asCollection.collect { arg item; map[item].value };
-			this.lineAt(interpolKeys, values) 
-		};
-		nodeMap = map.copy;
-		nodeMap.set(\fadeTime, fadeTime);
-		this.linkNodeMap;
-		if(this.isPlaying) { this.sendEach(nil,true) };
-	}
 	
 	rebuild {
 		var bundle;
