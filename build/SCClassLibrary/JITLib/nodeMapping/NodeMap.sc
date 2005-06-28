@@ -150,6 +150,17 @@ NodeMap {
 		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
 	}
 	
+	blend { arg another, frac;
+		var res = this.copy;
+		another.updateBundle;
+		another.setArgs.pairsDo { |key, x| 
+			var s = settings[key], y;
+			s !? { y = s.getValue };
+			y !? { res.set(key, blend(y, x, frac)) }
+		};
+		^res
+	}
+	
 	
 	copy {
 		var res, nset;

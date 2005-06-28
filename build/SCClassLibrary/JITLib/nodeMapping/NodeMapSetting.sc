@@ -21,6 +21,9 @@ NodeMapSetting {
 		isMapped = false;
 		isMultiChannel = val.isSequenceableCollection;
 	}
+	getValue { // unmapped, single channel only
+		^if(this.isMapped.not and: { this.isMultiChannel.not }) { value } { nil }
+	}
 		
 	updateNodeMap { arg nodeMap;
 		if(isMapped) {
