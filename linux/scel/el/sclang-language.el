@@ -389,7 +389,7 @@ are considered."
 	   (message "Making completion list...")
 	   (let* ((list (all-completions pattern table (lambda (assoc) (funcall predicate (car assoc)))))
 		  (win (selected-window))
-		  (buffer-name "*Completions*")
+		  (buffer-name "*SCLang:Completions*")
 		  (same-window-buffer-names (list buffer-name)))
 	     (setq list (sort list 'string<))
 	     (with-sclang-browser
@@ -433,7 +433,7 @@ are considered."
     (when (bufferp buffer)
       (with-current-buffer buffer
 	(goto-char (or pos (point-min)))
-	(when (functionp pos-func)
+	(when (and nil (functionp pos-func))
 	  (let ((pos (funcall pos-func name)))
 	    (and pos (goto-char pos))))))
     buffer))
@@ -600,7 +600,6 @@ are considered."
 ;; =====================================================================
 
 (defun sclang-list-to-string (list)
-  (unless (listp list) (setq list (list list)))
   (mapconcat 'sclang-object-to-string list ", "))
 
 (defconst false 'false)
@@ -608,7 +607,7 @@ are considered."
 (defun sclang-object-to-string (obj)
   (cond ((null obj)
 	 "nil")
-	((eq 'false obj)
+	((eq false obj)
 	 "false")
 	((eq t obj)
 	 "true")
@@ -622,7 +621,7 @@ are considered."
   "format chars:
      %s - print string
      %o - print object
-     %l - print list"
+     %l - print argument list"
   (let ((case-fold-search nil)
 	(i 0))
     (save-match-data
@@ -636,7 +635,9 @@ are considered."
 	       (repl (cond ((eq ?o format)
 			    (sclang-object-to-string arg))
 			   ((eq ?l format)
-			    (sclang-list-to-string arg))
+			    (if (listp arg)
+				(sclang-list-to-string arg)
+			      (sclang-object-to-string arg)))
 			   ((eq ?s format)
 			    (format "%s" arg))
 			   ((eq ?% format)

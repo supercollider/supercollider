@@ -300,6 +300,13 @@ If EOB-P is non-nil, positions cursor at end of buffer."
       (process-kill-without-query proc)
       proc)))
 
+(defun sclang-kill ()
+  "Kill SuperCollider process."
+  (interactive)
+  (when (sclang-get-process)
+    (kill-process sclang-process)
+    (delete-process sclang-process)))
+
 (defun sclang-stop ()
   "Stop SuperCollider process."
   (interactive)
@@ -313,13 +320,6 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 	(sit-for 0.5))))
   (sclang-kill)
   (sclang--release-command-fifo))
-
-(defun sclang-kill ()
-  "Kill SuperCollider process."
-  (interactive)
-  (when (sclang-get-process)
-    (kill-process sclang-process)
-    (delete-process sclang-process)))
 
 ;; =====================================================================
 ;; command process
@@ -459,7 +459,7 @@ Change this if \"cat\" has a non-standard name or location."
 		    "disabled")))
 
 (defun sclang--handle-command-result (list)
-  (save-excursion
+;;   (save-excursion ;; this is not really what we want
     (condition-case nil
 	(let ((fun (get (nth 0 list) 'sclang-command-handler))
 	      (arg (nth 1 list))
@@ -469,7 +469,7 @@ Change this if \"cat\" has a non-standard name or location."
 	      (when id
 		(sclang-eval-string
 		 (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))
-      (error nil))))
+      (error nil)))
 
 ;; =====================================================================
 ;; code evaluation

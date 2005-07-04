@@ -9,7 +9,7 @@
 # ======================================================================
 
 EnsureSConsVersion(0,96)
-EnsurePythonVersion(2,2)
+EnsurePythonVersion(2,3)
 SConsignFile()
 
 # ======================================================================
@@ -20,12 +20,7 @@ import glob
 import os
 import re
 import types
-
-try:
-    import tarfile
-    HAVE_TARFILE=1
-except:
-    HAVE_TARFILE=0
+import tarfile
 
 # ======================================================================
 # constants
@@ -208,7 +203,7 @@ env.Append(
     CXXFLAGS = env['CUSTOMCXXFLAGS'])
 
 # ======================================================================
-# configure
+# configuration
 # ======================================================================
 
 conf = Configure(env, custom_tests = { 'CheckPKGConfig' : CheckPKGConfig,
@@ -314,6 +309,29 @@ if features['altivec']:
         )
 else:
     env.Append(CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 1)])
+
+# ======================================================================
+# configuration summary
+# ======================================================================
+
+def yesorno(p):
+    if p: return 'yes'
+    else: return 'no'
+
+print '------------------------------------------------------------------------'
+print ' ALSA:                    %s' % yesorno(env['ALSA'])
+print ' ALTIVEC:                 %s' % yesorno(features['altivec'])
+print ' AUDIOAPI:                %s' % env['AUDIOAPI']
+print ' DEBUG:                   %s' % yesorno(env['DEBUG'])
+# print ' DESTDIR:                 %s' % env['DESTDIR']
+print ' DEVELOPMENT:             %s' % yesorno(env['DEVELOPMENT'])
+print ' LANG:                    %s' % yesorno(env['LANG'])
+print ' LID:                     %s' % yesorno(env['LID'])
+print ' PREFIX:                  %s' % env['PREFIX']
+print ' RENDEZVOUS:              %s' % yesorno(env['RENDEZVOUS'])
+print ' SCEL:                    %s' % yesorno(env['SCEL'])
+print ' X11:                     %s' % yesorno(features['x11'])
+print '------------------------------------------------------------------------'
 
 # ======================================================================
 # installation directories
@@ -723,14 +741,13 @@ def dist_paths():
     return paths
 
 def build_tar(env, target, source):
-    if HAVE_TARFILE:
-        paths = dist_paths()
-        tarfile_name = str(target[0])
-        tar_name = os.path.splitext(os.path.basename(tarfile_name))[0]
-        tar = tarfile.open(tarfile_name, "w:bz2")
-        for path in paths:
-            tar.add(path, os.path.join(tar_name, path))
-        tar.close()
+    paths = dist_paths()
+    tarfile_name = str(target[0])
+    tar_name = os.path.splitext(os.path.basename(tarfile_name))[0]
+    tar = tarfile.open(tarfile_name, "w:bz2")
+    for path in paths:
+        tar.add(path, os.path.join(tar_name, path))
+    tar.close()
 
 if 'dist' in COMMAND_LINE_TARGETS:
     env.Alias('dist', env['TARBALL'])
