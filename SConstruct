@@ -615,7 +615,10 @@ if is_installing():
 
 # scel
 if env['SCEL']:
-    el_files = glob.glob('linux/scel/el/*.el')
+    env.Command('linux/scel/el/sclang-vars.el', 'linux/scel/el/sclang-vars.el.in',
+                'sed \'s,@PKG_DATA_DIR@,%s,g\' < $SOURCE > $TARGET' %
+                pkg_data_dir(FINAL_PREFIX))
+    el_files = glob.glob('linux/scel/el/*.el') + ['linux/scel/el/sclang-vars.el']
     elc_files = map(lambda f: os.path.splitext(f)[0] + '.elc', el_files)
     elisp_dir = os.path.join(INSTALL_PREFIX, 'share', 'emacs', 'site-lisp')
     env.Command(elc_files, el_files,

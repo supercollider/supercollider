@@ -28,7 +28,8 @@
     (require 'sclang-util)
     (require 'sclang-interp)
     (require 'sclang-language)
-    (require 'sclang-mode)))
+    (require 'sclang-mode)
+    (require 'sclang-vars)))
 
 (defcustom sclang-help-directory "~/SuperCollider/Help"
   "*Directory where the SuperCollider help files are kept. OBSOLETE."
@@ -36,13 +37,6 @@
   :version "21.3"
   :type 'directory
   :options '(:must-match))
-
-(defcustom sclang-help-path (list "/usr/local/share/SuperCollider/Help"
-				  "~/share/SuperCollider/Help")
-  "*List of directories where SuperCollider help files are kept."
-  :group 'sclang-interface
-  :version "21.4"
-  :type '(repeat directory))
 
 (defcustom sclang-help-fill-column fill-column
   "*Column beyond which automatic line-wrapping in RTF help files should happen."
