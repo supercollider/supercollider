@@ -18,13 +18,7 @@
 (eval-when-compile
   (require 'cl))
 
-(eval-when-compile
-  (let ((load-path
-	 (if (and (boundp 'byte-compile-dest-file)
-		  (stringp byte-compile-dest-file))
-	     (cons (file-name-directory byte-compile-dest-file) load-path)
-	   load-path)))
-    (require 'sclang-util)))
+(require 'sclang-util)
 
 ;; =====================================================================
 ;; post buffer access

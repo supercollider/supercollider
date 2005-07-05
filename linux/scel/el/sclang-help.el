@@ -19,17 +19,11 @@
   (require 'cl)
   (require 'font-lock))
 
-(eval-when-compile
-  (let ((load-path
-	 (if (and (boundp 'byte-compile-dest-file)
-		  (stringp byte-compile-dest-file))
-	     (cons (file-name-directory byte-compile-dest-file) load-path)
-	   load-path)))
-    (require 'sclang-util)
-    (require 'sclang-interp)
-    (require 'sclang-language)
-    (require 'sclang-mode)
-    (require 'sclang-vars)))
+(require 'sclang-util)
+(require 'sclang-interp)
+(require 'sclang-language)
+(require 'sclang-mode)
+(require 'sclang-vars)
 
 (defcustom sclang-help-directory "~/SuperCollider/Help"
   "*Directory where the SuperCollider help files are kept. OBSOLETE."

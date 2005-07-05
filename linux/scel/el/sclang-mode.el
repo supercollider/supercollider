@@ -20,14 +20,8 @@
   (load "cl-seq" nil t)
   (require 'font-lock))
 
-(eval-when-compile
-  (let ((load-path
-	 (if (and (boundp 'byte-compile-dest-file)
-		  (stringp byte-compile-dest-file))
-	     (cons (file-name-directory byte-compile-dest-file) load-path)
-	   load-path)))
-    (require 'sclang-interp)
-    (require 'sclang-language)))
+(require 'sclang-interp)
+(require 'sclang-language)
 
 (defvar sclang-running-xemacs (string-match "XEmacs\\|Lucid" emacs-version)
   "Set if running on XEmacs.")

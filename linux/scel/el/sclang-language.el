@@ -18,14 +18,8 @@
 (eval-when-compile
   (require 'cl))
 
-(eval-when-compile
-  (let ((load-path
-	 (if (and (boundp 'byte-compile-dest-file)
-		  (stringp byte-compile-dest-file))
-	     (cons (file-name-directory byte-compile-dest-file) load-path)
-	   load-path)))
-    (require 'sclang-browser)
-    (require 'sclang-interp)))
+(require 'sclang-browser)
+(require 'sclang-interp)
 
 ;; =====================================================================
 ;; regexp utilities
