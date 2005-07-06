@@ -640,7 +640,7 @@ if env['SCEL']:
     elc_files = map(lambda f: os.path.splitext(f)[0] + '.elc', el_files)
     elisp_dir = os.path.join(INSTALL_PREFIX, 'share', 'emacs', 'site-lisp')
     env.Command(elc_files, el_files,
-                'emacs -batch --eval "(add-to-list \'load-path \\"linux/scel/el/\\")" -f batch-byte-compile $SOURCES')
+                'emacs -batch --eval "(add-to-list \'load-path (expand-file-name \\"linux/scel/el/\\"))" -f batch-byte-compile $SOURCES')
     env.Alias('install-elisp', env.Install(elisp_dir, el_files + elc_files))
     installEnv.Append(DATA = 'install-elisp')
 
