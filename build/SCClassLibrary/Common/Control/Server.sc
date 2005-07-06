@@ -119,7 +119,7 @@ Server : Model {
 	var <avgCPU, <peakCPU;
 	var <sampleRate, <actualSampleRate;
 	
-	var alive = false, booting = false, aliveThread, statusWatcher;
+	var alive = false, booting = false, aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 	var <>tree;
 	
 	var <window, <>scopeWindow;
@@ -390,7 +390,7 @@ Server : Model {
 		waitingForBufInfo = false;
 	}
 	
-	startAliveThread { arg delay=4.0, period=0.7;
+	startAliveThread { arg delay=4.0;
 		^aliveThread ?? {
 			this.addStatusWatcher;
 			aliveThread = Routine({
@@ -398,7 +398,7 @@ Server : Model {
 				delay.wait;
 				loop({
 					this.status;
-					period.wait;
+					aliveThreadPeriod.wait;
 					this.serverRunning = alive;
 					alive = false;
 				});
@@ -420,7 +420,7 @@ Server : Model {
 	*resumeThreads {
 		set.do({ arg server;
 			server.stopAliveThread;
-			server.startAliveThread(0.7);
+			server.startAliveThread(server.aliveThreadPeriod);
 		});
 	}
 	
