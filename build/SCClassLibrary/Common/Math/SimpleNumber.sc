@@ -296,15 +296,15 @@ SimpleNumber : Number {
 	// a clock format
 	asTimeString { arg precision=0.1;
 		var hours,mins,secs;
-		mins = (this/60).round(1);
-		if(mins >= 60,{ hours = (mins/60).round(1).asString ++ ":"; 
+		mins = (this/60).trunc(1);
+		if(mins >= 60,{ hours = (mins/60).trunc(1).asString ++ ":"; 
 			mins = mins%60;
 			if(mins < 10 ,{ mins = ")"++ mins.asString; },{ mins = mins.asString; });
 		},{
 			hours = "";
 			mins = mins.asString;
 		});
-		secs = (this%60).round(precision);
+		secs = (this%60).trunc(precision);
 		if(secs<10,{ secs = "0"++secs.asString; },{ secs=secs.asString;});
 		^(hours ++ mins ++ ":" ++ secs);
 	}
