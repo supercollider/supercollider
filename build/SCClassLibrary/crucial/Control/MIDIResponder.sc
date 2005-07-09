@@ -16,6 +16,9 @@ MIDIResponder {
 	*removeAll { this.init }
 	*fixSrc { |src|
 			// low numbers are not uid's, but indices to sources
+		(src.size > 0).if({
+			^src.collect(this.fixSrc(_))
+		});
 		(src.isNumber and: { src < MIDIClient.sources.size }).if({			^MIDIClient.sources[src].uid
 		});
 		^src
