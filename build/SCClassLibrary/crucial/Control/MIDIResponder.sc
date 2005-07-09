@@ -4,7 +4,8 @@
 // rather than hog the midi inputs here, make a global hog for all piglets to suckle from
 
 MIDIResponder {
-	var <>function;
+	var	<>function,
+		<>matchEvent;		// for matching ports, channels, and parameters
 	init { arg install;
 		if(this.class.initialized.not,{ this.class.init });
 		if(install,{this.class.add(this);});
@@ -13,6 +14,12 @@ MIDIResponder {
 		this.class.remove(this)
 	}
 	*removeAll { this.init }
+	*fixSrc { |src|
+			// low numbers are not uid's, but indices to sources
+		(src.isNumber and: { src < MIDIClient.sources.size }).if({			^MIDIClient.sources[src].uid
+		});
+		^src
+	}
 }
 
 ResponderArray {
@@ -35,8 +42,10 @@ ResponderArray {
 NoteOnResponder : MIDIResponder {
 	classvar <norinit = false,<nonr;
 
-	*new { arg function,install=true;
-		^super.new.function_(function).init(install)
+	*new { arg function, src, chan, num, veloc, install=true;
+		^super.new.function_(function)
+			.matchEvent_(MIDIEvent(nil, this.fixSrc(src), chan, num, veloc))
+			.init(install)
 	}
 	*initialized { ^norinit }
 	*responders { ^nonr }
@@ -46,12 +55,13 @@ NoteOnResponder : MIDIResponder {
 		nonr = [];
 		MIDIIn.noteOn = { arg src, chan, num, veloc;
 			nonr.do({ arg r;
-				r.value(src,chan,num,veloc);
+				if(r.matchEvent.match(src, chan, num, veloc))
+					{ r.value(src,chan,num,veloc); };
 			});
 		}
 	}
 	value { arg src,chan,note,veloc;
-		function.value(note,veloc)
+		function.value(src, chan, note, veloc)
 	}
 	*add { arg resp;
 		nonr = nonr.add(resp);
@@ -70,7 +80,8 @@ NoteOffResponder : NoteOnResponder {
 		noffr = [];
 		MIDIIn.noteOff = { arg src, chan, num, veloc;
 			noffr.do({ arg r;
-				r.value(src,chan,num,veloc);
+				if(r.matchEvent.match(src, chan, num, veloc))
+					{ r.value(src,chan,num,veloc); };
 			});
 		}
 	}
@@ -86,40 +97,113 @@ NoteOffResponder : NoteOnResponder {
 }
 
 CCResponder : MIDIResponder {
-	classvar <ccinit = false,<ccr;
+	classvar <ccinit = false,<ccr,<ccnumr;
 
-	var <>num;
-	
-	*new { arg num,function,install=true;
-		^super.new.num_(num).function_(function).init(install)
+	*new { arg function, src, chan, num, value, install=true;
+		^super.new.function_(function)
+			.matchEvent_(MIDIEvent(nil, this.fixSrc(src), chan, num, value))
+			.init(install)
 	}
 	*initialized { ^ccinit }
-	*responders { ^ccr }
+	*responders { ^ccnumr.select(_.notNil).flat ++ ccr }
 	value { arg src,chan,ccnum,val;
-		if(num == ccnum,{ function.value(val) })
+		function.value(src,chan,ccnum,val);
 	}
 	*add { arg resp;
+		var temp;
 		if(this.initialized.not,{ this.init });
-		ccr = ccr.add(resp);
+		if((temp = resp.matchEvent.ctlnum).isNumber) {
+			ccnumr[temp] = ccnumr[temp].add(resp);
+		} {
+			ccr = ccr.add(resp);
+		};
 	}
 	*remove { arg resp;
-		ccr.remove(resp);
+		var temp;
+		if((temp = resp.matchEvent.ctlnum).isNumber) {
+			ccnumr[temp].remove(resp)
+		} {
+			ccr.remove(resp);
+		};
 	}
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connect });
 		ccinit = true;
-		ccr = Array.newClear(127);
+		ccr = [];
+		ccnumr = Array.newClear(128);
 		MIDIIn.control = { arg src,chan,num,val;
-			ccr.do({ arg ccr; ccr.value(src,chan,num,val) });
+				// no need to check for nil because Nil-do does nothing
+			ccnumr[num].do({ |r|
+				if(r.matchEvent.match(src, chan, num, val))
+					{ r.value(src,chan,num,val) };
+			});
+			ccr.do({ arg r;
+				if(r.matchEvent.match(src, chan, num, val))
+					{ r.value(src,chan,num,val) };
+			});
 		};
 	}
 }
 
+TouchResponder : MIDIResponder {
+	classvar <touchinit = false,<touchr;
 
+	*new { arg function, src, chan, value, install=true;
+		^super.new.function_(function)
+			.matchEvent_(MIDIEvent(nil, this.fixSrc(src), chan, nil, value))
+			.init(install)
+	}
+	*init {
+		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		touchinit = true;
+		touchr = [];
+		MIDIIn.touch = { arg src, chan, val;
+			touchr.do({ arg r;
+				if(r.matchEvent.match(src, chan, nil, val))
+					{ r.value(src,chan,val) };
+			});
+		}
+	}
+	value { arg src,chan,val;
+		function.value(src,chan,val);
+	}
+	*initialized { ^touchinit }
+	*responders { ^touchr }
+
+	*add { arg resp;
+		touchr = touchr.add(resp);
+	}
+	*remove { arg resp;
+		touchr.remove(resp);
+	}
+}
+
+BendResponder : TouchResponder {
+	classvar <bendinit = false,<bendr;
+
+	*init {
+		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		bendinit = true;
+		bendr = [];
+		MIDIIn.bend = { arg src, chan, val;
+			bendr.do({ arg r;
+				if(r.matchEvent.match(src, chan, nil, val))
+					{ r.value(src,chan,val) };
+			});
+		}
+	}
+	*initialized { ^bendinit }
+	*responders { ^bendr }
+
+	*add { arg resp;
+		bendr = bendr.add(resp);
+	}
+	*remove { arg resp;
+		bendr.remove(resp);
+	}
+}
 
 /*
-TouchResponder
-BendResponder
 PolyTouchResponder
 */
 
