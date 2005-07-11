@@ -589,7 +589,8 @@ Server : Model {
 	record {
 		recordBuf.isNil.if({"Please execute Server-prepareForRecord before recording".warn; }, {
 			recordNode.isNil.if({
-				recordNode = Synth.tail(0, "server-record", [\bufnum, recordBuf.bufnum]);
+				recordNode = Synth.tail(RootNode(this), "server-record", [\bufnum, 
+					recordBuf.bufnum]);
 			}, { recordNode.run(true) });
 			"Recording".postln;
 		});
