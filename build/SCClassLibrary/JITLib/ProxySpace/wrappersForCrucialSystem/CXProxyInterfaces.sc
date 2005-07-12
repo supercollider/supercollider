@@ -1,60 +1,42 @@
 
 
 CXPlayerControl : AbstractPlayControl {
-	var <>bus;
+	var <>bus, proxy, player;
 	//here the lazy bus init happens and allocation of client side ressources
 	//there is no bundle passing in build
 	
-	build { arg proxy;
+	build { arg argProxy;
 		var ok;
+		proxy = argProxy;
+		
 		if(proxy.isNeutral) {
-			source.prepareForPlay; // first initialization for lazy rate detection
-			ok = proxy.initBus(source.rate ? 'audio', source.numChannels ? 2);
-			source.free;
-			
+			player.prepareForPlay; // first initialization for lazy rate detection
+			ok = proxy.initBus(player.rate ? 'audio', player.numChannels ? 2);
+			player.free;
 		};
+		
 		bus = proxy.asBus.as(SharedBus);
-		source.prepareForPlay(nil, true, bus);
-		ok = source.readyForPlay;
+		player = source.wrapInFader(bus);
+		
 		paused = proxy.paused;
-		^ok
+		^true // maybe add a test later
 	}
 	
 	playToBundle { arg bundle, extraArgs, target, addAction=\addToTail;
-		//var group;
-		var f;
-		if(paused.not) {
-			// we'll need channel offset maybe.
-			//group = Group.newToBundle(bundle, target, addAction);
-			source.prepareToBundle(nil, bundle);
-			f = {  CmdPeriod.remove(f); source.free; };
-			CmdPeriod.add(f); 
-			if(source.readyForPlay.not) {
-				source.makePatchOut(nil, true, bus, bundle);
-				"made new patch out for player".debug;
-			};
-			source.spawnOnToBundle(nil, bus, bundle); //proxy.group
-			// this.moveToGroupToBundle(bundle, proxy.group);
+		if(player.readyForPlay.not) { 
+			player.prepareToBundle(proxy.group, bundle, false, bus) 
 		};
+		player.makePatchOut(proxy.group, false, bus, bundle);
+		player.spawnToBundle(bundle);
 		^nil
-		
-		
 	}
 	 
 	stopToBundle { arg bundle, fadeTime=0.02;
-		source.releaseToBundle(fadeTime, bundle);
+		player.releaseAndFreeToBundle(fadeTime, bundle);
 	}
-	
-	freeToBundle { arg bundle, fadeTime;
-//		bundle.addSchedFunction({ source.freeHeavyResources }, fadeTime);
-//		source.freeToBundle(bundle);
-		bundle.sched(fadeTime, { source.free });
-
-	}
-	
-	
-	pause { source.stop }
-	resume { source.play }
+		
+	pause { player.stop }
+	resume { player.play }
 	// moveToGroupToBundle {}
 	
 	isPlaying { ^false } // ^source.isPlaying }

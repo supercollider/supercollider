@@ -8,8 +8,7 @@
 		^CXPlayerControl
 	}
 	
-	wrapInFader {}
-	
+	wrapInFader { ^this }
 	
 }
 
@@ -17,13 +16,6 @@
 	
 	proxyControlClass {
 			^CXSynthPlayerControl
-	}
-	
-	makeProxyControl { arg channelOffset=0, proxy;
-			var player;
-			//this.prepareToPlayWithProxy(proxy); //do it here for now.
-			player = if(proxy.isNeutral) { this } { this.wrapInFader(proxy) }   ;
-			^this.proxyControlClass.new(player, channelOffset); 
 	}
 	
 	wrapInFader { arg bus;
@@ -38,14 +30,28 @@
 			
 	}
 	
-}
-
-
-+Instr {
-	
-	makeProxyControl { arg channelOffset=0, proxy;
-		^Patch(this.name).makeProxyControl(channelOffset, proxy)
+	releaseAndFreeToBundle { arg releaseTime=(0.0), bundle;
+		this.releaseToBundle(releaseTime, bundle);
+		if(releaseTime > 0.01, {
+			bundle.addFunction({
+				SystemClock.sched(releaseTime + 0.1, { 
+					this.free; 
+					nil; 
+				})
+			});
+		});
 	}
 	
 }
+
++Instr {
+	proxyControlClass {
+			^CXSynthPlayerControl
+	}
+
+	wrapInFader { arg bus;
+		^Patch(this.name).wrapInFader(bus)
+	}
+}
+
 
