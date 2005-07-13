@@ -15,13 +15,13 @@
 \f1\b0 \
 \
 A Server object is the client-side representation of a server app and is used to control the app from the SuperCollider language application. (See 
-\f0\b ClientVsServer
+\f0\b [\ul ClientVsServer\ulnone ]
 \f1\b0  for more details on the distinction.) It forwards osc-messages and has a number of allocators that keep track of IDs for nodes, buses and buffers. The server application is a commandline program, so all commands apart from osc-messages are unix commands. The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine. \
 \
 Most of a Server's options are contolled through its instance of 
 \f0\b ServerOptions
 \f1\b0 . See the 
-\f0\b ServerOptions
+\f0\b [\ul ServerOptions\ulnone ]
 \f1\b0  helpfile for more detail.\
 \
 \
@@ -32,7 +32,7 @@ Most of a Server's options are contolled through its instance of
 \f1\b0\fs24 \
 \
 Server apps running on the local machine have two unix environment variables: SC_SYNTHDEF_PATH and SC_PLUGIN_PATH. These indicate directories of synthdefs and ugen plugins that will be loaded at startup. These are in addition to the default synthdef/ and plugin/ directories which are hard-coded. These can be set within SC using the getenv and setenv methods of class 
-\f0\b String
+\f0\b [\ul String\ulnone ]
 \f1\b0 .\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -50,24 +50,26 @@ Server apps running on the local machine have two unix environment variables: SC
 
 \f0\b\fs26 \cf0 The default group
 \fs30 \ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \ulnone \
+\f1\b0\fs24 \cf0 \ulnone \
 When a Server is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of Group: 
 \f0\b RootNode
 \f1\b0 .) If the server app was booted from within SCLang (as opposed to from the command line) the method initTree will be called automatically after booting. This will also create a 
 \f0\b default_group
 \f1\b0  with an ID of 1, which is the default group for all Nodes when using object style. This provides a predictable basic node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems. The default group is persistent, i.e. it is recreated after a reboot, pressing cmd-., etc. See 
-\f0\b RootNode
+\f0\b [\ul RootNode\ulnone ]
 \f1\b0  and 
-\f0\b default_group
+\f0\b [\ul default_group\ulnone ]
 \f1\b0  for more information. Note that if a Server has been booted from the command line you must call initTree manually in order to initialize the default group, if you want it. See 
 \f0\b initTree
 \f1\b0  below.\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs26 Local vs. Internal
+\f0\b\fs26 \cf0 Local vs. Internal
 \f1\b0\fs24 \
 \
 In general, when working with a single machine one will probably be using one of two Server objects which are created at startup and stored in the class variables 
@@ -75,9 +77,9 @@ In general, when working with a single machine one will probably be using one of
 \f1\b0  and 
 \f0\b internal
 \f1\b0 . By default two GUI windows are created to control these. The difference between the two is that the local server runs as a separate application with its own address space, and the internal server runs within the same space as the language/client app. The internal server has the advantage of being able to access shared memory, thus allowing for things like scope windows (see below) and 
-\f0\b SharedIn
-\f1\b0 /
-\f0\b SharedOut
+\f0\b [\ul SharedIn\ulnone ]
+\f1\b0 /[
+\f0\b \ul SharedOut\ulnone ]
 \f1\b0 . It also minimizes messaging latency. The local server, and any other server apps running on your local machine, have the advantage that if the language app crashes, it (and thus possibly your piece) will continue to run. It is thus an inherently more robust arrangement.\
 \
 \
@@ -86,8 +88,9 @@ In general, when working with a single machine one will probably be using one of
 \f0\b\fs26 The default Server
 \fs30 \ul \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \ulnone There is always a default Server, which is stored in the class variable 
+\f1\b0\fs24 \cf0 \ulnone There is always a default Server, which is stored in the class variable 
 \f0\b default
 \f1\b0 . Any Synths or Groups created without a target will be created on the default server. At startup this is set to be the 
 \f0\b local
@@ -97,14 +100,16 @@ In general, when working with a single machine one will probably be using one of
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 Class Methods
+\f0\b\fs30 \cf0 Class Methods
 \f1\b0\fs24 \
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *new(name, addr, options, clientID)
+\f0\b \cf0 *new(name, addr, options, clientID)
 \f1\b0 \
 	\
 
@@ -115,8 +120,8 @@ In general, when working with a single machine one will probably be using one of
 
 \f0\b 	addr - 
 \f1\b0 an optional instance of 
-\f0\b NetAddr
-\f1\b0 , providing host and port. The default is the localhost address using 			port 57110; the same as the local server.\
+\f0\b [\ul NetAddr\ulnone ]
+\f1\b0 , providing host and port. The default is the localhost address 			using port 57110; the same as the local server.\
 
 \f0\b 	options
 \f1\b0  
@@ -168,13 +173,15 @@ In general, when working with a single machine one will probably be using one of
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 Instance Methods
+\f0\b\fs28 \cf0 Instance Methods
 \f1\b0\fs24 \
 			\
 			\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b sendMsg(arg1, arg2, arg3, ... argN) - 
+\f0\b \cf0 sendMsg(arg1, arg2, arg3, ... argN) - 
 \f1\b0 send an osc message to the server.\
 		\
 	
@@ -319,13 +326,13 @@ dumpOSC(code)\
 
 \f0\b\fs24 \cf0 options - 
 \f1\b0 returns this Server's 
-\f0\b ServerOptions
+\f0\b [\ul ServerOptions\ulnone ]
 \f1\b0  object. Changes take effect when the server is rebooted.\
 \
 
 \f0\b options_(aServerOptions) - 
 \f1\b0 sets this Server's 
-\f0\b ServerOptions
+\f0\b [\ul ServerOptions\ulnone ]
 \f1\b0  object. Changes take effect when the server is rebooted.
 \f2\fs18 \
 \
@@ -339,11 +346,13 @@ dumpOSC(code)\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 Automatic Message Bundling\ul \
+\f0\b\fs30 \cf0 Automatic Message Bundling\ul \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \ulnone Server provides support for automatically bundling messages. This is quite convenient in object style, and ensures synchronous execution. See also 
+\f1\b0\fs24 \cf0 \ulnone Server provides support for automatically bundling messages. This is quite convenient in object style, and ensures synchronous execution. See also 
 \f0\b bundledCommands
 \f1\b0 .\
 \
@@ -416,17 +425,20 @@ dumpOSC(code)\
 \f1\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul \
+\f0\b\fs30 \cf0 \ul \ulc0 \
 \
 \
 \ulnone Shared Controls\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \ulnone \
+\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 The internal server has a number of shared control buses. Their values can be set or polled using the methods below.\
+\f1\b0 \cf0 The internal server has a number of shared control buses. Their values can be set or polled using the methods below.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b getSharedControl(num)
+\f0\b \cf0 getSharedControl(num)
 \f1\b0  - get the current value of a shared control bus. 
 \f0\b num
 \f1\b0  is the index of the bus to poll. This command is synchronous and only works with the internal server.\
@@ -446,12 +458,15 @@ dumpOSC(code)\
 
 \f0\b \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs30 Persistent Node Trees\ul \
+\fs30 \cf0 Persistent Node Trees\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \ulnone \
+\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 The instance variable 
+\f1\b0 \cf0 The instance variable 
 \f0\b tree
 \f1\b0  can be used to store a function which will be evaluated after the server is booted, after all nodes are freed, and after cmd-. is pressed. This allows, for example, for one to create a persistent basic node structure. 
 \f0\b tree
@@ -459,10 +474,11 @@ dumpOSC(code)\
 \f0\b initTree
 \f1\b0  after the default group is created, so its existence can be relied upon.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b initTree
+\f0\b \cf0 initTree
 \f1\b0  - This method initializes the 
-\f0\b default_group
+\f0\b [\ul default_group\ulnone ]
 \f1\b0  and evaluates the 
 \f0\b tree 
 \f1\b0 function. This method is called automatically when you boot a Server from the language. 
@@ -486,48 +502,57 @@ dumpOSC(code)\
 \f0\b\fs24 \cf0 tree - 
 \f1\b0 returns the contents of this Server's tree instance variable (most likely a Function).
 \f2\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 key down actions
+\f0\b\fs30 \cf0 Keyboard Shortcuts
 \f2\b0\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
-when the server window is in focus, these shortcuts can be used:
+when a server window is in focus, these shortcuts can be used:
 \f0\b \
 \
 space
 \f1\b0 :	start the server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b d
+\f0\b \cf0 d
 \f1\b0 		toggle dumpOSC\
 
 \f0\b n
 \f1\b0 		node query\
 
 \f0\b s
-\f1\b0 		scope
+\f1\b0 		scope (internal server only)
 \f2\fs18 \cf2 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 Scope Support
+\f0\b\fs30 \cf0 Scope Support
 \f1\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 This only works with the internal server, and currently only on OSX.\
+\f1\b0 \cf0 This only works with the internal server, and currently only on OSX.\
 see
-\f0\b  [Stethoscope] 
+\f0\b  [\ul Stethoscope\ulnone ] 
 \f1\b0 for further details.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 scope(numChannels, index, bufsize, zoom, rate) - 
 \f1\b0 Open a scope window showing the output of the Server. \
 		\
@@ -551,15 +576,17 @@ scope(numChannels, index, bufsize, zoom, rate) -
 \
 \
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 Recording Support
+\f0\b\fs30 \cf0 Recording Support
 \fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the 
-\f0\b DiskOut
-\f1\b0  helpfile for more info. For non-realtime recording, see the 
-\f0\b Non-Realtime-Synthesis
+\f1\b0 \cf0 The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the 
+\f0\b [\ul DiskOut\ulnone ]
+\f1\b0  helpfile for more info. For non-realtime recording, see the [
+\f0\b \ul Non-Realtime-Synthesis\ulnone ]
 \f1\b0  helpfile. \
 \
 This functionality is also available through the recording button on the server windows. Pressing it once calls 
@@ -570,8 +597,9 @@ This functionality is also available through the recording button on the server 
 \f0\b stopRecording
 \f1\b0  (see below). When doing so the file created will be in the recordings/ folder and be named for the current date and time.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b NOTE:
+\f0\b \cf0 NOTE:
 \f1\b0  
 \f0\b record
 \f1\b0  creates the recording synth after the Server's default group and uses 
@@ -582,16 +610,15 @@ This functionality is also available through the recording button on the server 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf4 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "default"\cf0 , s.nextNodeID, 1,1);
 \f1\fs24 \
 \
 For more detail on this subject see 
-\f0\b Order-of-execution,
-\f1\b0  
-\f0\b default_group
+\f0\b [\ul Order-of-execution\ulnone ],
+\f1\b0  [
+\f0\b \ul default_group\ulnone ]
 \f1\b0 , and 
-\f0\b NodeMessaging
+\f0\b [\ul NodeMessaging\ulnone ]
 \f1\b0 .\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -621,7 +648,7 @@ prepareForRecord(path) -
 \
 \
 The following setter methods have corresponding getters. See 
-\f0\b SoundFile
+\f0\b [\ul SoundFile\ulnone ]
 \f1\b0  for information on the various sample and header formats.	Not all sample and header formats are compatible.\
 \
 
@@ -637,7 +664,7 @@ recSampleFormat_(aString) -
 \f1\b0 Sets the sample format of the output file. The default is "float". Must be called BEFORE prepareForRecord.\
 \
 Note that the sampling rate of the ouput file will be the same as that of the server app. This can be set using the Server's 
-\f0\b ServerOptions
+\f0\b [\ul ServerOptions\ulnone ]
 \f1\b0 .\
 \
 \
@@ -647,7 +674,6 @@ Note that the sampling rate of the ouput file will be the same as that of the se
 \
 \cf2 // something to record\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf3 "bubbles"\cf0 , \{\
 	\cf4 var\cf0  f, zout;\
 	f = \cf4 LFSaw\cf0 .kr(0.4, 0, 24, \cf4 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf2 // glissando function\cf0 \
@@ -663,7 +689,6 @@ Note that the sampling rate of the ouput file will be the same as that of the se
 x = \cf4 Synth\cf0 .new(\cf3 "bubbles"\cf0 );\
 \
 s.prepareForRecord; \cf2 // you have to call this first\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 s.record;\
 \
@@ -678,6 +703,100 @@ s.stopRecording; \cf2 // this closes the file and deallocates the buffer recordi
 // look in the recordings/ folder and you'll find a file named for this date and time\
 \
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 Asynchronous Commands\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 Server provides support for waiting on the completion of asynchronous OSC commands such as reading or writing soundfiles. 
+\f0\b N.B. 
+\f1\b0 The following methods must be called from within a running 
+\f0\b [\ul Routine\ulnone ]
+\f1\b0 . Explicitly passing in a 
+\f0\b [\ul Condition\ulnone ]
+\f1\b0  allows multiple elements to depend on different conditions. The examples below should make clear how all this works.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 bootSync(condition) - 
+\f1\b0 Boot the Server and wait until it has completed before resuming the thread. 
+\f0\b condition
+\f1\b0  is an optional instance of 
+\f0\b Condition
+\f1\b0  used for evaluating this.\
+\
+
+\f0\b sendMsgSync(condition, args) - 
+\f1\b0 Send the following message to the  wait until it has completed before resuming the thread. 
+\f0\b condition
+\f1\b0  is an optional instance of 
+\f0\b [\ul Condition\ulnone ]
+\f1\b0  used for evaluating this. 
+\f0\b args 
+\f1\b0 should be one or more valid OSC messages.\
+\
+
+\f0\b sync(condition, bundles, latency)
+\f1\b0  - Send a /sync message to the server, which will replie with the message /synced when all pending asynchronous commands have been completed. 
+\f0\b condition
+\f1\b0  is an optional instance of 
+\f0\b [\ul Condition\ulnone ]
+\f1\b0  used for evaluating this. This may be slightly less safe then 
+\f0\b sendMsgSync
+\f1\b0  under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe. 
+\f0\b bundles
+\f1\b0  is one or more OSC messages which will be bundled before the sync message (thus ensuring that they will arrive before the /sync message). 
+\f0\b latency 
+\f1\b0 allows for the message to be evaluated at a specific point in the future.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\cf4 Routine\cf0 .run \{\
+	\cf4 var\cf0  c;\
+\
+	\cf2 // create a condition variable to control execution of the Routine\cf0 \
+	c = \cf4 Condition\cf0 .new;\
+	\
+	s.bootSync(c);\
+	\cf5 \\BOOTED\cf0 .postln;\
+		\
+	s.sendMsgSync(c, \cf3 "/b_alloc"\cf0 , 0, 44100, 2);\
+	s.sendMsgSync(c, \cf3 "/b_alloc"\cf0 , 1, 44100, 2);\
+	s.sendMsgSync(c, \cf3 "/b_alloc"\cf0 , 2, 44100, 2);\
+	\cf5 \\b_alloc_DONE\cf0 .postln;\
+\};\
+)\
+\
+(\
+\cf4 Routine\cf0 .run \{\
+	\cf4 var\cf0  c;\
+\
+	\cf2 // create a condition variable to control execution of the Routine\cf0 \
+	c = \cf4 Condition\cf0 .new;\
+	\
+	s.bootSync(c);\
+	\cf5 \\BOOTED\cf0 .postln;\
+		\
+	s.sendMsg(\cf3 "/b_alloc"\cf0 , 0, 44100, 2);\
+	s.sendMsg(\cf3 "/b_alloc"\cf0 , 1, 44100, 2);\
+	s.sendMsg(\cf3 "/b_alloc"\cf0 , 2, 44100, 2);\
+	s.sync(c);\
+	\cf5 \\b_alloc_DONE\cf0 .postln;\
+\};\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf2 \
 \
 \
 \
