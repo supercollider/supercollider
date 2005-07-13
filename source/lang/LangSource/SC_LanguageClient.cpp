@@ -143,11 +143,7 @@ void SC_LanguageClient::compileLibrary()
 	::compileLibrary();
 }
 
-#ifdef SC_WIN32
 extern void shutdownLibrary();
-#else
-extern void ::shutdownLibrary();
-#endif
 void SC_LanguageClient::shutdownLibrary()
 {
 	::shutdownLibrary();
