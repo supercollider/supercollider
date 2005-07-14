@@ -53,8 +53,9 @@ ProxySpace : LazyEnvir {
 		proxy = envir[\tempo];
 		if(proxy.isNil) { proxy = NodeProxy.control(server, 1); envir.put(\tempo, proxy); };
 		proxy.fadeTime = 0.0;
-		proxy.source = tempo;
+		proxy.source = { |tempo = 1.0| tempo };
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
+		if(tempo != 1) { this.clock.tempo = tempo };
 		
 	}
 
