@@ -204,11 +204,21 @@ FaderWarp : Warp {
 	//  useful mapping for amplitude faders
 	map { arg value;
 		// maps a value from [0..1] to spec range
-		^value.squared * spec.range + spec.minval
+		^if(spec.range.isPositive) {
+			value.squared * spec.range + spec.minval
+		}{
+				// formula can be reduced to (2*v) - v.squared
+				// but the 2 subtractions would be faster
+			(1 - (1-value).squared) * spec.range + spec.minval
+		};
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		^((value - spec.minval) / spec.range).sqrt
+		^if(spec.range.isPositive) {
+			((value - spec.minval) / spec.range).sqrt
+		}{
+			1 - sqrt(1 - ((value - spec.minval) / spec.range))
+		}
 	}
 }
 
@@ -216,13 +226,19 @@ DbFaderWarp : Warp {
 	//  useful mapping for amplitude faders
 	map { arg value;
 		// maps a value from [0..1] to spec range
-		^(value.squared * (spec.maxval.dbamp - spec.minval.dbamp) + spec.minval.dbamp).ampdb
-//		^value.squared.ampdb
+		var	range = spec.maxval.dbamp - spec.minval.dbamp;
+		^if(range.isPositive) {
+			(value.squared * range + spec.minval.dbamp).ampdb
+		}{
+			((1 - (1-value).squared) * range + spec.minval.dbamp).ampdb
+		}
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		^((value.dbamp - spec.minval.dbamp) / (spec.maxval.dbamp - spec.minval.dbamp)).sqrt
-//		^value.dbamp.sqrt
+		^if(spec.range.isPositive) {
+			((value.dbamp - spec.minval.dbamp) / (spec.maxval.dbamp - spec.minval.dbamp)).sqrt
+		}{
+			1 - sqrt(1 - ((value.dbamp - spec.minval.dbamp) / (spec.maxval.dbamp - spec.minval.dbamp)))
+		}
 	}
 }
-
