@@ -130,7 +130,11 @@ bool PlugIn_Load(const char *filename)
 
 #else
 
+#ifdef SC_DARWIN
 	void* handle = dlopen(filename, RTLD_NOW | RTLD_UNSHARED);
+#else
+	void* handle = dlopen(filename, RTLD_NOW);
+#endif
 	
 	if (!handle) {
 		scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename, dlerror());
