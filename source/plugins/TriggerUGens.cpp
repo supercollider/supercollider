@@ -116,7 +116,8 @@ struct Sweep : public Unit
 
 struct Phasor : public Unit
 {
-	float mLevel, m_previn;
+	double mLevel;
+	float m_previn;
 };
 
 struct Peak : public Unit
@@ -1284,7 +1285,7 @@ void Phasor_Ctor(Phasor *unit)
 	}
 
 	unit->m_previn = ZIN0(0);
-	ZOUT0(0) = unit->mLevel = 0.f;
+	ZOUT0(0) = unit->mLevel = ZIN0(2);
 }
 
 void Phasor_next_kk(Phasor *unit, int inNumSamples)
@@ -1292,20 +1293,19 @@ void Phasor_next_kk(Phasor *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	
 	float in        = ZIN0(0);
-	float rate      = ZIN0(1);
-	float start     = ZIN0(2);
-	float end       = ZIN0(3);
+	double rate      = ZIN0(1);
+	double start     = ZIN0(2);
+	double end       = ZIN0(3);
 	float resetPos  = ZIN0(4);
 	
 	float previn = unit->m_previn;
-	float level  = unit->mLevel;
+	double level  = unit->mLevel;
 	
 	if (previn <= 0.f && in > 0.f) {
 		level = resetPos;
 	}
 	LOOP(inNumSamples,
 		level = sc_wrap(level, start, end);
-		
 		ZXP(out) = level;
 		level += rate;
 	);
@@ -1319,25 +1319,24 @@ void Phasor_next_ak(Phasor *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	
 	float *in       = ZIN(0);
-	float rate      = ZIN0(1);
-	float start     = ZIN0(2);
-	float end       = ZIN0(3);
+	double rate      = ZIN0(1);
+	double start     = ZIN0(2);
+	double end       = ZIN0(3);
 	float resetPos  = ZIN0(4);
 	
 	float previn = unit->m_previn;
-	float level  = unit->mLevel;
+	double level  = unit->mLevel;
 	
 	LOOP(inNumSamples,
 		float curin = ZXP(in);
 		if (previn <= 0.f && curin > 0.f) {
-			float frac = -previn/(curin-previn);
+			float frac = 1.f - previn/(curin-previn);
 			level = resetPos + frac * rate;
-		} else {
-			level += rate;
-		}
+		} 
+		ZXP(out) = level;
+		level += rate;
 		level = sc_wrap(level, start, end);
 		
-		ZXP(out) = level;
 		previn = curin;
 	);
 	
@@ -1350,25 +1349,23 @@ void Phasor_next_aa(Phasor *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in       = ZIN(0);
 	float *rate     = ZIN(1);
-	float start     = ZIN0(2);
-	float end       = ZIN0(3);
+	double start     = ZIN0(2);
+	double end       = ZIN0(3);
 	float resetPos  = ZIN0(4);
 	
 	float previn = unit->m_previn;
-	float level = unit->mLevel;
+	double level = unit->mLevel;
 	
 	LOOP(inNumSamples,
 		float curin = ZXP(in);
-		float zrate = *rate++;
+		double zrate = ZXP(rate);
 		if (previn <= 0.f && curin > 0.f) {
-			float frac = -previn/(curin-previn);
+			float frac = 1.f - previn/(curin-previn);
 			level = resetPos + frac * zrate;
-		} else {
-			level += zrate;
 		}
-		level = sc_wrap(level, start, end);
-
 		ZXP(out) = level;
+		level += zrate;
+		level = sc_wrap(level, start, end);
 		previn = curin;
 	);
 	
