@@ -9,7 +9,6 @@
 		
 		// Server setup
 		Server.program = "scsynth";
-		this.makeServerWindows;
 
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
@@ -35,8 +34,5 @@
 	}
 	
 	newSCWindow {
-	}
-
-	makeServerWindows {
 	}
 }

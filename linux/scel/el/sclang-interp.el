@@ -574,7 +574,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 
 (defun sclang-show-server-panels ()
   (interactive)
-  (sclang-eval-string "thisProcess.makeServerWindows"))
+  (sclang-eval-string "SCUM.desktop.makeServerWindows"))
 
 ;; =====================================================================
 ;; default command handlers
