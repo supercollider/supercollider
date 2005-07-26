@@ -152,31 +152,37 @@
   '(
     "arg"
     "classvar"
-    "var"
+    "const"
     "super"
     "this"
-    "thisContext"
     "thisFunction"
     "thisFunctionDef"
     "thisMethod"
     "thisProcess"
     "thisThread"
+    "var"
     )
   "*List of keywords to highlight in SCLang mode.")
 
 (defvar sclang-font-lock-builtin-list
   '(
-    "nil"
-    "true"
     "false"
     "inf"
+    "nil"
+    "true"
     )
   "*List of builtins to highlight in SCLang mode.")
 
 (defvar sclang-font-lock-method-list
   '(
-    "if" "while" "loop" "for" "forBy"
-    "ar" "kr" "ir"
+    "ar"
+    "for"
+    "forBy"
+    "if"
+    "ir"
+    "kr"
+    "loop"
+    "while"
     )
   "*List of methods to highlight in SCLang mode.")
 
