@@ -42,6 +42,7 @@ ServerGui : ObjectGui {
 				recorder.enabled = true;
 			};
 			stopped = {
+				status.label = "";
 				active.stringColor_(Color.grey(0.3));
 				booter.setProperty(\value,0);
 				recorder.enabled = false;
@@ -57,6 +58,7 @@ ServerGui : ObjectGui {
 				recorder.enabled = true;
 			};
 			stopped = {
+				status.label = "";
 				active.background = Color.black;
 				recorder.enabled = false;
 			};
@@ -66,7 +68,7 @@ ServerGui : ObjectGui {
 		});
 			
 		status = CXLabel(layout,"               ");
-		status.font = Font("Helvetica",11);
+		status.font = Font("Helvetica",9);
 		status.background = Color.black;
 		status.stringColor = Color.green;
 		status.align = \right;
