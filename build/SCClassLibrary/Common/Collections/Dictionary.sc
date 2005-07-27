@@ -41,6 +41,15 @@ Dictionary : Set {
 	putPairs { arg args;
 		args.pairsDo { |key, val| this.put(key, val) }
 	}
+	getPairs { arg args;
+		var result;
+		args = args ?? { this.keys };
+		args.do { |key| 
+			var val = this.at(key); 
+			val !? { result = result.add(key).add(val) } 
+		};
+		^result
+	}
 	
 	associationAt { arg key;
 		var index = this.scanFor(key);
