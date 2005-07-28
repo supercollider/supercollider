@@ -1653,7 +1653,7 @@ void EnvGen_Ctor(EnvGen *unit)
 {
 	//Print("EnvGen_Ctor A\n");
 	if (unit->mCalcRate == calc_FullRate) {
-		if (INRATE(1) == calc_FullRate) {
+		if (INRATE(0) == calc_FullRate) {
 			SETCALC(EnvGen_next_aa);
 		} else {
 			SETCALC(EnvGen_next_ak);
