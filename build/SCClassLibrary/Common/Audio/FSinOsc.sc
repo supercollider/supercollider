@@ -64,14 +64,20 @@ Klank : UGen {
 }
 
 DynKlank : UGen {
+
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
-		var specs;
-		specs = specificationsArrayRef.asArray.collect(_.value).unbubble;
+		var inputs;
+		inputs = [specificationsArrayRef, input, freqscale, freqoffset, decayscale].flop;
+		^inputs.collect { arg item; this.ar1(*item) }.unbubble
+	}
+	
+	*ar1 { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
+		var spec = specificationsArrayRef.value;
 		^Ringz.ar(
 				input,
-				specs[0] * freqscale + freqoffset, 
-				specs[2] * decayscale,
-				specs[1] ? #[1.0]
+				spec[0] * freqscale + freqoffset, 
+				spec[2] * decayscale,
+				spec[1] ? #[1.0]
 		).sum
 	}
 }
