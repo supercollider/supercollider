@@ -175,7 +175,7 @@ SequenceableCollection : Collection {
 		div = b - a;
 		if(div == 0) { ^i };
 		^((val - a) / div) + i - 1
-	} 
+	}
 	
 	resamp0 { arg newSize;
 		var factor = this.size - 1 / (newSize - 1);
@@ -715,18 +715,22 @@ SequenceableCollection : Collection {
 		
 	
 	// support UGen range
-
+	
+		
 	range { arg lo = 0.0, hi = 1.0;
-		lo = lo.asCollection;
-		hi = hi.asCollection;
-		^this.collect({ arg ugen, i; ugen.range(lo.wrapAt(i), hi.wrapAt(i)) })
+		^this.multiChannelPerform(\range, lo, hi)
 	}
+	exprange { arg lo = 0.0, hi = 1.0;
+		^this.multiChannelPerform(\exprange, lo, hi)
+	}
+	
 	
 	// UGen support
 	
 	lag { arg lagTime=0.1; ^this.collect { arg item; item.lag(lagTime) } }
 	lag2 { arg lagTime=0.1; ^this.collect { arg item; item.lag2(lagTime) } }
 	lag3 { arg lagTime=0.1; ^this.collect { arg item; item.lag3(lagTime) } }
+	minNyquist { ^min(this, SampleRate.ir * 0.5) }
 	
 	// sorting
 	sort { arg function; 
