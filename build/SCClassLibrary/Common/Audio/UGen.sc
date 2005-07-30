@@ -95,6 +95,8 @@ UGen : AbstractFunction {
  		}
  	}
  	
+ 	minNyquist { ^min(this, SampleRate.ir * 0.5) }
+ 	
  	lag { arg lagTime=0.1;
 		^Lag.multiNew(this.rate, this, lagTime)
 	}
