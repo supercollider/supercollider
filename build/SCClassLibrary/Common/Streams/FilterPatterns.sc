@@ -412,7 +412,6 @@ Pbindf : FilterPattern {
 	embedInStream { arg event;	
 		var eventStream;
 		var inevent;
-		var sawNil = false;
 		var streampairs = patternpairs.copy;
 		var endval = streampairs.size - 1;
 		
