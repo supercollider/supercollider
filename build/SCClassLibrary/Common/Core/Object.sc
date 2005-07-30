@@ -87,6 +87,12 @@ Object {
 			this.performList(selector,args)
 		})
 	}
+	multiChannelPerform { arg selector ... args;
+		^flop([this, selector] ++ args).collect { |item|
+			performList(item[0], item[1], item[2..])
+		}
+	}
+
 
 	// copying
 	copy { ^this.shallowCopy }
