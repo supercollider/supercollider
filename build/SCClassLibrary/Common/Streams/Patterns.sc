@@ -210,7 +210,7 @@ Pchain : Pattern {
 		streams = patterns.collect(_.asStream);
 		loop {
 			streams.reverseDo { |str|
-				inevent = str.value(inval);
+				inevent = str.next(inval);
 				if(inevent.isNil) { ^inval };
 				inval = inevent;
 			};
