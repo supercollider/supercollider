@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf100
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
-\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pattern
@@ -19,7 +19,7 @@ superclass: AbstractFunction\
 
 \fs24 \cf0 \
 	Pattern 
-\f1\b0 is an abstract class that is the base for the Patterns library.  These classe form a  \
+\f1\b0 is an abstract class that is the base for the Patterns library.  These classes form a  \
 rich and concise score language for music. The series of help files entitled 
 \f0\b Streams-Patterns-Events 
 \f1\b0 \
@@ -108,9 +108,10 @@ created directly using
 \f0\b Routine
 \f1\b0 .\
 \
-( 
+ 
 \f0\b // a Routine vs a Pattern 
 \f1\b0 \
+(\
 \
 	a = [-100,00,300,400];					// the array to iterate\
 \
@@ -134,14 +135,17 @@ iterates its array as  a collection of
 of the values in the array.  The Routine, on the other hand,  needs to be completely \
 redefined.\
 \
-( var routinesA;\
+(\
+	var routinesA;\
 	a = [3, Pseq([-100,00,300,400]), Pseq([-100,00,300,400].reverse) ];\
 	routinesA = [[3], [-100,00,300,400], [-100,00,300,400].reverse];\
 	p = Pseq(a);\
 	q = p.asStream;\
 \
 	r = Routine(\{ \
-		routinesA.do(\{ arg v; v.do(\{ arg i; i.yield\}) \}) ;\
+		routinesA.do(\{ arg v; \
+			v.do(\{ arg i; i.yield\}) \
+		\}) ;\
 	\});\
 	10.do(\{ Post << Char.tab << r.next << " " << q.next << Char.nl; \});\
 )	\
@@ -154,7 +158,7 @@ redefined.\
 \f1\b0\fs24 \cf0 \
 The message 
 \f2 embedInStream
-\f1  is what allows Patterns to do this kind of nesting.   Most  objects \
+\f1  is what allows Patterns to do this kind of nesting. Most  objects \
 (such as the number 3 below) respond to 
 \f2 embedInStream
 \f0\b  
@@ -207,6 +211,9 @@ The pattern
 \f0\b Pbind 
 \f1\b0 connects specific patterns with specific names. Consult its help page for \
 details.\
+\
+..................\
+\
 	 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -222,45 +229,44 @@ all rely on the patterns assigned to the Interpreter variable p, q, and r in the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 \
-(\
-SynthDescLib\cf0 .global.read;\
-\
-\cf2 SynthDef\cf0 (\cf3 \\cfstring1\cf0 .postln, \{ \cf2 arg\cf0  i_out, freq = 360, gate = 1, pan, amp=0.1;\
-	\cf2 var\cf0  out, eg, fc, osc, a, b, w;\
-	fc = \cf2 LinExp\cf0 .kr(\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0.25,0.4)), -1,1,500,2000);\
-	osc = \cf2 Mix\cf0 .fill(8, \{\cf2 LFSaw\cf0 .ar(freq * [\cf2 Rand\cf0 (0.99,1.01),\cf2 Rand\cf0 (0.99,1.01)], 0, amp) \}).distort * 0.2;\
-	eg = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(1,1,1), gate, doneAction:2);\
-	out = eg * \cf2 RLPF\cf0 .ar(osc, fc, 0.1);\
+\cf3 (\
+\cf4 SynthDef\cf3 (\cf5 \\cfstring1\cf3 .postln, \{ \cf4 arg\cf3  i_out, freq = 360, gate = 1, pan, amp=0.1;\
+	\cf4 var\cf3  out, eg, fc, osc, a, b, w;\
+	fc = \cf4 LinExp\cf3 .kr(\cf4 LFNoise1\cf3 .kr(\cf4 Rand\cf3 (0.25,0.4)), -1,1,500,2000);\
+	osc = \cf4 Mix\cf3 .fill(8, \{\cf4 LFSaw\cf3 .ar(freq * [\cf4 Rand\cf3 (0.99,1.01),\cf4 Rand\cf3 (0.99,1.01)], 0, amp) \}).distort * 0.2;\
+	eg = \cf4 EnvGen\cf3 .kr(\cf4 Env\cf3 .asr(1,1,1), gate, doneAction:2);\
+	out = eg * \cf4 RLPF\cf3 .ar(osc, fc, 0.1);\
 	#a, b = out;\
-	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3])));\
+	\cf4 Out\cf3 .ar(i_out, \cf4 Mix\cf3 .ar(\cf4 PanAz\cf3 .ar(4, [a, b], [pan, pan+0.3])));\
 \}).store;\
-\cf2 \
-SynthDef\cf0 (\cf4 "sinegrain2"\cf0 , \
-	\{ \cf2 arg\cf0  out=0, freq=440, sustain=0.05, pan;\
-		\cf2 var\cf0  env;\
-		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.01, sustain, 0.3), doneAction:2);\
-		\cf2 Out\cf0 .ar(out, Pan2.ar(\cf2 SinOsc\cf0 .ar(freq, 0, env), pan))\
+\
+\cf4 SynthDef\cf3 (\cf6 "sinegrain2"\cf3 , \
+	\{ \cf4 arg\cf3  out=0, freq=440, sustain=0.05, pan;\
+		\cf4 var\cf3  env;\
+		env = \cf4 EnvGen\cf3 .kr(\cf4 Env\cf3 .perc(0.01, sustain, 0.3), doneAction:2);\
+		\cf4 Out\cf3 .ar(out, \cf4 Pan2\cf3 .ar(\cf4 SinOsc\cf3 .ar(freq, 0, env), pan))\
 	\}).store;\
-\cf2 \
-p = Pbind\cf0 (\
-	[\cf3 \\degree\cf0 , \cf3 \\dur\cf0 ], \cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],1),\
-	\cf3 \\amp\cf0 , 0.05, \cf3 \\octave\cf0 , 6, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 , \cf3 \\mtranspose\cf0 , 0);\
 \
-q = Pbindf(p, \\instrument, \\default );\
+p = \cf4 Pbind\cf3 (\
+	[\cf5 \\degree\cf3 , \cf5 \\dur\cf3 ], \cf4 Pseq\cf3 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],1),\
+	\cf5 \\amp\cf3 , 0.05, \cf5 \\octave\cf3 , 6, \cf5 \\instrument\cf3 , \cf5 \\cfstring1\cf3 , \cf5 \\mtranspose\cf3 , 0);\
 \
-\cf2 r = Pset\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
+q = \cf4 Pbindf\cf3 (p, \cf5 \\instrument\cf3 , \cf5 \\default\cf3  );\
+\
+r = \cf4 Pset\cf3 (\cf5 \\freq\cf3 , \cf4 Pseq\cf3 ([500, 600, 700], 2), q);\
 \
 )
 \f0\b\fs24 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 // EVENT PATTERNS - patterns that generate or require event streams\
 \
 	// Pbind( ArrayOfPatternPairs )\
 	\
 	
 \f2\b0\fs18 \cf2 p = Pbind\cf0 (\
-		[\cf3 \\degree\cf0 , \cf3 \\dur\cf0 ], \cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],1),\
-		\cf3 \\amp\cf0 , 0.05, \cf3 \\octave\cf0 , 6, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 , \cf3 \\mtranspose\cf0 , 0);\
+		[\cf7 \\degree\cf0 , \cf7 \\dur\cf0 ], \cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],1),\
+		\cf7 \\amp\cf0 , 0.05, \cf7 \\octave\cf0 , 6, \cf7 \\instrument\cf0 , \cf7 \\cfstring1\cf0 , \cf7 \\mtranspose\cf0 , 0);\
 		\
 	p.play;\
 	\
@@ -277,8 +283,9 @@ q = Pbindf(p, \\instrument, \\default );\
 \f2\b0\fs18 Ptpar([1,Pseq([p],4),0, Pseq([Pbindf(q,\\ctranspose, -24)],5)]).play
 \f0\b\fs24 \
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 	
+\f2\b0\fs18 \cf0 	
 \f0\b\fs24 // Pbindf( pattern, ArrayOfNamePatternPairs )\
 	
 \f2\b0\fs18 \
@@ -292,7 +299,7 @@ q = Pbindf(p, \\instrument, \\default );\
 \f1\b0 // function constructs an event that is passed to the pattern.asStream\
 	
 \f2\fs18 \
-	\cf2 Pfset\cf0 (\cf3 \{ ~freq\cf0  = \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ).asStream \}, q).play;\
+	\cf2 Pfset\cf0 (\cf7 \{ ~freq\cf0  = \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ).asStream \}, q).play;\
 	\
 	
 \f0\b\fs24 //Pset(name, valPattern, pattern)  \
@@ -304,7 +311,7 @@ q = Pbindf(p, \\instrument, \\default );\
 \f1\b0  are similar)\
 	
 \f2\fs18 \
-	\cf2 Pset\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q).play;\
+	\cf2 Pset\cf0 (\cf7 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q).play;\
 	\
 	
 \f0\b\fs24 //Psetp(name, valPattern, pattern) \
@@ -316,9 +323,9 @@ q = Pbindf(p, \\instrument, \\default );\
 \f1\b0  are similar)\
 	
 \f2\fs18 \
-	\cf2 r = Pset\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
+	\cf2 r = Pset\cf0 (\cf7 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
-	\cf2 Psetp\cf0 (\cf3 \\legato\cf0 , Pseq([0.01, 1.1],inf), r).play;\
+	\cf2 Psetp\cf0 (\cf7 \\legato\cf0 , Pseq([0.01, 1.1],inf), r).play;\
 	\
 	
 \f0\b\fs24 //Psetpre(name, valPattern, pattern) \
@@ -330,9 +337,9 @@ q = Pbindf(p, \\instrument, \\default );\
 \f1\b0  are similar)\
 	
 \f2\fs18 \
-	\cf2 r = Psetpre\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
+	\cf2 r = Psetpre\cf0 (\cf7 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
-	\cf2 Psetp\cf0 (\cf3 \\legato\cf0 , Pseq([0.01, 1.1],inf), r).play;\
+	\cf2 Psetp\cf0 (\cf7 \\legato\cf0 , Pseq([0.01, 1.1],inf), r).play;\
 	\
 	
 \f0\b\fs24 //Pstretch(valPattern, pattern) \
@@ -340,7 +347,7 @@ q = Pbindf(p, \\instrument, \\default );\
 \f1\b0 // stretches durations after \
 	
 \f2\fs18 \
-	\cf2 r = Psetpre\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
+	\cf2 r = Psetpre\cf0 (\cf7 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
 	\cf2 Pstretch(Pn(Env([0.5,2,0.5], [10,10]))\cf0 , Pn(r)).play;\
 	\
@@ -352,7 +359,7 @@ q = Pbindf(p, \\instrument, \\default );\
 \f1\b0 // stretches durations after \
 	
 \f2\fs18 \
-	\cf2 r = Psetpre\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
+	\cf2 r = Psetpre\cf0 (\cf7 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
 	\cf2 Pstretchp(Pn(Env([0.5,2,0.5], [10,10]))\cf0 , r).play;\
 	\
@@ -396,7 +403,7 @@ q = Pbindf(p, \\instrument, \\default );\
 \f1\b0 \
 	
 \f2\fs18 \
-	\cf2 r = Psetpre\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
+	\cf2 r = Psetpre\cf0 (\cf7 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
 	\cf2 Ptrace(r\cf0 ).play;\
 	\cf2 Ptrace(r, \\freq\cf0 ).play;\
@@ -622,7 +629,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	
 \f2\b0\fs18 \
 	Pbind(\\degree, \
-		\cf2 Prewrite\cf0 (0,\cf5 	\cf2 (\cf0 	0: #[2,0],\
+		\cf2 Prewrite\cf0 (0,\cf8 	\cf2 (\cf0 	0: #[2,0],\
 	 					1: #[0,0,1],\
 	 					2: #[1,0,1]\
 	 				), 4\
@@ -648,18 +655,18 @@ q = Pbindf(p, \\instrument, \\default );\
 \
 	
 \f2\b0\fs18 \cf2 Pbind\cf0 (\
-		\cf3 \\octave\cf0 , 4,\
-		\cf3 \\degree\cf0 , \cf2 PstepNadd\cf0 (\
+		\cf7 \\octave\cf0 , 4,\
+		\cf7 \\degree\cf0 , \cf2 PstepNadd\cf0 (\
 					\cf2 Pseq\cf0 ([1, 2, 3]), \
 					\cf2 Pseq\cf0 ([0, -2, [1, 3], -5]), \
 					\cf2 Pshuf\cf0 ([1, 0, 3, 0], 2)\
 				),\
-		\cf3 \\dur\cf0 , \cf2 PstepNadd\cf0 (\
+		\cf7 \\dur\cf0 , \cf2 PstepNadd\cf0 (\
 					\cf2 Pseq\cf0 ([1, 0, 0, 1], 2),\
 					\cf2 Pshuf\cf0 ([1, 1, 2, 1], 2)\
 			).loop * (1/8),\
-		\cf3 \\legato\cf0 , \cf2 Pn\cf0 (\cf2 Pshuf\cf0 ([0.2, 0.2, 0.2, 0.5, 0.5, 1.6, 1.4], 4), \cf2 inf\cf0 ),\
-		\cf3 \\scale\cf0 , #[0, 1, 3, 4, 5, 7, 8]\
+		\cf7 \\legato\cf0 , \cf2 Pn\cf0 (\cf2 Pshuf\cf0 ([0.2, 0.2, 0.2, 0.5, 0.5, 1.6, 1.4], 4), \cf2 inf\cf0 ),\
+		\cf7 \\scale\cf0 , #[0, 1, 3, 4, 5, 7, 8]\
 	).play;\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
