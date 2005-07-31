@@ -1,23 +1,20 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf100
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
-}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;}
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Stream
 \f1\b0 \cf2 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 \
 superclass: AbstractFunction\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 Stream is an abstract class that is not used directly.  The following attempts to document some\
+\f1\b0 Stream is an abstract class that is not used directly.  The following attempts to document some\
 aspects of the use of Streams for music generation.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs30 \cf0 Overview\
@@ -25,9 +22,8 @@ aspects of the use of Streams for music generation.\
 
 \f1\b0\fs24 \cf0 \
 A Stream represents a sequence of values that are obtained incrementally by repeated\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 next 
+\f0\b next 
 \f1\b0 messages.  A Stream can be restarted with a 
 \f0\b reset 
 \f1\b0 message. (Not all streams \
@@ -51,12 +47,10 @@ In SuperCollider, Streams are primarily used for handling text and for generatin
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 FuncStream(nextFunction, resetFunction)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b FuncStream(nextFunction, resetFunction)\
 
-\f1\b0 \cf0 \
+\f1\b0 \
 A Function defines a stream consisting of the Function itself, a FuncStream defines a stream\
 that consists of 
 \f2\i evaluations 
@@ -64,32 +58,36 @@ that consists of
 \f2\i  
 \f1\i0 its nextFunction.\
 \
-(
-\f0\b 	// Example 1: a Function vs. a FuncStream
-\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf3 // Example 1: a Function vs. a FuncStream
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (	\
 	f = \{ 33.rand \};\
-	s = FuncStream(f);\
-	10.do(\{ [f.next, s.next].postln \});\
-)\
-\
-(
-\f0\b 	// Example 2: the reset function
-\f1\b0 \
-\
-	f = \{ 33.rand \};\
-	s = FuncStream(f, \{thisThread.randSeed_(345)\});\
-	s.reset;\
-	10.do(\{ [f.next, s.next].postln \});\
-	s.reset;\
-	10.do(\{ [f.next, s.next].postln \});\
+	x = \cf2 FuncStream\cf0 (f);\
+	10.do(\{ [f.next, x.next].postln \});\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b \cf0 Routine(nextFunction, stacksize)\
+\cf3 // Example 2: the reset function\cf0 \
+(	\
+\
+	f = \{ 33.rand \};\
+	x = \cf2 FuncStream\cf0 (f, \{\cf2 thisThread\cf0 .randSeed_(345)\});\
+	x.reset;\
+	10.do(\{ [f.next, x.next].postln \});\
+	x.reset;\
+	10.do(\{ [f.next, x.next].postln \});\
+)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\fs24 \cf0 \
+
+\f0\b Routine(nextFunction, stacksize)\
+
+\f1\b0 \
 In a FuncStream, the nextFunction runs through to completion for each element of the stream.\
 In a Routine, the nextFunction returns values with 
 \f0\b yield
@@ -99,16 +97,21 @@ a
 \f1\b0  message) at the expression folowing the yield.  This allows a sequence of expressions in\
 the function definition to represent a sequence of distinct events, like a musical score.\
 \
-(
-\f0\b 	// Example 1: a Routine
-\f1\b0 \
-	s = Routine(\{ \
-		1.yield; \
-		2.yield; \
-		3.yield; \});\
-	4.do(\{ s.next.postln \});\
-)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf3 // Example 1: a Routine\cf0 \
 \
+(\
+	x = \cf2 Routine\cf0 (\{ \
+				1.yield;\
+				2.yield;\
+				3.yield; \
+		\});\
+		4.do(\{ x.next.postln \});\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
 Once the nextFunction completes execution, the Routine simply yields nil repeatedly.\
 Control structures (such as 
 \f0\b do
@@ -117,16 +120,21 @@ Control structures (such as
 \f1\b0 ) can be used within the nextFunction in a manner analogous\
 to repeat marks in a score\
 \
-(
-\f0\b 	// Example 1: a Routine
-\f1\b0 \
-	s = Routine(\{ \
-		4.do(\{\
-			[1,2,3,4].do(\{ arg i; i.yield; \})\
-		\})\
-	\});\
-	17.do(\{ s.next.postln \});\
-)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf3 // Example 1: a Routine
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+		x = \cf2 Routine\cf0 (\{ \
+			4.do(\{\
+				[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
+			\})\
+		\});\
+		17.do(\{ x.next.postln \});\
+)
+\f1\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -188,9 +196,8 @@ to repeat marks in a score\
 	\
 	appendStream(stream)
 \fs28 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 		
+\fs24 		
 \f1\b0 append stream after this
 \f0\b  
 \f1\b0 returns nil
