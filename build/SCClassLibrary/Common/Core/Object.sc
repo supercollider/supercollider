@@ -342,9 +342,9 @@ Object {
 	dependants {
 		^dependantsDictionary.at(this) ?? { IdentitySet.new };
 	}
-	changed { arg theChanger;
+	changed { arg what ... moreArgs;
 		dependantsDictionary.at(this).do({ arg item;
-			item.update(this, theChanger);
+			item.update(this, what, *moreArgs);
 		});
 	}
 	addDependant { arg dependant;
