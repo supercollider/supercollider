@@ -1261,6 +1261,7 @@ listliteral	: integer	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| ascii		{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| string	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| symbol	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
+			| name		{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| trueobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| falseobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| nilobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
