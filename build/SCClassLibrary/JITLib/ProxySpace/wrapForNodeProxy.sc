@@ -51,6 +51,7 @@
 	
 }
 
+
 +Function {
 	prepareForProxySynthDef { ^this }
 	argNames { ^def.argNames }
@@ -172,7 +173,7 @@
 + Event {
 	//proxyControlClass { ^StreamControl } // does not yet work as input
 	buildForProxy { arg proxy, channelOffset=0;
-		var ok, index, server, numChannels, rate;
+		var ok, index, server, numChannels, rate, finish;
 		ok = if(proxy.isNeutral) { 
 			rate = this.at(\rate) ? 'audio';
 			numChannels = this.at(\numChannels) ? NodeProxy.defaultNumAudio;
@@ -189,7 +190,9 @@
 					~channelOffset = channelOffset; // default value
 					~out = { ~channelOffset % numChannels + index };
 					~server = server; // not safe for server changes yet
+					finish = ~finish;
 					~finish = {
+						finish.value;
 						~out = ~out.value;
 						~group = proxy.group.asNodeID;// group shouldn't be assigned by the user
 					}
