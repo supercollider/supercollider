@@ -1,7 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Literals\
@@ -227,7 +227,9 @@ Arrays of literals are created at compile time and are written with a # preceedi
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \cf0 Literal Arrays must be used as is and may not be altered at run time. In literal Arrays names are interpreted as symbols. This is not the case in regular Arrays, where they are interpreted as variable names:\
+\f1 \cf0 Literal Arrays must be used as is and may not be altered at run time.\
+\
+In literal Arrays names are interpreted as symbols. This is not the case in regular Arrays, where they are interpreted as variable names:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -249,4 +251,31 @@ Using a literal Array is faster than building an array dynamically every time yo
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+Literal Arrays can be useful for things such as tables of constants, for example note names:\
+\
+
+\f2 \cf2 (\
+// build a table of note names\
+var table = ();\
+value \{\
+	var semitones = [0, 2, 4, 5, 7, 9, 11];\
+	var naturalNoteNames = ["c", "d", "e", "f", "g", "a", "b"];\
+\
+	(0..9).do \{|o|\
+		naturalNoteNames.do \{|c, i|\
+			var n = (o + 1) * 12 + semitones[i];\
+			table[(c ++ o).asSymbol] = n;\
+			table[(c ++ "s"  ++ o).asSymbol] = n + 1;\
+			table[(c ++ "ss" ++ o).asSymbol] = n + 2;\
+			table[(c ++ "b"  ++ o).asSymbol] = n - 1;\
+			table[(c ++ "bb" ++ o).asSymbol] = n - 2;\
+		\};\
+	\};\
+\};\
+\
+// translate note names to midi keys\
+table.atAll(#[c4, e4, gs4, c5, e5, gs5, c6])\
+)
+\f1 \cf0 \
+\
 }
