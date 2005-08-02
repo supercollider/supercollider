@@ -140,7 +140,7 @@ Event : Environment {
 				synthLib: nil,
 				instrument: \default,
 				
-				group: 0,
+				group: 1,
 				out: 0,
 				addAction: 0,
 				
@@ -366,9 +366,6 @@ Event : Environment {
 								server.sendBundle(latency, [\n_free, id]);
 							}
 						};
-					},
-					finish: #{
-						~finishEvents.do { |item| item.play }
 					},
 					
 					group: #{|server|
