@@ -139,6 +139,17 @@ Score {
 		this.class.write(score, oscFilePath);
 	}
 	
+	saveToFile { arg path;
+		var f;
+		f = File.new(path, "w");
+		f.putString("[ // SuperCollider Score output " ++ Date.getDate ++ "\n");
+		score.do{ arg me;
+			f.putString((me).asCompileString ++ ",\n");
+		};
+		f.putString("]");
+		f.close;
+	}
+
 	storeArgs {
 		^score
 	}
