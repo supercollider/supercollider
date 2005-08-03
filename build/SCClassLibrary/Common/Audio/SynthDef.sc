@@ -42,9 +42,9 @@ SynthDef {
 		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
 	}
 	//only write if no file exists
-	*writeOnce { arg name, func, rates, prependArgs, dir;
+	*writeOnce { arg name, func, rates, prependArgs, variants, dir;
 		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if {
-			this.new(name, func, rates, prependArgs).writeDefFile(dir)
+			this.new(name, func, rates, prependArgs, variants).writeDefFile(dir)
 		};
 	}
 	
