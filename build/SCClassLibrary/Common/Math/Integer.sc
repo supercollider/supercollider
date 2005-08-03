@@ -113,16 +113,31 @@ Integer : SimpleNumber {
 	// exit the program and return the result code to unix shell
 	exit { _Exit }
 
-	
-	asHexString { | width=8 |
-		var x, string;
-		x = this;
+	asStringToBase { | base=10, width=8 |
+		var rest = this, string, mask;
+		base = base.max(2);
 		string = String.newClear(width);
-		width.do { |i|
-			string.put(width-i-1, (x & 15).asDigit);
-			x = x >> 4;
+		if (base.even) {
+			mask = base - 1;
+			width.do { | i |
+				string.put(width-i-1, (rest & mask).asDigit);
+				rest = rest div: base;
+			};
+		} {
+			width.do { | i |
+				string.put(width-i-1, (rest mod: base).asDigit);
+				rest = rest div: base;
+			};
 		};
 		^string
+	}
+
+	asBinaryString { | width=8 |
+		^this.asStringToBase(2, width)
+	}
+
+	asHexString { | width=8 |
+		^this.asStringToBase(16, width)
 	}
 
 	asIPString {

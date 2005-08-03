@@ -5,6 +5,11 @@ File : UnixFILE {
 	*new { arg pathName, mode; 
 		^super.new.open(pathName, mode);
 	}
+	*use { arg pathName, mode, function;
+		var file;
+		file = this.new(pathName, mode);
+		{ function.value(file) }.protect({ file.close });
+	}
 	*delete { arg pathName;
 		_FileDelete
 		^this.primitiveFailed
