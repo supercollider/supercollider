@@ -199,8 +199,7 @@ Emacs {
 					outFile = nil
 				};
 			});
-			"Emacs: Initializing lisp interface.".postln;
-			this.sendToLisp(\_init);
+			// initialize servers
 			newServer = { | server update |
 				SimpleController(server)
 				.put(\serverRunning, { this.updateServer })
@@ -211,6 +210,10 @@ Emacs {
 			watcher = SimpleController(Server);
 			watcher[\serverAdded] = { | serverClass what server | newServer.value(server, true) };
 			Server.named.do(newServer.value(_, false));
+			this.updateServer;
+			// initialize lisp
+			"Emacs: Initializing lisp interface.".postln;
+			this.sendToLisp(\_init);
 		};
 	}
 
