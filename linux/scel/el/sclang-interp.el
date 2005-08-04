@@ -1,4 +1,4 @@
-;; copyright 2003 stefan kersten <steve@k-hornz.de>
+;; copyright 2003-2005 stefan kersten <steve@k-hornz.de>
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -28,6 +28,11 @@
 
 (defconst sclang-post-buffer "*SCLang*"
   "Name of the SuperCollider process output buffer.")
+
+(defconst sclang-bullet-latin-1 (string-to-char (decode-coding-string "\xa5" 'utf-8))
+  "Character for highlighting errors (latin-1).")
+(defconst sclang-bullet-utf-8 (string-to-char (decode-coding-string "\xe2\x80\xa2" 'utf-8))
+  "Character for highlighting errors (utf-8).")
 
 (defcustom sclang-max-post-buffer-size 0
   "*Maximum number of characters to insert in post buffer.
@@ -232,7 +237,9 @@ If EOB-P is non-nil, positions cursor at end of buffer."
       (let ((move-point (or sclang-auto-scroll-post-buffer
 			    (= (point) (process-mark process)))))
 	(save-excursion
-	  ;; Insert the text, advancing the process marker.
+	  ;; replace mac-roman bullet with unicode character
+	  (subst-char-in-string sclang-bullet-latin-1 sclang-bullet-utf-8 string t)
+	  ;; insert the text, advancing the process marker.
 	  (goto-char (process-mark process))
 	  (insert string)
 	  (set-marker (process-mark process) (point)))
@@ -453,17 +460,16 @@ Change this if \"cat\" has a non-standard name or location."
 		    "disabled")))
 
 (defun sclang--handle-command-result (list)
-;;   (save-excursion ;; this is not really what we want
-    (condition-case nil
-	(let ((fun (get (nth 0 list) 'sclang-command-handler))
-	      (arg (nth 1 list))
-	      (id  (nth 2 list)))
-	  (when (functionp fun)
-	    (let ((res (funcall sclang--command-handler fun arg)))
-	      (when id
-		(sclang-eval-string
-		 (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))
-      (error nil)))
+  (condition-case nil
+      (let ((fun (get (nth 0 list) 'sclang-command-handler))
+	    (arg (nth 1 list))
+	    (id  (nth 2 list)))
+	(when (functionp fun)
+	  (let ((res (funcall sclang--command-handler fun arg)))
+	    (when id
+	      (sclang-eval-string
+	       (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))
+    (error nil)))
 
 ;; =====================================================================
 ;; code evaluation
@@ -491,10 +497,12 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
    string))
 
 (defun sclang-eval-expression (string &optional silent-p)
+  "Execute STRING as SuperCollider code."
   (interactive "sEval: \nP")
   (sclang-eval-string string (not silent-p)))
 
 (defun sclang-eval-line (&optional silent-p)
+  "Execute the current line as SuperCollider code."
   (interactive "P")
   (let ((string (sclang-line-at-point)))
     (when string
@@ -505,6 +513,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
     string))
 
 (defun sclang-eval-region (&optional silent-p)
+  "Execute the region as SuperCollider code."
   (interactive "P")
   (sclang-eval-string
    (buffer-substring-no-properties (region-beginning) (region-end))
@@ -571,10 +580,6 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 (defun sclang-main-stop ()
   (interactive)
   (sclang-eval-string "thisProcess.stop"))
-
-(defun sclang-show-server-panels ()
-  (interactive)
-  (sclang-eval-string "SCUM.desktop.makeServerWindows"))
 
 ;; =====================================================================
 ;; default command handlers

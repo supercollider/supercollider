@@ -274,9 +274,10 @@
 		       (push-file file file))))
 	      result))
 	(sclang-message "Indexing help topics ...")
-	(dolist (help-directory sclang-help-path)
+	(dolist (dir sclang-help-path)
 	  (condition-case nil
-	      (index-dir help-directory)
+	      (if (file-directory-p dir)
+		  (index-dir dir))
 	    (error nil)))
 	(setq sclang-help-topic-alist
 	      (sort result (lambda (a b) (string< (car a) (car b)))))

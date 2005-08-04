@@ -16,15 +16,11 @@
 // USA
 
 EmacsInterface {
-	classvar handlers, showClassMethods;
+	classvar handlers;
 
 	*initClass {
 		handlers = IdentityDictionary.new;
 		this.initDefaultHandlers;
-		showClassMethods = IdentitySet.new;
-		showClassMethods.addAll(#[
-			\new, \ar, \kr
-		]);
 	}
 
 	*put { | name, function |
@@ -39,40 +35,44 @@ EmacsInterface {
 		^handlers.atFail(name, { ^nil }).valueArray(args)
 	}
 
+	*makeSubListSorter { | index selector('<') |
+		^{ | a b | a[index].perform(selector, b[index]) }
+	}
+
 	*initDefaultHandlers {
 		this
 		.put(\symbolTable, { | fileName |
-			var result, file;
-			var t;
+			var result, dt;
 
-			t = Main.elapsedTime;
-
-			result = IdentitySet.new;
-			
-			Class.allClasses.do { | class |
-				if (class.isMetaClass.not) {
-					result.add(class.name);
+			dt = {
+				result = IdentitySet.new;
+				
+				Class.allClasses.do { | class |
+					if (class.isMetaClass.not) {
+						result.add(class.name);
+					};
+					class.methods.do { | method |
+						result.add(method.name);
+					};
 				};
-				class.methods.do { | method |
-					result.add(method.name);
-				};
-			};
-			
-			file = File(fileName, "w");
-			result.collectAs({ |s| s.asString }, Array).storeLispOn(file);
-			file.close;
+				
+				File.use(fileName, "w", { | file |
+					result.collectAs(_.asString, Array).storeLispOn(file);
+				});
+			}.bench(false);
 
-			t = Main.elapsedTime - t;
-			Post << "Emacs: Built symbol table in " << t << " seconds\n";
+			"Emacs: Built symbol table in % seconds\n".postf(dt.asStringPrec(3));
 
 			true
 		})
 		.put(\classDefinitions, { | name |
 			var result, class, files;
 			
+			result = SortedList(8, this.makeSubListSorter(0, '<'));
+
 			if ((class = name.asSymbol.asClass).notNil) {
 				files = IdentitySet.new;
-				result = result.add([
+				result.add([
 					"  " ++ name,
 					class.filenameSymbol.asString,
 					class.charPos + 1
@@ -95,12 +95,13 @@ EmacsInterface {
 		.put(\methodDefinitions, { | name |
 			var result, symbol, getter, setter;
 		
+			result = SortedList(8, this.makeSubListSorter(0, '<'));
 			symbol = name.asSymbol;
 
 			Class.allClasses.do { | class |
 				class.methods.do { | method |
 					if (method.name === symbol) {
-						result = result.add([
+						result.add([
 							class.name ++ "-" ++ name,
 							method.filenameSymbol.asString,
 							method.charPos + 1
@@ -112,16 +113,22 @@ EmacsInterface {
 			name -> result
 		})
 		.put(\methodReferences, { | name |
-			var references, methods, result;
+			var result, references, methods;
 
+			result = SortedList(8, this.makeSubListSorter(0, '<'));
 			references = Class.findAllReferences(name.asSymbol);
+
 			if (references.notNil) {
 				methods = IdentitySet.new;
 				references.do { | funcDef |
-					methods.add(funcDef.homeContext);
+					var homeContext;
+					homeContext = funcDef.homeContext;
+					if (homeContext.isKindOf(Method)) {
+						methods.add(homeContext);
+					};
 				};
 				methods.do { | method |
-					result = result.add([
+					result.add([
 						method.ownerClass.name ++ "-" ++ method.name,
 						method.filenameSymbol.asString,
 						method.charPos + 1
@@ -176,13 +183,14 @@ Emacs {
 		var outFileName, newServer;
 		Class.initClassTree(EmacsInterface);
 		Class.initClassTree(EmacsDocument);
+		Class.initClassTree(OSCresponder);
 		Class.initClassTree(Server);
 		requestHandlers = IdentityDictionary.new;
 		requestAllocator = StackNumberAllocator(0, 128);
 		keys = IdentityDictionary.new;
 		outFileName = "SCLANG_COMMAND_FIFO".getenv;
 		if (outFileName.isNil) {
-			"Emacs: no communication FIFO available.".postln;
+			"Emacs: No communication FIFO available.".postln;
 		}{
 			outFile = File(outFileName, "w");
 			UI.registerForShutdown({
@@ -193,16 +201,16 @@ Emacs {
 			});
 			"Emacs: Initializing lisp interface.".postln;
 			this.sendToLisp(\_init);
-			newServer = { |server|
-				var ctl;
-				ctl = SimpleController(server);
-				ctl[\serverRunning] = { this.updateServer };
-				ctl[\counts] = { this.updateServer };
+			newServer = { | server |
+				SimpleController(server)
+				.put(\serverRunning, { this.updateServer })
+				.put(\counts, { this.updateServer });
+				server.startAliveThread;
+				this.updateServer;
 			};
-			watcher = SimpleController(Server);
-			watcher[\serverAdded] = newServer;
-			Server.set.do{ |server| newServer.value(server) };
-			this.updateServer;
+			watcher = SimpleController(Server)
+			watcher[\serverAdded] = { | serverClass what server | newServer.value(server) };
+			Server.named.do(newServer);
 		};
 	}
 
@@ -255,7 +263,7 @@ Emacs {
 	*updateServer {
 		var result;
 		result = [Server.default.name];
-		Server.set.do { arg server;
+		Server.named.do { arg server;
 			result = result.add(
 				server.name -> [
 					'running', server.serverRunning,
@@ -267,8 +275,8 @@ Emacs {
 					'notified', server.notified,
 					'dump-mode', server.dumpMode,
 					'info', [
-						(server.avgCPU ? 0.0).round.clip(0, 100),
-						(server.peakCPU ? 0.0).round.clip(0, 100),
+						((server.avgCPU ? 0.0) * 100.0).asInteger,
+						((server.peakCPU ? 0.0) * 100.0).asInteger,
 						server.numUGens ? 0,
 						server.numSynths ? 0,
 						server.numGroups ? 0,

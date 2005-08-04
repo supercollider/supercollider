@@ -1,4 +1,4 @@
-;; copyright 2003 stefan kersten <steve@k-hornz.de>
+;; copyright 2003-2005 stefan kersten <steve@k-hornz.de>
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -237,7 +237,7 @@ low-resource systems."
   "Return non-nil if point is inside a comment.
 
 Use font-lock information if font-lock-mode is enabled."
-  (if font-lock-mode
+  (if (and (boundp 'font-lock-mode) (eval 'font-lock-mode))
       ;; use available information in font-lock-mode
       (eq (get-text-property (point) 'face) 'font-lock-comment-face)
     ;; else parse from the beginning
