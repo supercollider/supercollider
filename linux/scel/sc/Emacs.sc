@@ -201,16 +201,16 @@ Emacs {
 			});
 			"Emacs: Initializing lisp interface.".postln;
 			this.sendToLisp(\_init);
-			newServer = { | server |
+			newServer = { | server update |
 				SimpleController(server)
 				.put(\serverRunning, { this.updateServer })
 				.put(\counts, { this.updateServer });
 				server.startAliveThread;
-				this.updateServer;
+				if (update) { this.updateServer };
 			};
 			watcher = SimpleController(Server);
-			watcher[\serverAdded] = { | serverClass what server | newServer.value(server) };
-			Server.named.do(newServer);
+			watcher[\serverAdded] = { | serverClass what server | newServer.value(server, true) };
+			Server.named.do(newServer.value(_, false));
 		};
 	}
 
