@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf100
-{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
-\f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-BoldOblique;
+\f3\fswiss\fcharset77 Helvetica-Oblique;\f4\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue0;
+\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Stream
@@ -40,31 +41,34 @@ as a stream and most simply stream themselves.  \
 \
 In SuperCollider, Streams are primarily used for handling text and for generating music.\
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 Two Stream classes: FuncStream and Routine
-\f1\b0 \
+\f2\i\b\fs28 \cf0 Two Stream classes: FuncStream and Routine
+\f1\i0\b0\fs30 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \
+\
+\
 
 \f0\b FuncStream(nextFunction, resetFunction)\
 
 \f1\b0 \
 A Function defines a stream consisting of the Function itself, a FuncStream defines a stream\
 that consists of 
-\f2\i evaluations 
+\f3\i evaluations 
 \f1\i0 of
-\f2\i  
+\f3\i  
 \f1\i0 its nextFunction.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf3 // Example 1: a Function vs. a FuncStream
+\f4\fs18 \cf3 // Example 1: a Function vs. a FuncStream
 \f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf0 (	\
+\f4\fs18 \cf0 (	\
 	f = \{ 33.rand \};\
 	x = \cf2 FuncStream\cf0 (f);\
 	10.do(\{ [f.next, x.next].postln \});\
@@ -99,8 +103,8 @@ the function definition to represent a sequence of distinct events, like a music
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf3 // Example 1: a Routine\cf0 \
-\
+\f4\fs18 \cf3 \
+// example\cf0 \
 (\
 	x = \cf2 Routine\cf0 (\{ \
 				1.yield;\
@@ -122,11 +126,11 @@ to repeat marks in a score\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf3 // Example 1: a Routine
+\f4\fs18 \cf3 // example
 \f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf0 (\
+\f4\fs18 \cf0 (\
 		x = \cf2 Routine\cf0 (\{ \
 			4.do(\{\
 				[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
@@ -136,15 +140,15 @@ to repeat marks in a score\
 )
 \f1\fs24 \
 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs32 \cf0 Composite Streams\
+\f0\b\fs28 \cf0 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs28 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs30 \cf0 	Iteration\
+\fs30 \cf0 Iteration\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
@@ -154,8 +158,8 @@ to repeat marks in a score\
 		
 \f1\b0 iterate until a nil is encountered
 \f0\b \
-		\ul beware:
-\f1\b0 \ulnone  applying do to an endless stream will lock up the interpreter!
+		beware:
+\f1\b0  applying do to an endless stream will lock up the interpreter!
 \f0\b \
 \
 
@@ -210,82 +214,185 @@ to repeat marks in a score\
 		
 \f1\b0 iterate all of this from within whatever Stream definition it is called.
 \f0\b \
+	
+\f1\b0 \
+
+\f0\b 	trace
+\f1\b0 \
+		print out the results of a stream while returning the original values
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 Composite Streams\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
+\f1\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs26 \cf0 Routines can be embedded in each other, using 
+\f0\b embedInStream
+\f1\b0 :
+\f0\b\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\b0\fs18 \cf3 // example\cf0 \
+(\
+x = \cf2 Routine\cf0 (\{ \
+			2.do(\{\
+				[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
+			\})\
+		\});\
+y = \cf2 Routine\cf0 (\{\
+		100.yield;\
+		30.yield;\
+		x.embedInStream;\
+		440.yield;\
+		1910.yield\
+\});\
+17.do(\{ y.next.postln \});\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Routines can be 
+\f0\b concatenated
+\f1\b0  just like Streams:
+\f4\fs18 \
+\
+(\
+x = \cf2 Routine\cf0 (\{ \
+			2.do(\{\
+				[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
+			\})\
+		\});\
+y = \cf2 Routine\cf0 (\{\
+		100.yield;\
+		30.yield;\
+\});\
+z = x ++ y;\
+17.do(\{ z.next.postln \});\
+)\
+\
+
+\f1\fs24 Routines can be combined with the 
+\f0\b composition
+\f1\b0  operator 
+\f0\b <>
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs18 \cf0 \
+(\cf4 \
+x = \cf5 Routine\cf4 (\{ \cf5 arg\cf4  inval;\
+			2.do(\{\
+				\
+				[1,2,3,4].do(\{ \cf5 arg\cf4  i; \
+					if(inval.isNil) \{ \cf5 nil\cf4 .alwaysYield \};\
+					inval = (i * inval).yield; \
+				\});\
+			\})\
+		\});\
+		\
+y = \cf5 Routine\cf4 (\{\
+		100.yield;\
+		30.yield;\
+		4.do \{ 1.0.rand.yield \};\
+\});\
+\
+z = x <> y;\
+17.do(\{ z.value.postln \}); \cf6 // call .value here, as this is a function.\cf4 \
+)
+\f0\b\fs30 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
 \f1\b0\fs24 \cf0 Composite Streams can be defined as combinations of Streams using the unary and binary \
-messages \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs28 \cf0 \ul \ulc0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs30 \cf0 \ulnone 	Unary messages\
+messages.
+\f0\b\fs30 \
+\
+Unary messages\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
 	Streams support most of the unary messages  defined in AbstractFunction:\
 \
-(\
-	a = Routine(\{ 20.do(\{ 33.rand.yield \}) \});\
-	b = Routine(\{ [-100,00,300,400].do(\{ arg v; v.yield\}) \});\
-\
-	c = b.neg;			// define a composite stream		\
-	c.trace.do;\
-\
-	// enumerate and perform all of the unary messages	:	\
-	
-\f0\b [ \
-		\\neg, \\reciprocal, \\bitNot, \\abs, \\asFloat, \\asInteger, \\ceil, \
-		\\floor, \\frac, \\sign, \\squared, \\cubed, \\sqrt, \\exp, \\midicps, \
-		\\cpsmidi, \\midiratio, \\ratiomidi, \\ampdb, \\dbamp, \\octcps, \
-		\\cpsoct, \\log, \\log2, \\log10, \\sin, \\cos, \\tan, \\asin, \\acos, \\atan, \
-		\\sinh, \\cosh, \\tanh, \\rand, \\rand2, \\linrand, \\bilinrand, \\sum3rand, \
-		\\distort, \\softclip, \\coin, \\even, \\odd, \\isPositive, \\isNegative,\
-		\\isStrictlyPositive\
-	]\
-	
-\f1\b0 	.do(\{ arg msg;\
-			Post << " " << msg << " "\
-			msg.post; " ".post; \
-			b.reset.perform(msg).do(\{arg v; v.post; " ".post;\}) \
-		\});\
-	\
-)	 \
-	In addition, it is possible to print out the results of a stream with\
-	\
-	
-\f0\b trace\
-
-\f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 	Binary messages\
+\f4\fs18 \cf4 (\
+	a = \cf5 Routine\cf4 (\{ 20.do(\{ 33.rand.yield \}) \});\
+	b = \cf5 Routine\cf4 (\{ [-100,00,300,400].do(\{ \cf5 arg\cf4  v; v.yield\}) \});\
+\
+	c = b.neg; \cf6 // define a composite stream		\cf4 \
+	\
+	\cf6 // enumerate and perform all of the unary messages	:	\cf4 \
+	[ \
+		\cf7 \\neg\cf4 , \cf7 \\reciprocal\cf4 , \cf7 \\bitNot\cf4 , \cf7 \\abs\cf4 , \cf7 \\asFloat\cf4 , \cf7 \\asInteger\cf4 , \cf7 \\ceil\cf4 , \
+		\cf7 \\floor\cf4 , \cf7 \\frac\cf4 , \cf7 \\sign\cf4 , \cf7 \\squared\cf4 , \cf7 \\cubed\cf4 , \cf7 \\sqrt\cf4 , \cf7 \\exp\cf4 , \cf7 \\midicps\cf4 , \
+		\cf7 \\cpsmidi\cf4 , \cf7 \\midiratio\cf4 , \cf7 \\ratiomidi\cf4 , \cf7 \\ampdb\cf4 , \cf7 \\dbamp\cf4 , \cf7 \\octcps\cf4 , \
+		\cf7 \\cpsoct\cf4 , \cf7 \\log\cf4 , \cf7 \\log2\cf4 , \cf7 \\log10\cf4 , \cf7 \\sin\cf4 , \cf7 \\cos\cf4 , \cf7 \\tan\cf4 , \cf7 \\asin\cf4 , \cf7 \\acos\cf4 , \cf7 \\atan\cf4 , \
+		\cf7 \\sinh\cf4 , \cf7 \\cosh\cf4 , \cf7 \\tanh\cf4 , \cf7 \\rand\cf4 , \cf7 \\rand2\cf4 , \cf7 \\linrand\cf4 , \cf7 \\bilinrand\cf4 , \cf7 \\sum3rand\cf4 , \
+		\cf7 \\distort\cf4 , \cf7 \\softclip\cf4 , \cf7 \\coin\cf4 , \cf7 \\even\cf4 , \cf7 \\odd\cf4 , \cf7 \\isPositive\cf4 , \cf7 \\isNegative\cf4 ,\
+		\cf7 \\isStrictlyPositive\cf4 \
+	]\
+	.do(\{ \cf5 arg\cf4  msg;\
+			postf(\cf8 "\\n msg: % \\n"\cf4 , msg);\
+			b.reset.perform(msg).do(\{\cf5 arg\cf4  v; v.post; \cf8 " "\cf4 .post;\}) \
+	\}); \
+	nil;\
+	\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 Binary messages\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
 	Streams support the following binary messages  defined in AbstractFunction:\
-(\
-	a = Routine(\{ 20.do(\{ 33.rand.yield \}) \});\
-	b = Routine(\{ [-100,00,300,400].do(\{ arg v; v.yield\}) \});\
-	[\
-	'+'
-\f0\b  , '-' , '*', '/', \\div, '%', '**', \\min, \\max, '<', '<=', '>', '>=', '&', '|', \
-	\\bitXor, \\lcm, \\gcd, \\round, \\trunc, \\atan2, \
-	\\hypot, '>>', '+>>', \\ring1, \\ring2, \\ring3, \\ring4, \
-	\\difsqr, \\sumsqr, \\sqrdif, \\absdif, \\amclip,\
-	\\scaleneg, \\clip2, \\excess, '<!', \\rrand, \\exprand\
-	]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	.do(\{ arg msg;\
-		"".postln;\
-		msg.post; " ".post; \
-		b.reset.perform(msg, a.reset).do(\{arg v; v.post; " ".post;\}) \
-	\});\
-)\
+\f4\fs18 \cf4 \
+\
+(\
+	a = \cf5 Routine\cf4 (\{ 20.do(\{ 33.rand.yield \}) \});\
+	b = \cf5 Routine\cf4 (\{ [-100,00,300,400].do(\{ \cf5 arg\cf4  v; v.yield\}) \});\
+	[\
+	\cf7 '+'\cf4  , \cf7 '-'\cf4  , \cf7 '*'\cf4 , \cf7 '/'\cf4 , \cf7 \\div\cf4 , \cf7 '%'\cf4 , \cf7 '**'\cf4 , \cf7 \\min\cf4 , \cf7 \\max\cf4 , \cf7 '<'\cf4 , \cf7 '<='\cf4 , \cf7 '>'\cf4 , \cf7 '>='\cf4 , \cf7 '&'\cf4 , \cf7 '|'\cf4 , \
+	\cf7 \\bitXor\cf4 , \cf7 \\lcm\cf4 , \cf7 \\gcd\cf4 , \cf7 \\round\cf4 , \cf7 \\trunc\cf4 , \cf7 \\atan2\cf4 , \
+	\cf7 \\hypot\cf4 , \cf7 '>>'\cf4 , \cf7 '+>>'\cf4 , \cf7 \\ring1\cf4 , \cf7 \\ring2\cf4 , \cf7 \\ring3\cf4 , \cf7 \\ring4\cf4 , \
+	\cf7 \\difsqr\cf4 , \cf7 \\sumsqr\cf4 , \cf7 \\sqrdif\cf4 , \cf7 \\absdif\cf4 , \cf7 \\amclip\cf4 ,\
+	\cf7 \\scaleneg\cf4 , \cf7 \\clip2\cf4 , \cf7 \\excess\cf4 , \cf7 '<!'\cf4 , \cf7 \\rrand\cf4 , \cf7 \\exprand\cf4 \
+	]\
+		.do(\{ \cf5 arg\cf4  msg;\
+			postf(\cf8 "\\n msg: % \\n"\cf4 , msg);\
+			b.reset.perform(msg).do(\{ \cf5 arg\cf4  v; v.post; \cf8 " "\cf4 .post; \}) \
+		\}); \
+		\cf5 nil\cf4 ;\
+)
+\f1\fs24 \cf0 \
  \
 \
 	}
