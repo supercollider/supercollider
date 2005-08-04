@@ -208,7 +208,7 @@ Emacs {
 				server.startAliveThread;
 				this.updateServer;
 			};
-			watcher = SimpleController(Server)
+			watcher = SimpleController(Server);
 			watcher[\serverAdded] = { | serverClass what server | newServer.value(server) };
 			Server.named.do(newServer);
 		};
