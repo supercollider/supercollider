@@ -18,6 +18,11 @@ Score {
 	
 	init { arg list;
 		score = list;
+		this.initTree;
+	}
+	initTree {
+		this.add(["/g_new", 1]);
+		this.sort;
 	}
 	
 	add { arg bundle;
