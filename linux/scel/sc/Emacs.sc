@@ -65,6 +65,22 @@ EmacsInterface {
 
 			true
 		})
+		.put(\openDefinition, { | name |
+			var class, method, res;
+			#class, method = name.split($-);
+			class = class.asSymbol.asClass;
+			if (class.notNil) {
+				if (method.isNil) {
+					res = [class.filenameSymbol.asString, class.charPos + 1];
+				} {
+					method = class.findMethod(method.asSymbol);
+					if (method.notNil) {
+						res = [method.filenameSymbol.asString, method.charPos + 1];
+					};
+				};
+			};
+			name -> res
+		})
 		.put(\classDefinitions, { | name |
 			var result, class, files;
 			
@@ -278,8 +294,8 @@ Emacs {
 					'notified', server.notified,
 					'dump-mode', server.dumpMode,
 					'info', [
-						((server.avgCPU ? 0.0) * 100.0).asInteger,
-						((server.peakCPU ? 0.0) * 100.0).asInteger,
+						(server.avgCPU ? 0.0).round(0.1),
+						(server.peakCPU ? 0.0).round(0.1),
 						server.numUGens ? 0,
 						server.numSynths ? 0,
 						server.numGroups ? 0,
