@@ -495,6 +495,18 @@ NodeProxy : BusPlug {
 		^all
 	}
 	
+	currentKeys {
+		var controlNames, excluded, list;
+		controlNames = this.controlNames;
+		excluded = #[\out, \i_out, \gate];
+		controlNames.do { |el|
+					var key;
+					key = el.name; 
+					if (excluded.includes(key).not) { list = list.add(key) } 
+		}
+		^list
+	}
+	
 	// derive names and default args from synthDefs
 	supplementNodeMap { arg keys, replaceOldKeys=false;
 		var controlNames, excluded;
