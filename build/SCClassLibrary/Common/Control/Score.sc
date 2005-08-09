@@ -20,8 +20,9 @@ Score {
 		score = list;
 		this.initTree;
 	}
+	
 	initTree {
-		this.add(["/g_new", 1]);
+		this.add([0.0, ["/g_new", 1]]);
 		this.sort;
 	}
 	
