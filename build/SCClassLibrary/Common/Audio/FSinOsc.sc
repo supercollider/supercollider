@@ -75,8 +75,8 @@ DynKlank : UGen {
 		var spec = specificationsArrayRef.value;
 		^Ringz.ar(
 				input,
-				spec[0] * freqscale + freqoffset, 
-				spec[2] * decayscale,
+				spec[0] ? #[440.0] * freqscale + freqoffset, 
+				spec[2] ? #[1.0] * decayscale,
 				spec[1] ? #[1.0]
 		).sum
 	}
