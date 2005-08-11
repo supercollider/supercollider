@@ -664,3 +664,31 @@ Penv : FilterPattern {
 	}	
 }
 
+Prorate : FilterPattern {
+	var <>proportion;
+	
+	*new { arg proportion, pattern=1;
+		^super.new(pattern).proportion_(proportion)
+	}
+	
+	embedInStream { arg inval;
+		var val, c;
+		var str = pattern.asStream;
+		var prop = proportion.asStream;
+		loop {
+			val = str.next(inval);
+			c = prop.next(inval);
+			if(val.isNil or: { c.isNil }) { ^inval };
+			if(c.isSequenceableCollection) {
+				c.do { |el|
+					inval = yield(el * val)
+				}
+			} {
+				inval = yield(c * val);
+				inval = yield(1 - c * val);
+			}
+		}
+	}
+}
+
+
