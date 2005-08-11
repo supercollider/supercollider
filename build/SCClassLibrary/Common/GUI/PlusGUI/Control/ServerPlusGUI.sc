@@ -34,7 +34,6 @@
 			killer.states = [["K", Color.black, Color.clear]];
 			
 			killer.action = { Server.killAll };	
-			killer.enabled = false;
 		});
 		
 		active = SCStaticText(w, Rect(0,0, 78, 24));
@@ -102,14 +101,13 @@
 				active.stringColor_(Color.red);
 				booter.setProperty(\value,1);
 				recorder.enabled = true;
-				killer.enabled = true;
 			};
 			stopped = {
 				active.stringColor_(Color.grey(0.3));
 				booter.setProperty(\value,0);
 				recorder.setProperty(\value,0);
 				recorder.enabled = false;
-				killer.enabled = false;
+
 			};
 			booting = {
 				active.stringColor_(Color.yellow(0.9));
