@@ -622,3 +622,45 @@ Pflatten : FilterPattern {
 	}
 }
 
+Penv : FilterPattern {
+	var <>timepattern;
+	
+	*new { arg timepattern, pattern;
+		^super.new(pattern).timepattern_(timepattern)
+	}
+	
+	embedInStream { arg inval;
+	
+		var elapsedTime, accum, timeVal, nextTime, start, leftOver = 0.0;
+		var stream, timeStream, val, outval;
+		
+		stream = pattern.asStream;
+		timeStream = timepattern.asStream;
+		outval = inval;
+		
+		loop {
+			if(inval.isNil) { ^outval };
+			accum = 0.0;
+			while {
+				timeVal = timeStream.next(inval);
+				if(timeVal.isNil) { ^outval };
+				val = stream.next(inval);
+				if(val.isNil) { ^outval };
+				accum = accum + timeVal;
+				accum < leftOver
+			};
+			nextTime = accum - leftOver;
+			start = thisThread.beats;
+			while {
+				elapsedTime = thisThread.beats - start;
+				leftOver = elapsedTime - nextTime;
+				leftOver < 0.0
+			} {
+				outval = val.yield(inval);
+			};
+			
+			elapsedTime = 0.0;
+		};
+	}	
+}
+
