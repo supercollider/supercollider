@@ -354,8 +354,7 @@
 			};
 		};
 		6AB6FFA10538A90A0000009F = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = IOKit.framework;
 			path = /System/Library/Frameworks/IOKit.framework;
@@ -370,6 +369,20 @@
 		};
 		6AB6FFA30538A90A0000009F = {
 			fileRef = 6AB6FFA10538A90A0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AC9B2DA08ABF480001EBDF6 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = QuickTime.framework;
+			path = /System/Library/Frameworks/QuickTime.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		6AC9B2DB08ABF480001EBDF6 = {
+			fileRef = 6AC9B2DA08ABF480001EBDF6;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -2320,8 +2333,6 @@
 			sourceTree = "<group>";
 		};
 		F50D04F902E68E8201CA2799 = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2335,8 +2346,6 @@
 			name = Development;
 		};
 		F50D04FA02E68E8201CA2799 = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -3498,8 +3507,7 @@
 		};
 		F50D060402E69C2101CA2799 = {
 			explicitFileType = wrapper.application;
-			fallbackIsa = PBXFileReference;
-			isa = PBXApplicationReference;
+			isa = PBXFileReference;
 			path = SuperCollider.app;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -4004,6 +4012,7 @@
 				92E20AB7058BBE8C004A7C6F,
 				F50D06BF02E7F11301CA2799,
 				F5C7B14F033D595901A80099,
+				6AC9B2DB08ABF480001EBDF6,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4638,6 +4647,7 @@
 				F50D069B02E6A1C601CA2799,
 				F50D069C02E6A1C601CA2799,
 				6AB6FFA10538A90A0000009F,
+				6AC9B2DA08ABF480001EBDF6,
 				F50D06BE02E7F11301CA2799,
 				F50D06C002E7F29001CA2799,
 				F5C7B14E033D595901A80099,
@@ -4648,8 +4658,7 @@
 			sourceTree = "<group>";
 		};
 		F50D069502E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = AppKit.framework;
 			path = /System/Library/Frameworks/AppKit.framework;
@@ -4657,8 +4666,7 @@
 			sourceTree = "<absolute>";
 		};
 		F50D069602E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = ApplicationServices.framework;
 			path = /System/Library/Frameworks/ApplicationServices.framework;
@@ -4666,8 +4674,7 @@
 			sourceTree = "<absolute>";
 		};
 		F50D069702E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Carbon.framework;
 			path = /System/Library/Frameworks/Carbon.framework;
@@ -4675,8 +4682,7 @@
 			sourceTree = "<absolute>";
 		};
 		F50D069802E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Cocoa.framework;
 			path = /System/Library/Frameworks/Cocoa.framework;
@@ -4684,8 +4690,7 @@
 			sourceTree = "<absolute>";
 		};
 		F50D069902E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = CoreAudio.framework;
 			path = /System/Library/Frameworks/CoreAudio.framework;
@@ -4693,8 +4698,7 @@
 			sourceTree = "<absolute>";
 		};
 		F50D069A02E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = CoreMIDI.framework;
 			path = /System/Library/Frameworks/CoreMIDI.framework;
@@ -4702,8 +4706,7 @@
 			sourceTree = "<absolute>";
 		};
 		F50D069B02E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = CoreServices.framework;
 			path = /System/Library/Frameworks/CoreServices.framework;
@@ -4711,8 +4714,7 @@
 			sourceTree = "<absolute>";
 		};
 		F50D069C02E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
@@ -5357,8 +5359,7 @@
 		};
 		F5ED51FE02FBA97D0195E057 = {
 			explicitFileType = "compiled.mach-o.executable";
-			fallbackIsa = PBXFileReference;
-			isa = PBXExecutableFileReference;
+			isa = PBXFileReference;
 			path = sclang;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
