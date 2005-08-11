@@ -366,6 +366,7 @@ void SCSoundFileView::draw0(SCRect inDamage, CGContextRef cgc)
 		chanRect.origin.y = rect.origin.y + 1. + chanHeight * j + chanHeight2;
 		chanRect.size.width = width;
 		chanRect.size.height = chanHeight;
+		CGRect viewRect = CGRectMake(mBounds.x + 1.f, (mBounds.y + 1.f) + (j * chanHeight), mBounds.width - 2.f, chanHeight);
 		//iterate over frames:
 		for (int i = 0; i < width && isample < samples; i++)
 		{
@@ -400,7 +401,10 @@ void SCSoundFileView::draw0(SCRect inDamage, CGContextRef cgc)
 			
 //			post("%g %g    %d   %g %g\n", ymin, ymax, isample, wrect.origin.x, wrect.size.height);
 			
-			CGContextFillRect(cgc, wrect);
+			wrect = CGRectIntersection(wrect, viewRect);
+			if ( !CGRectIsNull(wrect) ) {
+			    CGContextFillRect(cgc, wrect);
+			}
 		}
 		mFramesInBounds = msample;
 	}
@@ -436,7 +440,8 @@ void SCSoundFileView::draw0Buf(SCRect inDamage, CGContextRef cgc)
 //		float fframe = mScroll.x;
 		int msample=startx*channels;
 	
-		CGRect chanRect;
+		CGRect viewRect, chanRect;
+		viewRect = CGRectMake(mBounds.x + 1.f, (mBounds.y + 1.f) + (j * chanHeight), mBounds.width - 2.f, chanHeight);
 		chanRect.origin.x = rect.origin.x + 1.;
 		chanRect.origin.y = rect.origin.y + 1. + chanHeight * j + chanHeight2;
 		chanRect.size.width = width;
@@ -457,7 +462,10 @@ void SCSoundFileView::draw0Buf(SCRect inDamage, CGContextRef cgc)
 			
 //			post("%g %g    %d   %g %g\n", ymin, ymax, isample, wrect.origin.x, wrect.size.height);
 			
-			CGContextFillRect(cgc, wrect);
+			wrect = CGRectIntersection(wrect, viewRect);
+			if ( !CGRectIsNull(wrect) ) {
+			    CGContextFillRect(cgc, wrect);
+			}
 		}
 //				post("msample %d\n", msample);
 
@@ -637,7 +645,6 @@ void SCSoundFileView::draw(SCRect inDamage)
 	restore:
     CGContextRestoreGState(cgc);
 }
-
 
 
 int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
