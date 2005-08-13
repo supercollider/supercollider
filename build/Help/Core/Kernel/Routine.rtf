@@ -1,9 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf100
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;\f4\fswiss\fcharset77 Helvetica-BoldOblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red0\green0\blue191;
-\red96\green96\blue96;\red191\green0\blue0;\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Routine
@@ -30,8 +29,8 @@ The stackSize and random seed may be overridden if desired.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 (\
-a = \cf3 Routine\cf2 .new(\{ 1.yield; 2.yield; \});\
+\f2\fs18 \cf0 (\
+a = \cf2 Routine\cf0 .new(\{ 1.yield; 2.yield; \});\
 a.next.postln;\
 a.next.postln;\
 a.next.postln;\
@@ -64,9 +63,9 @@ This inval is accessible as the routine function argument:\
 
 \f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 Routine\cf0  \{ \cf4 arg\cf0  inval;\
+\cf2 Routine\cf0  \{ \cf2 arg\cf0  inval;\
 	inval.postln;\
-\}.value(\cf5 "hello routine"\cf0 );\
+\}.value(\cf3 "hello routine"\cf0 );\
 )
 \f1\fs24 \
 \
@@ -81,8 +80,8 @@ continuing routine, you have to assign the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
-r = \cf4 Routine\cf0  \{ \cf4 arg\cf0  inval;\
-	\cf4 var\cf0  valuePassedInbyYield;\
+r = \cf2 Routine\cf0  \{ \cf2 arg\cf0  inval;\
+	\cf2 var\cf0  valuePassedInbyYield;\
 	inval.postln;\
 	valuePassedInbyYield = 123.yield;\
 	valuePassedInbyYield.postln;\
@@ -90,8 +89,8 @@ r = \cf4 Routine\cf0  \{ \cf4 arg\cf0  inval;\
 \}\
 )\
 \
-r.value(\cf5 "hello routine"\cf0 );\
-r.value(\cf5 "goodbye world"\cf0 );
+r.value(\cf3 "hello routine"\cf0 );\
+r.value(\cf3 "goodbye world"\cf0 );
 \f1\fs24 \
 \
 \
@@ -101,15 +100,15 @@ Typically the name
 \
 
 \f2\fs18 (\
-r = \cf4 Routine\cf0  \{ \cf4 arg\cf0  inval;\
+r = \cf2 Routine\cf0  \{ \cf2 arg\cf0  inval;\
 	inval.postln;\
 	inval = 123.yield;\
 	inval.postln;\
 \}\
 )\
 \
-r.value(\cf5 "hello routine"\cf0 );\
-r.value(\cf5 "goodbye world"\cf0 );
+r.value(\cf3 "hello routine"\cf0 );\
+r.value(\cf3 "goodbye world"\cf0 );
 \f1\fs24 \
 \
 \
@@ -117,9 +116,9 @@ Typically a routine uses a multiple yield, in which the inval is reassigned repe
 \
 
 \f2\fs18 (\
-r = \cf4 Routine\cf0  \{ \cf4 arg\cf0  inval;\
+r = \cf2 Routine\cf0  \{ \cf2 arg\cf0  inval;\
 	inval.postln;\
-	5.do \{ \cf4 arg\cf0  i;\
+	5.do \{ \cf2 arg\cf0  i;\
 		inval = (i + 10).yield;\
 		inval.postln;\
 	\}\
@@ -127,7 +126,7 @@ r = \cf4 Routine\cf0  \{ \cf4 arg\cf0  inval;\
 )\
 (\
 5.do \{\
-	r.value(\cf5 "hello routine"\cf0 ).postln;\
+	r.value(\cf3 "hello routine"\cf0 ).postln;\
 \}\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -155,22 +154,38 @@ alwaysYield(outval)\
 \
 \
 
-\f0\b play(aClock)
+\f0\b play(clock, quant)
 \f1\b0 \
+		
+\f0\b clock
+\f1\b0 :		a Clock, 
+\f0\b TempoClock
+\f1\b0  by default\
+		
+\f0\b quant
+\f1\b0 :		either a number
+\f0\b  n
+\f1\b0  (quantize to 
+\f0\b n 
+\f1\b0 beats)\
+					or an array
+\f0\b  [n, m]
+\f1\b0  (quantize to 
+\f0\b n
+\f1\b0  beats, with offset 
+\f0\b m
+\f1\b0 )\
 \
 In the SuperCollider application, a Routine can be played using a Clock, as can any Stream.\
 every time the Routine yields, it should do so with a float, the clock will interpret that, usually\
 pausing for that many seconds, and then resume the routine, passing it it the clock's current time.\
-The default clock is the default 
-\f0\b [TempoClock]
-\f1\b0 .\
 
 \f0\b \
 \
 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs26 Accessible instance variables
+\fs26 \cf0 Accessible instance variables
 \fs24 \
 \
 \
@@ -205,18 +220,18 @@ clock\
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 (\cf2 \
-r = \cf3 Routine\cf2  \{ \cf3 arg\cf2  inval;\
+\f2\b0\fs18 \cf0 (\
+r = \cf2 Routine\cf0  \{ \cf2 arg\cf0  inval;\
 	loop \{\
-		\cf6 // thisThread refers to the routine.\cf2 \
-		postf(\cf7 "beats: % seconds: % time: % \\n"\cf2 , \
-			\cf3 thisThread\cf2 .beats, \cf3 thisThread\cf2 .seconds, \cf3 Main\cf2 .elapsedTime\
+		\cf4 // thisThread refers to the routine.\cf0 \
+		postf(\cf3 "beats: % seconds: % time: % \\n"\cf0 , \
+			\cf2 thisThread\cf0 .beats, \cf2 thisThread\cf0 .seconds, \cf2 Main\cf0 .elapsedTime\
 		);\
 		1.0.yield;\
 		\
 	\}\
 \}.play;\
-\cf0 )\
+)\
 \
 r.stop;\
 r.beats;\
@@ -233,53 +248,52 @@ Routine Example:\
 \f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 (\
-\cf3 var\cf2  r, outval;\
-r = \cf3 Routine\cf2 .new(\{ \cf3 arg\cf2  inval;\
-	(\cf7 "->inval was "\cf2  ++ inval).postln;\
+\f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  r, outval;\
+r = \cf2 Routine\cf0 .new(\{ \cf2 arg\cf0  inval;\
+	(\cf3 "->inval was "\cf0  ++ inval).postln;\
 	inval = 1.yield;\
-	(\cf7 "->inval was "\cf2  ++ inval).postln;\
+	(\cf3 "->inval was "\cf0  ++ inval).postln;\
 	inval = 2.yield;\
-	(\cf7 "->inval was "\cf2  ++ inval).postln;\
+	(\cf3 "->inval was "\cf0  ++ inval).postln;\
 	inval = 99.yield;\
 \});\
 \
-outval = r.next(\cf8 'a'\cf2 );\
-(\cf7 "<-outval was "\cf2  ++ outval).postln;\
-outval = r.next(\cf8 'b'\cf2 );\
-(\cf7 "<-outval was "\cf2  ++ outval).postln;\
-r.reset; \cf7 "reset"\cf2 .postln;\
-outval = r.next(\cf8 'c'\cf2 );\
-(\cf7 "<-outval was "\cf2  ++ outval).postln;\
-outval = r.next(\cf8 'd'\cf2 );\
-(\cf7 "<-outval was "\cf2  ++ outval).postln;\
-outval = r.next(\cf8 'e'\cf2 );\
-(\cf7 "<-outval was "\cf2  ++ outval).postln;\
-outval = r.next(\cf8 'f'\cf2 );\
-(\cf7 "<-outval was "\cf2  ++ outval).postln;\
+outval = r.next(\cf5 'a'\cf0 );\
+(\cf3 "<-outval was "\cf0  ++ outval).postln;\
+outval = r.next(\cf5 'b'\cf0 );\
+(\cf3 "<-outval was "\cf0  ++ outval).postln;\
+r.reset; \cf3 "reset"\cf0 .postln;\
+outval = r.next(\cf5 'c'\cf0 );\
+(\cf3 "<-outval was "\cf0  ++ outval).postln;\
+outval = r.next(\cf5 'd'\cf0 );\
+(\cf3 "<-outval was "\cf0  ++ outval).postln;\
+outval = r.next(\cf5 'e'\cf0 );\
+(\cf3 "<-outval was "\cf0  ++ outval).postln;\
+outval = r.next(\cf5 'f'\cf0 );\
+(\cf3 "<-outval was "\cf0  ++ outval).postln;\
 )\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 var\cf0  r;\
-r = \cf4 Routine\cf0 .new(\{\
-	10.do(\{ \cf4 arg\cf0  a;\
+\cf2 var\cf0  r;\
+r = \cf2 Routine\cf0 .new(\{\
+	10.do(\{ \cf2 arg\cf0  a;\
 		a.postln;\
-		\cf9 // Often you might see Wait being used to pause a routine\cf0 \
-		\cf9 // This waits for one second between each number\cf0 \
+		\cf4 // Often you might see Wait being used to pause a routine\cf0 \
+		\cf4 // This waits for one second between each number\cf0 \
 		1.wait;\
 	\});\
-	\cf9 // Wait half second before saying we're done\cf0 \
+	\cf4 // Wait half second before saying we're done\cf0 \
 	0.5.wait;\
-	\cf5 "done"\cf0 .postln;\
+	\cf3 "done"\cf0 .postln;\
 \});\
 \
-\cf4 SystemClock\cf0 .play(r);\
+\cf2 SystemClock\cf0 .play(r);\
 )\
-\cf2 \
+\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
