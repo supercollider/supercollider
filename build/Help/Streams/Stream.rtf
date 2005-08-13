@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-BoldOblique;
 \f3\fswiss\fcharset77 Helvetica-Oblique;\f4\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red191\green0\blue0;
-\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;\red96\green96\blue96;
+\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red96\green96\blue96;\red0\green115\blue0;
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -142,8 +142,8 @@ to repeat marks in a score\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 Playing streams
-\fs24 \
+\f2\i\b\fs30 \cf0 Playing streams
+\f0\i0\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -223,19 +223,40 @@ they can be used as a scheduling task. \
 	\} \}).play(quant:[1, 0.4]);\
 	)\
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 \
+\f1\fs24 \cf0 Streams that return 
+\f0\b Events
+\f1\b0  need to be wrapped in an 
+\f0\b EventStreamPlayer
+\f1\b0 . \
+The Event's 
+\f0\b delta
+\f1\b0  (can also be set by 
+\f0\b dur
+\f1\b0 ) is used as a scheduling beats value:\
+
+\f0\b \
+	
+\f4\b0\fs18 \cf3 // play at the next beat, with offset 0.4\cf0 \
+	\cf2 (\
+	Routine\cf0 (\{ loop \{ \
+			 \cf8 "///"\cf0 .postln; (delta:0.5).yield; \
+			 \cf8 "_/_"\cf0 .postln; (delta: 0.1).wait; \
+	\} \}).asEventStreamPlayer.play;\
+	)
+\f0\b\fs24 \
 
 \f1\b0 \
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs30 \cf0 Iteration\
+\f2\i\fs30 \cf0 Iteration
+\f0\i0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
@@ -325,21 +346,18 @@ they can be used as a scheduling task. \
 
 \fs28 \cf0 \
 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs32 \cf0 Composite Streams\
+\f2\i\b\fs32 \cf0 Composite Streams
+\f0\i0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs28 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs28 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -427,11 +445,16 @@ they can be used as a scheduling task. \
 messages.
 \f0\b\fs30 \
 \
-Unary messages\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
-	Streams support most of the unary messages  defined in AbstractFunction:\
+\f2\i \cf0 Unary messages
+\f0\i0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+Streams support most of the unary messages  defined in AbstractFunction:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -443,17 +466,17 @@ Unary messages\
 	\
 	\cf3 // enumerate and perform all of the unary messages	:	\cf0 \
 	[ \
-		\cf8 \\neg\cf0 , \cf8 \\reciprocal\cf0 , \cf8 \\bitNot\cf0 , \cf8 \\abs\cf0 , \cf8 \\asFloat\cf0 , \cf8 \\asInteger\cf0 , \cf8 \\ceil\cf0 , \
-		\cf8 \\floor\cf0 , \cf8 \\frac\cf0 , \cf8 \\sign\cf0 , \cf8 \\squared\cf0 , \cf8 \\cubed\cf0 , \cf8 \\sqrt\cf0 , \cf8 \\exp\cf0 , \cf8 \\midicps\cf0 , \
-		\cf8 \\cpsmidi\cf0 , \cf8 \\midiratio\cf0 , \cf8 \\ratiomidi\cf0 , \cf8 \\ampdb\cf0 , \cf8 \\dbamp\cf0 , \cf8 \\octcps\cf0 , \
-		\cf8 \\cpsoct\cf0 , \cf8 \\log\cf0 , \cf8 \\log2\cf0 , \cf8 \\log10\cf0 , \cf8 \\sin\cf0 , \cf8 \\cos\cf0 , \cf8 \\tan\cf0 , \cf8 \\asin\cf0 , \cf8 \\acos\cf0 , \cf8 \\atan\cf0 , \
-		\cf8 \\sinh\cf0 , \cf8 \\cosh\cf0 , \cf8 \\tanh\cf0 , \cf8 \\rand\cf0 , \cf8 \\rand2\cf0 , \cf8 \\linrand\cf0 , \cf8 \\bilinrand\cf0 , \cf8 \\sum3rand\cf0 , \
-		\cf8 \\distort\cf0 , \cf8 \\softclip\cf0 , \cf8 \\coin\cf0 , \cf8 \\even\cf0 , \cf8 \\odd\cf0 , \cf8 \\isPositive\cf0 , \cf8 \\isNegative\cf0 ,\
-		\cf8 \\isStrictlyPositive\cf0 \
+		\cf9 \\neg\cf0 , \cf9 \\reciprocal\cf0 , \cf9 \\bitNot\cf0 , \cf9 \\abs\cf0 , \cf9 \\asFloat\cf0 , \cf9 \\asInteger\cf0 , \cf9 \\ceil\cf0 , \
+		\cf9 \\floor\cf0 , \cf9 \\frac\cf0 , \cf9 \\sign\cf0 , \cf9 \\squared\cf0 , \cf9 \\cubed\cf0 , \cf9 \\sqrt\cf0 , \cf9 \\exp\cf0 , \cf9 \\midicps\cf0 , \
+		\cf9 \\cpsmidi\cf0 , \cf9 \\midiratio\cf0 , \cf9 \\ratiomidi\cf0 , \cf9 \\ampdb\cf0 , \cf9 \\dbamp\cf0 , \cf9 \\octcps\cf0 , \
+		\cf9 \\cpsoct\cf0 , \cf9 \\log\cf0 , \cf9 \\log2\cf0 , \cf9 \\log10\cf0 , \cf9 \\sin\cf0 , \cf9 \\cos\cf0 , \cf9 \\tan\cf0 , \cf9 \\asin\cf0 , \cf9 \\acos\cf0 , \cf9 \\atan\cf0 , \
+		\cf9 \\sinh\cf0 , \cf9 \\cosh\cf0 , \cf9 \\tanh\cf0 , \cf9 \\rand\cf0 , \cf9 \\rand2\cf0 , \cf9 \\linrand\cf0 , \cf9 \\bilinrand\cf0 , \cf9 \\sum3rand\cf0 , \
+		\cf9 \\distort\cf0 , \cf9 \\softclip\cf0 , \cf9 \\coin\cf0 , \cf9 \\even\cf0 , \cf9 \\odd\cf0 , \cf9 \\isPositive\cf0 , \cf9 \\isNegative\cf0 ,\
+		\cf9 \\isStrictlyPositive\cf0 \
 	]\
 	.do(\{ \cf2 arg\cf0  msg;\
-			postf(\cf9 "\\n msg: % \\n"\cf0 , msg);\
-			b.reset.perform(msg).do(\{\cf2 arg\cf0  v; v.post; \cf9 " "\cf0 .post;\}) \
+			postf(\cf8 "\\n msg: % \\n"\cf0 , msg);\
+			b.reset.perform(msg).do(\{\cf2 arg\cf0  v; v.post; \cf8 " "\cf0 .post;\}) \
 	\}); \
 	nil;\
 	\
@@ -465,11 +488,12 @@ Unary messages\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 Binary messages\
+\f2\i\b\fs30 \cf0 Binary messages
+\f0\i0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
-	Streams support the following binary messages  defined in AbstractFunction:\
+Streams support the following binary messages  defined in AbstractFunction:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f4\fs18 \cf0 \
@@ -478,15 +502,15 @@ Unary messages\
 	a = \cf2 Routine\cf0 (\{ 20.do(\{ 33.rand.yield \}) \});\
 	b = \cf2 Routine\cf0 (\{ [-100,00,300,400].do(\{ \cf2 arg\cf0  v; v.yield\}) \});\
 	[\
-	\cf8 '+'\cf0  , \cf8 '-'\cf0  , \cf8 '*'\cf0 , \cf8 '/'\cf0 , \cf8 \\div\cf0 , \cf8 '%'\cf0 , \cf8 '**'\cf0 , \cf8 \\min\cf0 , \cf8 \\max\cf0 , \cf8 '<'\cf0 , \cf8 '<='\cf0 , \cf8 '>'\cf0 , \cf8 '>='\cf0 , \cf8 '&'\cf0 , \cf8 '|'\cf0 , \
-	\cf8 \\bitXor\cf0 , \cf8 \\lcm\cf0 , \cf8 \\gcd\cf0 , \cf8 \\round\cf0 , \cf8 \\trunc\cf0 , \cf8 \\atan2\cf0 , \
-	\cf8 \\hypot\cf0 , \cf8 '>>'\cf0 , \cf8 '+>>'\cf0 , \cf8 \\ring1\cf0 , \cf8 \\ring2\cf0 , \cf8 \\ring3\cf0 , \cf8 \\ring4\cf0 , \
-	\cf8 \\difsqr\cf0 , \cf8 \\sumsqr\cf0 , \cf8 \\sqrdif\cf0 , \cf8 \\absdif\cf0 , \cf8 \\amclip\cf0 ,\
-	\cf8 \\scaleneg\cf0 , \cf8 \\clip2\cf0 , \cf8 \\excess\cf0 , \cf8 '<!'\cf0 , \cf8 \\rrand\cf0 , \cf8 \\exprand\cf0 \
+	\cf9 '+'\cf0  , \cf9 '-'\cf0  , \cf9 '*'\cf0 , \cf9 '/'\cf0 , \cf9 \\div\cf0 , \cf9 '%'\cf0 , \cf9 '**'\cf0 , \cf9 \\min\cf0 , \cf9 \\max\cf0 , \cf9 '<'\cf0 , \cf9 '<='\cf0 , \cf9 '>'\cf0 , \cf9 '>='\cf0 , \cf9 '&'\cf0 , \cf9 '|'\cf0 , \
+	\cf9 \\bitXor\cf0 , \cf9 \\lcm\cf0 , \cf9 \\gcd\cf0 , \cf9 \\round\cf0 , \cf9 \\trunc\cf0 , \cf9 \\atan2\cf0 , \
+	\cf9 \\hypot\cf0 , \cf9 '>>'\cf0 , \cf9 '+>>'\cf0 , \cf9 \\ring1\cf0 , \cf9 \\ring2\cf0 , \cf9 \\ring3\cf0 , \cf9 \\ring4\cf0 , \
+	\cf9 \\difsqr\cf0 , \cf9 \\sumsqr\cf0 , \cf9 \\sqrdif\cf0 , \cf9 \\absdif\cf0 , \cf9 \\amclip\cf0 ,\
+	\cf9 \\scaleneg\cf0 , \cf9 \\clip2\cf0 , \cf9 \\excess\cf0 , \cf9 '<!'\cf0 , \cf9 \\rrand\cf0 , \cf9 \\exprand\cf0 \
 	]\
 		.do(\{ \cf2 arg\cf0  msg;\
-			postf(\cf9 "\\n msg: % \\n"\cf0 , msg);\
-			b.reset.perform(msg).do(\{ \cf2 arg\cf0  v; v.post; \cf9 " "\cf0 .post; \}) \
+			postf(\cf8 "\\n msg: % \\n"\cf0 , msg);\
+			b.reset.perform(msg).do(\{ \cf2 arg\cf0  v; v.post; \cf8 " "\cf0 .post; \}) \
 		\}); \
 		\cf2 nil\cf0 ;\
 )
