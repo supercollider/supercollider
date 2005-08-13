@@ -1,8 +1,9 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf100
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-BoldOblique;
 \f3\fswiss\fcharset77 Helvetica-Oblique;\f4\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue0;
-\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red191\green0\blue0;
+\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Stream
@@ -64,27 +65,25 @@ that consists of
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf3 // Example 1: a Function vs. a FuncStream
+\f4\fs18 \cf3 	// Example 1: a Function vs. a FuncStream
 \f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f4\fs18 \cf0 (	\
-	f = \{ 33.rand \};\
-	x = \cf2 FuncStream\cf0 (f);\
-	10.do(\{ [f.next, x.next].postln \});\
-)\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // Example 2: the reset function\cf0 \
-(	\
-\
-	f = \{ 33.rand \};\
-	x = \cf2 FuncStream\cf0 (f, \{\cf2 thisThread\cf0 .randSeed_(345)\});\
-	x.reset;\
-	10.do(\{ [f.next, x.next].postln \});\
-	x.reset;\
-	10.do(\{ [f.next, x.next].postln \});\
-)\
+	
+\f4\fs18 (	\
+		f = \{ 33.rand \};\
+		x = \cf2 FuncStream\cf0 (f);\
+		10.do(\{ [f.next, x.next].postln \});\
+	)\
+	\
+	\cf3 // Example 2: the reset function\cf0 \
+	(	\
+	\
+		f = \{ 33.rand \};\
+		x = \cf2 FuncStream\cf0 (f, \{\cf2 thisThread\cf0 .randSeed_(345)\});\
+		x.reset;\
+		10.do(\{ [f.next, x.next].postln \});\
+		x.reset;\
+		10.do(\{ [f.next, x.next].postln \});\
+	)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
@@ -104,15 +103,15 @@ the function definition to represent a sequence of distinct events, like a music
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f4\fs18 \cf3 \
-// example\cf0 \
-(\
-	x = \cf2 Routine\cf0 (\{ \
-				1.yield;\
-				2.yield;\
-				3.yield; \
-		\});\
-		4.do(\{ x.next.postln \});\
-)\
+	// example\cf0 \
+	(\
+		x = \cf2 Routine\cf0 (\{ \
+					1.yield;\
+					2.yield;\
+					3.yield; \
+			\});\
+			4.do(\{ x.next.postln \});\
+	)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
@@ -126,21 +125,109 @@ to repeat marks in a score\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf3 // example
+\f4\fs18 \cf3 	// example
 \f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f4\fs18 \cf0 (\
-		x = \cf2 Routine\cf0 (\{ \
-			4.do(\{\
-				[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
-			\})\
-		\});\
-		17.do(\{ x.next.postln \});\
-)
+	
+\f4\fs18 (\
+			x = \cf2 Routine\cf0 (\{ \
+				4.do(\{\
+					[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
+				\})\
+			\});\
+			17.do(\{ x.next.postln \});\
+	)
 \f1\fs24 \
 \
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 Playing streams
+\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Because streams respond like functions to the value message, \
+they can be used as a scheduling task. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs18 \cf4 	// compare:\
+	// a function, returning 0.5\cf5 \
+	(\
+	\cf6 SystemClock\cf5 .sched(0.0, \
+		\{ \cf7 "***"\cf5 .postln; 0.5 \}\
+	);\
+	)\
+	\
+	\cf3 // a stream, returning 0.5 and 0.1\cf5 \
+	(\
+	\cf6 SystemClock\cf5 .sched(0.0, \
+		\cf6 Routine\cf5 (\{ loop \{ \
+			 \cf7 "***"\cf5 .postln; 0.5.yield; \
+			 \cf7 "_*_"\cf5 .postln; 0.1.yield; \
+		\} \})\
+	);\
+	)\
+	\
+	\cf4 // this is the reason why 'wait' works the same (for numbers) like 'yield' \cf5 \
+	(\
+	\cf6 SystemClock\cf5 .sched(0.0, \
+		\cf6 Routine\cf5 (\{ loop \{ \
+			 \cf7 "***"\cf5 .postln; 0.5.wait; \
+			 \cf7 "_*_"\cf5 .postln; 0.1.wait; \
+		\} \})\
+	);\
+	)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+
+\f1\b0 Streams that return 
+\f0\b numbers
+\f1\b0  can be played directly with the 
+\f0\b play
+\f1\b0  message:\
+\
+	\
+	
+\f0\b play(clock, quant)
+\f1\b0 \
+		
+\f0\b clock
+\f1\b0 :		a Clock, TempoClock by default\
+		
+\f0\b quant
+\f1\b0 :		either a number
+\f0\b  n
+\f1\b0  (quantize to 
+\f0\b n 
+\f1\b0 beats)\
+					or an array
+\f0\b  [n, m]
+\f1\b0  (quantize to 
+\f0\b n
+\f1\b0  beats, with offset 
+\f0\b m
+\f1\b0 )\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs18 \cf4 	// play at the next beat, with offset 0.4\cf5 \
+	\cf6 (\
+	Routine\cf5 (\{ loop \{ \
+			 \cf7 "***"\cf5 .postln; 0.5.wait; \
+			 \cf7 "_*_"\cf5 .postln; 0.1.wait; \
+	\} \}).play(quant:[1, 0.4]);\
+	)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+
+\f1\b0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -188,7 +275,9 @@ to repeat marks in a score\
 	
 \f0\b dot(function, stream)\
 		
-\f1\b0 return function.value(this.next, stream.next)
+\f1\b0 return 
+\f0\b function.value(this.next, stream.next)
+\f1\b0  for each element
 \f0\b \
 
 \f1\b0 \
@@ -204,8 +293,9 @@ to repeat marks in a score\
 \fs24 		
 \f1\b0 append stream after this
 \f0\b  
-\f1\b0 returns nil
-\f0\b\fs28 \
+\f1\b0 returns nil. The same like 
+\f0\b ++
+\fs28 \
 
 \fs24 	
 \f1\b0 \
@@ -217,9 +307,19 @@ to repeat marks in a score\
 	
 \f1\b0 \
 
-\f0\b 	trace
+\f0\b 	trace(key, printStream, prefix)
 \f1\b0 \
-		print out the results of a stream while returning the original values
+		print out the results of a stream while returning the original values\
+		\
+		
+\f0\b key
+\f1\b0 : 			when streaming events, post only this key.\
+		
+\f0\b printStream
+\f1\b0 : 	printOn this stream (default: Post)\
+		
+\f0\b prefix
+\f1\b0 :		string added to the printout to separate different streams
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -250,22 +350,22 @@ to repeat marks in a score\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\b0\fs18 \cf3 // example\cf0 \
-(\
-x = \cf2 Routine\cf0 (\{ \
-			2.do(\{\
-				[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
-			\})\
-		\});\
-y = \cf2 Routine\cf0 (\{\
-		100.yield;\
-		30.yield;\
-		x.embedInStream;\
-		440.yield;\
-		1910.yield\
-\});\
-17.do(\{ y.next.postln \});\
-)\
+\f4\b0\fs18 \cf3 	// example\cf0 \
+	(\
+	x = \cf2 Routine\cf0 (\{ \
+				2.do(\{\
+					[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
+				\})\
+			\});\
+	y = \cf2 Routine\cf0 (\{\
+			100.yield;\
+			30.yield;\
+			x.embedInStream;\
+			440.yield;\
+			1910.yield\
+	\});\
+	17.do(\{ y.next.postln \});\
+	)\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -275,19 +375,19 @@ y = \cf2 Routine\cf0 (\{\
 \f1\b0  just like Streams:
 \f4\fs18 \
 \
-(\
-x = \cf2 Routine\cf0 (\{ \
-			2.do(\{\
-				[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
-			\})\
-		\});\
-y = \cf2 Routine\cf0 (\{\
-		100.yield;\
-		30.yield;\
-\});\
-z = x ++ y;\
-17.do(\{ z.next.postln \});\
-)\
+	(\
+	x = \cf2 Routine\cf0 (\{ \
+				2.do(\{\
+					[1,2,3,4].do(\{ \cf2 arg\cf0  i; i.yield; \});\
+				\})\
+			\});\
+	y = \cf2 Routine\cf0 (\{\
+			100.yield;\
+			30.yield;\
+	\});\
+	z = x ++ y;\
+	17.do(\{ z.next.postln \});\
+	)\
 \
 
 \f1\fs24 Routines can be combined with the 
@@ -298,29 +398,28 @@ z = x ++ y;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f4\fs18 \cf0 \
-(\cf4 \
-x = \cf5 Routine\cf4 (\{ \cf5 arg\cf4  inval;\
-			2.do(\{\
-				\
-				[1,2,3,4].do(\{ \cf5 arg\cf4  i; \
-					if(inval.isNil) \{ \cf5 nil\cf4 .alwaysYield \};\
-					inval = (i * inval).yield; \
-				\});\
-			\})\
-		\});\
-		\
-y = \cf5 Routine\cf4 (\{\
-		100.yield;\
-		30.yield;\
-		4.do \{ 1.0.rand.yield \};\
-\});\
+	(\
+	x = \cf2 Routine\cf0 (\{ \cf2 arg\cf0  inval;\
+				2.do(\{\
+					\
+					[1,2,3,4].do(\{ \cf2 arg\cf0  i; \
+						if(inval.isNil) \{ \cf2 nil\cf0 .alwaysYield \};\
+						inval = (i * inval).yield; \
+					\});\
+				\})\
+			\});\
+			\
+	y = \cf2 Routine\cf0 (\{\
+			100.yield;\
+			30.yield;\
+			4.do \{ 1.0.rand.yield \};\
+	\});\
+	\
+	z = x <> y;\
+	17.do(\{ z.value.postln \}); \cf3 // call .value here, as this is a function.\cf0 \
+	)
+\f0\b\fs30 \
 \
-z = x <> y;\
-17.do(\{ z.value.postln \}); \cf6 // call .value here, as this is a function.\cf4 \
-)
-\f0\b\fs30 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -330,32 +429,31 @@ messages.
 \
 Unary messages\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \
+\f1\b0\fs24 \
 	Streams support most of the unary messages  defined in AbstractFunction:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf4 (\
-	a = \cf5 Routine\cf4 (\{ 20.do(\{ 33.rand.yield \}) \});\
-	b = \cf5 Routine\cf4 (\{ [-100,00,300,400].do(\{ \cf5 arg\cf4  v; v.yield\}) \});\
+\f4\fs18 \cf0 (\
+	a = \cf2 Routine\cf0 (\{ 20.do(\{ 33.rand.yield \}) \});\
+	b = \cf2 Routine\cf0 (\{ [-100,00,300,400].do(\{ \cf2 arg\cf0  v; v.yield\}) \});\
 \
-	c = b.neg; \cf6 // define a composite stream		\cf4 \
+	c = b.neg; \cf3 // define a composite stream		\cf0 \
 	\
-	\cf6 // enumerate and perform all of the unary messages	:	\cf4 \
+	\cf3 // enumerate and perform all of the unary messages	:	\cf0 \
 	[ \
-		\cf7 \\neg\cf4 , \cf7 \\reciprocal\cf4 , \cf7 \\bitNot\cf4 , \cf7 \\abs\cf4 , \cf7 \\asFloat\cf4 , \cf7 \\asInteger\cf4 , \cf7 \\ceil\cf4 , \
-		\cf7 \\floor\cf4 , \cf7 \\frac\cf4 , \cf7 \\sign\cf4 , \cf7 \\squared\cf4 , \cf7 \\cubed\cf4 , \cf7 \\sqrt\cf4 , \cf7 \\exp\cf4 , \cf7 \\midicps\cf4 , \
-		\cf7 \\cpsmidi\cf4 , \cf7 \\midiratio\cf4 , \cf7 \\ratiomidi\cf4 , \cf7 \\ampdb\cf4 , \cf7 \\dbamp\cf4 , \cf7 \\octcps\cf4 , \
-		\cf7 \\cpsoct\cf4 , \cf7 \\log\cf4 , \cf7 \\log2\cf4 , \cf7 \\log10\cf4 , \cf7 \\sin\cf4 , \cf7 \\cos\cf4 , \cf7 \\tan\cf4 , \cf7 \\asin\cf4 , \cf7 \\acos\cf4 , \cf7 \\atan\cf4 , \
-		\cf7 \\sinh\cf4 , \cf7 \\cosh\cf4 , \cf7 \\tanh\cf4 , \cf7 \\rand\cf4 , \cf7 \\rand2\cf4 , \cf7 \\linrand\cf4 , \cf7 \\bilinrand\cf4 , \cf7 \\sum3rand\cf4 , \
-		\cf7 \\distort\cf4 , \cf7 \\softclip\cf4 , \cf7 \\coin\cf4 , \cf7 \\even\cf4 , \cf7 \\odd\cf4 , \cf7 \\isPositive\cf4 , \cf7 \\isNegative\cf4 ,\
-		\cf7 \\isStrictlyPositive\cf4 \
+		\cf8 \\neg\cf0 , \cf8 \\reciprocal\cf0 , \cf8 \\bitNot\cf0 , \cf8 \\abs\cf0 , \cf8 \\asFloat\cf0 , \cf8 \\asInteger\cf0 , \cf8 \\ceil\cf0 , \
+		\cf8 \\floor\cf0 , \cf8 \\frac\cf0 , \cf8 \\sign\cf0 , \cf8 \\squared\cf0 , \cf8 \\cubed\cf0 , \cf8 \\sqrt\cf0 , \cf8 \\exp\cf0 , \cf8 \\midicps\cf0 , \
+		\cf8 \\cpsmidi\cf0 , \cf8 \\midiratio\cf0 , \cf8 \\ratiomidi\cf0 , \cf8 \\ampdb\cf0 , \cf8 \\dbamp\cf0 , \cf8 \\octcps\cf0 , \
+		\cf8 \\cpsoct\cf0 , \cf8 \\log\cf0 , \cf8 \\log2\cf0 , \cf8 \\log10\cf0 , \cf8 \\sin\cf0 , \cf8 \\cos\cf0 , \cf8 \\tan\cf0 , \cf8 \\asin\cf0 , \cf8 \\acos\cf0 , \cf8 \\atan\cf0 , \
+		\cf8 \\sinh\cf0 , \cf8 \\cosh\cf0 , \cf8 \\tanh\cf0 , \cf8 \\rand\cf0 , \cf8 \\rand2\cf0 , \cf8 \\linrand\cf0 , \cf8 \\bilinrand\cf0 , \cf8 \\sum3rand\cf0 , \
+		\cf8 \\distort\cf0 , \cf8 \\softclip\cf0 , \cf8 \\coin\cf0 , \cf8 \\even\cf0 , \cf8 \\odd\cf0 , \cf8 \\isPositive\cf0 , \cf8 \\isNegative\cf0 ,\
+		\cf8 \\isStrictlyPositive\cf0 \
 	]\
-	.do(\{ \cf5 arg\cf4  msg;\
-			postf(\cf8 "\\n msg: % \\n"\cf4 , msg);\
-			b.reset.perform(msg).do(\{\cf5 arg\cf4  v; v.post; \cf8 " "\cf4 .post;\}) \
+	.do(\{ \cf2 arg\cf0  msg;\
+			postf(\cf9 "\\n msg: % \\n"\cf0 , msg);\
+			b.reset.perform(msg).do(\{\cf2 arg\cf0  v; v.post; \cf9 " "\cf0 .post;\}) \
 	\}); \
 	nil;\
 	\
@@ -374,25 +472,25 @@ Unary messages\
 	Streams support the following binary messages  defined in AbstractFunction:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf4 \
+\f4\fs18 \cf0 \
 \
 (\
-	a = \cf5 Routine\cf4 (\{ 20.do(\{ 33.rand.yield \}) \});\
-	b = \cf5 Routine\cf4 (\{ [-100,00,300,400].do(\{ \cf5 arg\cf4  v; v.yield\}) \});\
+	a = \cf2 Routine\cf0 (\{ 20.do(\{ 33.rand.yield \}) \});\
+	b = \cf2 Routine\cf0 (\{ [-100,00,300,400].do(\{ \cf2 arg\cf0  v; v.yield\}) \});\
 	[\
-	\cf7 '+'\cf4  , \cf7 '-'\cf4  , \cf7 '*'\cf4 , \cf7 '/'\cf4 , \cf7 \\div\cf4 , \cf7 '%'\cf4 , \cf7 '**'\cf4 , \cf7 \\min\cf4 , \cf7 \\max\cf4 , \cf7 '<'\cf4 , \cf7 '<='\cf4 , \cf7 '>'\cf4 , \cf7 '>='\cf4 , \cf7 '&'\cf4 , \cf7 '|'\cf4 , \
-	\cf7 \\bitXor\cf4 , \cf7 \\lcm\cf4 , \cf7 \\gcd\cf4 , \cf7 \\round\cf4 , \cf7 \\trunc\cf4 , \cf7 \\atan2\cf4 , \
-	\cf7 \\hypot\cf4 , \cf7 '>>'\cf4 , \cf7 '+>>'\cf4 , \cf7 \\ring1\cf4 , \cf7 \\ring2\cf4 , \cf7 \\ring3\cf4 , \cf7 \\ring4\cf4 , \
-	\cf7 \\difsqr\cf4 , \cf7 \\sumsqr\cf4 , \cf7 \\sqrdif\cf4 , \cf7 \\absdif\cf4 , \cf7 \\amclip\cf4 ,\
-	\cf7 \\scaleneg\cf4 , \cf7 \\clip2\cf4 , \cf7 \\excess\cf4 , \cf7 '<!'\cf4 , \cf7 \\rrand\cf4 , \cf7 \\exprand\cf4 \
+	\cf8 '+'\cf0  , \cf8 '-'\cf0  , \cf8 '*'\cf0 , \cf8 '/'\cf0 , \cf8 \\div\cf0 , \cf8 '%'\cf0 , \cf8 '**'\cf0 , \cf8 \\min\cf0 , \cf8 \\max\cf0 , \cf8 '<'\cf0 , \cf8 '<='\cf0 , \cf8 '>'\cf0 , \cf8 '>='\cf0 , \cf8 '&'\cf0 , \cf8 '|'\cf0 , \
+	\cf8 \\bitXor\cf0 , \cf8 \\lcm\cf0 , \cf8 \\gcd\cf0 , \cf8 \\round\cf0 , \cf8 \\trunc\cf0 , \cf8 \\atan2\cf0 , \
+	\cf8 \\hypot\cf0 , \cf8 '>>'\cf0 , \cf8 '+>>'\cf0 , \cf8 \\ring1\cf0 , \cf8 \\ring2\cf0 , \cf8 \\ring3\cf0 , \cf8 \\ring4\cf0 , \
+	\cf8 \\difsqr\cf0 , \cf8 \\sumsqr\cf0 , \cf8 \\sqrdif\cf0 , \cf8 \\absdif\cf0 , \cf8 \\amclip\cf0 ,\
+	\cf8 \\scaleneg\cf0 , \cf8 \\clip2\cf0 , \cf8 \\excess\cf0 , \cf8 '<!'\cf0 , \cf8 \\rrand\cf0 , \cf8 \\exprand\cf0 \
 	]\
-		.do(\{ \cf5 arg\cf4  msg;\
-			postf(\cf8 "\\n msg: % \\n"\cf4 , msg);\
-			b.reset.perform(msg).do(\{ \cf5 arg\cf4  v; v.post; \cf8 " "\cf4 .post; \}) \
+		.do(\{ \cf2 arg\cf0  msg;\
+			postf(\cf9 "\\n msg: % \\n"\cf0 , msg);\
+			b.reset.perform(msg).do(\{ \cf2 arg\cf0  v; v.post; \cf9 " "\cf0 .post; \}) \
 		\}); \
-		\cf5 nil\cf4 ;\
+		\cf2 nil\cf0 ;\
 )
-\f1\fs24 \cf0 \
+\f1\fs24 \
  \
 \
 	}
