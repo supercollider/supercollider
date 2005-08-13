@@ -146,6 +146,8 @@ Stream : AbstractFunction {
 		// ascending order merge of two streams
 		^this.interlace({|x y| x < y }, stream);
 	}
+	
+	<> { arg obj; ^Pchain(this, obj).asStream }
 			
 
 	// function composition
