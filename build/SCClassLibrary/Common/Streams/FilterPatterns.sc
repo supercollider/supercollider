@@ -622,7 +622,7 @@ Pflatten : FilterPattern {
 	}
 }
 
-Penv : FilterPattern {
+Pflow : FilterPattern {
 	var <>timepattern;
 	
 	*new { arg timepattern, pattern;
@@ -650,7 +650,8 @@ Penv : FilterPattern {
 				accum < leftOver
 			};
 			nextTime = accum - leftOver;
-			start = thisThread.beats;
+			start = thisThread.endBeat ? thisThread.beats;
+			thisThread.endBeat = nextTime + start;
 			while {
 				elapsedTime = thisThread.beats - start;
 				leftOver = elapsedTime - nextTime;
