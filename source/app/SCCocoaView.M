@@ -39,7 +39,7 @@
 
 
 #include "SCCocoaView.h"
-
+#include "QuickTime/Movies.h"
 
 extern pthread_mutex_t gLangMutex;
 extern bool compiledOK;
@@ -249,17 +249,19 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			[mScrollView setHidden:YES];
 			[mTextView setHidden:YES];
 		}
-		
-		//return errNone;
+	
+		return errNone;
 	}
 	
 	if (strcmp(name, "usesTabToFocusNextView")==0) {
 		if(IsTrue(slot))[mCocoaToLangAction setUsesTabToFocusNextView:YES];
 		else [mCocoaToLangAction setUsesTabToFocusNextView:NO];
+		return errNone;		
 	}
 	if (strcmp(name, "enterExecutesSelection")==0) {
 		if(IsTrue(slot))[mCocoaToLangAction setEnterExecutesSelection:YES];
 		else [mCocoaToLangAction setEnterExecutesSelection:NO];
+		return errNone;		
 	}	
 	if (strcmp(name, "setScrollersSize")==0) {
 		if(IsTrue(slot)) [[mScrollView verticalScroller] setControlSize: NSMiniControlSize];
@@ -527,12 +529,7 @@ SCMovieView::SCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 		[view addSubview: mMovieView];
 		
 		//need to call EnterMovies for other qt c calls
-		/*
-		void SetMovieSelection (
-   Movie        theMovie,
-   TimeValue    selectionTime,
-   TimeValue    selectionDuration );
-   */
+		EnterMovies();
 }
 
 SCMovieView::~SCMovieView()
@@ -604,6 +601,12 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		[mMovieView setMovie: movie];
 		[string release];
 		[url release];
+		/* QT: */
+		mMovie = (Movie) [[mMovieView movie] QTMovie];
+		mTimeBase = GetMovieTimeBase (mMovie); 
+		mTimeRecord.base = mTimeBase;
+		GetMovieTime(mMovie, &mTimeRecord);
+		
 		return errNone;
 	}
 
@@ -687,7 +690,15 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "paste")==0) {
 		[mMovieView paste: NULL];
 		return errNone;		
-	}				
+	}					
+	
+	if (strcmp(name, "setCurrentTime")==0) {
+		int time;
+		err = slotIntVal(slot, &time);
+		if(err) return err;		
+		SetMovieTimeValue(mMovie, (TimeValue) time *  mTimeRecord.scale);
+		return errNone;		
+	}
 		
 	return SCView::setProperty(symbol, slot);
 }
