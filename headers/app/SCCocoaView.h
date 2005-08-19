@@ -28,6 +28,7 @@
 #import "SCCocoaView.h"
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
+#include "QuickTime/Movies.h"
 
 @interface SCCocoaTextViewResponder : NSResponder
 {
@@ -84,7 +85,10 @@ public:
 
 protected:
 	NSMovieView *mMovieView;
-
+	/* QT */
+	TimeBase mTimeBase;
+	TimeRecord mTimeRecord;
+	Movie mMovie;	
 };
 
 SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
