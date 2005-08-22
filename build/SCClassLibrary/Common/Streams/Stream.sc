@@ -203,7 +203,18 @@ Stream : AbstractFunction {
 		^if(key.isNil) {
 			this.collect {|item| printStream << prefix << item << Char.nl; item }
 		} {
-			this.collect {|item| printStream << prefix << item.at(key) << Char.nl; item }
+			this.collect {|item|
+				var val = item.at(key);
+				if(val.isKindOf(Function) and: { item.isKindOf(Environment) }) 
+				{ 
+					val = item.use { val.value };
+					printStream << prefix << val << "\t(printed function value)\n"; 
+				} {
+					printStream << prefix << val << Char.nl;
+				};
+				 
+				item 
+			}
 		}
 			 
 	}
