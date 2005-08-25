@@ -8,7 +8,7 @@ File : UnixFILE {
 	*use { arg pathName, mode, function;
 		var file;
 		file = this.new(pathName, mode);
-		{ function.value(file) }.protect({ file.close });
+		^{ function.value(file) }.protect({ file.close });
 	}
 	*delete { arg pathName;
 		_FileDelete
