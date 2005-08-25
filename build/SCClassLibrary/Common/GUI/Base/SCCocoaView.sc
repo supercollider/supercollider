@@ -8,17 +8,22 @@ SCTextView : SCView{
 		mouseDownAction.value(this, clickPos);	
 	}	
 	
-	string_{|str|
-		this.setProperty(\string, str);	
-	}
-	
 	string{
 		^this.getProperty(\string);
 	}
-	
+
+	string_{|str|
+		^this.setString(str, -1);
+	}
+		
 	selectedString {
 		^this.getProperty(\selectedString);
 	}
+	
+	selectedString_{|str|
+		this.setProperty(\selectedString, str);	
+	}
+	
 	selectionStart {
 		^this.getProperty(\selectedRangeLocation);
 	}
