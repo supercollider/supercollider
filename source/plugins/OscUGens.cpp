@@ -20,6 +20,7 @@
 
 #include "SC_PlugIn.h"
 #include <limits.h>
+#include <string.h>
 
 static InterfaceTable *ft;
 
@@ -4142,7 +4143,11 @@ void CopyBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	float *data1 = buf->data + toPos * channels1;
 	float *data2 = buf2->data + fromPos * channels2;
 	
-	memcpy(data1, data2, numbytes);
+	if ((((char*)data1 + numbytes) > (char*)data2) || (((char*)data2 + numbytes) > (char*)data1)) {
+		memmove(data1, data2, numbytes);
+	} else {
+		memcpy(data1, data2, numbytes);
+	}
 }
 
 
