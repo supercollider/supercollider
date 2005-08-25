@@ -333,7 +333,7 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	
 		return errNone;
 	}
-	if (strcmp(name, "string")==0) {
+	if (strcmp(name, "selectedString")==0) {
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
 		PyrString* pstring = slot->uos;
 		if(!pstring) return errNone;
