@@ -63,7 +63,7 @@
   (car (rassoc file sclang-help-topic-alist)))
 
 (defun sclang-help-buffer-name (topic)
-  (concat "*SCHelp: " topic "*"))
+  (sclang-make-buffer-name (concat "Help:" topic)))
 
 (defun sclang-rtf-file-p (file-name)
   (let ((case-fold-search t))
@@ -245,95 +245,6 @@
 	  (sclang-rtf-state-apply state))))))
 
 ;; =====================================================================
-;; help file access
-;; =====================================================================
-
-(defun sclang-index-help-topics ()
-  (interactive)
-  (setq sclang-help-topic-alist nil)
-  (let ((case-fold-search nil)
-	(max-specpdl-size 10000)
-	result)
-    (flet ((push-file
-	    (name path)
-	    (push (cons
-		   (file-name-nondirectory (replace-match "" nil nil name 1))
-		   path)
-		  result)))
-      (flet ((index-dir
-	      (dir)
-	      (dolist (file (directory-files dir t "^[^.]" t))
-		(cond ((file-directory-p file)
-		       (unless (string-match "CVS$" file)
-			 ;; handle XXX.rtfd/TXT.rtf
-			 (if (string-match "\\(\\.rtfd\\)$" file)
-			     (push-file file (concat file "/TXT.rtf"))
-			   ;; recurse into sub-directory
-			   (index-dir file))))
-		      ((string-match "\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)$" file)
-		       (push-file file file))))
-	      result))
-	(sclang-message "Indexing help topics ...")
-	(dolist (dir sclang-help-path)
-	  (condition-case nil
-	      (if (file-directory-p dir)
-		  (index-dir dir))
-	    (error nil)))
-	(setq sclang-help-topic-alist
-	      (sort result (lambda (a b) (string< (car a) (car b)))))
-	(sclang-message "Indexing help topics ... Done")))))
-
-(defun sclang-edit-help-file ()
-  (interactive)
-  (if (and (boundp 'sclang-help-file) sclang-help-file)
-      (let ((file sclang-help-file))
-	(if (file-exists-p file)
-	    (if (sclang-rtf-file-p file)
-		(start-process (format "*SCLang Help Editor %s*" file) nil sclang-rtf-editor-program file)
-	      (find-file file))
-	  (sclang-message "Help file not found")))
-    (sclang-message "Buffer has no associated help file")))
-
-(defun sclang-help-topic-at-point ()
-  "Answer the help topic at point, or nil if not found."
-  (save-excursion
-    (with-syntax-table sclang-help-mode-syntax-table
-      (let (beg end)
-	(skip-syntax-backward "w_")
-	(setq beg (point))
-	(skip-syntax-forward "w_")
-	(setq end (point))
-	(goto-char beg)
-	(car (assoc (buffer-substring-no-properties beg end)
-		    sclang-help-topic-alist))))))
-
-(defun sclang-find-help (topic)
-  (interactive
-   (list
-    (let ((topic (or (and mark-active (buffer-substring-no-properties (region-beginning) (region-end)))
-		     (sclang-help-topic-at-point)
-		     "Help")))
-      (completing-read (format "Help topic%s: " (if (sclang-get-help-file topic)
-						    (format " (default %s)" topic) ""))
-		       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic))))
-  (let ((file (sclang-get-help-file topic)))
-    (if file
-	(if (file-exists-p file)
-	    (let* ((buffer-name (sclang-help-buffer-name topic))
-		   (buffer (get-buffer buffer-name)))
-	      (unless buffer
-		(setq buffer (get-buffer-create buffer-name))
-		(with-current-buffer buffer
-		  (insert-file-contents file)
-		  (let ((sclang-current-help-file file)
-			(default-directory (file-name-directory file)))
-		    (sclang-help-mode))
-		  (set-buffer-modified-p nil)))
-	      (switch-to-buffer buffer))
-	  (sclang-message "Help file not found") nil)
-      (sclang-message "No help for \"%s\"" topic) nil)))
-
-;; =====================================================================
 ;; help mode
 ;; =====================================================================
 
@@ -429,6 +340,96 @@
     ))
 
 ;; =====================================================================
+;; help file access
+;; =====================================================================
+
+(defun sclang-index-help-topics ()
+  (interactive)
+  (setq sclang-help-topic-alist nil)
+  (let ((case-fold-search nil)
+	(max-specpdl-size 10000)
+	result)
+    (flet ((push-file
+	    (name path)
+	    (push (cons
+		   (file-name-nondirectory (replace-match "" nil nil name 1))
+		   path)
+		  result)))
+      (flet ((index-dir
+	      (dir)
+	      (dolist (file (directory-files dir t "^[^.]" t))
+		(cond ((file-directory-p file)
+		       (unless (string-match "CVS$" file)
+			 ;; handle XXX.rtfd/TXT.rtf
+			 (if (string-match "\\(\\.rtfd\\)$" file)
+			     (push-file file (concat file "/TXT.rtf"))
+			   ;; recurse into sub-directory
+			   (index-dir file))))
+		      ((string-match "\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)$" file)
+		       (push-file file file))))
+	      result))
+	(sclang-message "Indexing help topics ...")
+	(dolist (dir sclang-help-path)
+	  (condition-case nil
+	      (if (file-directory-p dir)
+		  (index-dir dir))
+	    (error nil)))
+	(setq sclang-help-topic-alist
+	      (sort result (lambda (a b) (string< (car a) (car b)))))
+	(sclang-message "Indexing help topics ... Done")))))
+
+(defun sclang-edit-help-file ()
+  (interactive)
+  (if (and (boundp 'sclang-help-file) sclang-help-file)
+      (let ((file sclang-help-file))
+	(if (file-exists-p file)
+	    (if (sclang-rtf-file-p file)
+		(start-process (sclang-make-buffer-name (format "HelpEditor:%s" file))
+			       nil sclang-rtf-editor-program file)
+	      (find-file file))
+	  (sclang-message "Help file not found")))
+    (sclang-message "Buffer has no associated help file")))
+
+(defun sclang-help-topic-at-point ()
+  "Answer the help topic at point, or nil if not found."
+  (save-excursion
+    (with-syntax-table sclang-help-mode-syntax-table
+      (let (beg end)
+	(skip-syntax-backward "w_")
+	(setq beg (point))
+	(skip-syntax-forward "w_")
+	(setq end (point))
+	(goto-char beg)
+	(car (assoc (buffer-substring-no-properties beg end)
+		    sclang-help-topic-alist))))))
+
+(defun sclang-find-help (topic)
+  (interactive
+   (list
+    (let ((topic (or (and mark-active (buffer-substring-no-properties (region-beginning) (region-end)))
+		     (sclang-help-topic-at-point)
+		     "Help")))
+      (completing-read (format "Help topic%s: " (if (sclang-get-help-file topic)
+						    (format " (default %s)" topic) ""))
+		       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic))))
+  (let ((file (sclang-get-help-file topic)))
+    (if file
+	(if (file-exists-p file)
+	    (let* ((buffer-name (sclang-help-buffer-name topic))
+		   (buffer (get-buffer buffer-name)))
+	      (unless buffer
+		(setq buffer (get-buffer-create buffer-name))
+		(with-current-buffer buffer
+		  (insert-file-contents file)
+		  (let ((sclang-current-help-file file)
+			(default-directory (file-name-directory file)))
+		    (sclang-help-mode))
+		  (set-buffer-modified-p nil)))
+	      (switch-to-buffer buffer))
+	  (sclang-message "Help file not found") nil)
+      (sclang-message "No help for \"%s\"" topic) nil)))
+
+;; =====================================================================
 ;; debugging
 ;; =====================================================================
 
@@ -456,9 +457,9 @@
 					 (condition-case nil
 					     (sclang-index-help-topics)
 					   (error nil))))
+(add-to-list 'auto-mode-alist '("\\.rtf$" . sclang-help-mode))
 (sclang-fill-help-syntax-table sclang-help-mode-syntax-table)
 (sclang-fill-help-mode-map sclang-help-mode-map)
-(add-to-list 'auto-mode-alist '("\\.rtf$" . sclang-help-mode))
 
 (provide 'sclang-help)
 

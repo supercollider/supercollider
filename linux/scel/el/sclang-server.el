@@ -15,6 +15,9 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
+(eval-and-compile
+  (require 'cl))
+
 (defvar sclang-server-alist nil
   "Alist of currently defined synthesis servers.")
 
@@ -32,9 +35,6 @@
     (set-face-foreground face "red")
     face)
   "Face for highlighting a server's running state in the mode-line.")
-
-(defvar sclang-post-buffer-mode-string ""
-  "Mode string used in the post buffer.")
 
 (defun sclang-get-server (&optional name)
   (unless name (setq name sclang-current-server))
@@ -56,10 +56,10 @@
      ;; only set the current server automatically once after startup
      (setq sclang-current-server-initialized t)
      (sclang-set-server sclang-default-server))
-   (sclang-update-mode-line)))
+   (sclang-update-server-info)))
 
 (defun sclang-next-server ()
-  "Select next server for mode-line display."
+  "Select next server for display."
   (interactive)
   (sclang-set-server)
   (let ((list (or (cdr (member-if (lambda (assoc)
@@ -67,10 +67,10 @@
 				  sclang-server-alist))
 		  sclang-server-alist)))
     (setq sclang-current-server (car (car list))))
-  (sclang-update-mode-line))
+  (sclang-update-server-info))
 
 (defun sclang-mouse-next-server (event)
-  "Select next server for mode-line display."
+  "Select next server for display."
   (interactive "e")
   (sclang-next-server))
 
@@ -91,13 +91,13 @@
      ["Make Default" sclang-server-make-default]
      )))
 
-(defun sclang-server-fill-mode-line-map (map)
-  (define-key map [mode-line mouse-1] 'sclang-mouse-next-server)
-  (define-key map [mode-line down-mouse-3] (sclang-create-server-menu "Commands"))
+(defun sclang-server-fill-mouse-map (map prefix)
+  (define-key map (vector prefix 'mouse-1) 'sclang-mouse-next-server)
+  (define-key map (vector prefix 'down-mouse-3) (sclang-create-server-menu "Commands"))
   map)
 
-(defvar sclang-server-mode-line-map (sclang-server-fill-mode-line-map (make-sparse-keymap))
-  "Keymap used for controlling servers in the mode-line.")
+(defvar sclang-server-mouse-map (sclang-server-fill-mouse-map (make-sparse-keymap) 'mode-line)
+  "Keymap used for controlling servers in the mode line.")
 
 (defun sclang-server-fill-key-map (map)
   "Fill server prefix map."
@@ -121,7 +121,7 @@
 (defvar sclang-server-key-map (sclang-server-fill-key-map (make-sparse-keymap))
   "Keymap used for controlling servers.")
 
-(defun sclang-server-mode-string ()
+(defun sclang-get-server-info-string ()
   "Return a mode-line string for the current server."
   (let* ((name (if sclang-current-server (symbol-name sclang-current-server) "-------"))
 	 (server (sclang-get-server))
@@ -130,7 +130,7 @@
 		  name
 		  'face (if running-p sclang-server-running-face)
 		  'help-echo "mouse-1: next server, mouse-3: command menu"
-		  'keymap sclang-server-mode-line-map))
+		  'keymap sclang-server-mouse-map))
 	 ;; (make-mode-line-mouse-map 'mouse-1 'sclang-mouse-next-server)))
 	 (address (if (and server (not (eq (plist-get server 'type) 'internal)))
 		      (format " (%s)" (plist-get server 'address))
@@ -141,14 +141,14 @@
 		 '("---" "---" "----" "----" "----" "----"))))
     (apply 'format "%s%s %3s|%3s %% u: %4s s: %4s g: %4s d: %4s" string address info)))
 
-(defun sclang-update-mode-line ()
+(defvar sclang-server-info-string (sclang-get-server-info-string)
+  "Info string used in the post buffer mode line.")
+
+(defun sclang-update-server-info ()
   (interactive)
   (sclang-set-server)
-  (with-sclang-post-buffer
-   (setq sclang-post-buffer-mode-string (sclang-server-mode-string))
-   (force-mode-line-update)))
-
-(add-hook 'sclang-library-startup-hook 'sclang-update-mode-line)
+  (setq sclang-server-info-string (sclang-get-server-info-string))
+  (force-mode-line-update))
 
 ;; =====================================================================
 ;; language control
@@ -181,11 +181,11 @@
   (sclang-perform-server-command "freeAll"))
 
 (defun sclang-server-display-default ()
-  "Display default server in the mode-line."
+  "Display default server."
   (interactive)
   (when sclang-default-server
     (sclang-set-server sclang-default-server)
-    (sclang-update-mode-line)))
+    (sclang-update-server-info)))
 
 (defun sclang-server-make-default ()
   "Make current server the default server."
@@ -257,8 +257,7 @@ if (server.notNil) {
 	  (lambda ()
 	    ;; install server mode line in post buffer
 	    (when (string= (buffer-name) sclang-post-buffer)
-	      (setq mode-line-format
-		    '("-" sclang-post-buffer-mode-string)))
+	      (setq mode-line-format '("-" sclang-server-info-string)))
 	    ;; install server prefix keymap
 	    (define-key sclang-mode-map "\C-c\C-p" sclang-server-key-map)))
 

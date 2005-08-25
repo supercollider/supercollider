@@ -18,7 +18,8 @@
 (eval-when-compile
   (require 'cl))
 
-(require 'sclang-util)
+(eval-and-compile
+  (require 'sclang-util))
 
 ;; =====================================================================
 ;; post buffer access
@@ -26,7 +27,7 @@
 
 ;; FIXME: everything will fail when renaming the post buffer!
 
-(defconst sclang-post-buffer "*SCLang*"
+(defconst sclang-post-buffer (sclang-make-buffer-name "PostBuffer")
   "Name of the SuperCollider process output buffer.")
 
 (defconst sclang-bullet-latin-1 (string-to-char (decode-coding-string "\xa5" 'utf-8))
@@ -483,9 +484,9 @@ Change this if \"cat\" has a non-standard name or location."
   :group 'sclang-interface
   :type 'boolean)
 
-(defun sclang-send-string (token string)
+(defun sclang-send-string (token string &optional force)
   (let ((proc (sclang-get-process)))
-    (when proc
+    (when (and proc (or (sclang-library-initialized-p) force))
       (process-send-string proc (concat string token))
       string)))
 
@@ -541,7 +542,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
   :group 'sclang-interface
   :type 'boolean)
 
-(defvar sclang-workspace-buffer "*SCWorkspace*")
+(defconst sclang-workspace-buffer (sclang-make-buffer-name "Workspace"))
 
 (defun sclang-fill-workspace-mode-map (map)
   (define-key map "\C-c}" 'bury-buffer))
@@ -617,7 +618,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 		     (sclang-start)
 		     (when command-line-args-left
 		       (let ((file (pop command-line-args-left)))
-			 (with-current-buffer (get-buffer-create "*SCLang Workspace*")
+			 (with-current-buffer (get-buffer-create sclang-workspace-buffer)
 			   (and (file-exists-p file) (insert-file-contents file))
 			   (set-buffer-modified-p nil)
 			   (sclang-mode)

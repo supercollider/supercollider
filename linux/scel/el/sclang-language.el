@@ -20,6 +20,7 @@
 
 (require 'sclang-browser)
 (require 'sclang-interp)
+(require 'sclang-util)
 
 ;; =====================================================================
 ;; regexp utilities
@@ -85,6 +86,11 @@
      sclang-block-regexp
      sclang-class-definition-regexp
      ))
+
+(defconst sclang-method-definition-spec-regexp
+  (concat (sclang-regexp-group sclang-class-name-regexp t)
+	  "-"
+	  (sclang-regexp-group sclang-method-name-regexp t)))
 
 ;; =====================================================================
 ;; regexp building
@@ -179,7 +185,7 @@ low-resource systems."
    (when (and sclang-use-symbol-table arg)
      (let ((file sclang--symbol-table-file))
        (when (and file (file-exists-p file))
-	 (with-current-buffer (get-buffer-create "*SCLang Symbols*")
+	 (with-current-buffer (get-buffer-create (sclang-make-buffer-name "SymbolTable" t))
 	   (erase-buffer)
 	   (unwind-protect
 	       (insert-file-contents file)
@@ -189,7 +195,7 @@ low-resource systems."
 	   (let ((table (condition-case nil
 			    (read (current-buffer))
 			  (error nil))))
-	     (unless table (message "SCLang: Couldn't retrieve symbol table."))
+	     (unless table (sclang-message "Couldn't retrieve symbol table."))
 	     (setq sclang-symbol-table (sort table 'string<))
 	     (sclang-update-font-lock))))))))
 
@@ -206,7 +212,7 @@ low-resource systems."
 	    (setq sclang-symbol-table nil)
 	    (sclang-update-font-lock)))
 
-(defun sclang-make-symbol-completion-table ()
+(defun sclang-get-symbol-completion-table ()
   (mapcar (lambda (s) (cons s nil)) sclang-symbol-table))
 
 (defun sclang-make-symbol-completion-predicate (predicate)
@@ -221,7 +227,7 @@ low-resource systems."
   (if sclang-use-symbol-table
       (let ((symbol (sclang-get-symbol default)))
 	(completing-read (sclang-make-prompt-string prompt symbol)
-			 (sclang-make-symbol-completion-table)
+			 (sclang-get-symbol-completion-table)
 			 (sclang-make-symbol-completion-predicate predicate)
 			 require-match nil
 			 'sclang-symbol-history symbol
@@ -366,7 +372,7 @@ are considered."
 		(point)))
 	 (pattern (buffer-substring-no-properties beg end))
 	 (case-fold-search nil)
-	 (table (sclang-make-symbol-completion-table))
+	 (table (sclang-get-symbol-completion-table))
 	 (predicate (or predicate
 			(if (sclang-class-name-p pattern)
 			    'sclang-class-name-p
@@ -374,16 +380,16 @@ are considered."
 	 (completion (try-completion pattern table (lambda (assoc) (funcall predicate (car assoc))))))
     (cond ((eq completion t))
 	  ((null completion)
-	   (message "Can't find completion for '%s'" pattern)
+	   (sclang-message "Can't find completion for '%s'" pattern)
 	   (ding))
 	  ((not (string= pattern completion))
 	   (delete-region beg end)
 	   (insert completion))
 	  (t
-	   (message "Making completion list...")
+	   (sclang-message "Making completion list...")
 	   (let* ((list (all-completions pattern table (lambda (assoc) (funcall predicate (car assoc)))))
 		  (win (selected-window))
-		  (buffer-name "*SCLang:Completions*")
+		  (buffer-name (sclang-make-buffer-name "Completions"))
 		  (same-window-buffer-names (list buffer-name)))
 	     (setq list (sort list 'string<))
 	     (with-sclang-browser
@@ -400,7 +406,7 @@ are considered."
 	      (dolist (x list)
 		(insert (sclang-browser-make-link x (cons buffer (cons beg x))))
 		(insert " \n"))))
-	   (message "Making completion list...%s" "done")))))
+	   (sclang-message "Making completion list...%s" "done")))))
 
 ;; =====================================================================
 ;; introspection
@@ -475,15 +481,28 @@ are considered."
   "Find all definitions of symbol NAME."
   (interactive
    (list
-    (sclang-read-symbol "Find definitions of: "
-			(sclang-symbol-at-point) nil t)))
-  (if (sclang-get-symbol name)
-      (progn
-	(ring-insert sclang-definition-marker-ring (point-marker))
-	(if (sclang-class-name-p name)
-	    (sclang-perform-command 'classDefinitions name)
-	  (sclang-perform-command 'methodDefinitions name)))
-    (message "'%s' is undefined" name)))
+    (if current-prefix-arg
+	(read-string "Find definition: ")
+      (sclang-read-symbol "Find definitions of: "
+			  (sclang-symbol-at-point) nil t))))
+  (if (sclang-symbol-match sclang-method-definition-spec-regexp name)
+      (sclang-perform-command 'openDefinition name)
+    (if (sclang-get-symbol name)
+	(progn
+	  (ring-insert sclang-definition-marker-ring (point-marker))
+	  (if (sclang-class-name-p name)
+	      (sclang-perform-command 'classDefinitions name)
+	    (sclang-perform-command 'methodDefinitions name)))
+      (sclang-message "'%s' is undefined" name))))
+
+(sclang-set-command-handler
+ 'openDefinition
+ (lambda (assoc)
+   (let ((name (car assoc))
+	 (data (cdr assoc)))
+     (if data
+	 (sclang-open-definition nil (car data) (cadr data))
+       (sclang-message "'%s' is undefined" name)))))
 
 (sclang-set-command-handler
  'classDefinitions
@@ -503,7 +522,7 @@ are considered."
 	      (when (or (looking-at (sclang-make-class-definition-regexp name))
 			(re-search-backward (sclang-make-class-extension-regexp name) nil t))
 		(match-beginning 1)))))
-       (message "No definitions of '%s'" name)))))
+       (sclang-message "No definitions of '%s'" name)))))
 
 (sclang-set-command-handler
  'methodDefinitions
@@ -518,7 +537,7 @@ are considered."
 	    (let ((case-fold-search nil))
 	      (when (re-search-forward (sclang-make-method-definition-regexp name))
 		(match-beginning 1)))))
-       (message "No definitions of '%s'" name)))))
+       (sclang-message "No definitions of '%s'" name)))))
 
 (defun sclang-find-references (name)
   "Find all references to symbol NAME."
@@ -530,7 +549,7 @@ are considered."
       (progn
 	(ring-insert sclang-definition-marker-ring (point-marker))
 	(sclang-perform-command 'methodReferences name))
-    (message "'%s' is undefined" name)))
+    (sclang-message "'%s' is undefined" name)))
 
 (sclang-set-command-handler
  'methodReferences
@@ -545,7 +564,7 @@ are considered."
 	    (let ((case-fold-search nil))
 	      (when (re-search-forward (regexp-quote name))
 		(match-beginning 0)))))
-       (message "No references to '%s'" name)))))
+       (sclang-message "No references to '%s'" name)))))
 
 (defun sclang-show-method-args ()
   "whooha. in full effect."

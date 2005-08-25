@@ -100,7 +100,7 @@
      "-"
      ["Run Main"		sclang-main-run]
      ["Stop Main"		sclang-main-stop]
-     ["Show Server Panels"	sclang-show-server-panels]
+     ["Show Server Panels"	sclang-show-server-panel]
      )))
 
 (defun sclang-fill-mode-map (map)

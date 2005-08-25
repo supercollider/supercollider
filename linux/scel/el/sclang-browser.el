@@ -15,6 +15,7 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
+(require 'sclang-util)
 (require 'view nil t)
 
 ;; TODO: better factoring
@@ -78,13 +79,14 @@
 (defun sclang-browser-follow-link (&optional pos)
   (interactive)
   (let* ((pos (or pos (point)))
-	 (data (get-text-property pos 'sclang-browser-link))
-	 (fun (or (car data) sclang-browser-link-function))
-	 (arg (cdr data)))
-    (when (functionp fun)
-      (condition-case nil
-	  (funcall fun arg)
-	(error (message "SCLang: Error in link function") nil)))))
+	 (data (get-text-property pos 'sclang-browser-link)))
+    (when (consp data)
+      (let ((fun (or (car data) sclang-browser-link-function))
+	    (arg (cdr data)))
+	(when (functionp fun)
+	  (condition-case nil
+	      (funcall fun arg)
+	    (error (sclang-message "Error in link function") nil)))))))
 
 (defun sclang-browser-mouse-follow-link (event)
   (interactive "e")
