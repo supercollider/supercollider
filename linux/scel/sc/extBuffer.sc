@@ -3,7 +3,7 @@
 		var active, booter, killer, makeDefault, running, booting, stopped;
 		var recorder, scoper;
 		var countsViews, ctlr;
-		var dumping=false;
+		var dumping=false, startDump, stopDump, stillRunning;
 		
 		if (window.notNil, { ^window.focus });
 		
@@ -49,34 +49,26 @@
 			
 		recorder.enabled = false;
 		
-		/*
-				w.view.keyDownAction = { arg ascii, char;
-				var startDump, stopDump, stillRunning;
-			
-			case 
-			{char === $n} { this.queryAllNodes }
-			{char === $ } { if(serverRunning.not) { this.boot } }
-			{char === $s and: {this.inProcess}} { this.scope }
-			{char == $d} {
-				stillRunning = {
-					SystemClock.sched(0.2, { this.stopAliveThread });
-				};
-				startDump = { 
-					this.dumpOSC(1);
-					this.stopAliveThread;
-					dumping = true;
-					CmdPeriod.add(stillRunning);
-				};
-				stopDump = {
-					this.dumpOSC(0);
-					this.startAliveThread;
-					dumping = false;
-					CmdPeriod.remove(stillRunning);
-				};
-				if(dumping, stopDump, startDump)
-			
-			};
-				};*/
+		stillRunning = {
+			SystemClock.sched(0.2, { this.stopAliveThread });
+		};
+		w.defineKey("n", { this.queryAllNodes })
+		 .defineKey(" ", { if(serverRunning.not) { this.boot } })
+		 .defineKey("d", {
+			 startDump = { 
+				 this.dumpOSC(1);
+				 this.stopAliveThread;
+				 dumping = true;
+				 CmdPeriod.add(stillRunning);
+			 };
+			 stopDump = {
+				 this.dumpOSC(0);
+				 this.startAliveThread;
+				 dumping = false;
+				 CmdPeriod.remove(stillRunning);
+			 };
+			 if(dumping, stopDump, startDump)
+		 });
 		
 		if (isLocal, {
 			running = {
@@ -141,8 +133,6 @@
 			numView
 		});
 		
-		w.focus;
-
 		ctlr = SimpleController(this)
 			.put(\serverRunning, {	if(serverRunning,running,stopped) })
 			.put(\counts,{
@@ -157,6 +147,7 @@
 				recorder.value=0;
 			});	
 		w.gotoBob;
+		w.focus;
 		this.startAliveThread;
 	}
 }

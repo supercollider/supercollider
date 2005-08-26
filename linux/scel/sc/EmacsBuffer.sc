@@ -2,7 +2,7 @@
 
 EmacsBuffer { // Represents an Emacs buffer
 	classvar all;
-	var <name, <>onClose;
+	var <name, <>onClose, <keymap;
 	*initClass {
 		Class.initClassTree(Emacs);
 		all = Dictionary.new;
@@ -21,18 +21,32 @@ EmacsBuffer { // Represents an Emacs buffer
 	}
 	init {
 		all[name] = this;
+		keymap = Dictionary.new;
 		Emacs.evalLispExpression(
 			['with-current-buffer', ['get-buffer-create', name],
 				[\let, [['inhibit-read-only', \t]], ['erase-buffer']],
-				['use-local-map', 'widget-keymap'],
+				['use-local-map',
+					[\let, [[\map, ['make-sparse-keymap']]],
+						['set-keymap-parent', \map, 'widget-keymap'],
+						\map]],
 				['add-hook', [\quote, 'kill-buffer-hook'],
 					[\lambda, [],
 						['sclang-eval-string',
-							['sclang-format', "EmacsBuffer.at(%o).killed",
+							['sclang-format', "EmacsBuffer.killed(%o)",
 								['buffer-name']]]],
 					\nil, \t]].asLispString)
 	}
 	*at {|name| ^all[name] }
+	defineKey {|keySeq,func|
+		keymap.put(keySeq, func);
+		Emacs.evalLispExpression(
+			this.use(['local-set-key', keySeq,
+				[\lambda, [],
+					[\interactive],
+					['sclang-eval-string',
+						['sclang-format', "EmacsBuffer.at(%o).keymap.at(%o).value",
+							['buffer-name'], keySeq]]]]).asLispString)
+	}
 	focus { Emacs.evalLispExpression(['switch-to-buffer', name].asLispString) }
 	use {|...args| ^['with-current-buffer', ['get-buffer', name]]++args }
 	insert {|string|
@@ -65,9 +79,13 @@ EmacsBuffer { // Represents an Emacs buffer
 	closeButton {
 		EmacsPushButton(this, "Close").action={this.free}
 	}
-	killed {
-		onClose.value(this);
-		all.removeAt(name);
+	*killed {|name|
+		var buf;
+		buf = this.at(name);
+		if (buf.isNil.not) {
+			buf.onClose.value(buf);
+			all.removeAt(name);
+		}
 	}
 	free {
 		onClose.value(this);
