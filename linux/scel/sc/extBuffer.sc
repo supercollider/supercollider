@@ -160,3 +160,82 @@
 		this.startAliveThread;
 	}
 }
+
++ SynthDesc {
+	makeWindow {
+		var w, s, startButton, sliders;
+		var id, cmdPeriodFunc;
+		var synthDesc;
+		var usefulControls, numControls;
+		var getSliderValues;
+
+		s = Server.default;
+				
+		usefulControls = controls.select {|controlName, i|
+			var ctlname;
+			ctlname = controlName.name;
+			(ctlname != "?") && (ctlname != "gate")
+		};
+		
+		numControls = usefulControls.size;
+		sliders = Array.newClear(numControls);
+		
+		id = s.nextNodeID; // generate a note id.
+		
+		// make the window
+		w = EmacsBuffer("*SynthDesc"+name++"*");
+		// add a button to start and stop the sound.
+		startButton = EmacsButton(w, ["Start","Stop"]);
+		w.newline;
+		getSliderValues = {
+			var envir;
+
+			envir = ();
+			usefulControls.do {|controlName, i|
+				var ctlname;
+				ctlname = controlName.name.asSymbol;
+				envir.put(ctlname, sliders[i].value);
+			};
+			envir.use {
+				msgFunc.valueEnvir
+			};
+		};
+		
+		startButton.action = {|value|
+				if (value == 1) {
+					// start sound
+					s.sendBundle(s.latency, ["/s_new", name, id, 0, 0] ++ getSliderValues.value);
+				};
+				if (value == 0) {
+					if (hasGate) {
+						// set gate to zero to cause envelope to release
+						s.sendMsg("/n_set", id, "gate", 0);
+					}{
+						s.sendMsg("/n_free", id);
+					};
+				};
+		};
+		
+		// create controls for all parameters
+		usefulControls.do {|controlName, i|
+			var ctlname, ctlname2, capname, spec;
+			ctlname = controlName.name;
+			capname = ctlname.copy; 
+			capname[0] = capname[0].toUpper;
+			spec = ctlname.asSymbol.asSpec;
+			sliders[i] = EmacsNumber(w, capname, spec?ControlSpec(-1e8,1e8),
+				{|ez| s.sendMsg("/n_set", id, ctlname, ez); }, controlName.defaultValue);
+		};
+			
+		// set start button to zero upon a cmd-period
+		cmdPeriodFunc = { startButton.value = 0; };
+		CmdPeriod.add(cmdPeriodFunc);
+		
+		// stop the sound when window closes and remove cmdPeriodFunc.
+		w.onClose = {
+			s.sendMsg("/n_free", id);
+			CmdPeriod.remove(cmdPeriodFunc);
+		};
+		w.focus; // make window visible and front window.
+	}
+}
