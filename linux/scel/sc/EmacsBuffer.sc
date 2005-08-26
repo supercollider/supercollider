@@ -59,8 +59,8 @@ EmacsBuffer { // Represents an Emacs buffer
 	editableField {|tag, value, action|
 		EmacsEditableField(this, tag, value).action=action
 	}
-	button {|states, action|
-		EmacsButton(this, states, action)
+	button {|states, action, prefix="[", suffix="]"|
+		EmacsButton(this, states, action, prefix, suffix)
 	}
 	closeButton {
 		EmacsPushButton(this, "Close").action={this.free}
@@ -216,7 +216,7 @@ EmacsButton : EmacsWidget {
 		this.wValueSet(realValue, {value = argValue});
 	}
 	states_ {|argStates|
-		this.wPut(\states, states=argStates, { this.wValueSet(states[0]) });
+		this.wPut(\states, states=argStates, { this.wValueSet(states[value]) });
 	}
 	initStates {|argStates|states=argStates}
 	initValue {|argValue|value=argValue}
