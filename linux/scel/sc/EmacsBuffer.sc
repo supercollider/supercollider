@@ -1,0 +1,266 @@
+// Emacs Widget library bindings for SCLang
+
+EmacsBuffer { // Represents an Emacs buffer
+	classvar all;
+	var <name, <>onClose;
+	*initClass {
+		Class.initClassTree(Emacs);
+		all = Dictionary.new;
+		Emacs.evalLispExpression(
+			[\require, [\quote, 'wid-edit']].asLispString,
+			{Emacs.evalLispExpression(
+				[\defvar, 'sclang-widgets', \nil,
+					"Maps IDs to Emacs widget objects."]
+				.asLispString,
+				{Emacs.evalLispExpression(
+					['make-variable-buffer-local', [\quote, 'sclang-widgets']]
+					.asLispString)})});
+	}
+	*new {|name="*SCWindow*"|
+		^super.newCopyArgs(name).init;
+	}
+	init {
+		all[name] = this;
+		Emacs.evalLispExpression(
+			['with-current-buffer', ['get-buffer-create', name],
+				[\let, [['inhibit-read-only', \t]], ['erase-buffer']],
+				['use-local-map', 'widget-keymap'],
+				['add-hook', [\quote, 'kill-buffer-hook'],
+					[\lambda, [],
+						['sclang-eval-string',
+							['sclang-format', "EmacsBuffer.at(%o).killed",
+								['buffer-name']]]],
+					\nil, \t]].asLispString)
+	}
+	*at {|name| ^all[name] }
+	focus { Emacs.evalLispExpression(['switch-to-buffer', name].asLispString) }
+	use {|...args| ^['with-current-buffer', ['get-buffer', name]]++args }
+	insert {|string|
+		Emacs.evalLispExpression(
+			this.use(['widget-insert', string]).asLispString
+		)
+	}
+	goto {|position|
+		Emacs.evalLispExpression(
+			this.use(['goto-char', position]).asLispString
+		)
+	}
+	gotoBob {
+		Emacs.evalLispExpression(
+			this.use(['goto-char', ['point-min']]).asLispString
+		)
+	}
+	gotoEob {
+		Emacs.evalLispExpression(
+			this.use(['goto-char', ['point-max']]).asLispString
+		)
+	}
+	newline { this.insert("\n")	}
+	editableField {|tag, value, action|
+		EmacsEditableField(this, tag, value).action=action
+	}
+	button {|states, action|
+		EmacsButton(this, states, action)
+	}
+	closeButton {
+		EmacsPushButton(this, "Close").action={this.free}
+	}
+	killed {
+		onClose.value(this);
+		all.removeAt(name);
+	}
+	free {
+		onClose.value(this);
+		all.removeAt(name);
+		Emacs.evalLispExpression(['kill-buffer', name].asLispString,
+			{super.free})
+	}
+}
+
+EmacsWidget {
+	classvar allocator, <idmap;
+	var <buffer, <type, <args, <id, <enabled;
+	*initClass {
+		allocator = StackNumberAllocator(0,1024);
+		idmap = Array.newClear(1024);
+	}
+	*new {|buffer, type ... args|
+		^super.newCopyArgs(buffer,type,args).init;
+	}
+	init {
+		id = allocator.alloc;
+		idmap[id] = this;
+		enabled = true;
+		Emacs.evalLispExpression(
+			buffer.use(
+				['add-to-list', [\quote, 'sclang-widgets'],
+					[\cons, id, ['widget-create', [\quote, type], ':id', id]++args]],
+				['widget-setup']).asLispString)
+	}
+	wPut {|argKey, argValue, handler|
+		Emacs.evalLispExpression(
+			buffer.use(['widget-put',
+				[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
+				(':'++argKey).asSymbol,
+				[\quote, argValue]]).asLispString, handler)
+	}
+	wValueSet {|argValue, handler|
+		Emacs.evalLispExpression(
+			buffer.use(['widget-value-set',
+				[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
+				argValue]).asLispString, handler)
+	}
+	enabled_ {|argValue, handler|
+		if (argValue) {
+			Emacs.evalLispExpression(
+				buffer.use(['widget-apply',
+					[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
+					':activate']).asLispString, {enabled=true;handler.value})
+		} {
+			Emacs.evalLispExpression(
+				buffer.use(['widget-apply',
+					[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
+					':deactivate']).asLispString, {enabled=false;handler.value})
+		}
+	}
+}
+
+EmacsPushButton : EmacsWidget {
+	var <>action;
+	*new {|buffer, tag|
+		^super.new(buffer, 'push-button', ':tag', tag, ':action',
+			[\lambda, [\widget, \event],
+				['sclang-eval-string',
+					['sclang-format', "EmacsWidget.idmap[%o].action.value",
+						['widget-get', \widget, ':id']]]])
+	}
+}
+
+EmacsEditableField : EmacsWidget {
+	var <>action;
+	*new {|buffer, tag, value=""|
+		^super.new(buffer, 'editable-field', ':tag', tag,
+			':format', "%{%t%}: %v",
+			':action',
+			[\lambda, [\widget, \event],
+				['sclang-eval-string',
+					['sclang-format', "EmacsWidget.idmap[%o].action.value(%o)",
+						['widget-get', \widget, ':id'],
+						['widget-value', \widget]]]],
+		value)
+	}
+}
+
+EmacsNumber : EmacsWidget {
+	var <>action, <>spec, <value;
+	*new {|buffer, tag, spec, action, value=0|
+		^super.new(buffer, \number, ':tag', tag,
+			':format', "%{%t%}: %v",
+			':min', spec.minval,
+			':max', spec.maxval,
+			':action',
+			[\lambda, [\widget, \event],
+				[\let, [[\val, ['widget-value', \widget]]],
+					[\cond,
+						[['>', \val, ['widget-get', \widget, ':max']],
+							[\error, "Too much"]],
+						[['<', \val, ['widget-get', \widget, ':min']],
+							[\error, "Too less"]],
+						[\t,
+							['sclang-eval-string',
+								['sclang-format', "EmacsWidget.idmap[%o].valueFromEmacs(%o)",
+									['widget-get', \widget, ':id'], \val]]]]]],
+			value).action_(action).spec_(spec).initValue(value)
+	}
+	valueFromEmacs {|argValue|
+		value = argValue;
+		action.value(value)
+	}
+	value_ {|argValue|
+		Emacs.evalLispExpression(
+			buffer.use(
+				['save-excursion',
+					['widget-value-set', [\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]], argValue],
+					['widget-setup']],
+				argValue).asLispString,
+			{|result|value=result})
+	}
+	initValue {|argValue|value=argValue}
+}
+
+EmacsButton : EmacsWidget {
+	var <>action, <value, <states;
+	*new {|buffer, states=#[], action, prefix="[", suffix="]"|
+		^super.new(buffer, \item, ':format', "%[%v%]",
+			':action',
+			[\lambda, [\widget, \event],
+				['widget-value-set', \widget,
+					[\or, [\cadr, [\member, ['widget-value', \widget], ['widget-get', \widget, ':states']]],
+						[\car, ['widget-get', \widget, ':states']]]],
+				['sclang-eval-string',
+					['sclang-format', "EmacsWidget.idmap[%o].valueFromEmacs(%o)",
+						['widget-get', \widget, ':id'],
+						[\position, ['widget-value', \widget], ['widget-get', \widget, ':states'], ':test', [\quote, 'string=']]]]],
+			':button-prefix', prefix,
+			':button-suffix', suffix,
+			':states', [\quote, states],
+			':value', states[0]).action_(action).initValue(0).initStates(states)
+	}
+	valueFromEmacs {|argValue|
+		value = argValue;
+		action.value(value)
+	}
+	value_ {|argValue|
+		var realValue;
+		realValue = states[argValue];
+		this.wValueSet(realValue, {value = argValue});
+	}
+	states_ {|argStates|
+		this.wPut(\states, states=argStates, { this.wValueSet(states[0]) });
+	}
+	initStates {|argStates|states=argStates}
+	initValue {|argValue|value=argValue}
+}
+
+EmacsText : EmacsWidget {
+	var <string, <size, <align;
+	*new {|buffer, string="", size, align=\center|
+		^super.new(buffer, \item, ':format', "%v", ':size', size?\nil, ':align', [\quote, align],
+			':value-create',
+			[\lambda, [\widget],
+				['let*', [
+					[\align, [\or, ['widget-get', \widget, ':align'], [\quote, \center]]],
+					[\string, ['widget-get', \widget, ':value']],
+					[\size, [\cond, [[\null, ['widget-get', \widget, ':size']], [\length, \string]],
+						[['<', ['widget-get', \widget, ':size'], [\length, \string]], [\length, \string]],
+						[\t, ['widget-get', \widget, ':size']]]]
+				],
+					[\insert,
+						[\cond,
+							[['=', \size, [\length, \string]], \string],
+							[['>', \size, [\length, \string]],
+								[\cond,
+									[[\eq, \align, [\quote, \left]],
+										[\concat, \string, ['make-string', ['-', \size, [\length, \string]], $ ]]],
+									[[\eq, \align, [\quote, \right]],
+										[\concat, ['make-string', ['-', \size, [\length, \string]], $ ], \string]],
+									[[\eq, \align, [\quote, \center]],
+										[\let, [[\half, ['/', ['-', \size, [\length, \string]], 2]]],
+											[\if, ['=', ['+', [\length, \string], ['*', \half, 2]], \size],
+												[\concat, ['make-string', \half, $ ], \string, ['make-string', \half, $ ]],
+												[\concat, ['make-string', \half, $ ], \string, ['make-string', \half, $ ], " "]]]]]]]]]],
+			string).initValue(size?string.size,align,string)
+	}
+	string_ {|argString|
+		string = argString.asString;
+		this.wValueSet(string);
+	}
+	size_ {|argSize|
+		this.wPut(\size, size=argSize, {this.wValueSet(string)})
+	}
+	align_ {|argAlign|
+		this.wPut(\align, align=argAlign, {this.wValueSet(string)})
+	}
+	initValue {|argSize,argAlign,argValue|size=argSize;align=argAlign;string=argValue}
+}
+

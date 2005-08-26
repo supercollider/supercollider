@@ -40,6 +40,12 @@
 	}
 }
 
++ Char {
+	storeLispOn { arg stream;
+		stream.putAll("?"++this)
+	}
+}
+
 + Number {
 	storeLispOn { arg stream;
 		stream << this
