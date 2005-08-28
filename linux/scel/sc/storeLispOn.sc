@@ -46,6 +46,14 @@
 	}
 }
 
++ Color {
+	storeLispOn { arg stream;
+		("#"++(red*255).asInteger.asHexString(2)
+			++(green*255).asInteger.asHexString(2)
+			++(blue*255).asInteger.asHexString(2)).storeLispOn(stream)
+	}
+}
+
 + Number {
 	storeLispOn { arg stream;
 		stream << this
