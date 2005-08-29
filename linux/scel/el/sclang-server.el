@@ -18,6 +18,13 @@
 (eval-and-compile
   (require 'cl))
 
+(defcustom sclang-server-panel "Server.default.makeWindow"
+  "*Expression to execute when `sclang-show-server-panel' is invoked."
+  :group 'sclang
+  :type '(choice (const "Server.default.makeWindow")
+		 (const "\\SCUM.asClass.do { \\SCUM.asClass.desktop.showServerPanel }")
+		 string))
+
 (defvar sclang-server-alist nil
   "Alist of currently defined synthesis servers.")
 
@@ -247,7 +254,7 @@ if (server.notNil) {
 (defun sclang-show-server-panel ()
   "Show graphical server panel if available."
   (interactive)
-  (sclang-eval-string "\\SCUM.asClass.do { \\SCUM.asClass.desktop.showServerPanel }"))
+  (sclang-eval-string sclang-server-panel))
 
 ;; =====================================================================
 ;; module setup
