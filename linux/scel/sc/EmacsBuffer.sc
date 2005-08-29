@@ -133,12 +133,12 @@ EmacsWidget {
 			Emacs.evalLispExpression(
 				buffer.use(['widget-apply',
 					[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
-					':activate']).asLispString, {enabled=true;handler.value})
+					':activate'], \nil).asLispString, {enabled=true;handler.value})
 		} {
 			Emacs.evalLispExpression(
 				buffer.use(['widget-apply',
 					[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
-					':deactivate']).asLispString, {enabled=false;handler.value})
+					':deactivate'], \nil).asLispString, {enabled=false;handler.value})
 		}
 	}
 }
