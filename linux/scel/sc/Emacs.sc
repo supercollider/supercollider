@@ -186,6 +186,12 @@ EmacsInterface {
 
 			stream.collection;
 		})
+		.put('evalSCLang', #{|expr, time|
+			{[time, \ok, expr.interpret]}
+			.try{|e|
+				[time, \error, e.errorString]
+			}
+		})
 	}
 }
 

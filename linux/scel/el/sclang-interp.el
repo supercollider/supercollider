@@ -533,6 +533,32 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
       (sclang-eval-string string (not silent-p))
       string)))
 
+(defvar sclang-eval-results nil
+  "Save results of sync SCLang evaluation.")
+
+(sclang-set-command-handler
+ 'evalSCLang
+ (lambda (arg) (push arg sclang-eval-results)))
+
+(defun sclang-eval-sync (string)
+  "Eval STRING in sclang and return result as a lisp value."
+  (let ((proc (get-process sclang--command-process)))
+    (if (and (processp proc) (eq (process-status proc) 'run))
+	(let ((time (current-time)) (tick 10000) elt)
+	  (sclang-perform-command 'evalSCLang string time)
+	  (while (and (> (decf tick) 0)
+		      (not (setq elt (find time sclang-eval-results
+					   :key #'car :test #'equal))))
+	    (accept-process-output proc 0 100))
+	  (if elt
+	      (prog1 (if (eq (nth 1 elt) 'ok)
+			 (nth 2 elt)
+		       (setq sclang-eval-results (delq elt sclang-eval-results))
+		       (signal 'sclang-error (nth 2 elt)))
+		(setq sclang-eval-results (delq elt sclang-eval-results)))
+	    (error "SCLang sync eval timeout")))
+      (error "SCLang Command process not running"))))
+
 ;; =====================================================================
 ;; workspace
 ;; =====================================================================
