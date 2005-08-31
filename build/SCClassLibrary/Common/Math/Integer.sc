@@ -117,7 +117,7 @@ Integer : SimpleNumber {
 		var rest = this, string, mask;
 		base = base.max(2);
 		string = String.newClear(width);
-		if (base.even) {
+		if (base.isPowerOfTwo) {
 			mask = base - 1;
 			width.do { | i |
 				string.put(width-i-1, (rest & mask).asDigit);
