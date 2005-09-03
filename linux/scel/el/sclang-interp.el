@@ -390,34 +390,19 @@ Change this if \"cat\" has a non-standard name or location."
     (unless (get-process sclang--command-process)
       (message "SCLang: Couldn't start command process"))))
 
-(defvar sclang--command-state [sclang--gather-command-output 0 ""]
-  "State array for processing command process output.
-
-[HANDLER EXPECTED-STRING-SIZE OUTPUT-STRING]")
-
-(defun sclang--gather-command-output (state)
-  (aset state 0 'sclang--gather-command-output)
-  (let ((string (aref state 2)))
-    (when (> (length string) 3)
-    (aset state 1 (sclang-string-to-int32 string))
-    (aset state 2 (substring string 4))
-    (sclang--scatter-command-output state))))
-
-(defun sclang--scatter-command-output (state)
-  (aset state 0 'sclang--scatter-command-output)
-  (let ((size (aref state 1))
-	(string (aref state 2)))
-  (when (and (> size 0) (>= (length string) size))
-    (let ((assoc (car (read-from-string string 0 size))))
-      (sclang--handle-command-result assoc))
-    (aset state 1 0)
-    (aset state 2 (substring string size))
-    (sclang--gather-command-output state))))
+(defvar sclang--command-process-previous nil
+  "Unprocessed command process output.")
 
 (defun sclang--command-process-filter (proc string)
-  (let ((state sclang--command-state))
-    (aset state 2 (concat (aref state 2) string))
-    (funcall (aref state 0) state)))
+  (when sclang--command-process-previous
+    (setq string (concat sclang--command-process-previous string)))
+  (let (end)
+    (while (and (> (length string) 3)
+		(>= (length string)
+		    (setq end (+ 4 (sclang-string-to-int32 string)))))
+      (sclang--handle-command-result (car (read-from-string string 4 end)))
+      (setq string (substring string end))))
+  (setq sclang--command-process-previous string))
 
 ;; =====================================================================
 ;; command interface
