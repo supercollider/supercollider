@@ -5978,8 +5978,8 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 				pan = sc_wrap(pan * 0.5f + 0.5f, 0.f, 1.f);
 				panangle = pan * pi2;
 			}
-			float pan1 = grain->pan1 = amp * sin(panangle);
-			float pan2 = grain->pan2 = amp * cos(panangle);
+			float pan1 = grain->pan1 = amp * cos(panangle);
+			float pan2 = grain->pan2 = amp * sin(panangle);
 			double w = pi / counter;
 			double b1 = grain->b1 = 2. * cos(w);
 			double y1 = sin(w);
