@@ -3382,10 +3382,15 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop)
 	int level, index, vindex, varType;
 	PyrBlock *tempfunc;
 	PyrClass *classobj;
-	
+
 	//postfl("compileAssignVar\n");
 	classobj = gCompilingClass;
-	if (varName->name[0] >= 'A' && varName->name[0] <= 'Z') {
+	if (varName == s_this || varName == s_super || varName == s_curProcess || varName == s_curThread || varName == s_curMethod || 
+		varName == s_curBlock || varName == s_curClosure) {
+		error("You may not assign to '%s'.", varName->name);
+		nodePostErrorLine(node);
+		compileErrors++;
+	} else if (varName->name[0] >= 'A' && varName->name[0] <= 'Z') {
 		// actually this shouldn't even parse, so you won't get here.
 		error("You may not assign to a class name.");
 		nodePostErrorLine(node);
