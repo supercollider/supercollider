@@ -68,6 +68,9 @@ File : UnixFILE {
 		this.read(string);
 		^string
 	}
+	readAllStringRTF {
+		^this.readAllString.stripRTF;
+	}
 	readAllSignal {
 		var signal;
 		signal = Signal.newClear(this.length);

@@ -14,6 +14,11 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	
+	stripRTF { 
+		_StripRtf
+		^this.primitiveFailed
+	}
+	
 	compare { arg aString, ignoreCase=false; _StringCompare }
 	< { arg aString; ^this.compare(aString, true) < 0 }
 	> { arg aString; ^this.compare(aString, true) > 0 }

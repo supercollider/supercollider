@@ -30,6 +30,7 @@ Primitives for String.
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "PyrLexer.h"
 
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
@@ -356,6 +357,24 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
+int prStripRtf(struct VMGlobals *g, int numArgsPushed);
+int prStripRtf(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	int len = a->uo->size;
+	char * chars = (char*)malloc(len + 1);
+	memcpy(chars, a->uos->s, len);
+	chars[len] = 0;
+	rtf2txt(chars);
+	
+	PyrString* string = newPyrString(g->gc, chars, 0, false);
+	SetObject(a, string);
+	free(chars);
+	
+	return errNone;
+}
+
+
 int prString_Find(struct VMGlobals *g, int numArgsPushed);
 int prString_Find(struct VMGlobals *g, int numArgsPushed)
 {	
@@ -432,6 +451,7 @@ void initStringPrimitives()
     definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
     definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
     definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
+	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 }
 
 #if _SC_PLUGINS_

@@ -132,4 +132,5 @@ extern int parseFailed;
 extern bool compiledOK;
 extern int radixcharpos, decptpos;
 
+int rtf2txt(char* txt);
 #endif
