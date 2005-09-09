@@ -2,7 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red96\green96\blue96;\red0\green0\blue191;\red0\green115\blue0;
-\red191\green0\blue0;}
+\red191\green0\blue0;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 String\
@@ -22,7 +23,7 @@ Strings can be written literally using double quotes:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Class Methods\
+\f0\b\fs28 \cf0 Class Methods\ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
@@ -38,7 +39,7 @@ Read the entire contents of a
 \f1 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Instance Methods\
+\f0\b\fs28 \cf0 Instance Methods\ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
@@ -197,9 +198,8 @@ f.asCompileString.postln;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 postcs
+\f0\b postcs
 \f1\b0 \
 \
 As postln, but posts the compileString of the reciever\
@@ -215,9 +215,8 @@ As postln, but posts the compileString of the reciever\
 \f1\b0 \
 \
 Compile and execute a String containing legal SuperCollider code, returning the result.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "2 + 1"\cf0 .interpret.postln;
@@ -230,9 +229,8 @@ Compile and execute a String containing legal SuperCollider code, returning the 
 \f1\b0 \
 \
 Compile, execute and print the result of a String containing legal SuperCollider code.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "2 + 1"\cf0 .interpretPrint;
@@ -245,9 +243,8 @@ Compile, execute and print the result of a String containing legal SuperCollider
 \f1\b0 \
 \
 Return a Symbol derived from the String.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 (\
@@ -265,9 +262,8 @@ z.class.postln;\
 \f1\b0 \
 \
 Return an Integer derived from the String. Strings beginning with non-numeric characters return 0.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "4"\cf0 .asInteger.postln;
@@ -279,9 +275,8 @@ Return an Integer derived from the String. Strings beginning with non-numeric ch
 \f1\b0 \
 \
 Return a Float derived from the String. Strings beginning with non-numeric characters return 0.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "4.3"\cf0 .asFloat.postln;
@@ -293,9 +288,8 @@ Return a Float derived from the String. Strings beginning with non-numeric chara
 \f1\b0 \
 \
 Concatenate this string with the following args.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are some args: "\cf0 .catArgs(\cf4 \\fish\cf0 , \cf3 SinOsc\cf0 .ar, \{4 + 3\}).postln;
@@ -307,24 +301,21 @@ Concatenate this string with the following args.\
 \f1\b0 \
 \
 Same as catArgs, but with spaces in between.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are some args: "\cf0 .scatArgs(\cf4 \\fish\cf0 , \cf3 SinOsc\cf0 .ar, \{4 + 3\}).postln;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 ccatArgs(... args)
+\f0\b ccatArgs(... args)
 \f1\b0 \
 \
 Same as catArgs, but with commas in between.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "a String"\cf0 .ccatArgs(\cf4 \\fish\cf0 , \cf3 SinOsc\cf0 .ar, \{4 + 3\}).postln;
@@ -336,9 +327,8 @@ Same as catArgs, but with commas in between.\
 \f1\b0 \
 \
 As catArgs, scatArgs and ccatArgs above, but takes a Collection (usually a List or an Array) as an argument. \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "a String"\cf0 .ccatList([\cf4 \\fish\cf0 , \cf3 SinOsc\cf0 .ar, \{4 + 3\}]).postln;
@@ -352,9 +342,8 @@ As catArgs, scatArgs and ccatArgs above, but takes a Collection (usually a List 
 Returns an Array of Strings split at the separator. The separator is a 
 \f0\b Char
 \f1\b0 , and is not included in the output array. The default separator is $/, handy for Unix paths.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "This/could/be/a/Unix/path"\cf0 .split.postln;\
@@ -367,9 +356,8 @@ Returns an Array of Strings split at the separator. The separator is a
 \f1\b0 \
 \
 Returns the index of the string in the receiver, or nil if not found.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words"\cf0 .find(\cf2 "are"\cf0 ).postln;\
@@ -381,9 +369,9 @@ Returns the index of the string in the receiver, or nil if not found.\
 \f1\b0 \
 \
 Returns the indices of the string in the receiver, or nil if not found.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words which are fish"\cf0 .findAll(\cf2 "are"\cf0 ).postln;\
 \cf2 "These are several words which are fish"\cf0 .findAll(\cf2 "fish"\cf0 ).postln;
@@ -397,9 +385,8 @@ Returns the indices of the string in the receiver, or nil if not found.\
 Returns a 
 \f0\b Boolean
 \f1\b0  indicating if the String contains string.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words"\cf0 .contains(\cf2 "are"\cf0 ).postln;\
@@ -412,9 +399,8 @@ Returns a
 \
 
 \f1\b0 Same as contains, but case insensitive.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words"\cf0 .containsi(\cf2 "ArE"\cf0 ).postln;
@@ -428,9 +414,8 @@ containsStringAt(index, string)
 Returns a 
 \f0\b Boolean 
 \f1\b0 indicating if the String contains string beginning at the specified index.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words"\cf0 .containsStringAt(6, \cf2 "are"\cf0 ).postln;
@@ -507,14 +492,31 @@ Add the escape character (\\) at the location of your choice.\
 
 \f1\b0 Returns class StringInspector.\
 \
+
+\f0\b stripRTF
+\f1\b0 \
+\
+Returns a new String with all RTF formatting removed.\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul Unix Support
+\f2\fs18 \cf0 (\cf6 \
+\cf7 // same as File-readAllStringRTF\cf6 \
+g = \cf8 File\cf6 (\cf9 "/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf"\cf6 ,\cf9 "r"\cf6 );\
+g.readAllString.stripRTF.postln;\
+g.close;\
+\cf0 )
+\f1\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 Unix Support
 \f1\b0\fs24 \ul \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ulnone Where relevant, the current working directory is the same as the location of the SuperCollider app and the shell is the Bourne shell (sh). Note that the cwd, and indeed the shell itself, does not persist:\
-\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \ulnone "echo $0"\cf0 .unixCmd; \cf5 // print the shell (sh)\cf0 \
@@ -624,12 +626,10 @@ pathMatch\
 \
 
 \f1\b0 Load and execute the file at the path represented by the receiver.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 \
 
-\f0\b \cf0 standardizePath\
+\f0\b standardizePath\
 \
 
 \f1\b0 Expand ~ to your home directory, and resolve symbolic links. See 
@@ -682,7 +682,7 @@ pathMatch\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul Document Support\
+\f0\b\fs30 \cf0 Document Support\ul \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
