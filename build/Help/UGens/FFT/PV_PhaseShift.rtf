@@ -1,0 +1,37 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 PV_PhaseShift					\
+
+\f1\b0\fs24 \
+
+\f0\b PV_PhaseShift.ar(buffer, shift)\
+
+\f1\b0 \
+
+\f0\b buffer
+\f1\b0  - fft buffer.\
+
+\f0\b shift
+\f1\b0  - phase shift in degrees.\
+
+\f2\fs18 \
+\cf2 s.boot;\
+\
+b = \cf3 Buffer\cf2 .alloc(s,2048,1);\
+\
+(\
+\cf3 SynthDef\cf2 (\cf4 "help-phaseShift"\cf2 , \{  \cf3 arg\cf2  out=0, bufnum=0, soundBufnum=2;\
+	\cf3 var\cf2  in, chain;\
+	in = \cf3 SinOsc\cf2 .ar(500);\
+	chain = \cf3 FFT\cf2 (bufnum, in);\
+	chain = \cf3 PV_PhaseShift\cf2 (chain, \cf3 LFNoise2\cf2 .kr(1, 180, 180)); \
+	\cf3 Out\cf2 .ar(out, 0.5 * \cf3 IFFT\cf2 (chain).dup);  \
+\}).play(s,[\cf5 \\out\cf2 , 0, \cf5 \\bufnum\cf2 , b.bufnum, \cf5 \\soundBufnum\cf2 , c.bufnum]);\
+)\
+\
+}
