@@ -240,9 +240,10 @@ Array[slot] : ArrayedCollection {
 		stream << " ]" ;
 	}
 	storeOn { arg stream;
+		var first, second, last;
 		if (stream.atLimit, { ^this });
 		if (this.size > 3) {
-			var first=this[0], second=this[1], last=this[this.size-1];
+			first=this[0]; second=this[1]; last=this[this.size-1];
 			if (this.lastIndexForWhich{|v,i|
 				if (i > 1) {
 					if (v.isKindOf(SimpleNumber)) {
