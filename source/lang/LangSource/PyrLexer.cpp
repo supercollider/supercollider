@@ -70,7 +70,7 @@
 
 #include "SC_LibraryConfig.h"
 
-#include "SC_DirectoryUtils.h"
+//#include "SC_DirectoryUtils.h"
 
 #ifdef SC_WIN32
 # include <stdio.h>
@@ -2169,8 +2169,8 @@ static void sc_InitCompileDirectories(void)
 	}
 #endif
 
-	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
-	sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
+//	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
+//	sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
 }
 
 bool passOne()
