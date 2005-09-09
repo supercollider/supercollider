@@ -1003,8 +1003,9 @@ void PV_Mul_next(PV_Unit *unit, int inNumSamples)
 	p->dc *= q->dc;
 	p->nyq *= q->nyq;
 	for (int i=0; i<numbins; ++i) {
-		p->bin[i].real *= q->bin[i].real;
-		p->bin[i].imag *= q->bin[i].imag;
+		float preal = p->bin[i].real;
+		p->bin[i].real = (preal * q->bin[i].real) - (p->bin[i].imag * q->bin[i].imag);
+		p->bin[i].imag = (preal * q->bin[i].imag) + (p->bin[i].imag * q->bin[i].real);
 	}
 }
 
