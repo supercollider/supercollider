@@ -856,7 +856,7 @@ NodeProxy : BusPlug {
 		var bundle, all;
 		all = keys.isEmpty;
 		if(all) { 
-			keys = nodeMap.settings.keys; 			
+			keys = nodeMap.settingKeys; 			
 			keys.remove('out');
 			keys.remove('i_out');  
 		};
