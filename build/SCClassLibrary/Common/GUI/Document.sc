@@ -288,11 +288,11 @@ Document {
 		} {
 			// in a second try, check if a path must be created.
 			// user makes double click on string.
-			dir = wikiDir;
-			wikiWord.split($/).drop(-1).do { |item|
-				dir = dir ++ item ++ "/";
-				postf("created directory: % \n", dir);
-				unixCmd("mkdir" + dir);
+			dir = wikiWord.dirname;
+			if(dir != ".") {
+				dir = wikiDir ++ dir;
+				"created directory: % \n".postf(dir); 
+				unixCmd("mkdir -p" + dir); 
 			};
 		}
 	}
