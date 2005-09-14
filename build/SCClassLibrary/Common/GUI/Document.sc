@@ -265,9 +265,10 @@ Document {
 		endFrontAction.value(this);
 	}
 	
-	makeWikiPage { arg filename, wikiWord;
-		var file, doc, string;
+	makeWikiPage { arg wikiWord, extension=".rtf";
+		var filename, file, doc, string, dir;
 		
+		filename = wikiDir ++ wikiWord ++ extension;
 		file = File(filename, "w");
 		if (file.isOpen) {
 			string = "{\\rtf1\\mac\\ansicpg10000\\cocoartf102\\n{\\fonttbl}\n"
@@ -284,7 +285,16 @@ Document {
 					unixCmd("rm" + filename) 
 				};
 			};
-		};
+		} {
+			// in a second try, check if a path must be created.
+			// user makes double click on string.
+			dir = wikiDir;
+			wikiWord.split($/).drop(-1).do { |item|
+				dir = dir ++ item ++ "/";
+				postf("created directory: % \n", dir);
+				unixCmd("mkdir" + dir);
+			};
+		}
 	}
 	openWikiPage {
 		var selectedText, filename, index;
@@ -335,8 +345,7 @@ Document {
 				}
 			};
 			// make a new wiki page
-			filename = wikiDir ++ selectedText ++ ".rtf";
-			this.makeWikiPage(filename, selectedText);
+			this.makeWikiPage(selectedText);
 		};
 	}
 		
