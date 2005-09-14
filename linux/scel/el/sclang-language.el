@@ -660,6 +660,58 @@ are considered."
 	  (setq i (+ start (length repl)))))))
   string)
 
+(defun sclang-format-pseq (items)
+  "Format ITEMS (a flat list of numbers or symbols) as a possibly nested Pseq.
+Looks for all repetitive patterns in ITEMS recursively.  Therefore, it is
+computationally expensive, especially when ITEMS is a long list.  If you don't
+want smart pattern guessing, use `sclang-format' directly to format your Pseq."
+  (flet ((find-reps (items)
+	   (let (r)
+	     (while items
+	       (let ((ret (car items))
+		     (skip 1)
+		     (rep (length items)))
+		 (catch 'match-found
+		   (while (>= rep 2)
+		     (let ((i (/ (length items) rep)))
+		       (while (> i 0)
+			 (let ((sublst (subseq items 0 i)))
+			   (when (catch 'equal
+				   (let ((a items))
+				     (loop repeat rep do
+					   (let ((b sublst))
+					     (while b
+					       (unless (eql (car b) (car a))
+						 (throw 'equal nil))
+					       (setq a (cdr a)
+						     b (cdr b)))))
+				     t))
+			     (setq ret (cons rep (if (> i 5)
+						     (find-reps sublst)
+						   sublst))
+				   skip (* i rep))
+			     (throw 'match-found t))
+			   (decf i))))
+		     (decf rep)))
+		 (accept-process-output nil 0 100)
+		 (message "Processed...%S" ret) ;; invent better progress info
+		 (setq r (append r (list ret))
+		       items (nthcdr skip items))))
+	     r))
+	 (elem-to-string (elem)
+	   (cond
+	    ((consp elem)
+	     (concat "Pseq([ "
+		     (mapconcat #'elem-to-string (cdr elem) ", ")
+		     (format " ], %d)" (car elem))))
+	    (t (sclang-object-to-string elem)))))
+    (let ((compressed (find-reps items)))
+      (if (and (= (length compressed) 1) (consp (car compressed)))
+	  (elem-to-string (car compressed))
+	(concat "Pseq([ "
+		(mapconcat #'elem-to-string compressed ", ")
+		" ], 1)")))))
+
 ;; =====================================================================
 ;; module setup
 ;; =====================================================================
