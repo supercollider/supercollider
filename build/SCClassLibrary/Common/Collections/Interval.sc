@@ -23,6 +23,11 @@ Interval : Collection {
 	add { ^this.shouldNotImplement(thisMethod) }
 	put { ^this.shouldNotImplement(thisMethod) }
 	storeArgs { ^[start, end, step] }
+	storeOn { arg stream;
+		stream << this.class.name;
+		this.storeParamsOn(stream);
+	}
+	printOn { arg stream; this.storeOn(stream) }
 }
 
 Range : Collection {
@@ -56,4 +61,9 @@ Range : Collection {
 		^newRange
 	}
 	storeArgs { ^[start, size] }
+		storeOn { arg stream;
+		stream << this.class.name;
+		this.storeParamsOn(stream);
+	}
+	printOn { arg stream; this.storeOn(stream) }
 }
