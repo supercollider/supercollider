@@ -244,13 +244,13 @@ Array[slot] : ArrayedCollection {
 		if (stream.atLimit, { ^this });
 		if (this.size > 3) {
 			first=this[0]; second=this[1]; last=this[this.size-1];
-			if (this.lastIndexForWhich{|v,i|
+			if (first != last and: {this.lastIndexForWhich{|v,i|
 				if (i > 1) {
 					if (v.isKindOf(SimpleNumber)) {
 						(v-this[i-1]) == (second-first);
 					} { false }
 				} { if (v.isKindOf(SimpleNumber)) { true } { false } }
-			}==(this.size-1))
+			}==(this.size-1)})
 			{
 				stream << "(" << first;
 				if ((second-first).abs!=1) {
