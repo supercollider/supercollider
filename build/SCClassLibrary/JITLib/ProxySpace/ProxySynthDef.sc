@@ -58,7 +58,9 @@ ProxySynthDef : SynthDef {
 			// constrain the output to the right number of channels if supplied
 			// if control rate, no channel wrapping is applied
 			// and wrap it in a fade envelope
-			envgen = if(makeFadeEnv, { EnvGate.new }, { 1.0 });
+			envgen = if(makeFadeEnv) { 
+						EnvGate(1, nil, nil, 2, if(rate === 'audio') { 'sin' } { 'lin' })
+			 		} { 1.0 };
 			if(chanConstraint.notNil  
 				and: { chanConstraint < numChannels }
 				and: { isScalar.not }, 
