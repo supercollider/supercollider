@@ -2208,6 +2208,21 @@ int prPen_BeginPath(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prPen_ClosePath(struct VMGlobals *g, int numArgsPushed);
+int prPen_ClosePath(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    //PyrSlot *a = g->sp;
+ 
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+    CGContextClosePath(cgc);
+    
+    return errNone;
+}
+
 int prPen_StrokePath(struct VMGlobals *g, int numArgsPushed);
 int prPen_StrokePath(struct VMGlobals *g, int numArgsPushed)
 {
@@ -2888,11 +2903,13 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Pen_Rotate", prPen_Rotate, 4, 0);	
 	definePrimitive(base, index++, "_Pen_SetWidth", prPen_SetWidth, 2, 0);	
 	definePrimitive(base, index++, "_Pen_SetMatrix", prPen_SetMatrix, 2, 0);	
+	definePrimitive(base, index++, "_Pen_AddRect", prPen_AddRect, 2, 0);	
 	definePrimitive(base, index++, "_Pen_AddArc", prPen_AddArc, 5, 0);	
 	definePrimitive(base, index++, "_Pen_AddWedge", prPen_AddWedge, 5, 0);	
 	definePrimitive(base, index++, "_Pen_AddAnnularWedge", prPen_AddAnnularWedge, 6, 0);	
 
 	definePrimitive(base, index++, "_Pen_BeginPath", prPen_BeginPath, 1, 0);	
+	definePrimitive(base, index++, "_Pen_ClosePath", prPen_ClosePath, 1, 0);	
 	definePrimitive(base, index++, "_Pen_MoveTo", prPen_MoveTo, 2, 0);	
 	definePrimitive(base, index++, "_Pen_LineTo", prPen_LineTo, 2, 0);	
 	definePrimitive(base, index++, "_Pen_StrokePath", prPen_StrokePath, 1, 0);	
