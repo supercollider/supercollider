@@ -130,7 +130,6 @@ int textlen;
 int textpos;
 int parseFailed = 0;
 bool compiledOK = false;
-int radixcharpos, decptpos;
 
 
 /* so the text editor's dumb paren matching will work */
@@ -142,6 +141,37 @@ int radixcharpos, decptpos;
 #define CLOSPAREN ')'
 
 //int rtf2txt(char* txt);
+
+int sc_strtoi(const char *str, int n, int base)
+{
+	int z = 0;
+	for (int i=0; i<n; ++i) 
+	{
+		int c = *str++;
+		if (!c) break;
+		if (c >= '0' && c <= '0' + sc_min(10,base) - 1) z = z * base + c - '0';
+		else if (c >= 'a' && c <= 'a' + sc_min(36,base) - 11) z = z * base + c - 'a' + 10;
+		else if (c >= 'A' && c <= 'A' + sc_min(36,base) - 11) z = z * base + c - 'A' + 10;
+	}
+	return z;
+}
+
+double sc_strtof(const char *str, int n, int base)
+{
+	double z = 0.;
+	int decptpos = 0;
+	for (int i=0; i<n; ++i) 
+	{
+		int c = *str++;
+		if (!c) break;
+		if (c >= '0' && c <= '0' + sc_min(10,base) - 1) z = z * base + c - '0';
+		else if (c >= 'a' && c <= 'a' + sc_min(36,base) - 11) z = z * base + c - 'a' + 10;
+		else if (c >= 'A' && c <= 'A' + sc_min(36,base) - 11) z = z * base + c - 'A' + 10;
+		else if (c == '.') decptpos = i;
+	}
+	z = z / pow(base, n - decptpos);
+	return z;
+}
 
 extern void asRelativePath(char *inPath, char *outPath)
 {
@@ -420,6 +450,7 @@ void unput0(int c)
 int yylex() 
 {
 	int r, c, c2, d;
+	int radix;
     char extPath[MAXPATHLEN]; // for error reporting
 
 	yylen = 0;
@@ -632,27 +663,26 @@ binop:
 radix_digits_1:
 
 	c = input();
-	if (c >= '0' && c <= '9') goto radix_digits_1;
-	if (c >= 'a' && c <= 'z') goto radix_digits_1;
-	if (c >= 'A' && c <= 'Z') goto radix_digits_1;
+	if (c >= '0' && c <= '0' + sc_min(10,radix) - 1) goto radix_digits_1;
+	if (c >= 'a' && c <= 'a' + sc_min(36,radix) - 11) goto radix_digits_1;
+	if (c >= 'A' && c <= 'A' + sc_min(36,radix) - 11) goto radix_digits_1;
 	if (c == '.') {
-		decptpos = yylen;
 		goto radix_digits_2;
 	}
 	unput(c);
 	yytext[yylen] = 0;
-	r = processintradix(yytext);
+	r = processintradix(yytext, yylen, radix);
 	goto leave;
 	
 radix_digits_2:
 
 	c = input();
-	if (c >= '0' && c <= '9') goto radix_digits_2;
-	if (c >= 'a' && c <= 'z') goto radix_digits_2;
-	if (c >= 'A' && c <= 'Z') goto radix_digits_2;
+	if (c >= '0' && c <= '0' + sc_min(10,radix) - 1)  goto radix_digits_2;
+	if (c >= 'A' && c <= 'A' + sc_min(36,radix) - 11) goto radix_digits_2;
+	// do not allow lower case after decimal point.
 	unput(c);
 	yytext[yylen] = 0;
-	r = processfloatradix(yytext);
+	r = processfloatradix(yytext, yylen, radix);
 	goto leave;
 
 hexdigits:
@@ -672,7 +702,8 @@ digits_1:	/* number started with digits */
 	
 	if (c >= '0' && c <= '9') goto digits_1;
 	else if (c == 'r') {
-		radixcharpos = yylen;
+		radix = sc_strtoi(yytext, yylen-1, 10);
+		yylen = 0;
 		goto radix_digits_1;
 	}
 	else if (c == 'e' || c == 'E') goto expon_1;
@@ -1084,68 +1115,29 @@ int processhex(char *s)
 }
 
 
-int processintradix(char *s) 
+int processintradix(char *s, int n, int radix) 
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
-	char *c;
-	int val, radix;
 #if DEBUGLEX
-	if (gDebugLexer) postfl("processhex: '%s'\n",s);
+	if (gDebugLexer) postfl("processintradix: '%s'\n",s);
 #endif
-
-	c = s;
-	radix = 0;
-	while (*c != 'r') {
-		if (*c >= '0' && *c <= '9') radix = radix*10 + *c - '0';
-		c++;
-	}
-	c++;
-	val = 0;
-	while (*c) {
-		if (*c >= '0' && *c <= '9') val = val*radix + *c - '0';
-		else if (*c >= 'a' && *c <= 'z') val = val*radix + *c - 'a' + 10;
-		else if (*c >= 'A' && *c <= 'Z') val = val*radix + *c - 'A' + 10;
-		c++;
-	}
 	
-	SetInt(&slot, val);
+	SetInt(&slot, sc_strtoi(s, n, radix));
 	node = newPyrSlotNode(&slot);
 	zzval = (int)node;
 	return INTEGER;
 }
 
-int processfloatradix(char *s) 
+int processfloatradix(char *s, int n, int radix) 
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
-	char *c;
-	int iradix, numdecplaces;
-	double val, radix;
 #if DEBUGLEX
-	if (gDebugLexer) postfl("processhex: '%s'\n",s);
+	if (gDebugLexer) postfl("processfloatradix: '%s'\n",s);
 #endif
 
-	c = s;
-	iradix = 0;
-	while (*c != 'r') {
-		if (*c >= '0' && *c <= '9') iradix = iradix*10 + *c - '0';
-		c++;
-	}
-	c++;
-	
-	radix = iradix;
-	val = 0.;
-	while (*c) {
-		if (*c >= '0' && *c <= '9') val = val*radix + *c - '0';
-		else if (*c >= 'a' && *c <= 'z') val = val*radix + *c - 'a' + 10;
-		else if (*c >= 'A' && *c <= 'Z') val = val*radix + *c - 'A' + 10;
-		//else if (c == '.') OK..
-		c++;
-	}
-	numdecplaces = yylen - decptpos;
-	val = val / pow(radix, numdecplaces);
-	SetFloat(&slot, val);
+	SetFloat(&slot, sc_strtof(s, n, radix));
 	node = newPyrSlotNode(&slot);
 	zzval = (int)node;
 	return INTEGER;
