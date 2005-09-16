@@ -331,7 +331,11 @@ NodeProxy : BusPlug {
 	source { ^objects.at(0).source }
 	sources {Ê^objects.array.collect(_.source) }
 	
-	at { arg index;  ^objects.at(index) } // should maybe be transparent? .source!
+	at { arg index; 
+		"info: node proxy 'at' was changed to return source. " 
+		"use proxy.objects.at to access control object".postln; 
+		^objects.at(index).source 
+	}
 	
 	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
 			
