@@ -27,18 +27,18 @@ BusPlug : AbstractFunction {
 	
 	*initClass {
 		2.do { arg i; i = i + 1;
-			SynthDef("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
+			SynthDef.writeOnce("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
 				var env;
 				env = EnvGate(curve:'sin') * Lag.kr(vol, 0.05);
 				Out.ar(out, InFeedback.ar(in, i) * env) 
-			}, [\kr, \ir]).writeDefFile;
+			}, [\kr, \ir]);
 		};
 		2.do { arg i; i = i + 1;
-			SynthDef("system_link_control_" ++ i, { arg out=0, in=16;
+			SynthDef.writeOnce("system_link_control_" ++ i, { arg out=0, in=16;
 				var env;
 				env = EnvGate(curve:'lin');
 				Out.kr(out, In.kr(in, i) * env) 
-			}, [\kr, \ir]).writeDefFile;
+			}, [\kr, \ir]);
 		}
 	}
 	
@@ -303,7 +303,7 @@ NodeProxy : BusPlug {
 	}
 	
 	fadeTime_ { arg t;
-		this.set(\fadeTime, t);
+		if(t.isNil) { this.unset(\fadeTime) } { this.set(\fadeTime, t) };
 	}
 	fadeTime {
 		^nodeMap.at(\fadeTime).value ? 0.02;
@@ -324,11 +324,14 @@ NodeProxy : BusPlug {
 	source_ { arg obj;
 		this.put(nil, obj, 0)
 	}
+	sources_ { arg list;
+		this[0..] = list;
+	}
 	
-	at { arg index;  ^objects.at(index) }
+	source { ^objects.at(0).source }
+	sources {Ê^objects.array.collect(_.source) }
 	
-	source { ^if(objects.size == 1) { objects.at(0).source } { objects.array.collect(_.source) } }
-	
+	at { arg index;  ^objects.at(index) } // should maybe be transparent? .source!
 	
 	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
 			
@@ -447,6 +450,7 @@ NodeProxy : BusPlug {
 		this.setNodeMap(map, false)
 	}
 	
+	// unsetArgsToBundle does not work.
 	setNodeMap { arg map, xfade=true;
 		var bundle, old, fadeTime;
 		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
@@ -457,7 +461,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) {
 			if(xfade) { this.sendEach(nil,true) }
 			{
-			old.unsetArgsToBundle(bundle, group); // unmap old
+			this.unsetToBundle(bundle); // unmap old
 			nodeMap.addToBundle(bundle, group); // map new
 			bundle.schedSend(server, clock, quant);
 			}
@@ -483,11 +487,9 @@ NodeProxy : BusPlug {
 	}
 	
 	controlNames {
-		var all; // Set doesn't work, because equality undefined for ControlName
-		all = Array.new;
+		var all = Array.new; // Set doesn't work, because equality undefined for ControlName
 		objects.do { |el|
-			var cn;
-			cn = el.controlNames.reject { |item| 
+			var cn = el.controlNames.reject { |item| 
 				all.any { |cn| cn.name === item.name }
 			};
 			all = all.addAll(cn) 
@@ -495,33 +497,40 @@ NodeProxy : BusPlug {
 		^all
 	}
 	
-	currentKeys {
-		var controlNames, excluded, list;
-		controlNames = this.controlNames;
-		excluded = #[\out, \i_out, \gate];
-		controlNames.do { |el|
-					var key;
-					key = el.name; 
-					if (excluded.includes(key).not) { list = list.add(key) } 
+	controlNamesDo { arg func, rejecting = #[\out, \i_out, \gate, \fadeTime];
+		this.controlNames.do { |el, i|
+					if (rejecting.includes(el.name).not) { func.(el, i) } 
+		}
+	}
+	
+	// controlPairs
+	controlKeysValues { arg keys, rejecting = #[\out, \i_out, \gate, \fadeTime];
+		var list = Array.new;
+		if(keys.isNil) {
+			this.controlNames.do { |el, i|
+				if(rejecting.includes(el.name).not) 
+				{ list = list.add(el.name).add(el.defaultValue) }
+			}
+		} {
+			this.controlNames.do { |el, i|
+				if(keys.includes(el.name)) 
+				{ list = list.add(el.name).add(el.defaultValue) }
+			}
 		}
 		^list
 	}
 	
 	// derive names and default args from synthDefs
 	supplementNodeMap { arg keys, replaceOldKeys=false;
-		var controlNames, excluded;
-		controlNames = this.controlNames;
-		excluded = #[\out, \i_out, \gate];
-		controlNames.do { |el|
+		this.controlNamesDo { |el|
 					var key;
 					key = el.name; 
 					if (
-						excluded.includes(key).not 
-						and: { replaceOldKeys or: { nodeMap.at(key).isNil } }
-						and: { keys.isNil or: { keys.includes(key) } }
+						( replaceOldKeys or: { nodeMap.at(key).isNil } )
+						and: 
+						{ keys.isNil or: { keys.includes(key) } }
 					) { nodeMap.set(key, el.defaultValue) }
 		}
-
 	}
 	
 	
@@ -853,20 +862,13 @@ NodeProxy : BusPlug {
 	
 		
 	unset { arg ... keys;
-		var bundle, all;
-		all = keys.isEmpty;
-		if(all) { 
-			keys = nodeMap.settingKeys; 			
-			keys.remove('out');
-			keys.remove('i_out');  
-		};
-		if(this.isPlaying) {
-			bundle = List.new;
-			nodeMap.unsetArgsToBundle(bundle, group.nodeID, keys);
-			server.listSendBundle(server.latency, bundle);
-		};
-		nodeMap.unset(*keys);
+		var bundle = List.new;
+		this.unsetToBundle(bundle, keys);
+		if(bundle.notEmpty) {
+			server.listSendBundle(server.latency, bundle)
+		}
 	}
+	
 	
 	unmap { arg ... keys;
 		var bundle;
@@ -879,6 +881,17 @@ NodeProxy : BusPlug {
 		nodeMap.unmap(*keys);
 	}
 	
+	unsetToBundle { arg bundle, keys;
+		var pairs = this.controlKeysValues(keys);
+		
+		if(this.isPlaying) {
+			if(pairs.notEmpty) {
+				bundle.add([15, group.nodeID] ++ pairs);
+			};
+		};
+		nodeMap.unset(*pairs[0,2..]);
+	}
+
 	
 	// xfades
 	
