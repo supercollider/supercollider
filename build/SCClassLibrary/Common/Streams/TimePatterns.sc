@@ -49,7 +49,7 @@ Pseg : Pstep {
 		};
 		#val, dur, curve = stream.next ?? {^inval};
 		thisThread.endBeat = thisThread.endBeat ? thisThread.beats; 
-		thisThread.endBeat = thisThread.endBea tmin: thisThread.beats;
+		thisThread.endBeat = thisThread.endBeat min: thisThread.beats;
 		loop {
 			evalArray[0] = val;
 			evalArray[5] = dur;
