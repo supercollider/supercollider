@@ -8,11 +8,13 @@ RecNodeProxy : NodeProxy {
 	*control { ^this.notYetImplemented(thisMethod) }
 		
 	*initClass {
-		for(1,8,{ arg i;
-			SynthDef.writeOnce("system-diskout-" ++ i.asString, { arg i_in, i_bufNum=0;
-				DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
+		StartUp.add {
+			for(1,8,{ arg i;
+				SynthDef.writeOnce("system-diskout-" ++ i.asString, { arg i_in, i_bufNum=0;
+					DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
+				});
 			});
-		});
+		}
 	}
 	
 	*newFrom { arg proxy, numChannels;

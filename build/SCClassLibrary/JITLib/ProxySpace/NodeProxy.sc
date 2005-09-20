@@ -26,19 +26,21 @@ BusPlug : AbstractFunction {
 	}
 	
 	*initClass {
-		2.do { arg i; i = i + 1;
-			SynthDef.writeOnce("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
-				var env;
-				env = EnvGate(curve:'sin') * Lag.kr(vol, 0.05);
-				Out.ar(out, InFeedback.ar(in, i) * env) 
-			}, [\kr, \ir]);
-		};
-		2.do { arg i; i = i + 1;
-			SynthDef.writeOnce("system_link_control_" ++ i, { arg out=0, in=16;
-				var env;
-				env = EnvGate(curve:'lin');
-				Out.kr(out, In.kr(in, i) * env) 
-			}, [\kr, \ir]);
+		StartUp.add {
+			2.do { arg i; i = i + 1;
+				SynthDef.writeOnce("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
+					var env;
+					env = EnvGate(curve:'sin') * Lag.kr(vol, 0.05);
+					Out.ar(out, InFeedback.ar(in, i) * env) 
+				}, [\kr, \ir]);
+			};
+			2.do { arg i; i = i + 1;
+				SynthDef.writeOnce("system_link_control_" ++ i, { arg out=0, in=16;
+					var env;
+					env = EnvGate(curve:'lin');
+					Out.kr(out, In.kr(in, i) * env) 
+				}, [\kr, \ir]);
+			}
 		}
 	}
 	
