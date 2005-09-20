@@ -10,7 +10,9 @@ Main : Process {
 		Server.local.makeWindow;
 		
 		"~/scwork/startup.rtf".loadPaths;
-	}
+		
+		StartUp.run;
+	} 
 	
 	shutdown { // at recompile, quit
 		Server.quitAll;

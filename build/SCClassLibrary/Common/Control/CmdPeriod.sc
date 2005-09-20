@@ -1,4 +1,4 @@
-//things to clear when hitting cmd-.
+// things to clear when hitting cmd-.
 
 CmdPeriod {
 	classvar <>objects;
@@ -26,4 +26,24 @@ CmdPeriod {
 	}
 
 
+}
+
+// things to do after startup file executed
+
+StartUp {
+	
+	classvar <>functions;
+	
+	*add { arg func;
+		functions = functions.add(func)
+	}
+	
+	*remove { arg func;
+		functions.remove(func)
+	}
+	
+	*run {
+		functions.do(_.value)
+	}
+	
 }
