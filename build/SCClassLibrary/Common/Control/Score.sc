@@ -42,7 +42,7 @@ Score {
 	sort {
 		score = score.sort({ arg a, b; a[0] < b[0] });
 	}
-	play { arg server;
+	play { arg server, clock, quant=0.0;
 		var size, osccmd, timekeep, inserver, rout;
 		isPlaying.not.if({
 			inserver = server ? Server.default;
@@ -61,7 +61,7 @@ Score {
 				isPlaying = false;
 			});
 			isPlaying = true;
-			routine.play;
+			routine.play(clock, quant);
 		}, {"Score already playing".warn;}
 		);
 	}
@@ -127,12 +127,15 @@ Score {
 		this.write(list, oscFilePath);
 	}
 	
-	*write { arg list, oscFilePath;
-		var osccmd, f;
+	*write { arg list, oscFilePath, clock;
+		var osccmd, f, tempoFactor;
 		f = File(oscFilePath, "w");
+		tempoFactor = (clock ? TempoClock.default).tempo.reciprocal;
 		protect {
 			list.size.do { |i|
-				osccmd = list[i].asRawOSC;
+				var msg = list[i].copy;
+				msg[0] = msg[0]Ê* tempoFactor;
+				osccmd = msg.asRawOSC;
 				f.write(osccmd.size).write(osccmd);
 			};
 		}{
@@ -141,8 +144,8 @@ Score {
 		"done".postln;
 	}
 	
-	write { arg oscFilePath;
-		this.class.write(score, oscFilePath);
+	write { arg oscFilePath, clock;
+		this.class.write(score, oscFilePath, clock);
 	}
 	
 	saveToFile { arg path;
