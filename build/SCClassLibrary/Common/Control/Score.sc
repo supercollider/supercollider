@@ -91,13 +91,13 @@ Score {
 		^this.class.new(sectionlist);	
 	}
 	
-	writeOSCFile { arg path, from, to;
+	writeOSCFile { arg path, from, to, clock;
 		if(to.notNil or: {from.notNil}) {  
 			from = from ? 0.0;
 			to = to ? this.endTime;
-			this.section(from, to).write(path) 
+			this.section(from, to).write(path, clock) 
 		} { 
-			this.write(path) 
+			this.write(path, clock) 
 		};
 	}
 		
@@ -121,10 +121,10 @@ Score {
 		);
 	}
 		
-	*writeFromFile { arg path, oscFilePath;
+	*writeFromFile { arg path, oscFilePath, clock;
 		var list;
 		list = thisProcess.interpreter.executeFile(path);
-		this.write(list, oscFilePath);
+		this.write(list, oscFilePath, clock);
 	}
 	
 	*write { arg list, oscFilePath, clock;
