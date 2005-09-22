@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;\f4\fnil\fcharset77 TrebuchetMS;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
-\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pen				
@@ -15,16 +15,17 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-A singleton class which allows you to draw on a 
+A class which allows you to draw on a 
 \f0\b [\ul \ulc2 SCWindow\ulnone ]
-\f1\b0 .
+\f1\b0 . It has no instance methods.
 \f2\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 All Pen methods must be called within an SCWindow-drawHook function, and will only be visible once the window is refreshed. Each call to SCWindow-refresh will 'overwrite' all previous drawing by executing the currently defined drawHook function. \
 \
 See also: 
-\f0\b [\ul \ulc2 SCWindow\ulnone ]
+\f0\b [\ul SCWindow\ulnone ]
 \f1\b0 , 
 \f0\b [\ul Color\ulnone ]
 \f1\b0 , and 
@@ -53,12 +54,10 @@ See also:
 \f1\b0  is an instance of 
 \f0\b [\ul Point\ulnone ]
 \f1\b0 .\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs18 		\
 
-\f0\b\fs24 \cf0 	*lineTo (point)\
+\f0\b\fs24 	*lineTo (point)\
 
 \f1\b0 		Draw a line (define a path) from the current position to 
 \f0\b point
@@ -144,9 +143,8 @@ See also:
 		\};\
 		w.refresh;\
 		)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 \
+\f0\b\fs24 \
 	*addWedge(center, radius, startAngle, arcAngle)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
 \cf0 		
@@ -178,9 +176,8 @@ See also:
 		\};\
 		w.refresh;\
 		)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 \
+\f0\b\fs24 \
 	*addAnnularWedge (center, innerRadius, outerRadius, startAngle, arcAngle)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
 \cf0 		
@@ -220,9 +217,8 @@ See also:
 		\};\
 		w.refresh;\
 		)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 \
+\f0\b\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //	*addRect(rect)\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -230,17 +226,14 @@ See also:
 \f1\b0 \cf0 		adds a rectangle to the drawing; \
 		
 \f0\b Unfortunately not working for now...\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 \
+\f2\b0\fs18 \
 	
 \f0\b\fs24 *stroke\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		outline the previous defined path. \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 		outline the previous defined path. \
 
-\f2\fs18 \cf0 		\
+\f2\fs18 		\
 		(\
 		w = \cf2 SCWindow\cf0 .new.front;\
 		w.view.background_(\cf2 Color\cf0 .white);\
@@ -263,12 +256,10 @@ See also:
 		\
 	
 \f0\b\fs24 *fill\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		fill the previous defined path. \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 		fill the previous defined path. \
 
-\f2\fs18 \cf0 		(\
+\f2\fs18 		(\
 		w = \cf2 SCWindow\cf0 .new.front;\
 		w.view.background_(\cf2 Color\cf0 .white);\
 		w.drawHook = \{\
@@ -288,9 +279,8 @@ See also:
 		w.refresh;\
 		)\
 					\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 These methods do require separate calls to 
+\f1\fs24 These methods do require separate calls to 
 \f0\b *stroke
 \f1\b0  or 
 \f0\b *fill
@@ -359,9 +349,8 @@ See also:
 \f1\b0  is an instance of 
 \f0\b [\ul Rect\ulnone ]
 \f1\b0 .\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 	\
+\f2\fs18 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf3 //	*drawAquaButton(rect, type=0, down=false, on=false)\
@@ -374,9 +363,8 @@ See also:
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 The following commands transform the graphics state, i.e. they effect all subsequent drawing commands. These transformations are cumulative, i.e. each command applies to the previous graphics state, 
+\f1\fs24 The following commands transform the graphics state, i.e. they effect all subsequent drawing commands. These transformations are cumulative, i.e. each command applies to the previous graphics state, 
 \f3\i not
 \f1\i0  the original one.\
 
@@ -388,9 +376,8 @@ See also:
 \f1\b0 ,
 \f0\b y
 \f1\b0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 \
+\f2\fs18 \
 		(\
 		w = \cf2 SCWindow\cf0 .new.front;\
 		w.view.background_(\cf2 Color\cf0 .white);\
@@ -433,18 +420,16 @@ See also:
 		w.refresh;\
 		)\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 	*scale (x=0, y=0)\
+\f0\b\fs24 	*scale (x=0, y=0)\
 		
 \f1\b0 Scales subsequent drawing. 
 \f0\b x
 \f1\b0  and 
 \f0\b y
 \f1\b0  are scaling factors (i.e. 1 is normal, 2 is double size, etc.).\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 	\
+\f2\fs18 	\
 		(\
 		w = \cf2 SCWindow\cf0 .new.front;\
 		w.view.background_(\cf2 Color\cf0 .white);\
@@ -509,42 +494,41 @@ See also:
 \f0\b angle 
 \f1\b0 in radians [0..2pi].\
 
-\f2\fs18 		(\cf6 \
-		w = \cf7 SCWindow\cf6 .new.front;\
-		w.view.background_(\cf7 Color\cf6 .white);\
+\f2\fs18 		(\
+		w = \cf2 SCWindow\cf0 .new.front;\
+		w.view.background_(\cf2 Color\cf0 .white);\
 		c = 0;\
 		w.drawHook = \{\
-			\cf7 Pen\cf6 .translate(220, 200);\
+			\cf2 Pen\cf0 .translate(220, 200);\
 			\
 			10.do(\{\
-				\cf7 Pen\cf6 .translate(0,10);\
-				\cf8 // set the Color for all "real" drawing\cf6 \
-				\cf7 Color\cf6 .hsv(c.fold(0, 1), 1, 1, 0.5).set;\
+				\cf2 Pen\cf0 .translate(0,10);\
+				\cf3 // set the Color for all "real" drawing\cf0 \
+				\cf2 Color\cf0 .hsv(c.fold(0, 1), 1, 1, 0.5).set;\
 				\
-				\cf8 // you have to set a starting point...\cf6 \
-				\cf7 Pen\cf6 .moveTo(0@0);\
+				\cf3 // you have to set a starting point...\cf0 \
+				\cf2 Pen\cf0 .moveTo(0@0);\
 	\
-				\cf7 Pen\cf6 .lineTo(50@100);\
-				\cf7 Pen\cf6 .lineTo(100@100);\
-				\cf7 Pen\cf6 .lineTo(0@150);\
-				\cf7 Pen\cf6 .lineTo(-100@100);\
-				\cf7 Pen\cf6 .lineTo(-50@100);\
-				\cf7 Pen\cf6 .lineTo(0@0);\
+				\cf2 Pen\cf0 .lineTo(50@100);\
+				\cf2 Pen\cf0 .lineTo(100@100);\
+				\cf2 Pen\cf0 .lineTo(0@150);\
+				\cf2 Pen\cf0 .lineTo(-100@100);\
+				\cf2 Pen\cf0 .lineTo(-50@100);\
+				\cf2 Pen\cf0 .lineTo(0@0);\
 	\
-				\cf7 Pen\cf6 .fill;\
-				\cf7 Pen\cf6 .rotate(0.2pi);\
+				\cf2 Pen\cf0 .fill;\
+				\cf2 Pen\cf0 .rotate(0.2pi);\
 				\
 				c = c + 0.1;\
 			\});\
 		\};\
 		w.refresh;\
-		\cf0 )
+		)
 \f0\b\fs24 \
 
 \f2\b0\fs18 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 	*matrix_ (array)\
+\f0\b\fs24 	*matrix_ (array)\
 
 \f1\b0 		transforms coordinate system.\
 		array = [a, b, c, d, x, y]\
@@ -554,9 +538,8 @@ See also:
 			d	zoomY\
 			x	translateX\
 			y	translateY\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 		(\
+\f2\fs18 		(\
 		\cf2 var\cf0  controlWindow, w;\
 		\cf2 var\cf0  r, a, b, c, d, matrix = [1, 0, 0, 1, 10, 10];\
 		\cf2 var\cf0  sliders, spex, name;\
@@ -615,17 +598,15 @@ See also:
 		\};\
 		w.refresh;\
 	)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
+\f1\fs24 \
 \
 
 \f0\b 	*width_(width=1)\
 
 \f1\b0 		sets the width of the Pen for the whole stroke\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 		(\
+\f2\fs18 		(\
 		w = \cf2 SCWindow\cf0 .new.front;\
 		w.view.background_(\cf2 Color\cf0 .white);\
 		w.drawHook = \{\
@@ -648,9 +629,8 @@ See also:
 		w.refresh;\
 		)\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 	*use (function)\
+\f0\b\fs24 	*use (function)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
 
 \f1\b0 \cf0 		Draw 
@@ -693,9 +673,8 @@ See also:
 		w.refresh\
 		)\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 	*path(function)\
+\f0\b\fs24 	*path(function)\
 
 \f1\b0 		make a path, consisting of the drawing made in 
 \f0\b function.\
@@ -714,31 +693,31 @@ See also:
 \f0\b \
 		\
 		
-\f2\b0\fs18 \cf8 // incomplete arrow\cf6 \
+\f2\b0\fs18 \cf3 // incomplete arrow\cf0 \
 		(\
-		w = \cf7 SCWindow\cf6 .new.front;\
-		w.view.background_(\cf7 Color\cf6 .white);\
+		w = \cf2 SCWindow\cf0 .new.front;\
+		w.view.background_(\cf2 Color\cf0 .white);\
 		w.drawHook = \{\
-			\cf8 // set the Color\cf6 \
-			\cf7 Color\cf6 .blue.set;\
-			\cf7 Pen\cf6 .translate(200,100);\
-			\cf7 Pen\cf6 .moveTo(0@0);\
+			\cf3 // set the Color\cf0 \
+			\cf2 Color\cf0 .blue.set;\
+			\cf2 Pen\cf0 .translate(200,100);\
+			\cf2 Pen\cf0 .moveTo(0@0);\
 \
-			\cf7 Pen\cf6 .lineTo(50@100);\
-			\cf7 Pen\cf6 .lineTo(100@100);\
+			\cf2 Pen\cf0 .lineTo(50@100);\
+			\cf2 Pen\cf0 .lineTo(100@100);\
 			\
-			\cf8 // forget what we just drew\cf6 \
-			\cf7 Pen\cf6 .beginPath;\
-			\cf7 Pen\cf6 .moveTo(100@100);\
-			\cf7 Pen\cf6 .lineTo(0@150);\
-			\cf7 Pen\cf6 .lineTo(-100@100);\
-			\cf7 Pen\cf6 .lineTo(-50@100);\
-			\cf7 Pen\cf6 .lineTo(0@0);\
+			\cf3 // forget what we just drew\cf0 \
+			\cf2 Pen\cf0 .beginPath;\
+			\cf2 Pen\cf0 .moveTo(100@100);\
+			\cf2 Pen\cf0 .lineTo(0@150);\
+			\cf2 Pen\cf0 .lineTo(-100@100);\
+			\cf2 Pen\cf0 .lineTo(-50@100);\
+			\cf2 Pen\cf0 .lineTo(0@0);\
 \
-			\cf7 Pen\cf6 .stroke\
+			\cf2 Pen\cf0 .stroke\
 		\};\
 		w.refresh;\
-		)\cf0 \
+		)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf3 \
@@ -747,41 +726,39 @@ See also:
 		
 \f1\b0 Use the previously defined path as a clipping path.\
 		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf6 		(\
-		w = \cf7 SCWindow\cf6 .new.front;\
-		w.view.background_(\cf7 Color\cf6 .white);\
+\f2\fs18 		(\
+		w = \cf2 SCWindow\cf0 .new.front;\
+		w.view.background_(\cf2 Color\cf0 .white);\
 		w.drawHook = \{\
-	       	\cf8 // outline the clipping path\cf6 \
-			\cf7 Pen\cf6 .moveTo(110@110);\
-			\cf7 Pen\cf6 .lineTo(290@110);\
-			\cf7 Pen\cf6 .lineTo(290@240);\
-			\cf7 Pen\cf6 .lineTo(110@240);\
-			\cf7 Pen\cf6 .lineTo(110@110);\
-			\cf8 // now clip\cf6 \
-			\cf7 Pen\cf6 .clip;\
+	       	\cf3 // outline the clipping path\cf0 \
+			\cf2 Pen\cf0 .moveTo(110@110);\
+			\cf2 Pen\cf0 .lineTo(290@110);\
+			\cf2 Pen\cf0 .lineTo(290@240);\
+			\cf2 Pen\cf0 .lineTo(110@240);\
+			\cf2 Pen\cf0 .lineTo(110@110);\
+			\cf3 // now clip\cf0 \
+			\cf2 Pen\cf0 .clip;\
 			\
-			\cf8 // everything else we draw is now clipped\cf6 \
-			\cf7 Color\cf6 .yellow.set;\
-			\cf7 Pen\cf6 .fillRect(\cf7 Rect\cf6 (0,0,400,400));\
-			\cf7 Color\cf6 .red.set;\
-			\cf7 Pen\cf6 .moveTo(200@100);\
+			\cf3 // everything else we draw is now clipped\cf0 \
+			\cf2 Color\cf0 .yellow.set;\
+			\cf2 Pen\cf0 .fillRect(\cf2 Rect\cf0 (0,0,400,400));\
+			\cf2 Color\cf0 .red.set;\
+			\cf2 Pen\cf0 .moveTo(200@100);\
 			\
-			\cf7 Pen\cf6 .lineTo(250@200);\
-			\cf7 Pen\cf6 .lineTo(300@200);\
-			\cf7 Pen\cf6 .lineTo(200@250);\
-			\cf7 Pen\cf6 .lineTo(100@200);\
-			\cf7 Pen\cf6 .lineTo(150@200);\
+			\cf2 Pen\cf0 .lineTo(250@200);\
+			\cf2 Pen\cf0 .lineTo(300@200);\
+			\cf2 Pen\cf0 .lineTo(200@250);\
+			\cf2 Pen\cf0 .lineTo(100@200);\
+			\cf2 Pen\cf0 .lineTo(150@200);\
 			\
-			\cf7 Pen\cf6 .fill;\
+			\cf2 Pen\cf0 .fill;\
 		\};\
 		w.refresh;\
 		)
-\f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs24 \
 
-\f0\b \cf0 \
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
