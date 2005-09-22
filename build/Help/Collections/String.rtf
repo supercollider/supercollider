@@ -1,15 +1,15 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
-}
+\f3\fnil\fcharset77 TrebuchetMS;\f4\fnil\fcharset77 GadgetRegular;}
 {\colortbl;\red255\green255\blue255;\red96\green96\blue96;\red0\green0\blue191;\red0\green115\blue0;
-\red191\green0\blue0;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-}
+\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 String\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 Superclass: RawArray\
+\fs24 \cf0 Superclass: RawArray\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -24,34 +24,36 @@ Strings can be written literally using double quotes:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 Class Methods\ul \
+
+\f1\b0\fs24 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \ulnone \
+\f0\b \cf0 *readNew(file)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *readNew(file)\
-
-\f1\b0 \
+\f1\b0 \cf0 \
 Read the entire contents of a 
 \f0\b File
 \f1\b0  and return them as a new String.
 \f2 \
 
 \f1 \
+
+\f0\b\fs28 Instance Methods\ul \
+
+\f1\b0\fs24 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Instance Methods\ul \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0\fs24 \cf0 \ulnone \
-
-\f0\b at(index)\
+\f0\b \cf0 at(index)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Strings respond to .at in a manner similar to other indexed collections. Each element is a 
+\f1\b0 \cf0 Strings respond to .at in a manner similar to other indexed collections. Each element is a 
 \f0\b Char
 \f1\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 "ABCDEFG"\cf0 .at(2).postln;
@@ -64,20 +66,25 @@ compare(aString)\
 Returns a -1, 0, or 1 depending on whether the receiver should be sorted before the argument,\
 is equal to the argument or should be sorted after the argument. This is a case sensitive compare.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b < aString\
+\f0\b \cf0 < aString\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Returns a Boolean whether the receiver should be sorted before the argument.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b == aString\
+\f0\b \cf0 == aString\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Returns a Boolean whether the two Strings are equal.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b post
+\f0\b \cf0 post
 \f1\b0 \
 \
 Prints the string to the current post window.\
@@ -132,8 +139,9 @@ format(\cf2 "this % a %. pi = %, list = %\\n", "is"\cf0 , \cf2 "test"\cf0 , pi.r
 
 \f1\fs24 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b error
+\f0\b \cf0 error
 \f1\b0 \
 \
 Prepends an error banner and posts the string\
@@ -152,18 +160,22 @@ Posts the string.\
 \
 
 \f0\b ++ aString\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Return a concatenation of the two strings.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b + aString\
+\f0\b \cf0 + aString\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Return a concatenation of the two strings with a space between them.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b compile
+\f0\b \cf0 compile
 \f1\b0 \
 \
 Compiles a String containing legal SuperCollider code and returns a Function.\
@@ -198,8 +210,9 @@ f.asCompileString.postln;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b postcs
+\f0\b \cf0 postcs
 \f1\b0 \
 \
 As postln, but posts the compileString of the reciever\
@@ -210,13 +223,15 @@ As postln, but posts the compileString of the reciever\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b interpret
+\f0\b \cf0 interpret
 \f1\b0 \
 \
 Compile and execute a String containing legal SuperCollider code, returning the result.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "2 + 1"\cf0 .interpret.postln;
@@ -224,13 +239,15 @@ Compile and execute a String containing legal SuperCollider code, returning the 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b interpretPrint
+\f0\b \cf0 interpretPrint
 \f1\b0 \
 \
 Compile, execute and print the result of a String containing legal SuperCollider code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "2 + 1"\cf0 .interpretPrint;
@@ -238,13 +255,15 @@ Compile, execute and print the result of a String containing legal SuperCollider
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b asSymbol
+\f0\b \cf0 asSymbol
 \f1\b0 \
 \
 Return a Symbol derived from the String.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 (\
@@ -257,13 +276,15 @@ z.class.postln;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b asInteger
+\f0\b \cf0 asInteger
 \f1\b0 \
 \
 Return an Integer derived from the String. Strings beginning with non-numeric characters return 0.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "4"\cf0 .asInteger.postln;
@@ -275,8 +296,9 @@ Return an Integer derived from the String. Strings beginning with non-numeric ch
 \f1\b0 \
 \
 Return a Float derived from the String. Strings beginning with non-numeric characters return 0.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "4.3"\cf0 .asFloat.postln;
@@ -288,8 +310,9 @@ Return a Float derived from the String. Strings beginning with non-numeric chara
 \f1\b0 \
 \
 Concatenate this string with the following args.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are some args: "\cf0 .catArgs(\cf4 \\fish\cf0 , \cf3 SinOsc\cf0 .ar, \{4 + 3\}).postln;
@@ -301,21 +324,24 @@ Concatenate this string with the following args.\
 \f1\b0 \
 \
 Same as catArgs, but with spaces in between.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are some args: "\cf0 .scatArgs(\cf4 \\fish\cf0 , \cf3 SinOsc\cf0 .ar, \{4 + 3\}).postln;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b ccatArgs(... args)
+\f0\b \cf0 ccatArgs(... args)
 \f1\b0 \
 \
 Same as catArgs, but with commas in between.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "a String"\cf0 .ccatArgs(\cf4 \\fish\cf0 , \cf3 SinOsc\cf0 .ar, \{4 + 3\}).postln;
@@ -327,8 +353,9 @@ Same as catArgs, but with commas in between.\
 \f1\b0 \
 \
 As catArgs, scatArgs and ccatArgs above, but takes a Collection (usually a List or an Array) as an argument. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "a String"\cf0 .ccatList([\cf4 \\fish\cf0 , \cf3 SinOsc\cf0 .ar, \{4 + 3\}]).postln;
@@ -342,8 +369,9 @@ As catArgs, scatArgs and ccatArgs above, but takes a Collection (usually a List 
 Returns an Array of Strings split at the separator. The separator is a 
 \f0\b Char
 \f1\b0 , and is not included in the output array. The default separator is $/, handy for Unix paths.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "This/could/be/a/Unix/path"\cf0 .split.postln;\
@@ -356,8 +384,9 @@ Returns an Array of Strings split at the separator. The separator is a
 \f1\b0 \
 \
 Returns the index of the string in the receiver, or nil if not found.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words"\cf0 .find(\cf2 "are"\cf0 ).postln;\
@@ -369,8 +398,9 @@ Returns the index of the string in the receiver, or nil if not found.\
 \f1\b0 \
 \
 Returns the indices of the string in the receiver, or nil if not found.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words which are fish"\cf0 .findAll(\cf2 "are"\cf0 ).postln;\
@@ -385,8 +415,9 @@ Returns the indices of the string in the receiver, or nil if not found.\
 Returns a 
 \f0\b Boolean
 \f1\b0  indicating if the String contains string.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words"\cf0 .contains(\cf2 "are"\cf0 ).postln;\
@@ -397,10 +428,12 @@ Returns a
 
 \f0\b \cf0 containsi(string)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Same as contains, but case insensitive.\
+\f1\b0 \cf0 Same as contains, but case insensitive.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words"\cf0 .containsi(\cf2 "ArE"\cf0 ).postln;
@@ -414,8 +447,9 @@ containsStringAt(index, string)
 Returns a 
 \f0\b Boolean 
 \f1\b0 indicating if the String contains string beginning at the specified index.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 "These are several words"\cf0 .containsStringAt(6, \cf2 "are"\cf0 ).postln;
@@ -425,11 +459,13 @@ Returns a
 
 \f0\b \cf0 icontainsStringAt(index, string)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Same as containsStringAt, but case insensitive.\
+\f1\b0 \cf0 Same as containsStringAt, but case insensitive.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b escapeChar(charToEscape)
+\f0\b \cf0 escapeChar(charToEscape)
 \f1\b0 \
 \
 Add the escape character (\\) at the location of your choice.\
@@ -443,8 +479,9 @@ Add the escape character (\\) at the location of your choice.\
 
 \f0\b \cf0 tr(from, to)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Transliteration. Replace all instances of from with to.\
+\f1\b0 \cf0 Transliteration. Replace all instances of from with to.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -455,8 +492,9 @@ Add the escape character (\\) at the location of your choice.\
 
 \f0\b \cf0 printOn(stream)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Print the String on stream.\
+\f1\b0 \cf0 Print the String on stream.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -464,7 +502,6 @@ Add the escape character (\\) at the location of your choice.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // equivalent to:\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Post\cf0  << \cf2 "Print this on Post"\cf0 ;
 \fs24 \
 \
@@ -472,8 +509,9 @@ Add the escape character (\\) at the location of your choice.\
 
 \f0\b \cf0 storeOn(stream)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Same as printOn, but formatted asCompileString.\
+\f1\b0 \cf0 Same as printOn, but formatted asCompileString.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -481,7 +519,6 @@ Add the escape character (\\) at the location of your choice.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // equivalent to:\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Post\cf0  <<< \cf2 "Store this on Post"\cf0 ;
 \fs24 \
 \
@@ -489,23 +526,26 @@ Add the escape character (\\) at the location of your choice.\
 
 \f0\b \cf0 inspectorClass\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Returns class StringInspector.\
+\f1\b0 \cf0 Returns class StringInspector.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b stripRTF
+\f0\b \cf0 stripRTF
 \f1\b0 \
 \
 Returns a new String with all RTF formatting removed.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 (\cf6 \
-\cf7 // same as File-readAllStringRTF\cf6 \
-g = \cf8 File\cf6 (\cf9 "/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf"\cf6 ,\cf9 "r"\cf6 );\
+\f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // same as File-readAllStringRTF\cf0 \
+g = \cf3 File\cf0 (\cf2 "/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf"\cf0 ,\cf2 "r"\cf0 );\
 g.readAllString.stripRTF.postln;\
 g.close;\
-\cf0 )
+)
 \f1\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -516,7 +556,7 @@ g.close;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ulnone Where relevant, the current working directory is the same as the location of the SuperCollider app and the shell is the Bourne shell (sh). Note that the cwd, and indeed the shell itself, does not persist:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul \
+\cf0 \ul \ulc0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \ulnone "echo $0"\cf0 .unixCmd; \cf5 // print the shell (sh)\cf0 \
@@ -548,14 +588,17 @@ g.close;\
 \f1 \cf0 Should you need an environment variable to persist you can use 
 \f0\b setenv
 \f1\b0  (see below).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 unixCmd\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Execute the String on the command line using the Bourne shell (sh) and send stdout to the post window. See man sh for more details.\
+\f1\b0 \cf0 Execute the String on the command line using the Bourne shell (sh) and send stdout to the post window. See man sh for more details.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 "ls Help"\cf0 .unixCmd;
@@ -575,7 +618,6 @@ setenv(value)\
 
 \f2\fs18 \cf5 // all defs in this directory will be loaded when a local server boots
 \f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 "SC_SYNTHDEF_PATH"\cf0 .setenv(\cf2 "~/scwork/"\cf0 .standardizePath); \
 \cf2 "echo $SC_SYNTHDEF_PATH"\cf0 .unixCmd;
@@ -585,8 +627,9 @@ setenv(value)\
 \f0\b \cf0 \
 getenv\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Returns the value contained in the environment variable indicated by the String.\
+\f1\b0 \cf0 Returns the value contained in the environment variable indicated by the String.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -610,8 +653,9 @@ pathMatch\
 
 \f0\b \cf0 loadPaths\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Perform pathMatch (see above) on this String, then load and execute all paths in the resultant 
+\f1\b0 \cf0 Perform pathMatch (see above) on this String, then load and execute all paths in the resultant 
 \f0\b Array
 \f1\b0 .\
 \
@@ -624,15 +668,19 @@ pathMatch\
 
 \f0\b \cf0 load\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Load and execute the file at the path represented by the receiver.\
+\f1\b0 \cf0 Load and execute the file at the path represented by the receiver.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b standardizePath\
+\f0\b \cf0 standardizePath\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Expand ~ to your home directory, and resolve symbolic links. See 
+\f1\b0 \cf0 Expand ~ to your home directory, and resolve symbolic links. See 
 \f0\b PathName 
 \f1\b0 for more complex needs.\
 \
@@ -645,8 +693,9 @@ pathMatch\
 
 \f0\b \cf0 basename\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Return the filename from a Unix path.\
+\f1\b0 \cf0 Return the filename from a Unix path.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -657,8 +706,9 @@ pathMatch\
 
 \f0\b \cf0 dirname\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Return the directory name from a Unix path.\
+\f1\b0 \cf0 Return the directory name from a Unix path.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -669,8 +719,9 @@ pathMatch\
 
 \f0\b \cf0 splitext\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Split off the extension from a filename or path and return both in an 
+\f1\b0 \cf0 Split off the extension from a filename or path and return both in an 
 \f0\b Array 
 \f1\b0 as [path or filename, extension].\
 \
@@ -688,8 +739,9 @@ pathMatch\
 
 \fs24 \cf0 \ulnone newTextWindow(title, makeListener)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Create a new 
+\f1\b0 \cf0 Create a new 
 \f0\b Document
 \f1\b0  with this.\
 \
@@ -702,8 +754,9 @@ pathMatch\
 
 \f0\b \cf0 openDocument\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Create a new 
+\f1\b0 \cf0 Create a new 
 \f0\b Document
 \f1\b0  from the path corresponding to this. Returns the Document.\
 \
@@ -719,8 +772,9 @@ d.class;\
 
 \f0\b \cf0 openTextFile(selectionStart, selectionLength)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Create a new 
+\f1\b0 \cf0 Create a new 
 \f0\b Document
 \f1\b0  from the path corresponding to this. The selection arguments will preselect the indicated range in the new window. Returns this.\
 \
@@ -736,8 +790,9 @@ d.class;\
 
 \f0\b \cf0 findHelpFile\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Returns the path for the helpfile named this, if it exists, else returns nil.\
+\f1\b0 \cf0 Returns the path for the helpfile named this, if it exists, else returns nil.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -749,10 +804,177 @@ d.class;\
 
 \f0\b \cf0 openHelpFile\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Performs foundHelpFile(above) on this, and opens the file it if it exists, otherwise opens the main helpfile.\
+\f1\b0 \cf0 Performs foundHelpFile(above) on this, and opens the file it if it exists, otherwise opens the main helpfile.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 "Document"\cf0 .openHelpFile;\
-\cf2 "foobar"\cf0 .openHelpFile;}
+\cf2 "foobar"\cf0 .openHelpFile;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 Drawing Support
+\fs28 \ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone \
+The following methods must be called within an SCWindow-drawHook function, and will only be visible once the window is refreshed. Each call to SCWindow-refresh will 'overwrite' all previous drawing by executing the currently defined drawHook function. See also: 
+\f0\b [\ul \ulc3 SCWindow\ulnone ]
+\f1\b0 , 
+\f0\b [\ul Color\ulnone ]
+\f1\b0 , and 
+\f0\b [\ul Pen\ulnone ]
+\f1\b0 .
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 draw\
+
+\f1\b0 	\
+Draws the String at the current 0@0 
+\f0\b [\ul Point\ulnone ]
+\f1\b0 . If not transformations of the graphics state have taken place this will be the upper left corner of the window. See also 
+\f0\b [\ul Pen\ulnone ]
+\f1\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+(\cf6 \
+w = \cf7 SCWindow\cf6 .new.front;\
+w.view.background_(\cf7 Color\cf6 .white);\
+w.drawHook = \{\
+	\cf8 "abababababa\\n\\n\\n"\cf6 .scramble.draw\
+\};\
+w.refresh\
+\cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 drawAtPoint(point, font, color)\
+
+\f1\b0 \
+Draws the String at the given 
+\f0\b [\ul Point\ulnone ] 
+\f1\b0 using the 
+\f0\b [\ul Font\ulnone ]
+\f1\b0  and 
+\f0\b [\ul Color\ulnone ]
+\f1\b0  specified.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\cf6 \
+w = \cf7 SCWindow\cf6 .new.front;\
+w.view.background_(\cf7 Color\cf6 .white);\
+w.drawHook = \{\
+	\cf8 "abababababa\\n\\n\\n"\cf6 .scramble.drawAtPoint(\
+		100@100, \
+		\cf7 Font\cf6 (\cf8 "
+\f4 \cf8 Gadget
+\f2 \cf8 "\cf6 , 30), \
+		\cf7 Color\cf6 .blue(0.3, 0.5))\
+\};\
+w.refresh\
+\cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 drawInRect(rect, font, color)\
+\
+
+\f1\b0 Draws the String into the given 
+\f0\b [\ul Rect\ulnone ]
+\f1\b0  using the 
+\f0\b [\ul Font\ulnone ]
+\f1\b0  and 
+\f0\b [\ul Color\ulnone ]
+\f1\b0  specified.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\cf6 \
+w = \cf7 SCWindow\cf6 .new.front;\
+r = \cf3 Rect\cf0 (100, 100, 100, 100);\cf6 \
+w.view.background_(\cf7 Color\cf6 .white);\
+w.drawHook = \{\
+	\cf8 "abababababa\\n\\n\\n"\cf6 .scramble.drawInRect(\cf7 r\cf6 , \cf7 Font\cf6 (\cf8 "
+\f4 \cf8 Gadget
+\f2 \cf8 "\cf6 , 30), \cf7 Color\cf6 .blue(0.3, 0.5));\
+	Pen.strokeRect(r);\
+\};\
+w.refresh\
+\cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf5 //	drawCenteredIn(inRect)\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	draws the String into the center of the given rect with font and color into the window.\
+
+\f0\b 	Unfortunately does not work for now...\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 (\cf6 \
+w = \cf7 SCWindow\cf6 .new.front;\
+w.view.background_(\cf7 Color\cf6 .white);\
+w.drawHook = \{\
+	\cf8 "abababababa\\n\\n\\n"\cf6 .scramble.drawCenteredIn(\
+		\cf7 Rect\cf6 (100, 100, 100, 100), \
+		\cf7 Font\cf6 (\cf8 "
+\f4 \cf8 Gadget
+\f2 \cf8 "\cf6 , 30), \
+		\cf7 Color\cf6 .blue(0.3, 0.5)\
+	)\
+\};\
+w.refresh\
+\cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf5 //	drawLeftJustIn(inRect)\cf0 \
+	Unfortunately does not work for now...\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 (\cf6 \
+w = \cf7 SCWindow\cf6 .new.front;\
+w.view.background_(\cf7 Color\cf6 .white);\
+w.drawHook = \{\
+	\cf8 "abababababa\\n\\n\\n"\cf6 .scramble.drawLeftJustIn(\
+		\cf7 Rect\cf6 (100, 100, 100, 100), \
+		\cf7 Font\cf6 (\cf8 "
+\f4 \cf8 Gadget
+\f2 \cf8 "\cf6 , 30), \
+		\cf7 Color\cf6 .blue(0.3, 0.5)\
+	)\
+\};\
+w.refresh\
+\cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf5 //	drawRightJustIn(inRect)\cf0 \
+	Unfortunately does not work for now...\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 (\cf6 \
+w = \cf7 SCWindow\cf6 .new.front;\
+w.view.background_(\cf7 Color\cf6 .white);\
+w.drawHook = \{\
+	\cf8 "abababababa\\n\\n\\n"\cf6 .scramble.drawLeftJustIn(\
+		\cf7 Rect\cf6 (100, 100, 100, 100), \
+		\cf7 Font\cf6 (\cf8 "
+\f4 \cf8 Gadget
+\f2 \cf8 "\cf6 ,
+\f4  
+\f2 30), \
+		\cf7 Color\cf6 .blue(0.3, 0.5)\
+	)\
+\};\
+w.refresh\
+\cf0 )}
