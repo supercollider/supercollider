@@ -18,15 +18,19 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 Breakpoint envelope specified with patterns and sampled at the times of the enclosing Event pattern.\
-The envelope discription is almost identical to that of Env.a\
+\f1\b0 \cf0 Pseg defines a function of time as a breakpoint envelope using the same parameters as 
+\f0\b Env
+\f1\b0 .  These patterns \
+can be used to describe tempo or dynamic variations independent of the rhythmic patterns that express them.\
 \
 	
 \f0\b levelpattern
 \f1\b0  - The first level is the initial value of the envelope, all subsequent values are interpolated\
+	If durpattern is nil, then levelpattern specifies the entire envelope by returning arrays of the form: \
+	 	[level, dur, curve]\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
 \cf0 	
-\f0\b timepattern
+\f0\b durpattern
 \f1\b0  - duration of segments in seconds. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	
