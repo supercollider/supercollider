@@ -333,12 +333,13 @@ Event : Environment {
 						};
 					},
 					set: #{|server|
-						var instrumentName, freqs, lag, dur, strum, sustain, desc, bndl, msgFunc;
+						var instrumentName, freqs, lag, dur, strum, bndl;
 						freqs = ~freq = ~freq.value + ~detune;
 										
 						if (freqs.isKindOf(Symbol).not) {
 							~amp = ~amp.value;
 							lag = ~lag + server.latency;
+							~sustain = ~sustain.value;
 							strum = ~strum;
 				
 							bndl = ([\n_set, ~id] ++ ~args.envirPairs).flop;
