@@ -4,7 +4,7 @@ ProxySpace : LazyEnvir {
 	classvar <>all;
 	
 	var <name, <server, <clock, <fadeTime;
-	var <>awake=true, tempoProxy;
+	var <>awake=true, tempoProxy, <group;
 	
 	*initClass { all = IdentityDictionary.new }
 	
@@ -31,7 +31,8 @@ ProxySpace : LazyEnvir {
 			proxy = NodeProxy.new(server);
 			proxy.clock = clock;
 			proxy.awake = awake;
-			if(fadeTime.notNil, { proxy.fadeTime = fadeTime });
+			if(fadeTime.notNil) { proxy.fadeTime = fadeTime };
+			if(group.isPlaying) { proxy.parentGroup = group };
 			^proxy
 	}
 	
@@ -46,6 +47,12 @@ ProxySpace : LazyEnvir {
 	fadeTime_ { arg dt;
 		fadeTime = dt;
 		this.do { arg item; item.fadeTime = dt };
+	}
+	
+	group_ { arg node;
+		if(node.isPlaying.not) { "node not playing and registered: % \n".postf(node); ^this };
+		group = node;
+		this.do { arg item; item.parentGroup = node };
 	}
 	
 	makeTempoClock { arg tempo=1.0, beats, seconds;
