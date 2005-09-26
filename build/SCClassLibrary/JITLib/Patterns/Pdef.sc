@@ -41,7 +41,7 @@ PatternProxy : Pattern {
 	convertFunction { arg func;
 			^Prout {
 				var inval = func.def.prototypeFrame !? { inval = this.defaultEvent };
-				func.value( inval ).embedInStream
+				func.value( inval ).embedInStream(inval)
 			};
 	}
 	
@@ -344,7 +344,7 @@ EventPatternProxy : TaskProxy {
 			} {
 				new = pattern
 			};
-			
+		//	if(new.isKindOf(Event)) { new = Pn(new) }; // loop single event
 			if(fadeTime.isNil) {
 				Pseq([EmbedOnce(Pfindur(delta, str, tolerance)), new])
 			}{
