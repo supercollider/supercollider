@@ -110,8 +110,7 @@
 	
 	// private
 	performAtControl { arg action, keys, levels=1.0, durs;
-		var ctlBus, bundle, id, setArgs, setBundle, ctlIndex, missing, startLevels, maxDur;
-		if(this.isPlaying) {
+		var ctlBus, bundle, id, setArgs, setBundle, ctlIndex, missing, startLevels, maxDur;		if(this.isPlaying) {
 		
 			durs = durs ? this.fadeTime;
 			id = group.nodeID;
@@ -130,9 +129,12 @@
 			bundle = ["/n_map", id];
 			
 			keys.do { arg key, i; 
-				var val = nodeMap.settings[key].getValue;
-				val !? { startLevels[i] = val };
-				bundle = bundle.addAll([key, ctlIndex + i]);
+				var val = nodeMap.settings[key];
+				val !? {
+					val = val.getValue;
+					val !? { startLevels[i] = val };
+					bundle = bundle.addAll([key, ctlIndex + i]);
+				}
 			};
 			
 			server.openBundle;
