@@ -5,6 +5,7 @@ BusPlug : AbstractFunction {
 	var <server, <bus; 		
 	var <monitor;
 	var <busArg = ""; // cache for "/s_new" bus arg
+	var <>parentGroup; // if nil, uses default group
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
 	
@@ -196,6 +197,7 @@ BusPlug : AbstractFunction {
 	play { arg out, numChannels, group, multi=false, vol, fadeTime;  
 		var bundle;
 		bundle = MixedBundle.new;
+		if(group.isNil and: { parentGroup.isPlaying }) { group = parentGroup };
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock, this.quant)		^monitor.group
@@ -206,6 +208,7 @@ BusPlug : AbstractFunction {
 		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle); };
 		if(monitor.isNil) { monitor = Monitor.new };
+		if(group.isNil and: { parentGroup.isPlaying }) { group = parentGroup };
 		group = (group ? this.homeServer).asGroup;
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, 
 				group, multi, vol, fadeTime);
@@ -315,6 +318,11 @@ NodeProxy : BusPlug {
 	asGroup { ^group.asGroup }
 	asTarget { ^group.asGroup }
 	
+	parentGroup_ {Êarg node;
+		if(node.isPlaying.not) { "node not playing and registered: % \n".postf(node); ^this };
+		parentGroup = node;
+		if(group.isPlaying) { group.moveToHead(parentGroup) }
+	}
 		
 		
 	//////////// set the source to anything that returns a valid ugen input ////////////
@@ -650,7 +658,8 @@ NodeProxy : BusPlug {
 				group = Group.basicNew(server, this.defaultGroupID);
 				NodeWatcher.register(group);
 				group.isPlaying = server.serverRunning;
-				bundle.add(group.newMsg(argGroup ? server.asGroup, \addToHead));
+				if(argGroup.isNil and: { parentGroup.isPlaying }) { argGroup = parentGroup };
+				bundle.add(group.newMsg(argGroup ?? { server.asGroup }, \addToHead));
 		}
 	}
 
