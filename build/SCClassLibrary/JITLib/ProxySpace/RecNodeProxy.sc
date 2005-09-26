@@ -10,7 +10,7 @@ RecNodeProxy : NodeProxy {
 	*initClass {
 		StartUp.add {
 			for(1,8,{ arg i;
-				SynthDef.writeOnce("system-diskout-" ++ i.asString, { arg i_in, i_bufNum=0;
+				SynthDef.writeOnce("system_diskout_" ++ i.asString, { arg i_in, i_bufNum=0;
 					DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
 				});
 			});
@@ -51,7 +51,7 @@ RecNodeProxy : NodeProxy {
 		recGroup = Group.basicNew(server);
 		bundle.add(recGroup.newMsg(server));
 		NodeWatcher.register(recGroup);
-		bundle.add([9, "system-diskout-" ++ this.numChannels, 
+		bundle.add([9, "system_diskout_" ++ this.numChannels, 
 					server.nextNodeID, 1, recGroup.nodeID,
 					\i_in, bus.index, \i_bufNum, buffer.bufnum
 				]);
