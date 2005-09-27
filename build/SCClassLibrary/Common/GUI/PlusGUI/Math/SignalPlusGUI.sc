@@ -99,6 +99,7 @@
 		value = this.value;
 		if(value.size == 0, { numChannels = 1 }, { numChannels =  value.size });
 		buffer = Buffer.new(server, duration * server.sampleRate, numChannels);
+
 		// no need to check for rate as RecordBuf is ar only
 		name = this.hash.asString;
 		def = SynthDef(name, { 
@@ -123,8 +124,10 @@
 	
 	plot { arg duration  = 0.01, server, bounds;
 		this.loadToFloatArray(duration, server, { |array, buf|
+			var numChan;
+			numChan = buf.numChannels;
 			{
-				array.plot(bounds: bounds, numChannels: buf.numChannels) 
+				array.plot(bounds: bounds, numChannels: numChan) 
 			}.defer;
 		})
 	}
