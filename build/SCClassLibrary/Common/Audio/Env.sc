@@ -10,7 +10,7 @@ Env {
 	
 	var <array;
 	
-	classvar shapeNames;
+	classvar <shapeNames;
 	
 	*new { arg levels=#[0,1,0], times=#[1,1], curve='lin', releaseNode, loopNode;
 		^super.newCopyArgs(levels, times, curve, releaseNode, loopNode)
