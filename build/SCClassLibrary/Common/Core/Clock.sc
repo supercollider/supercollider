@@ -34,9 +34,9 @@ SystemClock : Clock {
 
 
 TempoClock : Clock {
-	classvar all, <>default;
+	classvar <>all, <>default;
 
-	var queue, ptr;
+	var <queue, ptr;
 	
 	var <beatsPerBar=4.0, barsPerBeat=0.25;
 	var <baseBarBeat=0.0, <baseBar=0.0;
