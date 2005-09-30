@@ -1,30 +1,36 @@
-TabFileReader {
-	// a class to read tab delimited files.
+FileReader {
+	// a class to read text files automatically
+	classvar <delim = $ ;	// space separated by default
 	var stream;
 	
 	*new { arg stream;
 		^super.newCopyArgs(stream)
 	}
 	
-	*read { arg path, skipEmptyLines=false, func; 
+	*read { arg path, skipEmptyLines=false, skipBlanks=false, func, delimiter; 
 		var f, table; 
 		f = File(path, "r"); 
 		if (f.isOpen.not) { warn("TabFileReader: file" + path + "not found.") ^nil };
-		table = this.new(f).read(skipEmptyLines, func);
+		table = this.new(f).read(skipEmptyLines, skipBlanks, func, (delimiter));
 		f.close;
 		^table;
 	}
-	read { arg skipEmptyLines=false, func; 
+	read { arg skipEmptyLines=false, skipBlanks=false, func, delimiter; 
 		var string, record, table, c;
+
+		delimiter = delimiter ? this.class.delim;
 		string = String.new;
+
 		while ({
 			c = stream.getChar;
 			c.notNil
 		},{
-			if (c == $\t, {
-				func !? { string = func.value(string) };
-				record = record.add(string);
-				string = String.new;
+			if (c == delimiter, {
+				if (skipBlanks.not or: { string.size > 0 }) {
+					func !? { string = func.value(string) };
+					record = record.add(string);
+					string = String.new;
+				}
 			},{
 			if (c == $\n or: { c == $\r }, {
 				func !? { string = func.value(string) };
@@ -40,7 +46,7 @@ TabFileReader {
 			})});
 			
 		});
-		
+				// add last string if there is one!
 		if (string.notEmpty) {
 			func !? { string = func.value(string) };
 			record = record.add(string) 
@@ -49,11 +55,19 @@ TabFileReader {
 		^table
 	}
 
-	*readInterpret { arg path, skipEmptyLines=false; 
-		^this.read(path, skipEmptyLines, _.interpret);
+	*readInterpret { arg path, skipEmptyLines=false, skipBlanks=false; 
+		^this.read(path, skipEmptyLines, skipBlanks, _.interpret);
 	}
 	
-	readInterpret { arg skipEmptyLines=false;
-		^this.read(skipEmptyLines, _.interpret)
+	readInterpret { arg skipEmptyLines=false, skipBlanks=false;
+		^this.read(skipEmptyLines, skipBlanks=false, _.interpret)
 	}	
+}
+
+TabFileReader : FileReader { 
+	classvar <delim = $\t;
+}
+
+CSVFileReader : FileReader { 
+	classvar <delim = $,;
 }
