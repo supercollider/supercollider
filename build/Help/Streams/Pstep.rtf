@@ -12,6 +12,7 @@
 
 \f0\b \cf0 superclass: Pattern
 \f1\b0 \
+related: Pseg\
 \
 
 \f0\b Pstep(levelpattern, durpattern)\
@@ -38,16 +39,15 @@ Pstep is good for representing chord progressions, scale progressions, accent pa
 	Ppar([\
 		Pbind(\
 			\cf4 \\degree\cf0 , \cf3 Pbrown(0\cf0 ,12,1),\
-			\cf4 \\dur\cf0 , \cf3 Prand\cf0 ([0.2, 0.5, 1.1, 0.25, 0.15], \cf3 inf\cf0 )\
-		),\
+\cf4 			\\dur\cf0 , Pstep( Pseq([\cf3 0.1,0.2,0.4,0.8,1.6],inf),3.2)\
+		\cf0 ),	\
 		Pbind(\
-			\\detune, Pseg(Pseq([0,0,10,0],inf),4),\
 			\cf4 \\degree\cf0 , \cf3 Pbrown(0\cf0 ,20,1),\
-			\cf4 \\dur\cf0 , \cf3 0.1\cf0 \
+			\cf4 \\dur\cf0 , Pstep( Pseq([\cf3 0.1,0.2,0.4,0.8,1.6],inf),4.5)\cf0 \
 		)\
 	]),\
 	\\scale, Pstep(Pseq([ [0,2,4,5,7,9,11], [0,1,2,3,4,5,6]], inf), 5),\
-	\\db,Pstep(Pseq([4,-4,0,-4],inf),0.25) + Pwhite(-20, -15)	\
+	\\db,Pstep(Pseq([4,-4,0,-4],inf),0.25) + Pwhite(-20, -15)\
 ).play;\
 )\
 \
