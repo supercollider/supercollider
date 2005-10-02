@@ -292,7 +292,7 @@ Pbind : Pattern {
 }
 
 Pmono : Pattern {
-	var <>name, <>patternpairs;
+	var <>synthName, <>patternpairs;
 	*new { arg name ... pairs;
 		if (pairs.size.odd, { Error("Pmono should have even number of args.\n").throw; });
 		^super.newCopyArgs(name, pairs)
@@ -301,7 +301,7 @@ Pmono : Pattern {
 	embedInStream { | inevent |
 		var id, server;
 		var event;
-		var streamout;
+		var streamout, name;
 		var patMadeSynth;
 		var streampairs = patternpairs.copy;
 		var endval = patternpairs.size - 1;
@@ -315,7 +315,7 @@ Pmono : Pattern {
 			patMadeSynth = false;
 		} {
 			event[\type] = \monoNote; 
-			event[\instrument] = name;
+			event[\instrument] = synthName;
 			event[\updatePmono] = { | argID, argServer | 
 				 id = argID;
 				 server = argServer;
