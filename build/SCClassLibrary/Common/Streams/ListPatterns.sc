@@ -274,7 +274,8 @@ Ppar : ListPattern {
 					outval.put(\delta, nexttime - now);
 					
 					inval = outval.yield 
-						?? {while {priorityQ.notEmpty} { priorityQ.pop.next(nil) } };
+						?? {
+							while {priorityQ.notEmpty} { priorityQ.pop.next(nil) } };
 					now = nexttime;	
 				});	
 			});
