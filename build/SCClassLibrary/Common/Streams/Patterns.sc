@@ -286,76 +286,71 @@ Pbind : Pattern {
 }
 
 Pmono : Pattern {
-	var <>name, <>args, <>patternpairs;
-	*new { arg name, args ... pairs;
+	var <>name, <>patternpairs;
+	*new { arg name ... pairs;
 		if (pairs.size.odd, { Error("Pmono should have even number of args.\n").throw; });
-		^super.newCopyArgs(name, args, pairs)
+		^super.newCopyArgs(name, pairs)
 	}
 	
-	storeArgs { ^[name, args] ++ patternpairs }
-	embedInStream { arg inevent;
+	embedInStream { | inevent |
+		var id, server;
 		var event;
-		var sawNil = false;
-		var first = true;
-		var server, id;
+		var streamout;
+		var patMadeSynth;
 		var streampairs = patternpairs.copy;
-		var endval = streampairs.size - 1;
-		
-		forBy (1, endval, 2) { arg i;
-			streampairs.put(i, streampairs[i].asStream);
-		};
-		
-		server = inevent[\server] ?? { Server.default };
-		id = server.nextNodeID;
+		var endval = patternpairs.size - 1;
+		forBy (1, endval, 2) { | i | streampairs[i] = patternpairs[i].asStream };
+
+		inevent ?? { ^nil };
+
+		event = inevent.copy;
+		if (event[\id].notNil) {
+			event[\type] = \set;	
+			patMadeSynth = false;
+		} {
+			event[\type] = \monoNote; 
+			event[\instrument] = name;
+			event[\updatePmono] = { | argID, argServer | 
+				 id = argID;
+				 server = argServer;
+				 patMadeSynth = true; 
+			};
+		}; 
 		loop {
-			if (inevent.isNil) { ^nil };
-			event = inevent.copy;
-			
-			if(inevent.eventAt(\type) == \finish) {
-					if(first) { ^inevent.put(\type, nil) }; // avoid recursion
-					event[\delta] = 0;
-					event[\id] = id;
-					event[\type] = \off;
-					event.copyToFinishEvents;
-					
-					event[\type] = \finish;
-					event.yield;
-					^inevent				
-			};
-			if (first) { // if already finish here?
-				first = false;
-				event[\type] = \on;
-				name !? { event[\instrument] = name; };
-			}{
-				event[\type] = \set;
-			};
-			event[\id] = id;
-			args !? { event[\args] = args; };
-			
-			forBy (0, endval, 2) { arg i;
-				var name = streampairs[i];
-				var stream = streampairs[i+1];		
-				var streamout = stream.next(event);
-				if (streamout.isNil) {
-					event[\type] = \off;
-					event[\delta] = 0;
-					
-					inevent = event.yield;
-					^inevent;
-				};
-				
-				if (name.isSequenceableCollection) {
-					streamout.do { arg val, i;
-						event.put(name[i], val);
+			forBy (0, endval, 2) { | i |
+				name = streampairs[i];
+				streamout = streampairs[i+1].next(event);
+				streamout ?? { 					// exit on nil field
+					if (patMadeSynth) { 			// end synth if made by Pmono
+						event[\type] = \off;
+						event.play; 
 					};
+					^inevent
+				 };
+				if (name.isSequenceableCollection) {
+					name.do { | n, i | event[n] = streamout[i] };
 				}{
-					event.put(name, streamout);
-				};
-				
+					event[name] = streamout;
+				};			
 			};
-			inevent = event.yield;
-		}		
-	}
+			inevent = event.yield;			
+			if (inevent.isNil) {					// pattern is ending early
+				if ( patMadeSynth) {				// from pfin, pfindur, PatternConductor
+					event[\type] = \off;
+					event.play;
+					^nil 	
+				} {
+					^nil
+				}
+			};			
+			event = inevent.copy;
+			if (patMadeSynth) {
+				event[\server] = server;
+				event[\id] = id;
+			};
+			event[\type] = \set;
+		}
+	}	
 }
 
 
