@@ -210,5 +210,7 @@ Here is a simple example of its use:
 	isPlaying { ^(this[\isPlaying] == true) }
 	isPlaying_ { | flag | this[\isPlaying] = flag; }
 	nodeID { ^this[\id].asArray.last }	
+	
+	asEventStreamPlayer {}
 }
 
