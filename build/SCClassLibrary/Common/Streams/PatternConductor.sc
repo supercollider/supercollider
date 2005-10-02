@@ -10,7 +10,7 @@ PatternConductor  {
 	var <>clock, <>pattern, <>event, <>quant, <>eventStream, <tempo;
 	*new { |pattern, event, quant|
 		^super.new
-			.pattern_(pattern).event_(event ? ()).quant_(quant ? 0).tempo_(1);
+			.pattern_(pattern).event_(event ? Event.default).quant_(quant ? 0).tempo_(1);
 	}
 	
 	play { 
@@ -30,8 +30,7 @@ PatternConductor  {
 	resume { if(clock.notNil) { clock.tempo = tempo } }
 
 	stop { |stopTempo|
-		eventStream.stop; 
-		eventStream = nil;
+		eventStream.stream.next(nil);
 		if (stopTempo.isNil) {
 			clock.stop; 
 			clock.queue.pairsDo { | t, e| e.value };
