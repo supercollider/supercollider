@@ -69,6 +69,40 @@ Here is a simple example of its use:
 		
 	 	types = Event.partialEvents.playerEvent.eventTypes;
 
+		types[\monoNote] = #{ |server|	
+			var instrumentName, desc, msgFunc;
+			var bndl, synthLib, addAction, group, latency, ids, id, groupControls;
+			~server = server;
+			group = ~group;
+			addAction = ~addAction;
+			~freq = ~freq.value + ~detune;
+			~amp = ~amp.value;
+			ids = ~id;					
+			synthLib = ~synthLib ?? { SynthDescLib.global };
+			instrumentName = ~instrument.asSymbol;
+			desc = synthLib.synthDescs[instrumentName];			if (desc.notNil) { 
+				msgFunc = desc.msgFunc;
+				~hasGate = desc.hasGate;
+			}{
+				msgFunc = ~defaultMsgFunc;
+			};
+		
+			bndl = ( [\s_new, instrumentName, ids, addAction, group] ++ msgFunc.valueEnvir).flop;
+			if (ids.isNil ) {
+				bndl.do { | b |
+					id = server.nextNodeID;
+					ids = ids.add(id);
+					b[2] = id;
+				};
+			};					
+	
+			if ((addAction == 0) || (addAction == 3)) {
+				bndl = bndl.reverse;
+			};
+			server.sendBundle(server.latency, *bndl);
+			~updatePmono.value(ids, server);
+		};
+		
 		types[\Synth] = #{ |server|	
 			var instrumentName, desc, msgFunc;
 			var bndl, synthLib, addAction, group, latency, ids, id, groupControls;
