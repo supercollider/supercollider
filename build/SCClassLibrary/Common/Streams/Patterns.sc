@@ -215,6 +215,12 @@ Pchain : Pattern {
 				inval = inevent;
 			};
 			inval = yield(inevent);
+			if (inval.isNil) {
+				streams.reverseDo { |str|
+					str.next(inval);
+				};
+				^nil;
+			};			
 		};
 	}
 	storeOn { arg stream;
