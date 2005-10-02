@@ -7,30 +7,30 @@ the pattern.
 
 PatternConductor  {
 
-	var <>clock, <>pattern, <>event, <>quant, <>eventStream, <tempo;
-	*new { |pattern, event, quant|
+	var <>clock, <>patterns, <>event, <>quant, <>eventStreamPlayers, <tempo;
+	*new { |patterns, event, quant|
 		^super.new
-			.pattern_(pattern).event_(event ? Event.default).quant_(quant ? 0).tempo_(1);
+			.patterns_(patterns.asArray)
+			.event_(event ? Event.default)
+			.quant_(quant ? 0).tempo_(1);
 	}
 	
 	play { 
-		if (quant != 0) {
-			Routine.run({ this.prPlay }, 64, TempoClock.default, quant)
-		} {
-			this.prPlay
-		}
+		Routine.run({ this.prPlay }, 64, TempoClock.default, quant)
 	}
 
 	prPlay {
 		if (clock.notNil) { this.stop };
 		clock = TempoClock(tempo);
-		eventStream = pattern.play(clock, event, quant);
+		eventStreamPlayers = patterns.collect { | p | p.asEventStreamPlayer(event) };
+		eventStreamPlayers.do { | p | p.play(clock, false, quant) };
 	}
 	pause { | pauseTempo = 0.000001| if(clock.notNil) { clock.tempo = pauseTempo } }
 	resume { if(clock.notNil) { clock.tempo = tempo } }
 
 	stop { |stopTempo|
-		eventStream.stream.next(nil);
+		eventStreamPlayers.do { | p | p.stop };
+		eventStreamPlayers = nil;
 		if (stopTempo.isNil) {
 			clock.stop; 
 			clock.queue.pairsDo { | t, e| e.value };
