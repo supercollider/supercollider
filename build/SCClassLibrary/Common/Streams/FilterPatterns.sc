@@ -81,8 +81,13 @@ Psetpre : FilterPattern {
 		
 		loop {
 			val = valStream.next;
-			if (val.isNil or: event.isNil) { ^event };
-			event = this.filterEvent(event, val);
+//			if (val.isNil or: event.isNil) { ^event };
+//			event = this.filterEvent(event, val);
+			if (val.isNil or: event.isNil) { 
+				event = nil;
+			}{
+				event = this.filterEvent(event, val);
+			};
 			inevent = evtStream.next(event);
 			if (inevent.isNil) { ^event };
 			event = yield(inevent);
@@ -294,6 +299,7 @@ Pfin : FilterPattern {
 			if (inevent.isNil, { ^event });
 			event = inevent.yield;
 		});
+		stream.next(nil);
 		^event
 	}
 }	
@@ -318,6 +324,7 @@ Pfindur : FilterPattern {
 			if (nextElapsed.roundUp(tolerance) >= dur) {
 				// must always copy an event before altering it.
 				// fix delta time and yield to play the event.
+				stream.next(nil);
 				inevent = inevent.copy.put(\delta, dur - elapsed).yield;
 				^inevent;		// this terminates the Pfindur. Event will not be played here.
 			};
