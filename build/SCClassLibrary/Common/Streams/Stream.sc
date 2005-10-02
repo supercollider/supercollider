@@ -389,6 +389,7 @@ EventStreamPlayer : PauseStream {
 		clock.play(this, quant);
 	}
 	
+	stop {  stream.next(nil); stream = nextBeat = nil;  }
 	mute { muteCount = muteCount + 1; }
 	unmute { muteCount = muteCount - 1; }
 	
