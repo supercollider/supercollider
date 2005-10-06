@@ -372,6 +372,7 @@ Collection {
 	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this); }
 	
 	printAll { this.do { | item | item.postln; }; } // convenience method
+	printcsAll { this.do { | item | item.postcs; }; } // convenience method
 	dumpAll { this.do { | item | item.dump; }; } // convenience method
 	
 	printOn { | stream |
