@@ -315,7 +315,7 @@ EventPatternProxy : TaskProxy {
 	
 	source_ { arg item;
 		if(item.isKindOf(Function)) // allow functions to be passed in
-			{ source = item; pattern = PlazyEnvir(item) } 
+			{ source = item; pattern = PlazyEnvirN(item) } 
 			{ pattern = source = item };
 		envir !? { pattern = pattern <> envir };
 		this.wakeUp;
