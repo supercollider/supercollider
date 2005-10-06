@@ -384,12 +384,29 @@ FunctionDef {
 			})
 		});
 		^references
-	}	
+	}
 	storeOn { arg stream;
 		stream << "nil" 
 	}
 	checkCanArchive { "cannot archive FunctionDefs".warn }
 	archiveAsCompileString { ^true }
+	
+	argumentString { arg withDefaultValues=true;
+		var res, last;
+		if(argNames.isNil) { ^nil };
+		res = "";
+		last = argNames.size-1;
+		argNames.do { |name, i|
+			var value;
+			res = res ++ name;
+			if(withDefaultValues and: { value = prototypeFrame[i]; value.notNil }) { 
+				res = res ++ " = " ++ value 
+			};
+			if(i != last) { res = res ++ ", " };
+		}
+		^res
+	}
+	
 }
 
 Method : FunctionDef {
