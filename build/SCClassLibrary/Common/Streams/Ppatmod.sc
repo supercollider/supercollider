@@ -16,13 +16,44 @@ Plazy : Pattern {
 PlazyEnvir : Plazy {
 	
 	embedInStream { arg inval;
-	//	^func.valueWithEnvir(inval).embedInStream(inval)
 		^if(inval.isNil) { func.value.embedInStream(inval) } {
 			inval.use { 
 				func.valueEnvir.embedInStream(inval) 
 			}
 		}
 	}
+}
+
+
+PlazyEnvirN : PlazyEnvir {
+	var flopFunc;
+	
+	*new { arg func; ^super.new(func).makeFlopFunc }
+	
+	embedInStream { arg inval;
+		var patterns;
+		^if(inval.isNil) {
+			func.value.embedInStream(inval) 
+		} {
+			inval.use {
+				if(flopFunc.notNil) {
+					patterns = flopFunc.value;
+					if(patterns.size > 1) {
+						Ppar(patterns).embedInStream(inval)
+					} {
+						patterns[0].embedInStream(inval)
+					}
+				} {
+					func.valueEnvir.embedInStream(inval)
+				}
+			}
+		}
+	}
+	// expand arguments
+	makeFlopFunc {
+		func.def.argNames !? { flopFunc = func.envirFlop }
+	}
+
 }
 
 Penvir : Pattern {
