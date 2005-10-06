@@ -52,10 +52,13 @@ Function : AbstractFunction {
 		var prototypeFrame;
 		if(envir.isNil) { ^this.value };
 		prototypeFrame = def.prototypeFrame.copy;
+
 		def.argNames.do { |name,i| 
 			var val = envir[name];
 			val !? { prototypeFrame[i] = val };
 		};
+		postf("argNames: % prototypeFrame: %\n", def.argNames, prototypeFrame);
+
 		// evaluate a function, using arguments from the supplied environment
 		// slightly faster than valueEnvir and does not replace the currentEnvironment
 		^this.valueArray(prototypeFrame)
@@ -182,6 +185,23 @@ Function : AbstractFunction {
 	
 	matchItem { arg item;
 		^this.value(item)
+	}
+	
+	// multichannel expand function return values
+	
+	envirFlop {
+		var def=this.def, func;
+		if(def.argNames.isNil) { 
+			^{ |... args| [this.valueArrayEnvir(args)] } 
+		};
+		func = interpret(
+				"#{ arg " ++ " " ++ def.argumentString(true) ++ "; " 
+				++ "[ " ++ def.argumentString(false) ++ " ].flop };"
+		);
+		
+		^{ |... args|
+			func.valueArrayEnvir(args).collect(this.valueArray(_))
+		}
 	}
 }
 
