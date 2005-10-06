@@ -284,6 +284,11 @@ ArrayedCollection : SequenceableCollection {
 	perfectShuffle {
 		^this[(0 .. this.size div: 2 - 1).stutter + [0, this.size + 1 div: 2]]
 	}
+	
+	performInPlace { arg selector, from, to, argList;
+		^this.overWrite(this.copyRange(from, to).performList(selector, argList), from)
+	}
+
 
 	// concepts borrowed from J programming language
 	rank {
