@@ -17,15 +17,15 @@
 		^(envir ? currentEnvironment).findKeyForValue(this) 
 		//don't want to add a slot yet. not optimized
 	}
-	storeOn { arg stream;
+	storeKeyOn { arg stream;
 		var key = this.key;
-		if(key.notNil) { stream << "~" << key } { super.storeOn(stream) };
+		if(key.notNil) { stream << "~" << key } { this.storeOn(stream) };
 	}
 }
 
 +BinaryOpPlug {
 
-	storeOn { arg stream;
+	storeKeyOn { arg stream;
 		var astr, bstr, opstr;
 		var basic = operator.isBasicOperator;
 		astr = if(a.isKindOf(NodeProxy))
@@ -41,11 +41,9 @@
 }
 
 +UnaryOpPlug {
-	storeOn { arg stream; 
-		var astr;
-		astr = if(a.isKindOf(NodeProxy))
-			{ "~" ++ a.key } { a.asCompileString };
-			stream << astr << " " << operator
+	storeKeyOn { arg stream; 
+		if(a.isKindOf(NodeProxy)) { stream << ("~" ++ a.key) } { a.storeKeyOn(stream) };
+		stream << " " << operator
 	 }
 }
 
@@ -59,7 +57,7 @@
 		// find keys for all parents
 		if(keys.notNil) {
 			proxies = IdentitySet.new;
-			keys.do { arg key; envir[key].getFamily(proxies) };
+			keys.do { arg key; var p = envir[key]; p !? { p.getFamily(proxies) } };
 			keys = proxies.collect { arg item; item.key(envir) }; 
 		} { keys = envir.keys };
 		
@@ -104,9 +102,12 @@
 			keys = this.monitors.collect { arg item; item.key(envir) };
 		};
 		str = String.streamContents({ arg stream; 
-			stream << "// ( p = ProxySpace.new(s).push; )";
-			stream.nl.nl;
-			this.storeOn(stream, keys); 
+			stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
+			this.storeOn(stream, keys);
+			this.do { arg px; if(px.monitorGroup.isPlaying) { 
+				stream << "~" << px.key << ".play; \n"
+				}
+			};
 		});
 		^Document.new((name ? "proxyspace").asString, str)
 	}
