@@ -69,32 +69,47 @@ Here is a simple example of its use:
 		
 	 	types = Event.partialEvents.playerEvent.eventTypes;
 
+		types[\monoOff] =  #{|server|
+			var lag, bndl;
+							
+			lag = ~lag + server.latency;
+
+			if(~hasGate == false) {
+				bndl = [\n_free, ~id].flop;
+			} {
+				bndl = [\n_set, ~id, \gate, 0].flop; 
+			};
+			server.sendBundle(lag, *bndl);
+		};
+		
+		types[\monoSet] = #{|server|
+			var freqs, lag, bndl;
+			
+			freqs = ~freq = ~freq.value + ~detune;
+							
+			if (freqs.isKindOf(Symbol).not) {
+				~amp = ~amp.value;
+				lag = ~lag + server.latency;
+				~sustain = ~sustain.value;
+	
+				bndl = ([\n_set, ~id] ++ ~msgFunc.valueEnvir).flop;
+				server.sendBundle(server.latency, *bndl);
+			};
+		};
+
 		types[\monoNote] = #{ |server|	
-			var instrumentName, desc, msgFunc;
-			var bndl, synthLib, addAction, group, latency, ids, id, groupControls;
-			~server = server;
-			group = ~group;
+			var bndl, id, ids, addAction, f;
 			addAction = ~addAction;
 			~freq = ~freq.value + ~detune;
+			f = ~freq;
 			~amp = ~amp.value;
-			ids = ~id;					
-			synthLib = ~synthLib ?? { SynthDescLib.global };
-			instrumentName = ~instrument.asSymbol;
-			desc = synthLib.synthDescs[instrumentName];			if (desc.notNil) { 
-				msgFunc = desc.msgFunc;
-				~hasGate = desc.hasGate;
-			}{
-				msgFunc = ~defaultMsgFunc;
+			
+			bndl = ( [\s_new, ~instrument, ids, addAction, ~group] ++ ~msgFunc.valueEnvir).flop;
+			bndl.do { | b |
+				id = server.nextNodeID;
+				ids = ids.add(id);
+				b[2] = id;
 			};
-		
-			bndl = ( [\s_new, instrumentName, ids, addAction, group] ++ msgFunc.valueEnvir).flop;
-			if (ids.isNil ) {
-				bndl.do { | b |
-					id = server.nextNodeID;
-					ids = ids.add(id);
-					b[2] = id;
-				};
-			};					
 	
 			if ((addAction == 0) || (addAction == 3)) {
 				bndl = bndl.reverse;
