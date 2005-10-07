@@ -12,7 +12,8 @@ Pattern : AbstractFunction {
 	}
 	
 	play { arg clock, protoEvent, quant=1.0;
-		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)	}
+		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)
+	}
 
 	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
 	iter { ^this.asStream }
@@ -305,13 +306,23 @@ Pmono : Pattern {
 		var patMadeSynth;
 		var streampairs = patternpairs.copy;
 		var endval = patternpairs.size - 1;
+		var synthLib, desc, msgFunc, hasGate;
 		forBy (1, endval, 2) { | i | streampairs[i] = patternpairs[i].asStream };
 
 		inevent ?? { ^nil };
 
 		event = inevent.copy;
+		synthLib = event[\synthLib] ?? { SynthDescLib.global };
+		desc = synthLib.synthDescs[synthName.asSymbol];			if (desc.notNil) { 
+			msgFunc = desc.msgFunc;
+			hasGate = desc.hasGate;
+		}{
+			msgFunc = event[\defaultMsgFunc];
+			hasGate = true;
+		};
+		
 		if (event[\id].notNil) {
-			event[\type] = \set;	
+			event[\type] = \monoSet;	
 			patMadeSynth = false;
 		} {
 			event[\type] = \monoNote; 
@@ -323,12 +334,14 @@ Pmono : Pattern {
 			};
 		}; 
 		loop {
+			event[\msgFunc] = msgFunc;
 			forBy (0, endval, 2) { | i |
 				name = streampairs[i];
 				streamout = streampairs[i+1].next(event);
 				streamout ?? { 					// exit on nil field
 					if (patMadeSynth) { 			// end synth if made by Pmono
-						event[\type] = \off;
+						event[\type] = \monoOff;
+						event[\hasGate] = hasGate;
 						event.play; 
 					};
 					^inevent
@@ -354,7 +367,7 @@ Pmono : Pattern {
 				event[\server] = server;
 				event[\id] = id;
 			};
-			event[\type] = \set;
+			event[\type] = \monoSet;
 		}
 	}	
 }
