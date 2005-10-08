@@ -26,13 +26,13 @@ Main : Process {
 	
 	stop { // called by command-.
 		
-		Server.freeAll; // stop all sounds on local servers
 		
 		SystemClock.clear;
 		AppClock.clear;
 		TempoClock.default.clear;
 		CmdPeriod.clear;
 		
+		Server.freeAll; // stop all sounds on local servers
 		Server.resumeThreads;
 	}
 	
