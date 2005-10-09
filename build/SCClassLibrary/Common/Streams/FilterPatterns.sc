@@ -75,7 +75,7 @@ Psetpre : FilterPattern {
 		^event[name] = val;
 	}
 	embedInStream { arg event;
-		var val, inevent;
+		var val, inevent, filteredEvent;
 		var valStream = value.asStream;		
 		var evtStream = pattern.asStream;
 		
@@ -84,11 +84,12 @@ Psetpre : FilterPattern {
 //			if (val.isNil or: event.isNil) { ^event };
 //			event = this.filterEvent(event, val);
 			if (val.isNil or: event.isNil) { 
-				event = nil;
+				filteredEvent = nil;
 			}{
-				event = this.filterEvent(event, val);
+				event = event.copy;
+				filteredEvent = this.filterEvent(event, val);
 			};
-			inevent = evtStream.next(event);
+			inevent = evtStream.next(filteredEvent);
 			if (inevent.isNil) { ^event };
 			event = yield(inevent);
 		}
@@ -381,8 +382,24 @@ Pconst : FilterPattern {
 		^super.new(pattern).sum_(sum).tolerance_(tolerance)
 	}
 	storeArgs { ^[sum,pattern,tolerance] }
-	asStream {
-		^pattern.asStream.constrain(sum,tolerance)
+	
+	embedInStream { arg inval;
+			var delta, elapsed = 0.0, nextElapsed, str=pattern.asStream;
+			loop ({
+				delta = str.next(inval);
+				if(delta.isNil) { 
+					(sum - elapsed).yield; 
+					^inval
+				};
+				nextElapsed = elapsed + delta;
+				if (nextElapsed.round(tolerance) >= sum) {
+					(sum - elapsed).yield;
+					^inval
+				}{
+					elapsed = nextElapsed;
+					inval = delta.yield;
+				};
+			});
 	}
 }
 
