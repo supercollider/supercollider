@@ -119,7 +119,7 @@ Stethoscope {
 	numChannels_ { arg n;
 	
 		var isPlaying;
-		if(n > 16) {  Error("cannot display more than 16 channels at once").throw };
+		if(n > 16) { "cannot display more than 16 channels at once".inform; n = 16 };
 		if(n != numChannels and: { n > 0 }) {  
 			isPlaying = synth.isPlaying;
 			if(isPlaying) { synth.free; synth.isPlaying = false; synth = nil }; // immediate
