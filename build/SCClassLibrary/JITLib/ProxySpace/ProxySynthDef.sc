@@ -103,19 +103,3 @@ ProxySynthDef : SynthDef {
 	
 }
 
-EnvGate {
-		*new { arg i_level=1, gate, fadeTime, doneAction=2, curve='sin';			var synthGate, synthFadeTime;
-				if(gate.isNil and: { fadeTime.isNil }) {
-					#synthGate, synthFadeTime = // optimization
-						Control.names(['gate', 'fadeTime']).kr([1,0.02])
-				} {
-					synthGate = gate ?? { Control.names('gate').kr(1.0) };					synthFadeTime = fadeTime ?? { Control.names('fadeTime').kr(0.02) };
-				};
-				
-				^EnvGen.kr(
-					Env.new(#[0,1,0],#[1,1],curve,1),
-					synthGate, i_level, 0.0, synthFadeTime, doneAction
-				)
-               }
-}
-
