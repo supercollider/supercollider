@@ -360,9 +360,7 @@ Event : Environment {
 						hasGate = ~hasGate ? true;
 						
 						~id.asArray.do {|id, i|
-							var latency;
-							
-							latency = i * strum + lag;
+							var latency = i * strum + lag;
 							if(hasGate) {
 								server.sendBundle(latency, [\n_set, id, \gate, 0]); 
 							} {
@@ -382,7 +380,7 @@ Event : Environment {
 							
 							latency = i * strum + lag;
 							
-							server.sendBundle(latency.post, [\g_new, id, ~addAction, ~group].post); 
+							server.sendBundle(latency, [\g_new, id, ~addAction, ~group]); 
 						};
 					},
 	
@@ -398,7 +396,7 @@ Event : Environment {
 							
 							latency = i * strum + lag;
 							
-							server.sendBundle(latency.post, [\n_free, id].post); 
+							server.sendBundle(latency, [\n_free, id]); 
 						};
 					},
 	
