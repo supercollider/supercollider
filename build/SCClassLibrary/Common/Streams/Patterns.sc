@@ -58,19 +58,7 @@ Pattern : AbstractFunction {
 	}
 	
 	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
-	
-	// event stream support
-	
-	finishStream { arg stream, inevent;
-		var event, finishEvent;
-		loop {
-			event = inevent.copy.put(\type, \finish).put(\finishEvents, nil);
-			finishEvent = stream.next(event);
-			// no child stream has changed the event, or it is nil
-			if(finishEvent.eventAt(\finishEvents).isNil) { ^inevent };
-			inevent = finishEvent.yield;
-		}
-	}
+
 	
 	//////////////////////
 	
@@ -357,7 +345,7 @@ Pmono : Pattern {
 				if ( patMadeSynth) {				// from pfin, pfindur, PatternConductor
 					event[\type] = \off;
 					event.play;
-					^nil 	
+					^nil
 				} {
 					^nil
 				}
