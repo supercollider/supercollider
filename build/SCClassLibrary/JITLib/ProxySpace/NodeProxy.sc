@@ -26,26 +26,6 @@ BusPlug : AbstractFunction {
 		^this.new(server).defineBus(\control, numChannels);
 	}
 	
-	*initClass {
-		StartUp.add {
-			2.do { arg i; i = i + 1;
-				SynthDef.writeOnce("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
-					var env;
-					env = EnvGate(curve:'sin') * Lag.kr(vol, 0.05);
-					Out.ar(out, InFeedback.ar(in, i) * env) 
-				}, [\kr, \ir]);
-			};
-			2.do { arg i; i = i + 1;
-				SynthDef.writeOnce("system_link_control_" ++ i, { arg out=0, in=16;
-					var env;
-					env = EnvGate(curve:'lin');
-					Out.kr(out, In.kr(in, i) * env) 
-				}, [\kr, \ir]);
-			}
-		}
-	}
-	
-	
 	clear { 
 		this.free;
 		this.stop;
@@ -500,33 +480,29 @@ NodeProxy : BusPlug {
 	
 	}
 	
-	controlNames {
+	controlNames { arg rejecting = #[\out, \i_out, \gate, \fadeTime];
 		var all = Array.new; // Set doesn't work, because equality undefined for ControlName
 		objects.do { |el|
-			var cn = el.controlNames.reject { |item| 
-				all.any { |cn| cn.name === item.name }
+			el.controlNames.do { |item|
+				if(rejecting.includes(item.name).not and: {
+					all.every { |cn| cn.name !== item.name }
+				}) {
+					all = all.add(item);
+				}
 			};
-			all = all.addAll(cn) 
 		};
 		^all
 	}
-	
-	controlNamesDo { arg func, rejecting = #[\out, \i_out, \gate, \fadeTime];
-		this.controlNames.do { |el, i|
-					if (rejecting.includes(el.name).not) { func.(el, i) } 
-		}
-	}
-	
+
 	// controlPairs
 	controlKeysValues { arg keys, rejecting = #[\out, \i_out, \gate, \fadeTime];
 		var list = Array.new;
-		if(keys.isNil) {
-			this.controlNames.do { |el, i|
-				if(rejecting.includes(el.name).not) 
-				{ list = list.add(el.name).add(el.defaultValue) }
+		if(keys.isNil or: { keys.isEmpty }) {
+			this.controlNames(rejecting).do { |el, i|
+				list = list.add(el.name).add(el.defaultValue)
 			}
 		} {
-			this.controlNames.do { |el, i|
+			this.controlNames(rejecting).do { |el, i|
 				if(keys.includes(el.name)) 
 				{ list = list.add(el.name).add(el.defaultValue) }
 			}
@@ -536,7 +512,7 @@ NodeProxy : BusPlug {
 	
 	// derive names and default args from synthDefs
 	supplementNodeMap { arg keys, replaceOldKeys=false;
-		this.controlNamesDo { |el|
+		this.controlNames.do { |el|
 					var key;
 					key = el.name; 
 					if (
@@ -887,18 +863,17 @@ NodeProxy : BusPlug {
 	
 	unmap { arg ... keys;
 		var bundle;
-		if(keys.isEmpty) { keys = nodeMap.mappingKeys };
+		if(keys.isEmpty) { keys = nodeMap.mappingKeys; if(keys.isEmpty) { ^this } };
 		if(this.isPlaying) {
 			bundle = List.new;
 			nodeMap.unmapArgsToBundle(bundle, group.nodeID, keys);
-			server.listSendBundle(server.latency, bundle);
+			if(bundle.notEmpty) { server.listSendBundle(server.latency, bundle) };
 		};
 		nodeMap.unmap(*keys);
 	}
 	
 	unsetToBundle { arg bundle, keys;
 		var pairs = this.controlKeysValues(keys);
-		
 		if(this.isPlaying) {
 			if(pairs.notEmpty) {
 				bundle.add([15, group.nodeID] ++ pairs);
