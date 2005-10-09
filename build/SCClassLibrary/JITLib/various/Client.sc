@@ -1,7 +1,7 @@
 Client {
 	classvar <>named;
 	var <name, <addr;
-	var <>cmdName='/client', <>password;
+	var <>cmdName='/client', <>password, <>verbose=false;
 
 	*new { arg name=\default, addr;
 		^super.newCopyArgs(name).minit(addr).add
@@ -43,11 +43,13 @@ Client {
 	}
 	sendBundle { arg latency ... args;
 		args = this.prepareSendBundle(args);
+		if (verbose) { ("Client % sends: %\n").postf(name, args) };
 		addr.do({ arg a; a.sendBundle(latency, *args) })
 	}
 	sendTo { arg index ... args;
 		var a;
 		args = this.prepareSendBundle(args);
+		if (verbose) { ("Client % sends % to: % \n").postf(name, args, index) };
 		a = addr[index];
 		if(a.notNil) { a.sendBundle(nil, args)  };
 	}
@@ -87,6 +89,7 @@ LocalClient : Client {
 				var key, func;
 				key = msg[1];
 				func = ClientFunc.at(key);
+				if(verbose) { "LocalClient % received: %\n".postf(name, msg) };
 				func.value(msg.drop(2), time, responder);
 			});
 		};
