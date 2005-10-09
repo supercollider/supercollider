@@ -6,16 +6,6 @@ RecNodeProxy : NodeProxy {
 	}
 	
 	*control { ^this.notYetImplemented(thisMethod) }
-		
-	*initClass {
-		StartUp.add {
-			for(1,8,{ arg i;
-				SynthDef.writeOnce("system_diskout_" ++ i.asString, { arg i_in, i_bufNum=0;
-					DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
-				});
-			});
-		}
-	}
 	
 	*newFrom { arg proxy, numChannels;
 		^this.audio(proxy.server, numChannels ? proxy.numChannels)
