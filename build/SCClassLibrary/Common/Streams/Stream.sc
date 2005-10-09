@@ -220,24 +220,7 @@ Stream : AbstractFunction {
 	}
 	
 	constrain { arg sum, tolerance=0.001;
-		^r { arg inval;
-			var delta, elapsed = 0.0, nextElapsed;
-			loop ({
-				delta = this.next(inval);
-				if(delta.isNil) { 
-					(sum - elapsed).yield; 
-					nil.alwaysYield 
-				};
-				nextElapsed = elapsed + delta;
-				if (nextElapsed.round(tolerance) >= sum) {
-					(sum - elapsed).yield;
-					nil.alwaysYield;
-				}{
-					elapsed = nextElapsed;
-					inval = delta.yield;
-				};
-			});
-		}
+		^Pconst(sum, tolerance).asStream
 	}
 	
 	repeat { arg repeats = inf;
@@ -389,7 +372,7 @@ EventStreamPlayer : PauseStream {
 		clock.play(this, quant);
 	}
 	
-	stop {  stream.next(nil); stream = nextBeat = nil;  }
+	stop { stream.next(nil); stream = nextBeat = nil;  }
 	mute { muteCount = muteCount + 1; }
 	unmute { muteCount = muteCount - 1; }
 	
