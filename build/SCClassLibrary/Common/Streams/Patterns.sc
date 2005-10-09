@@ -208,7 +208,7 @@ Pchain : Pattern {
 				streams.reverseDo { |str|
 					str.next(inval);
 				};
-				^nil;
+				^nil.yield;
 			};			
 		};
 	}
