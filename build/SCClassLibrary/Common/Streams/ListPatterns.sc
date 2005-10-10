@@ -45,20 +45,22 @@ Pseq : ListPattern {
 		^super.new(list, repeats).offset_(offset)
 	}
 	embedInStream {  arg inval;
-		var item, offsetValue;
+		var item, offsetValue, outval;
 		offsetValue = offset.value;
 		if (inval.eventAt('reverse') == true, {
 			repeats.value.do({ arg j;
 				list.size.reverseDo({ arg i;
 					item = list.wrapAt(i + offsetValue);
-					inval = item.embedInStream(inval);
+					outval = item.embedInStream(inval);
+					if(outval.isNil) { ^inval } { inval = outval };
 				});
 			});
 		},{
 			repeats.value.do({ arg j;
 				list.size.do({ arg i;
 					item = list.wrapAt(i + offsetValue);
-					inval = item.embedInStream(inval);
+					outval = item.embedInStream(inval);
+					if(outval.isNil) { ^inval } { inval = outval };
 				});
 			});
 		});
@@ -311,21 +313,7 @@ Pswitch : Pattern {
 	storeArgs { ^[ list, which ]  }
 }
 
-Pswitch1 : Pswitch {	
-	embedInStream { arg inval;
-		var index, outval;
-		
-		var streamList = list.collect({ arg pattern; pattern.asStream; });
-		var indexStream = which.asStream;
-		loop {
-			if ((index = indexStream.next).isNil) { ^inval };
-			outval = streamList.wrapAt(index.asInteger).next(inval);
-			if (outval.isNil) { ^inval };
-			inval = outval.yield;
-		};
-	}
-}	
-
+	
 
 //Pswitch1 : Pattern {	
 //	var <>list, <>which=0;
