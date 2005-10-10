@@ -1,12 +1,13 @@
 
 // synthdefs needed by classes
 
-+ SynthDef {
-
+SystemSynthDefs {
+	classvar <>numChannels=2;
+	
 	*initClass {
 		StartUp.add {
 		
-			2.do { arg i; i = i + 1;
+			(1..numChannels).do { arg i;
 				SynthDef("system_link_audio_" ++ i, 
 				{ arg out=0, in=16, vol=1, doneAction=2;
 					var env;
@@ -14,7 +15,7 @@
 					Out.ar(out, InFeedback.ar(in, i) * env) 
 				}, [\kr, \ir, \kr, \ir]).writeDefFile;
 			};
-			2.do { arg i; i = i + 1;
+			(1..numChannels).do { arg i;
 				SynthDef.writeOnce("system_link_control_" ++ i, 
 				{ arg out=0, in=16, doneAction=2;
 					var env;
@@ -23,14 +24,15 @@
 				}, [\kr, \ir, \kr, \ir]).writeDefFile;
 			};
 			
-			for(1,8,{ arg i;
+			(1..numChannels).do { arg i;
 				SynthDef.writeOnce("system_diskout_" ++ i.asString, { arg i_in, i_bufNum=0;
 					DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
 				});
-			});		
+			};		
 	
 		}
 	}
 
 
 }
+
