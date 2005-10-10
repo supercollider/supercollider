@@ -208,7 +208,7 @@ Pchain : Pattern {
 				streams.reverseDo { |str|
 					str.next(inval);
 				};
-				^nil.yield;
+				^nil;
 			};			
 		};
 	}
@@ -258,7 +258,7 @@ Pbind : Pattern {
 		};
 
 		loop {
-			if (inevent.isNil) { ^nil.yield };
+			if (inevent.isNil) { ^nil };
 			event = inevent.copy;
 			forBy (0, endval, 2) { arg i;
 				var name = streampairs[i];
@@ -297,7 +297,7 @@ Pmono : Pattern {
 		var synthLib, desc, msgFunc, hasGate;
 		forBy (1, endval, 2) { | i | streampairs[i] = patternpairs[i].asStream };
 
-		inevent ?? { ^nil.yield };
+		inevent ?? { ^nil };
 
 		event = inevent.copy;
 		synthLib = event[\synthLib] ?? { SynthDescLib.global };
@@ -345,9 +345,9 @@ Pmono : Pattern {
 				if ( patMadeSynth) {				// from pfin, pfindur, PatternConductor
 					event[\type] = \off;
 					event.play;
-					^nil.yield
+					^nil
 				} {
-					^nil.yield
+					^nil
 				}
 			};			
 			event = inevent.copy;
