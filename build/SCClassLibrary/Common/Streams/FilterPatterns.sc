@@ -14,11 +14,7 @@ Pn : FilterPattern {
 	}
 	storeArgs { ^[pattern,repeats] }
 	embedInStream { arg event;
-		var outval;
-		repeats.value.do { 
-			outval = pattern.embedInStream(event);
-			if(outval.isNil) { ^event }
-		};
+		repeats.value.do { event = pattern.embedInStream(event) };
 		^event;
 	}
 }
@@ -367,6 +363,7 @@ Psync : FilterPattern {
 			{
 				inevent = inevent.copy; 
 				inevent.put(\delta, maxdur - elapsed);
+				stream.next(nil);
 				event = inevent.yield;
 				^event
 				

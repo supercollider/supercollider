@@ -45,22 +45,20 @@ Pseq : ListPattern {
 		^super.new(list, repeats).offset_(offset)
 	}
 	embedInStream {  arg inval;
-		var item, offsetValue, outval;
+		var item, offsetValue;
 		offsetValue = offset.value;
 		if (inval.eventAt('reverse') == true, {
 			repeats.value.do({ arg j;
 				list.size.reverseDo({ arg i;
 					item = list.wrapAt(i + offsetValue);
-					outval = item.embedInStream(inval);
-					if(outval.isNil) { ^inval } { inval = outval };
+					inval = item.embedInStream(inval);
 				});
 			});
 		},{
 			repeats.value.do({ arg j;
 				list.size.do({ arg i;
 					item = list.wrapAt(i + offsetValue);
-					outval = item.embedInStream(inval);
-					if(outval.isNil) { ^inval } { inval = outval };
+					inval = item.embedInStream(inval);
 				});
 			});
 		});
