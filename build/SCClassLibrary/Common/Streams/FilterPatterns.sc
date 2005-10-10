@@ -14,7 +14,11 @@ Pn : FilterPattern {
 	}
 	storeArgs { ^[pattern,repeats] }
 	embedInStream { arg event;
-		repeats.value.do { event = pattern.embedInStream(event) };
+		var outval;
+		repeats.value.do { 
+			outval = pattern.embedInStream(event);
+			if(outval.isNil) { ^event }
+		};
 		^event;
 	}
 }
