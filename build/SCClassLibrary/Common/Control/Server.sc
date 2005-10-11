@@ -655,7 +655,7 @@ Server : Model {
 		("\nnodes on" + name ++ ":").postln;
 		
 		report = { arg nodeID=0;
-			var child,synth;
+			var child, synth, defName;
 			indent.do({ " ".post });
 			nodes.at(nodeID).use({
 				~order = order;
@@ -673,8 +673,8 @@ Server : Model {
 					indent = indent - 8;
 				},{
 					synth = nodeWatcher.nodes.at(nodeID);
-					if(synth.notNil,{ // get defName if available
-						("Synth" + synth.nodeID).postln;
+					if(synth.notNil, {
+						("Synth" + synth.nodeID + (synth.defName.quote ? "")).postln;
 					},{
 						("Synth" + nodeID).postln;
 					});
