@@ -292,13 +292,17 @@ Pfin : FilterPattern {
 	}
 	storeArgs { ^[count,pattern] }
 	embedInStream { arg event;
-		var inevent;
+		var inevent, isEventStream = event.isKindOf(Event); // check for usage in the beginning
 		var stream = pattern.asStream;
 		
 		count.value.do({
 			inevent = stream.next(event);
 			if (inevent.isNil, { ^event });
 			event = inevent.yield;
+			if (isEventStream and: { event.isNil } ) {
+				stream.next(nil);
+				^nil.yield
+			}
 		});
 		stream.next(nil);
 		^event
@@ -318,6 +322,10 @@ Pfindur : FilterPattern {
 		var stream = pattern.asStream;
 		
 		loop {
+			if(event.isNil) {
+				stream.next(nil); 
+				^nil.yield 
+			};
 			inevent = stream.next(event);
 			if(inevent.isNil) { ^event };
 			delta = inevent.delta;
@@ -446,6 +454,10 @@ Pbindf : FilterPattern {
 		eventStream = pattern.asStream;
 		
 		loop{ 
+			if(event.isNil) {
+				eventStream.next(nil);
+				^nil.yield 
+			};
 			inevent = eventStream.next(event);
 
 			if (inevent.isNil) { ^event };
@@ -464,7 +476,7 @@ Pbindf : FilterPattern {
 				};
 			
 			};
-			event = yield(inevent);
+			event = yield(inevent);	
 		};
 	}
 }
