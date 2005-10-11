@@ -128,7 +128,7 @@ Here is a simple example of its use:
 			~amp = ~amp.value;
 			ids = ~id;					
 			synthLib = ~synthLib ?? { SynthDescLib.global };
-			instrumentName = ~instrument.asSymbol;
+			~defName = instrumentName = ~instrument.asSymbol;
 			desc = synthLib.synthDescs[instrumentName];			if (desc.notNil) { 
 				msgFunc = desc.msgFunc;
 				~hasGate = desc.hasGate;
