@@ -250,7 +250,7 @@ Ppar : ListPattern {
 				now = nexttime;	
 			});
 			
-			inval ?? { this.purgeQueue(priorityQ); ^nil.yield; };
+			inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 			
 			while({
 				priorityQ.notEmpty
@@ -265,7 +265,8 @@ Ppar : ListPattern {
 						outval.put(\freq, \rest);					
 						outval.put(\delta, nexttime - now);
 						
-						inval = outval.yield ?? { this.purgeQueue(priorityQ) };
+						inval = outval.yield;
+						inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 						now = nexttime;	
 					},{
 						priorityQ.clear;
@@ -276,7 +277,8 @@ Ppar : ListPattern {
 					nexttime = priorityQ.topPriority;
 					outval.put(\delta, nexttime - now);
 					
-					inval = outval.yield ?? { this.purgeQueue(priorityQ) };
+					inval = outval.yield;
+					inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 					now = nexttime;	
 				});	
 			});
