@@ -3,9 +3,9 @@
 BusPlug : AbstractFunction {
 	
 	var <server, <bus; 		
-	var <monitor;
+	var <>monitor, <>parentGroup; // if nil, uses default group
 	var <busArg = ""; // cache for "/s_new" bus arg
-	var <>parentGroup; // if nil, uses default group
+
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
 	
@@ -30,6 +30,7 @@ BusPlug : AbstractFunction {
 		this.free;
 		this.stop;
 		this.freeBus;
+		monitor = nil;
 	}
 		
 	
@@ -175,24 +176,19 @@ BusPlug : AbstractFunction {
 	
 	
 	play { arg out, numChannels, group, multi=false, vol, fadeTime;  
-		var bundle;
-		bundle = MixedBundle.new;
-		if(group.isNil and: { parentGroup.isPlaying }) { group = parentGroup };
+		var bundle = MixedBundle.new;
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime);
 		// homeServer: multi client support: monitor only locally
-		bundle.schedSend(this.homeServer, this.clock, this.quant)		^monitor.group
+		bundle.schedSend(this.homeServer, this.clock, this.quant)
 	}
 	
-	playToBundle { arg bundle, out, numChannels, group, multi=false, vol, fadeTime;
-		this.initBus(\audio, numChannels);
-		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
-		if(this.isPlaying.not) { this.wakeUpToBundle(bundle); };
-		if(monitor.isNil) { monitor = Monitor.new };
-		if(group.isNil and: { parentGroup.isPlaying }) { group = parentGroup };
-		group = (group ? this.homeServer).asGroup;
-		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, 
-				group, multi, vol, fadeTime);
+	playN { arg outs, amps, ins, vol, fadeTime, group;
+		var bundle = MixedBundle.new;
+		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group);
+		bundle.schedSend(this.homeServer, this.clock, this.quant)
 	}
+	
+
 	
 	fadeTime { ^0.02 }
 	quant { ^nil }
@@ -204,10 +200,7 @@ BusPlug : AbstractFunction {
 	monitorIndex { ^if(monitor.isNil) { nil }{ monitor.out } }
 	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }
 	
-	stop { arg fadeTime=0.1;
-		monitor.stop(fadeTime);
-		monitor = nil;
-	}
+	stop { arg fadeTime=0.1; monitor.stop(fadeTime) }
 	
 	scope { arg bufsize = 4096, zoom; if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } }
 	
@@ -230,6 +223,28 @@ BusPlug : AbstractFunction {
 				<< server << ", " << bus.numChannels <<")";
 	}
 	
+	
+	// monitor bundling
+	
+	playToBundle { arg bundle, out, numChannels, group, vol, fadeTime;
+		this.newMonitorToBundle(bundle);
+		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
+		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group, vol, fadeTime);
+	}
+	
+	playNToBundle { arg bundle, outs=(0), amps, ins, vol, fadeTime, group;
+		this.newMonitorToBundle(bundle);
+		group = group ?? { if(parentGroup.isPlaying) {parentGroup}{this.homeServer.asGroup} };
+		monitor.playNBusToBundle(bundle, outs, amps, bus, vol, fadeTime, group);
+	
+	}
+	
+	newMonitorToBundle { arg bundle;
+		this.initBus(\audio);
+		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
+		if(monitor.isNil) { monitor = Monitor.new };
+		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
+	}
 	
 }
 
@@ -267,8 +282,10 @@ NodeProxy : BusPlug {
 		this.free(fadeTime, true); 	// free group and objects
 		this.removeAll; 			// take out all objects
 		this.stop(fadeTime);		// stop any monitor
+		monitor = nil;
 		this.freeBus;	 // free the bus from the server allocator 
 		this.init;	// reset the environment
+		
 	}
 	
 	end { arg fadeTime;
@@ -480,11 +497,11 @@ NodeProxy : BusPlug {
 	
 	}
 	
-	controlNames { arg rejecting = #[\out, \i_out, \gate, \fadeTime];
+	controlNames { arg except = #[\out, \i_out, \gate, \fadeTime];
 		var all = Array.new; // Set doesn't work, because equality undefined for ControlName
 		objects.do { |el|
 			el.controlNames.do { |item|
-				if(rejecting.includes(item.name).not and: {
+				if(except.includes(item.name).not and: {
 					all.every { |cn| cn.name !== item.name }
 				}) {
 					all = all.add(item);
@@ -494,15 +511,40 @@ NodeProxy : BusPlug {
 		^all
 	}
 
+	controlKeys { arg except = #[\out, \i_out, \gate, \fadeTime]; 
+		var list = Array.new;
+			this.controlNames.do { |el, i|
+				if(except.includes(el.name).not) 
+				{ list = list.add(el.name) }
+			}
+		^list
+	}
+	
+	// control pairs including node map
+	getKeysValues { arg keys, except = #[], withDefaults = false; 
+		var pairs, result = [], myKeys, defaults, mapSettings; 
+		pairs = this.controlKeysValues.clump(2); 
+		#myKeys, defaults = pairs.flop; 
+		
+		mapSettings = nodeMap.settings; 
+		myKeys.collect { |key, i| 
+			var val = mapSettings[key]; 
+			if (withDefaults or: {val.notNil}) { 
+				result = result.add([ key, (val ? defaults[i]).value ]); 
+			};
+		}
+		^result
+	}
+
 	// controlPairs
-	controlKeysValues { arg keys, rejecting = #[\out, \i_out, \gate, \fadeTime];
+	controlKeysValues { arg keys, except = #[\out, \i_out, \gate, \fadeTime];
 		var list = Array.new;
 		if(keys.isNil or: { keys.isEmpty }) {
-			this.controlNames(rejecting).do { |el, i|
+			this.controlNames(except).do { |el, i|
 				list = list.add(el.name).add(el.defaultValue)
 			}
 		} {
-			this.controlNames(rejecting).do { |el, i|
+			this.controlNames(except).do { |el, i|
 				if(keys.includes(el.name)) 
 				{ list = list.add(el.name).add(el.defaultValue) }
 			}
@@ -923,6 +965,7 @@ NodeProxy : BusPlug {
 		bundle.send(server, server.latency);
 	}
 	
+	// needs fix
 	moveBeforeMsg { arg ... proxies;
 		var msg = [], id;
 		if(this.isPlaying.not) { "first proxy not playing.".inform; ^this };
@@ -938,11 +981,11 @@ NodeProxy : BusPlug {
 					id = id2;
 				}
 		};
-		^["/n_before"] ++ msg
+		^(["/n_before"] ++ msg).postln
 	}
 	
 	orderNodes { arg ... proxies;
-		server.listSendMsg(nil, this.moveBeforeMsg(proxies));
+		server.sendBundle(nil, this.moveBeforeMsg(*proxies));
 	}
 }
 

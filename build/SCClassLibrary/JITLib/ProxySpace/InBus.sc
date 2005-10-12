@@ -67,12 +67,17 @@ XInFeedback {
 	}
 }
 
-// listens on a fixed index (or several)
-// plays out to another.
 
-Monitor {
+
+// listens on a fixed index (or several)
+// plays out to various other indices.
+
+
+Monitor { 
+	var <ins, <outs, <amps, <vol=1;
+	var <group, synthIDs, synthAmps, <>fadeTime=0.02;
 	
-	var <group, <vol=1.0, <out=0;
+	
 	
 	play { arg fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
 			target, multi=false, volume, fadeTime=0.02;
@@ -83,72 +88,197 @@ Monitor {
 		
 		bundle = List.new;
 		this.playToBundle(
-			bundle, fromIndex, fromNumChannels, toIndex, toNumChannels, inGroup, multi, volume, fadeTime
+			bundle, fromIndex, fromNumChannels, toIndex, 
+			toNumChannels, inGroup, multi, volume, fadeTime
 		); 
 		
 		server.listSendBundle(server.latency, bundle);
 	}
 	
+	stop { arg argFadeTime;
+		fadeTime = argFadeTime ? fadeTime;
+		synthIDs = [];
+		synthAmps = [];
+		if(group.isPlaying) {
+			group.release(fadeTime);
+			SystemClock.sched(fadeTime, { group.free; group = nil })
+		}
+	}
+	
+	isPlaying {Ê^group.isPlaying }
+	numChannels {Ê^outs.size }
+	
+	// multichannel support
+	
+	playN { arg out, amp, in, vol, fadeTime=0.02, target;
+		var bundle = List.new;
+		var server, inGroup;
+		inGroup = target.asGroup;
+		server = inGroup.server;
+		
+		this.playNToBundle(bundle, out, amp, in, vol, fadeTime, inGroup);
+		server.listSendBundle(server.latency, bundle);
+		
+	}
+	
+	// setting volume and output offset.
+	// lists are only flat lists for now.
+		
+	vol_ { arg val; 
+		var server = group.server;
+		if(val == vol) {Ê^this };
+		vol = val;
+		this.amps = amps;
+	}
+	
+	out_ { arg index;
+		var offset = index - outs[0];
+		this.outs = outs + offset
+	}
+	
+	outs_ { arg indices;
+		outs = indices;
+		if(this.isPlaying) {
+			group.server.listSendBundle(group.server.latency,
+				[15, synthIDs, "out", indices].flop
+			)
+		}
+	}
+	
+	amps_ { arg values;
+		synthAmps = values * vol;
+		amps = values;
+		if (this.isPlaying) {
+			group.server.listSendBundle(group.server.latency, 
+				[15, synthIDs, "vol", values * vol].flop
+			);
+		};
+	}
+	
+	// bundling 
+	
+	
+	playNToBundle { arg bundle, argOuts=(outs), argAmps=(amps), argIns=(ins), 
+					argVol=(vol), argFadeTime=(fadeTime), inGroup; 
+		
+		var triplets, server; 
+
+		outs = argOuts; ins = argIns; amps = argAmps; vol = argVol; fadeTime = argFadeTime;
+		
+		
+		if (ins.size != outs.size)
+			{ Error("wrong size of outs and amps" ++ [ins, outs, amps]).throw };
+			
+		triplets = [ins, outs, amps].flop;
+		
+		if(this.isPlaying) { 
+			this.stopToBundle(bundle) 
+		} {
+			this.newGroupToBundle(bundle, inGroup)
+		};
+		synthIDs = [];
+		synthAmps = [];
+		
+		server = group.server;
+		
+		triplets.do {|trip, i|
+			var in, out, amp;
+			#in, out, amp = trip;
+			out = out.asArray;
+			amp = amp.asArray;
+			out.do { |item, j|
+				var id = server.nextNodeID;
+				synthIDs = synthIDs.add(id);
+				synthAmps = synthAmps.add(amp[j]);
+				bundle.add([9, "system_link_audio_1", 
+					id, 1, group.nodeID,
+					"out", item, 
+					"in", in,
+					"vol", amp.clipAt(j) * vol
+				]);
+			};
+		};
+		bundle.add([15, group.nodeID, "fadeTime", fadeTime]);
+	}
+	
+	// optimizes ranges of channels
+	
 	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
 			inGroup, multi, volume, fadeTime=0.02;
-		var divider, server, numChannels;
-		toIndex = toIndex ? out ? 0;
+		var server, numChannels, defname, chanRange, n;
+		
+		toIndex = toIndex ?? { if(outs.notNil, {Êouts[0] }, 0) };
 		vol = volume ? vol;
-		if(multi) { out = out.asCollection.add(toIndex) } { out = toIndex };
 		toNumChannels = toNumChannels ? fromNumChannels;
 		server = inGroup.server;
-		if(group.isPlaying.not) {
-				group = Group.basicNew(inGroup.server);
-				bundle.add(group.newMsg(inGroup, \addToTail));
-				NodeWatcher.register(group);
-				
+		
+		if(this.isPlaying) { 
+			if(multi.not) { this.stopToBundle(bundle) }
 		} {
-				if(group.group.nodeID != inGroup.nodeID) {
-					if(group.server !== group.group.server) 
-						{ Error("group not on the same server").throw };
-						bundle.add(["/g_tail", inGroup.nodeID, group.nodeID]);
-						group.group = inGroup;
-				};
-				if(multi.not) { bundle.add(["/n_set", group.nodeID, "gate", 0.0]) }
+			this.newGroupToBundle(bundle, inGroup)
 		};
+		
 		numChannels = max(fromNumChannels, toNumChannels);
-		divider = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
-		(numChannels div: divider).do { arg i;
-			bundle.add([9, "system_link_audio_"++divider, 
-					server.nextNodeID, 1, group.nodeID,
-					"out", toIndex + (i * divider  % toNumChannels), 
-					"in", fromIndex + (i * divider % fromNumChannels)
-			]);
+		chanRange = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
+		defname = "system_link_audio_" ++ chanRange;
+		(numChannels div: chanRange).do { arg i;
+			var id = server.nextNodeID;
+			var out = toIndex + (i * chanRange % toNumChannels);
+			var in = fromIndex + (i * chanRange % fromNumChannels);
+			synthIDs = synthIDs.add(id);
+			outs = outs.add(out);
+			ins = ins.add(in);
+			amps = amps.add(1.0);
+			bundle.add([9, defname, id, 1, group.nodeID, "out", out, "in", in]);
 		};
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
 	
-	isPlaying { ^group.isPlaying }
-	
-	stop { arg fadeTime=0.1;
-		if(group.isPlaying) {
-			group.release(fadeTime);
-			if(fadeTime.isNil) {
-				group.free;
-				group = nil;
-			} {
-				SystemClock.sched(fadeTime, { 
-					group.free;
-					group = nil;
-				})
-			}
-		}
+	playNBusToBundle { arg bundle, outs, amps, bus, vol, fadeTime, group;
+		var size, ins;
+		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
+		size = outs.size;
+		amps = amps ? [1.0];
+		ins = (0..(size - 1)) + bus.index;
+		this.playNToBundle(bundle, outs, amps, ins, vol, group, fadeTime)
 	}
 	
-	vol_ { arg invol;
-		vol = invol ? vol;
-		group.set(\vol, vol);
-	}
-	
-	out_ { arg inval;
-		out = inval;
-		group.set(\out, inval);
+		
+	newGroupToBundle { arg bundle, inGroup;
+				inGroup = inGroup.asGroup;
+				group = Group.basicNew(inGroup.server);
+				group.isPlaying = true;
+				bundle.add(group.newMsg(inGroup, \addToTail));
+				NodeWatcher.register(group);
 	}
 
-
+	
+	stopToBundle { arg bundle; // maybe with fade later.
+		bundle.add([15, group.nodeID, "gate", 0]);
+		synthIDs = [];
+		synthAmps = [];
+	}
 }
+
+
+
+
+// todo: 
+// analysis of contiguous channels for efficiency
+// maybe: merging of playN and play
+// recording function.
+
+
+/*
+	record { arg argAmps=(amps), argIns=(ins), vol, fadeTime;
+		var numChannels = ins.size;
+		if(numChannels > SystemSynthDefs.numChannels) { 
+				"too few channels defined in SystemSynthDefs".error ^this 
+		};
+		
+		if(this.isPlaying.not) { 
+			this.newGroupToBundle(bundle, inGroup)
+		};	 
+	}
+	*/
+
