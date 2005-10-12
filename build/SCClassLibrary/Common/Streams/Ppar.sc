@@ -126,7 +126,7 @@ Pgpar : Ppar {
 		
 		inevent = event.yield;
 		
-		patterns = this.wrapPatterns(ids.reverse);
+		patterns = this.wrapPatterns(ids);
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
 		^Pgroup.embedLoop(inevent, Ppar(patterns, repeats).asStream, ids, ingroup);
 	}
