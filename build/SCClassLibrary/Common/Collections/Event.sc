@@ -353,16 +353,16 @@ Event : Environment {
 						};
 					},
 					off: #{|server|
-						var lag, dur, strum, hasGate;
+						var lag, dur, strum, hasGate, gate;
 										
 						lag = ~lag + server.latency;
 						strum = ~strum;
 						hasGate = ~hasGate ? true;
-						
+						gate = min(0.0, ~gate ? 0.0); // accept release times
 						~id.asArray.do {|id, i|
 							var latency = i * strum + lag;
 							if(hasGate) {
-								server.sendBundle(latency, [\n_set, id, \gate, 0]); 
+								server.sendBundle(latency, [\n_set, id, \gate, gate]); 
 							} {
 								server.sendBundle(latency, [\n_free, id]);
 							}
