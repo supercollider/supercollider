@@ -224,6 +224,9 @@ Ppar : ListPattern {
 			priorityQ.put(0.0, pattern.asStream);
 		});
 	}
+	purgeQueue { arg priorityQ;
+		while { priorityQ.notEmpty } { priorityQ.pop.next(nil) }
+	}
 		
 // tests for nil events and relays them to all child streams
 // nil events come from Pfin, Pfindur, and PatternConductor 
@@ -243,10 +246,11 @@ Ppar : ListPattern {
 				outval.put(\freq, \rest);					
 				outval.put(\delta, nexttime);
 				
-				inval = outval.yield 
-					?? {while {priorityQ.notEmpty} { priorityQ.pop.next(nil) } };
+				inval = outval.yield; 
 				now = nexttime;	
 			});
+			
+			inval ?? { this.purgeQueue(priorityQ); ^nil.yield; };
 			
 			while({
 				priorityQ.notEmpty
@@ -261,8 +265,7 @@ Ppar : ListPattern {
 						outval.put(\freq, \rest);					
 						outval.put(\delta, nexttime - now);
 						
-						inval = outval.yield 
-							?? {while {priorityQ.notEmpty} { priorityQ.pop.next(nil) } };
+						inval = outval.yield ?? { this.purgeQueue(priorityQ) };
 						now = nexttime;	
 					},{
 						priorityQ.clear;
@@ -273,15 +276,15 @@ Ppar : ListPattern {
 					nexttime = priorityQ.topPriority;
 					outval.put(\delta, nexttime - now);
 					
-					inval = outval.yield 
-						?? {
-							while {priorityQ.notEmpty} { priorityQ.pop.next(nil) } };
+					inval = outval.yield ?? { this.purgeQueue(priorityQ) };
 					now = nexttime;	
 				});	
 			});
 		});
 		^inval;
 	}
+	
+	
 }	
 
 Ptpar : Ppar {
@@ -311,7 +314,20 @@ Pswitch : Pattern {
 	storeArgs { ^[ list, which ]  }
 }
 
-	
+Pswitch1 : Pswitch {	
+	embedInStream { arg inval;
+		var index, outval;
+		
+		var streamList = list.collect({ arg pattern; pattern.asStream; });
+		var indexStream = which.asStream;
+		loop {
+			if ((index = indexStream.next).isNil) { ^inval };
+			outval = streamList.wrapAt(index.asInteger).next(inval);
+			if (outval.isNil) { ^inval };
+			inval = outval.yield;
+		};
+	}
+}
 
 //Pswitch1 : Pattern {	
 //	var <>list, <>which=0;
