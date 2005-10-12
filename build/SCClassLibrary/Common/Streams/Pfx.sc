@@ -98,20 +98,21 @@ Pgroup : FilterPattern {
 }
 
 Pbus : FilterPattern {
-	var <>numChannels, <>rate, <>fadeTime;
+	var <>numChannels, <>rate, <>dur=2.0, <>fadeTime;
 	
-	*new { arg pattern, numChannels=2, rate=\audio, fadeTime=0.02;
-		^super.new(pattern).numChannels_(numChannels).rate_(rate).fadeTime_(fadeTime)
+	*new { arg pattern, dur=2.0, fadeTime=0.02, numChannels=2, rate=\audio;
+		^super.new(pattern).dur_(dur).numChannels_(numChannels).rate_(rate).fadeTime_(fadeTime)
 	}
 	
 	embedInStream { arg inevent;
-		var server, groupID, linkID, bus;
+		var server, groupID, linkID, bus, ingroup;
 		var patterns, event, freeBus, stream;
 				
 		if(inevent.isNil) { ^nil.yield };
 		server = inevent[\server] ?? { Server.default };
 		groupID = server.nextNodeID;
 		linkID = server.nextNodeID;
+		ingroup = inevent[\group];
 		
 		// could use a special event type for this:
 		if(rate == \audio) {
@@ -121,12 +122,13 @@ Pbus : FilterPattern {
 			bus = server.controlBusAllocator.alloc(numChannels);
 			freeBus = { server.controlBusAllocator.free(bus) };
 		};
-	
+		
 		event = inevent.copy;
 		event[\addAction] = 1;
 		event[\type] = \group;
 		event[\delta] = 1e-9;
 		event[\id] = groupID;
+		event[\group] = ingroup;
 		event.yield;
 		
 		
@@ -165,6 +167,7 @@ Pbus : FilterPattern {
 				event = (inevent ?? { Event.default }).copy;
 				event[\type] = \off;
 				event[\id] = linkID;
+				event[\gate] = dur.neg;
 				event[\hasGate] = true;				
 				event.play;
 				
@@ -179,6 +182,7 @@ Pbus : FilterPattern {
 				event = (inevent ?? { Event.default }).copy;
 				event[\type] = \off;
 				event[\id] = linkID;
+				event[\gate] = dur.neg;
 				event[\hasGate] = true;				
 				event.play;
 				
