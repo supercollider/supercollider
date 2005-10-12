@@ -965,23 +965,17 @@ NodeProxy : BusPlug {
 		bundle.send(server, server.latency);
 	}
 	
-	// needs fix
 	moveBeforeMsg { arg ... proxies;
-		var msg = [], id;
-		if(this.isPlaying.not) { "first proxy not playing.".inform; ^this };
-		id = this.group.nodeID;
-		proxies.do { |el|
-				var id2;
-				if(el.isPlaying) {
-					id2 = el.group.nodeID;
-					msg = msg ++ id ++ id2; 
-					if(el.monitorGroup.notNil) {
-						msg = msg ++ id ++ el.monitorGroup.nodeID
-					};
-					id = id2;
+		var list;
+		([this] ++ proxies).do { |el|
+			if(el.isPlaying) { 
+				list = list.add(el.group);
+				if(el.monitor.isPlaying) {
+					list = list.add(el.monitor.group) // debatable. maybe check whether special
 				}
+			}
 		};
-		^(["/n_before"] ++ msg).postln
+		^Node.orderNodesMsg(list) 
 	}
 	
 	orderNodes { arg ... proxies;
