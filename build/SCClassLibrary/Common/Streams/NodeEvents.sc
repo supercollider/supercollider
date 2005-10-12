@@ -70,16 +70,14 @@ Here is a simple example of its use:
 	 	types = Event.partialEvents.playerEvent.eventTypes;
 
 		types[\monoOff] =  #{|server|
-			var lag, bndl;
-							
-			lag = ~lag + server.latency;
+			var lag = ~lag + server.latency;
 
 			if(~hasGate == false) {
-				bndl = [\n_free, ~id].flop;
+				server.sendBundle(lag, [\n_free] ++ ~id);
 			} {
-				bndl = [\n_set, ~id, \gate, 0].flop; 
+				server.sendBundle(lag, *[\n_set, ~id, \gate, 0].flop); 
 			};
-			server.sendBundle(lag, *bndl);
+			
 		};
 		
 		types[\monoSet] = #{|server|
