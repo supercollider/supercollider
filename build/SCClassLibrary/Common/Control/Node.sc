@@ -163,6 +163,15 @@ Node {
 		^(aGroup ? server.defaultGroup).moveNodeToTailMsg(this);
 	}
 
+	*orderNodesMsg { arg nodes;
+		var msg = [18]; // "/n_after"
+		nodes.doAdjacentPairs { |first, toMoveAfter|
+			msg = msg.add(toMoveAfter.nodeID);
+			msg = msg.add(first.nodeID);
+		};
+		^msg
+	}
+
 	hash {  ^server.hash bitXor: nodeID.hash	}
 	
 	== { arg aNode;
