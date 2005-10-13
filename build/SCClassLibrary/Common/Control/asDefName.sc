@@ -51,8 +51,11 @@
 		^def.name
 	}
 	
-	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime;
-		^GraphBuilder.wrapOut(this.hash.asString, this, rates, prependArgs, outClass, fadeTime);	}
+	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime, name;
+		^GraphBuilder.wrapOut(name ?? { this.identityHash.abs.asString },
+			this, rates, prependArgs, outClass, fadeTime
+		);	
+	}
 	
 	play { arg target, outbus = 0, fadeTime=0.02, addAction=\addToHead;
 		var def, synth, server, bytes, synthMsg;
@@ -61,12 +64,19 @@
 		if(server.serverRunning.not) { 
 			("server '" ++ server.name ++ "' not running.").warn; ^nil
 		};
-		def = this.asSynthDef(fadeTime:fadeTime);
-		synth = Synth.basicNew(def.name,server);
+		def = this.asSynthDef(
+			fadeTime:fadeTime, 
+			name: SystemSynthDefs.tempNamePrefix ++ this.identityHash.abs.asString
+		);
+		synth = Synth.basicNew(def.name, server);
 		bytes = def.asBytes;
 		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus], addAction);
 		if(bytes.size > 8192) {
-			def.load(server, synthMsg);
+			if(server.isLocal) {
+				def.load(server, synthMsg)
+			}{
+				"synthdef too large to send to remote server".warn 
+			}
 		} {
 			server.sendMsg("/d_recv", bytes, synthMsg)
 		};
