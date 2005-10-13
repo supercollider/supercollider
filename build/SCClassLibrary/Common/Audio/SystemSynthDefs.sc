@@ -2,10 +2,15 @@
 // synthdefs needed by classes
 
 SystemSynthDefs {
-	classvar <>numChannels=2;
+	classvar <>numChannels = 2;
+	classvar <>tempNamePrefix = "temp__";
 	
+		
 	*initClass {
 		StartUp.add {
+			// clean up any written synthdefs starting with "temp__"
+			var path = SynthDef.synthDefDir ++ tempNamePrefix ++ "*";
+			if(pathMatch(path).notEmpty) { unixCmd("rm" + path) };
 		
 			(1..numChannels).do { arg i;
 				SynthDef("system_link_audio_" ++ i, 
