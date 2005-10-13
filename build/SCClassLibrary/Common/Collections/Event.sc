@@ -370,18 +370,13 @@ Event : Environment {
 					},
 					
 					group: #{|server|
-						var lag, dur, strum;
-										
-						lag = ~lag + server.latency;
-						strum = ~strum;
-			
-						~id.asArray.do {|id, i|
-							var latency;
-							
-							latency = i * strum + lag;
-							
-							server.sendBundle(latency, [\g_new, id, ~addAction, ~group]); 
-						};
+						var group = ~group, addAction = ~addAction;
+						var lag = ~lag + server.latency;
+						server.listSendBundle(lag,
+							~id.asArray.collect {|id, i|
+								[\g_new, id, addAction, group]
+							};
+						);
 					},
 	
 
