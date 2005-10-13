@@ -26,7 +26,9 @@
 #include "PyrMessage.h"
 #include "SC_Constants.h"
 #include "clz.h"
+extern "C" { 
 #include "fftlib.h"
+}
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -426,7 +428,7 @@ int prWavetableAsSignal(struct VMGlobals *g, int numArgsPushed)
 }
 //class_signal
 
-#if 0
+#if 1
 int prSignal_FFT(struct VMGlobals *g, int numArgsPushed);
 int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 {
@@ -627,8 +629,8 @@ void initSignalPrimitives()
 	definePrimitive(base, index++, "_SignalAsWavetable", prSignalAsWavetable, 1, 0);	
 	definePrimitive(base, index++, "_WavetableAsSignal", prWavetableAsSignal, 1, 0);	
 
-	//definePrimitive(base, index++, "_Signal_FFT", prSignal_FFT, 3, 0);	
-	//definePrimitive(base, index++, "_Signal_IFFT", prSignal_IFFT, 3, 0);	
+	definePrimitive(base, index++, "_Signal_FFT", prSignal_FFT, 3, 0);	
+	definePrimitive(base, index++, "_Signal_IFFT", prSignal_IFFT, 3, 0);	
 }
 
 
