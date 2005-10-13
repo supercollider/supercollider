@@ -29,7 +29,7 @@
 		var argNames;
 		argNames = this.argNames;
 		^ProxySynthDef(
-			ProxySynthDef.tempPrefix ++ proxy.generateUniqueName ++ index,
+			SystemSynthDefs.tempNamePrefix ++ proxy.generateUniqueName ++ index,
 			this.prepareForProxySynthDef(proxy),
 			proxy.nodeMap.ratesFor(argNames),
 			nil, 
@@ -171,7 +171,7 @@
 }
 
 + Event {
-	proxyControlClass { ^AbstractPlayControl } // does not yet work as input
+	proxyControlClass { ^StreamControl }
 	buildForProxy { arg proxy, channelOffset=0;
 		var ok, index, server, numChannels, rate, finish;
 		ok = if(proxy.isNeutral) { 
@@ -198,6 +198,7 @@
 						~group = ~group.value;
 					}
 				});
+				this
 		} { nil }
 	}
 }

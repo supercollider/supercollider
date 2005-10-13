@@ -4,13 +4,6 @@ ProxySynthDef : SynthDef {
 	var <>canReleaseSynth, <>canFreeSynth;
 	classvar <>sampleAccurate=false;
 	
-	*initClass {
-		//clean up any written synthdefs starting with "temp__"
-		var path = "synthdefs/"++ this.tempPrefix ++ "*";
-		if(pathMatch(path).notEmpty) { unixCmd("rm" + path) };
-	}
-	
-	*tempPrefix { ^"temp__" }
 	
 	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
