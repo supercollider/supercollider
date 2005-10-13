@@ -1130,7 +1130,8 @@ PyrObject* signal_rotate(VMGlobals *g, PyrObject* ina, int rot)
 	long i, j;
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a0 = (float*)(ina->slots) - 1;
-	float *a = a0 + sc_mod(rot, ina->size);
+//	float *a = a0 + sc_mod(rot, ina->size);
+	float *a = a0 + sc_mod(0 - rot, ina->size);
 	float *aend = a0 + ina->size;
 	float *c = (float*)(outc->slots) - 1;
 	long nsmps = outc->size;
@@ -1147,11 +1148,12 @@ PyrObject* signal_reverse_range(PyrObject* ina, long start, long end)
 	long size2;
 	long i;
 	start = sc_max(0, start);
-	end = sc_min(end, size);
+	end = sc_min(end + 1, size);
 	size = end - start;
 	size2 = size>>1;
 	float *a = (float*)(ina->slots) - 1 + start;
-	float *b = (float*)(ina->slots) - 1 + end;
+//	float *b = (float*)(ina->slots) - 1 + end;
+	float *b = (float*)(ina->slots) + end;
 	float temp;
 	for (i=0; i<size2; ++i) {
 		temp = *++a; 
@@ -1168,7 +1170,7 @@ PyrObject* signal_normalize_range(PyrObject* ina, long start, long end)
 	float z, scale, maxlevel;
 	float *a0, *a;
 	start = sc_max(0, start);
-	end = sc_min(end, size);
+	end = sc_min(end + 1, size);
 	size = end - start;
 	a0 = (float*)(ina->slots) - 1 + start;
 	a = a0;
@@ -1195,7 +1197,7 @@ PyrObject* signal_invert_range(PyrObject* ina, long start, long end)
 	float z;
 	start = sc_max(0, start);
 	end = sc_min(end, size);
-	size = end - start;
+	size = end - start + 1;
 	float *a = (float*)(ina->slots) - 1 + start;
 
 	for (i=0; i<size; ++i) {
@@ -1211,7 +1213,7 @@ PyrObject* signal_fade_range(PyrObject* ina, long start, long end, float lvl0, f
 	long i;
 	float z, level, slope;
 	start = sc_max(0, start);
-	end = sc_min(end, size);
+	end = sc_min(end + 1, size);
 	size = end - start;
 	float *a = (float*)(ina->slots) - 1 + start;
 	slope = (lvl1 - lvl0) / size;
@@ -1234,9 +1236,11 @@ PyrObject* signal_overdub(VMGlobals *g, PyrObject* ina, PyrObject* inb, long ind
 	b = (float*)(inb->slots) - 1;
 	
 	len = sc_min(inb->size, ina->size - index);
-	endptr = a + len;
-	//while (a<endptr) *++a += *++b;
-	UNROLL_CODE(len, a,  *++a += *++b;);
+	len = sc_min(inb->size + index, len);	// catch negative index
+		// negative out of range indices: do nothing.
+	if (inb->size + index > 0) { 
+		UNROLL_CODE(len, a,  *++a += *++b;);
+	}
 	
 	return ina;
 }
@@ -1245,11 +1249,14 @@ PyrObject* signal_overwrite(VMGlobals *g, PyrObject* ina, PyrObject* inb, long i
 {
 	float *a, *b;
 	long len;
-	a = (float*)(ina->slots);
-	b = (float*)(inb->slots);
+	a = (float*)(ina->slots) + index - 1;
+	b = (float*)(inb->slots) - 1;
 	
 	len = sc_min(inb->size, ina->size - index);
-	UNROLL_CODE(len, a,  *++a = *++b;);
+		// negative out of range indices: do nothing.
+	if (inb->size + index > 0) { 
+		UNROLL_CODE(len, a,  *++a = *++b;);
+	}
 	return ina;
 }
 
