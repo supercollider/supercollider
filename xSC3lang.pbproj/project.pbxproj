@@ -103,6 +103,27 @@
 			settings = {
 			};
 		};
+		6AAC6D6408FEDC0C006134E1 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			name = fftlib.c;
+			path = source/plugins/fftlib.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		6AAC6D6508FEDC0C006134E1 = {
+			fileRef = 6AAC6D6408FEDC0C006134E1;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AAC6D6608FEDC0C006134E1 = {
+			fileRef = 6AAC6D6408FEDC0C006134E1;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		6AB6FF62053898BC0000009F = {
 			children = (
 				6AB6FF64053898BC0000009F,
@@ -3141,6 +3162,7 @@
 		};
 		F50D059202E69B6B01CA2799 = {
 			children = (
+				6AAC6D6408FEDC0C006134E1,
 				F59DF065030733E801CE0C16,
 				F59DF066030733E801CE0C16,
 				F59DF0C5030777A101CE0C16,
@@ -3995,6 +4017,7 @@
 				6A7207D407BB709000A1F778,
 				6A40717407C72426003E9C23,
 				6A40718607C72B26003E9C23,
+				6AAC6D6508FEDC0C006134E1,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5523,6 +5546,7 @@
 				92B4EA67059399F300CA25E4,
 				92FC9EF906EB774800AA3E95,
 				92FC9EFB06EB774900AA3E95,
+				6AAC6D6608FEDC0C006134E1,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
