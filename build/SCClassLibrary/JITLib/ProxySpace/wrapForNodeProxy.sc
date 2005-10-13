@@ -58,7 +58,6 @@
 	defaultArgs { ^def.prototypeFrame }
 }
 
-
 +SimpleNumber {
 	
 	prepareForProxySynthDef { arg proxy;
@@ -78,7 +77,8 @@
 +SequenceableCollection {
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, this.size);
-		^{ this.collect({ |el| el.prepareForProxySynthDef(proxy).value }) }
+		^{ this.collect({ |el| el.prepareForProxySynthDef(proxy).value }) } 
+		// could use SynthDef.wrap, but needs type check for function.
 	}
 }
 
@@ -171,7 +171,7 @@
 }
 
 + Event {
-	//proxyControlClass { ^StreamControl } // does not yet work as input
+	proxyControlClass { ^AbstractPlayControl } // does not yet work as input
 	buildForProxy { arg proxy, channelOffset=0;
 		var ok, index, server, numChannels, rate, finish;
 		ok = if(proxy.isNeutral) { 
@@ -191,10 +191,11 @@
 					~out = { ~channelOffset % numChannels + index };
 					~server = server; // not safe for server changes yet
 					finish = ~finish;
+					~group = { proxy.group.asNodeID };
 					~finish = {
 						finish.value;
 						~out = ~out.value;
-						~group = proxy.group.asNodeID;// group shouldn't be assigned by the user
+						~group = ~group.value;
 					}
 				});
 		} { nil }
