@@ -108,7 +108,6 @@ MixedBundle : OSCBundle {
 	// private //
 	
 	prSend { arg server, latency;
-		this.doSendFunctions;
 		latency = latency ?? { server.latency };
 		if(functions.notNil) {
 			SystemClock.sched(latency, { this.doFunctions });
@@ -116,6 +115,7 @@ MixedBundle : OSCBundle {
 		if(messages.notNil) {
 			server.listSendBundle(latency, messages);
 		};
+		this.doSendFunctions;
 	}
 	
 }
