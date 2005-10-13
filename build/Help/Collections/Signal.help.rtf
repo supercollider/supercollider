@@ -1,7 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Signal						sampled audio buffer\
@@ -34,12 +35,16 @@ The Signal will be normalized.\
 
 \f0\b phases
 \f1\b0  - an Array of phases in radians for each harmonic beginning with the fundamental.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 Signal.sineFill(1000, 1.0/[1,2,3,4,5,6]).plot;\
-\
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .sineFill(1000, 1.0/[1,2,3,4,5,6]).plot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
 
 \f0\b *chebyFill(size, amplitudes, phases)\
 
@@ -53,19 +58,21 @@ The Signal will be normalized.\
 
 \f0\b amplitudes
 \f1\b0  - an Array of amplitudes for each Chebyshev polynomial beginning with order 1.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 Signal.chebyFill(1000, [1]).plot;\
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .chebyFill(1000, [1]).plot;\
 \
-Signal.chebyFill(1000, [0, 1]).plot;\
+\cf2 Signal\cf0 .chebyFill(1000, [0, 1]).plot;\
 \
-Signal.chebyFill(1000, [0, 0, 1]).plot;\
+\cf2 Signal\cf0 .chebyFill(1000, [0, 0, 1]).plot;\
 \
-Signal.chebyFill(1000, [0.3, -0.8, 1.1]).plot;\
+\cf2 Signal\cf0 .chebyFill(1000, [0.3, -0.8, 1.1]).plot;\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *hanningWindow(size, pad)\
+\f0\b\fs24 \cf0 *hanningWindow(size, pad)\
 
 \f1\b0 \
 Fill a Signal of the given size with a Hanning window.\
@@ -75,16 +82,17 @@ Fill a Signal of the given size with a Hanning window.\
 
 \f0\b pad
 \f1\b0  - the number of samples of the size that is zero padding.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 Signal.hanningWindow(1024).plot;\
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .hanningWindow(1024).plot;\
 \
-Signal.hanningWindow(1024, 512).plot;\
+\cf2 Signal\cf0 .hanningWindow(1024, 512).plot;\
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
-
-\f0\b *hammingWindow(size)\
+\f0\b\fs24 \cf0 *hammingWindow(size)\
 
 \f1\b0 \
 Fill a Signal of the given size with a Hamming window.\
@@ -94,16 +102,17 @@ Fill a Signal of the given size with a Hamming window.\
 
 \f0\b pad
 \f1\b0  - the number of samples of the size that is zero padding.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 Signal.hammingWindow(1024).plot;\
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .hammingWindow(1024).plot;\
 \
-Signal.hammingWindow(1024, 512).plot;\
+\cf2 Signal\cf0 .hammingWindow(1024, 512).plot;\
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
-
-\f0\b *welchWindow(size)\
+\f0\b\fs24 \cf0 *welchWindow(size)\
 
 \f1\b0 \
 Fill a Signal of the given size with a Welch window.\
@@ -113,17 +122,17 @@ Fill a Signal of the given size with a Welch window.\
 
 \f0\b pad
 \f1\b0  - the number of samples of the size that is zero padding.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .welchWindow(1024).plot;\
 \
-
-\f2 Signal.welchWindow(1024).plot;\
+\cf2 Signal\cf0 .welchWindow(1024, 512).plot;\
 \
-Signal.welchWindow(1024, 512).plot;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
-
-\f2 \
-
-\f0\b *rectWindow(size)\
+\f0\b\fs24 \cf0 *rectWindow(size)\
 
 \f1\b0 \
 Fill a Signal of the given size with a rectangular window.\
@@ -133,17 +142,17 @@ Fill a Signal of the given size with a rectangular window.\
 
 \f0\b pad
 \f1\b0  - the number of samples of the size that is zero padding.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .rectWindow(1024).plot;\
 \
-
-\f2 Signal.rectWindow(1024).plot;\
+\cf2 Signal\cf0 .rectWindow(1024, 512).plot;\
 \
-Signal.rectWindow(1024, 512).plot;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
-
-\f2 \
-
-\f0\b\fs28 \ul Instance Methods\
+\f0\b\fs28 \cf0 \ul \ulc0 Instance Methods\
 
 \f1\b0\fs24 \ulnone \
 
@@ -157,41 +166,43 @@ Plot the Signal in a window. The arguments are not required and if not given def
 
 \f0\b bounds
 \f1\b0  - a Rect giving the bounds of the window.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 Signal.sineFill(512, [1]).plot;\
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .sineFill(512, [1]).plot;\
 \
-Signal.sineFill(512, [1]).plot("Signal 1", Rect.newBy(50, 50, 150, 450));\
+\cf2 Signal\cf0 .sineFill(512, [1]).plot(\cf3 "Signal 1"\cf0 , \cf2 Rect\cf0 (50, 50, 150, 450));\
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
-
-\f0\b play(sampleRate, name, loop)\
+\f0\b\fs24 \cf0 play(loop, mul, numChannels, server)\
 
 \f1\b0 \
-Plays the Signal in a Mixer channel.\
-
-\f0\b sampleRate
-\f1\b0  - the sample rate of the signal.\
-
-\f0\b name
-\f1\b0  - a Symbol or String giving the name of the mixer channel.\
+loads the signal into a buffer on the server and plays it. \
+returns the buffer so you can free it again. \
 
 \f0\b loop
 \f1\b0  - A Boolean whether to loop the entire signal or play it once. Default is to loop.\
-\
 
-\f2 Signal.sineFill(512, [1]);//.play;\
-\
-Signal.sineFill(512, [1]);//.play(44100, "Signal 1");\
-\
-// Synth.collect returns a Signal\
-//Synth.collect(\{ PinkNoise.ar(XLine.kr(0.001, 0.2, 2)) \}, 2).play;\
-not yet implemented\
+\f0\b mul
+\f1\b0  - volume at which to play it, 0.2 by default.
+\f0\b \
+numChannels
+\f1\b0  - if the signal is an interleaved multichannel file, number of channels, default is 1.\
 
-\f1 \
+\f0\b server
+\f1\b0  - the server on which to load the signal into a buffer. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b waveFill(function, start, end)\
+\f2\fs18 \cf0 \
+b = \cf2 Signal\cf0 .sineFill(512, [1]).play(\cf2 true\cf0 , 0.2);\
+b.free; 	\cf4 // free the buffer again. \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 waveFill(function, start, end)\
 
 \f1\b0 \
 Fill the Signal with a function evaluated over an interval.\
@@ -211,209 +222,233 @@ The function is called with two arguments.\
 
 \f0\b end
 \f1\b0  - the ending value of the interval.\
-	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 (\
-s = Signal.newClear(512);\
-s.waveFill(\{ arg x, i; sin(x).max(0) \}, 0, 3pi);\
+\f2\fs18 \cf0 	\
+(\
+s = \cf2 Signal\cf0 .newClear(512);\
+s.waveFill(\{ \cf2 arg\cf0  x, i; sin(x).max(0) \}, 0, 3pi);\
 s.plot;\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b asWavetable\
+\f0\b\fs24 \cf0 asWavetable\
 
 \f1\b0 \
 Convert the Signal into a Wavetable.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .sineFill(512, [1]).asWavetable.plot;\
 \
-
-\f2 Signal.sineFill(512, [1]).asWavetable.plot;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
-
-\f0\b fill(val)\
+\f0\b\fs24 \cf0 fill(val)\
 
 \f1\b0 \
 Fill the Signal with a value.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 .newClear(512).fill(0.2).plot;\
 \
-
-\f2 Signal.newClear(512).fill(0.2).plot;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
-
-\f0\b scale(scale)\
+\f0\b\fs24 \cf0 scale(scale)\
 
 \f1\b0 \
 Scale the Signal by a factor 
 \f0\b in place
 \f1\b0 .\
-\
-\cf2 //(\
-//s = 
-\f2 Synth.collect(\{ WhiteNoise.ar \}, 0.01);\
-////SignalWindow.new(signals: [s, s.copy.scale(0.2)]);\
-//)\
-\cf0 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b offset(offset)\
+\f2\fs18 \cf0 \
+a = \cf2 Signal\cf0 [1,2,3,4];\
+a.scale(0.5); a;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 offset(offset)\
 
 \f1\b0 \
 Offset the Signal by a value 
 \f0\b in place
 \f1\b0 .\
-\
-\cf2 //(\
-//s = 
-\f2 Synth.collect(\{ WhiteNoise.ar(0.2) \}, 0.01);\
-//SignalWindow.new(signals: [s, s.copy.offset(0.2)]);\
-//)\
-\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b peak\
+\f2\fs18 \cf0 \
+a = \cf2 Signal\cf0 [1,2,3,4];\
+a.offset(0.5); a;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 peak\
 
 \f1\b0 \
 Return the peak absolute value of a Signal.\
-\
-\cf2 //(\
-//s = 
-\f2 Synth.collect(\{ PinkNoise.ar(0.1, -0.3) \}, 0.01);\
-//s.peak.postln;\
-//s.plot;\
-//)\
-\cf0 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b normalize\
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 [1,2,-3,2.5].peak;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 normalize\
 
 \f1\b0 \
 Normalize the Signal 
 \f0\b in place
 \f1\b0  such that the maximum absolute peak value is 1.\
-\
-\cf2 //(\
-//s = 
-\f2 Synth.collect(\{ PinkNoise.ar(0.1) \}, 0.01);\
-//SignalWindow.new(signals: [s, s.copy.normalize]);\
-//)\
-\cf0 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b normalizeTransfer\
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 [1,2,-4,2.5].normalize;\
+\cf2 Signal\cf0 [1,2,-4,2.5].normalize(0, 1);	\cf4 // normalize only a range\cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 normalizeTransfer\
 
 \f1\b0 \
 Normalizes a transfer function so that the center value of the table is offset to zero\
 and the absolute peak value is 1. Transfer functions are meant to be used in the \
 Shaper ugen.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 [1,2,3,2.5,1].normalizeTransfer;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b invert\
+\f0\b\fs24 \cf0 invert\
 
 \f1\b0 \
 Invert the Signal 
 \f0\b in place
 \f1\b0 .\
-\
-(\
-\cf2 //s = 
-\f2 Signal.sineFill(512, [1]);\
-//SignalWindow.new(signals: [s, s.copy.invert]);\
-\cf0 )\
-\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b reverse(beginSamp, endSamp)\
+\f2\fs18 \cf0 \
+a = \cf2 Signal\cf0 [1,2,3,4];\
+a.invert(0.5); a;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 reverse(beginSamp, endSamp)\
 
 \f1\b0 \
 Reverse a subrange of the Signal 
 \f0\b in place
 \f1\b0 .\
-\
-(\
-\cf2 //s = 
-\f2 Signal.sineFill(512, [1]);\
-//SignalWindow.new(signals: [s, s.copy.reverse(128, 384)]);\
-\cf0 )\
-\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b fade(beginSamp, endSamp, beginLevel, endLevel)\
+\f2\fs18 \cf0 \
+a = \cf2 Signal\cf0 [1,2,3,4];\
+a.reverse(1,2); a;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 fade(beginSamp, endSamp, beginLevel, endLevel)\
 
 \f1\b0 \
 Fade a subrange of the Signal 
 \f0\b in place
 \f1\b0 .\
-\
-(\
-\cf2 //s = 
-\f2 Synth.collect(\{ ClipNoise.ar(0.5) \}, 0.02);\
-//SignalWindow.new(signals: [s, s.copy.fade(0, 300, 0, 1)]);\
-\cf0 )\
-\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b integral\
+\f2\fs18 \cf0 \
+a = \cf2 Signal\cf0 .fill(10, 1);\
+a.fade(0, 3);		\cf4 // fade in\cf0 \
+a.fade(6, 9, 1, 0);	\cf4 // fade out\cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 integral\
 
 \f1\b0 \
 Return the integral of a signal.\
-\
-\cf2 //
-\f2 Synth.collect(\{ PinkNoise.ar(0.1) \}, 0.01).integral.postln;\
-\cf0 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b overDub(aSignal, index)\
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 [1,2,3,4].integral;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 overDub(aSignal, index)\
 
 \f1\b0 \
 Add a signal to myself starting at the index.\
 If the other signal is too long only the first part is overdubbed.\
-\
-(\
-\cf2 //s = 
-\f2 Synth.collect(\{ BrownNoise.ar(0.3) \}, 0.05);\
-//
-\f1 t = 
-\f2 Synth.collect(\{ FSinOsc.ar(800, 0.3) \}, 0.02);\
-//s.overDub(t, 1000).plot;\
-\cf0 )\
-\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b overWrite(aSignal, index)\
+\f2\fs18 \cf0 \
+a = \cf2 Signal\cf0 .fill(10, 100);\
+a.overDub(\cf2 Signal\cf0 [1,2,3,4], 3);\
+	\
+		\cf4 // run out of range\cf0 \
+a = \cf2 Signal\cf0 .fill(10, 100);\
+a.overDub(\cf2 Signal\cf0 [1,2,3,4], 8);	\
+\
+		\cf4 // run out of range 2\cf0 \
+a = \cf2 Signal\cf0 .fill(10, 100);\
+a.overDub(\cf2 Signal\cf0 [1,2,3,4], -4);	\
+\
+		\cf4 // this is still broken:\cf0 \
+a = \cf2 Signal\cf0 .fill(10, 100);\
+a.overDub(\cf2 Signal\cf0 [1,2,3,4], -1);	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 a.overDub(\cf2 Signal\cf0 [1,2,3,4], -2);	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 overWrite(aSignal, index)\
 
 \f1\b0 \
 Write a signal to myself starting at the index.\
 If the other signal is too long only the first part is overdubbed.\
-\
-(\
-\cf2 //s = 
-\f2 Synth.collect(\{ BrownNoise.ar(0.3) \}, 0.05);\
-//
-\f1 t = 
-\f2 Synth.collect(\{ FSinOsc.ar(800, 0.3) \}, 0.02);\
-//s.overWrite(t, 1000).plot;\
-\cf0 )\
-\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b blend(aSignal, blend)\
+\f2\fs18 \cf0 \
+a = \cf2 Signal\cf0 .fill(10, 100);\
+a.overWrite(\cf2 Signal\cf0 [1,2,3,4], 3);\
+\
+		\cf4 // this is still broken:\cf0 \
+a = \cf2 Signal\cf0 .fill(10, 100);\
+a.overDub(\cf2 Signal\cf0 [1,2,3,4], -2);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 blend(aSignal, blend)\
 
 \f1\b0 \
 Blend two signals by some proportion.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 (\
-\cf2 //s = Synth.collect(\{ LFPulse.ar(1300, 0.2) \}, 0.01);\
-//t = Synth.collect(\{ FSinOsc.ar(400) \}, 0.01);\
-//SignalWindow.new(signals: Array.fill(6, \{ arg i; s.blend(t, i/5) \}));\
-\cf0 ) \
+\f2\fs18 \cf0 \
+\cf2 Signal\cf0 [1,2,3,4].blend(\cf2 Signal\cf0 [5,5,5,0], 0);\
+\cf2 Signal\cf0 [1,2,3,4].blend(\cf2 Signal\cf0 [5,5,5,0], 0.2);\
+\cf2 Signal\cf0 [1,2,3,4].blend(\cf2 Signal\cf0 [5,5,5,0], 0.4);\
+\cf2 Signal\cf0 [1,2,3,4].blend(\cf2 Signal\cf0 [5,5,5,0], 1);\
+\cf2 Signal\cf0 [1,2,3,4].blend(\cf2 Signal\cf0 [5,5,5,0], 2);\
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Fourier Transform:\
+\f0\b\fs28 \cf0 \ul Fourier Transform:\
 \
 
 \fs24 \ulnone fftCosTable(size)\
@@ -421,62 +456,73 @@ Blend two signals by some proportion.\
 \f1\b0 \
 Fill a Signal with the cosine table needed by the FFT methods.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul \
+\f2\fs18 \cf2 Signal\cf0 .fftCosTable(512).plot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \ulnone fft(imag, cosTable)\
+\f1\fs24 \cf0 \
+\
+
+\f0\b fft(imag, cosTable)\
 
 \f1\b0 \
 Perform an FFT on a real and imaginary signal 
 \f0\b in place
 \f1\b0 .\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f2 (\
-\cf2 //var real, imag, table;\
-//real = Synth.collect(\{ \
-//		LFPulse.ar(800, 0.2)\
-//	\}, 4096/Synth.sampleRate) * Signal.hanningWindow(4096);\
-//imag = Signal.newClear(4096);\
-//table = Signal.fftCosTable(4096);\
-//(fft(real, imag, table)/100).plot;\
-\cf0 )\
+\f2\fs18 \cf0 (\
+var size = 512, real, imag, cosTable, complex; \
 \
-(\
-\cf2 //var real, imag, table,complex;\
-//real = Synth.collect(\{ \
-//		LFPulse.ar(800, 0.2)\
-//	\}, 4096/Synth.sampleRate) * Signal.hanningWindow(4096);\
-//imag = Signal.newClear(4096);\
-//table = Signal.fftCosTable(4096);\
-//complex=(fft(real, imag, table)/100);\
-//complex.real.plot;\
-//complex.imag.plot;\
-\cf0 )\
+real = Signal.newClear(size); \
+		// some harmonics\
+real.sineFill2([[8], [13, 0.5], [21, 0.25], [55, 0.125, 0.5pi]]);\
+		// add a little noise\
+real.overDub(Signal.fill(size, \{ 0.2.bilinrand \}));\
 \
+imag = Signal.newClear(size);\
+cosTable = Signal.fftCosTable(size);\
 \
+complex = fft(real, imag, cosTable); \
+[real, imag, (complex.magnitude) / 100 ].flop.flat\
+	.plot("fft", Rect(0,0, 512 + 8, 500), numChannels: 3);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b ifft(imag, cosTable)\
+\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 ifft(imag, cosTable)\
 
 \f1\b0 \
 Perform an inverse FFT on a real and imaginary signal 
 \f0\b in place
 \f1\b0 .\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f2 (\
-\cf2 //var real, imag, table;\
-//real = Synth.collect(\{ \
-//		LFSaw.ar(100, 0.2)\
-//	\}, 4096/Synth.sampleRate);\
-//imag = Signal.newClear(4096);\
-//table = Signal.fftCosTable(4096);\
-//fft(real, imag, table);	// forward transform\
-//ifft(real, imag, table);	// inverse transform\
-//real.plot;	// returns the original\
-\cf0 )\
+\f2\fs18 \cf0 (\
+var size = 512, real, imag, cosTable, complex, ifft; \
+\
+real = Signal.newClear(size); \
+		// some harmonics\
+real.sineFill2([[8], [13, 0.5], [21, 0.25], [55, 0.125, 0.5pi]]);\
+		// add a little noise\
+real.overDub(Signal.fill(size, \{ 0.2.bilinrand \}));\
+\
+imag = Signal.newClear(size);\
+cosTable = Signal.fftCosTable(size);\
+\
+complex = fft(real, imag, cosTable).postln;\
+ifft = complex.real.ifft(complex.imag, cosTable);\
+\
+[real, ifft.real].flop.flat.plot("fft and back", Rect(0,0, 512 + 8, 500), numChannels: 2);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1\fs24 \cf0 )\
 
 \f0\b\fs28 \ul Unary Messages:\
 
@@ -489,35 +535,36 @@ exp, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, \
 distort, softclip, nyqring, isPositive, isNegative,\
 isStrictlyPositive\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 (\
-\cf2 //s = Signal.sineFill(512, [0,0,0,1]);\
-//SignalWindow.new(signals: \
-//	[s, s.neg, s.abs, s.sign, s.squared, s.cubed, \
-//	s.asin.normalize, s.exp.normalize, s.distort, s.nyqring]);\
-\cf0 )\
-\
+\f2\b0\fs18 \cf0 x = \cf2 Signal\cf0 .sineFill(512, [0,0,0,1]);\
+[x, x.neg, x.abs, x.sign, x.squared, x.cubed, \
+x.asin.normalize, x.exp.normalize, s.distort].flop.flat.plot(numChannels: 9);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
-\
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
 
 \f0\b\fs28 \ul Binary Messages:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \ulnone \
+\f1\b0 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 Signal will respond to binary operators by returning a new Signal.\
+\fs24 \cf0 Signal will respond to binary operators by returning a new Signal.\
 \
 
 \f0\b +, -, *, /, div, %, **, min, max, ring1, ring2, ring3, ring4, \
 difsqr, sumsqr, sqrdif, absdif, amclip,\
 scaleneg, clip2, excess, <!\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 (\
-\cf2 //s = Synth.collect(\{ WhiteNoise.ar \}, 0.01);\
-//t = Synth.collect(\{ FSinOsc.ar(400) \}, 0.01);\
-//SignalWindow.new(signals: \
-//	[s, t, (s + t) * 0.5, s * t, min(s, t), max(s, t) ]\
-//);\
-\cf0 ) \
+\f2\b0\fs18 \cf0 (\
+x = Signal.fill(512, \{ rrand(0.0, 1.0) \});\
+y = Signal.fill(512, \{ |i| (i * pi / 64).sin \});\
+[x, y, (x + y) * 0.5, x * y, min(x, y), max(x, y) ].flop.flat.plot(numChannels: 6);\
+) \
 }

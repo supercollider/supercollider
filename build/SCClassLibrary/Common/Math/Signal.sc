@@ -84,35 +84,25 @@ Signal[float] : FloatArray {
 	}
 	
 	integral { _SignalIntegral; ^this.primitiveFailed }
-	overDub { arg aSignal, index; 
+	overDub { arg aSignal, index=0; 
 		_SignalOverDub 
 		// add a signal to myself starting at the index
 		// if the other signal is too long only the first part is overdubbed
 		^this.primitiveFailed 
 	}
-	overWrite { arg aSignal, index; 
+	overWrite { arg aSignal, index=0; 
 		_SignalOverWrite 
 		// write a signal to myself starting at the index
 		// if the other signal is too long only the first part is overwritten
 		^this.primitiveFailed 
 	}
-	/*
-	play { arg sampleRate, name=\Signal, loop = true;
-		var playbackRate = 1.0;
-		if (sampleRate.isNil, { 
-			sampleRate = Synth.sampleRate 
-		},{
-			playbackRate = sampleRate / Synth.sampleRate;
-		});
-		Instrument.play(name.asSymbol, { arg rate = 1.0;
-			if (loop, {
-				PlayBuf.ar(this, sampleRate, playbackRate * rate, 0, 0, this.size-2)
-			},{
-				PlayBuf.ar(this, sampleRate, playbackRate * rate, 0, this.size-2, this.size-2)
-			}); 
-		}, 1.0);
+	
+	play { arg loop=false, mul=0.2, numChannels=1, server; 
+		var buf; 
+		buf = Buffer.alloc(server ? Server.default, this.size, numChannels); 
+		buf.sendCollection(this, 0, 0.1, { buf.play(loop, mul); });
+		^buf
 	}
-	*/
 	
 	waveFill { arg function, start = 0.0, end = 1.0;
 		var i = 0, step, size, val, x;
@@ -146,7 +136,7 @@ Signal[float] : FloatArray {
 		list.do({ arg item, i; 
 			var harm, amp, phase;
 			# harm, amp, phase = item;
-			this.addSine(harm, amp, phase);
+			this.addSine(harm, amp ? 1.0, phase ? 0.0);
 		});
 	}
 	
@@ -170,18 +160,18 @@ Signal[float] : FloatArray {
 		this.addSine(harm, 1, 0.5pi);
 	}
 	
-//	fft { arg imag, cosTable; 
-//		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
-//		// fftsize is the next greater power of two than the receiver's length
-//		_Signal_FFT
-//		^this.primitiveFailed
-//	}
-//	ifft { arg imag, cosTable;
-//		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
-//		// fftsize is the next greater power of two than the receiver's length
-//		_Signal_IFFT
-//		^this.primitiveFailed
-//	}
+	fft { arg imag, cosTable; 
+		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
+		// fftsize is the next greater power of two than the receiver's length
+		_Signal_FFT
+		^this.primitiveFailed
+	}
+	ifft { arg imag, cosTable;
+		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
+		// fftsize is the next greater power of two than the receiver's length
+		_Signal_IFFT
+		^this.primitiveFailed
+	}
 	
 	neg { _Neg; ^this.primitiveFailed }
 	abs { _Abs; ^this.primitiveFailed }
