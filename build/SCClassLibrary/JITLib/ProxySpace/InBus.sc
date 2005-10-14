@@ -131,10 +131,18 @@ Monitor {
 		this.amps = amps;
 	}
 	
+	// first channel interface
+	
 	out_ { arg index;
 		var offset = index - outs[0];
 		this.outs = outs + offset
 	}
+	
+	out {
+		^outs !? { outs[0] }
+	}
+	
+	// multi channel interface
 	
 	outs_ { arg indices;
 		outs = indices;
