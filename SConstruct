@@ -586,6 +586,7 @@ source/lang/LangPrimSource/PyrListPrim.cpp
 source/lang/LangPrimSource/PyrStringPrim.cpp
 source/lang/LangPrimSource/PyrSymbolPrim.cpp
 source/lang/LangPrimSource/PyrUnixPrim.cpp
+source/plugins/fftlib.c
 ''')
 
 sclangSources = libsclangSources + ['source/lang/LangSource/cmdLineFuncs.cpp']
@@ -604,8 +605,10 @@ if env['LANG']:
 installEnv = Environment(
     ALL = ['install-bin', 'install-data'],
     BIN = ['install-plugins', 'install-programs'],
-    DATA = ['install-doc', 'install-library']
+    DATA = ['install-doc']
     )
+if env['LANG']:
+    installEnv.Append(DATA = ['install-library'])
 
 if is_installing():
     # class library
