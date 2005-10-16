@@ -207,7 +207,7 @@ Dictionary : Set {
 		^event.putAll(this);
 	}
 	embedInStream { arg event;
-		^event.copy.putAll(this).yield
+		^yield(event !? { event.copy.putAll(this) })
 	}
 	
 	asSortedArray {
