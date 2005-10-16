@@ -104,6 +104,13 @@ EnvironmentRedirect {
 	sortedKeysValuesDo { arg function;
 		envir.sortedKeysValuesDo(function);
 	}
+	putAll { arg ... dictionaries; 
+		dictionaries.do {|dict| 
+			dict.keysValuesDo { arg key, value; 
+				this.put(key, value) 
+			}
+		}
+	}
 	
 	choose {
         ^envir.choose
