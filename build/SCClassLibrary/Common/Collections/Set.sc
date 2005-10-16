@@ -16,7 +16,7 @@ Set : Collection {
 			})
 		})
 	}
-	clear { this.makeEmpty }
+	clear { this.makeEmpty; size=0 }
 	
 	includes { arg item; 
 		^array.at(this.scanFor(item)).notNil;
