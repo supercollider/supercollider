@@ -303,6 +303,7 @@ PauseStream : Stream
 	}
 	
 	isPlaying { ^stream.notNil }
+	
 	play { arg argClock, doReset = (false), quant=0.0;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
@@ -314,6 +315,7 @@ PauseStream : Stream
 	reset { ^originalStream.reset }
 	stop {  stream = nextBeat = nil  }
 	removedFromScheduler { this.stop }
+	wasStopped { ^streamHasEnded.not and: { stream.isNil } }
 	
 	pause { stream = nextBeat = nil }
 	resume { arg argClock, quant=1.0; 
