@@ -124,11 +124,10 @@ Monitor {
 	// setting volume and output offset.
 	// lists are only flat lists for now.
 		
-	vol_ { arg val; 
-		var server = group.server;
+	vol_ { arg val;
 		if(val == vol) {Ê^this };
 		vol = val;
-		this.amps = amps;
+		this.amps = (amps ? #[1.0]);
 	}
 	
 	// first channel interface
