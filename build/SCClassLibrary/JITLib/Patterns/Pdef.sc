@@ -66,6 +66,8 @@ PatternProxy : Pattern {
 		^if(envir.notNil) { envir[key] } { nil };
 	}
 	
+	isEventPattern { ^false }
+	
 	embedInStream { arg inval;
 		var pat, stream, outval, test, resetTest, count=0;
 		pat = pattern;
@@ -88,6 +90,7 @@ PatternProxy : Pattern {
 			outval.notNil
 		}{
 			inval = outval.yield;
+			if(this.isEventPattern and: inval.isNil) { ^nil.yield }
 		}
 		^inval
 	}
@@ -151,9 +154,6 @@ PatternProxy : Pattern {
 		^res
 	
 	}
-
-	
-	*cmdPeriod { this.all.do { arg item; item.stop } }
 	
 	*removeAll { 
 		this.all.do { arg pat; pat.stop }; 
@@ -213,7 +213,7 @@ Pdefn : PatternProxy {
 // contains time patterns (tasks)
 
 TaskProxy : PatternProxy {
-	var <isPlaying=false, <source;
+	var <source;
 	var <player, <>playQuant;
 	classvar <>defaultQuant=1.0;
 	
@@ -235,13 +235,14 @@ TaskProxy : PatternProxy {
 					}
 			}
 	}
-		
+	
 	wakeUp { 
-		player !? { if(player.streamHasEnded) { player.reset } };
-		if(isPlaying and: { player.isPlaying.not }) {
-			this.play(quant:playQuant) 
-		} 
+			if(player.notNil and: { player.isPlaying.not }) {
+				if(player.streamHasEnded) { player.reset };
+				this.play(quant:playQuant) 
+			}		
 	}
+	isEventPattern {Ê^true }
 	
 	*default { ^Pn(this.defaultValue,1) }
 	
@@ -254,19 +255,21 @@ TaskProxy : PatternProxy {
 		} { pattern }.asStream
 	}
 	
+	isPlaying { ^player.notNil and: { player.wasStopped.not } }
+	
 	playOnce { arg argClock, doReset = (false), quant;
 		clock = argClock ? clock;
 		^PauseStream.new(this.asStream).play(clock, doReset, quant ? this.quant)
 	}
 	
 	play { arg argClock, doReset=true, quant;
-		isPlaying = true;
 		playQuant = quant;
 		if(player.isNil) { 
 			player = this.playOnce(argClock, doReset, quant) 
 		} {
 			if(player.isPlaying.not) { 
-				player.play(argClock, doReset, quant) 
+				player.play(argClock, doReset, quant);
+				CmdPeriod.doOnce(this);
 			}
 		}
 	}
@@ -275,7 +278,8 @@ TaskProxy : PatternProxy {
 		^this.asStream.play(clock ? thisThread.clock, quant)
 	}
 	
-	stop { player.stop; isPlaying = false;  }
+	stop { player.stop; player = nil; }
+	cmdPeriod { this.stop }
 	
 	pause { if(player.notNil) { this.sched { player.pause } } }
 	resume { if(player.notNil) { this.sched { player.resume } } }
@@ -292,7 +296,6 @@ Tdef : TaskProxy {
 	
 	*initClass { 
 		all = IdentityDictionary.new;
-		CmdPeriod.add(this); 
 	}
 	*at { arg key;
 		^all.at(key);
@@ -376,11 +379,11 @@ EventPatternProxy : TaskProxy {
 	// start playing //
 	
 	play { arg argClock, protoEvent, quant, doReset=true;
-		isPlaying = true;
 		if(player.isPlaying.not) {
 			clock = argClock ? TempoClock.default;
 			player = player ?? { EventStreamPlayer(this.asStream, protoEvent) };
-			player.play(clock, doReset, quant ? this.quant)
+			player.play(clock, doReset, quant ? this.quant);
+			CmdPeriod.doOnce(this);
 		}
 	}
 	
@@ -407,7 +410,6 @@ Pdef : EventPatternProxy {
 	}
 	*initClass {
 		var phraseEventFunc;
-		CmdPeriod.add(this);
 		
 		all = IdentityDictionary.new; 
 		Class.initClassTree(Event);
