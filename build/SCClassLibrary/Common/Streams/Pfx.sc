@@ -92,7 +92,7 @@ Pgroup : FilterPattern {
 			};
 						
 			inevent = event.yield;
-			inevent !? { inevent.put(\group, ingroup);  };
+			inevent !? { inevent.put(\group, groupID);  };
 		}
 	}
 }
