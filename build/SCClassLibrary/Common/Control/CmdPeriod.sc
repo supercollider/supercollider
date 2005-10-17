@@ -11,11 +11,10 @@ CmdPeriod {
 		if(objects.isNil) { this.init }; // lazy init
 		objects = objects.add(object)
 	}
-	*doOnce { arg func;
+	*doOnce { arg object;
 		var f;
-		this.add(f = { this.remove(f); func.value  })
+		this.add(f = { this.remove(f); object.cmdPeriod  })
 	}
-	
 	
 	*remove { arg object;
 		objects.remove(object)
