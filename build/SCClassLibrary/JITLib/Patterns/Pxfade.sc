@@ -12,7 +12,7 @@ PfadeIn : FilterPattern {
 			if(holdTime > 0.0) { Event.silent(holdTime).yield };
 			loop {
 				outval = stream.next(inval);
-				if(outval.isNil) { nil.alwaysYield };
+				if(outval.isNil) { ^nil.yield };
 				
 				elapsed = elapsed + outval.delta;
 				c = elapsed / fadeTime;
@@ -44,8 +44,8 @@ PfadeOut : PfadeIn {
 				} {
 					c = elapsed - holdTime / fadeTime;
 					if(c >= 1.0) {
-						^this.finishStream(stream, outval);
-						//^inval
+						stream.next(nil);
+						^nil.yield
 					} {
 						outval = outval.copy;
 						outval[\amp] = (1.0 - c.max(0)) * outval[\amp];
