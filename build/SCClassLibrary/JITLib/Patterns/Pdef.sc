@@ -255,7 +255,7 @@ TaskProxy : PatternProxy {
 		} { pattern }.asStream
 	}
 	
-	isPlaying { ^player.notNil and: { player.wasStopped.not } }
+	isPlaying { ^player.notNil }
 	
 	playOnce { arg argClock, doReset = (false), quant;
 		clock = argClock ? clock;
