@@ -33,10 +33,7 @@ AbstractNodeWatcher {
 	cmds { ^nil }
 		
 	respond { arg method, msg;
-		//msg.postln;
-		msg = msg.copy;
-		msg.removeAt(0);
-		this.performList(method, msg)
+		this.performList(method, msg.drop(1))
 	}
 	
 	start {
@@ -152,7 +149,7 @@ NodeWatcher : BasicNodeWatcher {
 	unregister { arg node;
 		nodes.removeAt(node.nodeID);
 	}
-	
+
 	
 	//////////////private implementation//////////////
 	
