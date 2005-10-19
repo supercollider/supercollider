@@ -73,8 +73,8 @@ XInFeedback {
 // plays out to various other indices.
 
 
-Monitor { 
-	var <ins, <outs, <amps, <vol=1;
+Monitor {
+	var <ins, <outs, <amps = #[1.0], <vol=1;
 	var <group, synthIDs, synthAmps, <>fadeTime=0.02;
 	
 	
@@ -110,7 +110,7 @@ Monitor {
 	
 	// multichannel support
 	
-	playN { arg out, amp, in, vol, fadeTime=0.02, target;
+	playN { arg out, amp, in, vol, fadeTime, target;
 		var bundle = List.new;
 		var server, inGroup;
 		inGroup = target.asGroup;
@@ -127,7 +127,7 @@ Monitor {
 	vol_ { arg val;
 		if(val == vol) {Ê^this };
 		vol = val;
-		this.amps = (amps ? #[1.0]);
+		this.amps = amps;
 	}
 	
 	// first channel interface
@@ -153,11 +153,11 @@ Monitor {
 	}
 	
 	amps_ { arg values;
-		synthAmps = values * vol;
+		synthAmps = values.flat * vol;
 		amps = values;
 		if (this.isPlaying) {
 			group.server.listSendBundle(group.server.latency, 
-				[15, synthIDs, "vol", values * vol].flop
+				[15, synthIDs, "vol", synthAmps].flop
 			);
 		};
 	}
@@ -166,7 +166,7 @@ Monitor {
 	
 	
 	playNToBundle { arg bundle, argOuts=(outs), argAmps=(amps), argIns=(ins), 
-					argVol=(vol), argFadeTime=(fadeTime), inGroup; 
+					argVol=(vol), argFadeTime=(fadeTime), inGroup, defName="system_link_audio_1"; 
 		
 		var triplets, server; 
 
@@ -174,7 +174,7 @@ Monitor {
 		
 		
 		if (ins.size != outs.size)
-			{ Error("wrong size of outs and amps" ++ [ins, outs, amps]).throw };
+			{ Error("wrong size of outs and ins" ++ [outs, amps, ins]).throw };
 			
 		triplets = [ins, outs, amps].flop;
 		
@@ -197,7 +197,7 @@ Monitor {
 				var id = server.nextNodeID;
 				synthIDs = synthIDs.add(id);
 				synthAmps = synthAmps.add(amp[j]);
-				bundle.add([9, "system_link_audio_1", 
+				bundle.add([9, defName, 
 					id, 1, group.nodeID,
 					"out", item, 
 					"in", in,
@@ -225,6 +225,8 @@ Monitor {
 			this.newGroupToBundle(bundle, inGroup)
 		};
 		
+		amps = [];
+		
 		numChannels = max(fromNumChannels, toNumChannels);
 		chanRange = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
 		defname = "system_link_audio_" ++ chanRange;
@@ -241,11 +243,25 @@ Monitor {
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
 	
+	// shorter, but far less efficient
+	//playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
+//			inGroup, multi, volume, fadeTime;
+//			var numChannels = max(fromNumChannels, toNumChannels);
+//			var chanRange = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
+//			var n = numChannels div: chanRange;
+//			var outputChannels = Array.fill(n, {|i| toIndex + (i * chanRange % toNumChannels) });
+//			var inputChannels = Array.fill(n, {|i| fromIndex + (i * chanRange % fromNumChannels) });
+//			//[bundle, outputChannels, nil, inputChannels, 
+//			//	volume, fadeTime, inGroup, "system_link_audio_" ++ chanRange].postln;
+//			this.playNToBundle(bundle, outputChannels, nil, inputChannels, 
+//				volume, fadeTime, inGroup, "system_link_audio_" ++ chanRange);
+//				
+//	}
+	
 	playNBusToBundle { arg bundle, outs, amps, bus, vol, fadeTime, group;
 		var size, ins;
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
-		amps = amps ? [1.0];
 		ins = (0..(size - 1)) + bus.index;
 		this.playNToBundle(bundle, outs, amps, ins, vol, group, fadeTime)
 	}
