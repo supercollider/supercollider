@@ -120,6 +120,10 @@ String[char] : RawArray {
 		_String_Find
 		^this.primitiveFailed
 	}
+	findBackwards { arg string, ignoreCase = false, offset = 0x7FFFFFFE;
+		_String_FindBackwards
+		^this.primitiveFailed
+	}
 	endsWith { arg string;
 		^this.contains(string, this.size - string.size)
 	}
