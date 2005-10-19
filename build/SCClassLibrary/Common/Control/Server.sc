@@ -674,7 +674,7 @@ Server : Model {
 				},{
 					synth = nodeWatcher.nodes.at(nodeID);
 					if(synth.notNil, {
-						("Synth" + synth.nodeID + (synth.defName.quote ? "")).postln;
+						("Synth" + synth.nodeID + (synth.defName.asString.quote ? "")).postln;
 					},{
 						("Synth" + nodeID).postln;
 					});
