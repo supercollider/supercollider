@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
@@ -65,7 +65,7 @@ b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+\cf3 SynthDef\cf0 (\cf4 "help_PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 Out\cf0 .ar(out,\
 		\cf3 PlayBuf\cf0 .ar(1,bufnum, \cf3 BufRateScale\cf0 .kr(bufnum))\
 	)\
@@ -81,7 +81,7 @@ b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // loop is true\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+\cf3 SynthDef\cf0 (\cf4 "help_PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 Out\cf0 .ar(out,\
 		\cf3 PlayBuf\cf0 .ar(1,bufnum,\cf3 BufRateScale\cf0 .kr(bufnum),loop: 1.0)\
 	)\
@@ -92,7 +92,7 @@ b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // trigger one shot on each pulse\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+\cf3 SynthDef\cf0 (\cf4 "help_PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  trig;\
 	trig = \cf3 Impulse\cf0 .kr(2.0);\
 	\cf3 Out\cf0 .ar(out,\
@@ -104,7 +104,7 @@ b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // trigger one shot on each pulse\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+\cf3 SynthDef\cf0 (\cf4 "help_PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  trig;\
 	trig = \cf3 Impulse\cf0 .kr(\cf3 XLine\cf0 .kr(0.1,100,30));\
 	\cf3 Out\cf0 .ar(out,\
@@ -118,7 +118,7 @@ b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // mouse control of trigger rate and startpos\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+\cf3 SynthDef\cf0 (\cf4 "help_PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  trig;\
 	trig = \cf3 Impulse\cf0 .kr(MouseY.kr(0.5,200,1));\
 	\cf3 Out\cf0 .ar(out,\
@@ -131,7 +131,7 @@ b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // accelerating pitch\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+\cf3 SynthDef\cf0 (\cf4 "help_PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  rate;\
 	rate = \cf3 XLine\cf0 .kr(0.1,100,60);\
 	\cf3 Out\cf0 .ar(out, \
@@ -144,7 +144,7 @@ b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // sine wave control of playback rate. negative rate plays backwards\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+\cf3 SynthDef\cf0 (\cf4 "help_PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  rate;\
 	rate = \cf3 FSinOsc\cf0 .kr(\cf3 XLine\cf0 .kr(0.2,8,30), 0, 3, 0.6);\
 	\cf3 Out\cf0 .ar(out,\
@@ -156,7 +156,7 @@ b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // zig zag around sound \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+\cf3 SynthDef\cf0 (\cf4 "help_PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  rate;\
 	rate = \cf3 LFNoise2\cf0 .kr(\cf3 XLine\cf0 .kr(1,20,60), 2);\
 	\cf3 Out\cf0 .ar(out,\
