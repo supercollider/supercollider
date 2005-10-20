@@ -94,9 +94,9 @@ Stethoscope {
 				var z;
 				z = Select.ar(switch, [In.ar(in, numChannels), K2A.ar(In.kr(in, numChannels))]); 
 				ScopeOut.ar(z, bufnum);
-			}).play(server, [\bufnum, buffer.bufnum, \in, index, \switch] 
+			}).play(0, [\bufnum, buffer.bufnum, \in, index, \switch] 
 				++ if('audio' === rate) { 0 } { 1 },
-				\addAfter
+				\addToTail
 			);
 			synth.isPlaying = true;
 			NodeWatcher.register(synth);
