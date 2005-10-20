@@ -189,20 +189,28 @@ Function : AbstractFunction {
 	
 	// multichannel expand function return values
 	
+	flop {
+		if(def.argNames.isNil) { ^this };
+		^{ |... args| args.flop.collect(this.valueArray(_)) }
+	}
+
+	
 	envirFlop {
-		var def=this.def, func;
-		if(def.argNames.isNil) { 
-			^{ |... args| [this.valueArrayEnvir(args)] } 
-		};
-		func = interpret(
-				"#{ arg " ++ " " ++ def.argumentString(true) ++ "; " 
-				++ "[ " ++ def.argumentString(false) ++ " ].flop };"
-		);
-		
+		var func = this.makeFlopFunc;
 		^{ |... args|
 			func.valueArrayEnvir(args).collect(this.valueArray(_))
 		}
 	}
+	
+	makeFlopFunc {
+		if(def.argNames.isNil) { ^this };
+		
+		^interpret(
+				"#{ arg " ++ " " ++ def.argumentString(true) ++ "; " 
+				++ "[ " ++ def.argumentString(false) ++ " ].flop };"
+				)
+	}
+	
 }
 
 Thunk : AbstractFunction {
