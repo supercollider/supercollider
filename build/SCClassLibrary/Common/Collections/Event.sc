@@ -466,6 +466,105 @@ Event : Environment {
 									};
 							};
 						}
+					},
+					monoOff:  #{|server|
+						var lag = ~lag + server.latency;
+			
+						if(~hasGate == false) {
+							server.sendBundle(lag, [\n_free] ++ ~id);
+						} {
+							server.sendBundle(lag, *[\n_set, ~id, \gate, 0].flop); 
+						};
+						
+					},
+					
+					monoSet: #{|server|
+						var freqs, lag, bndl;
+						
+						freqs = ~freq = ~freq.value + ~detune;
+										
+						if (freqs.isKindOf(Symbol).not) {
+							~amp = ~amp.value;
+							lag = ~lag + server.latency;
+							~sustain = ~sustain.value;
+				
+							bndl = ([\n_set, ~id] ++ ~msgFunc.valueEnvir).flop;
+							server.sendBundle(server.latency, *bndl);
+						};
+					},
+			
+					monoNote:	#{ |server|	
+						var bndl, id, ids, addAction, f;
+						addAction = ~addAction;
+						~freq = ~freq.value + ~detune;
+						f = ~freq;
+						~amp = ~amp.value;
+						
+						bndl = ( [\s_new, ~instrument, ids, addAction, ~group] ++ ~msgFunc.valueEnvir).flop;
+						bndl.do { | b |
+							id = server.nextNodeID;
+							ids = ids.add(id);
+							b[2] = id;
+						};
+				
+						if ((addAction == 0) || (addAction == 3)) {
+							bndl = bndl.reverse;
+						};
+						server.sendBundle(server.latency, *bndl);
+						~updatePmono.value(ids, server);
+					},
+					
+					Synth: #{ |server|	
+						var instrumentName, desc, msgFunc;
+						var bndl, synthLib, addAction, group, latency, ids, id, groupControls;
+						~server = server;
+						group = ~group;
+						addAction = ~addAction;
+						~freq = ~freq.value + ~detune;
+						~amp = ~amp.value;
+						ids = ~id;					
+						synthLib = ~synthLib ?? { SynthDescLib.global };
+						~defName = instrumentName = ~instrument.asSymbol;
+						desc = synthLib.synthDescs[instrumentName];						if (desc.notNil) { 
+							msgFunc = desc.msgFunc;
+							~hasGate = desc.hasGate;
+						}{
+							msgFunc = ~defaultMsgFunc;
+						};
+					
+						bndl = ( [\s_new, instrumentName, ids, addAction, group] ++ msgFunc.valueEnvir).flop;
+						if (ids.isNil ) {
+							bndl.do { | b |
+								id = server.nextNodeID;
+								ids = ids.add(id);
+								b[2] = id;
+							};
+						};					
+				
+						if ((addAction == 0) || (addAction == 3)) {
+							bndl = bndl.reverse;
+						};
+						server.sendBundle(server.latency, *bndl);
+						~id = ids;
+						~isPlaying = true;	 
+						NodeWatcher.register(currentEnvironment);
+					},
+					
+					Group: #{|server|
+						var ids, group, addAction, bundle;
+						ids = ~id = (~id ?? { server.nextNodeID }).asArray;
+						group = ~group;
+						addAction = ~addAction;
+						~server = server;
+						if ((addAction == 0) || (addAction == 3) ) {
+							ids = ids.reverse;
+						};
+						bundle = ids.collect {|id, i|
+							[\g_new, id, addAction, group]; 
+						};
+						server.sendBundle(server.latency, *bundle);
+						~isPlaying = true;
+						NodeWatcher.register(currentEnvironment);
 					};
 				)
 			)
