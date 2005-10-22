@@ -1,9 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue191;
-\red0\green0\blue0;\red191\green0\blue0;\red96\green96\blue96;\red0\green115\blue0;\red0\green112\blue0;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green115\blue0;\red0\green112\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Snooping around SuperCollider
@@ -63,20 +62,22 @@ Even though you may access these data structures, if you store things into them,
 \
 // The following three include inherited methods\
 \cf0 \
-\cf2 Collection\cf0 .allMethods;	\cf3 // print all instance methods that instances of this class respond to\cf0 \
+\cf2 Collection\cf0 .methods.collect(_.name);	\
+						\cf3 // print all instance methods that instances of this class respond to\cf0 \
 \
-\cf2 Collection\cf0 .class.allMethods; \cf3 // print all class methods that this class responds to\cf0 \
+\cf2 Collection\cf0 .class.methods.collect(_.name); \
+						\cf3 // print all class methods that this class responds to\cf0 \
 \
 \cf2 Collection\cf0 .dumpFullInterface;	\cf3 // print all instance and class methods that this class responds to\cf0 \
 \
-\cf4 Collection\cf5 .dumpMethodList;	\cf6 // print instance methods of this class and superclasses, in alpha order\cf5 \
-						\cf6 // also shows from which class the method is inherited\cf5 \
-						\cf6 // does not include Object or Class methods\cf5 \
-						\cf6 // for class methods, do Meta_Collection.dumpMethodList\cf5 \
-\cf0 \
+\cf2 Collection\cf0 .dumpMethodList;	\cf3 // print instance methods of this class and superclasses, in alpha order\cf0 \
+						\cf3 // also shows from which class the method is inherited\cf0 \
+						\cf3 // does not include Object or Class methods\cf0 \
+						\cf3 // for class methods, do Meta_Collection.dumpMethodList\cf0 \
+\
 \cf2 Collection\cf0 .dumpClassSubtree;	\cf3 // dump all subclasses of this class\
 \cf0 \
-\cf4 Collection\cf5 .dumpSubclassList;	\cf6 // dump all subclasses, in alphabetical order\cf0 \
+\cf2 Collection\cf0 .dumpSubclassList;	\cf3 // dump all subclasses, in alphabetical order\cf0 \
 \
 \cf2 SCWindow\cf0 .instVarNames.dump;	\cf3 // dump all instance variable names of this class\
 \cf0 \
@@ -101,10 +102,23 @@ Even though you may access these data structures, if you store things into them,
     if (class.classVarNames.notNil, \{\
 		\cf3 // classVarNames is an Array of Symbols\
 \cf0         class.classVarNames.do(\{ \cf2 arg\cf0  varname;\
-            (class.name.asString ++ \cf7 " "\cf0  ++ varname.asString).postln;\
+            (class.name.asString ++ \cf4 " "\cf0  ++ varname.asString).postln;\
         \})\
     \});\
 \});\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // find and print all methods that contain "ascii"\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Class\cf0 .allClasses.do(\{ \cf2 arg\cf0  class;\
+   	class.methods.do(\{ \cf2 arg\cf0  sel;\
+   			if(sel.name.asString.find("ascii").notNil) \{\
+            		(class.name.asString + "-" + sel.name).postln;\
+            \}\
+      \});\
+\}); ""\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -122,30 +136,30 @@ Even though you may access these data structures, if you store things into them,
 \f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \cf2 Collection\cf0 .findMethod(\cf8 'select'\cf0 ); \cf3 // does it have this method?\cf0 \
+\fs18 \cf2 Collection\cf0 .findMethod(\cf5 'select'\cf0 ); \cf3 // does it have this method?\cf0 \
 \
-\cf2 Array\cf0 .findMethod(\cf8 'select'\cf0 ); \cf3 // this class doesn't\cf0 \
+\cf2 Array\cf0 .findMethod(\cf5 'select'\cf0 ); \cf3 // this class doesn't\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \cf2 Array\cf0 .findRespondingMethodFor(\cf8 'select'\cf0 ); \cf3 // climb the class tree to find the method
+\fs18 \cf2 Array\cf0 .findRespondingMethodFor(\cf5 'select'\cf0 ); \cf3 // climb the class tree to find the method
 \fs24 \cf0 \
 
 \fs18 \cf2 \
-Collection\cf0 .findMethod(\cf9 'select'\cf0 ).dump; \cf3 // find a method object\
+Collection\cf0 .findMethod(\cf6 'select'\cf0 ).dump; \cf3 // find a method object\
 \cf0 \
-\cf2 Collection\cf0 .findMethod(\cf9 'select'\cf0 ).argNames.dump; \cf3 // dump its argument names\
+\cf2 Collection\cf0 .findMethod(\cf6 'select'\cf0 ).argNames.dump; \cf3 // dump its argument names\
 \cf0 \
-\cf2 Collection\cf0 .findMethod(\cf9 'select'\cf0 ).varNames.dump; \cf3 // dump its local variable names\
+\cf2 Collection\cf0 .findMethod(\cf6 'select'\cf0 ).varNames.dump; \cf3 // dump its local variable names\
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // dump its code. mostly for debugging the compiler.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Collection\cf0 .findMethod(\cf9 'select'\cf0 ).dumpByteCodes;	\
+\cf2 Collection\cf0 .findMethod(\cf6 'select'\cf0 ).dumpByteCodes;	\
 \
-\cf2 Collection\cf0 .dumpByteCodes(\cf9 'select'\cf0 );	\cf3 // a shorter version of the above\
+\cf2 Collection\cf0 .dumpByteCodes(\cf6 'select'\cf0 );	\cf3 // a shorter version of the above\
 \cf0 \
 \{ 1 + 2 \}.dump; \cf3 // this is a Function\
 \cf0 \
@@ -167,11 +181,11 @@ Collection\cf0 .findMethod(\cf9 'select'\cf0 ).dump; \cf3 // find a method objec
 \cf3 // create some windows to snoop in\cf0 \
 5.do(\{ \cf2 arg\cf0  i;\
 	\cf2 var\cf0  w, b;\
-	w = \cf2 SCWindow\cf0 .new(\cf7 "snoop "\cf0  ++ i.asString, \
+	w = \cf2 SCWindow\cf0 .new(\cf4 "snoop "\cf0  ++ i.asString, \
 		\cf2 Rect\cf0 .new( 200 + 400.rand, 69 + 300.rand, 172, 90 ));\
 	w.front;\
 	b = \cf2 SCButton\cf0 .new( w, \cf2 Rect\cf0 .new( 23, 28, 127, 25 ));\
-	b.states = [[\cf7 "BLAM-O"\cf0 , \cf2 Color\cf0 .red]];\
+	b.states = [[\cf4 "BLAM-O"\cf0 , \cf2 Color\cf0 .red]];\
 \}))\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -202,7 +216,7 @@ Collection\cf0 .findMethod(\cf9 'select'\cf0 ).dump; \cf3 // find a method objec
 \fs18 \cf3 // First execute this:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
-f = \cf2 SynthDef\cf0 (\cf7 "Help-SnoopSynthDef"\cf0 , \
+f = \cf2 SynthDef\cf0 (\cf4 "Help-SnoopSynthDef"\cf0 , \
 	\{ \cf2 arg\cf0  out=0;\
 		 \cf2 Out\cf0 .ar(out, \cf2 PinkNoise\cf0 .ar(0.1))\
 	\});\
@@ -226,15 +240,15 @@ When evaluating text in the interpreter, the variable 'this' always refers to th
 \cf0 \
 \cf2 this\cf0 .clearAll;	\cf3 // set all variables a-z to nil\
 \cf0 \
-g = \cf2 this\cf0 .compile(\cf7 "(1 + 2).postln"\cf0 );	\cf3 // compile some text into a Function\
+g = \cf2 this\cf0 .compile(\cf4 "(1 + 2).postln"\cf0 );	\cf3 // compile some text into a Function\
 \cf0 \
 g.postln;		\cf3 // see, g is a Function\
 \cf0 \
 g.value;	\cf3 // evaluate g\
 \cf0 \
-\cf2 this\cf0 .interpret(\cf7 "(1 + 2).postln"\cf0 );	\cf3 // interpret some text\
+\cf2 this\cf0 .interpret(\cf4 "(1 + 2).postln"\cf0 );	\cf3 // interpret some text\
 \cf0 \
-\cf2 this\cf0 .interpretPrint(\cf7 "1 + 2"\cf0 );	\cf3 // interpret some text and print the result\
+\cf2 this\cf0 .interpretPrint(\cf4 "1 + 2"\cf0 );	\cf3 // interpret some text and print the result\
 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
