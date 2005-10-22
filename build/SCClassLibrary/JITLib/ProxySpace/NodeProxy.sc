@@ -4,7 +4,7 @@ BusPlug : AbstractFunction {
 	
 	var <server, <bus; 		
 	var <>monitor, <>parentGroup; // if nil, uses default group
-	var <busArg = ""; // cache for "/s_new" bus arg
+	var busArg; // cache for "/s_new" bus arg
 
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
@@ -65,17 +65,19 @@ BusPlug : AbstractFunction {
 		});
 		this.freeBus;
 		bus = Bus.alloc(rate, server, numChannels);
-		this.makeBusArg;
+		
 	}
+	
 	
 	freeBus {
 		if(bus.notNil, {
 			if(bus.rate === \control) { bus.setAll(0) }; // clean up
 			bus.free;
 		});
-		bus = nil;
-		this.makeBusArg;
+		busArg = bus = nil;
 	}
+	
+	busArg { ^busArg ?? { this.makeBusArg } }
 		
 	makeBusArg { 	
 			var index, numChannels;
@@ -83,7 +85,7 @@ BusPlug : AbstractFunction {
 					{ "" } {						// used for control mapping
 						index = this.index;
 						numChannels = this.numChannels;
-						if(numChannels == 1) 
+						if(numChannels == 1)
 							{ ("\c" ++ index) } 
 							{
 							Array.fill(numChannels, { arg i; "\c" ++ (index + i) })
@@ -137,7 +139,7 @@ BusPlug : AbstractFunction {
 							if(this.isNeutral) { this.defineBus(\control, 1) }; 
 							this.wakeUp 
 						};// if in event stream yield bus arg, else a normal stream
-						busArg.yield;
+						this.busArg.yield;
 					} { this.yield  }
 					^inval
 	}
@@ -511,26 +513,32 @@ NodeProxy : BusPlug {
 		^all
 	}
 
-	controlKeys { arg except = #[\out, \i_out, \gate, \fadeTime]; 
+	controlKeys { |except, noInternalKeys = true|
 		var list = Array.new;
+			if (noInternalKeys) { except = except ++ this.internalKeys; };
 			this.controlNames.do { |el, i|
-				if(except.includes(el.name).not) 
+				if(except.includes(el.name).not)
 				{ list = list.add(el.name) }
 			}
 		^list
 	}
-	
-	// control pairs including node map
-	getKeysValues { arg keys, except = #[], withDefaults = false; 
-		var pairs, result = [], myKeys, defaults, mapSettings; 
-		pairs = this.controlKeysValues.clump(2); 
-		#myKeys, defaults = pairs.flop; 
-		
-		mapSettings = nodeMap.settings; 
-		myKeys.collect { |key, i| 
-			var val = mapSettings[key]; 
-			if (withDefaults or: {val.notNil}) { 
-				result = result.add([ key, (val ? defaults[i]).value ]); 
+	internalKeys {
+		^#[\out, \i_out, \gate, \fadeTime];
+	}
+	getKeysValues { |keys, except, withDefaults = true, noInternalKeys = true|
+		var pairs, result = [], myKeys, defaults, mapSettings;
+		if (noInternalKeys) { except = except ++ this.internalKeys; };
+
+		pairs = this.controlKeysValues(except: except ).clump(2);
+		#myKeys, defaults = pairs.flop;
+
+		mapSettings = nodeMap.settings;
+		myKeys.collect { |key, i|
+			var val, doAdd;
+			val = mapSettings[key];
+			doAdd = withDefaults or: val.notNil;
+			if (doAdd) {
+				result = result.add([ key, (val ? defaults[i]).value ]);
 			};
 		}
 		^result
@@ -988,14 +996,16 @@ NodeProxy : BusPlug {
 Ndef : NodeProxy {
 	classvar <>defaultServer;
 	var key;
-	*new { arg key, object, server;
-		var res;
-		server = server ? defaultServer ? Server.default;
-		res = this.at(server, key);
-		if(res.isNil, {
-			res = super.new(server).toLib(key);
-		});
-		if(object.notNil, { res.source = object });
+	*new { arg key, object;
+		var res, server;
+		if(key.isKindOf(Association)) {
+			server = key.key;
+			key = key.value;
+		} {
+			server = defaultServer ? Server.default
+		};
+		res = this.at(server, key) ?? { super.new(server).toLib(key) };
+		object !? { res.source = object };
 		^res;
 	}
 	*clear {
