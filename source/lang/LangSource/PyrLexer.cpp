@@ -1980,6 +1980,7 @@ static bool sc_SkipDirectory(const char *name)
 	  (strcmp(name, "..") == 0) ||
 	  (strcasecmp(name, "help") == 0) ||
 	  (strcasecmp(name, "test") == 0) ||
+	  (strcasecmp(name, "_darcs") == 0) ||
 	  sc_IsNonHostPlatformDir(name));
 }
 
