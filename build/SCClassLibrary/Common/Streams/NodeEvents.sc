@@ -70,7 +70,6 @@ Here is a simple example of its use:
 		this[key] = value;
 	}
 		
-	
 	stop { this.use { ~stop.value }  }
 	pause { this.use { ~pause.value }  }
 	resume { this.use { ~resume.value }  }
