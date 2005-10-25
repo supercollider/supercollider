@@ -7,43 +7,45 @@ the pattern.
 
 PatternConductor  {
 
-	var <>clock, <>patterns, <>event, <>quant, <>eventStreamPlayers, <tempo;
+	var <>patterns, <>event, <>quant, <>eventStreamPlayers; 
+	var <>clock, <tempo, <>defaultPauseTempo, <>defaultStopTempo;
 	*new { |patterns, event, quant|
 		^super.new
 			.patterns_(patterns.asArray)
 			.event_(event ? Event.default)
-			.quant_(quant ? 0).tempo_(1);
+			.quant_(quant ? 0).tempo_(1).defaultPauseTempo_(1e-8).defaultStopTempo_(1e+8);
 	}
 	
 	play { 
+		
 		Routine.run({ this.prPlay }, 64, TempoClock.default, quant)
 	}
 
 	prPlay {
 		if (clock.notNil) { this.stop };
+		CmdPeriod.add(this);
 		clock = TempoClock(tempo);
 		eventStreamPlayers = patterns.collect { | p | p.asEventStreamPlayer(event) };
-		eventStreamPlayers.do { | p | p.play(clock, false, quant) };
+		eventStreamPlayers.do { | p | p.play(clock, false, 0) };
 	}
-	pause { | pauseTempo = 0.000001| if(clock.notNil) { clock.tempo = pauseTempo } }
-	resume { if(clock.notNil) { clock.tempo = tempo } }
+	pause { | pauseTempo| clock.tempo = pauseTempo ? defaultPauseTempo }
+	resume {  clock.tempo = tempo }
 
 	stop { |stopTempo|
+		var oldClock;
+		oldClock = clock;
 		eventStreamPlayers.do { | p | p.stop };
+		clock.tempo = stopTempo ? defaultStopTempo;
+		Task({ while {oldClock.queue.size >2 } { yield(1) }; oldClock.stop }).play(clock);
+		clock = nil;
 		eventStreamPlayers = nil;
-		if (stopTempo.isNil) {
-			clock.stop; 
-			clock.queue.pairsDo { | t, e| e.value };
-			clock.clear;
-			clock = nil;
-		} {
-			clock.tempo = stopTempo;
-		};
+		CmdPeriod.remove(this);
 	}
 	
 	tempo_ { | temp | 
 		tempo = temp; 
 		if (clock.notNil) { clock.tempo_(tempo) };
 	}
+	cmdPeriod { clock = nil }
 }
 
