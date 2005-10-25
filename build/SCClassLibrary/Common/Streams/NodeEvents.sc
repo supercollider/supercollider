@@ -52,49 +52,42 @@ Here is a simple example of its use:
 */
 
 +Event {
-
+	*checkIDs { | id |
+		if (id.isNil) {^nil};
+		if (id.asArray.first < 1000) { ^id};
+		^nil
+	}
+	
 	sendOSC { | msg |
-		if (this.isPlaying) {
+		if (this[\isPlaying]) {
 			this[\server].sendBundle( this[\latency],  *(msg.flop) )
 		}
 	}
-
-	set 	{ | key, value | 
+	set{ | key, value | 
 		this.sendOSC([15, this[\id], key, value]); 
-		this[key] = value
+		this[key] = value;
+	}
+		
+	
+	stop { this.use { ~stop.value }  }
+	pause { this.use { ~pause.value }  }
+	resume { this.use { ~resume.value }  }
+	release { this.use { ~release.value }  }
+
+	synth {
+		this.parent = Event.parentEvents[\synthEvent];
+	}
+	group {
+		this.parent = Event.parentEvents[\groupEvent];
 	}
 
-	stop 	{ 
-		if (this[\hasGate] == true) { this.release } {this.sendOSC([11, this[\id]]) };
-		this[\isPlaying] = false;
-	}
-	release 	{ this.set(\gate, 0) }
-	pause	{ this.sendOSC([12, this[\id], false]); }
-	resume 	{ this.sendOSC([12, this[\id], true]);  }	
-	map 		{ | key, busIndex | this.sendOSC([14, this[\id], key, busIndex]) }
-
-	before { | target | 
-		this.sendOSC([18, this[\id], target]); 
-		this[\group] = target; this[\addAction] = 2;
-	}
-	after {  | target | 
-		this.sendOSC([19, this[\id], target]);
-		this[\group] = target; this[\addAction] = 3;
-	}
-	headOf { | group | 
-		this.sendOSC([22, group, this[\id]]);   
-		this[\group] = group; this[\addAction] = 0;
-	}
-	tailOf { | group | 
-		this.sendOSC([23, group, this[\id]]);   
-		this[\group] = group; this[\addAction] = 1;
-	}
-	split { | key = \id | var ev;
-		if (this.isPlaying) {
+	split { | key = \id | 
+		var event;
+		if (this[\isPlaying] == true) {
 			^this[key].asArray.collect { |keyVal| 
-				ev = this.copy.put(key, keyVal); 
-				NodeWatcher.register(ev);
-				ev;
+				event = this.copy.put(key, keyVal); 
+				NodeWatcher.register(event);
+				event;
 			}
 		} {
 			^this[key].asArray.collect { |keyVal| 
@@ -102,10 +95,6 @@ Here is a simple example of its use:
 			} 
 		}
 	}
-	isPlaying { ^(this[\isPlaying] == true) }
-	isPlaying_ { | flag | this[\isPlaying] = flag; }
-	nodeID { ^this[\id].asArray.last }	
-	
-	asEventStreamPlayer {}
+	nodeID { ^this[\id] }
 }
 
