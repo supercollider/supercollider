@@ -58,6 +58,8 @@ Here is a simple example of its use:
 		^nil
 	}
 	
+	asEventStreamPlayer {}
+	
 	sendOSC { | msg |
 		if (this[\isPlaying]) {
 			this[\server].sendBundle( this[\latency],  *(msg.flop) )
