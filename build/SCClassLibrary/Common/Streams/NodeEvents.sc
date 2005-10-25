@@ -96,6 +96,6 @@ Here is a simple example of its use:
 			} 
 		}
 	}
-	nodeID { ^this[\id] }
+	nodeID { ^(this[\id].asArray[0]) }
 }
 
