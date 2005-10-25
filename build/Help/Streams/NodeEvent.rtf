@@ -8,22 +8,22 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-Event maintains a dictionary of event types in order to allow Patterns to function in different ways.\
-This help file discusses the event types \\Group and \\Synth, which we call NodeEvents.\
+\
+The methods 
+\f0\b Event-synth
+\f1\b0  and 
+\f0\b Event-group 
+\f1\b0 define specialized events that
+\f0\b  
+\f1\b0  duplicate the functionality of Synth and Group objects. These objects follow the naming conventions of patterns (i.e., groups and addActions are integer ID's) and have the same stop/play/pause/resume interface as the EventStreamPlayers created by Pattern-play.  So, they can be used interchangeably with patterns in control schemes and GUI's.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-\cf0 NodeEvents really duplicate the functionality of Group and Synth, but they follow the naming conventions\
-of patterns (integers are used for addActions, integer nodeID's are used for targets).  NodeEvents can be \
-used directly in patterns, but are equally useful as stand alone controls.\
-
-\f2 				
-\f1 \
-The following example creates  a group with nodeID = 2 and plays a synth within it.  \
+\cf0 The following example creates  a group with nodeID = 2 and plays a synth within it.  \
 \
 
-\f2 	g = (type: \\Group, id: 2);\
+\f2 	g = (id: 2).group;\
 	g.play;\
-	a = (type: \\Synth, group: 2)\
+	a = (group: 2).synth\
 	a.play;\
 	g.release;\
 	g.stop;\
@@ -37,7 +37,8 @@ The following example creates  a group with nodeID = 2 and plays a synth within 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\b\fs28 \cf0 methods\
+\f0\b\fs28 \cf0 interface\
+(these are implemented as functions defined in fields of the event)\
 \
 play				
 \f1\b0 starts synth or group, returns this.delta\
@@ -77,13 +78,13 @@ value and the standard rules of multi-channel expansion will be followed.  \
 \
 Here is a simple example of its use:\
 (\
-	g = (type: \\Group, id: [2,3,4,5,6], group: 0, addAction: 1);  // define a multiple Group event\
+	g = (id: [2,3,4,5,6], group: 0, addAction: 1).group ;  // define a multiple Group event\
 	g.play;									     // play it\
 \
-	b = (type:\\Synth, freq: [500,510], group: [2,3]);           // make a Synth event\
+	b = ( freq: [500,510], group: [2,3]).synth;           // make a Synth event\
 	b.play;\
 	\
-	b.set(\\freq,[1000,1200])\
+	b.set(\\freq,[1000,1006])\
 \
 	g.release\
 \
