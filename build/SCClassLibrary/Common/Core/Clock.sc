@@ -34,7 +34,7 @@ SystemClock : Clock {
 
 
 TempoClock : Clock {
-	classvar <>all, <>default;
+	classvar <all, <>default;
 
 	var <queue, ptr;
 	
