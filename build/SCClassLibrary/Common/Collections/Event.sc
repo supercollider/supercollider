@@ -148,7 +148,8 @@ Event : Environment {
 				
 				hasGate: nil,
 				msgFunc: nil,
-				defaultMsgFunc: #{|freq = 440, amp = 0.1, pan = 0, out = 0| [\freq, freq, \amp, amp, \pan, pan, \out, out] },
+				defaultMsgFunc: #{|freq = 440, amp = 0.1, pan = 0, out = 0| 
+					[\freq, freq, \amp, amp, \pan, pan, \out, out] },
 				
 				// for \type \set
 				args: #[\freq, \amp, \pan, \trig]
@@ -186,7 +187,49 @@ Event : Environment {
 				),
 				midicmd: \noteOn
 			),
+			nodeEvent: (
+				delta: 0,
+				
+				addAction: 0,
+				group: 1,
+				latency: 0.2,
+				instrument: \default,
+				hasGate: true,
+				
+				stop: #{ 
+					if (~hasGate == true) 
+						{currentEnvironment.set(\gate, 0) } 
+						{currentEnvironment.sendOSC([11, ~id]) };
+					~isPlaying = false;
+				},
+				release:	#{ currentEnvironment.set(\gate, 0); ~isPlaying = false; },
+				pause:	#{ currentEnvironment.sendOSC([12, ~id, false]); },
+				resume:	#{ currentEnvironment.sendOSC([12, ~id, true]);  },	
+				map: 	#{ | ev, key, busIndex | ev.sendOSC([14, ev[\id], key, busIndex]) },
 			
+				before: 	#{ | ev,target | 
+					ev.sendOSC([18, ev[\id], target]); 
+					ev[\group] = target; ev[\addAction] = 2;
+				},
+				after: 	#{  | ev, target | 
+					ev.sendOSC([19, ev[\id], target]);
+					ev[\group] = target; ev[\addAction] = 3;
+				},
+				headOf: 	#{ | ev, group | 
+					ev.sendOSC([22, group, ev[\id]]);   
+					ev[\group] = group; ev[\addAction] = 0;
+				},
+				tailOf: 	#{ |ev,  group | 
+					ev.sendOSC([23, group, ev[\id]]);   
+					ev[\group] = group; ev[\addAction] = 1;
+				},
+				isPlaying: #{ |ev| ^(ev[\isPlaying] == true) },
+				isPlaying_: #{ | ev, flag | ev[\isPlaying] = flag; },
+				nodeID: #{ |ev| ^ev[\id].asArray.last },	
+				
+				asEventStreamPlayer: #{|ev| ev }
+			),
+
 			playerEvent: (
 				type: \note,
 				play: #{
@@ -406,17 +449,20 @@ Event : Environment {
 						var lag, genarray;
 						lag = ~lag + server.latency;
 						genarray = ~genarray;
-						server.sendBundle(lag, [\b_gen, ~bufnum, ~gencmd, ~genflags] ++ genarray);
+						server.sendBundle(lag, [\b_gen, ~bufnum, ~gencmd, ~genflags]
+							 ++ genarray);
 					},
 					load: #{|server|
 						var lag;
 						lag = ~lag + server.latency;
-						server.sendBundle(lag, [\b_allocRead, ~bufnum, ~filename, ~frame, ~numframes]);
+						server.sendBundle(lag, 
+							[\b_allocRead, ~bufnum, ~filename, ~frame, ~numframes]);
 					},
 					read: #{|server|
 						var lag;
 						lag = ~lag + server.latency;
-						server.sendBundle(lag, [\b_read, ~bufnum, ~filename, ~frame, ~numframes, ~bufpos, ~leaveOpen]);
+						server.sendBundle(lag, 
+						[\b_read, ~bufnum, ~filename, ~frame, ~numframes, ~bufpos, ~leaveOpen]);
 					},
 					alloc: #{|server|
 						var lag;
@@ -500,7 +546,8 @@ Event : Environment {
 						f = ~freq;
 						~amp = ~amp.value;
 						
-						bndl = ( [\s_new, ~instrument, ids, addAction, ~group] ++ ~msgFunc.valueEnvir).flop;
+						bndl = ( [\s_new, ~instrument, ids, addAction, ~group] 
+							++ ~msgFunc.valueEnvir).flop;
 						bndl.do { | b |
 							id = server.nextNodeID;
 							ids = ids.add(id);
@@ -532,7 +579,8 @@ Event : Environment {
 							msgFunc = ~defaultMsgFunc;
 						};
 					
-						bndl = ( [\s_new, instrumentName, ids, addAction, group] ++ msgFunc.valueEnvir).flop;
+						bndl = ( [\s_new, instrumentName, ids, addAction, group] 
+						++ msgFunc.valueEnvir).flop;
 						if (ids.isNil ) {
 							bndl.do { | b |
 								id = server.nextNodeID;
@@ -565,7 +613,8 @@ Event : Environment {
 						server.sendBundle(server.latency, *bundle);
 						~isPlaying = true;
 						NodeWatcher.register(currentEnvironment);
-					};
+					}
+					
 				)
 			)
 		);
@@ -579,7 +628,69 @@ Event : Environment {
 				partialEvents.serverEvent,
 				partialEvents.playerEvent,
 				partialEvents.midiEvent
-			)
+			),
+			groupEvent:	(
+				play: #{
+					var server, group, addAction, ids, bundle;
+					ids = Event.checkIDs(~id);
+					group = ~group;
+					addAction = ~addAction;
+					~server = server= ~server ?? {Server.default};
+					if ((addAction == 0) || (addAction == 3) ) {
+						ids = ids.reverse;
+					};
+					bundle = ids.collect {|id, i|
+						[\g_new, id, addAction, group]; 
+					};
+					server.sendBundle(server.latency, *bundle);
+					~isPlaying = true;
+					~isRunning = true;
+					NodeWatcher.register(currentEnvironment);
+				}
+			).putAll(partialEvents.nodeEvent),
+			synthEvent:	(
+				play: #{ 
+					var server, latency, group, addAction;
+					var instrumentName, synthLib, desc, msgFunc;
+					var bndl, ids, id;
+					~server = server = ~server ?? { Server.default };
+					group = ~group;
+					addAction = ~addAction;
+					synthLib = ~synthLib ?? { SynthDescLib.global };
+					instrumentName = ~instrument.asSymbol;
+					desc = synthLib.synthDescs[instrumentName];					if (desc.notNil) { 
+						msgFunc = desc.msgFunc;
+						~hasGate = desc.hasGate;
+					}{
+						msgFunc = ~defaultMsgFunc;
+					};
+				
+					bndl = ( [\s_new, instrumentName, ids, addAction, group]
+						 ++ msgFunc.valueEnvir).flop;
+					bndl.postln;
+					ids = Event.checkIDs(~id);
+					if (ids.isNil ) {
+						bndl.do { | b |
+							id = server.nextNodeID;
+							ids = ids.add(id);
+							b[2] = id;
+						};
+					};					
+			
+					if ((addAction == 0) || (addAction == 3)) {
+						bndl = bndl.reverse;
+					};
+					server.sendBundle(server.latency, *bndl);
+					~id = ids;
+					~isPlaying = true;	 
+					~isRunning = true;	 
+					NodeWatcher.register(currentEnvironment);
+				},
+				defaultMsgFunc: #{|freq = 440, amp = 0.1, pan = 0, out = 0| 
+					[\freq, freq, \amp, amp, \pan, pan, \out, out] }
+			).putAll(partialEvents.nodeEvent)
+			
+
 		);
 		
 		defaultParentEvent = parentEvents.default;
