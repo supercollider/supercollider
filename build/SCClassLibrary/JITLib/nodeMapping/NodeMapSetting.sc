@@ -9,6 +9,7 @@ NodeMapSetting {
 		value = index;
 		isMultiChannel = false;
 		isMapped = true;
+		busNumChannels = 1;
 	}
 	mapn { arg index, numChannels;
 		value = index;
