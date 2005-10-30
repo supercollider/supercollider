@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 TrebuchetMS;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green115\blue0;
+\red191\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 UGen			
@@ -12,8 +12,9 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 superclass: AbstractFunction\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Unit generators are the basic building blocks of synths on the server, and are used to generate or process audio or control signals. The many subclasses of UGen are the client-side representations of unit generators, and are used to specify their parameters when constructing synth definitions (see 
 \f0\b [\ul SynthDef\ulnone ]
 \f1\b0 ). \
@@ -27,16 +28,50 @@ See also
 \f1\b0 .\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Convenience Methods
+\f0\b\fs28 Convenience Methods
 \f1\b0\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 range(lo, hi)
+\f0\b \cf0 scope(name, bufsize, zoom)
+\f1\b0 \
+\
+Displays the output of this UGen in an individual 
+\f0\b [\ul Stethoscope\ulnone ] 
+\f1\b0 window. 
+\f0\b name
+\f1\b0  is the name of the window.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf2 Server\cf3 .default = s = \cf2 Server\cf3 .internal.boot;\
+\{ \cf2 Ringz\cf3 .ar(\cf2 PinkNoise\cf3 .ar([0.1, 0.2]).scope(\cf4 \\pink\cf3 ), 2000, 1, 0.25) \}.play; \cf5 // multichannel works\cf3 \
+s.scope; \cf5 // can still separately scope the output of the server
+\f0\b\fs24 \cf0 \
+\
+poll(interval, label)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Polls the output of this UGen every 
+\f0\b interval
+\f1\b0  seconds, and posts the result. The default 
+\f0\b interval 
+\f1\b0 is 0.1 seconds.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf3 \{ \cf2 SinOsc\cf3 .ar(\cf2 LFNoise0\cf3 .ar(2).range(420, 460).poll(label: \cf4 \\LFNoise\cf3 ), 0, 0.2) \}.play;\
+\
+\cf5 // Multichannel is supported\cf3 \
+\{ \cf2 SinOsc\cf3 .ar(\cf2 SinOsc\cf3 .ar([0.2, 0.3]).range(420, 460).poll(label: \cf4 \\SinOscs\cf3 ), 0, 0.2) \}.play;\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+range(lo, hi)
 \f1\b0 \
 \
 Scales the output of this UGen to be within the range of 
@@ -53,7 +88,7 @@ Scales the output of this UGen to be within the range of
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf0 \{ \cf2 SinOsc\cf0 .ar(\cf2 SinOsc\cf0 .ar(0.3).range(440, 660), 0, 0.5) * 0.1 \}.play;
+\f3\fs18 \cf0 \{ \cf6 SinOsc\cf0 .ar(\cf6 SinOsc\cf0 .ar(0.3).range(440, 660), 0, 0.5) * 0.1 \}.play;
 \f1\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -125,14 +160,16 @@ Wraps the receiver in a
 \
 
 \f0\b lag2(lagTime)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Wraps the receiver in a 
 \f0\b [\ul Lag2\ulnone ] 
 \f1\b0 UGen, smoothing it's output by lagTime.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b lag3(lagTime)
+\f0\b \cf0 lag3(lagTime)
 \f1\b0 \
 \
 Wraps the receiver in a 
@@ -173,10 +210,10 @@ Outputs
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf3 // note different syntax in these two examples\cf0 \
-\{ if( \cf2 LFNoise1\cf0 .kr(1.0, 0.5, 0.5) , \cf2 SinOsc\cf0 .ar, \cf2 Saw\cf0 .ar ) * 0.1 \}.play;\
+\f3\fs18 \cf7 // note different syntax in these two examples\cf0 \
+\{ if( \cf6 LFNoise1\cf0 .kr(1.0, 0.5, 0.5) , \cf6 SinOsc\cf0 .ar, \cf6 Saw\cf0 .ar ) * 0.1 \}.play;\
 \
-\{ \cf2 Trig1\cf0 .ar(\cf2 Dust\cf0 .ar(3), 0.2).lag(0.1).if(\cf2 FSinOsc\cf0 .ar(440), \cf2 FSinOsc\cf0 .ar(880)) * 0.1 \}.play;
+\{ \cf6 Trig1\cf0 .ar(\cf6 Dust\cf0 .ar(3), 0.2).lag(0.1).if(\cf6 FSinOsc\cf0 .ar(440), \cf6 FSinOsc\cf0 .ar(880)) * 0.1 \}.play;
 \f1\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -235,7 +272,7 @@ The output rate of the UGen which is one of the Symbols 'audio', or 'control'.\
 \f0\b signalRange
 \f1\b0 \
 \
-Returns a symbol indicating the signal range of the receiver. Either\'ca\cf4 \\bipolar\cf0  or\'ca\cf4 \\unipolar\cf0 .\
+Returns a symbol indicating the signal range of the receiver. Either\'ca\cf8 \\bipolar\cf0  or\'ca\cf8 \\unipolar\cf0 .\
 \
 
 \f0\b numChannels

@@ -1,4 +1,5 @@
 Stethoscope {
+	classvar ugenScopes;
 	var <server, <numChannels, <rate,  <index;
 	var <bufsize, buffer, <window, synth;
 	var n, c, d, sl, style=0, sizeToggle=0, zx, zy, ai=0, ki=0, audiospec, controlspec;
@@ -198,6 +199,12 @@ Stethoscope {
 	}
 	adjustBufferSize {
 		this.allocBuffer(max(256,nextPowerOfTwo(asInteger(n.bounds.width * n.xZoom))))
+	}
+	
+	// ugenScopes
+	*ugenScopes {
+		if(ugenScopes.isNil, { ugenScopes = Set.new; });
+		^ugenScopes
 	}
 	
 
