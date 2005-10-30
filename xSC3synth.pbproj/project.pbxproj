@@ -5,6 +5,44 @@
 	};
 	objectVersion = 39;
 	objects = {
+		8870B53B090D8EB100B96791 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = SC_DirUtils.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		8870B53C090D8EB100B96791 = {
+			fileRef = 8870B53B090D8EB100B96791;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8870B53D090D8EBB00B96791 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = SC_DirUtils.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		8870B53E090D8EBB00B96791 = {
+			fileRef = 8870B53D090D8EBB00B96791;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//880
+//881
+//882
+//883
+//884
+//920
+//921
+//922
+//923
+//924
 		920DAEAD0423E08200A80067 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -173,8 +211,6 @@
 			sourceTree = "<group>";
 		};
 		F50D04F902E68E8201CA2799 = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -188,8 +224,6 @@
 			name = Development;
 		};
 		F50D04FA02E68E8201CA2799 = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -212,6 +246,7 @@
 		};
 		F50D050A02E69B6B01CA2799 = {
 			children = (
+				8870B53B090D8EB100B96791,
 				F50D050B02E69B6B01CA2799,
 				F50D050C02E69B6B01CA2799,
 				F50D050D02E69B6B01CA2799,
@@ -765,6 +800,7 @@
 		};
 		F50D059202E69B6B01CA2799 = {
 			children = (
+				8870B53D090D8EBB00B96791,
 				F59DF065030733E801CE0C16,
 				F59DF066030733E801CE0C16,
 				F59DF0C5030777A101CE0C16,
@@ -1007,7 +1043,6 @@
 		F50D069402E6A1C601CA2799 = {
 			children = (
 				F50D069902E6A1C601CA2799,
-				F50D06BE02E7F11301CA2799,
 				F50D06C002E7F29001CA2799,
 				F53F78F503B2842D011C068F,
 			);
@@ -1017,8 +1052,7 @@
 			sourceTree = "<group>";
 		};
 		F50D069902E6A1C601CA2799 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = CoreAudio.framework;
 			path = /System/Library/Frameworks/CoreAudio.framework;
@@ -1032,14 +1066,6 @@
 			name = Resources;
 			refType = 4;
 			sourceTree = "<group>";
-		};
-		F50D06BE02E7F11301CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = archive.ar;
-			name = "libstdc++.a";
-			path = "/usr/lib/libstdc++.a";
-			refType = 0;
-			sourceTree = "<absolute>";
 		};
 		F50D06C002E7F29001CA2799 = {
 			isa = PBXFileReference;
@@ -1064,8 +1090,7 @@
 			};
 		};
 		F53F78F503B2842D011C068F = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = CoreServices.framework;
 			path = /System/Library/Frameworks/CoreServices.framework;
@@ -1139,8 +1164,7 @@
 		};
 		F59DF07103073A6001CE0C16 = {
 			explicitFileType = "compiled.mach-o.dylib";
-			fallbackIsa = PBXFileReference;
-			isa = PBXLibraryReference;
+			isa = PBXFileReference;
 			path = libscsynth.a;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -1238,6 +1262,7 @@
 				9230F70903B83BDD00E3EBC0,
 				AA527444045D9A5B00F39DA0,
 				AA527447045D9A6D00F39DA0,
+				8870B53C090D8EB100B96791,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1567,6 +1592,7 @@
 				F53F78F303B28353011C068F,
 				920DAEAE0423E08200A80067,
 				AA79AED3045EFF5C002875C2,
+				8870B53E090D8EBB00B96791,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1700,7 +1726,6 @@
 		F59DF0BE03073A6001CE0C16 = {
 			buildActionMask = 2147483647;
 			files = (
-				F5CDE9140319620001CA2799,
 				F58C3E0D034AAEAF01CA2799,
 				F53F797003B2842E011C068F,
 			);
@@ -1789,8 +1814,7 @@
 		};
 		F5CA8D2502E8041801CA2799 = {
 			explicitFileType = "compiled.mach-o.executable";
-			fallbackIsa = PBXFileReference;
-			isa = PBXExecutableFileReference;
+			isa = PBXFileReference;
 			path = scsynth;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -1843,7 +1867,6 @@
 		F5CA8D2902E8041801CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				F5CDE9100318BAC501CA2799,
 				F5CDE912031959DB01CA2799,
 				F5CDE9170319677401CA2799,
 				F53F797103B28442011C068F,
@@ -1870,20 +1893,8 @@
 			settings = {
 			};
 		};
-		F5CDE9100318BAC501CA2799 = {
-			fileRef = F50D06BE02E7F11301CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		F5CDE912031959DB01CA2799 = {
 			fileRef = F59DF07103073A6001CE0C16;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F5CDE9140319620001CA2799 = {
-			fileRef = F50D06BE02E7F11301CA2799;
 			isa = PBXBuildFile;
 			settings = {
 			};

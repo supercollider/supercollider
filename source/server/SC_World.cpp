@@ -38,12 +38,18 @@
 #include <stdio.h>
 #include "SC_Prototypes.h"
 #include "SC_Samp.h"
+#include "SC_DirUtils.h"
 #ifdef SC_WIN32
 # include "../../headers/server/SC_ComPort.h"
 #else
 # include "SC_ComPort.h"
 #endif
 #include "SC_StringParser.h"
+#ifdef SC_WIN32
+# include <direct.h>
+#else
+# include <sys/param.h>
+#endif
 
 InterfaceTable gInterfaceTable;
 PrintFunc gPrint = 0;
@@ -232,7 +238,10 @@ static void World_LoadGraphDefs(World* world);
 void World_LoadGraphDefs(World* world)
 {
 	GraphDef *list = 0;
-	list = GraphDef_LoadDir(world, "synthdefs", list);
+	char resourceDir[MAXPATHLEN];
+	sc_GetResourceDirectory(resourceDir, MAXPATHLEN);
+	sc_AppendToPath(resourceDir, "synthdefs");
+	list = GraphDef_LoadDir(world, resourceDir, list);
 	GraphDef_Define(world, list);
 		
 	SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), ':');

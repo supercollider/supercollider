@@ -26,11 +26,18 @@
 #import "AIHTMLDecoder.h"
 #import "GetStringFromUser.h"
 #include "SCBase.h"
+#include "SC_DirUtils.h"
 
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#ifdef SC_WIN32
+//# include <wx/wx.h>
+# include <direct.h>
+#else
+# include <sys/param.h>
+#endif
 
 #include "PyrObject.h"
 #include "PyrKernel.h"
@@ -592,12 +599,21 @@ void SyntaxColorize(NSTextView* textView);
 
 NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* extension, NSString* helpFolderPath)
 {
-    // If called with no folder check in the SC distribution Help
-    // directory and the System and User Extensions directories.
+    // If called with no folder check in the bundle (if OS X), SC distribution Help
+    // directory, and the System and User Extensions directories.
     if(!helpFolderPath) { 
       NSString* helpFilePath ;
       NSString* searchPath ;
-      
+     
+#ifdef SC_DARWIN
+	  char resourceDirPath[MAXPATHLEN - 32];
+	  sc_GetResourceDirectory(resourceDirPath, MAXPATHLEN - 32);
+	  sc_AppendToPath(resourceDirPath, "Help/");
+	  searchPath = [NSString stringWithCString:(const char *) resourceDirPath encoding:NSASCIIStringEncoding];
+      helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+      if (helpFilePath) return helpFilePath;
+#endif
+
       searchPath = [NSString stringWithFormat: @"%@/Help/",
 			     [fileManager currentDirectoryPath]];
       helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);

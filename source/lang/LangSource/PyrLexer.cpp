@@ -70,7 +70,7 @@
 
 #include "SC_LibraryConfig.h"
 
-//#include "SC_DirectoryUtils.h"
+#include "SC_DirUtils.h"
 
 #ifdef SC_WIN32
 # include <stdio.h>
@@ -2082,70 +2082,70 @@ bool passOne_ProcessDir(char *dirname, int level)
 # include <unistd.h>
 # include <sys/param.h>
 #endif
-
-// Get the Users home directory.
-
-#if SC_WIN32
-# include "win32_utils.h"
-#endif
-
-void sc_GetUserHomeDirectory(char *str, int size);
-void sc_GetUserHomeDirectory(char *str, int size)
-{
-#ifndef SC_WIN32
-  char *home = getenv("HOME");
-  strncpy(str, home, size);
-#else
-  win32_GetHomeFolder(str,size);
-#endif
-}
-
-// Get the System level 'Extensions' directory.
-
-void sc_GetSystemExtensionDirectory(char *str, int size);
-void sc_GetSystemExtensionDirectory(char *str, int size)
-{
-	strncpy(str,
-#if defined(SC_DATA_DIR)
-		SC_DATA_DIR "/Extensions",
-#elif defined(SC_DARWIN)
-		"/Library/Application Support/SuperCollider/Extensions",
-#else
-		"/usr/local/share/SuperCollider/Extensions",
-#endif
-		size);
-}
-
-// Get the System level 'Extensions' directory.
-
-void sc_GetUserExtensionDirectory(char *str, int size);
-void sc_GetUserExtensionDirectory(char *str, int size)
-{
-  char home[MAXPATHLEN];
-  sc_GetUserHomeDirectory(home, MAXPATHLEN);
-
-  snprintf(str, 
-	   size, 
-#ifdef SC_DARWIN
-	   "%s/Library/Application Support/SuperCollider/Extensions",
-#else
-	   "%s/share/SuperCollider/Extensions",
-#endif
-	   home);
-}
+//
+//// Get the Users home directory.
+//
+//#if SC_WIN32
+//# include "win32_utils.h"
+//#endif
+//
+//void sc_GetUserHomeDirectory(char *str, int size);
+//void sc_GetUserHomeDirectory(char *str, int size)
+//{
+//#ifndef SC_WIN32
+//  char *home = getenv("HOME");
+//  strncpy(str, home, size);
+//#else
+//  win32_GetHomeFolder(str,size);
+//#endif
+//}
+//
+//// Get the System level 'Extensions' directory.
+//
+//void sc_GetSystemExtensionDirectory(char *str, int size);
+//void sc_GetSystemExtensionDirectory(char *str, int size)
+//{
+//	strncpy(str,
+//#if defined(SC_DATA_DIR)
+//		SC_DATA_DIR "/Extensions",
+//#elif defined(SC_DARWIN)
+//		"/Library/Application Support/SuperCollider/Extensions",
+//#else
+//		"/usr/local/share/SuperCollider/Extensions",
+//#endif
+//		size);
+//}
+//
+//// Get the System level 'Extensions' directory.
+//
+//void sc_GetUserExtensionDirectory(char *str, int size);
+//void sc_GetUserExtensionDirectory(char *str, int size)
+//{
+//  char home[MAXPATHLEN];
+//  sc_GetUserHomeDirectory(home, MAXPATHLEN);
+//
+//  snprintf(str, 
+//	   size, 
+//#ifdef SC_DARWIN
+//	   "%s/Library/Application Support/SuperCollider/Extensions",
+//#else
+//	   "%s/share/SuperCollider/Extensions",
+//#endif
+//	   home);
+//}
 
 // Add a component to a path.
 
-void sc_AppendToPath(char *path, const char *component);
-void sc_AppendToPath(char *path, const char *component)
-{
-#ifndef SC_WIN32
-  strcat(path, "/");
-#else
-  strcat(path, "\\");
-#endif
-  strcat(path, component);
-}
+//void sc_AppendToPath(char *path, const char *component);
+//void sc_AppendToPath(char *path, const char *component)
+//{
+//#ifndef SC_WIN32
+//  strcat(path, "/");
+//#else
+//  strcat(path, "\\");
+//#endif
+//  strcat(path, component);
+//}
 
 // Locate directories to compile.
 

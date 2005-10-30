@@ -14,11 +14,15 @@ SynthDef {
 	var <>available;
 	var <>variants;
 	
-	classvar <synthDefDir = "synthdefs/";
+	classvar <synthDefDir;
 	
 	*synthDefDir_ { arg dir;
 		if (dir.last != $/) { dir = dir ++ $/ };
 		synthDefDir = dir;
+	}
+	
+	*initClass {
+		synthDefDir = String.scDir ++ "/synthdefs/";
 	}
 	
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants;

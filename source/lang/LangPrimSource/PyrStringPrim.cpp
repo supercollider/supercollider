@@ -31,6 +31,12 @@ Primitives for String.
 #include <stdlib.h>
 #include <ctype.h>
 #include "PyrLexer.h"
+#include "SC_DirUtils.h"
+#ifdef SC_WIN32
+# include <direct.h>
+#else
+# include <sys/param.h>
+#endif
 
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
@@ -375,6 +381,22 @@ int prStripRtf(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prString_GetResourceDirPath(struct VMGlobals *g, int numArgsPushed);
+int prString_GetResourceDirPath(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+
+	char * chars = (char*)malloc(MAXPATHLEN - 32);
+	sc_GetResourceDirectory(chars, MAXPATHLEN - 32);
+	
+	PyrString* string = newPyrString(g->gc, chars, 0, false);
+	SetObject(a, string);
+	free(chars);
+	
+	return errNone;
+}
+
+
 int prString_Find(struct VMGlobals *g, int numArgsPushed);
 int prString_Find(struct VMGlobals *g, int numArgsPushed)
 {	
@@ -512,6 +534,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_String_FindBackwards", prString_FindBackwards, 4, 0);
     definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
+	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	
 }
 

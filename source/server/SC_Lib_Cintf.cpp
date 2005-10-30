@@ -28,6 +28,7 @@
 #include "SC_World.h"
 #include "SC_StringParser.h"
 #include "SC_InterfaceTable.h"
+#include "SC_DirUtils.h"
 #include <stdexcept>
 #ifndef _MSC_VER
 #include <dirent.h>
@@ -59,6 +60,13 @@
 # define SC_PLUGIN_LOAD_SYM "_load"
 #endif
 
+#ifndef SC_WIN32
+# include <sys/param.h>
+#else
+# include <stdlib.h>
+# define MAXPATHLEN _MAX_PATH
+#endif
+
 Malloc gMalloc;
 HashTable<SC_LibCmd, Malloc> *gCmdLib;
 HashTable<struct UnitDef, Malloc> *gUnitDefLib = 0;
@@ -66,6 +74,9 @@ HashTable<struct BufGen, Malloc> *gBufGenLib = 0;
 HashTable<struct PlugInCmd, Malloc> *gPlugInCmds = 0;
 extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
+
+char gSystemExtensionDir[MAXPATHLEN];
+char gUserExtensionDir[MAXPATHLEN];
 
 void initMiscCommands();
 bool PlugIn_LoadDir(char *dirname);
@@ -78,9 +89,19 @@ void initialize_library()
 	gPlugInCmds = new HashTable<PlugInCmd, Malloc>(&gMalloc, 64, true);
 
 	initMiscCommands();
-
+	
+	// get extension directories
+	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
+	sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
+	
 	// load default plugin directory
 	PlugIn_LoadDir(SC_PLUGIN_DIR);
+	
+	// load system extension plugins
+	PlugIn_LoadDir(gSystemExtensionDir);
+	
+	// load user extension plugins
+	PlugIn_LoadDir(gUserExtensionDir);
 
 	// load user plugin directories
 	SC_StringParser sp(getenv("SC_PLUGIN_PATH"), ':');
