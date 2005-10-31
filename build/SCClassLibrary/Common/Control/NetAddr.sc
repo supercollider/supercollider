@@ -119,6 +119,16 @@ BundleNetAddr : NetAddr {
 		bundle = bundle.addAll( args );
 	}
 	
+	closeBundle { arg time;
+		var size;
+		size = bundle.bundleSize;
+		if(size > 8192) {// udp max size.
+			bundle.clump(size div: 8192).do { |item| saveAddr.sendBundle(time, *item) }
+		} {
+			saveAddr.sendBundle(time, *bundle)
+		}
+	}
+	
 	recover {
 		^saveAddr.recover
 	}

@@ -546,9 +546,8 @@ Server : Model {
 	}
 	closeBundle { arg time; // set time to false if you don't want to send.
 		var bundle;
-		bundle = addr.bundle;
+		if (time != false) { addr.closeBundle(time) };
 		addr = addr.saveAddr;
-		if (time != false) { this.listSendBundle(time, bundle); }
 		^bundle;
 	}
 	makeBundle { arg time, func, bundle;
