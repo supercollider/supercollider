@@ -89,32 +89,19 @@ void initialize_library()
 	gPlugInCmds = new HashTable<PlugInCmd, Malloc>(&gMalloc, 64, true);
 
 	initMiscCommands();
-	
+
 	// get extension directories
+	//char systemExtensionDir[MAXPATHLEN];
+	//char userExtensionDir[MAXPATHLEN];
+
 	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
 	sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
-	
-	// load default plugin directory
-	PlugIn_LoadDir(SC_PLUGIN_DIR);
-	
-	// load system extension plugins
-	PlugIn_LoadDir(gSystemExtensionDir);
-	
-	// load user extension plugins
-	PlugIn_LoadDir(gUserExtensionDir);
-
-	// get extension directories
-	char systemExtensionDir[MAXPATHLEN];
-	char userExtensionDir[MAXPATHLEN];
-
-	sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
-	sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
 
  	// load system extension plugins
- 	PlugIn_LoadDir(systemExtensionDir);
+ 	PlugIn_LoadDir(gSystemExtensionDir);
  	
  	// load user extension plugins
- 	PlugIn_LoadDir(userExtensionDir);
+ 	PlugIn_LoadDir(gUserExtensionDir);
 
 	// load user plugin directories
 	SC_StringParser sp(getenv("SC_PLUGIN_PATH"), ':');
@@ -205,7 +192,9 @@ bool PlugIn_LoadDir(char *dirname)
 	bool success = true;
 	DIR *dir = opendir(dirname);	
 	if (!dir) {
-		scprintf("*** ERROR: open directory failed '%s'\n", dirname); fflush(stdout);
+		if(strcmp(dirname, gSystemExtensionDir) && strcmp(dirname, gUserExtensionDir)) {
+			scprintf("*** ERROR: open directory failed '%s'\n", dirname); fflush(stdout);
+		}
 		return false;
 	}
 	
