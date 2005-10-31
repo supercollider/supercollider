@@ -229,8 +229,9 @@ Monitor {
 	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
 			inGroup, multi, volume, fadeTime=0.02;
 		var server, numChannels, defname, chanRange, n;
+					
+		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) }; 
 		
-		toIndex = toIndex ?? { if(outs.notNil, {Êouts[0] }, 0) };
 		vol = volume ? vol;
 		toNumChannels = toNumChannels ? fromNumChannels;
 		server = inGroup.server;
@@ -280,6 +281,7 @@ Monitor {
 	
 	playNBusToBundle { arg bundle, outs, amps, bus, vol, fadeTime, group;
 		var size, ins;
+		outs = outs ? this.outs;	// remember old ones if none given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
 		ins = (0..(size - 1)) + bus.index;
