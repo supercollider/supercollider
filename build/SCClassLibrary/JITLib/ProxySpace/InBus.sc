@@ -144,20 +144,36 @@ Monitor {
 	// multi channel interface
 	
 	outs_ { arg indices;
+		if (outs.collect(_.size) != indices.collect(_.size)) { 
+			"new outs do not match old outs shape:".warn; 
+			("old:" + outs).postln; 
+			("new:" + indices).postln;
+			" use playN to change topology!".postln;
+			^this;
+		};
+		
 		outs = indices;
 		if(this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
-				[15, synthIDs, "out", indices].flop
+				[15, synthIDs, "out", outs.flat].flop.postln
 			)
 		}
 	}
 	
 	amps_ { arg values;
+		if (values.collect(_.size) != amps.collect(_.size)) { 
+			"new amps do not match old amps shape:".warn; 
+			("old:" + amps).postln; 
+			("new:" + values).postln;
+			" use playN to change topology!".postln;
+			^this;
+		};
+		
 		synthAmps = values.flat * vol;
 		amps = values;
 		if (this.isPlaying) {
 			group.server.listSendBundle(group.server.latency, 
-				[15, synthIDs, "vol", synthAmps].flop
+				[15, synthIDs, "vol", synthAmps].flop.postln
 			);
 		};
 	}
@@ -220,9 +236,13 @@ Monitor {
 		server = inGroup.server;
 		
 		if(this.isPlaying) { 
-			if(multi.not) { this.stopToBundle(bundle) }
+			if(multi.not) { 
+				this.stopToBundle(bundle);
+				outs = [];
+			}
 		} {
-			this.newGroupToBundle(bundle, inGroup)
+			this.newGroupToBundle(bundle, inGroup);
+			if (multi.not) { outs = [] }
 		};
 		
 		amps = [];
