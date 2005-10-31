@@ -118,28 +118,3 @@
 		}
 	}
 }
-
-+Pconst {
-
-	embedInStream { arg inval;
-		var stream;
-		var delta, elapsed = 0.0, nextElapsed;
-		stream = pattern.asStream;
-		loop ({
-			delta = stream.next;
-			if(delta.isNil) { 
-				inval = (sum - elapsed).yield; 
-				^inval 
-			};
-			nextElapsed = elapsed + delta;
-			if (nextElapsed.round(tolerance) >= sum, {
-				inval = (sum - elapsed).yield;
-				^inval;
-			},{
-				elapsed = nextElapsed;
-				inval = delta.yield;
-			});
-		});
-	}
-
-}
