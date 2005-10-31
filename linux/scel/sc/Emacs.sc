@@ -196,8 +196,7 @@ EmacsInterface {
 }
 
 Emacs {
-	classvar outFile, requestHandlers, requestAllocator;
-	classvar <watcher;
+	classvar outStream, outFile, requestHandlers, requestAllocator;
 	classvar <menu, <>keys;
 
 	// initialization
@@ -214,6 +213,7 @@ Emacs {
 		if (outFileName.isNil) {
 			"Emacs: No communication FIFO available.".postln;
 		}{
+			outStream = CollStream.on(String.new);
 			outFile = File(outFileName, "w");
 			UI.registerForShutdown({
 				if (outFile.notNil) {
@@ -229,8 +229,8 @@ Emacs {
 				server.startAliveThread;
 				if (update) { this.updateServer };
 			};
-			watcher = SimpleController(Server);
-			watcher[\serverAdded] = { | serverClass what server | newServer.value(server, true) };
+			SimpleController(Server)
+				.put(\serverAdded, { | serverClass what server | newServer.value(server, true) });
 			Server.named.do(newServer.value(_, false));
 			this.updateServer;
 			// initialize lisp

@@ -18,6 +18,9 @@
  *
  */
 
+#ifndef SC_DIR_UTILS_H_INCLUDED
+#define SC_DIR_UTILS_H_INCLUDED
+
 extern "C" {
 	void sc_GetResourceDirectory(char* pathBuf, int length);
 	void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length);
@@ -29,3 +32,5 @@ extern "C" {
 	void sc_GetSystemExtensionDirectory(char *str, int size);
 	void sc_GetUserExtensionDirectory(char *str, int size);
 }
+
+#endif // SC_DIR_UTILS_H_INCLUDED

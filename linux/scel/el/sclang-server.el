@@ -20,7 +20,7 @@
 
 (defcustom sclang-server-panel "Server.default.makeWindow"
   "*Expression to execute when `sclang-show-server-panel' is invoked."
-  :group 'sclang
+  :group 'sclang-interface
   :type '(choice (const "Server.default.makeWindow")
 		 (const "\\SCUM.asClass.do { \\SCUM.asClass.desktop.showServerPanel }")
 		 string))

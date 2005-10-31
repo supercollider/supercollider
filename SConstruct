@@ -203,6 +203,22 @@ env.Append(
     CXXFLAGS = env['CUSTOMCXXFLAGS'])
 
 # ======================================================================
+# installation directories
+# ======================================================================
+
+FINAL_PREFIX = '$PREFIX'
+INSTALL_PREFIX = os.path.join('$DESTDIR', '$PREFIX')
+
+if env['PREFIX'] == '/usr':
+    FINAL_CONFIG_PREFIX = '/etc'
+else:
+    FINAL_CONFIG_PREFIX = os.path.join(env['PREFIX'], 'etc')
+CONFIG_PREFIX = '$DESTDIR' + FINAL_CONFIG_PREFIX
+
+env.Append(
+    CPPDEFINES = [('SC_DATA_DIR', '\\"' + pkg_data_dir(FINAL_PREFIX) + '\\"')])
+
+# ======================================================================
 # configuration
 # ======================================================================
 
@@ -334,19 +350,6 @@ print ' X11:                     %s' % yesorno(features['x11'])
 print '------------------------------------------------------------------------'
 
 # ======================================================================
-# installation directories
-# ======================================================================
-
-FINAL_PREFIX = '$PREFIX'
-INSTALL_PREFIX = os.path.join('$DESTDIR', '$PREFIX')
-
-if env['PREFIX'] == '/usr':
-    FINAL_CONFIG_PREFIX = '/etc'
-else:
-    FINAL_CONFIG_PREFIX = os.path.join(env['PREFIX'], 'etc')
-CONFIG_PREFIX = '$DESTDIR' + FINAL_CONFIG_PREFIX
-
-# ======================================================================
 # source/common
 # ======================================================================
 
@@ -359,6 +362,7 @@ commonEnv.Append(
 
 commonSources = Split('''
 source/common/SC_AllocPool.cpp
+source/common/SC_DirUtils.cpp
 source/common/SC_Sem.cpp
 source/common/SC_StringBuffer.cpp
 source/common/SC_StringParser.cpp
@@ -520,7 +524,6 @@ langEnv.Append(
                '#headers/lang',
                '#headers/server',
                '#source/lang/LangSource/erase-compiler'],
-    CPPDEFINES = [('SC_DATA_DIR', '\\"' + pkg_data_dir(FINAL_PREFIX) + '\\"')],
     LIBS = ['common', 'scsynth', 'pthread', 'dl', 'm'],
     LIBPATH = '.'
     )

@@ -103,6 +103,19 @@ void initialize_library()
 	// load user extension plugins
 	PlugIn_LoadDir(gUserExtensionDir);
 
+	// get extension directories
+	char systemExtensionDir[MAXPATHLEN];
+	char userExtensionDir[MAXPATHLEN];
+
+	sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
+	sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
+
+ 	// load system extension plugins
+ 	PlugIn_LoadDir(systemExtensionDir);
+ 	
+ 	// load user extension plugins
+ 	PlugIn_LoadDir(userExtensionDir);
+
 	// load user plugin directories
 	SC_StringParser sp(getenv("SC_PLUGIN_PATH"), ':');
 	while (!sp.AtEnd()) {

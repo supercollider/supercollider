@@ -49,7 +49,7 @@ void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
 
 void sc_GetResourceDirectory(char* pathBuf, int length)
 {
-	sc_GetResourceDirectoryFromAppDirectory(pathBuf, length)
+	sc_GetResourceDirectoryFromAppDirectory(pathBuf, length);
 }
 
 #else	// running on OS X
