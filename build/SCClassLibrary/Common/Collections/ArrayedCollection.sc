@@ -427,6 +427,17 @@ ArrayedCollection : SequenceableCollection {
 		// array of messages
 		^([nil] ++ this).prBundleSize;
 	}
+	clumpBundles {
+		var size=0, res, clumps, count=0, bundleSizes;
+		bundleSizes = this.collect {Ê|item| [item].bundleSize };
+		bundleSizes.do { |a, i|
+			size = size + a;
+			if(size >= 8192) { clumps = clumps.add(count); count = 0; size = a };
+			count = count + 1;
+		};
+		^this.clumps(clumps);
+	}
+
 	prBundleSize {
 		_NetAddr_BundleSize; 
 		^this.primitiveFailed 

@@ -123,12 +123,15 @@ BundleNetAddr : NetAddr {
 		var size;
 		size = bundle.bundleSize;
 		if(size > 8192) {// udp max size.
-			bundle.clump(size div: 8192).do { |item| saveAddr.sendBundle(time, *item) }
+			bundle.clumpBundles.do { |item, i|
+				item.postln;
+				saveAddr.sendBundle(1e-9 * i + time, *item) 
+			};
 		} {
 			saveAddr.sendBundle(time, *bundle)
 		}
 	}
-	
+		
 	recover {
 		^saveAddr.recover
 	}
