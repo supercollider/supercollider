@@ -43,7 +43,6 @@
 				F50D061A02E69C2101CA2799 /* Sources */,
 				F50D061B02E69C2101CA2799 /* Frameworks */,
 				F50D061C02E69C2101CA2799 /* Rez */,
-				88332492090AC17F00A4A7E4 /* ShellScript */,
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
@@ -457,6 +456,7 @@
 		92FC9EF906EB774800AA3E95 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 92FC9D7306EAFCE900AA3E95 /* dtoa.c */; };
 		92FC9EFB06EB774900AA3E95 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 92FC9DD806EB002800AA3E95 /* g_fmt.c */; };
 		AAE9248D048143A400A8010B /* SC_Endian.h in Headers */ = {isa = PBXBuildFile; fileRef = AAE9248C048143A400A8010B /* SC_Endian.h */; };
+		B22686290916E0B500FEBB03 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */; };
 		C21B4674046D847B00A87B78 /* TabletEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = C21B4672046D847B00A87B78 /* TabletEvents.h */; };
 		C21B4675046D847B00A87B78 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = C21B4673046D847B00A87B78 /* TabletEvents.m */; };
 		C26BDCCD03D0B4E900A87B78 /* SCDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */; };
@@ -822,6 +822,7 @@
 		92FC9D7306EAFCE900AA3E95 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
 		92FC9DD806EB002800AA3E95 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		AAE9248C048143A400A8010B /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
+		B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
 		C21B4672046D847B00A87B78 /* TabletEvents.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TabletEvents.h; sourceTree = "<group>"; };
 		C21B4673046D847B00A87B78 /* TabletEvents.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = TabletEvents.m; path = source/app/TabletEvents.m; sourceTree = SOURCE_ROOT; };
 		C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCDialog.mm; sourceTree = "<group>"; };
@@ -1263,6 +1264,7 @@
 		F50D059202E69B6B01CA2799 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */,
 				6AAC6D6408FEDC0C006134E1 /* fftlib.c */,
 				F59DF065030733E801CE0C16 /* dlopen.c */,
 				F59DF066030733E801CE0C16 /* SC_AllocPool.cpp */,
@@ -1814,35 +1816,6 @@
 		};
 /* End PBXRezBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		88332492090AC17F00A4A7E4 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cp -R $TARGET_BUILD_DIR/$PRODUCT_NAME.app build";
-		};
-		883324AC090AC1A500A4A7E4 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		92B5F3AE0547488200496808 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -2000,6 +1973,7 @@
 				6A40717407C72426003E9C23 /* SCTextView.M in Sources */,
 				6A40718607C72B26003E9C23 /* SCSoundFileView.M in Sources */,
 				6AAC6D6508FEDC0C006134E1 /* fftlib.c in Sources */,
+				B22686290916E0B500FEBB03 /* SC_DirUtils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2087,7 +2061,6 @@
 				F5ED520102FBA97D0195E057 /* Sources */,
 				F5ED520202FBA97D0195E057 /* Frameworks */,
 				F5ED520302FBA97D0195E057 /* Rez */,
-				883324AC090AC1A500A4A7E4 /* ShellScript */,
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";

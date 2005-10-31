@@ -579,7 +579,6 @@
 				F59DF0A703073A6001CE0C16 /* Sources */,
 				F59DF0BE03073A6001CE0C16 /* Frameworks */,
 				F59DF0BF03073A6001CE0C16 /* Rez */,
-				88331E19090AB76C00A4A7E4 /* ShellScript */,
 			);
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -651,35 +650,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXRezBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		88331E19090AB76C00A4A7E4 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/$PRODUCT_NAME";
-		};
-		883323AE090AB8CA00A4A7E4 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/$PRODUCT_NAME";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F59DF0A703073A6001CE0C16 /* Sources */ = {
@@ -755,7 +725,6 @@
 				F5CA8D2802E8041801CA2799 /* Sources */,
 				F5CA8D2902E8041801CA2799 /* Frameworks */,
 				F5CA8D2A02E8041801CA2799 /* Rez */,
-				883323AE090AB8CA00A4A7E4 /* ShellScript */,
 			);
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = "";
