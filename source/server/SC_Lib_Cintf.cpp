@@ -89,11 +89,11 @@ void initialize_library()
 	gPlugInCmds = new HashTable<PlugInCmd, Malloc>(&gMalloc, 64, true);
 
 	initMiscCommands();
-
+	
+	// load default plugin directory
+	PlugIn_LoadDir(SC_PLUGIN_DIR);
+	
 	// get extension directories
-	//char systemExtensionDir[MAXPATHLEN];
-	//char userExtensionDir[MAXPATHLEN];
-
 	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
 	sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
 
