@@ -68,7 +68,7 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 		// If scsynth is in the bundle, we'll use that, and set our home
 		// path to the bundle's Resources directory.
 		
-		CFStringRef stringToFind = CFSTR("scsynth");
+		CFStringRef stringToFind = CFSTR("SCClassLibrary");
 		CFURLRef enablerURL = CFBundleCopyResourceURL (
 			CFBundleGetMainBundle(),
 			stringToFind,
