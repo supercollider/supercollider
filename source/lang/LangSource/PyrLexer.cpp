@@ -1984,9 +1984,9 @@ static bool sc_SkipDirectory(const char *name)
 	  sc_IsNonHostPlatformDir(name));
 }
 
-bool passOne_ProcessDir(char *dirname, int level);
+bool passOne_ProcessDir(char *dirnamearg, int level);
 #ifndef SC_WIN32
-bool passOne_ProcessDir(char *dirname, int level)
+bool passOne_ProcessDir(char *dirnamearg, int level)
 {
 	bool success = true;
 
@@ -1996,6 +1996,10 @@ bool passOne_ProcessDir(char *dirname, int level)
 		return success;
  	}
 #endif
+
+	// on non-Darwin, sc_ResolveIfAlias always returns original path
+	char dirname[MAXPATHLEN];
+	sc_ResolveIfAlias(dirnamearg, dirname, MAXPATHLEN);
 
  	if (level == 0) post("\tcompiling dir: '%s'\n", dirname);
 
@@ -2019,7 +2023,7 @@ bool passOne_ProcessDir(char *dirname, int level)
 		strcat(entrypathname, "/");
 		strcat(entrypathname, (char*)de->d_name);
 
-        if (sc_DirectoryExists(entrypathname)) {
+        if (sc_DirectoryExists(entrypathname) || sc_DirectoryAliasExists(entrypathname)) {
             success = passOne_ProcessDir(entrypathname, level + 1);
         } else {
             success = passOne_ProcessOneFile(entrypathname, level + 1);
@@ -2083,7 +2087,7 @@ bool passOne_ProcessDir(char *dirname, int level)
 static void sc_InitCompileDirectories(void);
 static void sc_InitCompileDirectories(void)
 {
-	getcwd(gCompileDir, MAXPATHLEN-32);
+	sc_GetResourceDirectory(gCompileDir, MAXPATHLEN-32);
 	sc_AppendToPath(gCompileDir,"SCClassLibrary");
 
 #ifdef SC_DATA_DIR

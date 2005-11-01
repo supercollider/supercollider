@@ -605,15 +605,12 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
       NSString* helpFilePath ;
       NSString* searchPath ;
      
-//#ifdef SC_DARWIN
 	  char resourceDirPath[MAXPATHLEN - 32];
 	  sc_GetResourceDirectory(resourceDirPath, MAXPATHLEN - 32);
 	  sc_AppendToPath(resourceDirPath, "Help/");
-	  //searchPath = [NSString stringWithCString:(const char *) resourceDirPath encoding:NSASCIIStringEncoding];
 	  searchPath = [NSString stringWithCString:(const char *) resourceDirPath];
       helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
       if (helpFilePath) return helpFilePath;
-//#endif
 
       searchPath = [NSString stringWithFormat: @"%@/Help/",
 			     [fileManager currentDirectoryPath]];
