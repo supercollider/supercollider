@@ -458,6 +458,7 @@ plugins = []
 # simple plugins
 for name in Split('''
 BinaryOpUGens
+ChaosUGens
 DelayUGens
 DemandUGens
 DynNoiseUGens
