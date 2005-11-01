@@ -218,8 +218,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -266,6 +264,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
+									<integer>5</integer>
 									<integer>4</integer>
 									<integer>2</integer>
 									<integer>0</integer>
@@ -336,6 +335,8 @@
 							<string>0pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -372,9 +373,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>8817BB50090D80BB0059E80C</string>
+				<string>88C3944D09172DA300B740D4</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>8817BB51090D80BB0059E80C</string>
+				<string>88C3944E09172DA300B740D4</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -508,9 +509,8 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>8817BB4F090D80A10059E80C</string>
-		<string>/Users/timwalters/Code/MIDI_Jitter_Analyzer/xSC3lang.xcodeproj</string>
+		<string>8856B20F0906EB2600F1C88A</string>
+		<string>/Users/timwalters/Code/SuperCollider3/xSC3lang.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>346 108 852 717 0 0 1280 832 </string>
@@ -534,7 +534,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>SC_DirUtils.cpp</string>
+								<string></string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -594,7 +594,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>8856B20F0906EB2600F1C88A</string>
-				<string>883324B8090AC5E300A4A7E4</string>
+				<string>88C3944909172B4300B740D4</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

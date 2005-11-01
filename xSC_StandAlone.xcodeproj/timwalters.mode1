@@ -204,10 +204,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>886C1FF7090D83DA005DFAD7</string>
+						<string>88C399E70917359D00B740D4</string>
 						<key>history</key>
 						<array>
-							<string>88C79C85090D7FE1009994E4</string>
+							<string>886C1FF7090D83DA005DFAD7</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -298,19 +298,20 @@
 							<array>
 								<string>F50D04F802E68E8201CA2799</string>
 								<string>F50D057E02E69B6B01CA2799</string>
-								<string>F50D059202E69B6B01CA2799</string>
+								<string>F50D059302E69B6B01CA2799</string>
+								<string>F50D059502E69B6B01CA2799</string>
 								<string>1C37FBAC04509CD000000102</string>
-								<string>886C1A45090D82A4005DFAD7</string>
-								<string>886C1A46090D82A4005DFAD7</string>
 								<string>1C37FAAC04509CD000000102</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>34</integer>
-									<integer>28</integer>
-									<integer>19</integer>
+									<integer>16</integer>
+									<integer>8</integer>
+									<integer>7</integer>
+									<integer>4</integer>
+									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -414,9 +415,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>886C1FF5090D83DA005DFAD7</string>
+				<string>88C399C309172DCB00B740D4</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>886C1FF6090D83DA005DFAD7</string>
+				<string>88C399C409172DCB00B740D4</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -551,7 +552,7 @@
 	<key>WindowOrderList</key>
 	<array>
 		<string>88D7CA51090C6B3E008D45B9</string>
-		<string>/Users/timwalters/Code/MIDI_Jitter_Analyzer/xSC_StandAlone.xcodeproj</string>
+		<string>/Users/timwalters/Code/SuperCollider3/xSC_StandAlone.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>153 115 852 717 0 0 1280 832 </string>

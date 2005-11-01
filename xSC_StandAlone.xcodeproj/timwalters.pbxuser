@@ -55,17 +55,7 @@
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
 	};
-	88C79C85090D7FE1009994E4 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = F50D051802E69B6B01CA2799 /* InitAlloc.h */;
-		name = "InitAlloc.h: 24";
-		rLen = 67;
-		rLoc = 905;
-		rType = 0;
-		vrLen = 1129;
-		vrLoc = 0;
-	};
-	88D7D573090C86EF008D45B9 /* PBXTextBookmark */ = {
+	88C399E70917359D00B740D4 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = F50D051802E69B6B01CA2799 /* InitAlloc.h */;
 		name = "InitAlloc.h: 24";
@@ -105,14 +95,16 @@
 		sourceDirectories = (
 		);
 	};
-	88EBA6A7090810AE00B66C80 /* PyrLexer.cpp:2156 */ = {
+	88EBA6A7090810AE00B66C80 /* PyrLexer.cpp:2160 */ = {
 		isa = PBXFileBreakpoint;
+		actions = (
+		);
 		continueAfterActions = 0;
 		delayBeforeContinue = 0;
 		fileReference = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */;
 		functionName = "sc_InitCompileDirectories()";
 		hitCount = 0;
-		lineNumber = 2156;
+		lineNumber = 2160;
 		modificationTime = 0;
 		state = 1;
 	};
@@ -126,13 +118,13 @@
 	F50D04F702E68E8201CA2799 /* Project object */ = {
 		activeBuildConfigurationName = Deployment;
 		activeBuildStyle = F50D04F902E68E8201CA2799 /* Development */;
-		activeExecutable = 8858D7EC090864A5006F2C14 /* SC_StandAlone */;
-		activeTarget = 8858D71C090864A5006F2C14 /* SC_StandAlone */;
+		activeExecutable = 88DB958B090A0E3700BE5BE9 /* SC_StandAlone_Devel */;
+		activeTarget = 88DB94AE090A0E3700BE5BE9 /* SC_StandAlone_Devel */;
 		addToTargets = (
 			8858D71C090864A5006F2C14 /* SC_StandAlone */,
 		);
 		breakpoints = (
-			88EBA6A7090810AE00B66C80 /* PyrLexer.cpp:2156 */,
+			88EBA6A7090810AE00B66C80 /* PyrLexer.cpp:2160 */,
 		);
 		codeSenseManager = 889ACF0C0906D6200009F038 /* Code sense */;
 		executables = (
@@ -264,13 +256,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 151880356;
-			PBXWorkspaceStateSaveDate = 151880356;
+			PBXPerProjectTemplateStateSaveDate = 152513981;
+			PBXWorkspaceStateSaveDate = 152513981;
 		};
 		perUserProjectItems = {
 			886C1FF7090D83DA005DFAD7 /* PBXTextBookmark */ = 886C1FF7090D83DA005DFAD7 /* PBXTextBookmark */;
-			88C79C85090D7FE1009994E4 = 88C79C85090D7FE1009994E4 /* PBXTextBookmark */;
-			88D7D573090C86EF008D45B9 = 88D7D573090C86EF008D45B9 /* PBXTextBookmark */;
+			88C399E70917359D00B740D4 /* PBXTextBookmark */ = 88C399E70917359D00B740D4 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 889ACF0B0906D6200009F038 /* Source Control */;
 		userBuildSettings = {
@@ -317,8 +308,8 @@
 	};
 	F50D058602E69B6B01CA2799 /* MyDocument.M */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1388, 16660}}";
-			sepNavSelRange = "{19282, 0}";
+			sepNavIntBoundsRect = "{{0, 0}, {1388, 16632}}";
+			sepNavSelRange = "{19257, 0}";
 			sepNavVisRect = "{{0, 8288}, {613, 588}}";
 			sepNavWindowFrame = "{{560, 53}, {652, 717}}";
 		};
@@ -348,10 +339,10 @@
 	};
 	F50D059F02E69B6B01CA2799 /* PyrStringPrim.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {823, 8204}}";
-			sepNavSelRange = "{5339, 40}";
-			sepNavVisRect = "{{0, 3196}, {823, 230}}";
-			sepNavWindowFrame = "{{352, 118}, {857, 716}}";
+			sepNavIntBoundsRect = "{{0, 0}, {818, 8204}}";
+			sepNavSelRange = "{8670, 11}";
+			sepNavVisRect = "{{0, 5076}, {818, 587}}";
+			sepNavWindowFrame = "{{352, 116}, {857, 716}}";
 		};
 	};
 	F50D05BD02E69B6B01CA2799 /* PyrFileUtils.cpp */ = {
@@ -371,10 +362,10 @@
 	};
 	F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {752, 33880}}";
-			sepNavSelRange = "{49129, 0}";
-			sepNavVisRect = "{{0, 29976}, {702, 487}}";
-			sepNavWindowFrame = "{{94, 190}, {857, 716}}";
+			sepNavIntBoundsRect = "{{0, 0}, {818, 33152}}";
+			sepNavSelRange = "{46120, 0}";
+			sepNavVisRect = "{{0, 577}, {818, 587}}";
+			sepNavWindowFrame = "{{26, 116}, {857, 716}}";
 		};
 	};
 	F50D05C602E69B6B01CA2799 /* PyrPrimitive.cpp */ = {

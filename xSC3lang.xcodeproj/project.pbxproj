@@ -250,6 +250,7 @@
 		6AC9B2DB08ABF480001EBDF6 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		88723045090870B30002E26A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88723043090870B30002E26A /* InfoPlist.strings */; };
 		88723046090870B30002E26A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88723043090870B30002E26A /* InfoPlist.strings */; };
+		88C3944A09172B6900B740D4 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */; };
 		88D7D584090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
 		88D7D585090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
 		88D7D586090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
@@ -2034,6 +2035,7 @@
 				92FC9EF906EB774800AA3E95 /* dtoa.c in Sources */,
 				92FC9EFB06EB774900AA3E95 /* g_fmt.c in Sources */,
 				6AAC6D6608FEDC0C006134E1 /* fftlib.c in Sources */,
+				88C3944A09172B6900B740D4 /* SC_DirUtils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

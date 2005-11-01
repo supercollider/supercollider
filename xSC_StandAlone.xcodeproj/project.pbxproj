@@ -223,7 +223,7 @@
 			name = SC_StandAlone_Devel;
 			productInstallPath = "$(USER_APPS_DIR)";
 			productName = SC_Lang;
-			productReference = 88DB958A090A0E3700BE5BE9 /* SC_StandAlone.app */;
+			productReference = 88DB958A090A0E3700BE5BE9 /* SC_StandAlone_Devel.app */;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
@@ -879,7 +879,7 @@
 		8872308D090872920002E26A /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = GoToLinePanel.nib; path = resources/GoToLinePanel.nib; sourceTree = "<group>"; };
 		88D7CA41090C69C5008D45B9 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
 		88DB9483090A077F00BE5BE9 /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
-		88DB958A090A0E3700BE5BE9 /* SC_StandAlone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SC_StandAlone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		88DB958A090A0E3700BE5BE9 /* SC_StandAlone_Devel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SC_StandAlone_Devel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		908DBC360507C63D00000098 /* GoToPanel.M */ = {isa = PBXFileReference; fileEncoding = "-2147483619"; lastKnownFileType = sourcecode.cpp.objcpp; path = GoToPanel.M; sourceTree = "<group>"; };
 		908DBC380507C65100000098 /* GoToPanel.h */ = {isa = PBXFileReference; fileEncoding = "-2147483619"; lastKnownFileType = sourcecode.c.h; path = GoToPanel.h; sourceTree = "<group>"; };
 		90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_Speech.cpp; path = source/lang/LangSource/SC_Speech.cpp; sourceTree = SOURCE_ROOT; };
@@ -1435,7 +1435,7 @@
 			isa = PBXGroup;
 			children = (
 				8858D7EB090864A5006F2C14 /* SC_StandAlone.app */,
-				88DB958A090A0E3700BE5BE9 /* SC_StandAlone.app */,
+				88DB958A090A0E3700BE5BE9 /* SC_StandAlone_Devel.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";

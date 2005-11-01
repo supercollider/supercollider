@@ -96,8 +96,8 @@
 	F50D04F702E68E8201CA2799 /* Project object */ = {
 		activeBuildConfigurationName = Deployment;
 		activeBuildStyle = F50D04F902E68E8201CA2799 /* Development */;
-		activeExecutable = 889ACEEC0906D5E00009F038 /* SuperCollider */;
-		activeTarget = F5B7410802E9534D01CA2799 /* All */;
+		activeExecutable = 889ACEEE0906D5E00009F038 /* sclang */;
+		activeTarget = F5ED51FF02FBA97D0195E057 /* sclang */;
 		addToTargets = (
 			F5B7410802E9534D01CA2799 /* All */,
 			F50D060502E69C2101CA2799 /* SuperCollider */,
@@ -199,8 +199,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 151879833;
-			PBXWorkspaceStateSaveDate = 151879833;
+			PBXPerProjectTemplateStateSaveDate = 152511947;
+			PBXWorkspaceStateSaveDate = 152511947;
 		};
 		sourceControlManager = 889ACF0B0906D6200009F038 /* Source Control */;
 		userBuildSettings = {
