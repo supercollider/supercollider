@@ -634,8 +634,11 @@ Event : Environment {
 						};
 						~bundle = nil;
 						~treeGroups = ~treeGroups ?? { ~tree.deepCopy };
-						~treeGroups !? { doTree.(~treeGroups, ~group, ~addAction) };
-						~bundle !? { 
+						~treeGroups !? { 
+							doTree.(~treeGroups, ~group, ~addAction);
+							CmdPeriod.doOnce { ~treeGroups = nil };
+						};
+						~bundle !? {
 							server.sendBundle(server.latency, *~bundle);
 						};
 						~bundle = nil;
