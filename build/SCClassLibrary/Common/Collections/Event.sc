@@ -613,7 +613,34 @@ Event : Environment {
 						server.sendBundle(server.latency, *bundle);
 						~isPlaying = true;
 						NodeWatcher.register(currentEnvironment);
+					},
+					
+					tree: #{ |server|
+						var doTree = { |tree, currentNode, addAction=1|
+							if(tree.isKindOf(Association)) {
+								~bundle = ~bundle.add(["/g_new", tree.key, addAction, currentNode]);
+								currentNode = tree.key;
+								tree = tree.value;
+							};
+							if(tree.isSequenceableCollection) {
+								tree.do { |x, i|
+									x ?? { tree[i] = x = server.nextNodeID };
+									doTree.(x, currentNode)
+								};
+							} {
+								~bundle = ~bundle.add(["/g_new", tree, addAction, currentNode]);
+							};
+							
+						};
+						~bundle = nil;
+						~treeGroups = ~treeGroups ?? { ~tree.deepCopy };
+						~treeGroups !? { doTree.(~treeGroups, ~group, ~addAction) };
+						~bundle !? { 
+							server.sendBundle(server.latency, *~bundle);
+						};
+						~bundle = nil;
 					}
+
 					
 				)
 			)
