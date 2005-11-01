@@ -1990,16 +1990,16 @@ bool passOne_ProcessDir(char *dirnamearg, int level)
 {
 	bool success = true;
 
+	// on non-Darwin, sc_ResolveIfAlias always returns original path
+	char dirname[MAXPATHLEN];
+	sc_ResolveIfAlias(dirnamearg, dirname, MAXPATHLEN);
+	
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
 		post("\texcluding dir: '%s'\n", dirname);
 		return success;
  	}
 #endif
-
-	// on non-Darwin, sc_ResolveIfAlias always returns original path
-	char dirname[MAXPATHLEN];
-	sc_ResolveIfAlias(dirnamearg, dirname, MAXPATHLEN);
 
  	if (level == 0) post("\tcompiling dir: '%s'\n", dirname);
 
