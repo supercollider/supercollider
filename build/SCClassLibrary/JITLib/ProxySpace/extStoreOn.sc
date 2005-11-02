@@ -21,7 +21,14 @@
 		var key = this.key;
 		if(key.notNil) { stream << "~" << key } { this.storeOn(stream) };
 	}
-	playNDialog { |bounds|		var editstring;		bounds = bounds ?? { Rect(0, 500, 320, 100) };		editstring = "~" ++ this.key ++ ".playN(\n"			++ "\touts:" + try { this.monitor.outs } ?? { (0..this.numChannels - 1) }  ++ ",\n"			++ "\tamps:" + try { this.monitor.amps } ?? { 1 ! this.numChannels }  ++ ",\n"			++ "\tvol:" + try { this.monitor.vol } ? 1 ++ "\n);";		^Document("edit outs:", editstring).bounds_(bounds);	}}
+	playNDialog { |bounds|		var editstring;
+		bounds = bounds ?? { Rect(0, 500, 320, 100) };
+		editstring = "~" ++ this.key ++ ".playN(\n" 
+			++ "\touts:" + try { this.monitor.outs } ?? { (0..this.numChannels - 1) }  ++ ",\n"
+			++ "\tamps:" + try { this.monitor.amps } ?? { 1 ! this.numChannels }  ++ ",\n"
+			++ "\tvol:" + try { this.monitor.vol } ? 1 ++ "\n);"; 
+			
+		^Document("edit outs:", editstring).bounds_(bounds);	}}
 
 +BinaryOpPlug {
 
