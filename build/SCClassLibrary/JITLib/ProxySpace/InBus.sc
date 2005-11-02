@@ -155,7 +155,7 @@ Monitor {
 		outs = indices;
 		if(this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
-				[15, synthIDs, "out", outs.flat].flop.postln
+				[15, synthIDs, "out", outs.flat].flop
 			)
 		}
 	}
@@ -173,13 +173,12 @@ Monitor {
 		amps = values;
 		if (this.isPlaying) {
 			group.server.listSendBundle(group.server.latency, 
-				[15, synthIDs, "vol", synthAmps].flop.postln
+				[15, synthIDs, "vol", synthAmps].flop
 			);
 		};
 	}
 	
 	// bundling 
-	
 	
 	playNToBundle { arg bundle, argOuts=(outs), argAmps=(amps), argIns=(ins), 
 					argVol=(vol), argFadeTime=(fadeTime), inGroup, defName="system_link_audio_1"; 
@@ -281,7 +280,7 @@ Monitor {
 	
 	playNBusToBundle { arg bundle, outs, amps, bus, vol, fadeTime, group;
 		var size, ins;
-		outs = outs ? this.outs;	// remember old ones if none given
+		outs = outs ? this.outs ? 0;	// remember old ones if none given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
 		ins = (0..(size - 1)) + bus.index;
@@ -303,6 +302,11 @@ Monitor {
 		synthIDs = [];
 		synthAmps = [];
 	}
+	
+	hasSeriesOuts { 
+		if (outs.isNil, { ^true });
+		^(outs.size < 1) or: { ^outs.differentiate.drop(1).every(_ == 1) };
+	} 
 }
 
 
