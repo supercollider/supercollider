@@ -50,7 +50,9 @@ ProxySpace : LazyEnvir {
 	}
 	
 	group_ { arg node;
-		if(node.isPlaying.not) { "node not playing and registered: % \n".postf(node); ^this };
+		node = node.asGroup;
+		NodeWatcher.register(node, true);
+		if(node.isPlaying.not) { "group % not playing!".postf(node); ^this };
 		group = node;
 		this.do { arg item; item.parentGroup = node };
 	}
@@ -155,6 +157,27 @@ ProxySpace : LazyEnvir {
 		};
 		^monitors
 	}
+	
+	activeProxies { ^this.arProxyNames({ |px, key| px.isPlaying }) }
+	
+	playingProxies { ^this.arProxyNames({ |px, key| px.monitor.isPlaying }) }
+	
+	existingProxies { ^this.arProxyNames }
+	
+	arProxyNames { |func=true| ^this.proxyNames(\audio, func) }
+	krProxyNames { |func=true| ^this.proxyNames(\control, func) } 
+
+	proxyNames { |rate, func=true| 
+		var pxs; 
+		pxs = SortedList(8, { |a,b| a < b }); 
+		this.keysValuesDo({ arg key, px;
+			if (px.rate === rate)  { 
+				if (func.value(px, key), { pxs.add(key) }) 
+			} 
+		});
+		^pxs;
+	}
+
 	
 	// global access
 	
