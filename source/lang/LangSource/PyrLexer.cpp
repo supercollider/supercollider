@@ -1990,9 +1990,10 @@ bool passOne_ProcessDir(char *dirnamearg, int level)
 {
 	bool success = true;
 
+	bool isAlias = false;
 	// on non-Darwin, sc_ResolveIfAlias always returns original path
 	char dirname[MAXPATHLEN];
-	sc_ResolveIfAlias(dirnamearg, dirname, MAXPATHLEN);
+	sc_ResolveIfAlias(dirnamearg, dirname, isAlias, MAXPATHLEN);
 	
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
@@ -2165,9 +2166,14 @@ bool passOne_ProcessOneFile(char *filename)
 #endif
 
 // sekhar's replacement
-bool passOne_ProcessOneFile(char *filename, int level)
+bool passOne_ProcessOneFile(char *filenamearg, int level)
 {
 	bool success = true;
+	
+	bool isAlias = false;
+	// on non-Darwin, sc_ResolveIfAlias always returns original path
+	char filename[MAXPATHLEN];
+	sc_ResolveIfAlias(filenamearg, filename, isAlias, MAXPATHLEN);
 
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(filename)) {
