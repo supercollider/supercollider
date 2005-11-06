@@ -33,15 +33,19 @@
 		sourceDirectories = (
 		);
 	};
-	886C1FF7090D83DA005DFAD7 /* PBXTextBookmark */ = {
+	885C647B091EAFC0001FABA8 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */;
+	};
+	885C6482091EB469001FABA8 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = F50D051802E69B6B01CA2799 /* InitAlloc.h */;
-		name = "InitAlloc.h: 24";
-		rLen = 67;
-		rLoc = 905;
+		fRef = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */;
+		name = "PyrLexer.cpp: 1997";
+		rLen = 0;
+		rLoc = 45338;
 		rType = 0;
-		vrLen = 1129;
-		vrLoc = 0;
+		vrLen = 1154;
+		vrLoc = 47011;
 	};
 	889ACF0B0906D6200009F038 /* Source Control */ = {
 		isa = PBXSourceControlManager;
@@ -54,16 +58,6 @@
 	889ACF0C0906D6200009F038 /* Code sense */ = {
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
-	};
-	88C399E70917359D00B740D4 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = F50D051802E69B6B01CA2799 /* InitAlloc.h */;
-		name = "InitAlloc.h: 24";
-		rLen = 67;
-		rLoc = 905;
-		rType = 0;
-		vrLen = 1129;
-		vrLoc = 0;
 	};
 	88DB94AE090A0E3700BE5BE9 /* SC_StandAlone_Devel */ = {
 		activeExec = 0;
@@ -95,7 +89,7 @@
 		sourceDirectories = (
 		);
 	};
-	88EBA6A7090810AE00B66C80 /* PyrLexer.cpp:2160 */ = {
+	88EBA6A7090810AE00B66C80 /* PyrLexer.cpp:2153 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
 		);
@@ -104,7 +98,7 @@
 		fileReference = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */;
 		functionName = "sc_InitCompileDirectories()";
 		hitCount = 0;
-		lineNumber = 2160;
+		lineNumber = 2153;
 		modificationTime = 0;
 		state = 1;
 	};
@@ -118,13 +112,13 @@
 	F50D04F702E68E8201CA2799 /* Project object */ = {
 		activeBuildConfigurationName = Deployment;
 		activeBuildStyle = F50D04F902E68E8201CA2799 /* Development */;
-		activeExecutable = 88DB958B090A0E3700BE5BE9 /* SC_StandAlone_Devel */;
-		activeTarget = 88DB94AE090A0E3700BE5BE9 /* SC_StandAlone_Devel */;
+		activeExecutable = 8858D7EC090864A5006F2C14 /* SC_StandAlone */;
+		activeTarget = 8858D71C090864A5006F2C14 /* SC_StandAlone */;
 		addToTargets = (
 			8858D71C090864A5006F2C14 /* SC_StandAlone */,
 		);
 		breakpoints = (
-			88EBA6A7090810AE00B66C80 /* PyrLexer.cpp:2160 */,
+			88EBA6A7090810AE00B66C80 /* PyrLexer.cpp:2153 */,
 		);
 		codeSenseManager = 889ACF0C0906D6200009F038 /* Code sense */;
 		executables = (
@@ -256,12 +250,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 152513981;
-			PBXWorkspaceStateSaveDate = 152513981;
+			PBXPerProjectTemplateStateSaveDate = 153005987;
+			PBXWorkspaceStateSaveDate = 153005987;
 		};
 		perUserProjectItems = {
-			886C1FF7090D83DA005DFAD7 /* PBXTextBookmark */ = 886C1FF7090D83DA005DFAD7 /* PBXTextBookmark */;
-			88C399E70917359D00B740D4 /* PBXTextBookmark */ = 88C399E70917359D00B740D4 /* PBXTextBookmark */;
+			885C647B091EAFC0001FABA8 /* PBXBookmark */ = 885C647B091EAFC0001FABA8 /* PBXBookmark */;
+			885C6482091EB469001FABA8 /* PBXTextBookmark */ = 885C6482091EB469001FABA8 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 889ACF0B0906D6200009F038 /* Source Control */;
 		userBuildSettings = {
@@ -303,7 +297,7 @@
 			sepNavIntBoundsRect = "{{0, 0}, {613, 588}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRect = "{{0, 0}, {613, 588}}";
-			sepNavWindowFrame = "{{153, 154}, {652, 717}}";
+			sepNavWindowFrame = "{{153, 115}, {652, 717}}";
 		};
 	};
 	F50D058602E69B6B01CA2799 /* MyDocument.M */ = {
@@ -349,23 +343,24 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {818, 1666}}";
 			sepNavSelRange = "{0, 0}";
-			sepNavVisRect = "{{0, 693}, {818, 587}}";
-			sepNavWindowFrame = "{{61, 239}, {857, 716}}";
+			sepNavVisRect = "{{0, 0}, {818, 587}}";
+			sepNavWindowFrame = "{{61, 116}, {857, 716}}";
 		};
 	};
 	F50D05BE02E69B6B01CA2799 /* PyrInterpreter3.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {842, 33614}}";
 			sepNavSelRange = "{61977, 0}";
-			sepNavVisRect = "{{0, 28913}, {672, 313}}";
+			sepNavVisRect = "{{0, 28913}, {711, 429}}";
+			sepNavWindowFrame = "{{15, 269}, {750, 558}}";
 		};
 	};
 	F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {818, 33152}}";
-			sepNavSelRange = "{46120, 0}";
-			sepNavVisRect = "{{0, 577}, {818, 587}}";
-			sepNavWindowFrame = "{{26, 116}, {857, 716}}";
+			sepNavIntBoundsRect = "{{0, 0}, {818, 33236}}";
+			sepNavSelRange = "{45338, 0}";
+			sepNavVisRect = "{{0, 28887}, {818, 587}}";
+			sepNavWindowFrame = "{{343, 114}, {857, 716}}";
 		};
 	};
 	F50D05C602E69B6B01CA2799 /* PyrPrimitive.cpp */ = {

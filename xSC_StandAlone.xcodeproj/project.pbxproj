@@ -371,12 +371,22 @@
 /* End PBXApplicationTarget section */
 
 /* Begin PBXBuildFile section */
-		88254DEE0909582700D7E0C5 /* Help in Resources */ = {isa = PBXBuildFile; fileRef = 88254A3F0909582600D7E0C5 /* Help */; };
+		8821F2E2091E810900952C1A /* BBall.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2D7091E810900952C1A /* BBall.icns */; };
+		8821F2E3091E810900952C1A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2D8091E810900952C1A /* Credits.rtf */; };
+		8821F2E4091E810900952C1A /* FindPanel.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2DA091E810900952C1A /* FindPanel.strings */; };
+		8821F2E5091E810900952C1A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2DC091E810900952C1A /* InfoPlist.strings */; };
+		8821F2E7091E810900952C1A /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2E0091E810900952C1A /* MainMenu.nib */; };
+		8821F2E8091E810900952C1A /* SCcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2E1091E810900952C1A /* SCcube.icns */; };
+		8821F2F4091E812100952C1A /* BBall.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2EA091E812100952C1A /* BBall.icns */; };
+		8821F2F5091E812100952C1A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2EB091E812100952C1A /* Credits.rtf */; };
+		8821F2F6091E812100952C1A /* FindPanel.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2ED091E812100952C1A /* FindPanel.strings */; };
+		8821F2F7091E812100952C1A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2EF091E812100952C1A /* InfoPlist.strings */; };
+		8821F2F8091E812100952C1A /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2F1091E812100952C1A /* MainMenu.nib */; };
+		8821F2F9091E812100952C1A /* MainMenu~.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2F2091E812100952C1A /* MainMenu~.nib */; };
+		8821F2FA091E812100952C1A /* SCcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8821F2F3091E812100952C1A /* SCcube.icns */; };
 		88254E060909583600D7E0C5 /* plugins in Resources */ = {isa = PBXBuildFile; fileRef = 88254DEF0909583600D7E0C5 /* plugins */; };
 		88254E0A0909584400D7E0C5 /* recordings in Resources */ = {isa = PBXBuildFile; fileRef = 88254E070909584400D7E0C5 /* recordings */; };
 		88254F940909586900D7E0C5 /* SCClassLibrary in Resources */ = {isa = PBXBuildFile; fileRef = 88254E0B0909586800D7E0C5 /* SCClassLibrary */; };
-		88254F960909588900D7E0C5 /* scsynth in Resources */ = {isa = PBXBuildFile; fileRef = 88254F950909588900D7E0C5 /* scsynth */; };
-		88254F9B0909589400D7E0C5 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 88254F970909589400D7E0C5 /* sounds */; };
 		88254FB0090958B000D7E0C5 /* synthdefs in Resources */ = {isa = PBXBuildFile; fileRef = 88254F9C090958B000D7E0C5 /* synthdefs */; };
 		8858D71E090864A5006F2C14 /* ChangeCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D04FE02E69B6B01CA2799 /* ChangeCounter.h */; };
 		8858D71F090864A5006F2C14 /* ControlSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D04FF02E69B6B01CA2799 /* ControlSpec.h */; };
@@ -565,18 +575,6 @@
 		8858D7E5090864A5006F2C14 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
 		8858D7E6090864A5006F2C14 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
 		8858D7E8090864A5006F2C14 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
-		886C1FCE090D82DA005DFAD7 /* BBall.icns in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FC4090D82DA005DFAD7 /* BBall.icns */; };
-		886C1FCF090D82DA005DFAD7 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FC5090D82DA005DFAD7 /* Credits.rtf */; };
-		886C1FD0090D82DA005DFAD7 /* FindPanel.strings in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FC7090D82DA005DFAD7 /* FindPanel.strings */; };
-		886C1FD1090D82DA005DFAD7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FC9090D82DA005DFAD7 /* InfoPlist.strings */; };
-		886C1FD2090D82DA005DFAD7 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FCB090D82DA005DFAD7 /* MainMenu.nib */; };
-		886C1FD4090D82DA005DFAD7 /* SCcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FCD090D82DA005DFAD7 /* SCcube.icns */; };
-		886C1FE0090D82F9005DFAD7 /* BBall.icns in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FD6090D82F9005DFAD7 /* BBall.icns */; };
-		886C1FE1090D82F9005DFAD7 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FD7090D82F9005DFAD7 /* Credits.rtf */; };
-		886C1FE2090D82F9005DFAD7 /* FindPanel.strings in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FD9090D82F9005DFAD7 /* FindPanel.strings */; };
-		886C1FE3090D82F9005DFAD7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FDB090D82F9005DFAD7 /* InfoPlist.strings */; };
-		886C1FE4090D82F9005DFAD7 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FDD090D82F9005DFAD7 /* MainMenu.nib */; };
-		886C1FE6090D82F9005DFAD7 /* SCcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 886C1FDF090D82F9005DFAD7 /* SCcube.icns */; };
 		886C2007090D84D9005DFAD7 /* SCSA_Library in CopyFiles */ = {isa = PBXBuildFile; fileRef = 886C1FFC090D841E005DFAD7 /* SCSA_Library */; };
 		8872307F090871770002E26A /* FindPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 88723064090871770002E26A /* FindPanel.nib */; };
 		88723082090871770002E26A /* GetStringDlg.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8872306A090871770002E26A /* GetStringDlg.nib */; };
@@ -694,7 +692,6 @@
 		88DB9520090A0E3700BE5BE9 /* plugins in Resources */ = {isa = PBXBuildFile; fileRef = 88254DEF0909583600D7E0C5 /* plugins */; };
 		88DB9521090A0E3700BE5BE9 /* recordings in Resources */ = {isa = PBXBuildFile; fileRef = 88254E070909584400D7E0C5 /* recordings */; };
 		88DB9522090A0E3700BE5BE9 /* SCClassLibrary in Resources */ = {isa = PBXBuildFile; fileRef = 88254E0B0909586800D7E0C5 /* SCClassLibrary */; };
-		88DB9523090A0E3700BE5BE9 /* scsynth in Resources */ = {isa = PBXBuildFile; fileRef = 88254F950909588900D7E0C5 /* scsynth */; };
 		88DB9524090A0E3700BE5BE9 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 88254F970909589400D7E0C5 /* sounds */; };
 		88DB9525090A0E3700BE5BE9 /* synthdefs in Resources */ = {isa = PBXBuildFile; fileRef = 88254F9C090958B000D7E0C5 /* synthdefs */; };
 		88DB9528090A0E3700BE5BE9 /* AIAttributedStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CFF7A367058AC2B80096CD03 /* AIAttributedStringAdditions.m */; };
@@ -851,6 +848,19 @@
 		6AB6FF83053898F00000009F /* SC_HID.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_HID.cpp; path = source/lang/LangSource/SC_HID.cpp; sourceTree = SOURCE_ROOT; };
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		8821F2D7091E810900952C1A /* BBall.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = BBall.icns; sourceTree = "<group>"; };
+		8821F2D9091E810900952C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
+		8821F2DB091E810900952C1A /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/FindPanel.strings; sourceTree = "<group>"; };
+		8821F2DD091E810900952C1A /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		8821F2E0091E810900952C1A /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = MainMenu.nib; sourceTree = "<group>"; };
+		8821F2E1091E810900952C1A /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
+		8821F2EA091E812100952C1A /* BBall.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = BBall.icns; sourceTree = "<group>"; };
+		8821F2EC091E812100952C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
+		8821F2EE091E812100952C1A /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/FindPanel.strings; sourceTree = "<group>"; };
+		8821F2F0091E812100952C1A /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		8821F2F1091E812100952C1A /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = MainMenu.nib; sourceTree = "<group>"; };
+		8821F2F2091E812100952C1A /* MainMenu~.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = "MainMenu~.nib"; sourceTree = "<group>"; };
+		8821F2F3091E812100952C1A /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
 		88254A3F0909582600D7E0C5 /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Help; path = build/Help; sourceTree = "<group>"; };
 		88254DEF0909583600D7E0C5 /* plugins */ = {isa = PBXFileReference; lastKnownFileType = folder; name = plugins; path = build/plugins; sourceTree = "<group>"; };
 		88254E070909584400D7E0C5 /* recordings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = recordings; path = build/recordings; sourceTree = "<group>"; };
@@ -859,18 +869,6 @@
 		88254F970909589400D7E0C5 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = build/sounds; sourceTree = "<group>"; };
 		88254F9C090958B000D7E0C5 /* synthdefs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = synthdefs; path = build/synthdefs; sourceTree = "<group>"; };
 		8858D7EB090864A5006F2C14 /* SC_StandAlone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SC_StandAlone.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		886C1FC4090D82DA005DFAD7 /* BBall.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = BBall.icns; sourceTree = "<group>"; };
-		886C1FC6090D82DA005DFAD7 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
-		886C1FC8090D82DA005DFAD7 /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/FindPanel.strings; sourceTree = "<group>"; };
-		886C1FCA090D82DA005DFAD7 /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		886C1FCB090D82DA005DFAD7 /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = MainMenu.nib; sourceTree = "<group>"; };
-		886C1FCD090D82DA005DFAD7 /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
-		886C1FD6090D82F9005DFAD7 /* BBall.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = BBall.icns; sourceTree = "<group>"; };
-		886C1FD8090D82F9005DFAD7 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
-		886C1FDA090D82F9005DFAD7 /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/FindPanel.strings; sourceTree = "<group>"; };
-		886C1FDC090D82F9005DFAD7 /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		886C1FDD090D82F9005DFAD7 /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = MainMenu.nib; sourceTree = "<group>"; };
-		886C1FDF090D82F9005DFAD7 /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
 		886C1FFC090D841E005DFAD7 /* SCSA_Library */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SCSA_Library; path = SCSA_Aux/SCSA_Library; sourceTree = "<group>"; };
 		88723065090871770002E26A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/FindPanel.nib; sourceTree = "<group>"; };
 		8872306B090871770002E26A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/GetStringDlg.nib; sourceTree = "<group>"; };
@@ -1116,39 +1114,40 @@
 			path = source/lang/LangSource/HID_Utilities;
 			sourceTree = SOURCE_ROOT;
 		};
-		886C1FC3090D82DA005DFAD7 /* SCSA_Devel_Resources */ = {
+		8821F2D6091E810900952C1A /* SCSA_Resources */ = {
 			isa = PBXGroup;
 			children = (
-				886C1FC4090D82DA005DFAD7 /* BBall.icns */,
-				886C1FC5090D82DA005DFAD7 /* Credits.rtf */,
-				886C1FC7090D82DA005DFAD7 /* FindPanel.strings */,
-				886C1FC9090D82DA005DFAD7 /* InfoPlist.strings */,
-				886C1FCB090D82DA005DFAD7 /* MainMenu.nib */,
-				886C1FCD090D82DA005DFAD7 /* SCcube.icns */,
-			);
-			name = SCSA_Devel_Resources;
-			path = SCSA_Aux/SCSA_Devel_Resources;
-			sourceTree = "<group>";
-		};
-		886C1FD5090D82F9005DFAD7 /* SCSA_Resources */ = {
-			isa = PBXGroup;
-			children = (
-				886C1FD6090D82F9005DFAD7 /* BBall.icns */,
-				886C1FD7090D82F9005DFAD7 /* Credits.rtf */,
-				886C1FD9090D82F9005DFAD7 /* FindPanel.strings */,
-				886C1FDB090D82F9005DFAD7 /* InfoPlist.strings */,
-				886C1FDD090D82F9005DFAD7 /* MainMenu.nib */,
-				886C1FDF090D82F9005DFAD7 /* SCcube.icns */,
+				8821F2D7091E810900952C1A /* BBall.icns */,
+				8821F2D8091E810900952C1A /* Credits.rtf */,
+				8821F2DA091E810900952C1A /* FindPanel.strings */,
+				8821F2DC091E810900952C1A /* InfoPlist.strings */,
+				8821F2E0091E810900952C1A /* MainMenu.nib */,
+				8821F2E1091E810900952C1A /* SCcube.icns */,
 			);
 			name = SCSA_Resources;
 			path = SCSA_Aux/SCSA_Resources;
 			sourceTree = "<group>";
 		};
+		8821F2E9091E812100952C1A /* SCSA_Devel_Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8821F2EA091E812100952C1A /* BBall.icns */,
+				8821F2EB091E812100952C1A /* Credits.rtf */,
+				8821F2ED091E812100952C1A /* FindPanel.strings */,
+				8821F2EF091E812100952C1A /* InfoPlist.strings */,
+				8821F2F1091E812100952C1A /* MainMenu.nib */,
+				8821F2F2091E812100952C1A /* MainMenu~.nib */,
+				8821F2F3091E812100952C1A /* SCcube.icns */,
+			);
+			name = SCSA_Devel_Resources;
+			path = SCSA_Aux/SCSA_Devel_Resources;
+			sourceTree = "<group>";
+		};
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
-				886C1FD5090D82F9005DFAD7 /* SCSA_Resources */,
-				886C1FC3090D82DA005DFAD7 /* SCSA_Devel_Resources */,
+				8821F2E9091E812100952C1A /* SCSA_Devel_Resources */,
+				8821F2D6091E810900952C1A /* SCSA_Resources */,
 				F50D04FB02E69B6B01CA2799 /* headers */,
 				F50D057E02E69B6B01CA2799 /* source */,
 				F50D060302E69C2101CA2799 /* Products */,
@@ -1724,24 +1723,21 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				886C1FE0090D82F9005DFAD7 /* BBall.icns in Resources */,
-				886C1FE3090D82F9005DFAD7 /* InfoPlist.strings in Resources */,
-				886C1FE4090D82F9005DFAD7 /* MainMenu.nib in Resources */,
-				886C1FE6090D82F9005DFAD7 /* SCcube.icns in Resources */,
 				8872307F090871770002E26A /* FindPanel.nib in Resources */,
 				88723082090871770002E26A /* GetStringDlg.nib in Resources */,
 				88723086090871770002E26A /* MyDocument.nib in Resources */,
 				88723088090871770002E26A /* SCGraphView.nib in Resources */,
 				8872308E090872920002E26A /* GoToLinePanel.nib in Resources */,
-				88254DEE0909582700D7E0C5 /* Help in Resources */,
 				88254E060909583600D7E0C5 /* plugins in Resources */,
 				88254E0A0909584400D7E0C5 /* recordings in Resources */,
 				88254F940909586900D7E0C5 /* SCClassLibrary in Resources */,
-				88254F960909588900D7E0C5 /* scsynth in Resources */,
-				88254F9B0909589400D7E0C5 /* sounds in Resources */,
 				88254FB0090958B000D7E0C5 /* synthdefs in Resources */,
-				886C1FE1090D82F9005DFAD7 /* Credits.rtf in Resources */,
-				886C1FE2090D82F9005DFAD7 /* FindPanel.strings in Resources */,
+				8821F2E2091E810900952C1A /* BBall.icns in Resources */,
+				8821F2E3091E810900952C1A /* Credits.rtf in Resources */,
+				8821F2E4091E810900952C1A /* FindPanel.strings in Resources */,
+				8821F2E5091E810900952C1A /* InfoPlist.strings in Resources */,
+				8821F2E7091E810900952C1A /* MainMenu.nib in Resources */,
+				8821F2E8091E810900952C1A /* SCcube.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1758,15 +1754,15 @@
 				88DB9520090A0E3700BE5BE9 /* plugins in Resources */,
 				88DB9521090A0E3700BE5BE9 /* recordings in Resources */,
 				88DB9522090A0E3700BE5BE9 /* SCClassLibrary in Resources */,
-				88DB9523090A0E3700BE5BE9 /* scsynth in Resources */,
 				88DB9524090A0E3700BE5BE9 /* sounds in Resources */,
 				88DB9525090A0E3700BE5BE9 /* synthdefs in Resources */,
-				886C1FCE090D82DA005DFAD7 /* BBall.icns in Resources */,
-				886C1FCF090D82DA005DFAD7 /* Credits.rtf in Resources */,
-				886C1FD0090D82DA005DFAD7 /* FindPanel.strings in Resources */,
-				886C1FD1090D82DA005DFAD7 /* InfoPlist.strings in Resources */,
-				886C1FD2090D82DA005DFAD7 /* MainMenu.nib in Resources */,
-				886C1FD4090D82DA005DFAD7 /* SCcube.icns in Resources */,
+				8821F2F4091E812100952C1A /* BBall.icns in Resources */,
+				8821F2F5091E812100952C1A /* Credits.rtf in Resources */,
+				8821F2F6091E812100952C1A /* FindPanel.strings in Resources */,
+				8821F2F7091E812100952C1A /* InfoPlist.strings in Resources */,
+				8821F2F8091E812100952C1A /* MainMenu.nib in Resources */,
+				8821F2F9091E812100952C1A /* MainMenu~.nib in Resources */,
+				8821F2FA091E812100952C1A /* SCcube.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1814,7 +1810,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp SCSA_Aux/SCSA_Main_Replacement/Main.sc $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/DefaultLibrary";
+			shellScript = "cp SCSA_Aux/SCSA_Main_Replacement/Main.sc $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/DefaultLibrary\ncp -R SCSA_Aux/SCSA_Help $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/Help\n[ -e $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/sounds ] || mkdir $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/sounds";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1996,50 +1992,50 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		886C1FC5090D82DA005DFAD7 /* Credits.rtf */ = {
+		8821F2D8091E810900952C1A /* Credits.rtf */ = {
 			isa = PBXVariantGroup;
 			children = (
-				886C1FC6090D82DA005DFAD7 /* English */,
+				8821F2D9091E810900952C1A /* English */,
 			);
 			name = Credits.rtf;
 			sourceTree = "<group>";
 		};
-		886C1FC7090D82DA005DFAD7 /* FindPanel.strings */ = {
+		8821F2DA091E810900952C1A /* FindPanel.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				886C1FC8090D82DA005DFAD7 /* English */,
+				8821F2DB091E810900952C1A /* English */,
 			);
 			name = FindPanel.strings;
 			sourceTree = "<group>";
 		};
-		886C1FC9090D82DA005DFAD7 /* InfoPlist.strings */ = {
+		8821F2DC091E810900952C1A /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				886C1FCA090D82DA005DFAD7 /* English */,
+				8821F2DD091E810900952C1A /* English */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		886C1FD7090D82F9005DFAD7 /* Credits.rtf */ = {
+		8821F2EB091E812100952C1A /* Credits.rtf */ = {
 			isa = PBXVariantGroup;
 			children = (
-				886C1FD8090D82F9005DFAD7 /* English */,
+				8821F2EC091E812100952C1A /* English */,
 			);
 			name = Credits.rtf;
 			sourceTree = "<group>";
 		};
-		886C1FD9090D82F9005DFAD7 /* FindPanel.strings */ = {
+		8821F2ED091E812100952C1A /* FindPanel.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				886C1FDA090D82F9005DFAD7 /* English */,
+				8821F2EE091E812100952C1A /* English */,
 			);
 			name = FindPanel.strings;
 			sourceTree = "<group>";
 		};
-		886C1FDB090D82F9005DFAD7 /* InfoPlist.strings */ = {
+		8821F2EF091E812100952C1A /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				886C1FDC090D82F9005DFAD7 /* English */,
+				8821F2F0091E812100952C1A /* English */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
