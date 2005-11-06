@@ -1,0 +1,243 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf100
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 Creating Stand-Alone Applications
+\f1\b0\fs24 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+
+\f0\b\fs28 Contents
+\fs24 \
+
+\f1\b0 \
+Introduction\
+Creating a stand-alone application using the Finder\
+Creating a stand-alone application using Xcode\
+Adding your own behavior
+\fs20 \
+
+\fs24 \
+
+\f0\b\fs28 Introduction
+\f1\b0\fs24 \
+\
+On OS X, applications are special directories known as "bundles." This allows you to create stand-alone applications running SuperCollider code that are opaque, in the sense that the user does not need to install SuperCollider, run SuperCollider code, or even know that SuperCollider is involved. (Of course, your application must be open-source and comply with the GPL.) This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use.\
+\
+
+\f0\b\fs28 Creating a stand-alone application using the Finder\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\fs24 \cf0 Step 1: 
+\f1\b0 Make a copy of the SuperCollider application, and name it whatever you'd like your application to be called. Then control-click on the copy and select "Show Package Contents" from the contextual menu. You'll get a new Finder window that shows you the inside of the application bundle. Navigate to Contents/Resources. This is where the folders that normally reside outside the SuperCollider application will go.\
+\
+
+\f0\b Step 2:
+\f1\b0  Option-drag the following items into the Resources folder as needed:\
+\
+	\'a5 
+\f0\b SCClassLibrary
+\f1\b0 --this is absolutely necessary, and of course can contain your own classes.\
+	\'a5 
+\f0\b plugins
+\f1\b0 --your application will launch without this, but you won't get very far making sound.\
+	\'a5 
+\f0\b recordings
+\f1\b0 --not necessary if your application does not allow recording, or if you have the user select the recording directory.\
+	\'a5 
+\f0\b sounds
+\f1\b0 --if your application requires any preexisting soundfiles, put them here.\
+	\'a5 
+\f0\b synthdefs
+\f1\b0 --not absolutely necessary, but very handy.\
+	\'a5 
+\f0\b Help
+\f1\b0 --if your users aren't dealing with SuperCollider code, they don't need the SuperCollider help files, but you should create a 
+\f0\b Help.help.rtf
+\f1\b0  file for your own application and put it in here.\
+	\'a5 If you want your application to be able to use the local server, drag in 
+\f0\b scsynth
+\f1\b0 . This is not recommended for most applications, though; see 
+\f0\b Adding your own behavior
+\f1\b0 , below.\
+\
+
+\f0\b Step 3:
+\f1\b0  Edit 
+\f0\b MainMenu.nib
+\f1\b0  by double-clicking on it. It will in open in InterfaceBuilder, presenting you with a "virtual" menubar that you can modify as you wish (deleting the 
+\f0\b Help
+\f1\b0  menu, for example). The exception is the name of the application menu ("SuperCollider")--you can change it here, but the change will not be picked up by the application. See step 4.\
+\
+
+\f0\b Step 4:
+\f1\b0  Edit 
+\f0\b English.lproj/InfoPlist.strings
+\f1\b0 , replacing "SuperCollider" with the name of your application in the 
+\f0\b CFBundleName
+\f1\b0  line. This will show up in your application's main menu.\
+\
+Now you have an application that behaves exactly like SuperCollider, but is entirely self-contained (can be dragged anywhere with no accompanying files) and has its own name. To make it behave like an ordinary application (with its own main window, etc.), see 
+\f0\b Adding your own behavior
+\f1\b0  below.\
+\
+Now when you launch the copy, it will use the items you dragged in (and any modifications of the class library will be stored there instead of the original). You can drag it anywhere, give it to other people, etc.\
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b\fs28 \cf0 Creating a stand-alone application using Xcode
+\f1\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+In the SuperCollider source, there's an Xcode project called 
+\f0\b xSC_StandAlone
+\f1\b0 . This is an Xcode 2.1 project, and will not open in earlier versions. It has two targets: \
+\
+	\'a5 
+\f0\b SC_StandAlone
+\f1\b0 . This creates a simple but complete application in its final form.\
+	\'a5 
+\f0\b SC_StandAlone_Devel
+\f1\b0 . This creates a development version of the same application, the differences being that 
+\f0\b Main-startup
+\f1\b0  is not modified, so that the server and post windows are created, and that an alias of its class library is used, so that any modifications are made to the original in the code folder, rather than in the bundle.\
+	\
+To create your own application:\
+\
+
+\f0\b Step 1:
+\f1\b0  Make a copy of the 
+\f0\b SCSA_Aux
+\f1\b0  folder (inside the 
+\f0\b SuperCollider3
+\f1\b0  folder), and name it after your application (e.g. 
+\f0\b MyApp_Aux
+\f1\b0 ). Change the names of all its subfolders similarly. Edit the 
+\f0\b MainMenu.nib
+\f1\b0  and 
+\f0\b English.lproj/InfoPlist.strings 
+\f1\b0 files in both 
+\f0\b MyApp_Resources
+\f1\b0  and 
+\f0\b MyApp_Devel_Resources
+\f1\b0  as described in the previous section.\
+\
+
+\f0\b Step 2:
+\f1\b0  Make a copy of the 
+\f0\b xSC_StandAlone
+\f1\b0  project, name it after your application, and open it in Xcode. Delete the 
+\f0\b SCSA_Resources
+\f1\b0  and 
+\f0\b SCSA_Devel_Resources
+\f1\b0  groups (choosing 
+\f0\b Delete References Only
+\f1\b0  at the dialog), and add 
+\f0\b MyApp_Resources
+\f1\b0  and 
+\f0\b MyApp_Devel_Resources
+\f1\b0  to the SC_StandAlone and SC_StandAlone_Devel targets, respectively (selecting the 
+\f0\b Recursively Add Groups
+\f1\b0  option in the dialog). Make sure you're adding them to the right targets.\
+\
+
+\f0\b Step 3:
+\f1\b0  Rename the the 
+\f0\b SC_StandAlone_Devel
+\f1\b0  target to 
+\f0\b MyApp_Devel
+\f1\b0  (by control-clicking on the target icon and selecting "Rename" from the contextual menu). Double-click on the 
+\f0\b MyApp_Devel
+\f1\b0  target. In the Base Product Name field, change "SC_StandAlone_Devel" to "MyApp_Devel". Do the same thing in the 
+\f0\b Info.Plist Entries
+\f1\b0  section. Click the 
+\f0\b Run Script
+\f1\b0  box. In the script that appears, replace 
+\f0\b SCSA
+\f1\b0  with 
+\f0\b MyApp
+\f1\b0  wherever it appears (three times).\
+\
+
+\f0\b Step 4:
+\f1\b0  Repeat step 3 for the SC_StandAlone target (leaving off _Devel, of course).\
+\
+
+\f0\b Step 5:
+\f1\b0  Build away!\
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b\fs28 \cf0 Adding your own behavior
+\f1\b0\fs24 \
+
+\f0\b\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\b0\fs24 \cf0 Using either of the above methods, you've created an application that behaves exactly like SuperCollider. To run your own code on launch and simulate an ordinary application rather than a development environment, you'll need to modify Main-startup. Here's an example (the same code used by the 
+\f0\b SC_StandAlone
+\f1\b0  target):\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs18 \cf0 	startup \{\
+		\cf2 super\cf0 .startup;\
+		\
+		\cf2 Document\cf0 .startup;\
+		\
+		\cf3 // set the 's' interpreter variable to the internal server.\cf0 \
+		\cf3 // You should use the internal server for standalone applications--\cf0 \
+		\cf3 // otherwise, if your application has a problem, the user will\cf0 \
+		\cf3 // be stuck with a process, possibly making sound, that he won't know \cf0 \
+		\cf3 // how to kill.\cf0 \
+		interpreter.s = \cf2 Server\cf0 .internal;\
+		\
+		\cf3 // server windows turned off for stand-alone application\cf0 \
+\cf3 //		Server.internal.makeWindow;\cf0 \
+\cf3 //		Server.local.makeWindow;\cf0 \
+		\
+		\cf3 // Start the application using internal server\cf0 \
+		interpreter.s.waitForBoot(\{\
+			\cf2 var\cf0  sb, demo;\
+			sb = \cf2 SCWindow\cf0 .screenBounds;\
+			\
+			demo = \cf2 SCSA_Demo\cf0 .new(\
+				\cf4 "the cheese stands alone"\cf0 , \
+				\cf2 Rect\cf0 (\
+					(sb.width - \cf2 SCSA_Demo\cf0 .width) * 0.5, \
+					(sb.height - \cf2 SCSA_Demo\cf0 .height) * 0.5,\
+					\cf2 SCSA_Demo\cf0 .width,\
+					\cf2 SCSA_Demo\cf0 .height\
+				),\
+				interpreter.s\
+			);\
+			demo.front;\
+			\cf3 // Close post window after application launches. If you want\cf0 \
+			\cf3 // to hide it completely, put this line after Document.startup instead.\cf0 \
+			\cf2 Document\cf0 .closeAll(\cf2 false\cf0 );\
+		\}, 25);\
+				\
+		\cf3 // You probably don't want to include this, since the user won't have it\cf0 \
+\cf3 //		"~/scwork/startup.rtf".loadPaths;\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs24 \cf0 \
+The class 
+\f0\b SCSA_Demo 
+\f1\b0 contains the entire application, including the main window. This is the tidiest way to work, and requires the least modification to SuperCollider. If you don't want to write a class, you can execute an .rtf file instead:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs18 \cf0 interpreter.executeFile(\cf2 String\cf0 .scDir ++ \cf4 "/myapp.rtf"\cf0 );
+\f1\fs24 \
+\
+However, any sizable application will benefit from encapsulation in classes.\
+\
+Note that the example uses the internal server. This is part and parcel of keeping the application stand-alone; it shouldn't call extraneous processes behind the user's back that will persist if the application fails. If you need to use the local server for some reason, make sure 
+\f0\b scsynth
+\f1\b0  is in the application's bundle.\
+}
