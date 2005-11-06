@@ -25,7 +25,7 @@ extern "C" {
 	void sc_GetResourceDirectory(char* pathBuf, int length);
 	void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length);
 	void sc_AppendToPath(char *path, const char *component);
-	void sc_ResolveIfAlias(const char *path, char *returnPath, int length);
+	void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length);
 	bool sc_DirectoryAliasExists(char *path);
 	
 	void sc_GetUserHomeDirectory(char *str, int size);
