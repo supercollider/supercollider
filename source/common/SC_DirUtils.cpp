@@ -132,7 +132,7 @@ void sc_AppendToPath(char *path, const char *component)
   strcat(path, component);
 }
 
-void sc_ResolveIfAlias(const char *path, char *returnPath, int length) 
+void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length) 
 {
 #ifdef SC_DARWIN
 	FSRef dirRef;
@@ -141,11 +141,13 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, int length)
 		Boolean isFolder;
 		Boolean wasAliased;
 		OSErr err = FSResolveAliasFile (&dirRef, true, &isFolder, &wasAliased);
-		if ( !err && wasAliased && isFolder ) {
+		isAlias = wasAliased;
+		if ( !err && wasAliased ) {
 			UInt8 resolvedPath[MAXPATHLEN];
 			osStatusErr = FSRefMakePath (&dirRef, resolvedPath, length);
 			if ( !osStatusErr ) {
 				strncpy(returnPath, (char *) resolvedPath, length);
+//				resolvedPath[length] = 0;
 				return;
 			}
 		}
