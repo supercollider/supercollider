@@ -91,7 +91,10 @@ void initialize_library()
 	initMiscCommands();
 	
 	// load default plugin directory
-	PlugIn_LoadDir(SC_PLUGIN_DIR);
+	char pluginDir[MAXPATHLEN];
+	sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
+	sc_AppendToPath(pluginDir, SC_PLUGIN_DIR);
+	PlugIn_LoadDir(pluginDir);
 	
 	// get extension directories
 	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);

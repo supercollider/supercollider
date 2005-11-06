@@ -37,6 +37,7 @@
 #include "ReadWriteMacros.h"
 #include "SC_Prototypes.h"
 #include "SC_CoreAudio.h"
+#include "SC_DirUtils.h"
 
 extern Malloc gMalloc;
 
