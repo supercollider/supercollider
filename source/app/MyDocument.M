@@ -647,12 +647,19 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSString* candidate;
 	NSString* fullName;
     while (candidate = [dirEnumerator nextObject]) {
-		fullName = [helpFolderPath stringByAppendingString: candidate];
-		if([[candidate lastPathComponent] isEqualToString:helpFileName]) {
+		NSString* trialName = [helpFolderPath stringByAppendingString: candidate];
+
+		char name[MAXPATHLEN];
+		char resolvedName[MAXPATHLEN];
+		[trialName getCString:name];
+		bool isAlias = false;
+		sc_ResolveIfAlias(name, resolvedName, isAlias, MAXPATHLEN);
+		fullName = [NSString stringWithCString:resolvedName];
+		if([[fullName lastPathComponent] isEqualToString:helpFileName]) {
             helpFilePath = fullName;
             break;
         } else if // if that didn't work, check if this is a directory symlink (allow directories to have extensions)
-	    (([[fileManager fileAttributesAtPath: fullName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeSymbolicLink)){
+	    ((([[fileManager fileAttributesAtPath: fullName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeSymbolicLink) || isAlias)){
 		  NSString* linkName = [[fullName stringByResolvingSymlinksInPath] stringByAppendingString: @"/"];
 		  if(([[fileManager fileAttributesAtPath: linkName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeDirectory)) {
 		    // if so traverse the link and call helpFileWithName() recursively
