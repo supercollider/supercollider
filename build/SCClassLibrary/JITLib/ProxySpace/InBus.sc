@@ -180,7 +180,7 @@ Monitor {
 	
 	// bundling 
 	
-	playNToBundle { arg bundle, argOuts=(outs), argAmps=(amps), argIns=(ins), 
+	playNToBundle { arg bundle, argOuts=(outs ?? {(0..ins.size-1)}), argAmps=(amps), argIns=(ins),
 					argVol=(vol), argFadeTime=(fadeTime), inGroup, defName="system_link_audio_1"; 
 		
 		var triplets, server; 
