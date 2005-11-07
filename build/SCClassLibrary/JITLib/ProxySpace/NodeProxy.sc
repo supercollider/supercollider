@@ -433,7 +433,11 @@ NodeProxy : BusPlug {
 	}
 	
 	server_ { arg inServer;
-		if(this.isNeutral.not) { Error("can't change the server").throw };
+		if(this.isNeutral.not) { 
+			// Error("can't change the server").throw 
+			this.end;
+			loaded = false;
+		};
 		server = inServer;
 	}
 	
