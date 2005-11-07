@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf230
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Georgia-Bold;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red191\green0\blue0;
+\red0\green0\blue0;\red0\green0\blue191;\red0\green0\blue191;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs30 \cf0 proxy space - basic concepts  		
@@ -10,9 +10,8 @@
 \f2\b0\fs18 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs24 \cf0 external structure of the node proxy, referencing in proxyspace and environments.\
+\f3\fs24 external structure of the node proxy, referencing in proxyspace and environments.\
 \
 previous: [\ul jitlib_basic_concepts_01\ulnone ]		next: [\ul jitlib_basic_concepts_03\ulnone ] \
 \
@@ -34,9 +33,8 @@ f ) 	using ProxySpace together with other Environments
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 a) normal environment lookup
+\f0\b\fs24 a) normal environment lookup
 \f2\b0\fs18 \
 \
 \
@@ -55,6 +53,19 @@ currentEnvironment.postln; \cf2 // the value is stored in the environment\cf0 \
 \
 ~b + ~a; \cf2 // this works.\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // note that you can always access environments (or ProxySpaces) from outside as well:\cf0 \
+\
+x = currentEnvironment;\
+x[\cf3 \\a\cf0 ] + x[\cf3 \\b\cf0 ] \cf2 // equivalent to ~b + ~a\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // or, if "know" is true,\cf5 \
+x.know = \cf6 true\cf5 ;\
+x.a + x.b;\
+\
+\cf0 \
+\
 \
 \
 	further readings: [\ul Environment\ulnone ]\
@@ -63,20 +74,20 @@ currentEnvironment.postln; \cf2 // the value is stored in the environment\cf0 \
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 b) proxyspace as an environment
+\f0\b\fs24 \cf0 b) proxyspace as an environment
 \f2\b0\fs18 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs24 \cf0 one can replace the current environment with a special type of environment, a proxy space\
+\f3\fs24 one can replace the current environment with a special type of environment, a proxy space\
 this environment represents processes that play audio on a server.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \
-p = \cf3 ProxySpace\cf0 .new(s); \cf2 // create a new environment, store it in variable p for now.\cf0 \
+p = \cf7 ProxySpace\cf0 .new(s); \cf2 // create a new environment, store it in variable p for now.\cf0 \
 p.push;				\cf2 // push it, so i becomes the current environment.\cf0 \
 currentEnvironment.postln; \
 currentEnvironment === p; \cf2 // this is identical.\cf0 \
@@ -108,7 +119,7 @@ s.boot;\
 (\
 ~x = \{\
 	\
-	\cf3 RLPF\cf0 .ar(\cf3 Impulse\cf0 .ar(4) * 20, [850, 950], 0.2)\
+	\cf7 RLPF\cf0 .ar(\cf7 Impulse\cf0 .ar(4) * 20, [850, 950], 0.2)\
 	\
 \}\
 )\
@@ -120,6 +131,7 @@ s.boot;\
 ~x.index; \cf2 // what bus index is it? this posts the index to the postwindow \
 		// before it was .ir(nil), now it is initialized to .ar(2)\cf0 \
 ~x.bus \cf2 // what bus is it?\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
 ~x.play; \cf2 // now listen to it. a monitor is created (see [\cf2 \ul \ulc2 Monitor\ulnone ]) that plays \
@@ -133,7 +145,7 @@ s.boot;\
 \cf2 // the sound function can be changed at any time:\cf0 \
 (\
 ~x = \{\
-		\cf3 RLPF\cf0 .ar(\cf3 Impulse\cf0 .ar([5, 7]) * 5, [1450, 1234], 0.2)\
+		\cf7 RLPF\cf0 .ar(\cf7 Impulse\cf0 .ar([5, 7]) * 5, [1450, 1234], 0.2)\
 \}\
 )\
 \
@@ -141,25 +153,25 @@ s.boot;\
 \cf2 // by replacing it with little (or big) variations:\cf0 \
 \
 		\cf2 // filter freqs higher:\cf0 \
-~x = \{	\cf3 RLPF\cf0 .ar(\cf3 Impulse\cf0 .ar([5, 7]) * 5, [1800, 2000], 0.2) \}\
+~x = \{	\cf7 RLPF\cf0 .ar(\cf7 Impulse\cf0 .ar([5, 7]) * 5, [1800, 2000], 0.2) \}\
 		\
 		\cf2 // same pulse ratio (5/8), different pulse tempo:\cf0 \
-~x = \{	\cf3 RLPF\cf0 .ar(\cf3 Impulse\cf0 .ar([5, 8] * 3.2) * 5, [1800, 2000], 0.2) \}\
+~x = \{	\cf7 RLPF\cf0 .ar(\cf7 Impulse\cf0 .ar([5, 8] * 3.2) * 5, [1800, 2000], 0.2) \}\
 \
 		\cf2 // different filter:\cf0 \
-~x = \{	\cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([5, 8] * 3.2), [1800, 2000], 0.05) \}\
+~x = \{	\cf7 Ringz\cf0 .ar(\cf7 Impulse\cf0 .ar([5, 8] * 3.2), [1800, 2000], 0.05) \}\
 \
 \cf2 // and if you set the proxy's fadeTime, you can create little \cf0 \
 \cf2 // textures by hand: \cf0 \
 \
 ~x.fadeTime = 3; \
 		\cf2 // different filter freqs every time:\cf0 \
-~x = \{	\cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([5, 8] * rrand(0.5, 1.5)) * 0.5, (\{ exprand(200, 4000) \} ! 2), 0.05) \}\
+~x = \{	\cf7 Ringz\cf0 .ar(\cf7 Impulse\cf0 .ar([5, 8] * rrand(0.5, 1.5)) * 0.5, (\{ exprand(200, 4000) \} ! 2), 0.05) \}\
 \
 \
 \
 \cf2 // here is another proxy:\cf0 \
-~y = \{ \cf3 Pan2\cf0 .ar(\cf3 Dust\cf0 .ar(20), 0) \};\
+~y = \{ \cf7 Pan2\cf0 .ar(\cf7 Dust\cf0 .ar(20), 0) \};\
 \
 ~y.bus; \cf2 // it has two channels, just as the ~x., but it plays on another (private) bus.\cf0 \
 \
@@ -168,17 +180,17 @@ s.boot;\
 (\
 ~x = \{\
 	\
-	\cf3 RLPF\cf0 .ar(~y.ar * 8,  [1450, 1234], 0.2)\
+	\cf7 RLPF\cf0 .ar(~y.ar * 8,  [1450, 1234], 0.2)\
 \}\
 )\
 \
 \cf2 // when the proxy changes, the result changes dynamically:\cf0 \
 \
-~y = \{\'ca\cf3 Impulse\cf0 .ar(\cf3 MouseX\cf0 .kr(2, 18, 1)) * [1, 1] \};\
+~y = \{\'ca\cf7 Impulse\cf0 .ar(\cf7 MouseX\cf0 .kr(2, 18, 1)) * [1, 1] \};\
 \
-~y = \{\'ca\cf3 PinkNoise\cf0 .ar(\cf3 MouseX\cf0 .kr(0, 0.2) * [1, 1]) \};\
+~y = \{\'ca\cf7 PinkNoise\cf0 .ar(\cf7 MouseX\cf0 .kr(0, 0.2) * [1, 1]) \};\
 \
-~y = \{\'ca\cf3 Impulse\cf0 .ar([\cf3 MouseX\cf0 .kr(2, 18, 1), \cf3 MouseY\cf0 .kr(2, 18, 1)]) \};\
+~y = \{\'ca\cf7 Impulse\cf0 .ar([\cf7 MouseX\cf0 .kr(2, 18, 1), \cf7 MouseY\cf0 .kr(2, 18, 1)]) \};\
 \
 \
 \
@@ -194,7 +206,7 @@ s.boot;\
 \
 \cf2 // to remove an input, nil can be used:\cf0 \
 \
-~y = \cf3 nil\cf0 ;\
+~y = \cf7 nil\cf0 ;\
 \
 \cf2 // stop listening\cf0 \
 ~y.stop;\
@@ -220,7 +232,7 @@ later inputs are adjusted to this bus, as far as it is possible.
 \f2\fs18 \
 \
 \
-~z2 = \{ \cf3 LFNoise0\cf0 .kr([1, 2, 3, 4]) \}; \cf2 // a four channel control rate proxy\cf0 \
+~z2 = \{ \cf7 LFNoise0\cf0 .kr([1, 2, 3, 4]) \}; \cf2 // a four channel control rate proxy\cf0 \
 ~z2.bus.postln;\
 \
 ~z100 = 0.5; \cf2 // a constant value causes a single channel control rate proxy.\cf0 \
@@ -247,7 +259,7 @@ be always initialized first. A typical problem is demonstrated here:
 ~u.play(0, 2); 	\cf2 // initialize 2 audio channels (default). 0 is the output bus number.\
 				// if the proxy is not inititialized, play defaults to 2 channels.\
 				// here it is explicitly given only to make it more clear.\cf0 \
-~u = \{ \cf3 PinkNoise\cf0 .ar(0.2) \}; \cf2 // use only one\cf0 \
+~u = \{ \cf7 PinkNoise\cf0 .ar(0.2) \}; \cf2 // use only one\cf0 \
 ~u.numChannels; \cf2 // 2 channels\cf0 \
 ~u.clear;\
 \
@@ -255,7 +267,7 @@ be always initialized first. A typical problem is demonstrated here:
 \f3\fs24 if evaluated the other way round, only one channel is used:
 \f2\fs18 \
 \
-~u = \{ \cf3 PinkNoise\cf0 .ar(0.2) \}; \cf2 // initialize 1 audio channel\cf0 \
+~u = \{ \cf7 PinkNoise\cf0 .ar(0.2) \}; \cf2 // initialize 1 audio channel\cf0 \
 ~u.play(0, 2); 	\cf2 // play 2 channels: the 1 channel is expanded into 2.\
 				// numChannels of .play defaults to the proxy's numChannels.\
 				// here it is explicitly given, so to expand the channels\cf0 \
@@ -282,7 +294,7 @@ p.postln;		\cf2 // post the whole proxy space\cf0 \
 \cf2 // play the audio:\cf0 \
 ~x.play;\
 \
-~x = \{ \cf3 PinkNoise\cf0 .ar(0.5) \};\
+~x = \{ \cf7 PinkNoise\cf0 .ar(0.5) \};\
 \
 \cf2 // p is the proxy space:\cf0 \
 p.postln;\
@@ -339,19 +351,19 @@ normal use of environments as pseudo variables. Here is some ways to cope with t
 \cf2 // scope of proxyspace to one document (note: this is mac-only currently)\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 EnvirDocument\cf0 (p, \cf4 "proxyspace"\cf0 ); 	\cf2 // to test this, check for currentEnvironment here \cf0 \
+\cf7 EnvirDocument\cf0 (p, \cf8 "proxyspace"\cf0 ); 	\cf2 // to test this, check for currentEnvironment here \cf0 \
 							\cf2 // and in the envir document.\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // you can also access the proxy space indirectly:\cf0 \
-p[\cf5 \\x\cf0 ].play;\
-p[\cf5 \\x\cf0 ] = \{ \cf3 SinOsc\cf0 .ar(450, 0, 0.1) \};\
+p[\cf3 \\x\cf0 ].play;\
+p[\cf3 \\x\cf0 ] = \{ \cf7 SinOsc\cf0 .ar(450, 0, 0.1) \};\
 \
 \cf2 // or: when the proxyspace is pushed, you can use a normal environment indirectly:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 p.push;\
 d = ();\
-d[\cf5 \\buffer1\cf0 ] = \cf3 Buffer\cf0 .alloc(s, 1024);\
+d[\cf3 \\buffer1\cf0 ] = \cf7 Buffer\cf0 .alloc(s, 1024);\
 d.use \{ ~buffer1.postln; ~zz = 81; \}; \cf2 // for more than one access to the environment, use use\cf0 \
 \
 \
@@ -360,7 +372,7 @@ d.use \{ ~buffer1.postln; ~zz = 81; \}; \cf2 // for more than one access to the 
 // without creating new proxies, use .envir:\cf0 \
 \
 p.envir.postln;\
-p.envir[\cf5 \\x\cf0 ].postln;\
+p.envir[\cf3 \\x\cf0 ].postln;\
 \
 \cf2 // this can be useful for lookup, when you want to know if a certain proxy exists already.\cf0 \
 \cf2 // direct access would create that proxy, which would not make sense in that case.\cf0 \
