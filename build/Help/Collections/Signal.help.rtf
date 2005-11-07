@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf230
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-BoldOblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;}
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Signal						sampled audio buffer\
@@ -399,22 +399,25 @@ If the other signal is too long only the first part is overdubbed.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs18 \cf0 \
-a = \cf2 Signal\cf0 .fill(10, 100);\
-a.overDub(\cf2 Signal\cf0 [1,2,3,4], 3);\
+\cf5 a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overDub(\cf6 Signal\cf5 [1,2,3,4], 3);\
 	\
-		\cf4 // run out of range\cf0 \
-a = \cf2 Signal\cf0 .fill(10, 100);\
-a.overDub(\cf2 Signal\cf0 [1,2,3,4], 8);	\
+		\cf7 // run out of range\cf5 \
+a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overDub(\cf6 Signal\cf5 [1,2,3,4], 8);	\
 \
-		\cf4 // run out of range 2\cf0 \
-a = \cf2 Signal\cf0 .fill(10, 100);\
-a.overDub(\cf2 Signal\cf0 [1,2,3,4], -4);	\
+a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overDub(\cf6 Signal\cf5 [1,2,3,4], -4);	\
 \
-		\cf4 // this is still broken:\cf0 \
-a = \cf2 Signal\cf0 .fill(10, 100);\
-a.overDub(\cf2 Signal\cf0 [1,2,3,4], -1);	\
-a.overDub(\cf2 Signal\cf0 [1,2,3,4], -2);	\
+a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overDub(\cf6 Signal\cf5 [1,2,3,4], -1);	\
 \
+a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overDub(\cf6 Signal\cf5 [1,2,3,4], -2);	\
+\
+a = \cf6 Signal\cf5 .fill(4, 100);\
+a.overDub(\cf6 Signal\cf5 [1,2,3,4,5,6,7,8], -2);	\
+\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -426,13 +429,25 @@ If the other signal is too long only the first part is overdubbed.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs18 \cf0 \
-a = \cf2 Signal\cf0 .fill(10, 100);\
-a.overWrite(\cf2 Signal\cf0 [1,2,3,4], 3);\
+\cf5 a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overWrite(\cf6 Signal\cf5 [1,2,3,4], 3);\
+	\
+		\cf7 // run out of range\cf5 \
+a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overWrite(\cf6 Signal\cf5 [1,2,3,4], 8);	\
 \
-		\cf4 // this is still broken:\cf0 \
-a = \cf2 Signal\cf0 .fill(10, 100);\
-a.overDub(\cf2 Signal\cf0 [1,2,3,4], -2);\
+a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overWrite(\cf6 Signal\cf5 [1,2,3,4], -4);	\
 \
+a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overWrite(\cf6 Signal\cf5 [1,2,3,4], -1);	\
+\
+a = \cf6 Signal\cf5 .fill(10, 100);\
+a.overWrite(\cf6 Signal\cf5 [1,2,3,4], -2);	\
+\
+a = \cf6 Signal\cf5 .fill(4, 100);\
+a.overWrite(\cf6 Signal\cf5 [1,2,3,4,5,6,7,8], -2);	\
+\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -481,24 +496,24 @@ Perform an FFT on a real and imaginary signal
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f3\fs18 \cf5 (\
-\cf6 var\cf5  size = 512, real, imag, cosTable, complex; \
+\f3\fs18 \cf0 (\
+\cf2 var\cf0  size = 512, real, imag, cosTable, complex; \
 \
-real = \cf6 Signal\cf5 .newClear(size); \
-		\cf7 // some harmonics\cf5 \
+real = \cf2 Signal\cf0 .newClear(size); \
+		\cf4 // some harmonics\cf0 \
 real.sineFill2([[8], [13, 0.5], [21, 0.25], [55, 0.125, 0.5pi]]);\
-		\cf7 // add a little noise\cf5 \
-real.overDub(\cf6 Signal\cf5 .fill(size, \{ 0.2.bilinrand \}));\
+		\cf4 // add a little noise\cf0 \
+real.overDub(\cf2 Signal\cf0 .fill(size, \{ 0.2.bilinrand \}));\
 \
-imag = \cf6 Signal\cf5 .newClear(size);\
-cosTable = \cf6 Signal\cf5 .fftCosTable(size);\
+imag = \cf2 Signal\cf0 .newClear(size);\
+cosTable = \cf2 Signal\cf0 .fftCosTable(size);\
 \
 complex = fft(real, imag, cosTable); \
 [real, imag, (complex.magnitude) / 100 ].flop.flat\
-	.plot(\cf8 "fft"\cf5 , \cf6 Rect\cf5 (0,0, 512 + 8, 500), numChannels: 3);\
+	.plot(\cf3 "fft"\cf0 , \cf2 Rect\cf0 (0,0, 512 + 8, 500), numChannels: 3);\
 )\
 
-\fs24 \cf0 \
+\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -512,24 +527,24 @@ Perform an inverse FFT on a real and imaginary signal
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f3\fs18 \cf5 (\
-\cf6 var\cf5  size = 512, real, imag, cosTable, complex, ifft; \
+\f3\fs18 \cf0 (\
+\cf2 var\cf0  size = 512, real, imag, cosTable, complex, ifft; \
 \
-real = \cf6 Signal\cf5 .newClear(size); \
-		\cf7 // some harmonics\cf5 \
+real = \cf2 Signal\cf0 .newClear(size); \
+		\cf4 // some harmonics\cf0 \
 real.sineFill2([[8], [13, 0.5], [21, 0.25], [55, 0.125, 0.5pi]]);\
-		\cf7 // add a little noise\cf5 \
-real.overDub(\cf6 Signal\cf5 .fill(size, \{ 0.2.bilinrand \}));\
+		\cf4 // add a little noise\cf0 \
+real.overDub(\cf2 Signal\cf0 .fill(size, \{ 0.2.bilinrand \}));\
 \
-imag = \cf6 Signal\cf5 .newClear(size);\
-cosTable = \cf6 Signal\cf5 .fftCosTable(size);\
+imag = \cf2 Signal\cf0 .newClear(size);\
+cosTable = \cf2 Signal\cf0 .fftCosTable(size);\
 \
 complex = fft(real, imag, cosTable).postln;\
 ifft = complex.real.ifft(complex.imag, cosTable);\
 \
-[real, ifft.real].flop.flat.plot(\cf8 "fft and back"\cf5 , \cf6 Rect\cf5 (0,0, 512 + 8, 500), numChannels: 2);\
+[real, ifft.real].flop.flat.plot(\cf3 "fft and back"\cf0 , \cf2 Rect\cf0 (0,0, 512 + 8, 500), numChannels: 2);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 )\
+\cf0 )\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
