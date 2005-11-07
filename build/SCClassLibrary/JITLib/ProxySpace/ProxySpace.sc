@@ -178,6 +178,7 @@ ProxySpace : LazyEnvir {
 		^pxs;
 	}
 
+	doFunctionPerform { arg selector; ^this[selector] }
 	
 	// global access
 	

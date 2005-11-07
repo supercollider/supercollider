@@ -122,10 +122,26 @@ EnvironmentRedirect {
      know { ^envir.know }
     	
     	doesNotUnderstand { arg selector ... args;
-     	var func;
-     	if(envir.know) { ^envir.performList(\doesNotUnderstand, selector, args) };
-		^this.superPerformList(\doesNotUnderstand, selector, args);     
-     }
+		var func;
+		if (this.know) {
+			if (selector.isSetter) {
+				selector = selector.asGetter;
+				^this[selector] = args[0];
+			};
+			^this.doFunctionPerform(selector, args)
+
+		};
+		^this.superPerformList(\doesNotUnderstand, selector, args);
+	}
+	
+	doFunctionPerform { arg selector, args;
+		envir[\forward] !? {
+			if(envir[selector].isNil) { 
+				^envir[\forward].functionPerformList(\value, this, selector, args);
+			}
+		};
+		^this[selector].functionPerformList(\value, this, args);
+	}
           
      //// this should maybe go in Environment
      
