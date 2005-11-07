@@ -97,5 +97,11 @@ Here is a simple example of its use:
 		}
 	}
 	nodeID { ^(this[\id].asArray[0]) }
+	
+	asGroup {
+		var type = this[\type]; 
+		if(type == \Group) { ^this };
+		^this[\group].asGroup
+	}
 }
 
