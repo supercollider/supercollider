@@ -1858,7 +1858,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		46781BC505C84F95002B7D2B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1867,7 +1867,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		46964EE405B93E5600AB268B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1876,7 +1876,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		92962B0B07853C010049266B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1889,7 +1889,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		92ADA1FA06265B970093F2C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1902,7 +1902,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		92CCC526045B4C4900CA2167 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1911,7 +1911,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		B969DA06069187BE0096E93F /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1920,7 +1920,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7420802EA2BD101CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1929,7 +1929,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7420902EA2E7201CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1938,7 +1938,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7420A02EA2EC201CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1947,7 +1947,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7420B02EA2EC201CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1956,7 +1956,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7420C02EA2EDC01CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1965,7 +1965,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7420D02EA2EF501CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1974,7 +1974,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7420E02EA2F3B01CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1983,7 +1983,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7420F02EA2FC901CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1992,7 +1992,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7421002EA2FF701CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2001,7 +2001,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7421102EA301D01CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2010,7 +2010,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7421202EA304001CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2019,7 +2019,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7421302EA306901CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2028,7 +2028,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 		F5B7421402EA308701CA2799 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2037,7 +2037,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $TARGET_BUILD_DIR/$PRODUCT_NAME build/plugins";
+			shellScript = "cp \"$TARGET_BUILD_DIR/$PRODUCT_NAME\" build/plugins";
 		};
 /* End PBXShellScriptBuildPhase section */
 

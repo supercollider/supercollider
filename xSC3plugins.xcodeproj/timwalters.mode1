@@ -266,7 +266,7 @@
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 204}, {186, 338}}</string>
+							<string>{{0, 0}, {186, 338}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -366,9 +366,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>88332440090ABEB300A4A7E4</string>
+				<string>8873FF6509208C1500C4B9DB</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>88332441090ABEB300A4A7E4</string>
+				<string>8873FF6609208C1500C4B9DB</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -502,7 +502,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>/Users/timwalters/Code/SuperCollider3_sa/xSC3plugins.xcodeproj</string>
+		<string>/Users/timwalters/Code/SuperCollider3/xSC3plugins.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>446 206 690 397 0 0 1280 832 </string>
