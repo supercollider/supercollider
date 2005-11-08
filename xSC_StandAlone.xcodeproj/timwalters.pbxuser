@@ -33,20 +33,6 @@
 		sourceDirectories = (
 		);
 	};
-	885C647B091EAFC0001FABA8 /* PBXBookmark */ = {
-		isa = PBXBookmark;
-		fRef = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */;
-	};
-	885C6482091EB469001FABA8 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */;
-		name = "PyrLexer.cpp: 1997";
-		rLen = 0;
-		rLoc = 45338;
-		rType = 0;
-		vrLen = 1154;
-		vrLoc = 47011;
-	};
 	889ACF0B0906D6200009F038 /* Source Control */ = {
 		isa = PBXSourceControlManager;
 		fallbackIsa = XCSourceControlManager;
@@ -250,12 +236,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 153005987;
-			PBXWorkspaceStateSaveDate = 153005987;
-		};
-		perUserProjectItems = {
-			885C647B091EAFC0001FABA8 /* PBXBookmark */ = 885C647B091EAFC0001FABA8 /* PBXBookmark */;
-			885C6482091EB469001FABA8 /* PBXTextBookmark */ = 885C6482091EB469001FABA8 /* PBXTextBookmark */;
+			PBXPerProjectTemplateStateSaveDate = 153127968;
+			PBXWorkspaceStateSaveDate = 153127968;
 		};
 		sourceControlManager = 889ACF0B0906D6200009F038 /* Source Control */;
 		userBuildSettings = {
@@ -357,9 +339,9 @@
 	};
 	F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {818, 33236}}";
+			sepNavIntBoundsRect = "{{0, 0}, {818, 30898}}";
 			sepNavSelRange = "{45338, 0}";
-			sepNavVisRect = "{{0, 28887}, {818, 587}}";
+			sepNavVisRect = "{{0, 28882}, {818, 587}}";
 			sepNavWindowFrame = "{{343, 114}, {857, 716}}";
 		};
 	};

@@ -1148,6 +1148,7 @@
 			children = (
 				8821F2E9091E812100952C1A /* SCSA_Devel_Resources */,
 				8821F2D6091E810900952C1A /* SCSA_Resources */,
+				886C1FFC090D841E005DFAD7 /* SCSA_Library */,
 				F50D04FB02E69B6B01CA2799 /* headers */,
 				F50D057E02E69B6B01CA2799 /* source */,
 				F50D060302E69C2101CA2799 /* Products */,
@@ -1461,7 +1462,6 @@
 		F50D069D02E6A1C601CA2799 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				886C1FFC090D841E005DFAD7 /* SCSA_Library */,
 				88254F9C090958B000D7E0C5 /* synthdefs */,
 				88254F970909589400D7E0C5 /* sounds */,
 				88254F950909588900D7E0C5 /* scsynth */,
@@ -1797,7 +1797,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ln -s \"`pwd`/SCSA_Aux/SCSA_Library\" $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/SCSA_Library_alias";
+			shellScript = "ln -s \"`pwd`/SCSA_Aux/SCSA_Library\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/SCSA_Library_alias\"";
 		};
 		88D7D546090C6C50008D45B9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1810,7 +1810,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp SCSA_Aux/SCSA_Main_Replacement/Main.sc $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/DefaultLibrary\ncp -R SCSA_Aux/SCSA_Help $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/Help\n[ -e $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/sounds ] || mkdir $TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/sounds";
+			shellScript = "cp SCSA_Aux/SCSA_Main_Replacement/Main.sc \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/DefaultLibrary\"\ncp -R SCSA_Aux/SCSA_Help \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/Help\"\n[ -e \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/sounds\" ] || mkdir \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/sounds\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
