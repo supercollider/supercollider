@@ -21,12 +21,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
 #ifdef SC_WIN32
 # include <direct.h>
-# define MAXPATHLEN _MAX_PATH
 # include "win32_utils.h"
 #else
 # include <sys/param.h>
+# include <sys/types.h>
+# include <sys/stat.h>
 #endif
 
 #ifdef SC_DARWIN
@@ -125,11 +127,11 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 void sc_AppendToPath(char *path, const char *component)
 {
 #ifndef SC_WIN32
-  strcat(path, "/");
+  strncat(path, "/", MAXPATHLEN);
 #else
-  strcat(path, "\\");
+  strncat(path, "\\", MAXPATHLEN);
 #endif
-  strcat(path, component);
+  strncat(path, component, MAXPATHLEN);
 }
 
 void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length) 
@@ -156,6 +158,21 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 	strcpy(returnPath, path);
 	return;
 }
+
+// Returns TRUE iff dirname is an existing directory
+
+bool sc_DirectoryExists(const char *dirname) 
+{
+#ifdef SC_WIN32
+  return false;
+#else
+  struct stat buf;
+  int err = stat(dirname, &buf);
+  return (err == 0) && (buf.st_mode & S_IFDIR);
+#endif
+}
+
+// Returns TRUE iff dirname is an existing directory
 
 bool sc_DirectoryAliasExists(char *path)
 {
@@ -187,7 +204,6 @@ void sc_GetUserHomeDirectory(char *str, int size)
 }
 
 // Get the System level 'Extensions' directory.
-
 
 void sc_GetSystemExtensionDirectory(char *str, int size)
 {

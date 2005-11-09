@@ -21,11 +21,18 @@
 #ifndef SC_DIR_UTILS_H_INCLUDED
 #define SC_DIR_UTILS_H_INCLUDED
 
+#ifdef SC_WIN32
+# include <stdlib>
+# define MAXPATHLEN _MAX_PATH
+#endif
+
 extern "C" {
 	void sc_GetResourceDirectory(char* pathBuf, int length);
 	void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length);
 	void sc_AppendToPath(char *path, const char *component);
 	void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length);
+	// Returns TRUE iff dirname is an existing directory
+	bool sc_DirectoryExists(const char *dirname);
 	bool sc_DirectoryAliasExists(char *path);
 	
 	void sc_GetUserHomeDirectory(char *str, int size);

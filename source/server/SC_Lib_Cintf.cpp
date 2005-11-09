@@ -40,31 +40,25 @@
 # include <dlfcn.h>
 #endif
 
-#ifndef SC_PLUGIN_DIR
-# ifndef SC_WIN32
-#  define SC_PLUGIN_DIR "plugins"
-# else
-#  ifdef _DEBUG
-#   define SC_PLUGIN_DIR "plugins_debug"
-#  else
-#   define SC_PLUGIN_DIR "plugins"
-#  endif
-# endif
+// Plugin directory in resource directory
+#if defined(SC_WIN32) && defined(_DEBUG)
+# define SC_LOCAL_PLUGIN_DIR "plugins_debug"
+#else
+# define SC_LOCAL_PLUGIN_DIR "plugins"
 #endif
 
+// Extension for binary plugins
 #ifndef SC_PLUGIN_EXT
 # define SC_PLUGIN_EXT ".scx"
 #endif
 
+// Symbol of initialization routine when loading plugins
 #ifndef SC_PLUGIN_LOAD_SYM
 # define SC_PLUGIN_LOAD_SYM "_load"
 #endif
 
 #ifndef SC_WIN32
 # include <sys/param.h>
-#else
-# include <stdlib.h>
-# define MAXPATHLEN _MAX_PATH
 #endif
 
 Malloc gMalloc;
@@ -94,7 +88,16 @@ void initialize_library()
 	char pluginDir[MAXPATHLEN];
 	sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
 	sc_AppendToPath(pluginDir, SC_PLUGIN_DIR);
-	PlugIn_LoadDir(pluginDir);
+
+	if (sc_DirectoryExists(pluginDir)) {
+		// load plugins in resource directory
+		PlugIn_LoadDir(pluginDir);
+	} else {
+		// load globally installed plugins
+#ifdef SC_PLUGIN_DIR
+		PlugIn_LoadDir(SC_PLUGIN_DIR);
+#endif
+	}
 	
 	// get extension directories
 	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
@@ -112,10 +115,6 @@ void initialize_library()
 		PlugIn_LoadDir(const_cast<char *>(sp.NextToken()));
 	}
 }
-
-
-
-
 
 bool PlugIn_Load(const char *filename);
 bool PlugIn_Load(const char *filename)

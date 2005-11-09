@@ -1943,20 +1943,6 @@ void finiPassOne()
     //postfl("<-finiPassOne\n");
 }
 
-// Returns TRUE iff dirname is an existing directory.
-
-bool sc_DirectoryExists(const char *dirname);
-bool sc_DirectoryExists(const char *dirname) 
-{
-#ifndef SC_WIN32
-  struct stat buf;
-  int err = stat(dirname, &buf);
-  return (err == 0) && (buf.st_mode & S_IFDIR);
-#else
-  return 0;
-#endif
-}
-
 // Returns TRUE iff 'name' is to be ignored during compilation.
 
 static bool sc_IsNonHostPlatformDir(const char *name);
