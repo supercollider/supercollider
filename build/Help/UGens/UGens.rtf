@@ -4,21 +4,19 @@
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 UGens Help\
+\f0\b\fs36 \cf0 UGens Overview
+\f1\b0\fs34 \
+
+\f0\b\fs24 \
 \
+See also: [\ul UGen\ulnone ] and [\ul Tour_of_UGens\ulnone ]\
+	\
 
-\fs24 (incomplete)\
-\
+\f1\b0 Below is a partial list of UGens sorted by type.
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0\fs34 \cf0 [Tour_of_UGens]\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs24 \cf0 \
-	UGen\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul \ulc0 \
-Analysis\ulnone \
+\cf0 \
+Analysis\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
@@ -27,9 +25,9 @@ Analysis\ulnone \
 	Pitch\
 	Slope\
 	ZeroCrossing
-\f0\b \ul \
+\f0\b \
 \
-Control\ulnone \
+Control\
 
 \f1\b0 \
 	DegreeToKey\
@@ -39,7 +37,7 @@ Control\ulnone \
 	MouseY\
 	MouseButton\
 \
-	\ul Demand UGens:\ulnone \
+	Demand UGens:\
 	\
 	Demand\
 	Duty\
@@ -56,8 +54,8 @@ Control\ulnone \
 	Dbrown\
 	Dibrown\
 	
-\f0\b \ul \
-In/Out\ulnone \
+\f0\b \
+In/Out\
 
 \f1\b0 \
 	AudioIn\
@@ -74,9 +72,8 @@ In/Out\ulnone \
 	SharedOut
 \f0\b \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul Oscillators\
-\ulnone 	
+Oscillators\
+	
 \f1\b0 \
 	Blip\
 	Formant\
@@ -100,14 +97,24 @@ In/Out\ulnone \
 	VOsc\
 	VOsc3\
 \
-
-\f0\b \ul Delays\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \ulnone \
+\f0\b \cf0 Delays\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
 	AllpassC\
 	AllpassL\
 	AllpassN\
+	BufAllpassC\
+	BufAllpassL\
+	BufAllpassN\
+	BufDelayC\
+	BufDelayL\
+	BufDelayN\
+	BufCombC\
+	BufCombL\
+	BufCombN\
 	CombC\
 	CombL\
 	CombN\
@@ -121,8 +128,8 @@ In/Out\ulnone \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \ul Multiple Channels\
-\ulnone 	
+\f0\b \cf0 Multiple Channels\
+	
 \f1\b0 \
 	Mix\
 	MultiOutUGen\
@@ -141,16 +148,16 @@ In/Out\ulnone \
 	XFade2\
 	
 \f0\b \
-\ul Physical Models\
+Physical Models\
 \
 	
-\f1\b0 \ulnone Ball\
+\f1\b0 Ball\
 	Spring\
 	TBall\
 	
-\f0\b \ul \
+\f0\b \
 Filters\
-\ulnone 	\
+	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 	BPF\
@@ -186,12 +193,10 @@ Filters\
 	TwoZero\
 	
 \f0\b \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul Noise\
-\ulnone 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+Noise\
+	\
 
-\f1\b0 \cf0 	LFNoise1\
+\f1\b0 	LFNoise1\
 	LFNoise2 \
 	LFNoise0 \
 	LFClipNoise      \
@@ -211,8 +216,7 @@ Filters\
 	Crackle   
 \f0\b    \
 	         \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul Triggers\ulnone \
+Triggers\
 \
  	
 \f1\b0 MostChange       \
@@ -232,16 +236,16 @@ Filters\
 	Phasor
 \f0\b \
 	\
-\ul Frequency Domain\
-\ulnone \
+Frequency Domain\
+\
 	
 \f1\b0 FFT\
 	Convolution\
 	PV_ConformalMap
 \f0\b \
-\ul \
+\
 Buffer Manipulation\
-\ulnone \
+\
 	
 \f1\b0 BufRd\
 	BufWr
@@ -257,8 +261,8 @@ Buffer Manipulation\
 	TGrains\
 	
 \f0\b \
-\ul Binary Operators\
-\ulnone \
+Binary Operators\
+\
 	
 \f1\b0 BinaryOpUGen (overview)\
 	+\
@@ -289,10 +293,11 @@ Buffer Manipulation\
 	thresh\
 	trunc\
 	wrap2\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
-\ul InfoUGens\
-\ulnone \
+\f0\b \cf0 \
+InfoUGens\
+\
 	
 \f1\b0 BufChannels\
 	BufDur\
@@ -305,8 +310,8 @@ Buffer Manipulation\
 	\
 	
 \f0\b \
-\ul Synth-Controlling-UGens\
-\ulnone \
+Synth-Controlling-UGens\
+\
 	see overview: [Synth-Controlling-UGens
 \f2\b0 ]
 \f0\b \
@@ -328,8 +333,8 @@ Buffer Manipulation\
 	PauseSelf\
 
 \f0\b \
-\ul Random Values\
-\ulnone \
+Random Values\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 	Rand\
@@ -345,7 +350,7 @@ Buffer Manipulation\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \ul Array Usage\ulnone \
+\f0\b \cf0 Array Usage\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
