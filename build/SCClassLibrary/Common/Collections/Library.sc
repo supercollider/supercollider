@@ -389,20 +389,24 @@ Archive : LibraryBase
 		global = this.new;
 	}
 
-	*read { arg filename = "archive.sctxar";
-		if (File.exists(filename)) {
-			if (filename.endsWith(".scar")) {
-				global = this.readBinaryArchive(filename);
+	*read { arg filename;
+		var expandedFileName;
+		expandedFileName = filename ?? (String.scDir ++ "/archive.sctxar");
+		if (File.exists(expandedFileName)) {
+			if (expandedFileName.endsWith(".scar")) {
+				global = this.readBinaryArchive(expandedFileName);
 			}{
-				global = this.readArchive(filename);
+				global = this.readArchive(expandedFileName);
 			};
 			if (global.isNil) {
 				global = this.new;
 			};
 		}
 	}
-	*write { arg filename = "archive.sctxar";
-		global.writeArchive(filename);
+	*write { arg filename;
+		var expandedFileName;
+		expandedFileName = filename ?? (String.scDir ++ "/archive.sctxar");
+		global.writeArchive(expandedFileName);
 	}
 }
 
