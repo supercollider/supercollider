@@ -42,9 +42,9 @@
 
 // Plugin directory in resource directory
 #if defined(SC_WIN32) && defined(_DEBUG)
-# define SC_LOCAL_PLUGIN_DIR "plugins_debug"
+# define SC_PLUGIN_DIR_NAME "plugins_debug"
 #else
-# define SC_LOCAL_PLUGIN_DIR "plugins"
+# define SC_PLUGIN_DIR_NAME "plugins"
 #endif
 
 // Extension for binary plugins
@@ -87,7 +87,7 @@ void initialize_library()
 	// load default plugin directory
 	char pluginDir[MAXPATHLEN];
 	sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
-	sc_AppendToPath(pluginDir, SC_PLUGIN_DIR);
+	sc_AppendToPath(pluginDir, SC_PLUGIN_DIR_NAME);
 
 	if (sc_DirectoryExists(pluginDir)) {
 		// load plugins in resource directory
