@@ -136,6 +136,7 @@ void sc_AppendToPath(char *path, const char *component)
 
 void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length) 
 {
+	isAlias = false;
 #ifdef SC_DARWIN
 	FSRef dirRef;
 	OSStatus osStatusErr = FSPathMakeRef ((const UInt8 *) path, &dirRef, NULL);
@@ -159,6 +160,55 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 	return;
 }
 
+// Returns TRUE iff 'name' is to be ignored during compilation.
+
+static bool sc_IsNonHostPlatformDir(const char *name)
+{
+#if defined(SC_DARWIN)
+  char a[] = "linux", b[] = "windows";
+#elif defined(SC_LINUX)
+  char a[] = "osx", b[] = "windows";
+#elif defined(SC_WIN32)
+  char a[] = "osx", b[] = "linux";
+#endif
+  return ((strcmp(name, a) == 0) || 
+	  (strcmp(name, b) == 0));
+}
+
+static bool sc_SkipDirectory(const char *name)
+{
+  return ((strcmp(name, ".") == 0) || 
+	  (strcmp(name, "..") == 0) ||
+	  (strcasecmp(name, "help") == 0) ||
+	  (strcasecmp(name, "test") == 0) ||
+	  (strcasecmp(name, "_darcs") == 0) ||
+	  sc_IsNonHostPlatformDir(name));
+}
+
+
+bool sc_ReadDir(DIR *dir, char* dirname, char *path, bool &skipEntry)
+{
+	struct dirent *rawDirEntry = readdir(dir);
+	if (!rawDirEntry) 
+		return false;
+	if (sc_SkipDirectory(rawDirEntry->d_name))
+	{
+		skipEntry = true;
+		return true;
+	}
+	
+	// construct path from dir entry
+	char *rawPath = (char*)malloc(strlen(dirname) + strlen((char *) rawDirEntry->d_name) + 2);
+	strcpy(rawPath, dirname);
+	strcat(rawPath, "/");
+	strcat(rawPath, (char *) rawDirEntry->d_name);
+	
+	// resolve path
+	bool isAlias = false;
+	sc_ResolveIfAlias(rawPath, path, isAlias, MAXPATHLEN);
+	return true;
+}
+	
 // Returns TRUE iff dirname is an existing directory
 
 bool sc_DirectoryExists(const char *dirname) 
@@ -170,25 +220,6 @@ bool sc_DirectoryExists(const char *dirname)
   int err = stat(dirname, &buf);
   return (err == 0) && (buf.st_mode & S_IFDIR);
 #endif
-}
-
-// Returns TRUE iff dirname is an existing directory
-
-bool sc_DirectoryAliasExists(char *path)
-{
-#ifdef SC_DARWIN
-	FSRef dirRef;
-	OSStatus osStatusErr = FSPathMakeRef ( (const UInt8 *) path, &dirRef, NULL );
-	if ( !osStatusErr ) {
-		Boolean isFolder;
-		Boolean wasAliased;
-		OSErr err = FSResolveAliasFile ( &dirRef, true, &isFolder, &wasAliased );
-		if ( !err && wasAliased && isFolder ) {
-			return true;
-		}
-	}
-#endif
-	return false;
 }
 
 // Support for Extensions

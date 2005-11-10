@@ -646,6 +646,7 @@ symbol4:
 	}
 	
 
+
 binop:
 
 	c = input();
@@ -1034,6 +1035,7 @@ int processident(char *token)
 #endif
 	
 	if (strcmp("while",token) ==0) { 
+
 		sym = getsym(token);
 		SetSymbol(&slot, sym);
 		node = newPyrSlotNode(&slot);
@@ -1334,6 +1336,7 @@ void postErrorLine()
 	}
 	if (textpos == end) str[j++] = '¶';
 	str[j] = 0;
+
 	postfl("%s\n", str);
 }
 #endif
@@ -1785,6 +1788,7 @@ void findDiscrepancy();
 
 void traverseFullDepTree2()
 {
+
 	// assign a class index to all classes
 	if (!parseFailed && !compileErrors) {
 		buildClassTree();
@@ -1943,43 +1947,11 @@ void finiPassOne()
     //postfl("<-finiPassOne\n");
 }
 
-// Returns TRUE iff 'name' is to be ignored during compilation.
-
-static bool sc_IsNonHostPlatformDir(const char *name);
-static bool sc_IsNonHostPlatformDir(const char *name)
-{
-#if defined(SC_DARWIN)
-  char a[] = "linux", b[] = "windows";
-#elif defined(SC_LINUX)
-  char a[] = "osx", b[] = "windows";
-#elif defined(SC_WIN32)
-  char a[] = "osx", b[] = "linux";
-#endif
-  return ((strcmp(name, a) == 0) || 
-	  (strcmp(name, b) == 0));
-}
-
-static bool sc_SkipDirectory(const char *name);
-static bool sc_SkipDirectory(const char *name)
-{
-  return ((strcmp(name, ".") == 0) || 
-	  (strcmp(name, "..") == 0) ||
-	  (strcasecmp(name, "help") == 0) ||
-	  (strcasecmp(name, "test") == 0) ||
-	  (strcasecmp(name, "_darcs") == 0) ||
-	  sc_IsNonHostPlatformDir(name));
-}
-
-bool passOne_ProcessDir(char *dirnamearg, int level);
+bool passOne_ProcessDir(char *dirname, int level);
 #ifndef SC_WIN32
-bool passOne_ProcessDir(char *dirnamearg, int level)
+bool passOne_ProcessDir(char *dirname, int level)
 {
 	bool success = true;
-
-	bool isAlias = false;
-	// on non-Darwin, sc_ResolveIfAlias always returns original path
-	char dirname[MAXPATHLEN];
-	sc_ResolveIfAlias(dirnamearg, dirname, isAlias, MAXPATHLEN);
 	
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
@@ -1997,26 +1969,18 @@ bool passOne_ProcessDir(char *dirnamearg, int level)
 	}
 	
 	for (;;) {
-		struct dirent *de;
+		char diritem[MAXPATHLEN];
+		bool skipItem = false;
+		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
+		if (!validItem) break;
+		if (skipItem) continue;
 		
-		de = readdir(dir);
-		if (!de) break;
-		
-		if (sc_SkipDirectory(de->d_name)) continue;
-
-		char *entrypathname = (char*)malloc(strlen(dirname) + strlen((char*)de->d_name) + 2);
-		strcpy(entrypathname, dirname);
-		//strcat(entrypathname, ":");
-		strcat(entrypathname, "/");
-		strcat(entrypathname, (char*)de->d_name);
-
-        if (sc_DirectoryExists(entrypathname) || sc_DirectoryAliasExists(entrypathname)) {
-            success = passOne_ProcessDir(entrypathname, level + 1);
+        if (sc_DirectoryExists(diritem)) {
+            success = passOne_ProcessDir(diritem, level + 1);
         } else {
-            success = passOne_ProcessOneFile(entrypathname, level + 1);
+            success = passOne_ProcessOneFile(diritem, level + 1);
         }
-
-		free(entrypathname);
+		
 		if (!success) break;
 	}
 	closedir(dir);
