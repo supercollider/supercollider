@@ -106,7 +106,7 @@ BundleNetAddr : NetAddr {
 	var <saveAddr, <>bundle;
 
 	*copyFrom { arg addr, bundle;
-		^super.newCopyArgs(addr.addr, addr.port, addr.hostname, addr.socket, addr, bundle);
+		^super.newCopyArgs(addr.addr, addr.port, addr.hostname, addr.socket, addr, bundle ? []);
 	}
 
 	sendRaw { arg rawArray;
