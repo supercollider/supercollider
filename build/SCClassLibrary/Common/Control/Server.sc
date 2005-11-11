@@ -546,7 +546,7 @@ Server : Model {
 	}
 	closeBundle { arg time; // set time to false if you don't want to send.
 		var bundle;
-		if (time != false) { addr.closeBundle(time) };
+		bundle = addr.closeBundle(time);
 		addr = addr.saveAddr;
 		^bundle;
 	}

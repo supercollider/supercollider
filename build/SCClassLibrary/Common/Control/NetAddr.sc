@@ -121,15 +121,18 @@ BundleNetAddr : NetAddr {
 	
 	closeBundle { arg time;
 		var size;
-		size = bundle.bundleSize;
-		if(size > 8192) {// udp max size.
-			bundle.clumpBundles.do { |item, i|
-				item.postln;
-				saveAddr.sendBundle(1e-9 * i + time, *item) 
-			};
-		} {
-			saveAddr.sendBundle(time, *bundle)
-		}
+		if(time != false) {
+			size = bundle.bundleSize;
+			if(size > 8192) {// udp max size.
+				bundle.clumpBundles.do { |item, i|
+					item.postln;
+					saveAddr.sendBundle(1e-9 * i + time, *item) 
+				};
+			} {
+				saveAddr.sendBundle(time, *bundle)
+			}
+		};
+		^bundle
 	}
 		
 	recover {
