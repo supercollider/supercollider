@@ -16,6 +16,12 @@ Dictionary : Set {
 		val = this.at(key);
 		if ( val.isNil, { ^function.value }, { ^val });
 	}
+	matchAt { |key|
+		this.keysValuesDo({ |k, v|
+			if(k.matchItem(key)) { ^v }
+		});
+		^nil
+	}
 	add { arg anAssociation;
 		this.put(anAssociation.key, anAssociation.value);
 	}
