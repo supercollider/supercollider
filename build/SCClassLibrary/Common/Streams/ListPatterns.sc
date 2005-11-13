@@ -342,26 +342,41 @@ Pslide : ListPattern {
     // indexing wraps around if goes past beginning or end.
     // step can be negative.
 
-    var <>len, <>step, <>start;
-    *new { arg list, repeats = 1, len = 3, step = 1, start = 0;
+    var <>len, <>step, <>start, <>wrapAtEnd;
+    *new { arg list, repeats = 1, len = 3, step = 1, start = 0, wrapAtEnd = true;
         ^super.new(list, repeats).len_(len).step_(step).start_(start)
+			.wrapAtEnd_(wrapAtEnd);
     }
     embedInStream { arg inval;
 	    	var item;
-	    	var pos = start; 
-	    	repeats.do({
-	    		len.do({ arg j;
-	    			item = list.wrapAt(pos + j);
-	    			inval = item.embedInStream(inval);
-	    		});
-	    		pos = pos + step;
-	    	});
+	    	var pos = start;
+	    	if(wrapAtEnd) {
+		    	repeats.do({
+		    		len.do({ arg j;
+		    			item = list.wrapAt(pos + j);
+		    			inval = item.embedInStream(inval);
+		    		});
+		    		pos = pos + step;
+		    	});
+		} {
+			repeats.do({
+				len.do({ |j|
+					item = list[pos + j];
+					if(item.notNil) {
+						inval = item.embedInStream(inval);
+					} {
+						^inval
+					};
+				});
+		    		pos = pos + step;
+			});
+		};
 	     ^inval;  		
     }
 }
 
 Pwalk : ListPattern {
-		// random walk pattern - hjh - jamshark70@yahoo.com
+		// random walk pattern - hjh - jamshark70@gmail.com
 	
 	var	<>startPos,	// starting index
 		<>stepPattern,	// pattern for steps
