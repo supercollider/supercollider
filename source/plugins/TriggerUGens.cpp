@@ -126,6 +126,18 @@ struct Peak : public Unit
 	float m_prevtrig;
 };
 
+struct Min : public Unit
+{
+	float mLevel;
+	float m_prevtrig;
+};
+
+struct Max : public Unit
+{
+	float mLevel;
+	float m_prevtrig;
+};
+
 struct PeakFollower : public Unit
 {
 	float mLevel;
@@ -260,6 +272,16 @@ void Peak_Ctor(Peak *unit);
 void Peak_next_ak(Peak *unit, int inNumSamples);
 void Peak_next_ai(Peak *unit, int inNumSamples);
 void Peak_next_aa(Peak *unit, int inNumSamples);
+
+void Min_Ctor(Min *unit);
+void Min_next_ak(Min *unit, int inNumSamples);
+void Min_next_ai(Min *unit, int inNumSamples);
+void Min_next_aa(Min *unit, int inNumSamples);
+
+void Max_Ctor(Max *unit);
+void Max_next_ak(Max *unit, int inNumSamples);
+void Max_next_ai(Max *unit, int inNumSamples);
+void Max_next_aa(Max *unit, int inNumSamples);
 
 
 void PeakFollower_Ctor(PeakFollower *unit);
@@ -1396,7 +1418,7 @@ void Peak_next_ak(Peak *unit, int inNumSamples)
 	float level = unit->mLevel;
 	float inlevel;
 	LOOP(inNumSamples,
-		inlevel = ZXP(in);
+		inlevel = fabs(ZXP(in));
 		if (inlevel > level) level = inlevel;
 		ZXP(out) = level;
 	);
@@ -1412,7 +1434,7 @@ void Peak_next_ai(Peak *unit, int inNumSamples)
 	float level = unit->mLevel;
 	float inlevel;
 	LOOP(inNumSamples,
-		inlevel = ZXP(in);
+		inlevel = fabs(ZXP(in));
 		if (inlevel > level) level = inlevel;
 		ZXP(out) = level;
 	);
@@ -1420,6 +1442,139 @@ void Peak_next_ai(Peak *unit, int inNumSamples)
 }
 
 void Peak_next_aa(Peak *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float *trig = ZIN(1);
+	float prevtrig = unit->m_prevtrig;
+	float level = unit->mLevel;
+
+	LOOP(inNumSamples,
+		float curtrig = ZXP(trig);
+		float inlevel = fabs(ZXP(in));
+		if (inlevel > level) level = inlevel;
+		ZXP(out) = level;
+		if (prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+		prevtrig = curtrig;
+	);
+	unit->m_prevtrig = prevtrig;
+	unit->mLevel = level;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Min_Ctor(Min *unit)
+{
+	if (INRATE(1) == calc_FullRate) {
+		SETCALC(Min_next_aa);
+	} else if (INRATE(1) == calc_ScalarRate) {
+		SETCALC(Min_next_ai);
+	} else {
+		SETCALC(Min_next_ak);
+	}
+	unit->m_prevtrig = 0.f;
+	ZOUT0(0) = unit->mLevel = ZIN0(0);
+}
+
+void Min_next_ak(Min *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float curtrig = ZIN0(1);
+	float level = unit->mLevel;
+	float inlevel;
+	LOOP(inNumSamples,
+		inlevel = ZXP(in);
+		if (inlevel < level) level = inlevel;
+		ZXP(out) = level;
+	);
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+	unit->m_prevtrig = curtrig;
+	unit->mLevel = level;
+}
+
+void Min_next_ai(Min *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float level = unit->mLevel;
+	float inlevel;
+	LOOP(inNumSamples,
+		inlevel = ZXP(in);
+		if (inlevel < level) level = inlevel;
+		ZXP(out) = level;
+	);
+	unit->mLevel = level;
+}
+
+void Min_next_aa(Min *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float *trig = ZIN(1);
+	float prevtrig = unit->m_prevtrig;
+	float level = unit->mLevel;
+
+	LOOP(inNumSamples,
+		float curtrig = ZXP(trig);
+		float inlevel = ZXP(in);
+		if (inlevel < level) level = inlevel;
+		ZXP(out) = level;
+		if (prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+		prevtrig = curtrig;
+	);
+	unit->m_prevtrig = prevtrig;
+	unit->mLevel = level;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+void Max_Ctor(Max *unit)
+{
+	if (INRATE(1) == calc_FullRate) {
+		SETCALC(Max_next_aa);
+	} else if (INRATE(1) == calc_ScalarRate) {
+		SETCALC(Max_next_ai);
+	} else {
+		SETCALC(Max_next_ak);
+	}
+	unit->m_prevtrig = 0.f;
+	ZOUT0(0) = unit->mLevel = ZIN0(0);
+}
+
+void Max_next_ak(Max *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float curtrig = ZIN0(1);
+	float level = unit->mLevel;
+	float inlevel;
+	LOOP(inNumSamples,
+		inlevel = ZXP(in);
+		if (inlevel > level) level = inlevel;
+		ZXP(out) = level;
+	);
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+	unit->m_prevtrig = curtrig;
+	unit->mLevel = level;
+}
+
+void Max_next_ai(Max *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float level = unit->mLevel;
+	float inlevel;
+	LOOP(inNumSamples,
+		inlevel = ZXP(in);
+		if (inlevel > level) level = inlevel;
+		ZXP(out) = level;
+	);
+	unit->mLevel = level;
+}
+
+void Max_next_aa(Max *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1441,6 +1596,7 @@ void Peak_next_aa(Peak *unit, int inNumSamples)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void PeakFollower_Ctor(PeakFollower *unit)
 {
@@ -1465,7 +1621,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 	
 	if(decay == unit->mDecay) {
 		LOOP(inNumSamples,
-			float inlevel = ZXP(in);
+			float inlevel = fabs(ZXP(in));
 			if (inlevel >= level) { 
 				level = inlevel; 
 			} else { 
@@ -1479,7 +1635,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 		float decay_slope = CALCSLOPE(decay, unit->mDecay);
 		if (decay >= 0.f && unit->mDecay >= 0.f) {
 			LOOP(inNumSamples, 
-				float inlevel = ZXP(in);
+				float inlevel = fabs(ZXP(in));
 				if (inlevel >= level) { 
 					level = inlevel; 
 				} else {
@@ -1490,7 +1646,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 			);
 		} else if (decay <= 0.f && unit->mDecay <= 0.f) {
 			LOOP(inNumSamples, 
-				float inlevel = ZXP(in);
+				float inlevel = fabs(ZXP(in));
 				if (inlevel >= level) { 
 					level = inlevel; 
 				} else {
@@ -1501,7 +1657,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 			);
 		} else {
 			LOOP(inNumSamples, 
-				float inlevel = ZXP(in);
+				float inlevel = fabs(ZXP(in));
 				if (inlevel >= level) { 
 					level = inlevel; 
 				} else {
@@ -1526,7 +1682,7 @@ void PeakFollower_next_ai(PeakFollower *unit, int inNumSamples)
 	float level = unit->mLevel;
 	
 		LOOP(inNumSamples,
-			float inlevel = ZXP(in);
+			float inlevel = fabs(ZXP(in));
 			if (inlevel >= level) { 
 				level = inlevel; 
 			} else { 
@@ -2009,6 +2165,8 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Sweep);
 	DefineSimpleUnit(Phasor);
 	DefineSimpleUnit(Peak);
+	DefineSimpleUnit(Min);
+	DefineSimpleUnit(Max);
 	DefineSimpleUnit(PeakFollower);
 	DefineSimpleUnit(MostChange);
 	DefineSimpleUnit(LeastChange);
