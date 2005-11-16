@@ -73,7 +73,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)pycxx&quot;;&quot;$(ProjectDir)..\..\headers\app\&quot;;&quot;$(ProjectDir)..\..\headers\lang\&quot;;&quot;$(ProjectDir)..\..\headers\common\&quot;;&quot;$(ProjectDir)..\..\headers\plugin_interface\&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;;&quot;$(ProjectDir)libgw32c_subset\&quot;;&quot;$(ProjectDir)..\..\..\libsndfile\src&quot;;&quot;$(ProjectDir)..\..\headers\server\&quot;;&quot;$(ProjectDir)..\..\..\portaudio\pa_common&quot;;&quot;$(ProjectDir)..\..\..\portmidi\pm_common&quot;;&quot;$(ProjectDir)..\..\..\portmidi\porttime&quot;;&quot;$(PYTHONPATH)\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)pycxx&quot;;&quot;$(ProjectDir)..\..\headers\app\&quot;;&quot;$(ProjectDir)..\..\headers\lang\&quot;;&quot;$(ProjectDir)..\..\headers\common\&quot;;&quot;$(ProjectDir)..\..\headers\plugin_interface\&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;;&quot;$(ProjectDir)libgw32c_subset\&quot;;&quot;$(ProjectDir)..\..\..\libsndfile\src&quot;;&quot;$(ProjectDir)..\..\headers\server\&quot;;&quot;$(ProjectDir)..\..\..\portaudio\pa_common&quot;;&quot;$(ProjectDir)..\..\..\portmidi\pm_common&quot;;&quot;$(ProjectDir)..\..\..\portmidi\porttime&quot;;&quot;$(PYTHONPATH)\include&quot;;&quot;$(ProjectDir)..\..\source\lang\LangSource\erase-compiler&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PYSCLANG_EXPORTS;SC_WIN32;__GNU_LIBRARY__;wxUSE_GUI=1;__WXDEBUG__;WINVER=0x0400;PTW32_BUILD;FORCE_MISSING_SNPRINTF;SC_WIN32_STATIC_PTHREADS"
 				RuntimeLibrary="2"
 				DefaultCharIsUnsigned="TRUE"
@@ -88,6 +88,7 @@
 				AdditionalDependencies="wsock32.lib winmm.lib"
 				OutputFile="$(PYTHONPATH)\Lib\site-packages\PySCLang.pyd"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(PYTHONPATH)\libs\"
 				ModuleDefinitionFile="PySCLang.def"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
@@ -173,6 +174,12 @@
 			</File>
 			<File
 				RelativePath=".\PySCLang_VM.h">
+			</File>
+			<File
+				RelativePath="..\..\headers\common\SC_DirUtils.h">
+			</File>
+			<File
+				RelativePath="..\..\headers\common\SC_Win32Utils.h">
 			</File>
 			<File
 				RelativePath=".\stdafx.h">
@@ -333,6 +340,9 @@
 					RelativePath="..\..\source\lang\LangSource\DumpParseNode.cpp">
 				</File>
 				<File
+					RelativePath="..\..\source\plugins\fftlib.c">
+				</File>
+				<File
 					RelativePath="..\..\source\lang\LangSource\GC.cpp">
 				</File>
 				<File
@@ -340,9 +350,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\lang\LangSource\erase-compiler\lang11d_tab.cpp">
-				</File>
-				<File
-					RelativePath="..\..\source\lang\LangSource\libraryConfig.cpp">
 				</File>
 				<File
 					RelativePath="..\..\source\lang\LangSource\PyrFileUtils.cpp">
@@ -636,9 +643,6 @@
 					</File>
 					<File
 						RelativePath="..\..\headers\lang\VMGlobals.h">
-					</File>
-					<File
-						RelativePath="..\..\headers\lang\win32_utils.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -1631,6 +1635,9 @@
 			</File>
 			<File
 				RelativePath="..\..\source\common\g_fmt.c">
+			</File>
+			<File
+				RelativePath="..\..\source\common\SC_DirUtils.cpp">
 			</File>
 			<File
 				RelativePath="..\..\source\common\SC_Sem.cpp">
