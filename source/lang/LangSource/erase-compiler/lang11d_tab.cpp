@@ -6,7 +6,13 @@
 
 #define	NAME	257
 #define	INTEGER	258
-#define	FLOAT	259
+
+#ifdef SC_WIN32 	 
+# define FLOAT_COMPAT 259 	 
+#else 	 
+# define FLOAT   259 
+#endif
+
 #define	ACCIDENTAL	260
 #define	SYMBOL	261
 #define	STRING	262
@@ -17,7 +23,11 @@
 #define	VAR	267
 #define	ARG	268
 #define	CLASSVAR	269
-#define	CONST	270
+#ifdef SC_WIN32 	 
+# define CONST_COMPAT 270 	 
+#else 	 
+# define CONST   270
+#endif
 #define	NILOBJ	271
 #define	TRUEOBJ	272
 #define	FALSEOBJ	273
