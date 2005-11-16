@@ -26,6 +26,8 @@
 
 		// load user startup file
 		"~/.sclang.sc".loadPaths;
+
+		StartUp.run;
 	}
 
 	shutdown { // at recompile, quit
