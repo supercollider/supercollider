@@ -60,10 +60,10 @@ PulseCount : UGen {
 Peak : PulseCount {
 }
 
-Min : Peak {
+RunningMin : Peak {
 }
 
-Max : Peak {
+RunningMax : Peak {
 }
 
 

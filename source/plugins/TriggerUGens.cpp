@@ -126,13 +126,13 @@ struct Peak : public Unit
 	float m_prevtrig;
 };
 
-struct Min : public Unit
+struct RunningMin : public Unit
 {
 	float mLevel;
 	float m_prevtrig;
 };
 
-struct Max : public Unit
+struct RunningMax : public Unit
 {
 	float mLevel;
 	float m_prevtrig;
@@ -273,15 +273,15 @@ void Peak_next_ak(Peak *unit, int inNumSamples);
 void Peak_next_ai(Peak *unit, int inNumSamples);
 void Peak_next_aa(Peak *unit, int inNumSamples);
 
-void Min_Ctor(Min *unit);
-void Min_next_ak(Min *unit, int inNumSamples);
-void Min_next_ai(Min *unit, int inNumSamples);
-void Min_next_aa(Min *unit, int inNumSamples);
+void RunningMin_Ctor(RunningMin *unit);
+void RunningMin_next_ak(RunningMin *unit, int inNumSamples);
+void RunningMin_next_ai(RunningMin *unit, int inNumSamples);
+void RunningMin_next_aa(RunningMin *unit, int inNumSamples);
 
-void Max_Ctor(Max *unit);
-void Max_next_ak(Max *unit, int inNumSamples);
-void Max_next_ai(Max *unit, int inNumSamples);
-void Max_next_aa(Max *unit, int inNumSamples);
+void RunningMax_Ctor(RunningMax *unit);
+void RunningMax_next_ak(RunningMax *unit, int inNumSamples);
+void RunningMax_next_ai(RunningMax *unit, int inNumSamples);
+void RunningMax_next_aa(RunningMax *unit, int inNumSamples);
 
 
 void PeakFollower_Ctor(PeakFollower *unit);
@@ -1464,20 +1464,20 @@ void Peak_next_aa(Peak *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Min_Ctor(Min *unit)
+void RunningMin_Ctor(RunningMin *unit)
 {
 	if (INRATE(1) == calc_FullRate) {
-		SETCALC(Min_next_aa);
+		SETCALC(RunningMin_next_aa);
 	} else if (INRATE(1) == calc_ScalarRate) {
-		SETCALC(Min_next_ai);
+		SETCALC(RunningMin_next_ai);
 	} else {
-		SETCALC(Min_next_ak);
+		SETCALC(RunningMin_next_ak);
 	}
 	unit->m_prevtrig = 0.f;
 	ZOUT0(0) = unit->mLevel = ZIN0(0);
 }
 
-void Min_next_ak(Min *unit, int inNumSamples)
+void RunningMin_next_ak(RunningMin *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1494,7 +1494,7 @@ void Min_next_ak(Min *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-void Min_next_ai(Min *unit, int inNumSamples)
+void RunningMin_next_ai(RunningMin *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1508,7 +1508,7 @@ void Min_next_ai(Min *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-void Min_next_aa(Min *unit, int inNumSamples)
+void RunningMin_next_aa(RunningMin *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1530,20 +1530,20 @@ void Min_next_aa(Min *unit, int inNumSamples)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Max_Ctor(Max *unit)
+void RunningMax_Ctor(RunningMax *unit)
 {
 	if (INRATE(1) == calc_FullRate) {
-		SETCALC(Max_next_aa);
+		SETCALC(RunningMax_next_aa);
 	} else if (INRATE(1) == calc_ScalarRate) {
-		SETCALC(Max_next_ai);
+		SETCALC(RunningMax_next_ai);
 	} else {
-		SETCALC(Max_next_ak);
+		SETCALC(RunningMax_next_ak);
 	}
 	unit->m_prevtrig = 0.f;
 	ZOUT0(0) = unit->mLevel = ZIN0(0);
 }
 
-void Max_next_ak(Max *unit, int inNumSamples)
+void RunningMax_next_ak(RunningMax *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1560,7 +1560,7 @@ void Max_next_ak(Max *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-void Max_next_ai(Max *unit, int inNumSamples)
+void RunningMax_next_ai(RunningMax *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1574,7 +1574,7 @@ void Max_next_ai(Max *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-void Max_next_aa(Max *unit, int inNumSamples)
+void RunningMax_next_aa(RunningMax *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -2165,8 +2165,8 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Sweep);
 	DefineSimpleUnit(Phasor);
 	DefineSimpleUnit(Peak);
-	DefineSimpleUnit(Min);
-	DefineSimpleUnit(Max);
+	DefineSimpleUnit(RunningMin);
+	DefineSimpleUnit(RunningMax);
 	DefineSimpleUnit(PeakFollower);
 	DefineSimpleUnit(MostChange);
 	DefineSimpleUnit(LeastChange);
