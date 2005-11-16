@@ -39,6 +39,10 @@
 #include "SC_CoreAudio.h"
 #include "SC_DirUtils.h"
 
+#ifdef SC_WIN32
+#include "SC_Win32Utils.h"
+#endif
+
 extern Malloc gMalloc;
 
 int32 GetHash(ParamSpec* inParamSpec)
@@ -318,6 +322,100 @@ GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)
 	return inList;
 }
 
+GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList)
+{
+	SC_GlobHandle* glob = sc_Glob(pattern);
+	if (!glob) return inList;
+	
+	const char* filename;
+	while ((filename = sc_GlobNext(glob)) != 0) {
+		int len = strlen(filename);
+		if (strncmp(filename+len-9, ".scsyndef", 9)==0) {
+			inList = GraphDef_Load(inWorld, filename, inList);
+		}
+		// why? <sk>
+		GraphDef_Load(inWorld, filename, inList);
+	}
+
+	sc_GlobFree(glob);
+	return inList;
+}
+
+GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
+{	
+#ifdef SC_WIN32
+	FILE *file = fopen(filename, "rb");
+#else
+	FILE *file = fopen(filename, "r");
+#endif
+	if (!file) {
+		scprintf("*** ERROR: can't fopen '%s'\n", filename);
+		return inList;
+	}
+
+	fseek(file, 0, SEEK_END);
+	int size = ftell(file);
+	char *buffer = (char*)malloc(size);
+	if (!buffer) {
+		scprintf("*** ERROR: can't malloc buffer size %d\n", size);
+		return inList;
+	}
+	fseek(file, 0, SEEK_SET);
+#ifdef SC_WIN32
+        size_t readSize = fread(buffer, 1, size, file);
+        if (readSize!= size)
+			// huh?! <sk>
+			*((int*)0) = 0;
+#else
+      	fread(buffer, 1, size, file);
+#endif
+	fclose(file);
+	
+	try {
+		inList = GraphDefLib_Read(inWorld, buffer, inList);
+	} catch (std::exception& exc) {
+		scprintf("exception in GrafDef_Load: %s\n", exc.what());
+		scprintf("while reading file '%s'\n", filename);
+	} catch (...) {
+		scprintf("unknown exception in GrafDef_Load\n");
+		scprintf("while reading file '%s'\n", filename);
+	}
+	
+	free(buffer);
+	
+	return inList;
+}
+
+GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
+{
+	SC_DirHandle *dir = sc_OpenDir(dirname);
+	if (!dir) {
+		scprintf("*** ERROR: open directory failed '%s'\n", dirname); 
+		return inList;
+	}
+
+	for (;;) {
+		char diritem[MAXPATHLEN];
+		bool skipItem = false;
+		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
+		if (!validItem) break;
+		if (skipItem) continue;
+		
+		if (sc_DirectoryExists(diritem)) {
+			inList = GraphDef_LoadDir(inWorld, diritem, inList);
+		} else {
+			int dnamelen = strlen(diritem);
+			if (strncmp(diritem+dnamelen-9, ".scsyndef", 9) == 0) {
+				inList = GraphDef_Load(inWorld, diritem, inList);
+			}
+		}
+	}
+
+	sc_CloseDir(dir);
+	return inList;
+}
+
+#if 0
 #ifndef SC_WIN32
 #include <glob.h>
 
@@ -347,9 +445,6 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 	return inList;
 }
 #else //#ifndef SC_WIN32
-
-extern void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars);
-extern void win32_ReplaceCharInString(char* string, int len, char src, char dst);
 
 GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList)
 {
@@ -382,51 +477,6 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 }
 
 #endif //#ifndef SC_WIN32
-
-
-GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
-{	
-#ifdef SC_WIN32
-  FILE *file = fopen(filename, "rb");
-#else
-  FILE *file = fopen(filename, "r");
-#endif
-	if (!file) {
-		scprintf("*** ERROR: can't fopen '%s'\n", filename);
-		return inList;
-	}
-
-	fseek(file, 0, SEEK_END);
-	int size = ftell(file);
-	char *buffer = (char*)malloc(size);
-	if (!buffer) {
-		scprintf("*** ERROR: can't malloc buffer size %d\n", size);
-		return inList;
-	}
-	fseek(file, 0, SEEK_SET);
-#ifdef SC_WIN32
-        size_t readSize = fread(buffer, 1, size, file);
-        if (readSize!= size)
-          *((int*)0) = 0;
-#else
-      	fread(buffer, 1, size, file);
-#endif
-	fclose(file);
-	
-	try {
-		inList = GraphDefLib_Read(inWorld, buffer, inList);
-	} catch (std::exception& exc) {
-		scprintf("exception in GrafDef_Load: %s\n", exc.what());
-		scprintf("while reading file '%s'\n", filename);
-	} catch (...) {
-		scprintf("unknown exception in GrafDef_Load\n");
-		scprintf("while reading file '%s'\n", filename);
-	}
-	
-	free(buffer);
-	
-	return inList;
-}
 
 #ifdef SC_LINUX
 # include <sys/stat.h>
@@ -543,6 +593,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
   return inList;
 }
 #endif //#ifndef SC_WIN32
+#endif // 0
 
 void UnitSpec_Free(UnitSpec *inUnitSpec);
 void UnitSpec_Free(UnitSpec *inUnitSpec)

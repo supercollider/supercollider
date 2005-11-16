@@ -321,17 +321,17 @@ void SC_TerminalClient::commandLoop()
 #endif
 }
 
+#ifdef SC_WIN32
+# define nanosleep(tv, tz) win32_nanosleep(tv, tz)
+#endif
+
 void SC_TerminalClient::daemonLoop()
 {
 	struct timespec tv = { 0, 500000 };
 
 	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
-#ifdef SC_WIN32
-    if (win32_nanosleep(&tv, 0) == -1) {
-#else
-    if (nanosleep(&tv, 0) == -1) {
-#endif
+		if (nanosleep(&tv, 0) == -1) {
 			perror(getName());
 			quit(1);
 			break;
@@ -351,11 +351,26 @@ int SC_TerminalClient::prExit(struct VMGlobals* g, int)
 	return errNone;
 }
 
+#include <PyrObject.h>
+
+static int finalizerFunc(struct VMGlobals* g, PyrObject* obj)
+{
+	printf("object %p finalized\n", obj);
+	return errNone;
+}
+
+static int prTestFinalizer(struct VMGlobals* g, int)
+{
+	InstallFinalizer(g, g->sp->uo, 0, &finalizerFunc);
+	return errNone;
+}
+
 void SC_TerminalClient::onLibraryStartup()
 {
 	int base, index = 0;
 	base = nextPrimitiveIndex();
 	definePrimitive(base, index++, "_Exit", &SC_TerminalClient::prExit, 1, 0);
+	definePrimitive(base, index++, "_TestFinalizer", &prTestFinalizer, 1, 0);
 }
 
 // EOF

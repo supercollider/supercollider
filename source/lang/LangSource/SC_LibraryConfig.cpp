@@ -9,7 +9,7 @@
 #include <string.h>
 #include <limits.h>
 #ifdef SC_WIN32
-# include "win32_utils.h"
+# include "SC_Win32Utils.h"
 # define MAXPATHLEN _MAX_PATH
 #else
 # include <sys/param.h>

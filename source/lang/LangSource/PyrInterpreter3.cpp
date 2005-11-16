@@ -39,7 +39,7 @@
 #include <string.h>
 
 #ifdef SC_WIN32
-# include "win32_utils.h"
+# include "SC_Win32Utils.h"
 # define kBigBigFloat 1e250
 #else
 # include <sys/time.h>

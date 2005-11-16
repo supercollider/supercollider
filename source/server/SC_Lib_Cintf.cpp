@@ -69,11 +69,8 @@ HashTable<struct PlugInCmd, Malloc> *gPlugInCmds = 0;
 extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
-char gSystemExtensionDir[MAXPATHLEN];
-char gUserExtensionDir[MAXPATHLEN];
-
 void initMiscCommands();
-bool PlugIn_LoadDir(char *dirname);
+bool PlugIn_LoadDir(char *dirname, bool reportError);
 
 void initialize_library()
 {	
@@ -91,28 +88,29 @@ void initialize_library()
 
 	if (sc_DirectoryExists(pluginDir)) {
 		// load plugins in resource directory
-		PlugIn_LoadDir(pluginDir);
+		PlugIn_LoadDir(pluginDir, true);
 	} else {
 		// load globally installed plugins
 #ifdef SC_PLUGIN_DIR
-		PlugIn_LoadDir(SC_PLUGIN_DIR);
+		PlugIn_LoadDir(SC_PLUGIN_DIR, true);
 #endif
 	}
 	
 	// get extension directories
-	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
-	sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
+	char extensionDir[MAXPATHLEN];
 
  	// load system extension plugins
- 	PlugIn_LoadDir(gSystemExtensionDir);
+	sc_GetSystemExtensionDirectory(extensionDir, MAXPATHLEN);
+ 	PlugIn_LoadDir(extensionDir, false);
  	
  	// load user extension plugins
- 	PlugIn_LoadDir(gUserExtensionDir);
+	sc_GetUserExtensionDirectory(extensionDir, MAXPATHLEN);
+ 	PlugIn_LoadDir(extensionDir, false);
 
 	// load user plugin directories
 	SC_StringParser sp(getenv("SC_PLUGIN_PATH"), ':');
 	while (!sp.AtEnd()) {
-		PlugIn_LoadDir(const_cast<char *>(sp.NextToken()));
+		PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
 	}
 }
 
@@ -182,19 +180,56 @@ bool PlugIn_Load(const char *filename)
 #endif
 }
 
+bool PlugIn_LoadDir(char *dirname, bool reportError)
+{
+	bool success = true;
+
+	SC_DirHandle *dir = sc_OpenDir(dirname);
+	if (!dir) {
+		if (reportError) {
+			scprintf("*** ERROR: open directory failed '%s'\n", dirname); fflush(stdout);
+		}
+		return false;
+	}
+	
+	for (;;) {
+		char diritem[MAXPATHLEN];
+		bool skipItem = false;
+		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
+		if (!validItem) break;
+		if (skipItem) continue;
+		
+        if (sc_DirectoryExists(diritem)) {
+            success = PlugIn_LoadDir(diritem, reportError);
+        } else {
+			int dnamelen = strlen(diritem);
+			int extlen = strlen(SC_PLUGIN_EXT);
+			char *extptr = diritem+dnamelen-extlen;
+			if (strncmp(extptr, SC_PLUGIN_EXT, extlen) == 0) {
+				success = PlugIn_Load(diritem);
+			}
+        }
+
+		if (!success) continue;
+	}
+
+	sc_CloseDir(dir);
+	return success;
+}
+
+#if 0
 #ifdef SC_LINUX
 # include <sys/stat.h>
 # include <sys/types.h>
 #endif // SC_LINUX
 
-bool PlugIn_LoadDir(char *dirname);
 #ifndef SC_WIN32
-bool PlugIn_LoadDir(char *dirname)
+bool PlugIn_LoadDir(char *dirname, bool reportError)
 {
 	bool success = true;
-	DIR *dir = opendir(dirname);	
+	DIR *dir = opendir(dirname);
 	if (!dir) {
-		if(strcmp(dirname, gSystemExtensionDir) && strcmp(dirname, gUserExtensionDir)) {
+		if (reportError) {
 			scprintf("*** ERROR: open directory failed '%s'\n", dirname); fflush(stdout);
 		}
 		return false;
@@ -231,7 +266,7 @@ bool PlugIn_LoadDir(char *dirname)
 #endif // SC_WIN32
 
 		if (isDirectory) {
-			success = PlugIn_LoadDir(entrypathname);
+			success = PlugIn_LoadDir(entrypathname, reportError);
 		} else {
 			int dnamelen = strlen(de->d_name);
 			int extlen = strlen(SC_PLUGIN_EXT);
@@ -250,7 +285,7 @@ bool PlugIn_LoadDir(char *dirname)
 	return success;
 }
 #else //#ifndef SC_WIN32
-bool PlugIn_LoadDir(char *dirname)
+bool PlugIn_LoadDir(char *dirname, bool reportError)
 {
   bool success = true;
   
@@ -275,7 +310,7 @@ bool PlugIn_LoadDir(char *dirname)
         else {
           char fullPath[_MAX_PATH];
           sprintf(fullPath,"%s\\%s",dirname,findData.cFileName);
-          success = PlugIn_LoadDir(fullPath);
+          success = PlugIn_LoadDir(fullPath, reportError);
         }
       } 
       else {
@@ -302,3 +337,4 @@ bool PlugIn_LoadDir(char *dirname)
   return success;
 }
 #endif //#ifndef SC_WIN32
+#endif

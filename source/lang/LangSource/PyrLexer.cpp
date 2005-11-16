@@ -32,12 +32,7 @@
 #else
 # include <sys/param.h>
 #endif
-#include <sys/types.h>
-#include <sys/stat.h>
-#ifdef SC_WIN32
-# define strcasecmp stricmp
-# define snprintf _snprintf
-#else
+#ifndef SC_WIN32
 # include "lang11d_tab.h"
 #endif
 #include "SCBase.h"
@@ -1948,7 +1943,6 @@ void finiPassOne()
 }
 
 bool passOne_ProcessDir(char *dirname, int level);
-#ifndef SC_WIN32
 bool passOne_ProcessDir(char *dirname, int level)
 {
 	bool success = true;
@@ -1962,7 +1956,7 @@ bool passOne_ProcessDir(char *dirname, int level)
 
  	if (level == 0) post("\tcompiling dir: '%s'\n", dirname);
 
-	DIR *dir = opendir(dirname);	
+	SC_DirHandle *dir = sc_OpenDir(dirname);
 	if (!dir) {
 		error("open directory failed '%s'\n", dirname); fflush(stdout);
 		return false;
@@ -1970,7 +1964,7 @@ bool passOne_ProcessDir(char *dirname, int level)
 	
 	for (;;) {
 		char diritem[MAXPATHLEN];
-		bool skipItem = false;
+		bool skipItem = true;
 		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
 		if (!validItem) break;
 		if (skipItem) continue;
@@ -1983,55 +1977,10 @@ bool passOne_ProcessDir(char *dirname, int level)
 		
 		if (!success) break;
 	}
-	closedir(dir);
+
+	sc_CloseDir(dir);
 	return success;
 }
-#else
-bool passOne_ProcessDir(char *dirname, int level)
-{
-	bool success = true;
-
-#ifdef ENABLE_LIBRARY_CONFIGURATOR
- 	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
- 	  post("\texcluding dir: '%s'\n", dirname);
- 	  return success;
- 	}
-#endif
-
- 	if (level == 0) 
-    post("\tcompiling dir: '%s'\n", dirname);
-
-	char allInDir[_MAX_PATH];
-  sprintf(allInDir,"%s\\*.*",dirname);
-  
-  WIN32_FIND_DATA findData;
-  HANDLE hFind = ::FindFirstFile(allInDir, &findData);
-  if (hFind == INVALID_HANDLE_VALUE) {
-		error("open directory failed '%s'\n", dirname); fflush(stdout);
-		return false;
-	}
-  
-	do {
-	  if (sc_SkipDirectory(findData.cFileName)) continue;
-	  
-    char *entrypathname = (char*)malloc(strlen(dirname) + strlen(findData.cFileName) + 2);
-		strcpy(entrypathname, dirname);
-		strcat(entrypathname, "\\");
-		strcat(entrypathname, findData.cFileName);
-
-    if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-      success = passOne_ProcessDir(entrypathname, level + 1);
-    } else {
-      success = passOne_ProcessOneFile(entrypathname, level + 1);
-    }
-
-		free(entrypathname);
-		if (!success) 
-      break;
-  } while (::FindNextFile(hFind, &findData));
-	return success;
-}
-#endif
 
 // Locate directories to compile.
 

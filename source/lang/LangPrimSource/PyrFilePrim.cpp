@@ -46,6 +46,10 @@ Primitives for File i/o.
 # define strcasecmp stricmp
 #endif
 
+#ifdef SC_WIN32
+#include "SC_Win32Utils.h"
+#endif
+
 #include <fcntl.h>
 #include <math.h>
 
@@ -73,9 +77,6 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-#ifdef SC_WIN32
-extern void win32_ReplaceCharInString(char* string, int len, char src, char dst);
-#endif //SC_WIN32
 
 int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {

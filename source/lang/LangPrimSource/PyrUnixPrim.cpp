@@ -32,7 +32,7 @@ Primitives for Unix.
 
 #ifdef SC_WIN32
 #include <stdio.h>
-#include "win32_utils.h"
+#include "SC_Win32Utils.h"
 #else
 # include <unistd.h>
 #endif

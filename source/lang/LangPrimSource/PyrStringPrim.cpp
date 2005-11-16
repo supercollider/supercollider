@@ -34,6 +34,7 @@ Primitives for String.
 #include "SC_DirUtils.h"
 #ifdef SC_WIN32
 # include <direct.h>
+# include "SC_Win32Utils.h"
 #else
 # include <sys/param.h>
 #endif
@@ -247,8 +248,6 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 }
 #else //#ifndef SC_WIN32
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
-extern void win32_ReplaceCharInString(char* string, int len, char src, char dst);
-extern void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars);
 
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 {

@@ -32,7 +32,7 @@
 
 #ifdef SC_WIN32
 typedef __int32 int32_t;
-#include "win32_utils.h"
+#include "SC_Win32Utils.h"
 #endif
 
 #define SANITYCHECK 0
