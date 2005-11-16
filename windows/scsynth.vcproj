@@ -1335,6 +1335,9 @@
 					RelativePath="..\..\SuperCollider3\source\common\SC_AllocPool.cpp">
 				</File>
 				<File
+					RelativePath="..\source\common\SC_DirUtils.cpp">
+				</File>
+				<File
 					RelativePath="..\..\SuperCollider3\source\common\SC_Sem.cpp">
 				</File>
 				<File
@@ -1435,6 +1438,13 @@
 				</File>
 				<File
 					RelativePath="..\..\SuperCollider3\headers\server\SC_WireSpec.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="common"
+				Filter="">
+				<File
+					RelativePath="..\headers\common\SC_Win32Utils.h">
 				</File>
 			</Filter>
 		</Filter>
