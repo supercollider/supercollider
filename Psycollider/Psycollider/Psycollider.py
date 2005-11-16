@@ -69,6 +69,7 @@ else:
   faces = { 'times': 'Times', 'mono' : 'Courier', 'helv' : 'Helvetica', 'other': 'new century schoolbook', 'size' : 10, 'size2': 8, }
   gAppHelpFolder = 'Help-windows'
   gHelpFolder = 'Help'
+  gUserExtensionFolder = '~\\SuperCollider\\Extensions'
 
 #----------------------------------------------------------------------
 ID_NewCodeWin  = wx.NewId()
@@ -882,7 +883,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     elif sel == ">" : sel = "(W32) greater than"          # from ">.rtf"
     elif sel == ">=": sel = "(W32) greater than or equal" # from ">=.rtf"
     if sel != "":
-      for helpFolder in [gHelpFolder]:
+      for helpFolder in [gHelpFolder, os.path.expanduser(gUserExtensionFolder)]:
         for folderPath, foldersInPath, fileNamesInFolder in os.walk(helpFolder):
         # don't visit CVS directories
           if 'CVS' in foldersInPath:
