@@ -30,6 +30,10 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#ifdef SC_WIN32
+#include "SC_Win32Utils.h"
+#endif
+
 #ifndef SC_INNERSC
 int64 gStartupOSCTime = -1;
 #endif //ifndef SC_INNERSC
@@ -125,19 +129,21 @@ void initializeScheduler()
 
 #if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
 
+int64 gOSCoffset = 0; 
+
 static inline int64 GetCurrentOSCTime()
 {
-/*	struct timeval tv;
+	struct timeval tv;
 	uint64 s, f;
-	gettimeofday(&tv, 0); 
-
+#ifdef SC_WIN32
+	win32_gettimeofday(&tv, 0);
+#else
+	gettimeofday(&tv, 0);
+#endif
 	s = (uint64)tv.tv_sec + (uint64)kSECONDS_FROM_1900_to_1970;
 	f = (uint64)((double)tv.tv_usec * kMicrosToOSCunits);
 
 	return (s << 32) + f;
-*/
-// TODO
-    return 0;
 }
 
 int32 server_timeseed()
@@ -153,6 +159,7 @@ int64 oscTimeNow()
 
 void initializeScheduler()
 {
+	gOSCoffset = GetCurrentOSCTime(); 
 }
 #endif // SC_AUDIO_API_PORTAUDIO
 
@@ -1470,6 +1477,13 @@ static int SC_PortAudioStreamCallback( const void *input, void *output,
     return driver->PortAudioCallback( input, output, frameCount, timeInfo, statusFlags );
 }
 
+int64 SC_PortAudioDriver::PortAudioTimeToHostTime(PaTime time) 
+{
+	int s = (uint64)time;
+	int f = (uint64)((time - s)/1.0e-6 * kMicrosToOSCunits);
+
+	return gOSCoffset + ((s << 32) + f);
+};
 
 int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
             unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
@@ -1480,7 +1494,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
     (void) frameCount, timeInfo, statusFlags; // suppress unused parameter warnings
     
 	try {
-        int64 oscTime = 0; // FIXME -> PortAudioTimeToHostTime( mStream, timeInfo.outputBufferDacTime );
+        int64 oscTime = PortAudioTimeToHostTime(timeInfo->outputBufferDacTime );
 		mOSCbuftime = oscTime;
 		
 		mFromEngine.Free();

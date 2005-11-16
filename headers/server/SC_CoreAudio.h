@@ -262,6 +262,8 @@ public:
     int PortAudioCallback( const void *input, void *output,
             unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
             PaStreamCallbackFlags statusFlags );
+private:
+	int64 PortAudioTimeToHostTime(PaTime time);
 };
 
 inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
