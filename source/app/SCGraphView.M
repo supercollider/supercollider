@@ -166,7 +166,14 @@ static NSString *sSCObjType = @"SuperCollider object address";
 		mDragStarted = NO;
 		mMenuView = 0;
         view->makeFocus(true);
-        view->mouseBeginTrack(scpoint, modifiers,theEvent);
+		bool constructionmode = mTopView->ConstructionMode();
+		if(!constructionmode)
+		{
+			view->mouseDownAction(scpoint, modifiers,theEvent);				
+			view->mouseBeginTrack(scpoint, modifiers,theEvent);
+		}else
+		view->setConstructionModeFromPoint(scpoint);
+
         [self displayIfNeeded];
         
         while (keepOn && !mDragStarted && !mMenuView) {
@@ -174,19 +181,43 @@ static NSString *sSCObjType = @"SuperCollider object address";
                     NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged ];
             mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
             //isInside = [self mouse:mouseLoc inRect:[self bounds]];
-            scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
-    
+            scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);			
             int evtype = [theEvent type];
             switch ([theEvent type]) {
+				case NSLeftMouseDown:
+				case NSRightMouseDown:
+					if(constructionmode)
+					{
+						view->doConstructionMove(scpoint);
+						mTopView->refresh();
+					}else
+						view->mouseDownAction(scpoint, modifiers,theEvent);	
+//						post("down \n");
+						break;
                 case NSLeftMouseDragged:
                 case NSRightMouseDragged:
                 case NSOtherMouseDragged:
-                        view->mouseTrack(scpoint, modifiers,theEvent);
+						if(constructionmode)
+						{
+							view->doConstructionMove(scpoint);
+							mTopView->refresh();
+						}else				
+							view->mouseTrack(scpoint, modifiers,theEvent);
+							view->mouseDownAction(scpoint, modifiers,theEvent);				
+//							post("drag \n");
                         break;
                 case NSLeftMouseUp:
                 case NSRightMouseUp:
                 case NSOtherMouseUp:
-                        view->mouseEndTrack(scpoint, modifiers,theEvent);
+						if(constructionmode)
+						{
+			//				view->doConstructionMove(scpoint);
+							mTopView->refresh();
+						}else
+						{
+							view->mouseEndTrack(scpoint, modifiers,theEvent);
+							view->mouseUpAction(scpoint, modifiers,theEvent);						
+						}
                         keepOn = NO;
                         break;
                 default:
@@ -194,6 +225,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
                         /* Ignore any other kind of event. */
                         break;
             }
+//			display:
             [self displayIfNeeded];
             flushPostBuf();
         }
@@ -201,6 +233,23 @@ static NSString *sSCObjType = @"SuperCollider object address";
 	mMenuView = 0;
     return;
 }
+
+-(void)mouseMoved:(NSEvent*)theEvent 
+{
+	NSPoint mouseLoc;
+	if (!mTopView) return;
+    unsigned int modifiers = [theEvent modifierFlags];
+    mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
+    SCView *view = mTopView->findView(scpoint);
+    if (view) {
+		mDragStarted = NO;
+		mMenuView = 0;
+//        view->makeFocus(true);
+        view->mouseOver(scpoint);
+	}
+}
+
 //scrollWheel:(NSEvent*)theEvent;
 
 - (void)setSCObject: (struct PyrObject*)inObject;
@@ -436,6 +485,8 @@ const int circDiam = 20;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
+	if(!view && mTopView->ConstructionMode())
+		view = mTopView;
     if (view) {
         bool flag = view->canReceiveDrag();
         mTopView->setDragView(flag ? view : 0);
@@ -453,6 +504,8 @@ const int circDiam = 20;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
+	if(!view && mTopView->ConstructionMode())
+		view = mTopView;		
     if (view) {
         bool flag = view->canReceiveDrag();
         mTopView->setDragView(flag ? view : 0);
@@ -479,6 +532,8 @@ const int circDiam = 20;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
+	if(!view && mTopView->ConstructionMode())
+		view = mTopView;		
     if (view) {
         bool flag = view->canReceiveDrag();
         mTopView->setDragView(flag ? view : 0);
@@ -493,10 +548,12 @@ const int circDiam = 20;
 
 - (BOOL)performDragOperation:(id)dragInfo {
 	if (!mTopView) return NO;
-    //post("performDragOperation %08X\n", self);
+//    post("performDragOperation %08X\n", self);
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
+	if(!view && mTopView->ConstructionMode())
+		view = mTopView;	
     if (view) {
         bool flag = view->canReceiveDrag();
         if (flag) {
