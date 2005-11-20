@@ -3,7 +3,9 @@ SCView {  // abstract class
 	classvar <>currentDrag, <>currentDragString;
 	classvar <>globalKeyDownAction, <>globalKeyUpAction;
 
-	var dataptr, <parent, <>action, <background, <>keyDownAction, <>keyUpAction, <>keyTyped;
+	var dataptr, <parent, <>action, <background;
+	var <> mouseDownAction, <>mouseUpAction, <>mouseOverAction;
+	var <>keyDownAction, <>keyUpAction, <>keyTyped;
 	var <>beginDragAction,<>canReceiveDragHandler,<>receiveDragHandler;
 	var <>onClose;
 	
@@ -114,7 +116,17 @@ SCView {  // abstract class
 		background = color;
 		this.setProperty(\background, color)
 	}
-
+	mouseDown{arg x, y, modifiers;
+		mouseDownAction.value(this, x, y, modifiers);	
+	}
+	mouseUp{arg x, y, modifiers;
+		mouseUpAction.value(this, x, y, modifiers);	
+	}
+	
+	mouseOver{arg x, y;
+		mouseOverAction.value(this, x, y);
+	}
+	
 	keyDown { arg char, modifiers, unicode,keycode;
 		globalKeyDownAction.value(this, char, modifiers, unicode, keycode); 
 		this.handleKeyDownBubbling(this, char, modifiers, unicode, keycode);
@@ -278,7 +290,29 @@ SCTopView : SCCompositeView {
 	handleKeyUpBubbling { arg view, char, modifiers, unicode, keycode;
 		keyUpAction.value(view, char, modifiers, unicode, keycode);
 	}
+	
+	//only in construction mode, handled internally
+	canReceiveDrag { ^currentDrag.isKindOf(Class)}
 //	remove { this.removeAll }
+
+	findWindow{
+		SCWindow.allWindows{|win|
+			if(win.view == this){
+				^win
+			}
+		}
+	}
+	
+	defaultReceiveDrag{
+		var win, view;
+		win = this.findWindow;
+		view = currentDrag.paletteExample(win, Rect(10,10,140,24));
+		view.keyDownAction_({|view, char, modifiers, unicode, keycode|
+			if(keycode == 51){
+				view.remove;
+			}
+		});
+	}
 }
 
 SCLayoutView : SCContainerView {
@@ -383,6 +417,7 @@ SCRangeSlider : SCSliderBase {
 		v = this.new(parent, bounds);
 		v.lo = 0.2;
 		v.hi = 0.7;
+		^v
 	}
 	
 	lo {
@@ -909,14 +944,7 @@ SCDragBoth : SCDragSink {
 }
 
 
-SCUserView : SCView { // abstract class
-	draw {}
-	mouseBeginTrack { arg x, y, modifiers; }
-	mouseTrack { arg x, y, modifiers; }
-	mouseEndTrack { arg x, y, modifiers; }
-}
-
-SCFuncUserView : SCUserView {
+SCUserView : SCView {
 	var <>keyDownFunc, <>drawFunc;
 	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
 	
@@ -934,6 +962,25 @@ SCFuncUserView : SCUserView {
 		keyDownFunc.value(this, key, modifiers, unicode) 
 	}
 }
+//
+//SCFuncUserView : SCUserView {
+//	var <>keyDownFunc, <>drawFunc;
+//	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
+//	
+//	draw { drawFunc.value(this) }
+//	mouseBeginTrack { arg x, y, modifiers; 
+//		mouseBeginTrackFunc.value(this, x, y, modifiers); 
+//	}
+//	mouseTrack { arg x, y, modifiers; 
+//		mouseTrackFunc.value(this, x, y, modifiers); 
+//	}
+//	mouseEndTrack { arg x, y, modifiers; 
+//		mouseEndTrackFunc.value(this, x, y, modifiers); 
+//	}
+//	keyDown { arg key, modifiers, unicode; 
+//		keyDownFunc.value(this, key, modifiers, unicode) 
+//	}
+//}
 
 //by jt v.0.22
 SCMultiSliderView : SCView { 
