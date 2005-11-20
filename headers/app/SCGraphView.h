@@ -34,6 +34,8 @@
 - (void) keyDown: (NSEvent*) event;
 - (void) keyUp: (NSEvent*) event;
 - (void) mouseDown: (NSEvent*) event;
+- (void) mouseMoved:(NSEvent*) theEvent;  //jan t
+
 - (void)setSCObject: (struct PyrObject*)inObject;
 - (struct PyrObject*)getSCObject;
 - (BOOL)isFlipped;
