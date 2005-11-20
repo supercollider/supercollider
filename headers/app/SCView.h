@@ -39,6 +39,10 @@ enum {
     layout_FixedBottom
 };
 
+enum {
+    view_ResizeConstructionMode,
+    view_PositionConstructionMode,
+};
 
 struct Layout
 {
@@ -90,6 +94,10 @@ public:
 	virtual void mouseOver(SCPoint where);
 	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	virtual void keyUp(int character, int modifiers, unsigned short keycode);
+	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	void doConstructionMove(SCPoint where);
+	void setConstructionModeFromPoint(SCPoint where);
 	virtual bool shouldDim();
 	void beginDrag(SCPoint where);
 	
@@ -150,6 +158,7 @@ protected:
 	bool mCanFocus;
 	bool mDragHilite;
 	int32 mID;
+	int mConstructionMode;
 };
 
 
@@ -255,7 +264,8 @@ public:
 	void SetConstructionMode(bool inFlag) { mConstructionMode = inFlag; }
 	
 	virtual void drawFocus(SCRect inDamage);
-		
+	virtual bool canReceiveDrag();	
+	virtual void receiveDrag();
 protected:
 	friend class SCView;
 	void focusIs(SCView *inView) { mFocusView = inView; }
