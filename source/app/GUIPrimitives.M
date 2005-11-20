@@ -1567,6 +1567,25 @@ int prSCWindow_SetAlpha(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prSCWindow_SetAcceptMouseOver(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_SetAcceptMouseOver(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    BOOL accept;
+    accept = (BOOL) IsTrue(b);		
+    
+    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    if (!view) return errNone;
+
+    NSWindow *window = [view window];
+	[window setAcceptsMouseMovedEvents:accept];
+    return errNone;
+}
+
 int addFontAttribute(NSMutableDictionary *dict, PyrSlot *fontSlot);
 int addFontAttribute(NSMutableDictionary *dict, PyrSlot *fontSlot)
 {
@@ -2883,6 +2902,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SCWindow_SetBounds", prSCWindow_SetBounds, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_GetBounds", prSCWindow_GetBounds, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_GetScreenBounds", prSCWindow_GetScreenBounds, 2, 0);	
+	definePrimitive(base, index++, "_SCWindow_SetAcceptMouseOver", prSCWindow_SetAcceptMouseOver, 2, 0);	
 
 	definePrimitive(base, index++, "_String_GetBounds", prString_GetBounds, 3, 0);	
 	definePrimitive(base, index++, "_String_DrawAtPoint", prString_DrawAtPoint, 4, 0);	
