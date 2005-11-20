@@ -267,7 +267,8 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: mNext(0), mNextAnimatedView(0), mPrevAnimatedView(0),
 		mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
 		mBackground(0), mVisible(true), mEnabled(true),
-        mCanFocus(true), mDragHilite(false)
+        mCanFocus(true), mDragHilite(false),
+		mConstructionMode(-1)
 {
 	if (inParent) inParent->add(this);
 	// store myself into sc object.
@@ -349,6 +350,68 @@ void SCView::keyUp(int character, int modifiers, unsigned short keycode)
     pthread_mutex_unlock (&gLangMutex);
 }
 
+void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    pthread_mutex_lock (&gLangMutex);
+    PyrSymbol *method = getsym("mouseDown");
+    if (mObj) {
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, mObj); 
+        ++g->sp;  SetFloat(g->sp, where.x); 
+        ++g->sp;  SetFloat(g->sp, where.y); 
+        ++g->sp;  SetInt(g->sp, modifiers); 
+        runInterpreter(g, method, 4);
+        g->canCallOS = false;
+    }
+    pthread_mutex_unlock (&gLangMutex);
+}
+void SCView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    pthread_mutex_lock (&gLangMutex);
+    PyrSymbol *method = getsym("mouseUp");
+    if (mObj) {
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, mObj); 
+        ++g->sp;  SetFloat(g->sp, where.x); 
+        ++g->sp;  SetFloat(g->sp, where.y); 
+        ++g->sp;  SetInt(g->sp, modifiers); 
+        runInterpreter(g, method, 4);
+        g->canCallOS = false;
+    }
+    pthread_mutex_unlock (&gLangMutex);
+}
+
+void SCView::setConstructionModeFromPoint(SCPoint where)
+{
+	SCRect bounds;
+	bounds = SCMakeRect(mBounds.x, mBounds.y, mBounds.width*0.6, mBounds.height*0.6);	
+//	post("point: x: %f, y: %f, bounds: x: %f, y: %f\n", where.x, where.y, mBounds.x, mBounds.y);
+	if( SCPointInRect(where, bounds)){
+		mConstructionMode = view_PositionConstructionMode;
+//		[[NSCursor openHandCursor] set];
+
+	}else{
+//		[[NSCursor crosshairCursor] set];
+		mConstructionMode = view_ResizeConstructionMode;
+	}
+}
+
+void SCView::doConstructionMove(SCPoint where)
+{
+
+	if( mConstructionMode == view_ResizeConstructionMode){
+		mBounds.width = mBounds.width + (where.x - (mBounds.width + mBounds.x));
+		mBounds.height = mBounds.height + (where.y - (mBounds.height + mBounds.y));
+	}else if (mConstructionMode == view_PositionConstructionMode) {
+		mBounds.x = where.x;
+		mBounds.y = where.y;	 
+	}
+	refresh();
+	mTop->refresh();
+}	
+
 NSMenu* SCView::contextMenu(SCPoint inPoint)
 {
 	return 0;
@@ -370,6 +433,19 @@ void SCView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 
 void SCView::mouseOver(SCPoint where)
 {
+    pthread_mutex_lock (&gLangMutex);
+    PyrSymbol *method = getsym("mouseOver");
+    if (mObj) {
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, mObj); 
+        ++g->sp;  SetInt(g->sp, (int) where.x); 
+        ++g->sp;  SetInt(g->sp, (int) where.y); 
+
+        runInterpreter(g, method, 3);
+        g->canCallOS = false;
+    }
+    pthread_mutex_unlock (&gLangMutex);
 }
 
 bool SCView::canReceiveDrag()
@@ -1232,6 +1308,17 @@ void SCTopView::drawFocus(SCRect inDamage)
     }
 }
 
+bool SCTopView::canReceiveDrag()
+{
+    PyrSlot result;
+    sendMessage(s_canReceiveDrag, 0, 0, &result);
+    return IsTrue(&result);
+}
+
+void SCTopView::receiveDrag()
+{
+    sendMessage(s_receiveDrag, 0, 0, 0);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
