@@ -5,6 +5,7 @@ SCWindow {
 	var dataptr, <name, <>onClose, <view, <userCanClose=true;
 	var <alwaysOnTop=false;
 	var <>drawHook;
+	var <acceptsMouseOver=false;
 	
 	*initClass {
 		UI.registerForShutdown({ this.closeAll });
@@ -54,6 +55,10 @@ SCWindow {
 		_SCWindow_SetShouldClose
 		^this.primitiveFailed
 	}
+	acceptsMouseOver_{arg bool;
+		acceptsMouseOver = bool;	
+		this.prSetAcceptMouseOver(bool);
+	}	
 	front {
 		_SCWindow_ToFront
 		^this.primitiveFailed
@@ -135,6 +140,10 @@ SCWindow {
 	prSetBounds { arg argBounds;
 		_SCWindow_SetBounds
 		^this.primitiveFailed
+	}
+	prSetAcceptMouseOver{arg bool;
+		_SCWindow_SetAcceptMouseOver
+		^this.primitiveFailed		
 	}
 	*prGetScreenBounds { arg argBounds;
 		_SCWindow_GetScreenBounds
