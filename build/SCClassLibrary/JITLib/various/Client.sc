@@ -39,6 +39,7 @@ Client {
 		^args
 	}
 	send { arg ... args;
+		if (verbose, { ["Client-send:", args].postln });
 		this.sendBundle(nil, args);
 	}
 	sendBundle { arg latency ... args;
