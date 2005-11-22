@@ -4,49 +4,50 @@
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 DelayC 	simple delay line with cubic interpolation\
+\f0\b\fs36 \cf0 BufDelayC	buffer based simple delay line with cubic interpolation\
 \
 
-\fs24 DelayC.ar(in, maxdelaytime, delaytime, mul, add)\
-DelayC.kr(in, maxdelaytime, delaytime, mul, add)\
+\fs24 BufDelayC.ar(buf, in, delaytime, mul, add)\
+BufDelayC.kr(buf, in, delaytime, mul, add)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-Simple delay line with cubic interpolation. See also 
-\f0\b [\ul DelayN\ulnone ]
+Simple delay line with cubic interpolation which uses a buffer for its internal memory. See also 
+\f0\b [\ul BufDelayN\ulnone ]
 \f1\b0  which uses no interpolation, and 
-\f0\b [\ul DelayL\ulnone ]
+\f0\b [\ul BufDelayL\ulnone ]
 \f1\b0  which uses linear interpolation. Cubic interpolation is more computationally expensive than linear, but more accurate.\
 \
 See also 
-\f0\b [\ul BufDelayC\ulnone ]
+\f0\b [\ul DelayC\ulnone ]
 \f1\b0 .\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 in
-\f1\b0  - the input signal.\
+\f0\b \cf0 buf
+\f1\b0  - buffer number.\
 
-\f0\b maxdelaytime
-\f1\b0  - the maximum delay time in seconds. used to initialize the delay buffer size.\
+\f0\b in
+\f1\b0  - the input signal.\
 
 \f0\b delaytime
 \f1\b0  - delay time in seconds.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 (\
+\f2\fs18 \cf0 \
+\cf2 // allocate buffer\
+\cf0 b = \cf3 Buffer\cf0 .alloc(s,44100,1);\cf2 \
+\
+\cf0 (\
 \cf2 // Dust randomly triggers Decay to create an exponential \cf0 \
 \cf2 // decay envelope for the WhiteNoise input source\cf0 \
 \{\
 z = \cf3 Decay\cf0 .ar(\cf3 Dust\cf0 .ar(1,0.5), 0.3, \cf3 WhiteNoise\cf0 .ar);
 \fs30 \
 
-\fs18 \cf3 DelayC\cf0 .ar(z, 0.2, 0.2, 1, z); \cf2 // input is mixed with delay via the add input\cf0 \
+\fs18 \cf3 BufDelayC\cf0 .ar(b.bufnum, z, 0.2, 1, z); \cf2 // input is mixed with delay via the add input\cf0 \
 \}.play\
-)
-\fs24 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs36 \cf0 \
+)\
+\
 }
