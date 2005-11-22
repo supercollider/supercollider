@@ -95,6 +95,7 @@ public:
 	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	virtual void keyUp(int character, int modifiers, unsigned short keycode);
 	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent);
 	virtual void mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent);
 	void doConstructionMove(SCPoint where);
 	void setConstructionModeFromPoint(SCPoint where);

@@ -4,7 +4,7 @@ SCView {  // abstract class
 	classvar <>globalKeyDownAction, <>globalKeyUpAction;
 
 	var dataptr, <parent, <>action, <background;
-	var <> mouseDownAction, <>mouseUpAction, <>mouseOverAction;
+	var <> mouseDownAction, <>mouseUpAction, <>mouseOverAction, <>mouseMoveAction;
 	var <>keyDownAction, <>keyUpAction, <>keyTyped;
 	var <>beginDragAction,<>canReceiveDragHandler,<>receiveDragHandler;
 	var <>onClose;
@@ -116,13 +116,15 @@ SCView {  // abstract class
 		background = color;
 		this.setProperty(\background, color)
 	}
-	mouseDown{arg x, y, modifiers;
-		mouseDownAction.value(this, x, y, modifiers);	
+	mouseDown{arg x, y, modifiers, clickCount;
+		mouseDownAction.value(this, x, y, modifiers, clickCount);	
 	}
 	mouseUp{arg x, y, modifiers;
 		mouseUpAction.value(this, x, y, modifiers);	
 	}
-	
+	mouseMove{arg x, y, modifiers;
+		mouseMoveAction.value(this, x, y, modifiers);	
+	}	
 	mouseOver{arg x, y;
 		mouseOverAction.value(this, x, y);
 	}

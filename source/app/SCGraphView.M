@@ -203,7 +203,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 							mTopView->refresh();
 						}else				
 							view->mouseTrack(scpoint, modifiers,theEvent);
-							view->mouseDownAction(scpoint, modifiers,theEvent);				
+							view->mouseMoveAction(scpoint, modifiers,theEvent);				
 //							post("drag \n");
                         break;
                 case NSLeftMouseUp:
