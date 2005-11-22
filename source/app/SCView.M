@@ -355,6 +355,7 @@ void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
     pthread_mutex_lock (&gLangMutex);
     PyrSymbol *method = getsym("mouseDown");
 	int clickCount = [theEvent clickCount];
+	int buttonNum = [theEvent buttonNumber];
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
@@ -362,8 +363,9 @@ void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
         ++g->sp;  SetFloat(g->sp, where.x); 
         ++g->sp;  SetFloat(g->sp, where.y); 
         ++g->sp;  SetInt(g->sp, modifiers); 
+		++g->sp;  SetInt(g->sp,buttonNum);
 		++g->sp;  SetInt(g->sp,clickCount);
-        runInterpreter(g, method, 5);
+        runInterpreter(g, method, 6);
         g->canCallOS = false;
     }
     pthread_mutex_unlock (&gLangMutex);
