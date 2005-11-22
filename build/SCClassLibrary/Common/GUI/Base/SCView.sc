@@ -117,7 +117,7 @@ SCView {  // abstract class
 		this.setProperty(\background, color)
 	}
 	mouseDown{arg x, y, modifiers, buttonNumber, clickCount;
-		mouseDownAction.value(this, x, y, modifiers, clickCount);	
+		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount);	
 	}
 	mouseUp{arg x, y, modifiers;
 		mouseUpAction.value(this, x, y, modifiers);	
