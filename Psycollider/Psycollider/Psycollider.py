@@ -64,12 +64,12 @@ import PySCLang, os, string, keyword, sys
 if wx.Platform == '__WXMSW__':
   faces = { 'times': 'Times New Roman', 'mono' : 'Courier New', 'helv' : 'Arial', 'other': 'Comic Sans MS', 'size' : 10, 'size2': 8, }
   gAppHelpFolder = 'help_windows'
-  gHelpFolder = 'Help'
 else:
   faces = { 'times': 'Times', 'mono' : 'Courier', 'helv' : 'Helvetica', 'other': 'new century schoolbook', 'size' : 10, 'size2': 8, }
   gAppHelpFolder = 'Help-windows'
-  gHelpFolder = 'Help'
-  gUserExtensionFolder = '~\\SuperCollider\\Extensions'
+  
+gHelpFolder = 'Help'
+gUserExtensionFolder = '~\\SuperCollider\\Extensions'
 
 #----------------------------------------------------------------------
 ID_NewCodeWin  = wx.NewId()
