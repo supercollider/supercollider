@@ -559,7 +559,7 @@ SC2DSlider : SCSliderBase {
 
 SC2DTabletSlider : SC2DSlider {
 
-	var <>mouseDownAction,<>mouseUpAction;
+//	var <>mouseDownAction,<>mouseUpAction;
 	
 	mouseDown { arg x,y,pressure,tiltx,tilty,deviceID,
 			 buttonNumber,clickCount,absoluteZ,rotation;
