@@ -383,7 +383,9 @@ public:
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
-    
+	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent);    
     virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 
     virtual bool setValue(double inX, double inY,bool send);

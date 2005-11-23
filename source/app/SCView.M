@@ -2327,6 +2327,15 @@ void SC2DTabletSlider::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theE
         TABLETTRACK(s_mouseUp,mX,mY)
     }
 }
+void SC2DTabletSlider::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+}
+void SC2DTabletSlider::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+}
+void SC2DTabletSlider::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
