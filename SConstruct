@@ -186,6 +186,8 @@ opts.AddOptions(
                'Enable Zeroconf/Rendezvous.', 1),
     BoolOption('SCEL',
                'Enable the SCEL user interface', 1),
+    BoolOption('SSE',
+               'Build with SSE support', 1),
     PackageOption('X11',
                   'Build with X11 support', 1)
     )
@@ -279,6 +281,10 @@ features['altivec'] = env['ALTIVEC'] \
                       and CPU == 'ppc' \
                       and conf.CheckCHeader('altivec.h')
 
+features['sse'] = env['SSE'] \
+                  and re.match("^i?[0-9x]86", CPU) \
+                  and conf.CheckCHeader('xmmintrin.h')
+
 env = conf.Finish()
 
 # x11
@@ -323,6 +329,11 @@ if features['altivec']:
         CCFLAGS = ['-maltivec', '-mabi=altivec'],
         CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)]
         )
+elif features['sse']:
+    env.Append(
+        CCFLAGS = ['-msse', '-mfpmath=sse'],
+        CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)]
+        )
 else:
     env.Append(CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 1)])
 
@@ -346,6 +357,7 @@ print ' LID:                     %s' % yesorno(env['LID'])
 print ' PREFIX:                  %s' % env['PREFIX']
 print ' RENDEZVOUS:              %s' % yesorno(env['RENDEZVOUS'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
+print ' SSE:                     %s' % yesorno(features['sse'])
 print ' X11:                     %s' % yesorno(features['x11'])
 print '------------------------------------------------------------------------'
 
@@ -357,7 +369,8 @@ commonEnv = env.Copy()
 commonEnv.Append(
     CPPPATH = ['#headers/common',
                '#headers/plugin_interface',
-               '#headers/server']
+               '#headers/server'],
+    CCFLAGS = ['-fPIC']
     )
 
 commonSources = Split('''
@@ -435,12 +448,12 @@ source/server/SC_UnitDef.cpp
 source/server/SC_World.cpp
 ''') + libraries['audioapi']['ADDITIONAL_SOURCES']
 
-scsynthSources = libscsynthSources + ['source/server/scsynth_main.cpp']
+scsynthSources = ['source/server/scsynth_main.cpp']
 
 libscsynth = serverEnv.SharedLibrary('scsynth', libscsynthSources)
 env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
 
-scsynth = serverEnv.Program('scsynth', scsynthSources)
+scsynth = serverEnv.Program('scsynth', scsynthSources, LIBS = ['scsynth'])
 env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [scsynth]))
 
 # ======================================================================
@@ -497,8 +510,9 @@ diskIOEnv = pluginEnv.Copy(
     LIBS = ['common'],
     LIBPATH = '.'
     )
-# rename shared object because it was already used for libscsynth
-diskIOSources = [diskIOEnv.SharedObject('source/plugins/SC_SyncCondition', 'source/server/SC_SyncCondition.cpp'), 'source/plugins/DiskIO_UGens.cpp']
+diskIOSources = [
+    diskIOEnv.SharedObject('source/plugins/SC_SyncCondition', 'source/server/SC_SyncCondition.cpp'),
+    'source/plugins/DiskIO_UGens.cpp']
 merge_lib_info(diskIOEnv, libraries['sndfile'])
 plugins.append(
     diskIOEnv.SharedLibrary(
@@ -590,17 +604,15 @@ source/lang/LangPrimSource/PyrListPrim.cpp
 source/lang/LangPrimSource/PyrStringPrim.cpp
 source/lang/LangPrimSource/PyrSymbolPrim.cpp
 source/lang/LangPrimSource/PyrUnixPrim.cpp
-source/plugins/fftlib.c
-''')
+''') + [libsclangEnv.SharedObject('source/lang/LangSource/fftlib', 'source/plugins/fftlib.c')]
 
-sclangSources = libsclangSources + ['source/lang/LangSource/cmdLineFuncs.cpp']
+sclangSources = ['source/lang/LangSource/cmdLineFuncs.cpp']
 
 if env['LANG']:
-    sclang = langEnv.Program('sclang', sclangSources)
+    sclang = langEnv.Program('sclang', sclangSources, LIBS = ['sclang', 'scsynth'])
     env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
-    if env['DEVELOPMENT']:
-        libsclang = langEnv.StaticLibrary('sclang', libsclangSources)
-        env.Alias('install-dev', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
+    libsclang = langEnv.SharedLibrary('sclang', libsclangSources)
+    env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
 
 # ======================================================================
 # installation

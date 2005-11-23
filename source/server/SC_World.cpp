@@ -39,6 +39,7 @@
 #include "SC_Prototypes.h"
 #include "SC_Samp.h"
 #include "SC_DirUtils.h"
+#include "SC_Altivec.h"
 #ifdef SC_WIN32
 # include "../../headers/server/SC_ComPort.h"
 #else
@@ -65,6 +66,9 @@ bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
 bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 }
 
+bool sc_UseVectorUnit();
+bool sc_SetDenormalFlags();
+
 ////////////////////////////////////////////////////////////////////////////////
 
 #if SC_LINUX
@@ -80,7 +84,7 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 #ifndef SC_MEMORY_ALIGNMENT
 # error SC_MEMORY_ALIGNMENT undefined
 #endif
-#define SC_DEBUG_MEMORY 0
+#define SC_DBUG_MEMORY 0
 
 inline void* sc_malloc(size_t size)
 {
@@ -221,8 +225,7 @@ void InterfaceTable_Init()
 	ft->fNRTLock = &World_NRTLock;
 	ft->fNRTUnlock = &World_NRTUnlock;
 		
-bool HasAltivec();
-	ft->mAltivecAvailable = HasAltivec();
+	ft->mAltivecAvailable = sc_UseVectorUnit();
 
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
 	ft->fDoneAction = &Unit_DoneAction;
@@ -346,7 +349,10 @@ World* World_New(WorldOptions *inOptions)
 #endif		
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;
-	
+
+		scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
+		sc_SetDenormalFlags();
+
 		if (world->mRealTime) {
 			hw->mAudioDriver = SC_NewAudioDriver(world);
 			hw->mAudioDriver->SetPreferredHardwareBufferFrameSize(
