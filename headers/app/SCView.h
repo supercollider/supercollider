@@ -596,7 +596,7 @@ protected:
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 ////
-//by jan truetzschler jt@kandos.de
+//by jan truetzschler jt[at]kandos[dot]de
 struct SCEnvObject {
     SCColor mColor; //changes between selected and mObjectColor
 	SCColor mObjectColor; //if its not selected
@@ -792,6 +792,9 @@ public:
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent);	
 protected:
     int mClipToBounds;
 };

@@ -4873,6 +4873,18 @@ void SCTabletView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent
     }
 }
 
+void SCTabletView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+
+}
+void SCTabletView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+
+}
+void SCTabletView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+
+}
 
 ////////////////////////////////////////////////
 
