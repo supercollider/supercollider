@@ -112,7 +112,7 @@ SCAutoCompleteTextField : SCTextField {
 
 SCTabletView : SCView {
 
-	var <>mouseDownAction,<>mouseUpAction;
+//	var <>mouseDownAction,<>mouseUpAction;
 	
 	mouseDown { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation;
 		mouseDownAction.value(this,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation);
