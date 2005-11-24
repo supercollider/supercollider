@@ -39,7 +39,6 @@
 #include "SC_Prototypes.h"
 #include "SC_Samp.h"
 #include "SC_DirUtils.h"
-#include "SC_Altivec.h"
 #ifdef SC_WIN32
 # include "../../headers/server/SC_ComPort.h"
 #else
