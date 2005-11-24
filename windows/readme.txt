@@ -15,6 +15,11 @@ the licenses are in separate text files in the "LICENSES" folder.
 | Changelog  |
 +------------+
 
+# SC3-WIN32-2005-11-23-14h30 :
+# made the post call into Python thread safe (Task postln bug)
+# see http://docs.python.org/api/threads.html for details
+# made unixCmd work with Win32
+
 # SC3-WIN32-2005-11-16-14h20 :
 # -------------------------------------------
 # first build that is in sync with the CVS again. 
