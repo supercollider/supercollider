@@ -18,17 +18,21 @@ int PySCLang_vpost(const char *fmt, va_list ap)
   if (size < kPostBufferSize) {
     vsprintf(_postBuffer, fmt, ap);
     //_txtCtrl->AppendText(wxString(_postBuffer));
-    
-    if( PySCLang_Module::scLogSink_s != NULL) {
-      // TODO : send text in the scLogSink_
-      PyObject* pystr = PyString_FromString(_postBuffer);
-      PyObject* tuple = PyTuple_New(1);
-      PyTuple_SetItem(tuple,0,pystr);
-      PyObject_Call(PySCLang_Module::scLogSink_s,tuple,NULL);
-    }
+
+	if( PySCLang_Module::scLogSink_s != NULL) {
+		/* make the Python call thread safe (global interpreter clock) */
+		PyGILState_STATE gstate;	
+		gstate = PyGILState_Ensure();
+
+		PyObject *arglist = Py_BuildValue("(s)", _postBuffer);
+		PyEval_CallObject(PySCLang_Module::scLogSink_s, arglist);
+		
+		PyGILState_Release(gstate);
+	}
     else { // no log sink callable..
       cout << _postBuffer; 
     }
+
   }
   else {
     char* tmpPostBuffer = new char[size+1]; // +1 : NULL ending
