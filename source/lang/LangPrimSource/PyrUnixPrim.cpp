@@ -33,6 +33,8 @@ Primitives for Unix.
 #ifdef SC_WIN32
 #include <stdio.h>
 #include "SC_Win32Utils.h"
+#define popen _popen
+#define pclose _pclose
 #else
 # include <unistd.h>
 #endif
@@ -103,14 +105,12 @@ int prString_Dirname(struct VMGlobals *g, int numArgsPushed)
 #endif
 
 
-#ifndef SC_WIN32
 void* string_popen_thread_func(void *data);
 void* string_popen_thread_func(void *data)
 {
     char *cmdline = (char*)data;
-
-    FILE *stream = popen(cmdline, "r");
-    free(cmdline);
+	FILE *stream = popen(cmdline, "r");
+	free(cmdline);
     if (!stream) return 0;
 
     int err = setvbuf(stream, 0, _IONBF, 0);
@@ -121,24 +121,20 @@ void* string_popen_thread_func(void *data)
     char buf[1024];
     
     while (true) {
-        //printf("->fgets\n");
+		//printf("->fgets\n");
         char *string = fgets(buf, 1024, stream);
         //printf("<-fgets %d\n", string ? strlen(string) : -1);
         if (!string) break;
-        postText(string, strlen(string));
-    }
-    int res = pclose(stream);
-    post("RESULT = %d\n", res);
+		postText(string, strlen(string));
+	}
+	int res = pclose(stream);
+	post("RESULT = %d\n", res);
     return 0;
 }   
 
-#endif
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
 int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 {
-#ifdef SC_WIN32
-  return errNone; // $$$todo fixme : implement prString_POpen please....
-#else
 	PyrSlot *a = g->sp;
 	
         if (!isKindOfSlot(a, class_string)) return errWrongType;
@@ -150,7 +146,6 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
         pthread_create(&thread, NULL, string_popen_thread_func, (void*)cmdline);
  	pthread_detach(thread);
 	return errNone;
-#endif
 }
 
 int prUnix_Errno(struct VMGlobals *g, int numArgsPushed);
