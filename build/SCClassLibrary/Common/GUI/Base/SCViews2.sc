@@ -139,6 +139,15 @@ EZSlider
 	}
 	init { arg window, dimensions, label, argControlSpec, argAction, initVal, 
 			initAction, labelWidth, numberWidth;
+		var	decorator = window.tryPerform(\decorator),
+			gap = decorator.tryPerform(\gap);
+		
+		gap.notNil.if({
+			labelWidth = labelWidth - gap.x;
+			numberWidth = numberWidth - gap.x;
+			dimensions.x = dimensions.x - (2*gap.x);
+		});
+
 		labelView = SCStaticText(window, labelWidth @ dimensions.y);
 		labelView.string = label;
 		labelView.align = \right;
@@ -186,6 +195,10 @@ EZSlider
 			numberView.value = value.round(round);
 		};
 	}
+	
+	visible_ { |bool|
+		[labelView, sliderView, numberView].do(_.visible_(bool))
+	}
 }
 
 
@@ -202,6 +215,14 @@ EZNumber
 	}
 	init { arg window, dimensions, label, argControlSpec, argAction, initVal, 
 			initAction, labelWidth, numberWidth;
+		var	decorator = window.tryPerform(\decorator),
+			gap = decorator.tryPerform(\gap);
+		
+		gap.notNil.if({
+			labelWidth = labelWidth - gap.x;
+			dimensions.x = dimensions.x - gap.x;
+		});
+
 		labelView = SCStaticText(window, labelWidth @ dimensions.y);
 		labelView.string = label;
 		labelView.align = \right;
@@ -235,5 +256,9 @@ EZNumber
 			value = initVal;
 			numberView.value = value.round(round);
 		};
+	}
+	
+	visible_ { |bool|
+		[labelView, numberView].do(_.visible_(bool))
 	}
 }
