@@ -145,7 +145,7 @@ EZSlider
 		gap.notNil.if({
 			labelWidth = labelWidth - gap.x;
 			numberWidth = numberWidth - gap.x;
-			dimensions.x = dimensions.x - (2*gap.x);
+			dimensions.x = dimensions.x.copy - (2*gap.x);
 		});
 
 		labelView = SCStaticText(window, labelWidth @ dimensions.y);
@@ -220,7 +220,7 @@ EZNumber
 		
 		gap.notNil.if({
 			labelWidth = labelWidth - gap.x;
-			dimensions.x = dimensions.x - gap.x;
+			dimensions.x = dimensions.x.copy - gap.x;
 		});
 
 		labelView = SCStaticText(window, labelWidth @ dimensions.y);
