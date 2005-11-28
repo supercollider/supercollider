@@ -65,13 +65,12 @@ bool sc_HasVectorUnit()
 void sc_SetDenormalFlags()
 {
 }
-#elif defined(SC_LINUX)
-# if defined(__ALTIVEC__)
-#  include <stdio.h>
-#  include <string.h>
-#  include <unistd.h>
-#  include <signal.h>
-#  include <setjmp.h>
+#elif defined(SC_LINUX) && defined(__ALTIVEC__)
+# include <stdio.h>
+# include <string.h>
+# include <unistd.h>
+# include <signal.h>
+# include <setjmp.h>
 
 // kernel independent altivec detection
 // contributed by niklas werner
@@ -113,7 +112,7 @@ bool sc_HasVectorUnit()
 void sc_SetDenormalFlags()
 {
 }
-# elif defined(__SSE__)
+#elif defined(SC_LINUX) && defined(__SSE__)
 # include <xmmintrin.h>
 
 // cpuid function that works with -fPIC from `minor' at http://red-bean.com
@@ -121,7 +120,7 @@ void sc_SetDenormalFlags()
 // http://svn.red-bean.com/repos/minor/trunk/gc/barriers-amd64.c
 // <sk>
 
-#  if defined(__i386__)
+# if defined(__i386__)
 /* If the current processor supports the CPUID instruction, execute
    one, with REQUEST in %eax, and set *EAX, *EBX, *ECX, and *EDX to
    the values the 'cpuid' stored in those registers.  Return true if
@@ -197,7 +196,7 @@ static bool cpuid(
 	else
 		return false;
 }
-#  elif defined(__x86_64__)
+# elif defined(__x86_64__)
 /* Execute a CPUID instruction with REQUEST in %eax, and set *EAX,
    *EBX, *ECX, and *EDX to the values the 'cpuid' stored in those
    registers.  */
@@ -214,7 +213,9 @@ static bool cpuid(
 				  : "memory");
 	return true;
 }
-#  endif
+# else
+# error Unknown SSE CPU
+# endif
 
 bool sc_HasVectorUnit()
 {
@@ -260,7 +261,6 @@ void sc_SetDenormalFlags()
 		}
     }
 }
-# endif
 #else
 bool sc_HasVectorUnit()
 {
