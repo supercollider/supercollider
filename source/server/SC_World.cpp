@@ -108,7 +108,7 @@ void* sc_dbg_malloc(size_t size, const char* tag, int line)
 	void* ptr = sc_malloc(size);
 	fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %u\n", tag, line, ptr, size);
 #if SC_MEMORY_ALIGNMENT > 1
-	if (((int)ptr % SC_MEMORY_ALIGNMENT) != 0) {
+	if (((intptr_t)ptr % SC_MEMORY_ALIGNMENT) != 0) {
 		fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %u: memory alignment error\n",
 				tag, line, ptr, size);
 		abort();

@@ -324,7 +324,7 @@ void DumpReplyAddress(ReplyAddress *inReplyAddress)
 	scprintf("mSockAddr.sin_family %d\n", inReplyAddress->mSockAddr.sin_family);
 	scprintf("mSockAddr.sin_port %d\n", inReplyAddress->mSockAddr.sin_port);
 	scprintf("mSockAddr.sin_addr.s_addr %d\n", inReplyAddress->mSockAddr.sin_addr.s_addr);
-	scprintf("mReplyFunc %08X\n", (uint32)inReplyAddress->mReplyFunc);
+	scprintf("mReplyFunc %08X\n", (intptr_t)inReplyAddress->mReplyFunc);
 }
 
 /*
