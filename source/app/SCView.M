@@ -3321,10 +3321,15 @@ void SCUserView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent
     mouseAction(getsym("mouseBeginTrack"), where, modifiers);
 }
 
-void SCUserView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
-{
-    mouseAction(getsym("mouseTrack"), where, modifiers);
-}
+  void SCUserView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+  {
+	if (modifiers & NSCommandKeyMask) {
+		beginDrag(where);
+	} else {
+	mouseAction(getsym("mouseTrack"), where, modifiers);
+	}
+  }
+
 
 void SCUserView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
@@ -3338,6 +3343,19 @@ void SCUserView::keyDown(int character, int modifiers)
 void SCUserView::keyUp(int character, int modifiers)
 {
 }
+
+bool SCUserView::canReceiveDrag()
+{
+	PyrSlot result;
+	sendMessage(s_canReceiveDrag, 0, 0, &result);
+	return IsTrue(&result);
+}
+
+void SCUserView::receiveDrag()
+{
+	sendMessage(s_receiveDrag, 0, 0, 0);
+}
+
 
 ////////////////////////////////////////////////
 

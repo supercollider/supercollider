@@ -676,6 +676,8 @@ public:
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);	
     virtual void keyDown(int character, int modifiers);
 	virtual void keyUp(int character, int modifiers);
+ 	virtual bool canReceiveDrag();
+ 	virtual void receiveDrag();	
 	
 protected:
 	void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);
