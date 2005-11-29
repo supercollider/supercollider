@@ -1405,7 +1405,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	filename[b->uos->size] = 0;
 		
 #ifdef SC_WIN32
-  char* headerFormat = reinterpret_cast<char*>(_alloca(headerSlot->uos->size));
+  char* headerFormat = (char *)malloc(headerSlot->uos->size);
 #else
   char headerFormat[headerSlot->uos->size];
 #endif
@@ -1413,7 +1413,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	headerFormat[headerSlot->uos->size] = 0;
 	
 #ifdef SC_WIN32
-  char* sampleFormat = reinterpret_cast<char*>(_alloca(formatSlot->uos->size));
+  char* sampleFormat = (char *)malloc(formatSlot->uos->size);
 #else
 	char sampleFormat[formatSlot->uos->size];
 #endif
