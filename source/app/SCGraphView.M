@@ -215,8 +215,8 @@ static NSString *sSCObjType = @"SuperCollider object address";
 							mTopView->refresh();
 						}else
 						{
-							view->mouseEndTrack(scpoint, modifiers,theEvent);
 							view->mouseUpAction(scpoint, modifiers,theEvent);						
+							view->mouseEndTrack(scpoint, modifiers,theEvent);
 						}
                         keepOn = NO;
                         break;
