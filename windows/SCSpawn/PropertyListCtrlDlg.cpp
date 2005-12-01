@@ -6,7 +6,6 @@
 #include "PropertyListCtrlDlg.h"
 #include ".\propertylistctrldlg.h"
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -221,9 +220,9 @@ void CPropertyListCtrlDlg::LaunchSC( )
 
   CString cmdLine;
 #ifdef _DEBUG
-  cmdLine.Format("cmd.exe /k scsynth_debug.exe %s %s %s %s %s", networkParams, bussesParams, sizesParams, serverMisc, pwdParam);
+  cmdLine.Format("scsynth_debug.exe %s %s %s %s %s", networkParams, bussesParams, sizesParams, serverMisc, pwdParam);
 #else //_DEBUG
-  cmdLine.Format("cmd.exe /k scsynth.exe %s %s %s %s %s", networkParams, bussesParams, sizesParams, serverMisc, pwdParam);
+  cmdLine.Format("scsynth.exe %s %s %s %s %s", networkParams, bussesParams, sizesParams, serverMisc, pwdParam);
 #endif //_DEBUG
 
   // next, we set the current process environment vars for SC3, because
@@ -272,43 +271,74 @@ void CPropertyListCtrlDlg::LaunchSC( )
   startupInfo.hStdError = 0; // ignored because of dwFlags
 
   // CreateProcess Unicode wants a non-readonly lpCommandLine <sigh>
-  char* szCmdLine = new char[cmdLine.GetLength( )+1];
-  strcpy(szCmdLine,cmdLine);
-
+  // start Psycollider (try the exe version first)
+  char* langCmdLine;
+  langCmdLine = "Psycollider.exe";
+  char* szCmdLine = new char[cmdLine.GetLength( )+ strlen(langCmdLine) + 4];
+  strcpy(szCmdLine,langCmdLine);
+  strcat(szCmdLine," \"");
+  strcat(szCmdLine,cmdLine);
+  strcat(szCmdLine,"\"");
+  
   berr = CreateProcess(
     /* LPCTSTR lpApplicationName*/ NULL,
     /* LPTSTR lpCommandLine*/ szCmdLine,
     /* LPSECURITY_ATTRIBUTES lpProcessAttributes*/ NULL,
     /* LPSECURITY_ATTRIBUTES lpThreadAttributes*/ NULL,
     /* BOOL bInheritHandles*/ FALSE,
-    /* DWORD dwCreationFlags*/ CREATE_NEW_CONSOLE,
+    /* DWORD dwCreationFlags*/ NULL,
     /* LPVOID lpEnvironment*/ NULL, // inherit parent
     /* LPCTSTR lpCurrentDirectory*/ NULL, // current folder
     /* LPSTARTUPINFO lpStartupInfo*/ &startupInfo,
     /* LPPROCESS_INFORMATION lpProcessInformation*/ &result
   );
-  delete [] szCmdLine;
+  
+  printf("%s\n", szCmdLine);
   if(!berr) {
-    char* msgBuf;
-    DWORD errorCode = ::GetLastError( );
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        NULL,
-        errorCode,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR) &msgBuf,
-        0,
-        NULL
-    );
-    CString guiErrMsg;
-    guiErrMsg.Format("Sorry. Couldn't launch scsynth.exe using ::CreateProcess(...).\nThe error is %s (%d).", msgBuf, errorCode);
-    ::MessageBox(NULL,guiErrMsg,"Error",MB_ICONERROR | MB_OK);
-    ::LocalFree( msgBuf);
+
+	// try to spawn Psycollider.py calling python
+    langCmdLine = "python.exe Psycollider.py";
+	szCmdLine = new char[cmdLine.GetLength( )+ strlen(langCmdLine) + 4];
+	strcpy(szCmdLine,langCmdLine);
+	strcat(szCmdLine," \"");
+	strcat(szCmdLine,cmdLine);
+	strcat(szCmdLine,"\"");
+	berr = CreateProcess(
+		/* LPCTSTR lpApplicationName*/ NULL,
+		/* LPTSTR lpCommandLine*/ szCmdLine,
+		/* LPSECURITY_ATTRIBUTES lpProcessAttributes*/ NULL,
+		/* LPSECURITY_ATTRIBUTES lpThreadAttributes*/ NULL,
+		/* BOOL bInheritHandles*/ FALSE,
+		/* DWORD dwCreationFlags*/ NULL,
+		/* LPVOID lpEnvironment*/ NULL, // inherit parent
+		/* LPCTSTR lpCurrentDirectory*/ NULL, // current folder
+		/* LPSTARTUPINFO lpStartupInfo*/ &startupInfo,
+		/* LPPROCESS_INFORMATION lpProcessInformation*/ &result
+	);
+
+	if(!berr) {
+		char* msgBuf;
+		DWORD errorCode = ::GetLastError( );
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+			NULL,
+			errorCode,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			(LPTSTR) &msgBuf,
+			0,
+			NULL
+		);
+		CString guiErrMsg;
+		guiErrMsg.Format("Sorry. Couldn't launch scsynth.exe using ::CreateProcess(...).\nThe error is %s (%d).", msgBuf, errorCode);
+		::MessageBox(NULL,guiErrMsg,"Error",MB_ICONERROR | MB_OK);
+		::LocalFree( msgBuf);
+		delete [] szCmdLine;
+		return;
+	}
   }
-  else {
-    ::CloseHandle(result.hProcess);
-    ::CloseHandle(result.hThread);
-  }
+  delete [] szCmdLine;
+  ::CloseHandle(result.hProcess);
+  ::CloseHandle(result.hThread);
 }
 
 void CPropertyListCtrlDlg::FillRegistryFromData( )
