@@ -71,6 +71,12 @@ else:
 gHelpFolder = 'Help'
 gUserExtensionFolder = '~\\SuperCollider\\Extensions'
 
+# check for commandline argument 
+if len(sys.argv) > 1: 
+  gSCSynthCmd = sys.argv[1]
+else:
+  gSCSynthCmd = 'scsynth -u 57110'
+
 #----------------------------------------------------------------------
 ID_NewCodeWin  = wx.NewId()
 ID_StartServer = wx.NewId()
@@ -103,6 +109,7 @@ ID_Lang_CompileLibrary = wx.NewId()
 ID_Lang_OpenClassDef = wx.NewId()
 ID_Lang_ImplementationsOf = wx.NewId()
 ID_Lang_ReferencesTo = wx.NewId()
+ID_Lang_ClearLogWindow = wx.NewId()
 
 ID_Go_To_Help_File = wx.NewId()
 
@@ -433,6 +440,9 @@ class PsycolliderLogWindow(wx.MDIChildFrame):
   def __init__ (self,parent,ID,title,pos=wx.DefaultPosition,size=wx.DefaultSize):
     wx.MDIChildFrame.__init__(self,parent,ID,title,pos,size)
     self.logSubWin = wx.TextCtrl(self,style = wx.TE_MULTILINE | wx.TE_READONLY )
+    self.Bind(wx.EVT_CLOSE, self.OnClose)
+  def OnClose(self, event):
+    self.logSubWin.AppendText("Sorry, not closing the log window...\n")
   
 class PsycolliderRTFWin(wx.MDIChildFrame):
   """ this class is not really able to display the SC help files properly """
@@ -480,6 +490,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     menuLang.Append(ID_Lang_ReferencesTo,"References to\tShift+Alt+Y")
     menuLang.Append(ID_EvalSelection , "&Evaluate Selection\tCtrl+Enter")
     menuLang.Append(ID_Go_To_Help_File , "&Go To Help File\tF1")
+    menuLang.Append(ID_Lang_ClearLogWindow, "&Clear Post Window\tAlt+P")
 
     menu2 = wx.Menu()
     menu2.Append(ID_AccelF2, "Simulate\tF&2")
@@ -533,7 +544,8 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     self.Bind(wx.EVT_MENU, self.On_Lang_OpenClassDef, id=ID_Lang_OpenClassDef)
     self.Bind(wx.EVT_MENU, self.On_Lang_ImplementationsOf, id=ID_Lang_ImplementationsOf)
     self.Bind(wx.EVT_MENU, self.On_Lang_ReferencesTo, id=ID_Lang_ReferencesTo)
-
+    self.Bind(wx.EVT_MENU, self.On_Lang_ClearLogWindow, id=ID_Lang_ClearLogWindow)
+    
     self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)  
     
     accelTableEntries = []
@@ -613,7 +625,12 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
 
   def On_Lang_CompileLibrary(self,evt):
     PySCLang.compileLibrary()
+    PySCLang.setCmdLine('s.options.setFromCmdString(\"' + gSCSynthCmd + '\")')
+    PySCLang.sendMain('interpretPrintCmdLine')
 
+  def On_Lang_ClearLogWindow(self,evt):
+    wx.GetApp().theMainFrame.logWin.logSubWin.Clear()
+	  
   def On_Lang_OpenClassDef(self,evt):
     self.SendSelection("openWinCodeFile")
 
@@ -932,13 +949,23 @@ class PsycolliderApp(wx.App):
     self.ChangeDirToSCClassLibraryFolder()
 
     # start the sc lang interpreter
-    PySCLang.start( )
-    
+    PySCLang.start( )    
+
     (addr,port) = self.GetServerAddressAndPort()
-    
-    # TODO : "s.serverRunning=true;" is a temp hack for lack of proper boot sequence....
-    PySCLang.setCmdLine('s.initTree;s.serverRunning=true;') 
+
+    # start the server
+	# set server options 
+    PySCLang.setCmdLine('s.options.setFromCmdString(\"' + gSCSynthCmd + '\")')
     PySCLang.sendMain('interpretPrintCmdLine')
+    PySCLang.setCmdLine('s.boot')
+    PySCLang.sendMain('interpretPrintCmdLine')
+
+#    PySCLang.setCmdLine('unixCmd(\"' + gSCSynthCmd + '\")') 
+#    PySCLang.sendMain('interpretPrintCmdLine')
+
+#    PySCLang.setCmdLine('s.initTree;s.serverRunning=true;') 
+#    PySCLang.sendMain('interpretPrintCmdLine')
+
     
     # Return a success flag
     return 1
