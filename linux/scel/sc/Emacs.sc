@@ -274,7 +274,7 @@ Emacs {
 		}
 	}
 	*evalLispExpression { | expression, handler |
-		this.sendToLisp('_eval', expression, handler);
+		this.sendToLisp('_eval', expression.asLispExpression, handler);
 	}
 
 	// utilities

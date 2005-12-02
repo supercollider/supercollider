@@ -22,13 +22,18 @@
 		this.storeLispOn(stream);
 		^stream.collection
 	}
-
+	asLispExpression {
+		^this.asLispString
+	}
 	storeLispOn { arg stream;
 		stream << "#<" << this << ">"
 	}
 }
 
 + Symbol {
+	asLispExpression {
+		^this
+	}
 	storeLispOn { arg stream;
 		stream.putAll(this.asString)
 	}

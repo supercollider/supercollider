@@ -32,6 +32,17 @@
   :type 'directory
   :options '(:must-match))
 
+(defcustom sclang-help-path (list sclang-system-help-dir
+				  "~/share/SuperCollider/Help")
+  "*List of directories where SuperCollider help files are kept."
+  :group 'sclang-interface
+  :version "21.4"
+  :type '(repeat directory))
+
+(defconst sclang-extension-path (list sclang-system-extension-dir
+				      "~/share/SuperCollider/Extensions")
+  "List of SuperCollider extension directories.")
+
 (defcustom sclang-help-fill-column fill-column
   "*Column beyond which automatic line-wrapping in RTF help files should happen."
   :group 'sclang-interface
@@ -52,15 +63,30 @@
 ;; (defvar sclang-help-topic-ring-length 32)
 ;; (defvar sclang-help-topic-ring (make-ring sclang-help-topic-ring-length))
 
+(defconst sclang-special-help-topics
+  '(("/" . "division")
+    ("-" . "subtraction"))
+  "Alist of help topics with transcoded filenames.")
+
 (defvar sclang-help-file nil)
 (defvar sclang-current-help-file nil)
 (make-variable-buffer-local 'sclang-help-file)
 
+(defconst sclang-help-file-regexp
+  "\\(\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)\\|\\.rtfd/TXT\\.rtf\\)$"
+  "Regular expression matching help files.")
+
+;; =====================================================================
+;; utilities
+;; =====================================================================
+
 (defun sclang-get-help-file (topic)
-  (cdr (assoc topic sclang-help-topic-alist)))
+  (let ((topic (or (cdr (assoc topic sclang-special-help-topics)) topic)))
+    (cdr (assoc topic sclang-help-topic-alist))))
 
 (defun sclang-get-help-topic (file)
-  (car (rassoc file sclang-help-topic-alist)))
+  (let ((topic (car (rassoc file sclang-help-topic-alist))))
+    (or (car (rassoc topic sclang-special-help-topics)) topic)))
 
 (defun sclang-help-buffer-name (topic)
   (sclang-make-buffer-name (concat "Help:" topic)))
@@ -73,15 +99,13 @@
   (let ((case-fold-search t))
     (string-match ".*\\.sc$" file)))
 
-(defconst sclang-help-file-regexp "\\(\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)\\|\\.rtfd/TXT\\.rtf\\)$")
-
 (defun sclang-help-file-p (file-name)
   (string-match sclang-help-file-regexp file-name))
 
 (defun sclang-help-topic-name (file-name)
   (if (string-match sclang-help-file-regexp file-name)
-      (file-name-nondirectory (replace-match "" nil nil file-name 1))
-    file-name))
+      (cons (file-name-nondirectory (replace-match "" nil nil file-name 1))
+	    file-name)))
 
 ;; =====================================================================
 ;; rtf parsing
@@ -343,42 +367,69 @@
 ;; help file access
 ;; =====================================================================
 
+(defun sclang-skip-help-directory-p (path)
+  "Answer t if PATH should be skipped during help file indexing."
+  (let ((directory (file-name-nondirectory path)))
+    (reduce (lambda (a b) (or a b))
+	    (mapcar (lambda (regexp) (string-match regexp directory))
+		    '("^\.$" "^\.\.$" "^CVS$" "^\.svn$" "^_darcs$")))))
+
+(defun sclang-filter-help-directories (list)
+  "Remove paths to be skipped from LIST of directories."
+  (remove-if (lambda (x)
+	       (or (not (file-directory-p x))
+		   (sclang-skip-help-directory-p x)))
+	     list))
+
+(defun sclang-extension-help-directories ()
+  "Build a list of help directories for extensions."
+  (flet ((flatten (seq)
+		  (if (null seq)
+		      seq
+		    (if (listp seq)
+			(reduce 'append (mapcar #'flatten seq))
+		      (list seq)))))
+    (flatten
+     (mapcar
+      (lambda (dir)
+	(mapcar
+	 (lambda (dir)
+	   (remove-if-not
+	    'file-directory-p
+	    (directory-files dir t "^[Hh][Ee][Ll][Pp]$" t)))
+	 (sclang-filter-help-directories (directory-files dir t))))
+      sclang-extension-path))))
+
+(defun sclang-help-directories ()
+  "Answer list of help directories to be indexed."
+  (append sclang-help-path (sclang-extension-help-directories)))
+
+(defun sclang-make-help-topic-alist (dirs result)
+  "Build a help topic alist from directories in DIRS, with initial RESULT."
+  (if dirs
+      (let* ((files (directory-files (car dirs) t))
+	     (topics (remove-if 'null (mapcar 'sclang-help-topic-name files)))
+	     (new-dirs	(sclang-filter-help-directories files)))
+	(sclang-make-help-topic-alist
+	 (append new-dirs (cdr dirs))
+	 (append topics result)))
+    (sort result (lambda (a b) (string< (car a) (car b))))))
+
 (defun sclang-index-help-topics ()
+  "Build an index of help topics searching in the various help file locations."
   (interactive)
   (setq sclang-help-topic-alist nil)
   (let ((case-fold-search nil)
 	(max-specpdl-size 10000)
-	result)
-    (flet ((push-file
-	    (name path)
-	    (push (cons
-		   (file-name-nondirectory (replace-match "" nil nil name 1))
-		   path)
-		  result)))
-      (flet ((index-dir
-	      (dir)
-	      (dolist (file (directory-files dir t "^[^.]" t))
-		(cond ((file-directory-p file)
-		       (unless (string-match "CVS$" file)
-			 ;; handle XXX.rtfd/TXT.rtf
-			 (if (string-match "\\(\\.rtfd\\)$" file)
-			     (push-file file (concat file "/TXT.rtf"))
-			   ;; recurse into sub-directory
-			   (index-dir file))))
-		      ((string-match "\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)$" file)
-		       (push-file file file))))
-	      result))
-	(sclang-message "Indexing help topics ...")
-	(dolist (dir sclang-help-path)
-	  (condition-case nil
-	      (if (file-directory-p dir)
-		  (index-dir dir))
-	    (error nil)))
-	(setq sclang-help-topic-alist
-	      (sort result (lambda (a b) (string< (car a) (car b)))))
-	(sclang-message "Indexing help topics ... Done")))))
+	(max-lisp-eval-depth 10000))
+    (sclang-message "Indexing help topics ...")
+    (setq sclang-help-topic-alist
+	  (sclang-make-help-topic-alist (sclang-help-directories) nil))
+    (sclang-message "Indexing help topics ... Done")))
 
 (defun sclang-edit-help-file ()
+  "Edit the help file associated with the current buffer.
+Either visit file internally (.sc) or start external editor (.rtf)."
   (interactive)
   (if (and (boundp 'sclang-help-file) sclang-help-file)
       (let ((file sclang-help-file))
@@ -428,26 +479,6 @@
 	      (switch-to-buffer buffer))
 	  (sclang-message "Help file not found") nil)
       (sclang-message "No help for \"%s\"" topic) nil)))
-
-;; =====================================================================
-;; debugging
-;; =====================================================================
-
-;; (setf debug-on-quit t)
-;; (setf debug-on-error t)
-
-;; (defun rtf ()
-;;   (interactive)
-;;   (sclang-convert-rtf-buffer (get-buffer-create "*RTF*")))
-
-;; (defun props ()
-;;   (interactive)
-;;   (message "props: %s" (text-properties-at (point))))
-
-;; (defun start-help ()
-;;   (interactive)
-;;   (sclang-index-help-topics)
-;;   (sclang-find-help "Server"))
 
 ;; =====================================================================
 ;; module setup

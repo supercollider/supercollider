@@ -27,9 +27,16 @@
 ;; =====================================================================
 
 (defun sclang-regexp-group (regexp &optional addressable)
+  "Enclose REGEXP in grouping parentheses.
+
+If ADDRESSABLE is non-nil the group match data can be addressed
+separately after matching."
   (concat "\\(" (unless addressable "?:") regexp "\\)"))
 
 (defun sclang-regexp-concat (&rest regexps)
+  "Concatenate REGEXPS by grouping.
+
+The expressions are joined as alternatives with the \\| operator."
   (mapconcat 'sclang-regexp-group regexps "\\|"))
 
 ;; =====================================================================
@@ -37,75 +44,96 @@
 ;; =====================================================================
 
 (defconst sclang-symbol-regexp
-  "\\(?:\\sw\\|\\s_\\)*")
+  "\\(?:\\sw\\|\\s_\\)*"
+  "Regular expression matching symbols.")
 
 (defconst sclang-identifier-regexp
-  (concat "[a-z]" sclang-symbol-regexp))
+  (concat "[a-z]" sclang-symbol-regexp)
+  "Regular expression matching valid identifiers.")
 
 (defconst sclang-method-name-special-chars
-  "-!%&*+/<=>?@|")
+  "-!%&*+/<=>?@|"
+  "Regular expression matching special method name characters.")
 
 (defconst sclang-method-name-plain-regexp
-  (concat sclang-identifier-regexp "_?"))
+  (concat sclang-identifier-regexp "_?")
+  "Regular expression matching regular method names.")
 
 (defconst sclang-method-name-special-regexp
   (concat
-   "[" (regexp-quote sclang-method-name-special-chars) "]+"
-   ))
+   "[" (regexp-quote sclang-method-name-special-chars) "]+")
+   "Regular expression matching method names composed of special characters.")
 
 (defconst sclang-method-name-regexp
   (sclang-regexp-concat
    sclang-method-name-special-regexp
-   sclang-method-name-plain-regexp
-   ))
+   sclang-method-name-plain-regexp)
+  "Regular expression matching method names.")
 
 (defconst sclang-class-name-regexp
-  "\\(?:Meta_\\)?[A-Z]\\(?:\\sw\\|\\s_\\)*")
+  "\\(?:Meta_\\)?[A-Z]\\(?:\\sw\\|\\s_\\)*"
+  "Regular expression matching class names.")
 
 (defconst sclang-symbol-name-regexp
   (sclang-regexp-concat
    sclang-method-name-regexp
-   sclang-class-name-regexp
-   ))
+   sclang-class-name-regexp)
+  "Regular expression matching class and method names.")
 
 (defconst sclang-class-definition-regexp
-  (concat "^\\s *\\(" sclang-class-name-regexp
-	  "\\)\\(?:\\s *:\\s *\\(" sclang-class-name-regexp "\\)\\)?\\s *{"))
+  (concat "^\\s *\\("
+	  sclang-class-name-regexp
+	  "\\)\\(?:\\s *:\\s *\\("
+	  sclang-class-name-regexp
+	  "\\)\\)?[[:space:]]*{")
+  "Regular expression matching class definitions.")
 
 (defconst sclang-method-definition-regexp
-  (concat "^\\s *\\*?\\(" sclang-method-name-regexp "\\)\\s *{"))
+  (concat "^\\s *\\*?\\(" sclang-method-name-regexp "\\)\\s *{")
+  "Regular expression matching method definitions.")
 
 (defconst sclang-block-regexp 
-  ;; Regular expression matching the beginning of a block of code enclosed by parentheses.
-  ;; '(' must be at the beginning of a line to avoid ambiguities with normal code
   "^\\((\\)\\s *\\(?:/[/*]?.*\\)?"
-  )
+  "Regular expression matching the beginning of a code block.
+
+A block is enclosed by parentheses where the opening parenthesis must
+be at the beginning of a line to avoid ambiguities.")
 
 (defconst sclang-beginning-of-defun-regexp
     (sclang-regexp-concat
-     sclang-block-regexp
      sclang-class-definition-regexp
-     ))
+     sclang-block-regexp)
+    "Regular expression matching the beginning of defuns.
+
+The match is either the start of a class definition
+\(`sclang-class-definition-regexp') or the beginning of a code block
+enclosed by parenthesis (`sclang-block-regexp').")
 
 (defconst sclang-method-definition-spec-regexp
   (concat (sclang-regexp-group sclang-class-name-regexp t)
 	  "-"
-	  (sclang-regexp-group sclang-method-name-regexp t)))
+	  (sclang-regexp-group sclang-method-name-regexp t))
+  "Regular expression matching definition specifications.
+
+A specification is of the form <class-name>-<method-name>.")
 
 ;; =====================================================================
 ;; regexp building
 ;; =====================================================================
 
 (defun sclang-make-class-definition-regexp (name)
+  "Return a regular expression matching the class definition NAME."
   (concat "\\(" (regexp-quote name) "\\)"
 	  "\\(?:\\s *:\\s *\\(" sclang-class-name-regexp "\\)\\)?"
-	  "\\s *{"))
+	  "[[:space:]]*{"))
 
 (defun sclang-make-class-extension-regexp (name)
+  "Return a regular expression matching the class extension NAME."
   (concat "\\+\\s *\\(" (regexp-quote name) "\\)"
 	  "\\s *{"))
 
 (defun sclang-make-method-definition-regexp (name)
+  "Return a regular expression matching the method definition NAME."
   (concat "\\(" (regexp-quote name) "\\)\\s *{"))
 
 ;; =====================================================================
@@ -113,6 +141,7 @@
 ;; =====================================================================
 
 (defun sclang-string-match (regexp string)
+  "Match REGEXP with STRING while preserving case."
   (let ((case-fold-search nil))
     (string-match regexp string)))
 
@@ -259,16 +288,16 @@ Use font-lock information if font-lock-mode is enabled."
 	(orig (point))
 	(success t))
     (while (and success (> arg 0))
-      (if (setq success (re-search-backward sclang-beginning-of-defun-regexp
-					    nil 'move))
-	  (unless (sclang-point-in-comment-p)
-	    (goto-char (match-beginning 0))
-	    (setq arg (1- arg)))))
+      (setq success (re-search-backward sclang-beginning-of-defun-regexp
+					nil 'move))
+      (when (and success (not (sclang-point-in-comment-p)))
+	(goto-char (match-beginning 0))
+	(setq arg (1- arg))))
     (while (and success (< arg 0))
-      (if (setq success (re-search-forward sclang-beginning-of-defun-regexp nil t))
-	  (unless (sclang-point-in-comment-p)
+      (setq success (re-search-forward sclang-beginning-of-defun-regexp nil t))
+      (when (and success (not (sclang-point-in-comment-p)))
 	    (goto-char (match-end 0))
-	    (setq arg (1+ arg)))))
+	    (setq arg (1+ arg))))
     (when success
       (beginning-of-line)
       (cond ((looking-at sclang-block-regexp) (goto-char (1- (match-end 1))))
@@ -321,7 +350,7 @@ Return value is nil or (beg end) of defun."
 ;; =====================================================================
 
 (defun sclang-symbol-at-point ()
-  "Answer the symbol at point, or nil if not a valid symbol."
+  "Return the symbol at point, or nil if not a valid symbol."
   (save-excursion
     (with-syntax-table sclang-mode-syntax-table
       (let ((case-fold-search nil)
@@ -341,9 +370,14 @@ Return value is nil or (beg end) of defun."
 	    (buffer-substring-no-properties beg end))))))
 
 (defun sclang-line-at-point ()
+  "Return the line at point."
   (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
 (defun sclang-defun-at-point ()
+  "Return the defun at point.
+
+A defun may either be a class definition or a code block, see
+`sclang-beginning-of-defun-regexp'."
   (save-excursion
     (with-syntax-table sclang-mode-syntax-table
       (multiple-value-bind (beg end) (sclang-point-in-defun-p)

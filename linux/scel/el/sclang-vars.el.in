@@ -21,12 +21,14 @@
 
 ;;; Code:
 
-(defcustom sclang-help-path (list "@PKG_DATA_DIR@/Help"
-				  "~/share/SuperCollider/Help")
-  "*List of directories where SuperCollider help files are kept."
-  :group 'sclang-interface
-  :version "21.4"
-  :type '(repeat directory))
+(defconst sclang-system-data-dir "@PKG_DATA_DIR@"
+  "Installation dependent data directory.")
+
+(defconst sclang-system-help-dir "@PKG_DATA_DIR@/Help"
+  "Installation dependent help directory.")
+
+(defconst sclang-system-extension-dir "@PKG_DATA_DIR@/Extensions"
+  "Installation dependent extension directory.")
 
 (provide 'sclang-vars)
 ;;; sclang-vars.el ends here
