@@ -31,15 +31,15 @@
 }
 
 + Symbol {
-	asLispExpression {
-		^this
-	}
 	storeLispOn { arg stream;
 		stream.putAll(this.asString)
 	}
 }
 
 + String {
+	asLispExpression {
+		^this
+	}
 	storeLispOn { arg stream;
 		stream.put($").putAll(this.escapeChar($")).put($")
 	}
