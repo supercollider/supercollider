@@ -349,7 +349,12 @@ EventPatternProxy : TaskProxy {
 			};
 		//	if(new.isKindOf(Event)) { new = Pn(new) }; // loop single event
 			if(fadeTime.isNil) {
-				Pseq([EmbedOnce(Pfindur(delta, str, tolerance)), new])
+				if(delta == 0) {
+					str.next(nil); // finish
+					new 
+				} {
+					Pseq([EmbedOnce(Pfindur(delta, str, tolerance)), new])
+				}
 			}{
 				
 				Ppar([
