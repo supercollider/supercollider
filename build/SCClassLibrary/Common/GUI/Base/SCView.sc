@@ -987,7 +987,8 @@ SCUserView : SCView {
 //by jt v.0.22
 SCMultiSliderView : SCView { 
 
-	var <>metaAction, <>mouseUpAction;
+	var <>metaAction;
+//	var <>mouseUpAction;
 	var <>size ;
 	var <gap;
 	var <editable = true;
