@@ -144,8 +144,17 @@ SCMovieView : SCView{
 	
 	gotoBeginning{
 		this.setProperty(\gotoBeginning);
-	}		
+	}	
 	
+	currentTime_{|time|
+		this.setProperty(\setCurrentTime, time);
+	}	
+
+	currentTime{
+		"SCMovieView-currentTime is not implemented".warn;
+//		^this.getProperty(\getCurrentTime);
+	}	
+		
 	editable_{|bool|
 		editable = bool;
 		this.setProperty(\setEditable, bool);		
