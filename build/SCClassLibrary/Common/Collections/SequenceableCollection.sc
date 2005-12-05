@@ -455,13 +455,6 @@ SequenceableCollection : Collection {
 		});
 		^tie
 	}
-
-	// misc math
-	blend { arg anotherSeqColl, blendFrac = 0.5;
-		// this blends between two collections assumed to contain numbers
-		// blendFrac should be from zero to one
-		^this.collect({ arg item, i; item.blend(anotherSeqColl.at(i), blendFrac); });
-	}
 	
 	isSequenceableCollection { ^true }
 	
