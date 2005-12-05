@@ -228,10 +228,10 @@ BusPlug : AbstractFunction {
 	
 	// monitor bundling
 	
-	playToBundle { arg bundle, out, numChannels, group, vol, fadeTime;
+	playToBundle { arg bundle, out, numChannels, group, multi=false, vol, fadeTime;
 		this.newMonitorToBundle(bundle);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
-		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group, vol, fadeTime);
+		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group, multi, vol, fadeTime);
 	}
 	
 	playNToBundle { arg bundle, outs, amps, ins, vol, fadeTime, group;
