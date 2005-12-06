@@ -143,3 +143,155 @@ RingNumberAllocator
 	}
 }
 
+
+// by hjh: for better handling of dynamic allocation
+
+ContiguousBlock {
+
+	var     <start, <size, <>used = false;  // assume free; owner must say otherwise
+
+	*new { |start, size| ^super.newCopyArgs(start, size) }
+
+	adjoins { |block|
+		^(start < block.start and: { start + size >= block.start })
+			or: { start > block.start and: { block.start + block.size >= start } }
+	}
+
+	join { |block|
+		var newstart;
+		this.adjoins(block).if({
+			^this.class.new(newstart = min(start, block.start),
+				max(start + size, block.start + block.size) - newstart)
+		}, {
+			^nil
+		});
+	}
+
+	split { |span|
+		(span < size).if({
+			^[this.class.new(start, span),
+				this.class.new(start + span, size - span)]
+		}, {
+			(span == size).if({
+				^[this, nil]
+			}, { ^nil });
+		});
+	}
+
+	storeArgs { ^[start, size, used] }
+	printOn { |stream| this.storeOn(stream) }
+}
+
+
+ContiguousBlockAllocator {
+	var	size, array, freed, pos, top;
+
+	*new { |size, pos = 0|
+		^super.newCopyArgs(size, Array.newClear(size).put(pos, ContiguousBlock(pos, size-pos)),
+			IdentityDictionary.new, pos, pos);
+	}
+
+	alloc { |n = 1|
+		var     block, new, leftover;
+		(block = this.findAvailable(n)).notNil.if({
+			#new, leftover = block.split(n);
+			new.used = true;
+			this.removeFromFreed(block);
+			array[new.start] = new;
+			leftover.notNil.if({
+				array[leftover.start] = leftover;
+				top = max(top, leftover.start);
+				(top > leftover.start).if({ this.addToFreed(leftover); });
+			});
+			^new.start
+		}, { ^nil });
+	}
+
+	free { |address|
+		var	block,
+			prev, next, temp;
+		((block = array[address]).notNil and: { block.used }).if({
+			block.used = false;
+			this.addToFreed(block);
+			((prev = this.findPrevious(address)).notNil and: { prev.used.not }).if({
+				(temp = prev.join(block)).notNil.if({
+						// if block is the last one, reduce the top
+					(block.start == top).if({ top = temp.start });
+					array[temp.start] = temp;
+					array[block.start] = nil;
+					this.removeFromFreed(prev).removeFromFreed(block);
+					(top > temp.start).if({ this.addToFreed(temp); });
+					block = temp;
+				});
+			});
+			((next = this.findNext(block.start)).notNil and: { next.used.not }).if({
+				(temp = next.join(block)).notNil.if({
+						// if next is the last one, reduce the top
+					(next.start == top).if({ top = temp.start });
+					array[temp.start] = temp;
+					array[next.start] = nil;
+					this.removeFromFreed(next).removeFromFreed(block);
+					(top > temp.start).if({ this.addToFreed(temp); });
+				});
+			});
+		});
+	}
+
+	blocks {
+		^array.select({ arg b; b.notNil and: { b.used } })
+	}
+
+	findAvailable { |n|
+		(freed[n].size > 0).if({ ^freed[n].choose });
+
+		freed.keysValuesDo({ |size, set|
+			(size >= n and: { set.size > 0 }).if({
+				^set.choose
+			});
+		});
+
+		(top + n > size or: { array[top].used }).if({ ^nil });
+		^array[top]
+	}
+
+	addToFreed { |block|
+		freed[block.size].isNil.if({ freed[block.size] = IdentitySet.new });
+		freed[block.size].add(block);
+	}
+
+	removeFromFreed { |block|
+		freed[block.size].tryPerform(\remove, block);
+			// I tested without gc; performance is about half as efficient without it
+		(freed[block.size].size == 0).if({ freed.removeAt(block.size) });
+	}
+
+	findPrevious { |address|
+		forBy(address-1, pos, -1, { |i|
+			array[i].notNil.if({ ^array[i] });
+		});
+		^nil
+	}
+
+	findNext { |address|
+		var	temp;
+		(temp = array[address]).notNil.if({
+			^array[temp.start + temp.size]
+		}, {
+			for(address+1, top, { |i|
+				array[i].notNil.if({ ^array[i] });
+			});
+		});
+		^nil
+	}
+
+	debug { |text|
+		Post << text << ":\n\nArray:\n";
+		array.do({ |item, i|
+			item.notNil.if({ Post << i << ": " << item << "\n"; });
+		});
+		Post << "\nFree sets:\n";
+		freed.keysValuesDo({ |size, set|
+			Post << size << ": " <<< set << "\n";
+		});
+	}
+}
