@@ -1,6 +1,8 @@
 
 ServerOptions
 {
+	classvar	<>default;
+
 	var <>numAudioBusChannels=128;
 	var <>numControlBusChannels=4096;
 	var <>numInputBusChannels=8;
@@ -24,6 +26,20 @@ ServerOptions
 	var <>outputStreamsEnabled;
 
 	var <>device = nil;
+	
+	var <>blockAllocClass;
+
+	*initClass {
+		default = this.new.blockAllocClass_(PowerOfTwoAllocator);
+	}
+	
+	*new {
+		default.notNil.if({
+			^default.copy
+		}, {
+			^super.new
+		});
+	}
 
 	// max logins
 	// session-password
@@ -152,16 +168,17 @@ Server : Model {
 	}
 	newAllocators {
 		nodeAllocator = NodeIDAllocator(clientID);
-		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
-		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
-		options.numInputBusChannels + options.numOutputBusChannels);
-		bufferAllocator = PowerOfTwoAllocator(options.numBuffers);
+		controlBusAllocator = options.blockAllocClass.new(options.numControlBusChannels);
+		audioBusAllocator = options.blockAllocClass.new(options.numAudioBusChannels, 
+			options.firstPrivateBus);
+		bufferAllocator = options.blockAllocClass.new(options.numBuffers);
 	}
 	nextNodeID {
 		^nodeAllocator.alloc
 	}
 	
 	*initClass {
+		Class.initClassTree(ServerOptions);
 		named = IdentityDictionary.new;
 		set = Set.new;
 		internal = Server.new(\internal, NetAddr.new);
