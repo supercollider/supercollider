@@ -374,16 +374,17 @@ SCSlider : SCSliderBase
 	
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
 		// standard keydown
-		if (char == $r, { this.valueAction = 1.0.rand; });
-		if (char == $n, { this.valueAction = 0.0; });
-		if (char == $x, { this.valueAction = 1.0; });
-		if (char == $c, { this.valueAction = 0.5; });
+		if (char == $r, { this.valueAction = 1.0.rand; ^this });
+		if (char == $n, { this.valueAction = 0.0; ^this });
+		if (char == $x, { this.valueAction = 1.0; ^this });
+		if (char == $c, { this.valueAction = 0.5; ^this });
 		if (char == $], { this.increment; ^this });
 		if (char == $[, { this.decrement; ^this });
 		if (unicode == 16rF700, { this.increment; ^this });
 		if (unicode == 16rF703, { this.increment; ^this });
 		if (unicode == 16rF701, { this.decrement; ^this });
 		if (unicode == 16rF702, { this.decrement; ^this });
+		^nil		// bubble if it's an invalid key
 	}
 	
 	defaultGetDrag { 
@@ -485,15 +486,17 @@ SCRangeSlider : SCSliderBase {
 			b = 1.0.rand; 
 			this.activeLo_(min(a, b));
 			this.activeHi_(max(a, b));
+			^this
 		});
-		if (char == $n, { this.activeLo_(0.0); this.activeHi_(0.0); });
-		if (char == $x, { this.activeLo_(1.0); this.activeHi_(1.0); });
-		if (char == $c, { this.activeLo_(0.5); this.activeHi_(0.5); });
-		if (char == $a, { this.activeLo_(0.0); this.activeHi_(1.0); });
+		if (char == $n, { this.activeLo_(0.0); this.activeHi_(0.0); ^this });
+		if (char == $x, { this.activeLo_(1.0); this.activeHi_(1.0); ^this });
+		if (char == $c, { this.activeLo_(0.5); this.activeHi_(0.5); ^this });
+		if (char == $a, { this.activeLo_(0.0); this.activeHi_(1.0); ^this });
 		if (unicode == 16rF700, { this.increment; ^this });
 		if (unicode == 16rF703, { this.increment; ^this });
 		if (unicode == 16rF701, { this.decrement; ^this });
 		if (unicode == 16rF702, { this.decrement; ^this });
+		^nil		// bubble if it's an invalid key
 	}
 	defaultGetDrag { ^Point(this.lo, this.hi) }	
 	defaultCanReceiveDrag {	
@@ -544,6 +547,7 @@ SC2DSlider : SCSliderBase {
 		if (unicode == 16rF703, { this.incrementX; ^this });
 		if (unicode == 16rF701, { this.decrementY; ^this });
 		if (unicode == 16rF702, { this.decrementX; ^this });
+		^nil		// bubble if it's an invalid key
 	}
 	defaultGetDrag { 
 		^Point(this.x, this.y)
@@ -609,6 +613,7 @@ SCButton : SCControlView {
 		if (char == $\r, { this.valueAction = this.value + 1; ^this });
 		if (char == $\n, { this.valueAction = this.value + 1; ^this });
 		if (char == 3.asAscii, { this.valueAction = this.value + 1; ^this });
+		^nil		// bubble if it's an invalid key
 	}
 
 	font_ { arg argFont;
@@ -670,6 +675,7 @@ SCPopUpMenu : SCControlView {
 		if (unicode == 16rF703, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF701, { this.valueAction = this.value - 1; ^this });
 		if (unicode == 16rF702, { this.valueAction = this.value - 1; ^this });
+		^nil		// bubble if it's an invalid key
 	}
 	font_ { arg argFont;
 		font = argFont;
@@ -792,7 +798,9 @@ SCNumberBox : SCStaticTextBase {
 			});
 			keyString = keyString.add(char);
 			this.string = keyString;
+			^this
 		});
+		^nil		// bubble if it's an invalid key
 	}
 	value { ^object }
 	value_ { arg val;
@@ -869,7 +877,9 @@ SCListView : SCControlView {
 			if (index.notNil, {
 				this.valueAction = index
 			});
+			^this
 		});
+		^nil		// bubble if it's an invalid key
 	}
 	font_ { arg argFont;
 		font = argFont;
@@ -1134,6 +1144,7 @@ SCMultiSliderView : SCView {
 		if (unicode == 16rF702, { this.index = this.index - 1; ^this });
 		if (unicode == 16rF700, { this.gap = this.gap + 1; ^this });
 		if (unicode == 16rF701, { this.gap = this.gap - 1; ^this });
+		^nil		// bubble if it's an invalid key
 	}
 	
 	doMetaAction{ 

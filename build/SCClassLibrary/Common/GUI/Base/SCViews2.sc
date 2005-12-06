@@ -143,8 +143,8 @@ EZSlider
 			gap = decorator.tryPerform(\gap);
 		
 		gap.notNil.if({
-			labelWidth = labelWidth - gap.x;
-			numberWidth = numberWidth - gap.x;
+//			labelWidth = labelWidth - gap.x;
+//			numberWidth = numberWidth - gap.x;
 			(dimensions = dimensions.copy).x_(dimensions.x - (2*gap.x));
 		});
 
@@ -219,8 +219,8 @@ EZNumber
 			gap = decorator.tryPerform(\gap);
 		
 		gap.notNil.if({
-			labelWidth = labelWidth - gap.x;
-			dimensions.x = dimensions.x.copy - gap.x;
+//			labelWidth = labelWidth - gap.x;
+			(dimensions = dimensions.copy).x_(dimensions.x - gap.x);
 		});
 
 		labelView = SCStaticText(window, labelWidth @ dimensions.y);
