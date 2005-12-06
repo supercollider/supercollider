@@ -57,6 +57,14 @@ else:
 # util
 # ======================================================================
 
+def make_os_env(*keys):
+    env = os.environ
+    res = {}
+    for key in keys:
+        if env.has_key(key):
+            res[key] = env[key]
+    return res
+
 def CheckPKGConfig(context, version):
     context.Message( 'Checking for pkg-config... ' )
     ret = context.TryAction('pkg-config --atleast-pkgconfig-version=%s' % version)[0]
@@ -68,7 +76,7 @@ def CheckPKG(context, name):
     ret = context.TryAction('pkg-config --exists \'%s\'' % name)[0]
     res = None
     if ret:
-        res = Environment()
+        res = Environment(ENV = make_os_env('PATH', 'PKG_CONFIG_PATH'))
         res.ParseConfig('pkg-config --cflags --libs \'%s\'' % name)
     context.Result(ret)
     return (ret, res)
@@ -197,6 +205,7 @@ opts.AddOptions(
 # ======================================================================
 
 env = Environment(options = opts,
+                  ENV = make_os_env('PATH'),
                   PACKAGE = PACKAGE,
                   VERSION = VERSION,
                   TARBALL = PACKAGE + VERSION + '.tbz2')
