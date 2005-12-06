@@ -18,9 +18,8 @@ A Server's instance of ServerOptions is stored in its
 \f0\b options
 \f1\b0  instance variable, which can be accessed through corresponding getter and setter methods.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 Note: 
+\f0\b Note: 
 \f1\b0 A ServerOptions' instance variables are translated into commandline arguments when a server app is booted. Thus a running Server must be rebooted before changes will take effect. There are also a few commandline options which are not currently encapsulated in ServerOptions. See 
 \f0\b Server-Architecture
 \f1\b0  for more details.\
@@ -139,6 +138,20 @@ outputStreamsEnabled -
 \f0\b String 
 \f1\b0  which allows turning off output streams that you are not interested in on the  audio device. If the string is "11000", for example, then only the first two output streams on the device will be enabled. Turning off streams can reduce CPU load.\
 \
+
+\f0\b blockAllocClass -
+\f1\b0  Specifies the class the server will use to allocate index numbers for buffers and audio and control buses. Should be given as a 
+\f0\b class name
+\f1\b0 , not a symbol. Currently implemented choices are: \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+PowerOfTwoAllocator: The original allocator. Intended for allocating these resources very quickly for relatively stable configurations. Not ideal for situations where buses or buffers will be allocated and deallocated frequently. \
+\
+ContiguousBlockAllocator: Designed for allocations that need to change frequently.  Sacrifices a small amount of speed for reliability. \
+\
+PowerOfTwoAllocator is the default.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs30 \cf0 \ul Instance Methods\
@@ -197,7 +210,6 @@ o.memSize = 4096;\
 \
 \cf4 // Create a new Server on the local machine using o for its options\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 t = Server\cf0 (\cf2 \\Local2\cf0 , \cf3 NetAddr\cf0 (\cf5 "127.0.0.1"\cf0 , 57111), o);\
 t.makeWindow;\
 t.boot;\

@@ -7,12 +7,10 @@
 
 \f0\b\fs36 \cf0 Buffer					
 \fs24 client-side representation of a buffer on a server\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 \
 
-\f0\b \cf0 superclass: Object
+\f0\b superclass: Object
 \f1\b0 \
 \
 Buffer encapsulates a number of common tasks, OSC messages, and capabilities related to server-side buffers, which are globally available arrays of floats. These are commonly used to hold sampled audio, such as a soundfile loaded into memory, but can be used to hold other types of data as well. They can be freed or altered even while being accessed.  Buffers are commonly used with 
@@ -47,6 +45,14 @@ Server-side buffers are identified by number, starting from 0. When using Buffer
 \
 Normally you should not need to supply a buffer number. You should only do so if you are sure you know what you are doing.\
 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 You can control which allocator determines the buffer index numbers by setting the server options 
+\f0\b blockAllocClass
+\f1\b0  variable prior to booting the server. Two allocators are available to support different kinds of applications. See the 
+\f0\b \ul [ServerOptions]
+\f1\b0 \ulnone  help file for details.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \ul Multichannel Buffers\
@@ -56,8 +62,9 @@ Normally you should not need to supply a buffer number. You should only do so if
 Multichannel buffers interleave their data. Thus the actual number of available values when requesting or setting values by index using methods such as set, setn, get, getn, etc., is equal to numFrames * numChannels. Indices start at 0 and go up to (numFrames * numChannels) - 1. In a two channel buffer for instance, index 0 will be the first value of the first channel, index 1 will be the first value of the second channel, index 2 will be the second value of the first channel, and so on.\
 \
 In some cases it is simpler to use multiple single channel buffers instead of a single multichannel one.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs28 \cf0 \ul Completion Messages and Action Functions\

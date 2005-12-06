@@ -1,16 +1,15 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Bus
 \f1\b0\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 The clientside representation of an audio or control bus on a server.  Encapsulates all the OSC messages a Bus can receive.  Manages allocation and deallocation of bus indices so that you don't need to worry about conflicts. The number of control busses, audio busses, and input and output busses is fixed and cannot be changed after the server has been booted. For more information see 
+\f2\fs24 The clientside representation of an audio or control bus on a server.  Encapsulates all the OSC messages a Bus can receive.  Manages allocation and deallocation of bus indices so that you don't need to worry about conflicts. The number of control busses, audio busses, and input and output busses is fixed and cannot be changed after the server has been booted. For more information see 
 \f0\b ClientVsServer
 \f2\b0  and 
 \f0\b Server-Architecture
@@ -28,10 +27,18 @@
 \f0\b In
 \f2\b0  or 
 \f0\b Out
-\f2\b0  ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.
+\f2\b0  ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.\
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 You can control which allocator determines the bus index numbers by setting the server options 
+\f0\b blockAllocClass
+\f2\b0  variable prior to booting the server. Two allocators are available to support different kinds of applications. See the 
+\f0\b \ul [ServerOptions]
+\f2\b0 \ulnone  help file for details.
 \f1\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \
+\f2\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \ul \ulc0 Class Methods\
@@ -39,33 +46,40 @@
 
 \fs24 \cf0 \ulnone \
 Bus.control(server, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	Allocate a control bus on the server.  \
+\f2\b0 \cf0 	Allocate a control bus on the server.  \
 	Defaults: default server, 1 channel.\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Bus.audio(server, numChannels);\
+\f0\b \cf0 Bus.audio(server, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	Allocate an audio bus on the server. \
+\f2\b0 \cf0 	Allocate an audio bus on the server. \
 	Defaults: default server, 1 channel.\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Bus.alloc(rate, server, numChannels);\
+\f0\b \cf0 Bus.alloc(rate, server, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	Allocate a bus of either rate as specified by the symbols: \
+\f2\b0 \cf0 	Allocate a bus of either rate as specified by the symbols: \
 		\\control or \\audio\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Bus.new(rate, index, numChannels);\
+\f0\b \cf0 Bus.new(rate, index, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	This method does not allocate a bus index, but assumes that you\
+\f2\b0 \cf0 	This method does not allocate a bus index, but assumes that you\
 	already have allocated the appropriate bus index and can supply it\
 	yourself.
 \f1\fs18 \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 \
+\f0\b\fs28 \cf0 \ul \
 Instance Methods
 \fs24 \ulnone \
 \
@@ -91,10 +105,35 @@ index
 \f0\b server
 \f2\b0  - Get the Bus' server object.\
 \
-\
+
+\f0\b asMapArg
+\f2\b0  - Returns a symbol consisting of the letter 'c' followed by the bus's index. This may be used when setting a synth node's control inputs to maps the input to the control bus. See the 
+\f0\b [\ul Node\ulnone ]
+\f2\b0  help file for more information on mapping controls to buses. \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b \cf0 Note:
+\f2\b0  It is impossible to map a synth control to an audio rate bus. Calling this method on an audio bus will throw an error.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Asynchronous Control Bus Methods
+\f1\fs18 \cf0 (\
+\cf2 var\cf0 	ffreqbus = \cf2 Bus\cf0 .control(s, 1),\
+	rqbus = \cf2 Bus\cf0 .control(s, 1);\
+\
+\cf2 SynthDef\cf0 (\cf3 \\rlpf\cf0 , \{ \cf2 |bus, ffreq, rq|\cf0 \
+	\cf2 ReplaceOut\cf0 .ar(bus, \cf2 RLPF\cf0 .ar(\cf2 In\cf0 .ar(bus, 1), ffreq, rq))\
+\}).play(s, [\cf3 \\ffreq\cf0 , ffreqbus.asMapArg, \cf3 \\rq\cf0 , rqbus.asMapArg]);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Asynchronous Control Bus Methods
 \f2\b0\fs24 \ulnone \
 \
 The following commands apply only to control buses and are asynchronous. For synchronous access to control buses one should use the internal server's shared control buses and 
@@ -136,7 +175,7 @@ The following commands apply only to control buses and are asynchronous. For syn
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 OSC Bundle Methods\
+\f0\b\fs28 \cf0 \ul OSC Bundle Methods\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \ulnone \
@@ -174,10 +213,10 @@ s.boot;\
 
 \f2\fs24 \cf0 	
 \f1\fs18 \
-(\cf3 \
+(\cf4 \
 // something to play with\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf4 "help-Bus"\cf0 , \{ \cf2 arg\cf0  out=0,ffreq=100;\
+\cf2 SynthDef\cf0 (\cf5 "help-Bus"\cf0 , \{ \cf2 arg\cf0  out=0,ffreq=100;\
 	\cf2 var\cf0  x;\
 	x = \cf2 RLPF\cf0 .ar(\cf2 LFPulse\cf0 .ar(\cf2 SinOsc\cf0 .kr(0.2, 0, 10, 21), [0,0.1], 0.1),\
 			 ffreq, 0.1)\
@@ -187,46 +226,36 @@ s.boot;\
 \
 )\
 \
-x = \cf2 Synth\cf0 (\cf4 "help-Bus"\cf0 );\
+x = \cf2 Synth\cf0 (\cf5 "help-Bus"\cf0 );\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // get a bus\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // get a bus\
 \cf0 b = \cf2 Bus\cf0 .control(s);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // map the synth's second input (ffreq) to read\
+\cf4 // map the synth's second input (ffreq) to read\
 // from the bus' output index\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 x.map(1,b.index);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // By setting the bus' value you send a /c_fill message\
+\cf4 // By setting the bus' value you send a /c_fill message\
 // to each channel of the bus setting it to supplied float value\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.value = 100;\
 b.value = 1000;\
 b.value = 30;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // Since this is a single channel bus this has the same effect\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // Since this is a single channel bus this has the same effect\
 \cf0 b.set(300);\
 b.numChannels.postln;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // multi-channel:  b.set(300,350);\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 // Get the current value. This is asynchronous so you can't rely on it happening immediately.\cf6 \
+\cf4 // multi-channel:  b.set(300,350);\cf0 \
+\cf4 // Get the current value. This is asynchronous so you can't rely on it happening immediately.\cf0 \
 (\
 a = "waiting";\
-b.get(\{\cf7 arg\cf6  value; a = value; (\cf8 "after the server responds a is set to:"\cf6  + a).postln;\});\cf0 \
-(\cf4 "a is now:"\cf0  + a).postln;\
+b.get(\{\cf2 arg\cf0  value; a = value; (\cf5 "after the server responds a is set to:"\cf0  + a).postln;\});\
+(\cf5 "a is now:"\cf0  + a).postln;\
 )\
 \
 x.free;\
 \
-b.free; \cf3 // release it so it may be reallocated!\
+b.free; \cf4 // release it so it may be reallocated!\
 \cf0 \
 	\
 }
