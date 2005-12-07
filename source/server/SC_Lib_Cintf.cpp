@@ -81,19 +81,20 @@ void initialize_library()
 
 	initMiscCommands();
 	
+#ifdef SC_PLUGIN_DIR
+	// load globally installed plugins
+	if (sc_DirectoryExists(SC_PLUGIN_DIR)) {
+		PlugIn_LoadDir(SC_PLUGIN_DIR, true);
+	}
+#endif
+
 	// load default plugin directory
 	char pluginDir[MAXPATHLEN];
 	sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
 	sc_AppendToPath(pluginDir, SC_PLUGIN_DIR_NAME);
 
 	if (sc_DirectoryExists(pluginDir)) {
-		// load plugins in resource directory
 		PlugIn_LoadDir(pluginDir, true);
-	} else {
-		// load globally installed plugins
-#ifdef SC_PLUGIN_DIR
-		PlugIn_LoadDir(SC_PLUGIN_DIR, true);
-#endif
 	}
 	
 	// get extension directories
