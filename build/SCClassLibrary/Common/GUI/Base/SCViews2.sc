@@ -139,12 +139,10 @@ EZSlider
 	}
 	init { arg window, dimensions, label, argControlSpec, argAction, initVal, 
 			initAction, labelWidth, numberWidth;
-		var	decorator = window.tryPerform(\decorator),
+		var	decorator = window.asView.tryPerform(\decorator),
 			gap = decorator.tryPerform(\gap);
 		
 		gap.notNil.if({
-//			labelWidth = labelWidth - gap.x;
-//			numberWidth = numberWidth - gap.x;
 			(dimensions = dimensions.copy).x_(dimensions.x - (2*gap.x));
 		});
 
@@ -215,13 +213,6 @@ EZNumber
 	}
 	init { arg window, dimensions, label, argControlSpec, argAction, initVal, 
 			initAction, labelWidth, numberWidth;
-		var	decorator = window.tryPerform(\decorator),
-			gap = decorator.tryPerform(\gap);
-		
-		gap.notNil.if({
-//			labelWidth = labelWidth - gap.x;
-			(dimensions = dimensions.copy).x_(dimensions.x - gap.x);
-		});
 
 		labelView = SCStaticText(window, labelWidth @ dimensions.y);
 		labelView.string = label;
