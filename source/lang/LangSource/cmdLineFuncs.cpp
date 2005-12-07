@@ -133,10 +133,12 @@ void initGUI()
 {
 }
 
+#ifndef PYSCLANG
 void initGUIPrimitives();
 void initGUIPrimitives()
 {
 }
+#endif
 
 void initSCViewPrimitives();
 void initSCViewPrimitives()

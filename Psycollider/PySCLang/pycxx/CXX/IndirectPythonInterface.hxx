@@ -1,7 +1,12 @@
 #ifndef __CXX_INDIRECT_PYTHON_INTERFACE__HXX__
 #define __CXX_INDIRECT_PYTHON_INTERFACE__HXX__
 
-#include <Python.h>
+#ifdef __APPLE__
+#include "Python/Python.h"
+#else
+#include "Python.h"
+#endif
+
 
 namespace Py
 {

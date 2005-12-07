@@ -3,7 +3,12 @@
  All rights reserved. See Legal.htm for full text and disclaimer.
 */
 
+#ifdef __APPLE__
+#include "Python/Python.h"
+#else
 #include "Python.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

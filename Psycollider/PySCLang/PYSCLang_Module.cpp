@@ -1,4 +1,9 @@
+#ifndef SC_WIN32
+#include "pycxx/cxx/Objects.hxx"
+#include "pycxx/cxx/Extensions.hxx"
+#else
 #include "stdafx.h"
+#endif
 
 #include "PySCLang_Module.h"
 
@@ -27,6 +32,7 @@ double elapsedTime();
 
 extern char *gHomePath;
 
+#ifdef SC_WIN32
 void PySCLang_InitNetwork( )
 {
 #ifdef SC_WIN32_STATIC_PTHREADS
@@ -44,10 +50,13 @@ void PySCLang_InitNetwork( )
     ::MessageBox(NULL,msg,"Error",MB_OK);
   }
 }
+#endif
 
   PySCLang_Module::PySCLang_Module() : ExtensionModule<PySCLang_Module>( "PySCLang" )
   {
+#ifdef SC_WIN32
     PySCLang_InitNetwork( );
+#endif
     add_varargs_method("sum", &PySCLang_Module::ex_sum, "DEBUG STUFF : sum(arglist) = sum of arguments");
     add_varargs_method("sendMain", &PySCLang_Module::sendMain, "sendMain");
     add_varargs_method("compileLibrary", &PySCLang_Module::compileLibrary, "compileLibrary");

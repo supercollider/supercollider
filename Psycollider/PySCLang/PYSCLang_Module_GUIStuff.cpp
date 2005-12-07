@@ -1,4 +1,10 @@
+#ifndef SC_WIN32
+#include "pycxx/cxx/Objects.hxx"
+#include "pycxx/cxx/Extensions.hxx"
+#else
 #include "stdafx.h"
+#endif
+
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"

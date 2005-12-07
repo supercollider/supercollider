@@ -6,7 +6,11 @@
 #ifndef __CXX_Exception_h
 #define __CXX_Exception_h
 
+#ifdef __APPLE__
+#include "Python/Python.h"
+#else
 #include "Python.h"
+#endif
 #include "CXX/Config.hxx"
 #include "CXX/IndirectPythonInterface.hxx"
 
