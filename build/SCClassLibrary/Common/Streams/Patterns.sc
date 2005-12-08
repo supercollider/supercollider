@@ -343,8 +343,10 @@ Pmono : Pattern {
 			inevent = event.yield;			
 			if (inevent.isNil) {					// pattern is ending early
 				if ( patMadeSynth) {				// from pfin, pfindur, PatternConductor
-					event[\type] = \off;
-					event.play;
+					event.use {
+						~finish.value;
+						~eventTypes[\off].value(~server ?? { Server.default });
+					};
 					^nil.yield
 				} {
 					^nil.yield
