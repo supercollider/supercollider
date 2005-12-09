@@ -1,6 +1,6 @@
 SCSoundFileView : SCScope{
 	var < soundfile;
-	var <>metaAction, <>mouseUpAction, <elasticMode, <drawsWaveForm=true, <readProgress;
+	var <>metaAction, <elasticMode, <drawsWaveForm=true, <readProgress;
 	var <startFrame, <numFrames;
 	var zoomOne, <>dataFrames, <viewFrames, <scrollPos, <>block=64;
 	
@@ -88,7 +88,7 @@ SCSoundFileView : SCScope{
 	}
 
 	mouseEndTrack{|x,y|
-		mouseUpAction.value(this, x,y)
+//		mouseUpAction.value(this, x,y)
 	}
 	
 	doMetaAction{
