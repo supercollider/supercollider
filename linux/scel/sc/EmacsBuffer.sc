@@ -209,32 +209,29 @@ EmacsNumber : EmacsWidget {
 EmacsButton : EmacsWidget {
 	var <>action, <value, <states;
 	*new {|buffer, states=#[], action, prefix="[", suffix="]"|
-		^super.new(buffer, \item, ':format', "%[%v%]",
-			':action',
-			[\lambda, [\widget, \event],
-				['widget-value-set', \widget,
-					[\or, [\cadr, [\member, ['widget-value', \widget], ['widget-get', \widget, ':states']]],
-						[\car, ['widget-get', \widget, ':states']]]],
-				['sclang-eval-string',
-					['sclang-format', "EmacsWidget.idmap[%o].valueFromEmacs(%o)",
-						['widget-get', \widget, ':id'],
-						[\position, ['widget-value', \widget], ['widget-get', \widget, ':states'], ':test', [\quote, 'string=']]]]],
+		^super.new(buffer, 'sclang-button',
 			':button-prefix', prefix,
 			':button-suffix', suffix,
 			':states', [\quote, states],
-			':value', states[0]).action_(action).initValue(0).initStates(states)
+			0).action_(action).initValue(0).initStates(states)
 	}
 	valueFromEmacs {|argValue|
 		value = argValue;
 		action.value(value)
 	}
 	value_ {|argValue|
-		var realValue;
-		realValue = states[argValue];
-		this.wValueSet(realValue, {value = argValue});
+		this.wValueSet(argValue, {value = argValue});
 	}
 	states_ {|argStates|
-		this.wPut(\states, states=argStates, { this.wValueSet(states[value]) });
+		states=argStates;
+		Emacs.sendToLisp(\_widgetSetStates, [buffer.name, id, states, value]);
+		/*		Emacs.evalLispExpression(
+			buffer.use(
+				[\let, [[\widget, [\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]]],
+					[\states, [\quote, states]]],
+					['widget-put', \widget, ':states', \states],
+					['widget-value-set', \widget, [\nth, value, \states]]] 
+			).asLispString) */
 	}
 	initStates {|argStates|states=argStates}
 	initValue {|argValue|value=argValue}

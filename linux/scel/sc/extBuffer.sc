@@ -1,11 +1,11 @@
 + Server {
-	makeWindow { arg w;
+	emacsWindow { arg w;
 		var active, booter, killer, makeDefault, running, booting, stopped;
 		var recorder, scoper;
 		var countsViews, ctlr;
 		var dumping=false, startDump, stopDump, stillRunning;
 		
-		if (window.notNil, { ^window.focus });
+		if (window.notNil, { ^window.front });
 		
 		if(w.isNil,{
 			w = window = EmacsBuffer("*" ++ name.asString ++ " server*");
@@ -147,7 +147,7 @@
 				recorder.value=0;
 			});	
 		w.gotoBob;
-		w.focus;
+		w.front;
 		this.startAliveThread;
 	}
 }
@@ -227,6 +227,6 @@
 			s.sendMsg("/n_free", id);
 			CmdPeriod.remove(cmdPeriodFunc);
 		};
-		w.focus; // make window visible and front window.
+		w.front; // make window visible and front window.
 	}
 }
