@@ -154,7 +154,8 @@
 
 (defun sclang-class-tree (class-name)
   "Display a tree-view of the sub-classes and methods of CLASS-NAME."
-  (interactive (list (sclang-read-symbol "Class: " nil #'sclang-class-name-p)))
+  (interactive
+   (list (sclang-read-symbol "Class: " "Object" #'sclang-class-name-p)))
   (sclang-eval-string (format "EmacsClassBrowser(%s)" class-name)))
 
 (provide 'sclang-widgets)
