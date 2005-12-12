@@ -1,4 +1,4 @@
-;;; sc-widgets.el --- Widget definitions for SCLang
+;;; sclang-widgets.el --- Widget definitions for SCLang
 
 ;; Copyright (C) 2005  Free Software Foundation, Inc.
 
@@ -152,6 +152,10 @@
 	    (find-file (widget-get widget :filename))
 	    (goto-char (widget-get widget :char-pos))))
 
+(defun sclang-class-tree (class-name)
+  "Display a tree-view of the sub-classes and methods of CLASS-NAME."
+  (interactive (list (sclang-read-symbol "Class: " nil #'sclang-class-name-p)))
+  (sclang-eval-string (format "EmacsClassBrowser(%s)" class-name)))
 
 (provide 'sclang-widgets)
-;;; sc-widgets.el ends here
+;;; sclang-widgets.el ends here
