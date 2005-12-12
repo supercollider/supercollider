@@ -58,7 +58,8 @@
     (require 'sclang-document)
     (require 'sclang-mode)
     (require 'sclang-help)
-    (require 'sclang-server)))
+    (require 'sclang-server)
+    (require 'sclang-widgets)))
 
 (provide 'sclang)
 

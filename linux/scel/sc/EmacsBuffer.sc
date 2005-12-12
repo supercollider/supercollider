@@ -47,7 +47,7 @@ EmacsBuffer { // Represents an Emacs buffer
 						['sclang-format', "EmacsBuffer.at(%o).keymap.at(%o).value",
 							['buffer-name'], keySeq]]]]).asLispString)
 	}
-	focus { Emacs.evalLispExpression(['switch-to-buffer', name].asLispString) }
+	front { Emacs.evalLispExpression(['switch-to-buffer', name].asLispString) }
 	use {|...args| ^['with-current-buffer', ['get-buffer', name]]++args }
 	insert {|string|
 		Emacs.evalLispExpression(
@@ -282,3 +282,46 @@ EmacsText : EmacsWidget {
 	initValue {|argSize,argAlign,argValue|size=argSize;align=argAlign;string=argValue}
 }
 
+EmacsClassTree : EmacsWidget {
+	*new {|buffer, className, open=true|
+		^super.new(buffer, 'sclang-class-tree', ':tag', className.asString,
+			':open', if(open){\t}{\nil},
+			':node', [\quote, ['sclang-file-position',
+				':filename', className.asSymbol.asClass.filenameSymbol.asString,
+				':char-pos', className.asSymbol.asClass.charPos+1,
+				':tag', className.asString]])
+	}
+	*dynargs {|className|
+		var class;
+		class = className.asSymbol.asClass;
+		^(class.subclasses.asArray.copy.sort{|a,b|a.name <= b.name}.collect{|sc|
+			['sclang-class-tree', ':tag', sc.name.asString,
+				':node', ['sclang-file-position',
+					':filename', sc.filenameSymbol.asString,
+					':char-pos', sc.charPos+1,
+					':tag', sc.name.asString]]})
+		++
+		(class.class.methods.asArray.copy.sort({|a,b| a.name <= b.name }).collect{|m|
+			['sclang-file-position',
+				':filename', m.filenameSymbol.asString,
+				':char-pos', m.charPos+1,
+				':tag', "*"++m.name.asString]})
+		++
+		(class.methods.asArray.copy.sort({|a,b| a.name <= b.name }).collect{|m|
+			['sclang-file-position',
+				':filename', m.filenameSymbol.asString,
+				':char-pos', m.charPos+1,
+				':tag', m.name.asString]})
+	}
+}
+
+EmacsClassBrowser {
+	var w, classTree;
+	*new {|class|
+		^super.newCopyArgs(EmacsBuffer("*"++class.asClass.name++"*")).init(class);
+	}
+	init {|class|
+		classTree=EmacsClassTree(w, class);
+		w.gotoBob.front;
+	}
+}
