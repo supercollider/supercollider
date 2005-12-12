@@ -103,8 +103,5 @@ private:
 };
 
 extern SC_LibraryConfig* gLibraryConfig;
-#ifndef SC_WIN32
-extern char *unixStandardizePath(const char *path, char *newpath);
-#endif
 
 #endif // SC_LIBRARYCONFIG_H_INCLUDED

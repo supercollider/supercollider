@@ -42,6 +42,7 @@
 #include "PyrPrimitive.h"
 #include "GC.h"
 #include "VMGlobals.h"
+#include "SC_DirUtils.h"
 
 void closeAllGUIScreens();
 void initGUI();
@@ -124,7 +125,7 @@ bool SC_LanguageClient::readDefaultLibraryConfig()
 
 	for (int i=0; i < 3; i++) {
 		snprintf(ipath, PATH_MAX, paths[i]);
-		if (unixStandardizePath(ipath, opath)) {
+		if (sc_StandardizePath(ipath, opath)) {
 			bool success = readLibraryConfig(opath, ipath);
 			if (success) return true;
 		}

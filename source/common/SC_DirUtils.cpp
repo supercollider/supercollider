@@ -55,6 +55,44 @@ void sc_AppendToPath(char *path, const char *component)
 	strncat(path, component, PATH_MAX);
 }
 
+char *sc_StandardizePath(const char *path, char *newpath2) {
+	char newpath1[MAXPATHLEN];
+
+	newpath1[0] = '\0';
+	newpath2[0] = '\0';
+
+	size_t pathLen = strlen(path);
+
+	if ((pathLen >= 2) && (path[0] == '~') && ((path[1] == '/') || (path[1] == '\\'))) {
+      char home[PATH_MAX];
+      sc_GetUserHomeDirectory(home, PATH_MAX);
+ 
+	    if (home != 0) {
+			if ((pathLen - 1 + strlen(home)) >= MAXPATHLEN) {
+				return 0;
+			}
+			strcpy(newpath1, home);
+			strcat(newpath1, path + 1);
+		} else {
+			if (pathLen >= MAXPATHLEN) {
+				return 0;
+			}
+			strcpy(newpath1, path);
+			newpath1[0] = '.';
+		}
+	} else {
+		if (pathLen >= MAXPATHLEN) {
+			return 0;
+		}
+		strcpy(newpath1, path);
+	}
+  
+	bool isAlias = false;
+	sc_ResolveIfAlias(newpath1, newpath2, isAlias, PATH_MAX);
+
+	return newpath2;
+}
+
 
 // Returns TRUE iff dirname is an existing directory.
 
@@ -125,6 +163,10 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 			}
 		}
 	}
+#elif defined(SC_LINUX)
+	if (!realpath(path, returnPath))
+		strcpy(returnPath, path);
+	return;
 #endif
 	strcpy(returnPath, path);
 	return;
