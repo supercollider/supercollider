@@ -1,6 +1,7 @@
 #include "SC_LibraryConfig.h"
 #include "SCBase.h"
 #include "SC_StringBuffer.h"
+#include "SC_DirUtils.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -10,7 +11,6 @@
 #include <limits.h>
 #ifdef SC_WIN32
 # include "SC_Win32Utils.h"
-# define MAXPATHLEN _MAX_PATH
 #else
 # include <sys/param.h>
 # include <unistd.h>
@@ -138,54 +138,6 @@ void SC_LibraryConfig::freeLibraryConfig()
 		gLibraryConfig = 0;
 	}
 }
-
-#ifndef SC_WIN32
-// sk: slightly improved robustness for path lengths exceeding MAXPATHLEN
-//     newpath2 should be a buffer of size MAXPATHLEN
-
-char *unixStandardizePath(const char *path, char *newpath2) {
-	char newpath1[MAXPATHLEN];
-
-	newpath1[0] = '\0';
-	newpath2[0] = '\0';
-
-	size_t pathLen = strlen(path);
-
-	if ((pathLen >= 2) && (path[0] == '~') && (path[1] == '/')) {
-  #ifndef SC_WIN32
-      const char *home = getenv("HOME");
-  #else
-      char* home[_PATH_MAX];
-      win32_GetHomeFolder(home, _PATH_MAX);
-  #endif
-
-		if (home != 0) {
-			if ((pathLen - 1 + strlen(home)) >= MAXPATHLEN) {
-				return 0;
-			}
-			strcpy(newpath1, home);
-			strcat(newpath1, path + 1);
-		} else {
-			if (pathLen >= MAXPATHLEN) {
-				return 0;
-			}
-			strcpy(newpath1, path);
-			newpath1[0] = '.';
-		}
-	} else {
-		if (pathLen >= MAXPATHLEN) {
-			return 0;
-		}
-		strcpy(newpath1, path);
-	}
-  
-	if (realpath(newpath1, newpath2) == 0) {
-		return 0;
-	}
-
-	return newpath2;
-}
-#endif
 
 // =====================================================================
 // SC_LibraryConfigFile
@@ -345,18 +297,11 @@ bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNu
 	path.finish();
   char realPath[MAXPATHLEN];
 
-#ifdef SC_WIN32
-  if (strlen(path.getData()) + 1 > MAXPATHLEN) {
+	if (sc_StandardizePath(path.getData(), realPath) == 0) {
 		(*mErrorFunc)("%s,%d: couldn't resolve path %s\n", fileName, lineNumber, path.getData());
 		return false;
 	}
-  strcpy(realPath,path.getData());
-#else
-	if (unixStandardizePath(path.getData(), realPath) == 0) {
-		(*mErrorFunc)("%s,%d: couldn't resolve path %s\n", fileName, lineNumber, path.getData());
-		return false;
-	}
-#endif
+
 	if (action == ':') {
 		if (++depth > kMaxIncludeDepth) {
 			(*mErrorFunc)("%s,%d: maximum include depth of %d exceeded\n", fileName, lineNumber, kMaxIncludeDepth);
@@ -364,11 +309,7 @@ bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNu
 		}
 		SC_LibraryConfigFile file(mErrorFunc);
 		if (!file.open(realPath)) return true;
-#ifdef SC_WIN32
-    const char* fileName = win32_basename(realPath);
-#else
     const char* fileName = basename(realPath);
-#endif
     bool success = file.read(depth, fileName, libConf);
 		file.close();
 		return success;
