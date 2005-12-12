@@ -87,19 +87,43 @@ void win32_GetHomeFolder(char* homeFolder, int bufLen)
 }
 
 char* win32_basename(char* path)
+{ 
+  int pathLen = strlen(path);
+  int lastPathSepFoundPos = -1;
+  int pos = 0;
+  while (path[pathLen-1] == '\\' || path[pathLen-1] == '/') { 
+	  path[pathLen-1]=0; pathLen--;
+  }; 
+  while(path[pos] != 0) {
+    if (path[pos] == '\\' || path[pos] == '/') {
+      lastPathSepFoundPos = pos;
+    }
+	pos++;
+  }
+  if (lastPathSepFoundPos == -1)
+    return path;
+  else
+    return path + lastPathSepFoundPos + 1;
+}
+
+char* win32_dirname(char* path)
 {
   int pathLen = strlen(path);
   int lastPathSepFoundPos = -1;
   int pos = 0;
+  while (path[pathLen-1] == '\\' || path[pathLen-1] == '/') { 
+	  path[pathLen-1]=0; pathLen--;
+  };
   while(path[pos] != 0) {
-    if (path[pos] == '/' || path[pos] == '/') {
+    if (path[pos] == '\\' || path[pos] == '/') {
       lastPathSepFoundPos = pos;
     }
+	pos++;
   }
-  if (lastPathSepFoundPos = -1)
-    return path;
-  else
-    return path + lastPathSepFoundPos + 1;
+  if (lastPathSepFoundPos != -1)
+	path[lastPathSepFoundPos]=0;
+
+  return path;
 }
 
 int win32_nanosleep (const struct timespec *requested_time,
