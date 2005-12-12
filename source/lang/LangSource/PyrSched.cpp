@@ -187,11 +187,7 @@ inline double GetTimeOfDay();
 double GetTimeOfDay()
 {
 	struct timeval tv;
-#ifdef SC_WIN32
-  win32_gettimeofday(&tv, 0);
-#else
   gettimeofday(&tv, 0);
-#endif
 	return (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
 }
 #endif // SC_DARWIN

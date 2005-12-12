@@ -58,11 +58,7 @@ int32 timeseed();
 int32 timeseed()
 {
 	struct timeval tv;
-#ifdef SC_WIN32
-  win32_gettimeofday(&tv, 0);
-#else
   gettimeofday(&tv, 0);
-#endif
   return tv.tv_sec ^ tv.tv_usec;
 }
 
