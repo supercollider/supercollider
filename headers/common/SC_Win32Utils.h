@@ -24,11 +24,18 @@
 #include <winsock2.h>
 #include <pthread.h>
 
+// wrappers for unix replacements
+#define gettimeofday win32_gettimeofday
+#define basename win32_basename
+#define dirname win32_dirname
+#define nanosleep win32_nanosleep
+
 void win32_ReplaceCharInString(char* string, int len, char src, char dst);
 void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars);
 void win32_gettimeofday(timeval* tv, void*);
 void win32_GetHomeFolder(char* homeFolder, int bufLen);
 char* win32_basename(char* path);
+char* win32_dirname(char* path);
 int win32_nanosleep (const struct timespec *requested_time, struct timespec *remaining);
 
 
