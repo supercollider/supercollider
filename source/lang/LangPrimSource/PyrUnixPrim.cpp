@@ -29,6 +29,7 @@ Primitives for Unix.
 #include "VMGlobals.h"
 #include "GC.h"
 #include "SC_RGen.h"
+#include "SC_DirUtils.h"
 
 #ifdef SC_WIN32
 #include <stdio.h>
@@ -62,7 +63,6 @@ int prString_System(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-#ifndef SC_WIN32
 int prString_Basename(struct VMGlobals *g, int numArgsPushed);
 int prString_Basename(struct VMGlobals *g, int numArgsPushed)
 {
@@ -72,7 +72,7 @@ int prString_Basename(struct VMGlobals *g, int numArgsPushed)
         int err = slotStrVal(a, path, PATH_MAX);
         if (err) return err;
 
-        char *basename0 = basename(path);
+		char *basename0 = basename(path);
 
         int size = strlen(basename0);
         PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
@@ -102,8 +102,6 @@ int prString_Dirname(struct VMGlobals *g, int numArgsPushed)
 
         return errNone;
 }
-#endif
-
 
 void* string_popen_thread_func(void *data);
 void* string_popen_thread_func(void *data)
@@ -166,7 +164,6 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 
 double bootSeconds();
 
-#ifndef SC_WIN32
 int prLocalTime(struct VMGlobals *g, int numArgsPushed);
 int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 {
@@ -175,7 +172,6 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 	
 	struct timeval tv;
 	gettimeofday(&tv, 0);
-	
 	
 	struct tm* tm = localtime((const time_t*)&tv.tv_sec);
 	
@@ -201,7 +197,6 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	struct timeval tv;
 	gettimeofday(&tv, 0);
 	
-	
 	struct tm* tm = gmtime((const time_t*)&tv.tv_sec);
 	
 	SetInt(slots+0, tm->tm_year + 1900);
@@ -216,7 +211,6 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	
 	return errNone;
 }
-#endif
 
 int prAscTime(struct VMGlobals *g, int numArgsPushed);
 int prAscTime(struct VMGlobals *g, int numArgsPushed)
@@ -304,8 +298,7 @@ int prTimeSeed(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-#ifdef SC_LINUX
-#include "SC_LibraryConfig.h"
+#ifndef SC_DARWIN
 
 // should be unified for OSX and linux
 int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
@@ -319,14 +312,14 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	err = slotStrVal(arg, ipath, PATH_MAX);
 	if (err) return err;
 
-	if (unixStandardizePath(ipath, opath)) {
+	if (sc_StandardizePath(ipath, opath)) {
 		PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
 		SetObject(arg, pyrString);
 	}
 
 	return errNone;
 }
-#endif // SC_LINUX
+#endif // not SC_DARWIN
 
 void initUnixPrimitives();
 void initUnixPrimitives()
@@ -336,22 +329,18 @@ void initUnixPrimitives()
 	base = nextPrimitiveIndex();
 	
 	definePrimitive(base, index++, "_String_System", prString_System, 1, 0);
-#ifndef SC_WIN32
-  definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
-  definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);
-#endif
-  definePrimitive(base, index++, "_String_POpen", prString_POpen, 1, 0);
+	definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
+	definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);
+	definePrimitive(base, index++, "_String_POpen", prString_POpen, 1, 0);
 	definePrimitive(base, index++, "_Unix_Errno", prUnix_Errno, 1, 0);
-#ifndef SC_WIN32
 	definePrimitive(base, index++, "_LocalTime", prLocalTime, 1, 0);
 	definePrimitive(base, index++, "_GMTime", prGMTime, 1, 0);
-#endif
-  definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
-  definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
+	definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
+	definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
 	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
-#ifdef SC_LINUX
+#ifndef SC_DARWIN
 	definePrimitive(base, index++, "_Cocoa_StandardizePath", prString_StandardizePath, 1, 0);
-#endif // SC_LINUX
+#endif // not SC_DARWIN
 }
 
 
