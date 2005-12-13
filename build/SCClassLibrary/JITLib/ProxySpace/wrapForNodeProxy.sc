@@ -252,7 +252,6 @@
 		set: #{ arg pattern, proxy, channelOffset=0, index;
 			var args;
 			args = proxy.controlNames.collect(_.name);
-			args = args.removeAll(#[\out, \i_out, \gate, \fadeTime]);
 			Pbindf(
 				pattern,
 				\type, \set,
