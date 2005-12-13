@@ -198,7 +198,7 @@ SynthControl : AbstractPlayControl {
 		};
 	}
 	set { arg ... args; // maybe want to set as fast as possible?
-		server.sendBundle(server.latency, "/n_set", nodeID, *args);
+		server.sendBundle(server.latency, ["/n_set", nodeID] ++ args);
 	}
 	
 	
@@ -298,7 +298,7 @@ SynthDefControl : SynthControl {
 	writeSynthDefFile { arg path, bytes;
 		var file;
 		file = File(path, "w");
-		protect { file.putAll(bytes); file.close } { file.close }
+		protect { file.putAll(bytes) } { file.close }
 	}
 	
 	asDefName { ^synthDef.name }
