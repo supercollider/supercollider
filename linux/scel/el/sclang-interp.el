@@ -32,8 +32,13 @@
 
 (defconst sclang-bullet-latin-1 (string-to-char (decode-coding-string "\xa5" 'utf-8))
   "Character for highlighting errors (latin-1).")
+
 (defconst sclang-bullet-utf-8 (string-to-char (decode-coding-string "\xe2\x80\xa2" 'utf-8))
   "Character for highlighting errors (utf-8).")
+
+(defconst sclang-parse-error-regexp
+  "^\\(WARNING\\|ERROR\\): .*\n[\t ]*in file '\\([^']\+\\)'\n[\t ]*line \\([0-9]\+\\) char \\([0-9]\+\\)"
+  "Regular expression matching parse errors during library compilation.")
 
 (defcustom sclang-max-post-buffer-size 0
   "*Maximum number of characters to insert in post buffer.
@@ -104,11 +109,24 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (with-sclang-post-buffer (erase-buffer)))
 
 (defun sclang--init-post-buffer ()
+  "Initialize post buffer."
   (get-buffer-create sclang-post-buffer)
   (with-sclang-post-buffer
+   ;; setup sclang mode
    (sclang-mode)
    (set (make-local-variable 'font-lock-fontify-region-function)
-	(lambda (&rest args))))
+	(lambda (&rest args)))
+   ;; setup compilation mode
+   (compilation-minor-mode)
+   (set (make-variable-buffer-local 'compilation-error-screen-columns) nil)
+   (set (make-variable-buffer-local 'compilation-error-regexp-alist)
+	(cons (list sclang-parse-error-regexp 2 3 4) compilation-error-regexp-alist))
+   (set (make-variable-buffer-local 'compilation-parse-errors-function)
+	(lambda (limit-search find-at-least)
+	  (compilation-parse-errors limit-search find-at-least)))
+   (set (make-variable-buffer-local 'compilation-parse-errors-filename-function)
+	(lambda (file-name)
+	  file-name)))
   (sclang-clear-post-buffer)
   (sclang-show-post-buffer))
 

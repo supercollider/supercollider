@@ -381,6 +381,12 @@
 		   (sclang-skip-help-directory-p x)))
 	     list))
 
+(defun sclang-directory-files-save (directory &optional full match nosort)
+  "Return a list of names of files in DIRECTORY, or nil on error."
+  (condition-case nil
+      (directory-files directory full match nosort)
+    (error nil)))
+
 (defun sclang-extension-help-directories ()
   "Build a list of help directories for extensions."
   (flet ((flatten (seq)
@@ -396,8 +402,8 @@
 	 (lambda (dir)
 	   (remove-if-not
 	    'file-directory-p
-	    (directory-files dir t "^[Hh][Ee][Ll][Pp]$" t)))
-	 (sclang-filter-help-directories (directory-files dir t))))
+	    (sclang-directory-files-save dir t "^[Hh][Ee][Ll][Pp]$" t)))
+	 (sclang-filter-help-directories (sclang-directory-files-save dir t))))
       sclang-extension-path))))
 
 (defun sclang-help-directories ()
@@ -407,7 +413,7 @@
 (defun sclang-make-help-topic-alist (dirs result)
   "Build a help topic alist from directories in DIRS, with initial RESULT."
   (if dirs
-      (let* ((files (directory-files (car dirs) t))
+      (let* ((files (sclang-directory-files-save (car dirs) t))
 	     (topics (remove-if 'null (mapcar 'sclang-help-topic-name files)))
 	     (new-dirs	(sclang-filter-help-directories files)))
 	(sclang-make-help-topic-alist

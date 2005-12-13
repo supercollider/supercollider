@@ -296,8 +296,8 @@ Use font-lock information if font-lock-mode is enabled."
     (while (and success (< arg 0))
       (setq success (re-search-forward sclang-beginning-of-defun-regexp nil t))
       (when (and success (not (sclang-point-in-comment-p)))
-	    (goto-char (match-end 0))
-	    (setq arg (1+ arg))))
+	(goto-char (match-end 0))
+	(setq arg (1+ arg))))
     (when success
       (beginning-of-line)
       (cond ((looking-at sclang-block-regexp) (goto-char (1- (match-end 1))))
