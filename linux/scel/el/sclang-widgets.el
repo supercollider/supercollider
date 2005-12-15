@@ -149,7 +149,7 @@
   "File position link for the SCLang Class Tree widget."
   :format "%[%t%]\n"
   :action (lambda (widget event)
-	    (find-file (widget-get widget :filename))
+	    (find-file-other-window (widget-get widget :filename))
 	    (goto-char (widget-get widget :char-pos))))
 
 (defun sclang-class-tree (class-name)
