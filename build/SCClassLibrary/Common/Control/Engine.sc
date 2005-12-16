@@ -192,19 +192,36 @@ ContiguousBlockAllocator {
 	}
 
 	alloc { |n = 1|
-		var     block, new, leftover;
+		var	block;
 		(block = this.findAvailable(n)).notNil.if({
-			#new, leftover = block.split(n);
-			new.used = true;
-			this.removeFromFreed(block);
-			array[new.start] = new;
-			leftover.notNil.if({
-				array[leftover.start] = leftover;
-				top = max(top, leftover.start);
-				(top > leftover.start).if({ this.addToFreed(leftover); });
-			});
-			^new.start
+			^this.prReserve(block.start, n, block).start
 		}, { ^nil });
+	}
+	
+	reserve { |address, size = 1|
+		var	block, new;
+		((block = array[address] ?? { this.findNext(address) }).notNil and:
+				{ block.used and:
+				{ address + size > block.start } }).if({
+			"The block at (%, %) is already in use and cannot be reserved."
+				.format(address, size).warn;
+		}, {
+			(block.start == address).if({
+				new = this.prReserve(address, size, block);
+				^new;
+			}, {
+				((block = this.findPrevious(address)).notNil and:
+						{ block.used and:
+						{ block.start + block.size > address } }).if({
+					"The block at (%, %) is already in use and cannot be reserved."
+						.format(address, size).warn;
+				}, {
+					new = this.prReserve(address, size, nil, block);
+					^new;
+				});
+			});
+		});
+		^nil
 	}
 
 	free { |address|
@@ -282,6 +299,34 @@ ContiguousBlockAllocator {
 			});
 		});
 		^nil
+	}
+	
+	prReserve { |address, size, availBlock, prevBlock|
+		var	new, leftover;
+		(availBlock.isNil and: { prevBlock.isNil }).if({
+			prevBlock = this.findPrevious(address);
+		});
+		availBlock = availBlock ? prevBlock;
+		(availBlock.start < address).if({
+			#leftover, availBlock = this.prSplit(availBlock, 
+				address - availBlock.start, false);
+		});
+		^this.prSplit(availBlock, size, true)[0];
+	}
+	
+	prSplit { |availBlock, n, used = true|
+		var	new, leftover;
+		#new, leftover = availBlock.split(n);
+		new.used = used;
+		this.removeFromFreed(availBlock);
+		used.not.if({ this.addToFreed(new) });
+		array[new.start] = new;
+		leftover.notNil.if({
+			array[leftover.start] = leftover;
+			top = max(top, leftover.start);
+			(top > leftover.start).if({ this.addToFreed(leftover); });
+		});
+		^[new, leftover]
 	}
 
 	debug { |text|
