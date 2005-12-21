@@ -696,7 +696,10 @@ SequenceableCollection : Collection {
 	asFraction { arg denominator=100, fasterBetter=true; 
 		^this.collect { |item| item.asFraction(denominator, fasterBetter) } 
 	}
-		
+
+	asPoint { ^Point(this[0] ? 0, this[1] ? 0) }
+	asRect { ^Rect(this[0] ? 0, this[1] ? 0, this[2] ? 0, this[3] ? 0) }
+
 	// support UGen rate access
 	
 	rate { 

@@ -140,6 +140,32 @@ Rect {
 	layout { arg argBounds; 
 		this.set(argBounds.left, argBounds.top, argBounds.width, argBounds.height);
 	}
+	
+	asArray { ^[this.left, this.top, this.width, this.height] }
+	
+	+ {|that|
+		var thatRect;
+		thatRect = that.asRect;
+		
+		^Rect(
+			this.left + thatRect.left,
+			this.top + thatRect.top,
+			this.width + thatRect.width,
+			this.height + thatRect.height
+		)
+	}
+	- {|that|
+		var thatRect;
+		thatRect = that.asRect;
+	
+		^Rect(
+			this.left - thatRect.left,
+			this.top - thatRect.top,
+			this.width - thatRect.width,
+			this.height - thatRect.height
+		)
+	}
+
 
 }
 

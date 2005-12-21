@@ -123,6 +123,8 @@ SimpleNumber : Number {
 	asInteger { _AsInt; ^this.primitiveFailed }
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
+	asRect { ^Rect(this, this, this, this) }
+
 	fontID { ^this }
 	
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; ^error("Math operation failed.\n") }

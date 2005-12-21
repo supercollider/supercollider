@@ -15,6 +15,7 @@ Point {
 	asComplex { ^Complex.new(x,y) }
 	asPolar { ^Polar.new(this.rho, this.theta) }
 	asRect { ^Rect.new(0,0,x,y) }
+	asArray { ^[this.x, this.y] }
 	
 	== { arg aPoint;
 		^aPoint respondsTo: #[\x, \y] and: { x == aPoint.x and: { y == aPoint.y } }
@@ -78,6 +79,12 @@ Point {
 	trunc { arg quant; 
 		quant = quant.asPoint;
 		^x.trunc(quant.x) @ y.trunc(quant.y)
+	}
+
+	mod {|that|
+		var thatPoint;
+		thatPoint = that.asPoint;
+		^(this.x mod: thatPoint.x) @ (this.y mod: thatPoint.y)
 	}
 	
 	printOn { arg stream;
