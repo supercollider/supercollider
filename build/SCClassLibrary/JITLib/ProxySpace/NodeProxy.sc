@@ -177,16 +177,16 @@ BusPlug : AbstractFunction {
 	///// monitoring //////////////
 	
 	
-	play { arg out, numChannels, group, multi=false, vol, fadeTime;  
+	play { arg out, numChannels, group, multi=false, vol, fadeTime, addAction;  
 		var bundle = MixedBundle.new;
-		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime);
+		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock, this.quant)
 	}
 	
-	playN { arg outs, amps, ins, vol, fadeTime, group;
+	playN { arg outs, amps, ins, vol, fadeTime, group, addAction;
 		var bundle = MixedBundle.new;
-		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group);
+		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
 		bundle.schedSend(this.homeServer, this.clock, this.quant)
 	}
 	
@@ -228,16 +228,17 @@ BusPlug : AbstractFunction {
 	
 	// monitor bundling
 	
-	playToBundle { arg bundle, out, numChannels, group, multi=false, vol, fadeTime;
+	playToBundle { arg bundle, out, numChannels, 
+				group, multi=false, vol, fadeTime, addAction;
 		this.newMonitorToBundle(bundle);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
-		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group, multi, vol, fadeTime);
+		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group, multi, vol, fadeTime, addAction);
 	}
 	
-	playNToBundle { arg bundle, outs, amps, ins, vol, fadeTime, group;
+	playNToBundle { arg bundle, outs, amps, ins, vol, fadeTime, group, addAction;
 		this.newMonitorToBundle(bundle);
 		group = group ?? { if(parentGroup.isPlaying) {parentGroup}{this.homeServer.asGroup} };
-		monitor.playNBusToBundle(bundle, outs, amps, bus, vol, fadeTime, group);
+		monitor.playNBusToBundle(bundle, outs, amps, bus, vol, fadeTime, group, addAction);
 	
 	}
 	

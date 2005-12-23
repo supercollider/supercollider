@@ -80,7 +80,7 @@ Monitor {
 	
 	
 	play { arg fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
-			target, multi=false, volume, fadeTime=0.02;
+			target, multi=false, volume, fadeTime=0.02, addAction;
 		var server, inGroup, numChannels, bundle, divider;
 		
 		inGroup = target.asGroup;
@@ -89,7 +89,7 @@ Monitor {
 		bundle = List.new;
 		this.playToBundle(
 			bundle, fromIndex, fromNumChannels, toIndex, 
-			toNumChannels, inGroup, multi, volume, fadeTime
+			toNumChannels, inGroup, multi, volume, fadeTime, addAction
 		); 
 		
 		server.listSendBundle(server.latency, bundle);
@@ -110,13 +110,13 @@ Monitor {
 	
 	// multichannel support
 	
-	playN { arg out, amp, in, vol, fadeTime, target;
+	playN { arg out, amp, in, vol, fadeTime, target, addAction;
 		var bundle = List.new;
 		var server, inGroup;
 		inGroup = target.asGroup;
 		server = inGroup.server;
 		
-		this.playNToBundle(bundle, out, amp, in, vol, fadeTime, inGroup);
+		this.playNToBundle(bundle, out, amp, in, vol, fadeTime, inGroup, addAction);
 		server.listSendBundle(server.latency, bundle);
 		
 	}
@@ -181,7 +181,7 @@ Monitor {
 	// bundling 
 	
 	playNToBundle { arg bundle, argOuts=(outs ?? {(0..ins.size-1)}), argAmps=(amps), argIns=(ins),
-					argVol=(vol), argFadeTime=(fadeTime), inGroup, defName="system_link_audio_1"; 
+					argVol=(vol), argFadeTime=(fadeTime), inGroup, addAction, 					defName="system_link_audio_1"; 
 		
 		var triplets, server; 
 
@@ -213,7 +213,7 @@ Monitor {
 				synthIDs = synthIDs.add(id);
 				synthAmps = synthAmps.add(amp[j]);
 				bundle.add([9, defName, 
-					id, 1, group.nodeID,
+					id, Node.actionNumberFor(addAction), group.nodeID,
 					"out", item, 
 					"in", in,
 					"vol", amp.clipAt(j) * vol
@@ -226,7 +226,7 @@ Monitor {
 	// optimizes ranges of channels
 	
 	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
-			inGroup, multi, volume, fadeTime=0.02;
+			inGroup, multi, volume, fadeTime=0.02, addAction;
 		var server, numChannels, defname, chanRange, n;
 					
 		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) }; 
@@ -258,7 +258,8 @@ Monitor {
 			outs = outs.add(out);
 			ins = ins.add(in);
 			amps = amps.add(1.0);
-			bundle.add([9, defname, id, 1, group.nodeID, "out", out, "in", in]);
+			bundle.add([9, defname, id, Node.actionNumberFor(addAction), 
+						group.nodeID, "out", out, "in", in]);
 		};
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
