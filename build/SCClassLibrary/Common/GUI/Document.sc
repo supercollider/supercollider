@@ -334,6 +334,12 @@ Document {
 			// open URL
 			("open " ++ selectedText).unixCmd;
 		}
+		{ selectedText.containsStringAt(selectedText.size-1, "/") }
+		{
+			Document(selectedText, 
+				pathMatch(wikiDir ++ selectedText).collect({|it|it.basename ++ "\n"}).join
+			)
+		}
 		{
 			if(index + selectedText.size > this.text.size) { ^this };
 			extensions.do {|ext|
