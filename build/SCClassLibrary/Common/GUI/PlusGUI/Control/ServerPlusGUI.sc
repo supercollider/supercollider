@@ -75,22 +75,26 @@
 			{char === $ } { if(serverRunning.not) { this.boot } }
 			{char === $s and: {this.inProcess}} { this.scope }
 			{char == $d} {
-				stillRunning = {
-					SystemClock.sched(0.2, { this.stopAliveThread });
-				};
-				startDump = { 
-					this.dumpOSC(1);
-					this.stopAliveThread;
-					dumping = true;
-					CmdPeriod.add(stillRunning);
-				};
-				stopDump = {
-					this.dumpOSC(0);
-					this.startAliveThread;
-					dumping = false;
-					CmdPeriod.remove(stillRunning);
-				};
-				if(dumping, stopDump, startDump)
+				if(this.isLocal or: { this.inProcess }) {
+					stillRunning = {
+						SystemClock.sched(0.2, { this.stopAliveThread });
+					};
+					startDump = { 
+						this.dumpOSC(1);
+						this.stopAliveThread;
+						dumping = true;
+						CmdPeriod.add(stillRunning);
+					};
+					stopDump = {
+						this.dumpOSC(0);
+						this.startAliveThread;
+						dumping = false;
+						CmdPeriod.remove(stillRunning);
+					};
+					if(dumping, stopDump, startDump)
+				} {
+					"cannot dump a remote server's messages".inform
+				}
 			
 			};
 		};
