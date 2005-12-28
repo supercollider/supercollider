@@ -206,6 +206,12 @@ PathName { 	// AdC, cx
 	isCVS {
 		^this.fileName == "CVS";
 	}
+	filesDo { arg func;
+		this.files.do(func);
+		this.foldersWithoutCVS.do { arg pathname;
+			pathname.filesDo(func)
+		}
+	}
 	streamTree { arg str, tabs=0;
 		str << this.fullPath << Char.nl;
 		this.files.do({ arg item; 
