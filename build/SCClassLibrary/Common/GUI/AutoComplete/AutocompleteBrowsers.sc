@@ -45,11 +45,8 @@ AutoCompMethodBrowser {
 		var	displaySel, temp, initString;
 		skipThis = dropMeta = false;
 		selector = argDoc.string(argStart, argSize);
-		(selector.size == 0).if({
-			(argDoc.string(argStart-1, 1) == ".").if({
-				selector = "value";
-			}, { ^nil })	// if no string and prev char was not a ., then abort
-		});
+			// if no string, abort
+		(selector.size == 0).if({ ^nil });
 			// if it's part of a class name, 
 		(selector[0] >= $A and: { selector[0] <= $Z }).if({
 			AutoCompClassBrowser.classExclusions.includes(selector.asSymbol.asClass).not.if({
