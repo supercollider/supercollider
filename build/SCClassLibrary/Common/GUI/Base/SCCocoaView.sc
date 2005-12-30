@@ -1,5 +1,4 @@
 SCTextView : SCView{
-	var <>mouseDownAction;
 	var <stringColor, <font, <editable;
 	var 	<autohidesScrollers, <hasHorizontalScroller, <hasVerticalScroller, <textBounds;
 	var <usesTabToFocusNextView=true, <enterInterpretsSelection=true;
