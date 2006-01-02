@@ -20,6 +20,7 @@ ScoreStreamPlayer : EventStreamPlayer {
 //		this.debug(event[\type]);
 		
 		while({absTime<= maxTime and: stream.notNil}, {this.next(i);i=i+1;});
+		score = score.add([absTime min: maxTime, [\c_set,0,0]]);
 		stream = nil;
 		^score;
 	}
