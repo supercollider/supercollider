@@ -1,9 +1,10 @@
 Score {
 	var <>score, routine, isPlaying = false;
-	classvar <>program;
+	classvar <>program, <>options;
 
 	*initClass {
 		program = "./scsynth";
+		options = ServerOptions.new;
 	}
 
 	*new { arg list;
@@ -105,7 +106,7 @@ Score {
 		"AIFF", sampleFormat = "int16", options, completionString="", duration = nil;
 		this.writeOSCFile(oscFilePath, 0, duration);
 		unixCmd(program + " -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
-			(options ?? {ServerOptions.new}).asOptionsString  
+			(options ? Score.options).asOptionsString  
 			+ completionString);
 	}
 	
