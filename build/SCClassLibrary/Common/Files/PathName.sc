@@ -1,10 +1,11 @@
 
-PathName { 	// AdC, cx
+PathName {
 
 	var <fullPath, colonIndices;
 	
 	classvar <>scroot;
 	classvar <>secondVolume; //needed only for OS9 path conversions
+	classvar <>tmp;
 	
 	*new { arg path = ""; 
 		^super.new.init(path.standardizePath); 
@@ -28,7 +29,14 @@ PathName { 	// AdC, cx
 			})
 		)
 	}
-	*initClass {	scroot = File.getcwd;	}
+	*initClass {	
+		scroot = File.getcwd;	
+		tmp = ["/tmp/", "/WINDOWS/TEMP/", "sounds/"].detect({ |path|
+			File.exists(path);
+		});
+		tmp.isNil.if(
+			{"No valid temp directory found. Please set this manually using PathName.tmp_".warn});
+	}
 	init { arg inPath;			
 		fullPath = inPath;	
 	}

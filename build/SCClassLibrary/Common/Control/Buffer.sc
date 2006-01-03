@@ -122,7 +122,7 @@ Buffer {
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
 			sndfile.numChannels = numChannels;
-			path = "sounds/" ++ data.hash.asString;
+			path = PathName.tmp ++ data.hash.asString;
 			if(sndfile.openWrite(path),
 				{
 					sndfile.writeData(data);
@@ -150,7 +150,7 @@ Buffer {
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
 			sndfile.numChannels = numChannels;
-			path = "sounds/" ++ data.hash.asString;
+			path = PathName.tmp ++ data.hash.asString;
 			if(sndfile.openWrite(path),
 				{
 					sndfile.writeData(data);
@@ -228,7 +228,7 @@ Buffer {
 		var msg, cond, path, file, array;
 		Routine.run({
 			cond = Condition.new;
-			path = "sounds/" ++ this.hash.asString;
+			path = PathName.tmp ++ this.hash.asString;
 			msg = this.writeMsg(path, "aiff", "float", count, index);
 			server.sendMsgSync(cond, *msg);
 			file = SoundFile.new;

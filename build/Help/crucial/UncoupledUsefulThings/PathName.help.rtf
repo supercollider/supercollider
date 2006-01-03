@@ -5,10 +5,8 @@
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 PathName
-\f1\b0\fs18  							
-\f0\b // AdC, July 2000.
-\f1\b0 \
+\f0\b\fs36 \cf0 PathName			file and directory path utilities
+\f1\b0\fs18 				\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -31,6 +29,7 @@ It expects a path to a file, and lets you access parts of that file path.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 PathName\cf0 .new(\cf3 "MyDisk/SC 2.2.8 f/Sounds/FunkyChicken"\cf0 ); \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -38,13 +37,28 @@ It expects a path to a file, and lets you access parts of that file path.\
 \f1\fs24 \cf0 ~ will be converted to your fully addressed home directory.  Symbolic Links will be expanded, as per String-standardizePath.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 \
+\f0\b\fs28 \cf0 \
+Class Methods\
+
+\f2\b0\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Instance Methods\
+\f0\b\fs24 \cf0 tmp\
+tmp_(aPath)
+\f2\b0\fs18 \
+
+\f1\fs24 \
+Get or set the global temp directory as a 
+\f0\b String
+\f1\b0 . This is used by 
+\f0\b Buffer
+\f1\b0 , etc. By default this is "/tmp/" for Linux and OSX, and "/WINDOWS/TEMP/" for Windows.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 \
+\f0\b\fs28 \cf0 \
+Instance Methods\
+
+\f2\b0\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 fileName
@@ -104,6 +118,7 @@ i.e. everything in between the last but one and the last slash. \
 
 \f2\fs18 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  myPath;\
 myPath = \cf2 PathName\cf0 .new(\cf3 "MyDisk/SC 2.2.8 f/Sounds/FunkyChicken"\cf0 ); \
 myPath.folderName.postln; \
@@ -120,6 +135,7 @@ myPath.folderName.postln; \
 
 \f2\fs18 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  myPath;\
 myPath = \cf2 PathName\cf0 .new(\cf3 "MyDisk/SC 2.2.8 f/Sounds/FunkyChicken"\cf0 ); \
 myPath.fullPath.postln; \
@@ -136,11 +152,15 @@ myPath.fullPath.postln; \
 
 \f2\fs18 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  myPath;\
 myPath = \cf2 PathName\cf0 .new(\cf3 "MyDisk/SC 2.2.8 f/Sounds/FunkyChicken"\cf0 ); \
 myPath.allFolders.postln; \
-)\
-\
+)
+\f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 diskName
@@ -151,6 +171,7 @@ myPath.allFolders.postln; \
 
 \f2\fs18 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  myPath;\
 myPath = \cf2 PathName\cf0 .new(\cf3 "MyDisk/SC 2.2.8 f/Sounds/FunkyChicken"\cf0 ); \
 myPath.diskName.postln; \
@@ -172,6 +193,7 @@ Returns zero if there is no number.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 PathName\cf0 (\cf3 "floating1"\cf0 ).endNumber.postln; \
 \
 \cf2 PathName\cf0 (\cf3 "floating"\cf0 ).endNumber.postln; \
@@ -185,6 +207,7 @@ Returns zero if there is no number.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 PathName\cf0 (\cf3 "floating1"\cf0 ).noEndNumbers.postln; \
 \
 \cf2 PathName\cf0 (\cf3 "floating"\cf0 ).noEndNumbers.postln; \
@@ -202,6 +225,7 @@ or by adding one if there is none.\
 
 \f2\fs18 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 PathName\cf0 (\cf3 "floating34"\cf0 ).nextName.postln; \
 \
 \cf2 PathName\cf0 (\cf3 "floating"\cf0 ).nextName.postln; \
