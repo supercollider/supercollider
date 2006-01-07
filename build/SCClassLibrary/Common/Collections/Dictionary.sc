@@ -204,7 +204,7 @@ Dictionary : Set {
 		this.keysValuesDo { arg key, val;
 			assoc = assoc.add(key -> val);
 		};
-		^assoc.order(func)
+		^assoc.sort(func).collect(_.key)
 	}
 
 	
