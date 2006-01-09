@@ -318,7 +318,6 @@ void WhiteNoise_Ctor(WhiteNoise* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 void PinkNoise_next(PinkNoise *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -335,8 +334,9 @@ void PinkNoise_next(PinkNoise *unit, int inNumSamples)
 		dice[k] = newrand; 
 		total += (newrand - prevrand); 
 		newrand = trand(s1,s2,s3) >> 13;
-		uint32 ifval = (total + newrand) | 0x40000000;
-		ZXP(out) = ((*(float*)&ifval) - 3.0f); 
+		elem32 val; // ensure write before read <sk>
+		val.u = (total + newrand) | 0x40000000;
+		ZXP(out) = val.f - 3.0f; 
 		counter ++; 
 	);
 	unit->mTotal = total;
