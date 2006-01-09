@@ -38,8 +38,8 @@ const double sqrt2  = sqrt(2.);
 const double rsqrt2 = 1. / sqrt2;
 
 // used to truncate precision
-const float truncFloat = (float)(3. * pow(2,22));
-const double truncDouble = 3. * pow(2,51);
+const float truncFloat = (float)(3. * pow(2.0,22));
+const double truncDouble = 3. * pow(2.0,51);
 
 const float kBadValue = 1e20f; // used in the secant table for values very close to 1/0
 

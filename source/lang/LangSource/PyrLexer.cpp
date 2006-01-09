@@ -164,7 +164,7 @@ double sc_strtof(const char *str, int n, int base)
 		else if (c >= 'A' && c <= 'A' + sc_min(36,base) - 11) z = z * base + c - 'A' + 10;
 		else if (c == '.') decptpos = i;
 	}
-	z = z / pow(base, n - decptpos);
+	z = z / pow((double)base, n - decptpos); 
 	return z;
 }
 
