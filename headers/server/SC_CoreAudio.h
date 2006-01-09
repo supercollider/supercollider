@@ -264,6 +264,7 @@ public:
             PaStreamCallbackFlags statusFlags );
 private:
 	int64 PortAudioTimeToHostTime(PaTime time);
+	void GetPaDeviceFromName(const char* device, int* mInOut);
 };
 
 inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)

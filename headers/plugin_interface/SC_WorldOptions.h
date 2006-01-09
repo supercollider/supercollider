@@ -69,6 +69,8 @@ struct WorldOptions
 	const char *mOutputStreamsEnabled;
     CFStringRef mServerPortName;
     CFStringRef mReplyPortName;
+#endif
+#if defined(SC_DARWIN) || defined(SC_WIN32)
 	const char *mDeviceName;
 #endif
 

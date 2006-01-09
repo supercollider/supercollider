@@ -66,7 +66,7 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 }
 
 bool sc_UseVectorUnit();
-bool sc_SetDenormalFlags();
+void sc_SetDenormalFlags();
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -344,6 +344,8 @@ World* World_New(WorldOptions *inOptions)
 #ifdef SC_DARWIN
 		world->hw->mInputStreamsEnabled = inOptions->mInputStreamsEnabled;
 		world->hw->mOutputStreamsEnabled = inOptions->mOutputStreamsEnabled;
+#endif 
+#if defined(SC_DARWIN)  || defined(SC_WIN32)
 		world->hw->mDeviceName = inOptions->mDeviceName;
 #endif		
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;

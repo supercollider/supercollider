@@ -101,6 +101,8 @@ struct HiddenWorld
 #ifdef SC_DARWIN
 	const char* mInputStreamsEnabled;
 	const char* mOutputStreamsEnabled;
+#endif
+#if defined(SC_DARWIN)  || defined(SC_WIN32)
 	const char *mDeviceName;
 #endif
 };

@@ -135,11 +135,7 @@ static inline int64 GetCurrentOSCTime()
 {
 	struct timeval tv;
 	uint64 s, f;
-#ifdef SC_WIN32
-	win32_gettimeofday(&tv, 0);
-#else
 	gettimeofday(&tv, 0);
-#endif
 	s = (uint64)tv.tv_sec + (uint64)kSECONDS_FROM_1900_to_1970;
 	f = (uint64)((double)tv.tv_usec * kMicrosToOSCunits);
 
@@ -1598,87 +1594,96 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
     return paContinue;
 }
 
+void SC_PortAudioDriver::GetPaDeviceFromName(const char* device, int* mInOut) {
+
+	const PaDeviceInfo *pdi;
+	const PaHostApiInfo *apiInfo;
+	char devString[256];
+	PaDeviceIndex numDevices = Pa_GetDeviceCount();
+	mInOut[0] = paNoDevice;
+	mInOut[1] = paNoDevice;
+
+	// This tries to find one or two devices that match the given name (substring)
+	// might cause problems for some names...
+	for( int i=0; i<numDevices; i++ ) {
+	    pdi = Pa_GetDeviceInfo( i );
+		apiInfo = Pa_GetHostApiInfo(pdi->hostApi);
+		strcpy(devString, apiInfo->name);
+		strcat(devString, " : ");
+		strcat(devString, pdi->name);
+		if (strstr(devString, device)) {
+			if (pdi->maxInputChannels > 0) mInOut[0] = i;
+			if (pdi->maxOutputChannels > 0) mInOut[1] = i;
+		}
+	}
+}
 
 // ====================================================================
-// NOTE: for now, in lieu of a mechanism that passes generic options to
-// the platform driver, we rely on the PortAudio default device environment variables
+//
+//
 bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 {
-    char *env;
+	int mDeviceInOut[2];
+	PaError paerror;
+	const PaDeviceInfo *pdi;
+	const PaHostApiInfo *apiInfo;
+	PaDeviceIndex numDevices = Pa_GetDeviceCount();
+	
+	// print out all options:
+	fprintf(stdout, "\nDevice options:\n");
+	for( int i=0; i<numDevices; i++ ) {
+	    pdi = Pa_GetDeviceInfo( i );
+		apiInfo = Pa_GetHostApiInfo(pdi->hostApi);
+		fprintf(stdout, "  - %s : %s   (device #%d with %d ins %d outs)\n",apiInfo->name,pdi->name, i, pdi->maxInputChannels, pdi->maxOutputChannels);
+	}
 
-/*
-FIXME:
-stefan kersten wrote:
-> * the powerbook alsa driver on linux doesn't support input; in the
-> jack implementation i took the channel information from
-> mWorld->mNumInputs/Outputs (which are set from the command line), i
-> believe this should be done for portaudio as well
-*/
+	mDeviceInOut[0] = paNoDevice;
+	mDeviceInOut[1] = paNoDevice;
+	if (mWorld->hw->mDeviceName)
+		GetPaDeviceFromName(mWorld->hw->mDeviceName, mDeviceInOut);
+	if (mDeviceInOut[0] == paNoDevice) mDeviceInOut[0] = Pa_GetDefaultInputDevice();
+	if (mDeviceInOut[1] == paNoDevice) mDeviceInOut[1] = Pa_GetDefaultOutputDevice();
 
-	// create inputs according to SC_PORTAUDIO_INPUTS (default 2)
-	env = getenv("SC_PORTAUDIO_INPUTS");
-	if (env == 0) env = "2";
-	mInputChannelCount = std::max(2, atoi(env));
-
-	// create outputs according to SC_PORTAUDIO_OUTPUTS (default 2)
-	env = getenv("SC_PORTAUDIO_OUTPUTS");
-	if (env == 0) env = "2";
-	mOutputChannelCount = std::max(2, atoi(env));
-
-  char *env2;
-  env = getenv("SC_PORTAUDIO_INPUT_DEVICE");
-  env2 = getenv("SC_PORTAUDIO_OUTPUT_DEVICE");
-#ifdef SC_WIN32
-#ifdef _DEBUG
-  if(env)
-    printf("SC_PORTAUDIO_INPUT_DEVICE = %s\n",env);
-  if(env2)
-    printf("SC_PORTAUDIO_OUTPUT_DEVICE= %s\n",env2);
-#endif //#ifdef _DEBUG
-#endif //#ifdef SC_WIN32
-  if (env == 0 && env2 == 0) {
-    // we revert to the classic behaviour when no env vars are specified. the latency
-    // values are safer when using Pa_OpenDefaultStream than when using 
-    // Pa_OpenStream and specifying the default devices.
-    *outNumSamples = mWorld->mBufLength;
+	*outNumSamples = mWorld->mBufLength;
     *outSampleRate = 44100.; ///$$$TODO fixme use the cmd-line supplied param
-    PaError paerror = Pa_OpenDefaultStream( &mStream, mInputChannelCount, mOutputChannelCount,
-            paFloat32 | paNonInterleaved, *outSampleRate, *outNumSamples, SC_PortAudioStreamCallback, this );
-    if( paerror != paNoError )
-        PRINT_PORTAUDIO_ERROR( Pa_OpenDefaultStream, paerror );
-    return paerror == paNoError;
-  }
-  else { 
-    // at least one device has been specified. let's retrieve the indices
-    PaDeviceIndex inIdx,outIdx;
-    if (env == 0) inIdx = Pa_GetDefaultInputDevice( );
-    else inIdx = atoi(env);
-    if (env2 == 0) outIdx = Pa_GetDefaultOutputDevice( );
-    else outIdx = atoi(env2);
-    
-    PaSampleFormat fmt = paFloat32 | paNonInterleaved;
-    
-    PaStreamParameters inStreamParams;
-    inStreamParams.device = inIdx;
-    inStreamParams.channelCount = mInputChannelCount;
-    inStreamParams.sampleFormat = fmt;
-    inStreamParams.suggestedLatency = Pa_GetDeviceInfo( inIdx )->defaultLowInputLatency; //$$$todo : allow user to choose latency instead of this
-    inStreamParams.hostApiSpecificStreamInfo = NULL;
 
-    PaStreamParameters outStreamParams;
-    outStreamParams.device = outIdx;
-    outStreamParams.channelCount = mOutputChannelCount;
-    outStreamParams.sampleFormat = fmt;
-    outStreamParams.suggestedLatency = Pa_GetDeviceInfo( outIdx )->defaultLowOutputLatency; //$$$todo : allow user to choose latency instead of this
-    outStreamParams.hostApiSpecificStreamInfo = NULL;
+	if (mDeviceInOut[0]!=paNoDevice && mDeviceInOut[1]!=paNoDevice) {
+		PaSampleFormat fmt = paFloat32 | paNonInterleaved;
+		mInputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[0] )->maxInputChannels;
+		mOutputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[1] )->maxOutputChannels;
+		fprintf(stdout, "\nBooting with:\n In: %s : %s \n",
+			Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[0] )->hostApi)->name,
+			Pa_GetDeviceInfo( mDeviceInOut[0] )->name); 
+		fprintf(stdout, " Out: %s : %s \n",
+			Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[1] )->hostApi)->name,
+			Pa_GetDeviceInfo( mDeviceInOut[1] )->name); 
 
-    *outNumSamples = mWorld->mBufLength;
-    *outSampleRate = 44100.; ///$$$TODO fixme use the cmd-line supplied param
-    PaError paerror = Pa_OpenStream(&mStream, &inStreamParams, &outStreamParams, *outSampleRate, *outNumSamples, paNoFlag, SC_PortAudioStreamCallback, this );
-    if( paerror != paNoError )
-        PRINT_PORTAUDIO_ERROR( Pa_OpenStream, paerror );
-    return paerror == paNoError;
-  }
+		PaStreamParameters inStreamParams;
+		inStreamParams.device = mDeviceInOut[0];
+		inStreamParams.channelCount = mInputChannelCount;
+		inStreamParams.sampleFormat = fmt;
+		inStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency; //$$$todo : allow user to choose latency instead of this
+		inStreamParams.hostApiSpecificStreamInfo = NULL;
+
+		PaStreamParameters outStreamParams;
+		outStreamParams.device = mDeviceInOut[1];
+		outStreamParams.channelCount = mOutputChannelCount;
+		outStreamParams.sampleFormat = fmt;
+		outStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[1] )->defaultLowOutputLatency; //$$$todo : allow user to choose latency instead of this
+		outStreamParams.hostApiSpecificStreamInfo = NULL;
+
+		paerror = Pa_OpenStream(&mStream, &inStreamParams, &outStreamParams, *outSampleRate, *outNumSamples, paNoFlag, SC_PortAudioStreamCallback, this );
+		if( paerror != paNoError )
+			PRINT_PORTAUDIO_ERROR( Pa_OpenStream, paerror );
+		return paerror == paNoError;
+	}
+	
+	// should not be necessary, but a last try with OpenDefaultStream... 
+	paerror = Pa_OpenDefaultStream( &mStream, 2, 2,
+        paFloat32 | paNonInterleaved, *outSampleRate, *outNumSamples, SC_PortAudioStreamCallback, this );
+	if( paerror != paNoError )
+	    PRINT_PORTAUDIO_ERROR( Pa_OpenDefaultStream, paerror );
+	return paerror == paNoError;    
 }
 
 bool SC_PortAudioDriver::DriverStart()

@@ -80,6 +80,8 @@ void Usage()
 		"   -I <input-streams-enabled>\n"
 		"   -O <output-streams-enabled>\n"
         "   -M <server-mach-port-name> <reply-mach-port-name>\n"
+#endif 
+#if defined(SC_DARWIN)  || defined(SC_WIN32)
         "   -H <hardware-device-name>\n"
 #endif
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
@@ -235,16 +237,18 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mOutputStreamsEnabled = argv[j+1];
 				break;
-			case 'H' :
-				checkNumArgs(2);
-				options.mDeviceName = argv[j+1];
-				break;
             case 'M':
 // -M serverPortName replyPortName                
                 checkNumArgs(3);
                 options.mServerPortName = CFStringCreateWithCStringNoCopy(NULL, argv[j + 1], kCFStringEncodingUTF8, kCFAllocatorNull);
                 options.mReplyPortName = CFStringCreateWithCStringNoCopy(NULL, argv[j + 2], kCFStringEncodingUTF8, kCFAllocatorNull);
                 break;
+#endif 
+#if defined(SC_DARWIN)  || defined(SC_WIN32)
+			case 'H' :
+				checkNumArgs(2);
+				options.mDeviceName = argv[j+1];
+				break;
 #endif
 			default: Usage();
 		}
