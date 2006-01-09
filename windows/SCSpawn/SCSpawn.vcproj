@@ -1,87 +1,145 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8,00"
 	Name="SCSpawn"
 	ProjectGUID="{75F74781-2B76-4FE6-AA5D-C75CB0005137}"
-	Keyword="MFCProj">
+	Keyword="MFCProj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(ProjectDir)..\..\..\SuperCollider3\build"
 			IntermediateDirectory=".\SCSpawn_Release"
 			ConfigurationType="1"
-			UseOfMFC="2"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/SCSpawn.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(ProjectDir)../../../portaudio/pa_common/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="3"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\Release/SCSpawn.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"/>
+				SuppressStartupBanner="true"
+				ShowIncludes="true"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1051"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(ProjectDir)..\..\..\SuperCollider3\build\SCSpawn.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/SCSpawn.pdb"
 				SubSystem="2"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/SCSpawn.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1051"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(ProjectDir)..\..\..\SuperCollider3\build"
 			IntermediateDirectory=".\SCSpawn_Debug"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="2"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/SCSpawn.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -89,7 +147,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="3"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\Debug/SCSpawn.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -97,47 +155,54 @@
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="4"/>
+				SuppressStartupBanner="true"
+				DebugInformationFormat="4"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1051"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(ProjectDir)..\..\..\SuperCollider3\build\SCSpawn_debug.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SCSpawn.pdb"
 				SubSystem="2"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/SCSpawn.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1051"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -145,699 +210,914 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath="InPlaceComboBoxImp.cpp">
+				RelativePath="InPlaceComboBoxImp.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="InPlaceEditImp.cpp">
+				RelativePath="InPlaceEditImp.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="InPlaceEditPropItemString.cpp">
+				RelativePath="InPlaceEditPropItemString.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\PaUtils.cpp">
+				RelativePath=".\PaUtils.cpp"
+				>
 			</File>
 			<File
-				RelativePath="PropertyItem.cpp">
+				RelativePath="PropertyItem.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="PropertyListCtrl.cpp">
+				RelativePath="PropertyListCtrl.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="PropertyListCtrlApp.cpp">
+				RelativePath="PropertyListCtrlApp.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="PropertyListCtrlDlg.cpp">
+				RelativePath="PropertyListCtrlDlg.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SCSpawn.rc">
+				RelativePath="SCSpawn.rc"
+				>
 			</File>
 			<File
-				RelativePath=".\SCSpawnProperties.cpp">
+				RelativePath=".\SCSpawnProperties.cpp"
+				>
 			</File>
 			<File
-				RelativePath="SmartString.cpp">
+				RelativePath="SmartString.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="StdAfx.cpp">
+				RelativePath="StdAfx.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
 						UsePrecompiledHeader="1"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 			<File
-				RelativePath="InPlaceComboBoxImp.h">
+				RelativePath="InPlaceComboBoxImp.h"
+				>
 			</File>
 			<File
-				RelativePath="InPlaceEditImp.h">
+				RelativePath="InPlaceEditImp.h"
+				>
 			</File>
 			<File
-				RelativePath="InPlaceEditPropItemString.h">
+				RelativePath="InPlaceEditPropItemString.h"
+				>
 			</File>
 			<File
-				RelativePath=".\PaUtils.h">
+				RelativePath=".\PaUtils.h"
+				>
 			</File>
 			<File
-				RelativePath="PropertyItem.h">
+				RelativePath="PropertyItem.h"
+				>
 			</File>
 			<File
-				RelativePath="PropertyListCtrl.h">
+				RelativePath="PropertyListCtrl.h"
+				>
 			</File>
 			<File
-				RelativePath="PropertyListCtrlApp.h">
+				RelativePath="PropertyListCtrlApp.h"
+				>
 			</File>
 			<File
-				RelativePath="PropertyListCtrlDlg.h">
+				RelativePath="PropertyListCtrlDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="Resource.h">
+				RelativePath="Resource.h"
+				>
 			</File>
 			<File
-				RelativePath=".\SCSpawnProperties.h">
+				RelativePath=".\SCSpawnProperties.h"
+				>
 			</File>
 			<File
-				RelativePath="SmartString.h">
+				RelativePath="SmartString.h"
+				>
 			</File>
 			<File
-				RelativePath="StdAfx.h">
+				RelativePath="StdAfx.h"
+				>
 			</File>
 			<File
-				RelativePath="UserMessageID.h">
+				RelativePath="UserMessageID.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 			<File
-				RelativePath="res\SCSpawn.ico">
+				RelativePath="res\SCSpawn.ico"
+				>
 			</File>
 			<File
-				RelativePath="res\SCSpawn.rc2">
+				RelativePath="res\SCSpawn.rc2"
+				>
 			</File>
 		</Filter>
 		<Filter
-			Name="portaudio">
+			Name="portaudio"
+			>
 			<Filter
-				Name="pa_common">
+				Name="pa_common"
+				>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_allocation.c">
+					RelativePath="..\..\..\portaudio\pa_common\pa_allocation.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_allocation.h">
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_converters.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_converters.h">
+					RelativePath="..\..\..\portaudio\pa_common\pa_allocation.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_cpuload.c">
+					RelativePath="..\..\..\portaudio\pa_common\pa_converters.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_cpuload.h">
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_dither.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_dither.h">
+					RelativePath="..\..\..\portaudio\pa_common\pa_converters.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_endianness.h">
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_front.c">
+					RelativePath="..\..\..\portaudio\pa_common\pa_cpuload.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_hostapi.h">
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_process.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_process.h">
+					RelativePath="..\..\..\portaudio\pa_common\pa_cpuload.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_skeleton.c">
+					RelativePath="..\..\..\portaudio\pa_common\pa_dither.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_stream.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_stream.h">
+					RelativePath="..\..\..\portaudio\pa_common\pa_dither.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_trace.c">
+					RelativePath="..\..\..\portaudio\pa_common\pa_endianness.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_common\pa_front.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_trace.h">
+					RelativePath="..\..\..\portaudio\pa_common\pa_hostapi.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\pa_util.h">
+					RelativePath="..\..\..\portaudio\pa_common\pa_process.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_common\portaudio.h">
+					RelativePath="..\..\..\portaudio\pa_common\pa_process.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_common\pa_skeleton.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_common\pa_stream.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_common\pa_stream.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_common\pa_trace.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_common\pa_trace.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_common\pa_util.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_common\portaudio.h"
+					>
 				</File>
 			</Filter>
 			<Filter
-				Name="pa_win">
+				Name="pa_win"
+				>
 				<File
-					RelativePath="..\..\..\portaudio\pa_win\pa_win_hostapis.c">
+					RelativePath="..\..\..\portaudio\pa_win\pa_win_hostapis.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_win\pa_win_util.c">
+					RelativePath="..\..\..\portaudio\pa_win\pa_win_util.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_win\pa_x86_plain_converters.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_win\pa_x86_plain_converters.h">
+					RelativePath="..\..\..\portaudio\pa_win\pa_x86_plain_converters.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_win\msvc\readme.txt">
+					RelativePath="..\..\..\portaudio\pa_win\pa_x86_plain_converters.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_win\msvc\readme.txt"
+					>
 				</File>
 				<Filter
-					Name="msvc">
+					Name="msvc"
+					>
 					<Filter
-						Name="common">
+						Name="common"
+						>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\asio.cpp">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\asio.cpp"
+							>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									AdditionalIncludeDirectories="..\..\..\portaudio\pa_win\msvc\host;..\..\..\portaudio\pa_win\msvc\host\pc"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									AdditionalIncludeDirectories="..\..\..\portaudio\pa_win\msvc\host;..\..\..\portaudio\pa_win\msvc\host\pc"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\asio.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\asio.h"
+							>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\asiodrvr.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\asiodrvr.h"
+							>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\asiosys.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\asiosys.h"
+							>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\combase.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\combase.h"
+							>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\debugmessage.cpp">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\debugmessage.cpp"
+							>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\iasiodrv.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\iasiodrv.h"
+							>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\register.cpp">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\register.cpp"
+							>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\common\wxdebug.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\common\wxdebug.h"
+							>
 						</File>
 					</Filter>
 					<Filter
-						Name="host">
+						Name="host"
+						>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\host\ASIOConvertSamples.cpp">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\host\ASIOConvertSamples.cpp"
+							>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\host\ASIOConvertSamples.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\host\ASIOConvertSamples.h"
+							>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\host\asiodrivers.cpp">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\host\asiodrivers.cpp"
+							>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									AdditionalIncludeDirectories="..\..\..\portaudio\pa_win\msvc\common;..\..\..\portaudio\pa_win\msvc\host\pc"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									AdditionalIncludeDirectories="..\..\..\portaudio\pa_win\msvc\common;..\..\..\portaudio\pa_win\msvc\host\pc"
-									UsePrecompiledHeader="0"/>
+									UsePrecompiledHeader="0"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\host\asiodrivers.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\host\asiodrivers.h"
+							>
 						</File>
 						<File
-							RelativePath="..\..\..\portaudio\pa_win\msvc\host\ginclude.h">
+							RelativePath="..\..\..\portaudio\pa_win\msvc\host\ginclude.h"
+							>
 						</File>
 						<Filter
-							Name="pc">
+							Name="pc"
+							>
 							<File
-								RelativePath="..\..\..\portaudio\pa_win\msvc\host\pc\asiolist.cpp">
+								RelativePath="..\..\..\portaudio\pa_win\msvc\host\pc\asiolist.cpp"
+								>
 								<FileConfiguration
-									Name="Release|Win32">
+									Name="Release|Win32"
+									>
 									<Tool
 										Name="VCCLCompilerTool"
 										AdditionalIncludeDirectories="..\..\..\portaudio\pa_win\msvc\common"
-										UsePrecompiledHeader="0"/>
+										UsePrecompiledHeader="0"
+									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|Win32">
+									Name="Debug|Win32"
+									>
 									<Tool
 										Name="VCCLCompilerTool"
 										AdditionalIncludeDirectories="..\..\..\portaudio\pa_win\msvc\common"
-										UsePrecompiledHeader="0"/>
+										UsePrecompiledHeader="0"
+									/>
 								</FileConfiguration>
 							</File>
 							<File
-								RelativePath="..\..\..\portaudio\pa_win\msvc\host\pc\asiolist.h">
+								RelativePath="..\..\..\portaudio\pa_win\msvc\host\pc\asiolist.h"
+								>
 							</File>
 						</Filter>
 					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
-				Name="pa_win_wmme">
+				Name="pa_win_wmme"
+				>
 				<File
-					RelativePath="..\..\..\portaudio\pa_win_wmme\pa_win_wmme.c">
+					RelativePath="..\..\..\portaudio\pa_win_wmme\pa_win_wmme.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_win_wmme\pa_win_wmme.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="pa_win_ds">
-				<File
-					RelativePath="..\..\..\portaudio\pa_win_ds\dsound_wrapper.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_win_ds\dsound_wrapper.h">
-				</File>
-				<File
-					RelativePath="..\..\..\portaudio\pa_win_ds\pa_win_ds.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
+					RelativePath="..\..\..\portaudio\pa_win_wmme\pa_win_wmme.h"
+					>
 				</File>
 			</Filter>
 			<Filter
-				Name="pa_asio">
+				Name="pa_win_ds"
+				>
 				<File
-					RelativePath="..\..\..\portaudio\pa_asio\iasiothiscallresolver.h">
+					RelativePath="..\..\..\portaudio\pa_win_ds\dsound_wrapper.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_asio\pa_asio.cpp">
+					RelativePath="..\..\..\portaudio\pa_win_ds\dsound_wrapper.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_win_ds\pa_win_ds.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="pa_asio"
+				>
+				<File
+					RelativePath="..\..\..\portaudio\pa_asio\iasiothiscallresolver.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\portaudio\pa_asio\pa_asio.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories="..\..\..\portaudio\pa_win\msvc\common;..\..\..\portaudio\pa_win\msvc\host;..\..\..\portaudio\pa_win\msvc\host\pc"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories="..\..\..\portaudio\pa_win\msvc\common;..\..\..\portaudio\pa_win\msvc\host;..\..\..\portaudio\pa_win\msvc\host\pc"
-							UsePrecompiledHeader="0"/>
+							UsePrecompiledHeader="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\..\portaudio\pa_asio\pa_asio.h">
+					RelativePath="..\..\..\portaudio\pa_asio\pa_asio.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="ReadMe.txt">
+			RelativePath="ReadMe.txt"
+			>
 		</File>
 	</Files>
 	<Globals>
 		<Global
 			Name="RESOURCE_FILE"
-			Value="SCSpawn.rc"/>
+			Value="SCSpawn.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

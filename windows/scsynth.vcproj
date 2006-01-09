@@ -1,71 +1,122 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8,00"
 	Name="scsynth"
 	ProjectGUID="{C02C0847-C65E-4187-A3F5-5878076C7803}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(ProjectDir)..\..\SuperCollider3\build"
 			IntermediateDirectory="scsynth_Debug_Intermediate"
 			ConfigurationType="1"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\SuperCollider3\headers\plugin_interface;..\..\SuperCollider3\headers\server;..\..\SuperCollider3\headers\common;&quot;..\..\pthread-win32&quot;;..\..\libsndfile\src;..\..\portaudio\pa_common"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;SC_WIN32;NOMINMAX;PTW32_BUILD;SC_WIN32_STATIC_PTHREADS"
-				MinimalRebuild="TRUE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="4"/>
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=" msvcrtd.lib ws2_32.lib"
+				AdditionalDependencies="msvcrtd.lib ws2_32.lib"
 				OutputFile="$(OutDir)/scsynth_debug.exe"
 				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/scsynth.pdb"
 				SubSystem="1"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(ProjectDir)..\..\SuperCollider3\build"
 			IntermediateDirectory="scsynth_Release_Intermediate"
 			ConfigurationType="1"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\SuperCollider3\headers\plugin_interface;..\..\SuperCollider3\headers\server;..\..\SuperCollider3\headers\common;&quot;..\..\pthread-win32&quot;;..\..\libsndfile\src;..\..\portaudio\pa_common"
@@ -73,40 +124,53 @@
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="3"/>
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wsock32.lib msvcrt.lib ws2_32.lib"
 				OutputFile="$(OutDir)/scsynth.exe"
 				LinkIncremental="1"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -115,1165 +179,1538 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<Filter
 				Name="server"
-				Filter="">
+				>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\Samp.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\Samp.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_BufGen.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_BufGen.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Carbon.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Carbon.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Complex.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Complex.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_ComPort.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_ComPort.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_CoreAudio.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_CoreAudio.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Dimension.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Dimension.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Errors.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Errors.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Graph.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Graph.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_GraphDef.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_GraphDef.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Group.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Group.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Lib.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Lib.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Lib_Cintf.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Lib_Cintf.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_MiscCmds.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_MiscCmds.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Node.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Node.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Rate.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Rate.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_SequencedCommand.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_SequencedCommand.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Str4.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Str4.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_SyncCondition.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_SyncCondition.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_Unit.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_Unit.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_UnitDef.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_UnitDef.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\SC_World.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\SC_World.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\server\scsynth_main.cpp">
+					RelativePath="..\..\SuperCollider3\source\server\scsynth_main.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="pthread"
-				Filter="">
+				>
 				<File
-					RelativePath="..\..\pthread-win32\pthread.c">
+					RelativePath="..\..\pthread-win32\pthread.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="__CLEANUP_C;WIN32;_DEBUG;_WINDOWS;PTW32_BUILD;_WINSOCKAPI_;WSAGetLastError=WSAGetLastError_Compat;WSASetLastError=WSASetLastError_Compat"/>
+							PreprocessorDefinitions="__CLEANUP_C;WIN32;_DEBUG;_WINDOWS;PTW32_BUILD;_WINSOCKAPI_;WSAGetLastError=WSAGetLastError_Compat;WSASetLastError=WSASetLastError_Compat"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="__CLEANUP_C;WIN32;NDEBUG;_WINDOWS;PTW32_BUILD;_WINSOCKAPI_;WSAGetLastError=WSAGetLastError_Compat;WSASetLastError=WSASetLastError_Compat"/>
+							PreprocessorDefinitions="__CLEANUP_C;WIN32;NDEBUG;_WINDOWS;PTW32_BUILD;_WINSOCKAPI_;WSAGetLastError=WSAGetLastError_Compat;WSASetLastError=WSASetLastError_Compat"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\compat_stuff\WSA-pthread-compat-stuff.cpp">
+					RelativePath=".\compat_stuff\WSA-pthread-compat-stuff.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="sndfile"
-				Filter="">
+				>
 				<File
-					RelativePath="..\..\libsndfile\src\aiff.c">
+					RelativePath="..\..\libsndfile\src\aiff.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\alaw.c">
+					RelativePath="..\..\libsndfile\src\alaw.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\au.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\au_g72x.c">
+					RelativePath="..\..\libsndfile\src\au.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\avr.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\command.c">
+					RelativePath="..\..\libsndfile\src\au_g72x.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\common.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\dither.c">
+					RelativePath="..\..\libsndfile\src\avr.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\double64.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\dwd.c">
+					RelativePath="..\..\libsndfile\src\command.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\dwvw.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\file_io.c">
+					RelativePath="..\..\libsndfile\src\common.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\float32.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\gsm610.c">
+					RelativePath="..\..\libsndfile\src\dither.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\htk.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\ima_adpcm.c">
+					RelativePath="..\..\libsndfile\src\double64.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\interleave.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\ircam.c">
+					RelativePath="..\..\libsndfile\src\dwd.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\macbinary3.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\mat4.c">
+					RelativePath="..\..\libsndfile\src\dwvw.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\mat5.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\ms_adpcm.c">
+					RelativePath="..\..\libsndfile\src\file_io.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\nist.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\ogg.c">
+					RelativePath="..\..\libsndfile\src\float32.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\paf.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\pcm.c">
+					RelativePath="..\..\libsndfile\src\gsm610.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\pvf.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\raw.c">
+					RelativePath="..\..\libsndfile\src\htk.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\rx2.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\sd2.c">
+					RelativePath="..\..\libsndfile\src\ima_adpcm.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\sds.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\sndfile.c">
+					RelativePath="..\..\libsndfile\src\interleave.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\strings.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\svx.c">
+					RelativePath="..\..\libsndfile\src\ircam.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\txw.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\ulaw.c">
+					RelativePath="..\..\libsndfile\src\macbinary3.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\voc.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\vox_adpcm.c">
+					RelativePath="..\..\libsndfile\src\mat4.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\w64.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\wav.c">
+					RelativePath="..\..\libsndfile\src\mat5.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\libsndfile\src\wav_w64.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\wve.c">
+					RelativePath="..\..\libsndfile\src\ms_adpcm.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\libsndfile\src\xi.c">
+					RelativePath="..\..\libsndfile\src\nist.c"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="inline=__inline"/>
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\ogg.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\paf.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\pcm.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\pvf.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\raw.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\rx2.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\sd2.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\sds.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\sndfile.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\strings.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\svx.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\txw.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\ulaw.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\voc.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\vox_adpcm.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\w64.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\wav.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\wav_w64.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\wve.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\libsndfile\src\xi.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="inline=__inline"
+						/>
 					</FileConfiguration>
 				</File>
 				<Filter
 					Name="GSM610"
-					Filter="">
+					>
 					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\add.c">
+						RelativePath="..\..\libsndfile\src\Gsm610\add.c"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\code.c">
+						RelativePath="..\..\libsndfile\src\Gsm610\code.c"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\decode.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\gsm_create.c">
+						RelativePath="..\..\libsndfile\src\Gsm610\decode.c"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\gsm_decode.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\gsm_destroy.c">
+						RelativePath="..\..\libsndfile\src\Gsm610\gsm_create.c"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\gsm_encode.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\gsm_option.c">
+						RelativePath="..\..\libsndfile\src\Gsm610\gsm_decode.c"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\long_term.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\lpc.c">
+						RelativePath="..\..\libsndfile\src\Gsm610\gsm_destroy.c"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\preprocess.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\rpe.c">
+						RelativePath="..\..\libsndfile\src\Gsm610\gsm_encode.c"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\short_term.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\Gsm610\table.c">
+						RelativePath="..\..\libsndfile\src\Gsm610\gsm_option.c"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								PreprocessorDefinitions="inline=__inline"/>
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\libsndfile\src\Gsm610\long_term.c"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\libsndfile\src\Gsm610\lpc.c"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\libsndfile\src\Gsm610\preprocess.c"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\libsndfile\src\Gsm610\rpe.c"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\libsndfile\src\Gsm610\short_term.c"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\libsndfile\src\Gsm610\table.c"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								PreprocessorDefinitions="inline=__inline"
+							/>
 						</FileConfiguration>
 					</File>
 				</Filter>
 				<Filter
 					Name="G72x"
-					Filter="">
+					>
 					<File
-						RelativePath="..\..\libsndfile\src\G72x\g721.c">
+						RelativePath="..\..\libsndfile\src\G72x\g721.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\G72x\g723_16.c">
+						RelativePath="..\..\libsndfile\src\G72x\g723_16.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\G72x\g723_24.c">
+						RelativePath="..\..\libsndfile\src\G72x\g723_24.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\G72x\g723_40.c">
+						RelativePath="..\..\libsndfile\src\G72x\g723_40.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\libsndfile\src\G72x\g72x.c">
+						RelativePath="..\..\libsndfile\src\G72x\g72x.c"
+						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="portaudio"
-				Filter="">
+				>
 				<Filter
 					Name="pa_common"
-					Filter="">
+					>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_allocation.c">
+						RelativePath="..\..\portaudio\pa_common\pa_allocation.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_allocation.h">
+						RelativePath="..\..\portaudio\pa_common\pa_allocation.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_converters.c">
+						RelativePath="..\..\portaudio\pa_common\pa_converters.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_converters.h">
+						RelativePath="..\..\portaudio\pa_common\pa_converters.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_cpuload.c">
+						RelativePath="..\..\portaudio\pa_common\pa_cpuload.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_cpuload.h">
+						RelativePath="..\..\portaudio\pa_common\pa_cpuload.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_dither.c">
+						RelativePath="..\..\portaudio\pa_common\pa_dither.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_dither.h">
+						RelativePath="..\..\portaudio\pa_common\pa_dither.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_endianness.h">
+						RelativePath="..\..\portaudio\pa_common\pa_endianness.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_front.c">
+						RelativePath="..\..\portaudio\pa_common\pa_front.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_hostapi.h">
+						RelativePath="..\..\portaudio\pa_common\pa_hostapi.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_process.c">
+						RelativePath="..\..\portaudio\pa_common\pa_process.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_process.h">
+						RelativePath="..\..\portaudio\pa_common\pa_process.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_skeleton.c">
+						RelativePath="..\..\portaudio\pa_common\pa_skeleton.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_stream.c">
+						RelativePath="..\..\portaudio\pa_common\pa_stream.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_stream.h">
+						RelativePath="..\..\portaudio\pa_common\pa_stream.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_trace.c">
+						RelativePath="..\..\portaudio\pa_common\pa_trace.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_trace.h">
+						RelativePath="..\..\portaudio\pa_common\pa_trace.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\pa_util.h">
+						RelativePath="..\..\portaudio\pa_common\pa_util.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_common\portaudio.h">
+						RelativePath="..\..\portaudio\pa_common\portaudio.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="pa_win"
-					Filter="">
+					>
 					<File
-						RelativePath="..\..\portaudio\pa_win\pa_win_hostapis.c">
+						RelativePath="..\..\portaudio\pa_win\pa_win_hostapis.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_win\pa_win_util.c">
+						RelativePath="..\..\portaudio\pa_win\pa_win_util.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_win\pa_x86_plain_converters.c">
+						RelativePath="..\..\portaudio\pa_win\pa_x86_plain_converters.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_win\pa_x86_plain_converters.h">
+						RelativePath="..\..\portaudio\pa_win\pa_x86_plain_converters.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_win\msvc\readme.txt">
+						RelativePath="..\..\portaudio\pa_win\msvc\readme.txt"
+						>
 					</File>
 					<Filter
 						Name="msvc"
-						Filter="">
+						>
 						<Filter
 							Name="common"
-							Filter="">
+							>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\asio.cpp">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\asio.cpp"
+								>
 								<FileConfiguration
-									Name="Debug|Win32">
+									Name="Debug|Win32"
+									>
 									<Tool
 										Name="VCCLCompilerTool"
-										AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\host;..\..\portaudio\pa_win\msvc\host\pc"/>
+										AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\host;..\..\portaudio\pa_win\msvc\host\pc"
+									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32">
+									Name="Release|Win32"
+									>
 									<Tool
 										Name="VCCLCompilerTool"
-										AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\host;..\..\portaudio\pa_win\msvc\host\pc"/>
+										AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\host;..\..\portaudio\pa_win\msvc\host\pc"
+									/>
 								</FileConfiguration>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\asio.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\asio.h"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\asiodrvr.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\asiodrvr.h"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\asiosys.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\asiosys.h"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\combase.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\combase.h"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\debugmessage.cpp">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\debugmessage.cpp"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\iasiodrv.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\iasiodrv.h"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\register.cpp">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\register.cpp"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\common\wxdebug.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\common\wxdebug.h"
+								>
 							</File>
 						</Filter>
 						<Filter
 							Name="host"
-							Filter="">
+							>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\host\ASIOConvertSamples.cpp">
+								RelativePath="..\..\portaudio\pa_win\msvc\host\ASIOConvertSamples.cpp"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\host\ASIOConvertSamples.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\host\ASIOConvertSamples.h"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\host\asiodrivers.cpp">
+								RelativePath="..\..\portaudio\pa_win\msvc\host\asiodrivers.cpp"
+								>
 								<FileConfiguration
-									Name="Debug|Win32">
+									Name="Debug|Win32"
+									>
 									<Tool
 										Name="VCCLCompilerTool"
-										AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common;..\..\portaudio\pa_win\msvc\host\pc"/>
+										AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common;..\..\portaudio\pa_win\msvc\host\pc"
+									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32">
+									Name="Release|Win32"
+									>
 									<Tool
 										Name="VCCLCompilerTool"
-										AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common;..\..\portaudio\pa_win\msvc\host\pc"/>
+										AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common;..\..\portaudio\pa_win\msvc\host\pc"
+									/>
 								</FileConfiguration>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\host\asiodrivers.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\host\asiodrivers.h"
+								>
 							</File>
 							<File
-								RelativePath="..\..\portaudio\pa_win\msvc\host\ginclude.h">
+								RelativePath="..\..\portaudio\pa_win\msvc\host\ginclude.h"
+								>
 							</File>
 							<Filter
 								Name="pc"
-								Filter="">
+								>
 								<File
-									RelativePath="..\..\portaudio\pa_win\msvc\host\pc\asiolist.cpp">
+									RelativePath="..\..\portaudio\pa_win\msvc\host\pc\asiolist.cpp"
+									>
 									<FileConfiguration
-										Name="Debug|Win32">
+										Name="Debug|Win32"
+										>
 										<Tool
 											Name="VCCLCompilerTool"
-											AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common"/>
+											AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common"
+										/>
 									</FileConfiguration>
 									<FileConfiguration
-										Name="Release|Win32">
+										Name="Release|Win32"
+										>
 										<Tool
 											Name="VCCLCompilerTool"
-											AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common"/>
+											AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common"
+										/>
 									</FileConfiguration>
 								</File>
 								<File
-									RelativePath="..\..\portaudio\pa_win\msvc\host\pc\asiolist.h">
+									RelativePath="..\..\portaudio\pa_win\msvc\host\pc\asiolist.h"
+									>
 								</File>
 							</Filter>
 						</Filter>
@@ -1281,177 +1718,233 @@
 				</Filter>
 				<Filter
 					Name="pa_win_wmme"
-					Filter="">
+					>
 					<File
-						RelativePath="..\..\portaudio\pa_win_wmme\pa_win_wmme.c">
+						RelativePath="..\..\portaudio\pa_win_wmme\pa_win_wmme.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_win_wmme\pa_win_wmme.h">
+						RelativePath="..\..\portaudio\pa_win_wmme\pa_win_wmme.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="pa_win_ds"
-					Filter="">
+					>
 					<File
-						RelativePath="..\..\portaudio\pa_win_ds\dsound_wrapper.c">
+						RelativePath="..\..\portaudio\pa_win_ds\dsound_wrapper.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_win_ds\dsound_wrapper.h">
+						RelativePath="..\..\portaudio\pa_win_ds\dsound_wrapper.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_win_ds\pa_win_ds.c">
+						RelativePath="..\..\portaudio\pa_win_ds\pa_win_ds.c"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="pa_asio"
-					Filter="">
+					>
 					<File
-						RelativePath="..\..\portaudio\pa_asio\iasiothiscallresolver.h">
+						RelativePath="..\..\portaudio\pa_asio\iasiothiscallresolver.h"
+						>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_asio\pa_asio.cpp">
+						RelativePath="..\..\portaudio\pa_asio\pa_asio.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common;..\..\portaudio\pa_win\msvc\host;..\..\portaudio\pa_win\msvc\host\pc"/>
+								AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common;..\..\portaudio\pa_win\msvc\host;..\..\portaudio\pa_win\msvc\host\pc"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common;..\..\portaudio\pa_win\msvc\host;..\..\portaudio\pa_win\msvc\host\pc"/>
+								AdditionalIncludeDirectories="..\..\portaudio\pa_win\msvc\common;..\..\portaudio\pa_win\msvc\host;..\..\portaudio\pa_win\msvc\host\pc"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\portaudio\pa_asio\pa_asio.h">
+						RelativePath="..\..\portaudio\pa_asio\pa_asio.h"
+						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="common"
-				Filter="">
+				>
 				<File
-					RelativePath="..\..\SuperCollider3\source\common\SC_AllocPool.cpp">
+					RelativePath="..\..\SuperCollider3\source\common\SC_AllocPool.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\source\common\SC_DirUtils.cpp">
+					RelativePath="..\source\common\SC_DirUtils.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\common\SC_Sem.cpp">
+					RelativePath="..\..\SuperCollider3\source\common\SC_Sem.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\source\common\SC_StringParser.cpp">
+					RelativePath="..\..\SuperCollider3\source\common\SC_StringParser.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\source\common\SC_Win32Utils.cpp">
+					RelativePath="..\source\common\SC_Win32Utils.cpp"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
 			<Filter
 				Name="server"
-				Filter="">
+				>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\HashTable.h">
+					RelativePath="..\..\SuperCollider3\headers\server\HashTable.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\IntFifo.h">
+					RelativePath="..\..\SuperCollider3\headers\server\IntFifo.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\MsgFifo.h">
+					RelativePath="..\..\SuperCollider3\headers\server\MsgFifo.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\OSC_Packet.h">
+					RelativePath="..\..\SuperCollider3\headers\server\OSC_Packet.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\PriorityQueue.h">
+					RelativePath="..\..\SuperCollider3\headers\server\PriorityQueue.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\ReadWriteMacros.h">
+					RelativePath="..\..\SuperCollider3\headers\server\ReadWriteMacros.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\Rendezvous.h">
+					RelativePath="..\..\SuperCollider3\headers\server\Rendezvous.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Complex.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Complex.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_ComPort.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_ComPort.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_CoreAudio.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_CoreAudio.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Errors.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Errors.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_GraphDef.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_GraphDef.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Group.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Group.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_HiddenWorld.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_HiddenWorld.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Lib.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Lib.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Lib_Cintf.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Lib_Cintf.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_List.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_List.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Lock.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Lock.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Prototypes.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Prototypes.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Reply.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Reply.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Samp.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Samp.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_SequencedCommand.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_SequencedCommand.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_Str4.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_Str4.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_SyncCondition.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_SyncCondition.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_SynthDef.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_SynthDef.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_UnitDef.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_UnitDef.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_UnitSpec.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_UnitSpec.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\SuperCollider3\headers\server\SC_WireSpec.h">
+					RelativePath="..\..\SuperCollider3\headers\server\SC_WireSpec.h"
+					>
+				</File>
+				<File
+					RelativePath="..\headers\plugin_interface\SC_World.h"
+					>
+				</File>
+				<File
+					RelativePath="..\headers\plugin_interface\SC_WorldOptions.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="common"
-				Filter="">
+				>
 				<File
-					RelativePath="..\headers\common\SC_Win32Utils.h">
+					RelativePath="..\headers\common\SC_Win32Utils.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
 		</Filter>
 	</Files>
 	<Globals>
