@@ -18,8 +18,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-#pragma once on
+#pragma once // the value on here causes MSVC8 not to compile, is it needed elsewhere?
 
 #include "PyrObject.h"
 #include "GC.h"
