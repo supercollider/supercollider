@@ -71,12 +71,6 @@ else:
 gHelpFolder = 'Help'
 gUserExtensionFolder = '~\\SuperCollider\\Extensions'
 
-# check for commandline argument 
-if len(sys.argv) > 1: 
-  gSCSynthCmd = sys.argv[1]
-else:
-  gSCSynthCmd = 'scsynth -u 57110'
-
 #----------------------------------------------------------------------
 ID_NewCodeWin  = wx.NewId()
 ID_StartServer = wx.NewId()
@@ -134,7 +128,7 @@ SC3_KEYWORDS.sort()
 
 class PsycolliderRTFSubWin(wx.TextCtrl):
   def __init__ (self,parent):
-    wx.TextCtrl.__init__(self,parent,style = wx.TE_MULTILINE | wx.TE_RICH2 | wx.TE_READONLY)
+    wx.TextCtrl.__init__(self,parent,style = wx.TE_MULTILINE | wx.TE_RICH | wx.TE_READONLY)
     self.Bind(wx.EVT_CHAR, self.OnChar)
   def OnChar(self,event):
     self.GetParent().GetParent().OnChildCharHook(event)
@@ -625,8 +619,6 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
 
   def On_Lang_CompileLibrary(self,evt):
     PySCLang.compileLibrary()
-    PySCLang.setCmdLine('s.options.setFromCmdString(\"' + gSCSynthCmd + '\")')
-    PySCLang.sendMain('interpretPrintCmdLine')
 
   def On_Lang_ClearLogWindow(self,evt):
     wx.GetApp().theMainFrame.logWin.logSubWin.Clear()
@@ -952,20 +944,6 @@ class PsycolliderApp(wx.App):
     PySCLang.start( )    
 
     (addr,port) = self.GetServerAddressAndPort()
-
-    # start the server
-	# set server options 
-    PySCLang.setCmdLine('s.options.setFromCmdString(\"' + gSCSynthCmd + '\")')
-    PySCLang.sendMain('interpretPrintCmdLine')
-    PySCLang.setCmdLine('s.boot')
-    PySCLang.sendMain('interpretPrintCmdLine')
-
-#    PySCLang.setCmdLine('unixCmd(\"' + gSCSynthCmd + '\")') 
-#    PySCLang.sendMain('interpretPrintCmdLine')
-
-#    PySCLang.setCmdLine('s.initTree;s.serverRunning=true;') 
-#    PySCLang.sendMain('interpretPrintCmdLine')
-
     
     # Return a success flag
     return 1
