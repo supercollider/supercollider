@@ -176,7 +176,9 @@ opts.AddOptions(
     EnumOption('AUDIOAPI',
                'Build with specified audio API support',
                DEFAULT_AUDIO_API, ('jack', 'coreaudio', 'portaudio')),
+    ('CUSTOMCC', 'Custom c compiler executable', ''),
     ('CUSTOMCCFLAGS', 'Custom c compiler flags', ''),
+    ('CUSTOMCXX', 'Custom c++ compiler executable', ''),
     ('CUSTOMCXXFLAGS', 'Custom c++ compiler flags', ''),
     BoolOption('DEBUG',
                'Build with debugging information', 0),
@@ -212,6 +214,10 @@ env = Environment(options = opts,
 env.Append(
     CCFLAGS = env['CUSTOMCCFLAGS'],
     CXXFLAGS = env['CUSTOMCXXFLAGS'])
+if env['CUSTOMCC']:
+    env.Replace(CC = env['CUSTOMCC'])
+if env['CUSTOMCXX']:
+    env.Replace(CXX = env['CUSTOMCXX'])
 
 # ======================================================================
 # installation directories
