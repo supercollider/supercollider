@@ -254,13 +254,24 @@ low-resource systems."
 
 (defun sclang-read-symbol (prompt &optional default predicate require-match inherit-input-method)
   (if sclang-use-symbol-table
-      (let ((symbol (sclang-get-symbol default)))
-	(completing-read (sclang-make-prompt-string prompt symbol)
-			 (sclang-get-symbol-completion-table)
-			 (sclang-make-symbol-completion-predicate predicate)
-			 require-match nil
-			 'sclang-symbol-history symbol
-			 inherit-input-method))
+      (flet ((make-minibuffer-local-map
+	      (parent-keymap)
+	      (let ((map (make-sparse-keymap)))
+		(set-keymap-parent map parent-keymap)
+		;; override keys bound to valid symbols
+		(define-key map [??] 'self-insert-command)
+		map)))
+	(let ((symbol (sclang-get-symbol default))
+	      (minibuffer-local-completion-map (make-minibuffer-local-map
+						minibuffer-local-completion-map))
+	      (minibuffer-local-must-match-map (make-minibuffer-local-map
+						minibuffer-local-completion-map)))
+	  (completing-read (sclang-make-prompt-string prompt symbol)
+			   (sclang-get-symbol-completion-table)
+			   (sclang-make-symbol-completion-predicate predicate)
+			   require-match nil
+			   'sclang-symbol-history symbol
+			   inherit-input-method)))
     (read-string (sclang-make-prompt-string prompt default) nil
 		 'sclang-symbol-history default inherit-input-method)))
 

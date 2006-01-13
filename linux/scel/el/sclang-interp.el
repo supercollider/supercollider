@@ -592,7 +592,11 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 	  (insert "// SuperCollider Workspace\n")
 	  (insert line)
 	  (insert "\n"))
-	(set-buffer-modified-p nil)))
+	(set-buffer-modified-p nil)
+	;; cwd to sclang-runtime-directory
+	(if (and sclang-runtime-directory
+		 (file-directory-p sclang-runtime-directory))
+	    (setq default-directory sclang-runtime-directory))))
     (switch-to-buffer buffer)))
 
 (add-hook 'sclang-library-startup-hook 
