@@ -171,6 +171,7 @@ struct Done : public Unit
 
 struct FreeSelf : public Unit
 {
+	float m_prevtrig;
 };
 
 struct PauseSelf : public Unit
@@ -1997,7 +1998,7 @@ void Done_next(Done *unit, int inNumSamples)
 void FreeSelf_Ctor(FreeSelf *unit)
 {
 	SETCALC(FreeSelf_next);
-		
+	unit->m_prevtrig = 0.f;	
 	FreeSelf_next(unit, 1);
 }
 
@@ -2005,11 +2006,10 @@ void FreeSelf_Ctor(FreeSelf *unit)
 void FreeSelf_next(FreeSelf *unit, int inNumSamples)
 {
 	float in = ZIN0(0);
-	if (in > 0.f) {
+	if (in > 0.f && unit->m_prevtrig <= 0.f) {
 		NodeEnd(&unit->mParent->mNode);
-		SETCALC(ClearUnitOutputs);
 	}
-	ZOUT0(0) = in;
+	unit->m_prevtrig = in;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
