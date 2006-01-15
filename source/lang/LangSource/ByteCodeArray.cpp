@@ -45,6 +45,10 @@ int compileOpcode(long opcode, long operand1)
 	} else {
 		compileByte(opcode);
 		compileByte(operand1);
+		if (opcode == opSendMsg || opcode == opSendSpecialMsg || opcode == opSendSuper) {
+			// these expect numKeyArgsPushed to be passed.
+			compileByte(0);
+		}
 		retc = 2;
 	}
 	return retc;
