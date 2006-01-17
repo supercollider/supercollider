@@ -203,7 +203,9 @@ Out : AbstractOut {
 }
 
 ReplaceOut : Out {}
-OffsetOut : Out {}
+OffsetOut : Out {
+	*kr { ^this.shouldNotImplement(thisMethod) }
+}
 
 LocalOut : AbstractOut {
 	*ar { arg channelsArray;
