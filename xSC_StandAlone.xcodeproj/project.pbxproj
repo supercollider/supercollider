@@ -197,7 +197,7 @@
 				88DB9527090A0E3700BE5BE9 /* Sources */,
 				88DB9578090A0E3700BE5BE9 /* Frameworks */,
 				88DB9583090A0E3700BE5BE9 /* Rez */,
-				88931C5B090A1D0900DA33D4 /* ShellScript */,
+				88FB09E4096E388F0012327A /* ShellScript */,
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
@@ -783,6 +783,10 @@
 		88DB9580090A0E3700BE5BE9 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
 		88DB9581090A0E3700BE5BE9 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		88DB9582090A0E3700BE5BE9 /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 88DB9483090A077F00BE5BE9 /* libscsynth.a */; };
+		88FB089A096CFA4E0012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88FB0899096CFA4E0012327A /* SC_StandAloneInfo_Darwin.cpp */; };
+		88FB089B096CFA4E0012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88FB0899096CFA4E0012327A /* SC_StandAloneInfo_Darwin.cpp */; };
+		88FB08AC096CFC290012327A /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FB08AB096CFC290012327A /* SC_StandAloneInfo_Darwin.h */; };
+		88FB08AD096CFC290012327A /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FB08AB096CFC290012327A /* SC_StandAloneInfo_Darwin.h */; };
 		B2268BA50916E3A200FEBB03 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2268BA40916E3A200FEBB03 /* SC_DirUtils.cpp */; };
 		B2268BA60916E3A200FEBB03 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2268BA40916E3A200FEBB03 /* SC_DirUtils.cpp */; };
 /* End PBXBuildFile section */
@@ -878,6 +882,8 @@
 		88D7CA41090C69C5008D45B9 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
 		88DB9483090A077F00BE5BE9 /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
 		88DB958A090A0E3700BE5BE9 /* SC_StandAlone_Devel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SC_StandAlone_Devel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		88FB0899096CFA4E0012327A /* SC_StandAloneInfo_Darwin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_StandAloneInfo_Darwin.cpp; sourceTree = "<group>"; };
+		88FB08AB096CFC290012327A /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
 		908DBC360507C63D00000098 /* GoToPanel.M */ = {isa = PBXFileReference; fileEncoding = "-2147483619"; lastKnownFileType = sourcecode.cpp.objcpp; path = GoToPanel.M; sourceTree = "<group>"; };
 		908DBC380507C65100000098 /* GoToPanel.h */ = {isa = PBXFileReference; fileEncoding = "-2147483619"; lastKnownFileType = sourcecode.c.h; path = GoToPanel.h; sourceTree = "<group>"; };
 		90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_Speech.cpp; path = source/lang/LangSource/SC_Speech.cpp; sourceTree = SOURCE_ROOT; };
@@ -1202,6 +1208,7 @@
 		F50D050A02E69B6B01CA2799 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				88FB08AB096CFC290012327A /* SC_StandAloneInfo_Darwin.h */,
 				88D7CA41090C69C5008D45B9 /* SC_DirUtils.h */,
 				F5C7B150033D5B4801A80099 /* SC_World.h */,
 				F5C7B154033D5EDC01A80099 /* SC_WorldOptions.h */,
@@ -1342,6 +1349,7 @@
 		F50D059202E69B6B01CA2799 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				88FB0899096CFA4E0012327A /* SC_StandAloneInfo_Darwin.cpp */,
 				B2268BA40916E3A200FEBB03 /* SC_DirUtils.cpp */,
 				6AAC6D6408FEDC0C006134E1 /* fftlib.c */,
 				F59DF065030733E801CE0C16 /* dlopen.c */,
@@ -1585,6 +1593,7 @@
 				8858D77F090864A5006F2C14 /* SCCocoaView.h in Headers */,
 				8858D780090864A5006F2C14 /* SCSoundFileView.h in Headers */,
 				88D7CA43090C69C5008D45B9 /* SC_DirUtils.h in Headers */,
+				88FB08AC096CFC290012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1692,6 +1701,7 @@
 				88DB9511090A0E3700BE5BE9 /* SCCocoaView.h in Headers */,
 				88DB9512090A0E3700BE5BE9 /* SCSoundFileView.h in Headers */,
 				88D7CA42090C69C5008D45B9 /* SC_DirUtils.h in Headers */,
+				88FB08AD096CFC290012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1786,19 +1796,6 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		88931C5B090A1D0900DA33D4 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "ln -s \"`pwd`/SCSA_Aux/SCSA_Library\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/SCSA_Library_alias\"";
-		};
 		88D7D546090C6C50008D45B9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1811,6 +1808,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cp SCSA_Aux/SCSA_Main_Replacement/Main.sc \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/DefaultLibrary\"\ncp -R SCSA_Aux/SCSA_Help \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/Help\"\n[ -e \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/sounds\" ] || mkdir \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/sounds\"";
+		};
+		88FB09E4096E388F0012327A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "[ -e \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/SCSA_Library_alias\" ] || ln -s \"`pwd`/SCSA_Aux/SCSA_Library\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/SCClassLibrary/SCSA_Library_alias\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1899,6 +1909,7 @@
 				8858D7DB090864A5006F2C14 /* SCSoundFileView.M in Sources */,
 				8858D7DC090864A5006F2C14 /* fftlib.c in Sources */,
 				B2268BA50916E3A200FEBB03 /* SC_DirUtils.cpp in Sources */,
+				88FB089A096CFA4E0012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1986,6 +1997,7 @@
 				88DB9575090A0E3700BE5BE9 /* SCSoundFileView.M in Sources */,
 				88DB9576090A0E3700BE5BE9 /* fftlib.c in Sources */,
 				B2268BA60916E3A200FEBB03 /* SC_DirUtils.cpp in Sources */,
+				88FB089B096CFA4E0012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2200,7 +2212,7 @@
 				);
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SC_StandAlone;
+				PRODUCT_NAME = SC_StandAlone_Devel;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",

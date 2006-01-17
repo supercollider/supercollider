@@ -1997,8 +1997,10 @@ static void sc_InitCompileDirectories(void)
 	}
 #endif
 
-	sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
-	sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
+	if (!sc_IsStandAlone()) {
+		sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
+		sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
+	}
 }
 
 bool passOne()
@@ -2015,14 +2017,16 @@ bool passOne()
 		success = passOne_ProcessDir(gCompileDir, 0);
 		if (!success) return false;
 
-		if(sc_DirectoryExists(gSystemExtensionDir)) {
-		  success = passOne_ProcessDir(gSystemExtensionDir,0);
-		  if (!success) return false;
-		}
+		if (!sc_IsStandAlone()) {
+			if(sc_DirectoryExists(gSystemExtensionDir)) {
+			  success = passOne_ProcessDir(gSystemExtensionDir,0);
+			  if (!success) return false;
+			}
 
-		if(sc_DirectoryExists(gUserExtensionDir)) {
-		  success = passOne_ProcessDir(gUserExtensionDir,0);
-		  if (!success) return false;
+			if(sc_DirectoryExists(gUserExtensionDir)) {
+			  success = passOne_ProcessDir(gUserExtensionDir,0);
+			  if (!success) return false;
+			}
 		}
 	} else {
 #ifdef ENABLE_LIBRARY_CONFIGURATOR

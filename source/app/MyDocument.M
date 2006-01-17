@@ -602,31 +602,32 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     // If called with no folder check in the bundle (if OS X), SC distribution Help
     // directory, and the System and User Extensions directories.
     if(!helpFolderPath) { 
-      NSString* helpFilePath ;
-      NSString* searchPath ;
-     
-	  char resourceDirPath[MAXPATHLEN - 32];
-	  sc_GetResourceDirectory(resourceDirPath, MAXPATHLEN - 32);
-	  sc_AppendToPath(resourceDirPath, "Help/");
-	  searchPath = [NSString stringWithCString:(const char *) resourceDirPath];
-      helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
-      if (helpFilePath) return helpFilePath;
+		NSString* helpFilePath ;
+		NSString* searchPath ;
+		 
+		char resourceDirPath[MAXPATHLEN - 32];
+		sc_GetResourceDirectory(resourceDirPath, MAXPATHLEN - 32);
+		sc_AppendToPath(resourceDirPath, "Help/");
+		searchPath = [NSString stringWithCString:(const char *) resourceDirPath];
+		helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+		if (helpFilePath) return helpFilePath;
 
-      searchPath = [NSString stringWithFormat: @"%@/Help/",
-			     [fileManager currentDirectoryPath]];
-      helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
-      if (helpFilePath) return helpFilePath;
-
-      searchPath = @"/Library/Application Support/SuperCollider/Extensions/";
-      helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
-      if (helpFilePath) return helpFilePath;
-
-      searchPath = [NSString stringWithFormat: @"%@/Library/Application Support/SuperCollider/Extensions/",  
-			     NSHomeDirectory()];
-      helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
-      if (helpFilePath) return helpFilePath;
-
-      return NULL;
+		if(!sc_IsStandAlone()) {
+			searchPath = [NSString stringWithFormat: @"%@/Help/",
+						 [fileManager currentDirectoryPath]];
+			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+			if (helpFilePath) return helpFilePath;
+			
+			searchPath = @"/Library/Application Support/SuperCollider/Extensions/";
+			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+			if (helpFilePath) return helpFilePath;
+			
+			searchPath = [NSString stringWithFormat: @"%@/Library/Application Support/SuperCollider/Extensions/",  
+						NSHomeDirectory()];
+			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+			if (helpFilePath) return helpFilePath;
+		}
+		return NULL;
     }
 
     // the name of the help file we are looking for 

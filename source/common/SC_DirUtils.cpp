@@ -33,15 +33,17 @@
 # include <sys/types.h>
 #endif
 
+#include <stdexcept>
+#include "SC_DirUtils.h"
+
 #ifdef SC_DARWIN
+#ifndef _SC_StandAloneInfo_
+# include "SC_StandAloneInfo_Darwin.h"
+#endif
 # include <CoreFoundation/CFString.h>
 # include <CoreFoundation/CFBundle.h>
 # include <CoreServices/CoreServices.h>
-//# include <CoreServices/Aliases.h>
 #endif
-
-#include <stdexcept>
-#include "SC_DirUtils.h"
 
 // Add a component to a path.
 
@@ -158,7 +160,6 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 			osStatusErr = FSRefMakePath (&dirRef, resolvedPath, length);
 			if ( !osStatusErr ) {
 				strncpy(returnPath, (char *) resolvedPath, length);
-//				resolvedPath[length] = 0;
 				return;
 			}
 		}
@@ -176,6 +177,11 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 
 #ifndef SC_DARWIN
 
+bool sc_IsStandAlone()
+{
+	return false;
+}
+
 void sc_GetResourceDirectory(char* pathBuf, int length)
 {
 	sc_GetResourceDirectoryFromAppDirectory(pathBuf, length);
@@ -183,76 +189,25 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 
 #else	// running on OS X
 
+// Support for stand-alone applications
+
+bool sc_IsStandAlone()
+{
+	return SC_StandAloneInfo::IsStandAlone();
+}
+
 void sc_GetResourceDirectory(char* pathBuf, int length)
 {
-	static bool haveCheckedBundleStatus = false;
-	static char dirPath[PATH_MAX];
-	
-	CFStringEncoding encoding = kCFStringEncodingASCII;
-	
-	if ( !haveCheckedBundleStatus )
-	{
-		haveCheckedBundleStatus = true;
-		
-		// If scsynth is in the bundle, we'll use that, and set our home
-		// path to the bundle's Resources directory.
-		
-		CFStringRef stringToFind = CFSTR("SCClassLibrary");
-		CFURLRef enablerURL = CFBundleCopyResourceURL (
-			CFBundleGetMainBundle(),
-			stringToFind,
-			NULL,
-			NULL
-		);
-		
-		if ( enablerURL )
-		{
-			// You'd think we could get an absolute path to the Resources directory. But
-			// we can't, we can only get a relative path, or an absolute path to a
-			// specific resource. Since we don't know the application name, we get the
-			// latter, and then hack off the resource name.
-			
-			CFStringRef rawPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
-
-			CFRange discardRange = CFStringFind (
-			   CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle),
-			   stringToFind,
-			   0
-			);
-			
-			CFRange validRange;
-			validRange.location = 0;
-			validRange.length = discardRange.location - 1;
-			
-			CFStringRef dirPathCFString = CFStringCreateWithSubstring (
-				kCFAllocatorDefault,
-				rawPath,
-				validRange
-			);
-			
-			CFStringGetCString (
-				dirPathCFString,
-				dirPath,
-				PATH_MAX,
-				encoding
-			);
-		}
-		
-		else
-		{
-			sc_GetResourceDirectoryFromAppDirectory(dirPath, length);
-		};
-	}
-	
-	// Copy the static variable to the caller's buffer.
-	strncpy(pathBuf, dirPath, length);	
+	SC_StandAloneInfo::GetResourceDir(pathBuf, length);
 }
+
 #endif	// ifndef SC_DARWIN
 
 void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
 {
 	getcwd(pathBuf, length);
 }
+
 
 // Support for Extensions
 

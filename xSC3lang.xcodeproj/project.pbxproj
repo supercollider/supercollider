@@ -254,6 +254,12 @@
 		88D7D584090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
 		88D7D585090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
 		88D7D586090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
+		88FB09A8096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */; };
+		88FB09A9096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */; };
+		88FB09AA096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */; };
+		88FB09AC096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */; };
+		88FB09AD096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */; };
+		88FB09AE096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */; };
 		908DBC370507C63D00000098 /* GoToPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = 908DBC360507C63D00000098 /* GoToPanel.M */; };
 		908DBC390507C65100000098 /* GoToPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 908DBC380507C65100000098 /* GoToPanel.h */; };
 		908DBC3B0507C66500000098 /* GoToLinePanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 908DBC3A0507C66500000098 /* GoToLinePanel.nib */; };
@@ -799,6 +805,8 @@
 		6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		88723044090870B30002E26A /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88D7D583090C8737008D45B9 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
+		88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
+		88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_StandAloneInfo_Darwin.cpp; sourceTree = "<group>"; };
 		908DBC360507C63D00000098 /* GoToPanel.M */ = {isa = PBXFileReference; fileEncoding = "-2147483619"; lastKnownFileType = sourcecode.cpp.objcpp; path = GoToPanel.M; sourceTree = "<group>"; };
 		908DBC380507C65100000098 /* GoToPanel.h */ = {isa = PBXFileReference; fileEncoding = "-2147483619"; lastKnownFileType = sourcecode.c.h; path = GoToPanel.h; sourceTree = "<group>"; };
 		908DBC3A0507C66500000098 /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = GoToLinePanel.nib; path = resources/GoToLinePanel.nib; sourceTree = "<group>"; };
@@ -1125,6 +1133,7 @@
 		F50D050A02E69B6B01CA2799 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */,
 				88D7D583090C8737008D45B9 /* SC_DirUtils.h */,
 				F5C7B150033D5B4801A80099 /* SC_World.h */,
 				F5C7B154033D5EDC01A80099 /* SC_WorldOptions.h */,
@@ -1265,6 +1274,7 @@
 		F50D059202E69B6B01CA2799 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */,
 				B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */,
 				6AAC6D6408FEDC0C006134E1 /* fftlib.c */,
 				F59DF065030733E801CE0C16 /* dlopen.c */,
@@ -1503,6 +1513,7 @@
 				92B5F3A20547488200496808 /* HID_Utilities_Internal.h in Headers */,
 				9286AEA5057D30EC000EBAEB /* SCService.h in Headers */,
 				88D7D585090C8737008D45B9 /* SC_DirUtils.h in Headers */,
+				88FB09A9096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1610,6 +1621,7 @@
 				6A7207DD07BB70CB00A1F778 /* SCCocoaView.h in Headers */,
 				6A40715507C7240E003E9C23 /* SCSoundFileView.h in Headers */,
 				88D7D584090C8737008D45B9 /* SC_DirUtils.h in Headers */,
+				88FB09A8096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1689,6 +1701,7 @@
 				92B4EA56059397C600CA25E4 /* SC_LibraryConfig.h in Headers */,
 				92B4EA62059399DD00CA25E4 /* SC_StringBuffer.h in Headers */,
 				88D7D586090C8737008D45B9 /* SC_DirUtils.h in Headers */,
+				88FB09AA096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1888,6 +1901,7 @@
 				92B5F3EE0547488200496808 /* HID_Utilities.c in Sources */,
 				92B5F3EF0547488200496808 /* SC_HID.cpp in Sources */,
 				9286AEA0057D30B9000EBAEB /* SCService.mm in Sources */,
+				88FB09AD096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1975,6 +1989,7 @@
 				6A40718607C72B26003E9C23 /* SCSoundFileView.M in Sources */,
 				6AAC6D6508FEDC0C006134E1 /* fftlib.c in Sources */,
 				B22686290916E0B500FEBB03 /* SC_DirUtils.cpp in Sources */,
+				88FB09AC096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2036,6 +2051,7 @@
 				92FC9EFB06EB774900AA3E95 /* g_fmt.c in Sources */,
 				6AAC6D6608FEDC0C006134E1 /* fftlib.c in Sources */,
 				88C3944A09172B6900B740D4 /* SC_DirUtils.cpp in Sources */,
+				88FB09AE096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
