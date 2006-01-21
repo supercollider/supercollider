@@ -450,20 +450,16 @@ Object  {
 		^this + (blendFrac * (that - this));
 	}
 	
-	blendAt { arg index;
-		var iMin;
-		iMin = index.asInteger;
-		^blend(this.clipAt(iMin), this.clipAt(iMin+1), index - iMin);
+	blendAt { arg index, method='clipAt';
+		var iMin = index.roundUp.asInteger - 1;
+		^blend(this.perform(method, iMin), this.perform(method, iMin+1), absdif(index, iMin));
 	}
 	
-	blendPut { arg index, obj;
-		var iMin, a, b, ratio;
-		iMin = index.asInteger;
-		ratio = index - iMin;
-		a = blend(this.clipAt(iMin), obj, 1 - ratio);
-		b = blend(this.clipAt(iMin + 1), obj, ratio);
-		this.clipPut(iMin, a);
-		this.clipPut(iMin + 1, b);
+	blendPut { arg index, val, method='wrapPut';
+		var iMin = index.roundUp.asInteger - 1;
+		var ratio = absdif(index, iMin);
+		this.perform(method, iMin, val * (1-ratio));
+		this.perform(method, iMin + 1, val * ratio);
 	}
 
 
