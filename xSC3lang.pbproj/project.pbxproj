@@ -790,7 +790,7 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				INFOPLIST_FILE = "Info-SuperCollider__xc_.plist";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
@@ -907,6 +907,7 @@
 				92B5F3A20547488200496808,
 				9286AEA5057D30EC000EBAEB,
 				881D825F090D904100F42BEB,
+				FE63C87A09826DEB00564599,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1610,6 +1611,7 @@
 				92B5F3EF0547488200496808,
 				9286AEA0057D30B9000EBAEB,
 				88ECD4250909A2E60031FA96,
+				FE63C87E09826DFB00564599,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2015,6 +2017,7 @@
 				92B5F3F60547488200496808,
 				92B5F3F80547488200496808,
 				92B5F3F90547488200496808,
+				FE63C8FA0982732500564599,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2589,6 +2592,7 @@
 		};
 		F50D050A02E69B6B01CA2799 = {
 			children = (
+				FE63C87809826DEB00564599,
 				881D825D090D904100F42BEB,
 				F5C7B150033D5B4801A80099,
 				F5C7B154033D5EDC01A80099,
@@ -3246,6 +3250,7 @@
 		};
 		F50D059202E69B6B01CA2799 = {
 			children = (
+				FE63C87C09826DFB00564599,
 				88ECD4210909A2E60031FA96,
 				6AAC6D6408FEDC0C006134E1,
 				F59DF065030733E801CE0C16,
@@ -3632,7 +3637,7 @@
 				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
 				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "-DSC_DARWIN -Wstrict-aliasing";
-				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_LDFLAGS = "/usr/local/lib/libsndfile.a -lz /usr/lib/libstdc++.6.dylib";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = SuperCollider;
 				SECTORDER_FLAGS = "";
@@ -3893,6 +3898,7 @@
 				6A7207DD07BB70CB00A1F778,
 				6A40715507C7240E003E9C23,
 				881D825E090D904100F42BEB,
+				FE63C87909826DEB00564599,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4105,6 +4111,7 @@
 				6A40718607C72B26003E9C23,
 				6AAC6D6508FEDC0C006134E1,
 				88ECD4230909A2E60031FA96,
+				FE63C87D09826DFB00564599,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4122,6 +4129,7 @@
 				92E20AB7058BBE8C004A7C6F,
 				F5C7B14F033D595901A80099,
 				6AC9B2DB08ABF480001EBDF6,
+				FE63C8F90982732500564599,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4758,6 +4766,7 @@
 				6AB6FFA10538A90A0000009F,
 				6AC9B2DA08ABF480001EBDF6,
 				F50D06C002E7F29001CA2799,
+				FE63C8F80982732500564599,
 				F5C7B14E033D595901A80099,
 			);
 			isa = PBXGroup;
@@ -5443,9 +5452,9 @@
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
 				OTHER_CFLAGS = "-DSC_DARWIN";
-				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_LDFLAGS = "/usr/local/lib/libsndfile.a -lz /usr/lib/libstdc++.6.dylib";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = sclang;
 				REZ_EXECUTABLE = YES;
@@ -5535,6 +5544,7 @@
 				92B4EA56059397C600CA25E4,
 				92B4EA62059399DD00CA25E4,
 				881D8260090D904100F42BEB,
+				FE63C87B09826DEB00564599,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5596,6 +5606,7 @@
 				92FC9EFB06EB774900AA3E95,
 				6AAC6D6608FEDC0C006134E1,
 				88ECD4270909A2E60031FA96,
+				FE63C87F09826DFB00564599,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5611,6 +5622,7 @@
 				F5ED526802FBB0110195E057,
 				F5709AEE033E525101A80099,
 				6AB6FFA30538A90A0000009F,
+				FE63C8FB0982732500564599,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6208,6 +6220,94 @@
 		};
 		F5ED527002FC2E340195E057 = {
 			fileRef = F5ED526C02FC2E330195E057;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//F50
+//F51
+//F52
+//F53
+//F54
+//FE0
+//FE1
+//FE2
+//FE3
+//FE4
+		FE63C87809826DEB00564599 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = SC_StandAloneInfo_Darwin.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		FE63C87909826DEB00564599 = {
+			fileRef = FE63C87809826DEB00564599;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE63C87A09826DEB00564599 = {
+			fileRef = FE63C87809826DEB00564599;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE63C87B09826DEB00564599 = {
+			fileRef = FE63C87809826DEB00564599;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE63C87C09826DFB00564599 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = SC_StandAloneInfo_Darwin.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		FE63C87D09826DFB00564599 = {
+			fileRef = FE63C87C09826DFB00564599;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE63C87E09826DFB00564599 = {
+			fileRef = FE63C87C09826DFB00564599;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE63C87F09826DFB00564599 = {
+			fileRef = FE63C87C09826DFB00564599;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE63C8F80982732500564599 = {
+			isa = PBXFileReference;
+			lastKnownFileType = "compiled.mach-o.dylib";
+			name = "libstdc++.6.dylib";
+			path = "/usr/lib/libstdc++.6.dylib";
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		FE63C8F90982732500564599 = {
+			fileRef = FE63C8F80982732500564599;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE63C8FA0982732500564599 = {
+			fileRef = FE63C8F80982732500564599;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE63C8FB0982732500564599 = {
+			fileRef = FE63C8F80982732500564599;
 			isa = PBXBuildFile;
 			settings = {
 			};

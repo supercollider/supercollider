@@ -246,6 +246,7 @@
 		};
 		F50D050A02E69B6B01CA2799 = {
 			children = (
+				FE0DCFA6098262B8001DF85B,
 				8870B53B090D8EB100B96791,
 				F50D050B02E69B6B01CA2799,
 				F50D050C02E69B6B01CA2799,
@@ -800,6 +801,7 @@
 		};
 		F50D059202E69B6B01CA2799 = {
 			children = (
+				FE0DCFBC098264F4001DF85B,
 				8870B53D090D8EBB00B96791,
 				F59DF065030733E801CE0C16,
 				F59DF066030733E801CE0C16,
@@ -1203,6 +1205,7 @@
 		F59DF07303073A6001CE0C16 = {
 			buildActionMask = 2147483647;
 			files = (
+				FE0DCFA9098263C3001DF85B,
 				F59DF07403073A6001CE0C16,
 				F59DF07503073A6001CE0C16,
 				F59DF07603073A6001CE0C16,
@@ -1593,6 +1596,7 @@
 				920DAEAE0423E08200A80067,
 				AA79AED3045EFF5C002875C2,
 				8870B53E090D8EBB00B96791,
+				FE0DCFBE098264F4001DF85B,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1852,6 +1856,7 @@
 				F5CA8D3102E8050E01CA2799,
 				F5C7B153033D5E9001A80099,
 				F5C7B158033D64B801A80099,
+				FE0DCFA7098262B8001DF85B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1860,6 +1865,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5CA8D8102E8050E01CA2799,
+				FE0DCFBD098264F4001DF85B,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1931,6 +1937,56 @@
 			path = scsynthlib_exp;
 			refType = 4;
 			sourceTree = "<group>";
+		};
+//F50
+//F51
+//F52
+//F53
+//F54
+//FE0
+//FE1
+//FE2
+//FE3
+//FE4
+		FE0DCFA6098262B8001DF85B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = SC_StandAloneInfo_Darwin.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		FE0DCFA7098262B8001DF85B = {
+			fileRef = FE0DCFA6098262B8001DF85B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE0DCFA9098263C3001DF85B = {
+			fileRef = FE0DCFA6098262B8001DF85B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE0DCFBC098264F4001DF85B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = SC_StandAloneInfo_Darwin.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		FE0DCFBD098264F4001DF85B = {
+			fileRef = FE0DCFBC098264F4001DF85B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FE0DCFBE098264F4001DF85B = {
+			fileRef = FE0DCFBC098264F4001DF85B;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 	};
 	rootObject = F50D04F702E68E8201CA2799;
