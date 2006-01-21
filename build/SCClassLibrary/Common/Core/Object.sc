@@ -1,5 +1,4 @@
-
-Object {
+Object  {
 	classvar <dependantsDictionary, currentEnvironment, topEnvironment, <uniqueMethods;
 	
 	const nl = "\n";
@@ -127,6 +126,11 @@ Object {
 	!= { arg obj; ^not(this == obj) }
 	=== { arg obj; _Identical; ^this.primitiveFailed }
 	!== { arg obj;_NotIdentical; ^this.primitiveFailed }
+	equals { arg that, properties;
+		^that.respondsTo(properties) and: { 
+			properties.every { |selector| this.perform(selector) == that.perform(selector) }
+		}
+	}
 	
 	basicHash { _ObjectHash; ^this.primitiveFailed }
 	hash { _ObjectHash; ^this.primitiveFailed }
@@ -451,6 +455,17 @@ Object {
 		iMin = index.asInteger;
 		^blend(this.clipAt(iMin), this.clipAt(iMin+1), index - iMin);
 	}
+	
+	blendPut { arg index, obj;
+		var iMin, a, b, ratio;
+		iMin = index.asInteger;
+		ratio = index - iMin;
+		a = blend(this.clipAt(iMin), obj, 1 - ratio);
+		b = blend(this.clipAt(iMin + 1), obj, ratio);
+		this.clipPut(iMin, a);
+		this.clipPut(iMin + 1, b);
+	}
+
 
 	fuzzyEqual { arg that, precision=1.0; ^max(0.0, 1.0 - (abs(this - that)/precision)) }
 	
