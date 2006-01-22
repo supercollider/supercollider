@@ -456,7 +456,7 @@ Object  {
 	}
 	
 	blendPut { arg index, val, method='wrapPut';
-		var iMin = index.roundUp.asInteger - 1;
+		var iMin = index.floor.asInteger;
 		var ratio = absdif(index, iMin);
 		this.perform(method, iMin, val * (1-ratio));
 		this.perform(method, iMin + 1, val * ratio);
