@@ -1,3 +1,4 @@
+
 /*
 	Sound File Format strings:
 		header formats:
@@ -121,7 +122,7 @@ SoundFile {
 		// normalizer utility
 
 	*normalize { |path, outPath, newHeaderFormat, newSampleFormat,
-		startFrame = 0, numFrames, chunkSize = 4194304, maxAmp = 1.0, linkChannels = true|
+		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304|
 		
 		var	file, outFile;
 		
@@ -129,7 +130,7 @@ SoundFile {
 				// need to clean up in case of error
 			protect {
 				outFile = file.normalize(outPath, newHeaderFormat, newSampleFormat,
-					startFrame, numFrames, chunkSize, maxAmp, linkChannels);
+					startFrame, numFrames, maxAmp, linkChannels, chunkSize);
 			} { file.close };
 			file.close;
 			^outFile	
@@ -139,7 +140,7 @@ SoundFile {
 	}
 	
 	normalize { |outPath, newHeaderFormat, newSampleFormat,
-		startFrame = 0, numFrames, chunkSize = 4194304, maxAmp = 1.0, linkChannels = true|
+		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304|
 		
 		var	peak, outFile;
 		
@@ -207,6 +208,9 @@ SoundFile {
 		numFrames.notNil.if({ numFrames = numFrames * numChannels; },
 			{ numFrames = inf });
 		(scale.size == 0).if({ scale = [scale] });
+
+			// chunkSize must be a multiple of numChannels
+		chunkSize = (chunkSize/numChannels).floor * numChannels;
 
 		this.seek(startFrame, 0);
 		
