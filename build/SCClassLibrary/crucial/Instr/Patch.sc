@@ -56,7 +56,8 @@ HasPatchIns : AbstractPlayer {
 	inputProxies { // just this patch
 		^this.inputs.select({ arg a; a.isKindOf(PlayerInputProxy) })
 	}
-	// deep search
+	// do a deep search through this Patch and any sub-patches and return all
+	// PlayerInputProxies [ input , deepOffset, argName, spec ]
 	annotatedInputProxies { arg offset=0,array; // [ input , deepOffset, argName, spec ]
 		var inputs;
 		inputs = this.inputs;
@@ -147,16 +148,26 @@ Patch : HasPatchIns  {
 	}
 
 	inputs { ^args }
-	setInput { arg ai, ag;
+	// insert a new input into this arg position
+	setInput { arg index, newArg;
 		//ISSUE if it wasn't a synth input before it won't become one now
 		// but you can respawn
 		var synthArgi;
-		args.at(ai).removeDependant(this);
-		ag.addDependant(this);
-		args.put(ai,ag);
-		synthArgi = synthArgsIndices.at(ai);
+		args.at(index).removeDependant(this);
+		newArg.addDependant(this);
+		args.put(index,newArg);
+		synthArgi = synthArgsIndices.at(index);
 		if(synthArgi.notNil,{
-			argsForSynth.put(synthArgi,ag);
+			argsForSynth.put(synthArgi,newArg);
+		});
+	}
+	set { arg index, value;
+		var argg;
+		argg = args[index];
+		if(argg.respondsTo('set'),{
+			argg.set(value);
+		},{
+			(argg.asString + "does not respond to set").warn;
 		});
 	}
 	argNameAt { arg i; ^instr.argNameAt(i) }

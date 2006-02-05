@@ -1,54 +1,36 @@
 
+
 Instr  { 
 
 	classvar <dir;
 
-	var  <>name, <>func,<>specs,<>outSpec,>path;
+	var  <>name, <>func, <>specs, <>outSpec, >path;
 	
-	*new { arg name, func,specs,outSpec=\audio;
+	// specs are optional, can be guessed from the argnames
+	// outSpec is optional, can be determined by evaluating the func
+	*new { arg name, func, specs, outSpec = \audio;
 		var previous;
 		if(func.isNil,{ ^this.at(name) });
-		if(name.isString or: {name.isKindOf(Symbol)},{
-			name = [name.asSymbol];
-		},{
-			name = name.collect({ arg n; n.asSymbol });
-		});
-		previous = Library.atList([this.name,name].flatten);
+		previous = Library.atList(this.symbolizeName(name).addFirst(Instr));
 		if(previous.notNil,{
 			previous.func = func;
 			previous.init(specs,outSpec);
 			previous.changed(this);
 			^previous
 		});
-		^super.newCopyArgs(name,func).init(specs,outSpec)//.write;
+		^super.newCopyArgs(name,func).init(specs,outSpec)
 	}
-		*put { arg instr;
-		^Library.putList([this.name,instr.name,instr].flatten )
+	*put { arg instr;
+		^Library.putList([Instr,this.symbolizeName(instr.name),instr].flatten )
 	}
 	*at { arg  name;
-		var fullname,instr,path;
-		if(name.isString or: {name.isKindOf(Symbol)},{
-			name = [name.asSymbol];
-		},{
-			name = name.collect({ arg n; n.asSymbol });
-		});
-
-		^(Library.atList(fullname = [this.name,name].flatten)
-			??
-			{ 	
-				// if not previously loaded, try loading the file
-				path = (dir ++ [name].flat.first.asString ++ ".rtf");
-				path.loadPath;
-				instr = Library.atList(fullname);
-				if(instr.isKindOf(Instr),{ 
-					instr.path = path; 
-				});
-				instr // or nil, not found
-			}
-		)
+		var search;
+		search = this.objectAt(name);
+		if(search.notNil,{ search = search.asInstr; });
+		^search
 	}
 
-	*ar { arg  name, args;
+	*ar { arg name, args;
 		var instr;
 		instr=this.at(name);
 		if(instr.isNil,{
@@ -115,23 +97,12 @@ Instr  {
 		nn=func.def.prototypeFrame;
 		^nn.at(i)
 	}
-	//default/initial arg value at input
-	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).tryPerform(\default)})
-		// value or control ?
-		/*?? {this.specs.at(i).defaultControl})*/ 
-		// sample spec has no default, but has a defaultControl
+	// the default value supplied in the function
+	initAt { arg i;  
+		^(this.defArgAt(i) ?? {this.specs.at(i).tryPerform(\default)})
 	}
 	
-	/*  server support */
-	defName {
-		// String-join would be better
-		var n;
-		n = "";
-		name.do({ arg part;
-			n = n ++ part.asString ++ ".";
-		});
-		^n.copyRange(0,n.size - 2)
-	}
+	defName { ^Instr.symbolizeName(name).collect(_.asString).join($.) }
 	asSynthDef { arg args,outClass=\Out;
 		var synthDef;
 		synthDef = InstrSynthDef.new;
@@ -146,11 +117,10 @@ Instr  {
 	writeDefFile { arg dir;
 		this.asSynthDef.writeDefFile(dir);
 	}
-	write {
+	write { arg dir;
 		var synthDef;
 		synthDef = this.asSynthDef;
-		synthDef.writeDefFile;
-		//this.writePropertyList(synthDef);
+		synthDef.writeDefFile(dir);
 	}
 
 	test { arg ... args;
@@ -162,26 +132,6 @@ Instr  {
 	play { arg ... args;
 		^Patch(this.name,args).play
 	}
-
-	asSingleName {
-		^String.streamContents({ arg s;
-			name.do({ arg n,i;
-				if(i > 0,{ s << $~ });
-				s << n;
-			})
-		})
-	}
-	*singleNameAsNames { arg singleName;
-		^singleName.split($~).collect({ arg n; n.asSymbol })
-	}
-	
-	*loadAll {
-		(this.dir ++ "*.rtf").pathMatch.do({ arg path; path.loadPath })
-	}
-	*clearAll {
-		Library.global.removeAt(this.name)
-	}
-
 	*choose { arg start;
 		// todo: scan directory first
 		^if(start.isNil,{ 
@@ -199,9 +149,72 @@ Instr  {
 		});
 		^Library.global.prNestedValuesFromDict(startAt).flat
 	}
-	asString { ^"Instr " ++ this.name.asString }
-		
+
 	//private
+	*symbolizeName { arg name;
+		if(name.isString,{
+			^name.split($.).collect(_.asSymbol);
+		 });
+	 	if(name.isSymbol,{
+			^[name];
+		});	
+		if(name.isSequenceableCollection,{
+			^name.collect({ arg n; n.asSymbol });
+		});
+		error("Invalid name for Instr : "++name);
+	}	
+
+	*objectAt { arg name;
+		var symbolized,search,path,pathParts,rootPath;
+		symbolized = Instr.symbolizeName(name);
+		search = Library.atList(symbolized.addFirst(Instr));
+		if(search.notNil,{ ^search });
+	
+		if((path = this.findPath(symbolized)).isNil,{
+			^nil
+		});
+		path.loadPath;
+		// now see if its there
+		^Library.atList(symbolized);
+	}
+	*findPath { arg symbolized;
+		var pathParts,rootPath,path;
+		pathParts = symbolized.collect(_.asString);
+		
+		// .rtf .txt .sc or plain
+		rootPath = (Instr.dir ++ pathParts.join("/"));
+		path = rootPath ++ ".rtf";
+		if(File.exists(path),{ ^path });
+		path = rootPath ++ ".txt";
+		if(File.exists(path),{ ^path });
+		path = rootPath ++ ".sc";
+		if(File.exists(path),{ ^path });
+		path = rootPath;
+		if(File.exists(path),{ ^path });
+		^nil
+	}
+	
+	asSingleName {
+		^String.streamContents({ arg s;
+			name.do({ arg n,i;
+				if(i > 0,{ s << $~ });
+				s << n;
+			})
+		})
+	}
+	*singleNameAsNames { arg singleName;
+		^singleName.split($~).collect({ arg n; n.asSymbol })
+	}
+	
+	*loadAll {
+		(this.dir ++ "*").pathMatch.do({ arg path; path.loadPath })
+	}
+	*clearAll {
+		Library.global.removeAt(this.name)
+	}
+
+	asString { ^"Instr " ++ this.defName }
+		
 	*initClass {
 		Class.initClassTree(Document);
 		// default is relative to your doc directory
@@ -253,13 +266,15 @@ Instr  {
 		});
 
 		layout.startRow;
-		ActionButton(layout,"edit File",{ this.path.openTextFile });
+		if(File.exists(this.path),{
+			ActionButton(layout,"edit File",{ this.path.openTextFile });
+		});
 		ActionButton(layout,"make Patch",{ Patch(this.name).topGui });
 	}
 }
 
 
-// a saveable, reloadable reference by name
+// an object that points to an Instr and is saveable/loadable as a compile string
 InstrAt {
 	var <>name,<>path,instr;
 	*new { arg name;
@@ -278,7 +293,10 @@ InstrAt {
 }
 
 
-UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
+// make a virtual Instr by reading the *ar and *kr method def
+// eg Patch(SinOsc,[ 440 ])
+
+UGenInstr { 
 
 	var <ugenClass,<rate,<specs;
 	
@@ -344,7 +362,7 @@ UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
 	}
 		
 //	guiClass { ^UGenInstrGui }
-	asString { ^"UGenInstr." ++ ugenClass.name.asString }
+	asString { ^"UGenInstr " ++ ugenClass.name.asString }
 	asInstr { ^this }
 	name { ^ugenClass }
 

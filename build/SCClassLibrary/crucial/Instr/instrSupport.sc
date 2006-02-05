@@ -26,15 +26,18 @@
 
 + String {
 	asInstr {
-		^Instr.at(this.asSymbol)
+		^Instr.at(this)
 	}
 	asInterfaceDef {
 		^InterfaceDef.at(this)
 	}
+	ar { arg ... args;
+		^this.asInstr.ar(*args)
+	}
 }
 
 + Class { // eg. SinOsc the class becomes a UGenInstr
-
+	// any class that responds to .ar or .kr
 	asInstr {
 		^UGenInstr(this)	
 	}
@@ -49,7 +52,25 @@
 	}
 }
 
-
++ SynthDef {
+	/* 
+	// doesnt hang onto its function
+	*def { arg name, ugenGraphFunc, rates, prependArgs, variants;
+		var new;
+		new = this.new(name, ugenGraphFunc, rates, prependArgs, variants);
+		Instr.put(new);
+		^new
+	}
+	asInstr {
+		^Instr(name, ugenGraphFunc)
+	} */
+	*at { arg name;
+		var search;
+		search = Instr.objectAt(name);
+		if(search.isNil,{ ^nil });
+		^search.asSynthDef
+	}
+}
 
 
 /**  asSpec **/
@@ -79,9 +100,9 @@
 
 
 /** building the Instr def name **/
-+ SynthDef {
-	longName { ^name }
-}
+//+ SynthDef {
+//	longName { ^name }
+//}
 
 + Editor {
 	addToDefName { arg stream;
