@@ -29,7 +29,15 @@ Editor {
 		},{
 			callback.value(value);
 		})
-	}	
+	}
+	set { arg val;
+		this.activeValue_(val);
+	}
+	activeValue_ { arg val;
+		this.value_(val);
+		action.value(value);
+	}
+
 }
 
 NumberEditor : Editor {
@@ -42,10 +50,6 @@ NumberEditor : Editor {
 	init { arg val,aspec;
 		spec = aspec.asSpec ?? {ControlSpec.new};
 		this.value_(spec.constrain(val));
-	}
-	activeValue_ { arg val;
-		this.value_(val);
-		action.value(value);
 	}
 	spec_ { arg aspec;
 		spec = aspec.asSpec;
