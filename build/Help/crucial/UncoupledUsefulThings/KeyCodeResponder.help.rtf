@@ -21,10 +21,11 @@ This object should be used as the keydown or keyup action for a view in place of
 \f0\b \cf0 KeyCodes are hardware dependant, and change from machine to machine. 
 \f1\b0  \
 Its a simple way to hook up keys to respond, but it won't transfer to other people's computers.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-see also [UnicodeResponder] which matches based on the unicode, though the physical location\
-of the key may still vary according the nationality of the keyboard.\
+\
+see also [
+\f0\b UnicodeResponder
+\f1\b0 ] which matches based on the unicode, though the physical location\
+of the key may still vary according zee nationality ov der keyboard.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 \
@@ -32,10 +33,12 @@ of the key may still vary according the nationality of the keyboard.\
 \cf0 see [
 \f0\b SCView]
 \f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Use this to post the keycodes\
+\f1\fs24 \cf0 Use this to post the keycodes\
 (\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -45,8 +48,14 @@ of the key may still vary according the nationality of the keyboard.\
 \
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\cf0 it prints
 \f2\fs18 \cf0 \
+\
+//  shift :\
+k.register(   41  ,   true, false, false, false, \{\
+\
+\});\
+\
 \
 \
 (\
@@ -60,7 +69,7 @@ of the key may still vary according the nationality of the keyboard.\
 k.normal( 36 -> \{  \cf5 "return"\cf0 .postln \});\
 k.option( 36 -> \{ \cf5 "option return"\cf0 .postln \});\
 k.shift( 36 -> \{ \cf5 "shift return"\cf0 .postln \});\
-\cf4 // overwrites\cf0 \
+\cf4 // overwrites previous registration\cf0 \
 k.shift( 36 -> \{ \cf5 "SHIFT RETURN only"\cf0 .postln; \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -120,10 +129,12 @@ normal(keycode -> fuction, keycode2 -> function2 , ... keycodeN -> functionN )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 	note the association ( key  -> value )\
+\f1\fs24 \cf0 	note the association ( key  -> value )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 	\
+\f2\fs18 \cf0 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 shift(keycode -> function)\
@@ -249,8 +260,9 @@ Only one function per deny/require mask combination is possible per keycode:\
 
 \f1\fs24 \cf0 whereby that modifier and only that modifier will fire the funtion.\
 see SCView for modifier values or use this :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 (\
 \
 	\cf3 KeyCodeResponder\cf0 .tester\
@@ -266,8 +278,9 @@ see SCView for modifier values or use this :\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 Gotcha

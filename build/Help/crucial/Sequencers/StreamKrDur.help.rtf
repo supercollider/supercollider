@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green112\blue0;
-\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs52 \cf0 StreamKrDur
@@ -60,7 +60,7 @@ It is extremely efficient in CPU usage on the client, using less than it takes t
 			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
 			 0.25,
 \fs20 \cf2 // a float
-\fs18 \
+\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 			 0.1)
 \fs20 ;\
@@ -134,7 +134,7 @@ It is extremely efficient in CPU usage on the client, using less than it takes t
 			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
 			 0.25,
 \fs20 \cf2 // a float
-\fs18 \
+\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 			 0.1)
 \fs20 ;\
@@ -186,7 +186,7 @@ It is extremely efficient in CPU usage on the client, using less than it takes t
 			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
 			 0.25,
 \fs20 \cf2 // a float
-\fs18 \
+\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 			 0.1)
 \fs20 ,\
@@ -213,30 +213,32 @@ It is extremely efficient in CPU usage on the client, using less than it takes t
 \
 A metronome\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf5 (\
-\cf6 var\cf5  nome,layout;\
-nome = \cf6 Patch\cf5 (\{ \cf6 arg\cf5  beat,freq,amp;\
-		\cf6 Decay2\cf5 .ar( \
-			\cf6 K2A\cf5 .ar(beat), 0.01,0.11, \
-			\cf6 SinOsc\cf5 .ar( freq, 0, amp )\
+\f2 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  nome,layout;\
+nome = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  beat,freq,amp;\
+		\cf3 Decay2\cf0 .ar( \
+			\cf3 K2A\cf0 .ar(beat), 0.01,0.11, \
+			\cf3 SinOsc\cf0 .ar( freq, 0, amp )\
 		)\
 	\},[\
-		\cf6 BeatClockPlayer\cf5 .new(4.0),\
-		\cf6 StreamKrDur\cf5 (\
-			\cf6 Pseq\cf5 ([ 750, 500, 300, 500, 750, 500, 400, 500, 750, 500, 400, 500, 750, 500, 400, 500 ],\cf6 inf\cf5 ), \
+		\cf3 BeatClockPlayer\cf0 .new(4.0),\
+		\cf3 StreamKrDur\cf0 (\
+			\cf3 Pseq\cf0 ([ 750, 500, 300, 500, 750, 500, 400, 500, 750, 500, 400, 500, 750, 500, 400, 500 ],\cf3 inf\cf0 ), \
 			1.0),\
-		\cf6 StreamKrDur\cf5 (\
-			\cf6 Pseq\cf5 ([1,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25] * 0.01,\cf6 inf\cf5 ),\
+		\cf3 StreamKrDur\cf0 (\
+			\cf3 Pseq\cf0 ([1,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25] * 0.01,\cf3 inf\cf0 ),\
 			1.0)\
 	]);\
-layout = \cf6 FlowView\cf5 .new;\
+layout = \cf3 FlowView\cf0 .new;\
 \
-\cf6 ToggleButton\cf5 (layout,\cf7 "Nome"\cf5 ,\{\
+\cf3 ToggleButton\cf0 (layout,\cf5 "Nome"\cf0 ,\{\
 	if(nome.isPlaying.not,\{ nome.play(atTime: 4) \})\
 \},\{\
 	if(nome.isPlaying,\{ nome.stop \})\
-\},maxx: 250);\
+\},minWidth: 250);\
 \
 )\
 \
@@ -246,6 +248,7 @@ See the example there.\
 \
 But if you wanted them in different syncs, different streams and a continous running synth \
 (have fun with the Decay), then this would be a good starting point.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
 \

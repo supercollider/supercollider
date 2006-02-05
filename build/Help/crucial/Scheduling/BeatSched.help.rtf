@@ -15,7 +15,7 @@
 \f1\b0 \cf0 \
 Functions can be scheduled for precise execution using relative seconds, relative beats, absolute seconds or absolute beats.  This class uses TempoClock for scheduling, and has some overlap of capabilities with that.\
 \
-The TempoClock class is used to specify what the tempo is, and is used for all beat <-> second calculations. The default global TempoClock object is used, or you can create a specific TempoClock instance.\
+The TempoClock class is used to specify what the tempo is, and is used for all beat <-> second calculations. The default global TempoClock object is used, or you can use a specific TempoClock instance.\
 \
 There is a default global BeatSched that can be addressed through class methods.  It uses the SystemClock and the default global TempoClock.  You may also create individual instances that maintain their own scheduling queues, tempii, and time epochs.\
 \
@@ -69,7 +69,8 @@ If using BeatSched instances you can clear the queue, only affecting your own ev
 	another example:  a sequence plays successive notes, all using xsched,  \
 	you then switch to a different sequence.  	you don't want the note that was \
 	scheduled from the previous sequence to happen.  	using one of the x-methods, \
-	you don't have to worry about it.\
+	you don't have to worry about it, the old notes will be cleared when new ones\
+	are scheduled.\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
