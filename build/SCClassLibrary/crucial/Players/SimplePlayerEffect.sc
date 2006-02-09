@@ -89,19 +89,18 @@ EnvelopedPlayer : AbstractSinglePlayerEffect {
 		status = \isReleaseing;
 		if(releaseTime.isNil,{ releaseTime = env.releaseTime; });
 		if(synth.notNil,{
-			bundle.add(synth.releaseMsg(releaseTime));
+			bundle.add(synth.releaseMsg(releaseTime + server.latency));
 		});
 		if(releaseTime > 0.01,{
 			bundle.addFunction({
 				SystemClock.sched(releaseTime,{ 
 					// want everything but the synthFree in here
 					this.stop(nil,false);
-					//this.identityHash.debug("stop now, scheded");
 					nil; 
 				})
 			});
 		},{
-			this.stop(stopSynth: false);//.debug("stop now");
+			this.stop(stopSynth: false);
 		});
 	}
 }
