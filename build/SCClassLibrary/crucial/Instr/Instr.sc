@@ -26,7 +26,7 @@ Instr  {
 	*at { arg  name;
 		var search;
 		search = this.objectAt(name);
-		if(search.notNil,{ search = search.asInstr; });
+		//if(search.notNil,{ search = search.asInstr; });
 		^search
 	}
 
@@ -155,7 +155,7 @@ Instr  {
 		if(name.isString,{
 			^name.split($.).collect(_.asSymbol);
 		 });
-	 	if(name.isSymbol,{
+	 	if(name.isKindOf(Symbol),{
 			^[name];
 		});	
 		if(name.isSequenceableCollection,{
@@ -175,12 +175,16 @@ Instr  {
 		});
 		path.loadPath;
 		// now see if its there
-		^Library.atList(symbolized);
+		^Library.atList(symbolized.addFirst(Instr));
 	}
 	*findPath { arg symbolized;
 		var pathParts,rootPath,path;
 		pathParts = symbolized.collect(_.asString);
-		
+		// if its a multi-part name then the last item is the instr name
+		// and the next to last is the file name.
+		// so remove last item :
+		if (pathParts.size > 1, { pathParts.pop });
+
 		// .rtf .txt .sc or plain
 		rootPath = (Instr.dir ++ pathParts.join("/"));
 		path = rootPath ++ ".rtf";
