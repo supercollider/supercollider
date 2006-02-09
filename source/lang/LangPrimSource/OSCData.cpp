@@ -754,6 +754,15 @@ int prGetHostByName(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prGetLangPort(VMGlobals *g, int numArgsPushed);
+int prGetLangPort(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	if (!gUDPport) return errFailed;
+	SetInt(a, gUDPport->RealPortNum());
+	return errNone;
+}
+
 int prExit(VMGlobals *g, int numArgsPushed);
 int prExit(VMGlobals *g, int numArgsPushed)
 {
@@ -969,6 +978,7 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);	
 	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);	
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
+	definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);	
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	
 #ifndef SC_WIN32
   definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	

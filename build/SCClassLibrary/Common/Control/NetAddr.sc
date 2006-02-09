@@ -19,6 +19,13 @@ NetAddr {
 		^super.newCopyArgs(addr, port, addr.asIPString)
 	}
 
+	*langPort {
+		_GetLangPort
+	}
+	*localAddr {
+		^this.new("127.0.0.1", this.langPort)
+	}
+
 	*useDoubles_ { arg flag = false;
 		_NetAddr_UseDoubles
 		^this.primitiveFailed;

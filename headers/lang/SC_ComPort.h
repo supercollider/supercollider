@@ -64,6 +64,7 @@ public:
 	int Socket() { return mSocket; }
         
 	int PortNum() const { return mPortNum; }
+	int RealPortNum() const { return ntohs(mBindSockAddr.sin_port); }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
