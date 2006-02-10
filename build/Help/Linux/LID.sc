@@ -115,6 +115,14 @@ LID.register('Logitech WingMan RumblePad', (
 
 d[\a].action = { | slot | [\a, slot.value].postln };
 
+// There is also a default keyboard device spec.
+
+(
+LID.keyboardDeviceSpec.keys.do { | key |
+	d[key].action = { | slot | [key, slot.value].postln }
+}
+)
+
 // =====================================================================
 // Grabbing devices
 // =====================================================================
