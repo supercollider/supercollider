@@ -1,4 +1,7 @@
 
+// these support different ways of specifying the timing of a scheduled event
+// see the atTime help file
+
 + Nil { // now
 	schedCXBundle { arg bundle,server,timeOfRequest;
 		bundle.send(server,nil); //0.0
@@ -38,7 +41,7 @@
 
 		// for server.latency seconds you are exposed to error if you are
 		// changing the tempo during that time
-		TempoClock.default.sched( nowRound - now - latencyBeats,{
+		TempoClock.default.sched( nowRound - now, {
 			/*SystemClock.sched(server.latency,{
 				var b;
 				b = TempoClock.default.elapsedBeats.debug("the beat");
