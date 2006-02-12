@@ -284,8 +284,11 @@ TaskProxy : PatternProxy {
 	pause { if(player.notNil) { this.sched { player.pause } } }
 	resume { if(player.notNil) { this.sched { player.resume } } }
 
+	align { arg argQuant;
+		quant = argQuant;
+		this.source = this.source.copy;
+	}
 	
-		
 	storeArgs { ^[source] }
 }
 
