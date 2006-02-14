@@ -73,7 +73,7 @@
 (make-variable-buffer-local 'sclang-help-file)
 
 (defconst sclang-help-file-regexp
-  "\\(\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)\\|\\.rtfd/TXT\\.rtf\\)$"
+  "\\(\\(\\(\\.help\\)?\\.\\(rtf\\|scd\\)\\)\\|\\(\\.help\\.sc\\)\\|\\.rtfd/TXT\\.rtf\\)$"
   "Regular expression matching help files.")
 
 ;; =====================================================================
@@ -387,28 +387,32 @@
       (directory-files directory full match nosort)
     (error nil)))
 
-(defun sclang-extension-help-directories ()
-  "Build a list of help directories for extensions."
-  (flet ((flatten (seq)
-		  (if (null seq)
-		      seq
-		    (if (listp seq)
-			(reduce 'append (mapcar #'flatten seq))
-		      (list seq)))))
-    (flatten
-     (mapcar
-      (lambda (dir)
-	(mapcar
-	 (lambda (dir)
-	   (remove-if-not
-	    'file-directory-p
-	    (sclang-directory-files-save dir t "^[Hh][Ee][Ll][Pp]$" t)))
-	 (sclang-filter-help-directories (sclang-directory-files-save dir t))))
-      sclang-extension-path))))
+;; (defun sclang-extension-help-directories ()
+;;   "Build a list of help directories for extensions."
+;;   (flet ((flatten (seq)
+;; 		  (if (null seq)
+;; 		      seq
+;; 		    (if (listp seq)
+;; 			(reduce 'append (mapcar #'flatten seq))
+;; 		      (list seq)))))
+;;     (flatten
+;;      (mapcar
+;;       (lambda (dir)
+;; 	(mapcar
+;; 	 (lambda (dir)
+;; 	   (remove-if-not
+;; 	    'file-directory-p
+;; 	    (sclang-directory-files-save dir t "^[Hh][Ee][Ll][Pp]$" t)))
+;; 	 (sclang-filter-help-directories (sclang-directory-files-save dir t))))
+;;       sclang-extension-path))))
+
+;; (defun sclang-help-directories ()
+;;   "Answer list of help directories to be indexed."
+;;   (append sclang-help-path (sclang-extension-help-directories)))
 
 (defun sclang-help-directories ()
   "Answer list of help directories to be indexed."
-  (append sclang-help-path (sclang-extension-help-directories)))
+  (append sclang-help-path sclang-extension-path))
 
 (defun sclang-make-help-topic-alist (dirs result)
   "Build a help topic alist from directories in DIRS, with initial RESULT."

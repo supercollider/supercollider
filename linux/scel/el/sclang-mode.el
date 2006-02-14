@@ -684,7 +684,7 @@ Returns the column to indent to."
 ;; module initialization
 ;; =====================================================================
 
-(add-to-list 'auto-mode-alist '("\\.sc$" . sclang-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(sc\\|scd\\)$" . sclang-mode))
 (add-to-list 'interpreter-mode-alist '("sclang" . sclang-mode))
 
 (add-hook 'sclang-library-startup-hook 'sclang--document-library-startup-hook-function)
