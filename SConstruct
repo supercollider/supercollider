@@ -296,11 +296,18 @@ features['altivec'] = env['ALTIVEC'] \
                       and CPU == 'ppc' \
                       and conf.CheckCHeader('altivec.h')
 
-features['sse'] = env['SSE'] \
-                  and re.match("^i?[0-9x]86", CPU) \
-                  and conf.CheckCHeader('xmmintrin.h')
-
+# only _one_ Configure context can be alive at a time
 env = conf.Finish()
+
+# sse
+if env['SSE'] and re.match("^i?[0-9x]86", CPU):
+    sseEnv = env.Copy()
+    sseEnv.Append(CCFLAGS = ['-msse2'])
+    sseConf = Configure(sseEnv)
+    features['sse'] = sseConf.CheckCHeader('xmmintrin.h')
+    sseConf.Finish()
+else:
+    features['sse'] = False
 
 # x11
 if env['X11']:
@@ -693,6 +700,9 @@ if env['DEVELOPMENT']:
             env, os.path.join('headers', d),
             pkg_include_dir(INSTALL_PREFIX),
             re.compile('.*\.h(h|pp)?'), 1))
+    # other useful headers
+    env.Alias('install-dev',
+              env.Install(pkg_include_dir(INSTALL_PREFIX, 'plugin_interface'), 'source/plugins/FFT_UGens.h'))
     pkgconfig_files = [
         libscsynthEnv.Command('linux/libscsynth.pc', 'SConstruct',
                               build_pkgconfig_file),
