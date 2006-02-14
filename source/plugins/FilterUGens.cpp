@@ -2496,7 +2496,7 @@ void Median_Ctor(Median* unit)
 	//postbuf("Median_Reset\n");
 	SETCALC(Median_next);
 	float in = ZIN0(1);
-	unit->m_medianSize = (int)ZIN0(0);
+	unit->m_medianSize = sc_clip((int)ZIN0(0), 0, kMAXMEDIANSIZE);
 	Median_InitMedian(unit, unit->m_medianSize, in);
 	ZOUT0(0) = Median_InsertMedian(unit, in);
 }
