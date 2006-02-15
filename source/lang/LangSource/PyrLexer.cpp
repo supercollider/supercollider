@@ -1606,6 +1606,7 @@ leave:
 
 int numClassDeps;
 static ClassExtFile* sClassExtFiles;
+static ClassExtFile* eClassExtFiles;
 
 ClassExtFile* newClassExtFile(PyrSymbol *fileSym);
 ClassExtFile* newClassExtFile(PyrSymbol *fileSym)
@@ -1613,8 +1614,10 @@ ClassExtFile* newClassExtFile(PyrSymbol *fileSym)
 	ClassExtFile* classext;
 	classext = (ClassExtFile*)pyr_pool_compile->Alloc(sizeof(ClassExtFile));
 	classext->fileSym = fileSym;
-	classext->next = sClassExtFiles;
-	sClassExtFiles = classext;
+	classext->next = 0;
+	if (!sClassExtFiles) sClassExtFiles = classext;
+	else eClassExtFiles->next = classext;
+	eClassExtFiles = classext;
 	return classext;
 }
 
@@ -1772,10 +1775,12 @@ void compileDepTree()
 
 void compileClassExtensions()
 {
-	ClassExtFile *classext = sClassExtFiles;
-	while (classext) {
-		compileFileSym(classext->fileSym);
-		classext = classext->next;
+	if (sClassExtFiles) {
+		ClassExtFile *classext = sClassExtFiles;
+		do {
+			compileFileSym(classext->fileSym);
+			classext = classext->next;
+		} while (classext);
 	}
 }
 
