@@ -241,17 +241,19 @@ MIDIIn {
 	}
 	
 	*prDispatchEvent { arg eventList, status, port, chan, b, c;
+		var selectedEvents;
 		eventList ?? {^this};
 		eventList.takeThese {| event |
-			var thread;
 			if (event.match(port, chan, b, c)) 
 			{
-				thread = event.thread;
-				event.set(status, port, chan, b, c);
-				thread.clock.sched(0, thread);
+				selectedEvents = selectedEvents.add(event);
 				true
 			}
 			{ false };
+		};
+		selectedEvents.do{ |event|
+				event.set(status, port, chan, b, c);
+				event.thread.next;
 		}
 	}
 }
