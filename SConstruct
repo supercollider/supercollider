@@ -276,9 +276,13 @@ elif env['AUDIOAPI'] == 'portaudio':
 
 # rendezvous
 if env['RENDEZVOUS']:
-    features['rendezvous'], libraries['rendezvous'] = conf.CheckPKG('howl')
+    features['rendezvous'], libraries['rendezvous'] = conf.CheckPKG('avahi-client')
     if features['rendezvous']:
-        libraries['rendezvous'].Append(CPPDEFINES = ['HAVE_HOWL'])
+        libraries['rendezvous'].Append(CPPDEFINES = ['HAVE_AVAHI'])
+    else:
+        features['rendezvous'], libraries['rendezvous'] = conf.CheckPKG('howl')
+        if features['rendezvous']:
+            libraries['rendezvous'].Append(CPPDEFINES = ['HAVE_HOWL'])
 else:
     features['rendezvous'] = False
 
