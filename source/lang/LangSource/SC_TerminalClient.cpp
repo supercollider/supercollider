@@ -124,8 +124,10 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				opt.mDaemon = true;
 				break;
 			case 'g':
-				if (!parseMemArg(optarg, &opt.mMemGrow))
+				if (!parseMemArg(optarg, &opt.mMemGrow)) {
+					optopt = c;
 					goto optArgInvalid;
+				}
 				break;
 			case 'h':
 				goto help;
@@ -133,8 +135,10 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				opt.mLibraryConfigFile = optarg;
 				break;
 			case 'm':
-				if (!parseMemArg(optarg, &opt.mMemSpace))
+				if (!parseMemArg(optarg, &opt.mMemSpace)) {
+					optopt = c;
 					goto optArgInvalid;
+				}
 				break;
 			case 'r':
 				opt.mCallRun = true;
@@ -143,13 +147,17 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				opt.mCallStop = true;
 				break;
 			case 'u':
-				if (!parsePortArg(optarg, &opt.mPort))
+				if (!parsePortArg(optarg, &opt.mPort)) {
+					optopt = c;
 					goto optArgInvalid;
+				}
 				break;
 			case '?':
 				goto optInvalid;
+				break;
 			case ':':
 				goto optArgExpected;
+				break;
 			default:
 				::post("%s: unknown error (getopt)\n", getName());
 				quit(255);
