@@ -1,4 +1,4 @@
-//  copyright 2003 stefan kersten <steve@k-hornz.de>
+// Copyright (c) 2003-2006 stefan kersten
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -25,7 +25,7 @@ SC_StringParser::SC_StringParser()
 {
 }
 
-SC_StringParser::SC_StringParser(char *spec, char sep)
+SC_StringParser::SC_StringParser(const char *spec, char sep)
 	: mSpec(spec), mStart(0), mEnd(0), mSep(sep)
 {
 	if (mSpec) {
@@ -47,7 +47,7 @@ bool SC_StringParser::AtEnd() const
 const char *SC_StringParser::NextToken()
 {
 	if (mSpec) {
-		char *end = strchr(mStart, mSep);
+		const char *end = strchr(mStart, mSep);
 		if (end == 0) {
 			end = mEnd;
 		}

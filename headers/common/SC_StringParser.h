@@ -1,6 +1,6 @@
 // emacs:		-*- c++ -*-
 // file:		SC_StringParser.h
-// copyright:	2003 stefan kersten <steve@k-hornz.de>
+// copyright:	2003-2006 stefan kersten
 // cvs:			$Id$
 
 // This program is free software; you can redistribute it and/or
@@ -25,12 +25,12 @@
 
 class SC_StringParser
 {
-	char	*mSpec, *mStart, *mEnd;
-	char	mSep, mBuf[SC_MAX_TOKEN_LENGTH];
+	const char	*mSpec, *mStart, *mEnd;
+	char		mSep, mBuf[SC_MAX_TOKEN_LENGTH];
 
 public:
 	SC_StringParser();
-	SC_StringParser(char *spec, char sep);
+	SC_StringParser(const char *spec, char sep);
 
 	bool AtEnd() const;
 	const char *NextToken();
