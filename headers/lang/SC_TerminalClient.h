@@ -85,6 +85,7 @@ protected:
 	virtual void commandLoop();
 	virtual void daemonLoop();
 
+	static int prArgv(struct VMGlobals* g, int);
 	static int prExit(struct VMGlobals* g, int);
 	virtual void onLibraryStartup();
 

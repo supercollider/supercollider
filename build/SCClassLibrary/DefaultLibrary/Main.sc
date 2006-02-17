@@ -1,5 +1,6 @@
 Main : Process {
-	
+	var argv;
+
 	startup {
 		super.startup;
 		Document.startup;
@@ -52,7 +53,14 @@ Main : Process {
 		SCWindow.viewPalette;
 		SCWindow.new.front;
 	}
-	
+
+	argv {
+		^argv ?? { argv = this.prArgv }
+	}
+
+	// PRIVATE
+	prArgv {
+		_Argv
+		^[]
+	}
 }
-
-

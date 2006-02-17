@@ -41,6 +41,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "GC.h"
+#include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "PyrSlot.h"
 #include "VMGlobals.h"
@@ -189,6 +191,19 @@ int SC_TerminalClient::run(int argc, char** argv)
 		return mReturnCode;
 	}
 
+	// finish argv processing
+	const char* codeFile = 0;
+
+	if (argc > 0) {
+		codeFile = argv[0];
+		argv++; argc--;
+		if ((argc > 0) && (strcmp(argv[0], "-") == 0)) {
+			argv++; argc--;
+		} else {
+			opt.mDaemon = true;
+		}
+	}
+
 	opt.mArgc = argc;
 	opt.mArgv = argv;
 
@@ -206,36 +221,13 @@ int SC_TerminalClient::run(int argc, char** argv)
 	// startup library
 	compileLibrary();
 
-	// enter daemon mode or read commands from stdin
-	bool enterMainLoop;
-	bool readCommands;
-
-	if (argc > 0) {
-		enterMainLoop = opt.mDaemon;
-		readCommands = !opt.mDaemon;
-		for (int i=0; i < argc; i++) {
-			// execute file
-			// - denotes input from stdin
-			const char* fileName = argv[i];
-			if (strcmp(fileName, "-") == 0) {
-				enterMainLoop = readCommands = true;
-				break;
-			} else {
-				executeFile(fileName);
-			}
-		}
-	} else {
-		enterMainLoop = true;
-		readCommands = !opt.mDaemon;
-	}
-
+	// enter main loop
+	if (codeFile) executeFile(codeFile);
 	if (opt.mCallRun) runMain();
 
-	if (enterMainLoop) {
-		mShouldBeRunning = true;
-		if (readCommands) commandLoop();
-		else daemonLoop();
-	}
+	mShouldBeRunning = true;
+	if (opt.mDaemon) daemonLoop();
+	else commandLoop();
 
 	if (opt.mCallStop) stopMain();
 
@@ -299,7 +291,7 @@ void SC_TerminalClient::commandLoop()
 	struct pollfd pfds[1] = { fd, POLLIN, 0 };
 	SC_StringBuffer cmdLine;
 
-  if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
 		perror(getName());
 		quit(1);
 		return;
@@ -339,6 +331,26 @@ void SC_TerminalClient::daemonLoop()
 	}
 }
 
+int SC_TerminalClient::prArgv(struct VMGlobals* g, int)
+{
+	int argc = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgc;
+	char** argv = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgv;
+
+	PyrSlot* argvSlot = g->sp;
+
+	PyrObject* argvObj = newPyrArray(g->gc, argc * sizeof(PyrObject), 0, true);
+	SetObject(argvSlot, argvObj);
+
+	for (int i=0; i < argc; i++) {
+		PyrString* str = newPyrString(g->gc, argv[i], 0, true);
+		SetObject(argvObj->slots+i, str);
+		argvObj->size++;
+		g->gc->GCWrite(argvObj, (PyrObject*)str);
+	}
+
+	return errNone;
+}
+
 int SC_TerminalClient::prExit(struct VMGlobals* g, int)
 {
 	int code;
@@ -369,6 +381,7 @@ void SC_TerminalClient::onLibraryStartup()
 {
 	int base, index = 0;
 	base = nextPrimitiveIndex();
+	definePrimitive(base, index++, "_Argv", &SC_TerminalClient::prArgv, 1, 0);
 	definePrimitive(base, index++, "_Exit", &SC_TerminalClient::prExit, 1, 0);
 	definePrimitive(base, index++, "_TestFinalizer", &prTestFinalizer, 1, 0);
 }

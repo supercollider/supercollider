@@ -334,6 +334,8 @@ Process {
 		interpreter.cmdLine.openHelpFile
 	}	
 
+	argv { ^[] }
+
 	shallowCopy { ^this }
 	
 	*elapsedTime { _ElapsedTime }
