@@ -196,12 +196,8 @@ int SC_TerminalClient::run(int argc, char** argv)
 
 	if (argc > 0) {
 		codeFile = argv[0];
+		opt.mDaemon = true;
 		argv++; argc--;
-		if ((argc > 0) && (strcmp(argv[0], "-") == 0)) {
-			argv++; argc--;
-		} else {
-			opt.mDaemon = true;
-		}
 	}
 
 	opt.mArgc = argc;

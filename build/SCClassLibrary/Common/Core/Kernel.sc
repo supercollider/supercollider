@@ -531,6 +531,10 @@ Interpreter {
 		});
 		text = file.readAllString;
 		file.close;
+		if (text.beginsWith("#!"), {
+			// comment out shebang to preserve line count
+			text.overWrite("//");
+		});
 		^this.compile(text)
 	}
 		
