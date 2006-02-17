@@ -70,11 +70,17 @@ build requirements (optional features)
    advanced linux sound architecture drivers and library, for sclang's
    MIDI interface
 
- o libhowl >= 0.9.6
+ o libhowl (obsolete)
 
    http://www.porchdogsoft.com/products/howl/
 
-   zeroconf ('rendezvous') service dicovery implementation
+   zeroconf service dicovery implementation
+
+ o libavahi-client
+
+   http://www.avahi.org/
+
+   a more powerful zeroconf service discovery implementation
 
  o linux kernel >= 2.6
 
@@ -90,10 +96,10 @@ on debian (unstable) you can install the following packages and be set
 for building supercollider:
 
    gcc
-   libjack0.80.0-dev
+   libjack0.100.0-dev
    libsndfile1-dev
    libasound2-dev
-   libhowl-dev
+   libavahi-client-dev
    pkg-config
    scons
 
@@ -141,8 +147,16 @@ ports, set up your environment as described below.
 you can specify the number of jack input/output channels created with
 the options -i and -o, respectively.
 
-the above only applies when running scsynth from the commandline, as
-sclang has its own mechanism for booting synthesis servers.
+the -H option can be used to specify a jack server to connect to and
+to set the jack client identifier. the format is either
+
+    <SERVER-NAME>:<CLIENT-NAME>
+
+or just
+
+    <CLIENT-NAME>
+
+when connecting to the default server.
 
 ------------------------------------------------------------------------
 running sclang
@@ -221,11 +235,12 @@ please report bugs either to the sc-users or sc-dev mailing lists.
 contributors
 ------------------------------------------------------------------------
 
-stefan kersten <steve AT k-hornz DOT de>
+stefan kersten <sk AT k-hornz DOT de>
 andi pieper
 maurizio umberto puxeddu
 rohan drape
 mario lang
+john yates
 
 ------------------------------------------------------------------------
 outro

@@ -70,18 +70,16 @@ struct WorldOptions
     CFStringRef mServerPortName;
     CFStringRef mReplyPortName;
 #endif
-#if defined(SC_DARWIN) || defined(SC_WIN32)
 	const char *mDeviceName;
-#endif
-
 };
 
 const WorldOptions kDefaultWorldOptions = 
 {
 	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0,0,0,0,0, 0, 64, 0, 1
 #ifdef SC_DARWIN
-	,0,0,CFSTR("com.audiosynth.scsynth"),NULL, 0,
+	,0,0,CFSTR("com.audiosynth.scsynth"),NULL
 #endif
+	,0
 };
 
 #ifdef SC_WIN32

@@ -1,6 +1,6 @@
 /*
 	Jack audio driver interface.
-	Copyright (c) 2003 2004 stefan kersten.
+	Copyright (c) 2003-2006 stefan kersten.
 
 	====================================================================
 
@@ -28,8 +28,9 @@
 #include "SC_Prototypes.h"
 #include "SC_StringParser.h"
 
-#include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -38,27 +39,10 @@
 // Constants
 
 static const char* kJackDriverIdent = "JackDriver";
+static const char* kJackDefaultClientName = "SuperCollider";
 
 // =====================================================================
 // Timing
-
-// NOTE: falling back to a direct call to gettimeofday, since there is
-// no low-overhead, high-resolution, _portable_ time source on
-// linux.
-
-// clock_gettime might help, but it's implemented in terms of
-// gettimeofday on linux.
-
-// jack_frame_time is quantized to buffer boundaries, and thus not
-// very useful. jack_transport_info_t.usecs is also quantized to
-// buffer boundaries.
-
-// we may use the cycle counter on pentium and the timebase register
-// on powerpc, both 64 bit wide. there seems to be the issue of the
-// timbase used by the kernel on SMP machines (?)
-
-// TODO: figure out how to get the timebase resolution (ticks/sec) on
-// powerpc.
 
 static inline int64 SC_JackOSCTime(const struct timeval& tv)
 {
@@ -134,8 +118,7 @@ SC_JackPortList::SC_JackPortList(jack_client_t *client, int numPorts, int type)
 		mPorts[i] = jack_port_register(
 					client, portname,
 					JACK_DEFAULT_AUDIO_TYPE,
-					type, 0
-				);
+					type, 0);
 		mBuffers[i] = 0;
 	}
 }
@@ -157,20 +140,22 @@ int sc_jack_process_cb(jack_nframes_t numFrames, void *arg)
 
 int sc_jack_bufsize_cb(jack_nframes_t numSamples, void *arg)
 {
-	((SC_JackDriver*)arg)->BufferSizeChanged((int)numSamples);
-	return 0;
+	return !((SC_JackDriver*)arg)->BufferSizeChanged((int)numSamples);
 }
 
 int sc_jack_srate_cb(jack_nframes_t sampleRate, void *arg)
 {
-	((SC_JackDriver*)arg)->SampleRateChanged((double)sampleRate);
-	return 0;
+	return !((SC_JackDriver*)arg)->SampleRateChanged((double)sampleRate);
 }
 
 int sc_jack_graph_order_cb(void* arg)
 {
-	((SC_JackDriver*)arg)->GraphOrderChanged();
-	return 0;
+	return !((SC_JackDriver*)arg)->GraphOrderChanged();
+}
+
+int sc_jack_xrun_cb(void* arg)
+{
+	return !((SC_JackDriver*)arg)->XRun();
 }
 
 void sc_jack_shutdown_cb(void* arg)
@@ -205,32 +190,38 @@ SC_JackDriver::~SC_JackDriver()
 // NOTE: for now, in lieu of a mechanism that passes generic options to
 // the platform driver, we rely on environment variables:
 //
-//  SC_JACK_NAME:				JACK client identifier for this synth
 // 	SC_JACK_DEFAULT_INPUTS:		which outports to connect to
 // 	SC_JACK_DEFAULT_OUTPUTS:	which inports to connect to
 // ====================================================================
 
 bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 {
-	// create jack client
-	// FIXME: this is non-optimal
-	char* clientName = getenv("SC_JACK_NAME");
-	char uniqueName[64];
+	char* clientName = 0;
+	char* serverName = 0;
 
-	if (clientName) {
-		mClient = jack_client_new(clientName);
-	} else {
-		clientName = "SuperCollider";
-		mClient = jack_client_new(clientName);
-		if (mClient == 0) {
-			sprintf(uniqueName, "SuperCollider-%d", getpid());
-			clientName = uniqueName;
-			mClient = jack_client_new(uniqueName);
+	if (mWorld->hw->mDeviceName && (strlen(mWorld->hw->mDeviceName) > 0)) {
+		// parse string <serverName>:<clientName>
+		SC_StringParser sp(mWorld->hw->mDeviceName, ':');
+		if (!sp.AtEnd()) serverName = strdup(sp.NextToken());
+		if (!sp.AtEnd()) clientName = strdup(sp.NextToken());
+		if (clientName == 0) {
+			// no semicolon found
+			clientName = serverName;
+			serverName = 0;
+		} else if (strlen(clientName) == 0) {
+			free(clientName);
+			clientName = 0;
 		}
 	}
+
+	mClient = jack_client_open(
+		clientName ? clientName : kJackDefaultClientName,
+		serverName ? JackServerName : JackNullOption,
+		NULL, serverName);
+	free(serverName); free(clientName);
 	if (mClient == 0) return false;
 
-	scprintf("%s: jack name is %s\n", kJackDriverIdent, clientName);
+	scprintf("%s: client name is '%s'\n", kJackDriverIdent, jack_get_client_name(mClient));
 
 	// create jack I/O ports
 	mInputList = new SC_JackPortList(mClient, mWorld->mNumInputs, JackPortIsInput);
@@ -241,6 +232,7 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	jack_set_buffer_size_callback(mClient, sc_jack_bufsize_cb, this);
 	jack_set_sample_rate_callback(mClient, sc_jack_srate_cb, this);
 	jack_set_graph_order_callback(mClient, sc_jack_graph_order_cb, this);
+	jack_set_xrun_callback(mClient, sc_jack_xrun_cb, this);
 	jack_on_shutdown(mClient, sc_jack_shutdown_cb, mWorld);
 
 	*outNumSamples = (int)jack_get_buffer_size(mClient);
@@ -310,7 +302,7 @@ bool SC_JackDriver::DriverStop()
 void SC_JackDriver::Run()
 {
 	jack_client_t* client = mClient;
-	World *world = mWorld;
+	World* world = mWorld;
 
 	struct timeval hostTime;
 	gettimeofday(&hostTime, 0);
@@ -335,16 +327,13 @@ void SC_JackDriver::Run()
 		double avgSampleRate = (sampleTime - mStartSampleTime)/(hostSecs - mStartHostSecs);
 		double jitter = (smoothSampleRate * (hostSecs - mPrevHostSecs)) - (sampleTime - mPrevSampleTime);
 		double drift = (smoothSampleRate - mSampleRate) * (hostSecs - mStartHostSecs);
-
 		static int tick = 0;
-		if (++tick > 1000) {
+		if (++tick > 10) {
 			tick = 0;
-			if (fabs(jitter) > 0.01) {
-				scprintf(
-					"avgSR %.6f smoothSR %.6f instSR %.6f jitter %.6f drift %.6f inc %lld\n", 
-					avgSampleRate, smoothSampleRate, instSampleRate, jitter, drift, mOSCincrement
-					);
-			}
+			scprintf(
+				"%.6f %.6f %.6f\n", 
+				mSampleRate, mSmoothSampleRate, fabs(mSampleRate - mSmoothSampleRate)
+				);
 		}
 #endif
 	}
@@ -353,8 +342,6 @@ void SC_JackDriver::Run()
 	mPrevSampleTime = sampleTime;
 
 	try {
-		int64 oscTime = mOSCbuftime = SC_JackOSCTime(hostTime) + mMaxOutputLatency;
-		
 		mFromEngine.Free();
 		mToEngine.Perform();
 		
@@ -388,10 +375,11 @@ void SC_JackDriver::Run()
 			outBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(outPorts[i], numSamples);
 		}
 
+		// main loop
+		int64 oscTime = mOSCbuftime = SC_JackOSCTime(hostTime) + mMaxOutputLatency;
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
-	
-		// main loop
+
 		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
 			int32 bufCounter = mWorld->mBufCounter;
 			int32 *tch;
@@ -443,7 +431,7 @@ void SC_JackDriver::Run()
 				}
 			}
 
-			// update OSC time
+			// advance OSC time
 			mOSCbuftime = oscTime = nextTime;
 		}
 	} catch (std::exception& exc) {
@@ -452,10 +440,9 @@ void SC_JackDriver::Run()
 		scprintf("%s: unknown exception in real time\n", kJackDriverIdent);
 	}
 
-	double cpuUsage = (double)jack_cpu_load(mClient); 
+	double cpuUsage = (double)jack_cpu_load(mClient);
 	mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
-	if (cpuUsage > mPeakCPU || --mPeakCounter <= 0)
-	{
+	if (cpuUsage > mPeakCPU || --mPeakCounter <= 0) {
 		mPeakCPU = cpuUsage;
 		mPeakCounter = mMaxPeakCounter;
 	}
@@ -463,30 +450,39 @@ void SC_JackDriver::Run()
 	mAudioSync.Signal();
 }
 
-void SC_JackDriver::BufferSizeChanged(int numSamples)
+void SC_JackDriver::Reset(double sampleRate, int bufferSize)
 {
-	mNumSamplesPerCallback = numSamples;
+	scprintf("Reset %f %d\n", sampleRate, bufferSize);
+
+	mSampleRate = mSmoothSampleRate = jack_get_sample_rate(mClient);
+	mNumSamplesPerCallback = bufferSize;
+
+	World_SetSampleRate(mWorld, mSampleRate);
 	mBuffersPerSecond = mSampleRate / mNumSamplesPerCallback;
 	mMaxPeakCounter = (int)mBuffersPerSecond;
+	mOSCincrement = (int64)(mOSCincrementNumerator / mSampleRate);
 }
 
-void SC_JackDriver::SampleRateChanged(double sampleRate)
+bool SC_JackDriver::BufferSizeChanged(int numSamples)
 {
-	World_SetSampleRate(mWorld, sampleRate);
-	mSampleRate = mSmoothSampleRate = sampleRate;
-	mBuffersPerSecond = sampleRate / mNumSamplesPerCallback;
-	mMaxPeakCounter = (int)mBuffersPerSecond;
-	mOSCincrement = (int64)(mOSCincrementNumerator / sampleRate);
+	Reset(jack_get_sample_rate(mClient), numSamples);
+	return true;
 }
 
-void SC_JackDriver::GraphOrderChanged()
+bool SC_JackDriver::SampleRateChanged(double sampleRate)
+{
+	Reset(sampleRate, jack_get_buffer_size(mClient));
+	return true;
+}
+
+bool SC_JackDriver::GraphOrderChanged()
 {
 	SC_JackPortList* outputs = mOutputList;
 	jack_nframes_t lat = 0;
 
-	for (int i=0; i < outputs->mSize; i++) {
-		jack_port_t* port = outputs->mPorts[i];
-		lat = sc_max(lat, jack_port_get_total_latency(mClient, port));
+	for (int i=0; i < outputs->mSize; ++i) {
+		jack_nframes_t portLat = jack_port_get_total_latency(mClient, outputs->mPorts[i]);
+		if (portLat > lat) lat = portLat;
 	}
 
 	int64 maxLat = (int64)((double)lat / mSampleRate * kSecondsToOSCunits);
@@ -495,6 +491,14 @@ void SC_JackDriver::GraphOrderChanged()
 		mMaxOutputLatency = maxLat;
 		scprintf("%s: max output latency %f\n", kJackDriverIdent, maxLat * kOSCtoSecs);
 	}
+
+	return true;
+}
+
+bool SC_JackDriver::XRun()
+{
+// 	scprintf("%s: xrun\n", kJackDriverIdent);
+	return true;
 }
 
 // EOF

@@ -102,9 +102,7 @@ struct HiddenWorld
 	const char* mInputStreamsEnabled;
 	const char* mOutputStreamsEnabled;
 #endif
-#if defined(SC_DARWIN)  || defined(SC_WIN32)
 	const char *mDeviceName;
-#endif
 };
 
 typedef struct HiddenWorld HiddenWorld;

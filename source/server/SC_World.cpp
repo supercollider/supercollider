@@ -345,9 +345,7 @@ World* World_New(WorldOptions *inOptions)
 		world->hw->mInputStreamsEnabled = inOptions->mInputStreamsEnabled;
 		world->hw->mOutputStreamsEnabled = inOptions->mOutputStreamsEnabled;
 #endif 
-#if defined(SC_DARWIN)  || defined(SC_WIN32)
 		world->hw->mDeviceName = inOptions->mDeviceName;
-#endif		
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;
 
