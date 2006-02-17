@@ -1,6 +1,6 @@
 /*
 	Commandline interpreter interface.
-	Copyright (c) 2003 2004 stefan kersten.
+	Copyright (c) 2003-2006 stefan kersten.
 
 	====================================================================
 
@@ -367,27 +367,12 @@ int SC_TerminalClient::prExit(struct VMGlobals* g, int)
 	return errNone;
 }
 
-#include <PyrObject.h>
-
-static int finalizerFunc(struct VMGlobals* g, PyrObject* obj)
-{
-	printf("object %p finalized\n", obj);
-	return errNone;
-}
-
-static int prTestFinalizer(struct VMGlobals* g, int)
-{
-	InstallFinalizer(g, g->sp->uo, 0, &finalizerFunc);
-	return errNone;
-}
-
 void SC_TerminalClient::onLibraryStartup()
 {
 	int base, index = 0;
 	base = nextPrimitiveIndex();
 	definePrimitive(base, index++, "_Argv", &SC_TerminalClient::prArgv, 1, 0);
 	definePrimitive(base, index++, "_Exit", &SC_TerminalClient::prExit, 1, 0);
-	definePrimitive(base, index++, "_TestFinalizer", &prTestFinalizer, 1, 0);
 }
 
 // EOF
