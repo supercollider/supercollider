@@ -1,5 +1,5 @@
 + Server {
-	emacsWindow { arg w;
+	makeWindow { arg w;
 		var active, booter, killer, makeDefault, running, booting, stopped;
 		var recorder, scoper;
 		var countsViews, ctlr;

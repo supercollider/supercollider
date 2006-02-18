@@ -18,10 +18,10 @@
 (eval-and-compile
   (require 'cl))
 
-(defcustom sclang-server-panel "Server.default.emacsWindow"
+(defcustom sclang-server-panel "Server.default.makeWindow"
   "*Expression to execute when `sclang-show-server-panel' is invoked."
   :group 'sclang-interface
-  :type '(choice (const "Server.default.emacsWindow")
+  :type '(choice (const "Server.default.makeWindow")
 		 (const "\\SCUM.asClass.do { \\SCUM.asClass.desktop.showServerPanel }")
 		 string))
 
