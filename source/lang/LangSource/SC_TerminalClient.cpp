@@ -223,13 +223,13 @@ int SC_TerminalClient::run(int argc, char** argv)
 	initRuntime(opt);
 
 	// startup library
+	mShouldBeRunning = true;
 	compileLibrary();
 
 	// enter main loop
 	if (codeFile) executeFile(codeFile);
 	if (opt.mCallRun) runMain();
 
-	mShouldBeRunning = true;
 	if (opt.mDaemon) daemonLoop();
 	else commandLoop();
 
@@ -244,8 +244,8 @@ int SC_TerminalClient::run(int argc, char** argv)
 
 void SC_TerminalClient::quit(int code)
 {
-	mShouldBeRunning = false;
 	mReturnCode = code;
+	mShouldBeRunning = false;
 }
 
 bool SC_TerminalClient::readCmdLine(int fd, SC_StringBuffer& cmdLine)
