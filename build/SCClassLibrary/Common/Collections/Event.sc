@@ -483,7 +483,7 @@ Event : Environment {
 												
 						if (freqs.isKindOf(Symbol).not) {
 							~amp = ~amp.value;
-							~midinote = ~midinote.value;
+							~midinote = ~freqs.cpsmidi;
 							strum = ~strum;
 							lag = ~lag + server.latency;
 							sustain = ~sustain = ~sustain.value;
