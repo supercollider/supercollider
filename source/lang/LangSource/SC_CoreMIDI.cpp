@@ -123,56 +123,68 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 		// it is needed  -jamesmcc
 	if (compiledOK) {
 			VMGlobals *g = gMainVMGlobals;
-			uint8 status = pkt->data[0] & 0xF0;			
-			uint8 chan = pkt->data[0] & 0x0F;
-        
-			g->canCallOS = false; // cannot call the OS
 			
-			++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
-			//set arguments: 
-			++g->sp;SetInt(g->sp,  uid); //src
-				// ++g->sp;  SetInt(g->sp, status); //status
-			++g->sp;  SetInt(g->sp, chan); //chan
- 			switch (status) {
-			case 0x80 : //noteOff
-				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-				runInterpreter(g, s_midiNoteOffAction, 5);
-				break;
-			case 0x90 : //noteOn 
-				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-				runInterpreter(g, pkt->data[2] ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
-				break;
-			case 0xA0 : //polytouch
-				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-				runInterpreter(g, s_midiPolyTouchAction, 5);
-				break;
-			case 0xB0 : //control
-				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-				runInterpreter(g, s_midiControlAction, 5);
-				break;
-			case 0xC0 : //program
-				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-				runInterpreter(g, s_midiProgramAction, 4);
-				break;
-			case 0xD0 : //touch
-				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-				runInterpreter(g, s_midiTouchAction, 4);
-				break;
-			case 0xE0 : //bend	
-				++g->sp; SetInt(g->sp,  (pkt->data[2] << 7) | pkt->data[1]); //val1
-				runInterpreter(g, s_midiBendAction, 4);
-				break;
-			case 0xF0 :
-                midiProcessSystemPacket(pkt, chan);
-                break;
-			default :	// data byte => continuing sysex message
-                chan = 0;
-                midiProcessSystemPacket(pkt, chan);
-                break;				
+			uint8 i = 0;
+			while (i < pkt->length) {
+				uint8 status = pkt->data[0] & 0xF0;			
+				uint8 chan = pkt->data[0] & 0x0F;
+				g->canCallOS = false; // cannot call the OS
+        
+				++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
+				//set arguments: 
+				++g->sp;SetInt(g->sp,  uid); //src
+					// ++g->sp;  SetInt(g->sp, status); //status
+				++g->sp;  SetInt(g->sp, chan); //chan
+				switch (status) {
+				case 0x80 : //noteOff
+					++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+					++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+					runInterpreter(g, s_midiNoteOffAction, 5);
+					i += 3;
+					break;
+				case 0x90 : //noteOn 
+					++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+					++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+					runInterpreter(g, pkt->data[2] ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+					i += 3;
+					break;
+				case 0xA0 : //polytouch
+					++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+					++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+					runInterpreter(g, s_midiPolyTouchAction, 5);
+					i += 3;
+					break;
+				case 0xB0 : //control
+					++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+					++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+					runInterpreter(g, s_midiControlAction, 5);
+					i += 3;
+					break;
+				case 0xC0 : //program
+					++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+					runInterpreter(g, s_midiProgramAction, 4);
+					i += 2;
+					break;
+				case 0xD0 : //touch
+					++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+					runInterpreter(g, s_midiTouchAction, 4);
+					i += 2;
+					break;
+				case 0xE0 : //bend	
+					++g->sp; SetInt(g->sp,  (pkt->data[2] << 7) | pkt->data[1]); //val1
+					runInterpreter(g, s_midiBendAction, 4);
+					i += 2;
+					break;
+				case 0xF0 :
+					midiProcessSystemPacket(pkt, chan);
+					i += 1;
+					break;
+				default :	// data byte => continuing sysex message
+					chan = 0;
+					midiProcessSystemPacket(pkt, chan);
+					i += 1;
+					break;				
+			}
 		}
 		g->canCallOS = false;
 	}
