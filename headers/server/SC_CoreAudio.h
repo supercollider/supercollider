@@ -50,10 +50,6 @@
 # include <CoreAudio/HostTime.h>
 #endif
 
-#if SC_AUDIO_API == SC_AUDIO_API_JACK
-# include <jack/jack.h>
-#endif
-
 #if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
 #include "portaudio.h"
 #endif
@@ -212,42 +208,8 @@ inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 
 #if SC_AUDIO_API == SC_AUDIO_API_JACK
 
-class SC_JackPortList;
+extern SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld);
 
-class SC_JackDriver : public SC_AudioDriver
-{
-    jack_client_t		*mClient;
-	SC_JackPortList		*mInputList;
-	SC_JackPortList		*mOutputList;
-	int64				mMaxOutputLatency;
-
-protected:
-    // driver interface methods
-	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
-	virtual bool DriverStart();
-	virtual bool DriverStop();
-    
-public:
-    SC_JackDriver(struct World *inWorld);
-	virtual ~SC_JackDriver();
-
-	// process loop
-    void Run();
-
-	// reset state
-	void Reset(double sampleRate, int bufferSize);
-
-	// notifications
-	bool BufferSizeChanged(int numSamples);
-	bool SampleRateChanged(double sampleRate);
-	bool GraphOrderChanged();
-	bool XRun();
-};
-
-inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
-{
-    return new SC_JackDriver(inWorld);
-}
 #endif // SC_AUDIO_API_JACK
 
 

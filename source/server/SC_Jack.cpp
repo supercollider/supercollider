@@ -28,6 +28,7 @@
 #include "SC_Prototypes.h"
 #include "SC_StringParser.h"
 
+#include <jack/jack.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,17 +45,84 @@ static const char* kJackDefaultClientName = "SuperCollider";
 // =====================================================================
 // Timing
 
-static inline int64 SC_JackOSCTime(const struct timeval& tv)
+// =====================================================================
+// SC_JackDLL
+//
+//   Delay-Locked-Loop after
+//   Fons Adriaensen, "Using a DLL to filter time"
+
+#define SC_JACK_USE_DLL 1
+#define SC_JACK_DEBUG_DLL 0
+
+class SC_JackDLL
+{
+public:
+	SC_JackDLL()
+		: m_b(0.), m_c(0.),
+		  m_t0(0.), m_t1(0.), m_e2(0.),
+		  m_np(0), m_ei(0.), m_ec(0)
+	{ }
+
+	void Reset(double sampleRate, jack_nframes_t periodFrames, double bandWidth, double t)
+	{
+		// compute coefficients
+		m_np = periodFrames;
+		m_b = 2*M_PI*bandWidth*m_np/sampleRate;
+		m_c = m_b*m_b/2.;
+		// initialize filter
+		double tp = m_np/sampleRate;
+		m_e2 = tp;
+		m_t0 = t;
+		m_t1 = t + tp;
+		// initialize statistics
+		m_ei = 0.;
+		m_ec = 0;
+	}
+
+	void Update(double t)
+	{
+		// compute error
+		double e = m_e = t - m_t1;
+		// update filter
+		m_t0 = m_t1;
+		m_t1 += m_b * e + m_e2;
+		m_e2 += m_c * e;
+		// collect statistics
+		m_ei += e;
+		m_ec++;
+	}
+
+	double PeriodTime() const { return m_t0; }
+	double NextPeriodTime() const { return m_t1; }
+	double Period() const { return m_t1 - m_t0; }
+	double SampleRate() const { return m_np/Period(); }
+	double Error() const { return m_e; }
+	double AvgError() const { return m_ec > 0 ? m_ei/m_ec : 0; }
+
+private:
+	double m_b, m_c;
+	double m_t0, m_t1, m_e, m_e2;
+	jack_nframes_t m_np;
+	double m_ei;
+	int m_ec;
+};
+
+static inline int64 sc_JackOSCTime(const struct timeval& tv)
 {
 	return ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
 		+ (int64)(tv.tv_usec * kMicrosToOSCunits);
 }
 
-static inline int64 SC_JackOSCTime()
+static inline int64 sc_JackOSCTime()
 {
 	struct timeval tv;
 	gettimeofday(&tv, 0);
-	return SC_JackOSCTime(tv);
+	return sc_JackOSCTime(tv);
+}
+
+static inline double sc_JackOSCTimeSeconds()
+{
+	return (uint64)sc_JackOSCTime() * kOSCtoSecs;
 }
 
 int32 server_timeseed()
@@ -67,7 +135,7 @@ int32 server_timeseed()
 
 int64 oscTimeNow()
 {
-	return SC_JackOSCTime();
+	return sc_JackOSCTime();
 }
 
 void initializeScheduler()
@@ -95,25 +163,55 @@ struct SC_JackPortList
 	~SC_JackPortList();
 };
 
+class SC_JackDriver : public SC_AudioDriver
+{
+    jack_client_t		*mClient;
+	SC_JackPortList		*mInputList;
+	SC_JackPortList		*mOutputList;
+	double				mMaxOutputLatency;
+	SC_JackDLL			mDLL;
+
+protected:
+    // driver interface methods
+	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
+	virtual bool DriverStart();
+	virtual bool DriverStop();
+    
+public:
+    SC_JackDriver(struct World *inWorld);
+	virtual ~SC_JackDriver();
+
+	// process loop
+    void Run();
+
+	// reset state
+	void Reset(double sampleRate, int bufferSize);
+
+	// notifications
+	bool BufferSizeChanged(int numSamples);
+	bool SampleRateChanged(double sampleRate);
+	bool GraphOrderChanged();
+	bool XRun();
+};
+
+SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
+{
+    return new SC_JackDriver(inWorld);
+}
+
 // =====================================================================
 // SC_JackPortList
 
 SC_JackPortList::SC_JackPortList(jack_client_t *client, int numPorts, int type)
 	: mSize(numPorts), mPorts(0), mBuffers(0)
 {
-	int i;
-	char *fmt, portname[32];
+	const char *fmt = (type == JackPortIsInput ? "in_%d" : "out_%d");
+	char portname[32];
 
 	mPorts = new jack_port_t*[mSize];
 	mBuffers = new float*[mSize];
 
-	if (type == JackPortIsInput) {
-		fmt = "in_%d";
-	} else {
-		fmt = "out_%d";
-	}
-
-	for (i = 0; i < mSize; i++) {
+	for (int i = 0; i < mSize; i++) {
 		snprintf(portname, 32, fmt, i+1);
 		mPorts[i] = jack_port_register(
 					client, portname,
@@ -172,9 +270,8 @@ SC_JackDriver::SC_JackDriver(struct World *inWorld)
 	  mClient(0),
 	  mInputList(0),
 	  mOutputList(0),
-	  mMaxOutputLatency(0)
-{
-}
+	  mMaxOutputLatency(0.)
+{ }
 
 SC_JackDriver::~SC_JackDriver()
 {
@@ -304,6 +401,18 @@ void SC_JackDriver::Run()
 	jack_client_t* client = mClient;
 	World* world = mWorld;
 
+#if SC_JACK_USE_DLL
+	mDLL.Update(sc_JackOSCTimeSeconds());
+#if SC_JACK_DEBUG_DLL
+	static int tick = 0;
+	if (++tick >= 10) {
+		tick = 0;
+		scprintf("DLL: t %.6f p %.9f sr %.6f e %.9f avg(e) %.9f\n",
+				 mDLL.PeriodTime(), mDLL.Period(), mDLL.SampleRate(),
+				 mDLL.Error(), mDLL.AvgError());
+	}
+#endif
+#else
 	struct timeval hostTime;
 	gettimeofday(&hostTime, 0);
 
@@ -322,24 +431,16 @@ void SC_JackDriver::Run()
 		}
 		mOSCincrement = (int64)(mOSCincrementNumerator / smoothSampleRate);
 		mSmoothSampleRate = smoothSampleRate;
-
 #if 0
 		double avgSampleRate = (sampleTime - mStartSampleTime)/(hostSecs - mStartHostSecs);
 		double jitter = (smoothSampleRate * (hostSecs - mPrevHostSecs)) - (sampleTime - mPrevSampleTime);
 		double drift = (smoothSampleRate - mSampleRate) * (hostSecs - mStartHostSecs);
-		static int tick = 0;
-		if (++tick > 10) {
-			tick = 0;
-			scprintf(
-				"%.6f %.6f %.6f\n", 
-				mSampleRate, mSmoothSampleRate, fabs(mSampleRate - mSmoothSampleRate)
-				);
-		}
 #endif
 	}
 
 	mPrevHostSecs = hostSecs;
 	mPrevSampleTime = sampleTime;
+#endif
 
 	try {
 		mFromEngine.Free();
@@ -376,9 +477,17 @@ void SC_JackDriver::Run()
 		}
 
 		// main loop
-		int64 oscTime = mOSCbuftime = SC_JackOSCTime(hostTime) + mMaxOutputLatency;
+#if SC_JACK_USE_DLL
+		int64 oscTime = mOSCbuftime = (int64)((mDLL.PeriodTime() - mMaxOutputLatency) * kSecondsToOSCunits + .5);
+// 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
+		int64 oscInc = mOSCincrement = (int64)((mDLL.Period() / numBufs) * kSecondsToOSCunits + .5);
+		mSmoothSampleRate = mDLL.SampleRate();
+		double oscToSamples = mOSCtoSamples = mSmoothSampleRate * kOSCtoSecs /* 1/pow(2,32) */;
+#else
+		int64 oscTime = mOSCbuftime = sc_JackOSCTime(hostTime) - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
+#endif
 
 		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
 			int32 bufCounter = mWorld->mBufCounter;
@@ -413,6 +522,7 @@ void SC_JackDriver::Run()
 			}
 
 			world->mSampleOffset = 0;
+			world->mSubsampleOffset = 0.f;
 			World_Run(world);
 
 			// copy touched outputs
@@ -452,15 +562,21 @@ void SC_JackDriver::Run()
 
 void SC_JackDriver::Reset(double sampleRate, int bufferSize)
 {
-	scprintf("Reset %f %d\n", sampleRate, bufferSize);
-
-	mSampleRate = mSmoothSampleRate = jack_get_sample_rate(mClient);
+	mSampleRate = mSmoothSampleRate = sampleRate;
 	mNumSamplesPerCallback = bufferSize;
 
 	World_SetSampleRate(mWorld, mSampleRate);
 	mBuffersPerSecond = mSampleRate / mNumSamplesPerCallback;
 	mMaxPeakCounter = (int)mBuffersPerSecond;
 	mOSCincrement = (int64)(mOSCincrementNumerator / mSampleRate);
+
+#if SC_JACK_USE_DLL
+	mDLL.Reset(
+		mSampleRate,
+		mNumSamplesPerCallback,
+		0.12,
+		sc_JackOSCTimeSeconds());
+#endif
 }
 
 bool SC_JackDriver::BufferSizeChanged(int numSamples)
@@ -485,11 +601,11 @@ bool SC_JackDriver::GraphOrderChanged()
 		if (portLat > lat) lat = portLat;
 	}
 
-	int64 maxLat = (int64)((double)lat / mSampleRate * kSecondsToOSCunits);
+	double maxLat = (double)lat / mSampleRate;
 
 	if (maxLat != mMaxOutputLatency) {
 		mMaxOutputLatency = maxLat;
-		scprintf("%s: max output latency %f\n", kJackDriverIdent, maxLat * kOSCtoSecs);
+		scprintf("%s: max output latency %.1f ms\n", kJackDriverIdent, maxLat * 1e3);
 	}
 
 	return true;
@@ -497,7 +613,7 @@ bool SC_JackDriver::GraphOrderChanged()
 
 bool SC_JackDriver::XRun()
 {
-// 	scprintf("%s: xrun\n", kJackDriverIdent);
+	Reset(mSampleRate, mNumSamplesPerCallback);
 	return true;
 }
 
