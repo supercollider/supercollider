@@ -450,7 +450,6 @@ Document {
 		^this.primitiveFailed
 	}
 
-	
 	prAdd {
 		allDocuments = allDocuments.add(this);
 		this.editable = true;
@@ -460,6 +459,7 @@ Document {
 				this.text.interpret;
 			}
 		};
+		current = this;
 		initAction.value(this);
 	
 	}
