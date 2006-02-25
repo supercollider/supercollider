@@ -1158,6 +1158,12 @@ NSString* pathOfHelpFileFor(NSString* selection)
 
 	helpFilePath = helpFileWithName(fileManager, selection, @".rtfd", nil);
 	if (helpFilePath) return helpFilePath;
+	
+	helpFilePath = helpFileWithName(fileManager, selection, @".scd", nil);
+	if (helpFilePath) return helpFilePath;
+	
+	helpFilePath = helpFileWithName(fileManager, selection, @".help.scd", nil);
+	if (helpFilePath) return helpFilePath;
 
     return helpFilePath; // possibly == NULL
 }
