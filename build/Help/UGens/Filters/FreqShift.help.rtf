@@ -1,23 +1,23 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red191\green0\blue0;
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 FreqShift					Frequency Shifter\
+\f0\b\fs36 \cf2 FreqShift\cf3 					\cf2 Frequency\cf3  \cf2 Shifter\cf3 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 FreqShift.ar(input, shift, phase, mul, add)\
+\fs24 \cf2 FreqShift\cf3 .ar(input, shift, phase, mul, add)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
-FreqShift implements single sideband amplitude modulation, also known as frequency shifting, but not to be confused with pitch shifting.  Frequency shifting moves all the components of a signal by a fixed amount but does not preserve the original harmonic relationships.\
+\f1\b0 \cf3 \
+\cf2 FreqShift\cf3  implements single sideband amplitude modulation, also known as frequency shifting, but not to be confused with pitch shifting.  \cf2 Frequency\cf3  shifting moves all the components of a signal by a fixed amount but does not preserve the original harmonic relationships.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 input
+\f0\b \cf3 input
 \f1\b0  - audio input\
 
 \f0\b shift
@@ -30,102 +30,114 @@ FreqShift implements single sideband amplitude modulation, also known as frequen
 \
 \
 
-\f0\b Examples
-\f1\b0 \
+\f0\b \cf2 Examples
+\f1\b0 \cf3 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 // shifting a 100Hz tone by 1 Hz rising to 500Hz\cf3 \
-\{\cf4 FreqShift\cf3 .ar(\cf4 SinOsc\cf3 .ar(100),\cf4 XLine\cf3 .kr(1,500,5),0,[0.5,0.5])\}.play(s);\
+\f2\fs18 \cf4 // shifting a 100Hz tone by 1 Hz rising to 500Hz\cf3 \
+\{\cf2 FreqShift\cf3 .ar(\cf2 SinOsc\cf3 .ar(100),\cf2 XLine\cf3 .kr(1,500,5),0,[0.5,0.5])\}.play(s);\
 \
-\cf2 // shifting a complex tone by 1 Hz rising to 500Hz\cf3 \
-\{\cf4 FreqShift\cf3 .ar(\cf4 Klang\cf3 .ar(`[[101,303,606,808]]),\cf4 XLine\cf3 .kr(1,500,10),0,[0.25,0.25])\}.play(s);\
+\cf4 // shifting a complex tone by 1 Hz rising to 500Hz\cf3 \
+\{\cf2 FreqShift\cf3 .ar(\cf2 Klang\cf3 .ar(`[[101,303,606,808]]),\cf2 XLine\cf3 .kr(1,500,10),0,[0.25,0.25])\}.play(s);\
 \
-\cf2 // modulating shift and phase\cf3 \
-\{\cf4 FreqShift\cf3 .ar(\cf4 SinOsc\cf3 .ar(10),\cf4 LFNoise2\cf3 .ar(0.3,1500),\cf4 SinOsc\cf3 .ar(500).range(0,2pi),[0.5,0.5])\}.play(s);\
+\cf4 // modulating shift and phase\cf3 \
+\{\cf2 FreqShift\cf3 .ar(\cf2 SinOsc\cf3 .ar(10),\cf2 LFNoise2\cf3 .ar(0.3,1500),\cf2 SinOsc\cf3 .ar(500).range(0,2pi),[0.5,0.5])\}.play(s);\
 \
-\cf2 // the ubiquitous houston example\cf3 \
+\cf4 // the ubiquitous houston example\cf3 \
 (\
-b = \cf4 Buffer\cf3 .read(s,\cf5 "sounds/a11wlk01.wav"\cf3 );\
-\{\cf4 FreqShift\cf3 .ar(\cf4 PlayBuf\cf3 .ar(1,b.bufnum,\cf4 BufRateScale\cf3 .kr(b.bufnum),loop:1),\cf4 LFNoise0\cf3 .kr(0.45,1000),0,[1,1])\}.play(s);\
+b = \cf2 Buffer\cf3 .read(s,\cf5 "sounds/a11wlk01.wav"\cf3 );\
+\{\cf2 FreqShift\cf3 .ar(\cf2 PlayBuf\cf3 .ar(1,b.bufnum,\cf2 BufRateScale\cf3 .kr(b.bufnum),loop:1),\cf2 LFNoise0\cf3 .kr(0.45,1000),0,[1,1])\}.play(s);\
 )\
 \
-\cf2 // shifting bandpassed noise\cf3 \
-\{\cf4 FreqShift\cf3 .ar(\cf4 BPF\cf3 .ar(\cf4 WhiteNoise\cf3 .ar(1),1000,0.001),\cf4 LFNoise0\cf3 .kr(5.5,1000),0,[32,32])\}.play(s);\
+\cf4 // shifting bandpassed noise\cf3 \
+\{\cf2 FreqShift\cf3 .ar(\cf2 BPF\cf3 .ar(\cf2 WhiteNoise\cf3 .ar(1),1000,0.001),\cf2 LFNoise0\cf3 .kr(5.5,1000),0,[32,32])\}.play(s);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
+\f1\fs24 \cf3 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 More Examples 
-\f1\b0 (send a SynthDef, run the routine then send a different SynthDef)\
+\f0\b \cf2 More\cf3  \cf2 Examples\cf3  
+\f1\b0 (send a \cf2 SynthDef\cf3 , run the routine then send a different \cf2 SynthDef\cf3 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 (\cf6 // simple detune & pitchmod via FreqShift\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 SynthDef\cf0 (\cf8 "frqShift1"\cf0 ,\{\cf7 arg\cf0  frq,detune=1.5;\
-	\cf7 var\cf0  e1,left,right;	\
-	e1 = \cf7 EnvGen\cf0 .ar(\cf7 Env\cf0 .new([0,1,0],[1,2.3]),1,doneAction:2);\
-	left = \cf7 SinOsc\cf0 .ar(frq,0,e1); \cf6 // original tone\cf0 \
-	left = left + \cf7 FreqShift\cf0 .ar(left,frq*detune); \cf6 // shift and add back to original \cf0 \
-	right = \cf7 FreqShift\cf0 .ar(left,\cf7 SinOsc\cf0 .kr(3.23,0,5));\
-	\cf7 Out\cf0 .ar(0, [left,right] * 0.25);\
+\f2\fs18 \cf3 (\cf4 // simple detune & pitchmod via FreqShift\cf3 \
+\cf2 SynthDef\cf3 (\cf5 "frqShift1"\cf3 ,\{\cf2 arg\cf3  frq,detune=1.5;\
+	\cf2 var\cf3  e1,left,right;	\
+	e1 = \cf2 EnvGen\cf3 .ar(\cf2 Env\cf3 .new([0,1,0],[1,2.3]),1,doneAction:2);\
+	left = \cf2 SinOsc\cf3 .ar(frq,0,e1); \cf4 // original tone\cf3 \
+	left = left + \cf2 FreqShift\cf3 .ar(left,frq*detune); \cf4 // shift and add back to original \cf3 \
+	right = \cf2 FreqShift\cf3 .ar(left,\cf2 SinOsc\cf3 .kr(3.23,0,5));\
+	\cf2 Out\cf3 .ar(0, [left,right] * 0.25);\
 \}).send(s);\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
+\f1\fs24 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 (\cf6 // the routine\cf0 \
-r = \cf7 Routine\cf0 (\{\
-	\cf7 var\cf0  table,pitch;\
+\f2\fs18 \cf3 (\cf4 // the routine\cf3 \
+r = \cf2 Routine\cf3 (\{\
+	\cf2 var\cf3  table,pitch;\
 	table = [0,2,4,5,7,9,11,12];\
-	\cf7 inf\cf0 .do\{\
+	\cf2 inf\cf3 .do\{\
 		pitch = (48+(12*2.rand) + table.choose).midicps;\
-		s.sendMsg(\cf8 "s_new"\cf0 ,\cf8 "frqShift1"\cf0 ,-1,1,1,\cf8 "frq"\cf0 ,pitch);\
+		s.sendMsg(\cf5 "s_new"\cf3 ,\cf5 "frqShift1"\cf3 ,-1,1,1,\cf5 "frq"\cf3 ,pitch);\
 		3.wait;\
 		\};\
 	\};\
 ).play;\
 )\
 \
-(\cf6 // shift pulse wave in opposite directions\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 SynthDef\cf0 (\cf8 "frqShift1"\cf0 ,\{\cf7 arg\cf0  frq,detune=0.15;\
-	\cf7 var\cf0  e1,snd,left,right;	\
-	e1 = \cf7 EnvGen\cf0 .ar(\cf7 Env\cf0 .new([0,1,0],[0.02,3.2]),1,doneAction:2);\
-	snd = \cf7 Pulse\cf0 .ar(frq,SinOsc.kr(2.3).range(0.2,0.8),e1); \cf6 // original tone\cf0 \
-	left = \cf7 FreqShift\cf0 .ar(snd,XLine.kr(-0.1,-200,2)); \cf6 // shift and add back to original \cf0 \
-	right = \cf7 FreqShift\cf0 .ar(snd,XLine.kr(0.1,200,2));\
-	\cf7 Out\cf0 .ar(0, [left,right] * 0.25);\
+(\cf4 // shift pulse wave in opposite directions\cf3 \
+\cf2 SynthDef\cf3 (\cf5 "frqShift1"\cf3 ,\{\cf2 arg\cf3  frq,detune=0.15;\
+	\cf2 var\cf3  e1,snd,left,right;	\
+	e1 = \cf2 EnvGen\cf3 .ar(\cf2 Env\cf3 .new([0,1,0],[0.02,3.2]),1,doneAction:2);\
+	snd = \cf2 Pulse\cf3 .ar(frq,\cf2 SinOsc\cf3 .kr(2.3).range(0.2,0.8),e1); \cf4 // original tone\cf3 \
+	left = \cf2 FreqShift\cf3 .ar(snd,\cf2 XLine\cf3 .kr(-0.1,-200,2)); \cf4 // shift and add back to original \cf3 \
+	right = \cf2 FreqShift\cf3 .ar(snd,\cf2 XLine\cf3 .kr(0.1,200,2));\
+	\cf2 Out\cf3 .ar(0, [left,right] * 0.25);\
 \}).send(s)\
 )\
 \
-(\cf6 // FreqShift >> feedback >>> FreqShift\cf0 \
-\cf7 SynthDef\cf0 (\cf8 "frqShift1"\cf0 ,\{\cf7 arg\cf0  frq;\
-	\cf7 var\cf0  e1,snd,snd2,in;\
-	in = \cf7 FreqShift\cf0 .ar(\cf7 InFeedback\cf0 .ar(0,1)*3.2,\cf7 XLine\cf0 .ar(0.01,frq*1.5,1)); \cf6 // shift the feedback\cf0 \
-	e1 = \cf7 Env\cf0 .new([0,1,0],[0.02,2.98]);\
-	snd = \cf7 SinOsc\cf0 .ar(frq,0,\cf7 EnvGen\cf0 .ar(e1,1,doneAction:2));\
-	snd2 = \cf7 FreqShift\cf0 .ar(snd+in,\cf7 SinOsc\cf0 .ar(4.24,0.5,3),0,0.5); \cf6 // subtle modulating shift\cf0 \
-	\cf7 OffsetOut\cf0 .ar([0,1], \cf7 Limiter\cf0 .ar(snd2+snd * 0.5,1,0.005));\
+(\cf4 // FreqShift >> feedback >>> FreqShift\cf3 \
+\cf2 SynthDef\cf3 (\cf5 "frqShift1"\cf3 ,\{\cf2 arg\cf3  frq;\
+	\cf2 var\cf3  e1,snd,snd2,in;\
+	in = \cf2 FreqShift\cf3 .ar(\cf2 InFeedback\cf3 .ar(0,1)*3.2,\cf2 XLine\cf3 .ar(0.01,frq*1.5,1)); \cf4 // shift the feedback\cf3 \
+	e1 = \cf2 Env\cf3 .new([0,1,0],[0.02,2.98]);\
+	snd = \cf2 SinOsc\cf3 .ar(frq,0,\cf2 EnvGen\cf3 .ar(e1,1,doneAction:2));\
+	snd2 = \cf2 FreqShift\cf3 .ar(snd+in,\cf2 SinOsc\cf3 .ar(4.24,0.5,3),0,0.5); \cf4 // subtle modulating shift\cf3 \
+	\cf2 OffsetOut\cf3 .ar([0,1], \cf2 Limiter\cf3 .ar(snd2+snd * 0.5,1,0.005));\
 \}).send(s);\
 )\
 \
 \
-(\cf6 // ssllooww columbia tuned shift detune\cf0 \
-~buf = \cf7 Buffer\cf0 .read(s,\cf8 "sounds/a11wlk01.wav"\cf0 );\
+(\cf4 // ssllooww columbia tuned shift detune\cf3 \
+r.stop; \cf4 // stop old routine\cf3 \
+\cf2 Buffer\cf3 .read(s,\cf5 "sounds/a11wlk01.wav"\cf3 , bufnum:99);\
 \
-\cf7 SynthDef\cf0 (\cf8 "frqShift1"\cf0 ,\{\cf7 arg\cf0  frq;\
-	\cf7 var\cf0  e1,snd,left,right;\
-	e1 = \cf7 Env\cf0 .new([0,1,0],[3,1],-4);\
-	snd = \cf7 PlayBuf\cf0 .ar(1,~buf.bufnum,\cf7 BufRateScale\cf0 .kr(b.bufnum)*0.01,loop:1);\
-	left = \cf7 FreqShift\cf0 .ar(snd,frq*2,0,EnvGen.ar(e1,1,doneAction:2)); \cf6 // subtle shift of the output\cf0 \
-	right = \cf7 FreqShift\cf0 .ar(snd,frq*3,0,EnvGen.ar(e1,1,doneAction:2));\
-	\cf7 Out\cf0 .ar(0, [left,right] * 3);\
+\cf2 SynthDef\cf3 (\cf5 "frqShift1"\cf3 ,\{\cf2 arg\cf3  frq, bufnum;\
+	\cf2 var\cf3  e1,snd,left,right;\
+	e1 = \cf2 Env\cf3 .new([0,1,0],[3,1],-4);\
+	snd = \cf2 PlayBuf\cf3 .ar(1, bufnum, \cf2 BufRateScale\cf3 .kr(bufnum) * 0.01, loop:1);\
+	left = \cf2 FreqShift\cf3 .ar(snd,frq*2,0,\cf2 EnvGen\cf3 .ar(e1,1,doneAction:2)); \cf4 // subtle shift of the output\cf3 \
+	right = \cf2 FreqShift\cf3 .ar(snd,frq*3,0,\cf2 EnvGen\cf3 .ar(e1,1,doneAction:2));\
+	\cf2 Out\cf3 .ar(0, [left,right] * 3);\
 \}).send(s);\
+(\cf4 // the routine\cf3 \
+r = \cf2 Routine\cf3 (\{\
+	\cf2 var\cf3  table,pitch;\
+	table = [0,2,4,5,7,9,11,12];\
+	\cf2 inf\cf3 .do\{\
+		pitch = (48+(12*2.rand) + table.choose).midicps;\
+		s.sendMsg(\cf5 "s_new"\cf3 ,\cf5 "frqShift1"\cf3 ,-1,1,1, \cf5 "frq"\cf3 , pitch, \cf5 "bufnum"\cf3 , 99);\
+		3.wait;\
+		\};\
+	\};\
+).play;\
+)\
+\
 )\
 }
