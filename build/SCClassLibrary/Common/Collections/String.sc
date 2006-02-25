@@ -150,6 +150,9 @@ String[char] : RawArray {
 		}
 		^indices
 	}
+	replace { arg find, replace; 
+		^super.replace(find, replace).join 
+	}
 	
 
 	escapeChar { arg charToEscape; // $"
@@ -182,7 +185,7 @@ String[char] : RawArray {
 	scramble {
 		^this.as(Array).scramble.as(String)
 	}
-
+	
 	compile { ^thisProcess.interpreter.compile(this); }
 	interpret { ^thisProcess.interpreter.interpret(this); } 
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
