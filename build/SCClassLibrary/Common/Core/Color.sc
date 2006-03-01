@@ -35,6 +35,7 @@ Color {
 			and: {this.alpha  == that.alpha}
 		})
 	}
+	hash { ^red.hash bitXor: green.hash bitXor: blue.hash bitXor: alpha.hash }
 	
 	scaleByAlpha {
 		^Color.new(red * alpha, green * alpha, blue * alpha, 1.0)
@@ -50,6 +51,61 @@ Color {
 			(alpha + alphaVal.rand2).clip(0,1)
 		) 
 	}
+	
+	complementary {
+		^Color.new(1.0 - red, 1.0 - green, 1.0 - blue, alpha)
+	}	
+	multiply { arg aColor, opacity=1.0;
+		var vals = aColor.asArray;
+		^Color.fromArray(blend(vals, vals * this.asArray, opacity) ++ alpha)
+	}
+	divide { arg aColor, opacity=1.0;
+		var vals = aColor.asArray, d=0.0001 ! 3;
+		^Color.fromArray(blend(vals, (vals / (this.asArray + d)).min(1.0), opacity) ++ alpha)
+	}
+	subtract { arg aColor, opacity=1.0;
+		var vals = aColor.asArray;
+		^Color.fromArray(blend(vals, (vals - this.asArray).max(0.0), opacity) ++ alpha)
+	}
+	add { arg aColor, opacity=1.0;
+		var vals = aColor.asArray;
+		^Color.fromArray(blend(vals, (vals + this.asArray).min(1.0), opacity) ++ alpha)
+	}
+	symmetricDifference { arg aColor, opacity=1.0;
+		var vals = aColor.asArray;
+		^Color.fromArray(blend(vals, abs(vals - this.asArray), opacity) ++ alpha)
+	}
+	screen { arg aColor, opacity=1.0;
+		var vals = aColor.asArray;
+		^Color.fromArray(blend(vals, (1-vals) * (1-this.asArray), opacity) ++ alpha)
+	}
+	lighten  { arg aColor, opacity=1.0;
+		var vals = aColor.asArray;
+		^Color.fromArray(blend(vals, max(vals, this.asArray), opacity) ++ alpha)
+	}
+	darken { arg aColor, opacity=1.0;
+		var vals = aColor.asArray;
+		^Color.fromArray(blend(vals, min(vals, this.asArray), opacity) ++ alpha)
+	}
+	hueBlend { arg aColor, blend=0.0;
+		var f, b;
+		f = this.asHSV;
+		b = aColor.asHSV;
+		^Color.hsv(blend(f[0], b[0], blend), b[1], b[2], alpha)
+	}
+	saturationBlend { arg aColor, blend=0.0;
+		var f, b;
+		f = this.asHSV;
+		b = aColor.asHSV;
+		^Color.hsv(b[0], blend(f[1], b[1], blend), b[2], alpha)
+	}
+	valueBlend { arg aColor, blend=0.0;
+		var f, b;
+		f = this.asHSV;
+		b = aColor.asHSV;
+		^Color.hsv(b[0], b[1], blend(f[2], b[2], blend), alpha)
+	}
+	
 	*hsv { arg hue, sat, val, alpha=1;
 			var r, g, b, segment, fraction, t1, t2, t3;
 			hue = hue.linlin(0, 1, 0, 360);
