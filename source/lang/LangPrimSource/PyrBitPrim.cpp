@@ -79,6 +79,16 @@ int prIsPowerOfTwo(VMGlobals *g, int numArgsPushed)
 	return errNone;	
 }
 
+int prBinaryGrayCode(VMGlobals *g, int numArgsPushed);
+int prBinaryGrayCode(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	
+	a = g->sp;
+	a->ui = GRAYCODE(a->ui);
+	return errNone;	
+}
+
 int prSetBit(VMGlobals *g, int numArgsPushed);
 int prSetBit(VMGlobals *g, int numArgsPushed)
 {
@@ -113,6 +123,7 @@ void initBitPrimitives()
 	definePrimitive(base, index++, "_NumBits", prNumBits, 1, 0);
 	definePrimitive(base, index++, "_Log2Ceil", prLog2Ceil, 1, 0);
 	definePrimitive(base, index++, "_SetBit", prSetBit, 3, 0);
+	definePrimitive(base, index++, "_BinaryGrayCode", prBinaryGrayCode, 1, 0);
 
 }
 
