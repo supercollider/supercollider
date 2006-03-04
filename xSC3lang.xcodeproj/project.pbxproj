@@ -185,8 +185,18 @@
 			<string>MyDocument</string>
 		</dict>
 		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>scd</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>txt.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>S</string>
+			<string>scel document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
