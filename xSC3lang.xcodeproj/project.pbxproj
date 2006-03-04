@@ -184,6 +184,10 @@
 			<key>NSDocumentClass</key>
 			<string>MyDocument</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>S</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>SuperCollider</string>
