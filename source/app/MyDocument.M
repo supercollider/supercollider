@@ -837,7 +837,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     BOOL success;
 
 	NSString* extension = [path pathExtension];
-	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"txt"] 
+	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"txt"] || [extension isEqualToString: @"scd"]
 			|| [aType isEqualToString: @"NSStringPboardType"]) 
 	{
 		NSString *text = [textView string];
