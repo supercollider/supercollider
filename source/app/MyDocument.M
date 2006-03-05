@@ -597,7 +597,7 @@ void SyntaxColorize(NSTextView* textView);
 
 #else
 
-NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* extension, NSString* helpFolderPath)
+NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* helpFolderPath)
 {
     // If called with no folder check in the bundle (if OS X), SC distribution Help
     // directory, and the System and User Extensions directories.
@@ -609,22 +609,22 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		sc_GetResourceDirectory(resourceDirPath, MAXPATHLEN - 32);
 		sc_AppendToPath(resourceDirPath, "Help/");
 		searchPath = [NSString stringWithCString:(const char *) resourceDirPath];
-		helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+		helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 		if (helpFilePath) return helpFilePath;
 
 		if(!sc_IsStandAlone()) {
 			searchPath = [NSString stringWithFormat: @"%@/Help/",
 						 [fileManager currentDirectoryPath]];
-			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 			if (helpFilePath) return helpFilePath;
 			
 			searchPath = @"/Library/Application Support/SuperCollider/Extensions/";
-			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 			if (helpFilePath) return helpFilePath;
 			
 			searchPath = [NSString stringWithFormat: @"%@/Library/Application Support/SuperCollider/Extensions/",  
 						NSHomeDirectory()];
-			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 			if (helpFilePath) return helpFilePath;
 		}
 		return NULL;
@@ -632,14 +632,14 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
     // the name of the help file we are looking for 
     NSString* helpFileName;
-       
-    // substitute for - or / as these are not valid UNIX filenames
+       	
+	// substitute for - or / as these are not valid UNIX filenames
     if([desiredHelpFile isEqual: @"-"]) {
-    	helpFileName = [NSString stringWithFormat: @"%@%@", @"subtraction", extension];
+    	helpFileName = @"subtraction";
     } else if([desiredHelpFile isEqual: @"/"]) {
-        helpFileName = [NSString stringWithFormat: @"%@%@", @"division", extension];
+        helpFileName = @"division";
     } else {
-        helpFileName = [NSString stringWithFormat: @"%@%@", desiredHelpFile, extension];
+        helpFileName = desiredHelpFile;
     }
 
     // recurse through this directory until we find it
@@ -656,7 +656,13 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		bool isAlias = false;
 		sc_ResolveIfAlias(name, resolvedName, isAlias, MAXPATHLEN);
 		fullName = [NSString stringWithCString:resolvedName];
-		if([[fullName lastPathComponent] isEqualToString:helpFileName]) {
+		// compare with valid extensions
+		if([[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.rtf"]]
+			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtf"]]
+			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtfd"]]
+			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".scd"]]
+			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.scd"]]
+			) {
             helpFilePath = fullName;
             break;
         } else if // if that didn't work, check if this is a directory symlink (allow directories to have extensions)
@@ -664,7 +670,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		  NSString* linkName = [[fullName stringByResolvingSymlinksInPath] stringByAppendingString: @"/"];
 		  if(([[fileManager fileAttributesAtPath: linkName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeDirectory)) {
 		    // if so traverse the link and call helpFileWithName() recursively
-		    helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, linkName);
+		    helpFilePath = helpFileWithName(fileManager, desiredHelpFile, linkName);
 		    if(helpFilePath) break;
 		  }
 		}
@@ -1147,24 +1153,9 @@ NSString* pathOfHelpFileFor(NSString* selection)
     NSFileManager* fileManager = [NSFileManager defaultManager];
     if (!fileManager) return helpFilePath; // == NULL
 
-    helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf", nil);
+    helpFilePath = helpFileWithName(fileManager, selection, nil);
 	if (helpFilePath) return helpFilePath;
 	
-    helpFilePath = helpFileWithName(fileManager, selection, @".help.sc", nil);
-	if (helpFilePath) return helpFilePath;
-	
-	helpFilePath = helpFileWithName(fileManager, selection, @".rtf", nil);
-	if (helpFilePath) return helpFilePath;
-
-	helpFilePath = helpFileWithName(fileManager, selection, @".rtfd", nil);
-	if (helpFilePath) return helpFilePath;
-	
-	helpFilePath = helpFileWithName(fileManager, selection, @".scd", nil);
-	if (helpFilePath) return helpFilePath;
-	
-	helpFilePath = helpFileWithName(fileManager, selection, @".help.scd", nil);
-	if (helpFilePath) return helpFilePath;
-
     return helpFilePath; // possibly == NULL
 }
 
@@ -1176,7 +1167,7 @@ void showHelpFor(NSString* selection)
 	
     NSString *helpFilePath = pathOfHelpFileFor(selection);
     if(!helpFilePath) { // none found
-        helpFilePath = helpFileWithName([NSFileManager defaultManager], @"Help", @".help.rtf", nil);
+        helpFilePath = helpFileWithName([NSFileManager defaultManager], @"Help", nil);
         if(!helpFilePath) { // not even Help.help ?
             post("\nCan't find help for '%s'\n", [selection cString]);
             return;
