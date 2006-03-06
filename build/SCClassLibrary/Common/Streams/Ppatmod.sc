@@ -74,7 +74,7 @@ Penvir : Pattern {
 Ppatmod : Pattern {
 	var <>pattern, <>func, <>repeats=1;
 	*new { arg pattern, func, repeats;
-		^super.new.pattern_(pattern).func_(func).repeats_(repeats)
+		^super.newCopyArgs(pattern, func, repeats)
 	}
 	embedInStream { arg inval;
 		var localPat;
@@ -86,4 +86,22 @@ Ppatmod : Pattern {
 		^inval;
 	}
 	storeArgs { ^[pattern, func, repeats] }
+}
+
+
+Peventmod : Pattern {
+	var <>func, <>event, <>repeats;
+	*new { arg func, event, repeats=inf;
+		^super.newCopyArgs(func, event, repeats)
+	}
+	embedInStream { arg inval;
+		var localEvent = event.copy ?? { Event.default };
+		repeats.value.do { arg i;
+			if(inval.isNil) { ^nil.yield };
+			localEvent.use { func.valueEnvir(inval, i) };
+			inval = localEvent.yield;
+		};
+		^inval
+	}
+	storeArgs { ^[func, event, repeats] }
 }
