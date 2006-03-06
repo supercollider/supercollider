@@ -1,8 +1,24 @@
 UI {
+	classvar resetActions, shutdownActions;
+
+	initClass {
+		resetActions = Array.new;
+		shutdownActions = Array.new;
+	}
+
 	*shutdown {
-		SCWindow.closeAll;
+		shutdownActions.do({ arg function; function.value });
 	}
 	*reset {
-		CocoaDialog.clear;
+		resetActions.do({ arg function; function.value });
+	}
+
+	*registerForReset {
+		arg function;
+		resetActions = resetActions.add(function);
+	}
+	*registerForShutdown {
+		arg function;
+		shutdownActions = shutdownActions.add(function);
 	}
 }
