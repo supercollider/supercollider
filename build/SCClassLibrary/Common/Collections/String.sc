@@ -224,7 +224,14 @@ String[char] : RawArray {
 		_String_Dirname;
 		^this.primitiveFailed
 	}
-	splitext {		this.reverseDo({ arg char, i;			if (char == $\., {				^[this.copyFromStart(this.size - 2 - i), this.copyToEnd(this.size - i)]			});		});		^[this, nil]	}
+	splitext {
+		this.reverseDo({ arg char, i;
+			if (char == $\., {
+				^[this.copyFromStart(this.size - 2 - i), this.copyToEnd(this.size - i)]
+			});
+		});
+		^[this, nil]
+	}
 	
 	// runs a unix command and returns the result code.
 	systemCmd { _String_System ^this.primitiveFailed }
@@ -245,7 +252,10 @@ String[char] : RawArray {
 		_String_Setenv
 		^this.primitiveFailed
 	}
-	
+	unsetenv {
+		^this.setenv(nil)
+	}
+
 	/// code gen
 	codegen_UGenCtorArg { arg stream; 
 		stream << this.asCompileString; 
