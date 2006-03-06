@@ -13,6 +13,7 @@ OSCBundle {
 	// eventstreams e.g. take into account the latency internally
 	
 	schedSend { arg server, clock, quant;
+		server = server ?? { Server.default };
 		this.doPrepare(server, {
 			if(clock.isNil) {
 				this.prSend(server, server.latency) 
@@ -24,11 +25,13 @@ OSCBundle {
 		});
 	}
 	
-	send { arg server, time; 
+	send { arg server, time;
+		server = server ?? { Server.default };
 		this.doPrepare(server, { this.prSend(server, time) }) 
 	}
 	
 	sendAtTime { arg server, atTime, timeOfRequest; // offset by preparation
+		server = server ?? { Server.default };
 		atTime.schedCXBundle(this,server,timeOfRequest ?? { Main.elapsedTime});
 	}
 	
