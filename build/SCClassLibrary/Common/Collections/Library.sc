@@ -19,15 +19,17 @@ MultiLevelIdentityDictionary : Collection
 	at { arg ... path;
 		^this.atPath(path)
 	}
-	atPath {
-		arg path;
+	atPathFail { arg path, function;
 		var item;
 		item = dictionary;
 		path.do({ arg name; 
 			item = item.at(name);
-			if (item.isNil, { ^nil });
+			if (item.isNil, { ^function.value });
 		});
 		^item
+	}
+	atPath { arg path;
+		^this.atPathFail(path)
 	}
 
 	put { arg ... path;
@@ -162,169 +164,166 @@ MultiLevelIdentityDictionary : Collection
 	}
 
 	// Tree-like do methods
-        leafDo {
-                arg func;
+	leafDo {
+		arg func;
 
-                this.doLeafDo([], this.dictionary, func);
-        }
-        leafDoFrom {
-                arg folderpath, func;
-                var folder;
+		this.doLeafDo([], this.dictionary, func);
+	}
+	leafDoFrom {
+		arg folderpath, func;
+		var folder;
 
-                folderpath = folderpath.asArray;
+		folderpath = folderpath.asArray;
 
-                folder = this.atPath(folderpath);
-                if (folder.notNil && folder.isKindOf(this.nodeType), {
-                        this.doLeafDo(folderpath, folder, func);
-                });
-        }
+		folder = this.atPath(folderpath);
+		if (folder.notNil && folder.isKindOf(this.nodeType), {
+			this.doLeafDo(folderpath, folder, func);
+		});
+	}
 
-        doLeafDo {
-                arg path, object, func;
+	doLeafDo {
+		arg path, object, func;
 
-                if (object.isKindOf(this.nodeType), {
-                        object.keysValuesDo({
-                                arg name, subobject;
-                                this.doLeafDo(path ++ [name], subobject, func)
-                        });
-                }, {
-                        func.value(path, object);
-                })
-        }
+		if (object.isKindOf(this.nodeType), {
+			object.keysValuesDo({
+				arg name, subobject;
+				this.doLeafDo(path ++ [name], subobject, func)
+			});
+		}, {
+			func.value(path, object);
+		})
+	}
 
-        treeDo {
-                arg branchFunc, leafFunc, argument0, postBranchFunc;
-                var result;
+	treeDo {
+		arg branchFunc, leafFunc, argument0, postBranchFunc;
+		var result;
 
-                result = this.doTreeDo([], this.dictionary, branchFunc, leafFunc, argument0, postBranchFunc);
-                ^result;
-        }
-        treeDoFrom {
-                arg folderpath, branchFunc, leafFunc, argument0, postBranchFunc;
-                var folder, result;
+		result = this.doTreeDo([], this.dictionary, branchFunc, leafFunc, argument0, postBranchFunc);
+		^result;
+	}
+	treeDoFrom {
+		arg folderpath, branchFunc, leafFunc, argument0, postBranchFunc;
+		var folder, result;
 
-                folderpath = folderpath.asArray;
+		folderpath = folderpath.asArray;
 
-                folder = this.atPath(folderpath);
-                if (folder.isKindOf(this.nodeType), {
-                        result = this.doTreeDo(folderpath, folder, branchFunc, leafFunc, argument0, postBranchFunc);
-                }, {
-                        result = nil;
-                });
+		folder = this.atPath(folderpath);
+		if (folder.isKindOf(this.nodeType), {
+			result = this.doTreeDo(folderpath, folder, branchFunc, leafFunc, argument0, postBranchFunc);
+		}, {
+			result = nil;
+		});
 
-                ^result;
+		^result;
 
-        }
-        doTreeDo {
-                arg path, object, branchFunc, leafFunc, argument, postBranchFunc;
-                var result;
+	}
+	doTreeDo {
+		arg path, object, branchFunc, leafFunc, argument, postBranchFunc;
+		var result;
 
-                if (object.isKindOf(this.nodeType), {
-                        if (branchFunc.notNil, {
-                                result = branchFunc.value(path, object, argument);
-                        }, {
-                                result = argument;
-                        });
-                        object.keysValuesDo({
-                                arg name, subobject;
-                                this.doTreeDo(path ++ [name], subobject, branchFunc, leafFunc, result, postBranchFunc)
-                        });
-                        if (postBranchFunc.notNil, {
-                                result = postBranchFunc.value(path, object, result);
-                        });
-                        ^result
-                }, {
-                        leafFunc.value(path, object, argument);
-                })
-        }
+		if (object.isKindOf(this.nodeType), {
+			if (branchFunc.notNil, {
+				result = branchFunc.value(path, object, argument);
+			}, {
+				result = argument;
+			});
+			object.keysValuesDo({
+				arg name, subobject;
+				this.doTreeDo(path ++ [name], subobject, branchFunc, leafFunc, result, postBranchFunc)
+			});
+			if (postBranchFunc.notNil, {
+				result = postBranchFunc.value(path, object, result);
+			});
+			^result
+		}, {
+			leafFunc.value(path, object, argument);
+		})
+	}
 
-       treeCollect {
-                arg branchFunc, leafFunc, postBranchFunc;
-                var result;
+	treeCollect { arg branchFunc, leafFunc, postBranchFunc;
+		var result;
+		result = this.doTreeCollect([], this.dictionary, branchFunc, leafFunc, postBranchFunc);
+		^result;
+	}
+	doTreeCollect { arg path, object, branchFunc, leafFunc, postBranchFunc;
+		var confirm, collection, result;
 
-                result = this.doTreeCollect([], this.dictionary, branchFunc, leafFunc, postBranchFunc);
-                ^result;
-        }
-        doTreeCollect {
-                arg path, object, branchFunc, leafFunc, postBranchFunc;
-                var confirm, collection, result;
+		if (object.isKindOf(this.nodeType), {
+			if (branchFunc.notNil, {
+				#confirm, result = branchFunc.value(path, object);
+			}, {
+				#confirm, result = [true, nil]
+			});
+			if (confirm, {
+				collection = [];
+				object.keysValuesDo({
+					arg name, subobject;
+					collection = collection.add(this.doTreeCollect(path ++ [name], subobject,
+						branchFunc, leafFunc, postBranchFunc));
+				});
+				collection.removeAllSuchThat({arg item; item.isNil});
+				if (postBranchFunc.notNil, {
+					result = postBranchFunc.value(path, object, collection);
+				}, {
+					result = nil;
+				});
+				^result
+			}, {
+				^nil
+			});
+		}, {
+			^leafFunc.value(path, object)
+		});
+	}
 
-                if (object.isKindOf(this.nodeType), {
-                        if (branchFunc.notNil, {
-                                #confirm, result = branchFunc.value(path, object);
-                        }, {
-                                #confirm, result = [true, nil]
-                        });
-                        if (confirm, {
-                                collection = [];
-                                object.keysValuesDo({
-                                        arg name, subobject;
-                                        collection = collection.add(this.doTreeCollect(path ++ [name], subobject,
-                                                                        branchFunc, leafFunc, postBranchFunc));
-                                });
-                                collection.removeAllSuchThat({arg item; item.isNil});
-                                if (postBranchFunc.notNil, {
-                                        result = postBranchFunc.value(path, object, collection);
-                                }, {
-                                        result = nil;
-                                });
-                                ^result
-                        }, {
-                                ^nil
-                        });
-                }, {
-                        ^leafFunc.value(path, object)
-                });
-        }
+	sortedTreeDo {
+		arg branchFunc, leafFunc, argument0, postBranchFunc, sortFunc;
+		var result;
 
-        sortedTreeDo {
-                arg branchFunc, leafFunc, argument0, postBranchFunc, sortFunc;
-                var result;
+		result = this.doSortedTreeDo([], this.dictionary, branchFunc, leafFunc, argument0, postBranchFunc, sortFunc);
+		^result;
+	}
+	doSortedTreeDo {
+		arg path, object, branchFunc, leafFunc, argument, postBranchFunc, sortFunc;
+		var result;
 
-                result = this.doSortedTreeDo([], this.dictionary, branchFunc, leafFunc, argument0, postBranchFunc, sortFunc);
-                ^result;
-        }
-        doSortedTreeDo {
-                arg path, object, branchFunc, leafFunc, argument, postBranchFunc, sortFunc;
-                var result;
+		sortFunc = sortFunc ? {arg a, b; a < b};
 
-                sortFunc = sortFunc ? {arg a, b; a < b};
+		if (object.isKindOf(this.nodeType), {
+			if (branchFunc.notNil, {
+				result = branchFunc.value(path, object, argument);
+			}, {
+				result = argument;
+			});
+			object.sortedKeysValuesDo({
+				arg name, subobject;
+				this.doSortedTreeDo(path ++ [name], subobject, branchFunc, leafFunc, result, postBranchFunc, sortFunc)
+			});
+			if (postBranchFunc.notNil, {
+				postBranchFunc.value(path, object, result);
+			});
+			^result
+		}, {
+			leafFunc.value(path, object, argument);
+		})
+	}
 
-                if (object.isKindOf(this.nodeType), {
-                        if (branchFunc.notNil, {
-                                result = branchFunc.value(path, object, argument);
-                        }, {
-                                result = argument;
-                        });
-                        object.sortedKeysValuesDo({
-                                arg name, subobject;
-                                this.doSortedTreeDo(path ++ [name], subobject, branchFunc, leafFunc, result, postBranchFunc, sortFunc)
-                        });
-                        if (postBranchFunc.notNil, {
-                                postBranchFunc.value(path, object, result);
-                        });
-                        ^result
-                }, {
-                        leafFunc.value(path, object, argument);
-                })
-        }
+	leafDoInBranch {
+		arg folderpath, function;
+		var path, folder;
 
-        leafDoInBranch {
-                arg folderpath, function;
-                var path, folder;
+		folderpath = folderpath.asArray;
 
-                folderpath = folderpath.asArray;
-
-                folder = this.atPath(folderpath);
-                if (folder.notNil && folder.isKindOf(this.nodeType), {
-                        folder.keysValuesDo({
-                                arg name, object;
-                                if (object.isKindOf(this.nodeType).not, {
-                                        function.value(folderpath ++ [name], object);
-                                });
-                        });
-                });
-        }
+		folder = this.atPath(folderpath);
+		if (folder.notNil && folder.isKindOf(this.nodeType), {
+			folder.keysValuesDo({
+				arg name, object;
+				if (object.isKindOf(this.nodeType).not, {
+					function.value(folderpath ++ [name], object);
+				});
+			});
+		});
+	}
 }
 
 
