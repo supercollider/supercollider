@@ -87,6 +87,8 @@ struct SC_LID
 	int getKeyState(int evtCode);
 	int getAbsInfo(int evtCode, struct input_absinfo *info);
 
+	int setLedState( int evtCode, int evtValue );
+
 	int grab(int flag);
 	void handleEvent(struct input_event& evt);
 
@@ -179,7 +181,7 @@ SC_LID::~SC_LID()
 
 int SC_LID::open(const char* path)
 {
-	m_fd = ::open(path, O_RDONLY);
+	m_fd = ::open(path, O_RDWR);
 
 	if (m_fd == -1) {
 		error("LID: %s\n", strerror(errno));
@@ -254,6 +256,23 @@ int SC_LID::getAbsInfo(int evtCode, struct input_absinfo* info)
 		error("LID: %s\n", strerror(errno));
 		return errFailed;
 	}
+	return errNone;
+}
+
+int SC_LID::setLedState( int evtCode, int evtValue )
+{ // added by marije baalman
+	struct input_event ev;
+// 	post( "set led state called, putting event" );
+	ev.code = evtCode;
+	ev.value = evtValue;
+	ev.type = EV_LED;
+// 	post( "m_fd %i", m_fd );
+// 	post( "code %i, value %i ", evtCode, evtValue );
+	if ( write(m_fd, &ev, sizeof(struct input_event)) == -1 )
+		{
+// 		post( "error writing event" );
+		return errFailed;
+		}
 	return errNone;
 }
 
@@ -667,6 +686,29 @@ int prLID_Stop(VMGlobals* g, int numArgsPushed)
 	return SC_LIDManager::instance().stop();
 }
 
+int prLID_SetLedState(VMGlobals *g, int numArgsPushed)
+{
+// 	post( "set led state primitive called" );
+	PyrSlot* args = g->sp - 2;
+	int evtCode, evtValue;
+	int err;
+
+	PyrObject* obj = SC_LID::getObject(args+0);
+	if (!obj) return errWrongType;
+
+	err = slotIntVal(args+1, &evtCode);
+	if (err) return err;
+
+	err = slotIntVal(args+2, &evtValue);
+	if (err) return err;
+
+	SC_LID* dev = SC_LID::getDevice(obj);
+	if (!dev) return errFailed;
+
+	SetInt(args, dev->setLedState(evtCode,evtValue));
+	return errNone;
+}
+
 void SC_LIDInit()
 {
 	int base, index;
@@ -689,6 +731,7 @@ void SC_LIDInit()
 	definePrimitive(base, index++, "_LID_Grab", prLID_Grab, 2, 0);
 	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
 	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
+	definePrimitive(base, index++, "_LID_SetLedState", prLID_SetLedState, 3, 0); // added by Marije Baalman
 }
 #else // !HAVE_LID
 int prLID_Start(VMGlobals* g, int numArgsPushed)

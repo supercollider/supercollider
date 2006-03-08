@@ -23,6 +23,21 @@ d = LID("/dev/input/trackball");
 // device name relative to LID.deviceRoot
 d = LID("gamepad");
 
+// build a table of the available devices:
+
+LID.buildDeviceTable
+
+// buildDeviceTable builds a table of the devices found in LID.deviceRoot+"/event",
+// trying to open all that it finds, looking up its name and closing them again.
+// the results is returned and can later be accessed by LID.deviceTable.
+// you can query another name than "/event" by passing an argument.
+// (the search will be: LID.deviceRoot++"/"++name++"*")
+
+LID.buildDeviceTable( "mouse" );
+
+// is likely to give the info that the devices could not be opened, as "mouse"
+// uses another interface (you can of course access mice via the "event" interface)
+
 // =====================================================================
 // Querying device information
 // =====================================================================
@@ -122,6 +137,24 @@ LID.keyboardDeviceSpec.keys.do { | key |
 	d[key].action = { | slot | [key, slot.value].postln }
 }
 )
+
+// =====================================================================
+// LED's
+// =====================================================================
+
+// some devices have LEDs which can be turned on and off. These show up
+// with d.caps as events of type 0x0011
+
+d = LID("/dev/input/event0");
+// LED's can be turned on:
+d.setLEDState( 0x0, 1 )
+// (LED 0x0 should be available on any keyboard)
+// and off:
+d.setLEDState( 0x0, 0 )
+d.close;
+
+// setLEDState( evtCode, evtValue ): value should be 1 or 0
+
 
 // =====================================================================
 // Grabbing devices

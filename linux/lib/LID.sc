@@ -30,7 +30,7 @@ LIDAbsInfo {
 
 LID {
 	var dataPtr, <path, <info, <caps, <spec, <slots, <isGrabbed=false, <>action;
-	classvar all, eventTypes, <>specs, <>deviceRoot = "/dev/input";
+	classvar all, eventTypes, <>specs, <>deviceRoot = "/dev/input", <deviceTable;
 	
 	*initClass {
 		all = [];
@@ -66,6 +66,26 @@ LID {
 		});
 		this.prStartEventLoop;
 	}
+
+	*buildDeviceTable{ |name|
+		var table, devices, d;
+		name = name ? "event";
+		devices = (deviceRoot++"/"++name++"*").pathMatch;
+		deviceTable = Array.fill( devices.size, 0 );
+		devices.do{ |it,i|
+			d = try { LID( it ) };
+			if ( d != nil,
+				{
+					deviceTable[i] = [ it, d.info ];
+					d.close;
+				},
+				{
+					deviceTable[i] = [ it, "could not open device" ];
+				});
+		};
+		^deviceTable;
+	}
+
 	*mouseDeviceSpec {
 		^(
 			// key
@@ -315,6 +335,9 @@ LID {
 	getLEDState { | evtCode |
 		^0
 	}
+	setLEDState { |evtCode, evtValue |
+		^this.prSetLedState( evtCode, evtValue )
+	}
 	grab { | flag = true |
 		// useful when using mouse or keyboard. be sure to have an
 		// 'exit point', or your desktop will be rendered useless ...
@@ -399,6 +422,11 @@ LID {
 		}{
 			slots[evtType][evtCode].value_(evtValue);
 		}
+	}
+	prSetLedState { |evtCode, evtValue|	// added by Marije Baalman
+		// set LED value
+		_LID_SetLedState
+		^this.primitiveFailed
 	}
 }
 

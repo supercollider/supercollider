@@ -33,7 +33,7 @@ PLATFORM = os.uname()[0].lower()
 CPU = os.uname()[4].lower()
 
 ANY_FILE_RE = re.compile('.*')
-HELP_FILE_RE = re.compile('.*\.(rtf(d)?|sc)$')
+HELP_FILE_RE = re.compile('.*\.(rtf(d)?|scd)$')
 SC_FILE_RE = re.compile('.*\.sc$')
 SRC_FILE_RE = re.compile('.*\.(c(pp)|h)$')
 
