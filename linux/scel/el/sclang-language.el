@@ -74,6 +74,10 @@ The expressions are joined as alternatives with the \\| operator."
   "\\(?:Meta_\\)?[A-Z]\\(?:\\sw\\|\\s_\\)*"
   "Regular expression matching class names.")
 
+(defconst sclang-primitive-name-regexp
+  (concat "_[A-Z]" sclang-symbol-regexp)
+  "Regular expression matching primitive names.")
+
 (defconst sclang-symbol-name-regexp
   (sclang-regexp-concat
    sclang-method-name-regexp
@@ -206,20 +210,20 @@ low-resource systems."
 (defvar sclang-symbol-history nil
   "List of recent symbols read from the minibuffer.")
 
-(defvar sclang--symbol-table-file nil)
+(defvar sclang-symbol-table-file nil)
 
 (sclang-set-command-handler
  'symbolTable
  (lambda (arg)
    (when (and sclang-use-symbol-table arg)
-     (let ((file sclang--symbol-table-file))
+     (let ((file sclang-symbol-table-file))
        (when (and file (file-exists-p file))
 	 (with-current-buffer (get-buffer-create (sclang-make-buffer-name "SymbolTable" t))
 	   (erase-buffer)
 	   (unwind-protect
 	       (insert-file-contents file)
 	     (delete-file file))
-	   (setq sclang--symbol-table-file nil)
+	   (setq sclang-symbol-table-file nil)
 	   (goto-char (point-min))
 	   (let ((table (condition-case nil
 			    (read (current-buffer))
@@ -233,7 +237,7 @@ low-resource systems."
 	    (when sclang-use-symbol-table
 	      (let ((file (make-temp-file "sclang-symbol-table.")))
 		(when (and file (file-exists-p file))
-		  (setq sclang--symbol-table-file file)
+		  (setq sclang-symbol-table-file file)
 		  (sclang-perform-command 'symbolTable file))))))
 
 (add-hook 'sclang-library-shutdown-hook
@@ -360,8 +364,13 @@ Return value is nil or (beg end) of defun."
 ;; buffer object access
 ;; =====================================================================
 
-(defun sclang-symbol-at-point ()
-  "Return the symbol at point, or nil if not a valid symbol."
+(defun sclang-symbol-at-point (&optional symbol-name-regexp)
+  "Return the symbol at point, or nil if not a valid symbol.
+
+The argument SYMBOL-NAME-REGEXP can be used to specify the type of
+symbol matched, candidates are `sclang-symbol-name-regexp' and
+`sclang-primitive-name-regexp', the default is
+`sclang-symbol-name-regexp'."
   (save-excursion
     (with-syntax-table sclang-mode-syntax-table
       (let ((case-fold-search nil)
@@ -377,7 +386,7 @@ Return value is nil or (beg end) of defun."
 	       (skip-syntax-forward "w_")
 	       (setq end (point))))
 	(goto-char beg)
-	(if (looking-at sclang-symbol-name-regexp)
+	(if (looking-at (or symbol-name-regexp sclang-symbol-name-regexp))
 	    (buffer-substring-no-properties beg end))))))
 
 (defun sclang-line-at-point ()
@@ -652,6 +661,35 @@ are considered."
       (sclang-read-symbol "Dump interface of: "
 			  class 'sclang-class-name-p t))))
   (sclang-eval-string (format "%s.dumpFullInterface" class)))
+
+;; =====================================================================
+;; cscope interface
+;; =====================================================================
+
+(defcustom sclang-source-directory nil
+  "Toplevel SuperCollider source directory.
+
+This variable is used by `sclang-find-primitve' to locate the cscope
+database."
+  :group 'sclang-interface
+  :version "21.4.1"
+  :type 'directory
+  :options '(must-match))
+
+(defun sclang-find-primitive (name)
+  "Find primitive name a cscope database.
+
+The database is searched in `sclang-source-directory', or the
+current-directory, iff `sclang-source-directoy' is nil."
+  (interactive
+   (let ((default (sclang-symbol-at-point sclang-primitive-name-regexp)))
+     (list (read-string (sclang-make-prompt-string "Find primitive: " default)
+			nil nil default))))
+  (if (require 'xcscope nil t)
+      (let ((cscope-initial-directory sclang-source-directory))
+	(cscope-find-this-text-string
+	 (if (string-match "^_" name) name (concat "_" name))))
+    (sclang-message "cscope not available")))
 
 ;; =====================================================================
 ;; sc-code formatting

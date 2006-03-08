@@ -108,7 +108,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (interactive)
   (with-sclang-post-buffer (erase-buffer)))
 
-(defun sclang--init-post-buffer ()
+(defun sclang-init-post-buffer ()
   "Initialize post buffer."
   (get-buffer-create sclang-post-buffer)
   (with-sclang-post-buffer
@@ -198,7 +198,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 ;; library startup/shutdown
 ;; =====================================================================
 
-(defvar sclang--library-initialized-p nil)
+(defvar sclang-library-initialized-p nil)
 
 (defcustom sclang-library-startup-hook nil
   "*Hook run after initialization of the SCLang process."
@@ -216,28 +216,28 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 ;; * sclang opens fifo for communication with emacs during class tree
 ;;   initialization
 ;; * sclang sends '_init' command
-;; * '_init' command handler calls sclang--on-library-startup to complete
+;; * '_init' command handler calls sclang-on-library-startup to complete
 ;;   initialization
 
 (defun sclang-library-initialized-p ()
   (and (sclang-get-process)
-       sclang--library-initialized-p))
+       sclang-library-initialized-p))
 
-(defun sclang--on-library-startup ()
-  (sclang-message "Initializing library ...")
-  (setq sclang--library-initialized-p t)
+(defun sclang-on-library-startup ()
+  (sclang-message "Initializing library...")
+  (setq sclang-library-initialized-p t)
   (run-hooks 'sclang-library-startup-hook)
-  (sclang-message "Initializing library ... Done"))
+  (sclang-message "Initializing library...done"))
 
-(defun sclang--on-library-shutdown ()
+(defun sclang-on-library-shutdown ()
   (run-hooks 'sclang-library-shutdown-hook)
-  (setq sclang--library-initialized-p nil))
+  (setq sclang-library-initialized-p nil))
 
 ;; =====================================================================
 ;; process hooks
 ;; =====================================================================
 
-(defun sclang--process-sentinel (proc msg)
+(defun sclang-process-sentinel (proc msg)
   (with-sclang-post-buffer
    (goto-char (point-max))
    (insert
@@ -245,9 +245,9 @@ If EOB-P is non-nil, positions cursor at end of buffer."
     (format "*** %s %s ***" proc (substring msg 0 -1))
     "\n\n"))
   (when (memq (process-status proc) '(exit signal))
-    (sclang--on-library-shutdown)))
+    (sclang-on-library-shutdown)))
 
-(defun sclang--process-filter (process string)
+(defun sclang-process-filter (process string)
   (let ((buffer (process-buffer process)))
     (with-current-buffer buffer
       (when (and (> sclang-max-post-buffer-size 0)
@@ -308,14 +308,14 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (interactive)
   (sclang-stop)
   (sit-for 1)
-  (sclang--init-post-buffer)
-  (sclang--start-command-process)
+  (sclang-init-post-buffer)
+  (sclang-start-command-process)
   (let ((process-connection-type nil))
     (let ((proc (apply 'start-process
 		       sclang-process sclang-post-buffer
 		       sclang-program (sclang-make-options))))
-      (set-process-sentinel proc 'sclang--process-sentinel)
-      (set-process-filter proc 'sclang--process-filter)
+      (set-process-sentinel proc 'sclang-process-sentinel)
+      (set-process-filter proc 'sclang-process-filter)
       (set-process-coding-system proc 'mule-utf-8 'mule-utf-8)
       (process-kill-without-query proc)
       proc)))
@@ -339,7 +339,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 	(incf i)
 	(sit-for 0.5))))
   (sclang-kill)
-  (sclang--release-command-fifo))
+  (sclang-release-command-fifo))
 
 ;; =====================================================================
 ;; command process
@@ -359,68 +359,68 @@ Change this if \"cat\" has a non-standard name or location."
   :group 'sclang-programs
   :type 'string)
 
-(defconst sclang--command-process "SCLang Command"
+(defconst sclang-command-process "SCLang Command"
   "Subprocess for receiving command results from sclang.")
 
-(defvar sclang--command-fifo nil
+(defvar sclang-command-fifo nil
   "FIFO for communicating with the subprocess.")
 
-(defun sclang--delete-command-fifo ()
-  (and sclang--command-fifo
-       (file-exists-p sclang--command-fifo)
-       (delete-file sclang--command-fifo)))
+(defun sclang-delete-command-fifo ()
+  (and sclang-command-fifo
+       (file-exists-p sclang-command-fifo)
+       (delete-file sclang-command-fifo)))
 
-(defun sclang--release-command-fifo ()
-  (sclang--delete-command-fifo)
-  (setq sclang--command-fifo nil))
+(defun sclang-release-command-fifo ()
+  (sclang-delete-command-fifo)
+  (setq sclang-command-fifo nil))
 
-(defun sclang--create-command-fifo ()
-  (setq sclang--command-fifo (make-temp-name
+(defun sclang-create-command-fifo ()
+  (setq sclang-command-fifo (make-temp-name
 			      (expand-file-name
 			       "sclang-command-fifo." temporary-file-directory)))
-  (sclang--delete-command-fifo)
+  (sclang-delete-command-fifo)
   (let ((res (call-process sclang-mkfifo-program
 			   nil t t
-			   sclang--command-fifo)))
+			   sclang-command-fifo)))
     (unless (eq 0 res)
       (message "SCLang: Couldn't create command fifo")
-      (setq sclang--command-fifo nil))))
+      (setq sclang-command-fifo nil))))
 
-(defun sclang--command-process-sentinel (proc msg)
+(defun sclang-command-process-sentinel (proc msg)
   (and (memq (process-status proc) '(exit signal))
-       (sclang--release-command-fifo)))
+       (sclang-release-command-fifo)))
 
-(defun sclang--start-command-process ()
-  (sclang--create-command-fifo)
-  (when sclang--command-fifo
+(defun sclang-start-command-process ()
+  (sclang-create-command-fifo)
+  (when sclang-command-fifo
     ;; sclang gets the fifo path via the environment
-    (setenv "SCLANG_COMMAND_FIFO" sclang--command-fifo)
+    (setenv "SCLANG_COMMAND_FIFO" sclang-command-fifo)
     (let ((process-connection-type nil))
       (let ((proc (start-process
-		   sclang--command-process nil
-		   sclang-cat-program sclang--command-fifo)))
-	(set-process-sentinel proc 'sclang--command-process-sentinel)
-	(set-process-filter proc 'sclang--command-process-filter)
+		   sclang-command-process nil
+		   sclang-cat-program sclang-command-fifo)))
+	(set-process-sentinel proc 'sclang-command-process-sentinel)
+	(set-process-filter proc 'sclang-command-process-filter)
 	;; this is important. use a unibyte stream without eol
 	;; conversion for communication.
 	(set-process-coding-system proc 'no-conversion 'no-conversion)
 	(process-kill-without-query proc)))
-    (unless (get-process sclang--command-process)
+    (unless (get-process sclang-command-process)
       (message "SCLang: Couldn't start command process"))))
 
-(defvar sclang--command-process-previous nil
+(defvar sclang-command-process-previous nil
   "Unprocessed command process output.")
 
-(defun sclang--command-process-filter (proc string)
-  (when sclang--command-process-previous
-    (setq string (concat sclang--command-process-previous string)))
+(defun sclang-command-process-filter (proc string)
+  (when sclang-command-process-previous
+    (setq string (concat sclang-command-process-previous string)))
   (let (end)
     (while (and (> (length string) 3)
 		(>= (length string)
 		    (setq end (+ 4 (sclang-string-to-int32 string)))))
-      (sclang--handle-command-result (car (read-from-string string 4 end)))
+      (sclang-handle-command-result (car (read-from-string string 4 end)))
       (setq string (substring string end))))
-  (setq sclang--command-process-previous string))
+  (setq sclang-command-process-previous string))
 
 ;; =====================================================================
 ;; command interface
@@ -441,35 +441,44 @@ Change this if \"cat\" has a non-standard name or location."
 		       "Emacs.lispPerformCommand(%o, %o, false)"
 		       symbol args)))
 
-(defun sclang--default-command-handler (fun arg)
+(defun sclang-default-command-handler (fun arg)
+  "Default command handler.
+Displays short message on error."
   (condition-case nil
       (funcall fun arg)
     (error (sclang-message "Error in command handler") nil)))
 
-(defun sclang--debug-command-handler (fun arg)
+(defun sclang-debug-command-handler (fun arg)
+  "Debugging command handler.
+Enters debugger on error."
   (let ((debug-on-error t)
 	(debug-on-signal t))
     (funcall fun arg)))
 
-(defvar sclang--command-handler 'sclang--default-command-handler)
+(defvar sclang-command-handler 'sclang-default-command-handler
+  "Function called when handling command result.")
 
-(defun sclang-debug-command-handler (&optional arg)
+(defun sclang-toggle-debug-command-handler (&optional arg)
+  "Toggle debugging of command handler.
+With arg, activate debugging iff arg is positive."
   (interactive "P")
-  (setq sclang--command-handler (if arg
-				    'sclang--default-command-handler
-				  'sclang--debug-command-handler))
+  (setq sclang-command-handler
+	(if (or (and arg (> arg 0))
+		(eq sclang-command-handler 'sclang-debug-command-handler))
+	    'sclang-default-command-handler
+	  'sclang-default-command-handler))
   (sclang-message "Command handler debugging %s."
-		  (if (eq sclang--command-handler 'sclang--debug-command-handler)
+		  (if (eq sclang-command-handler 'sclang-debug-command-handler)
 		      "enabled"
 		    "disabled")))
 
-(defun sclang--handle-command-result (list)
+(defun sclang-handle-command-result (list)
   (condition-case nil
       (let ((fun (get (nth 0 list) 'sclang-command-handler))
 	    (arg (nth 1 list))
 	    (id  (nth 2 list)))
 	(when (functionp fun)
-	  (let ((res (funcall sclang--command-handler fun arg)))
+	  (let ((res (funcall sclang-command-handler fun arg)))
 	    (when id
 	      (sclang-eval-string
 	       (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))
@@ -479,8 +488,8 @@ Change this if \"cat\" has a non-standard name or location."
 ;; code evaluation
 ;; =====================================================================
 
-(defconst sclang--token-interpret-cmd-line (char-to-string #X1b))
-(defconst sclang--token-interpret-print-cmd-line (char-to-string #X0c))
+(defconst sclang-token-interpret-cmd-line (char-to-string #X1b))
+(defconst sclang-token-interpret-print-cmd-line (char-to-string #X0c))
 
 (defcustom sclang-eval-line-forward t
   "*If non-nil `sclang-eval-line' advances to the next line."
@@ -497,7 +506,7 @@ Change this if \"cat\" has a non-standard name or location."
   "Send STRING to the sclang process for evaluation and print the result
 if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
   (sclang-send-string
-   (if print-p sclang--token-interpret-print-cmd-line sclang--token-interpret-cmd-line)
+   (if print-p sclang-token-interpret-print-cmd-line sclang-token-interpret-cmd-line)
    string))
 
 (defun sclang-eval-expression (string &optional silent-p)
@@ -545,7 +554,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 
 (defun sclang-eval-sync (string)
   "Eval STRING in sclang and return result as a lisp value."
-  (let ((proc (get-process sclang--command-process)))
+  (let ((proc (get-process sclang-command-process)))
     (if (and (processp proc) (eq (process-status proc) 'run))
 	(let ((time (current-time)) (tick 10000) elt)
 	  (sclang-perform-command 'evalSCLang string time)
@@ -561,6 +570,45 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 		(setq sclang-eval-results (delq elt sclang-eval-results)))
 	    (error "SCLang sync eval timeout")))
       (error "SCLang Command process not running"))))
+
+;; =====================================================================
+;; searching
+;; =====================================================================
+
+;; (defun sclang-help-file-paths ()
+;;   "Return a list of help file paths."
+
+
+;; (defun sclang-grep-help-files ()
+;;   (interactive)
+;;   (let ((sclang-grep-prompt "Search help files: ")
+;; 	(sclang-grep-files (mapcar 'cdr sclang-help-topic-alist)))
+;;     (call-interactively 'sclang-grep-files)))
+
+;; (defvar sclang-grep-history nil)
+
+;; (defcustom sclang-grep-case-fold-search t
+;;   "*Non-nil if sclang-grep-files should ignore case."
+;;   :group 'sclang-interface
+;;   :version "21.4"
+;;   :type 'boolean)
+
+;; (defvar sclang-grep-files nil)
+;; (defvar sclang-grep-prompt "Grep: ")
+
+;; (defun sclang-grep-files (regexp)
+;;   (interactive
+;;    (let ((grep-default (or (when current-prefix-arg (sclang-symbol-at-point))
+;; 			   (car sclang-grep-history))))
+;;      (list (read-from-minibuffer sclang-grep-prompt
+;; 				 grep-default
+;; 				 nil nil 'sclang-grep-history))))
+;;   (grep-compute-defaults)
+;;   (grep (concat grep-program
+;; 		" -n"
+;; 		(and sclang-grep-case-fold-search " -i")
+;; 		" -e" regexp
+;; 		" " (mapconcat 'shell-quote-argument sclang-grep-files " "))))
 
 ;; =====================================================================
 ;; workspace
@@ -619,7 +667,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 ;; default command handlers
 ;; =====================================================================
 
-(sclang-set-command-handler '_init (lambda (arg) (sclang--on-library-startup)))
+(sclang-set-command-handler '_init (lambda (arg) (sclang-on-library-startup)))
 
 (sclang-set-command-handler
  '_eval
@@ -643,7 +691,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 (add-to-list 'command-switch-alist
 	     (cons "sclang-debug"
 		   (lambda (switch)
-		     (sclang-debug-command-handler))))
+		     (sclang-toggle-debug-command-handler 1))))
 
 (add-to-list 'command-switch-alist
 	     (cons "scmail"
