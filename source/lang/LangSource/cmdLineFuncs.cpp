@@ -150,6 +150,11 @@ void initCocoaFilePrimitives()
 {
 }
 
+void initCocoaBridgePrimitives();
+void initCocoaBridgePrimitives()
+{
+}
+
 // CR ADDED
 void initRendezvousPrimitives();
 void initRendezvousPrimitives()
