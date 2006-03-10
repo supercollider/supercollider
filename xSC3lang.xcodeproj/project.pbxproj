@@ -230,6 +230,7 @@
 /* End PBXApplicationTarget section */
 
 /* Begin PBXBuildFile section */
+		6A2536BB09C1C9360045AEB7 /* CocoaBridgePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */; };
 		6A40715507C7240E003E9C23 /* SCSoundFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A40715407C7240E003E9C23 /* SCSoundFileView.h */; };
 		6A40717407C72426003E9C23 /* SCTextView.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A40717307C72426003E9C23 /* SCTextView.M */; };
 		6A40718607C72B26003E9C23 /* SCSoundFileView.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A40718507C72B26003E9C23 /* SCSoundFileView.M */; };
@@ -798,6 +799,7 @@
 /* Begin PBXFileReference section */
 		43C4FB05050E298F004C2729 /* libraryConfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = libraryConfig.h; sourceTree = "<group>"; };
 		43C4FB06050E29C9004C2729 /* libraryConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = libraryConfig.cpp; sourceTree = "<group>"; };
+		6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaBridgePrimitives.M; sourceTree = "<group>"; };
 		6A40715407C7240E003E9C23 /* SCSoundFileView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCSoundFileView.h; sourceTree = "<group>"; };
 		6A40717307C72426003E9C23 /* SCTextView.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCTextView.M; sourceTree = "<group>"; };
 		6A40718507C72B26003E9C23 /* SCSoundFileView.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCSoundFileView.M; sourceTree = "<group>"; };
@@ -1259,8 +1261,11 @@
 				CFF7A369058AC2B80096CD03 /* AIHTMLDecoder.m */,
 				CFF7A36A058AC2B80096CD03 /* AIStringAdditions.m */,
 				CFF7A36B058AC2B80096CD03 /* AITextAttributes.m */,
+				6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */,
+				F5889A2C0397F2F801A87B78 /* CocoaFilePrimitives.M */,
 				F50D058202E69B6B01CA2799 /* DrawBackground.M */,
 				F50D058302E69B6B01CA2799 /* GetStringFromUser.m */,
+				908DBC360507C63D00000098 /* GoToPanel.M */,
 				F50D058402E69B6B01CA2799 /* GUIPrimitives.M */,
 				F50D058502E69B6B01CA2799 /* main.m */,
 				F50D058602E69B6B01CA2799 /* MyDocument.M */,
@@ -1276,11 +1281,9 @@
 				F50D058F02E69B6B01CA2799 /* syntaxColorize.M */,
 				F50D059002E69B6B01CA2799 /* TextFinder.m */,
 				F50D059102E69B6B01CA2799 /* UserPanel.M */,
-				F5889A2C0397F2F801A87B78 /* CocoaFilePrimitives.M */,
 				C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */,
 				9286AE9E057D30B9000EBAEB /* SCService.mm */,
 				C21B4673046D847B00A87B78 /* TabletEvents.m */,
-				908DBC360507C63D00000098 /* GoToPanel.M */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -2004,6 +2007,7 @@
 				6AAC6D6508FEDC0C006134E1 /* fftlib.c in Sources */,
 				B22686290916E0B500FEBB03 /* SC_DirUtils.cpp in Sources */,
 				88FB09AC096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				6A2536BB09C1C9360045AEB7 /* CocoaBridgePrimitives.M in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
