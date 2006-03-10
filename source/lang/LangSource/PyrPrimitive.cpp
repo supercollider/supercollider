@@ -3965,6 +3965,10 @@ void initSpeechPrimitives();
                 
 void initCocoaFilePrimitives();
         initCocoaFilePrimitives();
+		
+void initCocoaBridgePrimitives();
+		initCocoaBridgePrimitives();
+		
 #endif
 
 // CR ADDED
