@@ -150,7 +150,17 @@ extern bool compiledOK;
 }
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-	post("window will close ... \n");
+   pthread_mutex_lock (&gLangMutex);	
+	PyrObject * pobj = [self getSCObject];
+	if(compiledOK && pobj){
+		PyrSymbol *method = getsym("doAction");
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, pobj); 
+		runInterpreter(g, method, 1);
+		g->canCallOS = false;
+	}
+    pthread_mutex_unlock (&gLangMutex);	
 }
 @end
 
