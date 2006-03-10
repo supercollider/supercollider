@@ -497,7 +497,7 @@ Pstutter : FilterPattern {
 		while ({
 			(inevent = stream.next(event)).notNil
 		},{
-			(nn = nstream.next).notNil.if({
+			(nn = nstream.next(event)).notNil.if({
 				nn.abs.do({
 					event = inevent.copy.yield;
 				});
@@ -515,8 +515,8 @@ PdurStutter : Pstutter { // float streams
 		var durs = pattern.asStream;
 		var stutts = n.asStream;
 		while({
-			(dur = durs.next).notNil
-			and: {(stut = stutts.next).notNil}
+			(dur = durs.next(event)).notNil
+			and: {(stut = stutts.next(event)).notNil}
 		},{
 			if(stut > 0,{ // 0 skips it
 				if(stut > 1,{
