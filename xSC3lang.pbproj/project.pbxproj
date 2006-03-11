@@ -31,6 +31,20 @@
 //6A2
 //6A3
 //6A4
+		6A243A9C09C35248003F7F5C = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			path = CocoaBridgePrimitives.M;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		6A243A9D09C35248003F7F5C = {
+			fileRef = 6A243A9C09C35248003F7F5C;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		6A40715407C7240E003E9C23 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -3147,6 +3161,7 @@
 				F50D059002E69B6B01CA2799,
 				F50D059102E69B6B01CA2799,
 				F5889A2C0397F2F801A87B78,
+				6A243A9C09C35248003F7F5C,
 				C26BDCCC03D0B4E900A87B78,
 				9286AE9E057D30B9000EBAEB,
 				C21B4673046D847B00A87B78,
@@ -4112,6 +4127,7 @@
 				6AAC6D6508FEDC0C006134E1,
 				88ECD4230909A2E60031FA96,
 				FE63C87D09826DFB00564599,
+				6A243A9D09C35248003F7F5C,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
