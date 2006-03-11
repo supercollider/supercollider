@@ -296,7 +296,7 @@ CleanupStream : Stream {
 
 PauseStream : Stream
 {
-	var <stream, <originalStream, <clock, <nextBeat, <streamHasEnded=false;
+	var <stream, <originalStream, <clock, <nextBeat, <streamHasEnded=false, isWaiting = false;
 	
 	*new { arg argStream, clock; 
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default) 
@@ -310,14 +310,29 @@ PauseStream : Stream
 		clock = argClock ? clock ? TempoClock.default;
 		streamHasEnded = false;
 		stream = originalStream; 
-		clock.play(this, quant);
+		isWaiting = true;	// make sure that accidental play/stop/play sequences
+						// don't cause memory leaks
+		clock.play({
+			if(isWaiting and: { nextBeat.isNil }) {
+				clock.sched(0, this);
+				isWaiting = false;
+			};
+			nil
+		}, quant);
+		^this
 	}
 	reset { ^originalStream.reset }
-	stop {  stream = nextBeat = nil  }
+	stop {
+		stream = nil;
+		isWaiting = false;
+	}
 	removedFromScheduler { this.stop }
 	wasStopped { ^streamHasEnded.not and: { stream.isNil } }
 	
-	pause { stream = nextBeat = nil }
+	pause {
+		stream = nil;
+		isWaiting = false;
+	}
 	resume { arg argClock, quant=1.0; 
 		^this.play(clock ? argClock, false, quant) 
 	}
@@ -364,15 +379,16 @@ EventStreamPlayer : PauseStream {
 	*new { arg stream, event;
 		^super.new(stream).event_(event ? Event.default);
 	}
-
-	play { arg argClock, doReset = false, quant=1.0;
-		if (stream.notNil) { "already playing".postln; ^this };
-		if (doReset) { this.reset };
-		clock = argClock ? clock ? TempoClock.default;
-		streamHasEnded = false;
-		stream = originalStream; 
-		clock.play(this, quant);
-	}
+	
+		// play can and should inherit from PauseStream, don't know why it's duplicated here
+//	play { arg argClock, doReset = false, quant=1.0;
+//		if (stream.notNil) { "already playing".postln; ^this };
+//		if (doReset) { this.reset };
+//		clock = argClock ? clock ? TempoClock.default;
+//		streamHasEnded = false;
+//		stream = originalStream; 
+//		clock.play(this, quant);
+//	}
 	
 	stop { stream.next(nil); stream = nextBeat = nil;  }
 	mute { muteCount = muteCount + 1; }
