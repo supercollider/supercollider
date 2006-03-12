@@ -411,7 +411,7 @@ source/common/scsynthsend.cpp
 ''')
 if PLATFORM == 'darwin':
     commonSources += ['source/common/dlopen.c']
-commonEnv.Library('common', commonSources)
+commonEnv.Library('build/common', commonSources)
 
 # ======================================================================
 # source/server
@@ -424,7 +424,7 @@ serverEnv.Append(
                '#headers/server'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
     LIBS = ['common', 'pthread', 'dl'],
-    LIBPATH = '.')
+    LIBPATH = 'build')
 libscsynthEnv = serverEnv.Copy(
     PKGCONFIG_NAME = 'libscsynth',
     PKGCONFIG_PREFIX = FINAL_PREFIX,
@@ -476,10 +476,10 @@ source/server/SC_World.cpp
 
 scsynthSources = ['source/server/scsynth_main.cpp']
 
-libscsynth = serverEnv.SharedLibrary('scsynth', libscsynthSources)
+libscsynth = serverEnv.SharedLibrary('build/scsynth', libscsynthSources)
 env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
 
-scsynth = serverEnv.Program('scsynth', scsynthSources, LIBS = ['scsynth'])
+scsynth = serverEnv.Program('build/scsynth', scsynthSources, LIBS = ['scsynth'])
 env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [scsynth]))
 
 # ======================================================================
@@ -493,6 +493,9 @@ pluginEnv.Append(
                '#headers/server']
     )
 plugins = []
+
+def make_plugin_target(name):
+    return os.path.join('build', 'plugins', name)
 
 # simple plugins
 for name in Split('''
@@ -515,17 +518,17 @@ UnaryOpUGens
 '''):
     plugins.append(
         pluginEnv.SharedLibrary(
-        name, os.path.join('source', 'plugins', name + '.cpp')))
+        make_plugin_target(name), os.path.join('source', 'plugins', name + '.cpp')))
 
 # fft ugens
 fftSources = Split('source/plugins/fftlib.c source/plugins/SCComplex.cpp')
 plugins.append(
     pluginEnv.SharedLibrary(
-    'FFT_UGens', ['source/plugins/FFT_UGens.cpp'] + fftSources))
+    make_plugin_target('FFT_UGens'), ['source/plugins/FFT_UGens.cpp'] + fftSources))
     
 plugins.append(
     pluginEnv.SharedLibrary(
-    'PV_ThirdParty',
+    make_plugin_target('PV_ThirdParty'),
     ['source/plugins/Convolution.cpp',
      'source/plugins/FFT2InterfaceTable.cpp',
      'source/plugins/FeatureDetection.cpp',
@@ -534,7 +537,7 @@ plugins.append(
 # diskio ugens
 diskIOEnv = pluginEnv.Copy(
     LIBS = ['common'],
-    LIBPATH = '.'
+    LIBPATH = 'build'
     )
 diskIOSources = [
     diskIOEnv.SharedObject('source/plugins/SC_SyncCondition', 'source/server/SC_SyncCondition.cpp'),
@@ -542,14 +545,14 @@ diskIOSources = [
 merge_lib_info(diskIOEnv, libraries['sndfile'])
 plugins.append(
     diskIOEnv.SharedLibrary(
-    'DiskIO_UGens', diskIOSources))
+    make_plugin_target('DiskIO_UGens'), diskIOSources))
 
 # ui ugens
 if features['x11']:
     macUGensEnv = pluginEnv.Copy()
     merge_lib_info(macUGensEnv, libraries['x11'])
     plugins.append(
-        macUGensEnv.SharedLibrary('MacUGens', 'source/plugins/MacUGens.cpp'))
+        macUGensEnv.SharedLibrary(make_plugin_target('MacUGens'), 'source/plugins/MacUGens.cpp'))
 
 env.Alias('install-plugins', env.Install(
     pkg_lib_dir(INSTALL_PREFIX, 'plugins'), plugins))
@@ -566,8 +569,9 @@ langEnv.Append(
                '#headers/server',
                '#source/lang/LangSource/erase-compiler'],
     LIBS = ['common', 'scsynth', 'pthread', 'dl', 'm'],
-    LIBPATH = '.'
+    LIBPATH = 'build'
     )
+
 libsclangEnv = langEnv.Copy(
     PKGCONFIG_NAME = 'libsclang',
     PKGCONFIG_PREFIX = FINAL_PREFIX,
@@ -635,10 +639,10 @@ source/lang/LangPrimSource/PyrUnixPrim.cpp
 sclangSources = ['source/lang/LangSource/cmdLineFuncs.cpp']
 
 if env['LANG']:
-    sclang = langEnv.Program('sclang', sclangSources, LIBS = ['sclang', 'scsynth'])
-    env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
-    libsclang = langEnv.SharedLibrary('sclang', libsclangSources)
+    libsclang = langEnv.SharedLibrary('build/sclang', libsclangSources)
     env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
+    sclang = langEnv.Program('build/sclang', sclangSources, LIBS = ['sclang', 'scsynth'])
+    env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
 
 # ======================================================================
 # installation
