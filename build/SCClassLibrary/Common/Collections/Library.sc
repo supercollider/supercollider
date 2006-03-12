@@ -380,17 +380,19 @@ Library : LibraryBase
 Archive : LibraryBase 
 {
 	classvar global;
+	classvar <>archiveDir;
 	
 	*global { ^global }
 	*global_ { arg obj; global = obj; }
 	
 	*initClass {
 		global = this.new;
+		archiveDir = String.scDir;
 	}
 
 	*read { arg filename;
 		var expandedFileName;
-		expandedFileName = filename ?? (String.scDir ++ "/archive.sctxar");
+		expandedFileName = filename ?? (archiveDir ++ "/archive.sctxar");
 		if (File.exists(expandedFileName)) {
 			if (expandedFileName.endsWith(".scar")) {
 				global = this.readBinaryArchive(expandedFileName);
@@ -404,7 +406,7 @@ Archive : LibraryBase
 	}
 	*write { arg filename;
 		var expandedFileName;
-		expandedFileName = filename ?? (String.scDir ++ "/archive.sctxar");
+		expandedFileName = filename ?? (archiveDir ++ "/archive.sctxar");
 		global.writeArchive(expandedFileName);
 	}
 }
