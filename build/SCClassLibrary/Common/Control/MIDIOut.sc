@@ -36,7 +36,7 @@ MIDIClient {
 				MIDIEndPoint(list.at(1).at(i), list.at(2).at(i), id)
 			});
 			destinations = list.at(3).collect({arg id, i;
-				MIDIEndPoint(list.at(4).at(i), list.at(4).at(i), id)
+				MIDIEndPoint(list.at(5).at(i), list.at(4).at(i), id)
 			});
 		});
 	}
