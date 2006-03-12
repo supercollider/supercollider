@@ -47,12 +47,6 @@
 void closeAllGUIScreens();
 void initGUI();
 void initGUIPrimitives();
-void initSCViewPrimitives();
-void initCocoaFilePrimitives();
-void initRendezvousPrimitives();
-void initSpeechPrimitives();
-
-long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
 
 extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long collect);
 
@@ -396,22 +390,32 @@ void initGUIPrimitives()
 	SC_LanguageClient::instance()->onLibraryStartup();
 }
 
+void initSCViewPrimitives();
 void initSCViewPrimitives()
 {
 }
 
+void initCocoaFilePrimitives();
 void initCocoaFilePrimitives()
 {
 }
 
+void initCocoaBridgePrimitives();
+void initCocoaBridgePrimitives()
+{
+}
+
+void initRendezvousPrimitives();
 void initRendezvousPrimitives()
 {
 }
 
+void initSpeechPrimitives();
 void initSpeechPrimitives()
 {
 }
 
+long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
 long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2)
 {
     return 0;
