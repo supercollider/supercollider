@@ -83,7 +83,7 @@ void* gstate_update_func(void* arg)
 		gstate->mouseX = (float)p.h * rscreenWidth;
 		gstate->mouseY = (float)p.v * rscreenHeight;
 		gstate->mouseButton = Button();
-		GetKeys((long*)gstate->keys);
+		GetKeys((BigEndianLong*)gstate->keys);
 		usleep(17000);
 	}
 	
