@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pmono
@@ -21,8 +21,8 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-Plays one instance of a synthDef.  The pattern pairs define changes in that one synth's controls.\
-If event[\\id] is not nil, Pmono simply directs its pattern changes to that node.\
+Plays one instance of a synth.  The pattern pairs define changes in that one synth's controls.\
+If event[\\id] is not nil, Pmono simply directs its pattern changes to that node and does not create an extra synth.\
 \
 examples:\
 \
@@ -34,38 +34,37 @@ p.stop\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
-// multi channel expansion is supported:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 // multi channel expansion is supported:\cf3 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-
-\f2\fs18 \cf0 p = Pmono("default", \\dur, 0.2, \\freq, Pwhite(1,8) * 100, \\detune, [0,2,5,1]).play\
+\cf3 p = \cf4 Pmono\cf3 (\cf5 "default"\cf3 , \cf6 \\dur\cf3 , 0.2, \cf6 \\freq\cf3 , \cf4 Pwhite\cf3 (1,8) * 100, \cf6 \\detune\cf3 , [0,2,5,1]).play\
 \
 p.stop\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs24 \cf0 \
+\cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-
-\f2\fs18 \cf0 \
+\cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs24 \cf0 // external duration control is possible, the following example will end after 5 seconds\
-// or you can stop it sooner with a stop message\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs18 \cf0 \
+\cf2 // the following example will end after 5 seconds\cf3 \
+\cf2 // or you can stop it sooner with a stop message\cf3 \
+\
 (\
+\cf4 var\cf3  p;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-\cf0 	p = PatternConductor(	\
-		Pfindur(5,\
-		\cf2 Pset(\cf0 \\detune,Pwhite(0,1.0) * [0,1,3,7],\cf2 \
-			Ppar\cf0 ([\
-				Pmono("default", \\dur, 0.2, \\freq, Pwhite(1,8) * 100 )\
-				\
-				,\cf2 Pmono\cf0 (\cf3 "default"\cf0 , \cf4 \\dur\cf0 , 0.1, \cf4 \\freq\cf0 , \cf2 Pwhite\cf0 (1,8) * 300)\
+\cf3 	p = \cf4 Pfindur\cf3 (5,\
+		\cf4 Pset\cf3 (\cf6 \\detune\cf3 ,\cf4 Pwhite\cf3 (0,1.0) * [0,1,3,7],\
+			\cf4 Ppar\cf3 ([\
+				\cf4 Pmono\cf3 (\cf5 "default"\cf3 , \cf6 \\dur\cf3 , 0.2, \cf6 \\freq\cf3 , \cf4 Pwhite\cf3 (1,8) * 100 ),\
+				\cf4 Pmono\cf3 (\cf5 "default"\cf3 , \cf6 \\dur\cf3 , 0.1, \cf6 \\freq\cf3 , \cf4 Pwhite\cf3 (1,8) * 300)\
 			])\
-		))\
+		)\
 	);\
-	p.play;\
+	\
+	z = p.play;\
 )\
-p.stop}
+z.stop;\
+\
+\
+}
