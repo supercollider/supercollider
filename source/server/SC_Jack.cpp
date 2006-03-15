@@ -51,8 +51,9 @@ static const char* kJackDefaultClientName = "SuperCollider";
 //   Delay-Locked-Loop after
 //   Fons Adriaensen, "Using a DLL to filter time"
 
-#define SC_JACK_USE_DLL 1
+#define SC_JACK_USE_DLL 0
 #define SC_JACK_DEBUG_DLL 0
+#define SC_JACK_DLL_BW 0.012
 
 class SC_JackDLL
 {
@@ -407,9 +408,9 @@ void SC_JackDriver::Run()
 	static int tick = 0;
 	if (++tick >= 10) {
 		tick = 0;
-		scprintf("DLL: t %.6f p %.9f sr %.6f e %.9f avg(e) %.9f\n",
+		scprintf("DLL: t %.6f p %.9f sr %.6f e %.9f avg(e) %.9f inc %.9f\n",
 				 mDLL.PeriodTime(), mDLL.Period(), mDLL.SampleRate(),
-				 mDLL.Error(), mDLL.AvgError());
+				 mDLL.Error(), mDLL.AvgError(), mOSCincrement * kOSCtoSecs);
 	}
 #endif
 #else
@@ -574,7 +575,7 @@ void SC_JackDriver::Reset(double sampleRate, int bufferSize)
 	mDLL.Reset(
 		mSampleRate,
 		mNumSamplesPerCallback,
-		0.12,
+		SC_JACK_DLL_BW,
 		sc_JackOSCTimeSeconds());
 #endif
 }
