@@ -230,20 +230,20 @@ BusPlug : AbstractFunction {
 	
 	playToBundle { arg bundle, out, numChannels, 
 				group, multi=false, vol, fadeTime, addAction;
-		this.newMonitorToBundle(bundle);
+		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group, multi, vol, fadeTime, addAction);
 	}
 	
 	playNToBundle { arg bundle, outs, amps, ins, vol, fadeTime, group, addAction;
-		this.newMonitorToBundle(bundle);
+		this.newMonitorToBundle(bundle); // todo: numChannels
 		group = group ?? { if(parentGroup.isPlaying) {parentGroup}{this.homeServer.asGroup} };
 		monitor.playNBusToBundle(bundle, outs, amps, bus, vol, fadeTime, group, addAction);
 	
 	}
 	
-	newMonitorToBundle { arg bundle;
-		this.initBus(\audio);
+	newMonitorToBundle { arg bundle, numChannels;
+		this.initBus(\audio, numChannels);
 		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
 		if(monitor.isNil) { monitor = Monitor.new };
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
