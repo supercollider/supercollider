@@ -167,15 +167,18 @@ Instr  {
 	*objectAt { arg name;
 		var symbolized,search,path,pathParts,rootPath;
 		symbolized = Instr.symbolizeName(name);
-		search = Library.atList(symbolized.addFirst(Instr));
+		search = Library.atList([Instr] ++ symbolized);
 		if(search.notNil,{ ^search });
-	
+
+		// look for a file
 		if((path = this.findPath(symbolized)).isNil,{
 			^nil
 		});
 		path.loadPath;
+		
 		// now see if its there
-		^Library.atList(symbolized.addFirst(Instr));
+		^Library.atList([Instr] ++ symbolized);
+		// else it returns nil : not found
 	}
 	*findPath { arg symbolized;
 		var pathParts,rootPath,path;
@@ -185,13 +188,17 @@ Instr  {
 		// so remove last item :
 		if (pathParts.size > 1, { pathParts.pop });
 
-		// .rtf .txt .sc or plain
+		// .rtf .txt .sc .scd or plain
 		rootPath = (Instr.dir ++ pathParts.join("/"));
+		
 		path = rootPath ++ ".rtf";
+		
 		if(File.exists(path),{ ^path });
 		path = rootPath ++ ".txt";
 		if(File.exists(path),{ ^path });
 		path = rootPath ++ ".sc";
+		if(File.exists(path),{ ^path });
+		path = rootPath ++ ".scd";
 		if(File.exists(path),{ ^path });
 		path = rootPath;
 		if(File.exists(path),{ ^path });
