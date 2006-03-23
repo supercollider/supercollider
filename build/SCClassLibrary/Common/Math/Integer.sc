@@ -115,13 +115,17 @@ Integer : SimpleNumber {
 
 	asStringToBase { | base=10, width=8 |
 		var rest = this, string, mask;
-		base = base.max(2);
+		if (base.inclusivelyBetween(2, 36).not) {
+			base = clip(base, 2, 36);
+			warn(thisMethod + ": base not between 2 and 36");
+		};
 		string = String.newClear(width);
 		if (base.isPowerOfTwo) {
 			mask = base - 1;
+			base = base.trailingZeroes;
 			width.do { | i |
 				string.put(width-i-1, (rest & mask).asDigit);
-				rest = rest div: base;
+				rest = rest >> base;
 			};
 		} {
 			width.do { | i |
