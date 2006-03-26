@@ -10,6 +10,15 @@ Stethoscope {
 		.index_(index ? 0).zoom_(zoom).allocBuffer(bufsize, bufnum).run;
 	}
 	
+	*tileBounds {
+		var screenBounds = SCWindow.screenBounds;
+		var x = 544 + (ugenScopes.size * 222);
+		var right = x + 212;
+		var y = floor(right / screenBounds.width) * 242 + 10;
+		if(right > screenBounds.right) { x = floor(right % screenBounds.width / 222) * 222 };
+		^Rect(x, y, 212, 212)
+	}
+	
 	makeBounds { arg size=212; ^Rect(322, 10, size, size) }
 	
 	makeWindow { arg view;
