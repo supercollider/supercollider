@@ -1,6 +1,6 @@
 + UGen {
 	scope { arg name = "UGen Scope", bufsize = 4096, zoom;
-		^SynthDef.wrap({ var bus, numChannels, rate, scope, screenBounds, x, y, right;
+		^SynthDef.wrap({ var bus, numChannels, rate, scope;
 			numChannels = this.numChannels;
 			rate = this.rate;
 			bus = Bus.perform(rate, Server.internal, numChannels);
@@ -10,15 +10,9 @@
 			);
 			
 			{
-				screenBounds = SCWindow.screenBounds;
-				x = 544 + (Stethoscope.ugenScopes.size * 222);
-				right = x + 212;
-				y = floor(right / screenBounds.width) * 242 + 10;
-				if(right > screenBounds.right, {x = floor(right%screenBounds.width / 222) 
-					* 222; }); 
 				scope = Stethoscope.new(Server.internal, numChannels, bus.index, bufsize, zoom, 
 					rate);
-				scope.window.name_(name.asString).bounds_(Rect(x, y, 212, 212));
+				scope.window.name_(name.asString).bounds_(Stethoscope.tileBounds);
 				Stethoscope.ugenScopes.add(scope);
 				scope.window.onClose = { scope.free; bus.free; 
 					Stethoscope.ugenScopes.remove(scope)};
@@ -32,7 +26,7 @@
 
 + Array {
 	scope { arg name = "UGen Scope", bufsize = 4096, zoom;
-		^SynthDef.wrap({ var bus, numChannels, rate, scope, screenBounds, x, y, right;
+		^SynthDef.wrap({ var bus, numChannels, rate, scope;
 			numChannels = this.numChannels;
 			rate = this.rate;
 			bus = Bus.perform(rate, Server.internal, numChannels);
@@ -42,15 +36,9 @@
 			);
 			
 			{
-				screenBounds = SCWindow.screenBounds;
-				x = 544 + (Stethoscope.ugenScopes.size * 222);
-				right = x + 212;
-				y = floor(right / screenBounds.width) * 242 + 10;
-				if(right > screenBounds.right, {x = floor(right%screenBounds.width / 222) 
-					* 222; }); 
 				scope = Stethoscope.new(Server.internal, numChannels, bus.index, bufsize, zoom, 
 					rate);
-				scope.window.name_(name.asString).bounds_(Rect(x, y, 212, 212));
+				scope.window.name_(name.asString).bounds_(Stethoscope.tileBounds);
 				Stethoscope.ugenScopes.add(scope);
 				scope.window.onClose = { scope.free; bus.free; 					Stethoscope.ugenScopes.remove(scope)};
 				CmdPeriod.doOnce({ {scope.window.close}.defer });
