@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A23B144D09D8482400F2959A /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A23B144C09D8482400F2959A /* libsndfile.a */; };
 		A25EAC9609444D5000B00A87 /* clz.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAC7E09444D5000B00A87 /* clz.h */; };
 		A25EAC9709444D5000B00A87 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAC7F09444D5000B00A87 /* Hash.h */; };
 		A25EAC9809444D5000B00A87 /* SC_BoundsMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAC8009444D5000B00A87 /* SC_BoundsMacros.h */; };
@@ -174,7 +175,6 @@
 		A25EADF009444EEF00B00A87 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A25EADEC09444EEF00B00A87 /* CoreServices.framework */; };
 		A25EADF109444EEF00B00A87 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A25EADED09444EEF00B00A87 /* Foundation.framework */; };
 		A25EADF209444EEF00B00A87 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A25EADEE09444EEF00B00A87 /* IOKit.framework */; };
-		A25EADF809444F3D00B00A87 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A25EADF709444F3D00B00A87 /* libsndfile.a */; };
 		A25EADFA09444F5600B00A87 /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A25EADF909444F5600B00A87 /* libscsynth.a */; };
 		A25EAE090944525300B00A87 /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A25EAE080944525300B00A87 /* Python.framework */; };
 		A25EAE9D094467DB00B00A87 /* ChangeCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAE9C094467DB00B00A87 /* ChangeCounter.h */; };
@@ -212,6 +212,7 @@
 /* End PBXBuildStyle section */
 
 /* Begin PBXFileReference section */
+		A23B144C09D8482400F2959A /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = ../../../../lib/libsndfile.a; sourceTree = SOURCE_ROOT; };
 		A25EAC7E09444D5000B00A87 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = clz.h; path = ../../headers/plugin_interface/clz.h; sourceTree = SOURCE_ROOT; };
 		A25EAC7F09444D5000B00A87 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Hash.h; path = ../../headers/plugin_interface/Hash.h; sourceTree = SOURCE_ROOT; };
 		A25EAC8009444D5000B00A87 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_BoundsMacros.h; path = ../../headers/plugin_interface/SC_BoundsMacros.h; sourceTree = SOURCE_ROOT; };
@@ -382,7 +383,6 @@
 		A25EADEC09444EEF00B00A87 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		A25EADED09444EEF00B00A87 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		A25EADEE09444EEF00B00A87 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
-		A25EADF709444F3D00B00A87 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = ../../../../lib/libsndfile.a; sourceTree = SOURCE_ROOT; };
 		A25EADF909444F5600B00A87 /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = ../../build/libscsynth.a; sourceTree = SOURCE_ROOT; };
 		A25EAE080944525300B00A87 /* Python.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python.framework; path = /System/Library/Frameworks/Python.framework; sourceTree = "<absolute>"; };
 		A25EAE9C094467DB00B00A87 /* ChangeCounter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ChangeCounter.h; path = ../../headers/app/ChangeCounter.h; sourceTree = SOURCE_ROOT; };
@@ -393,7 +393,7 @@
 		A25EB3EB0944842500B00A87 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		A26ECFAD0988DDCD0007F9E1 /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_StandAloneInfo_Darwin.h; path = ../../headers/common/SC_StandAloneInfo_Darwin.h; sourceTree = SOURCE_ROOT; };
 		A26ECFBE0988E7940007F9E1 /* SC_StandAloneInfo_Darwin.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_StandAloneInfo_Darwin.cpp; path = ../../source/common/SC_StandAloneInfo_Darwin.cpp; sourceTree = SOURCE_ROOT; };
-		D2AAC0630554660B00DB518D /*  */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; name = ""; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2AAC0630554660B00DB518D /* PySCLang.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PySCLang.so; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -406,11 +406,11 @@
 				A25EADF009444EEF00B00A87 /* CoreServices.framework in Frameworks */,
 				A25EADF109444EEF00B00A87 /* Foundation.framework in Frameworks */,
 				A25EADF209444EEF00B00A87 /* IOKit.framework in Frameworks */,
-				A25EADF809444F3D00B00A87 /* libsndfile.a in Frameworks */,
 				A25EADFA09444F5600B00A87 /* libscsynth.a in Frameworks */,
 				A25EAE090944525300B00A87 /* Python.framework in Frameworks */,
 				A25EB1580944836D00B00A87 /* ApplicationServices.framework in Frameworks */,
 				A25EB3EC0944842500B00A87 /* Carbon.framework in Frameworks */,
+				A23B144D09D8482400F2959A /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,7 +442,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC0630554660B00DB518D /*  */,
+				D2AAC0630554660B00DB518D /* PySCLang.so */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -730,11 +730,11 @@
 		A25EADE809444E6500B00A87 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A23B144C09D8482400F2959A /* libsndfile.a */,
 				A25EB3EB0944842500B00A87 /* Carbon.framework */,
 				A25EB1570944836D00B00A87 /* ApplicationServices.framework */,
 				A25EAE080944525300B00A87 /* Python.framework */,
 				A25EADF909444F5600B00A87 /* libscsynth.a */,
-				A25EADF709444F3D00B00A87 /* libsndfile.a */,
 				A25EADEB09444EEF00B00A87 /* CoreMIDI.framework */,
 				A25EADEC09444EEF00B00A87 /* CoreServices.framework */,
 				A25EADED09444EEF00B00A87 /* Foundation.framework */,
@@ -920,7 +920,7 @@
 			);
 			name = PySCLang;
 			productName = PySCLang;
-			productReference = D2AAC0630554660B00DB518D /*  */;
+			productReference = D2AAC0630554660B00DB518D /* PySCLang.so */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -1104,18 +1104,21 @@
 		A26ECFA20988DC6B0007F9E1 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = ../../build;
 			};
 			name = Development;
 		};
 		A26ECFA30988DC6B0007F9E1 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = ../../build;
 			};
 			name = Deployment;
 		};
 		A26ECFA40988DC6B0007F9E1 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = ../../build;
 			};
 			name = Default;
 		};
