@@ -30,12 +30,12 @@
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 		server = Server.internal;
 		if(server.serverRunning.not) { "internal server not running!".postln; ^nil };
-		def = this.asSynthDef(fadeTime:fadeTime);
-		outUGen = def.children.detect { |ugen| ugen.class === Out };
+		synthDef = this.asSynthDef(fadeTime:fadeTime);
+		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
 		
 		numChannels = numChannels ?? { if(outUGen.notNil) { (outUGen.inputs.size - 1) } { 1 } };
-		synth = Synth.basicNew(def.name, server);
-		bytes = def.asBytes;
+		synth = Synth.basicNew(synthDef.name, server);
+		bytes = synthDef.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
 		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
