@@ -489,6 +489,7 @@ const int circDiam = 20;
 		view = mTopView;
     if (view) {
         bool flag = view->canReceiveDrag();
+		view->mouseOver(scpoint);
         mTopView->setDragView(flag ? view : 0);
         [self displayIfNeeded];
         return flag ? NSDragOperationEvery : NSDragOperationNone;
@@ -509,6 +510,7 @@ const int circDiam = 20;
     if (view) {
         bool flag = view->canReceiveDrag();
         mTopView->setDragView(flag ? view : 0);
+		view->mouseOver(scpoint);		
         [self displayIfNeeded];
         return flag ? NSDragOperationEvery : NSDragOperationNone;
     } else {
