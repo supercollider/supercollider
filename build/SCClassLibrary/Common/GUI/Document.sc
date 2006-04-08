@@ -119,7 +119,8 @@ Document {
 	}
 	path_{|apath|
 		this.prSetFileName(apath);
-	}	
+	}
+	dir { var path = this.path; ^path !? { path.dirname } }	
 	title {
 		^this.prGetTitle
 	}
