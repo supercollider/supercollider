@@ -1,27 +1,37 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fmodern\fcharset77 Courier;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
-\f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;}
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf0 \
-
-\f1\b\fs36 HPF				2nd order Butterworth highpass filter
-\f2\b0\fs24 \
+\f0\b\fs36 \cf0 HPF				2nd order Butterworth highpass filter
+\f1\b0\fs24 \
 \
 
-\f1\b HPF.ar(in, freq, mul, add)\
+\f0\b HPF.ar(in, freq, mul, add)\
 
-\f2\b0 \
+\f1\b0 \
 A second order high pass filter. \
 
-\f1\b in
-\f2\b0  - input signal to be processed\
+\f0\b in
+\f1\b0  - input signal to be processed\
 
-\f1\b freq
-\f2\b0  - cutoff frequency.\
+\f0\b freq
+\f1\b0  - cutoff frequency.\
 
-\f3 \
-\{ HPF.ar(Saw.ar(200,0.1), FSinOsc.kr(XLine.kr(0.7,300,20),0,3600,4000), 5) \}.play;\
+\f2 \
+
+\fs20 \cf2 \{ \cf3 HPF\cf2 .ar(\cf3 Saw\cf2 .ar(200,0.1), \cf3 FSinOsc\cf2 .kr(\cf3 XLine\cf2 .kr(0.7,300,20),0,3600,4000), 5) \}.play;\
 \
+(\
+\{ 	\cf3 var\cf2  ctl = \cf3 HPF\cf2 .kr(\cf3 LFSaw\cf2 .kr(5), \cf3 SinOsc\cf2 .kr(\cf3 XLine\cf2 .kr(0.07,30,20), 0, 35, 40)) ;\
+	\cf3 SinOsc\cf2 .ar(ctl * 200 + 500);\
+\}.play;\
+)\
+\
+(\
+\{ 	\cf3 var\cf2  ctl = \cf3 HPF\cf2 .kr(LF\cf3 Saw\cf2 .kr(5,0.1), \cf3 MouseX\cf2 .kr(2, 200, 1));\
+	\cf3 SinOsc\cf2 .ar(ctl * 200 + 400) * 0.1;\
+\}.play;\
+)\
 }
