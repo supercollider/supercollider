@@ -345,15 +345,19 @@ extern "C"
 	void Slew_Ctor(Slew* unit);
 
 	void RLPF_next(RLPF *unit, int inNumSamples);
+	void RLPF_next_1(RLPF *unit, int inNumSamples);
 	void RLPF_Ctor(RLPF* unit);
 
 	void RHPF_next(RHPF *unit, int inNumSamples);
+	void RHPF_next_1(RHPF *unit, int inNumSamples);
 	void RHPF_Ctor(RHPF* unit);
 
 	void LPF_next(LPF *unit, int inNumSamples);
+	void LPF_next_1(LPF *unit, int inNumSamples);
 	void LPF_Ctor(LPF* unit);
 
 	void HPF_next(HPF *unit, int inNumSamples);
+	void HPF_next_1(HPF *unit, int inNumSamples);
 	void HPF_Ctor(HPF* unit);
 
 	void BPF_next(BPF *unit, int inNumSamples);
@@ -380,10 +384,12 @@ extern "C"
 	void Ringz_Ctor(Ringz* unit);
 
 	void Formlet_next(Formlet *unit, int inNumSamples);
+	void Formlet_next_1(Formlet *unit, int inNumSamples);
 	void Formlet_Ctor(Formlet* unit);
 
 	void FOS_next_k(FOS *unit, int inNumSamples);
 	void FOS_next_a(FOS *unit, int inNumSamples);
+	void FOS_next_1(FOS *unit, int inNumSamples);
 	void FOS_Ctor(FOS* unit);
 
 	void SOS_next_k(SOS *unit, int inNumSamples);
@@ -628,7 +634,7 @@ void Lag3_Ctor(Lag3* unit)
 
 void OnePole_next_a(OnePole *unit, int inNumSamples)
 {
-	//postbuf("OnePole_next_a\n");
+	//printf("OnePole_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -649,7 +655,7 @@ void OnePole_next_a(OnePole *unit, int inNumSamples)
 void OnePole_next_k(OnePole *unit, int inNumSamples)
 {
 
-	//postbuf("OnePole_next_a\n");
+	//printf("OnePole_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -723,7 +729,7 @@ void OneZero_Ctor(OneZero* unit)
 
 void OneZero_next(OneZero* unit, int inNumSamples)
 {
-	//postbuf("OneZero::next\n");
+	//printf("OneZero::next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -779,7 +785,7 @@ void OneZero_next(OneZero* unit, int inNumSamples)
 
 void Integrator_Ctor(Integrator* unit)
 {	
-	//postbuf("Integrator_Reset\n");
+	//printf("Integrator_Reset\n");
 	SETCALC(Integrator_next);
 	unit->m_b1 = 0.f;
 	unit->m_y1 = 0.f;
@@ -788,7 +794,7 @@ void Integrator_Ctor(Integrator* unit)
 
 void Integrator_next(Integrator* unit, int inNumSamples)
 {
-	//postbuf("Integrator_next_a\n");
+	//printf("Integrator_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -840,7 +846,7 @@ void Decay_Ctor(Decay* unit)
 
 void Decay_next(Decay* unit, int inNumSamples)
 {
-	//postbuf("Decay_next_a\n");
+	//printf("Decay_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -864,7 +870,7 @@ void Decay_next(Decay* unit, int inNumSamples)
 		unit->m_b1 = decayTime == 0.f ? 0.f : exp(log001 / (decayTime * SAMPLERATE));
 		unit->m_decayTime = decayTime;
 		float b1_slope = CALCSLOPE(unit->m_b1, b1);
-		//postbuf("decayTime %g  %g %g\n", unit->m_decayTime, next_b1, b1);
+		//printf("decayTime %g  %g %g\n", unit->m_decayTime, next_b1, b1);
 		LOOP(inNumSamples, 
 			float y0 = ZXP(in); 
 			ZXP(out) = y1 = y0 + b1 * y1;
@@ -897,7 +903,7 @@ void Decay2_Ctor(Decay2 *unit)
 
 void Decay2_next(Decay2* unit, int inNumSamples)
 {
-	//postbuf("Decay2_next_a\n");
+	//printf("Decay2_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -945,7 +951,7 @@ void Decay2_next(Decay2* unit, int inNumSamples)
 
 void LeakDC_Ctor(LeakDC *unit)
 {	
-	//postbuf("LeakDC_Ctor\n");
+	//printf("LeakDC_Ctor\n");
 	SETCALC(LeakDC_next);
 	unit->m_b1 = 0.f;
 	unit->m_x1 = 0.f;
@@ -956,7 +962,7 @@ void LeakDC_Ctor(LeakDC *unit)
 
 void LeakDC_next(LeakDC* unit, int inNumSamples)
 {
-	//postbuf("LeakDC_next_a\n");
+	//printf("LeakDC_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -994,7 +1000,7 @@ void LeakDC_next(LeakDC* unit, int inNumSamples)
 
 void TwoPole_Ctor(TwoPole *unit)
 {	
-	//postbuf("TwoPole_Reset\n");
+	//printf("TwoPole_Reset\n");
 	SETCALC(TwoPole_next);
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -1008,7 +1014,7 @@ void TwoPole_Ctor(TwoPole *unit)
 
 void TwoPole_next(TwoPole* unit, int inNumSamples)
 {
-	//postbuf("TwoPole_next_a\n");
+	//printf("TwoPole_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1069,7 +1075,7 @@ void TwoPole_next(TwoPole* unit, int inNumSamples)
 
 void TwoZero_Ctor(TwoZero* unit)
 {	
-	//postbuf("TwoZero_Reset\n");
+	//printf("TwoZero_Reset\n");
 	SETCALC(TwoZero_next);
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -1082,7 +1088,7 @@ void TwoZero_Ctor(TwoZero* unit)
 
 void TwoZero_next(TwoZero* unit, int inNumSamples)
 {
-	//postbuf("TwoZero_next\n");
+	//printf("TwoZero_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1151,7 +1157,7 @@ void TwoZero_next(TwoZero* unit, int inNumSamples)
 
 void APF_Ctor(APF* unit)
 {	
-	//postbuf("APF_Reset\n");
+	//printf("APF_Reset\n");
 	SETCALC(APF_next);
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -1167,7 +1173,7 @@ void APF_Ctor(APF* unit)
 
 void APF_next(APF* unit, int inNumSamples)
 {
-	//postbuf("APF_next_a\n");
+	//printf("APF_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1242,7 +1248,7 @@ void APF_next(APF* unit, int inNumSamples)
 
 void LPZ1_Ctor(LPZ1* unit)
 {	
-	//postbuf("LPZ1_Reset\n");
+	//printf("LPZ1_Reset\n");
 	SETCALC(LPZ1_next);
 	unit->m_x1 = ZIN0(0);
 	LPZ1_next(unit, 1);
@@ -1251,7 +1257,7 @@ void LPZ1_Ctor(LPZ1* unit)
 
 void LPZ1_next(LPZ1* unit, int inNumSamples)
 {
-	//postbuf("LPZ1_next_a\n");
+	//printf("LPZ1_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1284,7 +1290,7 @@ void LPZ1_next(LPZ1* unit, int inNumSamples)
 
 void HPZ1_Ctor(HPZ1* unit)
 {	
-	//postbuf("HPZ1_Reset\n");
+	//printf("HPZ1_Reset\n");
 	SETCALC(HPZ1_next);
 	unit->m_x1 = ZIN0(0);
 	HPZ1_next(unit, 1);
@@ -1293,7 +1299,7 @@ void HPZ1_Ctor(HPZ1* unit)
 
 void HPZ1_next(HPZ1* unit, int inNumSamples)
 {
-	//postbuf("HPZ1_next\n");
+	//printf("HPZ1_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1313,7 +1319,7 @@ void HPZ1_next(HPZ1* unit, int inNumSamples)
 	);
 	LOOP(inNumSamples & 3, 
 		x0 = ZXP(in); 
-		//postbuf("%d %d %g %g\n", this, inNumSamples, x0, x1);
+		//printf("%d %d %g %g\n", this, inNumSamples, x0, x1);
 		ZXP(out) = 0.5f * (x0 - x1);
 		x1 = x0;
 	);
@@ -1326,17 +1332,17 @@ void HPZ1_next(HPZ1* unit, int inNumSamples)
 
 void Slope_Ctor(Slope* unit)
 {	
-	//postbuf("Slope_Reset\n");
+	//printf("Slope_Reset\n");
 	SETCALC(Slope_next);
 	unit->m_x1 = ZIN0(0);
-	//postbuf("Slope_Reset %g\n", unit->m_x1);
+	//printf("Slope_Reset %g\n", unit->m_x1);
 	Slope_next(unit, 1);
 }
 
 
 void Slope_next(Slope* unit, int inNumSamples)
 {
-	//postbuf("Slope_next_a %g\n", unit->m_x1);
+	//printf("Slope_next_a %g\n", unit->m_x1);
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1358,7 +1364,7 @@ void Slope_next(Slope* unit, int inNumSamples)
 
 void Delay1_Ctor(Delay1* unit)
 {	
-	//postbuf("Delay1_Reset\n");
+	//printf("Delay1_Reset\n");
 	SETCALC(Delay1_next);
 	unit->m_x1 = ZIN0(0);
 	Delay1_next(unit, 1);
@@ -1367,7 +1373,7 @@ void Delay1_Ctor(Delay1* unit)
 
 void Delay1_next(Delay1* unit, int inNumSamples)
 {
-	//postbuf("Delay1_next_a\n");
+	//printf("Delay1_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1483,7 +1489,7 @@ void Delay2_next(Delay2* unit, int inNumSamples)
 
 void LPZ2_Ctor(LPZ2* unit)
 {	
-	//postbuf("LPZ2_Reset\n");
+	//printf("LPZ2_Reset\n");
 	SETCALC(LPZ2_next);
 	unit->m_x1 = unit->m_x2 = ZIN0(0);
 	ZOUT0(0) = 0.f;
@@ -1492,7 +1498,7 @@ void LPZ2_Ctor(LPZ2* unit)
 
 void LPZ2_next(LPZ2* unit, int inNumSamples)
 {
-	//postbuf("LPZ2_next_a\n");
+	//printf("LPZ2_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1525,7 +1531,7 @@ void LPZ2_next(LPZ2* unit, int inNumSamples)
 
 void HPZ2_Ctor(HPZ2* unit)
 {	
-	//postbuf("HPZ2_Reset\n");
+	//printf("HPZ2_Reset\n");
 	SETCALC(HPZ2_next);
 	unit->m_x1 = unit->m_x2 = ZIN0(0);
 	ZOUT0(0) = 0.f;
@@ -1534,7 +1540,7 @@ void HPZ2_Ctor(HPZ2* unit)
 
 void HPZ2_next(HPZ2* unit, int inNumSamples)
 {
-	//postbuf("HPZ2_next_a\n");
+	//printf("HPZ2_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1567,7 +1573,7 @@ void HPZ2_next(HPZ2* unit, int inNumSamples)
 
 void BPZ2_Ctor(BPZ2* unit)
 {	
-	//postbuf("BPZ2_Reset\n");
+	//printf("BPZ2_Reset\n");
 	SETCALC(BPZ2_next);
 	unit->m_x1 = unit->m_x2 = ZIN0(0);
 	ZOUT0(0) = 0.f;
@@ -1576,7 +1582,7 @@ void BPZ2_Ctor(BPZ2* unit)
 
 void BPZ2_next(BPZ2* unit, int inNumSamples)
 {
-	//postbuf("BPZ2_next_a\n");
+	//printf("BPZ2_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1609,7 +1615,7 @@ void BPZ2_next(BPZ2* unit, int inNumSamples)
 
 void BRZ2_Ctor(BRZ2* unit)
 {	
-	//postbuf("BRZ2_Reset\n");
+	//printf("BRZ2_Reset\n");
 	SETCALC(BRZ2_next);
 	unit->m_x1 = unit->m_x2 = ZIN0(0);
 	ZOUT0(0) = 0.f;
@@ -1618,7 +1624,7 @@ void BRZ2_Ctor(BRZ2* unit)
 
 void BRZ2_next(BRZ2* unit, int inNumSamples)
 {
-	//postbuf("BRZ2_next_a\n");
+	//printf("BRZ2_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1651,7 +1657,7 @@ void BRZ2_next(BRZ2* unit, int inNumSamples)
 
 void Slew_Ctor(Slew* unit)
 {	
-	//postbuf("Slew_Reset\n");
+	//printf("Slew_Reset\n");
 	SETCALC(Slew_next);
 	unit->mLevel = 0.f;
 	Slew_next(unit, 1);
@@ -1660,7 +1666,7 @@ void Slew_Ctor(Slew* unit)
 
 void Slew_next(Slew* unit, int inNumSamples)
 {
-	//postbuf("Slew_next_a\n");
+	//printf("Slew_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1678,7 +1684,7 @@ void Slew_next(Slew* unit, int inNumSamples)
 
 /*void Slew_next_1(Slew* unit, int inNumSamples)
 {
-	//postbuf("Slew_next_a\n");
+	//printf("Slew_next_a\n");
 
 	float *out = ZOUT(0);
 	float in = ZIN0(0);
@@ -1698,8 +1704,13 @@ void Slew_next(Slew* unit, int inNumSamples)
 
 void RLPF_Ctor(RLPF* unit)
 {	
-	//postbuf("RLPF_Reset\n");
-	SETCALC(RLPF_next);
+	//printf("RLPF_Reset\n");
+	if (unit->mBufLength == 1) { 
+		SETCALC(RLPF_next_1);
+	} else { 
+		SETCALC(RLPF_next);
+	};
+	
 	unit->m_a0 = 0.f;
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -1713,7 +1724,7 @@ void RLPF_Ctor(RLPF* unit)
 
 void RLPF_next(RLPF* unit, int inNumSamples)
 {
-	//postbuf("RLPF_next\n");
+	//printf("RLPF_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1794,12 +1805,66 @@ void RLPF_next(RLPF* unit, int inNumSamples)
 }
 
 
+void RLPF_next_1(RLPF* unit, int inNumSamples)
+{
+	//printf("RLPF_next_1\n");
+
+	float in = ZIN0(0);
+	float freq = ZIN0(1);
+	float reson = ZIN0(2);
+
+	float y0;
+	float y1 = unit->m_y1;
+	float y2 = unit->m_y2;
+	float a0 = unit->m_a0;
+	float b1 = unit->m_b1;
+	float b2 = unit->m_b2;
+
+	if (freq != unit->m_freq || reson != unit->m_reson) {
+
+		float qres = sc_max(0.001, reson);
+		float pfreq = freq * unit->mRate->mRadiansPerSample;
+		
+		float D = tan(pfreq * qres * 0.5);
+		float C = ((1.f-D)/(1.f+D));
+		float cosf = cos(pfreq);
+		
+		b1 = (1.f + C) * cosf;	
+		b2 = -C;
+		a0 = (1.f + C - b1) * .25;
+
+		y0 = a0 * in + b1 * y1 + b2 * y2;
+		ZOUT0(0) = y0 + 2.f * y1 + y2;
+		y2 = y1; 
+		y1 = y0;
+
+		unit->m_freq = freq;
+		unit->m_reson = reson;
+		unit->m_a0 = a0;
+		unit->m_b1 = b1;
+		unit->m_b2 = b2;
+	} else {
+		y0 = a0 * in + b1 * y1 + b2 * y2;
+		ZOUT0(0) = y0 + 2.f * y1 + y2;
+		y2 = y1; 
+		y1 = y0;
+	}
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+	
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void RHPF_Ctor(RHPF* unit)
 {	
-	//postbuf("RHPF_Reset\n");
-	SETCALC(RHPF_next);
+	//printf("RHPF_Reset\n");
+	if (unit->mBufLength == 1) { 
+		SETCALC(RHPF_next_1);
+	} else { 
+		SETCALC(RHPF_next);
+	};
 	unit->m_a0 = 0.f;
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -1813,7 +1878,7 @@ void RHPF_Ctor(RHPF* unit)
 
 void RHPF_next(RHPF* unit, int inNumSamples)
 {
-	//postbuf("RHPFs_next\n");
+	//printf("RHPFs_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1894,25 +1959,81 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 	
 }
 
+void RHPF_next_1(RHPF* unit, int inNumSamples)
+{
+	//printf("RHPFs_next_1\n");
+
+	float in = ZIN0(0);
+	float freq = ZIN0(1);
+	float reson = ZIN0(2);
+
+	float y0;
+	float y1 = unit->m_y1;
+	float y2 = unit->m_y2;
+	float a0 = unit->m_a0;
+	float b1 = unit->m_b1;
+	float b2 = unit->m_b2;
+
+	if (freq != unit->m_freq || reson != unit->m_reson) {
+
+		float qres = sc_max(0.001, reson);
+		float pfreq = freq * unit->mRate->mRadiansPerSample;
+		
+		float D = tan(pfreq * qres * 0.5);
+		float C = ((1.f-D)/(1.f+D));
+		float cosf = cos(pfreq);
+		
+		b1 = (1.f + C) * cosf;	
+		b2 = -C;
+		a0 = (1.f + C + b1) * .25;
+
+		y0 = a0 * in + b1 * y1 + b2 * y2;
+		ZOUT0(0) = y0 - 2.f * y1 + y2;
+		y2 = y1; 
+		y1 = y0;
+
+		unit->m_freq = freq;
+		unit->m_reson = reson;
+		unit->m_a0 = a0;
+		unit->m_b1 = b1;
+		unit->m_b2 = b2;
+	} else {
+		y0 = a0 * in + b1 * y1 + b2 * y2;
+		ZOUT0(0) = y0 - 2.f * y1 + y2;
+		y2 = y1; 
+		y1 = y0;
+	}
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+	
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void LPF_Ctor(LPF* unit)
 {	
-	////postbuf("LPF_Reset\n");
-	SETCALC(LPF_next);
-	unit->m_a0 = 0.f;
-	unit->m_b1 = 0.f;
-	unit->m_b2 = 0.f;
-	unit->m_y1 = 0.f;
-	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
-	ZOUT0(0) = 0.f;
+	////printf("LPF_Reset\n");
+	
+	if (unit->mBufLength == 1) { 
+		SETCALC(LPF_next_1);
+	} else { 
+
+		SETCALC(LPF_next);
+		unit->m_a0 = 0.f;
+		unit->m_b1 = 0.f;
+		unit->m_b2 = 0.f;
+		unit->m_y1 = 0.f;
+		unit->m_y2 = 0.f;
+		unit->m_freq = 0.f;
+		ZOUT0(0) = 0.f;
+	}
 }
 
 
 void LPF_next(LPF* unit, int inNumSamples)
 {
-	//postbuf("LPF_next\n");
+	//printf("LPF_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -1989,12 +2110,63 @@ void LPF_next(LPF* unit, int inNumSamples)
 	
 }
 
+void LPF_next_1(LPF* unit, int inNumSamples)
+{
+	//printf("LPF_next\n");
+	float in = ZIN0(0);
+	float freq = ZIN0(1);
+
+	float y0;
+	float y1 = unit->m_y1;
+	float y2 = unit->m_y2;
+	float a0 = unit->m_a0;
+	float b1 = unit->m_b1;
+	float b2 = unit->m_b2;
+
+	if (freq != unit->m_freq) {
+
+		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
+		
+		float C = 1.f / tan(pfreq);
+		float C2 = C * C;
+		float sqrt2C = C * sqrt2;
+		a0 = 1.f / (1.f + sqrt2C + C2);
+		b1 = -2.f * (1.f - C2) * a0 ;
+		b2 = -(1.f - sqrt2C + C2) * a0;
+
+		y0 = in + b1 * y1 + b2 * y2; 
+		ZOUT0(0) = a0 * (y0 + 2.f * y1 + y2);
+		y2 = y1; 
+		y1 = y0;
+
+		unit->m_freq = freq;
+		unit->m_a0 = a0;
+		unit->m_b1 = b1;
+		unit->m_b2 = b2;
+	} else {
+	
+		y0 = in + b1 * y1 + b2 * y2; 
+		ZOUT0(0) = a0 * (y0 + 2.f * y1 + y2);
+		y2 = y1; 
+		y1 = y0;
+	
+	}
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+	
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void HPF_Ctor(HPF* unit)
 {	
-	//postbuf("HPF_Reset\n");
-	SETCALC(HPF_next);
+	//printf("HPF_Reset\n");
+	if (unit->mBufLength == 1) { 
+		SETCALC(HPF_next_1);
+	} else { 
+		SETCALC(HPF_next);
+	};
 	unit->m_a0 = 0.f;
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -2007,7 +2179,7 @@ void HPF_Ctor(HPF* unit)
 
 void HPF_next(HPF* unit, int inNumSamples)
 {
-	//postbuf("HPF_next\n");
+	//printf("HPF_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -2084,6 +2256,52 @@ void HPF_next(HPF* unit, int inNumSamples)
 	
 }
 
+void HPF_next_1(HPF* unit, int inNumSamples)
+{
+	//printf("HPF_next\n");
+
+	float in = ZIN0(0);
+	float freq = ZIN0(1);
+
+	float y0;
+	float y1 = unit->m_y1;
+	float y2 = unit->m_y2;
+	float a0 = unit->m_a0;
+	float b1 = unit->m_b1;
+	float b2 = unit->m_b2;
+
+	if (freq != unit->m_freq) {
+
+		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
+
+		float C = tan(pfreq);
+		float C2 = C * C;
+		float sqrt2C = C * sqrt2;
+		a0 = 1.f / (1.f + sqrt2C + C2);
+		b1 = 2.f * (1.f - C2) * a0 ;
+		b2 = -(1.f - sqrt2C + C2) * a0;
+
+		y0 = in + b1 * y1 + b2 * y2; 
+		ZOUT0(0) = a0 * (y0 - 2.f * y1 + y2);
+		y2 = y1; 
+		y1 = y0;
+
+		unit->m_freq = freq;
+		unit->m_a0 = a0;
+		unit->m_b1 = b1;
+		unit->m_b2 = b2;
+	} else {
+		y0 = in + b1 * y1 + b2 * y2; 
+		ZOUT0(0) = a0 * (y0 - 2.f * y1 + y2);
+		y2 = y1; 
+		y1 = y0;
+
+	}
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+	
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void BPF_Ctor(BPF* unit)
@@ -2107,7 +2325,7 @@ void BPF_Ctor(BPF* unit)
 
 void BPF_next(BPF* unit, int inNumSamples)
 {
-	//postbuf("BPF_next\n");
+	//printf("BPF_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -2238,7 +2456,7 @@ void BPF_next_1(BPF* unit, int inNumSamples)
 
 void BRF_Ctor(BRF* unit)
 {	
-	//postbuf("BRF_Reset\n");
+	//printf("BRF_Reset\n");
 	if (unit->mBufLength == 1) { 
 		SETCALC(BRF_next_1);
 	} else { 
@@ -2257,7 +2475,7 @@ void BRF_Ctor(BRF* unit)
 
 void BRF_next(BRF* unit, int inNumSamples)
 {
-	//postbuf("BRF_next\n");
+	//printf("BRF_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -2402,7 +2620,7 @@ void BRF_next_1(BRF* unit, int inNumSamples)
 
 void MidEQ_Ctor(MidEQ* unit)
 {	
-	//postbuf("MidEQ_Reset\n");
+	//printf("MidEQ_Reset\n");
 	SETCALC(MidEQ_next);
 	unit->m_a0 = 0.f;
 	unit->m_b1 = 0.f;
@@ -2418,7 +2636,7 @@ void MidEQ_Ctor(MidEQ* unit)
 
 void MidEQ_next(MidEQ* unit, int inNumSamples)
 {
-	//postbuf("MidEQ_next\n");
+	//printf("MidEQ_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -2512,7 +2730,7 @@ void MidEQ_next(MidEQ* unit, int inNumSamples)
 
 void LowShelf_Ctor(LowShelf* unit)
 {	
-	////postbuf("LowShelf_Reset\n");
+	////printf("LowShelf_Reset\n");
 	SETCALC(LowShelf_next);
 	unit->m_a0 = 0.f;
 	unit->m_b1 = 0.f;
@@ -2526,7 +2744,7 @@ void LowShelf_Ctor(LowShelf* unit)
 
 void LowShelf_next(LowShelf* unit, int inNumSamples)
 {
-	//postbuf("LPF_next\n");
+	//printf("LPF_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -2613,7 +2831,7 @@ float Median_InsertMedian(Median* unit, float value);
 
 void Median_Ctor(Median* unit)
 {	
-	//postbuf("Median_Reset\n");
+	//printf("Median_Reset\n");
 	SETCALC(Median_next);
 	float in = ZIN0(1);
 	unit->m_medianSize = sc_clip((int)ZIN0(0), 0, kMAXMEDIANSIZE);
@@ -2672,7 +2890,7 @@ void Median_InitMedian(Median* unit, long size, float value)
 
 void Median_next(Median* unit, int inNumSamples)
 {
-	//postbuf("Median_next_a\n");
+	//printf("Median_next_a\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
@@ -2688,7 +2906,7 @@ void Median_next(Median* unit, int inNumSamples)
 
 void Resonz_Ctor(Resonz* unit)
 {	
-	//postbuf("Resonz_Reset\n");
+	//printf("Resonz_Reset\n");
 	SETCALC(Resonz_next);
 	unit->m_a0 = 0.f;
 	unit->m_b1 = 0.f;
@@ -2703,7 +2921,7 @@ void Resonz_Ctor(Resonz* unit)
 
 void Resonz_next(Resonz* unit, int inNumSamples)
 {
-	//postbuf("Resonz_next\n");
+	//printf("Resonz_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -2784,7 +3002,7 @@ void Resonz_next(Resonz* unit, int inNumSamples)
 
 void Ringz_Ctor(Ringz* unit)
 {	
-	//postbuf("Ringz_Reset\n");
+	//printf("Ringz_Reset\n");
 	SETCALC(Ringz_next);
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -2798,7 +3016,7 @@ void Ringz_Ctor(Ringz* unit)
 
 void Ringz_next(Ringz* unit, int inNumSamples)
 {
-	//postbuf("Ringz_next\n");
+	//printf("Ringz_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -2873,8 +3091,12 @@ void Ringz_next(Ringz* unit, int inNumSamples)
 
 void Formlet_Ctor(Formlet* unit)
 {	
-	//postbuf("Formlet_Reset\n");
-	SETCALC(Formlet_next);
+	//printf("Formlet_Reset\n");
+	if (unit->mBufLength == 1) { 
+		SETCALC(Formlet_next_1);
+	} else {
+		SETCALC(Formlet_next);
+	};
 	unit->m_b01 = 0.f;
 	unit->m_b02 = 0.f;
 	unit->m_y01 = 0.f;
@@ -2891,7 +3113,7 @@ void Formlet_Ctor(Formlet* unit)
 
 void Formlet_next(Formlet* unit, int inNumSamples)
 {
-	//postbuf("Formlet_next\n");
+	//printf("Formlet_next\n");
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -3007,18 +3229,97 @@ void Formlet_next(Formlet* unit, int inNumSamples)
 
 }
 
+void Formlet_next_1(Formlet* unit, int inNumSamples)
+{
+	//printf("Formlet_next\n");
+
+	float in = ZIN0(0);
+	float freq = ZIN0(1);
+	float attackTime = ZIN0(2);
+	float decayTime = ZIN0(3);
+
+	float y00;
+	float y10;
+	float y01 = unit->m_y01;
+	float y11 = unit->m_y11;
+	float y02 = unit->m_y02;
+	float y12 = unit->m_y12;
+
+	float b01 = unit->m_b01;
+	float b11 = unit->m_b11;
+	float b02 = unit->m_b02;
+	float b12 = unit->m_b12;
+	float ain;
+	
+	if (freq != unit->m_freq || decayTime != unit->m_decayTime || attackTime != unit->m_attackTime) {
+		float ffreq = freq * unit->mRate->mRadiansPerSample;
+		
+		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
+		float twoR = 2.f * R;
+		float R2 = R * R;
+		float cost = (twoR * cos(ffreq)) / (1.f + R2);
+		b01 = twoR * cost;
+		b02 = -R2;
+		
+		R = attackTime == 0.f ? 0.f : exp(log001/(attackTime * SAMPLERATE));
+		twoR = 2.f * R;
+		R2 = R * R;
+		cost = (twoR * cos(ffreq)) / (1.f + R2);
+		b11 = twoR * cost;
+		b12 = -R2;
+		
+			ain = in;
+			y00 = ain + b01 * y01 + b02 * y02; 
+			y10 = ain + b11 * y11 + b12 * y12; 
+			ZOUT0(0) = 0.25f * ((y00 - y02) - (y10 - y12));
+			
+			y02 = y01; 
+			y01 = y00;
+			y12 = y11; 
+			y11 = y10;
+
+		unit->m_freq = freq;
+		unit->m_attackTime = attackTime;
+		unit->m_decayTime = decayTime;
+		unit->m_b01 = b01;
+		unit->m_b02 = b02;
+		unit->m_b11 = b11;
+		unit->m_b12 = b12;
+	} else {
+			ain = in;
+			y00 = ain + b01 * y01 + b02 * y02; 
+			y10 = ain + b11 * y11 + b12 * y12; 
+			ZOUT0(0) = 0.25f * ((y00 - y02) - (y10 - y12));
+
+			y02 = y01; 
+			y01 = y00;
+			y12 = y11; 
+			y11 = y10;
+	}
+	unit->m_y01 = y01;
+	unit->m_y02 = y02;
+	unit->m_y11 = y11;
+	unit->m_y12 = y12;
+
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void FOS_Ctor(FOS* unit)
 {	
-	//postbuf("FOS_Reset\n");
-	if (INRATE(1) == calc_FullRate 
-			&& INRATE(2) == calc_FullRate 
-			&& INRATE(3) == calc_FullRate) {
-		SETCALC(FOS_next_a);
-	} else {
-		SETCALC(FOS_next_k);
-	}
+	//printf("FOS_Reset\n");
+	if (unit->mBufLength == 1) { 
+		SETCALC(FOS_next_1);
+	} else { 
+		if (INRATE(1) == calc_FullRate 
+				&& INRATE(2) == calc_FullRate 
+				&& INRATE(3) == calc_FullRate) {
+			SETCALC(FOS_next_a);
+		} else {
+			SETCALC(FOS_next_k);
+		}
+	};
 	unit->m_y1 = 0.f;
 	unit->m_a0 = 0.f;
 	unit->m_a1 = 0.f;
@@ -3040,6 +3341,23 @@ void FOS_next_a(FOS* unit, int inNumSamples)
 		ZXP(out) = ZXP(a0) * y0 + ZXP(a1) * y1;
 		y1 = y0;
 	);
+	unit->m_y1 = zapgremlins(y1);
+
+}
+
+void FOS_next_1(FOS* unit, int inNumSamples)
+{
+	float in = ZIN0(0);
+	float a0 = ZIN0(1);
+	float a1 = ZIN0(2);
+	float b1 = ZIN0(3);
+	
+	float y1 = unit->m_y1;
+
+	float y0 = in + b1 * y1; 
+	ZOUT0(0) = a0 * y0 + a1 * y1;
+	y1 = y0;
+
 	unit->m_y1 = zapgremlins(y1);
 
 }
@@ -3221,7 +3539,7 @@ void SOS_next_1(SOS *unit, int inNumSamples)	// optimized for SOS.kr
 
 void Compander_Ctor(Compander* unit)
 {	
-	//postbuf("Compander_Reset\n");
+	//printf("Compander_Reset\n");
 	SETCALC(Compander_next);
 	unit->m_clamp = 0.f;
 	unit->m_clampcoef = 0.f;
@@ -3308,7 +3626,7 @@ void Normalizer_Dtor(Normalizer* unit)
 void Normalizer_Ctor(Normalizer* unit)
 {	
 	SETCALC(Normalizer_next);
-	//postbuf("Normalizer_Reset\n");
+	//printf("Normalizer_Reset\n");
 	
 	float dur = ZIN0(2);
 	unit->m_bufsize = (long)(ceil(dur * SAMPLERATE));
@@ -3408,7 +3726,7 @@ void Limiter_Dtor(Limiter* unit)
 
 void Limiter_Ctor(Limiter* unit)
 {	
-	//postbuf("Limiter_Reset\n");
+	//printf("Limiter_Reset\n");
 	SETCALC(Limiter_next);
 	
 	float dur = ZIN0(2);
@@ -3504,7 +3822,7 @@ void Limiter_next(Limiter* unit, int inNumSamples)
 
 void Amplitude_Ctor(Amplitude* unit)
 {
-	//postbuf("Amplitude_Reset\n");
+	//printf("Amplitude_Reset\n");
 	SETCALC(Amplitude_next);
 		
 	float clamp = ZIN0(1);
@@ -3573,7 +3891,7 @@ void Amplitude_next(Amplitude* unit, int inNumSamples)
 
 void DetectSilence_Ctor(DetectSilence* unit)
 {	
-	//postbuf("DetectSilence_Reset\n");
+	//printf("DetectSilence_Reset\n");
 	SETCALC(DetectSilence_next);
 	
 	unit->mThresh = ZIN0(1);
