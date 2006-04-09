@@ -357,9 +357,11 @@ extern "C"
 	void HPF_Ctor(HPF* unit);
 
 	void BPF_next(BPF *unit, int inNumSamples);
+	void BPF_next_1(BPF *unit, int inNumSamples);
 	void BPF_Ctor(BPF* unit);
 
 	void BRF_next(BRF *unit, int inNumSamples);
+	void BRF_next_1(BRF *unit, int inNumSamples);
 	void BRF_Ctor(BRF* unit);
 
 	void Median_next(Median *unit, int inNumSamples);
@@ -386,6 +388,7 @@ extern "C"
 
 	void SOS_next_k(SOS *unit, int inNumSamples);
 	void SOS_next_a(SOS *unit, int inNumSamples);
+	void SOS_next_1(SOS *unit, int inNumSamples);
 	void SOS_Ctor(SOS* unit);
 
 	void Normalizer_next(Normalizer *unit, int inNumSamples);
@@ -2085,8 +2088,12 @@ void HPF_next(HPF* unit, int inNumSamples)
 
 void BPF_Ctor(BPF* unit)
 {	
-	//postbuf("BPF_Reset\n");
-	SETCALC(BPF_next);
+	//printf("BPF_Reset\n");
+	if (unit->mBufLength == 1) { 
+		SETCALC(BPF_next_1);
+	} else { 
+		SETCALC(BPF_next);
+	};
 	unit->m_a0 = 0.f;
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -2178,13 +2185,65 @@ void BPF_next(BPF* unit, int inNumSamples)
 	
 }
 
+void BPF_next_1(BPF* unit, int inNumSamples)
+{
+	//printf("BPF_next_1\n");
+
+	float in = ZIN0(0);
+	float freq = ZIN0(1);
+	float bw = ZIN0(2);
+
+	float y0;
+	float y1 = unit->m_y1;
+	float y2 = unit->m_y2;
+	float a0 = unit->m_a0;
+	float b1 = unit->m_b1;
+	float b2 = unit->m_b2;
+
+	if (freq != unit->m_freq || bw != unit->m_bw) {
+
+		float pfreq = freq * unit->mRate->mRadiansPerSample;
+		float pbw   = bw   * pfreq * 0.5;
+		
+		float C = 1.f / tan(pbw);
+		float D = 2.f * cos(pfreq);
+	
+		float a0 = 1.f / (1.f + C);
+		float b1 = C * D * a0 ;
+		float b2 = (1.f - C) * a0;
+
+		y0 = in + b1 * y1 + b2 * y2; 
+		ZOUT0(0) = a0 * (y0 - y2);
+		y2 = y1; 
+		y1 = y0;
+
+		unit->m_freq = freq;
+		unit->m_bw = bw;
+		unit->m_a0 = a0;
+		unit->m_b1 = b1;
+		unit->m_b2 = b2;
+	} else {
+		y0 = in + b1 * y1 + b2 * y2; 
+		ZOUT0(0) = a0 * (y0 - y2);
+		y2 = y1; 
+		y1 = y0;
+	}
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+	
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void BRF_Ctor(BRF* unit)
 {	
 	//postbuf("BRF_Reset\n");
-	SETCALC(BRF_next);
+	if (unit->mBufLength == 1) { 
+		SETCALC(BRF_next_1);
+	} else { 
+		SETCALC(BRF_next);
+	};
 	unit->m_a0 = 0.f;
 	unit->m_a1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -2279,6 +2338,59 @@ void BRF_next(BRF* unit, int inNumSamples)
 			y2 = y1; 
 			y1 = y0;
 		);
+	}
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+	
+}
+
+
+void BRF_next_1(BRF* unit, int inNumSamples)
+{
+	//printf("BRF_next_1\n");
+
+	float in = ZIN0(0);
+	float freq = ZIN0(1);
+	float bw = ZIN0(2);
+
+	float ay;
+	float y0;
+	float y1 = unit->m_y1;
+	float y2 = unit->m_y2;
+	float a0 = unit->m_a0;
+	float a1 = unit->m_a1;
+	float b2 = unit->m_b2;
+
+	if (freq != unit->m_freq || bw != unit->m_bw) {
+		float pfreq = freq * unit->mRate->mRadiansPerSample;
+		float pbw   = bw   * pfreq * 0.5;
+		
+		float C = tan(pbw);
+		float D = 2.f * cos(pfreq);
+	
+		float a0 = 1.f / (1.f + C);
+		float a1 = -D * a0;
+		float b2 = (1.f - C) * a0;
+				
+		ay = a1 * y1;
+		y0 = in - ay - b2 * y2;
+		ZOUT0(0) = a0 * (y0 + y2) + ay;
+		y2 = y1; 
+		y1 = y0;
+		
+		unit->m_freq = freq;
+		unit->m_bw = bw;
+		unit->m_a0 = a0;
+		unit->m_a1 = a1;
+		unit->m_b2 = b2;
+	} else {
+
+		ay = a1 * y1;
+		y0 = in - ay - b2 * y2;
+		ZOUT0(0) = a0 * (y0 + y2) + ay;
+		y2 = y1; 
+		y1 = y0;
+
 	}
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -2968,16 +3080,23 @@ void FOS_next_k(FOS* unit, int inNumSamples)
 
 void SOS_Ctor(SOS* unit)
 {	
-	//postbuf("SOS_Reset\n");
-	if (INRATE(1) == calc_FullRate 
-			&& INRATE(2) == calc_FullRate 
-			&& INRATE(3) == calc_FullRate 
+	printf("SOS_Reset\n");
+	if (unit->mBufLength != 1) {
+		if (INRATE(1) == calc_FullRate
+			&& INRATE(2) == calc_FullRate
+			&& INRATE(3) == calc_FullRate
 			&& INRATE(4) == calc_FullRate 
 			&& INRATE(5) == calc_FullRate) {
-		SETCALC(SOS_next_a);
-	} else {
-		SETCALC(SOS_next_k);
-	}
+				SETCALC(SOS_next_a);
+			//	printf("SOS_next_a\n");
+			} else { 
+				SETCALC(SOS_next_k); 
+			//	printf("SOS_next_k\n");
+			}
+		} else { 
+			SETCALC(SOS_next_1); 
+		//	printf("SOS_next_1\n");
+		}
 	unit->m_y1 = 0.f;
 	unit->m_a0 = 0.f;
 	unit->m_a1 = 0.f;
@@ -3072,6 +3191,28 @@ void SOS_next_k(SOS *unit, int inNumSamples)
 	unit->m_a2 = a2;
 	unit->m_b1 = b1;
 	unit->m_b2 = b2;
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+}
+
+void SOS_next_1(SOS *unit, int inNumSamples)	// optimized for SOS.kr 
+{
+	float in = ZIN0(0);
+	float a0 = ZIN0(1);
+	float a1 = ZIN0(2);
+	float a2 = ZIN0(3);
+	float b1 = ZIN0(4);
+	float b2 = ZIN0(5);
+	
+	float y0;
+	float y1 = unit->m_y1;
+	float y2 = unit->m_y2; 
+	
+	y0 = in + b1 * y1 + b2 * y2; 
+	ZOUT0(0) = a0 * y0 + a1 * y1 + a2 * y2;
+	y2 = y1; 
+	y1 = y0;
+	
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
