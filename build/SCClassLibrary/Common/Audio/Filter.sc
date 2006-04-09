@@ -228,11 +228,17 @@ FOS : Filter {
 	*ar { arg in = 0.0, a0 = 0.0, a1 = 0.0, b1 = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, a0, a1, b1).madd(mul, add)
 	}
+	*kr { arg in = 0.0, a0 = 0.0, a1 = 0.0, b1 = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', in, a0, a1, b1).madd(mul, add)
+	}
 }
 
 SOS : Filter {
 	*ar { arg in = 0.0, a0 = 0.0, a1 = 0.0, a2 = 0.0, b1 = 0.0, b2 = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, a0, a1, a2, b1, b2).madd(mul, add)
+	}
+	*kr { arg in = 0.0, a0 = 0.0, a1 = 0.0, a2 = 0.0, b1 = 0.0, b2 = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', in, a0, a1, a2, b1, b2).madd(mul, add)
 	}
 }
 
