@@ -82,16 +82,18 @@ Integer : SimpleNumber {
 	
 	nextPowerOfTwo { _NextPowerOfTwo }
 	isPowerOfTwo { _IsPowerOfTwo }
+	nextPowerOf { arg base; ^pow(base, ceil(log(this) / log(base))) }
+	nextPowerOfThree { ^pow(3, ceil(log(this) / log(3))) }
 	leadingZeroes { _CLZ }
 	trailingZeroes { _CTZ }
 	numBits { _NumBits }
 	log2Ceil { _Log2Ceil }
+	grayCode { _BinaryGrayCode }
 	setBit { arg bitNumber, bool = true; _SetBit ^this.primitiveFailed }
 
 	nthPrime { _NthPrime }
 	prevPrime { _PrevPrime }
 	nextPrime { _NextPrime }
-	
 	
 	isPrime {
 		_IsPrime
