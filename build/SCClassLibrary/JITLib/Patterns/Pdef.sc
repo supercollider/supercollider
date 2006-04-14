@@ -34,7 +34,7 @@ PatternProxy : Pattern {
 	
 	defaultEvent {
 	 	// default value: safe time value (better throw error?)
-		if(envir.isNil) { envir = (forward: { 1 }) };
+		if(envir.isNil) { envir = this.class.event };
 		^if(envir[\independent] === true) { (parent:envir) } { envir }
 	}
 	
@@ -55,7 +55,7 @@ PatternProxy : Pattern {
 	}
 	
 	set { arg ... args; 
-		if(envir.isNil) { this.envir = (forward: { 1 }) };
+		if(envir.isNil) { this.envir = this.class.event };
 		args.pairsDo { arg key, val; envir.put(key, val) };
 	}
 	unset { arg ... args;
@@ -64,6 +64,11 @@ PatternProxy : Pattern {
 	
 	get { arg key;
 		^if(envir.notNil) { envir[key] } { nil };
+	}
+	
+	place { arg ... args; 
+		if(envir.isNil) { this.envir = this.class.event };
+		args.pairsDo { arg key, val; envir.putP(key, val) }; // putP is defined in the event.
 	}
 	
 	isEventPattern { ^false }
@@ -140,7 +145,7 @@ PatternProxy : Pattern {
 	
 	/////////////////////////
 	// these following methods are factored out for the benefit of subclasses
-	// they only work for Pdef/Tdef/Pdefn
+	// they only work for Pdef/Tdef/Pdefn. *new works, but is less efficient than *basicNew here
 	
 	*new { arg key, item;
 		var res;
@@ -184,6 +189,28 @@ PatternProxy : Pattern {
 			};
 		};
 	}
+	
+	*event { arg proxyClass = PatternProxy;
+		var res = Event.default;
+		res.parent = res.parent.copy.putAll(
+			(
+			forward: #{ 1 },
+			proxyClass: proxyClass,
+			atP: {|e, key| 
+				var x = e.at(key); 
+				if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x); };
+				x
+			}, 
+			putP: { |e, key, val|
+				var x = e.at(key); 
+				if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x) };
+				x.source_(val)
+			}
+			)
+		);
+		^res
+	}
+	
 	////////////////
 	
 }
