@@ -7,7 +7,7 @@ PatternProxy : Pattern {
 				// quant new pattern insertion. can be [quant, offset]
 				// in EventPatternProxy it can be [quant, offset, onset]
 	
-	classvar <>defaultQuant;
+	classvar <>defaultQuant, defaultEnvir;
 	
 	// basicNew should be used for instantiation: *new is used in Pdef/Tdef/Pdefn
 	*basicNew { arg source;
@@ -191,24 +191,27 @@ PatternProxy : Pattern {
 	}
 	
 	*event { arg proxyClass = PatternProxy;
-		var res = Event.default;
-		res.parent = res.parent.copy.putAll(
-			(
-			forward: #{ 1 },
-			proxyClass: proxyClass,
-			atP: {|e, key| 
-				var x = e.at(key); 
-				if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x); };
-				x
-			}, 
-			putP: { |e, key, val|
-				var x = e.at(key); 
-				if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x) };
-				x.source_(val)
-			}
-			)
-		);
-		^res
+		defaultEnvir = defaultEnvir ?? {
+			var res = Event.default;
+			res.parent = res.parent.copy.putAll(
+				(
+				forward: #{ 1 },
+				proxyClass: proxyClass,
+				atP: {|e, key| 
+					var x = e.at(key); 
+					if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x); };
+					x
+				}, 
+				putP: { |e, key, val|
+					var x = e.at(key); 
+					if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x) };
+					x.source_(val)
+				}
+				)
+			);
+			res
+		};
+		^defaultEnvir
 	}
 	
 	////////////////
