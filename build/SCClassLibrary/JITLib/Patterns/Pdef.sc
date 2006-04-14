@@ -211,7 +211,7 @@ PatternProxy : Pattern {
 			);
 			res
 		};
-		^defaultEnvir
+		^defaultEnvir.copy
 	}
 	
 	////////////////
