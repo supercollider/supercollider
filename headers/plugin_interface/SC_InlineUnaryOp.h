@@ -276,12 +276,12 @@ inline float64 sc_log10(float64 x)
 
 inline float64 sc_midicps(float64 note)
 {
-	return (float64)440. * pow((float64)2., (note - (float64)69.) * (float64)0.083333333333);
+	return (float64)440. * pow((float64)2., (note - (float64)69.) * (float64)0.08333333333333333333333333);
 }
 
 inline float64 sc_cpsmidi(float64 freq)
 {
-	return sc_log2(freq * (float64)0.0022727272727) * (float64)12. + (float64)69.;
+	return sc_log2(freq * (float64)0.002272727272727272727272727) * (float64)12. + (float64)69.;
 }
 
 inline float64 sc_midiratio(float64 midi)
