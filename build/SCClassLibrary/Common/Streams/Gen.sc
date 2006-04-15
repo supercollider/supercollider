@@ -45,22 +45,22 @@ Gen : AbstractFunction
 		^gen
 	}
 	keep { arg n=1;
-		^GKeep(this, n)
+		^Gkeep(this, n)
 	}
 	keepWhile { arg function;
-		^GKeepWhile(this, function)
+		^GkeepWhile(this, function)
 	}
 	keepUntil { arg function;
-		^GKeepUntil(this, function)
+		^GkeepUntil(this, function)
 	}
 	select { arg function;
-		^GSelect(this, function)
+		^Gselect(this, function)
 	}
 	collect { arg function;
-		^GCollect(this, function)
+		^Gcollect(this, function)
 	}
 	++ { arg that;
-		^GCat([this, that])
+		^Gcat([this, that])
 	}
 	add { arg item;
 		^this ++ Gen(item)
@@ -71,24 +71,24 @@ Gen : AbstractFunction
 	
 	// function composition
 	composeUnaryOp { arg argSelector;
-		^GUnaryOp.new(argSelector, this)
+		^GunaryOp.new(argSelector, this)
 	}
 	composeBinaryOp { arg argSelector, argStream, adverb;
 		if(adverb.isNil) {
-			^GBinaryOp.new(argSelector, this, argStream)
+			^GbinaryOp.new(argSelector, this, argStream)
 		} {
 			if (adverb == 'x') {
-				^GBinaryOpX.new(argSelector, this, argStream);
+				^GbinaryOpX.new(argSelector, this, argStream);
 			};
 		};
 		^nil
 	}
 	reverseComposeBinaryOp { arg argSelector, argStream, adverb;
 		if(adverb.isNil) {
-			^GBinaryOp.new(argSelector, argStream, this)
+			^GbinaryOp.new(argSelector, argStream, this)
 		} {
 			if (adverb == 'x') {
-				^GBinaryOpX.new(argSelector, argStream, this);
+				^GbinaryOpX.new(argSelector, argStream, this);
 			};
 		};
 		^nil
@@ -98,19 +98,22 @@ Gen : AbstractFunction
 	}
 }
 
-GInf : Gen
+Ginf : Gen
 {
 	next { ^this }
 }
 
-GFunc : Gen
+Gfunc : Gen
 {
 	var <>nextFunc;
+	*new { arg current, nextFunc;
+		^super.newCopyArgs(current, nextFunc)
+	}
 	next { ^nextFunc.value(current) }
 	storeArgs { ^[current, nextFunc] }
 }
 
-GSeries : Gen
+Gseries : Gen
 {
 	var <>step, <>n;
 	*new { arg start = 0, step = 1, n = inf;
@@ -123,7 +126,7 @@ GSeries : Gen
 	storeArgs { ^[current, step, n] }
 }
 
-GGeom : Gen
+Ggeom : Gen
 {
 	var <>grow, <>n;
 	*new { arg start = 1, grow = 2, n = inf;
@@ -137,7 +140,7 @@ GGeom : Gen
 }
 
 
-GFib : Gen
+Gfib : Gen
 {
 	var <>b;
 	*new { arg a = 0, b = 1;
@@ -149,7 +152,7 @@ GFib : Gen
 	storeArgs { ^[current, b] }
 }
 
-GCyc : Gen
+Gcyc : Gen
 {
 	var <>list, <>index, <>step;
 	*new { arg list, index=0, step=1;
@@ -161,7 +164,7 @@ GCyc : Gen
 	storeArgs { ^[list, index, step] }
 }
 
-GIter : Gen
+Giter : Gen
 {
 	var <>list, <>index, <>step;
 	*new { arg list, index=0, step=1;
@@ -182,7 +185,7 @@ GenFilter : Gen
 	storeArgs { ^[gen] }
 }
 
-GReset : GenFilter
+Greset : GenFilter
 {
 	var <>reset;
 	*new { arg gen, reset;
@@ -194,7 +197,7 @@ GReset : GenFilter
 	}
 }
 
-GCollect : GenFilter
+Gcollect : GenFilter
 {
 	var <>function;
 	*new { arg gen, function;
@@ -207,7 +210,7 @@ GCollect : GenFilter
 	storeArgs { ^[gen, function] }
 }
 
-GSelect : GenFilter
+Gselect : GenFilter
 {
 	var <>function;
 	*new { arg gen, function;
@@ -228,7 +231,7 @@ GSelect : GenFilter
 	storeArgs { ^[gen, function] }
 }
 
-GUnaryOp : GenFilter
+GunaryOp : GenFilter
 {
 	var <>selector;
 	*new { arg gen, selector;
@@ -241,10 +244,10 @@ GUnaryOp : GenFilter
 	storeArgs { ^[gen, selector] }
 }
 
-GBinaryOp : GenFilter
+GbinaryOp : GenFilter
 {
 	var <>gen2, <>selector;
-	*new { arg gen, gen2, selector;
+	*new { arg selector, gen, gen2;
 		if (gen.isNil) { ^nil };
 		if (gen2.isNil) { ^nil };
 		^super.newCopyArgs(gen.genCurrent.perform(\selector, gen2.genCurrent), gen, gen2, selector)
@@ -255,10 +258,10 @@ GBinaryOp : GenFilter
 	storeArgs { ^[gen, gen2, selector] }
 }
 
-GBinaryOpX : GenFilter
+GbinaryOpX : GenFilter
 {
 	var <>gen2, <>selector, prResetGen2;
-	*new { arg gen, gen2, selector, prResetGen2;
+	*new { arg selector, gen, gen2, prResetGen2;
 		if (gen.isNil) { ^nil };
 		if (gen2.isNil) { ^nil };
 		^super.newCopyArgs(gen.genCurrent.perform(\selector, gen2.genCurrent), 
@@ -267,6 +270,27 @@ GBinaryOpX : GenFilter
 	next {
 		var nx2 = gen2.genNext;
 		if (nx2.notNil) {
+			^this.class.new(selector, gen, nx2, prResetGen2)
+		};
+		^this.class.new(selector, gen.genNext, prResetGen2)
+	}
+	storeArgs { ^[gen, gen2, selector, prResetGen2] }
+}
+
+GbinaryOpI : GenFilter
+{
+	var <>gen2, <>selector, prResetGen1, prResetGen2, haveReset1=false, haveReset2 = false;
+	*new { arg gen, gen2, selector, prResetGen1, prResetGen2;
+		if (gen.isNil) { ^nil };
+		if (gen2.isNil) { ^nil };
+		^super.newCopyArgs(gen.genCurrent.perform(\selector, gen2.genCurrent), 
+			gen, gen2, selector, prResetGen1 ? gen, prResetGen2 ? gen2)
+	}
+	next {
+		var nx1, nx2;
+		nx1 = gen.genNext;
+		nx2 = gen2.genNext;
+		if (nx2.notNil) {
 			^this.class.new(gen, nx2, selector. prResetGen2)
 		};
 		^this.class.new(gen.genNext, prResetGen2, selector)
@@ -274,7 +298,7 @@ GBinaryOpX : GenFilter
 	storeArgs { ^[gen, gen2, selector, prResetGen2] }
 }
 
-GRepeat : GenFilter
+Grepeat : GenFilter
 {
 	var <>n, prResetGen;
 	*new { arg gen, n=inf, prResetGen;
@@ -293,7 +317,7 @@ GRepeat : GenFilter
 }
 
 
-GKeep : GenFilter
+Gkeep : GenFilter
 {
 	var <>n;
 	*new { arg gen, n;
@@ -307,7 +331,7 @@ GKeep : GenFilter
 	storeArgs { ^[gen, n] }
 }
 
-GKeepWhile : GenFilter
+GkeepWhile : GenFilter
 {
 	var <>function;
 	*new { arg gen, function;
@@ -321,7 +345,7 @@ GKeepWhile : GenFilter
 	storeArgs { ^[gen, function] }
 }
 
-GKeepUntil : GenFilter
+GkeepUntil : GenFilter
 {
 	var <>function;
 	*new { arg gen, function;
@@ -337,7 +361,7 @@ GKeepUntil : GenFilter
 
 
 
-GCat : Gen
+Gcat : Gen
 {
 	var <>gens, phase=0, gen;
 	*new { arg gens, phase=0, gen;
@@ -360,7 +384,7 @@ GCat : Gen
 
 
 
-GStutter : GenFilter
+Gstutter : GenFilter
 {
 	var <>n, <>phase;
 	*new { arg gen, n=2, phase=0;
@@ -378,7 +402,7 @@ GStutter : GenFilter
 	}
 }
 
-GClump : GenFilter
+Gclump : GenFilter
 {
 	var <>n;
 	*new { arg gen, n=2;
@@ -402,7 +426,7 @@ GClump : GenFilter
 	}
 }
 
-GZip : Gen
+Gzip : Gen
 {
 	var <>gens;
 	*new { arg gens;
@@ -420,7 +444,7 @@ GZip : Gen
 	storeArgs { ^[gens] }
 }
 
-GLace : Gen
+Glace : Gen
 {
 	var <>gens, <>phase=0;
 	*new { arg gens, phase=0;
@@ -446,7 +470,7 @@ GLace : Gen
 	storeArgs { ^[gens, phase] }
 }
 
-GBind : Gen
+Gbind : Gen
 {
 	var <>protoEvent, <>pairs;
 	*new { arg protoEvent ... pairs;
@@ -482,7 +506,7 @@ GBind : Gen
 }
 
 
-GBindF : GenFilter
+GbindF : GenFilter
 {
 	var <>pairs;
 	*new { arg gen ... pairs;
@@ -515,6 +539,30 @@ GBindF : GenFilter
 			pairs[i+1] = inx;
 		}
 		^this.class.new(nx, *pairs)
+	}
+}
+
+Grng : Gen {
+	var s1, s2, s3;
+}
+
+Gwhite : Grng {
+	var <lo, <hi;
+	*new { arg seed, lo, hi;
+		seed ?? { Date.seed }
+	}
+	next {
+		
+	}
+}
+
+Gbrown : Grng {
+	var <lo, <hi, <step;
+	*new { arg seed, lo, hi, step;
+		seed ?? { Date.seed }
+	}
+	next {
+		
 	}
 }
 
