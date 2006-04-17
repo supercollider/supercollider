@@ -68,7 +68,7 @@ PatternProxy : Pattern {
 	
 	place { arg ... args; 
 		if(envir.isNil) { this.envir = this.class.event };
-		args.pairsDo { arg key, val; envir.putP(key, val) }; // putP is defined in the event.
+		args.pairsDo { arg key, val; envir.place(key, val) }; // place is defined in the event.
 	}
 	
 	isEventPattern { ^false }
@@ -191,27 +191,29 @@ PatternProxy : Pattern {
 	}
 	
 	*event { arg proxyClass = PatternProxy;
-		defaultEnvir = defaultEnvir ?? {
-			var res = Event.default;
-			res.parent = res.parent.copy.putAll(
+		var event, res;
+		if(defaultEnvir.isNil) {
+			defaultEnvir = Event.default;
+			defaultEnvir.parent = defaultEnvir.parent.copy.putAll(
 				(
 				forward: #{ 1 },
 				proxyClass: proxyClass,
-				atP: {|e, key| 
+				get: {|e, key| 
 					var x = e.at(key); 
 					if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x); };
 					x
 				}, 
-				putP: { |e, key, val|
+				place: { |e, key, val|
 					var x = e.at(key); 
 					if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x) };
 					x.source_(val)
 				}
 				)
 			);
-			res
 		};
-		^defaultEnvir.copy
+		event = defaultEnvir.copy;
+		event[\self] = event;
+		^event 
 	}
 	
 	////////////////
