@@ -51,8 +51,6 @@ static const char* kJackDefaultClientName = "SuperCollider";
 //   Delay-Locked-Loop after
 //   Fons Adriaensen, "Using a DLL to filter time"
 
-#define SC_JACK_USE_DLL 0
-#define SC_JACK_DEBUG_DLL 0
 #define SC_JACK_DLL_BW 0.012
 
 class SC_JackDLL

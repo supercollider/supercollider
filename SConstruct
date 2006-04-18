@@ -186,6 +186,10 @@ opts.AddOptions(
                'Intermediate installation prefix for packaging', '/'),
     BoolOption('DEVELOPMENT',
                'Build and install the development files', 0),
+    BoolOption('JACK_DLL',
+               'Build with delay locked loop support', 0),
+    BoolOption('JACK_DEBUG_DLL',
+               'Build with delay locked loop debugging support', 0),
     BoolOption('LANG',
                'Build the language application', 1),
     BoolOption('LID',
@@ -270,6 +274,10 @@ if env['AUDIOAPI'] == 'jack':
                           'SC_USE_JACK_CLIENT_NEW'],
             ADDITIONAL_SOURCES = ['source/server/SC_Jack.cpp']
             )
+    libraries['audioapi'].Append(
+        CPPDEFINES = [('SC_JACK_USE_DLL', env['JACK_DLL']),
+                      ('SC_JACK_DEBUG_DLL', env['JACK_DEBUG_DLL'])]
+        )
 elif env['AUDIOAPI'] == 'coreaudio':
     libraries['audioapi'] = Environment(
         CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_COREAUDIO')],
