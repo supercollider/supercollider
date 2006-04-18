@@ -256,12 +256,20 @@ if not success: Exit(1)
 
 # audio api
 if env['AUDIOAPI'] == 'jack':
-    success, libraries['audioapi'] = conf.CheckPKG('jack')
-    if not success: Exit(1)
-    libraries['audioapi'].Append(
-        CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_JACK')],
-        ADDITIONAL_SOURCES = ['source/server/SC_Jack.cpp']
-        )
+    success, libraries['audioapi'] = conf.CheckPKG('jack >= 0.100')
+    if success:
+        libraries['audioapi'].Append(
+            CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_JACK')],
+            ADDITIONAL_SOURCES = ['source/server/SC_Jack.cpp']
+            )
+    else:
+        success, libraries['audioapi'] = conf.CheckPKG('jack')
+        if not success: Exit(1)
+        libraries['audioapi'].Append(
+            CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_JACK'),
+                          'SC_USE_JACK_CLIENT_NEW'],
+            ADDITIONAL_SOURCES = ['source/server/SC_Jack.cpp']
+            )
 elif env['AUDIOAPI'] == 'coreaudio':
     libraries['audioapi'] = Environment(
         CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_COREAUDIO')],
