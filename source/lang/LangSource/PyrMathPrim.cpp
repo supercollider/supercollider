@@ -871,7 +871,6 @@ int mathClipSignal(struct VMGlobals *g, int numArgsPushed)
 int mathWrapInt(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	double lo, hi;
 	int err;
 	
 	a = g->sp - 2;
@@ -885,11 +884,13 @@ int mathWrapInt(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsInt(b) && IsInt(c)) {
 		a->ui = sc_mod((int)(a->ui - b->ui), (int)(c->ui - b->ui + 1)) + b->ui;
 	} else {
+		double x, lo, hi;
+		x = a->ui;
 		err = slotDoubleVal(b, &lo);
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_mod(a->uf - lo, hi - lo) + lo;
+		a->uf = sc_mod(x - lo, hi - lo) + lo;
 	}
 	return errNone;
 }
@@ -950,7 +951,6 @@ int mathWrapSignal(struct VMGlobals *g, int numArgsPushed)
 int mathFoldInt(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	double lo, hi;
 	int err;
 	
 	a = g->sp - 2;
@@ -962,13 +962,15 @@ int mathFoldInt(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsSym(c)) {
 		*a = *c;
 	} else if (IsInt(b) && IsInt(c)) {
-		a->ui = sc_fold(a->ui - b->ui, 0, c->ui - b->ui + 1) + b->ui;
+		a->ui = sc_fold(a->ui, b->ui, c->ui);
 	} else {
+		double x, lo, hi;
+		x = a->ui;
 		err = slotDoubleVal(b, &lo);
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_wrap(a->uf, lo, hi);
+		a->uf = sc_fold(x, lo, hi);
 	}
 	return errNone;
 }

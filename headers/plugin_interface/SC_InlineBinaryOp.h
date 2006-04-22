@@ -241,6 +241,11 @@ inline float sc_fold2(float a, float b)
 	return sc_fold(a, -b, b);
 }
 
+inline double sc_fold2(double a, double b)
+{
+	return sc_fold(a, -b, b);
+}
+
 inline float sc_excess(float a, float b)
 {
 	return a - sc_clip(a, -b, b);
@@ -388,9 +393,9 @@ inline int sc_wrap2(int a, int b)
 inline int sc_fold(int in, int lo, int hi) 
 {
 	int b = hi - lo;
-	int b2 = b+b-2;
+	int b2 = b+b;
 	int c = sc_mod(in - lo, b2);
-	if (c>=b) c = b2-c;
+	if (c>b) c = b2-c;
 	return c + lo;	
 }
 
@@ -503,9 +508,9 @@ inline long sc_wrap2(long a, long b)
 inline long sc_fold(long in, long lo, long hi) 
 {
 	long b = hi - lo;
-	long b2 = b+b-2;
+	int b2 = b+b;
 	long c = sc_mod(in - lo, b2);
-	if (c>=b) c = b2-c;
+	if (c>b) c = b2-c;
 	return c + lo;	
 }
 

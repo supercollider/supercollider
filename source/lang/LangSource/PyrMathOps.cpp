@@ -399,12 +399,12 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							res.ui = a->ui < -b->ui ? -b->ui : (a->ui > b->ui ? b->ui : a->ui); 
 							res.utag = tagInt; 
 							break;
-						case opFold2 : 
-							res.ui = sc_fold(a->ui - b->ui, 0, 2 * b->ui) + b->ui; 
+						case opFold2 : 							
+							res.ui = sc_fold2(a->ui, b->ui); 
 							res.utag = tagInt; 
 							break;
 						case opWrap2 : 
-							res.ui = sc_mod((int)(a->ui - b->ui), (int)(2 * b->ui)) + b->ui;
+							res.ui = sc_mod((int)(a->ui + b->ui), (int)(2 * b->ui)) - b->ui;
 							res.utag = tagInt; 
 							break;
 						case opExcess : 
@@ -521,7 +521,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							res.uf = a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui); 
 							break;
 						case opFold2 : 
-							res.uf = sc_fold((double)a->ui, -b->uf, -b->uf); 
+							res.uf = sc_fold2((double)a->ui, b->uf); 
 							break;
 						case opWrap2 : 
 							res.uf = sc_wrap((double)a->ui, -b->uf, -b->uf); 
@@ -754,7 +754,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							res.uf = a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf); 
 							break;
 						case opFold2 : 
-							res.uf = sc_fold(a->uf, (double)-b->ui, (double)b->ui); 
+							res.uf = sc_fold2(a->uf, (double)b->ui); 
 							break;
 						case opWrap2 : 
 							res.uf = sc_wrap(a->uf, (double)-b->ui, (double)b->ui); 
@@ -868,7 +868,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							res.uf = a->uf < -b->uf ? -b->uf : (a->uf > b->uf ? b->uf : a->uf); 
 							break;
 						case opFold2 : 
-							res.uf = sc_fold(a->uf, -b->uf, b->uf); 
+							res.uf = sc_fold2(a->uf, b->uf); 
 							break;
 						case opWrap2 : 
 							res.uf = sc_wrap(a->uf, -b->uf, b->uf); 

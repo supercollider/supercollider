@@ -379,7 +379,7 @@ int basicFoldAt(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
-		index = sc_fold(index, 0, obj->size);
+		index = sc_fold(index, 0, obj->size-1);
 		getIndexedSlot(obj, a, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
 		PyrObject *indexArray = b->uo;
@@ -389,7 +389,7 @@ int basicFoldAt(struct VMGlobals *g, int numArgsPushed)
 		for (int i=0; i<size; ++i) {
 			int err = getIndexedInt(indexArray, i, &index);
 			if (err) return err;
-			index = sc_fold(index, 0, obj->size);
+			index = sc_fold(index, 0, obj->size-1);
 			getIndexedSlot(obj, outArraySlots + i, index);
 		}
 		outArray->size = size;
@@ -562,7 +562,7 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
-		index = sc_fold(index, 0, obj->size);
+		index = sc_fold(index, 0, obj->size-1);
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
 		PyrObject *indexArray = b->uo;
@@ -572,7 +572,7 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 			int index;
 			int err = getIndexedInt(indexArray, i, &index);
 			if (err) return err;
-			index = sc_fold(index, 0, obj->size);
+			index = sc_fold(index, 0, obj->size-1);
 			err = putIndexedSlot(g, obj, c, index);
 			if (err) return err;
 		}
@@ -1682,7 +1682,7 @@ int prArrayExtendFold(struct VMGlobals *g, int numArgsPushed)
 		// copy second part
 		m = obj1->size;
 		for (i=0,j=m; j<size; ++i,++j) {
-			slots[j].ucopy = slots[sc_fold(j,0,m)].ucopy;
+			slots[j].ucopy = slots[sc_fold(j,0,m-1)].ucopy;
 		}
 	}
 	a->uo = obj2;
