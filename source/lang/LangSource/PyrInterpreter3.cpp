@@ -1591,10 +1591,11 @@ void Interpret(VMGlobals *g)
 						}
 						vars[4].ucopy = vars[0].ucopy;
 					} else {
-						vars[4].ucopy = vars[0].ucopy;
-						if (IsInt(vars+4)) {
-							vars[4].uf = vars[4].ui;
-						} else if (!IsFloat(vars+4)) {
+						if (IsInt(vars+0)) {
+							vars[4].uf = vars[0].ui;
+						} else if (IsFloat(vars+0)) {
+							vars[4].uf = vars[0].uf;
+						} else {
 							bailFromNumberSeries:
 							error("Number-forSeries : first, second or last not an Integer or Float.\n");
 							
@@ -1620,7 +1621,9 @@ void Interpret(VMGlobals *g)
 							if (IsNil(vars+2)) {
 								if (vars[1].uf < vars[4].uf) SetFloat(vars+2, -kBigBigFloat);
 								else SetFloat(vars+2, kBigBigFloat);
-							}
+							} 
+							else if (IsInt(vars+2)) vars[2].uf = vars[2].ui;
+							else if (!IsFloat(vars+2)) goto bailFromNumberSeries;
 							SetFloat(vars+1, vars[1].uf - vars[4].uf);
 						}
 					}
