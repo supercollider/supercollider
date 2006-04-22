@@ -32,16 +32,14 @@ Class {
 		
 	// call Class.initClassTree(SomeClass) to force a class to init if you depend on its resources
 	*initClassTree { arg aClass;
-		var implementsInitClass, methods; 
+		var implementsInitClass; 
 		// sometimes you need a class to be inited before another class
 		// start the process: Class.initClassTree(Object)
 		if(classesInited.isNil, { classesInited = IdentitySet.new });
 		if(classesInited.includes(aClass).not, {
-			methods = aClass.class.methods;
-			implementsInitClass = if(methods.isNil or: { aClass.isMetaClass }, { false }, {
-					methods.any({ arg item; item.name === 'initClass' });
+			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }, {
+					aClass.initClass;
 			});
-			if(implementsInitClass, { aClass.initClass });
 
 			classesInited.add(aClass);			
 			if(aClass.subclasses.notNil,{
