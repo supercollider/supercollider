@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;}
@@ -20,7 +20,7 @@ Collections are groups of objects. Collection is an abstract class. You do not c
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Class Methods:\
+\f0\b\fs28 \cf0 \ul \ulc0 Class Methods:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -30,7 +30,7 @@ Collections are groups of objects. Collection is an abstract class. You do not c
 Creates a Collection of the given size, the elements of which are determined by evaluation the given function. The function is passed the index as an argument.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \
+\f0\b\fs28 \cf0 \ul \ulc0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 \ulnone Array.fill(4, \{arg i; i * 2\}).postln;
@@ -66,7 +66,7 @@ Answer whether the receiver contains no objects.\
 \f1 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Adding and Removing:\
+\f0\b\fs28 \cf0 \ul \ulc0 Adding and Removing:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
@@ -153,7 +153,7 @@ a.postln;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Testing:\
+\f0\b\fs28 \cf0 \ul \ulc0 Testing:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
@@ -202,7 +202,7 @@ Answer whether all items in aCollection are contained in the receiver.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Iteration:\
+\f0\b\fs28 \cf0 \ul \ulc0 Iteration:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
@@ -276,12 +276,41 @@ The function is passed two arguments, the item and an integer index.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 inject(aValue, function)\
+\f0\b \cf0 inject(initialValue, function)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-Answer a value....\
+In functional programming, the operation known as a fold.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection. The function takes two arguments and returns the new value. The accumulated value is initialzed to initialValue.\
 \
+
+\f2 [1,2,3,4,5].inject(0, _+_);\
+\
+15\
+\
+[1,2,3,4,5].inject(1, _*_);\
+\
+120\
+\
+[1,2,3,4,5].inject([], \{|a,b| a ++ b.squared \}); // same as .collect(_.squared)\
+\
+[ 1, 4, 9, 16, 25 ]\
+\
+[1,2,3,4,5].inject([], \{|a,b| [b] ++ a ++ [b]\});\
+\
+[ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]\
+\
+[1,2,3,4,5].inject([], \{|a,b| a ++ b ++ a\});\
+\
+[ 1, 2, 1, 3, 1, 2, 1, 4, 1, 2, 1, 3, 1, 2, 1, 5, 1, 2, 1, 3, 1, 2, 1, 4, 1, 2, 1, 3, 1, 2, 1 ]\
+\
+[1,2,3,4,5].inject([], \{|a,b| a ++ a ++ b\});\
+\
+[ 1, 1, 2, 1, 1, 2, 3, 1, 1, 2, 1, 1, 2, 3, 4, 1, 1, 2, 1, 1, 2, 3, 1, 1, 2, 1, 1, 2, 3, 4, 5 ]
+\f1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 any(function)\
@@ -385,7 +414,7 @@ If function is nil, then answer the minimum of all items in the receiver.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Conversion:
+\f0\b\fs28 \cf0 \ul \ulc0 Conversion:
 \f1\b0\fs24 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
