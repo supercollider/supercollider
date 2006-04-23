@@ -13,7 +13,7 @@ Event : Environment {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
 	*silent { arg dur = 1.0;
-		^defaultParentEvent.copy.put(\type, \rest).put(\dur, dur)
+		^Event.new(8, nil, defaultParentEvent, true).put(\type, \rest).put(\dur, dur)
 	}
 	
 	next { arg inval; ^composeEvents(inval, this) }
