@@ -63,6 +63,10 @@ Function : AbstractFunction {
 		// slightly faster than valueEnvir and does not replace the currentEnvironment
 		^this.valueArray(prototypeFrame)
 	}	
+
+	numArgs { ^def.numArgs }		// return number of arguments to the function
+	numVars { ^def.numVars }		// return number of variables in the function
+	varArgs { ^def.varArgs }		// return boolean whether function has ellipsis argument
 	
 	loop {
 		// loop is supported magically by the compiler,
