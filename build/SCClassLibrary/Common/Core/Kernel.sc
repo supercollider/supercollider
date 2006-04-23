@@ -356,7 +356,7 @@ FunctionDef {
 	dumpByteCodes { _DumpByteCodes }
 	
 	numArgs { _FunDef_NumArgs }		// return number of arguments to the function
-	numVars { _FunDef_NumVars }		// return number of arguments to the function
+	numVars { _FunDef_NumVars }		// return number of variables in the function
 	varArgs { _FunDef_VarArgs }		// return boolean whether function has ellipsis argument
 
 	shallowCopy { ^this }
