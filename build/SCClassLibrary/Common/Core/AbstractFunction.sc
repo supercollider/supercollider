@@ -159,18 +159,19 @@ AbstractFunction {
 	fold { arg lo, hi; ^this.composeNAryOp('fold', [lo,hi])  }
 	blend { arg that, blendFrac = 0.5; ^this.composeNAryOp('blend', [that, blendFrac]) }
 	
-	linlin { arg inMin, inMax, outMin, outMax;
-		^this.composeNAryOp('linlin', [inMin, inMax, outMin, outMax])
+	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+		^this.composeNAryOp('linlin', [inMin, inMax, outMin, outMax, clip])
 	}
-	linexp { arg inMin, inMax, outMin, outMax;
-		^this.composeNAryOp('linexp', [inMin, inMax, outMin, outMax])
+	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
+		^this.composeNAryOp('linexp', [inMin, inMax, outMin, outMax, clip])
 	}
-	explin { arg inMin, inMax, outMin, outMax;
-		^this.composeNAryOp('explin', [inMin, inMax, outMin, outMax])
+	explin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+		^this.composeNAryOp('explin', [inMin, inMax, outMin, outMax, clip])
 	}
-	expexp { arg inMin, inMax, outMin, outMax;
-		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax])
+	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
+		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax, clip])
 	}
+
 	// function composition
 	<> { arg that;
 		// function composition
