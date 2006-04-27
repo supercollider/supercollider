@@ -142,50 +142,114 @@ SimpleNumber : Number {
 		}
 	}
 		
-	linlin { arg inMin, inMax, outMin, outMax;
+
+	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// linear to linear mapping
-		if (this <= inMin, { ^outMin });
-		if (this >= inMax, { ^outMax });
+		switch(clip, 
+			\minmax, {
+				if (this <= inMin, { ^outMin });
+				if (this >= inMax, { ^outMax });
+			},
+			\min, {
+				if (this <= inMin, { ^outMin });
+			},
+			\max, {
+				if (this >= inMax, { ^outMax });
+			}
+		);
     		^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
 	}
-	linexp { arg inMin, inMax, outMin, outMax;
+
+	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// linear to exponential mapping
-		if (this <= inMin, { ^outMin });
-		if (this >= inMax, { ^outMax });
+		switch(clip, 
+			\minmax, {
+				if (this <= inMin, { ^outMin });
+				if (this >= inMax, { ^outMax });
+			},
+			\min, {
+				if (this <= inMin, { ^outMin });
+			},
+			\max, {
+				if (this >= inMax, { ^outMax });
+			}
+		);
 		^pow(outMax/outMin, (this-inMin)/(inMax-inMin)) * outMin
 	}
-	explin { arg inMin, inMax, outMin, outMax;
+
+	explin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// exponential to linear mapping
-		if (this <= inMin, { ^outMin });
-		if (this >= inMax, { ^outMax });
+		switch(clip, 
+			\minmax, {
+				if (this <= inMin, { ^outMin });
+				if (this >= inMax, { ^outMax });
+			},
+			\min, {
+				if (this <= inMin, { ^outMin });
+			},
+			\max, {
+				if (this >= inMax, { ^outMax });
+			}
+		);
 		^(log(this/inMin)) / (log(inMax/inMin)) * (outMax-outMin) + outMin;
 	}
-	expexp { arg inMin, inMax, outMin, outMax;
+
+	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// exponential to exponential mapping
-		if (this <= inMin, { ^outMin });
-		if (this >= inMax, { ^outMax });
+		switch(clip, 
+			\minmax, {
+				if (this <= inMin, { ^outMin });
+				if (this >= inMax, { ^outMax });
+			},
+			\min, {
+				if (this <= inMin, { ^outMin });
+			},
+			\max, {
+				if (this >= inMax, { ^outMax });
+			}
+		);
 		^pow(outMax/outMin, log(this/inMin) / log(inMax/inMin)) * outMin;
 	}
 
-	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax;
+	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
 		// triangular linear mapping
-		if (this <= inMin, { ^outMin });
-		if (this >= inMax, { ^outMax });
+		switch(clip, 
+			\minmax, {
+				if (this <= inMin, { ^outMin });
+				if (this >= inMax, { ^outMax });
+			},
+			\min, {
+				if (this <= inMin, { ^outMin });
+			},
+			\max, {
+				if (this >= inMax, { ^outMax });
+			}
+		);
 		^if (this >= inCenter) {
-			this.linlin(inCenter, inMax, outCenter, outMax);
+			this.linlin(inCenter, inMax, outCenter, outMax, \none);
 		} {
-			this.linlin(inMin, inCenter, outMin, outCenter);
+			this.linlin(inMin, inCenter, outMin, outCenter, \none);
 		}
 	}
 	
-	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax;
+	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
 		// triangular exponential mapping
-		if (this <= inMin, { ^outMin });
-		if (this >= inMax, { ^outMax });
-		^if (this >= inCenter) {
-			this.explin(inCenter, inMax, outCenter, outMax);
+		switch(clip, 
+			\minmax, {
+				if (this <= inMin, { ^outMin });
+				if (this >= inMax, { ^outMax });
+			},
+			\min, {
+				if (this <= inMin, { ^outMin });
+			},
+			\max, {
+				if (this >= inMax, { ^outMax });
+			}
+		);
+		if (this >= inCenter) {
+			this.explin(inCenter, inMax, outCenter, outMax, \none);
 		} {
-			this.explin(inMin, inCenter, outMin, outCenter);
+			this.explin(inMin, inCenter, outMin, outCenter, \none);
 		}
 	}
 	 

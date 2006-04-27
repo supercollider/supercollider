@@ -680,19 +680,20 @@ SequenceableCollection : Collection {
 	wrap { arg lo, hi; ^this.collect {|item| item.wrap(lo,hi) }  }
 	fold { arg lo, hi; ^this.collect {|item| item.fold(lo,hi) }  }
 	
-	
-	linlin { arg inMin, inMax, outMin, outMax; 
-		^this.collect {|item| item.linlin(inMin, inMax, outMin, outMax) }  
+
+	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax; 
+		^this.collect {|item| item.linlin(inMin, inMax, outMin, outMax, clip) }  
 	}
-	linexp { arg inMin, inMax, outMin, outMax; 
-		^this.collect {|item| item.linexp(inMin, inMax, outMin, outMax) }  
+	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax; 
+		^this.collect {|item| item.linexp(inMin, inMax, outMin, outMax, clip) }  
 	}
-	explin { arg inMin, inMax, outMin, outMax; 
-		^this.collect {|item| item.explin(inMin, inMax, outMin, outMax) }  
+	explin { arg inMin, inMax, outMin, outMax, clip=\minmax; 
+		^this.collect {|item| item.explin(inMin, inMax, outMin, outMax, clip) }  
 	}
-	expexp { arg inMin, inMax, outMin, outMax; 
-		^this.collect {|item| item.expexp(inMin, inMax, outMin, outMax) }  
+	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax; 
+		^this.collect {|item| item.expexp(inMin, inMax, outMin, outMax, clip) }  
 	}
+
 	asFraction { arg denominator=100, fasterBetter=true; 
 		^this.collect { |item| item.asFraction(denominator, fasterBetter) } 
 	}
