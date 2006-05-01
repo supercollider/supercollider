@@ -131,6 +131,27 @@ Array[slot] : ArrayedCollection {
 		_ArrayContainsSeqColl 
 		^this.primitiveFailed 
 	}
+	unlace { arg clumpSize=2, numChan=1, clip=true;
+		^if(clip) { 
+			this.prUnlace(clumpSize, numChan) // clip not yet implemented in primitive
+		} { 
+			super.unlace(clumpSize, numChan) 
+		}
+	}
+	prUnlace { arg clumpSize=2, numChan=1;
+		_ArrayUnlace
+		^this.primitiveFailed; 
+	}
+	interlace { arg clumpSize=1;
+		//_ArrayInterlace
+		//^this.primitiveFailed;
+		Error("interlace was replaced by lace\n").throw
+	}
+	deinterlace { arg clumpSize=2, numChan=1;
+		//_ArrayUnlace
+		//^this.primitiveFailed; 
+		Error("deinterlace was replaced by unlace\n").throw
+	}
 	
 	// multiChannelExpand and flop do the same thing.
 	flop {
