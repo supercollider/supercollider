@@ -98,7 +98,7 @@ ArrayedCollection : SequenceableCollection {
 		};
 		^nil
 	}
-	
+		
 	replace { arg find, replace;		var index, out = [], array = this;
 		find = find.asArray; 
 		replace = replace.asArray;		while {
@@ -281,14 +281,6 @@ ArrayedCollection : SequenceableCollection {
 		var minItem = this.minItem;
 		var maxItem = this.maxItem;
 		^this.collect { |el| el.linlin(minItem, maxItem, min, max) };
-	}
-	interlace { arg clumpSize=1;
-		_ArrayInterlace
-		^this.primitiveFailed; 
-	}
-	deinterlace { arg numChan=2, clumpSize=1;
-		_ArrayDeInterlace
-		^this.primitiveFailed; 
 	}
 	
 	asciiPlot {
