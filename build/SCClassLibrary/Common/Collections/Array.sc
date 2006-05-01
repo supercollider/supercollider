@@ -131,7 +131,7 @@ Array[slot] : ArrayedCollection {
 		_ArrayContainsSeqColl 
 		^this.primitiveFailed 
 	}
-	unlace { arg clumpSize=2, numChan=1, clip=true;
+	unlace { arg clumpSize=2, numChan=1, clip=false;
 		^if(clip) { 
 			this.prUnlace(clumpSize, numChan) // clip not yet implemented in primitive
 		} { 
