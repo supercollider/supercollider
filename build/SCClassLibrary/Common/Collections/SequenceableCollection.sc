@@ -362,13 +362,14 @@ SequenceableCollection : Collection {
 		});
 		^list
 	}
-	unlace { arg numlists;
-		var size, list, sublist;
+	unlace { arg numlists, clumpSize=1, clip=false;
+		var size, list, sublist, self;
 		
 		size = (this.size + numlists - 1) div: numlists;
 		list = this.species.fill(numlists, { this.species.new(size) });
-		this.do({ arg item, i;
-			sublist = list.at(i % numlists);
+		self = if(clip) { this.keep(this.size.trunc(clumpSize * numlists).postln)Ê} { this };
+		self.do({ arg item, i;
+			sublist = list.at(i div: clumpSize % numlists);
 			sublist.add(item);
 		});
 		^list
