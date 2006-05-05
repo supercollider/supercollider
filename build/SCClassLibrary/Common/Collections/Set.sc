@@ -62,9 +62,17 @@ Set : Collection {
 			^nil
 		});
 	}
-	
+	powerset {
+		var class = this.species; 
+		^this.asArray.dup(this.size).allTuples.collect(_.as(class)).as(Set).as(class);
+	}
+	unify {
+		var result = this.species.new;
+		this.do {|x| result.addAll(x) }
+		^result
+	}
 	sect { arg that;
-		var result = Set.new;
+		var result = this.species.new;
 		this.do({ arg item;
 			if (that.includes(item), {
 				result.add(item);
@@ -73,7 +81,7 @@ Set : Collection {
 		^result
 	}
 	union { arg that;
-		var result = Set.new;
+		var result = this.species.new;
 		result.addAll(this);
 		result.addAll(that);
 		^result
@@ -82,7 +90,7 @@ Set : Collection {
 		^this.copy.removeAll(that);
 	}
 	symmetricDifference { arg that;
-		var result = Set.new;
+		var result = this.species.new;
 		this.do({ arg item;
 			if (that.includes(item).not, {
 				result.add(item);
