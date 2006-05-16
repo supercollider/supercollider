@@ -19,6 +19,9 @@ public:
 
   static PyObject* scLogSink_s;
   static PyObject* PyPrOpenWinTextFile_s;
+
+	void appClock();
+	
 private:
   Py::Object ex_sum(const Py::Tuple &a);
   Py::Object sendMain(const Py::Tuple &a);

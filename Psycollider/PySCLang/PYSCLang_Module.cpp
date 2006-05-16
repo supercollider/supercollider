@@ -52,6 +52,26 @@ void PySCLang_InitNetwork( )
 }
 #endif
 
+// triggered for app clock ticks
+extern "C" void *appClockTimer(void * pymod) {
+	((PySCLang_Module *)pymod)->appClock();
+	return NULL;
+}
+
+void PySCLang_Module::appClock() {
+	while(true) {
+		pthread_mutex_lock(&gLangMutex);
+		runLibrary(getsym("tick"));
+		pthread_mutex_unlock(&gLangMutex);
+	
+#ifdef SC_WIN32
+		Sleep(20);
+#else
+		sleep(20);
+#endif
+	}
+}
+
   PySCLang_Module::PySCLang_Module() : ExtensionModule<PySCLang_Module>( "PySCLang" )
   {
 #ifdef SC_WIN32
@@ -172,41 +192,21 @@ Py::Object PySCLang_Module::compiledOK__(const Py::Tuple &a)
 
 Py::Object PySCLang_Module::start(const Py::Tuple &a)
 {
-  if(a.size() != 0) {
-    PyErr_SetString(PyExc_IndexError,"requires 0 args");
-    return Py::Object(Py::Null());
-  }
-/*
-	deferredTaskTimer = 
-			[NSTimer scheduledTimerWithTimeInterval: 0.038 target: self selector:
-				@selector(doPeriodicTask:) userInfo: nil repeats: YES];        
-        
-	appClockTimer = 
-			[NSTimer scheduledTimerWithTimeInterval: 0.020 target: self selector:
-				@selector(doClockTask:) userInfo: nil repeats: YES]; 
-				       
-	[deferredTaskTimer retain];
-	[appClockTimer retain];
-	
-	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
-		forMode: NSModalPanelRunLoopMode];
-	
-	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
-		forMode: NSEventTrackingRunLoopMode];
-	
-	[[NSRunLoop currentRunLoop] addTimer: appClockTimer 
-		forMode: NSModalPanelRunLoopMode];
-	
-	[[NSRunLoop currentRunLoop] addTimer: appClockTimer 
-		forMode: NSEventTrackingRunLoopMode];
-
-	SetupHomeDirectory();
-*/	
+	if(a.size() != 0) {
+		PyErr_SetString(PyExc_IndexError,"requires 0 args");
+		return Py::Object(Py::Null());
+	}
 	pyr_init_mem_pools( 2*1024*1024, 256*1024 );
 	init_OSC(57120);
 	schedInit();
-  ::compileLibrary();
+	::compileLibrary();
+
+  	// appClock timer
+	pthread_t t;
+	pthread_create(&t, NULL, &appClockTimer, (void *)this);
 	
+	// deferred task timer still missing... (cf, 16 May 2006)
+
 //!!!
 // Rendezvous is broken in a way that makes SC become unusable
 //	// CR ADDED
