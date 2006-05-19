@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf230
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fnil\fcharset77 LucidaGrande;
 \f3\fswiss\fcharset77 Helvetica;\f4\fnil\fcharset77 LucidaGrande-Bold;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
-\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Patch
@@ -17,6 +17,7 @@
 	\cf2 Patch\cf0 (instr,args)\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 (\cf3 \\bubbles\cf0 , \{ \cf2 arg\cf0  amp=1.0;\
 	\cf2 var\cf0  f, zout;\
 	f = \cf2 LFSaw\cf0 .kr(0.4, 0, 24, \cf2 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
@@ -64,6 +65,7 @@ p.gui;\
 \
 	\
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 (\cf3 \\bubbles\cf0 , \{ \cf2 arg\cf0  amp=1.0;\
 	\cf2 var\cf0  f, zout;\
 	f = \cf2 LFSaw\cf0 .kr(0.4, 0, 24, \cf2 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
@@ -164,29 +166,33 @@ This gives the impression that Patch is "an automatic gui for an Instr / SynthDe
 \
 Most simple synth inputs (ControlSpec) will end up being KrNumberEditors.  Setting their values will control the playing synth.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf6 	aPatch.set( index, value)\
+\f1\fs18 \cf0 	aPatch.set( index, value)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
 \
 I recommend experimenting with factory methods to create your patches, supplying them with inputs useful for what you are working on.\
 If you use a certain physical controller or wacom :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf6 \
+\f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-\cf6 buildPatch  = \{ \cf7 arg\cf6  instrName;\
-	\cf7 var\cf6  i;\
-	i = \cf7 Instr\cf6 .at(instrName);\
+\cf0 buildPatch  = \{ \cf2 arg\cf0  instrName;\
+	\cf2 var\cf0  i;\
+	i = \cf2 Instr\cf0 .at(instrName);\
 	\
-	\cf7 Patch\cf6 (instrName,[\
-	  \{ i.specAt(0)map( \cf7 JoyAxis\cf6 .kr(0,1,axis:5) ) \},\
-	  \{ i.specAt(1)map( \cf7 JoyAxis\cf6 .kr(0,1,axis:5) ) \},\
+	\cf2 Patch\cf0 (instrName,[\
+	  \{ i.specAt(0).map( \cf2 JoyAxis\cf0 .kr(0,1,axis:5) ) \},\
+	  \{ i.specAt(1).map( \cf2 JoyAxis\cf0 .kr(0,1,axis:5) ) \},\
 	])\
 \};\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 \
-buildPatch.value( \cf8 \\boingboing\cf6  );\
+\cf0 \
+buildPatch.value( \cf3 \\boingboing\cf0  );\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
 \pard\pardeftab720\ql\qnatural
@@ -195,20 +201,20 @@ buildPatch.value( \cf8 \\boingboing\cf6  );\
 you can even keep your factories themselves in Instrument libraries:\
 \
 
-\f1\fs18 \cf7 Instr\cf6 (\cf8 \\joysticker\cf6 ,[ \cf7 arg\cf6  instrName;\
+\f1\fs18 \cf2 Instr\cf0 (\cf3 \\joysticker\cf0 ,[ \cf2 arg\cf0  instrName;\
 	\
-	\cf7 var\cf6  i;\
-	i = \cf7 Instr\cf6 .at(instrName);\
+	\cf2 var\cf0  i;\
+	i = \cf2 Instr\cf0 .at(instrName);\
 	\
-	\cf7 Patch\cf6 (instrName,[\
-	\'ca\'ca\{ i.specAt(0)map( \cf7 JoyAxis\cf6 .kr(0,1,axis:5) ) \},\
-	\'ca\'ca\{ i.specAt(1)map( \cf7 JoyAxis\cf6 .kr(0,1,axis:5) ) \},\
+	\cf2 Patch\cf0 (instrName,[\
+	\'ca\'ca\{ i.specAt(0).map( \cf2 JoyAxis\cf0 .kr(0,1,axis:5) ) \},\
+	\'ca\'ca\{ i.specAt(1).map( \cf2 JoyAxis\cf0 .kr(0,1,axis:5) ) \},\
 	])\
 \});\
 \
 \
-patch = \cf7 Instr\cf6 (\cf8 \\joysticker\cf6 ).value( \cf8 \\simple\cf6  );
-\f3\fs24 \cf0 \
+patch = \cf2 Instr\cf0 (\cf3 \\joysticker\cf0 ).value( \cf3 \\simple\cf0  );
+\f3\fs24 \
 \
 this Instr is not used for audio, its just used to build and return a Patch
 \f2 \
@@ -334,11 +340,13 @@ Floats and other scalar values including Envelopes, are transparently dealt with
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // fixing arguments\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 ([\cf3 \\jmcExamples\cf0 ,\cf3 'moto-rev'\cf0 ],\{ \cf2 arg\cf0  lfo=0.2,freq=1000,rq=0.1;\
 	\cf2 RLPF\cf0 .ar(\cf2 LFPulse\cf0 .ar(\cf2 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
 \});\
@@ -364,8 +372,8 @@ a = \cf2 Group\cf0 .new;\
 b = \cf2 Group\cf0 .after(a);\
 \
 c = \cf2 Bus.audio(s,1);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 p=Patch\cf0 (\{ \cf2 arg\cf0  in,ffreq;\
 	// the Bus is passed in as In.ar(bus.index,bus.numChannels)\
 	\cf2 LPF\cf0 .ar(in,ffreq)\
