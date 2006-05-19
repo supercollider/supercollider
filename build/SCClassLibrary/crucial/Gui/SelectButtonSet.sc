@@ -92,6 +92,9 @@ SelectButtonSet  {
 		old=action;
 		action={ func.value(selected); old.value(selected) }	
 	}
+	font_ { arg f;
+		butts.do({ |b| b.font_(f); });
+	}
 
 }
 
