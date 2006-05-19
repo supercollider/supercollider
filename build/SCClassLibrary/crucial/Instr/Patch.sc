@@ -17,6 +17,11 @@ HasPatchIns : AbstractPlayer {
 	synthArgsIndices { ^this.subclassResponsibility(thisMethod) }
 	inputs { ^this.subclassResponsibility(thisMethod) }
 
+	// the following methods all have to do with querying and iterating over
+	// the inputs to this player.  an example is finding all possibly modulatable
+	// inputs in this or any sub-patch and then assigning available controllers to those.
+	// these methods are for querying for PlayerInputProxy that are placeholders for 
+	// a potentially modulateable input
 	mapInputToBus { arg i,bus;
 		var patchOut;
 		bus = bus.asBus;
