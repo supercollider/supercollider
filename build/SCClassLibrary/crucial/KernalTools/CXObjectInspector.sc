@@ -20,7 +20,7 @@ CXObjectInspector : ObjectGui {
 		// slotAt
 		if(model.isArray,{
 			//vert = model.slotSize < 26;
-			min(model.slotSize,1024).do({arg i;
+			min(model.slotSize,2048).do({arg i;
 				var iv;
 				//if(vert or: {i % 3 == 0},{ layout.startRow; });
 				
