@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # This script builds the server, the plugins and the application (sclang), one after another.
-# It uses XCode, run it on Panther+ only.
+# It uses XCode 2.1 +, run it on Panther+ only.
 
 # scsynth
 echo "building scsynth"
