@@ -1,5 +1,4 @@
 
-// abusing the *new syntax rather than pollute the Symbol class
 
 Def {
 
