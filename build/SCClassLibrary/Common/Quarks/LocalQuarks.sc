@@ -1,4 +1,8 @@
-// downloaded quarks
+
+// a work in progress.  sk & cx
+
+// quarks that have been checked out from the repository.
+// they are stored in build/quarks
 LocalQuarks
 {
 	var <path;

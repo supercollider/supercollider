@@ -1,3 +1,11 @@
+
+// a work in progress.  sk & cx
+
+// the interface class for 
+//   accessing the SVN repository, (sourceforge quarks project)
+//   downloading those to the local quarks folder (build/quarks)
+//   installing selected quarks by symlink into the [Platform dependent]/Extensions folder
+
 Quarks
 {
 	var <repos, <local;

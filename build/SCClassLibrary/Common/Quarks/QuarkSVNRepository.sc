@@ -1,3 +1,7 @@
+
+// a work in progress.  sk & cx
+
+// the SVN repository, most probably on sourceforge
 QuarkSVNRepository
 {
 	var <url, cache;

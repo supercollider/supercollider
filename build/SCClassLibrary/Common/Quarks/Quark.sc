@@ -1,3 +1,7 @@
+
+// a work in progress.  sk & cx
+
+// quarks are much worse than opiates, you should have been more careful
 QuarkDependency
 {
 	var <name, <version;
@@ -6,7 +10,8 @@ QuarkDependency
 	}
 }
 
-// a Package
+// a single package of classes, helpfiles etc.
+// path is a relative path, relative to the repos root or the local root
 Quark
 {
 	var <name, <summary, <version, <dependencies, <tags,<>path;
