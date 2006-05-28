@@ -85,6 +85,7 @@ extern AdvancingAllocPool gParseNodePool;
 
 struct PyrParseNode {
 	PyrParseNode(int classno);
+	virtual ~PyrParseNode() {}
 	virtual void compile(PyrSlot *result) = 0;
 	virtual void dump(int level) = 0;
 
@@ -99,6 +100,7 @@ struct PyrParseNode {
 struct PyrSlotNode : public PyrParseNode {
 	PyrSlotNode() : PyrParseNode(pn_SlotNode) {}
 	PyrSlotNode(int classno) : PyrParseNode(classno) {}
+	virtual ~PyrSlotNode() {}
 	
 	virtual void compile(PyrSlot *result);
 	virtual void compileLiteral(PyrSlot *result);
@@ -116,6 +118,7 @@ typedef PyrSlotNode PyrPushNameNode;
 
 struct PyrCurryArgNode : public PyrParseNode {
 	PyrCurryArgNode() : PyrParseNode(pn_CurryArgNode), mArgNum(-1) {}
+	virtual ~PyrCurryArgNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -126,6 +129,7 @@ struct PyrCurryArgNode : public PyrParseNode {
 
 struct PyrClassExtNode : public PyrParseNode {
 	PyrClassExtNode() : PyrParseNode(pn_ClassExtNode) {}
+	virtual ~PyrClassExtNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -135,6 +139,7 @@ struct PyrClassExtNode : public PyrParseNode {
 
 struct PyrClassNode : public PyrParseNode {
 	PyrClassNode() : PyrParseNode(pn_ClassNode) {}
+	virtual ~PyrClassNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -149,6 +154,7 @@ struct PyrClassNode : public PyrParseNode {
 
 struct PyrMethodNode : public PyrParseNode {
 	PyrMethodNode() : PyrParseNode(pn_MethodNode) {}
+	virtual ~PyrMethodNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 	
@@ -163,6 +169,7 @@ struct PyrMethodNode : public PyrParseNode {
 
 struct PyrVarListNode : public PyrParseNode {
 	PyrVarListNode() : PyrParseNode(pn_VarListNode) {}
+	virtual ~PyrVarListNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -172,6 +179,7 @@ struct PyrVarListNode : public PyrParseNode {
 
 struct PyrVarDefNode : public PyrParseNode {
 	PyrVarDefNode() : PyrParseNode(pn_VarDefNode) {}
+	virtual ~PyrVarDefNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void compileArg(PyrSlot *result);
 	virtual void dump(int level);
@@ -185,6 +193,7 @@ struct PyrVarDefNode : public PyrParseNode {
 
 struct PyrCallNodeBase : public PyrParseNode {
 	PyrCallNodeBase(int classno) : PyrParseNode(classno) {}
+	virtual ~PyrCallNodeBase() {}
 
 	virtual void compile(PyrSlot *result);
 	virtual void compilePartialApplication(int numCurryArgs, PyrSlot *result);
@@ -195,6 +204,7 @@ struct PyrCallNodeBase : public PyrParseNode {
 
 struct PyrCallNodeBase2 : public PyrCallNodeBase {
 	PyrCallNodeBase2(int classno) : PyrCallNodeBase(classno) {}
+	virtual ~PyrCallNodeBase2() {}
 	
 	struct PyrSlotNode* mSelector;
 	struct PyrParseNode *mArglist;
@@ -204,6 +214,7 @@ struct PyrCallNodeBase2 : public PyrCallNodeBase {
 
 struct PyrCallNode : public PyrCallNodeBase2 {
 	PyrCallNode() : PyrCallNodeBase2(pn_CallNode) {}
+	virtual ~PyrCallNode() {}
 
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
@@ -213,6 +224,7 @@ struct PyrCallNode : public PyrCallNodeBase2 {
 
 struct PyrBinopCallNode : public PyrCallNodeBase2 {
 	PyrBinopCallNode() : PyrCallNodeBase2(pn_BinopCallNode) {}
+	virtual ~PyrBinopCallNode() {}
 
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
@@ -222,6 +234,7 @@ struct PyrBinopCallNode : public PyrCallNodeBase2 {
 
 struct PyrSetterNode : public PyrCallNodeBase {
 	PyrSetterNode() : PyrCallNodeBase(pn_SetterNode) {}
+	virtual ~PyrSetterNode() {}
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -235,6 +248,7 @@ struct PyrSetterNode : public PyrCallNodeBase {
 	
 struct PyrDynListNode : public PyrCallNodeBase {
 	PyrDynListNode() : PyrCallNodeBase(pn_DynListNode) {}
+	virtual ~PyrDynListNode() {}
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -246,6 +260,7 @@ struct PyrDynListNode : public PyrCallNodeBase {
 		
 struct PyrDynDictNode : public PyrCallNodeBase {
 	PyrDynDictNode() : PyrCallNodeBase(pn_DynDictNode) {}
+	virtual ~PyrDynDictNode() {}
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -257,6 +272,7 @@ struct PyrDynDictNode : public PyrCallNodeBase {
 
 struct PyrDropNode : public PyrParseNode {
 	PyrDropNode() : PyrParseNode(pn_DropNode) {}
+	virtual ~PyrDropNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -266,6 +282,7 @@ struct PyrDropNode : public PyrParseNode {
 
 struct PyrPushKeyArgNode : public PyrParseNode {
 	PyrPushKeyArgNode() : PyrParseNode(pn_PushKeyArgNode) {}
+	virtual ~PyrPushKeyArgNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -275,6 +292,7 @@ struct PyrPushKeyArgNode : public PyrParseNode {
 
 struct PyrReturnNode : public PyrParseNode {
 	PyrReturnNode() : PyrParseNode(pn_ReturnNode) {}
+	virtual ~PyrReturnNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -283,6 +301,7 @@ struct PyrReturnNode : public PyrParseNode {
 
 struct PyrBlockReturnNode : public PyrParseNode {
 	PyrBlockReturnNode() : PyrParseNode(pn_BlockReturnNode) {}
+	virtual ~PyrBlockReturnNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -291,6 +310,7 @@ struct PyrBlockReturnNode : public PyrParseNode {
 
 struct PyrAssignNode : public PyrParseNode {
 	PyrAssignNode() : PyrParseNode(pn_AssignNode) {}
+	virtual ~PyrAssignNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -301,6 +321,7 @@ struct PyrAssignNode : public PyrParseNode {
 	
 struct PyrMultiAssignNode : public PyrParseNode {
 	PyrMultiAssignNode() : PyrParseNode(pn_MultiAssignNode) {}
+	virtual ~PyrMultiAssignNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -311,6 +332,7 @@ struct PyrMultiAssignNode : public PyrParseNode {
 
 struct PyrMultiAssignVarListNode : public PyrParseNode {
 	PyrMultiAssignVarListNode() : PyrParseNode(pn_MultiAssignVarListNode) {}
+	virtual ~PyrMultiAssignVarListNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -320,6 +342,7 @@ struct PyrMultiAssignVarListNode : public PyrParseNode {
 	
 struct PyrBlockNode : public PyrParseNode {
 	PyrBlockNode() : PyrParseNode(pn_BlockNode) {}
+	virtual ~PyrBlockNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -332,6 +355,7 @@ struct PyrBlockNode : public PyrParseNode {
 
 struct PyrArgListNode : public PyrParseNode {
 	PyrArgListNode() : PyrParseNode(pn_ArgListNode) {}
+	virtual ~PyrArgListNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -341,6 +365,7 @@ struct PyrArgListNode : public PyrParseNode {
 	
 struct PyrLitListNode : public PyrParseNode {
 	PyrLitListNode() : PyrParseNode(pn_LitListNode) {}
+	virtual ~PyrLitListNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 
@@ -350,6 +375,7 @@ struct PyrLitListNode : public PyrParseNode {
 	
 struct PyrLitDictNode : public PyrParseNode {
 	PyrLitDictNode() : PyrParseNode(pn_LitDictNode) {}
+	virtual ~PyrLitDictNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
 

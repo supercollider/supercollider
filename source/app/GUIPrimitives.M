@@ -1685,7 +1685,7 @@ int prFont_SetAntiAliasing(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
     
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
@@ -1701,7 +1701,7 @@ int prFont_SetSmoothing(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
     
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
@@ -1896,13 +1896,14 @@ int prPen_AddRect(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     CGRect rect;
-    int err = slotGetCGRect(b, &rect);		
+    int err = slotGetCGRect(b, &rect);
+	if (err) return err;	
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
@@ -1917,7 +1918,7 @@ int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
@@ -1942,7 +1943,7 @@ int prPen_FillRect(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
@@ -1967,7 +1968,7 @@ int prPen_StrokeOval(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
@@ -1986,7 +1987,7 @@ int prPen_FillOval(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
@@ -2005,7 +2006,7 @@ int prPen_StrokeLine(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 2;
+    //PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
     PyrSlot *c = g->sp;
 

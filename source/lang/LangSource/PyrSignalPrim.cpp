@@ -378,11 +378,12 @@ void wavetableAsSignal(float *wavetable, float *signal, int size)
 {
 	int i, imax;
 	float *in, *out;
-	in = wavetable - 1;
+	in = wavetable;
 	out = signal - 1;
 	imax = size;
 	for (i=0; i<size; ++i) {
-		*++out = *++in + *++in;
+		*++out = in[0] + in[1];
+		in += 2;
 	}	
 }
 
@@ -433,8 +434,8 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed);
 int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	int err;
-	int i, M, fftsize, fftbufsize, zerosize, asize;
+
+	int i, M, fftsize, fftbufsize, asize;
 	float *inreal, *inimag, *fftbuf, *costable, *outreal, *outimag;
 	PyrObject *fftoutobj, *complexobj, *realobj, *imagobj;
 	
@@ -526,8 +527,8 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed);
 int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	int err;
-	int i, M, fftsize, fftbufsize, zerosize, asize;
+
+	int i, M, fftsize, fftbufsize, asize;
 	float *inreal, *inimag, *fftbuf, *costable, *outreal, *outimag;
 	PyrObject *fftoutobj, *complexobj, *realobj, *imagobj;
 	

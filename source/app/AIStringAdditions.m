@@ -40,9 +40,9 @@
 - (int)intValueFromHex
 {
     NSScanner		*scanner = [NSScanner scannerWithString:self];
-    int			value;
+    unsigned			value;
 
-    [scanner scanHexInt:&value];
+    [scanner scanHexInt: &value];
 
     return(value);
 }

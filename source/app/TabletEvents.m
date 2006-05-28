@@ -142,7 +142,7 @@ NSString *kEnterProximity = @"enterProximity";
 
 
 //////////////////////////////////////////////////////////////////////////////
-- (UInt16) deviceID
+- (unsigned int) deviceID
 {
    OSStatus		result;
    TabletPointerRec tabletData;
@@ -163,7 +163,7 @@ NSString *kEnterProximity = @"enterProximity";
 
 
 //////////////////////////////////////////////////////////////////////////////
-- (SInt32) absoluteX
+- (int) absoluteX
 {
    OSStatus		result;
    TabletPointerRec tabletData;
@@ -184,7 +184,7 @@ NSString *kEnterProximity = @"enterProximity";
 
 
 //////////////////////////////////////////////////////////////////////////////
-- (SInt32) absoluteY
+- (int) absoluteY
 {
    OSStatus		result;
    TabletPointerRec tabletData;
@@ -205,7 +205,7 @@ NSString *kEnterProximity = @"enterProximity";
 
 
 //////////////////////////////////////////////////////////////////////////////
-- (SInt32) absoluteZ
+- (int) absoluteZ
 {
    OSStatus		result;
    TabletPointerRec tabletData;

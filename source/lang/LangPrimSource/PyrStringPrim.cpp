@@ -235,7 +235,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	SetObject(a, array);
 	if (gerr) return errNone;
 	
-	for (int i=0; i<pglob.gl_pathc; ++i) {
+	for (unsigned int i=0; i<pglob.gl_pathc; ++i) {
 		PyrObject *string = (PyrObject*)newPyrString(g->gc, pglob.gl_pathv[i], 0, true);
 		SetObject(array->slots+i, string);
 		g->gc->GCWrite(array, string);

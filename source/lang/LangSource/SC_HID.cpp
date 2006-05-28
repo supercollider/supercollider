@@ -114,8 +114,8 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 //		PyrObject* devAllElementsArray = newPyrArray(g->gc, numElements * sizeof(PyrObject), 0 , true);
 		PyrObject *devAllElementsArray = c->uo;
 //		post("numElements: %d\n", numElements);
-		numElements = sc_clip(numElements, 0, devAllElementsArray->size);
-		for(int i=0; i<numElements; i++){
+		numElements = sc_clip(numElements, 0, (UInt32)devAllElementsArray->size);
+		for(UInt32 i=0; i<numElements; i++){
 			if(devElement){
 				char cstrElementName [256];
 				PyrObject* devElementArray = newPyrArray(g->gc, 5 * sizeof(PyrObject), 0 , true);
@@ -154,14 +154,14 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 
 	int usagePage, usage, err;
 	if(IsNil(b)) 
-		usagePage = NULL;
+		usagePage = 0;
 	else
 	{	
 		err = slotIntVal(b, &usagePage);
 		if (err) return err;
 	}
 	if(IsNil(c)) 
-		usage = NULL;
+		usage = 0;
 	else
 	{
 		err = slotIntVal(c, &usage);
@@ -377,7 +377,7 @@ void callback  (void * target, IOReturn result, void * refcon, void * sender)
 int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed);
 int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 1; //class
+	//PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //num
 	double eventtime;
 	int err = slotDoubleVal(b, &eventtime);
@@ -396,7 +396,7 @@ int prHIDQueueDevice(VMGlobals *g, int numArgsPushed);
 int prHIDQueueDevice(VMGlobals *g, int numArgsPushed)
 {
 	
-	PyrSlot *a = g->sp - 1; //class
+	//PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
 	int locID;
 	int err = slotIntVal(b, &locID);
@@ -414,7 +414,7 @@ int prHIDQueueElement(VMGlobals *g, int numArgsPushed);
 int prHIDQueueElement(VMGlobals *g, int numArgsPushed)
 {
 	
-	PyrSlot *a = g->sp - 2; //class
+	//PyrSlot *a = g->sp - 2; //class
 	PyrSlot *b = g->sp - 1; //locID device
 	PyrSlot *c = g->sp; //element cookie
 	int locID, cookieNum;
@@ -442,7 +442,7 @@ int prHIDDequeueElement(VMGlobals *g, int numArgsPushed);
 int prHIDDequeueElement(VMGlobals *g, int numArgsPushed)
 {
 	
-	PyrSlot *a = g->sp - 2; //class
+	//PyrSlot *a = g->sp - 2; //class
 	PyrSlot *b = g->sp - 1; //locID device
 	PyrSlot *c = g->sp; //element cookie
 	int locID, cookieNum;
@@ -469,7 +469,7 @@ int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed);
 int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed)
 {
 	
-	PyrSlot *a = g->sp - 1; //class
+	//PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
 	int locID;
 	int err = slotIntVal(b, &locID);

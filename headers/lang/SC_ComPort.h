@@ -44,6 +44,7 @@ protected:
 	virtual ReplyFunc GetReplyFunc()=0;
 public:
 	SC_CmdPort();
+	virtual ~SC_CmdPort();
 
 	virtual void* Run()=0;
 };

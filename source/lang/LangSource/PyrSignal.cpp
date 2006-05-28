@@ -1229,7 +1229,7 @@ PyrObject* signal_fade_range(PyrObject* ina, long start, long end, float lvl0, f
 	
 PyrObject* signal_overdub(VMGlobals *g, PyrObject* ina, PyrObject* inb, long index)
 {
-	float *a, *b, *endptr;
+	float *a, *b;
 	long len;
 	
 	if (index > 0) { 

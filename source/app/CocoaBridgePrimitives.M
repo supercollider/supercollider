@@ -405,11 +405,11 @@ int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *classname = g->sp - 3;
 	PyrSlot *initname = g->sp - 2;
     PyrSlot *args  = g->sp-1;
-    PyrSlot *defer  = g->sp;
+    //PyrSlot *defer  = g->sp;
 	
 	
-	bool hasArg = NotNil(args);
-	bool isCollection = isKindOfSlot(args, class_array);
+	//bool hasArg = NotNil(args);
+	//bool isCollection = isKindOfSlot(args, class_array);
 
 	NSString * nsclassname = nsStringFromPyrSlot(classname);
 	if([nsclassname length] < 1){ return errFailed; }
@@ -434,7 +434,7 @@ int prObjcGetClassName(struct VMGlobals *g, int numArgsPushed);
 int prObjcGetClassName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
-	PyrSlot *b  = g->sp;
+	//PyrSlot *b  = g->sp;
 	id objc = (id) a->uo->slots[0].ui;
 	if(!objc) return errFailed;	
 	PyrString *pyrPathString = newPyrString(g->gc, [[objc className] UTF8String], 0, true);

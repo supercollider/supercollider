@@ -24,6 +24,7 @@ class DrawBackground
 {
 public:
     DrawBackground();
+	virtual ~DrawBackground() {}
     virtual void draw(CGContextRef cgc, CGRect rect);
     virtual void drawSelf(CGContextRef cgc, CGRect rect);
 };
@@ -33,6 +34,7 @@ class SolidColorBackground : public DrawBackground
 {
 public:
     SolidColorBackground(SCColor inColor);
+	virtual ~SolidColorBackground() {}
     virtual void drawSelf(CGContextRef cgc, CGRect rect);
 private:
     SCColor mColor;
@@ -49,6 +51,7 @@ class GradientBackground : public DrawBackground
 {
 public:
     GradientBackground(SCColor inStartColor, SCColor inEndColor, int inDirection, int inSteps);
+	virtual ~GradientBackground() {}
     virtual void drawSelf(CGContextRef cgc, CGRect rect);
     
 protected:
@@ -60,6 +63,7 @@ class HiliteGradientBackground : public GradientBackground
 {
 public:
     HiliteGradientBackground(SCColor inStartColor, SCColor inEndColor, int inDirection, int inSteps, float inFrac = .33);
+	virtual ~HiliteGradientBackground() {}
     
     virtual void drawSelf(CGContextRef cgc, CGRect rect);
     

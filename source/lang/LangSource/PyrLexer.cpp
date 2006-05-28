@@ -22,7 +22,7 @@
 #include <string.h>
 #include <float.h>
 #include <math.h>
-#include <new.h>
+#include <new>
 #include <stdlib.h>
 #include <ctype.h>
 

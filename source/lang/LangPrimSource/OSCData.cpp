@@ -29,7 +29,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdexcept>
-#include <new.h>
+#include <new>
 
 #ifdef SC_WIN32
 # include <winsock2.h>

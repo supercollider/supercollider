@@ -669,7 +669,7 @@ static void hid_AddDevices (void *refCon, io_iterator_t iterator)
 	// NOTE: refcon passed in is used to point to the device list head
     pRecDevice* pListDeviceHead = (pRecDevice*) refCon;
     IOReturn result = kIOReturnSuccess;
-    io_object_t ioHIDDeviceObject = NULL;
+    io_object_t ioHIDDeviceObject = 0;
 
     while (ioHIDDeviceObject = IOIteratorNext (iterator))
     {
@@ -1018,7 +1018,7 @@ unsigned long HIDCreateOpenDeviceInterface (UInt32 hidDevice, pRecDevice pDevice
 Boolean HIDBuildDeviceList (UInt32 usagePage, UInt32 usage)
 {
     IOReturn result = kIOReturnSuccess;
-    mach_port_t masterPort = NULL;
+    mach_port_t masterPort = 0;
 
     if (NULL != gpDeviceList)
         HIDReleaseDeviceList ();

@@ -1154,7 +1154,8 @@ void returnFromBlock(VMGlobals *g)
 	CallStackSanity(g, "returnFromBlock");
 #endif
 	curframe = g->frame;
-again:
+
+//again:
 	returnFrame = curframe->caller.uof;
 	if (returnFrame) {
 		block = curframe->method.uoblk;

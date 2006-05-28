@@ -46,7 +46,7 @@
 # define kBigBigFloat 1e500
 #endif
 
-#include <new.h>
+#include <new>
 #include "InitAlloc.h"
 #include "bullet.h"
 

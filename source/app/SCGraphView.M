@@ -238,7 +238,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 {
 	NSPoint mouseLoc;
 	if (!mTopView) return;
-    unsigned int modifiers = [theEvent modifierFlags];
+    //unsigned int modifiers = [theEvent modifierFlags];
     mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
@@ -294,6 +294,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, void* inData)
 	//printf("dealloc %08X mTopView %08X\n", self, mTopView);
     delete mTopView;
 	mTopView = 0;
+	[super dealloc];
 }
 
 

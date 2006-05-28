@@ -111,7 +111,7 @@ void* string_popen_thread_func(void *data)
 	free(cmdline);
     if (!stream) return 0;
 
-    int err = setvbuf(stream, 0, _IONBF, 0);
+    /*int err =*/ setvbuf(stream, 0, _IONBF, 0);
 //    printf("err %d\n", err);
 //    setbuf(stream, 0);
 //    printf("err %d\n", err);

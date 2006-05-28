@@ -705,7 +705,7 @@ int prFunctionDefIsWithinClosed(struct VMGlobals *g, int numArgsPushed)
 
 void reallocStack(struct VMGlobals *g, int stackNeeded, int stackDepth)
 {
-	PyrThread *thread = g->thread;
+	//PyrThread *thread = g->thread;
 	PyrGC *gc = g->gc;
 	int newStackSize = NEXTPOWEROFTWO(stackNeeded);
 	
