@@ -51,8 +51,9 @@ bool sc_UseVectorUnit()
 	return false;
 }
 
-#if defined(SC_DARWIN) && __VEC__
+#if defined(SC_DARWIN)
 # include <Carbon/Carbon.h>
+#include <TargetConditionals.h>
 
 bool sc_HasVectorUnit()
 {
@@ -62,9 +63,22 @@ bool sc_HasVectorUnit()
 	return response & (1<<gestaltPowerPCHasVectorInstructions);
 }
 
+#if TARGET_CPU_X86
+
+void sc_SetDenormalFlags()
+{
+	// all Macs have SSE
+	_mm_setcsr(_mm_getcsr() | 0x40);
+}
+
+#else
+
 void sc_SetDenormalFlags()
 {
 }
+
+#endif
+
 #elif defined(SC_LINUX) && defined(__ALTIVEC__)
 # include <stdio.h>
 # include <string.h>
