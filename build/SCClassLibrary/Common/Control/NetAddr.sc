@@ -130,7 +130,7 @@ BundleNetAddr : NetAddr {
 		var size;
 		if(time != false) {
 			size = bundle.bundleSize;
-			if(size > 8192) {// udp max size.
+			if(size > 65535) {// udp max size.
 				bundle.clumpBundles.do { |item, i|
 					item.postln;
 					saveAddr.sendBundle(1e-9 * i + time, *item) 

@@ -210,7 +210,7 @@ bool SyncCmd::Stage3()
 
 void SyncCmd::Stage4()
 {
-	scpacket packet;
+	small_scpacket packet;
 	packet.adds("/synced");
 	packet.maketags(2);
 	packet.addtag(',');
@@ -776,7 +776,7 @@ void AudioStatusCmd::CallDestructor()
 
 bool AudioStatusCmd::Stage2()
 {
-	scpacket packet;
+	small_scpacket packet;
 	packet.adds("status.reply");
 	packet.maketags(10);
 	packet.addtag(',');

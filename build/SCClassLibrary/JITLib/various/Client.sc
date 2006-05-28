@@ -35,7 +35,7 @@ Client {
 	
 	prepareSendBundle { arg args;
 		args = args.collect { |msg| [cmdName] ++ msg };
-		if(args.bundleSize > 8192) { "bundle too large (> 8192)".warn; ^nil };
+		if(args.bundleSize > 65535) { "bundle too large (> 65535)".warn; ^nil };
 		^args
 	}
 	send { arg ... args;

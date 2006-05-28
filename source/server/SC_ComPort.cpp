@@ -371,22 +371,21 @@ ReplyFunc SC_UdpInPort::GetReplyFunc()
 void* SC_UdpInPort::Run()
 {
 	OSC_Packet *packet = 0;
-	char *data = 0;
 	while (true) {		
 		if (!packet) {
 			// preallocate packet before we need it.
 			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-			data = (char*)malloc(kPacketBufSize); // preallocate to maximum
 		}
 		
 		packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
-		int size = recvfrom(mSocket, data, kPacketBufSize , 0,
+		int size = recvfrom(mSocket, mReadBuf, kMaxUDPSize , 0,
 								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
 		
 		if (size > 0) {
+			char *data = (char*)malloc(size);
+			memcpy(packet, mReadBuf, size);
 			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
 			
-			data = (char*)realloc(data, size); // give back unused portion - a smart malloc should coalesce in place
 			packet->mReplyAddr.mReplyFunc = udp_reply_func;
 			packet->mSize = size;
 			packet->mData = data;
@@ -521,7 +520,8 @@ ReplyFunc SC_TcpConnectionPort::GetReplyFunc()
 
 void* SC_TcpConnectionPort::Run()
 {
-	char buf[kPacketBufSize];
+	const int kMaxPasswordLen = 32;
+	char buf[kMaxPasswordLen];
 	OSC_Packet *packet = 0;
 	// wait for login message
 	int32 size;
@@ -533,8 +533,10 @@ void* SC_TcpConnectionPort::Run()
 		size = recvall(mSocket, &msglen, sizeof(int32) );
 		if (size < 0) goto leave;
 		
-		// sk: msglen is in network byte order
-		size = recvall(mSocket, buf, ntohl(msglen));
+		msglen = ntohl(msglen);
+		if (msglen > kMaxPasswordLen) break;
+		
+		size = recvall(mSocket, buf, msglen);
 		if (size < 0) goto leave;
 		
 		validated = strcmp(buf, mWorld->hw->mPassword) == 0;

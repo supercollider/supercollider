@@ -43,11 +43,4 @@ int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, 
 int sendall(int socket, const void *msg, size_t len);
 
 
-void scpacket::sendudp(int socket, int addr, int port)
-{
-	struct sockaddr_in toaddr;
-	makeSockAddr(toaddr, addr, port);
-	sendallto(socket, buf, sizeof(buf), (sockaddr*)&toaddr, sizeof(toaddr));
-}
-
 

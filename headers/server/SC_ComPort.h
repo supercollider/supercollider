@@ -47,7 +47,8 @@ protected:
 	virtual ReplyFunc GetReplyFunc()=0;
 public:
 	SC_CmdPort(struct World *inWorld);
-
+	virtual ~SC_CmdPort() {}
+	
 	virtual void* Run()=0;
 };
 
@@ -80,10 +81,13 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const size_t kMaxUDPSize = 65535;
+
 class SC_UdpInPort : public SC_ComPort
 {
 protected:
 	struct sockaddr_in mReplySockAddr;
+	uint8_t mReadBuf[kMaxUDPSize];
 	virtual ReplyFunc GetReplyFunc();
 	
 public:
@@ -125,6 +129,7 @@ public:
 class SC_TcpConnectionPort : public SC_ComPort
 {
         SC_TcpInPort *mParent;
+		uint8_t mReadBuf[kMaxUDPSize];
 
 protected:
 	virtual ReplyFunc GetReplyFunc();
@@ -135,8 +140,6 @@ public:
         
         virtual void* Run();
 };
-
-const int kPacketBufSize = 8192; // this seems to be the maximum size of a UDP packet
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 

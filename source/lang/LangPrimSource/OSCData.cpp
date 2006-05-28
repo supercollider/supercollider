@@ -88,8 +88,6 @@ inline bool IsBundle(char* ptr)
 
 ///////////
 
-scpacket gSynthPacket;
-
 const int ivxNetAddr_Hostaddr = 0;
 const int ivxNetAddr_PortID = 1;
 const int ivxNetAddr_Hostname = 2;
@@ -98,11 +96,11 @@ const int ivxNetAddr_Socket = 3;
 void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
-int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size);
-int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
+int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
+int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
-void addMsgSlot(scpacket *packet, PyrSlot *slot);
-void addMsgSlot(scpacket *packet, PyrSlot *slot)
+void addMsgSlot(big_scpacket *packet, PyrSlot *slot);
+void addMsgSlot(big_scpacket *packet, PyrSlot *slot)
 {
 	switch (slot->utag) {
 		case tagInt :
@@ -120,7 +118,7 @@ void addMsgSlot(scpacket *packet, PyrSlot *slot)
 				packet->addb(arrayObj->b, arrayObj->size);
 			} else if (isKindOf(slot->uo, class_array)) {
 				PyrObject *arrayObj = slot->uo;
-				scpacket packet2;
+				big_scpacket packet2;
 				if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
 					makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
 				} else {
@@ -142,8 +140,8 @@ void addMsgSlot(scpacket *packet, PyrSlot *slot)
 	}
 }
 
-void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot);
-void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
+void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot);
+void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 {
 	switch (slot->utag) {
 		case tagInt :
@@ -167,7 +165,7 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 				PyrObject *arrayObj = slot->uo;
 				if (arrayObj->size) {
 					packet->addtag('b');
-					scpacket packet2;
+					big_scpacket packet2;
 					if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
 						makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
 					} else {
@@ -203,8 +201,8 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 	}
 }
 
-int makeSynthMsg(scpacket *packet, PyrSlot *slots, int size);
-int makeSynthMsg(scpacket *packet, PyrSlot *slots, int size)
+int makeSynthMsg(big_scpacket *packet, PyrSlot *slots, int size);
+int makeSynthMsg(big_scpacket *packet, PyrSlot *slots, int size)
 {
 	packet->BeginMsg();
 	
@@ -216,8 +214,8 @@ int makeSynthMsg(scpacket *packet, PyrSlot *slots, int size)
 	return errNone;
 }
 
-int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size);
-int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size)
+int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
+int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 {
 	packet->BeginMsg();
 	
@@ -259,7 +257,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 	
 }
 
-int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed)
+int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed)
 {
 	double time;
 	int err;
@@ -345,7 +343,7 @@ inline int OSCStrLen(char *str)
 }
 
 
-int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
+int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
 static void netAddrTcpClientNotifyFunc(void *clientData);
 void netAddrTcpClientNotifyFunc(void *clientData)
@@ -438,7 +436,7 @@ int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 {	
 	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
 	PyrSlot* args = netAddrSlot + 1;
-	scpacket packet;
+	big_scpacket packet;
 	
 	int numargs = numArgsPushed - 1;
 	makeSynthMsgWithTags(&packet, args, numargs);
@@ -454,7 +452,7 @@ int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 {	
 	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
 	PyrSlot* args = netAddrSlot + 1;
-	scpacket packet;
+	big_scpacket packet;
 	
 	double time;
 	int err = slotDoubleVal(args, &time);
@@ -493,7 +491,7 @@ int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed);
 int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 {	
 	PyrSlot* args = g->sp;
-	scpacket packet;
+	big_scpacket packet;
 	int numargs = args->uo->size;
 	if (numargs < 1) return errFailed;
 	makeSynthBundle(&packet, args->uo->slots, numargs, true);
@@ -505,7 +503,7 @@ int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed);
 int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 {	
 	PyrSlot* args = g->sp;
-	scpacket packet;
+	big_scpacket packet;
 	
 	int numargs = args->uo->size;
 	if (numargs < 1) return errFailed;
@@ -534,7 +532,7 @@ int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 	PyrSlot* args = array->slots;
 	int numargs = array->size;
 	if (numargs < 1) return errFailed;
-	scpacket packet;
+	big_scpacket packet;
 	
 	if (IsFloat(args) || IsNil(args) || IsInt(args)) {
 		makeSynthBundle(&packet, args, numargs, false);

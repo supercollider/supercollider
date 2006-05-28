@@ -32,7 +32,7 @@
 
 void SendDone(ReplyAddress *inReply, char *inCommandName)
 {
-	scpacket packet;
+	small_scpacket packet;
 	packet.adds("/done");
 	packet.maketags(2);
 	packet.addtag(',');
@@ -43,7 +43,7 @@ void SendDone(ReplyAddress *inReply, char *inCommandName)
 
 void SendFailure(ReplyAddress *inReply, char *inCommandName, char *errString)
 {
-	scpacket packet;
+	small_scpacket packet;
 	packet.adds("/fail");
 	packet.maketags(3);
 	packet.addtag(',');
@@ -56,7 +56,7 @@ void SendFailure(ReplyAddress *inReply, char *inCommandName, char *errString)
 
 void ReportLateness(ReplyAddress *inReply, float32 seconds)
 {
-	scpacket packet;
+	small_scpacket packet;
 	packet.adds("/late");
 	packet.maketags(2);
 	packet.addtag(',');

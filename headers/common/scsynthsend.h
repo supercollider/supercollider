@@ -32,160 +32,126 @@ struct netaddr {
 };
 typedef struct netaddr netaddr;
 
-#define kSCMaxPacketSize 8192
-
-struct scpacket {
-	int32 *wrpos, *endpos, *msgsizepos;
-	char *tagwrpos;
-	int inbundle;
-	int32 buf[kSCMaxPacketSize];
-
-	scpacket();
-	void reset();
-	void addi(int i);
-	void addii(int64 ii);
-	void addf(float f);
-	void addd(double f);
-	void adds(char *cstr);
-	void adds(char *src, size_t len);
-	void addb(uint8 *src, size_t len);
-	void addtag(char c);
-	void skip(int n);
-	void maketags(int n);
-	int size() { return (char*)wrpos - (char*)buf; }
-	char* data() { return (char*)buf; }
-	
-	void sendudp(int socket, int addr, int port);
-
-	void OpenBundle(int64 time);
-	void CloseBundle();
-	
-	void BeginMsg();
-	void EndMsg();
-};
-
-inline scpacket::scpacket() { reset(); }
 
 // ways to fail
 #define BUFFEROVERFLOW return
 //#define BUFFEROVERFLOW  throw std::runtime_error("buffer overflow")
 
-inline void scpacket::reset()
-{
-	wrpos = buf;
-	endpos = buf + kSCMaxPacketSize;
-	inbundle = 0;
-}
 
-inline void scpacket::skip(int n)
-{
-	if (wrpos + n > endpos) BUFFEROVERFLOW;
-	wrpos += n;
-}
+template <int MaxPacketSize = 8192>
+struct scpacket {
+	int32 *wrpos, *endpos, *msgsizepos;
+	char *tagwrpos;
+	int inbundle;
+	int32 buf[MaxPacketSize];
 
-inline void scpacket::addtag(char c)
-{
-	*tagwrpos++ = c;
-}
-
-inline void scpacket::maketags(int n)
-{
-	int size4 = (n + 4) >> 2;
-	tagwrpos = (char*)wrpos;
-	skip(size4);
-	wrpos[-1] = 0;
-}
-
-
-inline void scpacket::addi(int i)
-{
-	if (wrpos >= endpos) BUFFEROVERFLOW;
-	*wrpos++ = htonl(i);
-}
-
-inline void scpacket::addii(int64 ii)
-{
-	int i;
-	i = (int)(ii >> 32);
-	addi(i);
-	i = (int)ii;
-	addi(i);
-}
-
-inline void scpacket::addf(float f)
-{
-	if (wrpos >= endpos) BUFFEROVERFLOW;
-	elem32 slot;
-	slot.f = f;
-	*wrpos++ = htonl(slot.i);
-}
-
-inline void scpacket::addd(double f)
-{
-	if (wrpos >= endpos) BUFFEROVERFLOW;
-	elem64 slot;
-	slot.f = f;
-	*wrpos++ = htonl(slot.i >> 32);
-	*wrpos++ = htonl(slot.i & 0x00000000FFFFFFFF);
-}
-
-inline void scpacket::adds(char *src)
-{
-	size_t len = strlen(src);
-	size_t len4 = (len + 4) >> 2;
-	if (wrpos + len4 > endpos) BUFFEROVERFLOW;
-	wrpos[len4 - 1] = 0;
-	memcpy(wrpos, src, (size_t)len);
-	wrpos += len4;
-}
-
-inline void scpacket::adds(char *src, size_t len)
-{
-	size_t len4 = (len + 4) >> 2;
-	if (wrpos + len4 > endpos) BUFFEROVERFLOW;
-	wrpos[len4 - 1] = 0;
-	memcpy(wrpos, src, (size_t)len);
-	wrpos += len4;
-}
-
-// support binary objects
-inline void scpacket::addb(uint8 *src, size_t len)
-{
-	size_t len4 = (len + 3) >> 2;
-	if (wrpos + (len4 + 1) > endpos) BUFFEROVERFLOW;
-	wrpos[len4 - 1] = 0;
-	int32 swaplen = len;
-	*wrpos++ = htonl(swaplen);	
-	memcpy(wrpos, src, (size_t)len);
-	wrpos += len4;
-}
-
-inline void scpacket::OpenBundle(int64 time)
-{
-	inbundle++;
-	adds("#bundle");
-	addii(time);
-}
-
-inline void scpacket::CloseBundle()
-{
-    if (inbundle) inbundle--;
-}
-
-inline void scpacket::BeginMsg()
-{
-    if (inbundle) {
-        msgsizepos = wrpos;
-        addi(0);
-    }
-}
-
-inline void scpacket::EndMsg()
-{
-	if (inbundle) {
-		*msgsizepos = htonl(((wrpos - msgsizepos) - 1) * sizeof(int32));
+	scpacket() { reset(); }
+	void reset()
+	{
+		wrpos = buf;
+		endpos = buf + MaxPacketSize;
+		inbundle = 0;
 	}
-}
+	void addi(int i)
+	{
+		if (wrpos >= endpos) BUFFEROVERFLOW;
+		*wrpos++ = htonl(i);
+	}
+	void addii(int64 ii)
+	{
+		int i;
+		i = (int)(ii >> 32);
+		addi(i);
+		i = (int)ii;
+		addi(i);
+	}
+	void addf(float f)
+	{
+		if (wrpos >= endpos) BUFFEROVERFLOW;
+		elem32 slot;
+		slot.f = f;
+		*wrpos++ = htonl(slot.i);
+	}
+	void addd(double f)
+	{
+		if (wrpos >= endpos) BUFFEROVERFLOW;
+		elem64 slot;
+		slot.f = f;
+		*wrpos++ = htonl(slot.i >> 32);
+		*wrpos++ = htonl(slot.i & 0x00000000FFFFFFFF);
+	}
+	void adds(char *src)
+	{
+		size_t len = strlen(src);
+		size_t len4 = (len + 4) >> 2;
+		if (wrpos + len4 > endpos) BUFFEROVERFLOW;
+		wrpos[len4 - 1] = 0;
+		memcpy(wrpos, src, (size_t)len);
+		wrpos += len4;
+	}
+	void adds(char *src, size_t len)
+	{
+		size_t len4 = (len + 4) >> 2;
+		if (wrpos + len4 > endpos) BUFFEROVERFLOW;
+		wrpos[len4 - 1] = 0;
+		memcpy(wrpos, src, (size_t)len);
+		wrpos += len4;
+	}
+	void addb(uint8 *src, size_t len)
+	{
+		size_t len4 = (len + 3) >> 2;
+		if (wrpos + (len4 + 1) > endpos) BUFFEROVERFLOW;
+		wrpos[len4 - 1] = 0;
+		int32 swaplen = len;
+		*wrpos++ = htonl(swaplen);	
+		memcpy(wrpos, src, (size_t)len);
+		wrpos += len4;
+	}
+	void addtag(char c) { *tagwrpos++ = c; }
+	void skip(int n)
+	{
+		if (wrpos + n > endpos) BUFFEROVERFLOW;
+		wrpos += n;
+	}
+	void maketags(int n)
+	{
+		int size4 = (n + 4) >> 2;
+		tagwrpos = (char*)wrpos;
+		skip(size4);
+		wrpos[-1] = 0;
+	}
+	int size() { return (char*)wrpos - (char*)buf; }
+	char* data() { return (char*)buf; }
+	
+	void OpenBundle(int64 time)
+	{
+		inbundle++;
+		adds("#bundle");
+		addii(time);
+	}
+	void CloseBundle()
+	{
+		if (inbundle) inbundle--;
+	}
+	
+	void BeginMsg()
+	{
+		if (inbundle) {
+			msgsizepos = wrpos;
+			addi(0);
+		}
+	}
+	void EndMsg()
+	{
+		if (inbundle) {
+			*msgsizepos = htonl(((wrpos - msgsizepos) - 1) * sizeof(int32));
+		}
+	}
+};
+
+typedef scpacket<> small_scpacket;
+typedef scpacket<65535> big_scpacket;
+
 
 #endif
 

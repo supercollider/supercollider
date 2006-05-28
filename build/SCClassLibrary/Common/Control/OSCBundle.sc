@@ -45,9 +45,9 @@ OSCBundle {
 					var msgSize = msg.msgSize; 
 										// this is not exactly true, as we'll pack it in a 
 										// bundle later.
-										// 8172 = 8192 - 16 - 4:
-					if(msgSize >= 8172) { "Preparation message too big to send via UDP".error };
-					if(packetSize + msgSize > 8192) { 
+										// 65515 = 65535 - 16 - 4:
+					if(msgSize >= 65515) { "Preparation message too big to send via UDP".error };
+					if(packetSize + msgSize > 65535) { 
 						server.sync(Condition.new, bundle);
 						packetSize = 16;
 						bundle = [];

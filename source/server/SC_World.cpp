@@ -1072,7 +1072,7 @@ int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatS
 
 void TriggerMsg::Perform()
 {
-	scpacket packet;
+	small_scpacket packet;
 	packet.adds("/tr");
 	packet.maketags(4);
 	packet.addtag(',');
@@ -1092,7 +1092,7 @@ void TriggerMsg::Perform()
 
 void NodeEndMsg::Perform()
 {
-	scpacket packet;
+	small_scpacket packet;
 	switch (mState) {
 		case kNode_Go :
 			packet.adds("/n_go");
@@ -1160,7 +1160,7 @@ void DeleteGraphDefMsg::Perform()
 void NotifyNoArgs(World *inWorld, char *inString);
 void NotifyNoArgs(World *inWorld, char *inString)
 {
-	scpacket packet;
+	small_scpacket packet;
 	packet.adds(inString);
 
 	ReplyAddress *users = inWorld->hw->mUsers;

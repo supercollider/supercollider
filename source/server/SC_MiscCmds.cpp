@@ -434,7 +434,7 @@ SCErr meth_b_query(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 {
 	sc_msg_iter msg(inSize, inData);	
 	
-	scpacket packet;
+	small_scpacket packet;
 
 	int numbufs = msg.remain() >> 2;
 	packet.adds("/b_info");
@@ -1022,7 +1022,7 @@ SCErr meth_c_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 	
 	int numheads = msg.remain() >> 2;
 
-	scpacket packet;
+	big_scpacket packet;
 	packet.adds("/c_set");
 	packet.maketags(numheads * 2 + 1);
 	packet.addtag(',');
@@ -1063,7 +1063,7 @@ SCErr meth_c_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 		numcontrols += n;
 	}
 	
-	scpacket packet;
+	big_scpacket packet;
 	packet.adds("/c_setn");
 	packet.maketags(numheads * 2 + numcontrols + 1);
 	packet.addtag(',');
@@ -1144,7 +1144,7 @@ SCErr meth_b_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 	
 	int numheads = msg.remain() >> 2;
 
-	scpacket packet;
+	big_scpacket packet;
 	packet.adds("/b_set");
 	packet.maketags(numheads * 2 + 2);
 	packet.addtag(',');
@@ -1190,7 +1190,7 @@ SCErr meth_b_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 		numcontrols += n;
 	}
 	
-	scpacket packet;
+	big_scpacket packet;
 	packet.adds("/b_setn");
 	packet.maketags(numheads * 2 + numcontrols + 2);
 	packet.addtag(',');
@@ -1239,7 +1239,7 @@ SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 			
 	int numheads = msg.remain() >> 2;
 
-	scpacket packet;
+	big_scpacket packet;
 	packet.adds("/n_set");
 	packet.maketags(numheads * 2 + 2);
 	packet.addtag(',');
@@ -1292,7 +1292,7 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 		numcontrols += n;
 	}
 	
-	scpacket packet;
+	big_scpacket packet;
 	packet.adds("/b_setn");
 	packet.maketags(numheads * 2 + numcontrols + 2);
 	packet.addtag(',');
