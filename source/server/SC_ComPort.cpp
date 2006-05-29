@@ -383,7 +383,7 @@ void* SC_UdpInPort::Run()
 		
 		if (size > 0) {
 			char *data = (char*)malloc(size);
-			memcpy(packet, mReadBuf, size);
+			memcpy(data, mReadBuf, size);
 			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
 			
 			packet->mReplyAddr.mReplyFunc = udp_reply_func;
