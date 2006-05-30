@@ -38,6 +38,8 @@
 int64 gStartupOSCTime = -1;
 #endif //ifndef SC_INNERSC
 
+void sc_SetDenormalFlags();
+
 void set_real_time_priority(pthread_t thread);
 
 double gSampleRate, gSampleDur;
@@ -863,6 +865,10 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 		int numSamplesPerCallback = NumSamplesPerCallback();
 		mOSCbuftime = oscTime;
 		
+#if SC_DARWIN
+		sc_SetDenormalFlags();
+#endif
+
 		mFromEngine.Free();
 		/*if (mToEngine.HasData()) {
 			scprintf("oscTime %.9f %.9f\n", oscTime*kOSCtoSecs, CoreAudioHostTimeToOSC(AudioGetCurrentHostTime())*kOSCtoSecs);
