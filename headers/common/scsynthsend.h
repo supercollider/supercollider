@@ -40,16 +40,17 @@ typedef struct netaddr netaddr;
 
 template <int MaxPacketSize = 8192>
 struct scpacket {
+	static const int kBufSize = MaxPacketSize / sizeof(int32); // round down
 	int32 *wrpos, *endpos, *msgsizepos;
 	char *tagwrpos;
 	int inbundle;
-	int32 buf[MaxPacketSize];
+	int32 buf[kBufSize];
 
 	scpacket() { reset(); }
 	void reset()
 	{
 		wrpos = buf;
-		endpos = buf + MaxPacketSize;
+		endpos = buf + kBufSize;
 		inbundle = 0;
 	}
 	void addi(int i)
