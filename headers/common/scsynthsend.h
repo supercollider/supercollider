@@ -151,7 +151,7 @@ struct scpacket {
 };
 
 typedef scpacket<> small_scpacket;
-typedef scpacket<65535> big_scpacket;
+typedef scpacket<65516> big_scpacket;
 
 
 #endif
