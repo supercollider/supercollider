@@ -820,7 +820,7 @@ bool PyrGC::ListSanity()
 	bool found;
 	
 	if (StackDepth() < 0) {
-		fprintf(stderr, "stack underflow %ld\n", StackDepth());
+		fprintf(stderr, "stack underflow %d\n", (int)StackDepth());
 		return false;
 	}
 

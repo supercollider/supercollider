@@ -68,7 +68,7 @@ struct dlopen_handle {
     struct dlopen_handle *next;
 };
 static struct dlopen_handle *dlopen_handles = NULL;
-static const struct dlopen_handle main_program_handle = {NULL};
+static const struct dlopen_handle main_program_handle = {0};
 static char *dlerror_pointer = NULL;
 
 /*
@@ -85,8 +85,7 @@ NSModule module)
     static int (*p)(NSModule module) = NULL;
 
 	if(p == NULL)
-	    _dyld_func_lookup("__dyld_NSMakePrivateModulePublic",
-			      (unsigned long *)&p);
+	    _dyld_func_lookup("__dyld_NSMakePrivateModulePublic", (void**)&p);
 	if(p == NULL){
 #ifdef DEBUG
 	    printf("_dyld_func_lookup of __dyld_NSMakePrivateModulePublic "

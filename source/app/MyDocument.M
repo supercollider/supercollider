@@ -71,7 +71,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
 	return [super init];
 }
 
-- (NSTextView*)makeTextView
+- (SCTextView*)makeTextView
 {
     SCTextView* aTextView = [[SCTextView alloc] initWithFrame: 
                     NSMakeRect(0,0,612,512)];

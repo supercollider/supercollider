@@ -35,6 +35,7 @@ extern "C" {
 	int scprintf(const char *fmt, ...);
 }
 
+#if !SC_DARWIN
 static const char* kSCRendezvousServiceName = "SuperCollider";
 
 static const char* SCRendezvousProtocolString(SCRendezvousProtocol proto)
@@ -45,6 +46,7 @@ static const char* SCRendezvousProtocolString(SCRendezvousProtocol proto)
 		default: return 0;
 	};
 }
+#endif
 
 #if SC_DARWIN
 #include <CoreServices/CoreServices.h>

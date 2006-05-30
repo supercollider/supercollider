@@ -31,7 +31,7 @@ extern PyrSymbol *s_closed;
 
 @interface MyDocument : NSDocument
 {
-    IBOutlet NSTextView* initTextView;
+    IBOutlet SCTextView* initTextView;
     IBOutlet SCTextView* textView;
     IBOutlet NSScrollView* scrollView;
     Boolean isRichText;
@@ -40,7 +40,7 @@ extern PyrSymbol *s_closed;
 }
 
 
-- (NSTextView*)makeTextView;
+- (SCTextView*)makeTextView;
 - (SCTextView*) textView;
 
 - (void)windowControllerDidLoadNib:(NSWindowController*) aController;

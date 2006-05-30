@@ -982,7 +982,10 @@ int compareColDescs(const void *va, const void *vb)
 	return diff;
 }
 
+#define CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME 0
+#if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
 double elapsedTime();
+#endif
 
 void buildBigMethodMatrix()
 {
@@ -997,7 +1000,9 @@ void buildBigMethodMatrix()
 	int numClasses = gNumClasses;
 	//post("allocate arrays\n");
 	
+#if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
 	double t0 = elapsedTime();
+#endif
 	
 	// pyrmalloc: 
 	// lifetime: kill after compile
@@ -1148,7 +1153,8 @@ void buildBigMethodMatrix()
 	//post("freeIndex %d\n", freeIndex);
 	//post("widthSum %d\n", widthSum);
 	//post("popSum %d\n", popSum);
-#if 0
+	
+#if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
 	post("building table took %.3g seconds\n", elapsedTime() - t0);
 	{
 		int numFilled = 0;
