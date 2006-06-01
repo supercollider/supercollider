@@ -57,7 +57,10 @@ CollStream : IOStream {
 	pos_ { arg toPos;
 		pos = toPos.clip(0, collection.size);
 	}
-	
+	peek {
+		^collection.at(pos)
+	}
+
 	next {
 		if (pos >= collection.size, {
 			^nil
