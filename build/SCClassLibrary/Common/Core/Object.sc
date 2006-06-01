@@ -262,10 +262,13 @@ Object  {
 		^String.streamContents({ arg stream; this.storeOn(stream); });
 	}
 
-	printOn { arg stream;
+	printClassNameOn { arg stream;
 		var title;
 		title = this.class.name.asString;
-		stream << if((title @ 0).isVowel, { "an " }, { "a " }) << title ;
+		stream << if((title @ 0).isVowel, { "an " }, { "a " }) << title;
+	}
+	printOn { arg stream;
+		this.printClassNameOn(stream);
 	}
 	storeOn { arg stream;
 		stream << this.class.name;
