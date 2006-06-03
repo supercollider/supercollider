@@ -87,7 +87,7 @@ class SC_UdpInPort : public SC_ComPort
 {
 protected:
 	struct sockaddr_in mReplySockAddr;
-	uint8_t mReadBuf[kMaxUDPSize];
+	unsigned char mReadBuf[kMaxUDPSize];
 	virtual ReplyFunc GetReplyFunc();
 	
 public:
@@ -129,7 +129,7 @@ public:
 class SC_TcpConnectionPort : public SC_ComPort
 {
         SC_TcpInPort *mParent;
-		uint8_t mReadBuf[kMaxUDPSize];
+		unsigned char mReadBuf[kMaxUDPSize];
 
 protected:
 	virtual ReplyFunc GetReplyFunc();
