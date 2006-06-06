@@ -1293,7 +1293,7 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 	}
 	
 	big_scpacket packet;
-	packet.adds("/b_setn");
+	packet.adds("/n_setn");
 	packet.maketags(numheads * 2 + numcontrols + 2);
 	packet.addtag(',');
 
