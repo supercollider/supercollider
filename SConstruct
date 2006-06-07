@@ -683,12 +683,6 @@ if is_installing():
         env, 'build/Help',
         pkg_data_dir(INSTALL_PREFIX),
         HELP_FILE_RE, 1))
-    # linux extensions
-    if PLATFORM == 'linux':
-        env.Alias('install-library', install_dir(
-            env, 'linux/lib',
-            pkg_extension_dir(INSTALL_PREFIX, 'linux'),
-            SC_FILE_RE, 2))
     # scel
     if env['SCEL']:
         env.Alias('install-library', install_dir(
@@ -779,7 +773,6 @@ DIST_SPECS = [
     ('build', HELP_FILE_RE),
     ('doc', None),
     ('headers', SRC_FILE_RE),
-    ('linux/lib', SC_FILE_RE),
     ('linux/scel/sc', SC_FILE_RE),
     ('linux/scel/el', re.compile('.*\.el$')),
     ('resources', None),
