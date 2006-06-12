@@ -260,6 +260,72 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////
 
+class SC_BufReadCommand : public SC_SequencedCommand
+{
+public:
+	enum {
+		kMaxNumChannels = 32
+	};
+
+	SC_BufReadCommand(World* inWorld, ReplyAddress* inReplyAddress);
+	virtual ~SC_BufReadCommand();
+
+protected:
+	void InitChannels(sc_msg_iter& msg);
+	void CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames);
+
+protected:
+	int mNumChannels;
+	int mChannels[kMaxNumChannels];
+};
+
+///////////////////////////////////////////////////////////////////////////
+
+class BufAllocReadChannelCmd : public SC_BufReadCommand
+{
+public:
+	BufAllocReadChannelCmd(World *inWorld, ReplyAddress *inReplyAddress);
+	virtual ~BufAllocReadChannelCmd();
+	
+	virtual int Init(char *inData, int inSize);
+	
+	virtual bool Stage2();	// non real time
+	virtual bool Stage3();	//     real time
+	virtual void Stage4();	// non real time
+	
+protected:
+	int mBufIndex;
+	float *mFreeData;
+	SndBuf mSndBuf;
+	char *mFilename;
+	int mFileOffset, mNumFrames;
+	virtual void CallDestructor();
+};
+
+///////////////////////////////////////////////////////////////////////////
+
+class BufReadChannelCmd : public SC_BufReadCommand
+{
+public:
+	BufReadChannelCmd(World *inWorld, ReplyAddress *inReplyAddress);
+	virtual ~BufReadChannelCmd();
+	
+	virtual int Init(char *inData, int inSize);
+
+	virtual bool Stage2();	// non real time
+	virtual bool Stage3();	//     real time
+	virtual void Stage4();	// non real time
+	
+protected:
+	int mBufIndex;
+	char *mFilename;
+	int mFileOffset, mNumFrames, mBufOffset;
+	bool mLeaveFileOpen;
+	virtual void CallDestructor();
+};
+
+///////////////////////////////////////////////////////////////////////////
+
 class BufWriteCmd : public SC_SequencedCommand
 {
 public:

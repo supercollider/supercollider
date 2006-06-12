@@ -143,6 +143,22 @@ SCErr meth_b_read(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 	return kSCErr_None;
 }
 
+SCErr meth_b_allocReadChannel(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_allocReadChannel(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{	
+	CallSequencedCommand(BufAllocReadChannelCmd, inWorld, inSize, inData, inReply);
+	
+	return kSCErr_None;
+}
+
+SCErr meth_b_readChannel(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_readChannel(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	CallSequencedCommand(BufReadChannelCmd, inWorld, inSize, inData, inReply);
+	
+	return kSCErr_None;
+}
+
 SCErr meth_b_write(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_write(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
@@ -1414,8 +1430,10 @@ void initMiscCommands()
 
 	NEW_COMMAND(b_alloc);		
 	NEW_COMMAND(b_allocRead);	
+	NEW_COMMAND(b_allocReadChannel);	
 		
 	NEW_COMMAND(b_read);		
+	NEW_COMMAND(b_readChannel);		
 	NEW_COMMAND(b_write);	
 		
 	NEW_COMMAND(b_free);		

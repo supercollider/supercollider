@@ -604,6 +604,284 @@ void BufReadCmd::Stage4()
 
 ///////////////////////////////////////////////////////////////////////////
 
+SC_BufReadCommand::SC_BufReadCommand(World* inWorld, ReplyAddress* inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress),
+	  mNumChannels(0)
+{
+}
+
+SC_BufReadCommand::~SC_BufReadCommand()
+{
+}
+
+void SC_BufReadCommand::InitChannels(sc_msg_iter& msg)
+{
+	mNumChannels = 0;
+	while (msg.nextTag(0) == 'i') {
+		int c = msg.geti();
+		if (mNumChannels <= kMaxNumChannels) {
+			mChannels[mNumChannels++] = c;
+		}
+	}
+}
+
+void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames)
+{
+	for (int ci=0; ci < mNumChannels; ++ci) {
+		int c = mChannels[ci];
+		if (c >= 0 && c < srcChannels) {
+			for (int fi=0; fi < numFrames; ++fi) {
+				dst[fi*mNumChannels+ci] = src[fi*srcChannels+c];
+			}
+		} else {
+			for (int fi=0; fi < numFrames; ++fi) {
+				dst[fi*mNumChannels+ci] = 0.f;
+			}
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+BufAllocReadChannelCmd::BufAllocReadChannelCmd(World *inWorld, ReplyAddress *inReplyAddress)
+	: SC_BufReadCommand(inWorld, inReplyAddress),
+	  mFreeData(0), mFilename(0)
+{
+}
+
+int BufAllocReadChannelCmd::Init(char *inData, int inSize)
+{
+	sc_msg_iter msg(inSize, inData);
+	mBufIndex = msg.geti();
+	
+	char *filename = msg.gets();
+	if (!filename) return kSCErr_WrongArgType;
+
+	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+	strcpy(mFilename, filename);
+	
+	mFileOffset = msg.geti();
+	mNumFrames = msg.geti();
+
+	InitChannels(msg);
+
+	GET_COMPLETION_MSG(msg);
+
+	return kSCErr_None;
+}
+
+BufAllocReadChannelCmd::~BufAllocReadChannelCmd()
+{
+	World_Free(mWorld, mFilename);
+}
+
+void BufAllocReadChannelCmd::CallDestructor() 
+{
+	this->~BufAllocReadChannelCmd();
+}
+
+bool BufAllocReadChannelCmd::Stage2()
+{
+	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
+	
+	SF_INFO fileinfo;
+	memset(&fileinfo, 0, sizeof(fileinfo));
+	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	if (!sf) {
+		char str[256];
+		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		SendFailure(&mReplyAddress, "/b_allocRead", str);
+		scprintf(str);
+		return false;
+	}
+	if (mNumFrames <= 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
+	
+	if (mNumChannels == 0) {
+		// alloc data size
+		mFreeData = buf->data;
+		SCErr err = bufAlloc(buf, fileinfo.channels, mNumFrames, fileinfo.samplerate);
+		if (err) goto leave;
+		// read all channels
+		sf_seek(sf, mFileOffset, SEEK_SET);
+		sf_readf_float(sf, buf->data, mNumFrames);
+	} else {
+		// verify number of channels
+		if (mNumChannels > fileinfo.channels) {
+			char str[256];
+			sf_close(sf);
+			sprintf(str, "Channel mismatch. Requested %d channels. File '%s' has %d channels.\n",
+					mNumChannels, mFilename, fileinfo.channels);
+			SendFailure(&mReplyAddress, "/b_allocRead", str);
+			scprintf(str);
+			return false;
+		}
+		// alloc data size
+		mFreeData = buf->data;
+		SCErr err = bufAlloc(buf, mNumChannels, mNumFrames, fileinfo.samplerate);
+		if (err) goto leave;
+		// alloc temp buffer
+		float* data = (float*)malloc(mNumFrames*fileinfo.channels*sizeof(float));
+		if (data == 0) goto leave;
+		// read some channels
+		sf_seek(sf, mFileOffset, SEEK_SET);
+		sf_readf_float(sf, data, mNumFrames);
+		CopyChannels(buf->data, data, fileinfo.channels, mNumFrames);
+		// free temp buffer
+		free(data);
+	}
+	
+leave:
+	mSndBuf = *buf;
+	sf_close(sf);
+	
+	return true;
+}
+
+bool BufAllocReadChannelCmd::Stage3()
+{
+	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);	
+	*buf = mSndBuf;
+	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
+	SEND_COMPLETION_MSG;
+	
+	return true;
+}
+
+void BufAllocReadChannelCmd::Stage4()
+{
+	free(mFreeData);
+	SendDone("/b_allocReadChannel");
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+BufReadChannelCmd::BufReadChannelCmd(World *inWorld, ReplyAddress *inReplyAddress)
+	: SC_BufReadCommand(inWorld, inReplyAddress),
+	  mFilename(0)
+{
+}
+
+int BufReadChannelCmd::Init(char *inData, int inSize)
+{
+	sc_msg_iter msg(inSize, inData);
+	mBufIndex = msg.geti();
+	
+	char *filename = msg.gets();
+	if (!filename) return kSCErr_WrongArgType;
+
+	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+	strcpy(mFilename, filename);
+	
+	mFileOffset = msg.geti();
+	mNumFrames = msg.geti(-1);
+	mBufOffset = msg.geti();
+	mLeaveFileOpen = msg.geti();
+
+	InitChannels(msg);
+
+	GET_COMPLETION_MSG(msg);
+	
+	return kSCErr_None;
+}
+
+BufReadChannelCmd::~BufReadChannelCmd()
+{
+	World_Free(mWorld, mFilename);
+}
+
+void BufReadChannelCmd::CallDestructor() 
+{
+	this->~BufReadChannelCmd();
+}
+
+bool BufReadChannelCmd::Stage2()
+{
+	SF_INFO fileinfo;
+
+	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
+	int framesToEnd = buf->frames - mBufOffset;
+	if (framesToEnd <= 0) return true;
+
+	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	if (!sf) {
+		char str[256];
+		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		SendFailure(&mReplyAddress, "/b_read", str);
+		scprintf(str);
+		return false;
+	}
+
+	if (mNumChannels) {
+		if (mNumChannels > fileinfo.channels) {
+			char str[256];
+			sf_close(sf);
+			sprintf(str, "Channel mismatch. Requested %d channels. File '%s' has %d channels.\n",
+					mNumChannels, mFilename, fileinfo.channels);
+			SendFailure(&mReplyAddress, "/b_read", str);
+			scprintf(str);
+			return false;
+		}
+		if (mNumChannels != buf->channels) {
+			char str[256];
+			sf_close(sf);
+			sprintf(str, "Channel mismatch. Requested %d channels. Buffer has %d channels.\n",
+					mNumChannels, buf->channels);
+			SendFailure(&mReplyAddress, "/b_read", str);
+			scprintf(str);
+			return false;
+		}
+	} else if (fileinfo.channels != buf->channels) {
+		char str[256];
+		sf_close(sf);
+		sprintf(str, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n",
+				mFilename, fileinfo.channels, buf->channels);
+		SendFailure(&mReplyAddress, "/b_read", str);
+		scprintf(str);
+		return false;
+	}
+
+	if (mNumFrames < 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;	
+	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
+
+	sf_seek(sf, mFileOffset, SEEK_SET);
+	if (mNumFrames > 0) {
+		if (mNumChannels == 0) {
+			// read all channels
+			sf_readf_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
+		} else {
+			// alloc temp buffer
+			float* data = (float*)malloc(mNumFrames*fileinfo.channels*sizeof(float));
+			if (data == 0) goto leave;
+			// read some channels
+			sf_seek(sf, mFileOffset, SEEK_SET);
+			sf_readf_float(sf, data, mNumFrames);
+			CopyChannels(buf->data + (mBufOffset * mNumChannels), data, fileinfo.channels, mNumFrames);
+			// free temp buffer
+			free(data);
+		}
+	}
+
+leave:
+	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
+	else sf_close(sf);
+	
+	return true;
+}
+
+bool BufReadChannelCmd::Stage3()
+{
+	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
+	SEND_COMPLETION_MSG;
+	return true;
+}
+
+void BufReadChannelCmd::Stage4()
+{
+	SendDone("/b_readChannel");
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 BufWriteCmd::BufWriteCmd(World *inWorld, ReplyAddress *inReplyAddress)
 	: SC_SequencedCommand(inWorld, inReplyAddress), mFilename(0)
 {
