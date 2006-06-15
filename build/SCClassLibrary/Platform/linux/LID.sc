@@ -68,16 +68,20 @@ LID {
 	}
 
 	*buildDeviceTable{ |name|
-		var table, devices, d;
+		var table, devices, d, open;
 		name = name ? "event";
 		devices = (deviceRoot++"/"++name++"*").pathMatch;
 		deviceTable = Array.fill( devices.size, 0 );
 		devices.do{ |it,i|
+			open = false;
+			if ( all.detect({ | dev | dev.path == it }).notNil,
+				{open = true});
 			d = try { LID( it ) };
 			if ( d != nil,
 				{
 					deviceTable[i] = [ it, d.info ];
-					d.close;
+					if ( open.not,
+						{d.close});
 				},
 				{
 					deviceTable[i] = [ it, "could not open device" ];
