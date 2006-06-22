@@ -120,6 +120,12 @@ struct Dseq : public Unit
 	bool m_needToResetChild;
 };
 
+struct Dbufrd : public Unit
+{
+	float m_fbufnum;
+	SndBuf *m_buf;
+};
+
 struct Dser : public Dseq
 {
 };
@@ -180,6 +186,9 @@ void Dibrown_next(Dibrown *unit, int inNumSamples);
 
 void Dseq_Ctor(Dseq *unit);
 void Dseq_next(Dseq *unit, int inNumSamples);
+
+void Dbufrd_Ctor(Dbufrd *unit);
+void Dbufrd_next(Dbufrd *unit, int inNumSamples);
 
 void Dser_Ctor(Dser *unit);
 void Dser_next(Dser *unit, int inNumSamples);
@@ -1714,6 +1723,93 @@ void Donce_Ctor(Donce *unit)
 }
 
 
+inline double sc_loop(Unit *unit, double in, double hi, int loop) 
+{
+	// avoid the divide if possible
+	if (in >= hi) {
+		if (!loop) {
+			unit->mDone = true;
+			return hi;
+		}
+		in -= hi;
+		if (in < hi) return in;
+	} else if (in < 0.) {
+		if (!loop) {
+			unit->mDone = true;
+			return 0.;
+		}
+		in += hi;
+		if (in >= 0.) return in;
+	} else return in;
+	
+	return in - hi * floor(in/hi); 
+}
+
+#define GET_BUF \
+	float fbufnum  = ZIN0(0); \
+	if (fbufnum != unit->m_fbufnum) { \
+		uint32 bufnum = (int)fbufnum; \
+		World *world = unit->mWorld; \
+		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
+		unit->m_fbufnum = fbufnum; \
+		unit->m_buf = world->mSndBufs + bufnum; \
+	} \
+	SndBuf *buf = unit->m_buf; \
+	float *bufData __attribute__((__unused__)) = buf->data; \
+	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
+	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
+	uint32 bufFrames = buf->frames; \
+	int mask __attribute__((__unused__)) = buf->mask; \
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+
+#define CHECK_BUF \
+	if (!bufData) { \
+                unit->mDone = true; \
+		ClearUnitOutputs(unit, inNumSamples); \
+		return; \
+	}
+
+void Dbufrd_next(Dbufrd *unit, int inNumSamples)
+{
+  //	float *phasein = ZIN(1);
+	int32 loop     = (int32)IN0(2);	
+	
+	GET_BUF
+	CHECK_BUF
+
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
+
+	double phase;
+	if (ISDEMANDINPUT(1))
+	  {
+           float x = DEMANDINPUT(1);
+	   if (sc_isnan(x)) {
+	     x = 0;
+	    }
+	   phase = x;
+          } else
+	    phase = IN0(1);
+	
+	phase = sc_loop((Unit*)unit, phase, loopMax, loop); 
+		int32 iphase = (int32)phase; 
+		float* table1 = bufData + iphase * bufChannels; 		
+		OUT0(0) = table1[0];		
+}
+
+void Dbufrd_Ctor(Dbufrd *unit)
+{
+  
+  SETCALC(Dbufrd_next);
+
+  unit->m_fbufnum = -1e9f;
+
+  Dbufrd_next(unit , 0);
+  OUT0(0) = 0.f;    
+}
+
+
+
+
 void load(InterfaceTable *inTable)
 {
 	ft = inTable;
@@ -1730,6 +1826,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Dibrown);
 	DefineSimpleUnit(Dseq);
 	DefineSimpleUnit(Dser);
+	DefineSimpleUnit(Dbufrd);
 	DefineSimpleUnit(Drand);
 	DefineSimpleUnit(Dxrand);
 	DefineSimpleUnit(Dswitch1);
