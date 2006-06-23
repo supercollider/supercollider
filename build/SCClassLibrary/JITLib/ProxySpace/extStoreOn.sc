@@ -11,16 +11,22 @@
 	
 }
 
++Object {
+	// might need correction for literals.
+	envirKey { arg envir; ^(envir ? currentEnvironment).findKeyForValue(this) } 
+	envirCompileString {
+		var key = this.envirKey;
+		^if(key.notNil) { "~" ++ key } { this.asCompileString };
+	}
+}
+
 
 +NodeProxy {
-	key { arg envir;
-		^(envir ? currentEnvironment).findKeyForValue(this) 
+	key { arg envir; 
+		^super.envirKey(envir);
 		//don't want to add a slot yet. not optimized
 	}
-	storeKeyOn { arg stream;
-		var key = this.key;
-		if(key.notNil) { stream << "~" << key } { this.storeOn(stream) };
-	}
+	
 	playNDialog { |bounds|		var editstring;
 		bounds = bounds ?? { Rect(0, 500, 320, 100) };
 		editstring = "~" ++ this.key ++ ".playN(\n" 
@@ -30,28 +36,26 @@
 			
 		^Document("edit outs:", editstring).bounds_(bounds);	}}
 
-+BinaryOpPlug {
 
-	storeKeyOn { arg stream;
-		var astr, bstr, opstr;
++BinaryOpPlug {
+	envirCompileString {
+		var astr, bstr, opstr, str = "";
 		var basic = operator.isBasicOperator;
-		astr = if(a.isKindOf(NodeProxy))
-			{ "~" ++ a.key } { a.asCompileString };
-		bstr = if(b.isKindOf(NodeProxy))
-			{ "~" ++ b.key } { b.asCompileString };
-		if(b.isKindOf(AbstractOpPlug)){ bstr = "(" ++ bstr ++ ")" };
-		opstr = if(basic.not) 
-			{ "." ++ operator ++ "(" } { " " ++ operator ++ " " };
-		stream << astr  << opstr  << bstr;
-		if(basic.not) { stream << ")" };
+		astr = a.envirCompileString;
+		bstr = b.envirCompileString;
+		
+		if(b.isKindOf(AbstractOpPlug)){ bstr = "(%)".format(bstr) };
+		opstr = if(basic.not) { ".%(" } { " % " }.format(operator);
+		str = str ++ astr ++ opstr ++ bstr;
+		if(basic.not) { str = str ++ ")" };
+		^str
 	}
 }
 
 +UnaryOpPlug {
-	storeKeyOn { arg stream; 
-		if(a.isKindOf(NodeProxy)) { stream << ("~" ++ a.key) } { a.storeKeyOn(stream) };
-		stream << " " << operator
-	 }
+	envirCompileString {
+		^(a.envirCompileString ? "") ++  " "  ++ operator
+	}
 }
 
 
@@ -74,7 +78,7 @@
 			var proxy, str, multiline;
 			proxy = envir.at(key);
 			if(proxy.objects.size == 1 and: { proxy.objects.indices.first == 0 }) {
-				str = proxy.source.asCompileString ? "";
+				str = proxy.source.envirCompileString ? "";
 				multiline = str.includes(Char.nl);
 				if(multiline){ stream << "(" << Char.nl };
 				stream << "~" << key << " = ";
@@ -84,7 +88,7 @@
 			} {
 				proxy.objects.keysValuesDo({ arg index, item;
 					var multiline, str;
-					str = item.source.asCompileString ? "";
+					str = item.source.envirCompileString ? "";
 					multiline = str.includes(Char.nl);
 					if(multiline){ stream << "(" << Char.nl };
 					stream << "~" << key << "[" << index << "] = ";
