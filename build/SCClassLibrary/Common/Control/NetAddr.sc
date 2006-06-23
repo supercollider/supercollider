@@ -25,11 +25,19 @@ NetAddr {
 	*localAddr {
 		^this.new("127.0.0.1", this.langPort)
 	}
-
 	*useDoubles_ { arg flag = false;
 		_NetAddr_UseDoubles
 		^this.primitiveFailed;
 	}
+	*broadcastFlag {
+		_NetAddr_GetBroadcastFlag
+		^this.primitiveFailed
+	}
+	*broadcastFlag_ { arg flag = true;
+		_NetAddr_SetBroadcastFlag
+		^this.primitiveFailed
+	}
+
 	*disconnectAll {
 		connections.keys.do({ | netAddr |
 			netAddr.disconnect;

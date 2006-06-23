@@ -487,6 +487,28 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 	return netAddrSend(netAddrObj, msglen, bufptr, false);
 }
 
+int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed);
+int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed)
+{
+	if (gUDPport == 0) return errFailed;
+	int opt;
+	socklen_t optlen = sizeof(opt);
+	if (getsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, &opt, &optlen) == -1)
+		return errFailed;
+	SetBool(g->sp, opt);
+	return errNone;
+}
+
+int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed);
+int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
+{
+	if (gUDPport == 0) return errFailed;
+	int opt = IsTrue(g->sp);
+	if (setsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, &opt, sizeof(opt)) == -1)
+		return errFailed;
+	return errNone;
+}
+
 int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed);
 int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 {	
@@ -970,6 +992,8 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);	
+	definePrimitive(base, index++, "_NetAddr_GetBroadcastFlag", prNetAddr_GetBroadcastFlag, 1, 0);
+	definePrimitive(base, index++, "_NetAddr_SetBroadcastFlag", prNetAddr_SetBroadcastFlag, 2, 0);
 	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 1, 0);	
 	definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 1, 0);	
 
