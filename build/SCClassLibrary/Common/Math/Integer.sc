@@ -82,8 +82,6 @@ Integer : SimpleNumber {
 	
 	nextPowerOfTwo { _NextPowerOfTwo }
 	isPowerOfTwo { _IsPowerOfTwo }
-	nextPowerOf { arg base; ^pow(base, ceil(log(this) / log(base))) }
-	nextPowerOfThree { ^pow(3, ceil(log(this) / log(3))) }
 	leadingZeroes { _CLZ }
 	trailingZeroes { _CTZ }
 	numBits { _NumBits }
@@ -183,5 +181,6 @@ Integer : SimpleNumber {
 		array = array.add(num);
 		^array
 	}
+	
 }
 

@@ -130,7 +130,11 @@ SimpleNumber : Number {
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; ^error("Math operation failed.\n") }
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
 	performBinaryOpOnSignal { arg aSelector, aSignal; ^error("Math operation failed.\n") }
-
+	
+	nextPowerOfTwo { ^this.nextPowerOf(2) }
+	nextPowerOf { arg base; ^pow(base, ceil(log(this) / log(base))) }
+	nextPowerOfThree { ^pow(3, ceil(log(this) / log(3))) }
+	previousPowerOf { arg base; ^pow(base, ceil(log(this) / log(base)) - 1) }
 	
 	quantize { arg quantum = 1.0, tolerance = 0.05, strength = 1.0;
 		var round = round(this, quantum);
@@ -250,6 +254,14 @@ SimpleNumber : Number {
 			this.explin(inCenter, inMax, outCenter, outMax, \none);
 		} {
 			this.explin(inMin, inCenter, outMin, outCenter, \none);
+		}
+	}
+	lcurve { arg a = 1.0, m = 0.0, n = 1.0, tau = 1.0;
+		var x = this.neg;
+		^if(tau == 1.0) {
+			a * (m * exp(x) + 1) / (n * exp(x) + 1)
+		} {
+			a * (m * exp(x) + 1) / (n * exp(x) + 1)
 		}
 	}
 	 
