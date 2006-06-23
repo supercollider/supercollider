@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf380
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-BoldOblique;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -24,6 +25,33 @@ in order to access the application process (e.g. for GUI access ) use
 \f1\b0 ;\
 \
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Setting up OSCresponder for listening to a remote application
+\f1\b0 \
+\
+
+\f3\fs18 \cf2 // example: two SuperCollider apps communicating\cf3 \
+\
+\cf2 // application 1:\cf3 \
+n = \cf4 NetAddr\cf3 (\cf5 "127.0.0.1"\cf3 , 57120); \cf2 // the url should be the one of computer of app 2 (or nil)\cf3 \
+\
+o = \cf4 OSCresponder\cf3 (n, \cf6 '/chat'\cf3 , \{ \cf4 |t, r, msg|\cf3  msg[1].postln \}).add;\
+\
+\cf2 // application 2:\cf3 \
+m = \cf4 NetAddr\cf3 (\cf5 "127.0.0.1"\cf3 , 57120); \cf2 // the url should be the one of computer of app 1\cf3 \
+m.sendMsg(\cf5 "/chat"\cf3 , \cf5 "Hello App 1"\cf3 );\
+\
+\cf2 // end application 2:\cf3 \
+m.disconnect;\
+\
+\cf2 // end application 1:\cf3 \
+n.disconnect; o.remove;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 Sending data from server to client
@@ -31,33 +59,33 @@ in order to access the application process (e.g. for GUI access ) use
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf2 // example from SendTrig\cf0 \
+\f3\fs18 \cf7 // example from SendTrig\cf0 \
 \
 (\
-s = \cf3 Server\cf0 .local;\
+s = \cf8 Server\cf0 .local;\
 s.boot;\
 s.notify;\
 )\
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-SendTrig"\cf0 ,\{\
-	\cf3 SendTrig\cf0 .kr(\cf3 Dust\cf0 .kr(1.0), 0, 0.9);\
+\cf8 SynthDef\cf0 (\cf9 "help-SendTrig"\cf0 ,\{\
+	\cf8 SendTrig\cf0 .kr(\cf8 Dust\cf0 .kr(1.0), 0, 0.9);\
 \}).send(s);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // register to receive this message\cf0 \
+\cf7 // register to receive this message\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 a = OSCresponderNode\cf0 (s.addr, \cf5 '/tr'\cf0 , \{ \cf3 arg\cf0  time, responder, msg;\
+\cf8 a = OSCresponderNode\cf0 (s.addr, \cf10 '/tr'\cf0 , \{ \cf8 arg\cf0  time, responder, msg;\
 	[time, responder, msg].postln;\
 \}).add;\
-\cf3 b = OSCresponderNode\cf0 (s.addr, \cf5 '/tr'\cf0 , \{ \cf3 arg\cf0  time, responder, msg;\
+\cf8 b = OSCresponderNode\cf0 (s.addr, \cf10 '/tr'\cf0 , \{ \cf8 arg\cf0  time, responder, msg;\
 	"this is another call".postln;\
 \}).add;\
 )\
 \
 \
-\cf3 x = Synth\cf0 .new(\cf4 "help-SendTrig"\cf0 );\
+\cf8 x = Synth\cf0 .new(\cf9 "help-SendTrig"\cf0 );\
 a.remove;\
 b.remove;\
 x.free;\
@@ -68,19 +96,19 @@ x.free;\
 
 \f3\b0\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // end of group message\cf0 \
+\cf7 // end of group message\cf0 \
 \
 s.boot;\
 \
-a = \cf3 OSCresponderNode\cf0 (s.addr,\cf5 '/n_end'\cf0 ,\{ \cf3 arg\cf0  time,responder,msg;\
+a = \cf8 OSCresponderNode\cf0 (s.addr,\cf10 '/n_end'\cf0 ,\{ \cf8 arg\cf0  time,responder,msg;\
 	[time, responder, msg].postln;\
 	if(msg[1] == g.nodeID,\{\
-		\cf4 "g is dead !"\cf0 .postln;\
-		\cf2 // g = Group.new;\cf0 \
+		\cf9 "g is dead !"\cf0 .postln;\
+		\cf7 // g = Group.new;\cf0 \
 	\});\
 \}).add;\
 \
-g = \cf3 Group\cf0 .new;\
+g = \cf8 Group\cf0 .new;\
 \
 g.free;\
 \
@@ -93,18 +121,18 @@ a.remove;\
 \f3\b0\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // example from ServerErrorGui in crucial lib\cf0 \
+\cf7 // example from ServerErrorGui in crucial lib\cf0 \
 \
-f = \cf3 OSCresponderNode\cf0 (s.addr, \cf5 '/fail'\cf0 , \{ \cf3 arg\cf0  time, responder, msg;\
+f = \cf8 OSCresponderNode\cf0 (s.addr, \cf10 '/fail'\cf0 , \{ \cf8 arg\cf0  time, responder, msg;\
 	\{\
-		\cf3 var\cf0  mins,secs;\
+		\cf8 var\cf0  mins,secs;\
 		mins = (time/60).round(1);\
 		secs = (time%60).round(0.1);\
-		if(secs<10,\{ secs = \cf4 "0"\cf0 ++secs.asString; \},\{ secs=secs.asString;\});\
+		if(secs<10,\{ secs = \cf9 "0"\cf0 ++secs.asString; \},\{ secs=secs.asString;\});\
 		// put this on a gui\
-		\cf2 //errors.label = msg[1].asString + msg[2].asString + "("++(mins.asString++":"++secs)++")";\cf0 \
-		\cf2 //errors.stringColor = Color.white;\cf0 \
-		(msg[1].asString + msg[2].asString + \cf4 "("\cf0 ++(mins.asString++\cf4 ":"\cf0 ++secs)++\cf4 ")"\cf0 ).postln;\
+		\cf7 //errors.label = msg[1].asString + msg[2].asString + "("++(mins.asString++":"++secs)++")";\cf0 \
+		\cf7 //errors.stringColor = Color.white;\cf0 \
+		(msg[1].asString + msg[2].asString + \cf9 "("\cf0 ++(mins.asString++\cf9 ":"\cf0 ++secs)++\cf9 ")"\cf0 ).postln;\
 	\}.defer\
 \});\
 f.add;\
