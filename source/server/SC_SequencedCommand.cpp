@@ -628,13 +628,13 @@ void SC_BufReadCommand::InitChannels(sc_msg_iter& msg)
 void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames)
 {
 	for (int ci=0; ci < mNumChannels; ++ci) {
-		int c = mChannels[ci];
+		size_t c = mChannels[ci];
 		if (c >= 0 && c < srcChannels) {
-			for (int fi=0; fi < numFrames; ++fi) {
+			for (size_t fi=0; fi < numFrames; ++fi) {
 				dst[fi*mNumChannels+ci] = src[fi*srcChannels+c];
 			}
 		} else {
-			for (int fi=0; fi < numFrames; ++fi) {
+			for (size_t fi=0; fi < numFrames; ++fi) {
 				dst[fi*mNumChannels+ci] = 0.f;
 			}
 		}
