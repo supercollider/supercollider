@@ -34,6 +34,7 @@ SCWindow {
 	}
 		
 	close {
+		if (isClosed) { ^this };
 		this.prClose;
 	}
 	closed {
