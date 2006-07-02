@@ -231,7 +231,8 @@ void LagControl_next_k(LagControl *unit, int inNumSamples)
 	for (uint32 i=0; i<numChannels; ++i, mapin++) {
 		float *out = OUT(i);
 		float z = **mapin;
-		*out = unit->m_y1[i] = z + unit->m_b1[i] * (unit->m_y1[i] - z);
+		float x = z + unit->m_b1[i] * (unit->m_y1[i] - z);
+		*out = unit->m_y1[i] = zapgremlins(x);
 	}
 }
 
@@ -240,7 +241,8 @@ void LagControl_next_1(LagControl *unit, int inNumSamples)
 	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
 	float *out = OUT(0);
 	float z = **mapin;
-	*out = unit->m_y1[0] = z + unit->m_b1[0] * (unit->m_y1[0] - z);
+	float x = z + unit->m_b1[0] * (unit->m_y1[0] - z);
+	*out = unit->m_y1[0] = zapgremlins(x);
 }
 
 void LagControl_Ctor(LagControl* unit)
@@ -363,7 +365,8 @@ void LagIn_next_k(LagIn *unit, int inNumSamples)
 	for (int i=0; i<numChannels; ++i, in++) {
 		float *out = OUT(i);
 		float z = *in;
-		*out = y1[i] = z + b1 * (y1[i] - z);
+		float x = z + b1 * (y1[i] - z);
+		*out = y1[i] = zapgremlins(x);
 	}
 //Print("<-In_next_k\n");
 }
