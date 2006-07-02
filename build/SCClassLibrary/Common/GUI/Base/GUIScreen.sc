@@ -6,6 +6,7 @@ SCWindow {
 	var <alwaysOnTop=false;
 	var <>drawHook;
 	var <acceptsMouseOver=false;
+	var <isClosed = false;
 	
 	*initClass {
 		UI.registerForShutdown({ this.closeAll });
@@ -36,12 +37,12 @@ SCWindow {
 		this.prClose;
 	}
 	closed {
+		isClosed = true;
 		onClose.value; // call user function
 		dataptr = nil;
 		view.prClose;
 		allWindows.remove(this);
 	}
-	isClosed { ^dataptr.isNil }
 
 	fullScreen {
 		_SCWindow_BeginFullScreen
