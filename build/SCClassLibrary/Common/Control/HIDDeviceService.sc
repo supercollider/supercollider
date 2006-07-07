@@ -11,7 +11,9 @@ HIDDevice {
 	value{arg elementNum=0;
 		^HIDDeviceService.value(locID,elements.at(elementNum).cookie)
 	}
-	
+	setValue{|elementNum, val|
+		HIDDeviceService.setValue(locID,elements.at(elementNum).cookie, val)
+	}
 	queueDevice{
 		HIDDeviceService.queueDevice(locID);
 	}
@@ -39,6 +41,10 @@ HIDDeviceElement {
 	*new{arg type, usage, cookie, min, max;
 		^super.newCopyArgs(type, usage, cookie, min, max);
 	}
+//	value_{|val|
+//		HIDDeviceService.setValue(locID, cookie, val)
+//	
+//	}
 }
 
 HIDDeviceService{
@@ -62,6 +68,10 @@ HIDDeviceService{
 	*value{arg locID, cookie;
 		_HIDGetValue
 	}	
+
+	*setValue{arg locID, cookie, value;
+		_HIDSetValue
+	}
 	
 	*buildDeviceList{arg usagePage=1, usage=4;
 		var devlist, elelist;
