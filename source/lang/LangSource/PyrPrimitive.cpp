@@ -2997,8 +2997,15 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(b, &seed);
 	if (err) return err;
 
-	RGen* rgen = (RGen*)thread->randData.uo->slots;
-	rgen->init(seed);
+	PyrInt32Array *rgenArray = newPyrInt32Array(g->gc, 4, 0, true);
+	rgenArray->size = 4;
+	((RGen*)(rgenArray->i))->init(seed);
+
+	if (thread == g->thread) {
+		g->rgen = (RGen*)(rgenArray->i);
+	}
+	SetObject(&thread->randData, rgenArray);
+	g->gc->GCWrite(thread, rgenArray);	
 
 	return errNone;
 }
