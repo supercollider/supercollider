@@ -86,7 +86,7 @@ int prHIDGetElementListSize(VMGlobals *g, int numArgsPushed)
 	while (pCurrentHIDDevice && (pCurrentHIDDevice->locID !=locID))
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
-	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeInput);
+	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeAll);
 	SetInt(a, numElements);
 	return errNone;
 }
@@ -108,14 +108,14 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	
-	pRecElement	devElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeInput);
-	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeInput);
+	pRecElement	devElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
+	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeAll);
 
 //		PyrObject* devAllElementsArray = newPyrArray(g->gc, numElements * sizeof(PyrObject), 0 , true);
 		PyrObject *devAllElementsArray = c->uo;
 //		post("numElements: %d\n", numElements);
-		numElements = sc_clip(numElements, 0, (UInt32)devAllElementsArray->size);
-		for(UInt32 i=0; i<numElements; i++){
+		numElements = sc_clip(numElements, 0, devAllElementsArray->size);
+		for(int i=0; i<numElements; i++){
 			if(devElement){
 				char cstrElementName [256];
 				PyrObject* devElementArray = newPyrArray(g->gc, 5 * sizeof(PyrObject), 0 , true);
@@ -136,7 +136,7 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 				SetObject(devAllElementsArray->slots+i, devElementArray);
 				//g->gc->GCWrite(devAllElementsArray, (PyrObject*) devElementArray);
 			}
-			devElement =  HIDGetNextDeviceElement (devElement, kHIDElementTypeInput);
+			devElement =  HIDGetNextDeviceElement (devElement, kHIDElementTypeAll);
 		}
 	SetObject(a, devAllElementsArray);
 	return errNone;	
@@ -154,14 +154,14 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 
 	int usagePage, usage, err;
 	if(IsNil(b)) 
-		usagePage = 0;
+		usagePage = NULL;
 	else
 	{	
 		err = slotIntVal(b, &usagePage);
 		if (err) return err;
 	}
 	if(IsNil(c)) 
-		usage = 0;
+		usage = NULL;
 	else
 	{
 		err = slotIntVal(c, &usage);
@@ -244,14 +244,73 @@ int prHIDGetValue(VMGlobals *g, int numArgsPushed)
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	//look for the right element:
-	pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeIO);
+	pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
 	// use gElementCookie to find current element
     while (pCurrentHIDElement && (pCurrentHIDElement->cookie != cookie))
-        pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeIO);
+        pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeAll);
 		
 	if (pCurrentHIDElement)
     {
 		SInt32 value = HIDGetElementValue (pCurrentHIDDevice, pCurrentHIDElement);
+		 // if it's not a button and it's not a hatswitch then calibrate
+		if(( pCurrentHIDElement->type != kIOHIDElementTypeInput_Button ) &&
+			( pCurrentHIDElement->usagePage == 0x01 && pCurrentHIDElement->usage != kHIDUsage_GD_Hatswitch)) 
+			value = HIDCalibrateValue ( value, pCurrentHIDElement );
+		SetInt(a, value);
+	}
+	else SetNil(a);
+	return errNone;	
+	
+}
+
+
+int prHIDSetValue(VMGlobals *g, int numArgsPushed);
+int prHIDSetValue(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 3; //class
+	PyrSlot *b = g->sp - 2; //locID
+	PyrSlot *c = g->sp - 1; //element device
+	PyrSlot *d = g->sp; //value cookie
+	int locID, cookieNum, value;
+	int err = slotIntVal(b, &locID);
+	if (err) return err;
+	err = slotIntVal(c, &cookieNum);
+	if (err) return err;
+	IOHIDElementCookie cookie = (IOHIDElementCookie) cookieNum;
+	err = slotIntVal(d, &value);
+	if (err) return err;
+	//look for the right device: 
+    pRecDevice  pCurrentHIDDevice = HIDGetFirstDevice ();
+	while (pCurrentHIDDevice && (pCurrentHIDDevice->locID !=locID))
+        pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
+	if(!pCurrentHIDDevice) return errFailed;
+	//look for the right element:
+	pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
+	// use gElementCookie to find current element
+    while (pCurrentHIDElement && (pCurrentHIDElement->cookie != cookie))
+        pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeAll);
+//struct IOHIDEventStruct
+//{
+//    IOHIDElementType	type;
+//    IOHIDElementCookie	elementCookie;
+//    SInt32		value;
+//    AbsoluteTime	timestamp;
+//    UInt32		longValueSize;
+//    void *		longValue;
+//};		
+	
+	if (pCurrentHIDElement)
+    {
+		IOHIDEventStruct event = 
+		{
+			kIOHIDElementTypeOutput, 
+			pCurrentHIDElement->cookie,
+			value,
+			NULL,
+			sizeof(int),
+			NULL
+		};
+		SInt32 value = HIDSetElementValue (pCurrentHIDDevice, pCurrentHIDElement, &event);
 		 // if it's not a button and it's not a hatswitch then calibrate
 		if(( pCurrentHIDElement->type != kIOHIDElementTypeInput_Button ) &&
 			( pCurrentHIDElement->usagePage == 0x01 && pCurrentHIDElement->usage != kHIDUsage_GD_Hatswitch)) 
@@ -313,10 +372,10 @@ void PushQueueEvents_CalibratedValue (){
 			int productID = pCurrentHIDDevice->productID;			
 			int locID = pCurrentHIDDevice->locID;
 			IOHIDElementCookie cookie = (IOHIDElementCookie) event.elementCookie;
-			pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeIO);
+			pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
 	// use gElementCookie to find current element
 			while (pCurrentHIDElement && ( (pCurrentHIDElement->cookie) != cookie))
-			pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeIO);
+			pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeAll);
 		
 			if (pCurrentHIDElement)
 			{
@@ -377,7 +436,7 @@ void callback  (void * target, IOReturn result, void * refcon, void * sender)
 int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed);
 int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed)
 {
-	//PyrSlot *a = g->sp - 1; //class
+	PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //num
 	double eventtime;
 	int err = slotDoubleVal(b, &eventtime);
@@ -396,7 +455,7 @@ int prHIDQueueDevice(VMGlobals *g, int numArgsPushed);
 int prHIDQueueDevice(VMGlobals *g, int numArgsPushed)
 {
 	
-	//PyrSlot *a = g->sp - 1; //class
+	PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
 	int locID;
 	int err = slotIntVal(b, &locID);
@@ -414,7 +473,7 @@ int prHIDQueueElement(VMGlobals *g, int numArgsPushed);
 int prHIDQueueElement(VMGlobals *g, int numArgsPushed)
 {
 	
-	//PyrSlot *a = g->sp - 2; //class
+	PyrSlot *a = g->sp - 2; //class
 	PyrSlot *b = g->sp - 1; //locID device
 	PyrSlot *c = g->sp; //element cookie
 	int locID, cookieNum;
@@ -429,10 +488,10 @@ int prHIDQueueElement(VMGlobals *g, int numArgsPushed)
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	//look for the right element:
-	pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeIO);
+	pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
 	// use gElementCookie to find current element
     while (pCurrentHIDElement && (pCurrentHIDElement->cookie != cookie))
-        pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeIO);
+        pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeAll);
 	if(!pCurrentHIDElement) return errFailed;
 	HIDQueueElement(pCurrentHIDDevice, pCurrentHIDElement);
 	return errNone;	
@@ -442,7 +501,7 @@ int prHIDDequeueElement(VMGlobals *g, int numArgsPushed);
 int prHIDDequeueElement(VMGlobals *g, int numArgsPushed)
 {
 	
-	//PyrSlot *a = g->sp - 2; //class
+	PyrSlot *a = g->sp - 2; //class
 	PyrSlot *b = g->sp - 1; //locID device
 	PyrSlot *c = g->sp; //element cookie
 	int locID, cookieNum;
@@ -457,9 +516,9 @@ int prHIDDequeueElement(VMGlobals *g, int numArgsPushed)
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	//look for the right element:
-	pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeIO);
+	pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
     while (pCurrentHIDElement && (pCurrentHIDElement->cookie != cookie))
-        pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeIO);
+        pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeAll);
 	if(!pCurrentHIDElement) return errFailed;
 	HIDDequeueElement(pCurrentHIDDevice, pCurrentHIDElement);
 	return errNone;	
@@ -469,7 +528,7 @@ int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed);
 int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed)
 {
 	
-	//PyrSlot *a = g->sp - 1; //class
+	PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
 	int locID;
 	int err = slotIntVal(b, &locID);
@@ -512,6 +571,8 @@ void initHIDPrimitives()
 	definePrimitive(base, index++, "_HIDBuildElementList", prHIDBuildElementList, 3, 0);
 
 	definePrimitive(base, index++, "_HIDGetValue", prHIDGetValue, 3, 0);
+	definePrimitive(base, index++, "_HIDSetValue", prHIDSetValue, 4, 0);
+
 	definePrimitive(base, index++, "_HIDReleaseDeviceList", prHIDReleaseDeviceList, 1, 0);
 	definePrimitive(base, index++, "_HIDRunEventLoop", prHIDRunEventLoop, 2, 0);
 	definePrimitive(base, index++, "_HIDStopEventLoop", prHIDStopEventLoop, 1, 0);
@@ -519,6 +580,7 @@ void initHIDPrimitives()
 	definePrimitive(base, index++, "_HIDDequeueDevice", prHIDDequeueDevice, 2, 0);
 	definePrimitive(base, index++, "_HIDDequeueElement", prHIDDequeueElement, 3, 0);
 	definePrimitive(base, index++, "_HIDQueueElement", prHIDQueueElement, 3, 0);
+	
 }
 #else // !SC_DARWIN
 void initHIDPrimitives()
