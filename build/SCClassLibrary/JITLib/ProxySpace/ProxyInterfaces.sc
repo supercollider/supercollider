@@ -269,7 +269,7 @@ SynthDefControl : SynthControl {
 		bytes = synthDef.asBytes;
 		size = bytes.size;
 		size = size - (size bitAnd: 3) + 84; // 4 + 4 + 16 + 16 //appx path length size + overhead
-		if(server.options.protocol === \tcp or: { size < 8192}) {
+		if(server.options.protocol === \tcp or: { size < 65535}) {
 			bundle.addPrepare([5, bytes]); // "/d_recv"
 			
 // synthdefs now are not written, as there is no way to regain
