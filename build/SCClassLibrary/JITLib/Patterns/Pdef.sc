@@ -297,7 +297,8 @@ TaskProxy : PatternProxy {
 	play { arg argClock, doReset=true, quant;
 		playQuant = quant;
 		if(player.isNil) { 
-			player = this.playOnce(argClock, doReset, quant) 
+			player = this.playOnce(argClock, doReset, quant);
+			CmdPeriod.doOnce(this);
 		} {
 			if(player.isPlaying.not) { 
 				player.play(argClock, doReset, quant);
