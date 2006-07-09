@@ -58,7 +58,7 @@ Point {
 		var sinr, cosr;
 		sinr = angle.sin;
 		cosr = angle.cos;
-		^((x * cosr) + (y * sinr)) @ ((y * cosr) - (x * sinr))
+		^((x * cosr) - (y * sinr)) @ ((y * cosr) + (x * sinr))
 	}
 
 	abs { ^x.abs @ y.abs }
