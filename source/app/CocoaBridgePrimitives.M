@@ -436,7 +436,7 @@ int prObjcSendMessage(struct VMGlobals *g, int numArgsPushed)
 //	int val;
 //	slotIntVal(args->uo->slots+0, &val);
 	newThing = objc_msgSend(newThing, sel, args);
-	[newThing retain];
+//	[newThing retain];
 
 	SetPtr(receiver->uo->slots + 0, newThing);
     return errNone;
@@ -445,6 +445,7 @@ int prObjcSendMessage(struct VMGlobals *g, int numArgsPushed)
 int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed);
 int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
 {
+//under construction ...
 	PyrSlot *receiver = g->sp - 3;
     PyrSlot *classname = g->sp - 2;
 	PyrSlot *initname = g->sp - 1;
@@ -466,7 +467,7 @@ int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
 	id nsclass = objc_getClass(classname->uos->s);
 	
 	int val = NULL;
-	slotIntVal(args->uo->slots+0, &val);
+//	slotIntVal(args->uo->slots+0, &val);
 	id newThing = objc_msgSend(objc_getClass(classname->uos->s), sel, val);
 	[newThing retain];
 	#else
@@ -656,33 +657,12 @@ int prObjcLoadBundle(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *a = g->sp - 1;
 	PyrSlot *path = g->sp;
 //lazy load of a bundle and its principla class as desciped by apple
- 	NSString * bundlePath = nsStringFromPyrSlot(path);
-   
-//        NSString *bundlePath = [[[NSBundle mainBundle] builtInPlugInsPath]
-//                  stringByAppendingPathComponent:@"MyBundle.bundle"];  // 2
-//		
-	NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];       // 3
-//        NSBundle *bundle = [NSBundle bundleWithPath:@"/Users/falkenst/Public/sc_cocoaBundle/build/Debug/sc_cocoaBundle.bundle"];       // 3
- 
-//        if(bundle)
-//        {
-//            Class principalClass = [bundle principalClass];            // 4
-// 
-//            if(principalClass)
-//            {
-//                _bundleObject = [[principalClass alloc] init];         // 5
-//            }
-//		post("found bundle and test:%i", (int)[_bundleObject getFive]);
-//
-//        }
-//	SetPtr(receiver->uo->slots + 0, newThing);
+ 	NSString * bundlePath = nsStringFromPyrSlot(path);	
+	NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];       
 	if(bundle)
 		SetPtr(a->uo->slots + 0, bundle);
 	else
 		SetNil(a);
-		
- 
-//    return _bundleObject;                                              // 6
 	return errNone;
 }
 
