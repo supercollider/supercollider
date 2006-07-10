@@ -280,6 +280,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
     // must defer in case of large loads and gui
 	NSString * nsclassname = nsStringFromPyrSlot(classname);
 	if([nsclassname length] < 1){ return errFailed; }
+	///methodForSelector:sel //for alloc
 	
     id newThing = [[NSClassFromString( nsclassname ) class] alloc];
 	[newThing retain];
@@ -398,18 +399,60 @@ int prObjcSetDelegate(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prObjcGetClass(struct VMGlobals *g, int numArgsPushed);
+int prObjcGetClass(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *receiver = g->sp - 1;
+    PyrSlot *classname = g->sp ;
+	
+	id nsclass = [objc_getClass(classname->uos->s) class];
+	
+	[nsclass retain];
+	SetPtr(receiver->uo->slots + 0, nsclass);
+    return errNone;
+}
+
+int prObjcSendMessage(struct VMGlobals *g, int numArgsPushed);
+int prObjcSendMessage(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *receiver = g->sp - 2;
+	PyrSlot *msgname = g->sp - 1;
+    PyrSlot *args  = g->sp;
+//    PyrSlot *defer  = g->sp;
+	
+	
+	bool hasArg = NotNil(args);
+	bool isCollection = isKindOfSlot(args, class_array);
+
+	id newThing = (id) receiver->uo->slots[0].ui;
+    if (!newThing) return errFailed;
+
+	NSString * nsinitname = nsStringFromPyrSlot(msgname);
+	if([nsinitname length] < 1){  return errNone; }
+
+	SEL sel = NSSelectorFromString(nsinitname);
+	
+	
+//	int val;
+//	slotIntVal(args->uo->slots+0, &val);
+	newThing = objc_msgSend(newThing, sel, args);
+	[newThing retain];
+
+	SetPtr(receiver->uo->slots + 0, newThing);
+    return errNone;
+}
+
 int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed);
 int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *receiver = g->sp - 4;
-    PyrSlot *classname = g->sp - 3;
-	PyrSlot *initname = g->sp - 2;
-    PyrSlot *args  = g->sp-1;
-    //PyrSlot *defer  = g->sp;
+	PyrSlot *receiver = g->sp - 3;
+    PyrSlot *classname = g->sp - 2;
+	PyrSlot *initname = g->sp - 1;
+    PyrSlot *args  = g->sp;
 	
 	
-	//bool hasArg = NotNil(args);
-	//bool isCollection = isKindOfSlot(args, class_array);
+//	bool hasArg = NotNil(args);
+//	bool isCollection = isKindOfSlot(args, class_array);
 
 	NSString * nsclassname = nsStringFromPyrSlot(classname);
 	if([nsclassname length] < 1){ return errFailed; }
@@ -419,14 +462,25 @@ int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
 	SEL sel = NSSelectorFromString(nsinitname);
 	
 //	NSMethodSignature *sig = [[NSClassFromString( nsclassname ) class]  instanceMethodSignatureForSelector: sel];
-
+	#if 1
 	id nsclass = objc_getClass(classname->uos->s);
 	
-	int val;
+	int val = NULL;
 	slotIntVal(args->uo->slots+0, &val);
-	id newThing = objc_msgSend(nsclass, sel, val);
+	id newThing = objc_msgSend(objc_getClass(classname->uos->s), sel, val);
+	[newThing retain];
+	#else
+	/// //for alloc
+	int val = NULL;
+	slotIntVal(args->uo->slots+0, &val);
+	
+    id newThing = [[NSClassFromString( nsclassname ) class] sel val];
+	[newThing retain];
 
+	#endif
 	SetPtr(receiver->uo->slots + 0, newThing);
+//	SetInt(receiver->uo->slots + 0, 123);
+
     return errNone;
 }
 
@@ -434,7 +488,7 @@ int prObjcGetClassName(struct VMGlobals *g, int numArgsPushed);
 int prObjcGetClassName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
-	//PyrSlot *b  = g->sp;
+	PyrSlot *b  = g->sp;
 	id objc = (id) a->uo->slots[0].ui;
 	if(!objc) return errFailed;	
 	PyrString *pyrPathString = newPyrString(g->gc, [[objc className] UTF8String], 0, true);
@@ -596,6 +650,86 @@ int prObjcDealloc(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prObjcLoadBundle(struct VMGlobals *g, int numArgsPushed);
+int prObjcLoadBundle(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *a = g->sp - 1;
+	PyrSlot *path = g->sp;
+//lazy load of a bundle and its principla class as desciped by apple
+ 	NSString * bundlePath = nsStringFromPyrSlot(path);
+   
+//        NSString *bundlePath = [[[NSBundle mainBundle] builtInPlugInsPath]
+//                  stringByAppendingPathComponent:@"MyBundle.bundle"];  // 2
+//		
+	NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];       // 3
+//        NSBundle *bundle = [NSBundle bundleWithPath:@"/Users/falkenst/Public/sc_cocoaBundle/build/Debug/sc_cocoaBundle.bundle"];       // 3
+ 
+//        if(bundle)
+//        {
+//            Class principalClass = [bundle principalClass];            // 4
+// 
+//            if(principalClass)
+//            {
+//                _bundleObject = [[principalClass alloc] init];         // 5
+//            }
+//		post("found bundle and test:%i", (int)[_bundleObject getFive]);
+//
+//        }
+//	SetPtr(receiver->uo->slots + 0, newThing);
+	if(bundle)
+		SetPtr(a->uo->slots + 0, bundle);
+	else
+		SetNil(a);
+		
+ 
+//    return _bundleObject;                                              // 6
+	return errNone;
+}
+
+int prObjcBundleAllocPrincipalClass(struct VMGlobals *g, int numArgsPushed);
+int prObjcBundleAllocPrincipalClass(struct VMGlobals *g, int numArgsPushed)
+{
+
+	PyrSlot *receiver = g->sp;
+    
+    // have to put them in a specific pool so they can be released on command
+	id bundle = (id) receiver->uo->slots[0].ui;
+    if (!bundle) return errFailed;
+	Class principalClass = [bundle principalClass];            
+	NSObject * _bundleObject = NULL;
+
+	if(principalClass)
+	{
+		_bundleObject = [[principalClass alloc] init];         // 5
+	}
+	if(_bundleObject)
+		SetPtr(receiver, _bundleObject);
+	else
+		SetNil(receiver);	
+	return errNone;
+}
+
+int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed);
+int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *receiver = g->sp - 1;
+	PyrSlot *name = g->sp;
+	//lazy load of a bundle and its principla class as desciped by apple
+ 	NSString * className = nsStringFromPyrSlot(name);
+	id bundle = (id) receiver->uo->slots[0].ui;
+    if (!bundle) return errFailed;
+	Class exampleClass;
+	NSObject * _bundleObject = NULL;	
+	if (exampleClass = [bundle classNamed:className])  {
+        _bundleObject = [[exampleClass alloc] init];
+    }
+	if(_bundleObject)
+		SetPtr(receiver, _bundleObject);
+	else
+		SetNil(receiver);	
+	return errNone;	
+}
+
 
 void initCocoaBridgePrimitives()
 {
@@ -624,7 +758,12 @@ void initCocoaBridgePrimitives()
 	definePrimitive(base, index++, "_ObjC_GetClassName", prObjcGetClassName, 2, 0);	
     definePrimitive(base, index++, "_ObjC_SetActionForControl", prObjcSetActionForControl, 3, 0);	
     definePrimitive(base, index++, "_ObjC_SetDelegate", prObjcSetDelegate, 2, 0);	
-    definePrimitive(base, index++, "_ObjC_AllocSend", prObjcAllocSend, 5, 0);	
+    definePrimitive(base, index++, "_ObjC_AllocSend", prObjcAllocSend, 4, 0);	
+    definePrimitive(base, index++, "_ObjC_GetClass", prObjcGetClass, 2, 0);	
+    definePrimitive(base, index++, "_ObjC_SendMessage", prObjcSendMessage, 3, 0);	
+    definePrimitive(base, index++, "_ObjC_LoadBundle", prObjcLoadBundle, 2, 0);	
+    definePrimitive(base, index++, "_ObjcBundleAllocPrincipalClass", prObjcBundleAllocPrincipalClass, 1, 0);	
+    definePrimitive(base, index++, "_ObjcBundleAllocClassNamed", prObjcBundleAllocClassNamed, 2, 0);	
 
 // loadNibFile
 }
