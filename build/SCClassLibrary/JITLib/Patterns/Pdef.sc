@@ -295,14 +295,12 @@ TaskProxy : PatternProxy {
 	}
 	
 	play { arg argClock, doReset=true, quant;
-		playQuant = quant;
+		playQuant = quant ? this.quant;
 		if(player.isNil) { 
-			player = this.playOnce(argClock, doReset, quant);
-			CmdPeriod.doOnce(this);
+			player = this.playOnce(argClock, doReset, playQuant);
 		} {
 			if(player.isPlaying.not) { 
-				player.play(argClock, doReset, quant);
-				CmdPeriod.doOnce(this);
+				player.play(argClock, doReset, playQuant);
 			}
 		}
 	}
@@ -312,10 +310,11 @@ TaskProxy : PatternProxy {
 	}
 	
 	stop { player.stop; player = nil; }
-	cmdPeriod { this.stop }
 	
 	pause { if(player.notNil) { this.sched { player.pause } } }
-	resume { if(player.notNil) { this.sched { player.resume } } }
+	resume { arg clock, quant; 
+		player !? { player.resume(clock ? this.clock, quant ? this.quant) } 
+	}
 
 	align { arg argQuant;
 		quant = argQuant;
@@ -424,7 +423,6 @@ EventPatternProxy : TaskProxy {
 			clock = argClock ? TempoClock.default;
 			player = player ?? { EventStreamPlayer(this.asStream, protoEvent) };
 			player.play(clock, doReset, quant ? this.quant);
-			CmdPeriod.doOnce(this);
 		}
 	}
 	
