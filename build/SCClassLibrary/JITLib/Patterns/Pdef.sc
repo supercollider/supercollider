@@ -212,7 +212,7 @@ PatternProxy : Pattern {
 			);
 		};
 		event = defaultEnvir.copy;
-		event[\self] = event;
+	//	event[\self] = event; // this risks a crash on storeOn.
 		^event 
 	}
 	
