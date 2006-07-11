@@ -78,6 +78,7 @@ def CheckPKG(context, name):
     if ret:
         res = Environment(ENV = make_os_env('PATH', 'PKG_CONFIG_PATH'))
         res.ParseConfig('pkg-config --cflags --libs \'%s\'' % name)
+        res['PKGCONFIG'] = name
     context.Result(ret)
     return (ret, res)
 
@@ -89,21 +90,37 @@ def merge_lib_info(env, *others):
         env.Append(CPPDEFINES = other.get('CPPDEFINES', []))
         env.Append(LINKFLAGS = other.get('LINKFLAGS', []))
 
+def make_pkgconfig_requires(*envs):
+    res = []
+    for env in envs:
+        if env.has_key('PKGCONFIG'):
+            res.append(env['PKGCONFIG'])
+    return res
+
 def build_pkgconfig_file(target, source, env):
+    def write_field(file, name, prefix, separator=None):
+        if env.has_key(name):
+            if separator:
+                content = separator.join(env[name])
+            else:
+                content = env[name]
+            file.write('%s%s\n' % (prefix, content))
     out = file(str(target[0]), 'w')
     out.writelines([
         'prefix=%s\n' % env['PREFIX'],
         'exec_prefix=${prefix}\n',
         'libdir=${exec_prefix}/lib\n',
         'includedir=${prefix}/include/%s\n' % env['PACKAGE'],
-        '\n',
-        'Name: %s\n' % env['PKGCONFIG_NAME'],
-        'Version: %s\n' % env['VERSION'],
-        'Description: %s\n' % env['PKGCONFIG_DESC'],
-        'Requires: %s\n' % ', '.join(env['PKGCONFIG_REQUIRES']),
-        'Libs: -L${libdir} %s\n' % ' '.join(env['PKGCONFIG_LIBS']),
-        'Cflags: %s\n' % ' '.join(env['PKGCONFIG_CFLAGS'])
-        ])
+        '\n'])
+    write_field(out, 'PKGCONFIG_NAME', 'Name: ')
+    write_field(out, 'PKGCONFIG_DESC', 'Description: ')
+    write_field(out, 'URL', 'URL: ')
+    write_field(out, 'VERSION', 'Version: ')
+    write_field(out, 'PKGCONFIG_REQUIRES', 'Requires: ', ', ')
+    write_field(out, 'PKGCONFIG_REQUIRES_PRIVATE', 'Requires.private: ', ', ')
+    write_field(out, 'PKGCONFIG_LIBS', 'Libs: -L${libdir} ', ' ')
+    write_field(out, 'PKGCONFIG_LIBS_PRIVATE', 'Libs.private: ', ' ')
+    write_field(out, 'PKGCONFIG_CFLAGS', 'Cflags: ', ' ')
     out.close()
 
 def flatten_dir(dir):
@@ -211,9 +228,10 @@ opts.AddOptions(
 # ======================================================================
 
 env = Environment(options = opts,
-                  ENV = make_os_env('PATH'),
+                  ENV = make_os_env('PATH', 'PKG_CONFIG_PATH'),
                   PACKAGE = PACKAGE,
                   VERSION = VERSION,
+                  URL = 'http://supercollider.sourceforge.net',
                   TARBALL = PACKAGE + VERSION + '.tbz2')
 env.Append(
     CCFLAGS = env['CUSTOMCCFLAGS'],
@@ -303,21 +321,27 @@ else:
     features['rendezvous'] = False
 
 # asound
-features['alsa'] = env['ALSA'] \
-                   and conf.CheckCHeader('alsa/asoundlib.h') \
-                   and conf.CheckLib('asound', autoadd = False)
-if features['alsa']: libraries['alsa'] = Environment(LIBS = 'asound')
+# features['alsa'] = env['ALSA'] \
+#                    and conf.CheckCHeader('alsa/asoundlib.h') \
+#                    and conf.CheckLib('asound', autoadd = False)
+# if features['alsa']: libraries['alsa'] = Environment(LIBS = 'asound')
+features['alsa'], libraries['alsa'] = conf.CheckPKG('alsa')
 
 # lid
 features['lid'] = env['LID'] and conf.CheckCHeader('linux/input.h')
 
-# altivec
-features['altivec'] = env['ALTIVEC'] \
-                      and CPU == 'ppc' \
-                      and conf.CheckCHeader('altivec.h')
-
 # only _one_ Configure context can be alive at a time
 env = conf.Finish()
+
+# altivec
+if env['ALTIVEC'] and (CPU == 'ppc'):
+    altiEnv = env.Copy()
+    altiEnv.Append(CCFLAGS = ['-maltivec'])
+    altiConf = Configure(altiEnv)
+    features['altivec'] = altiConf.CheckCHeader('altivec.h')
+    altiConf.Finish()
+else:
+    features['altivec'] = False
 
 # sse
 if env['SSE'] and re.match("^i?[0-9x]86", CPU):
@@ -443,10 +467,13 @@ serverEnv.Append(
     LIBPATH = 'build')
 libscsynthEnv = serverEnv.Copy(
     PKGCONFIG_NAME = 'libscsynth',
-    PKGCONFIG_PREFIX = FINAL_PREFIX,
     PKGCONFIG_DESC = 'SuperCollider synthesis server library',
-    PKGCONFIG_REQUIRES = ['sndfile', 'jack'],
+    PKGCONFIG_PREFIX = FINAL_PREFIX,
+    PKGCONFIG_REQUIRES = make_pkgconfig_requires(libraries['sndfile'],
+                                                 libraries['audioapi'],
+                                                 libraries['rendezvous']),
     PKGCONFIG_LIBS = ['-lscsynth'],
+#     PKGCONFIG_LIBS_PRIVATE = ['-lm', '-lpthread', '-ldl'],
     PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server']
     )
 
@@ -490,10 +517,18 @@ source/server/SC_UnitDef.cpp
 source/server/SC_World.cpp
 ''') + libraries['audioapi']['ADDITIONAL_SOURCES']
 
+def make_static_object(env, source):
+    obj = os.path.splitext(source)[0] + "_a"
+    return env.StaticObject(obj, source)
+
 scsynthSources = ['source/server/scsynth_main.cpp']
 
 libscsynth = serverEnv.SharedLibrary('build/scsynth', libscsynthSources)
 env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
+
+if env['DEVELOPMENT']:
+    libscsynthStatic = serverEnv.StaticLibrary('build/scsynth', libscsynthSources)
+    env.Alias('install-dev', env.Install(lib_dir(INSTALL_PREFIX), [libscsynthStatic]))
 
 scsynth = serverEnv.Program('build/scsynth', scsynthSources, LIBS = ['scsynth'])
 env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [scsynth]))
@@ -590,9 +625,9 @@ langEnv.Append(
 
 libsclangEnv = langEnv.Copy(
     PKGCONFIG_NAME = 'libsclang',
-    PKGCONFIG_PREFIX = FINAL_PREFIX,
     PKGCONFIG_DESC = 'SuperCollider synthesis language library',
-    PKGCONFIG_REQUIRES = ['sndfile', 'libscsynth'],
+    PKGCONFIG_PREFIX = FINAL_PREFIX,
+    PKGCONFIG_REQUIRES = make_pkgconfig_requires(libraries['sndfile']) + ['libscsynth'],
     PKGCONFIG_LIBS = ['-lsclang'],
     PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/lang', '-I${includedir}/server']
     )
