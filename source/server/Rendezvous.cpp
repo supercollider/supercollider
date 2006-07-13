@@ -124,7 +124,30 @@ struct AvahiSession
 	char*				mServiceName;
 };
 
-static AvahiSession gAvahiSession;
+struct AvahiSessionInstance
+{
+	AvahiSessionInstance()
+		: mSession(0)
+	{
+	}
+	~AvahiSessionInstance()
+	{
+		if (mSession) {
+			delete mSession;
+		}
+	}
+	AvahiSession* GetSession()
+	{
+		if (!mSession) {
+			mSession = new AvahiSession();
+		}
+		return mSession;
+	}
+private:
+	AvahiSession* mSession;
+};
+
+static AvahiSessionInstance gAvahiSession;
 
 AvahiSession::AvahiSession()
 	: mPoll(0),
@@ -312,7 +335,7 @@ void AvahiSession::RenameService()
 
 void PublishPortToRendezvous(SCRendezvousProtocol proto, short port)
 {
-	gAvahiSession.PublishPort(proto, port);
+	gAvahiSession.GetSession()->PublishPort(proto, port);
 }
 
 #elif HAVE_HOWL
@@ -332,7 +355,30 @@ struct HowlSession
 	pthread_mutex_t		mMutex;
 };
 
-static HowlSession gHowlSession;
+struct HowlSessionInstance
+{
+	HowlSessionInstance()
+		: mSession(0)
+	{
+	}
+	~HowlSessionInstance()
+	{
+		if (mSession) {
+			delete mSession;
+		}
+	}
+	HowlSession* GetSession()
+	{
+		if (!mSession) {
+			mSession = new HowlSession();
+		}
+		return mSession;
+	}
+private:
+	HowlSession* mSession;
+};
+
+static HowlSessionInstance gHowlSession;
 
 HowlSession::HowlSession()
 	: mSession(0)
@@ -393,7 +439,7 @@ void HowlSession::PublishPort(sw_discovery session, SCRendezvousProtocol protoco
 
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 {
-	gHowlSession.PublishPort(protocol, portNum);
+	gHowlSession.GetSession()->PublishPort(protocol, portNum);
 }
 
 #else // !SC_DARWIN && !HAVE_AVAHI && !HAVE_HOWL
