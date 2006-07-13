@@ -1064,15 +1064,19 @@ void SharedIn_next_k(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > (int)world->mNumSharedControls)) {
+		if (!(busChannel < 0 && lastChannel > (int)world->mNumSharedControls)) {
 			unit->m_bus = world->mSharedControls + busChannel;
 		}
 	}
 	
 	float *in = unit->m_bus;
-	for (int i=0; i<numChannels; ++i, in++) {
-		float *out = OUT(i);
-		*out = *in;
+	if (in) {
+		for (int i=0; i<numChannels; ++i, in++) {
+			float *out = OUT(i);
+			*out = *in;
+		}
+	} else {
+		ClearUnitOutputs(unit, 1);
 	}
 //Print("<-SharedIn_next_k\n");
 }
@@ -1111,9 +1115,11 @@ void SharedOut_next_k(IOUnit *unit, int inNumSamples)
 	}
 	
 	float *out = unit->m_bus;
-	for (int i=1; i<numChannels+1; ++i, out++) {
-		float *in = IN(i);
-		*out = *in;
+	if (out) {
+		for (int i=1; i<numChannels+1; ++i, out++) {
+			float *in = IN(i);
+			*out = *in;
+		}
 	}
 //Print("<-SharedOut_next_k\n");
 }
