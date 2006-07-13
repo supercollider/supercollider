@@ -1,23 +1,17 @@
 Main : Process {
-	var argv;
+	var platform, argv;
 
 	startup {
 		super.startup;
-		Document.startup;
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
-		// make server window
-		Server.internal.makeWindow;
-		Server.local.makeWindow;
-		
-		"~/scwork/startup.rtf".loadPaths;
-		
+		this.platform.startup;
 		StartUp.run;
-	} 
+	}
 	
 	shutdown { // at recompile, quit
 		Server.quitAll;
-		HIDDeviceService.releaseDeviceList;
+		this.platform.shutdown;
 		super.shutdown;
 	}
 	
@@ -26,8 +20,8 @@ Main : Process {
 	}
 	
 	stop { // called by command-.
-		
-		
+
+
 		SystemClock.clear;
 		AppClock.clear;
 		TempoClock.default.clear;
@@ -54,6 +48,13 @@ Main : Process {
 		SCWindow.new.front;
 	}
 
+	platformClass {
+		// override in platform specific extension
+		^Platform
+	}
+	platform {
+		^platform ?? { platform = this.platformClass.new }
+	}
 	argv {
 		^argv ?? { argv = this.prArgv }
 	}
