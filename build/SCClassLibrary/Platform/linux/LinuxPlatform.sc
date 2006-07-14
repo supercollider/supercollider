@@ -1,10 +1,6 @@
 LinuxPlatform : UnixPlatform
 {
 	name { ^\linux }
-	systemAppSupportDir { ^"/usr/local/share/SuperCollider" }
-	userAppSupportDir { ^"~/share/SuperCollider".standardizePath }
-	systemExtensionDir { ^"/usr/local/share/SuperCollider/Extensions" }
-	userExtensionDir { ^"~/share/SuperCollider/Extensions".standardizePath }
 	startup {
 		// Document setup
 		if (\EmacsDocument.asClass.notNil) {

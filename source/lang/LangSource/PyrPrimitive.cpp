@@ -3937,44 +3937,47 @@ void initCharPrimitives();
 void initFilePrimitives();
 	 initFilePrimitives();
 
+void initPlatformPrimitives();
+	initPlatformPrimitives();
+
 void initStringPrimitives();
-	 initStringPrimitives();
+	initStringPrimitives();
 
 void initListPrimitives();
-	 initListPrimitives();
+	initListPrimitives();
 	
 void initUnixPrimitives();
-	 initUnixPrimitives();
+	initUnixPrimitives();
 
 void init_OSC_primitives();
-	 init_OSC_primitives();
+	init_OSC_primitives();
 
 /*  these probably should be moved out of the Lang code
 into an App init primitives section */
 void initGUIPrimitives();
-        initGUIPrimitives();
+	initGUIPrimitives();
 
 void initSCViewPrimitives();
-        initSCViewPrimitives();
+	initSCViewPrimitives();
 
 void initSchedPrimitives();
-        initSchedPrimitives();
+	initSchedPrimitives();
 
 void initMIDIPrimitives();
-		initMIDIPrimitives();
+	initMIDIPrimitives();
 
 #ifndef SC_WIN32
 void initHIDPrimitives();
-                initHIDPrimitives();
+	initHIDPrimitives();
 
 void initSpeechPrimitives();
-		initSpeechPrimitives();     
+	initSpeechPrimitives();     
                 
 void initCocoaFilePrimitives();
-        initCocoaFilePrimitives();
+	initCocoaFilePrimitives();
 		
 void initCocoaBridgePrimitives();
-		initCocoaBridgePrimitives();
+	initCocoaBridgePrimitives();
 		
 #endif
 
@@ -3984,7 +3987,7 @@ void initRendezvousPrimitives();
 	
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
-        initOpenGLPrimitives();
+	initOpenGLPrimitives();
 #endif
 
 	s_recvmsg = getsym("receiveMsg");

@@ -682,6 +682,7 @@ source/lang/LangPrimSource/PyrBitPrim.cpp
 source/lang/LangPrimSource/PyrCharPrim.cpp
 source/lang/LangPrimSource/PyrFilePrim.cpp
 source/lang/LangPrimSource/PyrListPrim.cpp
+source/lang/LangPrimSource/PyrPlatformPrim.cpp
 source/lang/LangPrimSource/PyrStringPrim.cpp
 source/lang/LangPrimSource/PyrSymbolPrim.cpp
 source/lang/LangPrimSource/PyrUnixPrim.cpp

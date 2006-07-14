@@ -67,10 +67,16 @@ bool sc_IsStandAlone();
 // Get the user home directory.
 void sc_GetUserHomeDirectory(char *str, int size);
 
+// Get the System level data directory.
+void sc_GetSystemAppSupportDirectory(char *str, int size);
+
+// Get the User level data directory.
+void sc_GetUserAppSupportDirectory(char *str, int size);
+
 // Get the System level 'Extensions' directory.
 void sc_GetSystemExtensionDirectory(char *str, int size);
 
-// Get the System level 'Extensions' directory.
+// Get the User level 'Extensions' directory.
 void sc_GetUserExtensionDirectory(char *str, int size);
 
 

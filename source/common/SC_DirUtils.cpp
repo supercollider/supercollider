@@ -224,21 +224,52 @@ void sc_GetUserHomeDirectory(char *str, int size)
 }
 
 
+// Get the System level data directory.
+
+void sc_GetSystemAppSupportDirectory(char *str, int size)
+{
+	strncpy(str,
+#if defined(SC_DATA_DIR)
+			SC_DATA_DIR,
+#elif defined(SC_DARWIN)
+			"/Library/Application Support/SuperCollider",
+#elif defined(SC_WIN32)
+			"C:\\SuperCollider",
+#else
+			"/usr/local/share/SuperCollider",
+#endif
+			size);
+}
+
+
+// Get the User level data directory.
+
+void sc_GetUserAppSupportDirectory(char *str, int size)
+{
+	char home[PATH_MAX];
+	sc_GetUserHomeDirectory(home, PATH_MAX);
+	
+	snprintf(str,
+			 size,
+#ifdef SC_DARWIN
+			 "%s/Library/Application Support/SuperCollider",
+#elif defined(SC_WIN32)
+			"%s\\SuperCollider",
+#else
+			 "%s/share/SuperCollider",
+#endif
+			 home);
+}
+
+
 // Get the System level 'Extensions' directory.
 
 void sc_GetSystemExtensionDirectory(char *str, int size)
 {
-	strncpy(str,
-#if defined(SC_DATA_DIR)
-			SC_DATA_DIR "/Extensions",
-#elif defined(SC_DARWIN)
-			"/Library/Application Support/SuperCollider/Extensions",
-#elif defined(SC_WIN32)
-			"C:\\SuperCollider\\Extensions",
-#else
-			"/usr/local/share/SuperCollider/Extensions",
-#endif
-			size);
+	char path[PATH_MAX];
+	sc_GetSystemAppSupportDirectory(path, sizeof(path));
+	sc_AppendToPath(path, "Extensions");
+	strncpy(str, path, size);
 }
 
 
@@ -246,19 +277,10 @@ void sc_GetSystemExtensionDirectory(char *str, int size)
 
 void sc_GetUserExtensionDirectory(char *str, int size)
 {
-	char home[PATH_MAX];
-	sc_GetUserHomeDirectory(home, PATH_MAX);
-	
-	snprintf(str, 
-			 size, 
-#ifdef SC_DARWIN
-			 "%s/Library/Application Support/SuperCollider/Extensions",
-#elif defined(SC_WIN32)
-			"%s\\SuperCollider\\Extensions",
-#else
-			 "%s/share/SuperCollider/Extensions",
-#endif
-			 home);
+	char path[PATH_MAX];
+	sc_GetUserAppSupportDirectory(path, sizeof(path));
+	sc_AppendToPath(path, "Extensions");
+	strncpy(str, path, size);
 }
 
 
