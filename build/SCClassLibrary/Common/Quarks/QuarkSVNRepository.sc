@@ -1,5 +1,10 @@
 
-// a work in progress.  sk & cx
+/**
+  *
+  * Subversion based package repository and package manager
+  * a work in progress.  sk & cx
+  *
+  */
 
 // the SVN repository, most probably on sourceforge
 QuarkSVNRepository
@@ -76,7 +81,7 @@ QuarkSVNRepository
 	}
 	checkout { | q, localRoot |
 		// may have to create not yet existing intermediate directories
-		this.svn("co", this.url ++ q.path, localRoot ++  q.path).join(Char.nl).postln;
+		this.svnp("co", this.url ++ q.path, localRoot ++  q.path)
 	}
 
 	svn { | cmd ... args |
@@ -88,5 +93,12 @@ QuarkSVNRepository
 		};
 		"exiting with contents".debug;
 		^contents
+	}
+	svnp { | cmd ... args |
+		var pipe, line;
+		pipe = Pipe( ("svn" + cmd + args.join(" ")).debug(">"), "r");
+		while { line = pipe.getLine; line.notNil } {
+			line.postln;
+		};
 	}
 }

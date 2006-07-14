@@ -1,5 +1,10 @@
 
-// a work in progress.  sk & cx
+/**
+  *
+  * Subversion based package repository and package manager
+  * a work in progress.  sk & cx
+  *
+  */
 
 // quarks are much worse than opiates, you should have been more careful
 QuarkDependency
@@ -10,8 +15,11 @@ QuarkDependency
 	}
 }
 
-// a single package of classes, helpfiles etc.
-// path is a relative path, relative to the repos root or the local root
+
+// a Quark is a single package of classes, helpfiles etc.
+// the QUARK file should contain an IdentityDictionary
+// path is a relative path — relative to the repos root or the local root
+
 Quark
 {
 	var <name, <summary, <version, <dependencies, <tags,<>path;
@@ -19,7 +27,7 @@ Quark
 	*fromFile { | path |
 		var string = { File.use(path, "r", _.readAllString) }.try;
 		if (string.isNil) {
-			Error("invalid quark file").throw;
+			Error(path + "is an invalid quark file").throw;
 		};
 		^this.fromString(string)
 	}

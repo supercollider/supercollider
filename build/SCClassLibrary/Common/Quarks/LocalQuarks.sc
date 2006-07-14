@@ -1,14 +1,20 @@
 
-// a work in progress.  sk & cx
+/**
+  *
+  * Subversion based package repository and package manager
+  * a work in progress.  sk & cx
+  *
+  */
 
-// quarks that have been checked out from the repository.
-// they are stored in build/quarks
+// Local Quarks are those that have been checked out from the repository.
+// and are stored in build/quarks prior to being actually installed
+
 LocalQuarks
 {
 	var <path;
 
 	*new { | path |
-		^super.newCopyArgs(path)
+		^super.newCopyArgs(path ?? { Platform.userAppSupportDir ++ "/Quarks"})
 	}
 
 	quarks {
