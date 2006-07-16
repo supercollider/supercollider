@@ -12,18 +12,6 @@
 			buildConfigurationList = 88332477090AC12E00A4A7E4 /* Build configuration list for PBXAggregateTarget "All" */;
 			buildPhases = (
 			);
-			buildSettings = {
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = All;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 				F5B7410902E9534D01CA2799 /* PBXTargetDependency */,
 				F59DF0C003073AEB01CE0C16 /* PBXTargetDependency */,
@@ -44,25 +32,6 @@
 				F50D061B02E69C2101CA2799 /* Frameworks */,
 				F50D061C02E69C2101CA2799 /* Rez */,
 			);
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
-				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
-					"-Wstrict-aliasing",
-				);
-				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SuperCollider;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
-			};
 			dependencies = (
 			);
 			name = SuperCollider;
@@ -478,6 +447,9 @@
 		92FC9EF906EB774800AA3E95 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 92FC9D7306EAFCE900AA3E95 /* dtoa.c */; };
 		92FC9EFB06EB774900AA3E95 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 92FC9DD806EB002800AA3E95 /* g_fmt.c */; };
 		AAE9248D048143A400A8010B /* SC_Endian.h in Headers */ = {isa = PBXBuildFile; fileRef = AAE9248C048143A400A8010B /* SC_Endian.h */; };
+		AB7E52F60A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */; };
+		AB7E52F70A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */; };
+		AB7E52F80A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */; };
 		B22686290916E0B500FEBB03 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */; };
 		C21B4674046D847B00A87B78 /* TabletEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = C21B4672046D847B00A87B78 /* TabletEvents.h */; };
 		C21B4675046D847B00A87B78 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = C21B4673046D847B00A87B78 /* TabletEvents.m */; };
@@ -753,32 +725,6 @@
 		F5ED527002FC2E340195E057 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildStyle section */
-		F50D04F902E68E8201CA2799 /* Development */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				OPTIMIZATION_CFLAGS = "-O0";
-				ZERO_LINK = YES;
-			};
-			name = Development;
-		};
-		F50D04FA02E68E8201CA2799 /* Deployment */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OPTIMIZATION_CFLAGS = "-O3";
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
-/* End PBXBuildStyle section */
-
 /* Begin PBXContainerItemProxy section */
 		92B5F2D20547314E00496808 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -847,6 +793,7 @@
 		92FC9D7306EAFCE900AA3E95 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
 		92FC9DD806EB002800AA3E95 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		AAE9248C048143A400A8010B /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
+		AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrPlatformPrim.cpp; sourceTree = "<group>"; };
 		B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
 		C21B4672046D847B00A87B78 /* TabletEvents.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TabletEvents.h; sourceTree = "<group>"; };
 		C21B4673046D847B00A87B78 /* TabletEvents.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = TabletEvents.m; path = source/app/TabletEvents.m; sourceTree = SOURCE_ROOT; };
@@ -1324,6 +1271,7 @@
 				F50D059B02E69B6B01CA2799 /* PyrCharPrim.cpp */,
 				F50D059D02E69B6B01CA2799 /* PyrFilePrim.cpp */,
 				F50D059E02E69B6B01CA2799 /* PyrListPrim.cpp */,
+				AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */,
 				F50D059F02E69B6B01CA2799 /* PyrStringPrim.cpp */,
 				F50D05A002E69B6B01CA2799 /* PyrSymbolPrim.cpp */,
 				F50D05A102E69B6B01CA2799 /* PyrUnixPrim.cpp */,
@@ -1737,22 +1685,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks";
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = SC_DARWIN;
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
-				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				INFOPLIST_FILE = "Info-SuperCollider__xc_.plist";
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SuperCollider;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = "-Wmost";
-				WRAPPER_EXTENSION = app;
-			};
 			dependencies = (
 			);
 			name = "SuperCollider (xc)";
@@ -1767,12 +1699,6 @@
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "xSC3lang" */;
-			buildSettings = {
-			};
-			buildStyles = (
-				F50D04F902E68E8201CA2799 /* Development */,
-				F50D04FA02E68E8201CA2799 /* Deployment */,
-			);
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
@@ -1919,6 +1845,7 @@
 				92B5F3EF0547488200496808 /* SC_HID.cpp in Sources */,
 				9286AEA0057D30B9000EBAEB /* SCService.mm in Sources */,
 				88FB09AD096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				AB7E52F70A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2008,6 +1935,7 @@
 				B22686290916E0B500FEBB03 /* SC_DirUtils.cpp in Sources */,
 				88FB09AC096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 				6A2536BB09C1C9360045AEB7 /* CocoaBridgePrimitives.M in Sources */,
+				AB7E52F60A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2070,6 +1998,7 @@
 				6AAC6D6608FEDC0C006134E1 /* fftlib.c in Sources */,
 				88C3944A09172B6900B740D4 /* SC_DirUtils.cpp in Sources */,
 				88FB09AE096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				AB7E52F80A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2098,21 +2027,6 @@
 				F5ED520202FBA97D0195E057 /* Frameworks */,
 				F5ED520302FBA97D0195E057 /* Rez */,
 			);
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = sclang;
-				REZ_EXECUTABLE = YES;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 			);
 			name = sclang;
