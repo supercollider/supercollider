@@ -193,34 +193,32 @@ PyrSymbol *s_nsObject;
 NSMutableArray *nsobjects;
 
 
-inline int nsinvocationSetArguments(PyrSlot* args, NSInvocation **anInvocation);
-inline int nsinvocationSetArguments(PyrSlot* args, NSInvocation **anInvocation)
+static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 {
 	int len = args->uo->size;
-//	NSInvocation * anInvocation = invocation;
 	for(int i =0; i<len; i++)
 	{
 		PyrSlot * slot = args->uo->slots+i;
-		char *cType = (char *)[[*anInvocation methodSignature] getArgumentTypeAtIndex: i+2];		
+		char *cType = (char *)[[anInvocation methodSignature] getArgumentTypeAtIndex: i+2];		
 
 		if(IsFloat(slot))
 		{
 			if(!(*cType == _C_FLT || *cType == _C_DBL)){post("wrong type at arg: %i excepted float\n", i); return errWrongType;}
 			float val;
 			slotFloatVal(slot, &val);				
-			[*anInvocation setArgument: &val atIndex: i+2];       
+			[anInvocation setArgument: &val atIndex: i+2];       
 		} else if(IsInt(slot))
 		{
 			if(!(*cType == _C_INT || *cType == _C_UINT || *cType == _C_LNG || *cType == _C_ULNG ||  *cType == _C_CHR))
 			{post("wrong type at arg: %i excepted %c \n", i, *cType); return errWrongType;}								
 			int val;
 			slotIntVal(slot, &val);
-			[*anInvocation setArgument: &val atIndex: i+2];       
+			[anInvocation setArgument: &val atIndex: i+2];       
 		} else if(isKindOfSlot(slot, s_nsObject->u.classobj))
 		{
 			if(*cType != _C_ID) return errWrongType;
 			id val = (id) slot->uo->slots[0].ui;
-			[*anInvocation setArgument: &val atIndex: i+2];       
+			[anInvocation setArgument: &val atIndex: i+2];       
 		} 
 		//else if(IsNil)
 		//{
@@ -232,20 +230,20 @@ inline int nsinvocationSetArguments(PyrSlot* args, NSInvocation **anInvocation)
 			NSRect bounds;
 			int err = slotGetNSRect(slot, &bounds);		
 			if (err) return err;
-			[*anInvocation setArgument: &bounds atIndex: i+2];       
+			[anInvocation setArgument: &bounds atIndex: i+2];       
 		} else if (isKindOfSlot(slot, s_string->u.classobj))
 		{
 			if(!(*cType == _C_CHARPTR || *cType == 'r')) return errWrongType;
 			char * ch = slot->uos->s;
 			if(!ch) return errFailed;
-			[*anInvocation setArgument: (void*)  &ch atIndex: i+2]; 
+			[anInvocation setArgument: (void*)  &ch atIndex: i+2]; 
 		} else if (isKindOfSlot(slot, s_point->u.classobj))
 		{
 			if(*cType != _C_STRUCT_B) return errWrongType;			
 			NSPoint point;
 			int err = slotGetPoint(slot, &point);		
 			if (err) return err;
-			[*anInvocation setArgument: &point atIndex: i+2];   				
+			[anInvocation setArgument: &point atIndex: i+2];   				
 		} else if (isKindOfSlot(slot, s_arrayed_collection->u.classobj))
 		{
 			//for now only arrays of SCNSObject
@@ -256,7 +254,7 @@ inline int nsinvocationSetArguments(PyrSlot* args, NSInvocation **anInvocation)
 				nsObjects[j] =  (id) nsslot->uo->slots[0].ui;
 			}
 			if(!nsObjects) return errFailed;
-			[*anInvocation setArgument: &nsObjects atIndex: i+2];  
+			[anInvocation setArgument: &nsObjects atIndex: i+2];  
 		}
 	}
 	return errNone;
@@ -282,21 +280,22 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 	if([nsclassname length] < 1){ return errFailed; }
 	///methodForSelector:sel //for alloc
 	
-    id newThing = [[NSClassFromString( nsclassname ) class] alloc];
-	[newThing retain];
+    Class nsclass = [NSClassFromString( nsclassname ) class];
+    id newThing = [[nsclass class] alloc];
+	[newThing retain]; // XXX_PCB: this is sketchy, retaining something returned by alloc...
 	NSString * nsinitname = nsStringFromPyrSlot(initname);
 	if([nsinitname length] < 1){ [newThing release]; return errFailed; }
 
 	SEL sel = NSSelectorFromString(nsinitname);
-	if(![[NSClassFromString( nsclassname ) class] instancesRespondToSelector:sel])
+	if(![nsclass instancesRespondToSelector:sel])
 	{
 		//if there is a wrong init-method better set object to nil ...		
-		[newThing release];
+		[newThing release]; // XXX_PCB: this simply balances the retain above, not the alloc, leak.
 		SetNil(receiver);	
 		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
 		return errNone;
 	}
-	NSMethodSignature *sig = [[NSClassFromString( nsclassname ) class]  instanceMethodSignatureForSelector: sel];
+	NSMethodSignature *sig = [nsclass  instanceMethodSignatureForSelector: sel];
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: newThing];
@@ -316,7 +315,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 			SetNil(receiver);			
 			return errFailed;
 		};
-		int err = nsinvocationSetArguments(args, &anInvocation);
+		int err = nsinvocationSetArguments(args, anInvocation);
 		if(err){ [newThing release]; SetNil(receiver); return err;}
 	} else if (numberOfArgs>0)
 	{
@@ -468,7 +467,7 @@ int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
 	
 	int val = NULL;
 //	slotIntVal(args->uo->slots+0, &val);
-	id newThing = objc_msgSend(objc_getClass(classname->uos->s), sel, val);
+	id newThing = objc_msgSend(nsclass, sel, val);
 	[newThing retain];
 	#else
 	/// //for alloc
@@ -519,15 +518,16 @@ int prObjcDeferInvocation(struct VMGlobals *g, int numArgsPushed)
 	id newThing = (id) receiver->uo->slots[0].ui;
     if (!newThing) return errFailed;
 	NSString * nsclassname = [newThing className];
+    Class nsclass = [NSClassFromString( nsclassname ) class];
 	NSString * nsinitname = nsStringFromPyrSlot(initname);
 	if([nsinitname length] < 1){ return errFailed; }
 	SEL sel = NSSelectorFromString(nsinitname);
-	if(![[NSClassFromString( nsclassname ) class] instancesRespondToSelector:sel]) 
+	if(![nsclass instancesRespondToSelector:sel]) 
 	{
 		post("Warning: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
 		return errNone;
 	} 
-	NSMethodSignature *sig = [[NSClassFromString( nsclassname ) class]  instanceMethodSignatureForSelector: sel];
+	NSMethodSignature *sig = [nsclass instanceMethodSignatureForSelector: sel];
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: newThing];
@@ -541,7 +541,7 @@ int prObjcDeferInvocation(struct VMGlobals *g, int numArgsPushed)
 
 	if(hasArg) 
 	{
-		int err = nsinvocationSetArguments(args, &anInvocation);
+		int err = nsinvocationSetArguments(args, anInvocation);
 		if(err) return err;
 	}
 
