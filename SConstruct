@@ -93,7 +93,7 @@ def merge_lib_info(env, *others):
 def make_pkgconfig_requires(*envs):
     res = []
     for env in envs:
-        if env.has_key('PKGCONFIG'):
+        if env and env.has_key('PKGCONFIG'):
             res.append(env['PKGCONFIG'])
     return res
 
@@ -421,7 +421,7 @@ print ' DEVELOPMENT:             %s' % yesorno(env['DEVELOPMENT'])
 print ' LANG:                    %s' % yesorno(env['LANG'])
 print ' LID:                     %s' % yesorno(env['LID'])
 print ' PREFIX:                  %s' % env['PREFIX']
-print ' RENDEZVOUS:              %s' % yesorno(env['RENDEZVOUS'])
+print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
 print ' SSE:                     %s' % yesorno(features['sse'])
 print ' X11:                     %s' % yesorno(features['x11'])
