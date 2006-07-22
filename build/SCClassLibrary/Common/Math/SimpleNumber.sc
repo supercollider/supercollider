@@ -257,11 +257,12 @@ SimpleNumber : Number {
 		}
 	}
 	lcurve { arg a = 1.0, m = 0.0, n = 1.0, tau = 1.0;
-		var x = this.neg;
+		var rTau, x = this.neg;
 		^if(tau == 1.0) {
 			a * (m * exp(x) + 1) / (n * exp(x) + 1)
 		} {
-			a * (m * exp(x) + 1) / (n * exp(x) + 1)
+			rTau = tau.reciprocal;
+			a * (m * exp(x) * rTau + 1) / (n * exp(x) * rTau + 1)
 		}
 	}
 	 
