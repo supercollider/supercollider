@@ -159,10 +159,10 @@ Psetp : Pset {
 			val.notNil
 		}{
 			evtStream = pattern.asStream;
-			while {
+			loop {
 				inevent = evtStream.next(event);
-				inevent.notNil
-			}{
+				if(event.isNil) { ^nil.yield };
+				if(inevent.isNil) { ^event };
 				this.filterEvent(inevent, val);
 				event = inevent.yield;
 			};
@@ -219,23 +219,23 @@ Pstretchp : Pstretch {
 	embedInStream { arg event;
 		var evtStream, val, inevent, delta;
 		var valStream = value.asStream;
-		while({
+		while {
 			val = valStream.next;
 			val.notNil
-		},{
+		} {
 			evtStream = pattern.asStream;
-			while({
+			loop {
 				inevent = evtStream.next(event);
-				inevent.notNil
-			},{
-				delta = inevent[\delta];
+				if(event.isNil) { ^nil.yield };
+				if(inevent.isNil) { ^event };
+					delta = inevent[\delta];
 				if (delta.notNil) {
 					inevent[\delta] = delta * val;
 				};
 				inevent[\dur] = inevent[\dur] * val;
 				event = inevent.yield;
-			});
-		});
+			};
+		};
 		^event;
 	}
 }
