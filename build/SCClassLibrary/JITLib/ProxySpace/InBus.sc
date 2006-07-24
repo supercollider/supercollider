@@ -261,6 +261,7 @@ Monitor {
 			bundle.add([9, defname, id, Node.actionNumberFor(addAction), 
 						group.nodeID, "out", out, "in", in]);
 		};
+		outs = outs.unbubble;
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
 	
