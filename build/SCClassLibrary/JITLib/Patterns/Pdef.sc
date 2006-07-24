@@ -268,12 +268,12 @@ TaskProxy : PatternProxy {
 			}
 	}
 	
-	wakeUp { 
-			if(player.notNil and: { player.isPlaying.not }) {
-				if(player.streamHasEnded) { player.reset };
-				this.play(quant:playQuant) 
-			}		
+	wakeUp {	
+			if(this.isPlaying) { player.reset; this.play(quant:playQuant) }
 	}
+	
+	isPlaying { ^player.notNil and: { player.wasStopped.not } }
+	
 	isEventPattern {Ê^true }
 	
 	*default { ^Pn(this.defaultValue,1) }
@@ -287,7 +287,6 @@ TaskProxy : PatternProxy {
 		} { pattern }.asStream
 	}
 	
-	isPlaying { ^player.notNil }
 	
 	playOnce { arg argClock, doReset = (false), quant;
 		clock = argClock ? clock;
