@@ -46,6 +46,9 @@
 - (void) doFloatAction: (id) sender;
 - (void) doIntAction: (id) sender;
 - (void) doStateAction: (id) sender;
+- (void) doFloatArrayAction: (id) sender;
+- (void) doSCObjectAction: (id) sender;
+
 - (void) keyUp: (NSEvent*) event;
 - (void) keyDown: (NSEvent*) event;
 - (void) mouseDown: (NSEvent*) event;
@@ -105,6 +108,7 @@ extern bool compiledOK;
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
+//		
 		++g->sp;  SetObject(g->sp, pobj); 
 		++g->sp;  SetInt(g->sp, [sender state]); 
 		runInterpreter(g, method, 2);
@@ -129,6 +133,73 @@ extern bool compiledOK;
     pthread_mutex_unlock (&gLangMutex);	
 	
 }
+- (void) doArrayAction: (id) sender
+{
+    pthread_mutex_lock (&gLangMutex);	
+	PyrObject * pobj = [self getSCObject];
+	if(compiledOK && pobj){
+		PyrSymbol *method = getsym("doAction");
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, pobj); 
+		//get Size
+		int size = (int) [sender arraySize];
+		float *src = (float*) [sender floatArray];
+		PyrDoubleArray* array = newPyrDoubleArray(g->gc, size, 0 , true);
+		for(int i=0; i<size; i++){
+			array->d[i] = src[i];
+		}		
+		++g->sp;  SetObject(g->sp, array); 
+		runInterpreter(g, method, 2);
+		g->canCallOS = false;
+	}
+    pthread_mutex_unlock (&gLangMutex);	
+	
+}
+
+/* experimental ! */
+- (void) doFloatArrayAction: (id) sender
+{
+    pthread_mutex_lock (&gLangMutex);	
+	PyrObject * pobj = [self getSCObject];
+	if(compiledOK && pobj){
+		PyrSymbol *method = getsym("doAction");
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, pobj); 
+		//get Size
+		int size = (int) [sender arraySize];
+		float *src = (float*) [sender floatArray];
+		PyrDoubleArray* array = newPyrDoubleArray(g->gc, size, 0 , true);
+		for(int i=0; i<size; i++){
+			array->d[i] = src[i];
+		}		
+		++g->sp;  SetObject(g->sp, array); 
+		runInterpreter(g, method, 2);
+		g->canCallOS = false;
+	}
+    pthread_mutex_unlock (&gLangMutex);	
+}
+/* experimental ! */
+- (void) doSCObjectAction: (id) sender
+{
+    pthread_mutex_lock (&gLangMutex);	
+	PyrObject * pobj = [self getSCObject];
+	if(compiledOK && pobj){
+		PyrSymbol *method = getsym("doAction");
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, pobj); 
+		//push values from sender
+		PyrObject* reslut = (PyrObject*) [sender valueWith: self];
+	
+		++g->sp;  SetObject(g->sp, reslut); 
+		runInterpreter(g, method, 2);
+		g->canCallOS = false;
+	}
+    pthread_mutex_unlock (&gLangMutex);	
+}
+
 - (void) keyUp: (NSEvent*) event
 {
 }
@@ -281,25 +352,24 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 	///methodForSelector:sel //for alloc
 	
     Class nsclass = [NSClassFromString( nsclassname ) class];
-    id newThing = [[nsclass class] alloc];
-	[newThing retain]; // XXX_PCB: this is sketchy, retaining something returned by alloc...
+	if(!nsclass){SetNil(receiver); return errFailed;}
+	
 	NSString * nsinitname = nsStringFromPyrSlot(initname);
-	if([nsinitname length] < 1){ [newThing release]; return errFailed; }
+	if([nsinitname length] < 1) return errFailed;
 
 	SEL sel = NSSelectorFromString(nsinitname);
 	if(![nsclass instancesRespondToSelector:sel])
 	{
 		//if there is a wrong init-method better set object to nil ...		
-		[newThing release]; // XXX_PCB: this simply balances the retain above, not the alloc, leak.
 		SetNil(receiver);	
 		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
 		return errNone;
 	}
+	NSObject * newThing = NULL;	
 	NSMethodSignature *sig = [nsclass  instanceMethodSignatureForSelector: sel];
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
-    [anInvocation setTarget: newThing];
-    [anInvocation setSelector: sel];
+
 	int numberOfArgs = (int) [sig numberOfArguments] - 2; //cocoa args start at 2
 	
 	if (hasArg && isCollection && numberOfArgs>0)
@@ -310,21 +380,21 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 		if(numberOfArgs != len) 
 		{
 			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cString],numberOfArgs, len);		
-
-			[newThing release]; 
 			SetNil(receiver);			
 			return errFailed;
-		};
+		}
 		int err = nsinvocationSetArguments(args, anInvocation);
-		if(err){ [newThing release]; SetNil(receiver); return err;}
+		if(err){ SetNil(receiver); return err;}
+	
 	} else if (numberOfArgs>0)
 	{
 		post("Warning: mismatching arguments \n");
-		[newThing release];
 		SetNil(receiver);
 		return errFailed;
 	}
-	
+	newThing = [nsclass alloc];	
+	[anInvocation setTarget: newThing];				
+	[anInvocation setSelector: sel];		
 	if(IsTrue(defer))
 		[scvm defer: anInvocation];
 	else 
@@ -334,12 +404,13 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 		[anInvocation getReturnValue: (void*)&val];				
 		newThing = (id) val;
 		[newThing retain];
+		SetPtr(receiver->uo->slots + 0, newThing);
+		[nsobjects addObject: newThing];
+		
 	}
 //	[nsAutoReleasePool addObject:newThing];	
 //	[newThing autorelease];	
-	[nsobjects addObject: newThing];
 	//receiver set dataptr
-	SetPtr(receiver->uo->slots + 0, newThing);
     return errNone;
 }
 
@@ -645,7 +716,8 @@ int prObjcDealloc(struct VMGlobals *g, int numArgsPushed)
     
     // have to put them in a specific pool so they can be released on command
     if(! IsInt(dataptr) ) return errWrongType;
-    
+	//todo remove object from nsobjects array ..
+    //[nsobjects ]
     // check retain count and return in case
     [(id)dataptr->ui release];
     return errNone;
@@ -692,22 +764,86 @@ int prObjcBundleAllocPrincipalClass(struct VMGlobals *g, int numArgsPushed)
 int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed);
 int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
 {
-    PyrSlot *receiver = g->sp - 1;
-	PyrSlot *name = g->sp;
+	
+    PyrSlot *receiver = g->sp - 4;
+    PyrSlot *name = g->sp - 3;
+	PyrSlot *initname = g->sp - 2;
+    PyrSlot *args  = g->sp-1;
+    PyrSlot *defer  = g->sp;
+	
+	bool hasArg = NotNil(args);
+	bool isCollection = isKindOfSlot(args, class_array);	
+	
 	//lazy load of a bundle and its principla class as desciped by apple
- 	NSString * className = nsStringFromPyrSlot(name);
+ 	NSString * nsclassname = nsStringFromPyrSlot(name);
 	id bundle = (id) receiver->uo->slots[0].ui;
     if (!bundle) return errFailed;
-	Class exampleClass;
-	NSObject * _bundleObject = NULL;	
-	if (exampleClass = [bundle classNamed:className])  {
-        _bundleObject = [[exampleClass alloc] init];
-    }
-	if(_bundleObject)
-		SetPtr(receiver, _bundleObject);
-	else
+	Class nsclass = NULL;
+	NSObject * newThing = NULL;	
+	nsclass = [bundle classNamed:nsclassname];
+	if(!nsclass){SetNil(receiver); return errFailed;}
+	// sort out initMethod
+	NSString * nsinitname = nsStringFromPyrSlot(initname);
+	if([nsinitname length] < 1){ SetNil(receiver); return errFailed; }
+
+	SEL sel = NSSelectorFromString(nsinitname);
+	if(![nsclass instancesRespondToSelector:sel])
+	{
 		SetNil(receiver);	
-	return errNone;	
+		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
+		return errNone;
+	}
+	NSMethodSignature *sig = [nsclass  instanceMethodSignatureForSelector: sel];
+    NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+    SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+
+	int numberOfArgs = (int) [sig numberOfArguments] - 2; //cocoa args start at 2
+	
+	if (hasArg && isCollection && numberOfArgs>0)
+	{
+		int len = args->uo->size;
+		
+		//should check for type [sig getArgumentTypeAtIndex: i];
+		if(numberOfArgs != len) 
+		{
+			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cString],numberOfArgs, len);		
+			SetNil(receiver);			
+			return errFailed;
+		};
+		int err = nsinvocationSetArguments(args, anInvocation);
+		if(err){ SetNil(receiver); return err;}
+		
+
+	} else if (numberOfArgs>0)
+	{
+		post("Warning: mismatching arguments \n");
+		SetNil(receiver);
+		return errFailed;
+	}
+	newThing = [nsclass alloc];	
+	[anInvocation setTarget: newThing];				
+	[anInvocation setSelector: sel];	
+	if(IsTrue(defer))
+	{
+		[scvm defer: anInvocation];
+	}
+	else 
+	{
+		id val;
+		[anInvocation invoke];
+		[anInvocation getReturnValue: (void*)&val];				
+		newThing = (id) val;
+		[newThing retain];
+		SetPtr(receiver, newThing);
+		[nsobjects addObject: newThing];
+	}
+
+    return errNone;
+	    
+//	if(_bundleObject)
+//		SetPtr(receiver, _bundleObject);
+//	else
+//		SetNil(receiver);	
 }
 
 
@@ -743,7 +879,7 @@ void initCocoaBridgePrimitives()
     definePrimitive(base, index++, "_ObjC_SendMessage", prObjcSendMessage, 3, 0);	
     definePrimitive(base, index++, "_ObjC_LoadBundle", prObjcLoadBundle, 2, 0);	
     definePrimitive(base, index++, "_ObjcBundleAllocPrincipalClass", prObjcBundleAllocPrincipalClass, 1, 0);	
-    definePrimitive(base, index++, "_ObjcBundleAllocClassNamed", prObjcBundleAllocClassNamed, 2, 0);	
+    definePrimitive(base, index++, "_ObjcBundleAllocClassNamed", prObjcBundleAllocClassNamed, 5, 0);	
 
 // loadNibFile
 }
