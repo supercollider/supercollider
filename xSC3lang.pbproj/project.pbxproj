@@ -2291,6 +2291,20 @@
 			settings = {
 			};
 		};
+		C2ECED340A7BB6980065BEFC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = PyrPlatformPrim.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		C2ECED650A7BBB840065BEFC = {
+			fileRef = C2ECED340A7BB6980065BEFC;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 //C20
 //C21
 //C22
@@ -3293,6 +3307,7 @@
 		};
 		F50D059502E69B6B01CA2799 = {
 			children = (
+				C2ECED340A7BB6980065BEFC,
 				F5285E0D0316170401CA2799,
 				F50D059802E69B6B01CA2799,
 				F50D059902E69B6B01CA2799,
@@ -4128,6 +4143,7 @@
 				88ECD4230909A2E60031FA96,
 				FE63C87D09826DFB00564599,
 				6A243A9D09C35248003F7F5C,
+				C2ECED650A7BBB840065BEFC,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
