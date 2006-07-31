@@ -1,34 +1,62 @@
+PySCLang - a python module for SuperCollider Lang
+Project : Psycollider
+ 
+by:
+Benjamin Golinvaux
+benjamin.golinvaux@euresys.com
+messenger: bgolinvaux@hotmail.com
 
-functions :
-
-sendMain(string)
-compileLibrary()
-setCmdLine(string)
-start()
+currently maintained by:
+Christopher Frauenberger 
+frauenberger@iem.at
 
 -------------------------------------------------------------------------------
 
-python session :
+PySCLang is a python module that implements the SuperCollider lang and makes it 
+scriptable from python. 
 
-import RRRRR as *
+Functions available from python:
 
-s1 = LoadBuffer("machin")
-s2 = LoadBuffer("truc")
+sendMain(string)
+	string is one of the following commands to the language:
+	interpretPrintCmdLine - evaluates the current command line string
+	run - runs something (defined in the library, does nothing if you didint override it)
+	stop - stops the lang
+	openWinCodeFile - opens any code window
+	methodTemplates - 
+	methodReferences - finds references to the method selected
+	
+compileLibrary()
+	compiles the library
+	
+setCmdLine(string)
+	sets the current command line to any string that contains usually sc3 code
+	
+start()
+	start the module
 
+setSCLogSink(window)
+	set where the module should post to
+	
+compiledOK
+	returns a bool whether the library was compiled correctly
+	
+Rtf2Ascii
+	ugly conversion...
 
-Play :
+setPyPrOpenWinTextFile(path,startRange,rangeSize)
+	a file to open
 
-(
-// read a whole sound into memory
-s = Server.local;
-// note: not *that* columbia, the first one
-b = Buffer.read(s,"sounds/a11wlk01.wav");
-)
+Example usage in python:
 
-SynthDef("help-PlayBuf",{ arg out=0,bufnum=0;
-	Out.ar(out,
-		PlayBuf.ar(1,bufnum, BufRateScale.kr(bufnum))
-	)
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+>>> import PySCLang, os
+>>> os.chdir("/Applications/SuperCollider3/")
+>>> PySCLang.start()
 
+>>> PySCLang.setCmdLine("s = Server.local; s.boot; ")
+>>> PySCLang.sendMain('interpretPrintCmdLine')
+>>> PySCLang.setCmdLine("s.initTree; s.serverRunning=true")
+>>> PySCLang.sendMain('interpretPrintCmdLine')
 
+>>> PySCLang.setCmdLine(" { SinOsc.ar(440, 0, 0.4) }.play(s) ")
+>>> PySCLang.sendMain('interpretPrintCmdLine')
