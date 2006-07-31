@@ -599,11 +599,22 @@ void SyntaxColorize(NSTextView* textView);
 
 NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* helpFolderPath)
 {
-    // If called with no folder check in the bundle (if OS X), SC distribution Help
+    // catch the common case of wanting main help
+	if([desiredHelpFile isEqual: @""]) {
+		NSString* mainHelpPath = @"Help/Help.help.rtf";
+		if([fileManager fileExistsAtPath: mainHelpPath]) {
+			return mainHelpPath;
+		} else {
+			// maybe it's moved or changed format
+			return helpFileWithName(fileManager, @"Help", helpFolderPath);
+		}
+	}
+	
+	// If called with no folder check in the bundle (if OS X), SC distribution Help
     // directory, and the System and User Extensions directories.
     if(!helpFolderPath) { 
-		NSString* helpFilePath ;
-		NSString* searchPath ;
+		NSString* helpFilePath;
+		NSString* searchPath;
 		 
 		char resourceDirPath[MAXPATHLEN - 32];
 		sc_GetResourceDirectory(resourceDirPath, MAXPATHLEN - 32);
@@ -633,11 +644,27 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     // the name of the help file we are looking for 
     NSString* helpFileName;
        	
-	// substitute for - or / as these are not valid UNIX filenames
+	// substitute for these symbols, as they are not valid filenames on one or more platforms
     if([desiredHelpFile isEqual: @"-"]) {
     	helpFileName = @"subtraction";
     } else if([desiredHelpFile isEqual: @"/"]) {
         helpFileName = @"division";
+	} else if([desiredHelpFile isEqual: @"**"]) {
+        helpFileName = @"exponentiation";
+	} else if([desiredHelpFile isEqual: @"%"]) {
+        helpFileName = @"modulo";
+	} else if([desiredHelpFile isEqual: @"*"]) {
+        helpFileName = @"multiplication";
+	} else if([desiredHelpFile isEqual: @"+"]) {
+        helpFileName = @"addition";
+	} else if([desiredHelpFile isEqual: @"<"]) {
+        helpFileName = @"lessthan";	
+	} else if([desiredHelpFile isEqual: @"<="]) {
+        helpFileName = @"lessorequalthan";
+	} else if([desiredHelpFile isEqual: @">"]) {
+        helpFileName = @"greaterthan";
+	} else if([desiredHelpFile isEqual: @">="]) {
+        helpFileName = @"greaterorequalthan";
     } else {
         helpFileName = desiredHelpFile;
     }
