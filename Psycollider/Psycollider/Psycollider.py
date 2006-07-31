@@ -817,9 +817,10 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     elif sel == "*" : sel = "multiplication"   			# from "*.rtf"
     elif sel == "**": sel = "exponentiation"        	# from "**.rtf"
     elif sel == "<" : sel = "lessthan"             		# from "<.rtf"
-    elif sel == "<=": sel = "lessthanorequal"    		# from "<=.rtf"
+    elif sel == "<=": sel = "lessorequalthan"    		# from "<=.rtf"
     elif sel == ">" : sel = "greaterthan"          		# from ">.rtf"
-    elif sel == ">=": sel = "greaterthanorequal" 		# from ">=.rtf"
+    elif sel == ">=": sel = "greaterorequalthan" 		# from ">=.rtf"
+    elif set == "%" : sel = "modulo"					# from "%.rtf"
     if sel != "":
       for helpFolder in [gHelpFolder, os.path.expanduser(gUserExtensionFolder)]:
         for folderPath, foldersInPath, fileNamesInFolder in os.walk(helpFolder):
