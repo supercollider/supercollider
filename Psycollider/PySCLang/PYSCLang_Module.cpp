@@ -1,3 +1,33 @@
+/*
+ * File: PYSCLang_Module.cpp
+ * Project : Psycollider
+ * 
+ * by:
+ * Benjamin Golinvaux
+ * benjamin.golinvaux@euresys.com
+ * messenger: bgolinvaux@hotmail.com
+ * 
+ * currently maintained by:
+ * Christopher Frauenberger 
+ * frauenberger@iem.at
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation; either version 2 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ *  USA
+ *
+ */
+
 #ifndef SC_WIN32
 #include "pycxx/cxx/Objects.hxx"
 #include "pycxx/cxx/Extensions.hxx"
@@ -252,12 +282,12 @@ Py::Object PySCLang_Module::setPyPrOpenWinTextFile(const Py::Tuple &a)
     PyErr_SetString(PyExc_IndexError,"requires 1 callable argument");
     return Py::Object(Py::Null());
   }
-  PyObject* logSink = a[0].ptr();
-  if( PyCallable_Check( logSink ) == 0)
+  PyObject* openTextFile = a[0].ptr();
+  if( PyCallable_Check( openTextFile ) == 0)
     PyErr_SetString(PyExc_TypeError,"object must be callable");
   else {
-    PyPrOpenWinTextFile_s = logSink;
-    Py_INCREF(logSink);
+    PyPrOpenWinTextFile_s = openTextFile;
+    Py_INCREF(openTextFile);
   }
   return Py::Nothing();
 }

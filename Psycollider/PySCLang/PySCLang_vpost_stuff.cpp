@@ -1,8 +1,45 @@
+/*
+ * File: PYSCLang_Module_GUIStuff.cpp
+ * Project : Psycollider
+ * 
+ * by:
+ * Benjamin Golinvaux
+ * benjamin.golinvaux@euresys.com
+ * messenger: bgolinvaux@hotmail.com
+ * 
+ * currently maintained by:
+ * Christopher Frauenberger 
+ * frauenberger@iem.at
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation; either version 2 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ *  USA
+ *
+ */
+
+#ifndef SC_WIN32
+#include "pycxx/cxx/Objects.hxx"
+#include "pycxx/cxx/Extensions.hxx"
+#else
 #include "stdafx.h"
+#endif
+
+#include "PySCLang_Module.h"
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <iostream>
-#include "PySCLang_Module.h"
 
 const int kPostBufferSize = 1024;
 
@@ -14,7 +51,12 @@ int PySCLang_vpost(const char *fmt, va_list ap)
 {
   if(_postBuffer == NULL)
     _postBuffer = new char[kPostBufferSize];
+#ifdef SC3_WIN
   int size = _vscprintf(fmt, ap);
+#else
+  int size = vprintf(fmt, ap);
+#endif
+
   if (size < kPostBufferSize) {
     vsprintf(_postBuffer, fmt, ap);
     //_txtCtrl->AppendText(wxString(_postBuffer));
@@ -43,12 +85,16 @@ int PySCLang_vpost(const char *fmt, va_list ap)
   return 0;
 }
 
-
 void setPostFile(FILE* file)
 {
   // we're not using that , are we ?
 }
 
+#ifndef SC3_WIN
+extern "C" {
+	int vpost(const char *fmt, va_list ap);
+}
+#endif
 int vpost(const char *fmt, va_list ap)
 {
 	PySCLang_vpost(fmt, ap);
@@ -93,6 +139,7 @@ void error(const char *fmt, ...)
   PySCLang_vpost(fmt, ap);
 }
 
+
 void flushPostBuf(void)
 {
 }
@@ -118,13 +165,14 @@ void initRendezvousPrimitives()
 {
 }
 
+
+#ifdef SC3_WIN
 void initSpeechPrimitives()
 {
 }
+#endif
 
 long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2)
 {
     return 0;
 }
-
-
