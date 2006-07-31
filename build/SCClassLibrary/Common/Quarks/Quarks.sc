@@ -16,27 +16,38 @@ Quarks
 	classvar global;
 	var <repos, <local;
 
-
-	// add code in App Support/SuperCollider/Quarks to remote repos
-	*add { |name| this.global.add(name) }
-	// or use standard svn tools in App Support/SuperCollider/Quarks
-	*commit { |name,message| this.global.commit(name,message) }
-	*update { |name| this.global.update(name) }
+	*checkoutAll { this.global.repos.checkoutAll(this.global.local.path) }
 	*checkout { | name, version | this.global.checkout(name,version); }
+	*update { |name| this.global.update(name) }
 	// return Quark objects for each in App Support/SuperCollider/Quarks
-	// so actually it would list any Quarks not yet checked in
+	// (so actually this would list any Quarks that are in local development and not yet checked in)
 	*checkedOut { ^this.global.checkedOut }
-	// post SVN status
-	*status { |name| this.global.status(name) }
-	
-	// symlinks from code in App Support/SuperCollider/Quarks to Extensions
-	// so that it is in the SC compile path
-	*install { |name,version| this.global.install(name,version) }
+	// download/update only the quark specification files from remote repos
+	// and not the quarks themselves
+	*updateDirectory { 
+		^this.global.repos.updateDirectory 
+	}
+
+
+	// this symlinks from {App Support}/SuperCollider/Quarks to {App Support}/SuperCollider/Extensions
+	// it is then in the SC compile path
+	*install { |name| this.global.install(name) }
 	// return Quark objects for each installed
 	*installed { ^this.global.installed }
-	*findInstalled { |name, version| ^this.global.findInstalled(name,version) }
-
-
+	*isInstalled { |name| ^this.global.isInstalled(name) }
+	// removes the symlink
+	//*uninstall
+	
+	// add code in {App Support}/SuperCollider/Quarks to the remote repos
+	// and also adds the quarks file in DIRECTORY
+	*add { |name| this.global.add(name) }
+	// you may also use standard svn tools within {App Support}/SuperCollider/Quarks
+	*commit { |name,message| this.global.commit(name,message) }
+	// post the SVN status
+	*status { |name| this.global.status(name) }
+	
+	*local { ^this.global.local }
+	*repos { ^this.global.repos }
 
 	*new { | reposPath, localPath |
 		^super.newCopyArgs(
@@ -51,7 +62,7 @@ Quarks
 		if((q = local.findQuark(name)).isNil,{
 			Error("Local Quark code not found, cannot add to repository").throw;
 		});
-		repos.svnp("add",local.path++"/"++q.path);
+		repos.svn("add",local.path++"/"++q.path);
 	}
 	commit { |name,message|
 		var q;
@@ -61,33 +72,32 @@ Quarks
 		if(message.isNil,{ 
 			Error("svn log message required to commit").throw;
 		});
-		repos.svnp("commit","-m",message,"-F",local.path++"/"++q.path);
+		repos.svn("commit","-m",message,"-F",local.path++"/"++q.path);
 	}
 	update { |name|
 		var q;
 		if(name.notNil,{
 			if((q = local.findQuark(name)).isNil,{
-				Error("Local Quark code not found, cannot update from repository").throw;
+				Error("Local Quark "+name+" not found, cannot update from repository").throw;
 			});
 			repos.svn("update", local.path++"/"++q.path);
 		},{
 			//update all
-			repos.svnp("update", local.path++"/");
+			repos.svn("update", local.path++"/");
 		});
 	}
-	
 	checkout { |name, version|
 		var q;
 		if(local.findQuark(name,version).notNil,{
-			warn("Quark already checked out");
+			inform("Quark "++name++" already checked out");
 			^this
 		});
+		
 		q = repos.findQuark(name,version);
 		if(q.isNil,{
 			Error("Quark not found in repository.").throw;
 		});
-		// might have to make local.path directory first
-		repos.svnp("co",repos.url++"/" ++ q.path,local.path ++ "/" ++ q.path)
+		repos.checkout(q,local.path);
 	}
 	checkedOut {
 		^local.quarks
@@ -96,59 +106,45 @@ Quarks
 		var q;
 		if(name.notNil,{
 			q = local.findQuark(name);
-			repos.svnp("status",local.path ++ "/" ++ q.path);
+			repos.svn("status",local.path ++ "/" ++ q.path);
 		},{
-			repos.svnp("status",local.path);
+			repos.svn("status",local.path);
 		});
 	}
-	install { | name, version |
+	install { | name |
 		var q, deps, installed;
-		// installed?
-		q = this.findInstalled(name);
-		if(q.notNil,{
-			if(version.notNil,{
-				if(q.version >= version,{
-					(name + "already installed").inform;
-					^this
-				},{
-					// can we get a higher version ?
-					// get it
-					// uninstall currently installed insufficient one
-					"quark installed but insufficient version found".notYetImplemented
-				});
-			},{
-				(name + "already installed").inform;
-				^this
-			});
+
+		if(this.isInstalled(name),{
+			(name + "already installed").inform;
+			^this
 		});
-		
-		// is it locally checked out ?
-		q = local.findQuark(name,version);
+
+		q = local.findQuark(name);
 		if(q.isNil,{
-			// complain
-			Error(name + "is not yet in your local quarks.  first you must: Quarks.checkout("++name++")").throw;
-			
-			// check it out from repos
+			Error(name + "is not yet downloaded from the repository").throw;
 		});
 		
-		
-		// dependencies not yet handled
-		/* deps = this.buildDeps(q);
-		"DEPENDENCIES".postln;
-		deps.do({ |dep| dep.name.postln });
-		"============".postln;
-		deps.do { |dep| local.install(dep) };
-		this.sync; */
 		
 		// do we have to create /quarks/ directory ?
+		this.checkDir;
 		
 		// install via symlink to Extensions/Quarks
-		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.extensionsDir ++ "/quarks/" ++ q.path).debug("install not yet implemented");
+		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.userExtensionDir.escapeChar($ ) ++ "/quarks/" ++ q.path).systemCmd;
+		(q.name + "installed").inform;
+	}
+	checkDir {
+		var d;
+		d = Platform.userExtensionDir.escapeChar($ ) ++ "/quarks";
+		if(d.pathMatch.isEmpty,{
+			("mkdir" + d).systemCmd;
+			("creating: " + d).inform;
+		});
 	}
 	
 	installed {
+		// of local quarks, select symlinks in userExtensionDir of same name
 		var pathMatches,q;
-		pathMatches = pathMatch( thisProcess.platform.userExtensionDir ++ "/quarks/*/QUARK" );
+		pathMatches = pathMatch( Platform.userExtensionDir ++ "/quarks/*/QUARK" );
 		^pathMatches.collect { |p|  
 			q = Quark.fromFile(p);
 		};
@@ -157,41 +153,8 @@ Quarks
 	listInstalled {
 		this.installed.do { |q| [q.name, q.summary].postln };
 	}
-	findInstalled { arg name, version;
-		var pathMatches, q;
-		pathMatches = pathMatch( thisProcess.platform.userExtensionDir ++ "/quarks/" ++ name ++ "/QUARK" );
-		if(pathMatches.size == 0,{ ^nil });
-		q = loadPath( pathMatches.first );
-		if(version <= q[\version],{
-			// insufficient version
-			inform(name + "version " + q[\version] + "is installed but version " + version + "is required");
-			^nil
-		});
-		^q	
+	isInstalled { arg name;
+		^pathMatch( Platform.userExtensionDir ++ "/quarks/" ++ name  ).notEmpty
 	}
 	
-	buildDeps { | q |
-		var stream = CollStream([]), vis = List.new;
-		this.buildDepsOn(q, stream, vis);
-		^stream.contents
-	}
-	buildDepsOn { | q, stream, vis |
-		var next;
-		if (vis.includes(q).not) {
-			vis.add(q);
-			if (q.dependencies.notEmpty) {
-				q.dependencies.do { |dep|
-					if (this.findInstalled(dep.name).isNil) {
-						Error(dep.name ++ " is not installed.").throw;
-						next = repos.findQuark(dep.name,dep.version);
-						if (next.isNil) {
-							Error(dep.name ++ " is not in the remote repository").throw;
-						};
-						this.buildDepsOn(next, stream, vis);
-					}
-				};
-			};
-			stream.put(q);
-		};
-	}
 }

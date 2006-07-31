@@ -43,6 +43,7 @@ Quark
 	}
 	init { | blob |
 		name = this.getName(blob[\name]);
+		path = this.getString(blob[\path]);
 		summary = this.getString(blob[\summary]);
  		version = this.getVersion(blob[\version]);
 		dependencies = this.getDependencies(blob[\dependencies]);
