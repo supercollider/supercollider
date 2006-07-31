@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A23B144D09D8482400F2959A /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A23B144C09D8482400F2959A /* libsndfile.a */; };
+		A257C6790A7E03F100509127 /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A257C6780A7E03F100509127 /* PyrPlatformPrim.cpp */; };
 		A25EAC9609444D5000B00A87 /* clz.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAC7E09444D5000B00A87 /* clz.h */; };
 		A25EAC9709444D5000B00A87 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAC7F09444D5000B00A87 /* Hash.h */; };
 		A25EAC9809444D5000B00A87 /* SC_BoundsMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAC8009444D5000B00A87 /* SC_BoundsMacros.h */; };
@@ -213,6 +214,7 @@
 
 /* Begin PBXFileReference section */
 		A23B144C09D8482400F2959A /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = ../../../../lib/libsndfile.a; sourceTree = SOURCE_ROOT; };
+		A257C6780A7E03F100509127 /* PyrPlatformPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrPlatformPrim.cpp; sourceTree = "<group>"; };
 		A25EAC7E09444D5000B00A87 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = clz.h; path = ../../headers/plugin_interface/clz.h; sourceTree = SOURCE_ROOT; };
 		A25EAC7F09444D5000B00A87 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Hash.h; path = ../../headers/plugin_interface/Hash.h; sourceTree = SOURCE_ROOT; };
 		A25EAC8009444D5000B00A87 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_BoundsMacros.h; path = ../../headers/plugin_interface/SC_BoundsMacros.h; sourceTree = SOURCE_ROOT; };
@@ -447,14 +449,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A257C6770A7E03AC00509127 /* PySCLang */ = {
+			isa = PBXGroup;
+			children = (
+				A25EAD4209444DD900B00A87 /* PYSCLang_Module.h */,
+				A25EAD4309444DD900B00A87 /* PySCLang_VM.h */,
+			);
+			name = PySCLang;
+			sourceTree = "<group>";
+		};
 		A25EAC7209444C6800B00A87 /* PySCLang */ = {
 			isa = PBXGroup;
 			children = (
 				A25EAD3209444DD900B00A87 /* pycxx */,
 				A25EAD4009444DD900B00A87 /* PYSCLang_Module_GUIStuff.cpp */,
 				A25EAD4109444DD900B00A87 /* PYSCLang_Module.cpp */,
-				A25EAD4209444DD900B00A87 /* PYSCLang_Module.h */,
-				A25EAD4309444DD900B00A87 /* PySCLang_VM.h */,
 			);
 			name = PySCLang;
 			sourceTree = "<group>";
@@ -489,6 +498,7 @@
 		A25EAC7A09444CEA00B00A87 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				A257C6770A7E03AC00509127 /* PySCLang */,
 				A25EAEAE0944780900B00A87 /* server */,
 				A25EAE9B094467B500B00A87 /* app */,
 				A25EAC7D09444D0400B00A87 /* plugin_interface */,
@@ -643,6 +653,7 @@
 		A25EAD6D09444E3100B00A87 /* LangPrimSource */ = {
 			isa = PBXGroup;
 			children = (
+				A257C6780A7E03F100509127 /* PyrPlatformPrim.cpp */,
 				A25EAD6E09444E3100B00A87 /* Icon */,
 				A25EAD6F09444E3100B00A87 /* OSCData.cpp */,
 				A25EAD7009444E3100B00A87 /* PyrArchiver.cpp */,
@@ -1012,6 +1023,7 @@
 				A25EB05A0944811100B00A87 /* cmdLineFuncs.cpp in Sources */,
 				A25EB093094482E500B00A87 /* fftlib.c in Sources */,
 				A26ECFBF0988E7940007F9E1 /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				A257C6790A7E03F100509127 /* PyrPlatformPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
