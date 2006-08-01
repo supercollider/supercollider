@@ -261,7 +261,6 @@ Monitor {
 			bundle.add([9, defname, id, Node.actionNumberFor(addAction), 
 						group.nodeID, "out", out, "in", in]);
 		};
-		outs = outs.unbubble;
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
 	
@@ -282,7 +281,7 @@ Monitor {
 	
 	playNBusToBundle { arg bundle, outs, amps, bus, vol, fadeTime, group;
 		var size, ins;
-		outs = outs ? this.outs ? 0;	// remember old ones if none given
+		outs = outs ?? {this.outs.unbubble} ? 0;	// remember old ones if none given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
 		ins = (0..(size - 1)) + bus.index;
