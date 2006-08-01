@@ -34,9 +34,10 @@ Quarks
 	*install { |name| this.global.install(name) }
 	// return Quark objects for each installed
 	*installed { ^this.global.installed }
+	*listInstalled { ^this.global.listInstalled }
 	*isInstalled { |name| ^this.global.isInstalled(name) }
 	// removes the symlink
-	//*uninstall
+	*uninstall { |name| ^this.global.uninstall(name) }
 	
 	// add code in {App Support}/SuperCollider/Quarks to the remote repos
 	// and also adds the quarks file in DIRECTORY
@@ -156,5 +157,24 @@ Quarks
 	isInstalled { arg name;
 		^pathMatch( Platform.userExtensionDir ++ "/quarks/" ++ name  ).notEmpty
 	}
+	
+	uninstall { | name |
+		var q, deps, installed;
+
+		if(this.isInstalled(name).not,{
+			^this
+		});
+
+		q = local.findQuark(name);
+		if(q.isNil,{
+			Error(name + "is not found in Local quarks in order to look up its relative path.  You may remove the symlink manually.").throw;
+		});
+
+		// install via symlink to Extensions/Quarks
+		("rm " +  Platform.userExtensionDir.escapeChar($ ) ++ "/quarks/" ++ q.path).systemCmd;
+		(q.name + "uninstalled").inform;
+	}
+
+
 	
 }
