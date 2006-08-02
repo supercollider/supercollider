@@ -262,7 +262,7 @@ NodeProxy : BusPlug {
 
 
 	var <group, <objects, <nodeMap;	
-	var <loaded=false, <>awake=true, <>paused=false;
+	var <loaded=false, <>awake=true, <paused=false;
 	var <>clock, <>quant;
 	classvar <>buildProxyControl;
 	
@@ -684,13 +684,13 @@ NodeProxy : BusPlug {
 	
 	defaultGroupID { ^server.nextNodeID } //shared proxy support
 	
-	prepareToBundle { arg argGroup, bundle;
+	prepareToBundle { arg argGroup, bundle, addAction=\addToTail;
 		if(this.isPlaying.not) {
 				group = Group.basicNew(server, this.defaultGroupID);
 				NodeWatcher.register(group);
 				group.isPlaying = server.serverRunning;
 				if(argGroup.isNil and: { parentGroup.isPlaying }) { argGroup = parentGroup };
-				bundle.add(group.newMsg(argGroup ?? { server.asGroup }, \addToHead));
+				bundle.add(group.newMsg(argGroup ?? { server.asGroup }, addAction));
 		}
 	}
 
@@ -784,7 +784,7 @@ NodeProxy : BusPlug {
 			this.wakeUpParentsToBundle(bundle, checkedAlready);
 			if(loaded.not) { this.loadToBundle(bundle) };
 			if(awake and: { this.isPlaying.not }) { 
-				this.prepareToBundle(nil, bundle);
+				this.prepareToBundle(nil, bundle, \addToHead);
 				this.sendAllToBundle(bundle)
 			};
 		};
@@ -792,8 +792,8 @@ NodeProxy : BusPlug {
 	}
 	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
-			objects.do{ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
+			objects.do{ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 	}
 		
 	// used in 'garbage collector'
