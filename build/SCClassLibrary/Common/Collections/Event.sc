@@ -485,7 +485,7 @@ Event : Environment {
 							~amp = ~amp.value;
 							~midinote = freqs.cpsmidi;
 							strum = ~strum;
-							lag = ~lag + server.latency;
+							lag = ~lag;
 							sustain = ~sustain = ~sustain.value;
 							midiout = ~midiout.value;
 							hasHate = ~hasGate ? true;
