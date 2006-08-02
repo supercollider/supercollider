@@ -293,10 +293,10 @@ FunctionList : AbstractFunction {
 		^array.collect(_.valueArrayEnvir(args));
 	}
 	flop {
-		^FlopFunctionList(*array.collect(_.flop))
+		^FlopFunctionList(array.collect(_.flop))
 	}
 	envirFlop {
-		^FlopFunctionList(*array.collect(_.envirFlop))
+		^FlopFunctionList(array.collect(_.envirFlop))
 	}
 }
 
