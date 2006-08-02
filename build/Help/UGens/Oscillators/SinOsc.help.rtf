@@ -1,11 +1,13 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 SinOsc			interpolating sine wavetable oscillator\
+\f0\b\fs36 \cf0 SinOsc			
+\fs26 interpolating sine wavetable oscillator
+\fs36 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -25,41 +27,19 @@ This is the same as Osc except that the table is a sine table of 8192 entries.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 SynthDef\cf0 (\cf3 "help-SinOsc"\cf0 ,\{ \cf2 arg\cf0  out=0;\
-	\cf2 Out\cf0 .ar(out,\
-		 \cf2 SinOsc\cf0 .ar(200, 0, 0.5)\
-	)\
-\}).play;\
+\f2\fs18 \cf2 \{ \cf3 SinOsc\cf2 .ar(200, 0, 0.5) \}.play;\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // modulate freq\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf3 "help-SinOsc"\cf0 ,\{ \cf2 arg\cf0  out=0;\
-	\cf2 Out\cf0 .ar(out,\
-		 \cf2 SinOsc\cf0 .ar(\cf2 XLine\cf0 .kr(2000,200), 0, 0.5)  \
-	 )\
-\}).play;\
+\cf4 // modulate freq\cf2 \
+\{ \cf3 SinOsc\cf2 .ar(\cf3 XLine\cf2 .kr(2000, 200), 0, 0.5) \}.play;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // modulate freq\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf3 "help-SinOsc"\cf0 ,\{ \cf2 arg\cf0  out=0;\
-	\cf2 Out\cf0 .ar(out,\
-		\cf2 SinOsc\cf0 .ar(\cf2 SinOsc\cf0 .ar(\cf2 XLine\cf0 .kr(1,1000,9),0,200,800), 0, 0.25)\
-	)\
-\}).play; \
+\cf4 // modulate freq\cf2 \
+\{ \cf3 SinOsc\cf2 .ar(\cf3 SinOsc\cf2 .ar(\cf3 XLine\cf2 .kr(1, 1000, 9), 0, 200, 800), 0, 0.25) \}.play; \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // modulate phase\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf3 "help-SinOsc"\cf0 ,\{ \cf2 arg\cf0  out=0;\
-	\cf2 Out\cf0 .ar(out, \
-		\cf2 SinOsc\cf0 .ar(800, \cf2 SinOsc\cf0 .ar(\cf2 XLine\cf0 .kr(20,8000,10),0,2pi), 0.25) \
-	)\
-\}).play; \
+\cf4 // modulate phase\cf2 \
+\{ \cf3 SinOsc\cf2 .ar(800, \cf3 SinOsc\cf2 .ar(\cf3 XLine\cf2 .kr(1, 1000, 9), 0, 2pi), 0.25) \}.play; \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 \
+\fs24 \cf2 \
 }
