@@ -13,7 +13,10 @@ Crucial {
 	}
 
 	*initSpecs {
+		
 		// this will be moved somewhere more polite
+		// or it should only add where not previously defined
+		
 		Spec.specs.putAll(			
 		  IdentityDictionary[
 			'audio'->AudioSpec.new,
@@ -54,7 +57,7 @@ Crucial {
 			'freqScale'->ControlSpec.new(0.01, 10, 'lin', 0, 1.0),
 			'qnty0'->StaticIntegerSpec.new(0, 20, 'lin', 1, 10),
 			'ffreqMul'->ControlSpec.new(0.1, 16000, 'exp', 0, 2),
-			'freq'->ControlSpec.new(20, 20000, 'exp', 0, 440),
+			//'freq'->ControlSpec.new(20, 20000, 'exp', 0, 440),
 			//'phase'->ControlSpec.new(0, 6.28319, 'lin', 0, 3.14159),
 			'ffreqAdd'->ControlSpec.new(0.1, 16000, 'exp', 0, 40),
 			'ffreq'->ControlSpec.new(60, 20000, 'exp', 0, 1095.45),
