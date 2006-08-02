@@ -270,3 +270,50 @@ NAryOpFunction : AbstractFunction {
 	}
 	
 }
+
+FunctionList : AbstractFunction {
+	var <>array;
+	
+	*new { arg functions;
+		^super.newCopyArgs(functions)
+	}
+	addFunc { arg ... functions; array = array.addAll(functions) }
+	removeFunc { arg function; array.remove(function) }
+	
+	value { arg ... args;
+		^array.collect(_.valueArray(args));
+	}
+	valueArray { arg args;
+		^array.collect(_.valueArray(args));
+	}
+	valueEnvir { arg ... args;
+		^array.collect(_.valueArrayEnvir(args));
+	}
+	valueArrayEnvir { arg args;
+		^array.collect(_.valueArrayEnvir(args));
+	}
+	flop {
+		^FlopFunctionList(*array.collect(_.flop))
+	}
+	envirFlop {
+		^FlopFunctionList(*array.collect(_.envirFlop))
+	}
+}
+
+FlopFunctionList : FunctionList {
+	value { arg ... args;
+		^array.collect(_.valueArray(args)).flop;
+	}
+	valueArray { arg args;
+		^array.collect(_.valueArray(args)).flop	
+	}
+	valueEnvir { arg ... args;
+		^array.collect(_.valueArrayEnvir(args)).flop
+	}
+	valueArrayEnvir { arg args;
+		^array.collect(_.valueArrayEnvir(args)).flop
+	}
+	flop { ^this }
+	envirFlop { ^this }
+}
+

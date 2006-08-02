@@ -81,6 +81,11 @@ Nil {
 	set {}
 	get { arg prevVal; ^prevVal }
 	
+	// FunctionList support
+	addFunc { arg ... functions;
+		^if(functions.size <= 1) {Êfunctions[0] } { FunctionList(functions) }
+	}
+	removeFunc { ^this }
 	
 	// if Main-startup fails then AppClock scheduler may be nil. If that happens an
 	// endless cascade of doesNotUnderstand messages gets printed in response to each clock tick

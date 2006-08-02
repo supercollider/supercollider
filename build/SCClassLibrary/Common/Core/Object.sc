@@ -313,6 +313,12 @@ Object  {
 			this.asArray.instill(index, item, default)
 		}
 	}
+	
+	// FunctionList support
+	addFunc { arg ... functions;
+		^FunctionList([this] ++ functions)
+	}
+	removeFunc { arg function; if(this === function) { ^nil } }
 
 	// looping
 	while { arg body;
