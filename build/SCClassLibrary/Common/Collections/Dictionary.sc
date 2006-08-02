@@ -145,6 +145,11 @@ Dictionary : Set {
 			function.value( Association.new(key, val), i);
 		})
 	}
+	pairsDo { arg function;
+		this.keysValuesDo({ arg key, val, i;
+			function.value(key, i);
+		})
+	}
 	collect { arg function;
 		var res = this.class.new(this.size);
 		this.keysValuesDo { arg key, elem; res.put(key, function.value(elem, key)) }
