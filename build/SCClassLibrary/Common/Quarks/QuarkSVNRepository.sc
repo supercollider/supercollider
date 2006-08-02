@@ -8,9 +8,13 @@
 
 QuarkSVNRepository
 {
+	classvar <>svnpath="/usr/local/bin/svn";
 	var <url;
 
 	*new { | url |
+		if(File.exists(QuarkSVNRepository.svnpath).not,{
+			Error("Correct SVN path is not set.  Set QuarkSVNRespository = /full/path/to/svn in your startup").throw;
+		});
 		^this.newCopyArgs(url ? "https://svn.sourceforge.net/svnroot/quarks")
 	}
 	// easiest to just check out all
@@ -60,13 +64,12 @@ QuarkSVNRepository
 		});
 		^matches.sort({ |a,b| a.version > b.version }).first
 	}
-	// OSX is not running svn commands ?
 	svn { | cmd ... args |
-		cmd = ("svn" + cmd + args.join(" "));
+		cmd = ("export LANG='' ; " + svnpath + cmd + args.join(" ") + "2>&1");
 		"".debug;
 		cmd.debug;
 		"".debug;
-		//cmd.unixCmd.debug("result:");
+		cmd.unixCmd;
 	}
 	// just post
 	svnp { |cmd ... args|
