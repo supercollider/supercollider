@@ -1,0 +1,135 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 FunctionList			
+\fs24 multiple function
+\f1\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 superclass: AbstractFunction
+\f2\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 A 
+\f0\b FunctionList
+\f1\b0  is a function that composes multiple functions into one. This allows allow to deal transparently with several functions as if they were one and to append new functions at a later point.\
+\
+See the [\ul Functions\ulnone ] help file for a basic introduction.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 *new(functions)
+\f1\b0  \
+	create a new instance. 
+\f3\i functions
+\f1\i0  is an array of functions or objects\
+\
+
+\f0\b addFunc(function, function ..)
+\f1\b0  \
+	This message is used to be able to add to 
+\f0\b an Object
+\f1\b0 , to a 
+\f0\b Function
+\f1\b0 , or to a 
+\f0\b FunctionList
+\f1\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 	nil.addFunc returns a function, if only one function is passed in the argument.\
+	function.addFunc then returns a FunctionList. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 removeFunc(function)
+\f1\b0 , remove a function from the list. \
+	Object  returns 
+\f0\b nil
+\f1\b0  when appropriate.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs18 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 // example\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+a = \cf3 nil\cf0 ;\
+a = a.addFunc \{ \cf3 |x="", y=""|\cf0 \'ca\cf4 "this % is an % example\\n"\cf0 .postf(x, y); 1 \};\
+a.postln;\
+a = a.addFunc \{ \cf3 |x="", y=""|\cf0  \cf4 "there is no % that is %\\n"\cf0 .postf(x, y); 2 \};\
+a.value;\
+a.value(\cf4 "text"\cf0 , \cf4 "extraordinary well written"\cf0 )\
+a.valueArray([\cf4 "x"\cf0 , \cf4 "y"\cf0 ]);\
+\
+\
+(\
+().use \{\
+	~x = \cf4 "array"\cf0 ;\
+	~y = \cf4 "ominous"\cf0 ;\
+	a.valueEnvir;\
+	a.valueEnvir(\cf4 "list"\cf0 );\
+\}\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 // removing a function\cf0 \
+x = \{ \cf4 "removal test"\cf0 .postln \};\
+a.addFunc(x);\
+a.value;\
+a = a.removeFunc(x);\
+a.value;\
+\
+\
+\cf2 // compatibility with function multichannel expansion\cf0 \
+a = \cf3 nil\cf0 ;\
+a = a.addFunc \{ \cf3 |x=0|\cf0  if(x > 0) \{ 7 \} \{ 1000.rand \} \};\
+a = a.addFunc \{ \cf3 |x=0|\cf0  if(x < 0) \{ 17 \} \{ -1000.rand \} \};\
+a.value\
+\
+a = a.flop;\
+a.value\
+a.value([-1, 1])\
+\
+\
+\
+\cf2 // typical usage (similar in action functions for views)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+d = \cf3 Document\cf0 .current;\
+d.keyDownAction = \{ \cf4 "You touched the keyboard."\cf0 .postln \};\
+\
+d.keyDownAction = d.keyDownAction.addFunc \{:\cf4 x\cf0 , x<-(1..), :: \cf4 "already % times\\n\\n"\cf0 .postf(x) \};\
+d.keyDownAction = \cf3 nil\cf0 ;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 // even if you don't know if there is already an action defined\
+// one can add one.\cf0 \
+\
+(\
+d.keyDownAction = \cf3 nil\cf0 ;\
+d.keyDownAction = d.keyDownAction.addFunc \{:\cf4 x\cf0 , x<-(1..), :: \cf4 "already % times\\n\\n"\cf0 .postf(x) \};\
+\
+);\
+\
+d.keyDownAction = \cf3 nil\cf0 ;\
+\
+\
+\
+\
+\
+\
+\
+}
