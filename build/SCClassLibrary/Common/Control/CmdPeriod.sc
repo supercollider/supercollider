@@ -31,7 +31,7 @@ CmdPeriod {
 
 StartUp {
 	
-	classvar <>functions;
+	classvar <>functions, <done=false;
 	
 	*add { arg func;
 		functions = functions.add(func)
@@ -42,7 +42,12 @@ StartUp {
 	}
 	
 	*run {
-		functions.do(_.value)
+		done = true;
+		functions.do(_.value);
+	}
+	
+	*defer { arg function;
+		if(done) {Êfunction.value } { this.add(function) }
 	}
 	
 }
