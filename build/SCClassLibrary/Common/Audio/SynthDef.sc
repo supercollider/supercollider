@@ -47,9 +47,7 @@ SynthDef {
 	}
 	//only write if no file exists
 	*writeOnce { arg name, func, rates, prependArgs, variants, dir;
-		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if {
-			this.new(name, func, rates, prependArgs, variants).writeDefFile(dir)
-		};
+		this.new(name, func, rates, prependArgs, variants).writeDefFile(dir, false)
 	}
 	
 	
@@ -223,8 +221,8 @@ SynthDef {
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
-	writeDefFile { arg dir;
-		super.writeDefFile(name, dir);
+	writeDefFile { arg dir, overwrite;
+		super.writeDefFile(name, dir, overwrite);
 	}
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.

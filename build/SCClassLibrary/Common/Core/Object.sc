@@ -526,22 +526,26 @@ Object  {
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
 	
-	writeDefFile { arg name, dir;
-		var file;
-
-		dir = dir ? SynthDef.synthDefDir;
+	writeDefFile { arg name, dir, overwrite = (true);
 		
-		if (name.isNil, { error("no file name"); ^nil });
+		StartUp.defer { // make sure the synth defs are written to the right path
+			var file;
+			dir = dir ? SynthDef.synthDefDir;
+			if (name.isNil) { error("missing SynthDef file name") } {
+				if(overwrite or: { pathMatch(dir ++ name ++ ".scsyndef").isEmpty }) 
+					{
+					file = File(dir ++ name ++ ".scsyndef", "w");
+					protect {
+						this.asArray.writeDef(file);
+					}{		
+						file.close;
+					}
+				}
+			}
+		}
 		
-		file = File(dir ++ name ++ ".scsyndef", "w");
-		
-		protect {
-			this.asArray.writeDef(file);
-		}{		
-			file.close;
-		};
 	}
-
+	
 	isInputUGen { ^false }
 	isOutputUGen { ^false }
 	isControlUGen { ^false }
