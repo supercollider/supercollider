@@ -194,6 +194,9 @@ extern "C"
 	void PV_MagMul_Ctor(PV_Unit *unit);
 	void PV_MagMul_next(PV_Unit *unit, int inNumSamples);
 
+	void PV_Copy_Ctor(PV_Unit *unit);
+	void PV_Copy_next(PV_Unit *unit, int inNumSamples);
+
 	void PV_CopyPhase_Ctor(PV_Unit *unit);
 	void PV_CopyPhase_next(PV_Unit *unit, int inNumSamples);
 
@@ -973,6 +976,35 @@ void PV_MagMul_Ctor(PV_Unit *unit)
 	ZOUT0(0) = ZIN0(0);
 }
 
+void PV_Copy_next(PV_Unit *unit, int inNumSamples)
+{
+	
+	float fbufnum1 = ZIN0(0);
+	float fbufnum2 = ZIN0(1);
+	if (fbufnum1 < 0.f || fbufnum2 < 0.f) { ZOUT0(0) = -1.f; return; }
+	ZOUT0(0) = fbufnum2;
+	uint32 ibufnum1 = (int)fbufnum1;
+	uint32 ibufnum2 = (int)fbufnum2;
+	World *world = unit->mWorld;
+	if (ibufnum1 >= world->mNumSndBufs) ibufnum1 = 0;
+	if (ibufnum2 >= world->mNumSndBufs) ibufnum2 = 0;
+	SndBuf *buf1 = world->mSndBufs + ibufnum1;
+	SndBuf *buf2 = world->mSndBufs + ibufnum2;
+	if (buf1->samples != buf2->samples) return;
+	
+	// copy to buf2
+	
+	buf2->coord = buf1->coord;
+	memcpy(buf2->data, buf1->data, buf1->samples * sizeof(float));
+	
+}
+
+void PV_Copy_Ctor(PV_Unit *unit)
+{
+	SETCALC(PV_Copy_next);
+	ZOUT0(0) = ZIN0(1);
+}
+
 void PV_CopyPhase_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
@@ -1546,6 +1578,7 @@ void load(InterfaceTable *inTable)
 	DefinePVUnit(PV_MagMul);
 	DefinePVUnit(PV_MagSquared);
 	DefinePVUnit(PV_MagNoise);
+	DefinePVUnit(PV_Copy);
 	DefinePVUnit(PV_CopyPhase);
 	DefinePVUnit(PV_PhaseShift);
 	DefinePVUnit(PV_PhaseShift90);

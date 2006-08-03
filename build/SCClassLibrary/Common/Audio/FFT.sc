@@ -82,6 +82,7 @@ PV_MagMul : UGen
 }
 
 PV_CopyPhase : PV_MagMul {}
+PV_Copy : PV_MagMul {}
 PV_Max : PV_MagMul {}
 PV_Min : PV_MagMul {}
 PV_Mul : PV_MagMul {}
