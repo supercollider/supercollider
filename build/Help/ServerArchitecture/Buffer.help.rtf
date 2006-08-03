@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
@@ -31,7 +31,7 @@ Buffer encapsulates a number of common tasks, OSC messages, and capabilities rel
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Buffer Numbers and Allocation\
+\f0\b\fs28 \cf0 Buffer Numbers and Allocation\ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
@@ -55,19 +55,18 @@ Normally you should not need to supply a buffer number. You should only do so if
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Multichannel Buffers\
+\f0\b\fs28 \cf0 Multichannel Buffers\ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
 Multichannel buffers interleave their data. Thus the actual number of available values when requesting or setting values by index using methods such as set, setn, get, getn, etc., is equal to numFrames * numChannels. Indices start at 0 and go up to (numFrames * numChannels) - 1. In a two channel buffer for instance, index 0 will be the first value of the first channel, index 1 will be the first value of the second channel, index 2 will be the second value of the first channel, and so on.\
 \
 In some cases it is simpler to use multiple single channel buffers instead of a single multichannel one.\
+
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs28 \cf0 \ul Completion Messages and Action Functions\
+\fs28 \cf0 Completion Messages and Action Functions\ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
@@ -85,8 +84,8 @@ With Buffer methods that take a completion message, it is also possible to pass 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Bundling
-\f1\b0\fs24 \ulnone \
+\f0\b\fs28 \cf0 Bundling
+\f1\b0\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 Many of the methods below have two versions: a regular one which sends its corresponding message to the server immediately, and one which returns the message in an 
@@ -99,8 +98,8 @@ Many of the methods below have two versions: a regular one which sends its corre
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\b\fs28 \cf0 \ul \
-Accessing Instance Variables
-\f1\b0\fs24 \ulnone \
+\ulnone Accessing Instance Variables
+\f1\b0\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
@@ -141,8 +140,8 @@ Accessing Instance Variables
 		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Creation with Immediate Memory Allocation
-\f3\b0\fs18 \ulnone \
+\f0\b\fs28 \cf0 Creation with Immediate Memory Allocation
+\f3\b0\fs18 \
 	\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
@@ -488,6 +487,7 @@ Accessing Instance Variables
 			x = \{ \cf2 PlayBuf\cf0 .ar(2, buf.bufnum, \cf2 BufRateScale\cf0 .kr(buf.bufnum), loop: 1) * 0.5 \}.play;\
 		\});\
 		)\
+		b.plot;\
 		x.free; b.free;\
 		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
@@ -588,7 +588,7 @@ Accessing Instance Variables
 \f3\b0\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Creation without Immediate Memory Allocation\
+\f0\b\fs28 \cf0 Creation without Immediate Memory Allocation\ul \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
 
@@ -701,8 +701,8 @@ Accessing Instance Variables
 		
 \f0\b\fs28 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul Instance Methods
-\f1\b0\fs24 \ulnone \
+\cf0 \ulnone Instance Methods
+\f1\b0\fs24 \
 		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
 
@@ -1364,8 +1364,8 @@ Accessing Instance Variables
 		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Buffer Fill Commands
-\f3\b0\fs18 \ulnone \
+\f0\b\fs28 \cf0 Buffer Fill Commands
+\f3\b0\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural

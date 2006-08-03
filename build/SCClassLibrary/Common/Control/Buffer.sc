@@ -122,7 +122,8 @@ Buffer {
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
 			sndfile.numChannels = numChannels;
-			path = PathName.tmp ++ data.hash.asString;
+			path = PathName.tmp ++ sndfile.hash.asString;
+			path.postln;
 			if(sndfile.openWrite(path),
 				{
 					sndfile.writeData(data);
@@ -150,7 +151,7 @@ Buffer {
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
 			sndfile.numChannels = numChannels;
-			path = PathName.tmp ++ data.hash.asString;
+			path = PathName.tmp ++ sndfile.hash.asString;
 			if(sndfile.openWrite(path),
 				{
 					sndfile.writeData(data);
@@ -244,9 +245,10 @@ Buffer {
 	// risky without wait 
 	getToFloatArray { arg index = 0, count, wait = 0.01, timeout = 3, action;
 		var refcount, array, pos = 0, getsize, resp, done = false;
-		count = count ? (numFrames * numChannels);
+		count = (count ? (numFrames * numChannels)).asInteger;
 		array = FloatArray.newClear(count);
-		refcount = (count / 1633).asInteger + 1;
+		refcount = (count / 1633).roundUp;
+		//("refcount" + refcount).postln;
 		resp = OSCresponderNode(server.addr, '/b_setn', { arg time, responder, msg; 
 			if(msg[1] == bufnum, {
 				//("received" + msg).postln;
