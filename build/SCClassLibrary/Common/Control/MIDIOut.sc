@@ -259,7 +259,7 @@ MIDIIn {
 }
 	
 MIDIOut {
-	var <>port, <> uid, <>latency=100;
+	var <>port, <> uid, <>latency=0.1;
 	
 	*new { arg port, uid;
 		^super.newCopyArgs(port, uid);
@@ -323,7 +323,7 @@ MIDIOut {
 		this.write(1, 16rF0, 16r0F);
 	}
 	
-	send {arg outport, uid, len, hiStatus, loStatus, a=0, b=0, late; //in ms
+	send { arg outport, uid, len, hiStatus, loStatus, a=0, b=0, late;
 		_SendMIDIOut		
 	}
 	

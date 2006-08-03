@@ -556,7 +556,7 @@ void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loSt
     MIDIPacketList * pktlist = &mpktlist;
     MIDIPacket * pk = MIDIPacketListInit(pktlist);
     //lets add some latency
-    float  latency =  1000000 * late ; //ms to nano 
+    float  latency =  1000000000 * late ; //secs to nano 
     UInt64  utime = AudioConvertNanosToHostTime( AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) + (UInt64)latency);
     ByteCount nData = (ByteCount) length;
     pk->data[0] = (Byte) (hiStatus & 0xF0) | (loStatus & 0x0F); 
