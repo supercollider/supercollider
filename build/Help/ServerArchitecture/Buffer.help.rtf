@@ -2,7 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;}
+\red0\green115\blue0;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Buffer					
@@ -97,8 +98,9 @@ Many of the methods below have two versions: a regular one which sends its corre
 \f1\b0  for more details.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \
-\ulnone Accessing Instance Variables
+\f0\b\fs28 \cf0 \ul \ulc0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\cf0 \ulnone Accessing Instance Variables
 \f1\b0\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
@@ -311,6 +313,70 @@ Many of the methods below have two versions: a regular one which sends its corre
 		)\
 		x.free; b.free;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+\cf0 	
+\f0\b\fs24 *readChannel(server, path, startFrame, numFrames, channels, action, bufnum)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+\cf0 		As 
+\f0\b *read
+\f1\b0  above, but takes an Array of channel indices to read in, allowing one to read only the selected channels.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
+\cf0 	\
+		
+\f0\b server 
+\f1\b0  - The server on which to allocate the buffer.\
+		
+\f0\b path
+\f1\b0  - A 
+\f0\b String
+\f1\b0  representing the path of the soundfile to be read.\
+		
+\f0\b startFrame
+\f1\b0  - The first frame of the soundfile to read. The default is 0, which is the beginning of the file.\
+		
+\f0\b numFrames 
+\f1\b0 - The number of frames to read. The default is -1, which will read the whole file.\
+		
+\f0\b channels
+\f1\b0  - An 
+\f0\b Array
+\f1\b0  of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided.\
+		
+\f0\b action
+\f1\b0  - A 
+\f0\b Function
+\f1\b0  to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.\
+		
+\f0\b bufnum
+\f1\b0  - An explicitly specified buffer number. Generally this is not needed.
+\f3\fs18 \
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
+\cf6 		s.boot;\
+		\cf7 // first a standard read so we can see what's in the file\cf6 \
+		b = \cf8 Buffer\cf6 .read(s, \cf9 "sounds/SinedPink.aiff"\cf6 );\
+		\cf3 // "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right\cf6 \
+		b.plot;\
+		b.free;\
+		\
+		\cf7 // Now just the sine\cf6 \
+		b = \cf8 Buffer\cf6 .readChannel(s, \cf9 "sounds/SinedPink.aiff"\cf6 , channels: [0]);\
+		b.plot;\
+		b.free;\
+		\
+		\cf7 // Now just the pink noise\cf6 \
+		b = \cf8 Buffer\cf6 .readChannel(s, \cf9 "sounds/SinedPink.aiff"\cf6 , channels: [1]);\
+		b.plot;\
+		b.free;\
+		\
+		\cf7 // Now reverse channel order\cf6 \
+		b = \cf8 Buffer\cf6 .readChannel(s, \cf9 "sounds/SinedPink.aiff"\cf6 , channels: [1, 0]);\
+		b.plot;\
+		b.free;\
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 \cf0 	
 \f0\b\fs24 *readNoUpdate(server, path, startFrame, numFrames, completionMessage, bufnum)\
@@ -697,7 +763,51 @@ Many of the methods below have two versions: a regular one which sends its corre
 		x = \{ \cf2 PlayBuf\cf0 .ar(1, b.bufnum, \cf2 BufRateScale\cf0 .kr(b.bufnum), loop: 1) * 0.5 \}.play;\
 		x.free; b.free;
 \f1\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	
+\f0\b allocReadChannel(argpath, startFrame, numFrames, channels, completionMessage)\
+	allocReadChannelMsg(argpath, startFrame, numFrames, channels, completionMessage)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
+
+\f3\b0\fs18 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+
+\f1\fs24 \cf0 		As 
+\f0\b allocRead
+\f1\b0  above, but allows you to specify which channels to read.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
+\cf0 \
+
+\f0\b 		argpath
+\f1\b0  - A 
+\f0\b String
+\f1\b0  representing the path of the soundfile to be read.\
+		
+\f0\b startFrame
+\f1\b0  - The first frame of the soundfile to read. The default is 0, which is the beginning of the file.\
+		
+\f0\b numFrames 
+\f1\b0 - The number of frames to read. The default is -1, which will read the whole file.\
+		
+\f0\b channels
+\f1\b0  - An 
+\f0\b Array
+\f1\b0  of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided.\
+		
+\f0\b completionMessage 
+\f1\b0 - A valid OSC message or a 
+\f0\b Function
+\f1\b0  which will return one. A Function will be passed this Buffer as an argument when evaluated.\
 		\
+\cf6 		
+\f3\fs18 s.boot;\
+		b = \cf8 Buffer\cf6 .new(s);\
+		\cf7 // read only the first channel (a Sine wave) of a stereo file\cf6 \
+		b.allocReadChannel(\cf9 "sounds/SinedPink.aiff"\cf6 , channels: [0]);\
+		x = \{ \cf8 PlayBuf\cf6 .ar(1, b.bufnum, \cf8 BufRateScale\cf6 .kr(b.bufnum), loop: 1) * 0.5 \}.play;\
+		x.free; b.free;
+\f1\fs24 		\cf0 \
 		
 \f0\b\fs28 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -741,6 +851,58 @@ Many of the methods below have two versions: a regular one which sends its corre
 \f1\b0  you will want this to be true, as the buffer will be used for streaming the soundfile in from disk. (For this the buffer must have been allocated with a multiple of (2 * synth block size).  A common number is 32768 frames. 
 \f0\b cueSoundFile
 \f1\b0  below, provides a simpler way of doing this.) The default is false which is the correct value for all other cases.\
+		
+\f0\b action
+\f1\b0  - A 
+\f0\b Function
+\f1\b0  to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.\
+		
+\f0\b completionMessage 
+\f1\b0 - A valid OSC message or a 
+\f0\b Function
+\f1\b0  which will return one. A Function will be passed this Buffer as an argument when evaluated.\
+		\
+
+\f0\b 	readChannel(path, fileStartFrame, numFrames, bufStartFrame, leaveOpen, channels, action);\
+
+\f1\b0 	
+\f0\b readChannelMsg(path, fileStartFrame, numFrames, bufStartFrame, leaveOpen, channels, completionMessage);\
+
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+\cf0 		As 
+\f0\b read
+\f1\b0  above, but allows you to specify which channels to read.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
+\cf0 		\
+
+\f0\b 		path
+\f1\b0  - A 
+\f0\b String
+\f1\b0  representing the path of the soundfile to be read.\
+		
+\f0\b fileStartFrame
+\f1\b0  - The first frame of the soundfile to read. The default is 0, which is the beginning of the file.\
+		
+\f0\b numFrames 
+\f1\b0 - The number of frames to read. The default is -1, which will read the whole file.\
+		
+\f0\b bufStartFrame
+\f1\b0  - The index of the frame in the buffer at which to start reading. The default is 0, which is the beginning of the buffer.\
+		
+\f0\b leaveOpen
+\f1\b0  - A boolean indicating whether or not the Buffer should be left 'open'. For use with 
+\f0\b DiskIn
+\f1\b0  you will want this to be true, as the buffer will be used for streaming the soundfile in from disk. (For this the buffer must have been allocated with a multiple of (2 * synth block size).  A common number is 32768 frames. 
+\f0\b cueSoundFile
+\f1\b0  below, provides a simpler way of doing this.) The default is false which is the correct value for all other cases.\
+		
+\f0\b channels
+\f1\b0  - An 
+\f0\b Array
+\f1\b0  of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided. The number of channels requested must match this Buffer's 
+\f0\b numChannels
+\f1\b0 .\
 		
 \f0\b action
 \f1\b0  - A 
