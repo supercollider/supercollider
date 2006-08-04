@@ -110,10 +110,10 @@ History { 		// adc 2006, Birmingham.
 
 	*document {
 		var alone = lines.flop[1].as(IdentitySet).size == 1;
-		var str, d;
+		var str, d, date = Date.getDate;
 		
 		str = "///////////////////////////////////////////////////\n";
-		str = str ++ format("// History, as it was on %.\n", Date.getDate);
+		str = str ++ format("// History, as it was on %.\n", date);
 		str = str ++ "///////////////////////////////////////////////////\n\n";
 		
 		lines.reverseDo { |x|
@@ -129,13 +129,12 @@ History { 		// adc 2006, Birmingham.
 			str = str ++ cmdLine ++ "\n\n";
 		};
 		
-		d = Document.new("History: " ++ Date.getDate, str);
+		d = Document.new("History: " ++ date, str);
 		d.path = d.title; // don't loose title.
 	}
 
 	*formatTime { arg val;
 			var h, m, s;
-			var str="";
 			h = val div: (60 * 60);
 			val = val - (h * 60 * 60);
 			m = val div: 60;
