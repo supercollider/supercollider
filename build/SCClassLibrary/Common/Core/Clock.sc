@@ -264,7 +264,11 @@ Scheduler {
 			queue.put(fromTime + delta, item);
 		});
 	}
-	clear { queue.clear }
+	clear { // adc: priorityqueue has no pairsDo method, array has
+		queue.array.pairsDo { arg time, item; item.removedFromScheduler };
+		queue.clear 
+	}
+
 	isEmpty { ^queue.isEmpty }
 	
 	advance { arg delta;
