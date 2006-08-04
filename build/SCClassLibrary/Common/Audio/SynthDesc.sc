@@ -213,7 +213,7 @@ SynthDesc {
 			};
 			stream << " ] }";
 		};
-		msgFunc = string.interpret;
+		msgFunc = string.compile.value;
 	}
 	
 }
