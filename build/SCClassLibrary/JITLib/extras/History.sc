@@ -110,7 +110,7 @@ History { 		// adc 2006, Birmingham.
 
 	*document {
 		var alone = lines.flop[1].as(IdentitySet).size == 1;
-		var str;
+		var str, d;
 		
 		str = "///////////////////////////////////////////////////\n";
 		str = str ++ format("// History, as it was on %.\n", Date.getDate);
@@ -121,25 +121,29 @@ History { 		// adc 2006, Birmingham.
 			#now, id, cmdLine = x;
 			if(cmdLine.beginsWith("//").not) {
 				str = str ++ 
-				format("// - % - % \n", now.round(0.1), if(alone) { "" } { "(" ++ id ++ ")" });
+				format("// - % - % \n", 
+					this.formatTime(now), 
+					if(alone) { "" } { "(" ++ id ++ ")" }
+				);
 			};
 			str = str ++ cmdLine ++ "\n\n";
 		};
 		
-		Document.new("History: " ++ Date.getDate, str);
+		d = Document.new("History: " ++ Date.getDate, str);
+		d.path = d.title; // don't loose title.
 	}
-		// todo:
-/*
-	*asTimeArray {
-		var num = this, rest, array;
-			var h, m;
-			h = 24 * 60 * 60;
-			m = 60 * 60;
-			rest = num div: h;
-			if(rest > 0) { array = array.add(rest);  };
-		}
+
+	*formatTime { arg val;
+			var h, m, s;
+			var str="";
+			h = val div: (60 * 60);
+			val = val - (h * 60 * 60);
+			m = val div: 60;
+			val = val - (m * 60);
+			s = val;
+			^"%:%:%".format(h, m, s.round(0.1))
 	}
-*/		
+	
 	*prettyString { |str| 
 		// remove returns at beginning or end of the string
 		var startIndex = str.detectIndex({ |ch| ch != $\n });
