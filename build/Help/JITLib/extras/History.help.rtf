@@ -1,0 +1,78 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red191\green0\blue0;
+\red96\green96\blue96;\red0\green0\blue191;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b\fs36 \cf2 History
+\f1\b0\fs18 \cf3 	
+\f2\fs24 keeps track of code that has been executed. \
+
+\f1\fs18 								\cf4 // adc 2006 \cf3 \
+								\
+
+\f2\fs24 \cf2 All\cf3  working code lines that are being executed are stored in a list, \
+in order to forward them to other players, to easily reuse \
+earlier versions, or to store and reproduce a performance.\
+
+\f1\fs18 \
+\cf2 History\cf3 .makeWin;\
+\cf2 History\cf3 .enter(\cf5 "2 + 2"\cf3 );		\cf4 // make a simple entry by hand.\cf3 \
+\
+\cf2 History\cf3 .removeAt(\cf2 History\cf3 .lines.size - 1);\
+\
+\cf2 History\cf3 .start;	\
+\
+1 + 2;			\cf4 // code line gets stored\cf3 \
+(\cf2 nil\cf3  + 2).postln;	\cf4 // error lines  are ignored  \cf3 \
+	\cf4 // comment-only is kept, empty lines not:\cf3 \
+\
+s.boot;		\cf4 // do some things\cf3 \
+p = \cf2 ProxySpace\cf3 .push;\
+\cf4 // ProxyMixer(p);\cf3 \
+(\
+~test = \{ \cf2 Blip\cf3 .ar(50 * [1, 1.02], 8) * 0.1 \};\
+~test.playN;\
+)\
+~test = \{ \cf2 Blip\cf3 .ar(\cf2 LFNoise1\cf3 .kr(3 ! 2, 200, 500), 4) * 0.1 \};\
+~test = \{ \cf2 Blip\cf3 .ar(\cf2 LFNoise1\cf3 .kr(3 ! 2, 200, 500), \cf2 LFNoise1\cf3 .kr(5 ! 2, 5, 8)) * 0.1 \};\
+\
+\
+~test.vol_(1);\
+\
+\cf2 History\cf3 .removeAt(0);		\cf4 // clear last line\cf3 \
+\cf2 History\cf3 .removeAt((0..5));	\cf4 // clear last 6 lines\cf3 \
+\
+~test.stop;\
+\
+~test.clear;\
+\
+\cf2 History\cf3 .postDoc(0);	\cf4 // post most recent line\cf3 \
+\cf2 History\cf3 .postDoc(12);	\cf4 // go back 12 lines\cf3 \
+\
+\cf2 History\cf3 .removeAt(0);	\cf4 // clear last line\cf3 \
+\
+\cf2 History\cf3 .drop(3);\
+\cf2 History\cf3 .keep(1);\
+\
+\cf2 History\cf3 .stop;\
+\
+\cf2 History\cf3 .saveCS;	\cf4 // raw form with time stamps, for re-reading and loading as is.\cf3 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf6 History\cf0 .saveCS("~/Desktop/test.txt", forward: true);	\
+			\cf7 // save with special name, in forward time order.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 \
+\cf2 History\cf3 .document;	\cf4 // post all to new window\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf6 History\cf0 .clear;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf4 \
+		// to do: post all to new window as runnable script!\cf3 \
+\cf4 //		// auto-save to file by appending ... ?\
+	\cf3 \
+}
