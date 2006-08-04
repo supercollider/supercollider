@@ -3398,7 +3398,7 @@ void FOS_next_k(FOS* unit, int inNumSamples)
 
 void SOS_Ctor(SOS* unit)
 {	
-	printf("SOS_Reset\n");
+	// printf("SOS_Reset\n");
 	if (unit->mBufLength != 1) {
 		if (INRATE(1) == calc_FullRate
 			&& INRATE(2) == calc_FullRate
