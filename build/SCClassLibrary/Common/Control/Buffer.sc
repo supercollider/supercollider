@@ -538,10 +538,10 @@ Buffer {
 	
 	play { arg loop = false, mul = 1;
 		^{ var player;
-			player = PlayBuf.ar(numChannels,bufnum,BufRateScale.kr(bufnum),loop: loop.binaryValue) 
-				* mul; 
+			player = PlayBuf.ar(numChannels,bufnum,BufRateScale.kr(bufnum), 
+				loop: loop.binaryValue); 
 			loop.not.if(FreeSelfWhenDone.kr(player));
-			player; 
+			player * mul; 
 		}.play;
 	}
 }
