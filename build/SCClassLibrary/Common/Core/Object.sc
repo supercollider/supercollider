@@ -146,6 +146,7 @@ Object  {
 	iter { ^OneShotStream(this) }
 	stop { ^this }
 	free { ^this }
+	clear { ^this }
 	removedFromScheduler { ^this }
 	isPlaying { ^false }
 	embedInStream { ^this.yield; }

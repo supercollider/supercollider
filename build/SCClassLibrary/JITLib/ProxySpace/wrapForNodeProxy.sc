@@ -39,7 +39,6 @@
 		); 
 	}
 	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }
-	clear { "Object-clear will be removed..".warn; ^this }
 	
 	defaultArgs { ^nil }
 	argNames { ^nil }
