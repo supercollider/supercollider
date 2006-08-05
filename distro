@@ -1,10 +1,9 @@
 #! /bin/sh
-# This takes the build products and makes a distribution folder.
-mkdir SuperCollider_f
-cp -R SuperCollider3Service/build/SCService.app SuperCollider_f
+# This takes the build products and makes a distribution folder.  This also creates an Extensions folder in Application Support.
+mkdir ../SuperCollider_f
 cd build
-cp -R examples SCClassLibrary Help plugins synthdefs sounds scsynth SuperCollider.app ../SuperCollider_f
+cp -r SuperCollider.app ../../SuperCollider_f
+cp scsynth ../../SuperCollider_f
+mkdir ~/Library/Application\ Support/SuperCollider/Extensions
 cd ..
-cd SuperCollider_f
-mkdir recordings
-rm -r */CVS */*/CVS */*/*/CVS */*/*/*/CVS */*/*/*/*/CVS
+svn export --force build ../SuperCollider_f
