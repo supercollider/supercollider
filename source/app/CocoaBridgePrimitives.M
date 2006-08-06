@@ -491,8 +491,8 @@ int prObjcSendMessage(struct VMGlobals *g, int numArgsPushed)
 //    PyrSlot *defer  = g->sp;
 	
 	
-	bool hasArg = NotNil(args);
-	bool isCollection = isKindOfSlot(args, class_array);
+//	bool hasArg = NotNil(args);
+//	bool isCollection = isKindOfSlot(args, class_array);
 
 	id newThing = (id) receiver->uo->slots[0].ui;
     if (!newThing) return errFailed;
@@ -519,7 +519,7 @@ int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *receiver = g->sp - 3;
     PyrSlot *classname = g->sp - 2;
 	PyrSlot *initname = g->sp - 1;
-    PyrSlot *args  = g->sp;
+//    PyrSlot *args  = g->sp;
 	
 	
 //	bool hasArg = NotNil(args);
@@ -536,7 +536,7 @@ int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
 	#if 1
 	id nsclass = objc_getClass(classname->uos->s);
 	
-	int val = NULL;
+	int val = 0;
 //	slotIntVal(args->uo->slots+0, &val);
 	id newThing = objc_msgSend(nsclass, sel, val);
 	[newThing retain];
@@ -559,7 +559,7 @@ int prObjcGetClassName(struct VMGlobals *g, int numArgsPushed);
 int prObjcGetClassName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
-	PyrSlot *b  = g->sp;
+//	PyrSlot *b  = g->sp;
 	id objc = (id) a->uo->slots[0].ui;
 	if(!objc) return errFailed;	
 	PyrString *pyrPathString = newPyrString(g->gc, [[objc className] UTF8String], 0, true);
