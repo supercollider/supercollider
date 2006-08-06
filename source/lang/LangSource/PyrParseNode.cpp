@@ -119,7 +119,7 @@ void compileTail()
 {
 	if (gGenerateTailCallByteCodes && gIsTailCodeBranch)
 	{
-		//if (gCompilingClass && gCompilingMethod) post("tail call %s-%s  ismethod %d\n", 
+		//if (gCompilingClass && gCompilingMethod) post("tail call %s:%s  ismethod %d\n", 
 		//	gCompilingClass->name.us->name, gCompilingMethod->name.us->name, gTailIsMethodReturn);
 		if (gTailIsMethodReturn)
 			compileByte(255);
@@ -350,7 +350,7 @@ void compileExtNodeMethods(PyrClassExtNode* node)
 	method = node->mMethods;
 	for (; method; method = (PyrMethodNode*)method->mNext) {
 		PyrSlot dummy;
-		//post("compile ext %s-%s\n", 
+		//post("compile ext %s:%s\n", 
 		method->mExtension = true;
 		compilePyrMethodNode(method, &dummy);
 	}
@@ -1152,21 +1152,21 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex, PyrC
 	}
 	/*
 	if (special == methForwardInstVar) {
-		postfl("methForwardInstVar %s-%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
+		postfl("methForwardInstVar %s:%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
 			gCompilingMethod->name.us->name, numFormalArgs, numActualArgs);
 	}
 	if (special == methForwardClassVar) {
-		postfl("methForwardClassVar %s-%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
+		postfl("methForwardClassVar %s:%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
 			gCompilingMethod->name.us->name, numFormalArgs, numActualArgs);
 	}
 	if (special == methRedirectSuper) {
-		postfl("methRedirectSuper %s-%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
+		postfl("methRedirectSuper %s:%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
 			gCompilingMethod->name.us->name, numFormalArgs, numActualArgs);
 	}
 	*/
 	
 //	if (special == methTempDelegate) {
-//		postfl("methTempDelegate %s-%s\n", gCompilingClass->name.us->name, 
+//		postfl("methTempDelegate %s:%s\n", gCompilingClass->name.us->name, 
 //			gCompilingMethod->name.us->name);
 //	}
 	return special;
@@ -1221,7 +1221,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 	oldmethod = classFindDirectMethod(gCompilingClass, mMethodName->mSlot.us);
 	
 	if (oldmethod && !mExtension) {
-		error("Method %s-%s already defined.\n", 
+		error("Method %s:%s already defined.\n", 
 			oldmethod->ownerclass.uoc->name.us->name, oldmethod->name.us->name);
 		nodePostErrorLine((PyrParseNode*)mMethodName);
 		compileErrors++;
@@ -1232,7 +1232,7 @@ void PyrMethodNode::compile(PyrSlot *result)
         char extPath[1024];
         
         asRelativePath(gCompilingFileSym->name, extPath);
-		post("\tExtension overwriting %s-%s\n\t\tin file '%s'.\n", 
+		post("\tExtension overwriting %s:%s\n\t\tin file '%s'.\n", 
 			oldmethod->ownerclass.uoc->name.us->name, oldmethod->name.us->name, 
 			extPath);
             
@@ -1312,7 +1312,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 				// already declared as arg?
 				for (j=0; j<i; ++j) {
 					if (methargs[j] == varslot->us) {
-						error("Argument '%s' already declared in %s-%s\n",
+						error("Argument '%s' already declared in %s:%s\n",
 							varslot->us->name, 
 							gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 						nodePostErrorLine((PyrParseNode*)vardef);
@@ -1326,7 +1326,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 					&& varslot->us->name[1] == 'r' 
 					&& varslot->us->name[2] == 'g')
 				{
-					post("%d  %s-%s   '%s'\n", i,
+					post("%d  %s:%s   '%s'\n", i,
 						gCompilingClass->name.us->name, 
 						gCompilingMethod->name.us->name, 
 						varslot->us->name);
@@ -1338,7 +1338,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 				// already declared as arg?
 				for (j=0; j<numArgs; ++j) {
 					if (methargs[j] == varslot->us) {
-						error("Argument '%s' already declared in %s-%s\n",
+						error("Argument '%s' already declared in %s:%s\n",
 							varslot->us->name, 
 							gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 						nodePostErrorLine((PyrParseNode*)vardef);
@@ -1389,7 +1389,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 			// already declared as arg?
 			for (j=0; j<numArgNames; ++j) {
 				if (methargs[j] == varslot->us) {
-					error("Variable '%s' already declared in %s-%s\n",
+					error("Variable '%s' already declared in %s:%s\n",
 						varslot->us->name, 
 						gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 					nodePostErrorLine((PyrParseNode*)vardef);
@@ -1399,7 +1399,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 			// already declared as var?
 			for (j=0; j<i; ++j) {
 				if (methvars[j] == varslot->us) {
-					error("Variable '%s' already declared in %s-%s\n",
+					error("Variable '%s' already declared in %s:%s\n",
 						varslot->us->name, 
 						gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 					nodePostErrorLine((PyrParseNode*)vardef);
@@ -1430,7 +1430,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 		methType = methPrimitive;
 		/*
 		if (getPrimitiveNumArgs(methraw->specialIndex) != numArgs) {
-			post("warning: number of arguments for method %s-%s does not match primitive %s. %d vs %d\n",
+			post("warning: number of arguments for method %s:%s does not match primitive %s. %d vs %d\n",
 				gCompilingClass->name.us->name, gCompilingMethod->name.us->name,
 				getPrimitiveName(methraw->specialIndex)->name,
 				numArgs, getPrimitiveNumArgs(methraw->specialIndex));
@@ -1495,17 +1495,17 @@ void PyrMethodNode::compile(PyrSlot *result)
 			}
 		} else if (bodyType == pn_AssignNode && numArgs == 2) { // assign inst var ?
 			PyrAssignNode *anode;
-					//post("methAssignInstVar 1  %s-%s\n", 
+					//post("methAssignInstVar 1  %s:%s\n", 
 					//	gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 			anode = (PyrAssignNode*)mBody;
 			if (anode->mNext && anode->mNext->mClassno == pn_ReturnNode
 				&& ((PyrReturnNode*)anode->mNext)->mExpr == NULL) {
-					//post("methAssignInstVar 2  %s-%s\n", 
+					//post("methAssignInstVar 2  %s:%s\n", 
 					//	gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 				if (classFindInstVar(gCompilingClass, anode->mVarName->mSlot.us, &index)) {
 					methType = methAssignInstVar;
 					methraw->specialIndex = index;
-					//post("methAssignInstVar 3  %s-%s\n", 
+					//post("methAssignInstVar 3  %s:%s\n", 
 					//	gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 				}
 			}
@@ -1678,7 +1678,7 @@ bool PyrVarDefNode::hasExpr(PyrSlot *result)
 	if (result) SetNil(result);
 	if (!mDefVal) return false;
 	if (mDefVal->mClassno != pn_PushLitNode && mDefVal->mClassno != pn_LiteralNode) {
-			//post("hasExpr A %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, mDefVal->mClassno);	
+			//post("hasExpr A %s:%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, mDefVal->mClassno);	
 			return true;
 	}
 	PyrPushLitNode *node = (PyrPushLitNode*)mDefVal;
@@ -1687,7 +1687,7 @@ bool PyrVarDefNode::hasExpr(PyrSlot *result)
 		PyrParseNode* litnode = (PyrParseNode*)node->mSlot.uo;
 		if (litnode) {
 			if (litnode->mClassno == pn_BlockNode) {
-				//post("hasExpr B %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, node->mClassno);	
+				//post("hasExpr B %s:%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, node->mClassno);	
 				return true;
 			} else {
 				if (result) node->compileLiteral(result);
@@ -1980,14 +1980,14 @@ void PyrCallNode::compileCall(PyrSlot *result)
 						compileTail();
 						compileByte(137); // push all args, send msg
 						compileByte(index);
-						//post("137 pushAllArgs     %s-%s\n", gCompilingClass->name.us->name,
+						//post("137 pushAllArgs     %s:%s\n", gCompilingClass->name.us->name,
 						//	gCompilingMethod->name.us->name);
 					} else if (code == push_AllButFirstArg) {
 						COMPILENODE(argnode, &dummy, false);
 						compileTail();
 						compileByte(138); // push all but first arg, send msg
 						compileByte(index);
-						//post("138 pushAllButFirstArg     %s-%s\n", gCompilingClass->name.us->name,
+						//post("138 pushAllButFirstArg     %s:%s\n", gCompilingClass->name.us->name,
 						//	gCompilingMethod->name.us->name);
 					} else goto normal;
 				} else if (numArgs>2 && numArgs == numBlockArgs+1) {
@@ -2000,7 +2000,7 @@ void PyrCallNode::compileCall(PyrSlot *result)
 						compileTail();
 						compileByte(141); // one arg pushed, push all but first arg, send msg
 						compileByte(index);
-						//post("141 pushAllButFirstArg2    %s-%s\n", gCompilingClass->name.us->name,
+						//post("141 pushAllButFirstArg2    %s:%s\n", gCompilingClass->name.us->name,
 						//	gCompilingMethod->name.us->name);
 					} else goto normal;
 					
@@ -2028,7 +2028,7 @@ void PyrCallNode::compileCall(PyrSlot *result)
 						varFound = findVarName(gCompilingBlock, &classobj, varname,
 							&varType, &varLevel, &varIndex, &tempFunc);
 						if (varFound && varType == varInst) {
-							//post("136 pushInstVar(sp) %s-%s '%s' %d %d\n", gCompilingClass->name.us->name,
+							//post("136 pushInstVar(sp) %s:%s '%s' %d %d\n", gCompilingClass->name.us->name,
 							//	gCompilingMethod->name.us->name, varname->name, varIndex, index);
 							compileTail();
 							compileByte(136);
@@ -2051,14 +2051,14 @@ void PyrCallNode::compileCall(PyrSlot *result)
 						compileTail();
 						compileByte(139); // push all args, send special msg
 						compileByte(index);
-						//post("139 pushAllArgs(sp) %s-%s\n", gCompilingClass->name.us->name,
+						//post("139 pushAllArgs(sp) %s:%s\n", gCompilingClass->name.us->name,
 						//	gCompilingMethod->name.us->name);
 					} else if (code == push_AllButFirstArg) {
 						COMPILENODE(argnode, &dummy, false);
 						compileTail();
 						compileByte(140); // push all but first arg, send special msg
 						compileByte(index);
-						//post("140 pushAllButFirstArg(sp) %s-%s\n", gCompilingClass->name.us->name,
+						//post("140 pushAllButFirstArg(sp) %s:%s\n", gCompilingClass->name.us->name,
 						//	gCompilingMethod->name.us->name);
 					} else goto special;
 				} else if (numArgs>2 && numArgs == numBlockArgs+1) {
@@ -2071,7 +2071,7 @@ void PyrCallNode::compileCall(PyrSlot *result)
 						compileTail();
 						compileByte(142); // one arg pushed, push all but first arg, send msg
 						compileByte(index);
-						//post("142 pushAllButFirstArg2(sp)    %s-%s\n", gCompilingClass->name.us->name,
+						//post("142 pushAllButFirstArg2(sp)    %s:%s\n", gCompilingClass->name.us->name,
 						//	gCompilingMethod->name.us->name);
 					} else goto special;
 				} else {
@@ -3909,7 +3909,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 			// already declared as arg?
 			for (j=0; j<i; ++j) {
 				if (blockargs[j] == varslot->us) {
-					error("Function argument '%s' already declared in %s-%s\n",
+					error("Function argument '%s' already declared in %s:%s\n",
 						varslot->us->name, 
 						gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 					nodePostErrorLine((PyrParseNode*)vardef);
@@ -3930,7 +3930,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 		// already declared as arg?
 		for (j=0; j<numArgs; ++j) {
 			if (blockargs[j] == varslot->us) {
-				error("Function argument '%s' already declared in %s-%s\n",
+				error("Function argument '%s' already declared in %s:%s\n",
 					varslot->us->name, 
 					gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 				nodePostErrorLine((PyrParseNode*)vardef);
@@ -3954,7 +3954,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 			// already declared as arg?
 			for (j=0; j<numArgNames; ++j) {
 				if (blockargs[j] == varslot->us) {
-					error("Function variable '%s' already declared in %s-%s\n",
+					error("Function variable '%s' already declared in %s:%s\n",
 						varslot->us->name, 
 						gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 					nodePostErrorLine((PyrParseNode*)vardef);
@@ -3964,7 +3964,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 			// already declared as var?
 			for (j=0; j<i; ++j) {
 				if (blockvars[j] == varslot->us) {
-					error("Function variable '%s' already declared in %s-%s\n",
+					error("Function variable '%s' already declared in %s:%s\n",
 						varslot->us->name, 
 						gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 					nodePostErrorLine((PyrParseNode*)vardef);
@@ -4046,7 +4046,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 			//static int totalLength = 0, totalStrings = 0;
 			//totalLength += stringLength;
 			//totalStrings++;
-			//post("cf %4d %4d %6d %s-%s \n", totalStrings, stringLength, totalLength, gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
+			//post("cf %4d %4d %6d %s:%s \n", totalStrings, stringLength, totalLength, gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 	}
 
 	gCompilingBlock = prevBlock;
@@ -4211,7 +4211,7 @@ int conjureLiteralSlotIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 	// lookup slot in selectors table
 	selectors = func->selectors.uo;
 	/*if (selectors && selectors->classptr != class_array) {
-		post("compiling %s-%s\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
+		post("compiling %s:%s\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 		post("selectors is a '%s'\n", selectors->classptr->name.us->name);
 		dumpObjectSlot(slot);
 		Debugger();

@@ -864,11 +864,11 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 #if DEBUGMETHODS
 	if (gTraceInterpreter) {
 		if (g->method) {
-			postfl(" %s-%s -> %s-%s\n", 
+			postfl(" %s:%s -> %s:%s\n", 
 				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		} else {
-			postfl(" top -> %s-%s\n", 
+			postfl(" top -> %s:%s\n", 
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		}
 	}
@@ -987,7 +987,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 				}
 			}
 			if (gKeywordError) {
-				post("WARNING: keyword arg '%s' not found in call to %s-%s\n",
+				post("WARNING: keyword arg '%s' not found in call to %s:%s\n",
 					key->us->name, meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 			}
 			found1: ;
@@ -1020,11 +1020,11 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 #if DEBUGMETHODS
 	if (gTraceInterpreter) {
 		if (g->method) {
-			postfl(" %s-%s -> %s-%s\n", 
+			postfl(" %s:%s -> %s:%s\n", 
 				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		} else {
-			postfl(" top -> %s-%s\n", 
+			postfl(" top -> %s:%s\n", 
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		}
 	}
@@ -1205,7 +1205,7 @@ void returnFromMethod(VMGlobals *g)
 	//assert(curframe->context.uof == NULL);
 	
 	/*if (gTraceInterpreter) {
-		post("returnFromMethod %s-%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
+		post("returnFromMethod %s:%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
 		post("tailcall %d\n", g->tailCall);
 	}*/
 #if SANITYCHECK
@@ -1224,7 +1224,7 @@ void returnFromMethod(VMGlobals *g)
 		{
 			once = false;
 			post("return all the way out. sd %d\n", g->sp - g->gc->Stack()->slots);
-			postfl("%s-%s\n", 
+			postfl("%s:%s\n", 
 				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name
 			);
 			post("tailcall %d\n", g->tailCall);
@@ -1307,7 +1307,7 @@ void returnFromMethod(VMGlobals *g)
 
 #if DEBUGMETHODS
 if (gTraceInterpreter) {
-	postfl("%s-%s <- %s-%s\n", 
+	postfl("%s:%s <- %s:%s\n", 
 		meth->ownerclass.uoc->name.us->name, meth->name.us->name,
 		g->method->ownerclass.uoc->name.us->name, g->method->name.us->name
 	);
@@ -1365,7 +1365,7 @@ int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long a
 				}
 			}
 			if (gKeywordError) {
-					post("WARNING: keyword arg '%s' not found in call to %s-%s\n",
+					post("WARNING: keyword arg '%s' not found in call to %s:%s\n",
 						key->us->name, meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 			}
 			found: ;

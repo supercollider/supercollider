@@ -212,8 +212,8 @@ Process {
 	openCodeFile {
 		var string, class, method, words;
 		string = interpreter.cmdLine;
-		if (string.includes($-), {
-			words = string.delimit({ arg c; c == $- });
+		if (string.includes($:), {
+			words = string.delimit({ arg c; c == $: });
 			class = words.at(0).asSymbol.asClass;
 			if (class.notNil, {
 				method = class.findMethod(words.at(1).asSymbol);
@@ -232,8 +232,8 @@ Process {
 	openWinCodeFile {
 		var string, class, method, words;
 		string = interpreter.cmdLine;
-		if (string.includes($-), {
-			words = string.delimit({ arg c; c == $- });
+		if (string.includes($:), {
+			words = string.delimit({ arg c; c == $: });
 			class = words.at(0).asSymbol.asClass;
 			if (class.notNil, {
 				method = class.findMethod(words.at(1).asSymbol);
@@ -278,7 +278,7 @@ Process {
 			class.methods.do({ arg method;
 				if (method.name == name, {
 					found = found + 1;
-					namestring = class.name ++ "-" ++ name;
+					namestring = class.name ++ ":" ++ name;
 					out << "   " << namestring << " :     ";
 					if (method.argNames.isNil or: { method.argNames.size == 1 }, {
 						out << "this." << name;

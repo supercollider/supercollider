@@ -2787,7 +2787,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	oldthread = g->thread;
 	if (newthread == oldthread) return;
 	//postfl("->switchToThread %d %08X -> %08X\n", oldstate, oldthread, newthread);
-	//post("->switchToThread from %s-%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
+	//post("->switchToThread from %s:%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
 	//post("->stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n", 
 	//	g->gc->Stack()->slots, g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots);
 	//assert(g->gc->SanityCheck());
@@ -3500,8 +3500,8 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	g->gc->SanityCheck();
 #endif	
 	
-	//post("doPrimitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-        //printf("doPrimitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+	//post("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+        //printf("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 
 	PyrMethodRaw *methraw = METHRAW(meth);
 	int primIndex = methraw->specialIndex;
@@ -3537,16 +3537,16 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	g->gc->SanityCheck();
 #endif	
 	} catch (std::exception& ex) {
-		post("caught exception in primitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		error(ex.what());
 		err = errException;
 	} catch (...) {
-		post("caught exception in primitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		err = errException;
 	}
 	if (err <= errNone) g->sp -= g->numpop;
 	else {
-		//post("primitive failed %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		//post("primitive failed %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		SetInt(&g->thread->primitiveIndex, methraw->specialIndex);
 		SetInt(&g->thread->primitiveError, err);
 		executeMethod(g, meth, numArgsNeeded);
@@ -3565,8 +3565,8 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 #if SANITYCHECK
 	g->gc->SanityCheck();
 #endif	
-	//post("doPrimitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-        //printf("doPrimitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+	//post("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+        //printf("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 
 	PyrMethodRaw *methraw = METHRAW(meth);
 	int primIndex = methraw->specialIndex;
@@ -3579,11 +3579,11 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 		try {
 			err = ((PrimitiveWithKeysHandler)def[1].func)(g, allArgsPushed, numKeyArgsPushed);
 		} catch (std::exception& ex) {
-			post("caught exception in primitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+			post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 			error(ex.what());
 			err = errException;
 		} catch (...) {
-			post("caught exception in primitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+			post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 			err = errException;
 		}
 		if (err <= errNone) g->sp -= g->numpop;
@@ -3638,7 +3638,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 					}
 				}
 				if (gKeywordError) {
-					post("WARNING: keyword arg '%s' not found in call to %s-%s\n",
+					post("WARNING: keyword arg '%s' not found in call to %s:%s\n",
 						key->us->name, meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 				}
 				found: ;
@@ -3648,11 +3648,11 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 		try {
 			err = (*def->func)(g, numArgsNeeded);
 		} catch (std::exception& ex) {
-			post("caught exception in primitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+			post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 			error(ex.what());
 			err = errException;
 		} catch (...) {
-			post("caught exception in primitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+			post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 			err = errException;
 		}
 		if (err <= errNone) g->sp -= g->numpop;

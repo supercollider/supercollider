@@ -2236,7 +2236,7 @@ void runLibrary(PyrSymbol* selector)
 		PyrMethod *meth = g->method;
 		if (meth) {
 			int ip = meth->code.uob ? g->ip - meth->code.uob->b : -1;
-			post("caught exception in runLibrary %s-%s %3d\n", 
+			post("caught exception in runLibrary %s:%s %3d\n", 
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name, ip
 			);
 			dumpByteCodes(meth);

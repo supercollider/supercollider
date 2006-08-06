@@ -288,7 +288,7 @@ void slotString(PyrSlot *slot, char *str)
 					}
 					sprintf(str, "\"%s\"", str2);
 				} else if (slot->uo->classptr == class_method) {
-					sprintf(str, "instance of Method %s-%s (%08X)", 
+					sprintf(str, "instance of Method %s:%s (%08X)", 
 						slot->uom->ownerclass.uoc->name.us->name,
 						slot->uom->name.us->name, (uint32)slot->uom);
 				} else if (slot->uo->classptr == class_fundef) {
@@ -301,7 +301,7 @@ void slotString(PyrSlot *slot, char *str)
 							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
-							sprintf(str, "instance of FunctionDef in Method %s-%s", 
+							sprintf(str, "instance of FunctionDef in Method %s:%s", 
 								context->uom->ownerclass.uoc->name.us->name,
 								context->uom->name.us->name);
 						} else {
@@ -314,7 +314,7 @@ void slotString(PyrSlot *slot, char *str)
 					if (!slot->uof) {
 						sprintf(str, "Frame (%0X)", slot->ui);
 					} else if (slot->uof->method.uoblk->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s-%s", slot->ui,
+						sprintf(str, "Frame (%0X) of %s:%s", slot->ui,
 							slot->uof->method.uom->ownerclass.uoc->name.us->name,
 							slot->uof->method.uom->name.us->name);
 					} else {
@@ -392,7 +392,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 					}
 					sprintf(str, "\"%s\"", str2);
 				} else if (slot->uo->classptr == class_method) {
-					sprintf(str, "%s-%s", 
+					sprintf(str, "%s:%s", 
 						slot->uom->ownerclass.uoc->name.us->name,
 						slot->uom->name.us->name);
 				} else if (slot->uo->classptr == class_fundef) {
@@ -405,7 +405,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
-							sprintf(str, "< FunctionDef in Method %s-%s >", 
+							sprintf(str, "< FunctionDef in Method %s:%s >", 
 								context->uom->ownerclass.uoc->name.us->name,
 								context->uom->name.us->name);
 						} else {
@@ -420,7 +420,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 					} else if (!slot->uof->method.uoblk) {
 						sprintf(str, "Frame (null method)");
 					} else if (slot->uof->method.uoblk->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s-%s", slot->ui,
+						sprintf(str, "Frame (%0X) of %s:%s", slot->ui,
 							slot->uof->method.uom->ownerclass.uoc->name.us->name,
 							slot->uof->method.uom->name.us->name);
 					} else {
@@ -470,7 +470,7 @@ bool postString(PyrSlot *slot, char *str)
 		case tagObj :
 			/*if (slot->uo) {
 				if (slot->uo->classptr == class_method) {
-					sprintf(str, "instance of Method %s-%s", 
+					sprintf(str, "instance of Method %s:%s", 
 						slot->uom->ownerclass.uoc->name.us->name,
 						slot->uom->name.us->name);
 				} else {
@@ -503,7 +503,7 @@ bool postString(PyrSlot *slot, char *str)
 					sprintf(str, "\"%s\"", str2);
 */
 				} else if (slot->uo->classptr == class_method) {
-					sprintf(str, "Method %s-%s", 
+					sprintf(str, "Method %s:%s", 
 						slot->uom->ownerclass.uoc->name.us->name,
 						slot->uom->name.us->name);
 				} else if (slot->uo->classptr == class_fundef) {
@@ -516,7 +516,7 @@ bool postString(PyrSlot *slot, char *str)
 							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
-							sprintf(str, "a FunctionDef in Method %s-%s", 
+							sprintf(str, "a FunctionDef in Method %s:%s", 
 								context->uom->ownerclass.uoc->name.us->name,
 								context->uom->name.us->name);
 						} else {
@@ -531,7 +531,7 @@ bool postString(PyrSlot *slot, char *str)
 					} else if (!slot->uof->method.uoblk) {
 						sprintf(str, "Frame (null method)");
 					} else if (slot->uof->method.uoblk->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s-%s", slot->ui,
+						sprintf(str, "Frame (%0X) of %s:%s", slot->ui,
 							slot->uof->method.uom->ownerclass.uoc->name.us->name,
 							slot->uof->method.uom->name.us->name);
 					} else {

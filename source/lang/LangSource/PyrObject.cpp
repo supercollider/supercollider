@@ -933,7 +933,7 @@ void setSelectorFlags()
 				method = methods->slots[i].uom;
 				method->name.us->flags |= sym_Selector;
 				//if (method->methType == methRedirect) {
-				//	post("rd: %3d %s-%s\n", k++, classobj->name.us->name,
+				//	post("rd: %3d %s:%s\n", k++, classobj->name.us->name,
 				//		method->name.us->name);
 				//}
 			}
@@ -1290,7 +1290,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 		numInstVars + superInstVars, numClassVars, 0, 0, obj_notindexed, 0);
 	classobj->classFlags.ui |= classIsIntrinsic;
 
-	//postfl("%s-%s  : %d\n", className->name, superClassName->name, superInstVars);
+	//postfl("%s:%s  : %d\n", className->name, superClassName->name, superInstVars);
 	if (superClass && superInstVars) {
 		memcpy(classobj->iprototype.uo->slots, superClass->iprototype.uo->slots,
 			sizeof(PyrSlot) * superInstVars);
