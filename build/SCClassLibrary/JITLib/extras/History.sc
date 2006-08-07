@@ -15,6 +15,7 @@ History { 		// adc 2006, Birmingham.
 	*clear { 
 		lines = List(1024);
 		lineShorts = List(1024); 
+		hasMovedOn = true;
 	}
 			// replace (\n ..." with (... ))!!!
 	*start { 
@@ -107,8 +108,8 @@ History { 		// adc 2006, Birmingham.
 			doc = Document(title).bounds_(Rect(300, 500, 300, 100));
 		};	
 	} 
-
-	*document {
+	
+	*storyString {
 		var alone = lines.flop[1].as(IdentitySet).size == 1;
 		var str, d, date = Date.getDate;
 		
@@ -128,11 +129,24 @@ History { 		// adc 2006, Birmingham.
 			};
 			str = str ++ cmdLine ++ "\n\n";
 		};
-		
-		d = Document.new("History: " ++ date, str);
-		d.path = d.title; // don't loose title.
+		^str;
 	}
-
+	
+	*document { 
+		var docTitle = "History_" ++ Date.getDate;
+		Document.new(docTitle, this.storyString)
+			.path_(docTitle); // don't lose title.
+	}
+	
+	*saveStory { |path| 
+		var file;
+		path = path ?? { saveFolder ++ "History_" ++ Date.getDate.stamp ++ ".sc" };
+		
+		file = File(path.standardizePath, "w");
+		file.write(this.storyString);
+		file.close;
+	}
+		
 	*formatTime { arg val;
 			var h, m, s;
 			h = val div: (60 * 60);
@@ -206,7 +220,9 @@ History { 		// adc 2006, Birmingham.
 		file.write(lines2write.asCompileString);
 		file.close;
 	}
+	
 	*loadCS { |path| 
 		
 	}
+		
 }
