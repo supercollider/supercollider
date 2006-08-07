@@ -327,6 +327,8 @@ PauseStream : Stream
 		isWaiting = false;
 	}
 	removedFromScheduler { nextBeat = nil; this.stop }
+	streamError { this.removedFromScheduler; streamHasEnded = true; }
+	
 	wasStopped { ^streamHasEnded.not and: { stream.isNil } }
 	
 	pause {
