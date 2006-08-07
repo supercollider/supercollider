@@ -6,7 +6,7 @@ PatternProxy : Pattern {
 	var <>clock, <>quant, <>condition=true, reset;
 				// quant new pattern insertion. can be [quant, offset]
 				// in EventPatternProxy it can be [quant, offset, onset]
-	
+				
 	classvar <>defaultQuant, defaultEnvir;
 	
 	// basicNew should be used for instantiation: *new is used in Pdef/Tdef/Pdefn
@@ -96,7 +96,7 @@ PatternProxy : Pattern {
 		}{
 			inval = outval.yield;
 			if(this.isEventPattern and: inval.isNil) { ^nil.yield }
-		}
+		};
 		^inval
 	}
 
@@ -123,10 +123,10 @@ PatternProxy : Pattern {
 				count = count + 1;
 				outval = outval ? default;
 				inval = outval.yield;
+				if(this.isEventPattern and: inval.isNil) { ^nil.yield }
 			}
 		}
 	}
-
 	
 	count { arg n=1;
 		condition = { |val,i| i % n == 0 }
@@ -262,17 +262,17 @@ TaskProxy : PatternProxy {
 					try { // this error handling only helps if error is not in substream
 						func.value(inval);
 					} { |error|
-						player.removedFromScheduler;
+						player.streamError;
 						error.throw; 
 					}
 			}
 	}
 	
 	wakeUp {	
-			if(this.isPlaying) { player.reset; this.play(quant:playQuant) }
-	}
+			if(this.isPlaying) { this.play(quant:playQuant) }	}
 	
 	isPlaying { ^player.notNil and: { player.wasStopped.not } }
+	isActive { ^player.isPlaying }
 	
 	isEventPattern {Ê^true }
 	
@@ -298,6 +298,7 @@ TaskProxy : PatternProxy {
 		if(player.isNil) { 
 			player = this.playOnce(argClock, doReset, playQuant);
 		} {
+			player.reset;
 			if(player.isPlaying.not) { 
 				player.play(argClock, doReset, playQuant);
 			}
