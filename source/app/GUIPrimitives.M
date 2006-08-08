@@ -726,6 +726,41 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prTextWindow_LinkAtClickPos(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_LinkAtClickPos(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+	
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	
+	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	if (!doc) return errFailed;
+	
+	NSTextView *textView = [doc textView];
+	
+	int clickLoc;
+	int err = slotIntVal(b, &clickLoc);
+	if (err) {
+		clickLoc = [textView selectedRange].location;
+	}
+	NSRange range = NSMakeRange(clickLoc, 0);
+	
+	NSTextStorage *textStorage = [textView textStorage];
+	NSRange limitRange = NSMakeRange(0, [textStorage length]);
+	if (range.location < limitRange.length) {
+		
+		id isLink = [textStorage attribute: NSLinkAttributeName atIndex: range.location effectiveRange: NULL];
+		
+		if (isLink) { SetTrue(a);} else { SetFalse(a);}
+
+	} else {
+		SetFalse(a);
+	}
+	return errNone;
+}
+
+
 int prTextWindow_GetSelectedRangeLength(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_GetSelectedRangeLength(struct VMGlobals *g, int numArgsPushed)
 {
@@ -2945,5 +2980,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Font_AvailableFonts", prFont_AvailableFonts, 1, 0);
 	definePrimitive(base, index++, "_Font_SetAntiAliasing", prFont_SetAntiAliasing, 2, 0);
 	definePrimitive(base, index++, "_Font_SetSmoothing", prFont_SetSmoothing, 2, 0);
+	
+	definePrimitive(base, index++, "_TextWindow_LinkAtClickPos", prTextWindow_LinkAtClickPos, 2, 0);
+	
 }
 

@@ -133,8 +133,8 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>htm</string>
 				<string>html</string>
+				<string>htm</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>html.icns</string>
@@ -161,7 +161,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>txt.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>scel document</string>
+			<string>scel document (scd)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>NSDocumentClass</key>

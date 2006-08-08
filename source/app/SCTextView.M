@@ -245,5 +245,20 @@ extern PyrSymbol * s_mouseDown;
 		}
 		pthread_mutex_unlock (&gLangMutex);
 }
+
+- (void)setDefaultTabsTo:(float)value {
+	NSTextStorage *text = [self textStorage];
+	int length = [text length], i = 0;
+	NSRange range;
+	while(i < length) {
+		NSMutableParagraphStyle *style = [[text attribute: NSParagraphStyleAttributeName atIndex: i longestEffectiveRange: &range inRange: NSMakeRange(0, [text length])] mutableCopy];
+		if(style) {
+			[style setDefaultTabInterval: value];
+			[text addAttribute: NSParagraphStyleAttributeName value: style range: range];
+			[style release];
+		}
+		i = i + range.length;
+	}
+}
 @end
 

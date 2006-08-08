@@ -67,7 +67,8 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
     textView = nil;
     scrollView = nil;
     isRichText = YES;
-	promptToSave = YES;	
+	promptToSave = YES;
+	pathToSaveAttachments = nil;
 	return [super init];
 }
 
@@ -689,6 +690,8 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtfd"]]
 			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".scd"]]
 			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.scd"]]
+			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".html"]]
+			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".htm"]]
 			) {
             helpFilePath = fullName;
             break;
@@ -779,18 +782,36 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     clickedOnLink: (id) link
     atIndex: (unsigned) charIndex
 {
-    if ([link isKindOfClass: [NSString class]])
+    NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
+	if (!docctl) return NO;
+	
+	NSURL *desiredURL;
+	
+	if ([link isKindOfClass: [NSString class]])
     {
-        showHelpFor(link);
-        return YES;
+        desiredURL = [NSURL URLWithString: link relativeToURL: [self fileURL]];
+		
         
     } else if ([link isKindOfClass: [NSURL class]])
     {
-        showHelpFor( [link path]);
-        return YES;
-    }
+        desiredURL = [NSURL URLWithString: [link relativePath] relativeToURL: [self fileURL]];
+    } else return NO;
     
-    return NO;
+	MyDocument *doc = (MyDocument*)[docctl documentForURL: desiredURL];
+    if (!doc) {
+        doc = [docctl openDocumentWithContentsOfURL: desiredURL display: true];
+        if (!doc) {
+            post("Can't open Help File Document '%s'\n", [[desiredURL path] cString]);
+            return NO;
+        }
+    }
+    NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
+    if (!window) {
+        post("!! window controller returns nil ? failed to open help file window\n");
+        return NO;
+    }
+    [window makeKeyAndOrderFront: nil];
+    return YES;
 }
 
 // Create a link
@@ -802,35 +823,39 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSMutableDictionary		*linkAttributes;
 
     selection = [textView selectedRange];
+	// check to see if we can make a link
     if (selection.length == 0)
     {
-        NSRunAlertPanel (@"Create Link", @"Please select some text before creating a link.", nil, nil, nil);
+        NSRunAlertPanel (@"Link to Help file", @"Please select some text before creating a link.", nil, nil, nil);
         return;
-    }
+    } else if(![self fileURL]) {
+		NSRunAlertPanel (@"Link to Help file", @"You must save this Document before creating a link.", nil, nil, nil);
+        return;
+	}
 
     //	Get the text which will go into the link. 
-    // 	Currently this looks for a helpfile with the name of the selection and any of the standard extensions 
-
-    link = [pathOfHelpFileFor([textView currentlySelectedTextOrLine: NULL]) lastPathComponent];
-    if ([link length] ==0)
-    {
-        return;
-    }
+	
+	link = pathOfHelpFileFor([textView currentlySelectedTextOrLine: NULL]);
+	if(!link) {
+		NSRunAlertPanel (@"Link to Help file", [NSString stringWithFormat: @"No help named %@ exists.", [textView currentlySelectedTextOrLine: NULL]], nil, nil, nil);
+		return;
+	}
+	link = pathOfFileRelativeToBaseDir(link, [[[self fileURL] path] stringByDeletingLastPathComponent]);
+	
+	//NSLog(@"Link URL: %@", link);
     
     //	Start to build attributes
     linkAttributes = [NSMutableDictionary dictionaryWithObject: link
         forKey: NSLinkAttributeName];
 
-    // Currently always blue and underlined
+    // Currently always blue
     [linkAttributes setObject: [NSColor blueColor]  forKey: NSForegroundColorAttributeName];
-    [linkAttributes setObject: [NSNumber numberWithBool: YES]  forKey: NSUnderlineStyleAttributeName];
-    
 
     //	Add the attributes. This adds the link attributes to the selected range.
     [[textView textStorage] addAttributes: linkAttributes  range: selection];
     
     // Make sure it saves as HTML as default
-    [self setFileType: @"SC Help (HTML)"];
+    [self setFileType: @"SC Help (HTML)"]; // need to change name to html
     [self updateChangeCount: NSChangeDone];
 }
 
@@ -864,25 +889,97 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     return @"MyDocument";
 }
 
+- (BOOL)prepareSavePanel:(NSSavePanel *)savePanel {
+	[savePanel setDelegate: self];
+	return YES;
+}
+
+- (void)setpathToSaveAttachments:(NSString *)newPathToSaveAttachments {
+	[newPathToSaveAttachments retain];
+	[pathToSaveAttachments release];
+	pathToSaveAttachments = newPathToSaveAttachments;
+}
+
+- (NSString *)panel:(id)sender userEnteredFilename:(NSString *)filename confirmed:(BOOL)okFlag {
+	if(okFlag) {
+		//NSLog(@"Filename from Panel: %@", filename);
+		if([[self fileTypeFromLastRunSavePanel] isEqualToString: @"SC Help (HTML)"] && [[textView textStorage] containsAttachments]) {
+			[self setpathToSaveAttachments: [[sender filename] stringByDeletingLastPathComponent]];
+			//NSLog(@"pathToSaveAttachments: %@", pathToSaveAttachments);
+			return filename;
+		} else { 
+			return filename; 
+		}
+	}
+	return nil;
+}
 
 - (BOOL)writeToFile:(NSString*) path ofType:(NSString *)aType
 {
     BOOL success;
-
 	NSString* extension = [path pathExtension];
 	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"txt"] || [extension isEqualToString: @"scd"]
 			|| [aType isEqualToString: @"NSStringPboardType"]) 
 	{
 		NSString *text = [textView string];
 		success = [text writeToFile: path atomically: YES];
-	} else if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"])
-        {
-                NSTextStorage *textStorage = [textView textStorage];
-		//NSString *html = [AIHTMLDecoder encodeHTML: textStorage encodeFullString: YES];
-                NSString *html = [AIHTMLDecoder encodeHTML:textStorage headers:YES fontTags:YES closeFontTags:YES styleTags:YES closeStyleTagsOnFontChange:YES encodeNonASCII:YES];
-                success = html ? [html writeToFile: path atomically: YES] : NO;
+	} else if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
+		
+		[textView setDefaultTabsTo: 28.0f]; // set default tabs to preserve layout
+		NSTextStorage *textStorage = [textView textStorage];
+		NSRange range = NSMakeRange(0, [textStorage length]);
+		NSDictionary *attributes = [NSDictionary dictionaryWithObject: NSHTMLTextDocumentType forKey:NSDocumentTypeDocumentAttribute];
+		
+		// Check for images etc.
+		if ([textStorage containsAttachments]) {
+			// this has wrappers for html and all attachments
+			NSFileWrapper *wrapper = [textStorage fileWrapperFromRange: range documentAttributes: attributes error: NULL];
+			success = wrapper ? YES : NO;
+			// if no wrapper bail out...
+			if(!success) return success;
+			
+			// now get the html component so we can clean it up and save it under the requested name
+			NSFileWrapper *indexWrapper = [[wrapper fileWrappers] objectForKey: @"index.html"];
+			[indexWrapper retain];
+			[wrapper removeFileWrapper: indexWrapper];
+			NSMutableString *html = [[NSMutableString alloc] initWithData: [indexWrapper regularFileContents] encoding: NSUTF8StringEncoding]; // maybe should check here?
+			// strip out "file:" so as to have nice portable relative urls
+			[html replaceOccurrencesOfString: @"file:///" withString: @"" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])];
+			
+			// NSTextView doesn't like <b> tags within spans, and unfortunately the export outputs bold underlines that way.
+			// The following figures out what the span name is for underlining, and fixes this
+			fixHTMLBoldUnderline(html);
+			
+			NSFileWrapper *htmlWrapper = [[NSFileWrapper alloc] initRegularFileWithContents: [html dataUsingEncoding: NSUTF8StringEncoding]];
+			success = [htmlWrapper writeToFile: path atomically:YES updateFilenames: YES];
+			// if that failed may as well stop now
+			if(!success) return success;
+			
+			// now save attachments to the final directory
+			NSEnumerator *files = [[wrapper fileWrappers] objectEnumerator];
+			NSFileWrapper *thisFile;
+			while(thisFile = [files nextObject]) {
+				// save relative to pathToSaveAttachments (which we stashed earlier) as the path arg passed in
+				// may not be the requested path, but rather a temp save location
+				NSString *thisPath = [pathToSaveAttachments stringByAppendingPathComponent: [thisFile preferredFilename]];
+				
+				// if any of these fail, everything fails
+				success = success && [thisFile writeToFile: thisPath atomically:YES updateFilenames: YES];
+			}
+			[indexWrapper release];
+			[htmlWrapper release];
+			[html release];
+		} else {
+			// html with no attachments, way more simpler
+			NSData *data = [textStorage dataFromRange:range documentAttributes:attributes error:NULL];
+			NSMutableString *html = [[NSMutableString alloc] initWithData: data encoding: NSUTF8StringEncoding];
+			if(html) fixHTMLBoldUnderline(html);
+			data = [html dataUsingEncoding: NSUTF8StringEncoding];
+			success = data ? [data writeToFile: path atomically: YES] : NO; 
+			[html release];
+		};
         
-        } else {
+	} else {
 		NSTextStorage *textStorage = [textView textStorage];
 	
 		NSRange range = NSMakeRange(0, [textStorage length]);
@@ -938,19 +1035,21 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     //[options setObject:[NSNumber numberWithUnsignedInt:NoStringEncoding] forKey:@"CharacterEncoding"];
     
     // Insert code here to read your document from the given data.  You can also choose to override -loadFileWrapperRepresentation:ofType: or -readFromFile:ofType: instead.
-
     [text beginEditing];	// Bracket with begin/end editing for efficiency
     [[text mutableString] setString:@""];	// Empty the document
     success = [text readFromURL:url options:options documentAttributes: &docAttrs];	// Read!
 
 	NSString* extension = [path pathExtension];
+	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) [initTextView setDefaultTabsTo: 28.0f];
     [text endEditing];
+	//NSLog([[text paragraphs] description]);
  	if ([extension isEqualToString: @"sc"]) {
 		[initTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
 		SyntaxColorize(initTextView);
 		//[textView didChangeText];
 	}
-
+	// in case of html with images, etc.
+	[self setpathToSaveAttachments: [path stringByDeletingLastPathComponent]];
     return success;
 }
 
@@ -1012,6 +1111,7 @@ extern PyrSymbol * s_didResignKey;
 - (void)dealloc{
 	//for some reason some Documents created with open do not call windowWillClose
 	//so that its action is called here: jan.t
+	[pathToSaveAttachments release];
 	[super dealloc];
 }
 - (IBAction) becomePostWindow: (id) sender
@@ -1216,4 +1316,67 @@ void showHelpFor(NSString* selection)
     }
     [window makeKeyAndOrderFront: nil];
 }
+
+void fixHTMLBoldUnderline(NSMutableString* html) {
+	NSLog(@"CHeck underlining");
+	// NSTextView doesn't like <b> tags within spans, and unfortunately the export outputs bold underlines that way.
+	// The following figures out what the span name is for underlining, and fixes this
+	NSRange underlineSpan = [html rangeOfString: @"{text-decoration: underline}"];
+	
+	if(underlineSpan.location != NSNotFound) {
+		
+		unsigned lineStart, nameStart;
+		// goto beginning of line
+		[html getLineStart: &lineStart end: NULL contentsEnd: NULL forRange: underlineSpan];
+		nameStart = lineStart + 5; // offset for "span."
+		NSString *underlineSpanClass = [html substringWithRange: NSMakeRange(nameStart, underlineSpan.location - 1 - nameStart)];
+		//NSLog(@"span class: %@", underlineSpanClass);
+		NSString *underlineBoldSpanTag = [NSString stringWithFormat: @"<span class=\"%@\"><b>", underlineSpanClass];
+		NSString *replaceTag = [NSString stringWithFormat: @"<b><span class=\"%@\">", underlineSpanClass];
+		//NSLog(@"span tag: %@", underlineBoldSpanTag);
+		
+		NSRange openTagRange = [html rangeOfString: underlineBoldSpanTag options: NSCaseInsensitiveSearch]; // finds the first one
+		while (openTagRange.location != NSNotFound) {
+			[html replaceCharactersInRange: openTagRange withString: replaceTag];
+			// now replace the close tag
+			unsigned int end = NSMaxRange(openTagRange);
+			NSRange closeTagRange = [html rangeOfString: @"</b></span>" options: NSCaseInsensitiveSearch range: NSMakeRange(end,  [html length] - end)];
+			[html replaceCharactersInRange: closeTagRange withString: @"</span></b>"];
+			// see if there's another one
+			end = NSMaxRange(closeTagRange);
+			openTagRange = [html rangeOfString: underlineBoldSpanTag options: NSCaseInsensitiveSearch range: NSMakeRange(end,  [html length] - end)];
+		}
+	}
+}
+
+// base is a directory, filepath is a file
+NSString* pathOfFileRelativeToBaseDir(NSString *filepath, NSString *baseDir) {
+	
+	if (![filepath isAbsolutePath]) {
+		return filepath;
+	} else if(![baseDir isAbsolutePath]) {
+		return nil;
+	}
+	NSArray *pathComponents = [filepath pathComponents];
+	NSArray *baseComponents = [baseDir pathComponents];
+	NSEnumerator *pathEnumerator = [pathComponents objectEnumerator];
+	NSEnumerator *baseEnumerator = [baseComponents objectEnumerator];
+	
+	int i = 0, pathCount, baseCount, shortest;
+	pathCount = [pathComponents count];
+	baseCount = [baseComponents count];
+	shortest = pathCount <= baseCount ? pathCount : baseCount;
+	
+	while((i < shortest) && [[pathEnumerator nextObject] isEqualToString: [baseEnumerator nextObject]]) {
+		i++;
+	}
+	
+	NSString *result = @"";
+	for(int j =0; j < (baseCount - i); j++) {
+		result = [result stringByAppendingString: @"../"];
+	}
+	result = [result stringByAppendingString: [NSString pathWithComponents: [pathComponents subarrayWithRange: NSMakeRange(i, pathCount - i) ]]];	
+	return result;
+}
+
 

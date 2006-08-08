@@ -36,7 +36,8 @@ extern PyrSymbol *s_closed;
     IBOutlet NSScrollView* scrollView;
     Boolean isRichText;
     struct PyrObject *mWindowObj;
-	Boolean promptToSave;	
+	Boolean promptToSave;
+	NSString *pathToSaveAttachments;
 }
 
 
@@ -117,4 +118,5 @@ extern PyrSymbol *s_closed;
 
 NSString* pathOfHelpFileFor(NSString* selection);
 void showHelpFor(NSString* selection);
-
+void fixHTMLBoldUnderline(NSMutableString* html);
+NSString* pathOfFileRelativeToBaseDir(NSString *filepath, NSString *baseDir);
