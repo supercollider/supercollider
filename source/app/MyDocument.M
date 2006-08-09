@@ -676,33 +676,37 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSString* candidate;
 	NSString* fullName;
     while (candidate = [dirEnumerator nextObject]) {
-		NSString* trialName = [helpFolderPath stringByAppendingString: candidate];
+		if([[candidate lastPathComponent] isEqualToString: @".svn"]) {
+			[dirEnumerator skipDescendents];
+		} else {
+			NSString* trialName = [helpFolderPath stringByAppendingString: candidate];
 
-		char name[MAXPATHLEN];
-		char resolvedName[MAXPATHLEN];
-		[trialName getCString:name];
-		bool isAlias = false;
-		sc_ResolveIfAlias(name, resolvedName, isAlias, MAXPATHLEN);
-		fullName = [NSString stringWithCString:resolvedName];
-		// compare with valid extensions
-		if([[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.rtf"]]
-			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtf"]]
-			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtfd"]]
-			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".scd"]]
-			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.scd"]]
-			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".html"]]
-			|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".htm"]]
-			) {
-            helpFilePath = fullName;
-            break;
-        } else if // if that didn't work, check if this is a directory symlink (allow directories to have extensions)
-	    ((([[fileManager fileAttributesAtPath: fullName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeSymbolicLink) || isAlias)){
-		  NSString* linkName = [[fullName stringByResolvingSymlinksInPath] stringByAppendingString: @"/"];
-		  if(([[fileManager fileAttributesAtPath: linkName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeDirectory)) {
-		    // if so traverse the link and call helpFileWithName() recursively
-		    helpFilePath = helpFileWithName(fileManager, desiredHelpFile, linkName);
-		    if(helpFilePath) break;
-		  }
+			char name[MAXPATHLEN];
+			char resolvedName[MAXPATHLEN];
+			[trialName getCString:name];
+			bool isAlias = false;
+			sc_ResolveIfAlias(name, resolvedName, isAlias, MAXPATHLEN);
+			fullName = [NSString stringWithCString:resolvedName];
+			// compare with valid extensions
+			if([[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.rtf"]]
+				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtf"]]
+				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtfd"]]
+				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".scd"]]
+				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.scd"]]
+				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".html"]]
+				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".htm"]]
+				) {
+				helpFilePath = fullName;
+				break;
+			} else if // if that didn't work, check if this is a directory symlink (allow directories to have extensions)
+			((([[fileManager fileAttributesAtPath: fullName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeSymbolicLink) || isAlias)){
+			  NSString* linkName = [[fullName stringByResolvingSymlinksInPath] stringByAppendingString: @"/"];
+			  if(([[fileManager fileAttributesAtPath: linkName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeDirectory)) {
+				// if so traverse the link and call helpFileWithName() recursively
+				helpFilePath = helpFileWithName(fileManager, desiredHelpFile, linkName);
+				if(helpFilePath) break;
+			  }
+			}
 		}
     }
 
