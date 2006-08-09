@@ -18,7 +18,7 @@ QuarkDependency
 
 // a Quark is a single package of classes, helpfiles etc.
 // the QUARK file should contain an IdentityDictionary
-// path is a relative path â€” relative to the repos root or the local root
+// path is a relative path â relative to the repos root or the local root
 
 Quark
 {

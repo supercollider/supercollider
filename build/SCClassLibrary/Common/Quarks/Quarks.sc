@@ -143,13 +143,14 @@ Quarks
 	}
 	
 	installed {
-		// of local quarks, select symlinks in userExtensionDir of same name
+		// of quarks in local, select those also present in userExtensionDir
 		var pathMatches,q;
-		pathMatches = pathMatch( Platform.userExtensionDir ++ "/quarks/*/QUARK" );
-		^pathMatches.collect { |p|  
+		pathMatches = (Platform.userAppSupportDir.escapeChar($ ) ++ "/quarks/DIRECTORY/*.quark").pathMatch;
+		^pathMatches.collect({ |p|  
 			q = Quark.fromFile(p);
-		};
-		
+		}).select({ |q|
+			(Platform.userExtensionDir.escapeChar($ ) ++ "/quarks/" ++ q.path).pathMatch.notEmpty
+		})
 	}
 	listInstalled {
 		this.installed.do { |q| [q.name, q.summary].postln };
