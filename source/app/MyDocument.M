@@ -775,7 +775,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (IBAction) showHelp: (id) sender;
 {
-	showHelpFor([textView currentlySelectedTextOrLine: NULL]);
+	showHelpFor([textView currentlySelectedText: NULL]);
 }
 
 #endif

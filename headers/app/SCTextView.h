@@ -27,13 +27,14 @@
 	int objectKeyDownActionIndex, objectKeyUpActionIndex;
 	BOOL mAcceptsFirstResponder;
 }
-	- (void) setAcceptsFirstResponder: (BOOL) flag;
-    - (void) keyDown: (NSEvent*) event;
-    - (void) mouseDown: (NSEvent*) event;
-    - (void) autoIndent: (NSEvent*) event;
-    - (void) mouseDownAction: (int) index;
-	- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
-	- (void) setLangClassToCall: (NSString*) stringin withKeyDownActionIndex:(int) downIndex withKeyUpActionIndex:(int) upIndex ;
-	- (void) setObjectKeyDownActionIndex:(int) mindex setObjectKeyUpActionIndex:(int) downIndex; 
-	- (void)setDefaultTabsTo:(float)value;
+- (void) setAcceptsFirstResponder: (BOOL) flag;
+- (void) keyDown: (NSEvent*) event;
+- (void) mouseDown: (NSEvent*) event;
+- (void) autoIndent: (NSEvent*) event;
+- (void) mouseDownAction: (int) index;
+- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
+- (NSString*)currentlySelectedText: (NSRange*) outRange;
+- (void) setLangClassToCall: (NSString*) stringin withKeyDownActionIndex:(int) downIndex withKeyUpActionIndex:(int) upIndex ;
+- (void) setObjectKeyDownActionIndex:(int) mindex setObjectKeyUpActionIndex:(int) downIndex; 
+- (void)setDefaultTabsTo:(float)value;
 @end

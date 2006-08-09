@@ -103,6 +103,14 @@ extern bool compiledOK;
     return [string substringWithRange: selectedRange];
 }
 
+- (NSString*)currentlySelectedText: (NSRange*) outRange
+{
+    NSString* string = [self string];
+    NSRange selectedRange = [self selectedRange];
+	if (outRange) *outRange = selectedRange;
+    return [string substringWithRange: selectedRange];
+}
+
 - (void) keyUp: (NSEvent*) event
 {
     NSString *characters = [event characters];
