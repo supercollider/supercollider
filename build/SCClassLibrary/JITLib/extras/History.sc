@@ -1,6 +1,6 @@
 History { 		// adc 2006, Birmingham. 
 
-	classvar <>forwardFunc, <date, <startTimeStamp, <time0;
+	classvar <>forwardFunc, <date, <startTimeStamp, <time0, function;
 	classvar <lines, <lineShorts;
 	classvar <>title = "History repeats";
 	classvar <w, <bounds, <doc, pop, startbut;
@@ -20,7 +20,7 @@ History { 		// adc 2006, Birmingham.
 			// replace (\n ..." with (... ))!!!
 	*start { 
 		var interp = thisProcess.interpreter;
-		interp.codeDump = { |str, val, func| 
+		function = { |str, val, func| 
 			if ( func.notNil 
 					and: { str.notEmpty } 
 					and: { str != "\n" } 
@@ -33,10 +33,11 @@ History { 		// adc 2006, Birmingham.
 					History.forwardFunc.value(str, val, func);
 				}
 		};
+		interp.codeDump = interp.codeDump.addFunc(function);
 		hasMovedOn = true;
 	}
-	*stop { 
-		thisProcess.interpreter.codeDump = nil; 
+	*stop {
+		thisProcess.interpreter.codeDump = thisProcess.interpreter.codeDump.removeFunc(function); 
 		hasMovedOn = true;
 	}
 
@@ -120,20 +121,18 @@ History { 		// adc 2006, Birmingham.
 		lines.reverseDo { |x|
 			var now, id, cmdLine;
 			#now, id, cmdLine = x;
-			if(cmdLine.beginsWith("//").not) {
 				str = str ++ 
 				format("// - % - % \n", 
 					this.formatTime(now), 
 					if(alone) { "" } { "(" ++ id ++ ")" }
 				);
-			};
 			str = str ++ cmdLine ++ "\n\n";
 		};
 		^str;
 	}
 	
-	*document { 
-		var docTitle = "History_" ++ Date.getDate;
+	*document {
+		var docTitle = "History_" ++ Date.getDate.asSortableString;
 		Document.new(docTitle, this.storyString)
 			.path_(docTitle); // don't lose title.
 	}
@@ -154,9 +153,24 @@ History { 		// adc 2006, Birmingham.
 			m = val div: 60;
 			val = val - (m * 60);
 			s = val;
-			^"%:%:%".format(h, m, s.round(0.1))
+			^"%:%:%".format(h, m, s.round(0.01))
 	}
-	
+	*getTimeFromString { arg str;
+		var ts, i;
+		if(str.beginsWith("// - ").not) { ^nil };
+		i = str.find(" - ", offset: 4);
+		if(i.isNil) { i = 10 }; // assume it's ok.
+		ts = str[5..i+2].postln.split($:).collect(_.asFloat);
+		^ts[0] * (60 * 60) + (ts[1] * 60) + ts[2]
+	}
+	*playString { arg str;
+		var i=0, dt, j;
+		i = str.find("// -", i);
+		j = str.find("\n", i);
+		dt = this.getTimeFromString(str[i..j]);
+		/* ... */
+	}
+		
 	*prettyString { |str| 
 		// remove returns at beginning or end of the string
 		var startIndex = str.detectIndex({ |ch| ch != $\n });
@@ -210,6 +224,7 @@ History { 		// adc 2006, Birmingham.
 		lineShorts = lineShorts.drop(num); 
 		hasMovedOn = true;
 	}
+	*removeLast { this.removeAt(lines.size - 1) }
 	
 	*saveCS { |path, forward=false| 
 		var file, lines2write; 
