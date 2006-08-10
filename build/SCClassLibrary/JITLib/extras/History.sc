@@ -132,7 +132,7 @@ History { 		// adc 2006, Birmingham.
 	}
 	
 	*document {
-		var docTitle = "History_" ++ Date.getDate.asSortableString;
+		var docTitle = Date.getDate.format("%Y-%d-%e-%Hh%m-History");
 		Document.new(docTitle, this.storyString)
 			.path_(docTitle); // don't lose title.
 	}
