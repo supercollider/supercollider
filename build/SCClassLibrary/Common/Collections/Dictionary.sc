@@ -146,9 +146,8 @@ Dictionary : Set {
 		})
 	}
 	pairsDo { arg function;
-		this.keysValuesDo({ arg key, val, i;
-			function.value(key, i);
-		})
+		this.keysValuesArrayDo(array, function);
+
 	}
 	collect { arg function;
 		var res = this.class.new(this.size);
