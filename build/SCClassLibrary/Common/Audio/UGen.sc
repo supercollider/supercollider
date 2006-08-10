@@ -167,10 +167,11 @@ UGen : AbstractFunction {
 		^SynthDef.wrap({
 			var id, responder;
 			id = this.hash & 0x7FFFFF;
-			switch(this.rate, 
-				\audio, {SendTrig.ar(Impulse.ar(interval.reciprocal), id, this)},
-				\control, {SendTrig.kr(Impulse.kr(interval.reciprocal), id, this)}
-			);
+			if(this.rate === \audio) {
+				SendTrig.ar(Impulse.ar(interval.reciprocal), id, this)
+			} {
+				SendTrig.kr(Impulse.kr(interval.reciprocal), id, this)
+			};
 			responder = OSCresponderNode(nil,'/tr',{ arg time, rder, msg;
 				if(msg[2] == id, { (label.asString + msg[3]).postln;});
 			}).add;
