@@ -2,16 +2,15 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red191\green0\blue0;\red0\green0\blue0;}
+\red0\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 FunctionList			
 \fs24 multiple function
 \f1\b0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 superclass: AbstractFunction
+\f0\b superclass: AbstractFunction
 \f2\b0\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf0 \
@@ -24,9 +23,8 @@
 \
 See the [\ul Functions\ulnone ] help file for a basic introduction.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 *new(functions)
+\f0\b *new(functions)
 \f1\b0  \
 	create a new instance. 
 \f3\i functions
@@ -47,19 +45,34 @@ See the [\ul Functions\ulnone ] help file for a basic introduction.\
 	function.addFunc then returns a FunctionList. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 removeFunc(function)
+\f0\b removeFunc(function)
 \f1\b0 , remove a function from the list. \
-	Object  returns 
+	returns 
+\f0\b the last function
+\f1\b0  when only one function is left.\
+	returns 
 \f0\b nil
-\f1\b0  when appropriate.\
+\f1\b0  when the last function was removed.\
 \
+addFunc and removeFunc are implemented for 
+\f0\b Nil
+\f1\b0 , 
+\f0\b Object
+\f1\b0  and 
+\f0\b FunctionList
+\f1\b0 \
+\
+	nil.addFunc(f): 			returns f\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 	obj.addFunc(f): 		returns FunctionList([obj, f])\
+\
+	nil.removeFunc(f)		returns nil\
+	obj.removeFunc(f)		returns nil, if f === obj, else obj is returned\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f2\fs18 \cf0 \
-\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf2 // example\
@@ -92,15 +105,14 @@ a.value;\
 a = a.removeFunc(x);\
 a.value;\
 \
-\cf5 // mathematics\cf6 \
-a = x.addFunc(\{ 1.0.rand \}).addFunc(\{ [0, 1].choose \});\
+\cf2 // mathematics\cf0 \
+a = \cf3 nil\cf0 ;\
+a = a.addFunc(\{ 1.0.rand \}).addFunc(\{ [0, 1].choose \});\
 a = a.squared.linexp(0, 1, 1.0, 500);\
 \
 a.value;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\
 \cf2 // compatibility with function multichannel expansion\cf0 \
 a = \cf3 nil\cf0 ;\
 a = a.addFunc \{ \cf3 |x=0|\cf0  if(x > 0) \{ 7 \} \{ 1000.rand \} \};\
@@ -113,13 +125,16 @@ a.value([-1, 1])\
 \
 \
 \
-\cf2 // typical usage (similar in action functions for views)\
+\cf2 // typical usage in a Document action\
+// see also SCView: addAction example.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf0 \
 d = \cf3 Document\cf0 .current;\
 d.keyDownAction = \{ \cf4 "You touched the keyboard."\cf0 .postln \};\
 \
 d.keyDownAction = d.keyDownAction.addFunc \{:\cf4 x\cf0 , x<-(1..), :: \cf4 "already % times\\n\\n"\cf0 .postf(x) \};\
+\
+\
 d.keyDownAction = \cf3 nil\cf0 ;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -135,9 +150,7 @@ d.keyDownAction = d.keyDownAction.addFunc \{:\cf4 x\cf0 , x<-(1..), :: \cf4 "alr
 d.keyDownAction = \cf3 nil\cf0 ;\
 \
 \
-\
-\
-\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf5 \
 \
 }

@@ -272,48 +272,41 @@ NAryOpFunction : AbstractFunction {
 }
 
 FunctionList : AbstractFunction {
-	var <>array;
+	var <>array, <flopped=false;
 	
 	*new { arg functions;
 		^super.newCopyArgs(functions)
 	}
-	addFunc { arg ... functions; array = array.addAll(functions) }
-	removeFunc { arg function; array.remove(function) }
+	addFunc { arg ... functions;
+		if(flopped) { Error("cannot add a function to a flopped FunctionList").throw };
+		array = array.addAll(functions)
+	}
+	removeFunc { arg function;
+		array.remove(function);
+		if(array.size < 2) { ^array[0] };
+	}
 	
 	value { arg ... args;
-		^array.collect(_.valueArray(args));
+		var res = array.collect(_.valueArray(args));
+		^if(flopped) { res.flop } { res }
 	}
 	valueArray { arg args;
-		^array.collect(_.valueArray(args));
+		var res = array.collect(_.valueArray(args));
+		^if(flopped) { res.flop } { res }
 	}
 	valueEnvir { arg ... args;
-		^array.collect(_.valueArrayEnvir(args));
+		var res = array.collect(_.valueArrayEnvir(args));
+		^if(flopped) { res.flop } { res }
 	}
 	valueArrayEnvir { arg args;
-		^array.collect(_.valueArrayEnvir(args));
+		var res = array.collect(_.valueArrayEnvir(args));
+		^if(flopped) { res.flop } { res }
 	}
 	flop {
-		^FlopFunctionList(array.collect(_.flop))
+		if(flopped.not) {Êarray = array.collect(_.flop) }; flopped = true;
 	}
 	envirFlop {
-		^FlopFunctionList(array.collect(_.envirFlop))
+		if(flopped.not) {Êarray = array.collect(_.envirFlop) }; flopped = true;
 	}
+	storeArgs { ^[array] }
 }
-
-FlopFunctionList : FunctionList {
-	value { arg ... args;
-		^array.collect(_.valueArray(args)).flop;
-	}
-	valueArray { arg args;
-		^array.collect(_.valueArray(args)).flop	
-	}
-	valueEnvir { arg ... args;
-		^array.collect(_.valueArrayEnvir(args)).flop
-	}
-	valueArrayEnvir { arg args;
-		^array.collect(_.valueArrayEnvir(args)).flop
-	}
-	flop { ^this }
-	envirFlop { ^this }
-}
-
