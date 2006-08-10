@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fnil\fcharset77 LucidaGrande;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green0\blue0;\red0\green0\blue191;}
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SCView
@@ -18,20 +18,16 @@ SCView is the abstract superclass for all SC GUI widgets. Currently this system 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 resize_(int)\
+\f0\b\fs24 resize_(int)\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 This setting controls how the widget will behave when it's window or enclosing view is resized. This is illustrated graphically below:
+\f2\b0 This setting controls how the widget will behave when it's window or enclosing view is resized. This is illustrated graphically below:
 \f0\b\fs28 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0\fs18 \
 
-\f2\fs24 \cf0 		1  2  3\
+\f2\fs24 		1  2  3\
 		4  5  6\
 		7  8  9\
 		\
@@ -48,27 +44,22 @@ SCView is the abstract superclass for all SC GUI widgets. Currently this system 
 		9 - fixed to right, fixed to bottom
 \f1\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 resize\
+\f0\b\fs24 resize\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 Return an Integer corresponding to the current resize behaviour (see above).\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\b0 Return an Integer corresponding to the current resize behaviour (see above).\
 
-\f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs18 \
 
-\f0\b\fs24 \cf0 keyDownAction_(aFunction)
+\f0\b\fs24 keyDownAction_(aFunction)
 \f2\b0 \
 \
 Register a 
 \f0\b Function
 \f2\b0  to be evaluated when a keystroke is received and this view is in focus.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\fs18 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // select the slider, type something and watch the post window\cf0 \
@@ -83,12 +74,10 @@ Register a
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 If you return nil from your function, or you have no function registered, the event will bubble up to the parent view which may then respond.  It will continue to bubble up unless something responds or it hits the topView of the window.  You may register a function in the window's topView to respond to all unhandled events for the window.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs18 \
 
-\f2\fs24 \cf0 There are default keyDownActions for some views, which will be overridden when you set a keydown action.\
+\f2\fs24 There are default keyDownActions for some views, which will be overridden when you set a keydown action.\
 \
 When called, the function will be passed the following arguments:\
 \
@@ -170,37 +159,30 @@ For various reasons these don't make it through cocoa:\
 \f1\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 keyDownAction\
+\f0\b\fs24 keyDownAction\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 Return the current keyDownAction function for this view if there is one, otherwise return nil.
+\f2\b0 Return the current keyDownAction function for this view if there is one, otherwise return nil.
 \f1\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 *globalKeyDownAction_(func)
+\f0\b\fs24 *globalKeyDownAction_(func)
 \fs28 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs24 \cf0 \
+\f2\b0\fs24 \
 A function that is evaluated for every keyDown event on every SCView. See 
 \f0\b keyDownAction_
 \f2\b0  for details.
 \f1\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 focus\
+\f0\b\fs24 focus\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 Brings this view into focus.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\b0 Brings this view into focus.\
 
-\f1\fs18 \cf0 \
+\f1\fs18 \
 (\
 	w = \cf3 SCWindow\cf0 .new;\
 	c = \cf3 SCSlider\cf0 (w,\cf3 Rect\cf0 (0,0,100,30));\
@@ -212,16 +194,13 @@ A function that is evaluated for every keyDown event on every SCView. See
 	d.focus;\
 	w.close;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 refresh\
+\f0\b\fs24 refresh\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 Under certain circumstances a view will not automatically update its appearance. This forces a redraw.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\b0 Under certain circumstances a view will not automatically update its appearance. This forces a redraw.\
 
-\f1\fs18 \cf0 \
+\f1\fs18 \
 (\
 	w = \cf3 SCWindow\cf0 .new;\
 	c = \cf3 SCButton\cf0 (w,\cf3 Rect\cf0 (0,0,100,30));\
@@ -247,28 +226,81 @@ A function that is evaluated for every keyDown event on every SCView. See
 	c.states = [[\cf4 "a"\cf0 ,\cf3 Color\cf0 .black,\cf3 Color\cf0 .red]];\
 	w.refresh;\
 	w.close;\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b\fs24 \cf0 addAction(func, selector)\
+removeAction(func, selector)\
+		func:
+\f2\b0  a function to be evaluated when action happens
+\f0\b \
+		selector: 
+\f2\b0 what function to add to (default: slider action)
+\f0\b \
+\
+
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+	(\
+		w = \cf3 SCWindow\cf0 (\cf4 "add action test"\cf0 );\
+		c = \cf3 SCSlider\cf0 (w,\cf3 Rect\cf0 (170, 50, 30, 270));\
+		w.front;\
+	)\
 	\
 	\
+	u = \{ \cf3 |x|\cf0  x.value.postln \};\
+	v = \{ \cf3 |x|\cf0  x.value.round(1).value.postln \};\
+	\
+	c.addAction(u); \cf2 // slider posts value\cf0 \
+	\
+	c.addAction(v); \cf2 // slider posts value and rounded value\cf0 \
+	\
+	c.removeAction(u); \cf2 // slider posts rounded value only\cf0 \
+	\
+	c.removeAction(v); \cf2 // slider posts nothing\cf0 \
+	\
+	c.action; \cf2 // nil again\cf0 \
+	\
+	c.addAction(u, \cf5 \\mouseDownAction\cf0 ); \cf2 // slider posts value on mouse down\cf0 \
+	\
+	c.mouseDownAction.postln; \cf2 // a function\cf0 \
+	\
+	c.addAction(v, \cf5 \\mouseDownAction\cf0 ); \cf2 // slider posts rounded value on mouse down\cf0 \
+	\
+	c.mouseDownAction.postln; \cf2 // a function list\cf0 \
+	\
+	c.removeAction(u, \cf5 \\mouseDownAction\cf0 );\
+	\
+	c.mouseDownAction.postln; \cf2 // a function \cf0 \
+	\
+	c.removeAction(v, \cf5 \\mouseDownAction\cf0 );\
+	\
+	c.mouseDownAction.postln; \cf2 // nil again\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+	w = c = u = v = nil;\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\
+	\
 
-\f0\b\fs24 \cf0 drag and drop\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 drag and drop\
 
-\f2\b0 \cf0 \
+\f2\b0 \
 Each view subclass has a default object that it exports when dragged from.  For sliders its the value of the slider, for lists it is the currently selected numeric index etc.  \
 \
 By setting the beginDragAction handler you can return a different object based on the context and your application.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 beginDragAction(theView)
+\f0\b beginDragAction(theView)
 \f2\b0  - return the object you wish your view to export by dragging\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 	aView.beginDragAction =  \{ \cf3 arg\cf0  theView;  someList[ theView.value ]  \}\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs18 	aView.beginDragAction =  \{ \cf3 arg\cf0  theView;  someList[ theView.value ]  \}\
 
-\f2\fs24 \cf0 	\
+\f2\fs24 	\
 The current dragged thing can be found in the classvar SCView.currentDrag.  Objects dragged from within \
 SuperCollider are also in SCView.currentDragString as a compile string.  Text dragged\
 from other applications is in SCView.currentDragString and the results of attempting to\
@@ -278,35 +310,28 @@ Each view subclass has a defaultCanReceiveDrag method that determines if the cur
 \
 By setting the canReceiveDragHandler and receiveDragHandler you can make any view accept and receive objects based on the context and your application.  (Note: currently not possible for SCStaticText)\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 canReceiveDrag(theView)
+\f0\b canReceiveDrag(theView)
 \f2\b0  - return true/false if you are willing to accept the current drag.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 	aView.canReceiveDrag = \cf3 false\cf0 ; \cf2 // no, leave me alone\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 	aView.canReceiveDrag = \{ \cf6 SCView\cf5 .currentDrag.isString \};\
+\f1\fs18 	aView.canReceiveDrag = \cf3 false\cf0 ; \cf2 // no, leave me alone\cf0 \
+	aView.canReceiveDrag = \{ \cf3 SCView\cf0 .currentDrag.isString \};\
 
-\f2\fs24 \cf0 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs24 	\
 
-\f0\b \cf0 receiveDrag(theView)
+\f0\b receiveDrag(theView)
 \f2\b0  - accept the drag.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 	aView.receiveDrag = \{ \
+\f1\fs18 	aView.receiveDrag = \{ \
 		\cf3 SCView\cf0 .currentDrag.postln;\
 	\}\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f2\fs24 \
 \
 The default drag object from a list view is the currently selected integer index.\
 Here a list view is made to export a string.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 (\
+\f1\fs18 (\
 	f = \cf3 SCWindow\cf0 .new.front;\
 	a = \cf3 SCListView\cf0 (f,100@100);\
 	a.items = [\cf4 "eh?"\cf0 ,\cf4 "bee!"\cf0 ,\cf4 "sea."\cf0 ];\
@@ -327,7 +352,6 @@ Here a list view is made to export a string.\
 	\};\
 	\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f2\fs24 \
 }
