@@ -16,6 +16,11 @@ EnvironmentRedirect {
 	*use { arg function;
 		^this.new.use(function)
 	}
+	*newFrom { arg aCollection;
+		var newCollection = this.new;
+		aCollection.keysValuesDo({ arg k,v, i; newCollection.put(k,v) });
+		^newCollection
+	}
 	
 	// override in subclasses
 	
@@ -182,9 +187,10 @@ EnvironmentRedirect {
 
 
 LazyEnvir : EnvironmentRedirect {
+	var <>proxyClass=\FuncProxy;
 	
 	makeProxy {
-		^FuncProxy.new
+		^proxyClass.asClass.new
 	}
 	
 	at { arg key;
