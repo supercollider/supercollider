@@ -5,7 +5,8 @@ ProxySynthDef : SynthDef {
 	classvar <>sampleAccurate=false;
 	
 	
-	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
+	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, 
+			chanConstraint, rateConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
 		var hasGateArg=false, hasOutArg=false;		
 		def = super.new(name, { 
@@ -45,6 +46,8 @@ ProxySynthDef : SynthDef {
 				"supplied gate overrides inner gate.".error;
 				^nil 
 			};
+			
+			
 			//"gate detection:".postln;
 			//[\makeFadeEnv, makeFadeEnv, \canFree, canFree, \hasOwnGate, hasOwnGate].debug;
 			
@@ -54,6 +57,7 @@ ProxySynthDef : SynthDef {
 			envgen = if(makeFadeEnv) { 
 						EnvGate(1, nil, nil, 2, if(rate === 'audio') { 'sin' } { 'lin' })
 			 		} { 1.0 };
+			 
 			if(chanConstraint.notNil  
 				and: { chanConstraint < numChannels }
 				and: { isScalar.not }, 
@@ -74,10 +78,25 @@ ProxySynthDef : SynthDef {
 				});
 			output = output * envgen;
 			
+			//"passed in rate: % output rate: %\n".postf(rateConstraint, rate);
 			
 			if(isScalar, {
 					output
 				}, {
+					// rate adaption. \scalar proxy means neutral
+					if(rateConstraint != \scalar and: { rateConstraint !== rate }) {
+						if(rate === 'audio') { 
+							output = A2K.kr(output);
+							rate = 'control';
+							"adopted proxy input to control rate".postln;
+						} {
+							if(rateConstraint === 'audio') {
+								output = K2A.ar(output);
+								rate = 'audio';
+								"adopted proxy input to audio rate".postln;
+							}
+						}
+					};
 					outCtl = Control.names(\out).ir(0) + channelOffset;
 					if(rate === \audio and: { sampleAccurate }) { OffsetOut } { Out } 						.multiNewList([rate, outCtl]++output)
 			})

@@ -35,7 +35,8 @@
 			nil, 
 			true, 
 			channelOffset,
-			proxy.numChannels
+			proxy.numChannels,
+			proxy.rate
 		); 
 	}
 	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }
