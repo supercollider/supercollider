@@ -57,7 +57,8 @@ Symbol {
 	}
 	envirPut { arg aValue;
 		_Symbol_envirPut
-		^currentEnvironment.put(this, aValue) 
+		currentEnvironment.put(this, aValue);
+		^aValue
 	}
 
 	blend { // Envelopes may call this on the curves inst var.
