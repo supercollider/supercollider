@@ -43,6 +43,7 @@
 				.drawRects_(discrete)
 				.thumbSize_(thumbsize) 
 				.valueThumbSize_(1)
+				.background_(Color.white)
 				.colors_(Color.black, Color.blue(1.0,1.0))
 				.action_({|v| 
 					var curval;
