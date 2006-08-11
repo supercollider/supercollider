@@ -70,14 +70,13 @@ BufRd : MultiOutUGen {
 
 BufWr : UGen {	
 	*ar { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
-		this.multiNewList(['audio', bufnum, phase, 
+		^this.multiNewList(['audio', bufnum, phase, 
 			loop] ++ inputArray.asArray)
-		^inputArray
+
 	}
 	*kr { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
-		this.multiNewList(['control', bufnum, phase, 
+		^this.multiNewList(['control', bufnum, phase, 
 			loop] ++ inputArray.asArray)
-		^inputArray
 	}
 	checkInputs {
  		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, { 
@@ -90,8 +89,7 @@ BufWr : UGen {
 
 RecordBuf : UGen {	
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, run=1.0, loop=1.0, trigger=1.0;
-		this.multiNewList(['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger ] ++ inputArray.asArray);
-		^inputArray
+		^this.multiNewList(['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger ] ++ inputArray.asArray);
 	}
 }
 
