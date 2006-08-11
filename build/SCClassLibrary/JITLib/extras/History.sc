@@ -5,7 +5,7 @@ History { 		// adc 2006, Birmingham.
 	classvar <>title = "History repeats";
 	classvar <w, <bounds, <doc, pop, startbut;
 	classvar <docFlag = \sameDoc, <hasMovedOn = true;
-	classvar <>verbose = false, <>recordLocally = true;
+	classvar <>verbose = false, <>recordLocally = true, <started=false;
 	classvar <>saveFolder = "~/Desktop/", <>recordLocally = true;
 	
 	*initClass { 
@@ -20,25 +20,31 @@ History { 		// adc 2006, Birmingham.
 			// replace (\n ..." with (... ))!!!
 	*start { 
 		var interp = thisProcess.interpreter;
-		function = { |str, val, func| 
-			if ( func.notNil 
-					and: { str.notEmpty } 
-					and: { str != "\n" } 
-					and: { str.keep(7) != "History" }) 
-				{ 
-					if (History.verbose, { [str, val, func].postcs });
-					if (History.recordLocally, { 
-						History.enter(thisProcess.interpreter.cmdLine) 
-					});
-					History.forwardFunc.value(str, val, func);
-				}
-		};
-		interp.codeDump = interp.codeDump.addFunc(function);
-		hasMovedOn = true;
+		if(started.not) {
+			function = { |str, val, func| 
+				if ( func.notNil 
+						and: { str.notEmpty } 
+						and: { str != "\n" } 
+						and: { str.keep(7) != "History" }) 
+					{ 
+						if (History.verbose, { [str, val, func].postcs });
+						if (History.recordLocally, { 
+							History.enter(thisProcess.interpreter.cmdLine) 
+						});
+						History.forwardFunc.value(str, val, func);
+					}
+			};
+			interp.codeDump = interp.codeDump.addFunc(function);
+			hasMovedOn = true;
+			started = true;
+		} {
+			"History has started already.".postln;
+		}
 	}
 	*stop {
 		thisProcess.interpreter.codeDump = thisProcess.interpreter.codeDump.removeFunc(function); 
 		hasMovedOn = true;
+		started = false;
 	}
 
 	*localOn { recordLocally = true }
@@ -126,6 +132,9 @@ History { 		// adc 2006, Birmingham.
 					this.formatTime(now), 
 					if(alone) { "" } { "(" ++ id ++ ")" }
 				);
+			if(cmdLine.find("\n").notNil and: { cmdLine[0] != $( }) {
+				cmdLine = format("(\n%\n);", cmdLine)
+			};
 			str = str ++ cmdLine ++ "\n\n";
 		};
 		^str;
@@ -163,14 +172,46 @@ History { 		// adc 2006, Birmingham.
 		ts = str[5..i+2].postln.split($:).collect(_.asFloat);
 		^ts[0] * (60 * 60) + (ts[1] * 60) + ts[2]
 	}
-	*playString { arg str;
-		var i=0, dt, j;
-		i = str.find("// -", i);
-		j = str.find("\n", i);
-		dt = this.getTimeFromString(str[i..j]);
-		/* ... */
+	*asLines { arg str;
+		var indices;
+		indices = str.findAll("// -");
+		^str.clumps(indices.differentiate)
 	}
+	/*
+	// problem: interpreter cancels backslashes etc.
+	*stream { arg str, func;
+		var lastTime=0, time;
+		func = func ?? {
+			{|str|
+				var dt = ~prev / str.size;
+				fork {
+					0.2.wait; // wait until result from last evaluation is printed
+					str.do {|char|
+						char.post;
+						dt.wait;
+					};
+					str.compile.value;
+					
+				};
+			}
 		
+		};
+		^Routine {
+			this.asLines(str).do { |line|
+				time = this.getTimeFromString(line) ? lastTime;
+				(prev:lastTime, delta: time - lastTime, play: { func.(line); }).yield;
+				lastTime = time;
+			}
+		}
+	}
+	*play { arg str, clock;
+		str = str ? Document.current.string;
+		^this.stream(str).asEventStreamPlayer.play(clock);
+	}
+	*playDocument {
+	
+	}
+	*/	
 	*prettyString { |str| 
 		// remove returns at beginning or end of the string
 		var startIndex = str.detectIndex({ |ch| ch != $\n });
@@ -237,7 +278,14 @@ History { 		// adc 2006, Birmingham.
 	}
 	
 	*loadCS { |path| 
-		
+		var file, ll;
+		protect {
+			file = File(path.standardizePath,"r");
+			ll = file.readAllString;
+		} {
+			file.close;
+		};
+		ll !? { lines = ll.compile.value };	
 	}
 		
 }
