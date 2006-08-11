@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
-\red191\green0\blue0;}
+\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 TGrains		buffer granulator\
@@ -59,6 +59,7 @@
 \
 (\
 s = \cf2 Server\cf0 .internal;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Server\cf0 .default = s;\
 s.boot;\
 )\
@@ -69,10 +70,11 @@ s.sendMsg(\cf3 \\b_allocRead\cf0 , 10, \cf4 "sounds/a11wlk01.wav"\cf0 );\
 \
 (\
 \{\
-	\cf2 var\cf0  b = 10, trate, dur;\
+	\cf2 var\cf0  b = 10, trate, dur, rate;\
 	trate = \cf2 MouseY\cf0 .kr(2,200,1);\
 	dur = 4 / trate;\
-	\cf2 TGrains\cf0 .ar(2, \cf2 Impulse\cf0 .ar(trate), b, \cf2 1\cf0 , \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b)), dur, 0, 0.1, 2);\
+	rate = Dseq([10, 1, 1, 0.5, 0.5, 0.2, 0.1], inf);\
+	\cf2 TGrains\cf0 .ar(2, \cf2 Impulse\cf0 .ar(trate), b, \cf2 rate\cf0 , \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b)), dur, Dseq([-1, 1], inf), 0.1, 2);\
 \}.scope(zoom: 4);\
 )\
 \
@@ -88,6 +90,7 @@ s.sendMsg(\cf3 \\b_allocRead\cf0 , 10, \cf4 "sounds/a11wlk01.wav"\cf0 );\
 \}.scope(zoom: 4);\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // 4 channels\cf0 \
 (\
 \{\
@@ -176,4 +179,28 @@ s.sendMsg(\cf3 \\b_allocRead\cf0 , 10, \cf4 "sounds/a11wlk01.wav"\cf0 );\
 \}.scope(zoom: 4);\
 )\
 \
+\
+\
+\
+\cf5 // demand ugens as inputs\cf0 \
+(\cf6 \
+\{\
+	\cf7 var\cf6  trate, dur, z, d;\
+	trate = \cf7 MouseX\cf6 .kr(1, 100, 1);\
+	d = \{ \cf7 Dwhite\cf6 (0.1, 0.2, 1) \};\
+	z = \{ \
+		\cf7 Drand\cf6 ([\cf7 Dgeom\cf6 (0.1, 1 + d.value, \cf7 Diwhite\cf6 (20, 40)), \cf7 Dgeom\cf6 (1, 1 - \cf0 d.value\cf6 , \cf7 Diwhite\cf6 (20, 40))]) \
+	\};\
+	\cf7 TGrains\cf6 .ar(2, \
+		\cf7 Impulse\cf6 .ar(trate),\
+		bufnum: 10, \
+		rate: \cf7 Dseq\cf6 ([1, 1, z.value, 0.5, 0.5, 0.2, 0.1, 0.1, 0.1, 0.1], \cf7 inf\cf6 ) * 2 + 1, \
+		centerPos: \cf7 Dseq\cf6 (z.dup(8), \cf7 inf\cf6 ),\
+		dur: \cf7 Dseq\cf6 ([1, d.value, 1, z.value, 0.5, 0.5, 0.1, z.value] * 2, \cf7 inf\cf6 ) / trate,\
+		pan: \cf7 Dseq\cf6 ([1, 1, 1, 0.5, 0.2, 0.1, 0, 0, 0], \cf7 inf\cf6 ) * 2 - 1,\
+		amp: \cf7 Dseq\cf6 ([1, 0, z.value, 0, 2, 1.0, 1, 0.1, 0.1], \cf7 inf\cf6 )\
+	);\
+\}.scope(zoom: 4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 )\
 }
