@@ -238,7 +238,7 @@ BusPlug : AbstractFunction {
 	playNToBundle { arg bundle, outs, amps, ins, vol, fadeTime, group, addAction;
 		this.newMonitorToBundle(bundle); // todo: numChannels
 		group = group ?? { if(parentGroup.isPlaying) {parentGroup}{this.homeServer.asGroup} };
-		monitor.playNBusToBundle(bundle, outs, amps, bus, vol, fadeTime, group, addAction);
+		monitor.playNBusToBundle(bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction);
 	
 	}
 	
@@ -582,9 +582,9 @@ NodeProxy : BusPlug {
 	generateUniqueName {
 			^server.clientID.asString ++ this.identityHash.abs
 	}
-	
-	
-	
+
+
+
 	/////////// filtering within one proxy /////////////////
 	
 	filter { arg i, func; this.put(i, \filter -> func)	}

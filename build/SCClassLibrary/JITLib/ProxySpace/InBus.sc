@@ -67,7 +67,35 @@ XInFeedback {
 	}
 }
 
+SelectX { 
+	*new { arg which, array;
+		^XFade2.ar(
+			Select.ar(which.round(2), array), 
+			Select.ar(which.trunc(2) + 1, array), 
+			(which * 2 - 1).fold2(1)
+		);
+	}
+	*ar { arg which, array, wrap=1;
+		^this.new(which, array, wrap);	
+	}
+	*kr { arg which, array, wrap=1;
+		^this.new(which, array, wrap);	
+	}
+}
 
+SelectXFocus { 	// does not wrap (yet).
+	*new { arg which, array, focus=1;
+		^Mix(array.collect({ arg in, i; 
+			(1 - ((which-i).abs * focus) ).max(0) * in;
+		}))
+	}
+	*ar { arg which, array, focus=1;
+		^this.new(which, array, focus);	
+	}
+	*kr { arg which, array, focus=1;
+		^this.new(which, array, focus);	
+	}
+}
 
 // listens on a fixed index (or several)
 // plays out to various other indices.
@@ -187,7 +215,7 @@ Monitor {
 
 		outs = argOuts; ins = argIns; amps = argAmps; vol = argVol; fadeTime = argFadeTime;
 		
-		
+
 		if (ins.size != outs.size)
 			{ Error("wrong size of outs and ins" ++ [outs, amps, ins]).throw };
 			
@@ -279,12 +307,17 @@ Monitor {
 //				
 //	}
 	
-	playNBusToBundle { arg bundle, outs, amps, bus, vol, fadeTime, group;
-		var size, ins;
+	playNBusToBundle { arg bundle, outs, amps, ins, bus, vol, fadeTime, group;
+		var size;
 		outs = outs ?? {this.outs.unbubble} ? 0;	// remember old ones if none given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
-		ins = (0..(size - 1)) + bus.index;
+		ins = if(ins.notNil) 
+				{ ins.wrap(0, bus.numChannels - 1).asArray }
+			 	{Ê(0..(bus.numChannels - 1)) } 
+			 	+ bus.index;
+
+		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?
 		this.playNToBundle(bundle, outs, amps, ins, vol, group, fadeTime)
 	}
 	
