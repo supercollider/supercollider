@@ -274,7 +274,7 @@ TaskProxy : PatternProxy {
 	isPlaying { ^player.notNil and: { player.wasStopped.not } }
 	isActive { ^player.isPlaying }
 	
-	isEventPattern {Ê^true }
+	isEventPattern {^true }
 	
 	*default { ^Pn(this.defaultValue,1) }
 	

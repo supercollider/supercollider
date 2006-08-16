@@ -367,7 +367,7 @@ SequenceableCollection : Collection {
 		
 		size = (this.size + numlists - 1) div: numlists;
 		list = this.species.fill(numlists, { this.species.new(size) });
-		self = if(clip) { this.keep(this.size.trunc(clumpSize * numlists).postln)Ê} { this };
+		self = if(clip) { this.keep(this.size.trunc(clumpSize * numlists).postln)} { this };
 		self.do({ arg item, i;
 			sublist = list.at(i div: clumpSize % numlists);
 			sublist.add(item);

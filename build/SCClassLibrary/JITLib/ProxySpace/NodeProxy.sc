@@ -318,7 +318,7 @@ NodeProxy : BusPlug {
 	asGroup { ^group.asGroup }
 	asTarget { ^group.asGroup }
 	
-	parentGroup_ {Êarg node;
+	parentGroup_ {arg node;
 		if(node.isPlaying.not) { "node not playing and registered: % \n".postf(node); ^this };
 		parentGroup = node;
 		if(group.isPlaying) { group.moveToHead(parentGroup) }
@@ -339,7 +339,7 @@ NodeProxy : BusPlug {
 	}
 	
 	source { ^objects.at(0).source }
-	sources {Ê^objects.array.collect(_.source) }
+	sources {^objects.array.collect(_.source) }
 	
 	at { arg index; 
 		"info: node proxy 'at' was changed to return source. " 

@@ -135,7 +135,7 @@ Score {
 		protect {
 			list.size.do { |i|
 				var msg = list[i].copy;
-				msg[0] = msg[0]Ê* tempoFactor;
+				msg[0] = msg[0]* tempoFactor;
 				osccmd = msg.asRawOSC;
 				f.write(osccmd.size).write(osccmd);
 			};

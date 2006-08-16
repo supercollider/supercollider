@@ -83,7 +83,7 @@ Nil {
 	
 	// FunctionList support
 	addFunc { arg ... functions;
-		^if(functions.size <= 1) {Êfunctions[0] } { FunctionList(functions) }
+		^if(functions.size <= 1) {functions[0] } { FunctionList(functions) }
 	}
 	removeFunc { ^this }
 	

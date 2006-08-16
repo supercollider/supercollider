@@ -47,7 +47,7 @@ StartUp {
 	}
 	
 	*defer { arg function;
-		if(done) {Êfunction.value } { this.add(function) }
+		if(done) {function.value } { this.add(function) }
 	}
 	
 }

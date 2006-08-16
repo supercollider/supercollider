@@ -110,7 +110,7 @@ History { 		// adc 2006, Birmingham.
 		doc.string_(line[2]).front;
 		w.front;
 	}
-	*findDoc {Ê
+	*findDoc {
 		if (doc.isNil or: { Document.allDocuments.includes(doc).not } or: { pop.value == 1 }) { 
 			doc = Document(title).bounds_(Rect(300, 500, 300, 100));
 		};	

@@ -133,8 +133,8 @@ Monitor {
 		}
 	}
 	
-	isPlaying {Ê^group.isPlaying }
-	numChannels {Ê^outs.size }
+	isPlaying {^group.isPlaying }
+	numChannels {^outs.size }
 	
 	// multichannel support
 	
@@ -153,7 +153,7 @@ Monitor {
 	// lists are only flat lists for now.
 		
 	vol_ { arg val;
-		if(val == vol) {Ê^this };
+		if(val == vol) {^this };
 		vol = val;
 		this.amps = amps;
 	}
@@ -314,7 +314,7 @@ Monitor {
 		size = outs.size;
 		ins = if(ins.notNil) 
 				{ ins.wrap(0, bus.numChannels - 1).asArray }
-			 	{Ê(0..(bus.numChannels - 1)) } 
+			 	{(0..(bus.numChannels - 1)) } 
 			 	+ bus.index;
 
 		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?

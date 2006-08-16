@@ -303,10 +303,10 @@ FunctionList : AbstractFunction {
 		^if(flopped) { res.flop } { res }
 	}
 	flop {
-		if(flopped.not) {Êarray = array.collect(_.flop) }; flopped = true;
+		if(flopped.not) {array = array.collect(_.flop) }; flopped = true;
 	}
 	envirFlop {
-		if(flopped.not) {Êarray = array.collect(_.envirFlop) }; flopped = true;
+		if(flopped.not) {array = array.collect(_.envirFlop) }; flopped = true;
 	}
 	storeArgs { ^[array] }
 }
