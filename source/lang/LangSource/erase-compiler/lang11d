@@ -183,10 +183,18 @@ msgsend : name blocklist1
 			{ 
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$2, (PyrParseNode*)$4, 0, 0); 
 			}
+		| name '(' ')' blocklist
+			{ 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, NULL, NULL, (PyrParseNode*)$4); 
+			}
 		| name '(' arglist1 optkeyarglist ')' blocklist
 			{ 
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 
 						(PyrParseNode*)$4, (PyrParseNode*)$6); 
+			}
+		| '(' binop2 ')' '(' ')' blocklist
+			{
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$2, NULL, NULL, (PyrParseNode*)$6); 
 			}
 		| '(' binop2 ')' '(' arglist1 optkeyarglist ')' blocklist
 			{
@@ -237,6 +245,17 @@ msgsend : name blocklist1
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, (PyrParseNode*)$2); 
 			}
+		| classname '(' ')' blocklist
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_new);
+				selectornode = newPyrSlotNode(&slot);
+				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
+				$$ = (long)newPyrCallNode(selectornode, args, NULL, (PyrParseNode*)$4); 
+			}
 		| classname '(' keyarglist1 ')' blocklist
 			{ 
 				PyrSlotNode *selectornode;
@@ -281,6 +300,15 @@ msgsend : name blocklist1
 					newPyrPushLitNode(selectornode2, NULL));
 				args = linkNextNode(args, (PyrParseNode*)$3);
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0); 
+			}
+		| expr '.' '(' ')' blocklist
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				
+				SetSymbol(&slot, s_value);
+				selectornode = newPyrSlotNode(&slot);
+				$$ = (long)newPyrCallNode(selectornode, (PyrParseNode*)$1, NULL, (PyrParseNode*)$5); 
 			}
 		| expr '.' '(' keyarglist1 ')' blocklist
 			{ 
@@ -328,6 +356,10 @@ msgsend : name blocklist1
 					newPyrPushLitNode(newPyrSlotNode(&slot2), NULL));
 				args = linkNextNode(args, (PyrParseNode*)$4);
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0); 
+			}
+		| expr '.' name '(' ')' blocklist
+			{ 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1, NULL, (PyrParseNode*)$6); 
 			}
 		| expr '.' name '(' arglist1 optkeyarglist ')' blocklist
 			{ 
