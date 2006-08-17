@@ -200,6 +200,7 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 		goto sendMessage;
 	} else if (unit->m_framepos == bufFrames2) {
 sendMessage:
+	if(unit->mWorld->mRealTime){
 		// send a message to read
 		DiskIOMsg msg;
 		msg.mWorld = unit->mWorld;
@@ -215,6 +216,16 @@ sendMessage:
 		pgDiskFifo->Write(msg);
 		pgDiskFifoHasData->Signal();
 #endif //#ifndef SC_WIN32
+	} else {
+		SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
+		uint32 mPos = bufFrames2 - unit->m_framepos;
+		if (mPos > (uint32)bufr->frames || mPos + bufFrames2 > (uint32)bufr->frames || (uint32) bufr->channels != bufChannels) return;
+		sf_count_t count;
+		count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
+		if (count < bufFrames2) {
+			memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels);
+		}	
+	}	
 	}
 }
 
