@@ -867,11 +867,13 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			   mSndBuf.data[i] = arr->d[i];
 			}
 		} else {
-			int frames = (int) size/channels;		
+			int frames = (int) ceil(size/channels);		
 			int err = bufAlloc(&mSndBuf, channels, frames, samplerate);
 			if(err) return err;
 			PyrDoubleArray * arr;
+//			printf("frames:%i, size:%i, mSndBuf.samples:%i\n",frames, size, mSndBuf.samples);
 			arr = (PyrDoubleArray*) (slots+0)->uo;
+			size = mSndBuf.samples;
 			for(int i=0; i<size; i++){
 			   mSndBuf.data[i] = arr->d[i];
 			}
