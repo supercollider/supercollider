@@ -92,6 +92,7 @@ Integer : SimpleNumber {
 	nthPrime { _NthPrime }
 	prevPrime { _PrevPrime }
 	nextPrime { _NextPrime }
+	indexOfPrime { _IndexOfPrime }
 	
 	isPrime {
 		_IsPrime

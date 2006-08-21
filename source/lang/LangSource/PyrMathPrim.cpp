@@ -703,6 +703,31 @@ int prIsPrime(VMGlobals *g, int numArgsPushed)
 	return errNone;	
 }
 
+int prIndexOfPrime(VMGlobals *g, int numArgsPushed);
+int prIndexOfPrime(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	int n, p;
+	
+	a = g->sp;
+	n = a->ui;
+	if (n <= 2) {
+		if (n == 2) { SetInt(a, 0); }
+		else { SetNil(a); }
+	} else if (n <= nthPrime(NUMPRIMES-1)) {
+		p = findPrime(n);
+		if (p < 0) {
+			SetNil(a);
+		} else {
+			SetInt(a, p);
+		}
+	} else {
+		SetNil(a);
+	}
+	return errNone;	
+}
+
+
 int prAs32Bits(VMGlobals *g, int numArgsPushed);
 int prAs32Bits(VMGlobals *g, int numArgsPushed)
 {
@@ -1273,6 +1298,7 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_PrevPrime", prPrevPrime, 1, 0);
 	definePrimitive(base, index++, "_NextPrime", prNextPrime, 1, 0);
 	definePrimitive(base, index++, "_IsPrime", prIsPrime, 1, 0);
+	definePrimitive(base, index++, "_IndexOfPrime", prIndexOfPrime, 1, 0);
 	definePrimitive(base, index++, "_As32Bits", prAs32Bits, 1, 0);
 	definePrimitive(base, index++, "_High32Bits", prHigh32Bits, 1, 0);
 	definePrimitive(base, index++, "_Low32Bits", prLow32Bits, 1, 0);
