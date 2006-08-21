@@ -521,7 +521,8 @@ SequenceableCollection : Collection {
 	nthPrime { ^this.performUnaryOp('nthPrime') }
 	prevPrime { ^this.performUnaryOp('prevPrime') }
 	nextPrime { ^this.performUnaryOp('nextPrime') }
-	
+	indexOfPrime { ^this.performUnaryOp('indexOfPrime') }
+
 	real { ^this.performUnaryOp('real') }
 	imag { ^this.performUnaryOp('imag') }
 
