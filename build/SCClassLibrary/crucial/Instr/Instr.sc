@@ -21,7 +21,7 @@ Instr  {
 		^super.newCopyArgs(name,func).init(specs,outSpec)
 	}
 	*put { arg instr;
-		^Library.putList([Instr,this.symbolizeName(instr.name),instr].flatten )
+		^Library.putList([this,this.symbolizeName(instr.name),instr].flatten )
 	}
 	*at { arg  name;
 		var search;
@@ -45,10 +45,10 @@ Instr  {
 		^func.valueArray(inputs);
 	}
 	value { arg inputs;
-		^func.valueArray(inputs)
+		^func.valueArray(inputs ? [])
 	}
 	valueEnvir { arg inputs;
-		^func.valueArrayEnvir(inputs);
+		^func.valueArrayEnvir(inputs ? []);
 	}
 	valueArray { arg inputs;
 		^func.valueArray(inputs)
@@ -133,23 +133,28 @@ Instr  {
 		^Patch(this.name,args).play
 	}
 	*choose { arg start;
-		// todo: scan directory first
+		// this is only choosing from Instr in memory,
+		// it is not loading all possible Instr from file
 		^if(start.isNil,{ 
-			Library.global.choose(this.name)
+			Library.global.choose(this)
 		},{
-			Library.global.performList(\choose,[this.name] ++ start)
+			Library.global.performList(\choose,([this] ++ this.symbolizeName(start)))
 		})
 	}
 	*leaves { arg startAt; // address array
 		if(startAt.isNil,{
-			startAt = Library.global.at(this.name);
+			startAt = Library.global.at(this);
 			if(startAt.isNil,{ ^[] });
 		},{
 			startAt = this.at(startAt.first);
 		});
 		^Library.global.prNestedValuesFromDict(startAt).flat
 	}
-
+	*selectByOutputSpec { arg outSpec;
+		outSpec = outSpec.asSpec;
+		^this.leaves.select({ |ins| ins.outSpec == outSpec })
+	}
+	
 	//private
 	*symbolizeName { arg name;
 		if(name.isString,{
@@ -159,7 +164,7 @@ Instr  {
 			^[name];
 		});	
 		if(name.isSequenceableCollection,{
-			^name.collect({ arg n; n.asSymbol });
+			^name.collect(_.asSymbol);
 		});
 		error("Invalid name for Instr : "++name);
 	}	
@@ -174,14 +179,27 @@ Instr  {
 		if((path = this.findPath(symbolized)).isNil,{
 			^nil
 		});
-		path.loadPath;
+		path.loadPath(false);
 		
 		// now see if its there
 		^Library.atList([Instr] ++ symbolized);
 		// else it returns nil : not found
 	}
 	*findPath { arg symbolized;
-		var pathParts,rootPath,path;
+		var quarkInstr,found;
+		found = this.findPathIn(symbolized,Instr.dir);
+		if(found.notNil,{ ^found });
+		
+		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr").pathMatch;
+		quarkInstr.do({ |path|
+			found = this.findPathIn(symbolized,path);
+			if(found.notNil,{ ^found });
+		});
+		^nil
+	}
+	*findPathIn { arg symbolized, rootPath;
+		var pathParts,path;
+
 		pathParts = symbolized.collect(_.asString);
 		// if its a multi-part name then the last item is the instr name
 		// and the next to last is the file name.
@@ -189,7 +207,7 @@ Instr  {
 		if (pathParts.size > 1, { pathParts.pop });
 
 		// .rtf .txt .sc .scd or plain
-		rootPath = (Instr.dir ++ pathParts.join("/"));
+		rootPath = (rootPath ++ pathParts.join("/"));
 		
 		path = rootPath ++ ".rtf";
 		
@@ -218,13 +236,18 @@ Instr  {
 	}
 	
 	*loadAll {
-		(this.dir ++ "*").pathMatch.do({ arg path; path.loadPath })
+		var quarkInstr;
+		(this.dir ++ "*").pathMatch.do({ arg path; path.loadPath(false) });
+		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr/*").pathMatch;
+		quarkInstr.do({ |path|
+			path.loadPath(true);
+		});
 	}
 	*clearAll {
 		Library.global.removeAt(this.name)
 	}
 
-	asString { ^"Instr " ++ this.defName }
+	asString { ^"Instr(" ++ this.defName ++ ")" }
 		
 	*initClass {
 		Class.initClassTree(Document);
@@ -267,7 +290,14 @@ Instr  {
 
 	//guiClass { ^InstrGui }
 	guiBody { arg layout;
-		var defs;
+		var defs,tf;
+		
+		tf = SCTextField(layout,Rect(0,0,500,200));
+		tf.string = this.func.def.sourceCode;
+		if(path.notNil,{
+			ActionButton(layout.startRow,"open file...",{ path.openTextFile });
+		});
+		ArgNameLabel("outSpec:",layout.startRow,150);
 		this.outSpec.gui(layout);
 		this.argNames.do({ arg a,i;
 			layout.startRow;		
