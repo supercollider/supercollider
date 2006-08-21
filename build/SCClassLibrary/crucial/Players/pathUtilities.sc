@@ -36,7 +36,12 @@
 				warn("String-loadPath file not found " + this + path);
 			});
 		});
-		if(obj.notNil,{ ^obj },{^ObjectNotFound.new(path)});
+		if(obj.isNil and: warnIfNotFound, { 
+			warn("String-loadPath found nil, empty contents or parse error in " + path);
+			
+			//^ObjectNotFound.new(path) 
+		});
+		^obj
 	}
 	loadDocument { arg warnIfNotFound=true;
 		var path,obj;
