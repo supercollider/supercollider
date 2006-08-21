@@ -151,7 +151,12 @@ Patch : HasPatchIns  {
 	*new { arg name,inputs;
 		^super.new.loadSubject(name).createArgs(loadDocument(inputs) ? [])
 	}
-
+	rand {
+		this.inputs.do({ |in|
+			// at least NumberEditors will respond
+			in.tryPerform(\rand);
+		})
+	}
 	inputs { ^args }
 	// insert a new input into this arg position
 	setInput { arg index, newArg;

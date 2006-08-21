@@ -64,6 +64,13 @@ NumberEditor : Editor {
 	unmappedValue {
 		^spec.unmap(value)
 	}
+	rand { arg standardDeviation = 0.25;
+		// gaussian centered on the spec default
+		var default,unmapped;
+		default = spec.unmap( spec.default );
+		unmapped = (sqrt(-2.0 * log(1.0.rand)) * sin(2pi.rand) * standardDeviation + default);
+		this.setUnmappedValue(unmapped);
+	}
 	numChannels { ^1 }
 
 	addToSynthDef { arg synthDef,name;
