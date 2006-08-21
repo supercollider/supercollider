@@ -622,6 +622,21 @@ Pflatten : FilterPattern {
 	}
 }
 
+Pdiff : FilterPattern {
+	embedInStream { arg event;
+		var next, prev;
+		var stream = pattern.asStream;
+		while {
+			next = stream.next(event);
+			next.notNil;
+		}{
+			event = (next - (prev ? next)).yield;
+			prev = next;
+		}
+		^event
+	}
+}
+
 Pflow : FilterPattern {
 	*new {	
 		Error("Pflow was replaced. please use Pstep instead").throw;

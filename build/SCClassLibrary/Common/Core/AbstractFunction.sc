@@ -172,6 +172,10 @@ AbstractFunction {
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax, clip])
 	}
 
+	degreeToKey { arg scale, stepsPerOctave=12; 
+		^this.composeNAryOp('degreeToKey', [scale, stepsPerOctave])
+	}
+	
 	// function composition
 	<> { arg that;
 		// function composition

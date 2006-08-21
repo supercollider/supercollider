@@ -52,13 +52,8 @@ Pattern : AbstractFunction {
 	composeNAryOp { arg selector, argList;
 		^Pnaryop.new(selector, this, argList);
 	}
-	
-	degreeToKey { arg scale, stepsPerOctave=12;
-		^PdegreeToKey(this,scale,stepsPerOctave)
-	}
-	
 	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
-
+	differentiate { ^Pdiff(this) } 
 	
 	//////////////////////
 	
