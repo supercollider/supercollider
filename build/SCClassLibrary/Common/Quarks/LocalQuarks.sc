@@ -28,7 +28,7 @@ LocalQuarks
 	}
 	findQuark { arg name, version;
 		var matches;
-		matches = this.quarks.debug.select({ |q| q.name == name });
+		matches = this.quarks.select({ |q| q.name == name });
 		if(version.notNil,{
 			matches = matches.select({ |q| q.version >= version });
 		});
