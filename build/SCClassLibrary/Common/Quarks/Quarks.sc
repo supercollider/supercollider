@@ -122,7 +122,7 @@ Quarks
 
 		q = local.findQuark(name);
 		if(q.isNil,{
-			Error(name + "is not yet downloaded from the repository").throw;
+			Error(name.asString + " not found in local quarks.  Not yet downloaded from the repository ?").throw;
 		});
 		
 		
