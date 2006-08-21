@@ -62,6 +62,7 @@ ControlSpec : Spec {
 		^warp.unmap(value.round(step).clip(clipLo, clipHi));
 	}
 	*initClass {
+		Class.initClassTree(Warp);
 		specs = specs.addAll([
 			// set up some ControlSpecs for common mappings
 			// you can add your own after the fact.
