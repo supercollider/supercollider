@@ -624,8 +624,9 @@ Pflatten : FilterPattern {
 
 Pdiff : FilterPattern {
 	embedInStream { arg event;
-		var next, prev;
 		var stream = pattern.asStream;
+		var next, prev = stream.next(event);
+		//prev !? { prev.yield };
 		while {
 			next = stream.next(event);
 			next.notNil;
