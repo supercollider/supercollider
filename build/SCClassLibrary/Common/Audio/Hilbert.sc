@@ -28,6 +28,7 @@ HilbertFIR : UGen {
 // single sideband amplitude modulation, using optimized Hilbert phase differencing network
 // basically coded by Joe Anderson, except Sean Costello changed the word HilbertIIR.ar
 // to Hilbert.ar
+
 FreqShift {
 	*ar {
 		arg in,			// input signal
@@ -35,15 +36,12 @@ FreqShift {
 		phase = 0.0,	// phase of SSB
 		mul = 1.0,
 		add = 0.0;
-		
-		var shifts = 0;
+		var shifts;
 		freq = freq.asArray;
 		shifts = Array.fill(freq.size, {arg i;
-			 SinOsc.ar(freq[i], (phase + [ 0.5*pi, 0.0 ])).sum});
-
-		// multiply by quadrature
-		// and add together. . .
-//		^(Hilbert.ar(in) * SinOsc.ar(freq, (phase + [ 0.5*pi, 0.0 ]))).sum.madd(mul, add)
-		^(Hilbert.ar(in) * shifts).madd(mul, add)
+			// multiply by quadrature
+			// and add together. . .
+			 (Hilbert.ar(in) * SinOsc.ar(freq[i], (phase + [ 0.5*pi, 0.0 ]))).sum});
+		^(shifts).madd(mul, add)
 	}
 }
