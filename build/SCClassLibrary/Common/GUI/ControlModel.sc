@@ -6,6 +6,11 @@ Spec {
 	*initClass {
 		specs = IdentityDictionary.new;
 	}
+	*add { arg name ... args;
+		var spec = this.new(*args);
+		specs.put(name, spec);
+		^spec
+	}
 	asSpec { ^this }
 	defaultControl {
 		^this.subclassResponsibility(thisMethod)
