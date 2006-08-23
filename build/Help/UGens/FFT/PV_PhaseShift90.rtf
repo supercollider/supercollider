@@ -1,7 +1,7 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 PV_PhaseShift90			shift phase by 90 degrees					\
@@ -14,21 +14,28 @@ Shift phase of all bins by 90 degrees.\
 \f0\b buffer
 \f1\b0  - fft buffer\
 \
-
-\f2\fs18 \cf2 Server\cf3 .internal.boot;\
+See also 
+\f0\b [\ul FFT Overview\ulnone ]
+\f1\b0 .\
 \
-b = \cf2 Buffer\cf3 .alloc(\cf2 Server\cf3 .internal,2048,1);\
-c = \cf2 Buffer\cf3 .alloc(\cf2 Server\cf3 .internal,2048,1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f2\fs18 \cf2 Server\cf0 .internal.boot;\
+\
+b = \cf2 Buffer\cf0 .alloc(\cf2 Server\cf0 .internal,2048,1);\
+c = \cf2 Buffer\cf0 .alloc(\cf2 Server\cf0 .internal,2048,1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 (\
-\{  \cf2 arg\cf3  out=0, bufnum=0;\
-	\cf2 var\cf3  in, fft, fft2, shifted;\
-	in = \cf2 SinOsc\cf3 .ar(500, 0, 0.4);\
-	fft = \cf2 FFT\cf3 (b.bufnum, in);\
-	fft2 = \cf2 FFT\cf3 (c.bufnum, in);\
-	shifted = \cf2 PV_PhaseShift90\cf3 (fft); \
-	\cf2 Out\cf3 .ar(0,  [\cf2 IFFT\cf3 (fft2),\cf2 IFFT\cf3 (shifted)]);  \
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\{  \cf2 arg\cf0  out=0, bufnum=0;\
+	\cf2 var\cf0  in, fft, fft2, shifted;\
+	in = \cf2 SinOsc\cf0 .ar(500, 0, 0.4);\
+	fft = \cf2 FFT\cf0 (b.bufnum, in);\
+	fft2 = \cf2 FFT\cf0 (c.bufnum, in);\
+	shifted = \cf2 PV_PhaseShift90\cf0 (fft); \
+	[\cf2 IFFT\cf0 (fft2),\cf2 IFFT\cf0 (shifted)];  \
 \}.scope\
 )}

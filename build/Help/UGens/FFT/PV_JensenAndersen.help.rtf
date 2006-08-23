@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red35\green110\blue37;\red191\green0\blue0;\red0\green0\blue0;
-\red0\green0\blue191;\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red35\green110\blue37;\red191\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs44 \cf0 PV_JensenAndersen
@@ -21,11 +21,7 @@ First order derivatives of the features are taken. Threshold may need to be set 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \ul \ulc0 Class Methods
-\f1\b0 \ulnone \
-\
-
-\f0\b *ar(buffer, propsc=0.25, prophfe=0.25, prophfc=0.25, propsf=0.25, threshold=1.0, waittime=0.04)\
+\f0\b \cf0 *ar(buffer, propsc=0.25, prophfe=0.25, prophfc=0.25, propsf=0.25, threshold=1.0, waittime=0.04)\
 
 \f1\b0 \
 
@@ -57,6 +53,11 @@ First order derivatives of the features are taken. Threshold may need to be set 
 \f1\b0  If triggered, minimum wait until a further frame can cause another spot (useful to stop multiple detects on heavy signals)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 See also 
+\f0\b [\ul FFT Overview\ulnone ]
+\f1\b0 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\i \cf0 Examples\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -64,19 +65,18 @@ First order derivatives of the features are taken. Threshold may need to be set 
 \f2\i0\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 		\cf0 \
-(\cf4 \
-b=\cf5 Buffer\cf4 .alloc(s,2048,1);\
+(\
+b=\cf4 Buffer\cf0 .alloc(s,2048,1);\
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 SynthDef\cf4 (\cf6 \\fftod\cf4 ,\
+\cf4 SynthDef\cf0 (\cf5 \\fftod\cf0 ,\
 \{\
- \cf5 var\cf4  source1, detect;\
+ \cf4 var\cf0  source1, detect;\
 	\
-	source1= \cf5 AudioIn\cf4 .ar(1); \
+	source1= \cf4 AudioIn\cf0 .ar(1); \
 	\
-	detect= \cf5 PV_JensenAndersen\cf4 .ar(\cf5 FFT\cf4 (b.bufnum,source1), threshold:\cf5 MouseX\cf4 .kr(0.1,1.0));\
+	detect= \cf4 PV_JensenAndersen\cf0 .ar(\cf4 FFT\cf0 (b.bufnum,source1), threshold:\cf4 MouseX\cf0 .kr(0.1,1.0));\
 	\
-	\cf5 Out\cf4 .ar(0,\cf5 SinOsc\cf4 .ar([440,445],0,\cf5 Decay\cf4 .ar(0.1*detect,0.1)));\
+	\cf4 Out\cf0 .ar(0,\cf4 SinOsc\cf0 .ar([440,445],0,\cf4 Decay\cf0 .ar(0.1*detect,0.1)));\
 \}).play(s);	\
-\cf0 )	\
+)	\
 }

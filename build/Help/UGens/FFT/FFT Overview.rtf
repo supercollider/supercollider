@@ -1,8 +1,9 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green115\blue0;}
+\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;\red0\green25\blue183;\red96\green96\blue96;
+\red191\green0\blue0;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 FFT Overview
@@ -45,7 +46,7 @@ In between an FFT and an IFFT one can chain together a number of Phase Vocoder U
 	\
 	(\
 	\{ \cf2 var\cf0  in, chain;\
-		in = \{\cf2 WhiteNoise\cf0 .ar(0.8)\}.dup;\
+		in = \cf2 WhiteNoise\cf0 .ar(0.8);\
 		chain = \cf2 FFT\cf0 (b.bufnum, in);\
 		chain = \cf2 PV_RandComb\cf0 (chain, 0.95, \cf2 Impulse\cf0 .kr(0.4)); \
 		\cf2 IFFT\cf0 (chain);\
@@ -130,6 +131,83 @@ any Synth using PV UGens might not.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
+\f0\b\fs28 \cf0 Multichannel Expansion with FFT UGens
+\f1\b0\fs24 \
+\
+\pard\pardeftab720\ql\qnatural
+\cf0 Care must be taken when using multichannel expansion with FFT UGens, as they require separate buffers. Code such as this can be deceptive:\
+\
+\pard\pardeftab720\ql\qnatural
+
+\f2\fs18 \cf6 chain = \cf7 FFT\cf6 (bufnum, \cf0 \{\cf2 WhiteNoise\cf0 .ar(0.2)\}.dup\cf6 );
+\f1\fs24 \cf0 \
+\
+The above may seem to work, but does not. It does result in two FFT UGens, but as they both write to the same buffer, the second simply overwrites the data from the first, thus wasting CPU and accomplishing nothing.\
+\
+When using multichannel expansion with FFT UGens it is necessary to ensure that each one writes to a different buffer. Here's an example of one way to do this:\
+\
+\pard\pardeftab720\ql\qnatural
+
+\f2\fs18 \cf0 b = \{\cf8 Buffer\cf0 .alloc(s,2048,1)\}.dup;
+\f1\fs24 \
+
+\f2\fs18 \
+(
+\f1\fs24 \cf6 \
+\pard\pardeftab720\ql\qnatural
+
+\f2\fs18 \cf7 SynthDef\cf6 (\cf9 "help-multichannel FFT"\cf6 , \{ \cf7 arg\cf6  out=0, bufnum= #[0, 1]; \cf10 // bufnum is an array
+\f1\fs24 \cf6 \
+	
+\f2\fs18 \cf7 var\cf6  in, chain;
+\f1\fs24 \
+	
+\f2\fs18 in = [\cf7 SinOsc\cf6 .ar(0.2), \cf7 WhiteNoise\cf6 .ar(0.2)];
+\f1\fs24 \
+	
+\f2\fs18 chain = \cf7 FFT\cf6 (bufnum, in); \cf10 // each FFT has a different buffer\cf6 \
+	\cf10 // now we can multichannel expand as normal
+\f1\fs24 \cf6 \
+	
+\f2\fs18 chain = \cf7 PV_BrickWall\cf6 (chain, \cf7 SinOsc\cf6 .kr(0.1));
+\f1\fs24 \
+	
+\f2\fs18 \cf7 Out\cf6 .ar(out, \cf7 IFFT\cf6 (chain));
+\f1\fs24 \
+
+\f2\fs18 \}).play(s,[\cf11 \\out\cf6 , 0, \cf11 \\bufnum\cf6 , b.collect(\cf7 _\cf6 .bufnum)]);
+\f1\fs24 \
+\pard\pardeftab720\ql\qnatural
+
+\f2\fs18 \cf0 )
+\f1\fs24 \
+\
+Note that dup on a UGen just makes a reference to that UGen, because UGen defines -copy to simply return the receiver. (See 
+\f0\b [\ul UGen\ulnone ]
+\f1\b0  for more detail.)\
+\
+
+\f2\fs18 a = SinOsc.ar;
+\f1\fs24 \
+
+\f2\fs18 a.dup[1] === a
+\f1\fs24 \
+
+\f2\fs18 \
+true
+\f1\fs24 \
+\
+Code like 
+\f2\fs18 \cf7 IFFT\cf6 (chain).dup
+\f1\fs24 \cf0  is found throughout the PV help files , and is just a convenient way to copy a mono signal to stereo, without further computation.\
+\
+See also 
+\f0\b [\ul MultiChannel\ulnone ]
+\f1\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
 \f0\b\fs28 \cf0 PV and FFT UGens in the Standard Library
 \f1\b0\fs24 \
 \
@@ -162,7 +240,7 @@ The following PV UGens are included in the standard SC distribution:\
 	[\ul PV_Max\ulnone ]	maximum magnitude\
 	[\ul PV_Min\ulnone ]	minimum magnitude\
 	[\ul PV_Mul\ulnone ]	complex multiply\
-	[\ul PV_PhaseShift\ulnone ]\
+	[\ul PV_PhaseShift\ulnone ]	shift phase of all bins\
 	[\ul PV_PhaseShift270\ulnone ]	shift phase by 270 degrees\
 	[\ul PV_PhaseShift90\ulnone ]	shift phase by 90 degrees\
 	[\ul PV_RandComb\ulnone ]	pass random bins\
