@@ -212,7 +212,7 @@ folders must be like that :
 
 ...
 ROOT\portaudio\docs
-ROOT\portaudio\pa_asio
+ROOT\portaudio\src
 ....
 
 3) go to steinberg.net --> support --> 3rd party Developers (menu on the right) --> ASIO SDK Download
@@ -223,21 +223,13 @@ info anyway...).
 4) once you receive the email (it took 5 minutes here), you can download asiosdk2.zip, copy and uncompress
 it to a temp folder. you must then copy some parts of the asio2 sdk to the PortAudio source tree.
 
-5) the "asiosdk2.zip\asiosdk2\host" folder must be copied to "ROOT\portaudio\pa_win\msvc\"
-
-so that the source tree looks like that :
+5) unpack the zip and put it next to portaudio. 
 
 ...
-ROOT\portaudio\pa_win\msvc\host\ASIOConvertSamples.cpp"
+ROOT\asio-sdk\common
+ROOT\asio-sdk\driver
 ...
 
-6) the "asiosdk2.zip\asiosdk2\common" folder must be copied to "ROOT\portaudio\pa_win\msvc\"
-
-so that the source tree looks like that :
-
-...
-ROOT\portaudio\pa_win\msvc\common\asiosys.h"
-...
 
 portmidi
 -----------
