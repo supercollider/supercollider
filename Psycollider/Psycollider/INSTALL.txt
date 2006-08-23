@@ -1,0 +1,18 @@
+INSTALL Psycollider
+=========================
+
+
+As this version of Psycollider is compiled with the MS Visual Studio C++ Express
+the included installer vccrt.msi must be executed _before_ Psycollider can be started. 
+
+NOTE: You need to have XP or 2000 with the newest Service Pack to be able to install the msi
+(needs MSInstaller 3.1)
+See also: 
+http://blogs.msdn.com/nikolad/archive/2005/09/02/460368.aspx
+http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=149470&SiteID=1
+
+Otherwise, it is ready to go..., have fun!
+
+
+Christopher Frauenberger
+[frauenberger@iem.at]
