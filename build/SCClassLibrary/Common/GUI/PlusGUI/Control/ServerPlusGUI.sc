@@ -83,12 +83,14 @@
 						this.dumpOSC(1);
 						this.stopAliveThread;
 						dumping = true;
+						w.name = "dumping osc: " ++ name.asString;
 						CmdPeriod.add(stillRunning);
 					};
 					stopDump = {
 						this.dumpOSC(0);
 						this.startAliveThread;
 						dumping = false;
+						w.name = name.asString ++ " server";
 						CmdPeriod.remove(stillRunning);
 					};
 					if(dumping, stopDump, startDump)
