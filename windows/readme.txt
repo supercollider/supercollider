@@ -4,18 +4,20 @@ SuperCollider 3 for Windows - supercollider.sourceforge.net
 the licenses are in separate text files in the "LICENSES" folder.
 ---------------------------------------------------------------------
 
-+---------------+
-| In this build |
-+---------------+
-- a port of scsynth.exe, with a GUI frontend
-  to choose server options (scspawn.exe)
-- a lang editor (written in python) and the python extension to make it work
+
+Welcome to Psycollider a python implementation of SuperCollider3
 
 +------------+
 | Changelog  |
 +------------+
 
+# SC3-WIN32-2006-08-16 :
+# -------------------------------------------
+# PsyCollider now supports HTML
+# better handling in the editor
+
 # SC3-WIN32-2005-11-23-14h30 :
+# -------------------------------------------
 # made the post call into Python thread safe (Task postln bug)
 # see http://docs.python.org/api/threads.html for details
 # made unixCmd work with Win32
