@@ -6,8 +6,8 @@ Spec {
 	*initClass {
 		specs = IdentityDictionary.new;
 	}
-	*add { arg name ... args;
-		var spec = this.new(*args);
+	*add { arg name, args;
+		var spec = args.asSpec;
 		specs.put(name, spec);
 		^spec
 	}
