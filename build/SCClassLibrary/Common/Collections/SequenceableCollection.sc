@@ -396,8 +396,6 @@ SequenceableCollection : Collection {
 		
 	// pitch operations
 	degreeToKey { arg scale, stepsPerOctave=12;
-		var size;
-		size = scale.size;
 		^this.collect({ arg scaleDegree;
 			scaleDegree.degreeToKey(scale, stepsPerOctave);
 		});
