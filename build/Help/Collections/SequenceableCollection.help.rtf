@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
@@ -35,7 +35,7 @@ Fill a SequenceableCollection with an arithmetic series.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 Array\cf0 .series(5, 10, 2).postln;
+\f2\fs18 \cf2 Array\cf0 .series(5, 10, 2);
 \fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -50,7 +50,21 @@ Fill a SequenceableCollection with a geometric series.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 Array\cf0 .geom(5, 1, 3).postln;
+\f2\fs18 \cf2 Array\cf0 .geom(5, 1, 3);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 *fib(size, a, b)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Fill a SequenceableCollection with a fibonacci series. \
+b is the starting value (default: 1), a is the starting step value (default: 0)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 Array\cf0 .fib(5);\
+\cf2 Array\cf0 .fib(5, 2, 32); // start from 32 with step 2.
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -63,7 +77,7 @@ Fill a SequenceableCollection with random values in the range minVal to maxVal.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 Array\cf0 .rand(8, 1, 100).postln;
+\f2\fs18 \cf2 Array\cf0 .rand(8, 1, 100);
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -76,7 +90,7 @@ Fill a SequenceableCollection with random values in the range -val to +val.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 Array\cf0 .rand2(8, 100).postln;
+\f2\fs18 \cf2 Array\cf0 .rand2(8, 100);
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -90,12 +104,27 @@ distribution.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 Array\cf0 .linrand(8, 1, 100).postln;
-\fs24 \
+\f2\fs18 \cf2 Array\cf0 .linrand(8, 1, 100);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Instance Methods
+\f0\b\fs24 \cf0 *exprand(size, minVal, maxVal)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Fill a SequenceableCollection with random values in the range minVal to maxVal with exponential\
+distribution.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 Array\cf0 .exprand(8, 1, 100);
+\fs24 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Instance Methods
 \f2\b0\fs24 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -117,7 +146,15 @@ Return the first element of the collection,\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-	Return the index of item in the collection, or nil if not found.\
+	Return the index of an item in the collection, or nil if not found.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 indexOfEqual(item)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+	Return the index of something in the collection that equals the item, or nil if not found.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -160,6 +197,8 @@ Return the first element of the collection,\
 
 \f2 \cf0 \
 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 copyRange(start, end)\
@@ -171,11 +210,16 @@ Return a new SequenceableCollection which is a copy of the indexed slots of the 
 \f1\b0  to 
 \f0\b end
 \f1\b0 .\
+x.copyRange(a, b) can also be written as 
+\f0\b x[a..b]
+\f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 (\
+\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  y, z;\
 z = [1, 2, 3, 4, 5];\
 y = z.copyRange(1,3);\
@@ -192,7 +236,9 @@ y.postln;\
 \f1\b0 \cf0 \
 Return a new SequenceableCollection which is a copy of the indexed slots of the receiver from 
 \f0\b start
-\f1\b0  to the end of the collection.\
+\f1\b0  to the end of the collection.  x.copyToEnd(a) can also be written as 
+\f0\b x[a..]
+\f1\b0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -202,7 +248,9 @@ Return a new SequenceableCollection which is a copy of the indexed slots of the 
 \f1\b0 \cf0 \
 Return a new SequenceableCollection which is a copy of the indexed slots of the receiver from the start of the collection to 
 \f0\b end
-\f1\b0 .\
+\f1\b0 .  x.copyFromStart(a) can also be written as 
+\f0\b x[..a]
+\f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
@@ -216,6 +264,36 @@ Remove item from collection.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
+\f0\b \cf0 keep(n)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Keep the first n items of the array. If n is negative, keep the last n items.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 a = [1, 2, 3, 4, 5];\
+a.keep(3);\
+a.keep(-3);
+\f1\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 drop(n)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Drop the first n items of the array. If n is negative, drop the last n items.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 a = [1, 2, 3, 4, 5];\
+a.drop(3);\
+a.drop(-3);
+\f1\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
 \f0\b \cf0 flat
 \f1\b0 \
 \
@@ -223,7 +301,7 @@ Returns a collection from which all nesting has been flattened.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [[1, 2, 3],[[4, 5],[[6]]]].flat.postln;
+\f2\fs18 \cf0 [[1, 2, 3],[[4, 5],[[6]]]].flat;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -235,9 +313,9 @@ Returns a collection from which numLevels of nesting has been flattened.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [[1, 2, 3],[[4, 5],[[6]]]].flatten(1).asCompileString.postln;\
+\f2\fs18 \cf0 [[1, 2, 3],[[4, 5],[[6]]]].flatten(1).postcs;\
 \
-[[1, 2, 3],[[4, 5],[[6]]]].flatten(2).asCompileString.postln;
+[[1, 2, 3],[[4, 5],[[6]]]].flatten(2).postcs;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -249,7 +327,7 @@ Invert rows and columns in a two dimensional collection.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [[1, 2, 3, 4],[5, 6, 7, 8],[9, 10, 11, 12]].flop.asCompileString.postln;
+\f2\fs18 \cf0 [[1, 2, 3, 4],[5, 6, 7, 8],[9, 10, 11, 12]].flop.postcs;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -261,7 +339,7 @@ Choose an element from the collection at random.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [1, 2, 3, 4].choose.postln;
+\f2\fs18 \cf0 [1, 2, 3, 4].choose;
 \fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -276,7 +354,7 @@ The weights must sum to 1.0.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [1, 2, 3, 4].wchoose([0.1, 0.2, 0.3, 0.4]).postln;
+\f2\fs18 \cf0 [1, 2, 3, 4].wchoose([0.1, 0.2, 0.3, 0.4]);
 \f1\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -301,9 +379,9 @@ If the function is nil, the following default function is used.\
 \f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 [6, 2, 1, 7, 5].sort.postln;\
+\f2 \cf0 [6, 2, 1, 7, 5].sort;\
 \
-[6, 2, 1, 7, 5].sort(\{ \cf2 arg\cf0  a, b; a > b \}).postln; \cf3 // reverse sort
+[6, 2, 1, 7, 5].sort(\{ \cf2 arg\cf0  a, b; a > b \}); \cf3 // reverse sort
 \fs24 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -344,7 +422,7 @@ If the function returns true, then a separation is made between the elements.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0  [1, 2, 3, 5, 6, 8, 10].separate(\{ \cf2 arg\cf0  a, b; (b - a) > 1 \}).asCompileString.postln;
+\f2\fs18 \cf0  [1, 2, 3, 5, 6, 8, 10].separate(\{ \cf2 arg\cf0  a, b; (b - a) > 1 \}).postcs;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -359,7 +437,7 @@ If the function returns true, then a separation is made between the elements.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [1, 2, 3, 4, 5, 6, 7, 8].clump(3).asCompileString.postln;
+\f2\fs18 \cf0 [1, 2, 3, 4, 5, 6, 7, 8].clump(3).postcs;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -375,7 +453,7 @@ is given by integers in the groupSizeList.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [1, 2, 3, 4, 5, 6, 7, 8].clumps([1,2]).asCompileString.postln;
+\f2\fs18 \cf0 [1, 2, 3, 4, 5, 6, 7, 8].clumps([1,2]).postcs;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -391,19 +469,19 @@ given probability.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [1, 2, 3, 4, 5, 6, 7, 8].curdle(0.3).asCompileString.postln;
+\f2\fs18 \cf0 [1, 2, 3, 4, 5, 6, 7, 8].curdle(0.3).postcs;
 \fs24 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Math Support\
+\f0\b\fs28 \cf0 \ul Math Support\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Unary Messages:\
+\f0\b\fs28 \cf0 \ul Unary Messages:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
@@ -431,17 +509,18 @@ Creates a new collection of the results of applying the selector to all elements
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 [1, 2, 3, 4].neg.postln;\
+\fs18 \cf0 [1, 2, 3, 4].neg;\
 \
-[1, 2, 3, 4].reciprocal.postln;
+[1, 2, 3, 4].reciprocal;
 \fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Binary Messages:\
+\f0\b\fs28 \cf0 \ul Binary Messages:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \ulnone \
@@ -471,9 +550,9 @@ the receiver.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 ([1, 2, 3, 4] * 10).postln;\
+\f2\fs18 \cf0 ([1, 2, 3, 4] * 10);\
 \
-([1, 2, 3, 4] * [4, 5, 6, 7]).postln;
+([1, 2, 3, 4] * [4, 5, 6, 7]);
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
