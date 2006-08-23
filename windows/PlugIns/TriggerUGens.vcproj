@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="TriggerUGens"
 	ProjectGUID="{3ACD1DB7-EBFD-499F-9C76-D3167F6C8FA4}"
 	RootNamespace="TriggerUGens"
