@@ -103,6 +103,8 @@ Routine : Thread {
 		^this.primitiveFailed
 	}
 	
+	p { ^Prout(func) }
+	
 	storeArgs { ^[func] }
 	storeOn { arg stream;
 		stream << this.class.name;
