@@ -47,6 +47,7 @@ gUserExtensionFolder = '~\\SuperCollider\\Extensions'
 #----------------------------------------------------------------------
 # wx IDs
 ID_NewCodeWin  = wx.NewId()
+ID_HTMLtoCode  = wx.NewId()
 ID_StartServer = wx.NewId()
 ID_StopServer = wx.NewId()
 ID_OpenFile = wx.NewId()
@@ -85,12 +86,21 @@ except IOError:
 SC3_KEYWORDS.sort()
 
 # ---------------------------------------------------------------------
+# HTML Sub Window 
+# 
+class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
+
+  def __init__ (self,parent):
+    wx.html.HtmlWindow.__init__(self,parent)
+
+    
+# ---------------------------------------------------------------------
 # RTF Sub Window 
 # Issues: not editable, does not always (python versions) render rtf correctly
 class PsycolliderRTFSubWin(wx.TextCtrl):
 
   def __init__ (self,parent):
-    wx.TextCtrl.__init__(self,parent,style = wx.TE_MULTILINE | wx.TE_RICH | wx.TE_READONLY)
+    wx.TextCtrl.__init__(self,parent, style = wx.TE_MULTILINE | wx.TE_RICH | wx.TE_READONLY)
     self.Bind(wx.EVT_CHAR, self.OnChar)
 
   def OnChar(self,event):
@@ -216,13 +226,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         #self.AutoCompShow(0, st)
 
         kw = keyword.kwlist[:]
-        kw.append("zzzzzz?2")
-        kw.append("aaaaa?2")
-        kw.append("__init__?3")
-        kw.append("zzaaaaa?2")
-        kw.append("zzbaaaa?2")
-        kw.append("this_is_a_longer_value")
-        #kw.append("this_is_a_much_much_much_much_much_much_much_longer_value")
+        #kw.append("zzzzzz?2")
 
         kw.sort()  # Python sorts are case sensitive
         self.AutoCompSetIgnoreCase(False)  # so this needs to match
@@ -446,6 +450,26 @@ class PsycolliderRTFWin(wx.MDIChildFrame):
     self.rtfSubWin.SetFocus()
    
 # ---------------------------------------------------------------------
+# HTML Window
+# accomodates HTML sub window
+class PsycolliderHTMLWin(wx.MDIChildFrame):
+
+  def __init__ (self,parent,ID,title,pos=wx.DefaultPosition,size=wx.DefaultSize):
+    wx.MDIChildFrame.__init__(self,parent,ID,title,pos,size)
+    self.htmlSubWin = PsycolliderHTMLSubWin(self)
+
+  def GetSelectedText(self):
+    return self.htmlSubWin.SelectionToText()
+
+  def GetCurLineAsString(self):
+    posInText = self.htmlSubWin.GetInsertionPoint()
+    (x,y) = self.htmlSubWin.PositionToXY(posInText)
+    return self.htmlSubWin.SelectLine(y)
+
+  def SetSubWinFocus(self):
+    self.htmlSubWin.SetFocus()
+
+# ---------------------------------------------------------------------
 # Main window
 class PsycolliderMainFrame(wx.MDIParentFrame):
 
@@ -456,6 +480,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     # menu creation 
     menu = wx.Menu()
     menu.Append(ID_NewCodeWin, "&New Code Window...\tCtrl+N")
+    menu.Append(ID_HTMLtoCode, "&HTML to Code Window...\tCtrl+T")
 #    spacing seems unequal here, but comes out okay when compiled, any ideas??
 #    menu.Append(ID_StartServer, "&Start Server")
 #    menu.Append(ID_StopServer, "&Stop Server")
@@ -490,6 +515,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     self.CreateStatusBar()
 
     self.Bind(wx.EVT_MENU, self.OnNewCodeWindow, id=ID_NewCodeWin)
+    self.Bind(wx.EVT_MENU, self.OnHTMLtoCode, id=ID_HTMLtoCode)
     self.Bind(wx.EVT_MENU, self.OnExit, id=ID_Exit)
 #    self.Bind(wx.EVT_MENU, self.OnStartServer, id=ID_StartServer)
 #    self.Bind(wx.EVT_MENU, self.OnStopServer, id=ID_StopServer)
@@ -516,6 +542,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     accelTableEntries = []
     # FILE
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('N'),ID_NewCodeWin))
+    accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('T'),ID_HTMLtoCode))
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('O'),ID_OpenFile))
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('S'),ID_SaveFile))
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('W'),ID_CloseCodeWin)) # yssr
@@ -645,7 +672,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
         elif reply == wx.ID_CANCEL:
           return 0
     else:
-      return 1
+      return 1                                  
     
   def OpenFile(self,path):
       child = self.GetActiveChild()
@@ -657,19 +684,15 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
       textContent = file.read()
       file.close()
       if textContent[0:5] == '{\\rtf':
-        win = self.OnNewRTFWindow(None)
-        win.rtfSubWin.LoadFile(path)
-        courierFont = wx.Font(10,wx.MODERN,wx.NORMAL,wx.NORMAL,False,"Courier New")
-        textAttr = wx.TextAttr(wx.NullColour, wx.NullColour, courierFont)
-        textAttr.SetFlags(wx.TEXT_ATTR_FONT_SIZE)
-        #win.rtfSubWin.SetStyle(0,win.rtfSubWin.GetLastPosition(), textAttr)
-        # we first need to convert rtf to something better... 
-        #win = self.OnNewCodeWindow(None)
-        #newTextContent = PySCLang.Rtf2Ascii(textContent) <--- this looks very bad
-        #win.codeSubWin.AddText(newTextContent)
-      #elif textContent[0:5] == '{\\html':
-      	# TODO: handle HTML here
-      	
+	# this does not work anymore - we have to wait for wxPython 2.7 to have proper RTF support
+	# help will be handled through html
+	win = self.OnNewRTFWindow(None)
+        #win.rtfSubWin.LoadFile(path)
+	win.rtfSubWin.AppendText("Sorry, RTF is currently not supported. Please open your file in an external editor (e.g. Wordpad) and copy the code here. \n")
+	win.rtfSubWin.AppendText("Full RTF support is planned as soon it is supported by wxPython 2.7")
+      elif (textContent.find('<html') >= 0 or textContent.find('<HTML') >= 0):
+      	win = self.OnNewHTMLWindow(None)
+	win.htmlSubWin.LoadPage(path)
       else:
        	# everything else is plain text code window
         win = self.OnNewCodeWindow(None)
@@ -796,10 +819,29 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     win.SetSubWinFocus()
     return win
 
+  def OnHTMLtoCode(self, evt):
+    activeChild = self.GetActiveChild()
+    if type(activeChild) == PsycolliderHTMLWin:
+      text = activeChild.htmlSubWin.ToText()
+      activeChild.Destroy()
+      win = PsycolliderCodeWin(self, -1, "Child Window: %d" % self.winCount)
+      win.codeSubWin.AddText(text)
+      win.Show(True)
+      win.SetSubWinFocus()
+      return win
+    return
+    
   def OnNewRTFWindow(self, evt):
     self.winCount = self.winCount + 1
     win = PsycolliderRTFWin(self, -1, "Child Window: %d" % self.winCount)
     #canvas = ScrolledWindow.MyCanvas(win)
+    win.Show(True)
+    win.SetSubWinFocus()
+    return win
+
+  def OnNewHTMLWindow(self, evt):
+    self.winCount = self.winCount + 1
+    win = PsycolliderHTMLWin(self, -1, "Child Window: %d" % self.winCount)
     win.Show(True)
     win.SetSubWinFocus()
     return win
@@ -811,7 +853,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
       sel = string.strip(str(activeChild.GetSelectedText()))
     else : sel = ""                    # yssr
     foundFilePath = ""
-    filePath = ""
+    filePath = ""                                                                                                         
     if   sel == "-" : sel = "subtraction"				# "subtraction.rtf"
     elif sel == "/" : sel = "division"					# "division.rtf"
     elif sel == "*" : sel = "multiplication"   			# from "*.rtf"
@@ -820,7 +862,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     elif sel == "<=": sel = "lessorequalthan"    		# from "<=.rtf"
     elif sel == ">" : sel = "greaterthan"          		# from ">.rtf"
     elif sel == ">=": sel = "greaterorequalthan" 		# from ">=.rtf"
-    elif set == "%" : sel = "modulo"					# from "%.rtf"
+    elif sel == "%" : sel = "modulo"					# from "%.rtf"
     if sel != "":
       for helpFolder in [gHelpFolder, os.path.expanduser(gUserExtensionFolder)]:
         for folderPath, foldersInPath, fileNamesInFolder in os.walk(helpFolder):
@@ -832,10 +874,10 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
             foldersInPath.remove('.svn')  
           for fileName in fileNamesInFolder:
             filePath = os.path.join(folderPath, fileName)
-            if fileName == sel + ".help.rtf":
+            if fileName == sel + ".help.html":
               foundFilePath = filePath
               break
-            if fileName == sel + ".rtf":
+            if fileName == sel + ".html":
               foundFilePath = filePath
               break
           # for fileName
@@ -847,7 +889,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
         if foundFilePath != "":
           break
     if foundFilePath == "":     
-      foundFilePath = os.path.join(gHelpFolder,"Help.help.rtf")
+      foundFilePath = os.path.join(gHelpFolder,"Help.html")
     self.OpenFile(foundFilePath)
     
 
@@ -863,6 +905,9 @@ class PsycolliderApp(wx.App):
     # Tell wxWindows that this is our main window
     self.SetTopWindow(frame)
     
+    # enable images for html
+    wx.InitAllImageHandlers()
+    
     #this creates a log window and tells PySCLang about it
     frame.CreateLogWindow( )
         
@@ -870,7 +915,8 @@ class PsycolliderApp(wx.App):
     
     PySCLang.setPyPrOpenWinTextFile(OpenTextFile)
     
-    self.ChangeDirToSCClassLibraryFolder()
+    if self.ChangeDirToSCClassLibraryFolder() == False: 
+      return 0
 
     # start the sc lang interpreter
     PySCLang.start( )    
@@ -945,7 +991,9 @@ class PsycolliderApp(wx.App):
       classLibPath_split = os.path.split(classLibPath)
       classLibParentFolder = classLibPath_split[0]
       os.chdir(classLibParentFolder)
-    return None
+    else:
+      return False
+    return True
       
                      
 def OpenTextFile(path,rangeStart,rangeSize):
