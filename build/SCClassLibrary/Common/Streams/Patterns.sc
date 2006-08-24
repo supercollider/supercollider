@@ -405,8 +405,8 @@ Pgeom : Pattern {	// geometric series
 
 
 Pbrown : Pattern {
-	var <>lo=0.0, <>hi=1.0, <>step=0.125, <>length;
-	*new { arg lo, hi, step, length=inf;
+	var <>lo, <>hi, <>step, <>length;
+	*new { arg lo=0.0, hi=1.0, step=0.125, length=inf;
 		^super.newCopyArgs(lo, hi, step, length)
 	}
 	storeArgs { ^[lo,hi,step,length] }
