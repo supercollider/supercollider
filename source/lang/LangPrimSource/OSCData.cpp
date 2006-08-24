@@ -493,8 +493,12 @@ int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 	if (gUDPport == 0) return errFailed;
 	int opt;
 	socklen_t optlen = sizeof(opt);
+#ifdef SC_WIN32
+	if (getsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, (char *)&opt, &optlen) == -1)
+#else
 	if (getsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, &opt, &optlen) == -1)
-		return errFailed;
+#endif
+	return errFailed;
 	SetBool(g->sp, opt);
 	return errNone;
 }
@@ -504,7 +508,11 @@ int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 {
 	if (gUDPport == 0) return errFailed;
 	int opt = IsTrue(g->sp);
+#ifdef SC_WIN32
+	if (setsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, (char *)&opt, sizeof(opt)) == -1)
+#else
 	if (setsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, &opt, sizeof(opt)) == -1)
+#endif
 		return errFailed;
 	return errNone;
 }

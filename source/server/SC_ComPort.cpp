@@ -387,7 +387,11 @@ void* SC_UdpInPort::Run()
 		}
 		
 		packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
+#ifdef SC_WIN32
+		int size = recvfrom(mSocket, (char *)mReadBuf, kMaxUDPSize , 0,
+#else
 		int size = recvfrom(mSocket, mReadBuf, kMaxUDPSize , 0,
+#endif
 								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
 		
 		if (size > 0) {
