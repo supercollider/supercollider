@@ -855,8 +855,8 @@ void PV_PhaseShift90_next(PV_Unit *unit, int inNumSamples)
 		
 	for (int i=0; i<numbins; ++i) {
 		float temp = p->bin[i].real;
-		p->bin[i].real = p->bin[i].imag;
-		p->bin[i].imag = -temp;
+		p->bin[i].real = -p->bin[i].imag;
+		p->bin[i].imag = temp;
 	}
 }
 
@@ -874,8 +874,8 @@ void PV_PhaseShift270_next(PV_Unit *unit, int inNumSamples)
 		
 	for (int i=0; i<numbins; ++i) {
 		float temp = p->bin[i].real;
-		p->bin[i].real = -p->bin[i].imag;
-		p->bin[i].imag = temp;
+		p->bin[i].real = p->bin[i].imag;
+		p->bin[i].imag = -temp;
 	}
 }
 
