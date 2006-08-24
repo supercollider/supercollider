@@ -950,6 +950,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			// strip out "file:" so as to have nice portable relative urls
 			[html replaceOccurrencesOfString: @"file:///" withString: @"" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])];
 			
+			// replace "%20" with " " as psycollider doesn't like the former
+			[html replaceOccurrencesOfString: @"%20" withString: @" " options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])];
+			
 			// NSTextView doesn't like <b> tags within spans, and unfortunately the export outputs bold underlines that way.
 			// The following figures out what the span name is for underlining, and fixes this
 			fixHTMLBoldUnderline(html);
