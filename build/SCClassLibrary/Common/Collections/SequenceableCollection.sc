@@ -740,15 +740,17 @@ SequenceableCollection : Collection {
 	sortMap { arg function;
 		^this.sort({| a, b | function.value(a) <= function.value(b) })
 	}
-	median { arg function;
-		var sorted, index;
-		sorted = this.sort(function);
+	sortedMedian { 
+		var index;
 		if (this.size.odd) {
-			^sorted.middle 
+			^this.middle 
 		}{
-			index = sorted.middleIndex;
-			^(sorted[index] + sorted[index+1]) / 2;
+			index = this.middleIndex;
+			^(this[index] + this[index+1]) / 2;
 		}
+	}
+	median { arg function;
+		^this.sort(function).sortedMedian
 	}
 	
 	quickSort { arg function; 
