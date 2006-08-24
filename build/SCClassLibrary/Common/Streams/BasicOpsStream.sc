@@ -82,8 +82,8 @@ NAryOpStream : Stream {
 		^super.newCopyArgs(operator, a).arglist_(arglist)
 	}
 	arglist_ { arg list;
-		isNumeric = list.every({ arg item; item.isNumber }); // optimization
-		arglist = list;
+		// optimization
+		isNumeric = list.every({ arg item; item.isNumber or: {item.class === Symbol} }); 		arglist = list;
 	}
 	next { arg inval;
 		var vala, values;

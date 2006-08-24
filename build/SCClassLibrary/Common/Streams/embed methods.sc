@@ -54,22 +54,24 @@
 	embedInStream { arg inval;
 		var streamA, streamlist, vala, values, isNumeric;
 		streamA = a.asStream;
-		isNumeric = arglist.every({ arg item; item.isNumber }); // optimization
+		isNumeric = arglist.every { arg item; 
+			item.isNumber or: {item.class === Symbol} }; // optimization
 		
 		if (isNumeric) {
 			loop {
-				vala = a.next;
+				vala = streamA.next(inval);
 				if (vala.isNil) { ^inval };
 				inval = yield(vala.performList(operator, arglist));
 			}
 		}{		
 			streamlist = arglist.collect({ arg item; item.asStream });
 			loop {
-				vala = a.next;
+				vala = streamA.next(inval);
 				if (vala.isNil) { ^inval };
-				values = streamlist.collect({ arg item; var result;
-					result = item.next;
+				values = streamlist.collect({ arg item;
+					var result = item.next;
 					if (result.isNil) { ^inval };
+					result
 				});
 				inval = yield(vala.performList(operator, values));
 			}
