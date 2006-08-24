@@ -282,6 +282,15 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 		throw std::runtime_error("failed to create udp socket\n");
 	}
 
+	{
+		int bufsize = 65536;
+#ifdef SC_WIN32
+		setsockopt(mSocket, SOL_SOCKET, SO_SNDBUF, (char*)&bufsize, sizeof(bufsize));
+#else
+		setsockopt(mSocket, SOL_SOCKET, SO_SNDBUF, &bufsize, sizeof(bufsize));
+#endif
+	}
+	
 	//scprintf("@@@ sizeof(ReplyAddress) %d\n", sizeof(ReplyAddress));
 
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
