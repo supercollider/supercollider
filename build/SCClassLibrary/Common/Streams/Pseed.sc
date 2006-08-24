@@ -28,46 +28,6 @@ Pseed : FilterPattern {
 
 }
 
-// cx: temporarily putting this here
-
-PdegreeToKey : FilterPattern {
-	
-	var <>scale,<>stepsPerOctave;
-	
-	*new { arg pattern,scale, stepsPerOctave=12;
-		^super.new(pattern).scale_(scale).stepsPerOctave_(stepsPerOctave)
-	}
-	storeArgs { ^[pattern,scale,stepsPerOctave ] }
-	embedInStream { arg inval;
-		var size, scaleDegree;
-		var mestream,scstream,sc,me;
-		if(scale.isSequenceableCollection,{
-
-			size = scale.size;
-			mestream = pattern.asStream;
-			while({ 
-				(me = mestream.next).notNil
-			},{
-				me = me.asInteger;
-				inval = ((stepsPerOctave * (me div: size)) + scale.wrapAt(me)).yield
-			});
-			^inval
-		},{		
-			
-			mestream = pattern.asStream;
-			scstream = scale.asStream;
-			while({ 
-				me = mestream.next;
-				sc = scstream.next;
-				me.notNil
-			},{
-				inval = me.degreeToKey(sc,stepsPerOctave).yield
-			})
-			^inval;
-		});
-	}
-}
-
 // classical indian scale pattern. no special pakads (movements) or vakras (twists) are applied.
 // the pakad is often a natural consequence of the notes of arohana / avarohana 
 // (ascending and descending structures).  This is the purpose of this pattern
@@ -84,24 +44,22 @@ Pavaroh : FilterPattern {
 	storeArgs { ^[pattern, aroh, avaroh, stepsPerOctave ] }
 	
 	embedInStream { arg inval;
-		var mestream, me, melast, scale, size;
-		mestream = pattern.asStream;
-		melast = 0;
-		while({ 
+		var me, melast = 0, scale;
+		var mestream = pattern.asStream;
+
+		while {
 			(me = mestream.next).notNil
-		},{
-			me = me.asInteger;
-			scale = if(me >= melast, { aroh }, { avaroh });
+		} {
+			scale = if(me >= melast) { aroh } { avaroh };
 			melast = me;
-			size = scale.size;
-			inval = ((stepsPerOctave * (me div: size)) + scale.wrapAt(me)).yield
-		});
+			inval = me.degreeToKey(scale, stepsPerOctave).yield
+		};
 		^inval
 
 	}
 	
-	
 }
+
 
 
 

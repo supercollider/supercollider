@@ -179,6 +179,12 @@ Pnaryop : Pattern {
 	}
 }
 
+PdegreeToKey : Pnaryop {
+	*new { arg pattern, scale, stepsPerOctave=12; 
+		^super.new('degreeToKey', pattern, [scale, stepsPerOctave])
+	}
+}
+
 Pchain : Pattern {
 	var <>patterns;
 	*new { arg ... patterns;
@@ -399,7 +405,7 @@ Pgeom : Pattern {	// geometric series
 
 
 Pbrown : Pattern {
-	var <>lo, <>hi, <>step, <>length;
+	var <>lo=0.0, <>hi=1.0, <>step=0.125, <>length;
 	*new { arg lo, hi, step, length=inf;
 		^super.newCopyArgs(lo, hi, step, length)
 	}
@@ -412,11 +418,11 @@ Pbrown : Pattern {
 		});
 		^inval;
 	}
-}	
+}
 
 Pwhite : Pattern {
 	var <>lo, <>hi, <>length;
-	*new { arg lo, hi, length=inf;
+	*new { arg lo=0.0, hi=1.0, length=inf;
 		^super.newCopyArgs(lo, hi, length)
 	}
 	storeArgs { ^[lo,hi,length] }
