@@ -1,5 +1,5 @@
-%token	NAME INTEGER FLOAT ACCIDENTAL SYMBOL STRING ASCII PRIMITIVENAME CLASSNAME CURRYARG
-%token  VAR ARG CLASSVAR CONST 
+%token	NAME INTEGER SC_FLOAT ACCIDENTAL SYMBOL STRING ASCII PRIMITIVENAME CLASSNAME CURRYARG
+%token  VAR ARG CLASSVAR SC_CONST
 %token	NILOBJ TRUEOBJ FALSEOBJ
 %token	PSEUDOVAR
 %token  ELLIPSIS DOTDOT PIE BEGINCLOSEDFUNC
@@ -90,7 +90,7 @@ classvardecl	: CLASSVAR rwslotdeflist ';'
 					{ $$ = (long)newPyrVarListNode((PyrVarDefNode*)$2, varClass); }
 				| VAR rwslotdeflist ';'
 					{ $$ = (long)newPyrVarListNode((PyrVarDefNode*)$2, varInst); }
-				| CONST constdeflist ';'
+				| SC_CONST constdeflist ';'
 					{ $$ = (long)newPyrVarListNode((PyrVarDefNode*)$2, varConst); }
 				;
 															
@@ -1495,8 +1495,8 @@ integer	: INTEGER { $$ = zzval; }
 			} 
 	;
 	
-floatr	: FLOAT { $$ = zzval; }
-		| '-' FLOAT %prec UMINUS 
+floatr	: SC_FLOAT { $$ = zzval; }
+		| '-' SC_FLOAT %prec UMINUS 
 			{
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 

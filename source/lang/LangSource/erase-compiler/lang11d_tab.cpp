@@ -6,7 +6,7 @@
 
 #define	NAME	257
 #define	INTEGER	258
-#define	FLOAT	259
+#define	SC_FLOAT	259
 #define	ACCIDENTAL	260
 #define	SYMBOL	261
 #define	STRING	262
@@ -17,7 +17,7 @@
 #define	VAR	267
 #define	ARG	268
 #define	CLASSVAR	269
-#define	CONST	270
+#define	SC_CONST	270
 #define	NILOBJ	271
 #define	TRUEOBJ	272
 #define	FALSEOBJ	273
@@ -289,26 +289,26 @@ static const short yyrline[] = { 0,
 #if YYDEBUG != 0 || defined (YYERROR_VERBOSE)
 
 static const char * const yytname[] = {   "$","error","$undefined.","NAME","INTEGER",
-"FLOAT","ACCIDENTAL","SYMBOL","STRING","ASCII","PRIMITIVENAME","CLASSNAME","CURRYARG",
-"VAR","ARG","CLASSVAR","CONST","NILOBJ","TRUEOBJ","FALSEOBJ","PSEUDOVAR","ELLIPSIS",
-"DOTDOT","PIE","BEGINCLOSEDFUNC","BADTOKEN","INTERPRET","BEGINGENERATOR","LEFTARROW",
-"WHILE","':'","'='","BINOP","KEYBINOP","'-'","'<'","'>'","'*'","'+'","'|'","READWRITEVAR",
-"'.'","'`'","UMINUS","'{'","'}'","'['","']'","';'","','","'('","')'","'^'","'~'",
-"'#'","root","classes","classextensions","classdef","classextension","optname",
-"superclass","classvardecls","classvardecl","methods","methoddef","optsemi",
-"optcomma","optequal","funcbody","cmdlinecode","methbody","primitive","retval",
-"funretval","blocklist1","blocklistitem","blocklist","msgsend","generator","@1",
-"@2","nextqual","qual","expr1","valrangex1","valrangeassign","valrangexd","valrange2",
-"valrange3","expr","adverb","exprn","exprseq","arrayelems","arrayelems1","arglist1",
-"arglistv1","keyarglist1","keyarg","optkeyarglist","mavars","mavarlist","slotliteral",
-"blockliteral","pushname","pushliteral","listliteral","block","funcvardecls",
-"funcvardecls1","funcvardecl","argdecls","constdeflist","constdef","slotdeflist0",
-"slotdeflist","slotdef","vardeflist0","vardeflist","vardef","dictslotdef","dictslotlist1",
-"dictslotlist","rwslotdeflist","rwslotdef","dictlit","dictlit2","litdictslotdef",
-"litdictslotlist1","litdictslotlist","listlit","listlit2","literallistc","literallist1",
-"rwspec","rspec","integer","floatr","accidental","pie","floatp","name","classname",
-"primname","trueobj","falseobj","nilobj","ascii","symbol","string","pseudovar",
-"binop","keybinop","binop2","curryarg", NULL
+"SC_FLOAT","ACCIDENTAL","SYMBOL","STRING","ASCII","PRIMITIVENAME","CLASSNAME",
+"CURRYARG","VAR","ARG","CLASSVAR","SC_CONST","NILOBJ","TRUEOBJ","FALSEOBJ","PSEUDOVAR",
+"ELLIPSIS","DOTDOT","PIE","BEGINCLOSEDFUNC","BADTOKEN","INTERPRET","BEGINGENERATOR",
+"LEFTARROW","WHILE","':'","'='","BINOP","KEYBINOP","'-'","'<'","'>'","'*'","'+'",
+"'|'","READWRITEVAR","'.'","'`'","UMINUS","'{'","'}'","'['","']'","';'","','",
+"'('","')'","'^'","'~'","'#'","root","classes","classextensions","classdef",
+"classextension","optname","superclass","classvardecls","classvardecl","methods",
+"methoddef","optsemi","optcomma","optequal","funcbody","cmdlinecode","methbody",
+"primitive","retval","funretval","blocklist1","blocklistitem","blocklist","msgsend",
+"generator","@1","@2","nextqual","qual","expr1","valrangex1","valrangeassign",
+"valrangexd","valrange2","valrange3","expr","adverb","exprn","exprseq","arrayelems",
+"arrayelems1","arglist1","arglistv1","keyarglist1","keyarg","optkeyarglist",
+"mavars","mavarlist","slotliteral","blockliteral","pushname","pushliteral","listliteral",
+"block","funcvardecls","funcvardecls1","funcvardecl","argdecls","constdeflist",
+"constdef","slotdeflist0","slotdeflist","slotdef","vardeflist0","vardeflist",
+"vardef","dictslotdef","dictslotlist1","dictslotlist","rwslotdeflist","rwslotdef",
+"dictlit","dictlit2","litdictslotdef","litdictslotlist1","litdictslotlist","listlit",
+"listlit2","literallistc","literallist1","rwspec","rspec","integer","floatr",
+"accidental","pie","floatp","name","classname","primname","trueobj","falseobj",
+"nilobj","ascii","symbol","string","pseudovar","binop","keybinop","binop2","curryarg", NULL
 };
 #endif
 
