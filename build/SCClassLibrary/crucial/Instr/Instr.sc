@@ -23,6 +23,13 @@ Instr  {
 	*put { arg instr;
 		^Library.putList([this,this.symbolizeName(instr.name),instr].flatten )
 	}
+	// bulk insert an orchestra of instr
+	*orc { arg name, pairs, outSpec = \audio;
+		forBy(0,pairs.size-1,2,	{ arg i;
+			Instr( [name,pairs@i ],pairs@(i+1),nil,outSpec)
+		})
+	}
+	
 	*at { arg  name;
 		var search;
 		search = this.objectAt(name);
@@ -122,7 +129,22 @@ Instr  {
 		synthDef = this.asSynthDef;
 		synthDef.writeDefFile(dir);
 	}
-
+	// for use in patterns
+	store { 
+		var args;
+		args = this.specs.collect({ arg spec,i;
+					if(spec.rate == \control or: spec.rate == \stream,{
+						IrNumberEditor(this.initAt(i),spec);
+					},{
+						spec.defaultControl(this.initAt(i))
+					})
+				}); 
+			^this.asSynthDef(args).store
+	}
+	asDefName {
+		^this.store.name
+	}
+	
 	test { arg ... args;
 		var p;
 		p = Patch(this.name,args);
@@ -150,9 +172,12 @@ Instr  {
 		});
 		^Library.global.prNestedValuesFromDict(startAt).flat
 	}
-	*selectByOutputSpec { arg outSpec;
+	*selectBySpec { arg outSpec;
 		outSpec = outSpec.asSpec;
 		^this.leaves.select({ |ins| ins.outSpec == outSpec })
+	}
+	*chooseBySpec { arg outSpec;
+		^this.selectBySpec(outSpec).choose
 	}
 	
 	//private
@@ -240,6 +265,7 @@ Instr  {
 		(this.dir ++ "*").pathMatch.do({ arg path; path.loadPath(false) });
 		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr/*").pathMatch;
 		quarkInstr.do({ |path|
+			path.debug("loading");
 			path.loadPath(true);
 		});
 	}
@@ -290,10 +316,15 @@ Instr  {
 
 	//guiClass { ^InstrGui }
 	guiBody { arg layout;
-		var defs,tf;
+		var defs,tf,source,lines,h,w;
+		source = this.func.def.sourceCode;
+		lines = source.split($\n);
+		w = lines.maxValue({ |l| l.size }) * 10;
+		h = lines.size * 20;
 		
-		tf = SCTextField(layout,Rect(0,0,500,200));
-		tf.string = this.func.def.sourceCode;
+		tf = SCTextField(layout,Rect(0,0,w,h));
+		tf.string = source;
+		
 		if(path.notNil,{
 			ActionButton(layout.startRow,"open file...",{ path.openTextFile });
 		});
