@@ -53,11 +53,11 @@ NumberEditor : Editor {
 	}
 	spec_ { arg aspec;
 		spec = aspec.asSpec;
-		value = spec.constrain(value);
+		this.value = spec.constrain(value);
 		this.changed(\spec);
 	}
 	setUnmappedValue { arg unipolar;
-		value = spec.map(unipolar);
+		this.value = spec.map(unipolar);
 		this.changed;
 		^value
 	}
