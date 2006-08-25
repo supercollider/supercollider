@@ -10,9 +10,9 @@ SelectButtonSet  {
 		action,				// action.value(selectedIndex,this)
 		color,
 		selectedColor,
-		x=20,y=20;
+		width=20,height=20;
 		
-		^super.new.init(layout,x,y,labelArrayOrQnty,action,color,selectedColor)
+		^super.new.init(layout.asFlowView,width,height,labelArrayOrQnty,action,color,selectedColor)
 	}
 	
 	init { arg layout,x,y,arglabelArray,argaction,
