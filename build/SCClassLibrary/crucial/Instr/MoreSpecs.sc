@@ -16,7 +16,8 @@ AudioSpec : Spec {
 			\audio1 -> mono,
 			\audio2 -> mono,
 			\stereo -> stereo,
-			\mono -> mono
+			\mono -> mono,
+			\audioEvent -> stereo
 			];
 		)
 	}
@@ -30,6 +31,7 @@ AudioSpec : Spec {
 	}
 }
 
+// an array of mono/stereo signals
 MultiTrackAudioSpec : AudioSpec {
 	var <>tracks;
 	*new { arg tracks=2,numChannels=2;
@@ -38,6 +40,24 @@ MultiTrackAudioSpec : AudioSpec {
 	storeArgs { ^[tracks,numChannels] }
 }
 
+
+EffectSpec : AudioSpec {
+	var <>numInputs;
+	*new { arg numChannels=2,numInputs=1;
+		^super.new(numChannels).numInputs_(numInputs)
+	}
+
+	*initClass {
+		specs.addAll(
+		 [
+			\monoEffect -> EffectSpec(1),
+			\stereoEffect -> EffectSpec(2),
+			\dualAudioEffect -> EffectSpec(2,2),
+			\dualStereoEffect -> EffectSpec(2,2)
+			];
+		)
+	}
+}
 
 
 TrigSpec : ControlSpec {
