@@ -140,8 +140,8 @@ History { 		// adc 2006, Birmingham.
 		^str;
 	}
 	
-	*document {
-		var docTitle = Date.getDate.format("%Y-%d-%e-%Hh%m-History");
+	*document { arg title="";
+		var docTitle = title ++ Date.getDate.format("%Y-%d-%e-%Hh%m-History");
 		Document.new(docTitle, this.storyString)
 			.path_(docTitle); // don't lose title.
 	}

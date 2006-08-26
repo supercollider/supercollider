@@ -81,13 +81,13 @@ ProxySpace : LazyEnvir {
 		});
 	}
 	
-	ar { arg key, numChannels, offset=0;
+	ar { arg key=\out, numChannels, offset=0;
 		^this.use({ arg envir;
 			this.at(key).ar(numChannels, offset)
 		})
 	}
 	
-	kr { arg key, numChannels, offset=0;
+	kr { arg key=\out, numChannels, offset=0;
 		^this.use({ arg envir;
 			this.at(key).kr(numChannels, offset)
 		})
