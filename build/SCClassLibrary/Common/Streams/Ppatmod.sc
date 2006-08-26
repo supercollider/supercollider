@@ -14,11 +14,12 @@ Plazy : Pattern {
 }
 
 PlazyEnvir : Plazy {
+	var <>passEvent=false;
 	
 	embedInStream { arg inval;
 		^if(inval.isNil) { func.value.embedInStream(inval) } {
 			inval.use { 
-				func.valueEnvir.embedInStream(inval) 
+				if(passEvent) { func.valueEnvir(inval) } { func.valueEnvir }.embedInStream(inval) 
 			}
 		}
 	}
@@ -26,9 +27,9 @@ PlazyEnvir : Plazy {
 
 
 PlazyEnvirN : PlazyEnvir {
-	var flopFunc;
+	var genFunc;
 	
-	*new { arg func; ^super.new(func).makeFlopFunc }
+	*new { arg func; ^super.new(func).makeGenFunc }
 	
 	embedInStream { arg inval;
 		var patterns;
@@ -36,22 +37,18 @@ PlazyEnvirN : PlazyEnvir {
 			func.value.embedInStream(inval) 
 		} {
 			inval.use {
-				if(flopFunc.notNil) {
-					patterns = flopFunc.value;
-					if(patterns.size > 1) {
+				patterns = if(passEvent) { genFunc.valueEnvir(inval) } { genFunc.valueEnvir };
+			};
+			if(patterns.size > 1) {
 						Ppar(patterns).embedInStream(inval)
-					} {
-						patterns[0].embedInStream(inval)
-					}
-				} {
-					func.valueEnvir.embedInStream(inval)
-				}
+			} {
+						patterns.unbubble.embedInStream(inval)
 			}
 		}
 	}
 	// expand arguments
-	makeFlopFunc {
-		func.def.argNames !? { flopFunc = func.envirFlop }
+	makeGenFunc {
+		genFunc = if(func.def.argNames.notNil) { func.envirFlop } { func }
 	}
 
 }
