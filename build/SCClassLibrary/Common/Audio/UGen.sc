@@ -163,6 +163,7 @@ UGen : AbstractFunction {
 	outputIndex { ^0 }
 	
 	// polling support
+	/*
 	poll { arg interval = 0.1, label = "UGen:";
 		^SynthDef.wrap({
 			var id, responder;
@@ -179,6 +180,14 @@ UGen : AbstractFunction {
 			this;
 		})
 	}
+	*/
+	poll {arg trig = 0.1, label = "Ugen", trigid = -1;
+		(trig.rate == 'audio').if({
+			^Poll.ar(trig, this, label, trigid);
+			}, {
+			^Poll.kr(trig, this, label, trigid)
+			})
+		}
 	
 	// PRIVATE
 	// function composition
