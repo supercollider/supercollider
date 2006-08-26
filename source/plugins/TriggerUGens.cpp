@@ -43,6 +43,16 @@ struct SendTrig : public Unit
 	float m_prevtrig;
 };
 
+
+struct Poll : public Unit
+{
+	int m_samplesRemain, m_intervalSamples;
+	float m_trig;
+	float m_lastPoll, m_id;
+	char *m_id_string; 
+};
+
+
 struct ToggleFF : public Unit
 {
 	float mLevel;
@@ -199,7 +209,6 @@ struct PauseSelfWhenDone : public Unit
 	Unit *m_src;
 };
 
-
 extern "C"
 {
 	void load(InterfaceTable *inTable);
@@ -215,6 +224,11 @@ void Trig_next_k(Trig *unit, int inNumSamples);
 void SendTrig_Ctor(SendTrig *unit);
 void SendTrig_next(SendTrig *unit, int inNumSamples);
 void SendTrig_next_aka(SendTrig *unit, int inNumSamples);
+
+void Poll_Ctor(Poll* unit);
+void Poll_next_aa(Poll *unit, int inNumSamples);
+void Poll_next_ak(Poll *unit, int inNumSamples);
+void Poll_next_kk(Poll *unit, int inNumSamples);
 
 void SetResetFF_Ctor(SetResetFF *unit);
 void SetResetFF_next_a(SetResetFF *unit, int inNumSamples);
@@ -526,6 +540,78 @@ void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
 		prevtrig = curtrig;
 	);
 	unit->m_prevtrig = prevtrig;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Poll_Ctor(Poll* unit)
+{
+	if (INRATE(0) == calc_FullRate){
+		if (INRATE(1) == calc_FullRate){
+			SETCALC(Poll_next_aa);
+			} else {
+			SETCALC(Poll_next_ak);
+			}
+		} else {
+		SETCALC(Poll_next_kk);
+		}
+
+	unit->m_trig = IN0(0);
+	unit->m_id = IN0(3); // number of chars in the id string 
+	unit->m_id_string = (char*)RTAlloc(unit->mWorld, ((int)unit->m_id + 1) * sizeof(char));	
+	for(int i = 0; i < (int)unit->m_id; i++){
+		unit->m_id_string[i] = (char)IN0(4+i);
+		};
+	unit->m_id_string[(int)unit->m_id] = '\0';
+
+	Poll_next_kk(unit, 1);
+
+}
+
+void Poll_Dtor(Poll* unit)
+{
+	RTFree(unit->mWorld, unit->m_id_string);
+}
+
+void Poll_next_aa(Poll *unit, int inNumSamples){
+	float* in = IN(1);
+	float* trig = IN(0);
+	float lasttrig = unit->m_trig;
+	for(int i = 0; i < inNumSamples; i++){
+		if((lasttrig <= 0.0) && (trig[i] > 0.0)){
+			Print("%s: %g\n", unit->m_id_string, in[i]);
+			if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in[i]);
+			}
+		lasttrig = trig[i];
+		}
+	unit->m_trig = lasttrig;
+}
+
+void Poll_next_kk(Poll *unit, int inNumSamples){
+	float in = IN0(1);
+	float trig = IN0(0);
+	if((unit->m_trig <= 0.0) && (trig > 0.0)){
+		Print("%s: %g\n", unit->m_id_string, in);
+		if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in);
+		}
+	unit->m_trig = trig;
+}
+
+
+void Poll_next_ak(Poll *unit, int inNumSamples){
+	float in = IN0(1);
+	float* trig = IN(0);
+	float lasttrig = unit->m_trig;
+	for(int i = 0; i < inNumSamples; i++){
+		if((lasttrig <= 0.0) && (trig[i] > 0.0)){
+			Print("%s: %g\n", unit->m_id_string, in);
+			if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in);
+			}
+		lasttrig = trig[i];
+		}
+	unit->m_trig = lasttrig;
 }
 
 
@@ -2151,6 +2237,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Trig1);
 	DefineSimpleUnit(Trig);
 	DefineSimpleUnit(SendTrig);
+	DefineDtorUnit(Poll);
 	DefineSimpleUnit(ToggleFF);
 	DefineSimpleUnit(SetResetFF);
 	DefineSimpleUnit(Latch);
