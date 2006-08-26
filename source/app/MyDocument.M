@@ -1050,7 +1050,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) [initTextView setDefaultTabsTo: 28.0f];
     [text endEditing];
 	//NSLog([[text paragraphs] description]);
- 	if ([extension isEqualToString: @"sc"]) {
+ 	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
 		[initTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
 		SyntaxColorize(initTextView);
 		//[textView didChangeText];
