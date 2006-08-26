@@ -52,6 +52,9 @@ InstrSpawner : Patch {
 	}
 	spawnNext {
 		if((delta = this.deltaStream.next(this)).isNil,{ ^false });
+		if(delta < 0.001,{
+			Error("Delta too fast, stopping." + delta).throw;
+		});
 		// only sending secret def args the first time !
 		// if sample changes, need to put into sendArray
 		streams.do({ arg s,i;

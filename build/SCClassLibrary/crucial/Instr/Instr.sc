@@ -197,7 +197,7 @@ Instr  {
 	*objectAt { arg name;
 		var symbolized,search,path,pathParts,rootPath;
 		symbolized = Instr.symbolizeName(name);
-		search = Library.atList([Instr] ++ symbolized);
+		search = Library.atList([this] ++ symbolized);
 		if(search.notNil,{ ^search });
 
 		// look for a file
@@ -207,7 +207,7 @@ Instr  {
 		path.loadPath(false);
 		
 		// now see if its there
-		^Library.atList([Instr] ++ symbolized);
+		^Library.atList([this] ++ symbolized);
 		// else it returns nil : not found
 	}
 	*findPath { arg symbolized;
