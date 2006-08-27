@@ -1015,6 +1015,10 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 	float preLevel_slope = CALCSLOPE(preLevel, unit->m_preLevel);
 	
 	if (loop) {
+		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
+			unit->mDone = false;
+			writepos = (int32)ZIN0(1);
+		}
 		if (writepos < 0) writepos = bufSamples - bufChannels;
 		else if (writepos >= (int32)bufSamples) writepos = 0;
 		if (run > 0.f) {
@@ -1189,6 +1193,10 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 	int32 writepos = unit->m_writepos;
 	
 	if (loop) {
+		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
+			unit->mDone = false;
+			writepos = (int32)ZIN0(1);
+		}
 		if (writepos < 0) writepos = bufSamples - bufChannels;
 		else if (writepos >= (int32)bufSamples) writepos = 0;
 		if (run > 0.f) {
