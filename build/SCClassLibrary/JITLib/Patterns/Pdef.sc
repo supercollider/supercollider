@@ -2,7 +2,7 @@
 // contains numerical / value patterns
 
 PatternProxy : Pattern {
-	var <pattern, <envir;
+	var <source, <pattern, <envir;
 	var <>clock, <>quant, <>condition=true, reset;
 				// quant new pattern insertion. can be [quant, offset]
 				// in EventPatternProxy it can be [quant, offset, onset]
@@ -20,18 +20,17 @@ PatternProxy : Pattern {
 	init { arg src;
 		clock = TempoClock.default; 
 		quant = this.class.defaultQuant;
-		this.source = src ?? { this.class.default }
+		this.source = src;
 	}
 	
 	constrainStream { ^pattern.asStream }
 	
 	source_ { arg obj; 
 		var pat = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
+		if (obj.isNil) { pat = this.class.default }; 
 		if(quant.isNil) { pattern = pat } { this.sched { pattern = pat } }
 	}
-	
-	source { ^pattern }
-	
+		
 	defaultEvent {
 	 	// default value: safe time value (better throw error?)
 		if(envir.isNil) { envir = this.class.event };
@@ -238,20 +237,19 @@ Pdefn : PatternProxy {
 		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
 	}
 	storeArgs { ^[key] } // assume it was created globally
-	
 }
 
 
 // contains time patterns (tasks)
 
 TaskProxy : PatternProxy {
-	var <source;
 	var <player, <>playQuant;
 	classvar <>defaultQuant=1.0;
 	
 		
 	source_ { arg obj;
 			pattern = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
+			if (obj.isNil) { pattern = this.class.default }; 
 			this.wakeUp;
 			source = obj;
 	}
@@ -272,7 +270,6 @@ TaskProxy : PatternProxy {
 			if(this.isPlaying) { this.play(quant:playQuant) }	}
 	
 	isPlaying { ^player.notNil and: { player.wasStopped.not } }
-	isActive { ^player.isPlaying }
 	
 	isEventPattern {^true }
 	
@@ -293,17 +290,29 @@ TaskProxy : PatternProxy {
 		^PauseStream.new(this.asStream).play(clock, doReset, quant ? this.quant)
 	}
 	
-	play { arg argClock, doReset=true, quant;
+	play { arg argClock, doReset=false, quant;
 		playQuant = quant ? this.quant;
 		if(player.isNil) { 
 			player = this.playOnce(argClock, doReset, playQuant);
 		} {
-			player.reset;
+				// resets  when stream has ended or after pause/cmd-period:
+			if (player.streamHasEnded or: player.wasStopped) { doReset = true };
+			
 			if(player.isPlaying.not) { 
 				player.play(argClock, doReset, playQuant);
+			} { 
+				if (doReset) { player.reset };
 			}
 		}
 	}
+			// check playing states: 
+	isActive { ^this.isPlaying and: { player.streamHasEnded.not } }
+	hasSource { ^source.notNil }
+	hasEnvir { ^envir.notNil }
+	hasPlayer { ^player.notNil }
+	hasEnded { ^player.isNil or: { player.streamHasEnded } }
+	isPaused { ^player.isNil or: { player.wasStopped } }
+	canPause { ^player.notNil and: { player.streamHasEnded.not } }
 	
 	fork { arg clock, quant;
 		^this.asStream.play(clock ? thisThread.clock, quant)
@@ -351,10 +360,13 @@ EventPatternProxy : TaskProxy {
 	var <>fadeTime;
 	classvar <>defaultQuant=1.0;
 	
-	source_ { arg item;
-		if(item.isKindOf(Function)) // allow functions to be passed in
-			{ source = item; pattern = PlazyEnvirN(item) } 
-			{ pattern = source = item };
+	source_ { arg obj;
+		if(obj.isKindOf(Function)) // allow functions to be passed in
+			{ source = obj; pattern = PlazyEnvirN(obj) } 
+			{ if (obj.isNil) 
+				{ pattern = this.class.default }
+				{ pattern = source = obj }
+			};
 		envir !? { pattern = pattern <> envir };
 		this.wakeUp;
 	}

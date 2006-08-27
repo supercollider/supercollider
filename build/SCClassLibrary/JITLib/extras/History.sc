@@ -1,15 +1,40 @@
 History { 		// adc 2006, Birmingham. 
 
 	classvar <>forwardFunc, <date, <startTimeStamp, <time0, function;
-	classvar <lines, <lineShorts;
+	classvar <lines, <lineShorts, <>displayTime = 0.1;
 	classvar <>title = "History repeats";
 	classvar <w, <bounds, <doc, pop, startbut;
 	classvar <docFlag = \sameDoc, <hasMovedOn = true;
 	classvar <>verbose = false, <>recordLocally = true, <started=false;
-	classvar <>saveFolder = "~/Desktop/", <>recordLocally = true;
+	classvar <>saveFolder = "~/Desktop/";
+	classvar <player;
 	
 	*initClass { 
+		Class.initClassTree(TaskProxy);
 		bounds = Rect(0, 0, 300, 200); 
+		
+		player = TaskProxy.new.source_({ |e| 
+			var lineIndices; 
+			var lastTimePlayed;
+			
+			lineIndices = (e.endLine, e.endLine - 1 .. e.startLine); 
+			
+			lineIndices.do { |index| 
+				var time, id, code, waittime;
+				#time, id, code = lines[index];
+				waittime = time - (lastTimePlayed ? time);
+			//	[\waittime, waittime].postln;
+				lastTimePlayed = time;
+				waittime.wait; 
+				if (e.verbose) { code.postln };
+				code.compile.value;	// so it does not change cmdLine.
+			};
+			0.5.wait;
+			"history is over.".postln;
+		});
+		
+		player.set(\startLine, 0, \endLine, 0);
+		
 		this.clear;
 	}
 	*clear { 
@@ -239,13 +264,9 @@ History { 		// adc 2006, Birmingham.
 		}; 
 		hasMovedOn = true;
 		now = (Main.elapsedTime - time0);
-//		lineStr.postcs;
-//		if (lineStr.first == $\n) { lineStr.drop(1) };
-//		if (lineStr.first == $\n) { lineStr.drop(-1) };
-//		lineStr.postcs;
 		
 		lines.addFirst([ now, id, lineStr ]);
-		lineShorts.addFirst( "" + now.round(1) + "-" + id + "-" + lineStr.keep(50) );
+		lineShorts.addFirst( "" + now.round(displayTime) + "-" + id + "-" + lineStr.keep(50) );
 	}
 	
 	*removeAt { |index| 
@@ -280,12 +301,21 @@ History { 		// adc 2006, Birmingham.
 	*loadCS { |path| 
 		var file, ll;
 		protect {
-			file = File(path.standardizePath,"r");
+			file = File(path.standardizePath, "r");
 			ll = file.readAllString;
 		} {
 			file.close;
 		};
 		ll !? { lines = ll.compile.value };	
 	}
+	
+	*play { |start=0, end, verbose=true| 	// line numbers; 
+						// starting from past 0 may not work.
+		start = start.clip(0, lines.lastIndex); 
+		end = (end ? lines.lastIndex).clip(0, lines.lastIndex); 
 		
+		player.set(\startLine, start, \endLine, end, \verbose, verbose); 
+		player.play;
+	}
+
 }
