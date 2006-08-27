@@ -247,7 +247,8 @@ TaskProxy : PatternProxy {
 	var <player, <>playQuant;
 	classvar <>defaultQuant=1.0;
 	
-		
+	storeArgs { ^[source] }
+	
 	source_ { arg obj;
 			pattern = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 			if (obj.isNil) { pattern = this.class.default; source = obj; }; 
@@ -267,12 +268,7 @@ TaskProxy : PatternProxy {
 			}
 	}
 	
-	wakeUp {	
-			if(this.isPlaying) { this.play(quant:playQuant) }	}
-	
-	isPlaying { ^player.notNil and: { player.wasStopped.not } }
-	
-	isEventPattern {^true }
+	isEventPattern { ^true }
 	
 	*default { ^Pn(this.defaultValue,1) }
 	
@@ -285,6 +281,12 @@ TaskProxy : PatternProxy {
 		} { pattern }.asStream
 	}
 	
+	align { arg argQuant;
+		quant = argQuant;
+		this.source = this.source.copy;
+	}
+	
+	////////// playing interface //////////
 	
 	playOnce { arg argClock, doReset = (false), quant;
 		clock = argClock ? clock;
@@ -306,7 +308,11 @@ TaskProxy : PatternProxy {
 			}
 		}
 	}
-			// check playing states: 
+	wakeUp {	
+			if(this.isPlaying) { this.play(quant:playQuant) }	}
+	
+	// check playing states:
+	isPlaying { ^player.notNil and: { player.wasStopped.not } }
 	isActive { ^this.isPlaying and: { player.streamHasEnded.not } }
 	hasSource { ^source.notNil }
 	hasEnvir { ^envir.notNil }
@@ -325,13 +331,7 @@ TaskProxy : PatternProxy {
 	resume { arg clock, quant; 
 		player !? { player.resume(clock ? this.clock, quant ? this.quant) } 
 	}
-
-	align { arg argQuant;
-		quant = argQuant;
-		this.source = this.source.copy;
-	}
 	
-	storeArgs { ^[source] }
 }
 
 Tdef : TaskProxy {
@@ -360,6 +360,8 @@ Tdef : TaskProxy {
 EventPatternProxy : TaskProxy {
 	var <>fadeTime;
 	classvar <>defaultQuant=1.0;
+	
+	storeArgs { ^[source] }
 	
 	source_ { arg obj;
 		if(obj.isKindOf(Function)) // allow functions to be passed in
@@ -417,6 +419,7 @@ EventPatternProxy : TaskProxy {
 	outset_ { arg val; quant = quant.instill(2, val) }
 	outset { arg val; ^quant.obtain(2) }
 	
+		
 	// branching from another thread
 	
 	fork { arg argClock, quant, protoEvent; // usual fork arg order: clock, quant, ...
@@ -430,6 +433,9 @@ EventPatternProxy : TaskProxy {
 		^this.fork(argClock ? clock, quant ? this.quant, protoEvent)
 	}
 	
+	
+	////////// playing interface //////////
+	
 	// start playing //
 	
 	play { arg argClock, protoEvent, quant, doReset=true;
@@ -440,7 +446,6 @@ EventPatternProxy : TaskProxy {
 		}
 	}
 	
-	storeArgs { ^[source] }
 	
 }
 
