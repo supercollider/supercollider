@@ -28,7 +28,8 @@ PatternProxy : Pattern {
 	source_ { arg obj; 
 		var pat = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 		if (obj.isNil) { pat = this.class.default }; 
-		if(quant.isNil) { pattern = pat } { this.sched { pattern = pat } }
+		if(quant.isNil) { pattern = pat } { this.sched { pattern = pat } };
+		source = obj;
 	}
 		
 	defaultEvent {
@@ -249,7 +250,7 @@ TaskProxy : PatternProxy {
 		
 	source_ { arg obj;
 			pattern = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
-			if (obj.isNil) { pattern = this.class.default }; 
+			if (obj.isNil) { pattern = this.class.default; source = obj; }; 
 			this.wakeUp;
 			source = obj;
 	}
@@ -362,13 +363,14 @@ EventPatternProxy : TaskProxy {
 	
 	source_ { arg obj;
 		if(obj.isKindOf(Function)) // allow functions to be passed in
-			{ source = obj; pattern = PlazyEnvirN(obj) } 
+			{ pattern = PlazyEnvirN(obj) } 
 			{ if (obj.isNil) 
 				{ pattern = this.class.default }
-				{ pattern = source = obj }
+				{ pattern = source }
 			};
 		envir !? { pattern = pattern <> envir };
 		this.wakeUp;
+		source = obj;
 	}
 	
 	*defaultValue { ^Event.silent }
