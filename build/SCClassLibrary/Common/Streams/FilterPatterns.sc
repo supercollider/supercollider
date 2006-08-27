@@ -631,7 +631,7 @@ Pdiff : FilterPattern {
 			next = stream.next(event);
 			next.notNil;
 		}{
-			event = (next - (prev ? next)).yield;
+			event = (next - prev).yield;
 			prev = next;
 		}
 		^event
