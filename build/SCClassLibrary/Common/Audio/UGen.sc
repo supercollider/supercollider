@@ -181,13 +181,10 @@ UGen : AbstractFunction {
 		})
 	}
 	*/
-	poll {arg trig = 0.1, label = "Ugen", trigid = -1;
-		(trig.rate == 'audio').if({
-			^Poll.ar(trig, this, label, trigid);
-			}, {
-			^Poll.kr(trig, this, label, trigid)
-			})
-		}
+	poll { arg trig, label, trigid = -1;
+		trig = trig ?? { Impulse.perform(this.methodSelectorForRate, 10) };
+		^Poll.perform(trig.methodSelectorForRate, trig, this, label, trigid)
+	}
 	
 	// PRIVATE
 	// function composition

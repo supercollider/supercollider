@@ -1,22 +1,17 @@
 Poll : UGen {
-	*ar {arg trig, in, label = "Ugen", trigid = -1;
-		label = label.asString;
-		label = Array.fill(label.size, {arg i; label[i].ascii});
-		this.multiNewList(['audio', trig, in, trigid] ++ `label);
+	*ar { arg trig, in, label, trigid = -1;
+		this.multiNewList(['audio', trig, in, label, trigid]);
 		^in;
-		}
-		
-	*kr {arg trig, in, label = "Ugen", trigid = -1;
-		label = label.asString;
-		label = Array.fill(label.size, {arg i; label[i].ascii});
-		this.multiNewList(['control', trig, in, trigid] ++ `label);
+	}
+	*kr { arg trig, in, label, trigid = -1;
+		this.multiNewList(['control', trig, in, label, trigid]);
 		^in;
-		}
-	*new1 {arg rate, trig, in, trigid, label;
-		var labelar;
-		labelar = label.dereference.asArray;
-		^super.new.rate_(rate).addToSynth.init([trig, in, trigid, labelar.size] ++ labelar);
-		}
+	}
+	*new1 { arg rate, trig, in, label, trigid;
+		label = label ?? {  "UGen(%)".format(in.class) };
+		label = label.asString.collectAs(_.ascii, Array);
+		^super.new.rate_(rate).addToSynth.init([trig, in, trigid, label.size] ++ label);
+	}
 		
  	checkInputs { ^this.checkSameRateAsFirstInput }
 
