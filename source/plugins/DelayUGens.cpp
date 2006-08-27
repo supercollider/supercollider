@@ -979,8 +979,9 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 void RecordBuf_Ctor(RecordBuf *unit)
 {	
 	
+	uint32 numInputs = unit->mNumInputs - 7; \
 	unit->m_fbufnum = -1e9f;
-	unit->m_writepos = (int32)ZIN0(1);
+	unit->m_writepos = (int32)ZIN0(1) * numInputs;
 	unit->m_recLevel = ZIN0(2);
 	unit->m_preLevel = ZIN0(3);
 
@@ -1017,7 +1018,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 	if (loop) {
 		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 			unit->mDone = false;
-			writepos = (int32)ZIN0(1);
+			writepos = (int32)ZIN0(1) * bufChannels;
 		}
 		if (writepos < 0) writepos = bufSamples - bufChannels;
 		else if (writepos >= (int32)bufSamples) writepos = 0;
@@ -1097,7 +1098,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 	} else {
 		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 			unit->mDone = false;
-			writepos = (int32)ZIN0(1);
+			writepos = (int32)ZIN0(1) * bufChannels;
 		}
 		if (run > 0.f) {
 			int nsmps = bufSamples - writepos;
@@ -1195,7 +1196,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 	if (loop) {
 		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 			unit->mDone = false;
-			writepos = (int32)ZIN0(1);
+			writepos = (int32)ZIN0(1) * bufChannels;
 		}
 		if (writepos < 0) writepos = bufSamples - bufChannels;
 		else if (writepos >= (int32)bufSamples) writepos = 0;
@@ -1257,7 +1258,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 	} else {
 		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 			unit->mDone = false;
-			writepos = (int32)ZIN0(1);
+			writepos = (int32)ZIN0(1) * bufChannels;
 		}
 		if (run > 0.f) {
 			int nsmps = bufSamples - writepos;
