@@ -23,14 +23,14 @@ QuarkSVNRepository
 	}
 	// checkout a specific quark
 	checkout { | q, localRoot |
-		this.svn("co", this.url ++ q.path, localRoot ++  q.path)
+		this.svn("co", this.url ++ "/" ++ q.path, localRoot ++ "/" ++  q.path)
 	}
 	// check if the quarks directory is checked out yet
 	checkDir {
 		var dir;
 		dir = Platform.userAppSupportDir ++ "/quarks/";
 		if(File.exists(dir).not, {
-			"Quarks dir is not yet checked out.  Execute:".debug;
+			//"Quarks dir is not yet checked out.  Execute:".debug;
 			this.svn("co","-N",this.url,Quarks.local.path);
 			this.svn("co",this.url++"/DIRECTORY",Quarks.local.path);
 			^false;
@@ -40,12 +40,12 @@ QuarkSVNRepository
 	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not
 	updateDirectory {
 		if(this.checkDir,{
-			"To update the DIRECTORY:".debug;
+			//"To update the DIRECTORY:".debug;
 			this.svn("update",Quarks.local.path ++ "/DIRECTORY/");
 		});
 	}
 	update {
-		"To update your local quarks working copies:".debug;
+		//"To update your local quarks working copies:".debug;
 		this.svn("update",Quarks.local.path);
 	}
 	// load all specification quark objects from DIRECTORY

@@ -161,7 +161,7 @@ Quarks
 	
 	uninstall { | name |
 		var q, deps, installed;
-
+		name = name.asString;
 		if(this.isInstalled(name).not,{
 			^this
 		});
