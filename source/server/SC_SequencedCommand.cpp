@@ -479,7 +479,9 @@ bool BufAllocReadCmd::Stage2()
 		scprintf(str);
 		return false;
 	}
-	if (mNumFrames <= 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
+	if (mFileOffset < 0) mFileOffset = 0;
+	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
+	if (mNumFrames <= 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
 	
 	// alloc data size
 	mFreeData = buf->data;
@@ -575,7 +577,9 @@ bool BufReadCmd::Stage2()
 		scprintf(str);
 		return false;
 	}
-	if (mNumFrames < 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
+	if (mFileOffset < 0) mFileOffset = 0;
+	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
+	if (mNumFrames < 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
 	
 	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
 
@@ -694,7 +698,9 @@ bool BufAllocReadChannelCmd::Stage2()
 		scprintf(str);
 		return false;
 	}
-	if (mNumFrames <= 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
+	if (mFileOffset < 0) mFileOffset = 0;
+	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
+	if (mNumFrames <= 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
 	
 	if (mNumChannels == 0) {
 		// alloc data size
@@ -840,7 +846,9 @@ bool BufReadChannelCmd::Stage2()
 		return false;
 	}
 
-	if (mNumFrames < 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;	
+	if (mFileOffset < 0) mFileOffset = 0;
+	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
+	if (mNumFrames < 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
 	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
 
 	sf_seek(sf, mFileOffset, SEEK_SET);
