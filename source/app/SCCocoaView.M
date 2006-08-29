@@ -598,7 +598,12 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		NSURL * url = [[NSURL alloc] initFileURLWithPath: string];		
 		NSMovie *movie = [[NSMovie alloc] initWithURL: url byReference: YES];
 		if(!movie) return errFailed;
+		//check for current movie:
+		NSMovie *nsmovie = [mMovieView movie];
 		[mMovieView setMovie: movie];
+		if(nsmovie){
+			[nsmovie release];
+		}
 		[string release];
 		[url release];
 		/* QT: */
