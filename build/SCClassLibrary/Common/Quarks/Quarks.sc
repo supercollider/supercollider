@@ -22,6 +22,10 @@ Quarks
 	// return Quark objects for each in App Support/SuperCollider/Quarks
 	// (so actually this would list any Quarks that are in local development and not yet checked in)
 	*checkedOut { ^this.global.checkedOut }
+	*listCheckedOut {
+		this.checkedOut.do { |q| q.postDesc };
+	}
+
 	// download/update only the quark specification files from remote repos
 	// and not the quarks themselves
 	*updateDirectory { 
@@ -153,10 +157,10 @@ Quarks
 		})
 	}
 	listInstalled {
-		this.installed.do { |q| [q.name, q.summary].postln };
+		this.installed.do { |q| q.postDesc };
 	}
 	isInstalled { arg name;
-		^pathMatch( Platform.userExtensionDir ++ "/quarks/" ++ name  ).notEmpty
+		^this.installed.detect{|quark| quark.name == name }.notNil
 	}
 	
 	uninstall { | name |
