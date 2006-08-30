@@ -401,10 +401,7 @@ SequenceableCollection : Collection {
 		});
 	}
 	keyToDegree { arg scale, stepsPerOctave=12;
-		var key, n;
-		n = this div: stepsPerOctave * scale.size;
-		key = this % stepsPerOctave;
-		^scale.indexInBetween(key) + n
+		^this.collect { arg val; val.keyToDegree(scale, stepsPerOctave) }
 	}
 	
 	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
