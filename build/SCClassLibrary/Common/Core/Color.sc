@@ -112,7 +112,7 @@ Color {
 			if( sat == 0 )
 				{ r = g = b = val }
 				{ 		
-						segment = floor( hue/60 );
+						segment = floor( hue/60 )%6;
 						fraction = ( hue/60 - segment );
 						t1 = val * (1 - sat);
 						t2 = val * (1 - (sat * fraction));
