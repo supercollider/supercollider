@@ -28,7 +28,8 @@ QuarkSVNRepository
 	// check if the quarks directory is checked out yet
 	checkDir {
 		var dir;
-		dir = Platform.userAppSupportDir ++ "/quarks/";
+//		dir = Platform.userAppSupportDir ++ "/quarks/";
+		dir = Quarks.local.path.select{|c| (c != $\\)};
 		if(File.exists(dir).not, {
 			//"Quarks dir is not yet checked out.  Execute:".debug;
 			this.svn("co","-N",this.url,Quarks.local.path);
