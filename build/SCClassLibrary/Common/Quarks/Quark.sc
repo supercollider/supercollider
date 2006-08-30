@@ -23,7 +23,8 @@ QuarkDependency
 Quark
 {
 	var <name, <summary, <version, <dependencies, <tags,<>path;
-
+	var <info;
+	
 	*fromFile { | path |
 		var string = { File.use(path, "r", _.readAllString) }.try;
 		if (string.isNil) {
@@ -47,6 +48,7 @@ Quark
 		summary = this.getString(blob[\summary]);
  		version = this.getVersion(blob[\version]);
 		dependencies = this.getDependencies(blob[\dependencies]);
+		info = blob;
 		tags = ();
 	}
 
@@ -92,6 +94,22 @@ Quark
 	printOn { arg stream;
 		stream << "Quark: " << name;
 		if(version.notNil,{ stream << " [" << version << "]"; });
+	}
+	
+	postDesc {
+		var string;
+		string = name;
+		if(version.notNil,{ string = string + "[" ++ version ++ "]"; });
+		string = string 
+			++ "\n" ++ summary;
+		dependencies.notEmpty.if{
+			string = string ++ "\nDepends on";
+			dependencies.do{|dep|
+				string = string ++ "\n - " ++ dep.name;
+			};
+		};
+		string = string ++ "\n";
+		string.postln;
 	}
 }
 
