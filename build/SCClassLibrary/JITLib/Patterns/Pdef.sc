@@ -2,7 +2,7 @@
 // contains numerical / value patterns
 
 PatternProxy : Pattern {
-	var <source, <pattern, <envir;
+	var <source, <pattern, <>envir;
 	var <>clock, <>quant, <>condition=true, reset;
 				// quant new pattern insertion. can be [quant, offset]
 				// in EventPatternProxy it can be [quant, offset, onset]
@@ -48,11 +48,6 @@ PatternProxy : Pattern {
 	pattern_ { arg pat; this.source_(pat) }
 	offset_ { arg val; quant = quant.instill(1, val) }
 	offset { arg val; ^quant.obtain(1) }
-
-	envir_ { arg argEnvir;
-		envir = argEnvir; 
-		this.source = this.source;
-	}
 	
 	set { arg ... args; 
 		if(envir.isNil) { this.envir = this.class.event };
