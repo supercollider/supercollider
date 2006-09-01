@@ -121,13 +121,14 @@ History { 		// adc 2006, Birmingham.
 			if (hasMovedOn) { 
 				v.items_(lineShorts.array).value_(0);
 				if (this.hasMovedOn, { v.value_(0) });
-				startbut.value_(thisProcess.interpreter.codeDump.notNil.binaryValue).refresh;
+				startbut.value_(this.started).refresh;
 				hasMovedOn = false;
 			};
 		}, 1, { w.isClosed }, "histwin");
 		
 		^w;
 	}
+		
 	*postDoc { |index, str| 
 		var line = lines[index]; 
 		if (line.isNil) { "no history yet!".inform; ^this };
@@ -290,7 +291,7 @@ History { 		// adc 2006, Birmingham.
 	
 	*saveCS { |path, forward=false| 
 		var file, lines2write; 
-
+	
 		lines2write = if (forward) { lines.reverse } { lines };
 		path = path ?? { saveFolder ++ "history_" ++ this.startTimeStamp ++ ".sc" };
 		file = File(path.standardizePath,"w");
@@ -309,13 +310,14 @@ History { 		// adc 2006, Birmingham.
 		ll !? { lines = ll.compile.value };	
 	}
 	
-	*play { |start=0, end, verbose=true| 	// line numbers; 
-						// starting from past 0 may not work.
+	*play { |start=0, end, verbose=true|	// line numbers; 
+									// starting from past 0 may not work.
 		start = start.clip(0, lines.lastIndex); 
 		end = (end ? lines.lastIndex).clip(0, lines.lastIndex); 
 		
 		player.set(\startLine, start, \endLine, end, \verbose, verbose); 
 		player.play;
 	}
-
+	
+	*cmdPeriod { this.enter("// thisProcess.cmdPeriod"); }
 }

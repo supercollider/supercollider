@@ -1,6 +1,5 @@
 
 TaskProxyEditor {
-	classvar <>scheme; 
 
 	var <>proxy, <>nVars, <win, <zone, <flow, <skipjack, <usesPlayN; 
 	var <nameBut, <playBut, <pauseBut, <srcBut, <envBut, <varButs;
@@ -11,19 +10,6 @@ TaskProxyEditor {
 			.init(w, height, width, makeWatcher); 
 	}
 	
-	*initClass { 	// scheme defines the class look and feel.
-		scheme = ();
-		scheme.font = GUI.scheme.font.new("Monaco", 10);
-		scheme.fontColor = Color.black;
-		
-		scheme.background = Color(0.8, 0.85, 0.7, 0.5);
-		scheme.foreground = Color.grey(0.95);
-		scheme.onColor = Color(0.5, 1, 0.5); 
-		scheme.offColor = Color.clear; 
-		
-		scheme.gap = 0 @ 0;
-	}
-
 	srcString {
 		^this.observedClass.asString 
 			++ "(" + proxy.key.asCompileString + "," 
@@ -60,74 +46,74 @@ TaskProxyEditor {
 
 	init { |w, height, width, makeWatcher| 
 		var sys = GUI.scheme; 
-		scheme.font = sys.font.new(scheme.font.name, scheme.font.size);
+		var skin = GUI.skin; 
+		var font = sys.font.new(*skin.fontSpecs);
 
 		win = w ?? { sys.window.new("task px edit", Rect(0, 0, 190, 30)) };
 		zone = sys.compositeView.new(win, Rect(0, 0, 190, height)); 
-		zone.background_(scheme.foreground);
+		zone.background_(skin.foreground);
 		
-		flow = FlowLayout(zone.bounds, 0@0, scheme.gap);
+		flow = FlowLayout(zone.bounds, 0@0, skin.gap);
 		zone.decorator = flow; 
 		try { win.front };
 
 		nameBut = sys.button.new(zone, Rect(0,0, 60,height))
-			.font_(scheme.font)
+			.font_(font)
 			.states_([
-				[" ", scheme.fontColor, scheme.onColor]
+				[" ", skin.fontColor, skin.onColor]
 			])
 		//	.action_({ "edit all".postln })
 			.keyDownAction_({ |btn, char| if (char.ascii == 127) { proxy.clear; proxy = nil }; })
 		;
 
 		playBut = sys.button.new(zone, Rect(0,0, width, height))
-			.font_(scheme.font)
+			.font_(font)
 			.states_([
-				[" >", scheme.fontColor, scheme.offColor], 
-				[" _", scheme.fontColor, scheme.onColor ],
-				[" |", scheme.fontColor, scheme.offColor ]
+				[" >", skin.fontColor, skin.offColor], 
+				[" _", skin.fontColor, skin.onColor ],
+				[" |", skin.fontColor, skin.offColor ]
 			]);
 			
-					// non-historical action:
-//		playBut.action_({ |b| 
-//				[ { proxy.stop }, { proxy.play }, { proxy.play } ][b.value].value 
-//			})
-					// historical action, sets cmdLine and gets recorded.
 		playBut.action_({ |but| var string;
-				if (proxy.notNil) { 
-					string = proxy.asCompileString 
-						++ [".play;", ".play;", ".stop;" ][but.value];
-					string.postln.interpret;
+				if (proxy.notNil) { 	
+								// historical action, sets cmdLine and gets recorded.
+					if (History.started) { 
+						string = proxy.asCompileString 
+							++ [".play;", ".play;", ".stop;" ][but.value];
+						string.postln.interpret;
+					} { 			// a-historical, but faster
+						[ { proxy.play }, { proxy.play }, { proxy.stop } ][but.value].value 
+					};
 					this.updateAll;
 				};
 			});
 
 		pauseBut = sys.button.new(zone, Rect(0,0, width, height))
-			.font_(scheme.font)
+			.font_(font)
 			.states_([
-				["paus", scheme.fontColor, scheme.onColor], 
-				["rsum", scheme.fontColor, scheme.offColor]
+				["paus", skin.fontColor, skin.onColor], 
+				["rsum", skin.fontColor, skin.offColor]
 			]);
 						
-					// non-historical action:
-//		pauseBut.action_({ |b| 
-//				[ { proxy.resume }, { proxy.pause } ][b.value].value 
-//			});
-
-					// historical action, sets cmdLine and gets recorded.
-		pauseBut.action_({ |but| var string;
+					
+		pauseBut.action_({ |but| var string; 
 				if (proxy.notNil) { 
-					string = proxy.asCompileString 
-						++ [".resume;", ".pause;" ][but.value];
-					string.postln.interpret;
-					this.updateAll;
+					if (History.started) { 		// historical
+						string = proxy.asCompileString 
+							++ [".resume;", ".pause;" ][but.value];
+						string.postln.interpret;
+					} { 						// faster 
+						[ { proxy.resume }, { proxy.pause } ][but.value].value 
+					};
+						this.updateAll;
 				};
 			});
 
 		srcBut = sys.button.new(zone, Rect(0,0, width, height))
-			.font_(scheme.font)
+			.font_(font)
 			.states_([ 
-				["src", scheme.fontColor, scheme.offColor],
-				["src", scheme.fontColor, scheme.onColor]
+				["src", skin.fontColor, skin.offColor],
+				["src", skin.fontColor, skin.onColor]
 			])
 			.action_({ |but|
 				this.openDoc(this.srcString);
@@ -135,10 +121,10 @@ TaskProxyEditor {
 			});
 
 		envBut = sys.button.new(zone, Rect(0,0, width, height))
-			.font_(scheme.font)
+			.font_(font)
 			.states_([ 
-				["env", scheme.fontColor, scheme.offColor],
-				["env", scheme.fontColor, scheme.onColor]
+				["env", skin.fontColor, skin.offColor],
+				["env", skin.fontColor, skin.onColor]
 			])
 			.action_({ |but|
 				if (proxy.envir.isNil) { 
@@ -151,8 +137,8 @@ TaskProxyEditor {
 //					// one key per button... maybe not.
 //		varButs = Array.fill(nVars, { |i| 
 //			sys.button.new(zone, Rect(0,0, width, height))
-//				.font_(scheme.font)
-//				.states_([ ["-", scheme.fontColor, scheme.offColor] ])
+//				.font_(font)
+//				.states_([ ["-", skin.fontColor, skin.offColor] ])
 //				.action_({ |b| 
 //					this.openDoc(this.editString(b.states[0][0].asSymbol))
 //				});
