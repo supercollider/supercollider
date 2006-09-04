@@ -363,7 +363,7 @@ EventPatternProxy : TaskProxy {
 			{ pattern = PlazyEnvirN(obj) } 
 			{ if (obj.isNil) 
 				{ pattern = this.class.default }
-				{ pattern = source }
+				{ pattern = obj }
 			};
 		envir !? { pattern = pattern <> envir };
 		this.wakeUp;
@@ -433,7 +433,7 @@ EventPatternProxy : TaskProxy {
 	
 	// start playing //
 	
-	play { arg argClock, protoEvent, quant, doReset=true;
+	play { arg argClock, protoEvent, quant, doReset;
 		if(player.isPlaying.not) {
 			clock = argClock ? TempoClock.default;
 			player = player ?? { EventStreamPlayer(this.asStream, protoEvent) };
