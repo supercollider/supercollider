@@ -120,8 +120,8 @@ History { 		// adc 2006, Birmingham.
 		SkipJack({ 
 			if (hasMovedOn) { 
 				v.items_(lineShorts.array).value_(0);
-				if (this.hasMovedOn, { v.value_(0) });
-				startbut.value_(this.started).refresh;
+			//	if (this.hasMovedOn, { v.value_(0) });
+				startbut.value_(this.started.binaryValue).refresh;
 				hasMovedOn = false;
 			};
 		}, 1, { w.isClosed }, "histwin");
