@@ -294,7 +294,7 @@ TaskProxy : PatternProxy {
 			player = this.playOnce(argClock, doReset, playQuant);
 		} {
 				// resets  when stream has ended or after pause/cmd-period:
-			if (player.streamHasEnded or: player.wasStopped) { doReset = true };
+			if (player.streamHasEnded or: {player.wasStopped}) { doReset = true };
 			
 			if(player.isPlaying.not) { 
 				player.play(argClock, doReset, playQuant);
@@ -432,12 +432,21 @@ EventPatternProxy : TaskProxy {
 	////////// playing interface //////////
 	
 	// start playing //
-	
-	play { arg argClock, protoEvent, quant, doReset;
-		if(player.isPlaying.not) {
-			clock = argClock ? TempoClock.default;
-			player = player ?? { EventStreamPlayer(this.asStream, protoEvent) };
+
+	play { arg argClock, protoEvent, quant, doReset=false;
+		playQuant = quant ? this.quant;
+		if(player.isNil) { 
+			player = EventStreamPlayer(this.asStream, protoEvent);
 			player.play(clock, doReset, quant ? this.quant);
+		} {
+				// resets  when stream has ended or after pause/cmd-period:
+			if (player.streamHasEnded or: {player.wasStopped}) { doReset = true };
+			
+			if(player.isPlaying.not) { 
+				player.play(clock, doReset, quant ? this.quant);
+			} { 
+				if (doReset) { player.reset };
+			}
 		}
 	}
 	
