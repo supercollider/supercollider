@@ -248,8 +248,6 @@ void dumpPyrSlot(PyrSlot* slot)
 	post("   %s\n", str);
 }
 
-#include <Carbon/Carbon.h>
-
 void slotString(PyrSlot *slot, char *str)
 {
 	switch (slot->utag) {
@@ -261,7 +259,6 @@ void slotString(PyrSlot *slot, char *str)
 			break;
 		case tagSym :
 			if (!slot->us->name) {
-				Debugger();
 				snprintf(str, 256, "Symbol <NAME IS NULL PTR>");
 			} else if (strlen(slot->us->name) > 240) {
 				char str2[256];
@@ -620,7 +617,8 @@ int asCompileString(PyrSlot *slot, char *str)
 			g_fmt(str, slot->uf);
 			break;
 		default :
-			Debugger();
+			strcpy(str, "<BAD TAG>");
+
 	}
 	return errNone;
 }

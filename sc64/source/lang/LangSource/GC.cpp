@@ -996,7 +996,7 @@ bool PyrGC::ListSanity()
 		fprintf(stderr, "grey count off %d %d\n", numgrey, mNumGrey);
 		DumpInfo();
 		fprintf(stderr, ".");
-		Debugger();
+		//Debugger();
 		return false;
 	}
 	return true;
@@ -1060,7 +1060,7 @@ bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 						dumpBadObject(objB);
 						fprintf(stderr, "\n");
 #endif
-						Debugger();
+						//Debugger();
 						return false;
 					}
 				}
@@ -1114,7 +1114,7 @@ bool PyrGC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 							dumpBadObject(objB);
 							fprintf(stderr, "\n");
 	#endif
-						Debugger();
+							//Debugger();
 							return false;
 						}
 					}

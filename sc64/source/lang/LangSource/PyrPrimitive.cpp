@@ -48,7 +48,6 @@
 #include "PyrDeepFreezer.h"
 //#include "Wacom.h"
 #include "InitAlloc.h"
-#include <Carbon/Carbon.h>
 
 #define SANITYCHECK 0
 int yyparse();

@@ -37,7 +37,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <Carbon/Carbon.h>
 
 #ifdef SC_WIN32
 # include "SC_Win32Utils.h"

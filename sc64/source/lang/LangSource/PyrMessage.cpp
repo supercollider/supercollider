@@ -30,7 +30,6 @@
 #endif
 #include <assert.h>
 #include "PredefinedSymbols.h"
-//#include <CoreServices/CoreServices.h> //!!!
 
 #define DEBUGMETHODS 0
 #define SANITYCHECK 0
