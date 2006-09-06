@@ -1,0 +1,345 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 TrebuchetMS;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 UGen			
+\fs28 abstract superclass of all unit generators
+\f1\b0\fs24 \
+\
+
+\f0\b superclass: AbstractFunction\
+
+\f1\b0 \
+Unit generators are the basic building blocks of synths on the server, and are used to generate or process audio or control signals. The many subclasses of UGen are the client-side representations of unit generators, and are used to specify their parameters when constructing synth definitions (see 
+\f0\b [\ul SynthDef\ulnone ]
+\f1\b0 ). \
+\
+See also 
+\f0\b [\ul UGens\ulnone ]
+\f1\b0 , 
+\f0\b [\ul Tour_of_UGens\ulnone ]
+\f1\b0 , and 
+\f0\b [\ul UGens-and-Synths\ulnone ]
+\f1\b0 .\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Convenience Methods
+\f1\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 scope(name, bufsize, zoom)
+\f1\b0 \
+\
+Displays the output of this UGen in an individual 
+\f0\b [\ul Stethoscope\ulnone ] 
+\f1\b0 window. 
+\f0\b name
+\f1\b0  is the name of the window.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf2 Server\cf0 .default = s = \cf2 Server\cf0 .internal.boot;\
+\{ \cf2 Ringz\cf0 .ar(\cf2 PinkNoise\cf0 .ar([0.1, 0.2]).scope(\cf3 \\pink\cf0 ), 2000, 1, 0.25) \}.play; \cf4 // multichannel works\cf0 \
+s.scope; \cf4 // can still separately scope the output of the server
+\f0\b\fs24 \cf0 \
+\
+poll(interval, label)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Polls the output of this UGen every 
+\f0\b interval
+\f1\b0  seconds, and posts the result. The default 
+\f0\b interval 
+\f1\b0 is 0.1 seconds.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 \{ \cf2 SinOsc\cf0 .ar(\cf2 LFNoise0\cf0 .ar(2).range(420, 460).poll(label: \cf3 \\LFNoise\cf0 ), 0, 0.2) \}.play;\
+\
+\cf4 // Multichannel is supported\cf0 \
+\{ \cf2 SinOsc\cf0 .ar(\cf2 SinOsc\cf0 .ar([0.2, 0.3]).range(420, 460).poll(label: \cf3 \\SinOscs\cf0 ), 0, 0.2) \}.play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+range(lo, hi)
+\f1\b0 \
+\
+Scales the output of this UGen to be within the range of 
+\f0\b lo
+\f1\b0  and 
+\f0\b hi
+\f1\b0 . 
+\f0\b N.B.
+\f1\b0  'range' expects the default output range, and thus should not be used in conjunction with 
+\f0\b mul
+\f1\b0  and 
+\f0\b add
+\f1\b0  arguments.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 \{ \cf2 SinOsc\cf0 .ar(\cf2 SinOsc\cf0 .ar(0.3).range(440, 660), 0, 0.5) * 0.1 \}.play;
+\f1\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 exprange(lo, hi)
+\f1\b0 \
+\
+Maps the output of this UGen exponentially to be within the range of 
+\f0\b lo
+\f1\b0  and 
+\f0\b hi
+\f1\b0  using a 
+\f0\b [\ul LinExp\ulnone ]
+\f1\b0  UGen. 
+\f0\b lo
+\f1\b0  and 
+\f0\b hi
+\f1\b0  should both be non-zero and have the same sign. 
+\f0\b N.B.
+\f1\b0  'exprange' expects the default output range, and thus should not be used in conjunction with 
+\f0\b mul
+\f1\b0  and 
+\f0\b add
+\f1\b0  arguments.\
+\
+
+\f0\b clip(lo, hi)
+\f1\b0 \
+\
+Wraps the receiver in a 
+\f0\b [\ul Clip\ulnone ] 
+\f1\b0 UGen, clipping its output at 
+\f0\b lo
+\f1\b0  and 
+\f0\b hi
+\f1\b0 .\
+\
+
+\f0\b fold(lo, hi)
+\f1\b0 \
+\
+Wraps the receiver in a 
+\f0\b [\ul Fold\ulnone ] 
+\f1\b0 UGen, folding its output at 
+\f0\b lo
+\f1\b0  and 
+\f0\b hi
+\f1\b0 .\
+\
+
+\f0\b wrap(lo, hi)
+\f1\b0 \
+\
+Wraps the receiver in a 
+\f0\b [\ul Wrap\ulnone ] 
+\f1\b0 UGen, wrapping its output at 
+\f0\b lo
+\f1\b0  and 
+\f0\b hi
+\f1\b0 .\
+\
+
+\f0\b lag(lagTime)
+\f1\b0 \
+\
+Wraps the receiver in a 
+\f0\b [\ul Lag\ulnone ] 
+\f1\b0 UGen, smoothing it's output by lagTime.\
+\
+
+\f0\b lag2(lagTime)\
+
+\f1\b0 \
+Wraps the receiver in a 
+\f0\b [\ul Lag2\ulnone ] 
+\f1\b0 UGen, smoothing it's output by lagTime.\
+\
+
+\f0\b lag3(lagTime)
+\f1\b0 \
+\
+Wraps the receiver in a 
+\f0\b [\ul Lag3\ulnone ] 
+\f1\b0 UGen, smoothing it's output by lagTime.\
+\
+
+\f0\b degreeToKey(scale, stepsPerOctave)
+\f1\b0 \
+\
+Wraps the receiver in a 
+\f0\b [\ul DegreeToKey\ulnone ] 
+\f1\b0 UGen. The default 
+\f0\b stepsPerOctave
+\f1\b0  is 12.\
+\
+
+\f0\b minNyquist
+\f1\b0 \
+\
+Wraps the receiver in a 
+\f0\b [\ul min\ulnone ] 
+\f1\b0 UGen, such that the lesser of the receiver's output and the Nyquist frequency is output. This can be useful to prevent aliasing.\
+\
+
+\f0\b if(trueUGen, falseUGen)
+\f1\b0 \
+\
+Outputs 
+\f0\b trueUGen
+\f1\b0  when the receiver outputs 1, 
+\f0\b falseUGen
+\f1\b0  when the receiver outputs 0. If the receiver outputs a value between 0 and 1, a mixture of both will be played. (This is implemented as: ^(this * (trueUGen - falseUGen)) + falseUGen) Note that both 
+\f0\b trueUGen
+\f1\b0  and 
+\f0\b falseUGen
+\f1\b0  will be calculated regardless of whether they are output, so this may not be the most efficient approach.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf4 // note different syntax in these two examples\cf0 \
+\{ if( \cf2 LFNoise1\cf0 .kr(1.0, 0.5, 0.5) , \cf2 SinOsc\cf0 .ar, \cf2 Saw\cf0 .ar ) * 0.1 \}.play;\
+\
+\{ \cf2 Trig1\cf0 .ar(\cf2 Dust\cf0 .ar(3), 0.2).lag(0.1).if(\cf2 FSinOsc\cf0 .ar(440), \cf2 FSinOsc\cf0 .ar(880)) * 0.1 \}.play;
+\f1\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 @ y
+\f1\b0 \
+\
+Dynamic geometry support. Returns 
+\f0\b Point(this, y)
+\f1\b0 .\
+\
+
+\f0\b asComplex
+\f1\b0 \
+\
+Complex math support. Returns 
+\f0\b Complex(this, 0.0)
+\f1\b0 .\
+
+\f0\b \
+dumpArgs
+\f1\b0 \
+\'ca \'ca \'ca\'ca \'ca\
+Posts a list of the arguments for this UGen and their values.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Other Instance Methods
+\f1\b0\fs24 \
+\
+The following methods and instance variables are largely used in the construction of synth definitions, synth descriptions (see 
+\f0\b [\ul SynthDesc\ulnone ]
+\f1\b0 ), UGen class definitions, etc., and are usually not needed for general use. Users should not attempt to set any of these values in general code.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 synthDef
+\f1\b0 \
+\
+The SynthDef which contains the UGen.\
+\
+
+\f0\b inputs
+\f1\b0 \
+\
+The array of inputs to the UGen. \
+\
+
+\f0\b rate
+\f1\b0 \
+\
+The output rate of the UGen which is one of the Symbols 'audio', or 'control'.\
+\
+
+\f0\b signalRange
+\f1\b0 \
+\
+Returns a symbol indicating the signal range of the receiver. Either\'ca\cf3 \\bipolar\cf0  or\'ca\cf3 \\unipolar\cf0 .\
+\
+
+\f0\b numChannels
+\f1\b0 \'ca\
+\
+Returns the number of output Channels. For a UGen, this will always be 1, but 
+\f0\b [\ul Array\ulnone ]
+\f1\b0  also implements this method, so multichannel expansion is supported. See 
+\f0\b [\ul MultiChannel\ulnone ]
+\f1\b0 .\
+\
+
+\f0\b numInputs
+\f1\b0 \
+\
+Returns the number of inputs for this UGen.\
+\
+
+\f0\b numOutputs
+\f1\b0 \
+\
+Returns the number of outputs for this UGen.\
+\
+
+\f0\b name
+\f1\b0 \
+\
+Returns the 
+\f0\b [\ul Class\ulnone ]
+\f1\b0  name of the receiver as a 
+\f0\b [\ul String\ulnone ]
+\f1\b0 .\
+\
+
+\f0\b madd(mul, add)
+\f1\b0 \
+\
+Wraps the receiver in a 
+\f0\b MulAdd
+\f1\b0  UGen. This is only used in UGen class definitions in order to allow efficient implementation of 
+\f0\b mul
+\f1\b0  and 
+\f0\b add
+\f1\b0  arguments.\
+\
+
+\f0\b isValidUGenInput
+\f1\b0 \
+\
+Returns true.\
+	\
+
+\f0\b asUGenInput
+\f1\b0 \
+\
+Returns the receiver.	\
+\
+
+\f0\b copy
+\f1\b0 \
+\
+Returns the receiver. Thus UGen-dup effectively returns a reference to the original and is a convenient way to copy a mono signal to multiple channels.\
+\
+
+\f3\fs18 \cf5 \{ \cf6 SinOsc\cf5 .ar(\cf6 Rand\cf5 (200, 4000), 0, 0.2).dup \}.plot \cf7 // this is the same UGen
+\f1\fs24 \cf0 \
+\'ca\'ca \'ca\
+\pard\pardeftab720\ql\qnatural
+\cf0 Function-dup evaluates that function multiple times, thus potentially returning distinct UGens.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 \{ \{\cf2 SinOsc\cf0 .ar(\cf2 Rand\cf0 (200, 4000), 0, 0.2)\}.dup \}.plot \cf4 // these are different UGens}

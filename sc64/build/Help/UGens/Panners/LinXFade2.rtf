@@ -1,0 +1,36 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 LinXFade2			two channel linear crossfade\
+
+\f1\b0\fs18 \
+
+\f0\b\fs24 LinXFade2.ar(inA, inB, pan, level)\
+
+\f1\b0\fs18 \
+
+\f2\fs24 Two channel linear crossfader.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 inA
+\f2\b0  - an input signal\
+
+\f0\b inB
+\f2\b0  - another input signal\
+
+\f0\b pan
+\f2\b0  - cross fade position from -1 to +1\
+
+\f0\b level
+\f2\b0  - a control rate level input\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\cf2 play(\{ \cf3 LinXFade2\cf2 .ar(\cf3 FSinOsc\cf2 .ar(800, 0, 0.2), \cf3 PinkNoise\cf2 .ar(0.2), \cf3 FSinOsc\cf2 .kr(1)) \});\
+
+\fs24 \cf0 \
+}

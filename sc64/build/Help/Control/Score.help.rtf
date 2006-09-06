@@ -1,0 +1,411 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Score			
+\fs24 score of timed OSC commands
+\f1\b0 \
+\
+\
+\
+Score encapsulates a list of timed OSC commands and provides some methods for using it, as well as support for the creation of binary OSC files for non-realtime synthesis. See 
+\f0\b Non-Realtime-Synthesis
+\f1\b0  for more details.\
+\
+The list should be in the following format, with times in ascending order. Bundles are okay.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 [\
+[beat1, [\cf2 OSCcmd1\cf0 ]],\
+[beat2, [\cf2 OSCcmd2\cf0 ], [\cf2 OSCcmd3\cf0 ]],\
+...\
+[beat_n, [\cf2 OSCcmdn\cf0 ]],\
+[beatToEndNRT, [\cf3 \\c_set\cf0 , 0, 0]] \cf4 // finish\cf0 \
+]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+For NRT synthesis the final event should a dummy event, after which synthesis will cease. It is thus important that this event be timed to allow previous events to complete.\
+\
+
+\f0\b Score
+\f1\b0  scheduling defaults to 
+\f0\b TempoClock
+\f1\b0 . A setting of 
+\f0\b TempoClock
+\f1\b0 .default.tempo = 1 (60 beats per minute), may be used to express score events in seconds if desired.\
+
+\f0\b \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 Class Methods\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \ulnone \
+*new(list)
+\f1\b0  - returns a new Score object with the supplied list. 
+\f0\b list 
+\f1\b0 can be an 
+\f0\b Array
+\f1\b0 , a 
+\f0\b List
+\f1\b0 , or similar object.\
+\
+
+\f0\b *newFromFile(path) 
+\f1\b0 - as 
+\f0\b *new
+\f1\b0 , but reads the list in from a text file. 
+\f0\b path 
+\f1\b0 is a string indicating the path of the file. The file must contain a valid SC expression.\
+
+\f0\b \
+*play(list, server) 
+\f1\b0 - as 
+\f0\b *new
+\f1\b0  but immediately plays it. (See also the instance method below.) If no value is supplied for 
+\f0\b server
+\f1\b0  it will play on the default 
+\f0\b Server
+\f1\b0 .\
+
+\f0\b \
+*playFromFile(path, server) 
+\f1\b0 - as 
+\f0\b *play
+\f1\b0 , but reads the list from a file.\
+\
+
+\f0\b *write(list, oscFilePath, clock)
+\f1\b0  - a convenience method to create a binary OSC file for NRT synthesis. Does not create an instance. 
+\f0\b oscFilePath
+\f1\b0  is a string containing the desired path of the OSC file. Use 
+\f0\b clock
+\f1\b0  as a tempo base. 
+\f0\b TempoClock
+\f1\b0 .default if 
+\f0\b clock
+\f1\b0  is nil.\
+\
+
+\f0\b *writeFromFile(path, oscFilePath, clock)
+\f1\b0  - as *write but reads the list from a file. Use 
+\f0\b clock
+\f1\b0  as a tempo base.  
+\f0\b TempoClock
+\f1\b0 .default if 
+\f0\b clock
+\f1\b0  is nil.\
+
+\f0\b \
+*recordNRT(list, oscFilePath, outputFilePath, inputFilePath, sampleRate, headerFormat, sampleFormat, options)
+\f1\b0  - a convenience method to synthesize 
+\f0\b list
+\f1\b0  in non-realtime. This method writes an OSC file to 
+\f0\b oscFilePath
+\f1\b0  (you have to do your own cleanup if desired) and then starts a server app to synthesize it. For details on valid headerFormats and sampleFormats see 
+\f0\b SoundFile
+\f1\b0 . Use 
+\f0\b TempoClock
+\f1\b0 .default as a tempo base. Does not return an instance.\
+
+\f0\b 	oscFilePath 
+\f1\b0 - the path to which the binary OSC file will be written.\
+	
+\f0\b outputFilePath 
+\f1\b0 - the path of the resultant soundfile.
+\f0\b \
+	inputFilePath
+\f1\b0  - an optional path for an input soundfile.\
+	
+\f0\b sampleRate
+\f1\b0  - the sample rate at which synthesis will occur.\
+	
+\f0\b headerFormat
+\f1\b0  - the header format of the output file. The default is 'AIFF'.\
+	
+\f0\b sampleFormat 
+\f1\b0 - the sample format of the output file. The default is 'int16'.\
+	
+\f0\b options
+\f1\b0  - an instance of 
+\f0\b ServerOptions
+\f1\b0 . If not supplied the options of the default 
+\f0\b Server
+\f1\b0  will be used.
+\f0\b \
+
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Instance Methods\ul \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \ulnone play(server, clock, quant) 
+\f1\b0 - play the list on 
+\f0\b server
+\f1\b0  use 
+\f0\b clock
+\f1\b0  as a tempo base and quantize start time to 
+\f0\b quant
+\f1\b0 . If 
+\f0\b server
+\f1\b0  is nil, then on the default server. 
+\f0\b TempoClock
+\f1\b0 .default if 
+\f0\b clock
+\f1\b0  is nil. now if 
+\f0\b quant
+\f1\b0  is 0.\
+
+\f0\b \
+stop 
+\f1\b0 - stop playing.\
+
+\f0\b \
+write(oscFilePath, clock) 
+\f1\b0 - create a binary OSC file for NRT synthesis from the list. Use 
+\f0\b clock
+\f1\b0  as a tempo base. 
+\f0\b TempoClock
+\f1\b0 .default if 
+\f0\b clock
+\f1\b0  is nil.\
+
+\f0\b \
+score 
+\f1\b0 - get the list.\
+
+\f0\b \
+score_(list) 
+\f1\b0 - set the list.\
+\
+
+\f0\b add(bundle)
+\f1\b0  - adds bundle to the list.\
+\
+
+\f0\b sort
+\f1\b0  - sort the score time order. \
+		This is recommended to do 
+\f0\b before
+\f1\b0  
+\f0\b recordNRT or write
+\f1\b0  when \
+		you are not sure about the packet order\
+\
+
+\f0\b recordNRT(oscFilePath, outputFilePath, inputFilePath, sampleRate, headerFormat, sampleFormat, options)
+\f1\b0  - synthesize the score in non-realtime. For details of the arguments see 
+\f0\b *recordNRT
+\f1\b0  above.\
+\
+
+\f0\b saveToFile(path)
+\f1\b0  - save the score list as a text file to 
+\f0\b path.
+\f1\b0 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 NRT Examples:
+\f1\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf4 \
+// A sample synthDef\cf0 \
+(\
+\cf2 SynthDef\cf0 (\cf5 "helpscore"\cf0 ,\{ \cf2 arg\cf0  freq = 440;\
+	\cf2 Out\cf0 .ar(0,\
+		 \cf2 SinOsc\cf0 .ar(freq, 0, 0.2) * \cf2 Line\cf0 .kr(1, 0, 0.5, doneAction: 2)\
+	)\
+\}).load(s);\
+)
+\fs24 \
+\
+
+\fs18 \cf4 // write a sample file for testing\cf0 \
+(\
+\cf2 var\cf0  f, g;\
+\cf2 TempoClock\cf0 .default.tempo = 1;\
+g = [\
+	[0.1, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1000, 0, 0, \cf3 \\freq\cf0 , 440]],	[0.2, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1001, 0, 0, \cf3 \\freq\cf0 , 660]],\
+	[0.3, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1002, 0, 0, \cf3 \\freq\cf0 , 220]],\
+	[1, [\cf3 \\c_set\cf0 , 0, 0]] \cf4 // finish\cf0 \
+	];\
+f = \cf2 File\cf0 (\cf5 "score-test"\cf0 ,\cf5 "w"\cf0 );\
+f.write(g.asCompileString);\
+f.close;\
+)\
+\
+\cf4 //convert it to a binary OSC file for use with NRT\cf0 \
+\cf2 Score\cf0 .writeFromFile(\cf5 "score-test"\cf0 , \cf5 "test.osc"\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 From the command line, the file can then be rendered from within the build directory:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+./scsynth -N test.osc _ test.aif 44100 AIFF int16 -o 1 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Score also provides methods to do all this more directly:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+(\
+\cf2 var\cf0  f, o;\
+g = [\
+	[0.1, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1000, 0, 0, \cf3 \\freq\cf0 , 440]],	[0.2, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1001, 0, 0, \cf3 \\freq\cf0 , 660], \
+		[\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1002, 0, 0, \cf3 \\freq\cf0 , 880]],\
+	[0.3, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1003, 0, 0, \cf3 \\freq\cf0 , 220]],\
+	[1, [\cf3 \\c_set\cf0 , 0, 0]] \cf4 // finish\cf0 \
+	];
+\f1\fs24 \
+
+\f2\fs18 o = \cf2 ServerOptions\cf0 .new.numOutputBusChannels = 1; \cf4 // mono output\cf0 \
+\cf2 Score\cf0 .recordNRT(g, \cf5 "help-oscFile"\cf0 , \cf5 "helpNRT.aiff"\cf0 , options: o); \cf4 // synthesize\cf0 \
+)
+\f1\fs24 \
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Real-time Examples:
+\f1\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 s.boot; \cf4 // boot the default server\
+\
+// A sample synthDef\cf0 \
+(\
+\cf2 SynthDef\cf0 (\cf5 "helpscore"\cf0 ,\{ \cf2 arg\cf0  freq = 440;\
+	\cf2 Out\cf0 .ar(0,\
+		 \cf2 SinOsc\cf0 .ar(freq, 0, 0.2) * \cf2 Line\cf0 .kr(1, 0, 0.5, doneAction: 2)\
+	)\
+\}).load(s);\
+)
+\fs24 \
+\
+
+\fs18 \cf4 // write a sample file for testing\cf0 \
+(\
+\cf2 var\cf0  f, g;\
+\cf2 TempoClock\cf0 .default.tempo = 1;\
+g = [\
+	[0.1, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1000, 0, 0, \cf3 \\freq\cf0 , 440]],	[0.2, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1001, 0, 0, \cf3 \\freq\cf0 , 660], \
+		[\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1002, 0, 0, \cf3 \\freq\cf0 , 880]],\
+	[0.3, [\cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1003, 0, 0, \cf3 \\freq\cf0 , 220]],\
+	[1, [\cf3 \\c_set\cf0 , 0, 0]] \cf4 // finish\cf0 \
+	];\
+f = \cf2 File\cf0 (\cf5 "score-test"\cf0 ,\cf5 "w"\cf0 );\
+f.write(g.asCompileString);\
+f.close;\
+)\
+\
+z = Score.newFromFile(\cf5 "score-test"\cf0 );\
+\
+\cf4 // play it on the default server\cf0 \
+\cf2 z\cf0 .play;\
+\
+\cf4 // change the list\cf0 \
+(\
+x = [\
+[0.0, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1000, 0, 0,  \cf3 \\freq\cf0 , 1413 ]],\
+[0.1, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1001, 0, 0,  \cf3 \\freq\cf0 , 712 ]],\
+[0.2, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1002, 0, 0,  \cf3 \\freq\cf0 , 417 ]],\
+[0.3, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1003, 0, 0,  \cf3 \\freq\cf0 , 1238 ]],\
+[0.4, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1004, 0, 0,  \cf3 \\freq\cf0 , 996 ]],\
+[0.5, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1005, 0, 0,  \cf3 \\freq\cf0 , 1320 ]],\
+[0.6, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1006, 0, 0,  \cf3 \\freq\cf0 , 864 ]],\
+[0.7, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1007, 0, 0,  \cf3 \\freq\cf0 , 1033 ]],\
+[0.8, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1008, 0, 0,  \cf3 \\freq\cf0 , 1693 ]],\
+[0.9, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1009, 0, 0,  \cf3 \\freq\cf0 , 410 ]],\
+[1.0, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1010, 0, 0,  \cf3 \\freq\cf0 , 1349 ]],\
+[1.1, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1011, 0, 0,  \cf3 \\freq\cf0 , 1449 ]],\
+[1.2, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1012, 0, 0,  \cf3 \\freq\cf0 , 1603 ]],\
+[1.3, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1013, 0, 0,  \cf3 \\freq\cf0 , 333 ]],\
+[1.4, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1014, 0, 0,  \cf3 \\freq\cf0 , 678 ]],\
+[1.5, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1015, 0, 0,  \cf3 \\freq\cf0 , 503 ]],\
+[1.6, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1016, 0, 0,  \cf3 \\freq\cf0 , 820 ]],\
+[1.7, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1017, 0, 0,  \cf3 \\freq\cf0 , 1599 ]],\
+[1.8, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1018, 0, 0,  \cf3 \\freq\cf0 , 968 ]],\
+[1.9, [ \cf3 \\s_new\cf0 , \cf3 \\helpscore\cf0 , 1019, 0, 0,  \cf3 \\freq\cf0 , 1347 ]],\
+[2.0, [\cf3 \\c_set\cf0 , 0, 0]] \cf4 // finish\cf0 \
+];\
+\
+z.score_(x);\
+)\
+\
+\cf4 // play it\cf0 \
+z.play;\
+\
+\cf4 // play and stop after one second\cf0 \
+(\
+z.play;\
+\cf2 SystemClock\cf0 .sched(1.0, \{z.stop;\});\
+)\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 creating Score from a pattern
+\f2\b0\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDescLib\cf0 .read;\
+\
+\
+\cf4 // new pattern\cf0 \
+(\
+p = \cf2 Pbind\cf0 (\
+	\
+	\cf3 \\dur\cf0 , \cf2 Prand\cf0 ([0.3, 0.5], \cf2 inf\cf0 ),\
+	\cf3 \\freq\cf0 , \cf2 Prand\cf0 ([200, 300, 500],\cf2 inf\cf0 )\
+);\
+)\
+\
+\cf4 // make a score from the pattern, 4 beats long\cf0 \
+z = p.asScore(4.0);\
+\
+z.score.postcs;\
+z.play;\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 rendering a pattern to sound file directly:
+\f2\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // render the pattern to aiff (4 beats)\cf0 \
+\
+p.render(\cf5 "asScore-Help.aif"\cf0 , 4.0);\
+\
+\
+\
+\
+\
+}

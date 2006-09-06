@@ -1,0 +1,106 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red95\green95\blue95;
+\red0\green114\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pbindef
+\f1\b0\fs18  			
+\f0\b\fs24 incremental event pattern reference definition\
+\
+
+\f2\b0 superclass: Pdef\
+\
+\
+\
+keeps a reference to a Pbind in which single keys can be replaced, just like in 
+\f0\b PbindProxy
+\f2\b0 .\
+It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.\
+\
+the difference to Pdef is that it allows to incrementally change the the elementary patterns (patternpairs)\
+of a Pbind - also of an already existing Pbind in a Pdef.\
+\
+\
+\
+
+\f0\b *new(key, paramKey1, pattern1, ... )\
+\
+
+\f2\b0 	store the pattern in the global dictionary of 
+\f0\b Pdef
+\f2\b0  under key.\
+	if there is already a Pdef there, replace its pattern with the new one.\
+	If there is already a 
+\f0\b Pbindef
+\f2\b0  there, set the parameters only, or add a new one (the whole pattern is 	replaced).\
+\
+\
+
+\f0\b *new(key)\
+\
+
+\f2\b0 	acess the pattern at that key (if none is there, a default pattern is created)\
+	see 
+\f0\b Pdef\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf2 // example:\
+\
+\cf0 (\
+\cf3 SynthDef\cf0 (\cf4 "Pdefhelp"\cf0 , \{ \cf3 arg\cf0  out, freq, sustain=1, amp=1, pan;\
+\cf3 var\cf0  env, u=1;\
+env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.01, sustain), 1, doneAction:2);\
+5.do \{ \cf3 var\cf0  d; d = exprand(0.01, 1); u = \cf3 SinOsc\cf0 .ar(d * 300, u, rrand(0.1,1.2) * d, 1) \};\
+\cf3 Out\cf0 .ar(out, \cf3 Pan2\cf0 .ar(\cf3 SinOsc\cf0 .ar(u + 1 * freq, 0, amp * env), pan));\
+\
+\}).store;\
+)\
+s.boot;\
+\
+\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\instrument\cf0 , \cf5 \\Pdefhelp\cf0 ).play;\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([0, 2, 5b, 1b], \cf3 inf\cf0 ));\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\dur\cf0 , 0.1);\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([1b, 5, 3, 1b, 6, 2, 5, 0, 3, 0, 2], \cf3 inf\cf0 ));\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\legato\cf0 , \cf3 Prand\cf0 ([1.0, 2.4, 0.2], \cf3 inf\cf0 ), \cf5 \\mtranspose\cf0 , -3);\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\mtranspose\cf0 , \cf3 nil\cf0 ); \cf2 // remove key\
+\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([1, 2, 3, 4, 5, 6], 1));\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([1, 2, 3, 4, 5, 6], 3), \cf5 \\dur\cf0 , 0.02);\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([1, 2, 3, 4, 5, 6], 3), \cf5 \\dur\cf0 , 0.1);\
+\
+\cf2 // apart from this Pbindef behaves like Pdef:\
+\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 ).quant = 0.0;\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([1, 2, 3, 4, 5, 6], 1));\
+\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 ).stop;\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 , \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([1, 2, 3, 4, 5, 6], 1)); \cf2 // does not resume now\
+\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 ).playOnce; \cf2 // play single instance\
+\cf3 Pseq\cf0 ([\cf3 Pbindef\cf0 (\cf5 \\a\cf0 ), \cf3 Pdef\cf0 (\cf5 \\a\cf0 )]).play; \cf2 // same here (Pdef(\\a) is the same pattern as Pbindef))\
+\
+\cf3 Pbindef\cf0 (\cf5 \\a\cf0 ) === \cf3 Pdef\cf0 (\cf5 \\a\cf0 ) \cf2 // identical.\
+\
+\
+\
+// an already existing Pdef can be incrementally changed\
+\
+\cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\instrument\cf0 , \cf5 \\Pdefhelp\cf0 , \cf5 \\dur\cf0 , 0.3));\
+\cf3 Pdef\cf0 (\cf5 \\x\cf0 ).play;\
+\
+\cf3 Pbindef\cf0 (\cf5 \\x\cf0 , \cf5 \\degree\cf0 , 7.rand);\
+\cf3 Pbindef\cf0 (\cf5 \\x\cf0 , \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([0, 7, 3, 7, 4], \cf3 inf\cf0 ), \cf5 \\dur\cf0 , \cf3 Pn\cf0 (\cf3 Pseries\cf0 (0.2, -0.02, 10)));\
+\cf3 Pbindef\cf0 (\cf5 \\x\cf0 , \cf5 \\stretch\cf0 , 2);\
+\
+\
+\
+\
+\
+}

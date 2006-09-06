@@ -1,0 +1,760 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+\f3\fmodern\fcharset77 Courier;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs42 \cf0 How Unit Generator plug-ins work.
+\fs26 \
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+
+\fs30 \cf0 \
+The server loads unit generator plug-ins when it starts up.\
+Unit Generator plug-ins are dynamically loaded libraries (DLLs) written in C++.\
+Each library may contain one or multiple unit generator definitions.\
+The server looks in the "plugins" directory for all files ending in .scx and calls the load() function in each one.\
+\
+
+\f1\b The load() function\
+
+\f0\b0 \
+When the library is loaded the server calls the load() function in the library.\
+\
+The load function has two responsibilities:\
+	\'a5 It needs to store the passed in pointer to the InterfaceTable in a global variable.\
+	\'a5 It defines the unit generators.\
+	\
+
+\f2\fs24 \cf2 \CocoaLigature0 // InterfaceTable contains pointers to functions in the host (server).\cf0 \
+static \cf3 InterfaceTable\cf0  *ft;\cf2 \
+...\
+\
+// the load function is called by the host when the plug-in is loaded\cf0 \
+void load(\cf3 InterfaceTable\cf0  *inTable)\
+\{\
+	ft = inTable; \cf2 // store pointer to InterfaceTable\cf0 \
+\
+	\cf3 DefineSimpleUnit\cf0 (\cf3 MySaw\cf0 );\
+\}\
+
+\f0\fs30 \CocoaLigature1 \
+Unit Generators are defined by calling a function in the InterfaceTable and passing it the name of the unit generator, the size of its C data struct, and pointers to functions for constructing and destructing it. The macro 
+\f2\fs24 \cf3 \CocoaLigature0 DefineSimpleUnit
+\f0\fs30 \cf0 \CocoaLigature1  makes this more brief.\
+\
+
+\f2\fs28 #define DefineSimpleUnit(name) \\\
+       (*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, 0);\
+
+\f0\fs30 \
+
+\f2\fs28 ft->fDefineUnit 
+\f0\fs30 is a function pointer in the InterfaceTable to the server function that defines a new unit generator.\
+\
+
+\f2\fs28 #name 
+\f0\fs30 creates a string C from the name. In this case, "MySaw".\
+\
+
+\f2\fs28 sizeof(name) 
+\f0\fs30 will be the size of the struct MySaw.\
+\
+
+\f2\fs28 name##_Ctor 
+\f0\fs30 will macro-expand to 
+\f2\fs28 MySaw_Ctor
+\f0\fs30 . There will need to be a function defined with this name.\
+\
+
+\f2\fs28 0
+\f0\fs30  is the argument for the Dtor, or destructor function, which is not needed for this unit generator.\
+
+\f2\fs28 \
+\
+
+\f0\fs30 So the macro: \
+\
+
+\f2\fs28 DefineSimpleUnit(MySaw); \
+
+\fs24 \CocoaLigature0 \
+
+\f0\fs30 \CocoaLigature1 expands to this:\
+\
+
+\f2\fs28 (*ft->fDefineUnit)("MySaw", sizeof(MySaw), (UnitCtorFunc)&MySaw_Ctor, 0);\
+\
+
+\f0\fs30 \
+A plug-in can also define things other than unit generators such as buffer fill (
+\f3\fs28 "/b_gen")
+\f0\fs30  commands.\
+
+\f2\fs38 \CocoaLigature0 	\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs42 \cf0 \CocoaLigature1 Adding a Target to Xcode
+\fs26 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs30 \cf0 You will need to have the Developer Tools installed to do this.\
+Each group of plugins shares a target in Xcode.  They create a file: eg. MyUGens.scx which is then copied into the plugins folder via a shell script.\
+\
+Create a new target, select type 'Legacy''Library'.\
+(In the future using 'Legacy' may not be necessary, but currently Xcode doesn't build BUNDLE library style correctly with non-legacy targets.)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs16 \cf0                        {{\NeXTGraphic Pasted Graphic.tiff \width10980 \height11180
+}¬}
+\f0\fs16 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs30 \cf0 \
+\
+Go to the Target Inspector.  \
+Set the product name to be MyUGens.scx.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic Pasted Graphic 1.tiff \width15100 \height4980
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs16 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs30 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs16 \cf0                        \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs30 \cf0 Click on "GCC CompilerSettings". \
+Set "Other C Flags" to -DSC_DARWIN\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic Pasted Graphic 9.tiff \width3260 \height1620
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs30 \cf0 \
+\
+Click on "Expert View" and change LIBRARY_STYLE to BUNDLE
+\fs16 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic Pasted Graphic 6.tiff \width14900 \height3760
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs30 \cf0 \
+\
+\
+Add a build phase (control or right click on build phases): a shell script build phase. \
+Type this script (with the name of your build product in place of MyUGens.scx) :\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs28 \cf0 cp build/MyUGens.scx build/plugins \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs30 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic Pasted Graphic 4.tiff \width11320 \height2300
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs30 \cf0 \
+\
+\
+Open the inspector for the All Plugins target and click on the plus button {{\NeXTGraphic Pasted Graphic 3.tiff \width460 \height460
+}¬}
+\f0\fs30 .\
+A list of targets will open. Add your target.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic Pasted Graphic 5.tiff \width5120 \height1640
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs30 \cf0 \
+\
+Your target will be built along with the others when the aggregate target "All Plugins" is selected.\
+\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+\cf0 Create a new .cpp file and add it to the project.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic Pasted Graphic 7.tiff \width4000 \height3800
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs30 \cf0 \
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+\cf0 Set the name to MyUGens.cpp\
+Uncheck "Also create 'MyUGens.h' "\
+Location should be in SuperCollider3/source/plugins .\
+Check your target's name in the targets list.\
+Click Finish.\
+
+\f2\fs24 \CocoaLigature0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs16 \cf0 \CocoaLigature1                         {{\NeXTGraphic Pasted Graphic 8.tiff \width10980 \height11100
+}¬}
+\f0\fs16 \
+                        \
+\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+
+\fs30 \cf0 \
+Copy this code into the MyUGens.cpp file.\
+____________________________________________________________________\
+
+\f2\fs24 \CocoaLigature0 \
+#include \cf4 "SC_PlugIn.h"\cf0 \
+\
+\cf2 // InterfaceTable contains pointers to functions in the host (server).\cf0 \
+static \cf3 InterfaceTable\cf0  *ft;\
+\
+\cf2 // declare struct to hold unit generator state\cf0 \
+struct \cf3 MySaw\cf0  : public \cf3 Unit\cf0 \
+\{\
+	double mPhase; \cf2 // phase of the oscillator, from -1 to 1.\cf0 \
+	float mFreqMul; \cf2 // a constant for multiplying frequency\cf0 \
+\};\
+\
+\cf2 // declare unit generator functions \cf0 \
+extern \cf4 "C"\cf0 \
+\{\
+	void load(\cf3 InterfaceTable\cf0  *inTable);\
+	void \cf3 MySaw_next_a\cf0 (\cf3 MySaw\cf0  *unit, int inNumSamples);\
+	void \cf3 MySaw_next_k\cf0 (\cf3 MySaw\cf0  *unit, int inNumSamples);\
+	void \cf3 MySaw_Ctor\cf0 (\cf3 MySaw\cf0 * unit);\
+\};\
+\
+\cf2 //////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // Ctor is called to initialize the unit generator. \cf0 \
+\cf2 // It only executes once.\
+\cf0 \
+\cf2 // A Ctor usually does 3 things.\cf0 \
+\cf2 // 1. set the calculation function.\cf0 \
+\cf2 // 2. initialize the unit generator state variables.\cf0 \
+\cf2 // 3. calculate one sample of output.\cf0 \
+void \cf3 MySaw_Ctor\cf0 (\cf3 MySaw\cf0 * unit)\
+\{\
+\
+	\cf2 // 1. set the calculation function.\cf0 \
+	if (\cf3 INRATE\cf0 (0) == calc_FullRate) \{\
+		\cf2 // if the frequency argument is audio rate \cf0 \
+		\cf3 SETCALC\cf0 (\cf3 MySaw_next_a\cf0 );\
+	\} else \{\
+		\cf2 // if the frequency argument is control rate (or a scalar).\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		\cf3 SETCALC\cf0 (\cf3 MySaw_next_k\cf0 );\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+\cf0 	\}\
+\
+	\cf2 // 2. initialize the unit generator state variables.\cf0 \
+	\cf2 // initialize a constant for multiplying the frequency\cf0 \
+	unit->mFreqMul = 2.0 * \cf3 SAMPLEDUR\cf0 ;\
+	\cf2 // get initial phase of oscillator\cf0 \
+	unit->mPhase = \cf3 IN0\cf0 (1);\
+	\
+	\cf2 // 3. calculate one sample of output.\cf0 \
+	\cf3 MySaw_next_k\cf0 (unit, 1);\
+\}\
+\
+\
+\cf2 //////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // The calculation function executes once per control period \cf0 \
+\cf2 // which is typically 64 samples.\cf0 \
+\
+\cf2 // calculation function for an audio rate frequency argument\cf0 \
+void \cf3 MySaw_next_a\cf0 (\cf3 MySaw\cf0  *unit, int inNumSamples)\
+\{\
+	\cf2 // get the pointer to the output buffer\cf0 \
+	float *out = \cf3 OUT\cf0 (0);\
+	\
+	\cf2 // get the pointer to the input buffer\cf0 \
+	float *freq = \cf3 IN\cf0 (0);\
+	\
+	\cf2 // get phase and freqmul constant from struct and store it in a \cf0 \
+	\cf2 // local variable.\cf0 \
+	\cf2 // The optimizer will cause them to be loaded it into a register.\cf0 \
+	float freqmul = unit->mFreqMul;\
+	double phase = unit->mPhase;\
+	\
+	\cf2 // perform a loop for the number of samples in the control period.\cf0 \
+	\cf2 // If this unit is audio rate then inNumSamples will be 64 or whatever\cf0 \
+	\cf2 // the block size is. If this unit is control rate then inNumSamples will\cf0 \
+	\cf2 // be 1.\cf0 \
+	for (int i=0; i < inNumSamples; ++i)\
+	\{\
+		\cf2 // out must be written last for in place operation\cf0 \
+		float z = phase; \
+		phase += freq[i] * freqmul;\
+		\
+		\cf2 // these if statements wrap the phase a +1 or -1.\cf0 \
+		if (phase >= 1.f) phase -= 2.f;\
+		else if (phase <= -1.f) phase += 2.f;\
+		\
+		\cf2 // write the output\cf0 \
+		out[i] = z;\
+	\}\
+\
+	\cf2 // store the phase back to the struct\cf0 \
+	unit->mPhase = phase;\
+\}\
+\
+\cf2 //////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // calculation function for a control rate frequency argument\cf0 \
+void \cf3 MySaw_next_k\cf0 (\cf3 MySaw\cf0  *unit, int inNumSamples)\
+\{\
+	\cf2 // get the pointer to the output buffer\cf0 \
+	float *out = \cf3 OUT\cf0 (0);\
+\
+	\cf2 // freq is control rate, so calculate it once.\cf0 \
+	float freq = \cf3 IN0\cf0 (0) * unit->mFreqMul;\
+	\
+	\cf2 // get phase from struct and store it in a local variable.\cf0 \
+	\cf2 // The optimizer will cause it to be loaded it into a register.\cf0 \
+	double phase = unit->mPhase;\
+	\
+	\cf2 // since the frequency is not changing then we can simplify the loops \cf0 \
+	\cf2 // by separating the cases of positive or negative frequencies. \cf0 \
+	\cf2 // This will make them run faster because there is less code inside the loop.\cf0 \
+	if (freq >= 0.f) \{\
+		\cf2 // positive frequencies\cf0 \
+		for (int i=0; i < inNumSamples; ++i)\
+		\{ \
+			out[i] = phase;\
+			phase += freq;\
+			if (phase >= 1.f) phase -= 2.f;\
+		\}\
+	\} else \{\
+		\cf2 // negative frequencies\cf0 \
+		for (int i=0; i < inNumSamples; ++i)\
+		\{ \
+			out[i] = phase;\
+			phase += freq;\
+			if (phase <= -1.f) phase += 2.f;\
+		\}\
+	\}\
+\
+	\cf2 // store the phase back to the struct\cf0 \
+	unit->mPhase = phase;\
+\}\
+\
+\cf2 ////////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // the load function is called by the host when the plug-in is loaded\cf0 \
+void load(\cf3 InterfaceTable\cf0  *inTable)\
+\{\
+	ft = inTable;\
+\
+	\cf3 DefineSimpleUnit\cf0 (\cf3 MySaw\cf0 );\
+\}\
+\
+\cf2 ////////////////////////////////////////////////////////////////////\cf0 \
+
+\f0\fs30 \CocoaLigature1 ____________________________________________________________________\
+
+\f2\fs24 \cf2 \CocoaLigature0 \
+// In the MyUGens.sc file:\cf0 \
+\
+\cf3 MySaw\cf0  : \cf3 UGen\cf0  \{\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	*ar \{ \cf3 arg\cf0  freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;\
+		^\cf3 this\cf0 .multiNew(\cf5 'audio'\cf0 , freq, iphase).madd(mul, add)\
+	\}\
+	*kr \{ \cf3 arg\cf0  freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;\
+		^\cf3 this\cf0 .multiNew(\cf5 'control'\cf0 , freq, iphase).madd(mul, add)\
+	\}\
+\}\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs30 \cf0 \CocoaLigature1 The SuperCollider class for your UGen allows the SuperCollider application to be able to write a SynthDef file.\
+\
+The arguments to the MySaw UGen are freq and iphase.\
+The 
+\f2\fs24 \CocoaLigature0 multiNew
+\f0\fs30 \CocoaLigature1  method handles multi channel expansion.\
+The 
+\f2\fs24 \CocoaLigature0 madd
+\f0\fs30 \CocoaLigature1  method provides support for the mul and add arguments. It will create a MulAdd UGen if necessary. You could write the class without mul and add arguments, but providing them makes it more convenient for the user.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf2 \CocoaLigature0 // without mul and add.\cf0 \
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+\cf3 MySaw\cf0  : \cf3 UGen\cf0  \{\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	*ar \{ \cf3 arg\cf0  freq = 440.0, iphase = 0.0;\
+		^\cf3 this\cf0 .multiNew(\cf5 'audio'\cf0 , freq, iphase)\
+	\}\
+	*kr \{ \cf3 arg\cf0  freq = 440.0, iphase = 0.0;\
+		^\cf3 this\cf0 .multiNew(\cf5 'control'\cf0 , freq, iphase)\
+	\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs30 \cf0 \CocoaLigature1 \
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+\cf0 ____________________________________________________________________\
+
+\f2\fs24 \CocoaLigature0 \
+\cf2 // test it:\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \{ \cf3 MySaw\cf0 .ar(200,0,0.1) \}.play\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+\cf0 \
+
+\f0\fs30 \CocoaLigature1 ____________________________________________________________________\
+
+\f2\fs24 \CocoaLigature0 \
+
+\f1\b\fs30 \CocoaLigature1 Useful macros\
+
+\f0\b0 \
+These are defined in SC_Unit.h.\
+
+\f2\fs24 \CocoaLigature0 \
+\cf2 // These return float* pointers to input and output buffers.\cf0 \
+#define \cf3 IN\cf0 (index)  (unit->mInBuf[index])\
+#define \cf3 OUT\cf0 (index) (unit->mOutBuf[index])\
+\
+\cf2 \
+// These return a float value. Used for control rate inputs and outputs.\cf0 \
+#define \cf3 IN0\cf0 (index)  (\cf3 IN\cf0 (index)[0])\
+#define \cf3 OUT0\cf0 (index) (\cf3 OUT\cf0 (index)[0])\
+\
+\cf2 \
+// get the rate of the input.\cf0 \
+#define \cf3 INRATE\cf0 (index) (unit->mInput[index]->mCalcRate)\
+\
+
+\f0\fs30 \CocoaLigature1 The possible rates are:\
+\
+
+\f2\fs24 \CocoaLigature0 	calc_ScalarRate\
+	calc_BufRate				"control rate"\
+	calc_FullRate				"audio rate"\
+\
+\
+\cf2 // set the calculation function\cf0 \
+#define \cf3 SETCALC\cf0 (func) (unit->mCalcFunc = (\cf3 UnitCalcFunc\cf0 )&func)\
+\
+
+\f0\fs30 \CocoaLigature1 SETCALC must be called in the constructor. It may also be called from a calculation function to change to a different calculation function.\
+
+\f2\fs24 \CocoaLigature0 \
+\cf2 \
+// calculate a slope for control rate interpolation to audio rate.\cf0 \
+#define \cf3 CALCSLOPE\cf0 (next,prev) ((next - prev) * unit->mRate->mSlopeFactor)\
+\
+
+\f0\fs30 \CocoaLigature1 CALCSLOPE returns (next - prev) / blocksize which is useful for calculating slopes for linear interpolation.\
+
+\f2\fs24 \CocoaLigature0 \
+\
+#define \cf3 SAMPLERATE\cf0  (unit->mRate->mSampleRate)\
+\
+
+\f0\fs30 \CocoaLigature1 SAMPLERATE returns the sample rate for the unit generator. If it is audio rate then it will be the audio sample rate. If the ugen is control rate, then it will be the control rate. For example, if the ugen is control rate and the auio sample rate is 44100 and the block size is 64, then this will return 44100/64 or 689.0625.\
+
+\f2\fs24 \CocoaLigature0 \
+\
+#define \cf3 SAMPLEDUR\cf0  (unit->mRate->mSampleDur)\
+\
+
+\f0\fs30 \CocoaLigature1 SAMPLEDUR is simply the reciprocal of the sample rate. It is the seconds per sample.\
+
+\f2\fs24 \CocoaLigature0 \
+\
+#define \cf3 BUFLENGTH\cf0  (unit->mBufLength)\
+\
+
+\f0\fs30 \CocoaLigature1 BUFLENGTH is equal to the block size if the unit is audio rate and is equal to 1 if the unit is control rate.\
+
+\f2\fs24 \CocoaLigature0 \
+\
+#define \cf3 BUFRATE\cf0  (unit->mRate->mBufRate)\
+\
+
+\f0\fs30 \CocoaLigature1 BUFRATE always returns the control rate.\
+\
+
+\f2\fs24 \CocoaLigature0 \
+#define \cf3 BUFDUR\cf0  (unit->mRate->mBufDuration)\
+\
+
+\f0\fs30 \CocoaLigature1 BUFDUR is the reciprocal of the control rate.\
+
+\f2\fs24 \CocoaLigature0 \
+
+\f0\fs30 \CocoaLigature1 ____________________________________________________________________\
+\
+
+\f1\b Pointer aliasing\
+
+\f2\b0\fs24 \CocoaLigature0 \
+
+\f0\fs30 \CocoaLigature1 The server uses a "buffer coloring" algorithm to minimize use of buffers to optimize cache performance. This means that any of the output buffers may be the same as one of the input buffers. This allows for in-place operation which is very efficient. You must be careful however not to write any output sample before you have read all of the input samples. If you did, then the input will be overwritten with output.\
+
+\f2\fs24 \CocoaLigature0 \
+\cf2 // This code is correct. It reads the freq input before writing to out.\cf0 \
+	for (int i=0; i < inNumSamples; ++i)\
+	\{\
+		float z = phase; \cf2 // store phase in z\cf0 \
+		phase += freq[i] * freqmul; \cf2 // read freq\cf0 \
+		out[i] = z; \cf2 // write the output\cf0 \
+		\
+		\cf2 // these if statements wrap the phase a +1 or -1.\cf0 \
+		if (phase >= 1.f) phase -= 2.f;\
+		else if (phase <= -1.f) phase += 2.f;\
+	\}\
+\
+\
+\cf2 // If out and freq are the same, then the code below will fail.\cf0 \
+	for (int i=0; i < inNumSamples; ++i)\
+	\{\
+		\cf2 // write the output\cf0 \
+		out[i] = phase; \
+		phase += freq[i] * freqmul;\
+		\
+		\cf2 // these if statements wrap the phase a +1 or -1.\cf0 \
+		if (phase >= 1.f) phase -= 2.f;\
+		else if (phase <= -1.f) phase += 2.f;\
+	\}\
+\
+
+\f0\fs30 \CocoaLigature1 If your unit generator cannot be written efficiently when pointers are aliased, then you can tell the server this by using one of the following macros when definining it.\
+\
+
+\f2\fs24 \CocoaLigature0 	DefineSimpleCantAliasUnit(MyUGen);\
+	\
+	DefineDtorCantAliasUnit(MyUGen);\
+
+\f0\fs30 \CocoaLigature1 \
+The server will then ensure that no output buffers are the same as any input buffers.\
+____________________________________________________________________\
+\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+
+\fs42 \cf0 A Unit Generator that needs a Dtor\
+\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+
+\fs30 \cf0 This is code for a simple fixed delay line.\
+\
+\
+
+\f2\fs24 \CocoaLigature0 #include \cf4 "SC_PlugIn.h"\cf0 \
+\
+\cf2 // InterfaceTable contains pointers to functions in the host (server).\cf0 \
+static \cf3 InterfaceTable\cf0  *ft;\
+\
+\cf2 // declare struct to hold unit generator state\cf0 \
+struct \cf3 MyDelay\cf0  : public \cf3 Unit\cf0 \
+\{\
+	uint32 mDelayLength;\
+	uint32 mPosition;\
+	float *mData; \cf2 // delay buffer\cf0 \
+\};\
+\
+\cf2 // declare unit generator functions \cf0 \
+extern \cf4 "C"\cf0 \
+\{\
+	void load(\cf3 InterfaceTable\cf0  *inTable);\
+	void \cf3 MyDelay_next_notfull\cf0 (\cf3 MyDelay\cf0  *unit, int inNumSamples);\
+	void \cf3 MyDelay_next_full\cf0 (\cf3 MyDelay\cf0  *unit, int inNumSamples);\
+	void \cf3 MyDelay_Ctor\cf0 (\cf3 MyDelay\cf0 * unit);\
+	void \cf3 MyDelay_Dtor\cf0 (\cf3 MyDelay\cf0 * unit);\
+\};\
+\
+\cf2 //////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // Ctor is called to initialize the unit generator. \cf0 \
+\cf2 // It only executes once.\cf0 \
+\
+\cf2 // A Ctor usually does 3 things.\cf0 \
+\cf2 // 1. set the calculation function.\cf0 \
+\cf2 // 2. initialize the unit generator state variables.\cf0 \
+\cf2 // 3. calculate one sample of output.\cf0 \
+void \cf3 MyDelay_Ctor\cf0 (\cf3 MyDelay\cf0 * unit)\
+\{\
+\
+	\cf2 // 1. set the calculation function.\cf0 \
+	\cf3 SETCALC\cf0 (\cf3 MyDelay_next_notfull\cf0 );\
+\
+	\cf2 // 2. initialize the unit generator state variables.\cf0 \
+	\cf2 // get the delay length\cf0 \
+	unit->mDelayLength = (uint32)(\cf3 IN0\cf0 (1) * \cf3 SAMPLERATE\cf0 );\
+	\
+	\cf2 // allocate the buffer\cf0 \
+	unit->mData = (float*)\cf3 RTAlloc\cf0 (unit->mWorld, unit->mDelayLength * sizeof(float));\
+	\cf2 // RTAlloc allocates out of the real time memory pool of the server \cf0 \
+	\cf2 // which is finite. The size of the real time memory pool is set using the\cf0 \
+	\cf2 // -m command line argument of the server.\cf0 \
+	\
+	\cf2 // initialize the position\cf0 \
+	unit->mPosition = 0;\
+	\
+	\cf2 // 3. calculate one sample of output.\cf0 \
+	\cf3 MyDelay_next_notfull\cf0 (unit, 1);\
+\}\
+\
+\cf2 //////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // Dtor is called to perform any clean up for the unit generator. \cf0 \
+\
+void \cf3 MyDelay_Dtor\cf0 (\cf3 MyDelay\cf0 * unit)\
+\{\
+	\cf2 // free the buffer\cf0 \
+	\cf3 RTFree\cf0 (unit->mWorld, unit->mData);\
+\}\
+\
+\
+\cf2 //////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // The calculation function executes once per control period \cf0 \
+\cf2 // which is typically 64 samples.\cf0 \
+\
+\cf2 // calculation function when the buffer has not yet been filled\cf0 \
+void \cf3 MyDelay_next_notfull\cf0 (\cf3 MyDelay\cf0  *unit, int inNumSamples)\
+\{\
+	\cf2 // get the pointer to the output buffer\cf0 \
+	float *out = \cf3 OUT\cf0 (0);\
+	\
+	\cf2 // get the pointer to the input buffer\cf0 \
+	float *in = \cf3 IN\cf0 (0);\
+	\
+	\cf2 // get values from struct and store them in local variables.\cf0 \
+	\cf2 // The optimizer will cause them to be loaded it into a register.\cf0 \
+	float *data = unit->mData;\
+	uint32 length = unit->mDelayLength;\
+	uint32 position = unit->mPosition;\
+	bool wrapped = \cf3 false\cf0 ;\
+	\
+	\cf2 // perform a loop for the number of samples in the control period.\cf0 \
+	\cf2 // If this unit is audio rate then inNumSamples will be 64 or whatever\cf0 \
+	\cf2 // the block size is. If this unit is control rate then inNumSamples will\cf0 \
+	\cf2 // be 1.\cf0 \
+	for (int i=0; i < inNumSamples; ++i)\
+	\{\
+		\cf2 // get old value in delay line\cf0 \
+		float z = data[position];\
+		\cf2 // store new value in delay line\cf0 \
+		data[position] = in[i];\
+		\
+		\cf2 // see if the position went to the end of the buffer \cf0 \
+		if (++position >= length) \{\
+			position = 0; \cf2 // go back to beginning\cf0 \
+			wrapped = \cf3 true\cf0 ; \cf2 // indicate we have wrapped.\cf0 \
+			\
+			\cf2 // change the calculation function\cf0 \
+			\cf2 // next time, the MyDelay_next_full function will be called\cf0 \
+			\cf3 SETCALC\cf0 (\cf3 MyDelay_next_full\cf0 );\
+		\}\
+		\cf2 // if we have not yet wrapped, then z is garbage from the uninitialized \cf0 \
+		\cf2 // buffer, so output zero. If we have wrapped, then z is a good value.\cf0 \
+		out[i] = wrapped ? z : 0.f;\
+	\}\
+\
+	\cf2 // store the position back to the struct\cf0 \
+	unit->mPosition = position;\
+\}\
+\
+\cf2 //////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // calculation function when the buffer has been filled\cf0 \
+void \cf3 MyDelay_next_full\cf0 (\cf3 MyDelay\cf0  *unit, int inNumSamples)\
+\{\
+	\cf2 // get the pointer to the output buffer\cf0 \
+	float *out = \cf3 OUT\cf0 (0);\
+	\
+	\cf2 // get the pointer to the input buffer\cf0 \
+	float *in = \cf3 IN\cf0 (0);\
+	\
+	\cf2 // get values from struct and store them in local variables.\cf0 \
+	\cf2 // The optimizer will cause them to be loaded it into a register.\cf0 \
+	float *data = unit->mData;\
+	uint32 length = unit->mDelayLength;\
+	uint32 position = unit->mPosition;\
+	\
+	\cf2 // perform a loop for the number of samples in the control period.\cf0 \
+	\cf2 // If this unit is audio rate then inNumSamples will be 64 or whatever\cf0 \
+	\cf2 // the block size is. If this unit is control rate then inNumSamples will\cf0 \
+	\cf2 // be 1.\cf0 \
+	for (int i=0; i < inNumSamples; ++i)\
+	\{\
+		\cf2 // get old value in delay line\cf0 \
+		float z = data[position];\
+		\cf2 // store new value in delay line\cf0 \
+		data[position] = in[i];\
+		\cf2 // see if the position went to the end of the buffer \cf0 \
+		if (++position >= length) \{\
+			position = 0; \cf2 // go back to beginning\cf0 \
+		\}\
+		out[i] = z;\
+	\}\
+\
+	\cf2 // store the position back to the struct\cf0 \
+	unit->mPosition = position;\
+\}\
+\
+\cf2 ////////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // the load function is called by the host when the plug-in is loaded\cf0 \
+void load(\cf3 InterfaceTable\cf0  *inTable)\
+\{\
+	ft = inTable;\
+\
+	\cf3 DefineDtorUnit\cf0 (\cf3 MyDelay\cf0 );\
+\}\
+\
+\cf2 ////////////////////////////////////////////////////////////////////\cf0 \
+
+\f0\fs30 \CocoaLigature1 ____________________________________________________________________\
+\
+
+\f2\fs24 \CocoaLigature0 \
+\cf2 // In the MyUGens.sc file:\cf0 \
+\
+\cf3 MyDelay\cf0  : \cf3 UGen\cf0  \{\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	*ar \{ \cf3 arg\cf0  in, delaytime=0.4;\
+		^\cf3 this\cf0 .multiNew(\cf5 'audio'\cf0 , in, delaytime)\
+	\}\
+	*kr \{ \cf3 arg\cf0  in, delaytime=0.4;\
+		^\cf3 this\cf0 .multiNew(\cf5 'control'\cf0 , in, delaytime)\
+	\}\
+\}\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+
+\f0\fs30 \cf0 \CocoaLigature1 ____________________________________________________________________\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \CocoaLigature0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // test it\cf0 \
+(\
+\{\
+	\cf3 var\cf0  z;\
+	z = \cf3 SinOsc\cf0 .ar * \cf3 Decay\cf0 .kr(\cf3 Impulse\cf0 .kr(1,0,0.2), 0.1);\
+	[z, \cf3 MyDelay\cf0 .ar(z, 0.3)]\
+\}.play;\
+)\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
+
+\f0\fs30 \cf0 \CocoaLigature1 ____________________________________________________________________\
+\
+\
+\
+TO DO:\
+UGens which access buffers.\
+UGens which use the built in random number generators.\
+\
+\
+}

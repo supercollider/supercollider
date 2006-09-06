@@ -1,0 +1,3 @@
+LIBRARY UNARYOPUGENS.SCX
+EXPORTS
+  _loaxxd@1 = load

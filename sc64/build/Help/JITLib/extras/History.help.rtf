@@ -1,0 +1,193 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b\fs36 \cf0 History
+\f1\b0\fs18 			
+\f0\b\fs24 keeps a history of interpreted lines of code
+\f1\b0\fs18 \
+
+\f2\fs24 \
+\
+\
+History keeps track of all code lines that are being executed, in order to forward them to other players, to easily reuse earlier versions, or to store and reproduce a performance. Since it records everything that is interpreted, there is only one instance of History.\
+(adc 2006)\
+\
+\
+	
+\f0\b *start / *stop
+\f2\b0 	start/stop adding interpreted code to history\
+	\
+	
+\f0\b *clear
+\f2\b0 		remove all items from history\
+	\
+	
+\f0\b *enter(obj)
+\f2\b0 	add an entry by hand\
+	\
+	
+\f0\b *document
+\f2\b0 	post the history in a new document\
+	\
+	
+\f0\b *drop(n)
+\f2\b0 		drop the newest n lines from history. if n is negative, drop the oldest n lines\
+	\
+	
+\f0\b *keep(n)
+\f2\b0 		keep only the newest n lines from history. if n is negative, keep the oldest n lines\
+	\
+	
+\f0\b *saveCS(path, forward)
+\f2\b0 \
+				store the history as one compileString\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs24 \cf0 	
+\f0\b *saveStory(path)
+\f2\b0  	store in a file, in historical order as individual code snippets\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 // example\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 History\cf0 .clear; \
+\cf3 History\cf0 .start; \
+\
+1 + 2;\
+s.boot;\
+a = \{ \cf3 |freq=440|\cf0  \cf3 SinOsc\cf0 .ar(freq, 0, 0.2) \}.play;\
+\
+a.set(\cf4 \\freq\cf0 , 500);\
+\
+a.free;\
+\cf3 \
+History\cf0 .stop;	\cf2 // stop collecting\cf0 \
+\
+\cf3 History\cf0 .document; \cf2 // create a document with all the changes\cf0 \
+\
+\cf3 History\cf0 .makeWin; \cf2 // gui window\cf0 \
+\
+\cf3 History\cf0 .play;			\cf2 // posts lines by default;\cf0 \
+\
+\cf3 History\cf0 .play(verbose: \cf3 false\cf0 ); \cf2 // just do it, no posting;\cf0 \
+\
+\
+\
+\
+10 + 200;			// enter 5 more lines\
+\
+s.boot;\
+\
+a = \{ \cf3 |freq=330|\cf0  \cf3 SinOsc\cf0 .ar(freq, 0, 0.2) \}.play;\
+\
+a.set(\cf4 \\freq\cf0 , 660);\
+\
+a.free;\
+\cf3 \
+		\cf0  \cf2 // play specific lines only: may or may not work,\
+		 //  as code depends on previous state.\cf3 \
+History\cf0 .play(start: 5, end: 10);\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 // removing and adding lines\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 History\cf0 .enter(\cf5 "2 + 2"\cf0 );		\cf2 // make a simple entry by hand.\cf0 \
+\
+\cf3 History\cf0 .drop(-1); \cf2 // drop the oldest memory\cf0 \
+\
+\cf3 History\cf0 .drop(1); \cf2 // drop the newest memory\cf0 \
+\
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 // more examples\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 History\cf0 .start;\
+\
+\
+1 + 2;			\cf2 // code line gets stored\cf0 \
+\
+(\cf3 nil\cf0  + 2).postln;	\cf2 // error lines  are ignored  \cf0 \
+\
+	\cf2 // comment-only is kept, empty lines not:\cf0 \
+\
+\
+s.boot;		\cf2 // do some things\cf0 \
+p = \cf3 ProxySpace\cf0 .push;\
+\
+(\
+~test = \{ \cf3 Blip\cf0 .ar(50 * [1, 1.02], 8) * 0.1 \};\
+~test.playN;\
+)\
+\
+~test = \{ \cf3 Blip\cf0 .ar(\cf3 LFNoise1\cf0 .kr(3 ! 2, 200, 500), 4) * 0.1 \};\
+~test = \{ \cf3 Blip\cf0 .ar(\cf3 LFNoise1\cf0 .kr(3 ! 2, 200, 500), \cf3 LFNoise1\cf0 .kr(5 ! 2, 5, 8)) * 0.1 \};\
+\
+\
+~test.vol_(0.1);\
+\
+~test.stop;\
+\
+~test.clear;\
+\
+History.document;\
+\cf3 History\cf0 .removeAt(0);		\cf2 // clear last line\cf0 \
+\cf3 History\cf0 .removeAt((0..3));	\cf2 // clear last 4 lines\cf0 \
+\
+\
+\cf3 History\cf0 .postDoc(0);	\cf2 // post most recent line\cf0 \
+\cf3 History\cf0 .postDoc(4);	\cf2 // go back 4 lines\cf0 \
+\
+\cf3 History\cf0 .keep(4);		// keep newest 4\
+\cf3 History\cf0 .stop;\
+\
+\
+\cf3 History\cf0 .saveCS; \cf2 // save as compilestring for reloading.\
+\
+\cf3 History\cf0 .saveCS("~/Desktop/testHist.txt", forward: true);\
+			\cf2 // save with special name, in forward time order.\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 History\cf0 .saveStory;	\cf2 // write all to file in historical order\
+\
+\cf3 History\cf0 .saveStory("~/Desktop/myTest.sc");	\cf2 // ... with given filename. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 History\cf0 .clear;	\cf2 // start over with a clean slate.\cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 // To Do:\cf0 \
+		\cf2 // History Reloaded - from a saved file:\cf0 \
+\cf2 //	History.loadCS("~/Desktop/testHist.sc");\cf0 \
+\
+		\cf2 // auto-save by appending to a file ... \cf0 \
+\cf2 //	History.autoSave_(true); 	\cf0 \
+\
+		\cf2 //  save as one runnable task/script.\cf0 \
+\cf2 //	History.saveScript; \cf0 \
+\cf2 //	History.saveScript("~/Desktop/histScript.sc");	// with given filename. \cf0 \
+\
+}

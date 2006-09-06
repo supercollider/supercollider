@@ -1,0 +1,84 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 \
+Formlet			FOF-like filter
+\f1\b0\fs24 \
+\
+
+\f0\b Formlet.ar(in, freq, attacktime, decaytime, mul, add)\
+
+\f1\b0 \
+This is a resonant filter whose impulse response is like that of a sine wave with a Decay2 envelope over it.\
+It is possible to control the attacktime and decaytime.\
+Formlet is equivalent to:\
+\
+Ringz(in, freq, decaytime) - Ringz(in, freq, attacktime)\
+\
+Note that if attacktime == decaytime then the signal cancels out and if attacktime > decaytime\
+then the impulse response is inverted.\
+\
+The great advantage to this filter over FOF is that there is no limit to the number of overlapping\
+grains since the grain is just the impulse response of the filter.\
+\
+
+\f0\b in
+\f1\b0  - input signal to be processed\
+
+\f0\b freq
+\f1\b0  - resonant frequency in Hertz\
+
+\f0\b attackTime
+\f1\b0  - 60 dB attack time in seconds.\
+
+\f0\b decayTime
+\f1\b0  - 60 dB decay time in seconds.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\
+\{ \cf2 Formlet\cf0 .ar(\cf2 Impulse\cf0 .ar(20, 0.5), 1000, 0.01, 0.1) \}.play;\
+\
+\{ \cf2 Formlet\cf0 .ar(\cf2 Blip\cf0 .ar(\cf2 XLine\cf0 .kr(10,400,8), 1000, 0.1), 1000, 0.01, 0.1) \}.play;\
+\
+(\
+\cf3 // modulating formant frequency\cf0 \
+\{ \
+	\cf2 var\cf0  in;\
+	in = \cf2 Blip\cf0 .ar(\cf2 SinOsc\cf0 .kr(5,0,20,300), 1000, 0.1);\
+	\cf2 Formlet\cf0 .ar(in, \cf2 XLine\cf0 .kr(1500,700,8), 0.005, 0.04);\
+\}.play;\
+)\
+\
+(\
+\cf3 // mouse control of frequency and decay time.\cf0 \
+\{ \
+	\cf2 var\cf0  in;\
+	in = \cf2 Blip\cf0 .ar(\cf2 SinOsc\cf0 .kr(5,0,20,300), 1000, 0.1);\
+	\cf2 Formlet\cf0 .ar(in, \
+		\cf2 MouseY\cf0 .kr(700,2000,\cf4 1\cf0 ), \
+		0.005, \cf2 MouseX\cf0 .kr(0.01,0.2,\cf4 1\cf0 ));\
+\}.play;\
+)\
+\
+(\
+\cf3 // mouse control of frequency and decay time.\cf0 \
+\{ \
+	\cf2 var\cf0  freq;\
+	freq = \cf2 Formlet\cf0 .kr(\
+		\cf2 Dust\cf0 .kr(10 ! 2), \
+		\cf2 MouseY\cf0 .kr(7,200,\cf4 1\cf0 ), \
+		0.005, \cf2 MouseX\cf0 .kr(0.1,2,\cf4 1\cf0 )\
+	);\
+	SinOsc.ar(freq * 200 + [500, 600] - 100) * 0.2\
+\}.play;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+}

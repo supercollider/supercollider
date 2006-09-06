@@ -1,0 +1,148 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Dictionary\
+
+\f1\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Superclass: Set\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+A Dictionary is an associative collection mapping keys to values.\
+Two keys match if they are equal. i.e. == returns true.\
+\
+The contents of a Dictionary are unordered. \
+You must not depend on the order of items in a Dictionary.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul \ulc0 Creation:
+\f1\b0\fs24 \ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 *new(n)
+\f1\b0 \
+\
+Creates a Dictionary with an initial capacity for n key value mappings.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul \ulc0 Adding and Removing:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \ulnone add(anAssociation)
+\fs28 \ul \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone Add anAssociation to the Dictionary.  \
+If the key value pair already exists in the Dictionary, the key's value will be replaced.
+\f2 \
+\
+(\
+d = \cf2 Dictionary\cf0 .new;\
+d.add(\cf3 'monkey'\cf0  -> 0).postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // Add robot as a key with a value of 1\cf0 \
+d.add(\cf3 'robot'\cf0  -> 1).postln;\
+\cf4 // Replaces the value for the key monkey with 2\cf0 \
+d.add(\cf3 'monkey'\cf0  -> 2).postln;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 put(key, obj)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Associate two objects and add them to the Dictionary.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 key 
+\f1\b0 - key to associate with object
+\f0\b \
+obj 
+\f1\b0  - an object\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 d.put(\cf5 "abc"\cf0 , 10).postln;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 removeAt(key)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 Remove the key and the value associated with it from the Dictionary.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+d.removeAt(\cf3 'monkey'\cf0 ).postln;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul \ulc0 Accessing:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 at(key)
+\f2\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 Access the value associated with the key.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // Get the value associated with key\cf0 \
+d.at(\cf3 'robot'\cf0 );\
+\cf4 // Key doesn't exist\cf0 \
+d.at(\cf3 'monkey'\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 matchAt(item)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+The dictionary's keys are used as conditions against which the arbitrary item is matched. \
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 Note: if an item matches multiple criteria, the value returned is arbitrary. This is because a dictionary is an unordered collection. It's the user's responsibility to make sure that criteria are mutually exclusive.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+If the key is an object, the item will be matched by identity (if key === item, the value will be returned). \
+If the key is a collection, the item is matched if it's contained in the collection. \
+If the key is a function, the function is evaluated with the item as an argument and the item is matched if the function returns true.\
+\
+
+\f2 \cf6 d = \cf7 Dictionary\cf6 [\
+	0 -> \cf8 'zero'\cf6 ,\
+	\cf8 'abc'\cf6  -> \cf8 'alpha'\cf6 ,\
+	[1, 2, 3, 5, 8, 13, 21] -> \cf8 'fibonacci'\cf6 ,\
+	\{ \cf7 |x|\cf6  x.even \} -> \cf8 'even'\cf6 \
+];\
+\
+d.matchAt(0)\
+d.matchAt(1)\
+d.matchAt(2)  \cf9 // matches both 'fibonacci' and 'even', but 'fibonacci' is returned\cf6 \
+d.matchAt(4)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 d.matchAt('abc')\
+}

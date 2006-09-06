@@ -1,0 +1,51 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 TWChoose
+\f1\b0\fs18 \cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 The output is selected randomly on recieving a trigger from an array of inputs.\
+the weights of this choice are determined from the weights array.\
+If normalize is set to 1 the weights are continuously normalized, which means an extra\
+calculation overhead. \
+when using fixed values the 
+\f0\b normalizeSum
+\f2\b0  method can be used to normalize the values\
+TWChoose is a composite of TWindex and Select\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 	*ar(trig,array,weights,normalize)\
+	*kr(trig,array,weights,normalize)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf2 \
+\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \{ \
+	\cf2 var\cf0  a;\
+	a = [\
+			\cf2 SinOsc\cf0 .ar,\
+			\cf2 Saw\cf0 .ar,\
+			\cf2 Pulse\cf0 .ar\
+		];\
+	\cf2 TWChoose\cf0 .ar(\cf2 Dust.ar(MouseX.kr(1, 1000, 1))\cf0 , a, [0.99, 0.05, 0.05].normalizeSum) * 0.2\
+	\
+\}.play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 )\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Note: all the ugens are continously running. This may not be the most efficient way if each input is  cpu-expensive.\
+}

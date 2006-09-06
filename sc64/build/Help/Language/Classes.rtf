@@ -1,0 +1,97 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Classes
+\f1\b0\fs24 \
+\
+	All objects in SuperCollider are members of a class that describes the objects' data and interface. The name of a class must begin with a capital letter. Class names are the only global values in the SC language. Since classes are themselves objects, the value of a class name identifier is the object representing that class.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Instance Variables\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+	The data of an object is contained in its instance variables. Instance variables are of two kinds, named and indexed. Each object contains a separate copy of its instance variables.\
+\
+	Some classes' instances have no instance variables at all but instead have an atomic value. Classes whose instances consist of an atomic value are Integer, Float, Symbol, True, False, Nil, Infinitum, Char, Color.\
+\
+	Instance variables declaration lists occur after the open curly bracket of the class definition and are preceeded by the reserved word 
+\f0\b var
+\f1\b0 . Instance variables names in the list may be initialized to a default literal value by using an equals sign. Instance variables which are not explicitly initialized will be set to nil.\
+\
+	Instance variables may only be directly accessed and changed from within the class' own methods. Instance variables may be exposed to clients by adding getter and setter messages to the class. A 
+\f0\b getter
+\f1\b0  message is a message with the same name as the variable which returns the value of that variable when sent to the receiver. A 
+\f0\b setter
+\f1\b0  message is a message with the name of the variable with an underscore appended which sets the value of the instance variable to the value of the argument to the message. Getter and setter methods may be defined in the declaration of the instance variable. A getter message for an instance variable is created by typing a less than sign < before the variable name. A setter message is created by typing a greater than > sign before the variable name. If both occur then they must occur in the order <>.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf2 var\cf0  a, <b, >c, <>d;
+\f1 \
+	a has no getter or setter.\
+	b has a getter but not a setter.\
+	c has only a setter.\
+	d has both a getter and setter.\
+\
+\
+
+\f2 \cf2 Point\cf0  \{\
+	\cf3 // x and y are instance variables which have both getter and setter methods\
+\cf0 	\cf3 // and default to zero.\
+\cf0 	\cf2 var\cf0  <>x = 0, <>y = 0;		\
+	...\
+\}\
+\
+p = \cf2 Point\cf0 .new;\
+p.x_(5);		\cf3 // send setter message to set x to 5\
+\cf0 p.y_(7);		\cf3 // send setter message to set y to 7\
+\cf0 p.x = 5;		\cf3 // send setter message using setter assignment (See [03 Assignment])\
+\cf0 p.y = 7;		\cf3 // send setter message using setter assignment (See [03 Assignment])\
+\cf0 a = p.x;		\cf3 // send getter message for x\
+\cf0 b = p.y;		\cf3 // send getter message for y\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Class Variables\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+Class variables are values that are shared by all objects in the class. Class variable declaration lists are preceeded by the reserved word 
+\f0\b classvar
+\f1\b0  and may be interspersed with instance variable declaration lists. Class variables like instance variables may only be directly accessed by methods of the class. Class variables may also have getter and setter methods created for them using the less than < and greater than > symbols.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Instance Methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+	The messages of a class' interface are implemented in the methods of the class. When an object is sent a message the method whose name matches the message selector in the receiver's class is executed.\
+\
+	Method definitions follow the class variable and instance variable declarations in the class.\
+\
+	Method definitions are similar to FunctionDefs in syntax. Method definitions begin with the message selector. The message selector must be an identifier or a binary operator. Methods have arguments and variable declarations with the same syntax as in FunctionDefs. Methods however have an implicit first argument named 
+\f0\b this
+\f1\b0  which is the receiver of the message. The variable 'this' may be referred to just like any of the other arguments and variables in the method. You may not assign a value to 'this'.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Class Methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+	Class Methods are methods that implement messages sent to the class object. A common example is the message 
+\f0\b new
+\f1\b0  which is sent to the class object to create a new instance of the class. Class method names have an asterisk preceeding the message selector.\
+\
+}

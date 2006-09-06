@@ -1,0 +1,346 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fnil\fcharset77 LucidaGrande;\f4\fnil\fcharset77 LucidaGrande-Bold;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;
+\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red96\green96\blue96;\red0\green115\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Binary messages
+\fs18 \
+
+\f1\b0 \
+The pattern for a binary message is\
+\
+	RECEIVER OPERATOR OPERAND\
+	\
+For example\
+\
+	2 * 3\
+	\
+is a receiver (the object to which a message is sent), a binary operator, and an operand.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Mixing = addition\
+
+\f1\b0\fs18 \
+Use addition (a binary operation) to mix two or more ugens.\
+\
+(\
+	\cf2 // mix 2 sawtooth waves\cf0 \
+	\{ \
+		\cf3 Saw\cf0 .ar(500, 0.05)				\cf2 // receiver\cf0 \
+		+							\cf2 // operator\cf0 \
+		\cf3 Saw\cf0 .ar(600, 0.06)				\cf2 // operand\cf0 \
+	\}.scope;\
+)\
+\
+\
+(\cf4 \
+\cf5 // mix 3 unit generators.\cf4 \
+	\{ \
+		\cf6 Saw\cf4 .ar(500, 0.05)				\cf5 // receiver\cf4 \
+		+							\cf5 // operator\cf4 \
+		\cf6 Saw\cf4 .ar(600, 0.06)				\cf5 // operand\cf4 \
+										\cf5 // when evaluated produce \
+										// a BinaryOpUGen\cf4 \
+										\cf5 // this BinaryOpUGen is then a receiver for an\cf4 \
+		+								\cf5 // addition operator followed by\cf4 \
+		\cf6 Saw\cf4 .ar(700, 0.07)					\cf5 // an operand\cf4 \
+	\}.scope;\
+\cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+Rewrite the previous example with the Mix ugen.\
+\
+(\
+\{ \
+	\cf3 Mix\cf0 .ar(\
+		\cf2 // the ugens that will be mixed go into an array\cf0 \
+		[ \
+			\cf3 Saw\cf0 .ar(500, 0.05),\
+			\cf3 Saw\cf0 .ar(600, 0.06), \
+			\cf3 Saw\cf0 .ar(700, 0.06) \
+		]\
+	) \
+\}.scope\
+)\
+\
+Or use Mix.arFill to create the same result. \
+\
+\{ \cf3 Mix\cf0 .arFill(3, \{ \cf3 arg\cf0  i; \cf3 Saw\cf0 .ar(500 + (i * 100), 0.05) \}) \}.scope;\
+\
+Every time the function is evaluated, the argument i is incremented. So i equals 0 the first time the function is evaluated, i equals 1 the second time, i equals 2, the third time, and so on.\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 Scaling = multiplication
+\f1\b0 \
+
+\fs18 \
+Apply an envelope, in the form of a low-frequency sine wave, to a WhiteNoise generator. \
+\
+\{ \cf3 WhiteNoise\cf0 .ar(0.1) * \cf3 SinOsc\cf0 .kr(1, 1) \}.scope;\
+\
+(\
+	\cf2 // scaling and mixing\cf0 \
+	\cf2 // ... imitates a train?\cf0 \
+	\{ \
+		(\cf3 WhiteNoise\cf0 .ar(0.1) * \cf3 SinOsc\cf0 .kr(1, 1))\
+		+\
+		(\cf3 BrownNoise\cf0 .ar(0.1) * \cf3 SinOsc\cf0 .kr(2, 1))\
+	\
+	\}.scope;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Envelopes\
+
+\f1\b0\fs18 \
+Dynamically modulate any parameter in a ugen (such as frequency, phase, or amplitude) with an envelope.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // modulate amplitude\cf0 \
+\{ \cf3 SinOsc\cf0 .ar(440, 0, 0.1) * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .sine(1), doneAction: 2) \}.scope;\
+\
+Setting the doneAction argument (control) to 2 insures that after the envelope reaches its endpoint, SuperCollider will release the memory it used for the instances of the SinOsc and the EnvGen. \
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Keyword arguments
+\f1\b0\fs18 \
+\
+Keywords make code easier to read and they allow arguments to be presented in any order. Here, the doneAction and the timeScale arguments are expressed in keyword style. \
+\
+(\cf4 \
+\cf6 SynthDef\cf4 (\cf7 "timeScale"\cf4 , \{ \cf6 arg\cf4  ts = 1;\
+	\cf6 Out\cf4 .ar(\
+		0,\
+		\cf6 SinOsc\cf4 .ar(440, 0, 0.4) \
+		* \
+		\cf6 EnvGen\cf4 .kr(\
+			\cf6 Env\cf4 .sine(1), \
+			doneAction: 2, \
+			timeScale: ts		\cf5 // scale the duration of an envelope\cf4 \
+		)\
+	)\
+\}).load(s);\
+\cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Synth\cf0 (\cf8 "timeScale"\cf0 , [\cf9 \\ts\cf0 , 0.1]); \cf2 // timeScale controls the duration of the envelope\cf0 \
+\cf2 \
+////////////////////////////////////////////////////////////////////////////////////////////////////\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // scale the duration of the envelope for every new synth\cf0 \
+(\
+r = \cf3 Routine\cf0 (\{\
+	loop(\{\
+		\cf3 Synth\cf0 (\cf8 "timeScale"\cf0 , [\cf9 \\ts\cf0 , 0.01.rrand(0.3)]);\
+		0.5.wait;\
+	\})\
+\});\
+)\
+r.play\
+\cf2 \
+////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Additive Synthesis\
+
+\f1\b0\fs18 \
+Additive synthesis is as its name says. Components are added (mixed) together.\
+\
+(\
+\{	\cf2 // evaluate the function 12 times\cf0 \
+	\cf3 var\cf0  n = 12;\
+	\cf3 Mix\cf0 .arFill(\
+		n,\
+		\{ \
+			\cf3 SinOsc\cf0 .ar(\
+				[67.0.rrand(2000), 67.0.rrand(2000)],\
+				0, \
+				n.reciprocal * 0.75\
+			)\
+		\}\
+	)\
+	*\
+	\cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(11, 6), doneAction: 2)\
+\}.scope\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Envelopes\
+
+\f1\b0\fs18 \
+The promise of additive synthesis is that one can add sine waves to create any sound that can be imagined. \
+\
+The problem of additive synthesis is that each and every sine wave and their envelopes have to be specified explicitly.\
+\
+Create nuanced textures by scaling sine waves with envelopes and then mixing the result.\
+\
+(\
+\{	\cf3 var\cf0  n = 12;\
+	\
+	\cf3 Mix\cf0 .arFill(\
+			n,									\cf2 // generate n sine waves\cf0 \
+			\{ \
+			\cf3 SinOsc\cf0 .ar(							\cf2 // each with a possible frequency between\cf0 \
+				[67.0.rrand(2000), 67.0.rrand(2000)],	\cf2 // low.rrand(high) ... floating point values\cf0 \
+				0, \
+				n.reciprocal						\cf2 // scale the amplitude of each sine wave\cf0 \
+												\cf2 // according to the value of n\cf0 \
+			)\
+			*\
+			\cf3 EnvGen\cf0 .kr(							\cf2 // put an envelope on each of the sine waves\cf0 \
+				\cf3 Env\cf0 .sine(2.0.rrand(17)), \
+				doneAction: 0 					\cf2 // deallocate envelopes only when the\cf0 \
+												\cf2 // entire sound is complete (why?)\cf0 \
+			)\
+		\}\
+	)\
+	*											\cf2 // put an envelope over the whole patch\cf0 \
+	\cf3 EnvGen\cf0 .kr(\
+		\cf3 Env\cf0 .perc(11, 6), \
+		doneAction: 2, \
+		levelScale: 0.75\
+	) \
+												\
+\}.scope\
+)\
+\
+(Or use the 
+\f0\b\fs24 Klang
+\f1\b0\fs18  ugen to produce a similar effect).\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Ring modulation
+\f1\b0 \
+
+\fs18 \
+Multiply two UGens.\
+\
+\{ \cf3 SinOsc.ar(440, 0, 0.571)\cf0  * \cf3 SinOsc\cf0 .kr(880) \}.scope\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // use an lfo to modulate the amplitude of the modulator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	
+\f1\fs18 \{ \
+
+\f2\fs24 	
+\f1\fs18 	\cf3 SinOsc\cf0 .ar(440, 0, 0.571) \
+
+\f2\fs24 	
+\f1\fs18 	* \
+
+\f2\fs24 	
+\f1\fs18 	(\cf3 SinOsc\cf0 .kr(880)					\cf2 // wrap the modulator and the lfo in parenthese\cf0 \
+
+\f2\fs24 	
+\f1\fs18 	* 								\cf2 // why ... ?\cf0 \
+
+\f2\fs24 	
+\f1\fs18 	\cf3 SinOsc\cf0 .kr([6.99, 8.01].reciprocal)\
+
+\f2\fs24 	
+\f1\fs18 	)\
+
+\f2\fs24 	
+\f1\fs18 \}.scope\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Amplitude modulation
+\f1\b0 \
+
+\fs18 \
+Multiply two UGens and restrict the value of the modulator to positive values (use the .abs message to calculate 'absolute' value) to create what Charles Dodge calls "classic" amplitude modulation.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // use an lfo to modulate the amplitude of the modulator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	
+\f1\fs18 \{ \
+
+\f2\fs24 	
+\f1\fs18 	\cf3 SinOsc\cf0 .ar(440, 0, 0.571) \
+
+\f2\fs24 	
+\f1\fs18 	* \
+
+\f2\fs24 	
+\f1\fs18 	(\cf3 SinOsc\cf0 .kr(880).abs				\cf2 // wrap the modulator and the lfo in parenthese\cf0 \
+
+\f2\fs24 	
+\f1\fs18 	* 								\cf2 // why ... ?\cf0 \
+
+\f2\fs24 	
+\f1\fs18 	\cf3 SinOsc\cf0 .kr([6.99, 8.01].reciprocal)\
+
+\f2\fs24 	
+\f1\fs18 	)\
+
+\f2\fs24 	
+\f1\fs18 \}.scope\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+Compare "classic" amplitude modulation and ring modulation\
+\
+\cf2 // "classic"\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \{ \cf3 SinOsc.ar(440, 0, 0.571)\cf0  * \cf3 SinOsc\cf0 .kr(880).abs \}.scope\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // "ring"\
+// ... what's the difference?\cf0 \
+\{ \cf3 SinOsc.ar(440, 0, 0.571)\cf0  * \cf3 SinOsc\cf0 .kr(880) \}.scope\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs24 \cf0 go to 
+\f4\b 10_Subtractive_synthesis
+\f1\b0\fs18 \cf2 \
+}

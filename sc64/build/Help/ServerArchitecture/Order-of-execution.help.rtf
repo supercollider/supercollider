@@ -1,0 +1,407 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b\fs40 \cf0 Order of execution \
+
+\f1\b0\fs24 \
+Order of execution is one of the most critical and seemingly difficult aspects of using SuperCollider, but in reality it only takes a little thought in the early planning stages to make it work for you. \
+\
+Order of execution in this context doesn't mean the order in which statements are executed in the language (the client). It refers to the ordering of synth nodes on the server, which corresponds to the order in which their output is calculated each control cycle (blockSize). Whether or not you specify the order of execution, each synth and each group goes into a specific place in the chain of execution.\
+\
+If you have on the server:\
+\
+	synth 1 ---> synth 2 \
+\
+... all the unit generators associated with synth 1 will execute before those in synth 2 during each control cycle. \
+\
+If you don't have any synths that use In.ar, you don't have to worry about order of execution. It only matters when one synth is reading the output of another.\
+\
+The rule is simple: if you have a synth on the server (i.e. an "effect") that depends on the output from another synth (the "source"), the effect must appear later in the chain of nodes on the server than the source.\
+\
+	source ---> effect \
+\
+If you have:\
+\
+	effect ---> source \
+\
+The effect synth will not hear the source synth, and you won't get the results you want. \
+\
+
+\f0\b\fs28 \ul Some Notes about Servers and Targets\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone There is always a default 
+\f0\b Server
+\f1\b0 , which can be accessed or set through the class method Server.default. At startup this is set to be the local Server, and is also assigned to the interpreter variable s.\
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f2\fs18 \cf2 // execute the following and watch the post window\cf0 \
+s === \cf3 Server\cf0 .default;\
+s === \cf3 Server\cf0 .local;\
+\cf3 Server\cf0 .default = \cf3 Server\cf0 .internal; s === \cf3 Server\cf0 .default;
+\f1\fs24 \
+
+\f2\fs18 \cf3 Server\cf0 .default = \cf3 Server\cf0 .local; \cf2 // return it to the local server
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+When a 
+\f0\b Server
+\f1\b0  is booted there is a top level group with an ID of 0 that defines the root of the node tree. This is represented by a subclass of Group: 
+\f0\b RootNode
+\f1\b0 . There is also a 
+\f0\b default_group
+\f1\b0  with an ID of 1. This group is the default group for all Nodes. This is what you will get if you supply a Server as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.  \
+\
+The default group serves an important purpose: It provides a predictable basic Node tree so that methods such as Server-scope and Server-record can function without running into order of execution problems. Thus in general one should create new Nodes within the default group rather than in the RootNode. See 
+\f0\b default_group
+\f1\b0  and 
+\f0\b RootNode 
+\f1\b0 for more detail.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul \ulc0 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \ul Controlling order of execution\ulnone  \
+
+\f1\b0\fs24 \
+There are three ways to control the order of execution: using addAction in your synth creation messages, moving nodes, and placing your synths in groups. Using groups is optional, but they are the most effective in helping you organize the order of execution.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-2880\ql\qnatural
+
+\f0\b \cf0 Add actions:
+\f1\b0 \
+\
+By specifying an addAction argument for 
+\f0\b Synth.new
+\f1\b0  (or SynthDef.play, Function.play, etc.) one can specify the node's placement relative to a target. The target might be a group node, another synth node, or a server. \
+\
+As noted above, the default target is the 
+\f0\b default_group
+\f1\b0  (the group with 
+\f0\b nodeID 1
+\f1\b0 ) of the default Server. \
+\
+ The following 
+\f0\b Symbols
+\f1\b0  are valid addActions for Synth.new: \cf4 \\addToHead\cf0 , \cf4 \\addToTail\cf0 , \cf4 \\addBefore\cf0 , \cf4 \\addAfter\cf0 , \cf4 \\addReplace\cf0 .\
+\
+
+\f0\b 	Synth.new(defName, args, target, addAction)
+\f1\b0 \
+		if target is a Synth the  \cf4 \\addToHead\cf0 , and \cf4 \\addToTail\cf0  methods will apply to that Synths group\
+		if target is a Server it will resolve to that Server's default group\
+		if target is nil it will resolve to the default group of the default Server\
+	 	 
+\f0\b \
+
+\f1\b0 For each addAction there is also a corresponding convenience method of class 
+\f0\b Synth
+\f1\b0 :
+\f0\b \
+	\
+	Synth.head(aGroup, defName, args)\
+		
+\f1\b0 add the new synth to the the head of the group specified by aGroup\
+	 	if aGroup is a synth node, the new synth will be added to the head of that node's group\
+	 	if target is a Server it will resolve to that Server's default group\
+		if target is nil it will resolve to the default group of the default Server\
+
+\f0\b \
+	Synth.tail(aGroup, defName, args)\
+		
+\f1\b0 add the new synth to the the tail of the group specified by aGroup\
+	 	if aGroup is a synth node, the new synth will be added to the tail of that node's group\
+	 	if target is a Server it will resolve to that Server's default group\
+		if target is nil it will resolve to the default group of the default Server\
+
+\f0\b 	\
+	Synth.before(aNode, defName, args)\
+		
+\f1\b0 add the new node just before the node specified by aNode.\
+
+\f0\b \
+	Synth.after(aNode, defName, args)\
+		
+\f1\b0 add the new node just after the node specified by aNode.\
+
+\f0\b \
+	Synth.replace(synthToReplace, defName, args)\
+		
+\f1\b0 the new node replaces the node specified by synthToReplace. The target node is freed.\
+\
+Using Synth.new without an addAction will result in the default addAction. (You can check the default values for the arguments of any method by looking at a class' source code. See 
+\f0\b Internal-Snooping
+\f1\b0  for more details.) Where order of execution matters, it is important that you specify an addAction, or use one of the convenience methods shown above.\
+\
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b \cf0 Moving nodes:\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b \cf0 	.moveBefore\
+	.moveAfter\
+	.moveToHead\
+	.moveToTail
+\f1\b0 \
+\
+If you need to change the order of execution after synths and groups have been created, you can do this using move messages.\
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f2\fs18 \cf0 	~fx = \cf3 Synth\cf0 .tail(s, \cf5 "fx"\cf0 );\
+	~src = \cf3 Synth\cf0 .tail(s, \cf5 "src"\cf0 );  \cf2 // effect will not be heard b/c it's earlier\cf0 \
+	~src.moveBefore(~fx);   \cf2 // place the source before the effect\cf0 \
+	
+\f1\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-2880\ql\qnatural
+
+\f0\b \cf0 Groups \
+
+\f1\b0 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 Groups can be moved in the same way as synths. When you move a group, all the synths in that group move with it. This is why groups are such an important tool for managing order of execution. (See the 
+\f0\b Group
+\f1\b0  helpfile for details on this and other convenient aspects of Groups.)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-2880\ql\qnatural
+\cf0 \
+		Group 1 ---> Group 2\
+\
+In the above configuration, all of the synths in group 1 will execute before all of the synths in group 2. This is an easy, easy way to make the order of execution happen the way you want it to. \
+\
+Determine your architecture, then make groups to support the architecture.\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b \cf0 Using order of execution to your advantage \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f1\b0 \cf0 \
+Before you start coding, plan out what you want and decide where the synths need to go. \
+\
+A common configuration is to have a routine playing nodes, all of which need to be processed by a single effect. Plus, you want this effect to be separate from other things running at the same time. To be sure, you should place the synth -> effect chain on a private audio bus, then transfer it to the main output.\
+\
+	[Lots of synths] ----> effect ----> transfer\
+\
+This is a perfect place to use a group:\
+\
+	Group ( [lots of synths] ) ----> effect ----> transfer\
+\
+To make the structure clearer in the code, one can also make a group for the effect (even if there's only one synth in it):\
+\
+	Group ( [lots of synths] ) ----> Group ( [effect] ) ----> transfer \
+\
+I'm going to throw a further wrench into the example by modulating a parameter (note length) using a control rate synth.\
+\
+So, at the beginning of your program:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5760\tx7200\ql\qnatural
+
+\f2\fs18 \cf0 s.boot;\
+\
+(\
+l = \cf3 Bus\cf0 .control(s, 1);  \cf2 // get a bus for the LFO--not relevant to order-of-exec\cf0 \
+b = \cf3 Bus\cf0 .audio(s, 2);	\cf2 // assuming stereo--this is to keep the src->fx chain separate from\cf0 \
+				\cf2 // other similar chains\cf0 \
+~synthgroup = \cf3 Group\cf0 .tail(s);\
+~fxgroup = \cf3 Group\cf0 .tail(s);\
+\
+\cf2 // now you have synthgroup --> fxgroup within the default group of s\cf0 \
+\
+\cf2 // make some synthdefs to play with\cf0 \
+\cf3 SynthDef\cf0 (\cf5 "order-of-ex-dist"\cf0 , \{ \cf3 arg\cf0  bus, preGain, postGain;\
+	\cf3 var\cf0  sig;\
+	sig = \cf3 In\cf0 .ar(bus, 2);\
+	sig = (sig * preGain).distort;\
+	\cf3 ReplaceOut\cf0 .ar(bus, sig * postGain);\
+\}).send(s);\
+\
+\cf3 SynthDef\cf0 (\cf5 "order-of-ex-pulse"\cf0 , \{ \cf3 arg\cf0  freq, bus, ffreq, pan, lfobus;\
+	\cf3 var\cf0  sig, noteLen;\
+	noteLen = \cf3 In\cf0 .kr(lfobus, 1);\
+	sig = \cf3 RLPF\cf0 .ar(\cf3 Pulse\cf0 .ar(freq, 0.2, 0.5), ffreq, 0.3);\
+	\cf3 Out\cf0 .ar(bus, \cf3 Pan2\cf0 .ar(sig, pan)\
+		* \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.1, 1), timeScale: noteLen, doneAction: 2));\
+\}).send(s);\
+\
+\cf3 SynthDef\cf0 (\cf5 "LFNoise1"\cf0 , \{ \cf3 arg\cf0  freq, mul, add, bus;\
+	\cf3 Out\cf0 .kr(bus, \cf3 LFNoise1\cf0 .kr(freq, mul:mul, add:add));\
+\}).send(s);\
+)\
+\
+\cf2 // Place LFO:\cf0 \
+\
+~lfo = \cf3 Synth\cf0 .head(s, \cf5 "LFNoise1"\cf0 , [\cf4 \\freq\cf0 , 0.3, \cf4 \\mul\cf0 , 0.68, \cf4 \\add\cf0 , 0.7, \cf4 \\bus\cf0 , l.index]);\
+\
+\cf2 // Then place your effect: \cf0 \
+\
+~dist = \cf3 Synth\cf0 .tail(~fxgroup, \cf5 "order-of-ex-dist"\cf0 , [\cf4 \\bus\cf0 , b.index, \cf4 \\preGain\cf0 , 8, \cf4 \\postGain\cf0 , 0.6]);\
+\
+\cf2 // transfer the results to main out, with level scaling\
+// play at tail of s's default group (note that Function-play also takes addActions!\cf0 \
+\
+~xfer = \{ \cf3 Out\cf0 .ar(0, 0.25 * \cf3 In\cf0 .ar(b.index, 2)) \}.play(s, addAction: \cf4 \\addToTail\cf0 );   \
+\
+\cf2 // And start your routine:\cf0 \
+\
+(\
+r = \cf3 Routine\cf0 (\{\
+	\{\
+		\cf3 Synth\cf0 .tail(~synthgroup, \cf5 "order-of-ex-pulse"\cf0 ,\
+			[\cf4 \\freq\cf0 , rrand(200, 800), \cf4 \\ffreq\cf0 , rrand(1000, 15000), \cf4 \\pan\cf0 , 1.0.rand2,\
+			 \cf4 \\bus\cf0 , b.index, \cf4 \\lfobus\cf0 , l.index]);\
+		0.07.wait;\
+	\}.loop;\
+\}).play(\cf3 SystemClock\cf0 );\
+)\
+\
+~dist.run(\cf3 false\cf0 );	\cf2 // proves that the distortion effect is doing something\cf0 \
+~dist.run(\cf3 true\cf0 );\
+\
+\cf2 // to clean up:\cf0 \
+(\
+r.stop;\cf6 \
+[~synthgroup, ~fxgroup, b, l, ~lfo, ~xfer].do(\{ \cf7 arg\cf6  x; x.free \});\
+currentEnvironment.clear; \cf8 // clear all environment variables\cf0 \
+)\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f1\fs24 \cf0 \
+Note that in the routine, using a Group for the source synths allows their order to easily be specified relative to each other (they are added with the .tail method), without worrying about their order relative to the effect synth.\
+\
+Note that this arrangement prevents errors in order of execution, through the use of a small amount of organizational code. Although straightforward here, this arrangement could easily be scaled to a larger project.\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b \cf0 \
+\
+\
+Messaging Style
+\f1\b0 \
+\
+The above examples are in 'object style'. Should you prefer to work in 'messaging style' there are corresponding messages to all of the methods shown above. See 
+\f0\b NodeMessaging
+\f1\b0 , and 
+\f0\b Server-Command-Reference
+\f1\b0  for more details.\
+\
+\
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Feedback\
+\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 When the various output ugens (
+\f0\b Out
+\f1\b0 , 
+\f0\b OffsetOut
+\f1\b0 , 
+\f0\b XOut
+\f1\b0 ) write data to a bus, they 
+\f3\i mix
+\f1\i0  it with any data from the current cycle, but 
+\f3\i overwrite
+\f1\i0  any data from the previous cycle. (
+\f0\b ReplaceOut
+\f1\b0  overwrites all data regardless.) Thus depending on node order, the data on a given bus may be from the current cycle or be one cycle old. 
+\f0\b In.ar
+\f1\b0  checks the timestamp of any data it reads in and zeros any data from the previous cycle (for use within that synth; the data remains on the bus). This is fine for audio data, as it avoids feedback, but for control data it is useful to be able to read data from any place in the node order. For this reason 
+\f0\b In.kr
+\f1\b0  also reads data that is older than the current cycle.\
+\
+In some cases we might also want to read audio from a node later in the current node order. This is the purpose of 
+\f0\b InFeedback
+\f1\b0 . The delay introduced by this is at maximum one block size, which equals about 0.0014 sec at the default block size and sample rate.\
+\
+The variably mixing and overwriting behaviour of the output ugens can make order of execution crucial when using 
+\f0\b In.kr
+\f1\b0  or 
+\f0\b InFeedback.ar
+\f1\b0 . (No pun intended.) For example with a node order like the following the InFeedback ugen in Synth 2 will only receive data from Synth 1 (-> = write out; <- = read in):\
+\
+Synth 1 -> busA					this synth overwrites the output of Synth3 before it reaches Synth 2\
+Synth 2 (with InFeedback) <- busA \
+Synth 3 -> busA\
+\
+If Synth 1 were moved after Synth 2 then Synth 2's InFeedback would receive a mix of the output from Synth 1 and Synth 3. This would also be true if Synth 2 came after Synth1 and Synth 3. In both cases data from Synth 1 and Synth 3 would have the same time stamp (either current or from the previous cycle), so nothing would be overwritten.\
+\
+(As well, if any In.ar wrote to busA earlier in the node order than Synth 2, it would zero the bus before Synth 3's data reached Synth 2. This is true even it there were no node before Synth 2 writing to busA.)\
+\
+Because of this it is often useful to allocate a separate bus for feedback. With the following arrangement Synth 2 will receive data from Synth3 regardless of Synth 1's position in the node order.
+\f2\fs18 \cf3 \
+\
+
+\f1\fs24 \cf0 Synth 1 -> busA\
+Synth 2 (with InFeedback) <- busB \
+Synth 3 -> busB + busA \
+\
+The following example demonstrates this issue with In.kr:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf5 "help-Infreq"\cf0 , \{ \cf3 arg\cf0  bus;\
+	\cf3 Out\cf0 .ar(0, \cf3 FSinOsc\cf0 .ar(\cf3 In\cf0 .kr(bus), 0, 0.5));\
+\}).send(s);\
+\
+\cf3 SynthDef\cf0 (\cf5 "help-Outfreq"\cf0 , \{ \cf3 arg\cf0  freq = 400, bus;\
+	\cf3 Out\cf0 .kr(bus, \cf3 SinOsc\cf0 .kr(1, 0, freq/40, freq));\
+\}).send(s);\
+\
+b = \cf3 Bus\cf0 .control(s,1);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // add the first control Synth at the tail of the default server; no audio yet\cf0 \
+x = \cf3 Synth\cf0 .tail(s, \cf5 "help-Outfreq"\cf0 , [\cf4 \\bus\cf0 , b.index]);\
+\
+\cf2 // add the sound producing Synth BEFORE it; It receives x's data from the previous cycle\cf0 \
+y = \cf3 Synth\cf0 .before(x, \cf5 "help-Infreq"\cf0 , [\cf4 \\bus\cf0 , b.index]);\
+\
+\cf2 // add another control Synth before y, at the head of the server\cf0 \
+\cf2 // It now overwrites x's cycle old data before y receives it\cf0 \
+z = \cf3 Synth\cf0 .head(s, \cf5 "help-Outfreq"\cf0 , [\cf4 \\bus\cf0 , b.index, \cf4 \\freq\cf0 , 800]);\
+\
+\cf2 // get another bus\cf0 \
+c = \cf3 Bus\cf0 .control(s, 1);\
+\
+\cf2 // now y receives x's data even though z is still there\cf0 \
+y.set(\cf4 \\bus\cf0 , c.index); x.set(\cf4 \\bus\cf0 , c.index);\
+\
+x.free; y.free; z.free;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 	
+\f2\fs18 \cf3 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b\fs28 \cf0  
+\f1\b0\fs24 \
+
+\f0\b\fs28 \ul Helpful 'Third Party' Classes\ulnone \
+
+\f1\b0\fs24 \
+James Harkins' MixerChannel class can help you with order of execution. Each channel includes a synth group and an effect group, as well as level and panning controls and pre- and post-fader sends. Using this class, it helps if you understand audio buses, but it does include methods .play and .playfx to place synths in the correct group and assign the bus automatically. You can download this class from http://www.duke.edu/~jharkins/sc3\
+\
+If you run into trouble, the crucial library includes a utility to query all nodes on the server so that you can see the order in which they're executing. Type 
+\f0\b Crucial.menu
+\f1\b0  to access this command.\
+\
+\
+}
