@@ -248,6 +248,8 @@ void dumpPyrSlot(PyrSlot* slot)
 	post("   %s\n", str);
 }
 
+#include <Carbon/Carbon.h>
+
 void slotString(PyrSlot *slot, char *str)
 {
 	switch (slot->utag) {
@@ -258,7 +260,10 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "Character %d '%c'", slot->ui, slot->ui);
 			break;
 		case tagSym :
-			if (strlen(slot->us->name) > 240) {
+			if (!slot->us->name) {
+				Debugger();
+				snprintf(str, 256, "Symbol <NAME IS NULL PTR>");
+			} else if (strlen(slot->us->name) > 240) {
 				char str2[256];
 				memcpy(str2, slot->us->name, 240);
 				str2[240] = 0;
@@ -342,13 +347,15 @@ void slotString(PyrSlot *slot, char *str)
 		case tagPtr :
 			sprintf(str, "RawPointer %X", slot->ui);
 			break;
-		default :
+		case tagFloat :
 		{
 			char fstr[32];
 			g_fmt(fstr, slot->uf);
 			sprintf(str, "Float %s   %08X %08X", fstr, slot->utag, slot->ui);
 			break;
 		}
+		default :
+			sprintf(str, "<BAD TAG %d>", slot->utag);
 	}
 }
 
@@ -609,9 +616,11 @@ int asCompileString(PyrSlot *slot, char *str)
 		case tagPtr :
 			strcpy(str, "/*Ptr*/ nil");
 			break;
-		default :
+		case tagFloat :
 			g_fmt(str, slot->uf);
 			break;
+		default :
+			Debugger();
 	}
 	return errNone;
 }

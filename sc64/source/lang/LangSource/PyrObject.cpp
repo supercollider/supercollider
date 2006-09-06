@@ -40,9 +40,8 @@ int gNumClasses = 0;
 int gNumClassVars = 0;
 int gFormatElemSize[NUMOBJFORMATS];
 int gFormatElemCapc[NUMOBJFORMATS];
-int gFormatElemTag[NUMOBJFORMATS];
 PyrMethod *gNullMethod; // used to fill row table
-PyrClass* gTagClassTable[16];
+PyrClass* gTagClassTable[10];
 
 PyrClass *class_object;
 PyrClass *class_dict;
@@ -292,19 +291,19 @@ void initSymbols()
  	SetFloat(&o_inf, INFINITY);
 #endif
 	
-	gSpecialValues[svNil] = o_nil.uf;
-	gSpecialValues[svFalse] = o_false.uf;
-	gSpecialValues[svTrue] = o_true.uf;
-	gSpecialValues[svNegOne] = o_negone.uf;
-	gSpecialValues[svZero] = o_zero.uf;
-	gSpecialValues[svOne] = o_one.uf;
-	gSpecialValues[svTwo] = o_two.uf;
-	gSpecialValues[svFHalf] = o_fhalf.uf;
-	gSpecialValues[svFNegOne] = o_fnegone.uf;
-	gSpecialValues[svFZero] = o_fzero.uf;
-	gSpecialValues[svFOne] = o_fone.uf;
-	gSpecialValues[svFTwo] = o_ftwo.uf;
-	gSpecialValues[svInf] = o_inf.uf;
+	gSpecialValues[svNil] = o_nil;
+	gSpecialValues[svFalse] = o_false;
+	gSpecialValues[svTrue] = o_true;
+	gSpecialValues[svNegOne] = o_negone;
+	gSpecialValues[svZero] = o_zero;
+	gSpecialValues[svOne] = o_one;
+	gSpecialValues[svTwo] = o_two;
+	gSpecialValues[svFHalf] = o_fhalf;
+	gSpecialValues[svFNegOne] = o_fnegone;
+	gSpecialValues[svFZero] = o_fzero;
+	gSpecialValues[svFOne] = o_fone;
+	gSpecialValues[svFTwo] = o_ftwo;
+	gSpecialValues[svInf] = o_inf;
 	
 	gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
 	gFormatElemSize[obj_slot  ] = sizeof(PyrSlot);
@@ -325,16 +324,6 @@ void initSymbols()
 	gFormatElemCapc[obj_int8  ] = sizeof(PyrSlot) / sizeof(int8);
 	gFormatElemCapc[obj_char  ] = sizeof(PyrSlot) / sizeof(char);
 	gFormatElemCapc[obj_symbol] = sizeof(PyrSlot) / sizeof(PyrSymbol*);
-	
-	gFormatElemTag[obj_notindexed] = -1;
-	gFormatElemTag[obj_slot  ] = -1;
-	gFormatElemTag[obj_double] = 0;
-	gFormatElemTag[obj_float ] = 0;
-	gFormatElemTag[obj_int32  ] = tagInt;
-	gFormatElemTag[obj_int16 ] = tagInt;
-	gFormatElemTag[obj_int8  ] = tagInt;
-	gFormatElemTag[obj_char  ] = tagChar;
-	gFormatElemTag[obj_symbol] = tagSym;
 }
 
 char *slotSymString(PyrSlot* slot)
@@ -347,7 +336,8 @@ char *slotSymString(PyrSlot* slot)
 		case tagNil : return "Nil";
 		case tagFalse : return "False";
 		case tagTrue : return "True";
-		default : return "<float>";
+		case tagFloat : return "<float>";
+		default : return "BUG";
 	}
 }
 
@@ -586,7 +576,7 @@ void objAddIndexedSlotGrow(PyrSlot *arraySlot, PyrSlot *addSlot)
 			obj = newobj;
 		}
 	}
-	obj->slots[obj->size++].ucopy = addSlot->ucopy;
+	obj->slots[obj->size++] = *addSlot;
 }
 
 void addMethod(PyrClass *classobj, PyrMethod *method)
@@ -1559,18 +1549,15 @@ void initClasses()
 		addIntrinsicVar(class_func, "context", &o_nil);
 	
 	gTagClassTable[ 0] = NULL; 
-	gTagClassTable[ 1] = NULL;
-	gTagClassTable[ 2] = class_int;
-	gTagClassTable[ 3] = class_symbol;
-	gTagClassTable[ 4] = class_char;
-	gTagClassTable[ 5] = class_nil;
-	gTagClassTable[ 6] = class_false;
-	gTagClassTable[ 7] = class_true;
-	gTagClassTable[ 8] = class_rawptr;
-	gTagClassTable[ 9] = class_float;
-	gTagClassTable[10] = class_float;
-	gTagClassTable[11] = class_float;
-	gTagClassTable[12] = class_float;
+	gTagClassTable[tagObj] = NULL;
+	gTagClassTable[tagInt] = class_int;
+	gTagClassTable[tagSym] = class_symbol;
+	gTagClassTable[tagChar] = class_char;
+	gTagClassTable[tagNil] = class_nil;
+	gTagClassTable[tagFalse] = class_false;
+	gTagClassTable[tagTrue] = class_true;
+	gTagClassTable[tagPtr] = class_rawptr;
+	gTagClassTable[tagFloat] = class_float;
 	
 	o_emptyarray.utag = tagObj;
 	o_emptyarray.uo = newPyrArray(NULL, 0, obj_permanent | obj_immutable, false);
@@ -2057,9 +2044,25 @@ void DumpDetailedFrame(PyrFrame *frame)
 	}
 	
 	post("\t....%s details:\n", mstr);
-	post("\t\tneedsHeapContext  = %d\n", methraw->needsHeapContext);
+	post("\t\tspecialIndex  = %d\n", methraw->specialIndex);
+	post("\t\tmethType  = %d\n", methraw->methType);
+	post("\t\tframeSize  = %d\n", methraw->frameSize);
+
+	post("\t\tspaceForTag1  = %d\n", methraw->spaceForTag1);
+	post("\t\tspaceForPad1  = %d\n", methraw->spaceForPad1);
+
+
+	post("\t\tunused2  = %d\n", methraw->unused2);
+	post("\t\tnumargs  = %d\n", methraw->numargs);
+	post("\t\tvarargs  = %d\n", methraw->varargs);
+	post("\t\tnumvars  = %d\n", methraw->numvars);
 	post("\t\tnumtemps  = %d\n", methraw->numtemps);
+	post("\t\tneedsHeapContext  = %d\n", methraw->needsHeapContext);
 	post("\t\tpopSize  = %d\n", methraw->popSize);
+	post("\t\posargs  = %d\n", methraw->posargs);
+	
+	post("\t\spaceForTag2  = %d\n", methraw->spaceForTag2);
+	post("\t\spaceForPad2  = %d\n", methraw->spaceForPad2);
 	
 	slotString(&frame->method, str);		post("\t\tmethod  = %s\n", str);
 	slotString(&frame->caller, str);		post("\t\tcaller  = %s\n", str);
@@ -2123,7 +2126,7 @@ bool isSubclassOf(PyrClass *classobj, PyrClass *testclass)
 bool objAddIndexedSlot(PyrObject *obj, PyrSlot *slot)
 {
 	if (obj->size < ARRAYMAXINDEXSIZE(obj)) {
-		obj->slots[obj->size++].ucopy = slot->ucopy;
+		obj->slots[obj->size++] = *slot;
 		return true;
 	} else {
 		return false;
@@ -2154,27 +2157,29 @@ bool objAddIndexedObject(PyrObject *obj, PyrObject *obj2)
 
 void fillSlots(PyrSlot* slot, int size, PyrSlot* fillslot)
 {
-	double fillval = fillslot->uf;
+	PyrSlot fillval = *fillslot;
 	
-	double *p = &slot->uf - 1;
-	double *pend = p + size;
-	while (p < pend) *++p = fillval;
+	PyrSlot *pslot = slot - 1;
+	PyrSlot *pend = pslot + size;
+	while (pslot < pend) *++pslot = fillval;
 }
 
 void nilSlots(PyrSlot* slot, int size)
 {
-	double xnil = o_nil.uf;
+	PyrSlot xnil = o_nil;
 	
-	double *p = &slot->uf - 1;
-	double *pend = p + size;
-	while (p < pend) *++p = xnil;
+	PyrSlot *pslot = slot - 1;
+	PyrSlot *pend = pslot + size;
+	while (pslot < pend) *++pslot = xnil;
 }
 
 void zeroSlots(PyrSlot* slot, int size)
 {	
-	double *p = &slot->uf - 1;
-	double *pend = p + size;
-	while (p < pend) *++p = 0.;
+	PyrSlot xzero = o_zero;
+
+	PyrSlot *pslot = slot - 1;
+	PyrSlot *pend = pslot + size;
+	while (pslot < pend) *++pslot = xzero;
 }
 
 PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect) 
@@ -2304,11 +2309,14 @@ PyrMethod* initPyrMethod(PyrMethod* method)
 	method->classptr = class_method;
 	method->size = 0;
 	method->size = numSlots;
-	method->rawData1.uf = 0.0;
-	method->rawData2.uf = 0.0;
+	method->rawData1.u.ii = 0;
+	method->rawData1.utag = tagInt;
+	method->rawData1.pad = 0;
+	method->rawData2.u.ii = 0;
+	method->rawData2.pad = 0;
 	nilSlots(&method->code,  numSlots-2);
-	//method->byteMeter.ucopy = o_zero.ucopy;
-	//method->callMeter.ucopy = o_zero.ucopy;
+	//method->byteMeter = o_zero;
+	//method->callMeter = o_zero;
 	//post("<- newPyrMethod %08X %08X\n", method, methraw);
 	return method;
 }
@@ -2461,10 +2469,11 @@ void getIndexedSlot(PyrObject *obj, PyrSlot *a, int index)
 	switch (obj->obj_format) {
 		case obj_slot :
 		case obj_double :
-			a->ucopy = obj->slots[index].ucopy;
+			*a = obj->slots[index];
 			break;
 		case obj_float :
 			a->uf = ((float*)(obj->slots))[index];
+			a->utag = tagFloat;
 			break;
 		case obj_int32 :
 			a->ui = ((int32*)(obj->slots))[index];
@@ -2496,7 +2505,7 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 		case obj_slot :
 			if (obj->obj_flags & obj_immutable) return errImmutableObject;
 			slot = obj->slots + index;
-			slot->ucopy = c->ucopy;
+			*slot = *c;
 			g->gc->GCWrite(obj, slot);
 			break;
 		case obj_double :
@@ -2504,9 +2513,11 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 				if (c->utag != tagInt) return errWrongType;
 				else {
 					obj->slots[index].uf = c->ui;
+					obj->slots[index].utag = tagFloat;
 				}
 			} else {
 				obj->slots[index].uf = c->uf;
+				obj->slots[index].utag = tagFloat;
 			}
 			break;
 		case obj_float :
@@ -2551,9 +2562,11 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 			if (obj->obj_flags & obj_immutable) return errImmutableObject;
 			slot = obj->slots + index;
 			slot->uf = val;
+			slot->utag = tagFloat;
 			break;
 		case obj_double :
 			obj->slots[index].uf = val;
+			obj->slots[index].utag = tagFloat;
 			break;
 		case obj_float :
 			((float*)(obj->slots))[index] = (float)val;
@@ -2584,7 +2597,8 @@ int calcHash(PyrSlot *a)
 		case tagFalse : hash = 0x55AA55AA; break;
 		case tagTrue : hash = 0x69696969; break;
 		case tagPtr : hash = Hash(a->ui); break;
-		default : hash = Hash(a->utag + Hash(a->ui)); break; // hash for a double
+		case tagFloat : hash = Hash(a->utag + Hash(a->ui)); break; // hash for a double
+		default: hash = 0; 
 	}
 	return hash;
 }

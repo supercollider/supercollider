@@ -43,7 +43,7 @@ PyrSymbol *gSpecialUnarySelectors[opNumUnarySelectors];
 PyrSymbol *gSpecialBinarySelectors[opNumBinarySelectors];
 PyrSymbol *gSpecialSelectors[opmNumSpecialSelectors];
 PyrSymbol* gSpecialClasses[op_NumSpecialClasses];
-double gSpecialValues[svNumSpecialValues];
+PyrSlot gSpecialValues[svNumSpecialValues];
 
 PyrParseNode* gRootParseNode;
 int gParserResult;
@@ -598,8 +598,12 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						// create getter method
 						method = newPyrMethod();
 						methraw = METHRAW(method);
-                                                methraw->unused1 = 0;
-                                                methraw->unused2 = 0;
+						methraw->spaceForTag1 = tagInt;
+						methraw->spaceForTag2 = tagInt;
+						methraw->spaceForPad1 = 0;
+						methraw->spaceForPad2 = 0;
+						methraw->unused1 = 0;
+						methraw->unused2 = 0;
 						methraw->numargs = 1;
 						methraw->numvars = 0;
 						methraw->posargs = 1;
@@ -611,7 +615,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetObject(&method->ownerclass, classobj);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
-						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
+						method->name = vardef->mVarName->mSlot;
 						methraw->methType = methReturnInstVar;
 						methraw->specialIndex = instVarIndex;
 						addMethod(classobj, method);
@@ -627,8 +631,12 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						// create setter method
 						method = newPyrMethod();
 						methraw = METHRAW(method);
-                                                methraw->unused1 = 0;
-                                                methraw->unused2 = 0;
+						methraw->spaceForTag1 = tagInt;
+						methraw->spaceForTag2 = tagInt;
+						methraw->spaceForPad1 = 0;
+						methraw->spaceForPad2 = 0;
+						methraw->unused1 = 0;
+						methraw->unused2 = 0;
 						methraw->numargs = 2;
 						methraw->numvars = 0;
 						methraw->posargs = 2;
@@ -662,8 +670,12 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						// create getter method
 						method = newPyrMethod();
 						methraw = METHRAW(method);
-                                                methraw->unused1 = 0;
-                                                methraw->unused2 = 0;
+						methraw->spaceForTag1 = tagInt;
+						methraw->spaceForTag2 = tagInt;
+						methraw->spaceForPad1 = 0;
+						methraw->spaceForPad2 = 0;
+						methraw->unused1 = 0;
+						methraw->unused2 = 0;
 						methraw->numargs = 1;
 						methraw->numvars = 0;
 						methraw->posargs = 1;
@@ -673,7 +685,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetNil(&method->contextDef);
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, metaclassobj);
-						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
+						method->name = vardef->mVarName->mSlot;
 						SetSymbol(&method->selectors, classobj->name.us);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
@@ -727,8 +739,12 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						// create getter method
 						method = newPyrMethod();
 						methraw = METHRAW(method);
-                                                methraw->unused1 = 0;
-                                                methraw->unused2 = 0;
+						methraw->spaceForTag1 = tagInt;
+						methraw->spaceForTag2 = tagInt;
+						methraw->spaceForPad1 = 0;
+						methraw->spaceForPad2 = 0;
+						methraw->unused1 = 0;
+						methraw->unused2 = 0;
 						methraw->numargs = 1;
 						methraw->numvars = 0;
 						methraw->posargs = 1;
@@ -738,12 +754,12 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetNil(&method->contextDef);
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, metaclassobj);
-						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
+						method->name = vardef->mVarName->mSlot;
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
 
 						methraw->methType = methReturnLiteral;
-						method->selectors.ucopy = litslot.ucopy;
+						method->selectors = litslot;
 						addMethod(metaclassobj, method);
 					}
 				}
@@ -1252,6 +1268,10 @@ void PyrMethodNode::compile(PyrSlot *result)
 	SetObject(&method->ownerclass, gCompilingClass);
 	
 	methraw = METHRAW(method);
+	methraw->spaceForTag1 = tagInt;
+	methraw->spaceForTag2 = tagInt;
+	methraw->spaceForPad1 = 0;
+	methraw->spaceForPad2 = 0;
 	methraw->unused1 = 0;
 	methraw->unused2 = 0;
 	
@@ -1289,8 +1309,8 @@ void PyrMethodNode::compile(PyrSlot *result)
 	numArgNames = methraw->posargs;
 	
 	if (numSlots == 1) {
-		method->argNames.ucopy = o_argnamethis.ucopy;
-		method->prototypeFrame.ucopy = o_onenilarray.ucopy;
+		method->argNames = o_argnamethis;
+		method->prototypeFrame = o_onenilarray;
 	} else {
 		argNames = newPyrSymbolArray(NULL, numArgNames, obj_permanent | obj_immutable, false);
 		argNames->size = numArgNames;
@@ -1364,7 +1384,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 				*slot = litval;
 			}
 			if (funcVarArgs) {
-				method->prototypeFrame.uo->slots[numArgs].ucopy = o_emptyarray.ucopy;
+				method->prototypeFrame.uo->slots[numArgs] = o_emptyarray;
 			}
 		}
 	}
@@ -1793,6 +1813,10 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot *resul
 	gPartiallyAppliedFunction = block;
 	
 	PyrMethodRaw* methraw = METHRAW(block);
+	methraw->spaceForTag1 = tagInt;
+	methraw->spaceForTag2 = tagInt;
+	methraw->spaceForPad1 = 0;
+	methraw->spaceForPad2 = 0;
 	methraw->unused1 = 0;
 	methraw->unused2 = 0;
 
@@ -2760,7 +2784,7 @@ void compileSwitchMsg(PyrCallNode* node)
 				
 				int index = arrayAtIdentityHashInPairs(array, key);
 				PyrSlot *slot = array->slots + index;
-				slot->ucopy = key->ucopy;
+				*slot = *key;
 				SetInt(slot+1, offset); 
 
 				if (byteCodes) {
@@ -3730,11 +3754,11 @@ int litDictPut(PyrObject *dict, PyrSlot *key, PyrSlot *value)
 	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
 	if (knows && IsSym(key)) {
 		if (key->us == s_parent) {
-			dict->slots[ivxIdentDict_parent].ucopy = value->ucopy;
+			dict->slots[ivxIdentDict_parent] = *value;
 			return errNone;
 		}
 		if (key->us == s_proto) {
-			dict->slots[ivxIdentDict_proto].ucopy = value->ucopy;
+			dict->slots[ivxIdentDict_proto] = *value;
 			return errNone;
 		}
 	}
@@ -3743,9 +3767,9 @@ int litDictPut(PyrObject *dict, PyrSlot *key, PyrSlot *value)
 	
 	index = arrayAtIdentityHashInPairs(array, key);
 	slot = array->slots + index;
-	slot[1].ucopy = value->ucopy;
+	slot[1] = *value;
 	if (IsNil(slot)) {
-		slot->ucopy = key->ucopy;
+		*slot = *key;
 	}
 #endif
 	return errNone;
@@ -3844,6 +3868,10 @@ void PyrBlockNode::compile(PyrSlot* result)
 	gPartiallyAppliedFunction = NULL;
 
 	methraw = METHRAW(block);
+	methraw->spaceForTag1 = tagInt;
+	methraw->spaceForTag2 = tagInt;
+	methraw->spaceForPad1 = 0;
+	methraw->spaceForPad2 = 0;
 	methraw->unused1 = 0;
 	methraw->unused2 = 0;
 	
@@ -3990,7 +4018,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 	
 	if (funcVarArgs) {
 		//SetNil(&block->prototypeFrame.uo->slots[numArgs]);
-		block->prototypeFrame.uo->slots[numArgs].ucopy = o_emptyarray.ucopy;
+		block->prototypeFrame.uo->slots[numArgs] = o_emptyarray;
 	}
 	
 	if (numVars) {
@@ -4250,7 +4278,7 @@ int conjureLiteralSlotIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 		selectors = func->selectors.uo;
 	}
 	slot2 = selectors->slots + selectors->size++;
-	*(double*)slot2 = *(double*)slot;
+	*slot2 = *slot;
 		
 	return selectors->size-1;
 }
@@ -4291,7 +4319,7 @@ int conjureConstantIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 		freePyrObject((PyrObject*)constants);  
 		constants = func->constants.uo;
 	}
-	constants->slots[constants->size++].ucopy = slot->ucopy;
+	constants->slots[constants->size++] = *slot;
 		
 	return constants->size-1;
 }

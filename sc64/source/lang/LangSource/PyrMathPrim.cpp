@@ -65,7 +65,7 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 					}
 					break;
 				default :
-					a->uf = a->ui + b->uf; 
+					a->uf = a->ui + b->uf; a->utag = tagFloat;
 					break;
 			}
 			break;
@@ -166,7 +166,7 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 					}
 					break;
 				default :
-					a->uf = a->ui * b->uf; 
+					a->uf = a->ui * b->uf;  a->utag = tagFloat;
 					break;
 			}
 			break;
@@ -267,7 +267,7 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 					}
 					break;
 				default :
-					a->uf = a->ui - b->uf; 
+					a->uf = a->ui - b->uf;  a->utag = tagFloat;
 					break;
 			}
 			break;
@@ -366,7 +366,7 @@ int prAddInt(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default :
-			a->uf = a->ui + b->uf; 
+			a->uf = a->ui + b->uf;  a->utag = tagFloat;
 			break;
 	}
 	g->sp-- ; // drop
@@ -458,7 +458,7 @@ int prSubInt(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default :
-			a->uf = a->ui - b->uf; 
+			a->uf = a->ui - b->uf;  a->utag = tagFloat;
 			break;
 	}
 	g->sp-- ; // drop
@@ -550,7 +550,7 @@ int prMulInt(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default :
-			a->uf = a->ui * b->uf; 
+			a->uf = a->ui * b->uf;  a->utag = tagFloat;
 			break;
 	}
 	g->sp-- ; // drop
@@ -836,6 +836,7 @@ int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
 		a->uf = sc_clip(a->ui, lo, hi);
+		a->utag = tagFloat;
 	}
 	return errNone;
 }
@@ -916,6 +917,7 @@ int mathWrapInt(struct VMGlobals *g, int numArgsPushed)
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
 		a->uf = sc_mod(x - lo, hi - lo) + lo;
+		a->utag = tagFloat;
 	}
 	return errNone;
 }
@@ -996,6 +998,7 @@ int mathFoldInt(struct VMGlobals *g, int numArgsPushed)
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
 		a->uf = sc_fold(x, lo, hi);
+		a->utag = tagFloat;
 	}
 	return errNone;
 }

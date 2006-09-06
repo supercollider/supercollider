@@ -71,7 +71,7 @@ static PostBuf mainPostBuf;
 #define POSTBUFLEN 131072
 #define POSTBUFMASK 131071
 
-FILE *postfile=NULL;
+FILE *postfile=stdout;
 
 void PostBuf::Init()
 {

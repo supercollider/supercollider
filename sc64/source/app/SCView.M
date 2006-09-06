@@ -654,11 +654,11 @@ void SCView::sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot 
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, mObj); 
         for (int i=0; i<numargs; ++i) {
-            ++g->sp;  g->sp->ucopy = args[i].ucopy; 
+            ++g->sp;  *g->sp = args[i]; 
         }
         runInterpreter(g, method, numargs+1);
         g->canCallOS = false;
-        if (result) result->ucopy = g->result.ucopy;
+        if (result) *result = g->result;
     }
     pthread_mutex_unlock (&gLangMutex);
 
@@ -808,8 +808,8 @@ void SCView::beginDrag(SCPoint where)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
-        slot.ucopy = g->classvars->slots[classVarIndex].ucopy;
-        stringSlot.ucopy = g->classvars->slots[classVarIndex+1].ucopy;
+        slot = g->classvars->slots[classVarIndex];
+        stringSlot = g->classvars->slots[classVarIndex+1];
 		if (isKindOfSlot(&stringSlot, class_string)) {
 			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
 		}
@@ -5017,7 +5017,7 @@ int prSCView_SetProperty(struct VMGlobals *g, int numArgsPushed)
 	int err = view->setProperty(args[1].us, args+2);
         if (err) SetNil(args+2);
         
-        args[0].ucopy = args[2].ucopy;
+        args[0] = args[2];
         
 	return err;
 }
@@ -5037,7 +5037,7 @@ int prSCView_GetProperty(struct VMGlobals *g, int numArgsPushed)
 	int err = view->getProperty(args[1].us, args+2);
         if (err) SetNil(args+2);
         
-        args[0].ucopy = args[2].ucopy;
+        args[0] = args[2];
         
 	return errNone;
 }

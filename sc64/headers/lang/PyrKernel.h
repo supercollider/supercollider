@@ -127,7 +127,10 @@ struct PyrMethodRaw {
 	unsigned short specialIndex;
 	unsigned short methType;
 	unsigned short frameSize;
-	
+
+	uint32 spaceForTag1;
+	uint32 spaceForPad1;
+
 	unsigned char unused2;
 	unsigned char numargs;
 	unsigned char varargs;
@@ -136,11 +139,13 @@ struct PyrMethodRaw {
 	unsigned char needsHeapContext;
 	unsigned char popSize;
 	unsigned char posargs;
-	
+
+	uint32 spaceForTag2;
+	uint32 spaceForPad2;
 };
 
 
-#define METHRAW(obj) ((PyrMethodRaw*)&(((PyrBlock*)obj)->rawData1))
+#define METHRAW(obj) ((PyrMethodRaw*)&(((PyrBlock*)obj)->rawData1.u.ii))
 
 struct PyrBlock : public PyrObjectHdr 
 {
@@ -221,7 +226,7 @@ enum {
 	svNumSpecialValues
 };
 
-extern double gSpecialValues[svNumSpecialValues];
+extern PyrSlot gSpecialValues[svNumSpecialValues];
 
 extern PyrMethod *gNullMethod; // used to fill row table
 

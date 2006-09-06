@@ -226,7 +226,6 @@ extern PyrSymbol *s_systemclock;
 
 extern int gFormatElemSize[NUMOBJFORMATS];
 extern int gFormatElemCapc[NUMOBJFORMATS];
-extern int gFormatElemTag[NUMOBJFORMATS];
 
 void dumpObject(PyrObject *obj);
 void dumpObjectSlot(PyrSlot *slot);
@@ -235,14 +234,13 @@ bool respondsTo(PyrSlot *slot, PyrSymbol *selector);
 bool isSubclassOf(struct PyrClass *classobj, struct PyrClass *testclass);
 
 const int kFloatTagIndex = 11;
-extern struct PyrClass* gTagClassTable[16];
+extern struct PyrClass* gTagClassTable[10];
 
 inline struct PyrClass* classOfSlot(PyrSlot *slot)
 {
 	PyrClass *classobj;
-	int tag;
-	if (IsFloat(slot)) classobj = gTagClassTable[kFloatTagIndex];
-	else if ((tag = slot->utag & 0xF) == 1) classobj = slot->uo->classptr;
+	int tag = slot->utag;
+	if (tag == tagObj) classobj = slot->uo->classptr;
 	else classobj = gTagClassTable[tag];
 
 	return classobj;

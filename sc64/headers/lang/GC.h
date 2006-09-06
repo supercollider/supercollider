@@ -168,6 +168,16 @@ public:
 	void BecomePermanent(PyrObject *inObject);
 	void BecomeImmutable(PyrObject *inObject);
 	
+	unsigned char BlackColor() const { return mBlackColor; }
+	unsigned char GreyColor() const { return mGreyColor; }
+	unsigned char WhiteColor() const { return mWhiteColor; }
+	
+	bool IsObjectInHeap(PyrObjectHdr* testObj);
+	bool IsObjectInObject(PyrObjectHdr* inObj, PyrObjectHdr* testObj);
+
+	bool HeapTagSanity();
+	bool ObjectTagSanity(PyrObjectHdr* inObj);
+
 private:
 	void ScanSlots(PyrSlot *inSlots, long inNumToScan);
 	void SweepBigObjects();
@@ -204,9 +214,9 @@ private:
 	
 	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned;
 	
-	unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
 	bool mCanSweep;
 	bool mRunning;
+	unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
 };
 
 inline void PyrGC::DLRemove(PyrObjectHdr *obj) 

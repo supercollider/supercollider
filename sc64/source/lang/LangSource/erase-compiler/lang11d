@@ -1501,6 +1501,7 @@ floatr	: SC_FLOAT { $$ = zzval; }
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
 				node->mSlot.uf = -node->mSlot.uf;
+				node->mSlot.utag = tagFloat;
 				$$ = zzval;
 			} 
 	;
@@ -1514,6 +1515,7 @@ accidental : ACCIDENTAL { $$ = zzval; }
 					intval = floor(node->mSlot.uf + 0.5);
 					fracval = node->mSlot.uf - intval;
 					node->mSlot.uf = -intval + fracval;
+					node->mSlot.utag = tagFloat;
 					$$ = zzval;
 				} 
 
@@ -1535,12 +1537,14 @@ floatp	: floatr
 				node = (PyrSlotNode*)$1;
 				ival = node->mSlot.ui;
 				node->mSlot.uf = ival * pi;
+				node->mSlot.utag = tagFloat;
 			}
 		| pie 
 			{
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
 				node->mSlot.uf = pi;
+				node->mSlot.utag = tagFloat;
 				$$ = zzval;
 			} 
 		| '-' pie 
@@ -1548,6 +1552,7 @@ floatp	: floatr
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
 				node->mSlot.uf = -pi;
+				node->mSlot.utag = tagFloat;
 				$$ = zzval;
 			} 
 	;

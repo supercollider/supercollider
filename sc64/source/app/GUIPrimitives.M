@@ -150,7 +150,7 @@ int prTextWindow_GetBounds(struct VMGlobals *g, int numArgsPushed)
     SetFloat(slots+1, bounds.origin.y);
     SetFloat(slots+2, bounds.size.width);
     SetFloat(slots+3, bounds.size.height);
-    a->ucopy = b->ucopy;
+    *a = *b;
     
     return errNone;
 }
@@ -1490,7 +1490,7 @@ int prSCWindow_GetBounds(struct VMGlobals *g, int numArgsPushed)
     SetFloat(slots+1, bounds.origin.y);
     SetFloat(slots+2, bounds.size.width);
     SetFloat(slots+3, bounds.size.height);
-    a->ucopy = b->ucopy;
+    *a = *b;
     
     return errNone;
 }
@@ -1511,7 +1511,7 @@ int prSCWindow_GetScreenBounds(struct VMGlobals *g, int numArgsPushed)
     SetFloat(slots+1, bounds.origin.y);
     SetFloat(slots+2, bounds.size.width);
     SetFloat(slots+3, bounds.size.height);
-    a->ucopy = b->ucopy;
+    *a = *b;
     
     return errNone;
 }
@@ -1772,7 +1772,7 @@ int prString_GetBounds(struct VMGlobals *g, int numArgsPushed)
     SetFloat(rectSlots+1, 0.);
     SetFloat(rectSlots+2, size.width);
     SetFloat(rectSlots+3, size.height);
-    a->ucopy = b->ucopy;
+    *a = *b;
     
     return errNone;
 }

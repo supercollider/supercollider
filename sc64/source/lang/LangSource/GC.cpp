@@ -25,6 +25,9 @@
 #include "InitAlloc.h"
 #include <string.h>
 #include <stdexcept>
+#ifdef SC_DARWIN
+	#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
+#endif
 
 #define SANITYCHECK 0
 #define PAUSETIMES 0
@@ -433,6 +436,7 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 		DLInsertAfter(&gcs->mWhite, obj);
 	}
 
+
 	obj->obj_sizeclass = sizeclass;
 	obj->obj_format = inFormat;
 	obj->obj_flags = inFlags;
@@ -443,6 +447,9 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 #if SANITYCHECK
 	SanityCheck();
 #endif
+//		printf("Z gc %08X frame color %08X %d  %02x   %02x %02x %02x\n", this, obj, obj->gc_color == mWhiteColor,
+//			obj->gc_color, mBlackColor, mGreyColor, mWhiteColor);
+
 	return obj;
 }	
 
@@ -796,9 +803,6 @@ bool PyrGC::SanityCheck2()
 	return mNumGrey == numgrey;
 }
 
-#ifdef SC_DARWIN
-	#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
 
 bool PyrGC::SanityCheck()
 {
@@ -806,9 +810,9 @@ bool PyrGC::SanityCheck()
 	
 	
 	//postfl("PyrGC::SanityCheck\n");
-	bool res = LinkSanity() && ListSanity()
-	//&& SanityMarkObj((PyrObject*)mProcess,NULL,0) && SanityMarkObj(mStack,NULL,0) 
-	//&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
+	bool res = LinkSanity() && ListSanity() && HeapTagSanity()
+	&& SanityMarkObj((PyrObject*)mProcess,NULL,0) && SanityMarkObj(mStack,NULL,0) 
+	&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
 	;
 	//if (!res) DumpInfo();
 	//if (!res) Debugger();
@@ -992,6 +996,7 @@ bool PyrGC::ListSanity()
 		fprintf(stderr, "grey count off %d %d\n", numgrey, mNumGrey);
 		DumpInfo();
 		fprintf(stderr, ".");
+		Debugger();
 		return false;
 	}
 	return true;
@@ -1055,6 +1060,7 @@ bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 						dumpBadObject(objB);
 						fprintf(stderr, "\n");
 #endif
+						Debugger();
 						return false;
 					}
 				}
@@ -1108,6 +1114,7 @@ bool PyrGC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 							dumpBadObject(objB);
 							fprintf(stderr, "\n");
 	#endif
+						Debugger();
 							return false;
 						}
 					}
@@ -1290,6 +1297,120 @@ void PyrGC::ClearMarks()
 			obj = obj->next;
 		}
 	}
+}
+
+bool PyrGC::IsObjectInObject(PyrObjectHdr* inObj, PyrObjectHdr* testObj)
+{
+	if (inObj->obj_format > obj_slot) return false;
+	
+	PyrSlot* slots = ((PyrObject*)inObj)->slots;
+	int size = inObj->size;
+	for (int i = 0; i < size; ++i) {
+		PyrSlot* slot = slots+i;
+		if (IsObj(slot) && slot->uo == testObj) {
+			printf("found in slot %d\n", i);
+			dumpObject((PyrObject*)inObj);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool PyrGC::IsObjectInHeap(PyrObjectHdr* testObj)
+{
+	// scan grey list
+	{
+		PyrObjectHdr *obj = mGrey.next;
+		while (!IsMarker(obj)) {
+			if (obj == testObj || IsObjectInObject(obj, testObj)) {
+				printf("found in grey list\n");
+				return true;
+			}
+			obj = obj->next;
+		}
+	}
+	
+	for (int i=0; i<kNumGCSets; ++i) {
+		GCSet *set = mSets + i;
+		
+		// scan black list
+		PyrObjectHdr *obj = set->mBlack.next;
+		while (!IsMarker(obj)) {
+			if (obj == testObj || IsObjectInObject(obj, testObj)) {
+				printf("found in black list, set %d\n", i);
+				return true;
+			}
+			obj = obj->next;
+		}
+		
+//		// scan white list
+//		obj = set->mWhite.next;
+//		while (obj != set->mFree) {
+//			if (obj == testObj || IsObjectInObject(obj, testObj)) {
+//				printf("found in white list, set %d\n", i);
+//				return true;
+//			}
+//			obj = obj->next;
+//		}		
+	}
+	return false;
+}
+
+bool PyrGC::ObjectTagSanity(PyrObjectHdr* inObj)
+{
+	if (inObj->obj_format > obj_slot) return false;
+	
+	PyrSlot* slots = ((PyrObject*)inObj)->slots;
+	int size = inObj->size;
+	for (int i = 0; i < size; ++i) {
+		PyrSlot& s = slots[i];
+		if (s.tag < 1 || s.tag > 9) {
+			printf("found in slot %d\n", i);
+			dumpObject((PyrObject*)inObj);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool PyrGC::HeapTagSanity()
+{
+	// scan grey list
+	{
+		PyrObjectHdr *obj = mGrey.next;
+		while (!IsMarker(obj)) {
+			if (ObjectTagSanity(obj)) {
+				printf("found in grey list\n");
+				return true;
+			}
+			obj = obj->next;
+		}
+	}
+	
+	for (int i=0; i<kNumGCSets; ++i) {
+		GCSet *set = mSets + i;
+		
+		// scan black list
+		PyrObjectHdr *obj = set->mBlack.next;
+		while (!IsMarker(obj)) {
+			if (ObjectTagSanity(obj)) {
+				printf("found in black list, set %d\n", i);
+				return true;
+			}
+			obj = obj->next;
+		}
+		
+//		// scan white list
+//		obj = set->mWhite.next;
+//		while (obj != set->mFree) {
+//			if (ObjectTagSanity(obj)) {
+//				printf("found in white list, set %d\n", i);
+//				return true;
+//			}
+//			obj = obj->next;
+//		}		
+	}
+	return false;
 }
 
 

@@ -41,106 +41,80 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 /* some DSPs like the TIC32 do not support 8 byte doubles */
 /* on such CPUs, set DOUBLESLOTS to zero */
 
-#define DOUBLESLOTS 1
-
 /* use the high order bits of an IEEE double NaN as a tag */
 enum {
-	tagObj     = 0x7FF90001,
-	tagInt     = 0x7FF90002,
-	tagSym     = 0x7FF90003,
-	tagChar    = 0x7FF90004,
-	tagNil     = 0x7FF90005,	// nil, false, and true are indicated by the tag alone.
-	tagFalse   = 0x7FF90006,	// the lower 32 bits are zero.
-	tagTrue    = 0x7FF90007,
-	tagPtr     = 0x7FF90008,
-	/* anything else is a double */
-	tagUnused  = 0x7FF9000D
-	
-	
-#if !DOUBLESLOTS	
-	,tagFloat = 0x7FF9000F /* used only to initialized 4 byte float tags, never compared with */
-#endif
+	tagObj     = 1,
+	tagInt     = 2,
+	tagSym     = 3,
+	tagChar    = 4,
+	tagNil     = 5,	// nil, false, and true are indicated by the tag alone.
+	tagFalse   = 6,	// the lower 32 bits are zero.
+	tagTrue    = 7,
+	tagPtr     = 8,
+	tagFloat   = 9
 };
 
-typedef union pyrslot {
-	double f;
-	struct {
-#if BYTE_ORDER == BIG_ENDIAN
-		int tag;
-#endif // BIG_ENDIAN
-		union {
-			int c; /* char */
-			int i;
-			float f;
-			void *ptr;
-			struct PyrObject *o;
-			PyrSymbol *s;
-			struct PyrMethod *om;
-			struct PyrBlock *oblk;
-			struct PyrClass *oc;
-			struct PyrFrame *of;
-			struct PyrList *ol;
-			struct PyrString *os;
-			struct PyrInt8Array *ob;
-			struct PyrDoubleArray *od;
-			struct PyrSymbolArray *osym;
-			struct PyrParseNode *opn;
-			struct PyrProcess *op;
-			struct PyrThread *ot;
-			struct PyrInterpreter *oi;
-			struct PyrPlug *plug;
-		} u;
-#if BYTE_ORDER == LITTLE_ENDIAN
-		// need to swap on intel <sk>
-		int tag;
-#endif // LITTLE_ENDIAN
-	} s;
+typedef struct pyrslot {
+	union {
+		double f;
+		uint64 ii;
+		int c; /* char */
+		int i;
+		void *ptr;
+		struct PyrObject *o;
+		PyrSymbol *s;
+		struct PyrMethod *om;
+		struct PyrBlock *oblk;
+		struct PyrClass *oc;
+		struct PyrFrame *of;
+		struct PyrList *ol;
+		struct PyrString *os;
+		struct PyrInt8Array *ob;
+		struct PyrDoubleArray *od;
+		struct PyrSymbolArray *osym;
+		struct PyrParseNode *opn;
+		struct PyrProcess *op;
+		struct PyrThread *ot;
+		struct PyrInterpreter *oi;
+		struct PyrPlug *plug;
+	} u;
+	uint32 tag;
+	uint32 pad;
 } PyrSlot;
 
 /* 
 	these are some defines to make accessing the structure less verbose.
 	obviously it polutes the namespace of identifiers beginning with 'u'.
 */
-#define utag s.tag
+#define utag tag
 //int
-#define ui s.u.i
+#define ui u.i
 //PyrObject
-#define uo s.u.o
+#define uo u.o
 //PyrSymbol
-#define us s.u.s
-#define uc s.u.c
-#define uoc s.u.oc
-#define uof s.u.of
-#define uol s.u.ol
-#define uod s.u.od
-#define uob s.u.ob
-#define uop s.u.op
-#define uoi s.u.oi
-#define uod s.u.od
+#define us u.s
+#define uc u.c
+#define uoc u.oc
+#define uof u.of
+#define uol u.ol
+#define uod u.od
+#define uob u.ob
+#define uop u.op
+#define uoi u.oi
+#define uod u.od
 //string
-#define uos s.u.os
-#define uot s.u.ot
+#define uos u.os
+#define uot u.ot
 //method
-#define uom s.u.om
+#define uom u.om
 //symbol array
-#define uosym s.u.osym
-#define uoblk s.u.oblk
-#define uopn s.u.opn
-#define uptr s.u.ptr
-#define uplug s.u.plug
+#define uosym u.osym
+#define uoblk u.oblk
+#define uopn u.opn
+#define uptr u.ptr
+#define uplug u.plug
 
-#if DOUBLESLOTS
-#define uf f
-#else
-#define uf s.u.f
-#endif
-
-#define ucopy f
-
-/* 
-	Note that on the PowerPC, the fastest way to copy a slot is to
-	copy the double field, not the struct.
-*/
+#define uf u.f
 
 /* some macros for setting values of slots */
 inline void SetInt(PyrSlot* slot, int val)    {  (slot)->utag = tagInt;  (slot)->ui = (val); }
@@ -164,11 +138,7 @@ inline void SetFalse(PyrSlot* slot)   { (slot)->utag = tagFalse; (slot)->ui = 0;
 inline void SetBool(PyrSlot* slot, bool test)	{ (slot)->utag = ((test) ? tagTrue : tagFalse); (slot)->ui = 0;  }
 inline void SetNil(PyrSlot* slot)    { (slot)->utag = tagNil;  (slot)->ui = 0; }
 
-#if DOUBLESLOTS
-inline void SetFloat(PyrSlot* slot, double val)    { (slot)->uf = (val); }
-#else
-inline void SetFloat(PyrSlot* slot, double val)    { (slot)->utag = s_float; (slot)->uf = (val); }
-#endif
+inline void SetFloat(PyrSlot* slot, double val)    { (slot)->utag = tagFloat; (slot)->uf = (val); }
 
 inline bool IsObj(PyrSlot* slot) { return ((slot)->utag == tagObj); }
 inline bool NotObj(PyrSlot* slot) { return ((slot)->utag != tagObj); }
@@ -187,11 +157,11 @@ inline bool NotSym(PyrSlot* slot) { return ((slot)->utag != tagSym); }
 inline bool IsInt(PyrSlot* slot) { return ((slot)->utag == tagInt); }
 inline bool NotInt(PyrSlot* slot) { return ((slot)->utag != tagInt); }
 
-inline bool IsFloatTag(int tag)  { return ((tag & 0xFFFFFFF0) != 0x7FF90000); }
-inline bool IsFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) != 0x7FF90000); }
-inline bool NotFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) == 0x7FF90000); }
+inline bool IsFloatTag(int tag)  { return tag == tagFloat; }
+inline bool IsFloat(PyrSlot* slot) { return slot->tag == tagFloat; }
+inline bool NotFloat(PyrSlot* slot) { return slot->tag != tagFloat; }
 
-inline bool IsPtr(PyrSlot* slot) { return ((slot)->utag == tagPtr); }
+inline bool IsPtr(PyrSlot* slot) { return slot->utag == tagPtr; }
 
 void dumpPyrSlot(PyrSlot* slot);
 void slotString(PyrSlot *slot, char *str);
@@ -262,8 +232,8 @@ inline int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol)
 
 inline void slotCopy(PyrSlot *dst, PyrSlot *src, int num)
 {
-	double *dstp = (double*)dst - 1;
-	double *srcp = (double*)src - 1;
+	PyrSlot *dstp = dst - 1;
+	PyrSlot *srcp = src - 1;
 	for (int i=0;i<num;++i) { *++dstp = *++srcp; } 
 }
 

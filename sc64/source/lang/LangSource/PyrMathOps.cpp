@@ -66,7 +66,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opNotNil : SetTrue(a); break;
 				case opBitNot : res.ui = ~a->ui; res.utag = tagInt; break;
 				case opAbs : res.ui = a->ui < 0 ? -a->ui : a->ui; res.utag = tagInt; break;
-				case opAsFloat : res.uf = (double)a->ui; break;
+				case opAsFloat : res.uf = (double)a->ui; res.utag = tagFloat; break;
 				case opAsInt : res.ui = (int)a->ui; res.utag = tagInt; break;
 				case opCeil : res.ui = a->ui; res.utag = tagInt; break;
 				case opFloor : res.ui = a->ui; res.utag = tagInt; break;
@@ -74,51 +74,51 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opSign : res.ui = a->ui > 0 ? 1 : (a->ui == 0 ? 0 : -1); res.utag = tagInt; break;
 				case opSquared : res.ui = a->ui * a->ui; res.utag = tagInt; break;
 				case opCubed : res.ui = a->ui * a->ui * a->ui; res.utag = tagInt; break;
-				case opSqrt : res.uf = sqrt((double)a->ui); break;
-				case opExp : res.uf = exp((double)a->ui); break;
-				case opRecip : res.uf = 1. / a->ui; break;
-				case opMIDICPS : res.uf = sc_midicps((double)a->ui); break;
-				case opCPSMIDI : res.uf = sc_cpsmidi((double)a->ui); break;
-				case opMIDIRatio : res.uf = sc_midiratio((double)a->ui); break;
-				case opRatioMIDI : res.uf = sc_ratiomidi((double)a->ui); break;
-				case opAmpDb : res.uf = sc_ampdb((double)a->ui); break;
-				case opDbAmp : res.uf = sc_dbamp((double)a->ui); break;
-				case opOctCPS : res.uf = sc_octcps((double)a->ui); break;
-				case opCPSOct : res.uf = sc_cpsoct((double)a->ui); break;
-				case opLog : res.uf = log((double)a->ui); break;
-				case opLog2 : res.uf = log2((double)a->ui); break;
-				case opLog10 : res.uf = log10((double)a->ui); break;
-				case opSin : res.uf = sin((double)a->ui); break;
-				case opCos : res.uf = cos((double)a->ui); break;
-				case opTan : res.uf = tan((double)a->ui); break;
-				case opArcSin : res.uf = asin((double)a->ui); break;
-				case opArcCos : res.uf = acos((double)a->ui); break;
-				case opArcTan : res.uf = atan((double)a->ui); break;
-				case opSinH : res.uf = sinh((double)a->ui); break;
-				case opCosH : res.uf = cosh((double)a->ui); break;
-				case opTanH : res.uf = tanh((double)a->ui); break;
+				case opSqrt : res.uf = sqrt((double)a->ui); res.utag = tagFloat; break;
+				case opExp : res.uf = exp((double)a->ui); res.utag = tagFloat; break;
+				case opRecip : res.uf = 1. / a->ui; res.utag = tagFloat; break;
+				case opMIDICPS : res.uf = sc_midicps((double)a->ui); res.utag = tagFloat; break;
+				case opCPSMIDI : res.uf = sc_cpsmidi((double)a->ui); res.utag = tagFloat; break;
+				case opMIDIRatio : res.uf = sc_midiratio((double)a->ui); res.utag = tagFloat; break;
+				case opRatioMIDI : res.uf = sc_ratiomidi((double)a->ui); res.utag = tagFloat; break;
+				case opAmpDb : res.uf = sc_ampdb((double)a->ui); res.utag = tagFloat; break;
+				case opDbAmp : res.uf = sc_dbamp((double)a->ui); res.utag = tagFloat; break;
+				case opOctCPS : res.uf = sc_octcps((double)a->ui); res.utag = tagFloat; break;
+				case opCPSOct : res.uf = sc_cpsoct((double)a->ui); res.utag = tagFloat; break;
+				case opLog : res.uf = log((double)a->ui); res.utag = tagFloat; break;
+				case opLog2 : res.uf = log2((double)a->ui); res.utag = tagFloat; break;
+				case opLog10 : res.uf = log10((double)a->ui); res.utag = tagFloat; break;
+				case opSin : res.uf = sin((double)a->ui); res.utag = tagFloat; break;
+				case opCos : res.uf = cos((double)a->ui); res.utag = tagFloat; break;
+				case opTan : res.uf = tan((double)a->ui); res.utag = tagFloat; break;
+				case opArcSin : res.uf = asin((double)a->ui); res.utag = tagFloat; break;
+				case opArcCos : res.uf = acos((double)a->ui); res.utag = tagFloat; break;
+				case opArcTan : res.uf = atan((double)a->ui); res.utag = tagFloat; break;
+				case opSinH : res.uf = sinh((double)a->ui); res.utag = tagFloat; break;
+				case opCosH : res.uf = cosh((double)a->ui); res.utag = tagFloat; break;
+				case opTanH : res.uf = tanh((double)a->ui); res.utag = tagFloat; break;
 				case opRand : res.ui = g->rgen->irand(a->ui); res.utag = tagInt; break;
 				case opRand2 : res.ui = g->rgen->irand2(a->ui); res.utag = tagInt; break;
 				case opLinRand : res.ui = g->rgen->ilinrand(a->ui); res.utag = tagInt; break;
 				case opBiLinRand : res.ui = g->rgen->ibilinrand(a->ui); res.utag = tagInt; break;
 
-//				case opExpRand : res.uf = g->rgen->exprand(a->ui); break;
-//				case opBiExpRand : res.uf = g->rgen->biexprand(a->ui); break;
-				case opSum3Rand : res.uf = g->rgen->sum3rand(a->ui); break;
+//				case opExpRand : res.uf = g->rgen->exprand(a->ui); res.utag = tagFloat; break;
+//				case opBiExpRand : res.uf = g->rgen->biexprand(a->ui); res.utag = tagFloat; break;
+				case opSum3Rand : res.uf = g->rgen->sum3rand(a->ui); res.utag = tagFloat; break;
 
-//				case opGammaRand : res.uf = g->rgen->gammarand(a->ui); break;
-//				case opGaussRand : res.uf = g->rgen->gaussrand(a->ui); break;
-//				case opPoiRand : res.uf = g->rgen->poirand(a->ui); break;
+//				case opGammaRand : res.uf = g->rgen->gammarand(a->ui); res.utag = tagFloat; break;
+//				case opGaussRand : res.uf = g->rgen->gaussrand(a->ui); res.utag = tagFloat; break;
+//				case opPoiRand : res.uf = g->rgen->poirand(a->ui); res.utag = tagFloat; break;
 
-				case opDistort : res.uf = sc_distort((double)a->ui); break;
-				case opSoftClip : res.uf = sc_softclip((double)a->ui); break;
+				case opDistort : res.uf = sc_distort((double)a->ui); res.utag = tagFloat; break;
+				case opSoftClip : res.uf = sc_softclip((double)a->ui); res.utag = tagFloat; break;
 				case opCoin : res = BOOL(a->ui); break;
-				case opRectWindow : res.uf = sc_rectwindow((double)a->ui); break;
-				case opHanWindow : res.uf = sc_hanwindow((double)a->ui); break;
-				case opWelchWindow : res.uf = sc_welwindow((double)a->ui); break;
-				case opTriWindow : res.uf = sc_triwindow((double)a->ui); break;
-				case opSCurve : res.uf = sc_scurve((double)a->ui); break;
-				case opRamp : res.uf = sc_ramp((double)a->ui); break;
+				case opRectWindow : res.uf = sc_rectwindow((double)a->ui); res.utag = tagFloat; break;
+				case opHanWindow : res.uf = sc_hanwindow((double)a->ui); res.utag = tagFloat; break;
+				case opWelchWindow : res.uf = sc_welwindow((double)a->ui); res.utag = tagFloat; break;
+				case opTriWindow : res.uf = sc_triwindow((double)a->ui); res.utag = tagFloat; break;
+				case opSCurve : res.uf = sc_scurve((double)a->ui); res.utag = tagFloat; break;
+				case opRamp : res.uf = sc_ramp((double)a->ui); res.utag = tagFloat; break;
 				default : goto send_normal_1;
 			}	
 			break;
@@ -214,74 +214,74 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 			break;
 		default : // double
 			switch (opcode) {
-				case opNeg : res.uf = -a->uf; break;
+				case opNeg : res.uf = -a->uf; res.utag = tagFloat; break;
 				case opIsNil : SetFalse(a); break;
 				case opNotNil : SetTrue(a); break;
-				case opBitNot : res.uf = ~(int)a->uf; break;
-				case opAbs : res.uf = a->uf < 0. ? -a->uf : a->uf; break;
-				case opAsFloat : res.uf = (double)a->uf; break;
+				case opBitNot : res.uf = ~(int)a->uf; res.utag = tagFloat; break;
+				case opAbs : res.uf = a->uf < 0. ? -a->uf : a->uf; res.utag = tagFloat; break;
+				case opAsFloat : res.uf = (double)a->uf; res.utag = tagFloat; break;
 				case opAsInt : res.ui = (int)a->uf; res.utag = tagInt; break;
-				case opCeil : res.uf = ceil(a->uf); break;
-				case opFloor : res.uf = floor(a->uf); break;
-				case opFrac : res.uf = a->uf - floor(a->uf); break;
-				case opSign : res.uf = a->uf > 0. ? 1 : (a->uf == 0 ? 0 : -1); break;
-				case opSquared : res.uf = a->uf * a->uf; break;
-				case opCubed : res.uf = a->uf * a->uf * a->uf; break;
-				case opSqrt : res.uf = sqrt(a->uf); break;
-				case opExp : res.uf = exp(a->uf); break;
-				case opRecip : res.uf = 1./a->uf; break;
-				case opMIDICPS : res.uf = sc_midicps(a->uf); break;
-				case opCPSMIDI : res.uf = sc_cpsmidi(a->uf); break;
-				case opMIDIRatio : res.uf = sc_midiratio((double)a->uf); break;
-				case opRatioMIDI : res.uf = sc_ratiomidi((double)a->uf); break;
-				case opAmpDb : res.uf = sc_ampdb(a->uf); break;
-				case opDbAmp : res.uf = sc_dbamp(a->uf); break;
-				case opOctCPS : res.uf = sc_octcps(a->uf); break;
-				case opCPSOct : res.uf = sc_cpsoct(a->uf); break;
-				case opLog : res.uf = log(a->uf); break;
-				case opLog2 : res.uf = log2(a->uf); break;
-				case opLog10 : res.uf = log10(a->uf); break;
-				case opSin : res.uf = sin(a->uf); break;
-				case opCos : res.uf = cos(a->uf); break;
-				case opTan : res.uf = tan(a->uf); break;
-				case opArcSin : res.uf = asin(a->uf); break;
-				case opArcCos : res.uf = acos(a->uf); break;
-				case opArcTan : res.uf = atan(a->uf); break;
-				case opSinH : res.uf = sinh(a->uf); break;
-				case opCosH : res.uf = cosh(a->uf); break;
-				case opTanH : res.uf = tanh(a->uf); break;
-				case opRand : res.uf = g->rgen->frand() * a->uf; break;
-				case opRand2 : res.uf = g->rgen->frand2() * a->uf; break;
-				case opLinRand   : res.uf = g->rgen->linrand(a->uf); break;
-				case opBiLinRand : res.uf = g->rgen->bilinrand(a->uf); break;
+				case opCeil : res.uf = ceil(a->uf); res.utag = tagFloat; break;
+				case opFloor : res.uf = floor(a->uf); res.utag = tagFloat; break;
+				case opFrac : res.uf = a->uf - floor(a->uf); res.utag = tagFloat; break;
+				case opSign : res.uf = a->uf > 0. ? 1 : (a->uf == 0 ? 0 : -1); res.utag = tagFloat; break;
+				case opSquared : res.uf = a->uf * a->uf; res.utag = tagFloat; break;
+				case opCubed : res.uf = a->uf * a->uf * a->uf; res.utag = tagFloat; break;
+				case opSqrt : res.uf = sqrt(a->uf); res.utag = tagFloat; break;
+				case opExp : res.uf = exp(a->uf); res.utag = tagFloat; break;
+				case opRecip : res.uf = 1./a->uf; res.utag = tagFloat; break;
+				case opMIDICPS : res.uf = sc_midicps(a->uf); res.utag = tagFloat; break;
+				case opCPSMIDI : res.uf = sc_cpsmidi(a->uf); res.utag = tagFloat; break;
+				case opMIDIRatio : res.uf = sc_midiratio((double)a->uf); res.utag = tagFloat; break;
+				case opRatioMIDI : res.uf = sc_ratiomidi((double)a->uf); res.utag = tagFloat; break;
+				case opAmpDb : res.uf = sc_ampdb(a->uf); res.utag = tagFloat; break;
+				case opDbAmp : res.uf = sc_dbamp(a->uf); res.utag = tagFloat; break;
+				case opOctCPS : res.uf = sc_octcps(a->uf); res.utag = tagFloat; break;
+				case opCPSOct : res.uf = sc_cpsoct(a->uf); res.utag = tagFloat; break;
+				case opLog : res.uf = log(a->uf); res.utag = tagFloat; break;
+				case opLog2 : res.uf = log2(a->uf); res.utag = tagFloat; break;
+				case opLog10 : res.uf = log10(a->uf); res.utag = tagFloat; break;
+				case opSin : res.uf = sin(a->uf); res.utag = tagFloat; break;
+				case opCos : res.uf = cos(a->uf); res.utag = tagFloat; break;
+				case opTan : res.uf = tan(a->uf); res.utag = tagFloat; break;
+				case opArcSin : res.uf = asin(a->uf); res.utag = tagFloat; break;
+				case opArcCos : res.uf = acos(a->uf); res.utag = tagFloat; break;
+				case opArcTan : res.uf = atan(a->uf); res.utag = tagFloat; break;
+				case opSinH : res.uf = sinh(a->uf); res.utag = tagFloat; break;
+				case opCosH : res.uf = cosh(a->uf); res.utag = tagFloat; break;
+				case opTanH : res.uf = tanh(a->uf); res.utag = tagFloat; break;
+				case opRand : res.uf = g->rgen->frand() * a->uf; res.utag = tagFloat; break;
+				case opRand2 : res.uf = g->rgen->frand2() * a->uf; res.utag = tagFloat; break;
+				case opLinRand   : res.uf = g->rgen->linrand(a->uf); res.utag = tagFloat; break;
+				case opBiLinRand : res.uf = g->rgen->bilinrand(a->uf); res.utag = tagFloat; break;
 
-//				case opExpRand   : res.uf = g->rgen->exprand(a->uf); break;
-//				case opBiExpRand : res.uf = g->rgen->biexprand(a->uf); break;
-				case opSum3Rand : res.uf = g->rgen->sum3rand(a->uf); break;
+//				case opExpRand   : res.uf = g->rgen->exprand(a->uf); res.utag = tagFloat; break;
+//				case opBiExpRand : res.uf = g->rgen->biexprand(a->uf); res.utag = tagFloat; break;
+				case opSum3Rand : res.uf = g->rgen->sum3rand(a->uf); res.utag = tagFloat; break;
 
-//				case opGammaRand : res.uf = g->rgen->gammarand(a->uf); break;
-//				case opGaussRand : res.uf = g->rgen->gaussrand(a->uf); break;
-//				case opPoiRand   : res.uf = g->rgen->poirand(a->uf); break;
+//				case opGammaRand : res.uf = g->rgen->gammarand(a->uf); res.utag = tagFloat; break;
+//				case opGaussRand : res.uf = g->rgen->gaussrand(a->uf); res.utag = tagFloat; break;
+//				case opPoiRand   : res.uf = g->rgen->poirand(a->uf); res.utag = tagFloat; break;
 
 				case opDistort : 
-					res.uf = sc_distort(a->uf); 
+					res.uf = sc_distort(a->uf);  res.utag = tagFloat;
 					break;
 				case opSoftClip :
-					res.uf = sc_softclip(a->uf);
+					res.uf = sc_softclip(a->uf); res.utag = tagFloat;
 					break;
 				case opCoin : res = BOOL(g->rgen->frand() < a->uf); break;
-				case opRectWindow : res.uf = sc_rectwindow(a->uf); break;
-				case opHanWindow : res.uf = sc_hanwindow(a->uf); break;
-				case opWelchWindow : res.uf = sc_welwindow(a->uf); break;
-				case opTriWindow : res.uf = sc_triwindow(a->uf); break;
-				case opSCurve : res.uf = sc_scurve(a->uf); break;
-				case opRamp : res.uf = sc_ramp(a->uf); break;
+				case opRectWindow : res.uf = sc_rectwindow(a->uf); res.utag = tagFloat; break;
+				case opHanWindow : res.uf = sc_hanwindow(a->uf); res.utag = tagFloat; break;
+				case opWelchWindow : res.uf = sc_welwindow(a->uf); res.utag = tagFloat; break;
+				case opTriWindow : res.uf = sc_triwindow(a->uf); res.utag = tagFloat; break;
+				case opSCurve : res.uf = sc_scurve(a->uf); res.utag = tagFloat; break;
+				case opRamp : res.uf = sc_ramp(a->uf); res.utag = tagFloat; break;
 				default : goto send_normal_1;
 			}	
 			break;
 	}
 	
-	g->sp[0].ucopy = res.ucopy;
+	g->sp[0] = res;
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
@@ -320,7 +320,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opSub : res.ui = a->ui - b->ui; res.utag = tagInt; break;
 						case opMul : res.ui = a->ui * b->ui; res.utag = tagInt; break;
 						case opIDiv : res.ui = sc_div(a->ui, b->ui); res.utag = tagInt; break;
-						case opFDiv : res.uf = (double)a->ui / (double)b->ui; break;
+						case opFDiv : res.uf = (double)a->ui / (double)b->ui; res.utag = tagFloat; break;
 						case opMod : res.ui = sc_mod((int)a->ui, (int)b->ui); res.utag = tagInt; break;
 						case opEQ  : res = BOOL(a->ui == b->ui); break;
 						case opNE  : res = BOOL(a->ui != b->ui); break;
@@ -340,10 +340,10 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opRound : res.ui = sc_round((int)a->ui, (int)b->ui); res.utag = tagInt; break;
 						case opRoundUp : res.ui = sc_roundUp((int)a->ui, (int)b->ui); res.utag = tagInt; break;
 						case opTrunc : res.ui = sc_trunc((int)a->ui, (int)b->ui); res.utag = tagInt; break;
-						case opAtan2 : res.uf = atan2((double)a->ui, (double)b->ui); break;
-						case opHypot : res.uf = hypot((double)a->ui, (double)b->ui); break;
-						case opHypotx : res.uf = hypotx((double)a->ui, (double)b->ui); break;
-						case opPow   : res.uf = pow((double)a->ui, (double)b->ui); break;
+						case opAtan2 : res.uf = atan2((double)a->ui, (double)b->ui); res.utag = tagFloat; break;
+						case opHypot : res.uf = hypot((double)a->ui, (double)b->ui); res.utag = tagFloat; break;
+						case opHypotx : res.uf = hypotx((double)a->ui, (double)b->ui); res.utag = tagFloat; break;
+						case opPow   : res.uf = pow((double)a->ui, (double)b->ui); res.utag = tagFloat; break;
 						case opShiftLeft : {
 							long ia = a->ui;
 							long ib = b->ui;
@@ -375,7 +375,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opRing1 : res.ui = a->ui * b->ui + a->ui; res.utag = tagInt; break;
 						case opRing2 : res.ui = a->ui * b->ui + a->ui + b->ui; res.utag = tagInt; break;
 						case opRing3 : res.ui = a->ui * a->ui * b->ui; res.utag = tagInt; break;
-						case opRing4 : res.uf = a->ui * a->ui * b->ui
+						case opRing4 : res.ui = a->ui * a->ui * b->ui
 											- a->ui * b->ui * b->ui; res.utag = tagInt; break;
 						case opDifSqr : res.ui = a->ui * a->ui - b->ui * b->ui; res.utag = tagInt; break;
 						case opSumSqr : res.ui = a->ui * a->ui + b->ui * b->ui; res.utag = tagInt; break;
@@ -418,7 +418,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							res.utag = tagInt; 
 							break;
 						case opExpRandRange : 
-							res.uf = g->rgen->exprandrng(a->ui, b->ui); 
+							res.uf = g->rgen->exprandrng(a->ui, b->ui);  res.utag = tagFloat;
 							break;
 						default : goto send_normal_2;
 					}
@@ -473,11 +473,11 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					break;
 				default :
 					switch (opcode) {
-						case opAdd : res.uf = a->ui + b->uf; break;
-						case opSub : res.uf = a->ui - b->uf; break;
-						case opMul : res.uf = a->ui * b->uf; break;
+						case opAdd : res.uf = a->ui + b->uf; res.utag = tagFloat; break;
+						case opSub : res.uf = a->ui - b->uf; res.utag = tagFloat; break;
+						case opMul : res.uf = a->ui * b->uf; res.utag = tagFloat; break;
 						case opIDiv : res.ui = (long)floor(a->ui / b->uf); res.utag = tagInt; break;
-						case opFDiv : res.uf = a->ui / b->uf; break;
+						case opFDiv : res.uf = a->ui / b->uf; res.utag = tagFloat; break;
 						case opMod : res.uf = sc_mod((double)a->ui, b->uf); break;
 						case opEQ  : res = BOOL(a->ui == b->uf); break;
 						case opNE  : res = BOOL(a->ui != b->uf); break;
@@ -487,54 +487,56 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opGE  : res = BOOL(a->ui >= b->uf); break;
 						//case opIdentical : res = o_false; break;
 						//case opNotIdentical : res = o_true; break;
-						case opMin : res.uf = a->ui < b->uf ? a->ui : b->uf; break;
-						case opMax : res.uf = a->ui > b->uf ? a->ui : b->uf; break;
-						case opRound : res.uf = sc_round((double)a->ui, b->uf); break;
-						case opRoundUp : res.uf = sc_roundUp((double)a->ui, b->uf); break;
-						case opTrunc : res.uf = sc_trunc((double)a->ui, b->uf); break;
-						case opAtan2 : res.uf = atan2(a->ui, b->uf); break;
-						case opHypot : res.uf = hypot(a->ui, b->uf); break;
-						case opHypotx : res.uf = hypotx(a->ui, b->uf); break;
-						case opPow   : res.uf = pow((double)a->ui, b->uf); break;
-						case opRing1 : res.uf = a->ui * b->uf + a->ui; break;
-						case opRing2 : res.uf = a->ui * b->uf + a->ui + b->uf; break;
-						case opRing3 : res.uf = a->ui * a->ui * b->uf; break;
+						case opMin : res.uf = a->ui < b->uf ? a->ui : b->uf; res.utag = tagFloat; break;
+						case opMax : res.uf = a->ui > b->uf ? a->ui : b->uf; res.utag = tagFloat; break;
+						case opRound : res.uf = sc_round((double)a->ui, b->uf); res.utag = tagFloat; break;
+						case opRoundUp : res.uf = sc_roundUp((double)a->ui, b->uf); res.utag = tagFloat; break;
+						case opTrunc : res.uf = sc_trunc((double)a->ui, b->uf); res.utag = tagFloat; break;
+						case opAtan2 : res.uf = atan2(a->ui, b->uf); res.utag = tagFloat; break;
+						case opHypot : res.uf = hypot(a->ui, b->uf); res.utag = tagFloat; break;
+						case opHypotx : res.uf = hypotx(a->ui, b->uf); res.utag = tagFloat; break;
+						case opPow   : res.uf = pow((double)a->ui, b->uf); res.utag = tagFloat; break;
+						case opRing1 : res.uf = a->ui * b->uf + a->ui; res.utag = tagFloat; break;
+						case opRing2 : res.uf = a->ui * b->uf + a->ui + b->uf; res.utag = tagFloat; break;
+						case opRing3 : res.uf = a->ui * a->ui * b->uf; res.utag = tagFloat; break;
 						case opRing4 : res.uf = a->ui * a->ui * b->uf
-											- a->ui * b->uf * b->uf; break;
-						case opDifSqr : res.uf = a->ui * a->ui - b->uf * b->uf; break;
-						case opSumSqr : res.uf = a->ui * a->ui + b->uf * b->uf; break;
+											- a->ui * b->uf * b->uf; res.utag = tagFloat; break;
+						case opDifSqr : res.uf = a->ui * a->ui - b->uf * b->uf; res.utag = tagFloat; break;
+						case opSumSqr : res.uf = a->ui * a->ui + b->uf * b->uf; res.utag = tagFloat; break;
 						case opSqrSum : {
 							double z;
 							z = a->ui + b->uf;
 							res.uf = z*z; 
+							res.utag = tagFloat;
 						} break;
 						case opSqrDif : {
 							double z;
 							z = a->ui - b->uf;
 							res.uf = z*z; 
+							res.utag = tagFloat;
 						} break;
-						case opAbsDif : res.uf = fabs(a->ui - b->uf); break;
+						case opAbsDif : res.uf = fabs(a->ui - b->uf); res.utag = tagFloat; break;
 						case opThresh : res.ui = a->ui<b->uf ? 0 : a->ui; res.utag = tagInt; break;
-						case opAMClip : res.uf = b->uf<0 ? 0 : a->ui*b->uf; break;
-						case opScaleNeg : res.uf = a->ui<0 ? a->ui*b->uf : a->ui; break;
+						case opAMClip : res.uf = b->uf<0 ? 0 : a->ui*b->uf; res.utag = tagFloat; break;
+						case opScaleNeg : res.uf = a->ui<0 ? a->ui*b->uf : a->ui; res.utag = tagFloat; break;
 						case opClip2 : 
-							res.uf = a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui); 
+							res.uf = a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui); res.utag = tagFloat; 
 							break;
 						case opFold2 : 
-							res.uf = sc_fold2((double)a->ui, b->uf); 
+							res.uf = sc_fold2((double)a->ui, b->uf); res.utag = tagFloat; 
 							break;
 						case opWrap2 : 
-							res.uf = sc_wrap((double)a->ui, -b->uf, -b->uf); 
+							res.uf = sc_wrap((double)a->ui, -b->uf, -b->uf); res.utag = tagFloat; 
 							break;
 						case opExcess : 
-							res.uf = a->ui - (a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui)); 
+							res.uf = a->ui - (a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui)); res.utag = tagFloat; 
 							break;
 						case opFirstArg : res.ui = a->ui; res.utag = tagInt; break;
 						case opRandRange : 
-							res.uf = a->ui + g->rgen->frand() * (b->uf - a->ui);
+							res.uf = a->ui + g->rgen->frand() * (b->uf - a->ui); res.utag = tagFloat; 
 							break;
 						case opExpRandRange : 
-							res.uf = g->rgen->exprandrng(a->ui, b->uf); 
+							res.uf = g->rgen->exprandrng(a->ui, b->uf); res.utag = tagFloat; 
 							break;
 						default : goto send_normal_2;
 					}
@@ -706,12 +708,12 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 			switch (b->utag) {
 				case tagInt :
 					switch (opcode) {
-						case opAdd : res.uf = a->uf + b->ui; break;
-						case opSub : res.uf = a->uf - b->ui; break;
-						case opMul : res.uf = a->uf * b->ui; break;
+						case opAdd : res.uf = a->uf + b->ui; res.utag = tagFloat; break;
+						case opSub : res.uf = a->uf - b->ui; res.utag = tagFloat; break;
+						case opMul : res.uf = a->uf * b->ui; res.utag = tagFloat; break;
 						case opIDiv : res.ui = (long)floor(a->uf / b->ui); res.utag = tagInt; break;
-						case opFDiv : res.uf = a->uf / b->ui; break;
-						case opMod : res.uf = sc_mod(a->uf, (double)b->ui); break;
+						case opFDiv : res.uf = a->uf / b->ui; res.utag = tagFloat; break;
+						case opMod : res.uf = sc_mod(a->uf, (double)b->ui); res.utag = tagFloat; break;
 						case opEQ  : res = BOOL(a->uf == b->ui); break;
 						case opNE  : res = BOOL(a->uf != b->ui); break;
 						case opLT  : res = BOOL(a->uf <  b->ui); break;
@@ -720,54 +722,56 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opGE  : res = BOOL(a->uf >= b->ui); break;
 						//case opIdentical : res = o_false; break;
 						//case opNotIdentical : res = o_true; break;
-						case opMin : res.uf = a->uf < b->ui ? a->uf : b->ui; break;
-						case opMax : res.uf = a->uf > b->ui ? a->uf : b->ui; break;
-						case opRound : res.uf = sc_round(a->uf, (double)b->ui); break;
-						case opRoundUp : res.uf = sc_roundUp(a->uf, (double)b->ui); break;
-						case opTrunc : res.uf = sc_trunc(a->uf, (double)b->ui); break;
-						case opAtan2 : res.uf = atan2(a->uf, b->ui); break;
-						case opHypot : res.uf = hypot(a->uf, b->ui); break;
-						case opHypotx : res.uf = hypotx(a->uf, b->ui); break;
-						case opPow   : res.uf = pow(a->uf, (double)b->ui); break;
-						case opRing1 : res.uf = a->uf * b->ui + a->uf; break;
-						case opRing2 : res.uf = a->uf * b->ui + a->uf + b->ui; break;
-						case opRing3 : res.uf = a->uf * a->uf * b->ui; break;
+						case opMin : res.uf = a->uf < b->ui ? a->uf : b->ui; res.utag = tagFloat; break;
+						case opMax : res.uf = a->uf > b->ui ? a->uf : b->ui; res.utag = tagFloat; break;
+						case opRound : res.uf = sc_round(a->uf, (double)b->ui); res.utag = tagFloat; break;
+						case opRoundUp : res.uf = sc_roundUp(a->uf, (double)b->ui); res.utag = tagFloat; break;
+						case opTrunc : res.uf = sc_trunc(a->uf, (double)b->ui); res.utag = tagFloat; break;
+						case opAtan2 : res.uf = atan2(a->uf, b->ui); res.utag = tagFloat; break;
+						case opHypot : res.uf = hypot(a->uf, b->ui); res.utag = tagFloat; break;
+						case opHypotx : res.uf = hypotx(a->uf, b->ui); res.utag = tagFloat; break;
+						case opPow   : res.uf = pow(a->uf, (double)b->ui); res.utag = tagFloat; break;
+						case opRing1 : res.uf = a->uf * b->ui + a->uf; res.utag = tagFloat; break;
+						case opRing2 : res.uf = a->uf * b->ui + a->uf + b->ui; res.utag = tagFloat; break;
+						case opRing3 : res.uf = a->uf * a->uf * b->ui; res.utag = tagFloat; break;
 						case opRing4 : res.uf = a->uf * a->uf * b->ui
-											- a->uf * b->ui * b->ui; break;
-						case opDifSqr : res.uf = a->uf * a->uf - b->ui * b->ui; break;
-						case opSumSqr : res.uf = a->uf * a->uf + b->ui * b->ui; break;
+											- a->uf * b->ui * b->ui; res.utag = tagFloat; break;
+						case opDifSqr : res.uf = a->uf * a->uf - b->ui * b->ui; res.utag = tagFloat; break;
+						case opSumSqr : res.uf = a->uf * a->uf + b->ui * b->ui; res.utag = tagFloat; break;
 						case opSqrSum : {
 							double z;
 							z = a->uf + b->ui;
 							res.uf = z*z; 
+							res.utag = tagFloat; 
 						} break;
 						case opSqrDif : {
 							double z;
 							z = a->uf - b->ui;
 							res.uf = z*z; 
+							res.utag = tagFloat; 
 						} break;
-						case opAbsDif : res.uf = fabs(a->uf - b->ui); break;
-						case opThresh : res.uf = a->uf<b->ui ? 0. : a->uf; break;
-						case opAMClip : res.uf = b->ui<0 ? 0. : a->uf*b->ui; break;
-						case opScaleNeg : res.uf = a->uf<0 ? a->uf*b->ui : a->uf; break;
+						case opAbsDif : res.uf = fabs(a->uf - b->ui); res.utag = tagFloat; break;
+						case opThresh : res.uf = a->uf<b->ui ? 0. : a->uf; res.utag = tagFloat; break;
+						case opAMClip : res.uf = b->ui<0 ? 0. : a->uf*b->ui; res.utag = tagFloat; break;
+						case opScaleNeg : res.uf = a->uf<0 ? a->uf*b->ui : a->uf; res.utag = tagFloat; break;
 						case opClip2 : 
-							res.uf = a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf); 
+							res.uf = a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf); res.utag = tagFloat; 
 							break;
 						case opFold2 : 
-							res.uf = sc_fold2(a->uf, (double)b->ui); 
+							res.uf = sc_fold2(a->uf, (double)b->ui); res.utag = tagFloat; 
 							break;
 						case opWrap2 : 
-							res.uf = sc_wrap(a->uf, (double)-b->ui, (double)b->ui); 
+							res.uf = sc_wrap(a->uf, (double)-b->ui, (double)b->ui); res.utag = tagFloat; 
 							break;
 						case opExcess : 
-							res.uf = a->uf - (a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf)); 
+							res.uf = a->uf - (a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf)); res.utag = tagFloat; 
 							break;
-						case opFirstArg : res.uf = a->uf; break;
+						case opFirstArg : res.uf = a->uf; res.utag = tagFloat; break;
 						case opRandRange : 
-							res.uf = a->uf + g->rgen->frand() * (b->ui - a->uf);
+							res.uf = a->uf + g->rgen->frand() * (b->ui - a->uf); res.utag = tagFloat; 
 							break;
 						case opExpRandRange : 
-							res.uf = g->rgen->exprandrng(a->uf, b->ui); 
+							res.uf = g->rgen->exprandrng(a->uf, b->ui); res.utag = tagFloat; 
 							break;
 						default : goto send_normal_2;
 					}
@@ -820,12 +824,12 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					break;
 				default : // double
 					switch (opcode) {
-						case opAdd : res.uf = a->uf + b->uf; break;
-						case opSub : res.uf = a->uf - b->uf; break;
-						case opMul : res.uf = a->uf * b->uf; break;
+						case opAdd : res.uf = a->uf + b->uf; res.utag = tagFloat; break;
+						case opSub : res.uf = a->uf - b->uf; res.utag = tagFloat; break;
+						case opMul : res.uf = a->uf * b->uf; res.utag = tagFloat; break;
 						case opIDiv : res.ui = (long)floor(a->uf / b->uf); res.utag = tagInt; break;
-						case opFDiv : res.uf = a->uf / b->uf; break;
-						case opMod : res.uf = sc_mod(a->uf, b->uf); break;
+						case opFDiv : res.uf = a->uf / b->uf; res.utag = tagFloat; break;
+						case opMod : res.uf = sc_mod(a->uf, b->uf); res.utag = tagFloat; break;
 						case opEQ  : res = BOOL(a->uf == b->uf); break;
 						case opNE  : res = BOOL(a->uf != b->uf); break;
 						case opLT  : res = BOOL(a->uf <  b->uf); break;
@@ -834,54 +838,62 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opGE  : res = BOOL(a->uf >= b->uf); break;
 						//case opIdentical  : res = BOOL(a->uf == b->uf); break;
 						//case opNotIdentical  : res = BOOL(a->uf != b->uf); break;
-						case opMin : res.uf = a->uf < b->uf ? a->uf : b->uf; break;
-						case opMax : res.uf = a->uf > b->uf ? a->uf : b->uf; break;
-						case opRound : res.uf = sc_round(a->uf, b->uf); break;
-						case opRoundUp : res.uf = sc_roundUp(a->uf, b->uf); break;
-						case opTrunc : res.uf = sc_trunc(a->uf, b->uf); break;
-						case opAtan2 : res.uf = atan2(a->uf, b->uf); break;
-						case opHypot : res.uf = hypot(a->uf, b->uf); break;
-						case opHypotx : res.uf = hypotx(a->uf, b->uf); break;
-						case opPow   : res.uf = pow(a->uf, b->uf); break;
-						case opRing1 : res.uf = a->uf * b->uf + a->uf; break;
-						case opRing2 : res.uf = a->uf * b->uf + a->uf + b->uf; break;
-						case opRing3 : res.uf = a->uf * a->uf * b->uf; break;
+						case opMin : res.uf = a->uf < b->uf ? a->uf : b->uf; res.utag = tagFloat; break;
+						case opMax : res.uf = a->uf > b->uf ? a->uf : b->uf; res.utag = tagFloat; break;
+						case opRound : res.uf = sc_round(a->uf, b->uf); res.utag = tagFloat; break;
+						case opRoundUp : res.uf = sc_roundUp(a->uf, b->uf); res.utag = tagFloat; break;
+						case opTrunc : res.uf = sc_trunc(a->uf, b->uf); res.utag = tagFloat; break;
+						case opAtan2 : res.uf = atan2(a->uf, b->uf); res.utag = tagFloat; break;
+						case opHypot : res.uf = hypot(a->uf, b->uf); res.utag = tagFloat; break;
+						case opHypotx : res.uf = hypotx(a->uf, b->uf); res.utag = tagFloat; break;
+						case opPow   : res.uf = pow(a->uf, b->uf); res.utag = tagFloat; break;
+						case opRing1 : res.uf = a->uf * b->uf + a->uf; res.utag = tagFloat; break;
+						case opRing2 : res.uf = a->uf * b->uf + a->uf + b->uf; res.utag = tagFloat; break;
+						case opRing3 : res.uf = a->uf * a->uf * b->uf; res.utag = tagFloat; break;
 						case opRing4 : res.uf = a->uf * a->uf * b->uf
-											- a->uf * b->uf * b->uf; break;
-						case opDifSqr : res.uf = a->uf * a->uf - b->uf * b->uf; break;
-						case opSumSqr : res.uf = a->uf * a->uf + b->uf * b->uf; break;
+											- a->uf * b->uf * b->uf; res.utag = tagFloat; break;
+						case opDifSqr : res.uf = a->uf * a->uf - b->uf * b->uf; res.utag = tagFloat; break;
+						case opSumSqr : res.uf = a->uf * a->uf + b->uf * b->uf; res.utag = tagFloat; break;
 						case opSqrSum : {
 							double z;
 							z = a->uf + b->uf;
 							res.uf = z*z; 
+							res.utag = tagFloat; 
 						} break;
 						case opSqrDif : {
 							double z;
 							z = a->uf - b->uf;
 							res.uf = z*z; 
+							res.utag = tagFloat; 
 						} break;
-						case opAbsDif : res.uf = fabs(a->uf - b->uf); break;
-						case opThresh : res.uf = a->uf<b->uf ? 0. : a->uf; break;
-						case opAMClip : res.uf = b->uf<0 ? 0 : a->uf*b->uf; break;
-						case opScaleNeg : res.uf = a->uf<0 ? a->uf*b->uf : a->uf; break;
+						case opAbsDif : res.uf = fabs(a->uf - b->uf); res.utag = tagFloat; break;
+						case opThresh : res.uf = a->uf<b->uf ? 0. : a->uf; res.utag = tagFloat; break;
+						case opAMClip : res.uf = b->uf<0 ? 0 : a->uf*b->uf; res.utag = tagFloat; break;
+						case opScaleNeg : res.uf = a->uf<0 ? a->uf*b->uf : a->uf; res.utag = tagFloat; break;
 						case opClip2 : 
 							res.uf = a->uf < -b->uf ? -b->uf : (a->uf > b->uf ? b->uf : a->uf); 
+							res.utag = tagFloat; 
 							break;
 						case opFold2 : 
 							res.uf = sc_fold2(a->uf, b->uf); 
+							res.utag = tagFloat; 
 							break;
 						case opWrap2 : 
 							res.uf = sc_wrap(a->uf, -b->uf, b->uf); 
+							res.utag = tagFloat; 
 							break;
 						case opExcess : 
 							res.uf = a->uf - (a->uf < -b->uf ? -b->uf : (a->uf > b->uf ? b->uf : a->uf)); 
+							res.utag = tagFloat; 
 							break;
-						case opFirstArg : res.uf = a->uf; break;
+						case opFirstArg : res.uf = a->uf; res.utag = tagFloat; break;
 						case opRandRange : 
 							res.uf = a->uf + g->rgen->frand() * (b->uf - a->uf); 
+							res.utag = tagFloat; 
 							break;
 						case opExpRandRange : 
 							res.uf = g->rgen->exprandrng(a->uf, b->uf); 
+							res.utag = tagFloat; 
 							break;
 						default : goto send_normal_2;
 					}
@@ -890,7 +902,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 		} break;
 	}
 	g->sp -= numArgsPushed - 1; // drop
-	g->sp[0].ucopy = res.ucopy;
+	g->sp[0] = res;
 	g->numpop = 0;
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;

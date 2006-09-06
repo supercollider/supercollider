@@ -2166,6 +2166,8 @@ bool compileLibrary();
 bool compileLibrary() 
 {
 	//printf("->compileLibrary\n");
+	printf("sizeof slot %d\n", sizeof(PyrSlot));
+	printf("sizeof methraw %d\n", sizeof(PyrMethodRaw));
 	shutdownLibrary();
 
 	pthread_mutex_lock (&gLangMutex);
@@ -2253,7 +2255,7 @@ void interpretCmdLine(const char *textbuf, int textlen, char *methodname)
 //#if __profile__
 //		ProfilerInit(collectSummary, microsecondsTimeBase, 500, 100);
 //#endif
-		(++gMainVMGlobals->sp)->ucopy = slot.ucopy;
+		*(++gMainVMGlobals->sp) = slot;
 		runInterpreter(gMainVMGlobals, getsym(methodname), 1);
 //#if __profile__
 //		ProfilerDump("\pErase2.prof");

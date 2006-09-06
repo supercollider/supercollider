@@ -37,6 +37,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <Carbon/Carbon.h>
 
 #ifdef SC_WIN32
 # include "SC_Win32Utils.h"
@@ -49,6 +50,8 @@
 #include <new>
 #include "InitAlloc.h"
 #include "bullet.h"
+
+bool BadStackTags(VMGlobals *g);
 
 //void tellPlugInsAboutToRun();
 double timeNow();
@@ -354,7 +357,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 bool initAwakeMessage(VMGlobals *g)
 {
 	//post("initAwakeMessage %08X %08X\n", g->thread, g->process->mainThread.uot);
-	g->process->curThread.ucopy = g->process->mainThread.ucopy; //??
+	g->process->curThread = g->process->mainThread; //??
 	g->thread = g->process->mainThread.uot; //??
 	
 	// these will be set up when the run method is called
@@ -366,11 +369,11 @@ bool initAwakeMessage(VMGlobals *g)
 	
 	// set process as the receiver
 	PyrSlot *slot = g->sp - 3;
-	g->receiver.ucopy = slot->ucopy;
+	g->receiver = *slot;
 
-	g->thread->beats.uf = slot[1].uf;
-	g->thread->seconds.uf = slot[2].uf;
-	g->thread->clock.ucopy = slot[3].ucopy;
+	g->thread->beats = slot[1];
+	g->thread->seconds = slot[2];
+	g->thread->clock = slot[3];
 	g->gc->GCWrite(g->thread, slot+3);
 
 	// start it
@@ -381,7 +384,7 @@ bool initAwakeMessage(VMGlobals *g)
 
 bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
-	g->process->curThread.ucopy = g->process->mainThread.ucopy;
+	g->process->curThread = g->process->mainThread;
 	g->thread = g->process->mainThread.uot;
 	
 	// these will be set up when the run method is called
@@ -394,12 +397,14 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 	g->ip = NULL;	
         g->execMethod = 0;
 	g->thread->beats.uf = g->thread->seconds.uf = elapsedTime();
+	g->thread->beats.utag = tagFloat;
+	g->thread->seconds.utag = tagFloat;
 	SetObject(&g->thread->clock, s_systemclock->u.classobj);
 	g->gc->GCWrite(g->thread, s_systemclock->u.classobj);
 	
 	// set process as the receiver
 	PyrSlot *slot = g->sp - numArgsPushed + 1;
-	g->receiver.ucopy = slot->ucopy;
+	g->receiver = *slot;
 
 	// start it
 	sendMessage(g, selector, numArgsPushed);
@@ -410,7 +415,7 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 
 void endInterpreter(VMGlobals *g)
 {
-	g->result.ucopy = g->sp->ucopy;
+	g->result = *g->sp;
 //	dumpObjectSlot(&g->result);
 	g->gc->Stack()->size = 0;
 	g->sp = g->gc->Stack()->slots - 1;
@@ -421,8 +426,8 @@ void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
 void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
 {
 	// only the value is on the stack
-	sp[1].ucopy = sp[0].ucopy; // copy value up one
-	sp[0].ucopy = g->receiver.ucopy; // put receiver in place
+	sp[1] = sp[0]; // copy value up one
+	sp[0] = g->receiver; // put receiver in place
 	sp++;
 	g->sp = sp;
 	g->ip = ip;
@@ -467,7 +472,7 @@ void Interpret(VMGlobals *g)
 	PyrSymbol *selector;
 	PyrClass *classobj;
 	PyrSlot *slot, *vars;
-	double *sp, *pslot;
+	PyrSlot *sp, *pslot;
 	PyrObject *obj;
 	PyrClosure *closure;
 	PyrMethod *meth;
@@ -494,7 +499,7 @@ void Interpret(VMGlobals *g)
 #endif
 
 	// Codewarrior puts them in registers. take advantage..
-	sp = (double*)g->sp;
+	sp = g->sp;
 	ip = g->ip;
 	
 	numKeyArgsPushed = 0;
@@ -503,9 +508,18 @@ void Interpret(VMGlobals *g)
 		return;
 	}
 	while (true) {  // not going to indent body to save line space
-
+	
+//	if (BadStackTags(g)) {
+//		DumpStack(g, sp);
+//		Debugger();
+//	}
+//	if (g->gc->HeapTagSanity())
+//	{
+//		Debugger();
+//	}
+	
 #if CHECK_MAX_STACK_USE
-	int stackDepth = (PyrSlot*)sp - g->sp + 1;
+	int stackDepth = sp - g->sp + 1;
 	if (stackDepth > gMaxStackDepth) {
 		gMaxStackDepth = stackDepth;
 		printf("gMaxStackDepth %d\n", gMaxStackDepth);
@@ -527,17 +541,17 @@ void Interpret(VMGlobals *g)
 	//postfl("sp %08X   frame %08X   diff %d    caller %08X\n", sp, g->frame, ((int)sp - (int)g->frame)>>3, g->frame->caller.uof);
 #if DEBUGINTERPRETER
 	if (gTraceInterpreter) {
-		//DumpStack(g, (PyrSlot*)sp);
+		//DumpStack(g, sp);
 		if (FrameSanity(g->frame, "dbgint")) {
 			//Debugger();
 		}
 		//g->gc->SanityCheck();
 		//assert(g->gc->SanityCheck());
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 		g->gc->FullCollection();
-			sp = (double*)g->sp; ip = g->ip;
+			sp = g->sp; ip = g->ip;
 		postfl("[%3d] %20s-%-16s  ", 
-			((PyrSlot*)sp - g->gc->Stack()->slots) + 1,
+			(sp - g->gc->Stack()->slots) + 1,
 			g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
 		dumpOneByteCode(g->block, NULL, ip);
 	}
@@ -558,25 +572,25 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; ip++; // get literal index
 			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
 			if (classobj) {
-				++sp; SetObject((PyrSlot*)sp, classobj);
+				++sp; SetObject(sp, classobj);
 			} else {
 				*++sp = gSpecialValues[svNil];
 			}
 			break;
 		case 1 : // opExtended, opPushInstVar
 			op2 = ip[1]; ip++; // get inst var index
-			*++sp = g->receiver.uo->slots[op2].uf;
+			*++sp = g->receiver.uo->slots[op2];
 			break;
 		case 2 : // opExtended, opPushTempVar
 			op2 = ip[1]; // get temp var level
 			op3 = ip[2]; // get temp var index
 			ip += 2;
 			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
-			*++sp = tframe->vars[op3].uf;
+			*++sp = tframe->vars[op3];
 			break;
 		case 3 : // opExtended, opPushTempZeroVar
 			op2 = ip[1]; ip++; // get temp var index
-			*++sp = g->frame->vars[op2].uf;
+			*++sp = g->frame->vars[op2];
 			break;
 		case 4 : // opExtended, opPushLiteral
 			op2 = ip[1]; ip++; // get literal index
@@ -584,33 +598,33 @@ void Interpret(VMGlobals *g)
 			slot = g->block->selectors.uo->slots + op2;
 			if (slot->utag == tagObj && slot->uo->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
 				// push a closure
-				g->sp = (PyrSlot*)sp; // gc may push the stack
+				g->sp = sp; // gc may push the stack
 				closure = (PyrClosure*)g->gc->New(2*sizeof(PyrSlot), 0, obj_notindexed, true);
-				sp = (double*)g->sp;
+				sp = g->sp;
 				closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
 				closure->size = 2;
-				closure->block.ucopy = slot->ucopy;
+				closure->block = *slot;
 				if (IsNil(&slot->uoblk->contextDef)) {
-					closure->context.ucopy = g->process->interpreter.uoi->context.ucopy;
+					closure->context = g->process->interpreter.uoi->context;
 				} else {
 					SetObject(&closure->context, g->frame);
 				}
-				++sp; SetObject((PyrSlot*)sp, closure);
+				++sp; SetObject(sp, closure);
 			} else {
-				*++sp = slot->uf;
+				*++sp = *slot;
 			}
 			break;
 		case 5 : // opExtended, opPushClassVar
 			op2 = ip[1]; // get class
 			op3 = ip[2]; // get class var index
 			ip += 2;
-			*++sp = g->classvars->slots[(op2<<8)|op3].uf;
+			*++sp = g->classvars->slots[(op2<<8)|op3];
 			break;
 		case 6 :  // opExtended, opPushSpecialValue == push a special class
 			op2 = ip[1]; ip++; // get class name index
 			classobj = gSpecialClasses[op2]->u.classobj;
 			if (classobj) {
-				++sp; SetObject((PyrSlot*)sp, classobj);
+				++sp; SetObject(sp, classobj);
 			} else {
 				*++sp = gSpecialValues[svNil];
 			}
@@ -621,7 +635,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + op2;
-				slot->uf = *sp;
+				*slot = *sp;
 				g->gc->GCWrite(obj, slot);
 			}
 			break;
@@ -631,15 +645,15 @@ void Interpret(VMGlobals *g)
 			ip += 2;
 			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
 			slot = tframe->vars + op3;
-			slot->uf = *sp;
+			*slot = *sp;
 			g->gc->GCWrite(tframe, slot);
 			break;
 		case 9 : // opExtended, opStoreClassVar
 			op2 = ip[1]; // get index of class name literal
 			op3 = ip[2]; // get class var index
 			ip += 2;
-			g->classvars->slots[(op2<<8)|op3].uf = *sp;
-			g->gc->GCWrite(g->classvars, (PyrSlot*)sp);
+			g->classvars->slots[(op2<<8)|op3] = *sp;
+			g->gc->GCWrite(g->classvars, sp);
 			break;
 		case 10 : // opExtended, opSendMsg
 			numArgsPushed = ip[1]; // get num args
@@ -648,7 +662,7 @@ void Interpret(VMGlobals *g)
 			ip += 3;
 			selector = g->block->selectors.uo->slots[op3].us;			
 
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 			
 			if (numKeyArgsPushed) goto key_class_lookup;
 			else goto class_lookup;
@@ -673,83 +687,83 @@ void Interpret(VMGlobals *g)
 			ip += 3;
 			
 			selector = gSpecialSelectors[op3];
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 			
 			if (numKeyArgsPushed) goto key_class_lookup;
 			else goto class_lookup;
 			
 		case 13 :  // opExtended, opSendSpecialUnaryArithMsg
 			op2 = ip[1]; ip++; // get selector index
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialUnaryArithMsg(g, -1);
 #if TAILCALLOPTIMIZE
 			g->tailCall = 0;
 #endif
-			sp = (double*)g->sp; ip = g->ip;
+			sp = g->sp; ip = g->ip;
 			break;
 		case 14 :  // opExtended, opSendSpecialBinaryArithMsg
 			op2 = ip[1]; ip++; // get selector index
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialBinaryArithMsg(g, 2, false);
-			sp = (double*)g->sp; ip = g->ip;
+			sp = g->sp; ip = g->ip;
 			break;
 		case 15 : // opExtended, opSpecialOpcode (none yet)
 			op2 = ip[1]; ip++; // get extended special opcode
 			switch (op2) {
 				case opgProcess : // push thisProcess
-					++sp; SetObject((PyrSlot*)sp, g->process); break;
+					++sp; SetObject(sp, g->process); break;
 				case opgThread : // push thisProcess
-					++sp; SetObject((PyrSlot*)sp, g->thread); break;
+					++sp; SetObject(sp, g->thread); break;
 				case opgMethod : // push thisMethod
-					++sp; SetObject((PyrSlot*)sp, g->method); break;
+					++sp; SetObject(sp, g->method); break;
 				case opgFunctionDef : // push thisFunctionDef
-					++sp; SetObject((PyrSlot*)sp, g->block); break;
+					++sp; SetObject(sp, g->block); break;
 				case opgFunction : // push thisFunc
 					// push a closure
-					g->sp = (PyrSlot*)sp; // gc may push the stack
+					g->sp = sp; // gc may push the stack
 					closure = (PyrClosure*)g->gc->New(2*sizeof(PyrSlot), 0, obj_notindexed, true);
-					sp = (double*)g->sp;
+					sp = g->sp;
 					closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
 					closure->size = 2;
 					SetObject(&closure->block, g->block);
 					SetObject(&closure->context, g->frame->context.uof);
-					++sp; SetObject((PyrSlot*)sp, closure);
+					++sp; SetObject(sp, closure);
 					break;
 				default :
 					*++sp = gSpecialValues[svNil]; break;
 			}
 			break;
 		// opPushInstVar, 0..15
-		case 16 : *++sp = g->receiver.uo->slots[ 0].uf; break;
-		case 17 : *++sp = g->receiver.uo->slots[ 1].uf; break;
-		case 18 : *++sp = g->receiver.uo->slots[ 2].uf; break;
-		case 19 : *++sp = g->receiver.uo->slots[ 3].uf; break;
-		case 20 : *++sp = g->receiver.uo->slots[ 4].uf; break;
-		case 21 : *++sp = g->receiver.uo->slots[ 5].uf; break;
-		case 22 : *++sp = g->receiver.uo->slots[ 6].uf; break;
-		case 23 : *++sp = g->receiver.uo->slots[ 7].uf; break;
-		case 24 : *++sp = g->receiver.uo->slots[ 8].uf; break;
-		case 25 : *++sp = g->receiver.uo->slots[ 9].uf; break;
-		case 26 : *++sp = g->receiver.uo->slots[10].uf; break;
-		case 27 : *++sp = g->receiver.uo->slots[11].uf; break;
-		case 28 : *++sp = g->receiver.uo->slots[12].uf; break;
-		case 29 : *++sp = g->receiver.uo->slots[13].uf; break;
-		case 30 : *++sp = g->receiver.uo->slots[14].uf; break;
-		case 31 : *++sp = g->receiver.uo->slots[15].uf; break;
+		case 16 : *++sp = g->receiver.uo->slots[ 0]; break;
+		case 17 : *++sp = g->receiver.uo->slots[ 1]; break;
+		case 18 : *++sp = g->receiver.uo->slots[ 2]; break;
+		case 19 : *++sp = g->receiver.uo->slots[ 3]; break;
+		case 20 : *++sp = g->receiver.uo->slots[ 4]; break;
+		case 21 : *++sp = g->receiver.uo->slots[ 5]; break;
+		case 22 : *++sp = g->receiver.uo->slots[ 6]; break;
+		case 23 : *++sp = g->receiver.uo->slots[ 7]; break;
+		case 24 : *++sp = g->receiver.uo->slots[ 8]; break;
+		case 25 : *++sp = g->receiver.uo->slots[ 9]; break;
+		case 26 : *++sp = g->receiver.uo->slots[10]; break;
+		case 27 : *++sp = g->receiver.uo->slots[11]; break;
+		case 28 : *++sp = g->receiver.uo->slots[12]; break;
+		case 29 : *++sp = g->receiver.uo->slots[13]; break;
+		case 30 : *++sp = g->receiver.uo->slots[14]; break;
+		case 31 : *++sp = g->receiver.uo->slots[15]; break;
 		
 		case 32 : // JumpIfTrue
 			// cannot compare with o_false because it is NaN
-			if ( ((PyrSlot*)sp)->utag == tagTrue ) {
+			if ( sp->utag == tagTrue ) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
-			} else if ( ((PyrSlot*)sp)->utag == tagFalse) {
+			} else if ( sp->utag == tagFalse) {
 				ip+=2;
 			} else {
 				numArgsPushed = 1;
 				selector = gSpecialSelectors[opmNonBooleanError];
-				slot = (PyrSlot*)sp;
+				slot = sp;
 							
 				goto class_lookup;
 			}
@@ -757,98 +771,98 @@ void Interpret(VMGlobals *g)
 			break;
 
 		// opPushTempVar, levels 1..7
-		case 33 : *++sp = g->frame->context.uof->vars[ip[1]].uf; ip++; break;
-		case 34 : *++sp = g->frame->context.uof->context.uof->vars[ip[1]].uf; ip++; break;
-		case 35 : *++sp = g->frame->context.uof->context.uof->context.uof->vars[ip[1]].uf; ip++; break;
+		case 33 : *++sp = g->frame->context.uof->vars[ip[1]]; ip++; break;
+		case 34 : *++sp = g->frame->context.uof->context.uof->vars[ip[1]]; ip++; break;
+		case 35 : *++sp = g->frame->context.uof->context.uof->context.uof->vars[ip[1]]; ip++; break;
 		case 36 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->vars[ip[1]].uf; ip++; break;
+					context.uof->vars[ip[1]]; ip++; break;
 		case 37 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->vars[ip[1]].uf; ip++; break;
+					context.uof->context.uof->vars[ip[1]]; ip++; break;
 		case 38 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->vars[ip[1]].uf; ip++; break;
+					context.uof->context.uof->context.uof->vars[ip[1]]; ip++; break;
 		case 39 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->vars[ip[1]].uf; ip++; break;
+					context.uof->context.uof->context.uof->context.uof->vars[ip[1]]; ip++; break;
 
 		// push literal constants.
 		case 40 : 
 			ival = ip[1];
 			ip+=1;
-			*++sp = g->block->constants.uo->slots[ival].uf;
+			*++sp = g->block->constants.uo->slots[ival];
 			break;
 		case 41 : 
 			ival = (ip[1] << 8) | ip[2];
 			ip+=2;
-			*++sp = g->block->constants.uo->slots[ival].uf;
+			*++sp = g->block->constants.uo->slots[ival];
 			break;
 		case 42 : 
 			ival = (ip[1] << 16) | (ip[2] << 8) | ip[3];
 			ip+=3;
-			*++sp = g->block->constants.uo->slots[ival].uf;
+			*++sp = g->block->constants.uo->slots[ival];
 			break;
 		case 43 : 
 			ival = (ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8) | ip[4];
 			ip+=4;
-			*++sp = g->block->constants.uo->slots[ival].uf;
+			*++sp = g->block->constants.uo->slots[ival];
 			break;
 
 		// push integers.
 		case 44 : 
 			ival = (int32)(ip[1] << 24) >> 24;
 			ip+=1;
-			++sp; SetInt((PyrSlot*)sp, ival);
+			++sp; SetInt(sp, ival);
 			break;
 		case 45 : 
 			ival = (int32)((ip[1] << 24) | (ip[2] << 16)) >> 16;
 			ip+=2;
-			++sp; SetInt((PyrSlot*)sp, ival);
+			++sp; SetInt(sp, ival);
 			break;
 		case 46 : 
 			ival = (int32)((ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8)) >> 8;
 			ip+=3;
-			++sp; SetInt((PyrSlot*)sp, ival);
+			++sp; SetInt(sp, ival);
 			break;
 		case 47 : 
 			ival = (int32)((ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8) | ip[4]);
 			ip+=4;
-			++sp; SetInt((PyrSlot*)sp, ival);
+			++sp; SetInt(sp, ival);
 			break;
 
 
 		// opPushTempZeroVar
-		case 48 : *++sp = g->frame->vars[ 0].uf; break;
-		case 49 : *++sp = g->frame->vars[ 1].uf; break;
-		case 50 : *++sp = g->frame->vars[ 2].uf; break;
-		case 51 : *++sp = g->frame->vars[ 3].uf; break;
-		case 52 : *++sp = g->frame->vars[ 4].uf; break;
-		case 53 : *++sp = g->frame->vars[ 5].uf; break;
-		case 54 : *++sp = g->frame->vars[ 6].uf; break;
-		case 55 : *++sp = g->frame->vars[ 7].uf; break;
-		case 56 : *++sp = g->frame->vars[ 8].uf; break;
-		case 57 : *++sp = g->frame->vars[ 9].uf; break;
-		case 58 : *++sp = g->frame->vars[10].uf; break;
-		case 59 : *++sp = g->frame->vars[11].uf; break;
-		case 60 : *++sp = g->frame->vars[12].uf; break;
-		case 61 : *++sp = g->frame->vars[13].uf; break;
-		case 62 : *++sp = g->frame->vars[14].uf; break;
-		case 63 : *++sp = g->frame->vars[15].uf; break;
+		case 48 : *++sp = g->frame->vars[ 0]; break;
+		case 49 : *++sp = g->frame->vars[ 1]; break;
+		case 50 : *++sp = g->frame->vars[ 2]; break;
+		case 51 : *++sp = g->frame->vars[ 3]; break;
+		case 52 : *++sp = g->frame->vars[ 4]; break;
+		case 53 : *++sp = g->frame->vars[ 5]; break;
+		case 54 : *++sp = g->frame->vars[ 6]; break;
+		case 55 : *++sp = g->frame->vars[ 7]; break;
+		case 56 : *++sp = g->frame->vars[ 8]; break;
+		case 57 : *++sp = g->frame->vars[ 9]; break;
+		case 58 : *++sp = g->frame->vars[10]; break;
+		case 59 : *++sp = g->frame->vars[11]; break;
+		case 60 : *++sp = g->frame->vars[12]; break;
+		case 61 : *++sp = g->frame->vars[13]; break;
+		case 62 : *++sp = g->frame->vars[14]; break;
+		case 63 : *++sp = g->frame->vars[15]; break;
 		
 		// case opPushLiteral
-		case 64 : *++sp = g->block->constants.uo->slots[ 0].uf; break;
-		case 65 : *++sp = g->block->constants.uo->slots[ 1].uf; break;
-		case 66 : *++sp = g->block->constants.uo->slots[ 2].uf; break;
-		case 67 : *++sp = g->block->constants.uo->slots[ 3].uf; break;
-		case 68 : *++sp = g->block->constants.uo->slots[ 4].uf; break;
-		case 69 : *++sp = g->block->constants.uo->slots[ 5].uf; break;
-		case 70 : *++sp = g->block->constants.uo->slots[ 6].uf; break;
-		case 71 : *++sp = g->block->constants.uo->slots[ 7].uf; break;
-		case 72 : *++sp = g->block->constants.uo->slots[ 8].uf; break;
-		case 73 : *++sp = g->block->constants.uo->slots[ 9].uf; break;
-		case 74 : *++sp = g->block->constants.uo->slots[10].uf; break;
-		case 75 : *++sp = g->block->constants.uo->slots[11].uf; break;
-		case 76 : *++sp = g->block->constants.uo->slots[12].uf; break;
-		case 77 : *++sp = g->block->constants.uo->slots[13].uf; break;
-		case 78 : *++sp = g->block->constants.uo->slots[14].uf; break;
-		case 79 : *++sp = g->block->constants.uo->slots[15].uf; break;
+		case 64 : *++sp = g->block->constants.uo->slots[ 0]; break;
+		case 65 : *++sp = g->block->constants.uo->slots[ 1]; break;
+		case 66 : *++sp = g->block->constants.uo->slots[ 2]; break;
+		case 67 : *++sp = g->block->constants.uo->slots[ 3]; break;
+		case 68 : *++sp = g->block->constants.uo->slots[ 4]; break;
+		case 69 : *++sp = g->block->constants.uo->slots[ 5]; break;
+		case 70 : *++sp = g->block->constants.uo->slots[ 6]; break;
+		case 71 : *++sp = g->block->constants.uo->slots[ 7]; break;
+		case 72 : *++sp = g->block->constants.uo->slots[ 8]; break;
+		case 73 : *++sp = g->block->constants.uo->slots[ 9]; break;
+		case 74 : *++sp = g->block->constants.uo->slots[10]; break;
+		case 75 : *++sp = g->block->constants.uo->slots[11]; break;
+		case 76 : *++sp = g->block->constants.uo->slots[12]; break;
+		case 77 : *++sp = g->block->constants.uo->slots[13]; break;
+		case 78 : *++sp = g->block->constants.uo->slots[14]; break;
+		case 79 : *++sp = g->block->constants.uo->slots[15]; break;
 		
 		//	opPushClassVar
 		case 80 :  case 81 :  case 82 :  case 83 :  
@@ -857,23 +871,23 @@ void Interpret(VMGlobals *g)
 		case 92 :  case 93 :  case 94 :  case 95 :
 			op2 = op1 & 15;
 			op3 = ip[1]; ip++; // get class var index
-			*++sp = g->classvars->slots[(op2<<8)|op3].uf;
+			*++sp = g->classvars->slots[(op2<<8)|op3];
 			break;
 			
 		// opPushSpecialValue
-		case  96 : *++sp = g->receiver.uf; break;
+		case  96 : *++sp = g->receiver; break;
 		case  97 : // push one and subtract
-			if (((PyrSlot*)sp)->utag == tagInt) {
-				((PyrSlot*)sp)->ui--;
+			if (sp->utag == tagInt) {
+				sp->ui--;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
 			} else {
 				*++sp = gSpecialValues[svOne];
-				g->sp = (PyrSlot*)sp; g->ip = ip;
+				g->sp = sp; g->ip = ip;
 				g->primitiveIndex = opSub;
 				prSubNum(g, -1); 
-				sp = (double*)g->sp; ip = g->ip; 
+				sp = g->sp; ip = g->ip; 
 			}
 			break;
 		case  98 : *++sp = gSpecialValues[svNegOne]; break;
@@ -886,17 +900,17 @@ void Interpret(VMGlobals *g)
 		case 105 : *++sp = gSpecialValues[svFOne]; break;
 		case 106 : *++sp = gSpecialValues[svFTwo]; break;
 		case 107 : // push one and add
-			if (((PyrSlot*)sp)->utag == tagInt) {
-				((PyrSlot*)sp)->ui++;
+			if (sp->utag == tagInt) {
+				sp->ui++;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
 			} else {
 				*++sp = gSpecialValues[svOne];
-				g->sp = (PyrSlot*)sp; g->ip = ip; 
+				g->sp = sp; g->ip = ip; 
 				g->primitiveIndex = opAdd;
 				prAddNum(g, -1); 
-				sp = (double*)g->sp; ip = g->ip; 
+				sp = g->sp; ip = g->ip; 
 			}
 			break;
 		case 108 : *++sp = gSpecialValues[svTrue]; break;
@@ -911,7 +925,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -920,7 +934,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 1;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -929,7 +943,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 2;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -938,7 +952,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 3;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -947,7 +961,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 4;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -956,7 +970,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 5;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -965,7 +979,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 6;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -974,7 +988,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 7;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -983,7 +997,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 8;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -992,7 +1006,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 9;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -1001,7 +1015,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 10;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -1010,7 +1024,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 11;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -1019,7 +1033,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 12;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -1028,7 +1042,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 13;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -1037,7 +1051,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 14;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -1046,7 +1060,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 15;	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -1059,7 +1073,7 @@ void Interpret(VMGlobals *g)
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + (op1 & 15);	
-				slot->uf = *sp--;	
+				*slot = *sp--;	
 				g->gc->GCWrite(obj, slot);	
 			}
 			break;
@@ -1070,7 +1084,7 @@ void Interpret(VMGlobals *g)
 			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame; // zero level
 			slot = tframe->vars + op3;
-			slot->uf = *sp--;
+			*slot = *sp--;
 			g->gc->GCWrite(tframe, slot);
 			break;
 		
@@ -1078,7 +1092,7 @@ void Interpret(VMGlobals *g)
 			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame->context.uof; // one level
 			slot = tframe->vars + op3;
-			slot->uf = *sp--;
+			*slot = *sp--;
 			g->gc->GCWrite(tframe, slot);
 			break;
 		
@@ -1086,7 +1100,7 @@ void Interpret(VMGlobals *g)
 			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame->context.uof->context.uof; // two levels
 			slot = tframe->vars + op3;
-			slot->uf = *sp--;
+			*slot = *sp--;
 			g->gc->GCWrite(tframe, slot);
 			break;
 		
@@ -1094,7 +1108,7 @@ void Interpret(VMGlobals *g)
 			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame->context.uof->context.uof->context.uof; // three levels
 			slot = tframe->vars + op3;
-			slot->uf = *sp--;
+			*slot = *sp--;
 			g->gc->GCWrite(tframe, slot);
 			break;
 		
@@ -1102,7 +1116,7 @@ void Interpret(VMGlobals *g)
 			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame->context.uof->context.uof->context.uof->context.uof; // four levels
 			slot = tframe->vars + op3;
-			slot->uf = *sp--;
+			*slot = *sp--;
 			g->gc->GCWrite(tframe, slot);
 			break;
 		
@@ -1111,7 +1125,7 @@ void Interpret(VMGlobals *g)
 			op3 = ip[1]; ip++; // get temp var index
 			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
 			slot = tframe->vars + op3;
-			slot->uf = *sp;
+			*slot = *sp;
 			g->gc->GCWrite(tframe, slot);
 			break;
 			
@@ -1120,77 +1134,77 @@ void Interpret(VMGlobals *g)
 			op3 = ip[2]; // get selector
 			ip+=2;
 			
-			*++sp = g->receiver.uo->slots[op2].uf;
+			*++sp = g->receiver.uo->slots[op2];
 			
 			numArgsPushed = 1;
 			selector = gSpecialSelectors[op3];
-			slot = (PyrSlot*)sp;
+			slot = sp;
 									
 			goto class_lookup;
 			
 		case 137 :  // push all args, send msg
 			numArgsPushed = METHRAW(g->block)->numargs;
-			pslot = (double*)(g->frame->vars - 1); 
+			pslot = (g->frame->vars - 1); 
 			for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++sp = *++pslot;
 
 			op2 = ip[1]; ip++; // get selector index
 			selector = g->block->selectors.uo->slots[op2].us;
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 						
 			goto class_lookup;
 			
 		case 138 :  // push all but first arg, send msg
 			numArgsPushed = METHRAW(g->block)->numargs;
-			pslot = (double*)(g->frame->vars); 
+			pslot = (g->frame->vars); 
 			for (m=0,mmax=numArgsPushed-1; m<mmax; ++m) *++sp = *++pslot;
 
 			op2 = ip[1]; ip++; // get selector index
 			selector = g->block->selectors.uo->slots[op2].us;
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 						
 			goto class_lookup;
 			
 		case 139 :  // push all args, send special
 			numArgsPushed = METHRAW(g->block)->numargs;
-			pslot = (double*)(g->frame->vars - 1); 
+			pslot = (g->frame->vars - 1); 
 			for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++sp = *++pslot;
 			
 			op2 = ip[1]; ip++; // get selector
 			selector = gSpecialSelectors[op2];
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 						
 			goto class_lookup;
 			
 		case 140 :  // push all but first arg, send special
 			numArgsPushed = METHRAW(g->block)->numargs;
-			pslot = (double*)(g->frame->vars); 
+			pslot = (g->frame->vars); 
 			for (m=0,mmax=numArgsPushed-1; m<mmax; ++m) *++sp = *++pslot;
 			
 			op2 = ip[1]; ip++; // get selector
 			selector = gSpecialSelectors[op2];
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 						
 			goto class_lookup;
 			
 		case 141 :  // one arg pushed, push all but first arg, send msg
 			numArgsPushed = METHRAW(g->block)->numargs + 1;
-			pslot = (double*)(g->frame->vars); 
+			pslot = (g->frame->vars); 
 			for (m=0,mmax=numArgsPushed-2; m<mmax; ++m) *++sp = *++pslot;
 
 			op2 = ip[1]; ip++; // get selector index
 			selector = g->block->selectors.uo->slots[op2].us;
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 						
 			goto class_lookup;
 			
 		case 142 :  // one arg pushed, push all but first arg, send special
 			numArgsPushed = METHRAW(g->block)->numargs + 1;
-			pslot = (double*)(g->frame->vars); 
+			pslot = (g->frame->vars); 
 			for (m=0,mmax=numArgsPushed-2; m<mmax; ++m) *++sp = *++pslot;
 			
 			op2 = ip[1]; ip++; // get selector
 			selector = gSpecialSelectors[op2];
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 
 			goto class_lookup;
 			
@@ -1203,20 +1217,20 @@ void Interpret(VMGlobals *g)
 				case 0 :
 					vars = g->frame->vars;
 					if (vars[2].ui < g->receiver.ui) {
-						*++sp = vars[1].uf; // push function
-						*++sp = vars[2].uf; // push i
-						*++sp = vars[2].uf; // push i
+						*++sp = vars[1]; // push function
+						*++sp = vars[2]; // push i
+						*++sp = vars[2]; // push i
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 2;
+						slot = sp - 2;
 						
 						goto class_lookup;
 					} else {
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 				break;
 				case 1 :
@@ -1232,20 +1246,20 @@ void Interpret(VMGlobals *g)
 				case 3 :
 					vars = g->frame->vars;
 					if (vars[2].ui >= 0) {
-						*++sp = vars[1].uf; // push function
-						*++sp = vars[2].uf; // push i
-						*++sp = vars[3].uf; // push j
+						*++sp = vars[1]; // push function
+						*++sp = vars[2]; // push i
+						*++sp = vars[3]; // push j
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 2;
+						slot = sp - 2;
 						
 						goto class_lookup;
 					} else {
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 					break;
 				case 4 :
@@ -1268,10 +1282,10 @@ void Interpret(VMGlobals *g)
 						} else {
 							error("Integer-for : endval not a SimpleNumber.\n");
 							
-							*++sp = g->receiver.ui;
+							++sp; SetFloat(sp, g->receiver.ui);
 							numArgsPushed = 1;
 							selector = gSpecialSelectors[opmPrimitiveFailed];
-							slot = (PyrSlot*)sp;
+							slot = sp;
 							
 							goto class_lookup;
 						}
@@ -1282,7 +1296,7 @@ void Interpret(VMGlobals *g)
 					} else {
 						vars[5].ui = -1;
 					}
-					vars[3].ucopy = g->receiver.ucopy;
+					vars[3] = g->receiver;
 
 					break;
 				case 6 :
@@ -1290,20 +1304,20 @@ void Interpret(VMGlobals *g)
 					if ((vars[5].ui > 0 && vars[3].ui <= vars[1].ui)
 							|| (vars[5].ui < 0 && vars[3].ui >= vars[1].ui)) 
 					{
-						*++sp = vars[2].uf; // push function
-						*++sp = vars[3].uf; // push i
-						*++sp = vars[4].uf; // push j
+						*++sp = vars[2]; // push function
+						*++sp = vars[3]; // push i
+						*++sp = vars[4]; // push j
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 2;
+						slot = sp - 2;
 						
 						goto class_lookup;
 					} else {
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 					break;
 					
@@ -1321,33 +1335,33 @@ void Interpret(VMGlobals *g)
 							|| vars[2].utag != tagInt) {
 						error("Integer-forBy : endval or stepval not an Integer.\n");
 						
-						*++sp = g->receiver.ui;
+						++sp; SetFloat(sp, g->receiver.ui);
 						numArgsPushed = 1;
 						selector = gSpecialSelectors[opmPrimitiveFailed];
-						slot = (PyrSlot*)sp;
+						slot = sp;
 						
 						goto class_lookup;
 					}
-					vars[4].ucopy = g->receiver.ucopy;
+					vars[4] = g->receiver;
 					break;
 				case 8 :
 					vars = g->frame->vars;
 					if ((vars[2].ui >= 0 && vars[4].ui <= vars[1].ui)
 							|| (vars[2].ui < 0 && vars[4].ui >= vars[1].ui)) {
-						*++sp = vars[3].uf; // push function
-						*++sp = vars[4].uf; // push i
-						*++sp = vars[5].uf; // push j
+						*++sp = vars[3]; // push function
+						*++sp = vars[4]; // push i
+						*++sp = vars[5]; // push j
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 2;
+						slot = sp - 2;
 						
 						goto class_lookup;
 					} else {
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 					break;
 				case 9 :
@@ -1364,20 +1378,20 @@ void Interpret(VMGlobals *g)
 					vars = g->frame->vars;
 					
 					if (vars[2].ui < g->receiver.uo->size) {
-						*++sp = vars[1].uf; // push function
-						getIndexedSlot(g->receiver.uo, (PyrSlot*)++sp, vars[2].ui); // push this.at(i)
-						*++sp = vars[2].uf; // push i
+						*++sp = vars[1]; // push function
+						getIndexedSlot(g->receiver.uo, ++sp, vars[2].ui); // push this.at(i)
+						*++sp = vars[2]; // push i
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 2;
+						slot = sp - 2;
 						
 						goto class_lookup;
 					} else {
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 					break;
 					
@@ -1388,20 +1402,20 @@ void Interpret(VMGlobals *g)
 				case 12 :
 					vars = g->frame->vars;
 					if (vars[2].ui >= 0) {
-						*++sp = vars[1].uf; // push function
+						*++sp = vars[1]; // push function
 						getIndexedSlot(g->receiver.uo, (PyrSlot*)++sp, vars[2].ui); // push this.at(i)
-						*++sp = vars[3].uf; // push j
+						*++sp = vars[3]; // push j
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 2;
+						slot = sp - 2;
 						
 						goto class_lookup; // class_lookup:
 					} else {
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 					break;
 					
@@ -1421,24 +1435,24 @@ void Interpret(VMGlobals *g)
 							slot = obj->slots + m;	// key
 						}
 						vars[3].ui = m;
-						*++sp = vars[2].uf; // function
-						*++sp = slot[0].uf; // key
-						*++sp = slot[1].uf; // val
-						*++sp = vars[4].uf; // j
+						*++sp = vars[2]; // function
+						*++sp = slot[0]; // key
+						*++sp = slot[1]; // val
+						*++sp = vars[4]; // j
 						vars[4].ui++;
 						
 						// SendSpecialMsg value
 						numArgsPushed = 4;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 3;
+						slot = sp - 3;
 						
 						goto class_lookup; // class_lookup:
 					} else {
 						keysValuesArrayDo_return:
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 					break;
 				case 14 :
@@ -1462,20 +1476,20 @@ void Interpret(VMGlobals *g)
 				case 17 :
 					vars = g->frame->vars;
 					if (vars[2].uf + 0.5 < g->receiver.uf) {
-						*++sp = vars[1].uf; // push function
-						*++sp = vars[2].uf; // push i
-						*++sp = vars[2].uf; // push i
+						*++sp = vars[1]; // push function
+						*++sp = vars[2]; // push i
+						*++sp = vars[2]; // push i
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 2;
+						slot = sp - 2;
 						
 						goto class_lookup;
 					} else {
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 					break;
 				case 18 :
@@ -1491,20 +1505,20 @@ void Interpret(VMGlobals *g)
 				case 20 :
 					vars = g->frame->vars;
 					if (vars[2].uf + 0.5 >= 0.0) {
-						*++sp = vars[1].uf; // push function
-						*++sp = vars[2].uf; // push i
-						*++sp = vars[3].uf; // push j
+						*++sp = vars[1]; // push function
+						*++sp = vars[2]; // push i
+						*++sp = vars[3]; // push j
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
-						slot = (PyrSlot*)sp - 2;
+						slot = sp - 2;
 						
 						goto class_lookup;
 					} else {
-						*++sp = g->receiver.uf; 
-						g->sp = (PyrSlot*)sp; g->ip = ip; 
+						*++sp = g->receiver; 
+						g->sp = sp; g->ip = ip; 
 						returnFromMethod(g); 
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 					}
 					break;
 				case 21 :
@@ -1516,12 +1530,12 @@ void Interpret(VMGlobals *g)
 					break;
 				case 22 : // ? question mark method
 					sp--;
-					if (((PyrSlot*)sp)->utag == tagNil) {
+					if (sp->utag == tagNil) {
 						*sp = *(sp+1);
 					}
 					break;
 				case 23 : // if not nil push this and jump. used to implement ??
-					if (((PyrSlot*)sp)->utag != tagNil) {
+					if (sp->utag != tagNil) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 					} else {
@@ -1530,7 +1544,7 @@ void Interpret(VMGlobals *g)
 					}
 					break;
 				case 24 : // ifNil
-					if ( ((PyrSlot*)sp)->utag != tagNil ) {
+					if ( sp->utag != tagNil ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 					} else {
@@ -1539,7 +1553,7 @@ void Interpret(VMGlobals *g)
 					sp--;
 					break;
 				case 25 : // ifNotNil
-					if ( ((PyrSlot*)sp)->utag == tagNil ) {
+					if ( sp->utag == tagNil ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 					} else {
@@ -1548,7 +1562,7 @@ void Interpret(VMGlobals *g)
 					sp--;
 					break;					
 				case 26 : // ifNotNilPushNil
-					if ( ((PyrSlot*)sp)->utag != tagNil ) {
+					if ( sp->utag != tagNil ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 						*sp = gSpecialValues[svNil];
@@ -1558,7 +1572,7 @@ void Interpret(VMGlobals *g)
 					}
 					break;
 				case 27 : // ifNilPushNil
-					if ( ((PyrSlot*)sp)->utag == tagNil ) {
+					if ( sp->utag == tagNil ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 					} else {
@@ -1567,7 +1581,7 @@ void Interpret(VMGlobals *g)
 					}
 					break;					
 				case 28 : // switch
-					obj = ((PyrSlot*)sp)->uo;
+					obj = sp->uo;
 					op2 = 1 + arrayAtIdentityHashInPairs(obj, (PyrSlot*)(sp-1));
 					sp-=2;
 					ip += obj->slots[op2].ui;
@@ -1589,7 +1603,7 @@ void Interpret(VMGlobals *g)
 							}
 							SetInt(vars+1, vars[1].ui - vars[0].ui);
 						}
-						vars[4].ucopy = vars[0].ucopy;
+						vars[4] = vars[0];
 					} else {
 						if (IsInt(vars+0)) {
 							vars[4].uf = vars[0].ui;
@@ -1599,10 +1613,10 @@ void Interpret(VMGlobals *g)
 							bailFromNumberSeries:
 							error("Number-forSeries : first, second or last not an Integer or Float.\n");
 							
-							*++sp = g->receiver.ui;
+							++sp; SetFloat(sp, g->receiver.ui);
 							numArgsPushed = 1;
 							selector = gSpecialSelectors[opmPrimitiveFailed];
-							slot = (PyrSlot*)sp;
+							slot = sp;
 							
 							goto class_lookup;
 						}
@@ -1634,38 +1648,38 @@ void Interpret(VMGlobals *g)
 					if (tag == tagInt) {
 						if ((vars[1].ui >= 0 && vars[4].ui <= vars[2].ui)
 								|| (vars[1].ui < 0 && vars[4].ui >= vars[2].ui)) {
-							*++sp = vars[3].uf; // push function
-							*++sp = vars[4].uf; // push i
-							*++sp = vars[5].uf; // push j
+							*++sp = vars[3]; // push function
+							*++sp = vars[4]; // push i
+							*++sp = vars[5]; // push j
 							// SendSpecialMsg value
 							numArgsPushed = 3;
 							selector = gSpecialSelectors[opmValue];
-							slot = (PyrSlot*)sp - 2;
+							slot = sp - 2;
 							
 							goto class_lookup;
 						} else {
-							*++sp = g->receiver.uf; 
-							g->sp = (PyrSlot*)sp; g->ip = ip; 
+							*++sp = g->receiver; 
+							g->sp = sp; g->ip = ip; 
 							returnFromMethod(g); 
-							sp = (double*)g->sp; ip = g->ip; 
+							sp = g->sp; ip = g->ip; 
 						}
 					} else {
 						if ((vars[1].uf >= 0. && vars[4].uf <= vars[2].uf)
 								|| (vars[1].uf < 0. && vars[4].uf >= vars[2].uf)) {
-							*++sp = vars[3].uf; // push function
-							*++sp = vars[4].uf; // push i
-							*++sp = vars[5].uf; // push j
+							*++sp = vars[3]; // push function
+							*++sp = vars[4]; // push i
+							*++sp = vars[5]; // push j
 							// SendSpecialMsg value
 							numArgsPushed = 3;
 							selector = gSpecialSelectors[opmValue];
-							slot = (PyrSlot*)sp - 2;
+							slot = sp - 2;
 							
 							goto class_lookup;
 						} else {
-							*++sp = g->receiver.uf; 
-							g->sp = (PyrSlot*)sp; g->ip = ip; 
+							*++sp = g->receiver; 
+							g->sp = sp; g->ip = ip; 
 							returnFromMethod(g); 
-							sp = (double*)g->sp; ip = g->ip; 
+							sp = g->sp; ip = g->ip; 
 						}
 					}
 					break;
@@ -1694,7 +1708,7 @@ void Interpret(VMGlobals *g)
 		case 156 :  case 157 :  case 158 :  case 159 :
 			op2 = op1 & 15;
 			op3 = ip[1]; ip++; // get class var index
-			g->classvars->slots[(op2<<8)|op3].uf = *sp--;
+			g->classvars->slots[(op2<<8)|op3] = *sp--;
 			g->gc->GCWrite(g->classvars, (PyrSlot*)(sp+1));
 			break;
 			
@@ -1702,10 +1716,10 @@ void Interpret(VMGlobals *g)
 		case 160 :  
 			// special case for this as only arg			
 			op2 = ip[1]; ip++; // get selector index
-			*++sp = g->receiver.uf;
+			*++sp = g->receiver;
 			numArgsPushed = 1;
 			selector = g->block->selectors.uo->slots[op2].us;
-			slot = (PyrSlot*)sp;
+			slot = sp;
 						
 			goto class_lookup;
 		
@@ -1717,7 +1731,7 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; ip++; // get selector index
 			numArgsPushed = op1 & 15;
 			selector = g->block->selectors.uo->slots[op2].us;
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 						
 			goto class_lookup;
 			
@@ -1730,10 +1744,10 @@ void Interpret(VMGlobals *g)
 		case 177 :  
 			// special case for this as only arg
 			op2 = ip[1]; ip++; // get selector index
-			*++sp = g->receiver.uf;
+			*++sp = g->receiver;
 			numArgsPushed = 1;
 			selector = g->block->selectors.uo->slots[op2].us;
-			slot = (PyrSlot*)sp;
+			slot = sp;
 			classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
 						
 			goto msg_lookup;
@@ -1746,7 +1760,7 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; ip++; // get selector index
 			numArgsPushed = op1 & 15;
 			selector = g->block->selectors.uo->slots[op2].us;
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 			classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
 						
 			goto msg_lookup;
@@ -1754,11 +1768,11 @@ void Interpret(VMGlobals *g)
 		// opSendSpecialMsg
 		case 192 :  
 			
-			*++sp = g->receiver.uf;
+			*++sp = g->receiver;
 			op2 = ip[1]; ip++; // get selector index
 			numArgsPushed = 1;
 			selector = gSpecialSelectors[op2];
-			slot = (PyrSlot*)sp;
+			slot = sp;
 						
 			goto class_lookup;
 		
@@ -1770,40 +1784,40 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; ip++; // get selector index
 			numArgsPushed = op1 & 15;
 			selector = gSpecialSelectors[op2];
-			slot = (PyrSlot*)sp - numArgsPushed + 1;
+			slot = sp - numArgsPushed + 1;
 			
 			goto class_lookup;
 			
 		// opSendSpecialUnaryArithMsg
 		case 208 :  // opNeg
-			if (IsFloat((PyrSlot*)sp)) {
-				*sp = -*sp;
+			if (IsFloat(sp)) {
+				sp->uf = -sp->uf;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
-			} else if (((PyrSlot*)sp)[0].utag == tagInt) {
-				((PyrSlot*)sp)[0].ui = -((PyrSlot*)sp)[0].ui;
+			} else if (sp[0].utag == tagInt) {
+				sp[0].ui = -sp[0].ui;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
 			} else goto unary_send;
 			break;
 		case 209 : // opNot
-			if (((PyrSlot*)sp)[0].utag == tagTrue) {
-				((PyrSlot*)sp)[0].utag = tagFalse;
+			if (sp[0].utag == tagTrue) {
+				sp[0].utag = tagFalse;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
-			} else if (((PyrSlot*)sp)[0].utag == tagFalse) {
-				((PyrSlot*)sp)[0].utag = tagTrue;
+			} else if (sp[0].utag == tagFalse) {
+				sp[0].utag = tagTrue;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
 			} else goto unary_send;
 			break;
 		case 210 : // opIsNil
-			if (((PyrSlot*)sp)[0].utag == tagNil) {
-				((PyrSlot*)sp)[0].utag = tagTrue;
+			if (sp[0].utag == tagNil) {
+				sp[0].utag = tagTrue;
 			} else {
 				*sp = gSpecialValues[svFalse];
 			}
@@ -1812,10 +1826,10 @@ void Interpret(VMGlobals *g)
 #endif
 			break;
 		case 211 : // opNotNil
-			if (((PyrSlot*)sp)[0].utag != tagNil) {
+			if (sp[0].utag != tagNil) {
 				*sp = gSpecialValues[svTrue];
 			} else {
-				((PyrSlot*)sp)[0].utag = tagFalse;
+				sp[0].utag = tagFalse;
 			}
 #if TAILCALLOPTIMIZE
 			g->tailCall = 0;
@@ -1826,71 +1840,71 @@ void Interpret(VMGlobals *g)
 		case 216 :  case 217 :  case 218 :  case 219 :  
 		case 220 :  case 221 :  case 222 :  case 223 :
 			unary_send:
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			g->primitiveIndex = op1 & 15;
 			doSpecialUnaryArithMsg(g, -1);
-			sp = (double*)g->sp; ip = g->ip;
+			sp = g->sp; ip = g->ip;
 			break;
 			
 		// opSendSpecialBinaryArithMsg
 		case 224 : // add
-			if (((PyrSlot*)sp)[-1].utag == tagInt) {
-				if (((PyrSlot*)sp)[0].utag == tagInt) {
-					--sp; ((PyrSlot*)sp)[0].ui += ((PyrSlot*)sp)[1].ui;
+			if (sp[-1].utag == tagInt) {
+				if (sp[0].utag == tagInt) {
+					--sp; sp[0].ui += sp[1].ui;
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
 #endif
 				} else {
-					g->sp = (PyrSlot*)sp; g->ip = ip; 
+					g->sp = sp; g->ip = ip; 
 					g->primitiveIndex = opAdd;
 					prAddInt(g, -1); 
-					sp = (double*)g->sp; ip = g->ip; 
+					sp = g->sp; ip = g->ip; 
 				}
 			} else {
-				g->sp = (PyrSlot*)sp; g->ip = ip; 
+				g->sp = sp; g->ip = ip; 
 				g->primitiveIndex = opAdd;
 				prAddNum(g, -1); 
-				sp = (double*)g->sp; ip = g->ip; 
+				sp = g->sp; ip = g->ip; 
 			}
 			break;
 		case 225 : // subtract
-			if (((PyrSlot*)sp)[-1].utag == tagInt) {
-				if (((PyrSlot*)sp)[0].utag == tagInt) {
-					--sp; ((PyrSlot*)sp)[0].ui -= ((PyrSlot*)sp)[1].ui;
+			if (sp[-1].utag == tagInt) {
+				if (sp[0].utag == tagInt) {
+					--sp; sp[0].ui -= sp[1].ui;
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
 #endif
 				} else {
-					g->sp = (PyrSlot*)sp; g->ip = ip; 
+					g->sp = sp; g->ip = ip; 
 					g->primitiveIndex = opSub;
 					prSubInt(g, -1); 
-					sp = (double*)g->sp; ip = g->ip; 
+					sp = g->sp; ip = g->ip; 
 				}
 			} else {
-				g->sp = (PyrSlot*)sp; g->ip = ip; 
+				g->sp = sp; g->ip = ip; 
 				g->primitiveIndex = opSub;
 				prSubNum(g, -1); 
-				sp = (double*)g->sp; ip = g->ip; 
+				sp = g->sp; ip = g->ip; 
 			}
 			break;
 		case 226 :  // multiply
-			if (((PyrSlot*)sp)[-1].utag == tagInt) {
-				if (((PyrSlot*)sp)[0].utag == tagInt) {
-					--sp; ((PyrSlot*)sp)[0].ui *= ((PyrSlot*)sp)[1].ui;
+			if (sp[-1].utag == tagInt) {
+				if (sp[0].utag == tagInt) {
+					--sp; sp[0].ui *= sp[1].ui;
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
 #endif
 				} else {
-					g->sp = (PyrSlot*)sp; g->ip = ip; 
+					g->sp = sp; g->ip = ip; 
 					g->primitiveIndex = opMul;
 					prMulInt(g, -1); 
-					sp = (double*)g->sp; ip = g->ip; 
+					sp = g->sp; ip = g->ip; 
 				}
 			} else {
-				g->sp = (PyrSlot*)sp; g->ip = ip; 
+				g->sp = sp; g->ip = ip; 
 				g->primitiveIndex = opMul;
 				prMulNum(g, -1); 
-				sp = (double*)g->sp; ip = g->ip; 
+				sp = g->sp; ip = g->ip; 
 			}
 			break;
 		
@@ -1898,10 +1912,10 @@ void Interpret(VMGlobals *g)
 		case 228 :  case 229 :  case 230 :  case 231 :  
 		case 232 :  case 233 :  case 234 :  case 235 :  
 		case 236 :  case 237 :  case 238 :  case 239 :
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			g->primitiveIndex = op1 & 15;
 			doSpecialBinaryArithMsg(g, 2, false);
-			sp = (double*)g->sp; ip = g->ip;
+			sp = g->sp; ip = g->ip;
 			break;
 		
 		// opSpecialOpcodes
@@ -1909,100 +1923,100 @@ void Interpret(VMGlobals *g)
 		case 241 : ++sp; *sp = sp[-1]; break;	// opDup
 
 		case 242 : // opcFunctionReturn
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			returnFromBlock(g); 
-			sp = (double*)g->sp; ip = g->ip; 
+			sp = g->sp; ip = g->ip; 
 			break;	
 		case 243 : // opcReturn
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			returnFromMethod(g); 
-			sp = (double*)g->sp; ip = g->ip; 
+			sp = g->sp; ip = g->ip; 
 			break;	
 		case 244 : // opcReturnSelf
-		*++sp = g->receiver.uf; 
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+		*++sp = g->receiver; 
+			g->sp = sp; g->ip = ip; 
 			returnFromMethod(g); 
-			sp = (double*)g->sp; ip = g->ip; 
+			sp = g->sp; ip = g->ip; 
 			break; 
 		case 245 : // opcReturnTrue
 			*++sp = gSpecialValues[svTrue]; 
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			returnFromMethod(g); 
-			sp = (double*)g->sp; ip = g->ip; 
+			sp = g->sp; ip = g->ip; 
 			break; 
 		case 246 : // opcReturnFalse
 			*++sp = gSpecialValues[svFalse]; 
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			returnFromMethod(g); 
-			sp = (double*)g->sp; ip = g->ip; 
+			sp = g->sp; ip = g->ip; 
 			break; 
 		case 247 : // opcReturnNil
 			*++sp = gSpecialValues[svNil]; 
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			returnFromMethod(g); 
-			sp = (double*)g->sp; ip = g->ip; 
+			sp = g->sp; ip = g->ip; 
 			break; 
 		
 		case 248 : // opcJumpIfFalse
 			// cannot compare with o_false because it is NaN
-			if ( ((PyrSlot*)sp)->utag == tagFalse ) {
+			if ( sp->utag == tagFalse ) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
-			} else if ( ((PyrSlot*)sp)->utag == tagTrue) {
+			} else if ( sp->utag == tagTrue) {
 				ip+=2;
 			} else {
 				numArgsPushed = 1;
 				selector = gSpecialSelectors[opmNonBooleanError];
-				slot = (PyrSlot*)sp;
+				slot = sp;
 							
 				goto class_lookup;
 			}
 			sp--;
 			break;
 		case 249 : // opcJumpIfFalsePushNil
-			if ( ((PyrSlot*)sp)->utag == tagFalse) {
+			if ( sp->utag == tagFalse) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
 				*sp = gSpecialValues[svNil];
-			} else if ( ((PyrSlot*)sp)->utag == tagTrue) {
+			} else if ( sp->utag == tagTrue) {
 				sp--;
 				ip+=2;
 			} else {
 				numArgsPushed = 1;
 				selector = gSpecialSelectors[opmNonBooleanError];
-				slot = (PyrSlot*)sp;
+				slot = sp;
 							
 				goto class_lookup;
 			}
 			break;
 		case 250 : // opcJumpIfFalsePushFalse
-			if (((PyrSlot*)sp)->utag == tagFalse) {
+			if (sp->utag == tagFalse) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
 				//*sp = r_false;
-			} else if (((PyrSlot*)sp)->utag == tagTrue) {
+			} else if (sp->utag == tagTrue) {
 				sp--;
 				ip+=2;
 			} else {
 				numArgsPushed = 1;
 				selector = gSpecialSelectors[opmNonBooleanError];
-				slot = (PyrSlot*)sp;
+				slot = sp;
 							
 				goto class_lookup;
 			}
 			break;
 		case 251 : // opcJumpIfTruePushTrue
-			if (((PyrSlot*)sp)->utag == tagFalse) {
+			if (sp->utag == tagFalse) {
 				sp--;
 				ip+=2;
-			} else if (((PyrSlot*)sp)->utag == tagTrue) {
+			} else if (sp->utag == tagTrue) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
 				*sp = gSpecialValues[svTrue];
 			} else {
 				numArgsPushed = 1;
 				selector = gSpecialSelectors[opmNonBooleanError];
-				slot = (PyrSlot*)sp;
+				slot = sp;
 							
 				goto class_lookup;
 			}
@@ -2021,10 +2035,10 @@ void Interpret(VMGlobals *g)
 			break;
 		case 254 : // opcSpecialBinaryOpWithAdverb
 			op2 = ip[1]; ip++; // get selector index
-			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->sp = sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialBinaryArithMsg(g, 3, false);
-			sp = (double*)g->sp; ip = g->ip;
+			sp = g->sp; ip = g->ip;
 			break;
 		case 255 : // opcTailCallReturnFromMethod
 #if TAILCALLOPTIMIZE
@@ -2044,24 +2058,24 @@ void Interpret(VMGlobals *g)
 			meth = gRowTable[index];
 			
 			if (meth->name.us != selector) {
-				g->sp = (PyrSlot*)sp; g->ip = ip;
+				g->sp = sp; g->ip = ip;
 				doesNotUnderstand(g, selector, numArgsPushed);
-				sp = (double*)g->sp; ip = g->ip; 
+				sp = g->sp; ip = g->ip; 
 			} else {
 				PyrMethodRaw *methraw;
 				methraw = METHRAW(meth);
 				switch (methraw->methType) {
 					case methNormal : /* normal msg send */
-						g->sp = (PyrSlot*)sp; g->ip = ip;
+						g->sp = sp; g->ip = ip;
 						executeMethod(g, meth, numArgsPushed);
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 						break;
 					case methReturnSelf : /* return self */
 						sp -= numArgsPushed - 1;
 						break;
 					case methReturnLiteral : /* return literal */
 						sp -= numArgsPushed - 1;
-						*sp = meth->selectors.uf; /* in this case selectors is just a single value */
+						*sp = meth->selectors; /* in this case selectors is just a single value */
 						break;
 					case methReturnArg : /* return an argument */
 						sp -= numArgsPushed - 1;
@@ -2069,13 +2083,13 @@ void Interpret(VMGlobals *g)
 						if (index < numArgsPushed) {
 							*sp = sp[index];
 						} else {
-							*sp = meth->prototypeFrame.uo->slots[index].uf;
+							*sp = meth->prototypeFrame.uo->slots[index];
 						}
 						break;
 					case methReturnInstVar : /* return inst var */
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex;
-						*sp = slot->uo->slots[index].uf;
+						*sp = slot->uo->slots[index];
 						break;
 					case methAssignInstVar : /* assign inst var */
 						sp -= numArgsPushed - 1;
@@ -2084,34 +2098,34 @@ void Interpret(VMGlobals *g)
 						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*&)sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
-								obj->slots[index].uf = sp[1];
-								g->gc->GCWrite(obj, (PyrSlot*)sp + 1);
+								obj->slots[index] = sp[1];
+								g->gc->GCWrite(obj, sp + 1);
 							} else {
-								obj->slots[index].uf = gSpecialValues[svNil];
+								obj->slots[index] = gSpecialValues[svNil];
 							}
-							*sp = slot->uf;
+							*sp = *slot;
 						}
 						break;
 					case methReturnClassVar : /* return class var */
 						sp -= numArgsPushed - 1;
-						*sp = g->classvars->slots[methraw->specialIndex].uf;
+						*sp = g->classvars->slots[methraw->specialIndex];
 						break;
 					case methAssignClassVar : /* assign class var */
 						sp -= numArgsPushed - 1;
 						if (numArgsPushed >= 2) {
-							g->classvars->slots[methraw->specialIndex].uf = sp[1];
-							g->gc->GCWrite(g->classvars, (PyrSlot*)sp + 1);
+							g->classvars->slots[methraw->specialIndex] = sp[1];
+							g->gc->GCWrite(g->classvars, sp + 1);
 						} else {
-							g->classvars->slots[methraw->specialIndex].uf = gSpecialValues[svNil];
+							g->classvars->slots[methraw->specialIndex] = gSpecialValues[svNil];
 						}
-						*sp = slot->uf;
+						*sp = *slot;
 						break;
 					case methRedirect : /* send a different selector to self */
 						if (numArgsPushed < methraw->numargs) { // not enough args pushed
 							/* push default arg values */
-							double *qslot;
+							PyrSlot *qslot;
 							int m, mmax;
-							qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
+							qslot = (meth->prototypeFrame.uo->slots + numArgsPushed - 1);
 							for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++sp = *++qslot;
 							numArgsPushed = methraw->numargs;
 						}
@@ -2120,9 +2134,9 @@ void Interpret(VMGlobals *g)
 					case methRedirectSuper : /* send a different selector to self */
 						if (numArgsPushed < methraw->numargs) { // not enough args pushed
 							/* push default arg values */
-							double *qslot;
+							PyrSlot *qslot;
 							int m, mmax;
-							qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
+							qslot = (meth->prototypeFrame.uo->slots + numArgsPushed - 1);
 							for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++sp = *++qslot;
 							numArgsPushed = methraw->numargs;
 						}
@@ -2132,15 +2146,15 @@ void Interpret(VMGlobals *g)
 					case methForwardInstVar : /* forward to an instance variable */
 						if (numArgsPushed < methraw->numargs) { // not enough args pushed
 							/* push default arg values */
-							double *qslot;
+							PyrSlot *qslot;
 							int m, mmax;
-							qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
+							qslot = (meth->prototypeFrame.uo->slots + numArgsPushed - 1);
 							for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++sp = *++qslot;
 							numArgsPushed = methraw->numargs;
 						}
 						selector = meth->selectors.us;
 						index = methraw->specialIndex;
-						slot->ucopy = slot->uo->slots[index].ucopy;
+						*slot = slot->uo->slots[index];
 						
 						classobj = classOfSlot(slot);
 						
@@ -2148,22 +2162,22 @@ void Interpret(VMGlobals *g)
 					case methForwardClassVar : /* forward to an instance variable */
 						if (numArgsPushed < methraw->numargs) { // not enough args pushed
 							/* push default arg values */
-							double *qslot;
+							PyrSlot *qslot;
 							int m, mmax;
-							qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
+							qslot = (meth->prototypeFrame.uo->slots + numArgsPushed - 1);
 							for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++sp = *++qslot;
 							numArgsPushed = methraw->numargs;
 						}
 						selector = meth->selectors.us;
-						slot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
+						*slot = g->classvars->slots[methraw->specialIndex];				
 						
 						classobj = classOfSlot(slot);
 						
 						goto msg_lookup;
 					case methPrimitive : /* primitive */
-						g->sp = (PyrSlot*)sp; g->ip = ip;
+						g->sp = sp; g->ip = ip;
 						doPrimitive(g, meth, numArgsPushed);
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 						break;
 				} // switch (meth->methType)
 			} // end handle message
@@ -2184,42 +2198,42 @@ void Interpret(VMGlobals *g)
 			meth = gRowTable[index];
 			
 			if (meth->name.us != selector) {
-				g->sp = (PyrSlot*)sp; g->ip = ip;
+				g->sp = sp; g->ip = ip;
 				doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
-				sp = (double*)g->sp; ip = g->ip; 
+				sp = g->sp; ip = g->ip; 
 			} else {
 				PyrMethodRaw *methraw;
 				methraw = METHRAW(meth);
 				switch (methraw->methType) {
 					case methNormal : /* normal msg send */
-						g->sp = (PyrSlot*)sp; g->ip = ip;
+						g->sp = sp; g->ip = ip;
 						executeMethodWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 						break;
 					case methReturnSelf : /* return self */
 						sp -= numArgsPushed - 1;
 						break;
 					case methReturnLiteral : /* return literal */
 						sp -= numArgsPushed - 1;
-						*sp = meth->selectors.uf; /* in this case selectors is just a single value */
+						*sp = meth->selectors; /* in this case selectors is just a single value */
 						break;
 					case methReturnArg : /* return an argument */
-						g->sp = (PyrSlot*)sp;
+						g->sp = sp;
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
-						sp = (double*)g->sp;
+						sp = g->sp;
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex; // zero is index of the first argument
 						if (index < numArgsPushed) {
 							*sp = sp[index];
 						} else {
-							*sp = meth->prototypeFrame.uo->slots[index].uf;
+							*sp = meth->prototypeFrame.uo->slots[index];
 						}
 						break;
 					case methReturnInstVar : /* return inst var */
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex;
-						*sp = slot->uo->slots[index].uf;
+						*sp = slot->uo->slots[index];
 						break;
 					case methAssignInstVar : /* assign inst var */
 						sp -= numArgsPushed - 1;
@@ -2229,73 +2243,73 @@ void Interpret(VMGlobals *g)
 						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*&)sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
-								obj->slots[index].uf = sp[1];
-								g->gc->GCWrite(obj, (PyrSlot*)sp + 1);
+								obj->slots[index] = sp[1];
+								g->gc->GCWrite(obj, sp + 1);
 							} else {
-								obj->slots[index].uf = gSpecialValues[svNil];
+								obj->slots[index] = gSpecialValues[svNil];
 							}
-							*sp = slot->uf;
+							*sp = *slot;
 						}
 						break;
 					case methReturnClassVar : /* return class var */
 						sp -= numArgsPushed - 1;
-						*sp = g->classvars->slots[methraw->specialIndex].uf;
+						*sp = g->classvars->slots[methraw->specialIndex];
 						break;
 					case methAssignClassVar : /* assign class var */
 						sp -= numArgsPushed - 1;
 						if (numArgsPushed >= 2) {
-							g->classvars->slots[methraw->specialIndex].uf = sp[1];
-							g->gc->GCWrite(g->classvars, (PyrSlot*)sp + 1);
+							g->classvars->slots[methraw->specialIndex] = sp[1];
+							g->gc->GCWrite(g->classvars, sp + 1);
 						} else {
-							g->classvars->slots[methraw->specialIndex].uf = gSpecialValues[svNil];
+							g->classvars->slots[methraw->specialIndex] = gSpecialValues[svNil];
 						}
-						*sp = slot->uf;
+						*sp = *slot;
 						break;
 					case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */
-						g->sp = (PyrSlot*)sp;
+						g->sp = sp;
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
-						sp = (double*)g->sp;
+						sp = g->sp;
 						selector = meth->selectors.us;
 						
 						goto msg_lookup;
 					case methRedirectSuper : /* send a different selector to super */
-						g->sp = (PyrSlot*)sp;
+						g->sp = sp;
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
-						sp = (double*)g->sp;
+						sp = g->sp;
 						selector = meth->selectors.us;
 
 						classobj = meth->ownerclass.uoc->superclass.us->u.classobj;
 						
 						goto msg_lookup;
 					case methForwardInstVar : /* forward to an instance variable */
-						g->sp = (PyrSlot*)sp;
+						g->sp = sp;
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
-						sp = (double*)g->sp;
+						sp = g->sp;
 						selector = meth->selectors.us;
 						index = methraw->specialIndex;
-						slot->ucopy = slot->uo->slots[index].ucopy;
+						*slot = slot->uo->slots[index];
 						
 						classobj = classOfSlot(slot);
 						
 						goto msg_lookup;
 					case methForwardClassVar : /* forward to an instance variable */
-						g->sp = (PyrSlot*)sp;
+						g->sp = sp;
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
-						sp = (double*)g->sp;
+						sp = g->sp;
 						selector = meth->selectors.us;
-						slot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
+						*slot = g->classvars->slots[methraw->specialIndex];				
 						
 						classobj = classOfSlot(slot);
 						
 						goto msg_lookup;
 					case methPrimitive : /* primitive */
-						g->sp = (PyrSlot*)sp; g->ip = ip;
+						g->sp = sp; g->ip = ip;
 						doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
-						sp = (double*)g->sp; ip = g->ip; 
+						sp = g->sp; ip = g->ip; 
 						break;
 				} // switch (meth->methType)
 			} // end handle message
@@ -2305,7 +2319,7 @@ void Interpret(VMGlobals *g)
 #endif
 	} // switch(op1)
 	} // end while(true)
-	g->sp = (PyrSlot*)sp; g->ip = ip; 
+	g->sp = sp; g->ip = ip; 
 }
 
 void DumpSimpleBackTrace(VMGlobals *g);
@@ -2393,6 +2407,18 @@ void DumpStack(VMGlobals *g, PyrSlot *sp)
 		slotString(slot, str);
 		post("   %2d  %s\n", i, str);
 	}
+}
+
+
+bool BadStackTags(VMGlobals *g)
+{
+	int i;
+	PyrSlot *bottom =  g->gc->Stack()->slots;
+	PyrSlot *slot =  g->sp;
+	for (; slot>=bottom; slot--) {
+		if (slot->tag < 1 || slot->tag > 9) return true;
+	}
+	return false;
 }
 
 

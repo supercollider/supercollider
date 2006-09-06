@@ -56,13 +56,14 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 		mom = (mom - 2 >> 1) & ~1;
 		pmom = heap->slots + mom;
 		if (schedtime < pmom->uf) {
-			pme[0].ucopy = pmom[0].ucopy;
-			pme[1].ucopy = pmom[1].ucopy;
+			pme[0] = pmom[0];
+			pme[1] = pmom[1];
 			pme = pmom;
 		} else break;
 	}
 	pme[0].uf = schedtime;
-	pme[1].ucopy = task->ucopy;
+	pme[0].utag = tagFloat;
+	pme[1] = *task;
 	g->gc->GCWrite(heap, task);
 	heap->size += 2;
 
@@ -79,7 +80,7 @@ bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 {
 	if (heap->size) {
 		*schedtime = heap->slots[0].uf;
-		task->ucopy = heap->slots[1].ucopy;
+		*task = heap->slots[1];
 		return true;
 	} else return false;
 }
@@ -89,38 +90,39 @@ bool getheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 {
 	PyrSlot *pmom, *pme, *pend;
 	short mom,me,size;	/* parent and sibling in the heap, not in the task hierarchy */
-	double tasktemp;
+	PyrSlot tasktemp;
 	double timetemp;
 
 	//dumpheap(heap);
 	//post("->getheap\n");
 	if (heap->size>0) {
 		*schedtime = heap->slots[0].uf;
-		task->ucopy = heap->slots[1].ucopy;
+		*task = heap->slots[1];
 		size = heap->size -= 2;
-		heap->slots[0].ucopy = heap->slots[size].ucopy;
-		heap->slots[1].ucopy = heap->slots[size+1].ucopy;
+		heap->slots[0] = heap->slots[size];
+		heap->slots[1] = heap->slots[size+1];
 		mom = 0;
 		me = 2;
 		pmom = heap->slots + mom;
 		pme = heap->slots + me;
 		pend = heap->slots + size;
 		timetemp = pmom[0].uf;
-		tasktemp = pmom[1].uf;
+		tasktemp = pmom[1];
 		for (;pme < pend;) { /* demote heap */
 			if (pme+2 < pend && pme[0].uf > pme[2].uf) {
 				me += 2; pme += 2; 
 			}
 			if (timetemp > pme[0].uf) {
-				pmom[0].ucopy = pme[0].ucopy;
-				pmom[1].ucopy = pme[1].ucopy;
+				pmom[0] = pme[0];
+				pmom[1] = pme[1];
 				pmom = pme;
 				me = ((mom = me) << 1) + 2;
 				pme = heap->slots + me;
 			} else break;
 		}
 		pmom[0].uf = timetemp;
-		pmom[1].uf = tasktemp;
+		pmom[0].utag = tagFloat;
+		pmom[1] = tasktemp;
 		
 		//dumpheap(heap);
 	//dumpheap(heap);
@@ -431,9 +433,9 @@ void* schedRunFunc(void* arg)
 				SetNil(&task.uot->nextBeat);
 			}
 
-			(++g->sp)->ucopy = task.ucopy;
-			(++g->sp)->uf = schedtime;
-			(++g->sp)->uf = schedtime;
+			*(++g->sp) = task;
+			++g->sp; SetFloat(g->sp, schedtime);
+			++g->sp; SetFloat(g->sp, schedtime);
 			++g->sp;	SetObject(g->sp, s_systemclock->u.classobj);
 			
 			runAwakeMessage(g);
@@ -859,9 +861,9 @@ void* TempoClock::Run()
 				SetNil(&task.uot->nextBeat);
 			}
 
-			(++g->sp)->ucopy = task.ucopy;
-			(++g->sp)->uf = mBeats;
-			(++g->sp)->uf = BeatsToSecs(mBeats);
+			*(++g->sp) = task;
+			++g->sp; SetFloat(g->sp, mBeats);
+			++g->sp; SetFloat(g->sp, BeatsToSecs(mBeats));
 			++g->sp;	SetObject(g->sp, mTempoClockObj);
 			
 			runAwakeMessage(g);
@@ -890,9 +892,9 @@ void TempoClock::Flush()
 					
 		getheap(mQueue, &mBeats, &task);
 
-		(++g->sp)->ucopy = task.ucopy;
-		(++g->sp)->uf = mBeats;
-		(++g->sp)->uf = BeatsToSecs(mBeats);
+		*(++g->sp) = task;
+		++g->sp; SetFloat(g->sp, mBeats);
+		++g->sp; SetFloat(g->sp, BeatsToSecs(mBeats));
 		++g->sp;	SetObject(g->sp, mTempoClockObj);
 		
 		runAwakeMessage(g);

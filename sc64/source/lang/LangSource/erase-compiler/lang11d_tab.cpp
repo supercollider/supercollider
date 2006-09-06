@@ -3194,6 +3194,7 @@ case 262:
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
 				node->mSlot.uf = -node->mSlot.uf;
+				node->mSlot.utag = tagFloat;
 				yyval = zzval;
 			;
     break;}
@@ -3210,6 +3211,7 @@ case 264:
 					intval = floor(node->mSlot.uf + 0.5);
 					fracval = node->mSlot.uf - intval;
 					node->mSlot.uf = -intval + fracval;
+					node->mSlot.utag = tagFloat;
 					yyval = zzval;
 				;
     break;}
@@ -3233,6 +3235,7 @@ case 269:
 				node = (PyrSlotNode*)yyvsp[-1];
 				ival = node->mSlot.ui;
 				node->mSlot.uf = ival * pi;
+				node->mSlot.utag = tagFloat;
 			;
     break;}
 case 270:
@@ -3241,6 +3244,7 @@ case 270:
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
 				node->mSlot.uf = pi;
+				node->mSlot.utag = tagFloat;
 				yyval = zzval;
 			;
     break;}
@@ -3250,6 +3254,7 @@ case 271:
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
 				node->mSlot.uf = -pi;
+				node->mSlot.utag = tagFloat;
 				yyval = zzval;
 			;
     break;}

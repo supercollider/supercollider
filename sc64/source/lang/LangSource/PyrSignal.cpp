@@ -127,7 +127,7 @@ PyrObject* newPyrSignal(VMGlobals *g, long size)
 /*PyrObject* newPyrSignalFrom(VMGlobals *g, PyrObject* inSignal, long size)
 {
 	PyrObject *signal;
-	double *pslot, *qslot, *endptr;
+	PyrSlot *pslot, *qslot, *endptr;
 	long set, m, mmax;
 	long numbytes = size * sizeof(float);	
 	signal = (PyrObject*)g->gc->New(numbytes, 0, obj_float, true);

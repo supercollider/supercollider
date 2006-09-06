@@ -110,6 +110,7 @@ int prSignalPeak(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp;
 	
 	a->uf = signal_findpeak(a->uo);
+	a->utag = tagFloat;
 	return errNone;
 }
 
@@ -155,6 +156,7 @@ int prSignalIntegral(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp;
 	
 	a->uf = signal_integral(a->uo);
+	a->utag = tagFloat;
 	return errNone;
 }
 

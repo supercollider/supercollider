@@ -80,7 +80,7 @@
         PyrSlot slot;
         SetObject(&slot, pyrPathString);
         
-        result->slots[i].ucopy = slot.ucopy;
+        result->slots[i] = slot;
 
         g->gc->GCWrite(result,pyrPathString);
         // have to set size field each time in order that gc can find the created objects
