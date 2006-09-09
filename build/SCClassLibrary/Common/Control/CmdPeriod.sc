@@ -2,6 +2,7 @@
 
 CmdPeriod {
 	classvar <>objects;
+	classvar <era = 0;
 	
 	*init {
 		objects = IdentitySet.new;
@@ -22,6 +23,7 @@ CmdPeriod {
 	
 	*clear {
 		objects.copy.do({ arg item; item.cmdPeriod;  });
+		era = era + 1;
 	}
 
 
@@ -44,6 +46,7 @@ StartUp {
 	*run {
 		done = true;
 		functions.do(_.value);
+		"StartUp done.".postln;
 	}
 	
 	*defer { arg function;
