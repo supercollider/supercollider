@@ -71,7 +71,7 @@
 		synth = Synth.basicNew(def.name, server);
 		bytes = def.asBytes;
 		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus], addAction);
-		if(bytes.size > (65535 div: 4) { // preliminary fix until full size works
+		if(bytes.size > (65535 div: 4)) { // preliminary fix until full size works
 			if(server.isLocal) {
 				def.load(server, synthMsg)
 			}{
