@@ -18,7 +18,7 @@ TaskProxyEditor {
 
 	editString { |edKey| 
 		var keyText = if (edKey.isNil) { 
-			"\anyKey, nil"
+			"\\anyKey, nil"
 		} { 
 			edKey.asCompileString + "," 
 			+ proxy.envir[edKey].asCompileString 
@@ -255,7 +255,8 @@ TaskProxyAllGui {
 	init { | size, w|
 		var zone, flow;
 		var sys = GUI.scheme; 
-		win = w ?? { sys.window.new("Tdef-all", Rect(0, 0, 194, 16 * size + 5)) };
+		var name = "" ++ this.observedClass ++ "AllGui";
+		win = w ?? { sys.window.new(name, Rect(0, 0, 194, 16 * size + 5)) };
 		zone = sys.compositeView.new(win, Rect(0, 0, 200, 16 * size + 10)); 
 	//	zone.background_(scheme.foreground);
 
@@ -267,8 +268,8 @@ TaskProxyAllGui {
 		
 		SkipJack({ 
 			names = this.observedClass.all.keys.as(Array).sort.keep(size); 
-			edits.do { |edit, i| edit.proxy_(Tdef.all[names[i]]).updateAll };
-		}, 0.5, { win.isClosed }, "TdefAllGui");
+			edits.do { |edit, i| edit.proxy_(this.observedClass.all[names[i]]).updateAll };
+		}, 0.5, { win.isClosed }, name);
 	}
 }
 
