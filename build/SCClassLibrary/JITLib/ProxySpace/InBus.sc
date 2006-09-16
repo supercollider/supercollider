@@ -254,12 +254,14 @@ Monitor {
 	// optimizes ranges of channels
 	
 	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
-			inGroup, multi, volume, fadeTime=0.02, addAction;
+			inGroup, multi, volume, inFadeTime, addAction;
 		var server, numChannels, defname, chanRange, n;
 					
 		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) }; 
 		
 		vol = volume ? vol;
+		fadeTime = inFadeTime ? fadeTime ? 0.02; 	// remembers monitor fadeTime.
+		
 		toNumChannels = toNumChannels ? fromNumChannels;
 		server = inGroup.server;
 		
@@ -318,7 +320,8 @@ Monitor {
 			 	+ bus.index;
 
 		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?
-		this.playNToBundle(bundle, outs, amps, ins, vol, group, fadeTime)
+	//	this.playNToBundle(bundle, outs, amps, ins, vol, group, fadeTime)
+		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group)
 	}
 	
 		
