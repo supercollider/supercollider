@@ -163,7 +163,12 @@ Quarks
 		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name ++ "/" ++ q.path).systemCmd;
 		(q.name + "installed").inform;
 	}
-	
+	listInstalled {
+		this.installed.do { |q| q.postDesc };
+	}
+	isInstalled { arg name;
+		^this.installed.detect{|quark| quark.name == name }.notNil
+	}
 	uninstall { | name |
 		var q, deps, installed;
 		name = name.asString;
