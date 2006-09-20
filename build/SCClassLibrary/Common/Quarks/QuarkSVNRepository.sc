@@ -39,15 +39,14 @@ QuarkSVNRepository
 		^true;
 	}
 	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not
-	updateDirectory {
-		if(this.checkDir,{
-			//"To update the DIRECTORY:".debug;
-			this.svn("update",Quarks.local.path ++ "/DIRECTORY/");
-		});
+	updateDirectory {|lQuark|
+		lQuark = lQuark ? Quarks.local;
+		this.svn("update",lQuark.path ++ "/DIRECTORY/");
 	}
-	update {
+	update {|lQuark|
 		//"To update your local quarks working copies:".debug;
-		this.svn("update",Quarks.local.path);
+		lQuark = lQuark ? Quarks.local;
+		this.svn("update",lQuark.path);
 	}
 	// load all specification quark objects from DIRECTORY
 	// they may or may not be locally checked out

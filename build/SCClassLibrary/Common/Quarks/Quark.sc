@@ -22,7 +22,7 @@ QuarkDependency
 
 Quark
 {
-	var <name, <summary, <version, <dependencies, <tags,<>path;
+	var <name, <summary, <version, <author, <dependencies, <tags,<>path;
 	var <info;
 	
 	*fromFile { | path |
@@ -48,6 +48,7 @@ Quark
 		summary = this.getString(blob[\summary]);
  		version = this.getVersion(blob[\version]);
 		dependencies = this.getDependencies(blob[\dependencies]);
+		author = this.getString(blob[\author]);
 		info = blob;
 		tags = ();
 	}
@@ -101,6 +102,7 @@ Quark
 		string = name;
 		if(version.notNil,{ string = string + "[" ++ version ++ "]"; });
 		string = string 
+			++ "\n(by " ++ (author ? "anonymous") ++ ")"
 			++ "\n" ++ summary;
 		dependencies.notEmpty.if{
 			string = string ++ "\nDepends on";

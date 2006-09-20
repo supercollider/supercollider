@@ -17,14 +17,17 @@ LocalQuarks
 		^super.newCopyArgs((path ?? { Platform.userAppSupportDir ++ "/quarks"}).escapeChar($ ))
 	}
 
+	name {
+		^PathName(path).fileName;
+	}
 	quarks {
 		// check through each quark in repos/directory
 		var paths,quarks;
-		paths = (Platform.userAppSupportDir ++ "/quarks/DIRECTORY/*.quark").pathMatch;
+		paths = (path ++ "/DIRECTORY/*.quark").pathMatch;
 		quarks = paths.collect({ |p| Quark.fromFile(p) });
 
 		// check paths that do exist locally
-		^quarks.select({ |q| (Platform.userAppSupportDir ++ "/quarks/" ++q.path).pathMatch.notEmpty })
+		^quarks.select({ |q| (path ++ "/" ++ q.path).pathMatch.notEmpty })
 	}
 	findQuark { arg name, version;
 		var matches;

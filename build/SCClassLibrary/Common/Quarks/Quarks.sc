@@ -18,7 +18,18 @@ Quarks
 
 	*checkoutAll { this.global.repos.checkoutAll(this.global.local.path) }
 	*checkout { | name, version | this.global.checkout(name,version); }
-	*update { |name| this.global.update(name) }
+	update { |name|
+		var q;
+		if(name.notNil,{
+			if((q = local.findQuark(name)).isNil,{
+				Error("Local Quark "+name+" not found, cannot update from repository").throw;
+			});
+			repos.svn("update", local.path++"/"++q.path);
+		},{
+			//update all
+			repos.update(local)
+		});
+	}
 	// return Quark objects for each in App Support/SuperCollider/Quarks
 	// (so actually this would list any Quarks that are in local development and not yet checked in)
 	*checkedOut { ^this.global.checkedOut }
@@ -31,7 +42,6 @@ Quarks
 	*updateDirectory { 
 		^this.global.repos.updateDirectory 
 	}
-
 
 	// this symlinks from {App Support}/SuperCollider/Quarks to {App Support}/SuperCollider/Extensions
 	// it is then in the SC compile path
@@ -79,18 +89,14 @@ Quarks
 		});
 		repos.svn("commit","-m",message,"-F",local.path++"/"++q.path);
 	}
-	update { |name|
-		var q;
-		if(name.notNil,{
-			if((q = local.findQuark(name)).isNil,{
-				Error("Local Quark "+name+" not found, cannot update from repository").throw;
-			});
-			repos.svn("update", local.path++"/"++q.path);
-		},{
-			//update all
-			repos.svn("update", local.path++"/");
-		});
+	updateDirectory {
+		repos.updateDirectory(local)	
 	}
+
+	listCheckedOut {
+		this.checkedOut.do { |q| q.postDesc };
+	}
+	checkoutAll { repos.checkoutAll(local.path) }
 	checkout { |name, version|
 		var q;
 		if(local.findQuark(name,version).notNil,{
@@ -104,6 +110,14 @@ Quarks
 		});
 		repos.checkout(q,local.path);
 	}
+	checkDir {
+		var d;
+		d = Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name;
+		if(d.pathMatch.isEmpty,{
+			("mkdir" + d).systemCmd;
+			("creating: " + d).inform;
+		});
+	}
 	checkedOut {
 		^local.quarks
 	}
@@ -116,6 +130,19 @@ Quarks
 			repos.svn("status",local.path);
 		});
 	}
+	installed {
+		// of quarks in local, select those also present in userExtensionDir
+		var pathMatches,q;
+		pathMatches = (local.path ++ "/DIRECTORY/*.quark").pathMatch;
+		^pathMatches.collect({ |p|  
+			q = Quark.fromFile(p);
+		}).select({ |q|
+			(Platform.userExtensionDir.escapeChar($ ) 
+				++ "/" ++ local.name 
+				++ "/" ++ q.path
+			).pathMatch.notEmpty
+		})
+	}
 	install { | name |
 		var q, deps, installed;
 
@@ -126,41 +153,15 @@ Quarks
 
 		q = local.findQuark(name);
 		if(q.isNil,{
-			Error(name.asString + " not found in local quarks.  Not yet downloaded from the repository ?").throw;
+			Error(name.asString + "not found in local quarks.  Not yet downloaded from the repository ?").throw;
 		});
-		
-		
-		// do we have to create /quarks/ directory ?
+				
+		// do we have to create /quarks/ directory ? If so, do it.
 		this.checkDir;
 		
-		// install via symlink to Extensions/Quarks
-		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.userExtensionDir.escapeChar($ ) ++ "/quarks/" ++ q.path).systemCmd;
+		// install via symlink to Extensions/<quarks-dir>
+		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name ++ "/" ++ q.path).systemCmd;
 		(q.name + "installed").inform;
-	}
-	checkDir {
-		var d;
-		d = Platform.userExtensionDir.escapeChar($ ) ++ "/quarks";
-		if(d.pathMatch.isEmpty,{
-			("mkdir" + d).systemCmd;
-			("creating: " + d).inform;
-		});
-	}
-	
-	installed {
-		// of quarks in local, select those also present in userExtensionDir
-		var pathMatches,q;
-		pathMatches = (Platform.userAppSupportDir.escapeChar($ ) ++ "/quarks/DIRECTORY/*.quark").pathMatch;
-		^pathMatches.collect({ |p|  
-			q = Quark.fromFile(p);
-		}).select({ |q|
-			(Platform.userExtensionDir.escapeChar($ ) ++ "/quarks/" ++ q.path).pathMatch.notEmpty
-		})
-	}
-	listInstalled {
-		this.installed.do { |q| q.postDesc };
-	}
-	isInstalled { arg name;
-		^this.installed.detect{|quark| quark.name == name }.notNil
 	}
 	
 	uninstall { | name |
@@ -176,10 +177,7 @@ Quarks
 		});
 
 		// install via symlink to Extensions/Quarks
-		("rm " +  Platform.userExtensionDir.escapeChar($ ) ++ "/quarks/" ++ q.path).systemCmd;
+		("rm " +  Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name ++ "/" ++ q.path).systemCmd;
 		(q.name + "uninstalled").inform;
 	}
-
-
-	
 }
