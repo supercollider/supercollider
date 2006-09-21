@@ -182,8 +182,10 @@ UGen : AbstractFunction {
 	}
 	*/
 	poll { arg trig, label, trigid = -1;
-		trig = trig ?? { Impulse.perform(this.methodSelectorForRate, 10) };
-		^Poll.perform(trig.methodSelectorForRate, trig, this, label, trigid)
+		trig = trig.isNumber.if({Impulse.perform
+			(this.methodSelectorForRate, trig)}, {trig})
+              	?? { Impulse.perform(this.methodSelectorForRate, 10) };
+          ^Poll.perform(trig.methodSelectorForRate, trig, this, label, trigid)
 	}
 	
 	// PRIVATE
