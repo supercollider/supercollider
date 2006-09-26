@@ -51,6 +51,7 @@ HIDDeviceService{
 	classvar < devices, <> action;
 	classvar < initialized = false;
 	classvar < deviceSpecs;
+	classvar < eventLoopIsRunning = false;
 
 	*initClass {
 		deviceSpecs = IdentityDictionary.new;
@@ -116,10 +117,23 @@ HIDDeviceService{
 		//must be called before closing the program..
 		_HIDReleaseDeviceList
 	}
-	*runEventLoop{arg rate=0.002; 
+	*runEventLoop {arg rate=0.002;
+		eventLoopIsRunning.if({
+			"META_HIDDeviceService-runEventLoop: \n\t stopping and restarting running eventLoop".warn;
+		});
+		this.stopEventLoop;
+		this.pr_runEventLoop(rate);
+		eventLoopIsRunning = true;
+	}
+
+	*pr_runEventLoop{arg rate; 
 		_HIDRunEventLoop
 	}
 	*stopEventLoop{
+		this.pr_stopEventLoop;
+		eventLoopIsRunning = false;
+	}
+	*pr_stopEventLoop{
 		_HIDStopEventLoop
 	}
 
