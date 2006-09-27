@@ -49,7 +49,7 @@ Node {
 		^[14, nodeID, controlName, index] ++ args; //"/n_map"
 	}	
 	mapn { arg controlName, index, numControls ... args;
-		server.sendMsg(48, nodeID, controlName, numControls, *args); //"/n_mapn"
+		server.sendMsg(48, nodeID, controlName, index, numControls, *args); //"/n_mapn"
 	}
 	mapnMsg { arg controlName, index, numControls ... args;
 		^[48, nodeID, controlName, numControls] ++ args; //"/n_mapn"
