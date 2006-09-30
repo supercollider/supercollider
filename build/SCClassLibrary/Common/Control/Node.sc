@@ -42,21 +42,22 @@ Node {
 		^[12, nodeID,flag.binaryValue]; //"/n_run"
 	}
 	
-	map { arg controlName, index ... args;
-		server.sendMsg(14, nodeID, controlName, index, *args); //"/n_map"
+	map { arg ... args;
+		server.sendMsg(14, nodeID, *(args.asNodeArg)); //"/n_map"
 	}
-	mapMsg { arg controlName, index ... args;
-		^[14, nodeID, controlName, index] ++ args; //"/n_map"
+	mapMsg { arg ... args;
+		^[14, nodeID] ++ args.asNodeArg; //"/n_map"
 	}	
-	mapn { arg controlName, index, numControls ... args;
-		server.sendMsg(48, nodeID, controlName, index, numControls, *args); //"/n_mapn"
+	mapn { arg ... args;
+		server.sendMsg(48, nodeID, *(args.asNodeArg)); //"/n_mapn"
 	}
-	mapnMsg { arg controlName, index, numControls ... args;
-		^[48, nodeID, controlName, numControls] ++ args; //"/n_mapn"
+	mapnMsg { arg ... args;
+		^[48, nodeID] ++ args.asNodeArg; //"/n_mapn"
 	}
 	// map to Bus objects
 	busMap { arg firstControl, aBus ... args;
 		var values;
+		"busMap is deprecated, use map".warn;
 		values = List.new;
 		args.pairsDo({ arg control, bus; values.addAll([control, bus.index, bus.numChannels])});
 		server.sendMsg(48, nodeID, firstControl, aBus.index, aBus.numChannels, *values);
@@ -64,39 +65,42 @@ Node {
 	}
 	busMapMsg { arg firstControl, aBus ... args;
 		var values;
+		"busMapMsg is deprecated, use map".warn;
 		values = List.new;
 		args.pairsDo({ arg control, bus; values.addAll([control, bus.index, bus.numChannels])});
 		^[48, nodeID, firstControl, aBus.index, aBus.numChannels] ++ values;
 		//"/n_mapn"
 	}
-	set { arg controlName, value ... args;
-		server.sendMsg(15, nodeID, controlName, value, *args); 	 //"/n_set"
+	
+	set { arg ... args;
+		server.sendMsg(15, nodeID, *(args.unbubble.asNodeArg)); 	 //"/n_set"
 	}
 	
-	setMsg { arg controlName, value ... args;
-		^[15, nodeID, controlName, value] ++ args; 	 //"/n_set"
+	setMsg { arg ... args;
+		^[15, nodeID] ++ args.unbubble.asNodeArg; 	 //"/n_set"
 	}
 
-	setn { arg controlName,  values ... args;
-		server.sendMsg(*this.setnMsg(controlName, values, *args));
+	setn { arg ... args;
+		server.sendMsg(*this.setnMsg(*args));
 	}
 	
-	setnMsg { arg controlName,  values ... args;
+	setnMsg { arg ... args;
 		var nargs;
+		args = args.asNodeArg; 
 		nargs = List.new;
 		args.pairsDo({ arg control, moreVals; 
 			nargs.addAll([control, moreVals.size, moreVals].flat)}
 		);
-		^[16, nodeID,controlName, values.size] ++ values ++ nargs; 
+		^[16, nodeID] ++ nargs; 
 			// "n_setn"
 	}
-	
+		
 	fill { arg controlName, numControls, value ... args;
-		server.sendMsg(17, nodeID, controlName, numControls, value, *args); //"n_fill"
+		server.sendMsg(17, nodeID, controlName, numControls, value, *(args.asNodeArg)); //"n_fill"
 	}
 	
 	fillMsg { arg controlName, numControls, value ... args;
-		^[17, nodeID, controlName, numControls, value] ++ args; //"n_fill"
+		^[17, nodeID, controlName, numControls, value] ++ args.asNodeArg; //"n_fill"
 	}
 
 	release { arg releaseTime;
@@ -281,7 +285,8 @@ Synth : Node {
 		addNum = addActions[addAction];
 		synth = this.basicNew(defName, server);
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
-		server.sendMsg(9, defName, synth.nodeID, addNum, inTarget.nodeID, *args); //"s_new"
+		server.sendMsg(9, defName, synth.nodeID, addNum, inTarget.nodeID, 
+			*(args.asNodeArg)); //"s_new"
 		^synth
 	}
 	*newPaused { arg defName, args, target, addAction=\addToHead;
@@ -291,8 +296,8 @@ Synth : Node {
 		addNum = addActions[addAction];
 		synth = this.basicNew(defName, server);
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
-		server.sendBundle(nil, [9, defName, synth.nodeID, addNum, inTarget.nodeID] ++ args, 
-			[12, synth.nodeID, 0]); // "s_new" + "/n_run"
+		server.sendBundle(nil, [9, defName, synth.nodeID, addNum, inTarget.nodeID] ++ 
+			args.asNodeArg, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
 		^synth
 	}
 		/** does not send	(used for bundling) **/
@@ -306,7 +311,7 @@ Synth : Node {
 		// if target is nil set to default group of server specified when basicNew was called
 		inTarget = (target ? server.defaultGroup).asTarget;
 		(addNum < 2).if({ group = inTarget; }, { group = inTarget.group; });
-		^[9, defName, nodeID, addNum, inTarget.nodeID] ++ args; //"/s_new"
+		^[9, defName, nodeID, addNum, inTarget.nodeID] ++ args.asNodeArg; //"/s_new"
 	}
 	*after { arg aNode, defName, args;	
 		^this.new(defName, args, aNode, \addAfter);
@@ -327,24 +332,24 @@ Synth : Node {
 	addToHeadMsg { arg aGroup, args;
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
-		^[9, defName, nodeID, 0, group.nodeID] ++ args	// "/s_new"
+		^[9, defName, nodeID, 0, group.nodeID] ++ args.asNodeArg	// "/s_new"
 	}
 	addToTailMsg { arg aGroup, args;
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
-		^[9, defName, nodeID, 1, group.nodeID] ++ args // "/s_new"
+		^[9, defName, nodeID, 1, group.nodeID] ++ args.asNodeArg // "/s_new"
 	}
 	addAfterMsg {  arg aNode, args;
 		group = aNode.group; 
-		^[9, defName, nodeID, 3, aNode.nodeID] ++ args // "/s_new"
+		^[9, defName, nodeID, 3, aNode.nodeID] ++ args.asNodeArg // "/s_new"
 	}
 	addBeforeMsg {  arg aNode, args;
 		group = aNode.group; 
-		^[9, defName, nodeID, 2, aNode.nodeID] ++ args // "/s_new"
+		^[9, defName, nodeID, 2, aNode.nodeID] ++ args.asNodeArg // "/s_new"
 	}
 	addReplaceMsg { arg nodeToReplace, args;
 		group = nodeToReplace.group; 
-		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args // "/s_new"
+		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args.asNodeArg // "/s_new"
 	}
 	
 	// nodeID -1 
@@ -352,8 +357,8 @@ Synth : Node {
 		var server;
 		target = target.asTarget;
 		server = target.server;
-		server.sendMsg(9, defName.asDefName, -1, addActions[addAction], target.nodeID, *args);
-			//"/s_new"
+		server.sendMsg(9, defName.asDefName, -1, addActions[addAction], target.nodeID, 
+			*(args.asNodeArg)); //"/s_new"
 		^nil;
 	}
 	
