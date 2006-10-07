@@ -68,18 +68,19 @@ XInFeedback {
 }
 
 SelectX { 
-	*new { arg which, array;
-		^XFade2.ar(
-			Select.ar(which.round(2), array), 
-			Select.ar(which.trunc(2) + 1, array), 
+	*new1 { arg rate, which, array;
+		var selector = UGen.methodSelectorForRate(rate);
+		^XFade2.perform(selector, 
+			Select.perform(selector, which.round(2), array), 
+			Select.perform(selector, which.trunc(2) + 1, array), 
 			(which * 2 - 1).fold2(1)
 		);
 	}
 	*ar { arg which, array, wrap=1;
-		^this.new(which, array, wrap);	
+		^this.new1(\audio, which, array, wrap);	
 	}
 	*kr { arg which, array, wrap=1;
-		^this.new(which, array, wrap);	
+		^this.new1(\control, which, array, wrap);	
 	}
 }
 
