@@ -279,15 +279,17 @@ Buffer {
 	
 	// risky without wait 
 	getToFloatArray { arg index = 0, count, wait = 0.01, timeout = 3, action;
-		var refcount, array, pos = 0, getsize, resp, done = false;
+		var refcount, array, pos, getsize, resp, done = false;
+		pos = index = index.asInteger;
 		count = (count ? (numFrames * numChannels)).asInteger;
 		array = FloatArray.newClear(count);
 		refcount = (count / 1633).roundUp;
+		count = count + pos;
 		//("refcount" + refcount).postln;
 		resp = OSCresponderNode(server.addr, '/b_setn', { arg time, responder, msg; 
 			if(msg[1] == bufnum, {
 				//("received" + msg).postln;
-				array = array.overWrite(FloatArray.newFrom(msg.copyToEnd(4)), msg[2]);
+				array = array.overWrite(FloatArray.newFrom(msg.copyToEnd(4)), msg[2] - index);
 				refcount = refcount - 1;
 				//("countDown" + refcount).postln;
 				if(refcount <= 0, {done = true; responder.remove; action.value(array, this); });
