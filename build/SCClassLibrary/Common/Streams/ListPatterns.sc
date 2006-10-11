@@ -4,19 +4,22 @@ Pindex : Pattern {
 		^super.newCopyArgs(listPat, indexPat, repeats)
 	}
 	embedInStream { arg inval;
-		var indexStream, index, item;
+		var indexStream, index, item, itemCount;
 		var listStream = listPat.asStream;
 		repeats.do {
-			var list = listStream.next;
+			var list = listStream.next(inval);
 			if (list.isNil) { ^inval };
 			indexStream = indexPat.asStream;
+			itemCount = 0;
 			while {
-				index = indexStream.next;
+				index = indexStream.next(inval);
 				index.notNil
 			}{
+				itemCount = itemCount + 1;
 				item = list.wrapAt(index);
 				inval = item.embedInStream(inval);
 			};
+			if(itemCount == 0) { ^inval }
 		};
 		^inval;
 	}
