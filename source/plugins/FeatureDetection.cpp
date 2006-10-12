@@ -94,7 +94,7 @@ void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase *unit)
  
 		unit->m_numbins = buf->samples - 2 >> 1;
         int insize = unit->m_numbins * sizeof(float);
-    
+   
         unit->m_prevframe = (float*)RTAlloc(unit->mWorld, insize);
    
         memset(unit->m_prevframe, 0, insize);
@@ -241,11 +241,15 @@ void PV_HainsworthFoote_Ctor(PV_HainsworthFoote *unit)
 
 		World *world = unit->mWorld;
     
-        unit->m_5kindex= (int)(5000.0/(world->mSampleRate))*(unit->m_numbins);
-        unit->m_30Hzindex= (int)(30.0/(world->mSampleRate))*(unit->m_numbins);
+        unit->m_5kindex= (int)((5000.0/(world->mSampleRate))*(unit->m_numbins));
+        unit->m_30Hzindex= (int)((30.0/(world->mSampleRate))*(unit->m_numbins));
        
 	    unit->m_prevNorm= 1.0;
- 
+		
+		//unit->m_5kindex,  unit->m_30Hzindex,  
+		//printf("numbins %d  sr %d \n",  unit->m_numbins, world->mSampleRate); 
+		//printf("test %d sr %f 5k %d 30Hz %d\n", unit->m_numbins, world->mSampleRate, unit->m_5kindex,  unit->m_30Hzindex);
+		   
 		SETCALC(PV_HainsworthFoote_next);
 }
 
