@@ -1780,20 +1780,28 @@ void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 
 	double phase;
-	if (ISDEMANDINPUT(1))
-	  {
-           float x = DEMANDINPUT(1);
-	   if (sc_isnan(x)) {
-	     x = 0;
-	    }
-	   phase = x;
-          } else
-	    phase = IN0(1);
-	
-	phase = sc_loop((Unit*)unit, phase, loopMax, loop); 
-		int32 iphase = (int32)phase; 
-		float* table1 = bufData + iphase * bufChannels; 		
-		OUT0(0) = table1[0];		
+	if (inNumSamples)
+		{
+			if (ISDEMANDINPUT(1))
+			{
+				float x = DEMANDINPUT(1);
+				if (sc_isnan(x)) {
+					OUT0(0) = NAN;
+					return;		//x = 0.0;
+				}
+				phase = x;
+			} else
+				phase = IN0(1);
+			
+			phase = sc_loop((Unit*)unit, phase, loopMax, loop); 
+			int32 iphase = (int32)phase; 
+			float* table1 = bufData + iphase * bufChannels; 		
+			OUT0(0) = table1[0];
+		}
+		else
+		{
+			RESETINPUT(1);
+		}
 }
 
 void Dbufrd_Ctor(Dbufrd *unit)
