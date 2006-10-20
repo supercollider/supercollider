@@ -22,6 +22,7 @@ ScoreStreamPlayer : EventStreamPlayer {
 		while({absTime<= maxTime and: stream.notNil}, {this.next(i);i=i+1;});
 		score = score.add([absTime min: maxTime, [\c_set,0,0]]);
 		stream = nil;
+		score.score = score.score.asSortedList({ | a, b| a[0] < b[0] });
 		^score;
 	}
 	
