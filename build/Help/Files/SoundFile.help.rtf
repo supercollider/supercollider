@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fswiss\fcharset77 Helvetica-Oblique;\f4\fmodern\fcharset77 Courier;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
@@ -16,8 +16,9 @@
 This class is used to check the size, format, channels etc. when the client needs this information about a SoundFile.\
 \
 Some manipulation of the sound file data is possible. Soundfile data can be read and written incrementally, so with properly designed code, there is no restriction on the file size.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
+\f1\fs18 \cf0 \
 \
 (\
 \
@@ -41,11 +42,103 @@ f.close;\
 
 \f2\b0\fs24 \cf0 \ulnone \
 
-\f0\b new\
+\f0\b *new\
 
 \f2\b0 \
 Creates a new SoundFile instance. \
 \
+
+\f0\b *collect(pattern = "sounds/*")\
+\
+
+\f2\b0 Returns an array of SoundFile objects whose paths match the pattern.  \
+(The associated files are closed. These objects can be used to cue playback buffers)\
+\
+
+\f0\b\fs28 Playback
+\f2\b0 \
+
+\fs24 \
+
+\f0\b cue(event | Nil, playNow = false)\
+\
+
+\f2\b0 Allocates a buffer and cues the SoundFile for playback. Returns an event parameterized to play that buffer.\
+(See 
+\f0\b NodeEvent 
+\f2\b0 for a description of how events can be used to control running synths.)\
+The event responds to 
+\f0\b play, stop, pause, resume
+\f2\b0 , keeping both the file and buffer open.\
+The file is closed and the  buffer is freed when the event is sent a 
+\f0\b close 
+\f2\b0 message.\
+\
+
+\f0\b arguments
+\f2\b0 \
+
+\f0\b 	event | Nil\
+	
+\f2\b0 An 
+\f0\b event 
+\f2\b0 can passed as an argument allowing playback to be customized using the following keys:\
+	\
+	
+\f0\b 	key			default value			what it does\
+	
+\f2\b0 	\
+		// buffer and playback position:	\
+		bufferSize		65536\
+		firstFrame		0					first frame to play\
+		lastFrame		nil					last frame to play (nil plays to end of file)\
+	\
+		// synth parameters\
+		out:			0					sets output bus\
+		server:		Server.default			which server\
+		group:		1					what target\
+		addAction:	0					head/tail/before/after\
+		amp:			1					amplitude\
+	\
+		instrument:	nil					if nil SoundFile:cue determines the SynthDef\
+										(one of diskIn1, diskIn2, ...diskIn16)\
+										\
+		Here is the default SynthDef used for stereo files:\
+	
+\f1\fs18 \cf2 \
+		SynthDef\cf0 (\cf3 "diskIn2"\cf0 , \{ \cf2 | bufnum, out,  gate = 1, sustain,  amp = 1, ar = 0, dr = 0.01 |\cf0 \
+			\cf2 Out\cf0 .ar(out, \cf2 DiskIn\cf0 .ar(2, bufnum) \
+			* Linen.kr(gate, ar, 1, dr, 2)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 			* \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(0, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)\
+		\});\
+		\
+	
+\f2\fs24 	The control 
+\f0\b sustain
+\f2\b0  determines playback duration based on the firstFrame and lastFrame.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		The control 
+\f0\b gate 
+\f2\b0 allows early termination of the playback\
+	
+\f1\fs18 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 	
+\f0\b\fs24 playNow
+\f1\b0\fs18 \
+	
+\f2\fs24 	This is a boolean that determines whether the file is to be played immediately after cueing.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 			\
+	
+\f0\b 	example:\
+	
+\f2\b0 	f = SoundFile.collect("sounds/*")\
+		e = f[1].cue;\
+		\
+		e = f[1].cue( (addAction: 2, group: 1) );	// synth will play ahead of the default group\
+		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \ul Read/Write\
