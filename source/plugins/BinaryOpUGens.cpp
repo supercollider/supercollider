@@ -1187,7 +1187,7 @@ void wrap2_1(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = ZIN0(0);
 	float xb = ZIN0(1);
-	ZOUT0(0) = sc_round(xa, xb);
+	ZOUT0(0) = sc_wrap(xa, -xb, xb);
 }
 
 void atan2_1(BinaryOpUGen *unit, int inNumSamples)
