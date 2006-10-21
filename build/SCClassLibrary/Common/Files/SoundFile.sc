@@ -234,4 +234,66 @@ SoundFile {
 		^outFile
 	}
 
+	*initClass {
+		StartUp.add {
+			(1..16).do { | i |
+				SynthDef("diskIn" ++ i, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
+					Out.ar(out, DiskIn.ar(i, bufnum) 
+					* Linen.kr(gate, ar, 1, dr, 2)
+					* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
+				}).store
+			}
+		};
+	}
+
+	*collect { | path = "sounds/*" |
+		var paths, files;
+		paths = path.pathMatch;
+		files = paths.collect { | p | SoundFile.openRead(p) };
+		files = files.select { | f | f.notNil };
+		files.do { | f | f.close };
+		^files;	
+	}
+
+	cue { | ev, playNow = false |
+		var server, packet;
+		ev = ev ? ();
+		ev.use {
+			~instrument = ~instrument ?? 	{"diskIn" ++ numChannels };
+			ev.synth;
+			server = ~server ?? { Server.default};
+			~bufnum =  server.bufferAllocator.alloc(1);
+			~bufferSize = 0x10000;
+			~firstFrame = ~firstFrame ? 0;
+			~lastFrame = ~lastFrame ? numFrames;
+			~sustain = (~lastFrame - ~firstFrame)/(server.options.sampleRate ? 44100);
+			~close = { | ev |
+					server.bufferAllocator.free(ev[\bufnum]);
+					server.sendBundle(server.latency, ["/b_close", ev[\bufnum]], ["/b_free", ev[\bufnum] ]  )
+			};
+			~setwatchers = {
+				OSCpathResponder(server.addr, ["/n_end", ~id[0]], 
+				{ | time, resp, msg |
+					server.sendBundle(server.latency, ["/b_close", ev[\bufnum]], 
+					["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
+					resp.remove;
+				} 
+				).add;
+			};
+			if (playNow) {
+				packet = server.makeBundle(false, {ev.play})[0];    
+					// makeBundle creates an array of messages
+					// need one message, take the first
+			} {
+				packet = [];
+			};
+			server.sendBundle(server.latency,["/b_alloc", ~bufnum, ~bufferSize, numChannels,
+						["/b_read", ~bufnum, path, ~firstFrame, ~bufferSize, 0, 1, packet]
+					]);
+		};
+		^ev;	
+	}
+	
+	play { | ev, playNow = true | ^this.cue(ev, playNow) }
+	
 }
