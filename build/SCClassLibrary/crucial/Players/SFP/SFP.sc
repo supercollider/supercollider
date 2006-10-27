@@ -146,7 +146,7 @@ SFP : AbstractSFP  {
 		 
 	var <found = false,<soundFilePath;
 	
-	*new { arg path="no file",tempo,firstBeatIsAtFrame=0;
+	*new { arg path,tempo,firstBeatIsAtFrame=0;
 		^super.new.init(path).tempo_(tempo).firstBeatIsAt_(firstBeatIsAtFrame)
 	}
 	storeArgs { ^[this.soundFilePath,tempo,firstBeatIsAt] }
@@ -168,8 +168,8 @@ SFP : AbstractSFP  {
 	
 	init { arg sfilePath;
 		if(sfilePath.isNil,{
-			file = SoundFile.new("no soundfile specified...",numChannels:2);
-			name = soundFilePath = "no soundfile specified";
+			file = SoundFile.new(nil).numChannels_(2);
+			name = soundFilePath = nil;
 		},{
 			// we don't have to check actually
 			if(sfilePath.isString,{
@@ -229,6 +229,7 @@ SFP : AbstractSFP  {
 	
 	//name { ^this.fileName }
 	fileName { 
+		if(soundFilePath.isNil,{ ^nil });
 		^PathName(soundFilePath).fileName 
 	}
 	fileDuration { ^file.duration }
