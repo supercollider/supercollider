@@ -76,12 +76,14 @@ TaskProxyEditor {
 			
 		playBut.action_({ |but| var string;
 				if (proxy.notNil) { 	
-								// historical action, sets cmdLine and gets recorded.
 					if (History.started) { 
+								// historical action, sets cmdLine and gets recorded.
 						string = proxy.asCompileString 
 							++ [".play;", ".play;", ".stop;" ][but.value];
-						string.postln.interpret;
-					} { 			// a-historical, but faster
+						thisProcess.interpreter.cmdLine_(string)
+							.interpretPrintCmdLine; 
+					} {
+					 			// a-historical, but faster
 						[ { proxy.play }, { proxy.play }, { proxy.stop } ][but.value].value 
 					};
 					this.updateAll;
@@ -98,11 +100,12 @@ TaskProxyEditor {
 					
 		pauseBut.action_({ |but| var string; 
 				if (proxy.notNil) { 
-					if (History.started) { 		// historical
+					if (History.started) { 		//	"// historical".postln;
 						string = proxy.asCompileString 
 							++ [".resume;", ".pause;" ][but.value];
-						string.postln.interpret;
-					} { 						// faster 
+						thisProcess.interpreter.cmdLine_(string)
+							.interpretPrintCmdLine; 
+					} { 						//	"// faster".postln;
 						[ { proxy.resume }, { proxy.pause } ][but.value].value 
 					};
 						this.updateAll;
@@ -166,7 +169,7 @@ TaskProxyEditor {
 			// blank out controls if no proxy there.
 		if (proxy.isNil) { 
 			if (oldProxy.isNil) { ^this };	// do nothing if there was none.
-			"blank em out".postln;
+		//	"blank em out".postln;
 			[ nameBut, playBut, pauseBut, srcBut, envBut ].flat.do (_.visible_(false));
 			win.refresh;
 			
@@ -216,7 +219,7 @@ TaskProxyEditor {
 		if (guiStates[0] != oldStates[0]) { 
 			playBut.value_(guiStates[0]).refresh;
 			pauseBut
-				.visible_(guiStates[3] > 0) 		// canPause, i.e. either active or paused, or stopped from cmd-.
+				.visible_(guiStates[3] > 0) // canPause, i.e. either active or paused, or stopped from cmd-.
 				.value_(guiStates[4]) 		// isPaused
 				.refresh;
 		};
@@ -248,7 +251,7 @@ PdefEditor : TaskProxyEditor {
 TaskProxyAllGui { 
 	var <win, <edits, <names; 
 	
-	*new { |size=32, w| 
+	*new { |size=24, w| 
 		^super.new.init(size, w);
 	}
 	
