@@ -544,7 +544,7 @@ Buffer {
 				loop: loop.binaryValue); 
 			loop.not.if(FreeSelfWhenDone.kr(player));
 			player * mul; 
-		}.play;
+		}.play(server);
 	}
 }
 
