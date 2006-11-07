@@ -255,7 +255,7 @@ SynthDescLib {
 			path = SynthDef.synthDefDir ++ "*.scsyndef";
 		};
 		synthDescs = SynthDesc.read(path, true, synthDescs);
-		postf("SynthDescLib '%' read of '%' done.\n", name, path);
+//		postf("SynthDescLib '%' read of '%' done.\n", name, path);
 	}
 }
 
