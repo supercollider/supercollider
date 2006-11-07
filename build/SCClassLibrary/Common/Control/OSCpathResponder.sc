@@ -76,8 +76,11 @@ OSCpathResponder : OSCresponder {
 	}
 	
 	findDispatcher {
-		var responder, match;
-		responder = OSCpathDispatcher(addr, cmdName);
+		var responder, match, pathIndices;
+		if (OSCpathDispatcher.cmdPathIndices.includes(cmdName).not, {
+			pathIndices = Array.series(path.size, 1);
+		});
+		responder = OSCpathDispatcher(addr, cmdName, nil, pathIndices);
 		match = OSCresponder.all.findMatch(responder);
 		if(match.isNil, { ^responder.add });
 		if (match.class === OSCresponder,  {
