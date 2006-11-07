@@ -11,19 +11,18 @@ OSCresponder {
 	} 
 	
 	*respond { arg time, addr, msg;
-		var cmdName, responder, match;
+		var cmdName, responder, match1, match2;
 		
 		#cmdName = msg;
 		responder = this.new(addr, cmdName);
-		match = all.findMatch(responder);
-		if (match.isNil, { 
-			responder.addr = nil;
-			match = all.findMatch(responder);
-			if (match.isNil, { ^false });
-		});
-		match.value(time, msg, addr); 
-		^true
+		match1 = all.findMatch(responder);
+		match1.value(time, msg, addr);
+		responder.addr = nil;
+		match2 = all.findMatch(responder);
+		match2.value(time, msg, addr); 
+		^(match1.notNil || match2.notNil)
 	}
+	
 	*add { arg responder;
 		var old;
 		old = all.findMatch(responder);
@@ -67,10 +66,10 @@ OSCresponder {
 OSCMultiResponder : OSCresponder {
 	var <>nodes;
 	
-	value { arg time, msg;
+	value { arg time, msg, addr;
 		var iterlist;
 		iterlist = nodes.copy;
-		iterlist.do({ arg node; node.action.value(time, node, msg) });
+		iterlist.do({ arg node; node.value(time, msg, addr) });
 	}
 	isEmpty { ^nodes.size == 0 }
 	
