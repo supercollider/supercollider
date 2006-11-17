@@ -7,14 +7,29 @@
  *	scheme is cocoa.
  *
  *	Changelog:
- *		-
+ *		- jrh added makeGUI
  *
- *	@version	0.1, 13-Apr-06
+ *	@version	0.12, 28-Oct-06
  */
 GUI { 
 	classvar <scheme, schemes, <skin, skins;
 	
 	*new { |key| ^scheme.at(key) }
+
+
+	*makeGUI { arg key, args, properties;
+		var meth, class;
+		class = scheme.at(key);
+		if(properties.notNil) {
+			meth = class.class.findMethod(\new);
+			if(meth.notNil) {
+				meth.argNames.drop(args.size).do { |key| args = args ++ properties[key] }
+			}
+		};
+		meth.argNames.postln;
+		args.postln;
+		^class.new(*args)
+	}
 	
 	*initClass { 
 		skins = (
@@ -125,7 +140,7 @@ GUI {
 				vLayoutView: JSCVLayoutView,
 				
 				slider: JSCSlider,
-//				knob: SCKnob, 
+//				knob: JSCKnob, 
 				rangeSlider: JSCRangeSlider,
 				slider2D: JSC2DSlider,
 //				tabletSlider2D: JSC2DTabletSlider,
@@ -142,14 +157,14 @@ GUI {
 				numberBox: JSCNumberBox,
 				textField: JSCTextField,
 
-//				userView: JSCUserView,
-//				multiSliderView: JSCMultiSliderView,
+				userView: JSCUserView,
+				multiSliderView: JSCMultiSliderView,
 //				envelopeView: JSCEnvelopeView,
 					
 //			 	tabletView: JSCTabletView,
 //				soundFileView: JSCSoundFileView,
 //				movieView: JSCMovieView,
-//				textView: JSCTextView,
+				textView: JSCTextView,
 							
 				scopeView: JSCScope,
 				freqScope: JFreqScope,
@@ -165,14 +180,14 @@ GUI {
 
 				mouseX: JMouseX, 
 				mouseY: JMouseY,
-				mouseButton: JMouseButton
+				mouseButton: JMouseButton,
 //				keyState: JKeyState,
 
 				///////////////// Common -> OSX /////////////////
 
-//				pen: JPen,
+				pen: JPen,
 
-//				dialog: JDialog,
+				dialog: SwingDialog
 //				speech: JSpeech
 			)
 		);
