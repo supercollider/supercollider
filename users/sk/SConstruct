@@ -199,10 +199,10 @@ opts.AddOptions(
     EnumOption('AUDIOAPI',
                'Build with specified audio API support',
                DEFAULT_AUDIO_API, ('jack', 'coreaudio', 'portaudio')),
-    ('CUSTOMCC', 'Custom c compiler executable', ''),
-    ('CUSTOMCCFLAGS', 'Custom c compiler flags', ''),
-    ('CUSTOMCXX', 'Custom c++ compiler executable', ''),
-    ('CUSTOMCXXFLAGS', 'Custom c++ compiler flags', ''),
+    ('CC', 'C compiler executable'),
+    ('CCFLAGS', 'C compiler flags'),
+    ('CXX', 'C++ compiler executable'),
+    ('CXXFLAGS', 'C++ compiler flags'),
     BoolOption('DEBUG',
                'Build with debugging information', 0),
     PathOption('DESTDIR',
@@ -216,7 +216,7 @@ opts.AddOptions(
     BoolOption('LANG',
                'Build the language application', 1),
     BoolOption('LID',
-               'Build with Linux Input Device support', 0),
+               'Build with Linux Input Device support [linux]', PLATFORM == 'linux'),
     PathOption('PREFIX',
                'Installation prefix', '/usr/local'),
     BoolOption('RENDEZVOUS',
@@ -231,15 +231,6 @@ opts.AddOptions(
                   'Build with X11 support', 1)
     )
 
-if PLATFORM == 'darwin':
-    opts.AddOptions(
-	BoolOption('UNIVERSAL',
-		   'Build universal binaries (see UNIVERSAL_ARCHS)', 1),
-# 	ListOption('UNIVERSAL_ARCHS',
-# 		   'Architectures to build for',
-# 		   'all', ['ppc', 'i386'])
-	)
-    
 # ======================================================================
 # basic environment
 # ======================================================================
@@ -250,13 +241,6 @@ env = Environment(options = opts,
                   VERSION = VERSION,
                   URL = 'http://supercollider.sourceforge.net',
                   TARBALL = PACKAGE + VERSION + '.tbz2')
-env.Append(
-    CCFLAGS = env['CUSTOMCCFLAGS'],
-    CXXFLAGS = env['CUSTOMCXXFLAGS'])
-if env['CUSTOMCC']:
-    env.Replace(CC = env['CUSTOMCC'])
-if env['CUSTOMCXX']:
-    env.Replace(CXX = env['CUSTOMCXX'])
 
 # ======================================================================
 # installation directories
@@ -278,8 +262,11 @@ env.Append(
 # configuration
 # ======================================================================
 
-conf = Configure(env, custom_tests = { 'CheckPKGConfig' : CheckPKGConfig,
-                                       'CheckPKG' : CheckPKG })
+def make_conf(env):
+    return Configure(env, custom_tests = { 'CheckPKGConfig' : CheckPKGConfig,
+					   'CheckPKG' : CheckPKG })
+
+conf = make_conf(env)
 
 if not conf.CheckPKGConfig('0'):
     print 'pkg-config not found.'
@@ -295,6 +282,7 @@ if not success: Exit(1)
 
 # audio api
 if env['AUDIOAPI'] == 'jack':
+    features['audioapi'] = 'Jack'
     success, libraries['audioapi'] = conf.CheckPKG('jack >= 0.100')
     if success:
         libraries['audioapi'].Append(
@@ -314,11 +302,13 @@ if env['AUDIOAPI'] == 'jack':
                       ('SC_JACK_DEBUG_DLL', env['JACK_DEBUG_DLL'])]
         )
 elif env['AUDIOAPI'] == 'coreaudio':
+    features['audioapi'] = 'CoreAudio'
     libraries['audioapi'] = Environment(
         CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_COREAUDIO')],
         ADDITIONAL_SOURCES = []
         )
 elif env['AUDIOAPI'] == 'portaudio':
+    features['audioapi'] = 'Portaudio'
     libraries['audioapi'] = Environment(
         CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_PORTAUDIO')],
         LIBS = ['portaudio'],
@@ -337,12 +327,20 @@ if env['RENDEZVOUS']:
 else:
     features['rendezvous'] = False
 
-# asound
-# features['alsa'] = env['ALSA'] \
-#                    and conf.CheckCHeader('alsa/asoundlib.h') \
-#                    and conf.CheckLib('asound', autoadd = False)
-# if features['alsa']: libraries['alsa'] = Environment(LIBS = 'asound')
+# alsa
 features['alsa'], libraries['alsa'] = conf.CheckPKG('alsa')
+if features['alsa']:
+    libraries['alsa'].Append(CPPDEFINES = ['HAVE_ALSA'])
+
+# midi
+if conf.CheckCHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
+    features['midiapi'] = 'CoreMIDI'
+    libraries['midiapi'] = Environment(
+	LINKFLAGS = '-framework CoreMIDI',
+	)
+elif features['alsa']:
+    features['midiapi'] = 'ALSA'
+    libraries['midiapi'] = libraries['alsa'].Copy()
 
 # lid
 features['lid'] = env['LID'] and conf.CheckCHeader('linux/input.h')
@@ -403,14 +401,6 @@ else:
     env.Append(CPPDEFINES = ['NDEBUG'])
 
 # platform specific
-if False: #PLATFORM == 'darwin':
-    # universal binary support
-    if env['UNIVERSAL']:
-	archs = map(lambda x: ['-arch', x], ['ppc', 'i386'])
-	env.Append(
-	    CCFLAGS = archs,
-	    LINKFLAGS = archs
-	)
 if CPU == 'ppc':
     env.Append(CCFLAGS = '-fsigned-char')
 
@@ -439,7 +429,8 @@ def yesorno(p):
 print '------------------------------------------------------------------------'
 print ' ALSA:                    %s' % yesorno(env['ALSA'])
 print ' ALTIVEC:                 %s' % yesorno(features['altivec'])
-print ' AUDIOAPI:                %s' % env['AUDIOAPI']
+print ' AUDIOAPI:                %s' % features['audioapi']
+print ' MIDIAPI:                 %s' % features['midiapi']
 print ' DEBUG:                   %s' % yesorno(env['DEBUG'])
 # print ' DESTDIR:                 %s' % env['DESTDIR']
 print ' DEVELOPMENT:             %s' % yesorno(env['DEVELOPMENT'])
@@ -675,7 +666,7 @@ langEnv.Append(
     )
 if PLATFORM == 'darwin':
     langEnv.Append(
-	CPPFLAGS = '/System/Library/Frameworks/CoreServices.framework/Frameworks/',
+	#CPPFLAGS = '/System/Library/Frameworks/CoreServices.framework/Frameworks/',
 	LINKFLAGS = '-framework CoreServices -framework CoreAudio'
 	)
 
@@ -690,14 +681,6 @@ libsclangEnv = langEnv.Copy(
 
 # required libraries
 merge_lib_info(langEnv, libraries['sndfile'])
-
-# optional features
-if features['alsa']:
-    langEnv.Append(CPPDEFINES = ['HAVE_ALSA'])
-    merge_lib_info(langEnv, libraries['alsa'])
-
-if features['lid']:
-    langEnv.Append(CPPDEFINES = ['HAVE_LID'])
 
 libsclangSources = Split('''
 source/lang/LangSource/AdvancingAllocPool.cpp
@@ -719,9 +702,7 @@ source/lang/LangSource/PyrSched.cpp
 source/lang/LangSource/PyrSignal.cpp
 source/lang/LangSource/PyrSignalPrim.cpp
 source/lang/LangSource/PyrSymbolTable.cpp
-source/lang/LangSource/SC_AlsaMIDI.cpp
 source/lang/LangSource/SC_ComPort.cpp
-source/lang/LangSource/SC_LID.cpp
 source/lang/LangSource/SC_LanguageClient.cpp
 source/lang/LangSource/SC_LibraryConfig.cpp
 source/lang/LangSource/SC_TerminalClient.cpp
@@ -743,6 +724,34 @@ source/lang/LangPrimSource/PyrStringPrim.cpp
 source/lang/LangPrimSource/PyrSymbolPrim.cpp
 source/lang/LangPrimSource/PyrUnixPrim.cpp
 ''') + [libsclangEnv.SharedObject('source/lang/LangSource/fftlib', 'source/plugins/fftlib.c')]
+
+# optional features
+if features['midiapi']:
+    merge_lib_info(langEnv, libraries['midiapi'])
+    if features['midiapi'] == 'CoreMIDI':
+	libsclangSources += ['source/lang/LangSource/SC_CoreMIDI.cpp']
+    else:
+	libsclangSources += ['source/lang/LangSource/SC_AlsaMIDI.cpp']
+
+if features['lid']:
+    langEnv.Append(CPPDEFINES = 'HAVE_LID')
+    libsclangSources += ['source/lang/LangSource/SC_LID.cpp']
+elif PLATFORM == 'darwin':
+    langEnv.Append(
+	CPPPATH = '#source/lang/LangSource/HID_Utilities',
+	LINKFLAGS = '-framework Carbon -framework IOKit'
+	)
+    libsclangSources += Split('''
+source/lang/LangSource/SC_HID.cpp
+source/lang/LangSource/HID_Utilities/HID_Error_Handler.c
+source/lang/LangSource/HID_Utilities/HID_Name_Lookup.c
+source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.c
+source/lang/LangSource/HID_Utilities/HID_Utilities.c
+''')
+
+if PLATFORM == 'darwin':
+    langEnv.Append(CPPDEFINES = 'HAVE_SPEECH')
+    libsclangSources += ['source/lang/LangSource/SC_Speech.cpp']
 
 sclangSources = ['source/lang/LangSource/cmdLineFuncs.cpp']
 
