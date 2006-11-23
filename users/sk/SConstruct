@@ -29,8 +29,14 @@ import tarfile
 PACKAGE = 'SuperCollider'
 VERSION = '3'
 
+def short_cpu_name(cpu):
+    # handle those bloody platform idiosyncrasies
+    if cpu == 'Power Macintosh':
+	cpu = 'ppc'
+    return cpu.lower()
+
 PLATFORM = os.uname()[0].lower()
-CPU = os.uname()[4].lower()
+CPU = short_cpu_name(os.uname()[4])
 
 ANY_FILE_RE = re.compile('.*')
 HELP_FILE_RE = re.compile('.*\.(rtf(d)?|scd)$')
@@ -345,7 +351,7 @@ features['lid'] = env['LID'] and conf.CheckCHeader('linux/input.h')
 env = conf.Finish()
 
 # altivec
-if env['ALTIVEC'] and (CPU == 'ppc'):
+if env['ALTIVEC']:
     altiEnv = env.Copy()
     altiEnv.Append(CCFLAGS = ['-maltivec'])
     altiConf = Configure(altiEnv)
@@ -355,7 +361,7 @@ else:
     features['altivec'] = False
 
 # sse
-if env['SSE'] and re.match("^i?[0-9x]86", CPU):
+if env['SSE']:
     sseEnv = env.Copy()
     sseEnv.Append(CCFLAGS = ['-msse2'])
     sseConf = Configure(sseEnv)
