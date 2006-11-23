@@ -1,0 +1,34 @@
+# setup.py for use with py2exe to create a Psycollider.exe
+#
+# created: 10.12.2005
+#
+# commandline is: python setup.py py2exe 
+# 
+# NOTE:	you must copy the PySCLang module into the dist directory manually as it is excluded
+# 	this is due to a problem with py2exe when using option bundle_files 1
+
+from distutils.core import setup
+import py2exe
+
+setup(
+    version = "0.1",
+    description = "Psycollider, the SuperCollider3 implementation on Windows",
+    name = "Psycollider",
+    zipfile=None,
+    # needs to be console to prevent empty cmd-windows for scsynth...
+    console = [ 
+        { 
+            "script": "Psycollider.py", 
+            "icon_resources": [(1, "Psycollider.ico")] 
+        } 
+    ], 
+    # options for py2exe
+    options = {"py2exe": {"compressed": 1,
+                       "optimize": 2,
+                       #"packages": ["PySCLang"],
+		       "bundle_files": 2,
+                       "excludes": ["PySCLang"],
+                       #"dll_excludes": [""]
+                       }
+    }
+    )                                                                                                                                       

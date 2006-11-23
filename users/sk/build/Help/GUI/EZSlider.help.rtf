@@ -1,0 +1,162 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 EZSlider				wrapper class for label, slider, number box\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 EZSlider(window, dimensions, label, controlSpec, action, initVal, initAction, labelWidth, numberWidth)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 EZSlider is a wrapper class for managing a label, slider and number box.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+	window 
+\f1\b0 - the SCWindow containing the views.\
+	
+\f0\b dimensions
+\f1\b0  - a Point giving the width and height of the combined views.\
+	
+\f0\b label
+\f1\b0  - a String\
+	
+\f0\b controlSpec
+\f1\b0  - the ControlSpec for the value.\
+	
+\f0\b action
+\f1\b0  - a function called when the value changes. The function is passed the EZSlider instance as its argument.\
+	
+\f0\b initVal
+\f1\b0  - the value to initialize the slider and number box with. If nil, then it uses the ControlSpec's default value.\
+	
+\f0\b initAction
+\f1\b0  - a Boolean indicating whether the action function should be called when setting the initial value. The default is false.\
+	
+\f0\b labelWidth
+\f1\b0  - number of pixels width for the label. default is 80.\
+	
+\f0\b numberWidth
+\f1\b0  - number of pixels width for the number box. default is 80.\
+	\
+The contained views can be accessed via the EZSlider instance variables:\
+	
+\f0\b labelView
+\f1\b0 , 
+\f0\b sliderView
+\f1\b0 , 
+\f0\b numberView
+\f1\b0 \
+\
+Another useful instance variable is 
+\f0\b round
+\f1\b0 , the rounding precision for the number box display. The default value for 
+\f0\b round
+\f1\b0  is 0.001 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 Example:
+\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs26 \cf0 \
+(\
+\cf2 // start server\cf0 \
+s = \cf3 Server\cf0 .internal;\
+\cf3 Server\cf0 .default = s;\
+s.boot;\
+)\
+\
+(\
+\cf2 // define a synth\cf0 \
+\cf3 SynthDef\cf0 (\cf4 "window-test"\cf0 , \{ \cf3 arg\cf0  note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1;\
+		\cf3 var\cf0  x;\
+		x = \cf3 Mix\cf0 .fill(4, \{ \
+			\cf3 LFSaw\cf0 .ar((note + \{0.1.rand2\}.dup).midicps, 0, 0.02) \
+		\});\
+		x = \cf3 RLPF\cf0 .ar(x, fc, rq).softclip;\
+		x = \cf3 RLPF\cf0 .ar(x, fc, rq, amp).softclip;\
+		x = \cf3 Balance2\cf0 .ar(x[0], x[1], bal);\
+		x = x * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .cutoff, gate, doneAction: 2);\
+		\cf3 Out\cf0 .ar(0, x);\
+	\}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]\
+).load(s);\
+)\
+\
+(\
+\cf3 var\cf0  w, startButton, noteControl, cutoffControl, resonControl;\
+\cf3 var\cf0  balanceControl, ampControl;\
+\cf3 var\cf0  id, cmdPeriodFunc;\
+\
+id = s.nextNodeID; \cf2 // generate a note id.\cf0 \
+\
+\cf2 // make the window\cf0 \
+w = \cf3 SCWindow\cf0 (\cf4 "another control panel"\cf0 , \cf3 Rect\cf0 (20, 400, 440, 180));\
+w.front; \cf2 // make window visible and front window.\cf0 \
+w.view.decorator = \cf3 FlowLayout\cf0 (w.view.bounds);\
+\
+w.view.background = \cf3 HiliteGradient\cf0 (\cf3 Color\cf0 .rand(0.0,1.0),\cf3 Color\cf0 .rand(0.0,1.0),\
+					[\cf5 \\h\cf0 ,\cf5 \\v\cf0 ].choose, 100, rrand(0.1,0.9));\
+\
+\cf2 // add a button to start and stop the sound.\cf0 \
+startButton = \cf3 SCButton\cf0 (w, 75 @ 24);\
+startButton.states = [\
+	[\cf4 "Start"\cf0 , \cf3 Color\cf0 .black, \cf3 Color\cf0 .green],\
+	[\cf4 "Stop"\cf0 , \cf3 Color\cf0 .white, \cf3 Color\cf0 .red]\
+];\
+startButton.action = \{\cf3 |view|\cf0 \
+		if (view.value == 1) \{\
+			\cf2 // start sound\cf0 \
+			s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "window-test"\cf0 , id, 0, 0, \
+				\cf4 "note"\cf0 , noteControl.value,\
+				\cf4 "fc"\cf0 , cutoffControl.value,\
+				\cf4 "rq"\cf0 , resonControl.value,\
+				\cf4 "bal"\cf0 , balanceControl.value,\
+				\cf4 "amp"\cf0 , ampControl.value.dbamp);\
+		\};\
+		if (view.value == 0) \{\
+			\cf2 // set gate to zero to cause envelope to release\cf0 \
+			s.sendMsg(\cf4 "/n_set"\cf0 , id, \cf4 "gate"\cf0 , 0);\
+		\};\
+\};\
+\
+\cf2 // create controls for all parameters\cf0 \
+w.view.decorator.nextLine;\
+noteControl = \cf3 EZSlider\cf0 (w, 400 @ 24, \cf4 "Note"\cf0 , \cf3 ControlSpec\cf0 (24, 60, \cf5 \\lin\cf0 , 1), \
+	\{\cf3 |ez|\cf0  s.sendMsg(\cf4 "/n_set"\cf0 , id, \cf4 "note"\cf0 , ez.value); \}, 36);\
+	\
+w.view.decorator.nextLine;\
+cutoffControl = \cf3 EZSlider\cf0 (w, 400 @ 24, \cf4 "Cutoff"\cf0 , \cf3 ControlSpec\cf0 (200, 5000, \cf5 \\exp\cf0 ), \
+	\{\cf3 |ez|\cf0  s.sendMsg(\cf4 "/n_set"\cf0 , id, \cf4 "fc"\cf0 , ez.value); \}, 1000);\
+	\
+w.view.decorator.nextLine;\
+resonControl = \cf3 EZSlider\cf0 (w, 400 @ 24, \cf4 "Resonance"\cf0 , \cf3 ControlSpec\cf0 (0.1, 0.7), \
+	\{\cf3 |ez|\cf0  s.sendMsg(\cf4 "/n_set"\cf0 , id, \cf4 "rq"\cf0 , ez.value); \}, 0.2);\
+	\
+w.view.decorator.nextLine;\
+balanceControl = \cf3 EZSlider\cf0 (w, 400 @ 24, \cf4 "Balance"\cf0 , \cf5 \\bipolar\cf0 , \
+	\{\cf3 |ez|\cf0  s.sendMsg(\cf4 "/n_set"\cf0 , id, \cf4 "bal"\cf0 , ez.value); \}, 0);\
+	\
+w.view.decorator.nextLine;\
+ampControl = \cf3 EZSlider\cf0 (w, 400 @ 24, \cf4 "Amp"\cf0 , \cf5 \\db\cf0 , \
+	\{\cf3 |ez|\cf0  s.sendMsg(\cf4 "/n_set"\cf0 , id, \cf4 "amp"\cf0 , ez.value.dbamp); \}, -6);\
+	\
+\
+\cf2 // set start button to zero upon a cmd-period\cf0 \
+cmdPeriodFunc = \{ startButton.value = 0; \};\
+\cf3 CmdPeriod\cf0 .add(cmdPeriodFunc);\
+\
+\cf2 // stop the sound when window closes and remove cmdPeriodFunc.\cf0 \
+w.onClose = \{\
+	s.sendMsg(\cf4 "/n_free"\cf0 , id);\
+	\cf3 CmdPeriod\cf0 .remove(cmdPeriodFunc);\
+\};\
+\
+)\
+}

@@ -1,0 +1,25 @@
+// You can now specify the device to start with 
+// the string is "API : DeviceName"
+// NOTE: you need to specify a string that is a substring of
+// 	the 2 device names that specify input and output to
+//	have both devices recognised correctly
+//	Your options will be printed each time the server starts
+
+// examples
+//s.options.device_("ASIO : ASIO4ALL v2");
+//s.options.device_("MME : Microsoft Soundmapper");
+//s.options.device_("MME : Realtek AC97 Audio");
+//s.options.dump;
+
+Server.program = "scsynth.exe";
+{s.boot}.defer(1);
+
+SwingOSC.program = "java -jar SwingOSC\\build\\SwingOSC.jar";
+
+g=SwingOSC.default;
+
+{g.boot;}.defer(1);
+
+"\n\nThis is Psycollider, build 16 August 2006".postln;
+"Have fun! \n\n\n\n".postln;
+

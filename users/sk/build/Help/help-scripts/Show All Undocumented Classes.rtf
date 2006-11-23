@@ -1,0 +1,93 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green0\blue191;\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf2 // Generates a list of all classes for which there are no help files.\cf3 \
+\
+\cf4 var\cf3  paths, doc, result, addFunc;\
+\cf4 var\cf3  titleString, infoString;\
+\cf4 var\cf3  documentedClasses, undocumentedClasses, classesStartIndex;\
+\cf4 var\cf3  documented, documentedIndex;\
+\
+paths = [\cf4 PathName\cf3 (\cf5 "Help/"\cf3 ), \cf6 PathName\cf0 (\cf7 "/Library/Application Support/SuperCollider/Extensions"\cf0 ), \
+	\cf6 PathName\cf0 (\cf7 "~/Library/Application Support/SuperCollider/Extensions"\cf0 )]\cf3 ;\
+\
+titleString = \cf5 "A Generated List of all Undocumented Classes"
+\fs20 \cf3 ;\
+\
+
+\fs18 infoString = \cf5 "Below is an alphabetical list of all classes which have no help files. This includes classes from CRUCIAL-LIBRARY, JITLib, and other third party libraries you may have installed. Note that many of these are either private classes not intended for direct use, abstract superclasses (such as Clock), or currently non-functioning or vestigial classes (such as the image synthesis classes from SC3d5). Nevertheless this is a good place to look for undocumented functionality. Note that some of these classes are covered in overviews, tutorials, etc.\\n\\nClicking on any of the Class Names below will open a Class Browser. For a list of documented classes click here:\\n\\n"\cf3 ;
+\fs20 \
+
+\fs18 \
+result = titleString ++ \cf4 Char\cf3 .nl ++ \cf4 Char\cf3 .nl ++ infoString;\
+\
+documented = \cf5 "*Show All Documented Classes"\cf3 ;\
+documentedIndex = result.size;\
+\
+result = result ++ documented ++ \cf4 Char\cf3 .nl ++ \cf4 Char\cf3 .nl;\
+\
+documentedClasses = \cf4 List\cf3 .new;\
+\
+\cf2 // compile list of documented classes and compare with master class list\cf3 \
+\cf2 // WAY faster than searching for individual files\cf3 \
+addFunc = \{\cf4 |folderPathName|\cf3 \
+	folderPathName.fullPath.containsi("help").if(\{	\
+		folderPathName.files.do(\{\cf4 |item|\cf3 \
+			\cf4 var\cf3  nameString;\
+			nameString = item.fileName.split($.).at(0);\
+			if(nameString.asSymbol.asClass.notNil, \{ \
+				documentedClasses.add(nameString.asSymbol.asClass);\
+			\});\
+		\});\
+	\});\
+\
+	folderPathName.foldersWithoutCVS.do(\{\cf4 |folder|\cf3  \
+		addFunc.value(folder);\
+	\});\
+\};\
+\
+paths.do(addFunc);\
+\
+undocumentedClasses = \cf4 Class\cf3 .allClasses.difference(documentedClasses);\
+\
+classesStartIndex = result.size;\
+\
+undocumentedClasses.do(\{\cf4 |item|\cf3  \
+	\cf4 var\cf3  name;\
+	name = item.name;\
+	\cf2 // weed out metaclasses\cf3 \
+	name.isMetaClassName.not.if(\{ \
+		result = result ++ \cf4 Char\cf3 .nl ++ name.asString; \
+	\});\
+\});\
+\
+result = result ++ \cf4 Char\cf3 .nl;\
+\
+doc = \cf4 Document\cf3 .new(\cf5 "Undocumented Classes"\cf3 );\
+\cf2 //doc = Document.open("Help/help-scripts/tab-template.rtf");\cf3 \
+\cf2 //doc.title = "Undocumented Classes";\cf3 \
+\
+doc.setFont(\cf4 Font\cf3 (\cf5 "Helvetica"\cf3 , 12));\
+doc.string = result;\
+\
+doc.setFont(\cf4 Font\cf3 (\cf5 "Helvetica-Bold"\cf3 , 18), 0, titleString.size);\
+\
+doc.selectRange(documentedIndex, documented.size); \
+doc.underlineSelection;\
+\
+\cf2 // Click on name opens class browser\cf3 \
+doc.mouseDownAction = \{ \cf4 arg\cf3  document;\
+	\cf4 var\cf3  line;\
+	line = document.currentLine;\
+	if((document.selectionStart > classesStartIndex) && (line.size > 0), \{\
+		(line ++ \cf5 ".browse"\cf3 ).interpret\
+	\});\
+ \};\
+ \
+doc.selectRange(0,0);\
+doc.editable_(\cf4 false\cf3 );\
+\{doc.removeUndo;\}.defer(0.1);\
+}

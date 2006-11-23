@@ -1,0 +1,44 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf0 \
+s = \cf2 Server\cf0 .local; \cf3 // get the default server\
+\cf0 \
+s.boot; \cf3 // boot it\
+\cf0 \
+(\
+\cf3 // define a synth\
+\cf2 SynthDef\cf0 (\cf4 "slidertest"\cf0 , \{ \cf2 arg\cf0  freq = 440;\
+	freq = \cf2 Lag\cf0 .kr(freq);\
+	\cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(freq, 0, 0.1));\
+\}).load(s);\
+)\
+\
+\
+(\
+\cf2 var\cf0  w, c, spec;\
+\cf3 // start the synth\
+\cf0 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "slidertest"\cf0 , 1001, 1, 0);\
+\cf3 // create a window\
+\cf0 w = \cf2 SCWindow\cf0 (\cf4 "sine"\cf0 , \cf2 Rect\cf0 (228, 264, 260, 80));\
+\cf3 // create a slider\
+\cf0 c = \cf2 SCSlider\cf0 (w, \cf2 Rect\cf0 (12, 12, 200, 24));\
+\cf3 // the spec maps values from the 0-1 range of the view to another range.\
+// see the ControlSpec class\
+\cf0 spec = \cf5 \\freq\cf0 .asSpec;\
+\cf3 // the action function for the slider sends a message to the server\
+\cf0 c.action = \{\
+	s.sendMsg(\cf4 "/n_set"\cf0 , 1001, \cf5 'freq'\cf0 , spec.map(c.value)); \
+\};\
+\cf3 // set the slider's initial position\
+\cf0 c.value = spec.unmap(spec.default);\
+\cf3 // kill the synth when the window is closed\
+\cf0 w.onClose = \{ s.sendMsg(\cf4 "/n_free"\cf0 , 1001) \};\
+\cf3 // show the window\
+\cf0 w.front;\
+)\
+\
+}

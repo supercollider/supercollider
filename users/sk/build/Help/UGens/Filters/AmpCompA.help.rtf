@@ -1,0 +1,164 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 AmpCompA
+\f1\b0\fs18 			
+\f0\b\fs24 ANSI A-weighting curve\
+						basic psychoacoustic amplitude compensation
+\f2\b0 \
+\
+\
+superclass: UGen\
+\
+	\
+	Higher frequencies are normally perceived as louder, which AmpCompA compensates. \
+	Following the measurings by Fletcher and Munson, the ANSI standard describes \
+	a function for loudness vs. frequency. \
+	Note that this curve is only valid for standardized amplitude. [1]\
+	\
+	For a simpler but more flexible curve, see [\ul AmpComp\ulnone ]\
+	\
+\
+
+\f0\b 	*ar(freq, root, minAmp, rootAmp)\
+	*kr(freq, root, minAmp, rootAmp)\
+	*ir(freq, root, minAmp, rootAmp)
+\f2\b0 \
+	\
+	
+\f0\b freq
+\f2\b0  			input frequency value. For freq == root, the output is rootAmp. (default freq 0 Hz)\
+	
+\f0\b root
+\f2\b0 			root freq relative to which the curve is calculated (usually lowest freq) (default 0 Hz)\
+				default value: C (60.midicps)\
+				\
+	
+\f0\b minAmp
+\f2\b0 		amplitude at the minimum point of the curve (around 2512 Hz) (default -10dB)\
+	
+\f0\b rootAmp
+\f2\b0 		amplitude at the root frequency. (default 1)\
+				\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	
+\f2\fs24 apart from 
+\f3\i freq
+\f2\i0 , the values are not modulatable
+\f1\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\
+// compare a sine without compensation\cf0 \
+\
+\{ \cf3 SinOsc\cf0 .ar(\cf3 MouseX\cf0 .kr(300, 15000, 1)) * 0.1 \}.play;\
+\
+\cf2 // with one that uses amplitude compensation\cf0 \
+(\
+\{ \
+	\cf3 var\cf0  freq;\
+	freq = \cf3 MouseX\cf0 .kr(300, 15000, 1);\
+	\cf3 SinOsc\cf0 .ar(freq) * 0.3 * \cf3 AmpCompA\cf0 .kr(freq) \
+\}.play;\
+)\
+\
+\
+\cf2 // adjust the minimum and root amp \
+// (in this way one can flatten out the curve for higher amplitudes) \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+(\
+\{ \
+	\cf3 var\cf0  freq;\
+	freq = \cf3 MouseX\cf0 .kr(300, 18000, 1);\
+	\cf3 Formant\cf0 .ar(300, freq, 20, 0.1) * \cf3 AmpCompA\cf0 .kr(freq, 300, 0.6, 0.3)\
+\}.play;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // the curve:\cf0 \
+\
+\{ \cf3 AmpCompA\cf0 .ar(\cf3 Line\cf0 .ar(48, 120, 1).midicps, 48.midicps) \}.plot(1.0);\
+\
+\cf2 // freqs:\cf0 \
+\
+\{ \cf3 AmpCompA\cf0 .ar(\cf3 Line\cf0 .ar(0, 20000, 1)) \}.plot(1.0);\
+\
+\cf2 // compare with AmpComp (exponential decay)\cf0 \
+\
+\{ \cf3 AmpComp\cf0 .ar(\cf3 Line\cf0 .ar(48, 120, 1).midicps, 48.midicps) \}.plot(1.0);\
+\cf2 \
+// freqs:\cf0 \
+\
+\{ \cf3 AmpComp\cf0 .ar(\cf3 Line\cf0 .ar(40, 20000, 1), 40) \}.plot(1.0);\
+\
+\
+\
+\cf2 // amplitude compensation in frequency modulation (using Fletscher-Munson curve)\cf0 \
+(\
+\{ \
+	\cf3 var\cf0  freq;\
+	freq = \cf3 MouseX\cf0 .kr(300, 15000, 1);\
+	freq = freq * \cf3 SinOsc\cf0 .ar(\cf3 MouseY\cf0 .kr(3, 200, 1), 0, 0.5, 1);\
+	\cf3 SinOsc\cf0 .ar(freq) * 0.1 * \cf3 AmpCompA\cf0 .ar(freq, 300) \
+\}.play;\
+)\
+\
+\cf2 // amplitude compensation in frequency modulation (using AmpComp exponential decay)\cf0 \
+(\
+\{ \
+	\cf3 var\cf0  freq;\
+	freq = \cf3 MouseX\cf0 .kr(300, 15000, 1);\
+	freq = freq * \cf3 SinOsc\cf0 .ar(\cf3 MouseY\cf0 .kr(3, 200, 1), 0, 0.5, 1);\
+	\cf3 SinOsc\cf0 .ar(freq) * 0.1 * \cf3 AmpComp\cf0 .ar(freq, 300) \
+\}.play;\
+)\
+\
+\
+\cf2 // without amplitude compensation\cf0 \
+(\
+\{ \
+	\cf3 var\cf0  freq;\
+	freq = \cf3 MouseX\cf0 .kr(300, 15000, 1);\
+	freq = freq * \cf3 SinOsc\cf0 .ar(\cf3 MouseY\cf0 .kr(3, 200, 1), 0, 0.5, 1);\
+	\cf3 SinOsc\cf0 .ar(freq) * 0.1\
+\}.play;\
+)\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+[1] Function freq -> dB, \
+	derived from \ul http://www.beis.de/Elektronik/AudioMeasure/WeightingFilters.html\ulnone \
+	and modified to map freq -> amp
+\f1\fs18 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  k =  3.5041384e16;\
+var c1 = 424.31867740601;\
+var c2 = 11589.093052022;\
+var c3 = 544440.67046057;\
+var c4 = 148698928.24309;\
+f = \{\cf3 |f|\cf0 \
+  \cf3 var\cf0  r = squared(f);\
+  \cf3 var\cf0  m1 = pow(r,4);\
+  \cf3 var\cf0  n1 = squared(c1 + r);\
+  \cf3 var\cf0  n2 = c2 + r;\
+  \cf3 var\cf0  n3 = c3 + r;\
+  \cf3 var\cf0  n4 = squared(c4 + r);\
+  \cf3 var\cf0  level = k * m1 / (n1 * n2 * n3 * n4);\
+  sqrt(level)\
+ \};\
+)\
+\
+}

@@ -1,0 +1,93 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 OSCBundle	
+\f1\b0\fs18 		
+\f0\b\fs24 network
+\f1\b0\fs18  
+\f0\b\fs24 bundle object
+\f2\b0 \
+\
+\
+superclass: Object\
+\
+a bundle object that allows to add preparation messages for async processes.\
+if this feature is not needed, a list object can be used instead.\
+\
+\
+
+\f0\b add(msg)
+\f2\b0 				add an osc message to the bundle\
+\
+
+\f0\b addAll(array)	
+\f2\b0 		add an array of osc messages to the bundle\
+\
+
+\f0\b addPrepare(msg)
+\f2\b0 		add a preparation osc message, which is sent\
+					before the bundle is sent.\
+\
+\
+\
+
+\f0\b send(server, latency)
+\f2\b0 	send the bundle to a server.  If preparation messages are given,\
+					they are sent, the process waits for their reception abd then sends the\
+					bundle.\
+\
+
+\f0\b schedSend(server, clock, quant)
+\f2\b0  \
+					like send, but the sending is synced to a given clock (TempoClock) to the next beat.\
+					quant can be a pair of values: [quant, offset]\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 // example\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+	\cf2 // create a new, empty instance\cf0 \
+	a = \cf3 OSCBundle\cf0 .new; \
+	\
+	\cf2 // a synthdef that needs to be sent to the server, an operation that is asynchronous,\cf0 \
+	\cf2 // i.e. we have to wait until it is finished.\cf0 \
+	x = \cf3 SynthDef\cf0 (\cf4 "test"\cf0 , \{\'ca\cf3 OffsetOut\cf0 .ar(0, \cf3 BPF\cf0 .ar(\cf3 Impulse\cf0 .ar(4) * 10, \cf3 Rand\cf0 (9000, 1000), 0.1)) \});\
+	\cf2 // this is why addPrepare is used.\cf0 \
+	a.addPrepare([\cf4 "/d_recv"\cf0 , x.asBytes]);\
+	\cf2 // add is used with synchronous operations, like starting synths.\cf0 \
+	a.add([\cf4 "/s_new"\cf0 , \cf4 "test"\cf0 , -1]);\
+\
+	\cf2 // the bundle has now the synchronous separated from the asynchronous bundles:\cf0 \
+	a.oscMessages;\
+	a.preparationMessages;\
+	\
+	\cf2 // this can be simply sent - the bundle takes care of the server client communication\cf0 \
+	\cf2 // like waiting for the synthdef to be loaded. the synth is started when the preparation\cf0 \
+	\cf2 // is finished.\cf0 \
+	\
+	s.boot; \cf2 // boot the server\cf0 \
+	a.send(s);\
+\
+	s.freeAll; \cf2 // free all nodes on the server\cf0 \
+\
+	\cf2 // scheduled sending: the synths are started on the next beat.\cf0 \
+\
+	a.schedSend(s, \cf3 TempoClock\cf0 .default, 1); 	\
+	a.schedSend(s, \cf3 TempoClock\cf0 .default, 1);		\
+	a.schedSend(s, \cf3 TempoClock\cf0 .default, 1);\
+	\
+	s.freeAll; \cf2 // free all nodes on the server\cf0 \
+\
+	\cf2 // the bundle can contain several preparation messages and messages at a time.\cf0 \
+	\cf2 // the proparationMessages are sent first and only when they are all completed,\cf0 \
+	\cf2 // the other bundles are sent.\cf0 \
+	\cf2 // the bundle can also be reused, if there is no specific allocated buffers/node ids.		\cf0 \
+	}

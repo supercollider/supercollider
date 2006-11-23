@@ -1,0 +1,37 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
+{\fonttbl\f0\fmodern\fcharset77 Courier;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs36 \cf0 RHPF
+\f2\b0\fs24 \
+\
+
+\f1\b RHPF.ar(in, freq, q, mul, add)\
+
+\f2\b0 \
+A resonant high pass filter. \
+
+\f1\b in
+\f2\b0  - input signal to be processed\
+
+\f1\b freq
+\f2\b0  - cutoff frequency.\
+
+\f1\b rq
+\f2\b0  - the reciprocal of Q.  bandwidth / cutoffFreq. \
+
+\f3 \
+
+\fs20 \cf2 \{ \cf3 RHPF\cf2 .ar(\cf3 Saw\cf2 .ar(200,0.1), \cf3 FSinOsc\cf2 .kr(\cf3 XLine\cf2 .kr(0.7,300,20), 0, 3600, 4000), 0.2) \}.play;\
+\
+(\
+\{ 	\cf3 var\cf2  ctl = \cf3 RHPF\cf2 .kr(\cf3 LFSaw\cf2 .kr(2), \cf3 SinOsc\cf2 .kr(\cf3 XLine\cf2 .kr(0.07,30,20), 0, 35, 40), 0.05);\
+	\cf3 SinOsc\cf2 .ar(ctl * 200 + 500);\
+\}.play;\
+)}

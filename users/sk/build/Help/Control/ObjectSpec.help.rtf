@@ -1,0 +1,101 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 ObjectSpec : Spec
+\f1\b0\fs24 \
+\
+Allows any kind of object to be specified as a default for an Instr argument.\
+\
+The object should be a kind of object that does not have an Editor in the Patch system... e.g., for Env, the spec should be an EnvSpec. The object will not be editable after patch creation.\
+\
+Suitable objects for ObjectSpec are static Arrays, other data structures used to build parallel or serial structures, or even Functions that provide additional UGens to the Patch.\
+\
+
+\f0\b *new(obj)
+\f1\b0 \
+\
+obj is the object that will be used as the default when the Patch is built.\
+\
+
+\f0\b defaultControl\
+defaultControl_\
+
+\f1\b0 \
+Access or change the object.\
+\
+
+\f0\b Example:
+\f1\b0 \
+\
+In this patch, the Instr defines a filter structure, but leaves the choice of exciter up to the user. If the user doesn't provide an exciter, a default will be used.\
+\
+Since the Formlet filter's impulse response is a sine wave, formHarmRatios and formHarmAmps accept arrays that create an additive array of Formlets. Formlet is a very efficient UGen, so the Patch is still CPU cheap!\
+\
+The result resembles CHANT (IRCA/M, 1979).\
+\
+\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf2 (\
+\cf3 // define the Instr\cf2 \
+\cf4 Instr\cf2 ([\cf5 \\analog\cf2 , \cf5 \\voxlet\cf2 ], \{ \cf4 |freq, gate, exciterFunc, detune, formfreq, ffreq, env, formfreqenv, attacktime, decaytime, vsens, fenvsens, formHarmRatios, formHarmAmps|\cf2 \
+	\cf4 var\cf2  amp, sig;\
+	formfreq = formfreq * ((\cf4 EnvGen\cf2 .kr(formfreqenv, gate) * fenvsens) + 1);\
+	amp = (\cf4 Latch\cf2 .kr(gate, gate)-1) * vsens + 1;\
+	sig = exciterFunc.value(freq, detune);	\cf3 // this func is user supplied\cf2 \
+	sig = \cf4 Formlet\cf2 .ar(sig,\
+		formHarmRatios.notNil.if(\{ formfreq * formHarmRatios \}, \{ formfreq \}), \
+		attacktime, decaytime, mul: formHarmAmps ?? \{ 1 \});\
+	\cf3 // formlet is a bit volatile, so limit its amplitude\cf2 \
+	(\cf4 Limiter\cf2 .ar(\cf4 LPF\cf2 .ar(\cf4 Mix\cf2 .ar(sig), ffreq), 0.9, 0.06)\
+		* \cf4 EnvGen\cf2 .kr(env, gate, doneAction:2)) ! 2\
+\}, [\
+	\cf5 \\freq\cf2 ,\
+	\cf5 \\amp\cf2 ,\
+		\cf3 // default func is an audio-rate impulse to provide the base frequency\cf2 \
+		\cf3 // override this with a func for a different exciter\cf2 \
+		\cf3 // your func may have a frequency and detune argument\
+		// it should output 1 channel only\cf2 \
+	\cf4 ObjectSpec\cf2 (\{ \cf4 |fr|\cf2  \cf4 Impulse\cf2 .ar(fr) \}),\
+	\cf5 \\mydetune\cf2 ,\
+	\cf5 \\freq\cf2 ,\
+	#[20, 20000, \cf5 \\exp\cf2 , 0, 1200],\
+	\cf4 EnvSpec\cf2 (\cf4 Env\cf2 .adsr(0.07, 0.2, 0.8, 0.11)),\
+	\cf4 EnvSpec\cf2 (\cf4 Env\cf2 (#[0, 0], [1])),\
+	#[0.0001, 1, \cf5 \\exp\cf2 , 0, 0.01],\
+	#[0.0001, 1, \cf5 \\exp\cf2 , 0, 0.1],\
+	\cf5 \\amp\cf2 ,\
+	\cf5 \\amp\cf2 ,\
+	\cf4 ObjectSpec\cf2 (\cf4 nil\cf2 ),	\cf3 // arrays by default are nil -- ugenfunc fills in the true default here\cf2 \
+	\cf4 ObjectSpec\cf2 (\cf4 nil\cf2 )\
+]);\
+)\
+\
+\cf3 // use the default exciter\cf2 \
+p = \cf4 Patch\cf2 ([\cf5 \\analog\cf2 , \cf5 \\voxlet\cf2 ], [\cf4 Patch\cf2 (\{ \cf4 MouseX\cf2 .kr(20, 20000, 1, 0.1) \}), 0.5, \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 Patch\cf2 (\{ \cf4 MouseY\cf2 .kr(20, 20000, 1, 0.1) \}), \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , 1, 0]);\
+p.play;\
+\cf3 // move the mouse to control base freq and formant freq\cf2 \
+\cf3 // watch the volume--amplitude can spike at times in this patch\cf2 \
+\
+\cf3 // when done:\cf2 \
+p.free;\
+\
+\
+\cf3 // free the patch ("free" button) and try this to change the exciter\cf2 \
+p = \cf4 Patch\cf2 ([\cf5 \\analog\cf2 , \cf5 \\voxlet\cf2 ], [\cf4 Patch\cf2 (\{ \cf4 MouseX\cf2 .kr(20, 20000, 1, 0.1) \}), 0.25, \{ \cf4 |fr, detune|\cf2  \cf4 Mix\cf2 .ar(\cf4 Saw\cf2 .ar([fr, fr*detune])) \}, \cf4 nil\cf2 , \cf4 Patch\cf2 (\{ \cf4 MouseY\cf2 .kr(20, 20000, 1, 0.1) \}), \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , 1, 0]);\
+p.play;\
+\
+p.free;\
+\
+\cf3 // now let's add some additiveness to the filters
+\f1\fs24 \cf2 \
+
+\f2\fs20 \cf2 p = \cf4 Patch\cf2 ([\cf5 \\analog\cf2 , \cf5 \\voxlet\cf2 ], [\cf4 Patch\cf2 (\{ \cf4 MouseX\cf2 .kr(20, 20000, 1, 0.1) \}), 0.25, \{ \cf4 |fr, detune|\cf2  \cf4 Mix\cf2 .ar(\cf4 Saw\cf2 .ar([fr, fr*detune])) \}, \cf4 nil\cf2 , \cf4 Patch\cf2 (\{ \cf4 MouseY\cf2 .kr(20, 20000, 1, 0.1) \}), \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , \cf4 nil\cf2 , 1, 0, (1..6), (1..6).reciprocal]);\
+p.play;\
+\
+p.free;\
+}

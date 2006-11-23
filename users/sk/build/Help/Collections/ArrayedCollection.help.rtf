@@ -1,0 +1,678 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-BoldOblique;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 ArrayedCollection
+\f1\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Superclass: SequenceableCollection\
+
+\f1\b0 \
+ArrayedCollection is an abstract class, a subclass of SequenceableCollections whose elements are held in a vector of slots. Instances of ArrayedCollection have a fixed maximum size beyond which they may not grow.\
+\
+Its principal subclasses are Array (for holding objects), and RawArray, from which Int8Array, FloatArray,Signal etc. inherit.\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\i\b\fs28 \cf0 Class Methods
+\f0\i0 \ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone \
+
+\f0\b *with(... args)\
+
+\f1\b0 \
+Create a new ArrayedCollection whose slots are filled with the given arguments.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf2 Array\cf0 .with(7, \cf3 'eight'\cf0 ,  9).postln;
+\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+
+\f0\b *series(size, start, step)\
+
+\f1\b0 \
+Fill an ArrayedCollection with an arithmetic series.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf2 Array\cf0 .series(5, 10, 2).postln;
+\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+
+\f0\b *geom(size, start, grow)\
+
+\f1\b0 \
+Fill an ArrayedCollection with a geometric series.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf2 Array\cf0 .geom(5, 1, 3).postln;
+\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\i\b\fs28 \cf0 Instance Methods
+\f3\i0\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 at(index)
+\f1\b0 \
+\
+Return the 
+\f0\b item
+\f1\b0  at 
+\f0\b index
+\f1\b0 .\
+		\
+
+\f0\b clipAt(index)\
+\
+
+\f1\b0 Same as 
+\f0\b at
+\f1\b0 , but values for 
+\f0\b index
+\f1\b0  greater than the size of the ArrayedCollection will be clipped to the last index.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 y = [ 1, 2, 3 ];\
+y.clipAt(13).postln;
+\f1\fs24 \
+ 
+\f0\b \
+wrapAt(index)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Same as 
+\f0\b at
+\f1\b0 , but values for 
+\f0\b index
+\f1\b0  greater than the size of the ArrayedCollection will be wrapped around to 0.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 y = [ 1, 2, 3 ];\
+y.wrapAt(3).postln; \cf4 // this returns the value at index 0\cf0 \
+y.wrapAt(4).postln; \cf4 // this returns the value at index 1
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+foldAt(index)\
+\
+
+\f1\b0 Same as 
+\f0\b at
+\f1\b0 , but values for 
+\f0\b index
+\f1\b0  greater than the size of the ArrayedCollection will be folded back.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 y = [ 1, 2, 3 ];\
+y.foldAt(3).postln; \cf4 // this returns the value at index 1\cf0 \
+y.foldAt(4).postln; \cf4 // this returns the value at index 0\
+\cf0 y.foldAt(5).postln; \cf4 // this returns the value at index 1
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+swap(i, j)\
+\
+
+\f1\b0 Swap the values at indices i and j.\
+
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0\fs18 \cf0 [ 1, 2, 3 ].swap(0, 2).postln;
+\f0\b\fs24 \
+\
+put(index, item)
+\f3\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+Put 
+\f0\b item
+\f1\b0  at 
+\f0\b index
+\f1\b0 , replacing what is there.\
+
+\f0\b \
+clipPut(index, item)
+\f3\b0 \
+
+\f1 \
+Same as 
+\f0\b put
+\f1\b0 , but values for 
+\f0\b index
+\f1\b0  greater than the size of the ArrayedCollection will be clipped to the last index.\
+ 
+\f0\b \
+wrapPut(index, item)
+\f3\b0 \
+
+\f1 \
+Same as 
+\f0\b put
+\f1\b0 , but values for 
+\f0\b index
+\f1\b0  greater than the size of the ArrayedCollection will be wrapped around to 0.\
+
+\f0\b \
+foldPut(index)\
+\
+
+\f1\b0 Same as 
+\f0\b put
+\f1\b0 , but values for 
+\f0\b index
+\f1\b0  greater than the size of the ArrayedCollection will be folded back.
+\f0\b \
+\
+removeAt(index)
+\f1\b0 \
+\
+Remove and return the element at 
+\f0\b index
+\f1\b0 , shrinking the size of the ArrayedCollection.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 y = [ 1, 2, 3 ]; \
+y.removeAt(1); \
+y.postln;
+\f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+takeAt(index)\
+\
+
+\f1\b0 Same as 
+\f0\b removeAt
+\f1\b0 , but reverses the order of the items following those that which was taken.
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 y = [ 1, 2, 3, 4 ]; \
+y.takeAt(1); \
+y.postln;
+\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 add(item)\
+
+\f1\b0 \
+Adds an item to an ArrayedCollection if there is space. If there is not any space left in the object then this method returns a new ArrayedCollection. For this reason, you should always assign the result of add to a variable - never depend on add changing the receiver.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // z and y are the same object\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3];\
+y = z.add(4);\
+z.postln;\
+y.postln;\
+)
+\fs24 \
+\
+
+\fs18 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // in this case a new object is returned\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4];\
+y = z.add(5);\
+z.postln;\
+y.postln;\
+)
+\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 addAll(aCollection)\
+
+\f1\b0 \
+Adds all the elements of aCollection to the contents of the receiver, possibly returning a new collection.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // in this case a new object is returned\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4];\
+y = z.addAll([7, 8, 9]);\
+z.postln;\
+y.postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+
+\f0\b fill(value)\
+
+\f1\b0 \
+Inserts the item into the contents of the receiver, possibly returning a new collection. Note the difference between this and Collection's *fill.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\cf2 var\cf0  z;\
+z = \cf2 List\cf0 [1, 2, 3, 4];\
+z.fill(4).postln;\
+z.fill([1,2,3,4]).postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+
+\f0\b insert(index, item)\
+
+\f1\b0 \
+Inserts the item into the contents of the receiver, possibly returning a new collection.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // in this case a new object is returned\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4];\
+y = z.insert(1, 999);\
+z.postln;\
+y.postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 addFirst(item)\
+
+\f1\b0 \
+Inserts the item before the contents of the receiver, possibly returning a new collection.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // in this case a new object is returned\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4];\
+y = z.addFirst(999);\
+z.postln;\
+y.postln;\
+)
+\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 pop
+\f1\b0 \
+\
+Remove and return the last element of the ArrayedCollection.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\cf2 var\cf0  z;\
+z = [1, 2, 3, 4];\
+z.pop.postln;\
+z.postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+grow(sizeIncrease)\
+\
+
+\f1\b0 Increase the size of the ArrayedCollection by 
+\f0\b sizeIncrease 
+\f1\b0 number of slots,  possibly returning a new collection.
+\f0\b \
+\
+copyRange(start, end)\
+
+\f1\b0 \
+Return a new ArrayedCollection which is a copy of the indexed slots of the receiver from start to end.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (\
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4, 5];\
+y = z.copyRange(1,3);\
+z.postln;\
+y.postln;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 copySeries(first, second, last)\
+
+\f1\b0 \
+Return a new ArrayedCollection consisting of the values starting at 
+\f0\b first
+\f1\b0 , then every step of the distance between 
+\f0\b first
+\f1\b0  and 
+\f0\b second
+\f1\b0 , up until 
+\f0\b last
+\f1\b0 .\
+x.copySeries(a, b, c) can also be written as 
+\f0\b x[a, b..c]
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (\
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4, 5, 6];\
+y = z.copySeries(0, 2, 5);\
+y.postln;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 putSeries(first, second, last, value)\
+
+\f1\b0 \
+Put 
+\f0\b value
+\f1\b0  at every index starting at 
+\f0\b first
+\f1\b0 , then every step of the distance between 
+\f0\b first
+\f1\b0  and 
+\f0\b second
+\f1\b0 , up until 
+\f0\b last
+\f1\b0 .\
+x.putSeries(a, b, c, val) can also be written as 
+\f0\b x[a, b..c] = val\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (\
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4, 5, 6];\
+y = z.putSeries(0, 2, 5, "foo");\
+y.postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 ++ aCollection\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 Concatenate the contents of the two collections into a new ArrayedCollection.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4];\
+y = z ++ [7, 8, 9];\
+z.postln;\
+y.postln;\
+)
+\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 reverse
+\f3\b0 \
+
+\f1 \
+Return a new ArrayedCollection whose elements are reversed.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\cf2 var\cf0  y, z;\
+z = [1, 2, 3, 4];\
+y = z.reverse;\
+z.postln;\
+y.postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 do(function)
+\f3\b0 \
+
+\f1 \
+Iterate over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 [\cf3 'a'\cf0 , \cf3 'b'\cf0 , \cf3 'c'\cf0 ].do(\{ \cf2 arg\cf0  item, i; [i, item].postln; \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 reverseDo(function)
+\f3\b0 \
+
+\f1 \
+Iterate over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 [\cf3 'a'\cf0 , \cf3 'b'\cf0 , \cf3 'c'\cf0 ].reverseDo(\{ \cf2 arg\cf0  item, i; [i, item].postln; \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 windex
+\f1\b0 \
+\
+Interprets the array as a list of probabilities which should sum to 1.0 and returns a random index value based on those probabilities.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (\
+\cf2 Array\cf0 .fill(10, \{\
+	[0.1, 0.6, 0.3].windex;\
+\}).postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 normalizeSum
+\f1\b0 \
+\
+Returns the Array resulting from : \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\cf2 this\cf0  / \cf2 this\cf0 .sum)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 so that the array will sum to 1.0.\
+\
+This is useful for using with windex or wchoose.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 [1, 2, 3].normalizeSum.postln;
+\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 performInPlace(selector, from, to, argList)
+\f1\b0 \
+\
+performs a method in place, within a certain region [from..to], returning the same array.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 a = (0..10);\
+a.performInPlace(\\normalizeSum, 3, 6); \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+find(anotherArray)
+\f1\b0 \
+\
+finds the starting index of a number of elements contained in the array.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 a = (0..10);\
+a.find([4, 5, 6]); \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 replace(anotherArray)
+\f1\b0 \
+\
+return a new array in which a number of elements have been replaced by another \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 a = (0..10) ++ (0..10);\
+a.replace([4, 5, 6], 100); \
+a.replace([4, 5, 6], [1734, 1985, 1860]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 this method is inherited by String:
+\f3\fs18 \
+\
+a = "hello world";\
+a.replace("world", "word");\
+\
+\
+
+\f0\b\fs24 asRandomTable
+\f1\b0 \
+\
+return an integral table that can be used to generate random numbers with a specified distribution.\
+(see\ul  [Randomness] \ulnone helpfile for a more detailed example)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+a = (0..100) ++ (100..50) / 100; // distribution\
+a = a.asRandomTable;\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 tableRand
+\f1\b0 \
+\
+returns a new random number from a random table.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+a = (0..100) ++ (100..50) / 100; // distribution\
+a = a.asRandomTable;\
+20.do \{\'caa.tableRand.postln \};\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 msgSize\
+\
+
+\f1\b0 return the size of an osc message in bytes
+\f0\b \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0\fs18 \cf0 a = ["/s_new", "default", -1, "freq", 440];
+\f0\b\fs24 \
+
+\f3\b0\fs18 a.msgSize;
+\f0\b\fs24 \
+\
+\
+bundleSize\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 return the size of an osc bundle in bytes
+\f0\b \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0\fs18 \cf0 a = [["/s_new", "default", -1, "freq", 440], ["/s_new", "default", -1, "freq", 220]];
+\f0\b\fs24 \
+
+\f3\b0\fs18 a.bundleSize;
+\f0\b\fs24 \
+\
+\
+}

@@ -1,0 +1,135 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 if
+\f1\b0\fs18 \cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 if( boolean, trueFunc, falseFunc)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 see also: [\ul Control-Structures\ulnone ]
+\f1\fs18 \
+\
+
+\f2\fs24 the functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\{\
+	if( 6 == 9,\{\
+		\cf3 "hello"\cf0 .postln;\
+	\},\{\
+		\cf3 "hello"\cf0 .postln;\
+	\})\
+\}.def.dumpByteCodes\
+\
+BYTECODES: (18)\
+  0   \cf2 FE\cf0  06    \cf2 PushPosInt\cf0  6\
+  2   \cf2 FE\cf0  09    \cf2 PushPosInt\cf0  9\
+  4   \cf2 E6\cf0        \cf2 SendSpecialBinaryArithMsg\cf0  \cf4 '=='\cf0 \
+  5   \cf2 F8\cf0  00 06 \cf2 JumpIfFalse\cf0  6  (14)\
+  8   42       \cf2 PushLiteral\cf0  \cf3 "hello"\cf0 \
+  9   \cf2 A1\cf0  00    \cf2 SendMsg\cf0  \cf4 'postln'\cf0 \
+ 11   \cf2 FC\cf0  00 03 \cf2 JumpFwd\cf0  3  (17)\
+ 14   41       \cf2 PushLiteral\cf0  \cf3 "hello"\cf0 \
+ 15   \cf2 A1\cf0  00    \cf2 SendMsg\cf0  \cf4 'postln'\cf0 \
+ 17   \cf2 F2\cf0        \cf2 BlockReturn\cf0 \
+a \cf2 FunctionDef\cf0  in closed \cf2 FunctionDef\cf0 \
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 failure to inline due to variable declarations\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \{\
+\
+	if( 6 == 9,\{\
+		\cf2 var\cf0  notHere;\
+		\cf3 "hello"\cf0 .postln;\
+	\},\{\
+		\cf3 "hello"\cf0 .postln;\
+	\})\
+\
+\}.def.dumpByteCodes\
+\
+WARNING: \cf2 FunctionDef\cf0  contains variable declarations and so will not be inlined.\
+   in file \cf4 'selected text'\cf0 \
+   line 4 char 14 :\
+  		\cf2 var\cf0  notHere;\'a5\
+  		\cf3 "hello"\cf0 .postln;\
+-----------------------------------\
+BYTECODES: (12)\
+  0   \cf2 FE\cf0  06    \cf2 PushPosInt\cf0  6\
+  2   \cf2 FE\cf0  09    \cf2 PushPosInt\cf0  9\
+  4   \cf2 E6\cf0        \cf2 SendSpecialBinaryArithMsg\cf0  \cf4 '=='\cf0 \
+  5   04 00    \cf2 PushLiteralX\cf0  instance of \cf2 FunctionDef\cf0  in closed \cf2 FunctionDef\cf0 \
+  7   04 01    \cf2 PushLiteralX\cf0  instance of \cf2 FunctionDef\cf0  in closed \cf2 FunctionDef\cf0 \
+  9   \cf2 C3\cf0  0\cf2 B\cf0     \cf2 SendSpecialMsg\cf0  \cf4 'if'\cf0 \
+ 11   \cf2 F2\cf0        \cf2 BlockReturn\cf0 \
+a \cf2 FunctionDef\cf0  in closed \cf2 FunctionDef\cf0 \
+\
+\
+\
+\
+\
+\{\
+	if( 6 == 9,\{\
+		\cf3 "hello"\cf0 .postln;\
+	\},\{\
+		\cf3 "hello"\cf0 .postln;\
+	\})\
+\}.def.dumpByteCodes\
+\
+BYTECODES: (18)\
+  0   \cf2 FE\cf0  06    \cf2 PushPosInt\cf0  6\
+  2   \cf2 FE\cf0  09    \cf2 PushPosInt\cf0  9\
+  4   \cf2 E6\cf0        \cf2 SendSpecialBinaryArithMsg\cf0  \cf4 '=='\cf0 \
+  5   \cf2 F8\cf0  00 06 \cf2 JumpIfFalse\cf0  6  (14)\
+  8   42       \cf2 PushLiteral\cf0  \cf3 "hello"\cf0 \
+  9   \cf2 A1\cf0  00    \cf2 SendMsg\cf0  \cf4 'postln'\cf0 \
+ 11   \cf2 FC\cf0  00 03 \cf2 JumpFwd\cf0  3  (17)\
+ 14   41       \cf2 PushLiteral\cf0  \cf3 "hello"\cf0 \
+ 15   \cf2 A1\cf0  00    \cf2 SendMsg\cf0  \cf4 'postln'\cf0 \
+ 17   \cf2 F2\cf0        \cf2 BlockReturn\cf0 \
+a \cf2 FunctionDef\cf0  in closed \cf2 FunctionDef\cf0 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 UGens can also use if\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 the condition ugen is 0 / 1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+(\
+	\{\
+		if( \cf2 LFNoise1\cf0 .kr(1.0,0.5,0.5) , \cf2 SinOsc\cf0 .ar, \cf2 Saw\cf0 .ar )\
+	\}.play\
+\cf2 )\
+\
+\
+\
+\
+}

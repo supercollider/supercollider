@@ -1,0 +1,426 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fnil\fcharset77 LucidaGrande;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Sample
+\f1\b0\fs18 \
+\
+
+\f0\b\fs28 superclass: AbstractSample\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 This class can be used as an argument to a Patch.  It will take care of all the troubles of loading, allocating, measuring, and even beat synchronizing of a small sound file.  It will not clear the copyright.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	\cf2 Sample\cf0 .new(soundFilePath,tempo)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+It will not play by itself, but it holds all the intelligence to allow other things to play it very easily.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+(\
+\
+\cf2 p = Patch\cf0 (\{ \cf2 arg\cf0  sample;\
+\
+	\cf2 PlayBuf\cf0 .ar(sample.numChannels,\
+			sample.bufnumIr,\
+			sample.bufRateScaleKr,\
+			1.0,\
+			0.0,\
+			1.0)\
+\
+\},[\
+	\cf2 Sample\cf0 ("a11wlk01.wav")\
+]);\
+\
+p.gui;\
+\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Notice that the path to the sample is relative to the sounds/ directory, not to SuperCollider's own directory.  You can set the Sample.soundsDir to the directory of your choice (eg, ~/Library/Sounds/  or ~/Sounds/ ).  Copy  
+\f3 a11wlk01.wav to your own sounds directory so you can still play examples.
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Within the Instr function you use these methods on your Sample object\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	
+\f0\b bufnumIr
+\f2\b0 \
+		at the start of the synth, this will get the dynamic bufferID of your Sample object.\
+		this Instr will reuse SynthDefs where possible.  Multiple synths may use the same\
+		basic sample synthDef for many voices with no need to compile new SynthDefs\
+		and send to the server.\
+		\
+	
+\f0\b sampleRate
+\f2\b0 \
+		a float of the current sample's sample rate, embedded into the SynthDef as a constant.\
+		the def will be resuable for all samples of that sample rate, and will be slightly more efficient.\
+	
+\f0\b sampleRateKr
+\f2\b0 \
+		a kr rate signal that will change if you load a different sample into the buffer,even\
+		while playing.\
+	
+\f0\b sampleRateIr
+\f2\b0 \
+		a ir rate signal that will NOT change if you load a different sample into the buffer.\
+		use when you know the sample will not change, or if you know that all samples are the\
+		same sampleRate anyway.\
+\
+	
+\f0\b bufRateScaleKr
+\f2\b0 \
+		the nominal pitchRatio value needed to play at the original pitch\
+	
+\f0\b bufRateScaleIr
+\f2\b0 \
+		the nominal pitchRatio value needed to play at the original pitch.\
+		will NOT change if you load a different sample into the buffer.\
+		\
+	
+\f0\b bufFramesKr
+\f2\b0 \
+		a kr rate signal with the number of frames of the current sample\
+	
+\f0\b bufFramesIr
+\f2\b0 \
+		an ir rate signal with the number of frames of the sample\
+\
+	
+\f0\b bufSamplesKr
+\f2\b0 \
+		a kr rate signal with the number of samples of the current sample\
+	
+\f0\b bufSamplesIr
+\f2\b0 \
+		an ir rate signal with the number of samples of the current sample\
+\
+	
+\f0\b duration
+\f2\b0 \
+		duration in seconds of current sample, embedded into SynthDef as a constant.\
+	
+\f0\b bufDurKr
+\f2\b0 \
+		duration in seconds\
+	
+\f0\b bufDurIr
+\f2\b0 \
+		duration in seconds\
+\
+		\
+	
+\f0\b numChannels
+\f2\b0 \
+		integer, number of channels of the current sample.  this will be embedded\
+		into the SynthDef as a constant.  the SynthDef will still be reusable for \
+		all samples of the same numChannels.
+\f1\fs18 \
+
+\f2\fs24 	
+\f0\b bufChannelsKr
+\f2\b0 \
+		number of channels of the current sample.  you cannot use this to modulate\
+		a PlayBuf.\
+	
+\f0\b bufChannelsIr
+\f2\b0 \
+		number of channels of the  sample.  you cannot use this to modulate\
+		a PlayBuf.\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 You can swap the samples while playing.  Click on the name of the sample (in black font) and browse for a  stereo sample.  Then start play, and you can browse for more and change it while playing.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 (\
+\
+\cf2 Instr\cf0 (\cf3 "help-Sample"\cf0 ,\{ \cf2 arg\cf0  sample,pchRatio=0.50;\
+	\cf2 PlayBuf\cf0 .ar(sample.numChannels,\
+				sample.bufnumIr, \cf4 // finds the buffer number when the synth starts\
+\cf0 				sample.bufRateScaleKr * pchRatio,\
+				1.0,0.0,1.0);\
+\});\
+\
+\cf2 p = Patch\cf0 (\cf3 "help-Sample"\cf0 ,[\
+	\cf2 Sample\cf0 (\cf3 "pick a stereo sample..."\cf0 )\
+]);\
+\
+p.gui\
+\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 The def name was : help-SampleO8NEut\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 You can build up a library of Instr functions and exploit them with Patch.\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf2 arg\cf0  sample,pchRatio=1.0,start=0.0;\
+	\cf2 PlayBuf\cf0 .ar(sample.numChannels,\
+				sample.bufnumIr, \cf4 // finds the buffer number when the synth starts\
+\cf0 				sample.sampleRateKr / 44100 * pchRatio,\
+				1.0,\
+				start * sample.bufFramesKr,\
+				1.0); \cf4 // loop\
+\cf0 \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 )\
+\
+Patch object:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+(\
+	p = \cf2 Patch\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\
+	[\
+		\cf2 Sample\cf0 (\cf3 "a11wlk01.wav"\cf0 )\
+	]);\
+	\
+	\cf4 // edit controls on the gui\
+\cf0 	p.gui\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\
+save it,  and this will fully restore the complete sound.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+(\
+	\cf2 Patch\cf0 .new(\
+		[ \cf5 'help'\cf0 , \cf5 'Sample'\cf0  ], [ \cf2 Sample\cf0 .new(\cf3 "a11wlk01.wav"\cf0 , 1.6347258775994), \
+			0.46511627906977, 0.17441860465116 ]\
+	).play\
+)	\
+\
+\
+\
+BeatLock\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 This will embed the sample's tempo into the SynthDef as a constant.  Tempo's tempo can vary, but\
+what the monkey thinks the music in the sample is will remain fixed in the SynthDef.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 	\
+(\
+	\
+	\cf4 //beatlock\
+\cf0 	\cf2 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf2 arg\cf0  sample;\
+		\cf2 PlayBuf\cf0 .ar(\
+			sample.numChannels,\
+			sample.bufnumIr,\
+			sample.pchRatioKr,\
+			1.0,0.0,1.0);\
+	\},[\
+		\cf5 \\sample\cf0 ,\
+		\cf5 \\tempo\cf0 \
+	]);\
+	\
+	\cf2 p = Patch\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\
+	[\
+		\cf2 Sample\cf0 (\cf3 "a11wlk01.wav"\cf0 )\
+	]);\
+	\
+	// move the tempo slider\
+	p.gui\
+	\
+)\
+\
+This is roughly equivalent to this:\
+	(\
+	\cf4 //beatlock\
+\cf0 	\cf2 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf2 arg\cf0  sample,tempo;\
+		\cf2 PlayBuf\cf0 .ar(\
+			sample.numChannels,\
+			sample.bufnumIr,\
+			sample.sampleRateIr / 44100 * tempo * sample.tempo.reciprocal,\
+			1.0,0.0,1.0);\
+	\},[\
+		\cf5 \\sample\cf0 ,\
+		\cf5 \\tempo\cf0 \
+	]);\
+	\
+	\
+	\cf2 p = Patch\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\
+	[\
+		\cf2 Sample\cf0 (\cf3 "a11wlk01.wav"\cf0 ),\
+		\cf2 TempoPlayer\cf0 .new\
+	]);\
+	\
+	// move the tempo slider\
+	p.gui\
+	\
+	)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\
+\
+soundFilePath\
+end\
+	signal.size - 1\
+	the last indexable position in the signal\
+duration\
+totalMemory\
+	numFrames * numChannels\
+\
+\
+\
+\
+The following methods are relevant if the sample is some kind of loop.\
+\
+\
+tempo\
+	beats per second the original recording is regarded to have.\
+beats\
+	number of beats\
+beatsize\
+	the number of samples per beat\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\cf4 /***\
+\
+( \
+// hit load and select a rhythm\
+// will stay beat locked and the beat will flow despite the cutting\
+q = rrand(8,32);\
+\
+Patch(\{arg gate,env,sample,pchRatio;\
+	var pchRatioKr,start;\
+	pchRatioKr = sample.pchRatioKr * pchRatio;\
+	start = LFSaw.kr(GetTempo.kr * sample.beats.reciprocal, sample.end * 0.5, sample.end * 0.5);\
+	\
+	ReTrigger2.ar(\{ \
+		PlayBuf.ar(sample.signal,sample.sampleRate,pchRatioKr,start.poll,0,sample.end);\
+	\},gate,env,sample.numChannels)\
+\},\
+[\
+	Stream2Trig(\
+		1.0,\
+		Pseq(Array.geom(8.rand,2 ** -5,  2.0).scramble,inf)\
+	),\
+	Env.asr(release:0.1),\
+	Sample(":Sounds:floating_1"),\
+	StreamKrDur(\
+		Pslide(Array.series(q,0.0,4.0 / q),inf,rrand(3,5),rrand(1,6)),\
+		rrand(0.125,0.5)\
+	)\
+]).topGui\
+\
+)\
+\
+\
+( // will stay beat locked and the beat will flow despite the cutting\
+q = rrand(8,32);\
+\
+Patch(\{arg gate,env,sample,pchRatio;\
+	var pchRatioKr,start;\
+	pchRatioKr = sample.pchRatioKr * pchRatio;\
+	start = LFSaw.kr(GetTempo.kr * sample.beats.reciprocal, sample.end * 0.5, sample.end * 0.5);\
+	\
+	ReTrigger2.ar(\{ \
+		PlayBuf.ar(sample.signal,sample.sampleRate,pchRatioKr,start.poll,0,sample.end);\
+	\},gate,env,sample.numChannels)\
+\},\
+[\
+	Stream2Trig(\
+		1.0,\
+		Pseq(Array.geom(8.rand,2 ** -5,  2.0).scramble,inf)\
+	),\
+	Env.asr(release:0.1),\
+	Sample(":Sounds:floating_1"),\
+	StreamKrDur(\
+		Pslide(Array.series(q,-2.0,2.0 / q).scramble,inf,rrand(3,5),rrand(2,5)),\
+		rrand(0.125,1.0)\
+	)\
+]).topGui\
+\
+)\
+\
+\
+( \
+Patch(\{arg gate,env,sample;\
+	var p;\
+	p = PlayBuf.ar(sample.signal,sample.sampleRate,sample.pchRatioKr,0,0,sample.end);\
+	Enveloper2.ar(p,gate,env,sample.numChannels)\
+\},\
+[\
+	Stream2Trig(`([1,0,1,0,0,1,0,1]),`(Array.fill(8,\{ 2 ** rrand(-5,-1) \}))),\
+	Env.perc(release:0.2),\
+	Sample(":Sounds:floating_1")\
+]).topGui\
+\
+)\
+\
+(\
+Patch(\{arg gate,env,sample,startBeat;\
+	var p,s,e;\
+	p = sample.pchRatioKr;\
+	s = startBeat * sample.beatsize;\
+	e = s + LFNoise1.kr(0.2,9000.0,5000.0);\
+	Enveloper.ar(\{ PlayBuf.ar(sample.signal,sample.sampleRate,p,s,s,e); \},gate,env,4,sample.numChannels)\
+\},\
+[\
+	Stream2Trig(`(Array.fill(128.rand,\{[1,0.125,0,0].choose\})),`(Array.fill(128.rand,\{ 2 ** rrand(-7,-1) \}))),\
+	Env.perc(release:3.0),\
+	s = Sample(":Sounds:floating_1"),\
+	StreamKrDur( Pfunc(\{ s.beats.rand.round(0.25) \}),Pfunc(\{ 2 ** rrand(-4,2)\}))\
+]).topGui\
+\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf4 \
+***/\cf0 \
+\
+}

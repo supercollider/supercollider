@@ -1,0 +1,105 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+
+\f1\b\fs36 Function Creation via Partial Application\
+
+\f0\b0\fs24 \
+Partial application is a way to create a function by passing only some arguments to a method. The _ character stands in for missing arguments and becomes an argument to the created function. It only applies to a single method, list, or dictionary call, not to a more complex nested expression.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 for example:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+f = _ + 2;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 f is now a function of one argument.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+f.value(7);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 it is equivalent to having written:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+f = \{\cf2 |x|\cf0  x + 2 \};\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 (except that there is no name 'x' declared)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\
+g = \cf2 Point\cf0 (\cf2 _\cf0 , \cf2 _\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 g is a function of two arguments.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+g.value(3, 4);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Here are some example usages of this in a collect message. Below each is written the equivalent function.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 (1..8).collect(\cf2 _\cf0 .isPrime);\
+(1..8).collect \{\cf2 |x|\cf0  x.isPrime \};\
+\
+(1..8).collect(\cf2 _\cf0 .hash);\
+(1..8).collect \{\cf2 |x|\cf0  x.hash \};\
+\
+(1..8).collect([\cf3 \\a\cf0 , \cf3 \\b\cf0 , \cf2 _\cf0 ]);\
+(1..8).collect \{\cf2 |x|\cf0  [\cf3 \\a\cf0 , \cf3 \\b\cf0 , x] \};\
+\
+(1..8).collect((a:\cf2 _\cf0 ));\
+(1..8).collect \{\cf2 |x|\cf0  (a:x) \};\
+\
+(1..8).collect(\cf2 Polar\cf0 (\cf2 _\cf0 , pi));\
+(1..8).collect \{\cf2 |x|\cf0  \cf2 Polar\cf0 (x, pi) \};\
+\
+(1..8).collect((1..\cf2 _\cf0 ));\
+(1..8).collect \{\cf2 |x|\cf0  (1..x) \};\
+\
+f = (a:\cf2 _\cf0 , b:\cf2 _\cf0 ); \cf4 // f is a two argument function\cf0 \
+g = f.(\cf2 _\cf0 , 5);   \cf4 // g is a partial application of f\cf0 \
+g.(7);          \cf4 // get the answer\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // equivalent to this:\cf0 \
+f = \{\cf2 |x, y|\cf0  (a:x, b:y) \}\
+g = \{\cf2 |z|\cf0  f.(z, 5) \};\
+g.value(7);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 An example of what you can't do:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+(1..8).collect( \cf2 Point\cf0 (100 * \cf2 _\cf0 , 50) ); \cf4 // nested expression won't work.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // only the * gets partially applied, not the surrounding expression.\cf0 \
+\
+(1..8).collect \{\cf2 |x|\cf0  \cf2 Point\cf0 (100 * x, 50) \}; \cf4 // need to use a function for this.\cf0 \
+\
+}

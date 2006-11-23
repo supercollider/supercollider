@@ -1,0 +1,44 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 \
+\cf3 // LMFAP: Little Man From Another Place (the dwarf in the Red Room)\cf2 \
+\cf3 // (thor magnusson) (CC 2006)\cf2 \
+\
+\cf3 // better use headphones !!!\cf2 \
+(\
+s = \cf4 Server\cf2 .local;\
+b = \cf4 Buffer\cf2 .alloc(s, 44100 * 6.0, 2);\
+)\
+(\
+\cf4 SynthDef\cf2 (\cf5 \\LMFAP\cf2 , \{\cf4 |combdecay=1, allpassdecay=0.5, wet=0.1, bufnum, rate=1, end=264600|\cf2 \
+	\cf4 var\cf2  in, signal;\
+	in = \cf4 AudioIn\cf2 .ar([1,2]);\
+	z = \cf4 DelayN\cf2 .ar(in, 0.1, 0.51);\
+	y = \cf4 Mix\cf2 .ar(\cf4 Array\cf2 .fill(3,\{ \cf4 CombL\cf2 .ar(z, 0.05, rrand(0.03, 0.05), combdecay) \})); \
+	6.do(\{ y = \cf4 AllpassN\cf2 .ar(y, 0.030, rrand(0.01, 0.03), allpassdecay) \});\
+	\cf4 BufWr\cf2 .ar(in+(y*wet), bufnum, \cf4 Phasor\cf2 .ar(0, 1, 0, end));\
+	signal = \cf4 BufRd\cf2 .ar(2, bufnum, \cf4 Phasor\cf2 .ar(0, \cf4 BufRateScale\cf2 .kr(0)*rate, 0, end));\
+	y = \cf4 Mix\cf2 .ar(\cf4 Array\cf2 .fill(7,\{ \cf4 CombL\cf2 .ar(signal, 0.05, rrand(0.03, 0.05), combdecay) \})); \
+	6.do(\{ y = \cf4 AllpassN\cf2 .ar(y, 0.050, rrand(0.03, 0.05), allpassdecay) \});\
+	\cf4 Out\cf2 .ar(0, signal+(y*wet));\
+\}).load(s);\
+)\
+\
+\cf3 // wait a bit\cf2 \
+c = \cf4 Synth\cf2 (\cf5 \\LMFAP\cf2 , [\cf5 \\bufnum\cf2 , b.bufnum, \cf5 \\rate\cf2 , -1]);\
+\
+\
+c.set(\cf5 \\combdecay\cf2 , 3)\
+c.set(\cf5 \\allpassdecay\cf2 , 0.4)\
+\
+c.set(\cf5 \\rate\cf2 , -0.8)\
+\
+c.set(\cf5 \\wet\cf2 , 0.4) \cf3 // more reverb\cf2 \
+\
+c.set(\cf5 \\end\cf2 , 44100*3) \cf3 // 3 sec loop\cf2 \
+\
+}

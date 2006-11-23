@@ -1,0 +1,59 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 PV_MagMul			multiply magnitudes\
+
+\f1\b0\fs24 \
+
+\f0\b PV_MagMul.ar(bufferA,  bufferB)\
+
+\f1\b0 \
+Multiplies magnitudes of two inputs and keeps the phases of the first input.\
+
+\f0\b bufferA
+\f1\b0  - fft buffer A.\
+
+\f0\b bufferB
+\f1\b0  - fft buffer B.\
+\
+See also 
+\f0\b [\ul FFT Overview\ulnone ]
+\f1\b0 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s.boot;\
+(\
+b = \cf2 Buffer\cf0 .alloc(s,2048,1);\
+c = \cf2 Buffer\cf0 .alloc(s,2048,1);\
+d = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
+)\
+\
+(\
+\cf2 SynthDef\cf0 (\cf3 "help-magMul"\cf0 , \{ \cf2 arg\cf0  out=0, bufnumA=0, bufnumB=1;\
+	\cf2 var\cf0  inA, chainA, inB, chainB, chain;\
+	inA = \cf2 WhiteNoise\cf0 .ar(0.2);\
+	inB = \cf2 LFSaw\cf0 .ar(100, 0, 0.2);\
+	chainA = \cf2 FFT\cf0 (bufnumA, inA);\
+	chainB = \cf2 FFT\cf0 (bufnumB, inB);\
+	chain = \cf2 PV_MagMul\cf0 (chainA, chainB); \
+	\cf2 Out\cf0 .ar(out, 0.5 * \cf2 IFFT\cf0 (chain).dup);\
+\}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnumA\cf0 , b.bufnum, \cf4 \\bufnumB\cf0 , c.bufnum ]);\
+)\
+\
+(\
+\cf2 SynthDef\cf0 (\cf3 "help-magMul2"\cf0 , \{ \cf2 arg\cf0  out=0, bufnumA=0, bufnumB=1, soundBufnum=2;\
+	\cf2 var\cf0  inA, chainA, inB, chainB, chain;\
+	inA = \cf2 LFSaw\cf0 .ar([100, 150], 0, 0.2);\
+	inB = \cf2 PlayBuf\cf0 .ar(1, soundBufnum, \cf2 BufRateScale\cf0 .kr(soundBufnum), loop: 1);\
+	chainA = \cf2 FFT\cf0 (bufnumA, inA);\
+	chainB = \cf2 FFT\cf0 (bufnumB, inB);\
+	chain = \cf2 PV_MagMul\cf0 (chainA, chainB); \
+	\cf2 Out\cf0 .ar(out,  0.1 * \cf2 IFFT\cf0 (chain));\
+\}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnumA\cf0 , b.bufnum, \cf4 \\bufnumB\cf0 , c.bufnum, \cf4 \\soundBufnum\cf0 , d.bufnum]);\
+)\
+}

@@ -1,0 +1,174 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pstep
+\f1\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 superclass: Pattern
+\f1\b0 \
+related: Pseg\
+\
+
+\f0\b Pstep(levelpattern, durpattern)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Levelpattern can return either individual values or arrays.  The value returned by levelpattern is\
+returned for the duration returned by durpattern.\
+\
+Pstep is good for representing chord progressions, scale progressions, accent patterns, etc.\
+\
+ \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 s.boot;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // change degree independant of number of events that have been playing\cf0 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Pbindf\cf0 (\
+	Ppar([\
+		Pbind(\
+			\cf4 \\degree\cf0 , \cf3 Pbrown(0\cf0 ,12,1),\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 			\\dur\cf0 , Pstep( Pseq([\cf3 0.1,0.2,0.4,0.8,1.6],inf),3.2)\
+		\cf0 ),	\
+		Pbind(\
+			\cf4 \\degree\cf0 , \cf3 Pbrown(0\cf0 ,20,1),\
+			\cf4 \\dur\cf0 , Pstep( Pseq([\cf3 0.1,0.2,0.4,0.8,1.6],inf),4.5)\cf0 \
+		)\
+	]),\
+	\\scale, Pstep(Pseq([ [0,2,4,5,7,9,11], [0,1,2,3,4,5,6]], inf), 5),\
+	\\db,Pstep(Pseq([4,-4,0,-4],inf),0.25) + Pwhite(-20, -15)\
+).play;\
+)\
+\
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // change one parameter\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Pbind\cf0 (\
+	\cf4 \\degree\cf0 , \cf3 Pstep\cf0 (\cf3 Pseq\cf0 ([1, 2, 3, 4, 5]), 1.0).trace,\
+	\cf4 \\dur\cf0 , \cf3 Pseries\cf0 (0.1, 0.1, 15)\
+).play;\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // change degree independant of number of events that have been playing\cf0 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  a, b;\
+a = \cf3 Pbind\cf0 (\
+	\cf4 \\degree\cf0 , \cf3 Pstep\cf0 (\cf3 Pseq\cf0 ([0, 2b, 3],1), 1.0),\
+	\cf4 \\dur\cf0 , \cf3 Prand\cf0 ([0.2, 0.5, 1.1, 0.25, 0.15], \cf3 inf\cf0 )\
+);\
+b = \cf3 Pbind\cf0 (\
+	\cf4 \\degree\cf0 , \cf3 Pseq\cf0 ([0, 2b, 3], 1),\
+	\cf4 \\dur\cf0 , 2,\
+	\cf4 \\ctranspose\cf0 , -7\
+);\
+\cf3 Pseq\cf0 ([\cf3 Event\cf0 .silent(1.25), \cf3 Ppar\cf0 ([a, b])], \cf3 inf\cf0 ).play;\
+)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // test tempo changes\cf0 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  a, b;\
+a = \cf3 Pbind\cf0 (\
+	\cf4 \\degree\cf0 , \cf3 Pstep\cf0 (\cf3 Pseq\cf0 ([0, 2b, 3],1), 1.0),\
+	\cf4 \\dur\cf0 , \cf3 Prand\cf0 ([0.2, 0.5, 1.1, 0.25, 0.15], 9)\
+);\
+b = \cf3 Pbind\cf0 (\
+	\cf4 \\degree\cf0 , \cf3 Pseq\cf0 ([0, 2b, 3], 1),\
+	\cf4 \\dur\cf0 , 2,\
+	\cf4 \\ctranspose\cf0 , -7\
+);\
+\
+\cf3 Ppar\cf0 ([a, b], inf).play;\
+)\
+\
+\
+\cf3 SystemClock\cf0 .sched(0, \{ \cf3 TempoClock\cf0 .default.tempo = [1, 2, 3, 5].choose.postln; 2 \});\
+\cf3 \
+TempoClock\cf0 .default.tempo = 1.0;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 // timing test:\cf0 \
+\cf2 // parallel streams\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+(\
+\
+\cf3 var\cf0  times, levels;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf5 "pgrain"\cf0 , \
+	\{ \cf3 arg\cf0  out = 0, freq=800, sustain=0.001, amp=0.5, pan = 0;\
+		\cf3 var\cf0  window;\
+		window = \cf3 Env\cf0 .sine(sustain, amp);\
+		\cf3 Out\cf0 .ar(out, \
+			\cf3 Pan2\cf0 .ar(\
+				\cf3 SinOsc\cf0 .ar(freq) * \cf3 EnvGen\cf0 .ar(window, doneAction:2),\
+				pan\
+			) \
+		)\
+	\}\
+).store;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+\
+times = \cf3 Pseq\cf0 ([3.4, 1, 0.2, 0.2, 0.2], \cf3 inf\cf0 );\
+levels = \cf3 Pseq\cf0 ([0, 1, 2, 3, 4], \cf3 inf\cf0 );\
+\
+a = \cf3 Pstep\cf0 (levels, times);\
+b = \cf3 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\pgrain\cf0 , \cf4 \\octave\cf0 , 7, \cf4 \\dur\cf0 , 0.12, \cf4 \\degree\cf0 , a);\
+x = times;\
+\
+\cf3 Ppar\cf0 ([b, \cf3 Pset\cf0 (\cf4 \\mtranspose\cf0 , 2, b) ]).play;\
+\
+\
+\
+b.play;\
+r \{\
+	\cf3 var\cf0  z = x.asStream; \cf2 // direct times\cf0 \
+	loop \{\
+		z.next.wait;\
+		s.makeBundle(0.2, \{\
+			\cf3 Synth\cf0 (\cf4 \\pgrain\cf0 , [\cf4 \\freq\cf0 , 3000, \cf4 \\sustain\cf0 , 0.01]); \cf2 // signal tone\cf0 \
+		\})\
+		\
+	\}\
+\}.play(quant:1)\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\
+\
+\
+}

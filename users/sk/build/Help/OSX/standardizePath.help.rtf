@@ -1,0 +1,78 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\froman\fcharset77 Times-Roman;\f4\fmodern\fcharset77 Courier;}
+{\colortbl;\red255\green255\blue255;\red96\green96\blue96;\red0\green0\blue0;\red96\green96\blue96;
+\red26\green26\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 standardizePath
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 String Method\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Returns a string with ~ replaced by the current user's home directory, and all symbolic links resolved.  \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 	"~/Documents"\cf0 .standardizePath\
+\
+/Volumes/Macintosh HD/Users/cruxxial/Documents\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+	Note that my Documents folder is on a different partition than the boot,\
+	so the full path uses /Volumes\
+	\
+Resolves symbolic links, but does not resolve aliases.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	\cf2 "~/Library/Favorites/SuperCollider3"\cf0 .standardizePath\
+\
+/Volumes/Macintosh HD/Users/cruxxial/Library/Favorites/SuperCollider3\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+Removes extraneous . and .. and /  but does not otherwise expand them.\
+\
+
+\f1\fs18 \cf3 	\cf4 "./Help/"\cf3 .standardizePath\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+Help
+\f2\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 From the Cocoa documentation:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx720\tx1280\tx1840\tx2400\tx2960\tx3520\tx4080\tx4640\tx5200\tx5760\tx6320\tx6880\tx7440\li720\fi-260\ql\qnatural
+
+\f3\fs24 \cf0 \'a5 	Expand an initial tilde expression using \cf5 \ul stringByExpandingTildeInPath\cf0 \ulnone .\
+\'a5 	Reduce empty components and references to the current directory (that is, the sequences "//" and "/./") to single path separators.\
+\'a5 	In absolute paths only, resolve references to the parent directory (that is, the component "..") to the real parent directory if possible using \cf5 \ul stringByResolvingSymlinksInPath\cf0 \ulnone , which consults the file system to resolve each potential symbolic link.\
+\pard\tx1280\tx1840\tx2400\tx2960\tx3520\tx4080\tx4640\tx5200\tx5760\tx6320\tx6880\tx7440\li720\ql\qnatural
+\cf0 \
+In relative paths, because symbolic links can't be resolved, references to the parent directory are left in place.\
+\
+\pard\tx720\tx1280\tx1840\tx2400\tx2960\tx3520\tx4080\tx4640\tx5200\tx5760\tx6320\tx6880\tx7440\li720\fi-260\ql\qnatural
+\cf0 \'a5 	Remove an initial component of "
+\f4 /private
+\f3 " from the path if the result still indicates an existing file or directory (checked by consulting the file system).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\
+}
