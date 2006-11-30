@@ -164,8 +164,7 @@ PatternProxy : Pattern {
 	*put {}
 	key_ {}
 	
-	clear { this.class.all.removeAt(this.key).stop }
-	
+	// clear { this.class.all.removeAt(this.key).stop; ^nil }	
 	repositoryArgs { ^[this.key, this.source] }
 	
 	*postRepository { arg keys, stream;
@@ -437,13 +436,15 @@ EventPatternProxy : TaskProxy {
 		playQuant = quant ? this.quant;
 		if(player.isNil) { 
 			player = EventStreamPlayer(this.asStream, protoEvent);
-			player.play(clock, doReset, quant ? this.quant);
+			player.play(argClock, doReset, quant ? this.quant);
 		} {
 				// resets  when stream has ended or after pause/cmd-period:
 			if (player.streamHasEnded or: {player.wasStopped}) { doReset = true };
-			
-			if(player.isPlaying.not) { 
-				player.play(clock, doReset, quant ? this.quant);
+			if(protoEvent.notNil and: {Êplayer.event !== protoEvent }) {
+				player.event = protoEvent
+			};
+			if(player.isPlaying.not) {
+				player.play(argClock, doReset, quant ? this.quant);
 			} { 
 				if (doReset) { player.reset };
 			}
