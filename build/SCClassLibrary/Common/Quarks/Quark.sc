@@ -65,7 +65,7 @@ Quark
 	}
 	getVersion { | obj |
 		if (obj.notNil) {
-			if (obj.repondsTo(\asFloat).not) {
+			if (obj.respondsTo(\asFloat).not) {
 				Error("invalid version type").throw;
 			};
 			^obj.asFloat
