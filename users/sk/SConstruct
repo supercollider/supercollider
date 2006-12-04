@@ -30,7 +30,6 @@ PACKAGE = 'SuperCollider'
 VERSION = '3'
 
 def short_cpu_name(cpu):
-    # handle those bloody platform idiosyncrasies
     if cpu == 'Power Macintosh':
 	cpu = 'ppc'
     return cpu.lower()
@@ -47,14 +46,17 @@ if PLATFORM == 'darwin':
     PLATFORM_SYMBOL = 'SC_DARWIN'
     PLUGIN_EXT = '.scx'
     DEFAULT_AUDIO_API = 'coreaudio'
+    DEFAULT_PREFIX = '/usr/local'
 elif PLATFORM == 'linux':
     PLATFORM_SYMBOL = 'SC_LINUX'
     PLUGIN_EXT = '.so'
     DEFAULT_AUDIO_API = 'jack'
+    DEFAULT_PREFIX = '/usr/local'
 elif PLATFORM == 'windows':
     PLATFORM_SYMBOL = 'SC_WIN32'
     PLUGIN_EXT = '.scx'
     DEFAULT_AUDIO_API = 'portaudio'
+    DEFAULT_PREFIX = '/'
 else:
     print 'Unknown platform: %s' % PLATFORM
     Exit(1)
@@ -165,17 +167,30 @@ def is_installing():
         if pat.match(x): return True
     return False
 
+def is_home_directory(dir):
+    return os.path.normpath(dir) == os.path.normpath(os.environ.get('HOME', '/'))
+
 def bin_dir(prefix):
     return os.path.join(prefix, 'bin')
 def lib_dir(prefix):
     return os.path.join(prefix, 'lib')
-def data_dir(prefix):
-    return os.path.join(prefix, 'share')
 
 def pkg_data_dir(prefix, *args):
-    return os.path.join(data_dir(prefix), PACKAGE, *args)
+    if PLATFORM == 'darwin':
+	base = '/Library/Application Support'
+	if is_home_directory(prefix):
+	    base = os.path.join(prefix, base)
+    else:
+	base = os.path.join(prefix, 'share')
+    return os.path.join(base, PACKAGE, *args)
 def pkg_doc_dir(prefix, *args):
-    return os.path.join(data_dir(prefix), 'doc', PACKAGE, *args)
+    if PLATFORM == 'darwin':
+	base = '/Library/Documentation'
+	if is_home_directory(prefix):
+	    base = os.path.join(prefix, base)
+    else:
+	base = os.path.join(prefix, 'share', 'doc')   
+    return os.path.join(base, PACKAGE, *args)
 def pkg_include_dir(prefix, *args):
     return os.path.join(prefix, 'include', PACKAGE, *args)
 def pkg_lib_dir(prefix, *args):
@@ -218,7 +233,7 @@ opts.AddOptions(
     BoolOption('LID',
                'Build with Linux Input Device support [linux]', PLATFORM == 'linux'),
     PathOption('PREFIX',
-               'Installation prefix', '/usr/local'),
+               'Installation prefix', DEFAULT_PREFIX),
     BoolOption('RENDEZVOUS',
                'Enable Zeroconf/Rendezvous.', 1),
     BoolOption('SCEL',
@@ -427,7 +442,6 @@ def yesorno(p):
     else: return 'no'
 
 print '------------------------------------------------------------------------'
-print ' ALSA:                    %s' % yesorno(env['ALSA'])
 print ' ALTIVEC:                 %s' % yesorno(features['altivec'])
 print ' AUDIOAPI:                %s' % features['audioapi']
 print ' MIDIAPI:                 %s' % features['midiapi']
@@ -837,7 +851,7 @@ if env['DEVELOPMENT']:
 # documentation
 if is_installing():
     # TODO: build html documentation?
-    doc_dir = os.path.join(data_dir(INSTALL_PREFIX), 'doc', PACKAGE)
+    doc_dir = pkg_doc_dir(INSTALL_PREFIX)
     env.Alias('install-doc',
               install_dir(env, 'doc', doc_dir, ANY_FILE_RE, 0) +
               install_dir(env, 'build/examples', doc_dir, ANY_FILE_RE, 1) +
