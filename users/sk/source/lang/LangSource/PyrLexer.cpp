@@ -2016,7 +2016,8 @@ bool passOne()
 			  if (!success) return false;
 			}
 
-			if(sc_DirectoryExists(gUserExtensionDir)) {
+			if(sc_DirectoryExists(gUserExtensionDir) &&
+			   (strcmp(gSystemExtensionDir,gUserExtensionDir) != 0)) {
 			  success = passOne_ProcessDir(gUserExtensionDir,0);
 			  if (!success) return false;
 			}
