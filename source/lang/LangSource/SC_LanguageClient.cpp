@@ -410,10 +410,12 @@ void initRendezvousPrimitives()
 {
 }
 
+#if !defined(HAVE_SPEECH)
 void initSpeechPrimitives();
 void initSpeechPrimitives()
 {
 }
+#endif // HAVE_SPEECH
 
 long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
 long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2)

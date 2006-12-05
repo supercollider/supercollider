@@ -24,8 +24,6 @@
 
 #ifndef __APPLE__
 double log2(double x);
-#else
-#include <CarbonCore/fp.h>
 #endif
 
 #include "Opcodes.h"
