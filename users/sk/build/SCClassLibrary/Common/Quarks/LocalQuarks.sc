@@ -34,5 +34,19 @@ LocalQuarks
 		});
 		^matches.sort({ |a,b| a.version > b.version }).first
 	}
+	findPath { arg name, version;
+		var q;
+		if((q = this.findQuark(name, version)).isNil,{
+			Error("Local Quark % not Found.".format(name.quote)).throw;
+		});
+		^path ++ "/" ++ q.path;
+	}
+	openFolder { arg name, version;
+		if(name.isNil) { 
+			unixCmd("open" + path) 
+		} {
+			unixCmd("open" + this.findPath(name, version))
+		}
+	}
 }
 

@@ -266,10 +266,10 @@ Document {
 		endFrontAction.value(this);
 	}
 	
-	makeWikiPage { arg wikiWord, extension=".rtf";
-		var filename, file, doc, string, dir;
-		
-		filename = wikiDir ++ wikiWord ++ extension;
+	makeWikiPage { arg wikiWord, extension=(".rtf"), directory;
+		var filename, file, doc, string, dirName;
+		directory = directory ? wikiDir;
+		filename = directory ++ wikiWord ++ extension;
 		file = File(filename, "w");
 		if (file.isOpen) {
 			string = "{\\rtf1\\mac\\ansicpg10000\\cocoartf102\\n{\\fonttbl}\n"
@@ -283,32 +283,42 @@ Document {
 			doc.selectRange(0,0x7FFFFFFF);
 			doc.onClose = {
 				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {  
-					unixCmd("rm" + filename) 
+					unixCmd("rm" + filename)
 				};
 			};
 		} {
 			// in a second try, check if a path must be created.
 			// user makes double click on string.
-			dir = wikiWord.dirname;
-			if(dir != ".") {
-				dir = wikiDir ++ dir;
-				"created directory: % \n".postf(dir); 
-				unixCmd("mkdir -p" + dir); 
+			dirName = wikiWord.dirname;
+			if(dirName != ".") {
+				dirName = directory ++ dirName;
+				"created directory: % \n".postf(dirName); 
+				unixCmd("mkdir -p" + dirName); 
 			};
 		}
 	}
 	openWikiPage {
-		var selectedText, filename, index;
+		var selectedText, filename, index, directory;
 		var extensions = #[".rtf", ".sc", ".txt", ""];
 		selectedText = this.selectedText;
 		index = this.selectionStart;
+		
 		this.selectRange(index, 0);
+		
+		// refer to local link with round parens
+		if(selectedText.first == $( /*)*/ and: {Ê/*(*/ selectedText.last == $) }) {
+				selectedText = selectedText[1 .. selectedText.size-2];
+				directory = Document.current.path.dirname ++ "/";
+		} {
+				directory = wikiDir;
+		};
+		
 		case { selectedText[0] == $* }
 		{ 
 			// execute file
 			selectedText = selectedText.drop(1);
 			extensions.do {|ext|
-				filename = wikiDir ++ selectedText ++ ext;
+				filename = directory ++ selectedText ++ ext;
 				if (File.exists(filename)) {
 					// open existing wiki page
 					filename.load;
@@ -337,14 +347,15 @@ Document {
 		}
 		{ selectedText.containsStringAt(selectedText.size-1, "/") }
 		{
-			Document(selectedText, 
-				pathMatch(wikiDir ++ selectedText).collect({|it|it.basename ++ "\n"}).join
+			Document(selectedText,
+				pathMatch(directory ++ selectedText).collect({|it|it.basename ++ "\n"}).join
 			)
 		}
+		
 		{
 			if(index + selectedText.size > this.text.size) { ^this };
 			extensions.do {|ext|
-				filename = wikiDir ++ selectedText ++ ext;
+				filename = directory ++ selectedText ++ ext;
 				if (File.exists(filename)) {
 					// open existing wiki page
 					this.class.open(filename);
@@ -352,7 +363,7 @@ Document {
 				}
 			};
 			// make a new wiki page
-			this.makeWikiPage(selectedText);
+			this.makeWikiPage(selectedText, nil, directory);
 		};
 	}
 		

@@ -296,7 +296,8 @@ CleanupStream : Stream {
 
 PauseStream : Stream
 {
-	var <stream, <originalStream, <clock, <nextBeat, <streamHasEnded=false, isWaiting = false;
+	var <stream, <originalStream, <clock, <nextBeat, <streamHasEnded=false;
+	var isWaiting = false, era=0;
 	
 	*new { arg argStream, clock; 
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default) 
@@ -312,6 +313,7 @@ PauseStream : Stream
 		stream = originalStream; 
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
+		era = CmdPeriod.era;
 		clock.play({
 			if(isWaiting and: { nextBeat.isNil }) {
 				clock.sched(0, this);
@@ -329,7 +331,10 @@ PauseStream : Stream
 	removedFromScheduler { nextBeat = nil; this.stop }
 	streamError { this.removedFromScheduler; streamHasEnded = true; }
 	
-	wasStopped { ^streamHasEnded.not and: { stream.isNil } }
+	wasStopped { 
+		^streamHasEnded.not and: { stream.isNil } // stopped by clock or stop-message
+		or: { CmdPeriod.era != era } // stopped by cmd-period, after stream has ended
+	}
 	
 	pause {
 		stream = nil;

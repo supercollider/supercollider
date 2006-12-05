@@ -41,7 +41,7 @@ static bool streq(char *cstr, unichar *ustr)
 static unichar input() 
 {
 	unichar c;
-	if (textpos >= textlen) {
+	if (textpos > textlen) {
 		c = 0;
 	} else {
 		c = text[textpos++];
@@ -60,7 +60,7 @@ static unichar input()
 static unichar input0() 
 {
 	unichar c;
-	if (textpos >= textlen) {
+	if (textpos > textlen) {
 		c = 0;
 		textpos++; // so unput will work properly
 	} else {
@@ -118,27 +118,29 @@ void SyntaxColorize(NSTextView* textView)
 {
 	unichar c;
 	long startrun = 0, endrun;
-        NSRange range;
+	NSRange range;
 	int startline, clevel, prevc;
-        NSColor* black = [NSColor colorWithCalibratedRed: 0. green: 0. blue: 0. alpha: 1.];
-        NSColor* darkRed = [NSColor colorWithCalibratedRed: 0.75 green: 0. blue: 0. alpha: 1.];
-        NSColor* darkBlue = [NSColor colorWithCalibratedRed: 0. green: 0. blue: 0.75 alpha: 1.];
-        NSColor* darkGreen = [NSColor colorWithCalibratedRed: 0. green: 0.45 blue: 0. alpha: 1.];
-        NSColor* darkGray = [NSColor colorWithCalibratedRed: 0.375 green: 0.375 blue: 0.375 alpha: 1.];
+	NSColor* black = [NSColor colorWithCalibratedRed: 0. green: 0. blue: 0. alpha: 1.];
+	NSColor* darkRed = [NSColor colorWithCalibratedRed: 0.75 green: 0. blue: 0. alpha: 1.];
+	NSColor* darkBlue = [NSColor colorWithCalibratedRed: 0. green: 0. blue: 0.75 alpha: 1.];
+	NSColor* darkGreen = [NSColor colorWithCalibratedRed: 0. green: 0.45 blue: 0. alpha: 1.];
+	NSColor* darkGray = [NSColor colorWithCalibratedRed: 0.375 green: 0.375 blue: 0.375 alpha: 1.];
+	NSTextStorage *textStorage = [textView textStorage];
 	
 	if (!startColorizer(textView)) return;
 	
-	// reset to black
-	        
-        range = NSMakeRange(textpos, textlen - textpos);
-        [textView setTextColor: black range: range];
+	[textStorage beginEditing];
 	
+	// reset to black	        
+	range = NSMakeRange(textpos, textlen - textpos);
+	[textStorage addAttribute:NSForegroundColorAttributeName value: black range: range];
+
 	bool bracket = false;
 
 	for (;;) {
 		yylen = 0;
 		c = input();
-		if (c == 0 || textpos >= textlen) goto leave;
+		if (c == 0 || textpos > textlen) goto leave;
 		else if (c==' ' || c=='\t' || c=='\v' || c=='\f' || c=='\n' || c=='\r') {
 			continue;
 		}
@@ -183,21 +185,21 @@ void SyntaxColorize(NSTextView* textView)
 			yytext[yylen] = 0;
 			endrun = textpos;
 			startrun = textpos - yylen;
-                        range = NSMakeRange(startrun, endrun - startrun);
+			range = NSMakeRange(startrun, endrun - startrun);
 			if (yytext[0] == '_') {
-                                [textView setTextColor: darkBlue range: range];
-                        }
+			  [textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+			}
 			else if (yytext[0] >= 'A' && yytext[0] <= 'Z') {
-                                [textView setTextColor: darkBlue range: range];
-                        }
+			  [textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+			}
 			else if (  streq("var",yytext)
 					|| streq("arg",yytext)
 					|| streq("classvar",yytext) 
 					|| streq("const",yytext)
 			) {
-                                range = NSMakeRange(startrun, endrun - startrun);
-                                [textView setTextColor: darkBlue range: range];
-				}
+				range = NSMakeRange(startrun, endrun - startrun);
+				[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+			}
 			else if (  streq("this",yytext)
 					|| streq("super",yytext)
 					|| streq("thisProcess",yytext)
@@ -206,15 +208,15 @@ void SyntaxColorize(NSTextView* textView)
 					|| streq("thisFunctionDef",yytext)
 					|| streq("thisFunction",yytext)
 			) {
-                                [textView setTextColor: darkBlue range: range];
-                        }
+				[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+			}
 			else if (  streq("nil",yytext)
 					|| streq("false",yytext)
 					|| streq("true",yytext) 
 					|| streq("inf",yytext)
 			) {
-                                [textView setTextColor: darkBlue range: range];
-                        }
+				[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+			}
 			continue;
 		}
 	symbol1:
@@ -237,13 +239,13 @@ void SyntaxColorize(NSTextView* textView)
 		else {
 			unput(c);
 			endrun = textpos;
-                        range = NSMakeRange(startrun, endrun - startrun);
-                        [textView setTextColor: darkGreen range: range];
+			range = NSMakeRange(startrun, endrun - startrun);
+			[textStorage addAttribute:NSForegroundColorAttributeName value: darkGreen range: range];
 			continue;
 		}
 	symbol3 : {	
 			int startline;
-                        unichar endchar;
+			unichar endchar;
 			startrun = textpos - 1;
 			startline = lineno;
 			endchar = '\'';
@@ -254,21 +256,21 @@ void SyntaxColorize(NSTextView* textView)
 					c = input0();
 				}
 			} while (c != endchar && c != 0);
-			if (c == 0 || textpos >= textlen) {
+			if (c == 0 || textpos > textlen) {
 				//postbuf("Open ended symbol ... started on line %d in file '%s'\n", 
 				//	startline, curfilename);
 				goto error2;
 			} else {
 				endrun = textpos;
-                                range = NSMakeRange(startrun, endrun - startrun);
-                                [textView setTextColor: darkGreen range: range];
+				range = NSMakeRange(startrun, endrun - startrun);
+				[textStorage addAttribute:NSForegroundColorAttributeName value: darkGreen range: range];
 				continue;
 			}
 		}
 
 	string1 : {	
 			int startline;
-                        unichar endchar;
+			unichar endchar;
                         
 			startrun = textpos - 1;
 			startline = lineno;
@@ -280,14 +282,14 @@ void SyntaxColorize(NSTextView* textView)
 					c = input0();
 				}
 			} while (c != endchar && c != 0);
-			if (c == 0 || textpos >= textlen) {
+			if (c == 0 || textpos > textlen) {
 				//postbuf("Open ended string ... started on line %d in file '%s'\n", 
 				//	startline, curfilename);
 				goto error2;
 			} else {
 				endrun = textpos;
-                                range = NSMakeRange(startrun, endrun - startrun);
-                                [textView setTextColor: darkGray range: range];
+				range = NSMakeRange(startrun, endrun - startrun);
+				[textStorage addAttribute:NSForegroundColorAttributeName value: darkGray range: range];
 				continue;
 			}
 		}
@@ -297,8 +299,8 @@ void SyntaxColorize(NSTextView* textView)
 			c = input0(); 
 		} while (c != '|' && c != 0);
 		endrun = textpos;
-                range = NSMakeRange(startrun, endrun - startrun);
-                [textView setTextColor: darkBlue range: range];
+		range = NSMakeRange(startrun, endrun - startrun);
+		[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
 		continue;
 	comment1:	/* comment -- to end of line */
 		startrun = textpos-2;
@@ -306,8 +308,8 @@ void SyntaxColorize(NSTextView* textView)
 			c = input0(); 
 		} while (c != '\n' && c != '\r' && c != 0);
 		endrun = textpos;
-                range = NSMakeRange(startrun, endrun - startrun - 1);
-                [textView setTextColor: darkRed range: range];
+		range = NSMakeRange(startrun, endrun - startrun - 1);
+		[textStorage addAttribute:NSForegroundColorAttributeName value: darkRed range: range];
 		continue;
 
 	comment2 : 
@@ -326,8 +328,8 @@ void SyntaxColorize(NSTextView* textView)
 			goto error2;
 		} else {
 			endrun = textpos;
-                        range = NSMakeRange(startrun, endrun - startrun);
-                        [textView setTextColor: darkRed range: range];
+			range = NSMakeRange(startrun, endrun - startrun);
+			[textStorage addAttribute:NSForegroundColorAttributeName value: darkRed range: range];
 			continue;
 		}
 	}
@@ -335,5 +337,6 @@ void SyntaxColorize(NSTextView* textView)
 error2:
 	
 leave:
-    free(text);
+	free(text);
+	[textStorage endEditing];
 }

@@ -41,6 +41,9 @@
 #include "SCBase.h"
 #include "InitAlloc.h"
 
+//double log2 ( double x );
+//double hypot ( double x, double y );
+
 float gSlopeFactor[32];
 long gWrapMask[32];
 

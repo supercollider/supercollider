@@ -710,6 +710,12 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 				underlineRange.location --;
 				underlineRange.length += 2;
 			}
+			// include parentheses in selection
+			if (start >= 0 && [string characterAtIndex: start] == '('
+				&& end < (int)limitRange.length && [string characterAtIndex: end] == ')') {
+				underlineRange.location --;
+				underlineRange.length += 2;
+			}
 			
 			if ((int)underlineRange.length > 0 && (int)underlineRange.location <= clickLoc && clickLoc < (int)(underlineRange.location + underlineRange.length)) {
 				[doc selectRangeStart: underlineRange.location size: underlineRange.length];

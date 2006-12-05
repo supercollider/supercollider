@@ -246,6 +246,15 @@ opts.AddOptions(
                   'Build with X11 support', 1)
     )
 
+if PLATFORM == 'darwin':
+    opts.AddOptions(
+	BoolOption('UNIVERSAL',
+		   'Build universal binaries (see UNIVERSAL_ARCHS)', 1),
+# 	ListOption('UNIVERSAL_ARCHS',
+# 		   'Architectures to build for',
+# 		   'all', ['ppc', 'i386'])
+	)
+    
 # ======================================================================
 # basic environment
 # ======================================================================
@@ -320,6 +329,7 @@ elif env['AUDIOAPI'] == 'coreaudio':
     features['audioapi'] = 'CoreAudio'
     libraries['audioapi'] = Environment(
         CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_COREAUDIO')],
+	LINKFLAGS =  '-framework CoreAudio',
         ADDITIONAL_SOURCES = []
         )
 elif env['AUDIOAPI'] == 'portaudio':
@@ -416,6 +426,14 @@ else:
     env.Append(CPPDEFINES = ['NDEBUG'])
 
 # platform specific
+if False: #PLATFORM == 'darwin':
+    # universal binary support
+    if env['UNIVERSAL']:
+	archs = map(lambda x: ['-arch', x], ['ppc', 'i386'])
+	env.Append(
+	    CCFLAGS = archs,
+	    LINKFLAGS = archs
+	)
 if CPU == 'ppc':
     env.Append(CCFLAGS = '-fsigned-char')
 
@@ -470,6 +488,14 @@ commonEnv.Append(
     CCFLAGS = ['-fPIC']
     )
 
+# strtod
+conf = Configure(commonEnv)
+if conf.CheckFunc('strtod'):
+    commonEnv.Append(
+	CPPDEFINES = 'HAVE_STRTOD'
+	)
+commonEnv = conf.Finish()
+
 commonSources = Split('''
 source/common/SC_AllocPool.cpp
 source/common/SC_DirUtils.cpp
@@ -514,7 +540,7 @@ libscsynthEnv = serverEnv.Copy(
 # platform specific
 if PLATFORM == 'darwin':
     serverEnv.Append(
-	LINKFLAGS = '-framework CoreServices -framework CoreAudio'
+	LINKFLAGS = '-framework CoreServices' # -framework CoreAudio
 	)
 elif PLATFORM == 'linux':
     serverEnv.Append(CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')])
@@ -675,14 +701,12 @@ langEnv.Append(
                '#headers/lang',
                '#headers/server',
                '#source/lang/LangSource/erase-compiler'],
+    CPPDEFINES = [['USE_SC_TERMINAL_CLIENT', env['TERMINAL_CLIENT']]],
     LIBS = ['common', 'scsynth', 'pthread', 'dl', 'm'],
     LIBPATH = 'build'
     )
-if PLATFORM == 'darwin':
-    langEnv.Append(
-	#CPPFLAGS = '/System/Library/Frameworks/CoreServices.framework/Frameworks/',
-	LINKFLAGS = '-framework CoreServices -framework CoreAudio'
-	)
+# if PLATFORM == 'darwin':
+merge_lib_info(langEnv, libraries['audioapi'])
 
 libsclangEnv = langEnv.Copy(
     PKGCONFIG_NAME = 'libsclang',
@@ -774,8 +798,7 @@ if env['LANG']:
     env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
     sclang = langEnv.Program(
 	'build/sclang', sclangSources,
-	LIBS = ['sclang', 'scsynth'],
-	CPPDEFINES = [['SC_TERMINAL_CLIENT', env['TERMINAL_CLIENT']]])
+	LIBS = ['sclang', 'scsynth'])
     env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
 
 # ======================================================================

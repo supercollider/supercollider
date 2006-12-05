@@ -19,10 +19,6 @@
 */
 #ifndef SC_WIN32
 
-#if !(defined(SC_DARWIN) || defined(USE_SC_TERMINAL_CLIENT))
-# define USE_SC_TERMINAL_CLIENT 1
-#endif
-
 #if USE_SC_TERMINAL_CLIENT
 
 #include "SC_TerminalClient.h"
