@@ -732,7 +732,7 @@ void TIRand_Ctor(TIRand* unit)
 	int range = hi - lo + 1;
 	RGen& rgen = *unit->mParent->mRGen;	
 	ZOUT0(0) = unit->m_value = (float)(rgen.irand(range) + lo);
-	if(unit->mCalcRate == calc_FullRate){ SETCALC(TRand_next_a); } else { SETCALC(TRand_next_k); }
+	if(unit->mCalcRate == calc_FullRate){ SETCALC(TIRand_next_a); } else { SETCALC(TIRand_next_k); }
 	unit->m_trig = ZIN0(2);
 }
 
