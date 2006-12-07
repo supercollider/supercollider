@@ -61,6 +61,11 @@ else:
     print 'Unknown platform: %s' % PLATFORM
     Exit(1)
 
+if CPU == 'ppc':
+    DEFAULT_OPT_ARCH = '7450'
+elif CPU in [ 'i586', 'i686' ]:
+    DEFAULT_OPT_ARCH = CPU
+
 # ======================================================================
 # util
 # ======================================================================
@@ -92,11 +97,13 @@ def CheckPKG(context, name):
 
 def merge_lib_info(env, *others):
     for other in others:
-        env.Append(LIBS = other.get('LIBS', []))
-        env.Append(LIBPATH = other.get('LIBPATH', []))
-        env.Append(CPPPATH = other.get('CPPPATH', []))
-        env.Append(CPPDEFINES = other.get('CPPDEFINES', []))
-        env.Append(LINKFLAGS = other.get('LINKFLAGS', []))
+        env.AppendUnique(CCFLAGS = other.get('CCFLAGS', []))
+        env.AppendUnique(CPPDEFINES = other.get('CPPDEFINES', []))
+        env.AppendUnique(CPPPATH = other.get('CPPPATH', []))
+        env.AppendUnique(CXXFLAGS = other.get('CXXFLAGS', []))
+        env.AppendUnique(LIBS = other.get('LIBS', []))
+        env.AppendUnique(LIBPATH = other.get('LIBPATH', []))
+        env.AppendUnique(LINKFLAGS = other.get('LINKFLAGS', []))
 
 def make_pkgconfig_requires(*envs):
     res = []
@@ -201,6 +208,23 @@ def pkg_classlib_dir(prefix, *args):
 def pkg_extension_dir(prefix, *args):
     return pkg_data_dir(prefix, 'Extensions', *args)
 
+def make_opt_flags(env):
+    flags = [
+	"-O3",
+	#"-fomit-frame-pointer", # can behave strangely for sclang
+	"-ffast-math",
+	"-fstrength-reduce"
+	]
+    arch = env['OPT_ARCH']
+    if CPU == 'ppc':
+	flags.extend([
+		"-mcpu=%s" % (arch,),
+		"-fsigned-char", "-mhard-float",
+		"-mpowerpc-gpopt", "-mpowerpc-gfxopt" ])
+    else:
+	flags.extend([ "-march=%s" % (arch,) ])
+    return flags
+
 # ======================================================================
 # command line options
 # ======================================================================
@@ -211,6 +235,7 @@ opts.AddOptions(
                'Build with ALSA sequencer support', 1),
     BoolOption('ALTIVEC',
                'Build with Altivec support', 1),
+    ('OPT_ARCH', 'Architecture to optimize for', DEFAULT_OPT_ARCH),
     EnumOption('AUDIOAPI',
                'Build with specified audio API support',
                DEFAULT_AUDIO_API, ('jack', 'coreaudio', 'portaudio')),
@@ -375,9 +400,15 @@ env = conf.Finish()
 
 # altivec
 if env['ALTIVEC']:
-    altiEnv = env.Copy()
-    altiEnv.Append(CCFLAGS = ['-maltivec'])
-    altiConf = Configure(altiEnv)
+    if PLATFORM == 'darwin':
+	altivec_flags = [ '-faltivec' ]
+    else:
+	altivec_flags = [ '-maltivec', '-mabi=altivec' ]
+    libraries['altivec'] = env.Copy()
+    libraries['altivec'].Append(
+	CCFLAGS = altivec_flags,
+	CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
+    altiConf = Configure(libraries['altivec'])
     features['altivec'] = altiConf.CheckCHeader('altivec.h')
     altiConf.Finish()
 else:
@@ -385,9 +416,11 @@ else:
 
 # sse
 if env['SSE']:
-    sseEnv = env.Copy()
-    sseEnv.Append(CCFLAGS = ['-msse2'])
-    sseConf = Configure(sseEnv)
+    libraries['sse'] = env.Copy()
+    libraries['sse'].Append(
+	CCFLAGS = ['-msse2', '-mfpmath=sse'],
+	CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
+    sseConf = Configure(libraries['sse'])
     features['sse'] = sseConf.CheckCHeader('xmmintrin.h')
     sseConf.Finish()
 else:
@@ -403,8 +436,7 @@ if env['X11']:
     x11Conf = Configure(x11Env)
     features['x11'] = x11Conf.CheckCHeader('X11/Intrinsic.h') \
                       and x11Conf.CheckLib('X11', 'XQueryPointer')
-    if features['x11']:
-        libraries['x11'] = x11Conf.Finish()
+    libraries['x11'] = x11Conf.Finish()
 else:
     features['x11'] = False
 
@@ -414,16 +446,18 @@ Help(opts.GenerateHelpText(env))
 # defines and compiler flags
 
 env.Append(
-    CPPDEFINES = ['_REENTRANT', PLATFORM_SYMBOL],
-    CCFLAGS = ['-Wno-unknown-pragmas'],
-    CXXFLAGS = ['-Wno-deprecated']
+    CPPDEFINES = [ '_REENTRANT', PLATFORM_SYMBOL ],
+    CCFLAGS = [ '-Wno-unknown-pragmas' ],
+    CXXFLAGS = [ '-Wno-deprecated' ]
     )
 
 # debugging flags
 if env['DEBUG']:
     env.Append(CCFLAGS = '-g')
 else:
-    env.Append(CPPDEFINES = ['NDEBUG'])
+    env.Append(
+	CCFLAGS = make_opt_flags(env),
+	CPPDEFINES = ['NDEBUG'])
 
 # platform specific
 if False: #PLATFORM == 'darwin':
@@ -434,22 +468,14 @@ if False: #PLATFORM == 'darwin':
 	    CCFLAGS = archs,
 	    LINKFLAGS = archs
 	)
-if CPU == 'ppc':
-    env.Append(CCFLAGS = '-fsigned-char')
 
 # vectorization
 if features['altivec']:
-    env.Append(
-        CCFLAGS = ['-maltivec', '-mabi=altivec'],
-        CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)]
-        )
+    merge_lib_info(env, libraries['altivec'])
 elif features['sse']:
-    env.Append(
-        CCFLAGS = ['-msse', '-mfpmath=sse'],
-        CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)]
-        )
+    merge_lib_info(env, libraries['sse'])
 else:
-    env.Append(CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 1)])
+    env.AppendUnique(CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 1)])
 
 # ======================================================================
 # configuration summary
