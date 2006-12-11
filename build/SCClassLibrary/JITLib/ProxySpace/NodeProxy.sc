@@ -534,7 +534,7 @@ NodeProxy : BusPlug {
 		var pairs, result = [], myKeys, defaults, mapSettings;
 		if (noInternalKeys) { except = except ++ this.internalKeys; };
 
-		pairs = this.controlKeysValues(except: except ).clump(2);
+		pairs = this.controlKeysValues(keys, except: except ).clump(2);
 		#myKeys, defaults = pairs.flop;
 
 		mapSettings = nodeMap.settings;
@@ -549,7 +549,7 @@ NodeProxy : BusPlug {
 		^result
 	}
 
-	// controlPairs
+	// controlPairs, gets default values
 	controlKeysValues { arg keys, except = #[\out, \i_out, \gate, \fadeTime];
 		var list = Array.new;
 		if(keys.isNil or: { keys.isEmpty }) {
