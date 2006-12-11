@@ -551,18 +551,13 @@ NodeProxy : BusPlug {
 
 	// controlPairs, gets default values
 	controlKeysValues { arg keys, except = #[\out, \i_out, \gate, \fadeTime];
-		var list = Array.new;
+		var list, fullList = this.controlNames(except);
 		if(keys.isNil or: { keys.isEmpty }) {
-			this.controlNames(except).do { |el, i|
-				list = list.add(el.name).add(el.defaultValue)
-			}
+			list = fullList.collect { |el, i| [el.name, el.defaultValue] }
 		} {
-			this.controlNames(except).do { |el, i|
-				if(keys.includes(el.name)) 
-				{ list = list.add(el.name).add(el.defaultValue) }
-			}
+			list = keys.collect { |key| [key, fullList.detect { |pair| pair.first == key }] }
 		}
-		^list
+		^list.flat;
 	}
 	
 	// derive names and default args from synthDefs

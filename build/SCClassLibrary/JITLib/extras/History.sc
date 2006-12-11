@@ -108,7 +108,7 @@ History { 		// adc 2006, Birmingham.
 		v = sys.listView.new(w,bounds.moveTo(0, 20))	////
 			.font_(font)
 			.items_([])
-		//	.resize_(5)							////
+			.resize_(5)							////
 			.background_(Color.grey(0.62))
 			.action_({ |entry| 
 				var val = entry.value; 
