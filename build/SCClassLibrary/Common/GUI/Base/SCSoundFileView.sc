@@ -16,7 +16,7 @@ SCSoundFileView : SCScope{
 		soundfile.close;
 	}
 
-	read{|startframe=0, frames=0, block=64, closeFile=true|
+	read { |startframe=0, frames, block=64, closeFile=true| 
 		this.block = block;
 		if(soundfile.isOpen.not){
 			if(soundfile.openRead.not){
@@ -24,7 +24,11 @@ SCSoundFileView : SCScope{
 			};
 		};
 		startFrame = startframe;
-		numFrames = frames;
+		frames = frames ? soundfile.numFrames; 
+		
+		if (frames == -1) { frames = soundfile.numFrames };
+		numFrames = frames.clip(0, soundfile.numFrames).postln;
+		
 		this.readFile(soundfile, startframe, frames, block);
 		if(closeFile){soundfile.close};
 	}
@@ -136,7 +140,15 @@ SCSoundFileView : SCScope{
 	selectionSize{|index|
 		^this.getProperty(\selectionSize, index);
 	}
-
+	
+	selection { |index| 
+		^[this.selectionStart(index), this.selectionSize(index)]
+	}
+	setSelection { |index, selection| 
+		this.setSelectionStart(index, selection[0])
+			.setSelectionSize(index, selection[1]);
+	}
+	
 	selectionStartTime{|index|
 		^this.getProperty(\selectionStartTime, index);
 	}
@@ -145,10 +157,12 @@ SCSoundFileView : SCScope{
 		^this.getProperty(\selectionDuration, index);
 	}	
 	
-	readSelection{
+	readSelection{ |block=64, closeFile=true|
 		this.read(
 			this.selectionStart(this.currentSelection),
-			this.selectionSize(this.currentSelection)
+			this.selectionSize(this.currentSelection),
+			block,
+			closeFile
 		);
 	}
 	
@@ -167,6 +181,13 @@ SCSoundFileView : SCScope{
 		this.setProperty(\gridResolution, resolution);	
 	}
 	
+	gridOn { ^this.getProperty(\gridOn) }	
+	gridResolution { ^this.getProperty(\gridResolution) }
+	gridColor { ^this.getProperty(\gridColor) }	
+	timeCursorOn { ^this.getProperty(\timeCursorOn) }	
+	timeCursorPosition { ^this.getProperty(\timeCursorPosition) }
+	timeCursorColor { ^this.getProperty(\timeCursorColor) }
+
 	dataNumSamples{
 		^this.getProperty(\getViewNumSamples);	
 	}
