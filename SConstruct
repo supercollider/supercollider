@@ -391,6 +391,8 @@ if conf.CheckCHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/Core
 elif features['alsa']:
     features['midiapi'] = 'ALSA'
     libraries['midiapi'] = libraries['alsa'].Copy()
+else:
+    features['midiapi'] = None
 
 # lid
 features['lid'] = env['LID'] and conf.CheckCHeader('linux/input.h')
