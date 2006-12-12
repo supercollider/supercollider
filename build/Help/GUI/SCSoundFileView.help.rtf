@@ -1,33 +1,199 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SCSoundFileView
-\f1\b0\fs18 \cf0 \
+\f1\b0\fs18 \
 \
-\cf2 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 (\
-w = \cf3 SCWindow\cf2 .new(\cf4 "soundfile test"\cf2 , \cf3 Rect\cf2 (200, 200, 800, 400));\
-a = \cf3 SCSoundFileView\cf2 .new(w, \cf3 Rect\cf2 (20,20, 700, 60));\
 \
-f = \cf3 SoundFile\cf2 .new;\
-f.openRead(\cf4 "sounds/a11wlk01.wav"\cf2 );\
+(\
+w = \cf2 SCWindow\cf0 .new(\cf3 "soundfile test"\cf0 , \cf2 Rect\cf0 (200, 200, 800, 400));\
+a = \cf2 SCSoundFileView\cf0 .new(w, \cf2 Rect\cf0 (20,20, 700, 60));\
+\
+f = \cf2 SoundFile\cf0 .new;\
+f.openRead(\cf3 "sounds/a11wlk01.wav"\cf0 );\
 f.inspect;\
 \
 a.soundfile = f;\
 a.read(0, f.numFrames);\
-a.elasticMode = \cf3 true\cf2 ;\
+a.elasticMode = \cf2 true\cf0 ;\
 \
-a.timeCursorOn = \cf3 true\cf2 ;\
-a.timeCursorColor = \cf3 Color\cf2 .red;\
+a.timeCursorOn = \cf2 true\cf0 ;\
+a.timeCursorColor = \cf2 Color\cf0 .red;\
 a.timeCursorPosition = 2050;\
-a.drawsWaveForm = \cf3 true\cf2 ;\
-a.gridOn = \cf3 true\cf2 ;\
+a.drawsWaveForm = \cf2 true\cf0 ;\
+a.gridOn = \cf2 true\cf0 ;\
 a.gridResolution = 0.2;\
 \
 w.front;\
+)\
 \
-)}
+// step by step examples:\
+\
+(		\cf4 // make a simple SCSoundFileView\cf0 \
+w = \cf2 SCWindow\cf0 .new(\cf3 "soundfile test"\cf0 , \cf2 Rect\cf0 (10, 700, 750, 100));\
+w.front;\
+a = \cf2 SCSoundFileView\cf0 .new(w, \cf2 Rect\cf0 (20,20, 700, 60));\
+\
+f = \cf2 SoundFile\cf0 .new;\
+f.openRead(\cf3 "sounds/a11wlk01.wav"\cf0 );\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // f.inspect;\cf0 \
+\
+a.soundfile = f;			\cf4 // set soundfile\cf0 \
+a.read(0, f.numFrames);		\cf4 // read in the entire file.\cf0 \
+a.refresh;				\cf4 // refresh to display the file.\cf0 \
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 		\cf4 // reading file\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 a.read(0, f.numFrames / 2).refresh;	\cf4 // read first half\cf0 \
+a.read.refresh;					\cf4 // read entire file by default\cf0 \
+a.read(f.numFrames / 2).refresh; 	\cf4 // read second half\cf0 \
+a.read(0, -1).refresh;				\cf4 // -1 also reads entire file, like buffer. \cf0 \
+\
+	\cf4 // block sets visual resolution of waveform, default is 64.\
+	// i.e. the view keeps peak values for each block of e.g. 64 samples \
+	// rather than the entire waveform. \cf0 \
+a.read(0, -1, block: 32).refresh; \
+a.read(0, -1, block: 24).refresh; \
+a.read(0, -1, block: 16).refresh; \
+\
+	\cf4 // for longer files, you can use:\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 a.readWithTask;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs22 \cf0 	\cf4 // zoom is relative: < 0 zooms in, > 0 zooms out. \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 a.zoom(0.2).refresh;\
+a.zoom(2).refresh;\
+a.zoom(2).refresh;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 a.zoomToFrac(0.5); \cf4 // zoom to half file size\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 a.zoomAllOut;\
+	\
+a.gridOn = \cf2 true\cf0 ;			\cf4 // time grid, 1 second by default,\cf0 \
+a.gridResolution = 0.2;		\cf4 // or set resolution in seconds\cf0 \
+a.gridColor = \cf2 Color\cf0 .green;	\cf4 // color is changeable.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 a.gridOffset_(0.1);		\cf4 // not sure if this is working? \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+a.timeCursorOn = \cf2 true\cf0 ;			\cf4 // a settable cursor \cf0 \
+a.timeCursorPosition = 2050;	\cf4 // position is in frames.\cf0 \
+a.timeCursorColor = \cf2 Color\cf0 .white;	\
+\
+		\cf4 // toggle drawing on/off\cf0 \
+a.drawsWaveForm = \cf2 false\cf0 ;\
+a.drawsWaveForm = \cf2 true\cf0 ;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf4 	// these methods should return view properties (not done yet):\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 a.gridOn\
+a.gridResolution\
+a.gridColor\
+a.timeCursorOn\
+a.timeCursorPosition\
+a.timeCursorColor\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 		\cf4 // Selections: multiple selections are supported.\cf0 \
+		\cf4 // e.g. use selection 0:\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 a.setSelectionColor(0, \cf2 Color\cf0 .red);	\cf4 // set...( index, value )\cf0 \
+a.selectionStart(0);				// at index\
+a.setSelectionStart(0, 12345);		\
+a.setSelectionSize(0, 12345);\
+\
+a.setSelectionStart(0, 1234);\
+a.selectionStart(0);		\cf4 // \cf0 \
+\
+		\cf4 // now selection 1\cf0 \
+a.setSelectionColor(1, \cf2 Color\cf0 .white);\
+a.setSelectionStart(1, 1234).setSelectionSize(1, 1234 * 2);\
+a.selectionStart(1);		\cf4 // \cf0 \
+a.setSelectionStart(0, 12345);		\cf4 // \cf0 \
+\
+		\cf4 // the current selection gets changed when click/dragging in view.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 a.currentSelection;	\cf4 // index of current selection; \cf0 \
+a.currentSelection_(1);	\cf4 // switch current selection - try click/drag white now.\cf0 \
+a.currentSelection; \
+\
+a.selections.size;		// 64 selections\
+a.selections[0];\
+a.selections[1];\
+a.selections;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf4 	// setSelection (index, selection);\cf0 \
+a.setSelection(0, [234, 2345]); \
+a.selection(1);	\cf4 // returns [start, size]. \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+a.elasticMode = \cf2 true\cf0 ;	\cf4 // not sure if this is working yet? \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+(		\cf4 // mouseUpAction\cf0 \
+a.mouseUpAction = \{ \
+	(\cf3 "mouseUp, current selection is now:"\cf0  \
+		+ a.selections[a.currentSelection]).postln;\
+\};\
+)\
+	\cf4 // lock selection 0:\cf0 \
+a.currentSelection_(0);\
+a.setEditableSelectionStart(0, \cf2 false\cf0 );\
+a.setEditableSelectionSize(0, \cf2 false\cf0 );\
+\
+\
+	\cf4 // unlock selection 0:\cf0 \
+a.setEditableSelectionStart(0, \cf2 true\cf0 );\
+a.setEditableSelectionSize(0, \cf2 true\cf0 );\
+\
+a.selectionStartTime(0);\
+a.selectionDuration(0);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 a.setSelectionStart(0, 12345);\
+a.setSelectionSize(0, 12345);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 a.readSelection.refresh;\
+a.readSelection(16).refresh;	\cf4 // in higher resolution\cf0 \
+a.read.refresh;				\cf4 // go back to entire file.\cf0 \
+\
+\
+a.dataNumSamples;	\cf4 // visual data have this many points\cf0 \
+a.data.plot;		// \
+a.setData(a.data.reverse);\
+\
+\
+a.zoom(0.25);		\cf4 // scrolling is normalized\cf0 \
+a.scrollTo(0.5);	\cf4 // \cf0 \
+a.scrollTo(0.6);	\cf4 // \cf0 \
+a.scroll(12);		\cf4 // scroll is in viewFrames. \cf0 \
+\
+a.zoom(4);	\
+\
+w.close;\
+\
+}
