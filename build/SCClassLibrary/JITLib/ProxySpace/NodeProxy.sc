@@ -664,6 +664,14 @@ NodeProxy : BusPlug {
 	
 	}
 	
+	quantize { arg ... proxies;
+		var quant = this.quant ? 1.0;
+		([this]++proxies).do { |x|
+			x.quant = quant;
+			x.send;
+		}
+	}
+	
 	wakeUp { 	if(this.isPlaying.not) { this.deepWakeUp } } // do not touch internal state if playing
 	
 	deepWakeUp {
