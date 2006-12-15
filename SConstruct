@@ -420,7 +420,7 @@ else:
 if env['SSE']:
     libraries['sse'] = env.Copy()
     libraries['sse'].Append(
-	CCFLAGS = ['-msse2', '-mfpmath=sse'],
+	CCFLAGS = ['-msse', '-mfpmath=sse'],
 	CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
     sseConf = Configure(libraries['sse'])
     features['sse'] = sseConf.CheckCHeader('xmmintrin.h')
