@@ -79,6 +79,16 @@ Integer : SimpleNumber {
 		});
 		^array
 	}
+	asDigits { arg base=10, numDigits;
+		var array, num = this;
+		numDigits = numDigits ?? { (this.log / base.log).asInteger + 1 };
+		array = Array.new(numDigits);
+		numDigits.do {
+			array = array.addFirst(num % base);
+			num = num div: base
+		}
+		^array
+	}
 	
 	nextPowerOfTwo { _NextPowerOfTwo }
 	isPowerOfTwo { _IsPowerOfTwo }
