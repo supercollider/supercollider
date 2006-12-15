@@ -99,6 +99,7 @@ Event : Environment {
 				scale: #[0, 2, 4, 5, 7, 9, 11], // diatonic major scale
 				stepsPerOctave: 12.0,
 				detune: 0.0,		// detune in Hertz
+				harmonic: 1.0,		// harmonic ratio
 				
 				note: #{
 					(~degree + ~mtranspose).degreeToKey(~scale, ~stepsPerOctave);
@@ -107,13 +108,26 @@ Event : Environment {
 					((~note.value + ~gtranspose + ~root) / ~stepsPerOctave + ~octave) * 12.0; 
 				},
 				freq: #{
-					(~midinote.value + ~ctranspose).midicps;
+					(~midinote.value + ~ctranspose).midicps * ~harmonic;
 				},
-				freqToScale: #{ arg self, freq; // conversion from frequency to scale value
+				freqToNote: #{ arg self, freq; // conversion from frequency to note value
 					self.use {
 						var midinote;
 						midinote = (freq.cpsmidi - ~ctranspose);
 						midinote / 12.0 - ~octave * ~stepsPerOctave - ~root - ~gtranspose
+					}
+				},
+				freqToScale: #{ arg self, freq; 
+					// conversion from frequency to scale value. 
+					self.use {
+						var degree = self.freqToNote(freq).keyToDegree(~scale, ~stepsPerOctave) - ~mtranspose;
+						degree.asArray.collect {|x, i|
+							x = x.round(0.01);
+							if(x.floor != x) { 
+								"could not translate: %\n".postf(freq[i]); 
+								nil 
+							} { x }
+						}.unbubble;
 					}
 				}
 			),
