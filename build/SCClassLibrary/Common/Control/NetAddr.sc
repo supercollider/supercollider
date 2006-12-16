@@ -97,7 +97,7 @@ NetAddr {
 	}
 	storeOn { | stream |
 		super.storeOn(stream);
-		stream << $( << this.ip << ", " << port << $)
+		stream << $( << "\"" << this.ip << "\", " << port << $)
 	}
 
 	// PRIVATE
