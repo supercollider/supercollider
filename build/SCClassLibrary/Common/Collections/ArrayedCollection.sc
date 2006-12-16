@@ -82,23 +82,7 @@ ArrayedCollection : SequenceableCollection {
 			}
 		}
 	}
-	
-	find { arg anotherArray;
-		var array = this, i, res=0;
-		var first = anotherArray.first, size = anotherArray.size;
-		while {
-			i = array.indexOf(first);
-			i.notNil
-		} {
-			res = res + i + 1;
-			if(array.copyRange(i, i + size - 1) == anotherArray) {
-				^res - 1
-			};
-			array = array.drop(i+1);
-		};
-		^nil
-	}
-		
+			
 	replace { arg find, replace;		var index, out = [], array = this;
 		find = find.asArray; 
 		replace = replace.asArray;		while {

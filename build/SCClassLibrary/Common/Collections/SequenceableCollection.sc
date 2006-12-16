@@ -146,11 +146,46 @@ SequenceableCollection : Collection {
 		^nil
 	}
 	
-	indexOfEqual { arg item;
-		this.do({ arg elem, i;
-			if ( item == elem, { ^i })
+	indexOfEqual { arg item, offset=0; 
+		(this.lastIndex - offset).do ({ arg i;
+			i = i + offset;
+			if ( item == this[i], { ^i })
 		});
 		^nil
+	}
+	indicesOfEqual { |item| 
+		var indices, i=0, offset=0;
+		while { 
+			i = this.indexOfEqual(item, offset); 
+			i.notNil
+		}{
+			indices = indices.add(i);
+			offset = i + 1;
+		}
+		^indices
+	}
+
+	find { |sublist, offset=0| 
+		var subSize_1 = sublist.size - 1, first = sublist.first, index; 
+		(this.size - offset).do { |i| 
+			index = i + offset; 
+			if (this[index] == first) { 
+				if (this.copyRange(index, index + subSize_1) == sublist) { ^index }
+			};
+		};
+		^nil
+	}
+
+	findAll { arg arr, offset=0;
+		var indices, i=0;
+		while { 
+			i = this.findEqual(arr, offset); 
+			i.notNil
+		}{
+			indices = indices.add(i);
+			offset = i + 1;
+		}
+		^indices
 	}
 	
 	indexOfGreaterThan { arg val;
