@@ -125,17 +125,20 @@ Monitor {
 	}
 	
 	stop { arg argFadeTime;
+		var oldGroup = group;
 		fadeTime = argFadeTime ? fadeTime;
 		synthIDs = [];
 		synthAmps = [];
-		if(group.isPlaying) {
-			group.release(fadeTime);
-			SystemClock.sched(fadeTime, { group.free; group = nil })
-		}
+		if(oldGroup.isPlaying) {
+			oldGroup.release(fadeTime);
+			SystemClock.sched(fadeTime, { oldGroup.free })
+		};
+		group.isPlaying = false;
+		group = nil;
 	}
 	
-	isPlaying {^group.isPlaying }
-	numChannels {^outs.size }
+	isPlaying { ^group.isPlaying }
+	numChannels { ^outs.size }
 	
 	// multichannel support
 	
@@ -225,7 +228,7 @@ Monitor {
 		if(this.isPlaying) { 
 			this.stopToBundle(bundle) 
 		} {
-			this.newGroupToBundle(bundle, inGroup)
+			this.newGroupToBundle(bundle, inGroup, addAction)
 		};
 		synthIDs = [];
 		synthAmps = [];
@@ -242,7 +245,7 @@ Monitor {
 				synthIDs = synthIDs.add(id);
 				synthAmps = synthAmps.add(amp[j]);
 				bundle.add([9, defName, 
-					id, Node.actionNumberFor(addAction), group.nodeID,
+					id, 1, group.nodeID,
 					"out", item, 
 					"in", in,
 					"vol", amp.clipAt(j) * vol
@@ -272,7 +275,7 @@ Monitor {
 				outs = [];
 			}
 		} {
-			this.newGroupToBundle(bundle, inGroup);
+			this.newGroupToBundle(bundle, inGroup, addAction);
 			if (multi.not) { outs = [] }
 		};
 		
@@ -289,8 +292,7 @@ Monitor {
 			outs = outs.add(out);
 			ins = ins.add(in);
 			amps = amps.add(1.0);
-			bundle.add([9, defname, id, Node.actionNumberFor(addAction), 
-						group.nodeID, "out", out, "in", in]);
+			bundle.add([9, defname, id, 1, group.nodeID, "out", out, "in", in]);
 		};
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
@@ -326,11 +328,11 @@ Monitor {
 	}
 	
 		
-	newGroupToBundle { arg bundle, inGroup;
-				inGroup = inGroup.asGroup;
-				group = Group.basicNew(inGroup.server);
+	newGroupToBundle { arg bundle, target, addAction=(\addToTail);
+				target = target.asGroup;
+				group = Group.basicNew(target.server);
 				group.isPlaying = true;
-				bundle.add(group.newMsg(inGroup, \addToTail));
+				bundle.add(group.newMsg(target, addAction));
 				NodeWatcher.register(group);
 	}
 
