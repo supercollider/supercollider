@@ -83,11 +83,18 @@ ArrayedCollection : SequenceableCollection {
 		}
 	}
 			
-	replace { arg find, replace;		var index, out = [], array = this;
+	replace { arg find, replace;
+		var index, out = [], array = this;
 		find = find.asArray; 
-		replace = replace.asArray;		while {
+		replace = replace.asArray;
+		while {
 			(index = array.find(find)).notNil
-		}{			out = out ++ array.keep(index) ++ replace;			array = array.drop(index + find.size);		};		^out ++ array	}
+		}{
+			out = out ++ array.keep(index) ++ replace;
+			array = array.drop(index + find.size);
+		};
+		^out ++ array
+	}
 
 	// see counterparts to these in Object 
 	slotSize {
@@ -242,7 +249,17 @@ ArrayedCollection : SequenceableCollection {
 			j = j + 1;
 		})
 	}
-	reverse {		var i = 0;		var res = this.copy;		var size1 = res.size - 1;		var halfsize = res.size div: 2;		halfsize.do({ arg i;			res.swap(i, size1 - i);		});		^res	}
+	reverse {
+		var i = 0;
+		var res = this.copy;
+		var size1 = res.size - 1;
+		var halfsize = res.size div: 2;
+		halfsize.do({ arg i;
+			res.swap(i, size1 - i);
+		});
+		^res
+	}
+
 	windex {
 		_ArrayWIndex
 		^this.primitiveFailed 
