@@ -124,7 +124,7 @@ Pset : FilterPattern {
 		
 		loop {
 			inEvent = evtStream.next(event);
-			if (inEvent.isNil) { ^event };
+			if (inEvent.isNil) { nil.yield; ^event };
 			val = valStream.next;
 			if (val.isNil) { ^event };
 			
