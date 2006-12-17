@@ -197,6 +197,8 @@ EZSlider
 	visible_ { |bool|
 		[labelView, sliderView, numberView].do(_.visible_(bool))
 	}
+	
+	remove { [labelView, sliderView, numberView].do(_.remove) }
 }
 
 
@@ -252,4 +254,6 @@ EZNumber
 	visible_ { |bool|
 		[labelView, numberView].do(_.visible_(bool))
 	}
+	
+	remove { [labelView, numberView].do(_.remove) }
 }

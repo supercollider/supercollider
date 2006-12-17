@@ -288,5 +288,21 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	
+	asSecs { |maxDays = 365| // assume a timeString of ddd:hh:mm:ss.sss. see asTimeString.
+		var time = 0, sign = 1, str = this; 
+
+		if (this.first == $-, { 
+			str = this.drop(1); 
+			sign = -1 
+		});
+		
+		str.split($:).reverseDo { |num, i| 
+			num = num.interpret;
+			if (num > [60, 60, 24, maxDays][i]) { ("number greater than allowed:" + this).warn; ^this };
+			if (num < 0) { ("negative numbers within slots not supported:" + this).warn; ^this };
+			time = time + (num * [1.0, 60.0, 3600.0, 86400.0][i]);
+		};
+		^time * sign;
+	}
 }
 

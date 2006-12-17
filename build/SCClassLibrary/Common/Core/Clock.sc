@@ -56,8 +56,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 
 */
 
-	*new { arg tempo, beats, seconds;
-		^super.new.init(tempo, beats, seconds)
+	*new { arg tempo, beats, seconds, queueSize=256;
+		^super.new.init(tempo, beats, seconds, queueSize)
 	}
 	
 	*initClass {
@@ -70,11 +70,12 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		all.do({ arg item; if (item.permanent.not, { item.stop })  })
 	}	
 
-	init { arg tempo, beats, seconds;
-		queue = Array.new(256);
+	init { arg tempo, beats, seconds, queueSize;
+		queue = Array.new(queueSize);
 		this.prStart(tempo, beats, seconds);
 		all = all.add(this);
 	}
+
 	stop {
 		all.take(this);
 		this.prStop;

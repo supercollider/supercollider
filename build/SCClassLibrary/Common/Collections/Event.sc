@@ -316,7 +316,7 @@ Event : Environment {
 							~amp = ~amp.value;
 							addAction = ~addAction;
 							group = ~group;
-							lag = ~lag + server.latency;
+							lag = ~lag + (server.latency ? 0); 
 							strum = ~strum;
 							sustain = ~sustain = ~sustain.value;
 							instrumentName = ~instrument.asSymbol;
@@ -342,9 +342,14 @@ Event : Environment {
 								latency = i * strum + lag;
 								id = server.nextNodeID;
 								
-								//send the note on bundle
-								server.sendBundle(latency, [\s_new, instrumentName, id, addAction, group] ++ msgArgs); 
-										
+								if (server.latency.notNil) {
+									//send the note on bundle
+									server.sendBundle(latency, [\s_new, instrumentName, id, addAction, group] ++ msgArgs); 
+								} { 
+									thisThread.clock.sched(latency) { 
+										server.sendBundle(nil, [\s_new, instrumentName, id, addAction, group] ++ msgArgs); 
+									};
+								};
 								if (hasGate) {
 									// send note off bundle.
 									thisThread.clock.sched(sustain) { 

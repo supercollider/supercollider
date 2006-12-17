@@ -378,7 +378,7 @@ SimpleNumber : Number {
 		mins = (this/60).trunc(1);
 		if(mins >= 60,{ hours = (mins/60).trunc(1).asString ++ ":"; 
 			mins = mins%60;
-			if(mins < 10 ,{ mins = ")"++ mins.asString; },{ mins = mins.asString; });
+			if(mins < 10 ,{ mins = "0"++ mins.asString; },{ mins = mins.asString; });
 		},{
 			hours = "";
 			mins = mins.asString;

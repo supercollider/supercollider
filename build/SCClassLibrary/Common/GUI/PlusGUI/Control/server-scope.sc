@@ -1,7 +1,7 @@
 + Server {
 
 	scope { arg numChannels, index, bufsize = 4096, zoom, rate;
-			numChannels = numChannels ? 2;
+			numChannels = (numChannels ? 2).min(16);
 			if(scopeWindow.isNil) {
 				scopeWindow = 
 					Stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil, 
