@@ -206,6 +206,18 @@ String[char] : RawArray {
 	
 	/// unix
 
+	standardizePath {
+		_String_StandardizePath
+		^this.primitiveFailed
+	}
+	absolutePath{
+		var first;
+		first = this[0];
+		if(first == $/){^this};
+		if(first == $~){^this.standardizePath};
+		^File.getcwd ++ "/" ++ this;
+	}
+
 	pathMatch { _StringPathMatch ^this.primitiveFailed } // glob
 	load {
 		^thisProcess.interpreter.executeFile(this);
@@ -232,7 +244,18 @@ String[char] : RawArray {
 		});
 		^[this, nil]
 	}
-	
+
+	// path concatenate
+	+/+ { arg path;
+		if (path.respondsTo(\fullPath)) {
+			^PathName(this +/+ path.fullPath)
+		};
+		if (this.last == $/ or: { path.first == $/ }) {
+			^this ++ path
+		};
+		^this ++ "/" ++ path
+	}
+
 	// runs a unix command and returns the result code.
 	systemCmd { _String_System ^this.primitiveFailed }
 	

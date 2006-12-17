@@ -67,14 +67,6 @@
 //	}
 
 	/// cocoa or at least foundation dependant
-	standardizePath { _Cocoa_StandardizePath ^this.primitiveFailed }
-	absolutePath{
-		var first;
-		first = this[0];
-		if(first == $/){^this};
-		if(first == $~){^this.standardizePath};
-		^File.getcwd ++ "/" ++ this;
-	}
 	findHelpFile {
 		_Cocoa_HelpFileForString_
 		^this.primitiveFailed

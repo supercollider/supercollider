@@ -72,7 +72,7 @@ int prSavePanel(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-
+// NOTE: unused
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed);
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
 {
@@ -280,7 +280,7 @@ void initCocoaFilePrimitives()
     definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);	
     definePrimitive(base, index++, "_Cocoa_SavePanel", prSavePanel, 2, 0);	
     //definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
-    definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);	
+//     definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);	
     definePrimitive(base, index++, "_Cocoa_GetPathsInDirectory", prGetPathsInDirectory, 4, 0);	
     definePrimitive(base, index++, "_Cocoa_HelpFileForString_", prHelpFileForString, 1, 0);	
 
