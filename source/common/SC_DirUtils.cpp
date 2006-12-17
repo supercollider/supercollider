@@ -163,6 +163,9 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 				return;
 			}
 		}
+		if (!realpath(path, returnPath))
+			strcpy(returnPath, path);
+		return;
 	}
 #elif defined(SC_LINUX)
 	if (!realpath(path, returnPath))
