@@ -63,8 +63,11 @@ else:
 
 if CPU == 'ppc':
     DEFAULT_OPT_ARCH = '7450'
-elif CPU in [ 'i586', 'i686' ]:
+elif CPU in [ 'i386', 'i586', 'i686' ]:
+    # FIXME: better detection
     DEFAULT_OPT_ARCH = CPU
+else:
+    DEFAULT_OPT_ARCH = None
 
 # ======================================================================
 # util
@@ -216,13 +219,14 @@ def make_opt_flags(env):
 	"-fstrength-reduce"
 	]
     arch = env['OPT_ARCH']
+    if arch:
+	if CPU == 'ppc':
+	    flags.extend([ "-mcpu=%s" % (arch,) ])
+	else:
+	    flags.extend([ "-march=%s" % (arch,) ])
     if CPU == 'ppc':
-	flags.extend([
-		"-mcpu=%s" % (arch,),
-		"-fsigned-char", "-mhard-float",
-		"-mpowerpc-gpopt", "-mpowerpc-gfxopt" ])
-    else:
-	flags.extend([ "-march=%s" % (arch,) ])
+	flags.extend([ "-fsigned-char", "-mhard-float",
+		       "-mpowerpc-gpopt", "-mpowerpc-gfxopt" ])
     return flags
 
 # ======================================================================
@@ -568,7 +572,7 @@ libscsynthEnv = serverEnv.Copy(
 # platform specific
 if PLATFORM == 'darwin':
     serverEnv.Append(
-	LINKFLAGS = '-framework CoreServices' # -framework CoreAudio
+	LINKFLAGS = '-framework CoreServices'
 	)
 elif PLATFORM == 'linux':
     serverEnv.Append(CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')])
@@ -733,7 +737,11 @@ langEnv.Append(
     LIBS = ['common', 'scsynth', 'pthread', 'dl', 'm'],
     LIBPATH = 'build'
     )
-# if PLATFORM == 'darwin':
+if PLATFORM == 'darwin':
+    langEnv.Append(
+	LINKFLAGS = '-framework CoreServices'
+	)
+    
 merge_lib_info(langEnv, libraries['audioapi'])
 
 libsclangEnv = langEnv.Copy(
@@ -826,7 +834,7 @@ if env['LANG']:
     env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
     sclang = langEnv.Program(
 	'build/sclang', sclangSources,
-	LIBS = ['sclang', 'scsynth'])
+	LIBS = ['scsynth', 'sclang'])
     env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
 
 # ======================================================================
