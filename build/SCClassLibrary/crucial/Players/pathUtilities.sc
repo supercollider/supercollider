@@ -7,11 +7,7 @@
 }
 
 + SequenceableCollection {
-	loadPath {
-		^this.collect({ arg obj;
-			obj.loadPath
-		})
-	}
+	loadPath { arg warnIfNotFound=true;		^this.collect { arg obj;			obj.loadPath(warnIfNotFound)		}	}
 	enpath {
 		^this.collect({ arg obj;
 			obj.enpath
