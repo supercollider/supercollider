@@ -820,6 +820,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		PyrObject *optionsObj = a->uo;
 		PyrSlot *optionsSlots = optionsObj->slots;
 
+		static char mInputStreamsEnabled[512], mOutputStreamsEnabled[512], mDeviceName[512];
 		int err;
 		
 		err = slotIntVal(optionsSlots + 0, (int*)&options.mNumAudioBusChannels);
@@ -867,6 +868,20 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		
 		options.mLoadGraphDefs = IsTrue(optionsSlots + 14) ? 1 : 0;
 		
+		#ifdef SC_DARWIN
+		err = slotStrVal(optionsSlots+15, mInputStreamsEnabled, 512);
+		if(err) options.mInputStreamsEnabled = NULL;
+		else options.mInputStreamsEnabled = mInputStreamsEnabled;
+		
+		err = slotStrVal(optionsSlots+16, mOutputStreamsEnabled, 512);
+		if(err) options.mOutputStreamsEnabled = NULL;
+		else options.mOutputStreamsEnabled = mOutputStreamsEnabled;
+		#endif
+		
+		err = slotStrVal(optionsSlots+17, mDeviceName, 512);
+		if(err) options.mDeviceName = NULL;
+		else options.mDeviceName = mDeviceName;		
+
 		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
 		
