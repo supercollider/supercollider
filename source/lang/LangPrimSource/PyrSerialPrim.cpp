@@ -339,10 +339,6 @@ void SerialPort::threadLoop()
 	const int fd = m_fd;
 	const int max_fd = fd+1;
 
-	fd_set fds;
-	FD_ZERO(   &fds);
-	FD_SET(fd, &fds);
-
 // 	printf("SerialPort: entering main loop\n");
 
 	m_running = true;
@@ -350,7 +346,8 @@ void SerialPort::threadLoop()
 
 	while (true) {
 		fd_set rfds;
-		FD_COPY(&fds, &rfds);
+		FD_ZERO(   &rfds);
+		FD_SET(fd, &rfds);
 
 		struct timeval timeout;
 		timeout.tv_sec = 1;
