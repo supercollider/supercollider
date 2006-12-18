@@ -4,15 +4,16 @@
 		var active, booter, killer, makeDefault, running, booting, stopped;
 		var recorder, scoper;
 		var countsViews, ctlr;
-		var dumping=false;
+		var dumping=false, label;
 		
 		if (window.notNil, { ^window.front });
 		
-		if(w.isNil,{
-			w = window = SCWindow(name.asString ++ " server", 
+		if(w.isNil) {
+			label = name.asString + "server";
+			w = window = SCWindow(label, 
 						Rect(10, named.values.indexOf(this) * 120 + 10, 306, 92));
 			w.view.decorator = FlowLayout(w.view.bounds);
-		});
+		} { label = w.name };
 		
 		if(isLocal,{
 			booter = SCButton(w, Rect(0,0, 48, 24));
@@ -90,7 +91,7 @@
 						this.dumpOSC(0);
 						this.startAliveThread;
 						dumping = false;
-						w.name = name.asString ++ " server";
+						w.name = label;
 						CmdPeriod.remove(stillRunning);
 					};
 					if(dumping, stopDump, startDump)
