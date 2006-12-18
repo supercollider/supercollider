@@ -199,6 +199,15 @@
 /* End PBXApplicationTarget section */
 
 /* Begin PBXBuildFile section */
+		53FA84000B374A5200AB10D4 /* SC_FIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */; };
+		53FA84010B374A5200AB10D4 /* SC_FIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */; };
+		53FA84020B374A5200AB10D4 /* SC_FIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */; };
+		53FA84040B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */; };
+		53FA84050B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */; };
+		53FA84060B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */; };
+		53FA840A0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */; };
+		53FA840B0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */; };
+		53FA840C0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */; };
 		6A2536BB09C1C9360045AEB7 /* CocoaBridgePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */; };
 		6A40715507C7240E003E9C23 /* SCSoundFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A40715407C7240E003E9C23 /* SCSoundFileView.h */; };
 		6A40717407C72426003E9C23 /* SCTextView.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A40717307C72426003E9C23 /* SCTextView.M */; };
@@ -743,8 +752,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		43C4FB05050E298F004C2729 /* libraryConfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = libraryConfig.h; sourceTree = "<group>"; };
 		43C4FB06050E29C9004C2729 /* libraryConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = libraryConfig.cpp; sourceTree = "<group>"; };
+		53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_FIFO.h; sourceTree = "<group>"; };
+		53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrSerialPrim.cpp; sourceTree = "<group>"; };
+		53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_LanguageClient.h; sourceTree = "<group>"; };
 		6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaBridgePrimitives.M; sourceTree = "<group>"; };
 		6A40715407C7240E003E9C23 /* SCSoundFileView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCSoundFileView.h; sourceTree = "<group>"; };
 		6A40717307C72426003E9C23 /* SCTextView.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCTextView.M; sourceTree = "<group>"; };
@@ -1096,6 +1107,7 @@
 		F50D050A02E69B6B01CA2799 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */,
 				88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */,
 				88D7D583090C8737008D45B9 /* SC_DirUtils.h */,
 				F5C7B150033D5B4801A80099 /* SC_World.h */,
@@ -1116,6 +1128,7 @@
 		F50D051002E69B6B01CA2799 /* lang */ = {
 			isa = PBXGroup;
 			children = (
+				53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */,
 				F50D051102E69B6B01CA2799 /* AdvancingAllocPool.h */,
 				F50D051202E69B6B01CA2799 /* AllocPools.h */,
 				F50D051302E69B6B01CA2799 /* bullet.h */,
@@ -1168,7 +1181,6 @@
 				F50D054202E69B6B01CA2799 /* SFHeaders.h */,
 				F50D054302E69B6B01CA2799 /* SimpleStack.h */,
 				F50D054402E69B6B01CA2799 /* VMGlobals.h */,
-				43C4FB05050E298F004C2729 /* libraryConfig.h */,
 			);
 			path = lang;
 			sourceTree = "<group>";
@@ -1264,6 +1276,7 @@
 		F50D059502E69B6B01CA2799 /* LangPrimSource */ = {
 			isa = PBXGroup;
 			children = (
+				53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */,
 				F5285E0D0316170401CA2799 /* OSCData.cpp */,
 				F50D059802E69B6B01CA2799 /* PyrArchiver.cpp */,
 				F50D059902E69B6B01CA2799 /* PyrArrayPrimitives.cpp */,
@@ -1479,6 +1492,8 @@
 				9286AEA5057D30EC000EBAEB /* SCService.h in Headers */,
 				88D7D585090C8737008D45B9 /* SC_DirUtils.h in Headers */,
 				88FB09A9096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
+				53FA84010B374A5200AB10D4 /* SC_FIFO.h in Headers */,
+				53FA840B0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1587,6 +1602,8 @@
 				6A40715507C7240E003E9C23 /* SCSoundFileView.h in Headers */,
 				88D7D584090C8737008D45B9 /* SC_DirUtils.h in Headers */,
 				88FB09A8096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
+				53FA84000B374A5200AB10D4 /* SC_FIFO.h in Headers */,
+				53FA840A0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1667,6 +1684,8 @@
 				92B4EA62059399DD00CA25E4 /* SC_StringBuffer.h in Headers */,
 				88D7D586090C8737008D45B9 /* SC_DirUtils.h in Headers */,
 				88FB09AA096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
+				53FA84020B374A5200AB10D4 /* SC_FIFO.h in Headers */,
+				53FA840C0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1846,6 +1865,7 @@
 				9286AEA0057D30B9000EBAEB /* SCService.mm in Sources */,
 				88FB09AD096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 				AB7E52F70A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
+				53FA84050B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1936,6 +1956,7 @@
 				88FB09AC096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 				6A2536BB09C1C9360045AEB7 /* CocoaBridgePrimitives.M in Sources */,
 				AB7E52F60A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
+				53FA84040B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1999,6 +2020,7 @@
 				88C3944A09172B6900B740D4 /* SC_DirUtils.cpp in Sources */,
 				88FB09AE096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 				AB7E52F80A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
+				53FA84060B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

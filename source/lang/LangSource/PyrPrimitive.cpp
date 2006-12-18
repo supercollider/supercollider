@@ -3978,7 +3978,9 @@ void initCocoaFilePrimitives();
 		
 void initCocoaBridgePrimitives();
 	initCocoaBridgePrimitives();
-		
+
+void initSerialPrimitives();
+	initSerialPrimitives();
 #endif
 
 // CR ADDED
