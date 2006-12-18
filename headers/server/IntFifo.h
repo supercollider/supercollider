@@ -58,7 +58,7 @@ public:
 	{
 		//assert(HasData());
 		long next = NextPos(mReadHead);
-		out = mItems[next].Perform();
+		int out = mItems[next];
 #ifdef SC_DARWIN
 		// we don't really need a compare and swap, but this happens to call 
 		// the PowerPC memory barrier instruction lwsync.
@@ -68,6 +68,7 @@ public:
 #else
 		mReadHead = next;
 #endif
+		return out;
 	}
 
 private:
