@@ -1,13 +1,27 @@
 SerialPort
 {
-	classvar allPorts;
-	var <dataptr, <semaphore;
+	classvar <>devicePattern, allPorts;
+	var dataptr, semaphore;
 
-	initClass {
+	*initClass {
 		allPorts = Array[];
 		UI.registerForShutdown({
 			this.closeAll;
 		});
+	}
+
+	// device listing
+	*devices {
+		^(devicePattern ?? {
+			thisProcess.platform.switch(
+				\linux,   "/dev/ttyS*",
+				\osx,     "/dev/tty.*",
+				\windows, "COM"
+			)
+		}).pathMatch
+	}
+	*listDevices {
+		this.devices.do(_.postln);
 	}
 
 	*new {
@@ -19,6 +33,12 @@ SerialPort
 		  crtscts(false),
 		  xonxoff(false)
 		  exclusive(false) |
+
+		if (port.isNumber) {
+			port = this.devices[port] ?? {
+				Error("invalid port index").throw;
+			};
+		}
 
 		^super.new.initSerialPort(
 			port,
@@ -67,6 +87,11 @@ SerialPort
 		};
 		^byte
 	}
+	// rx errors since last query
+	rxErrors {
+		_SerialPort_RXErrors
+	}
+
 	// always blocks
 	put { | byte, timeout=0.005 |
 		while { this.prPut(byte).not } {
@@ -78,11 +103,6 @@ SerialPort
 		bytes.do { |byte|
 			this.put(byte, timeout);
 		}
-	}
-
-	// rename me
-	flush {
-		_SerialPort_Flush
 	}
 
 // 	cmdPeriod {

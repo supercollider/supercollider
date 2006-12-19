@@ -76,6 +76,8 @@ public:
 
 	static const int kNumOptions = 7;
 	static const int kBufferSize = 8192;
+	static const int kReadTimeoutMs = 1000;
+
 	typedef SC_FIFO<uint8_t,kBufferSize> FIFO;
 	
 	struct Error : std::runtime_error
@@ -103,7 +105,7 @@ public:
 
 	bool put(uint8_t byte);
 	bool get(uint8_t* byte);
-	bool flush();
+	int rxErrors();
 
 protected:
 	static void* threadFunc(void*);
@@ -122,7 +124,7 @@ private:
 	struct termios		m_oldtermio;
 
 	// rx buffers
-	int					m_xruns[2];
+	int					m_rxErrors[2];
 	FIFO				m_rxfifo;
 	uint8_t				m_rxbuffer[kBufferSize];
 
@@ -264,8 +266,8 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 	// disable post processing
 	toptions.c_oflag &= ~OPOST;
 
-	// make communication fully synchronous
-	// see: http://unixwiz.net/techtips/termios-vmin-vtime.html
+	// see:  http://unixwiz.net/techtips/termios-vmin-vtime.html
+	// NOTE: unused for non-blocking reads
 // 	toptions.c_cc[VMIN]  = 0;
 // 	toptions.c_cc[VTIME] = 20;
     
@@ -276,7 +278,7 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 	}
 	memcpy(&m_termio, &toptions, sizeof(toptions));
 
-	m_xruns[0] = m_xruns[1] = 0;
+	m_rxErrors[0] = m_rxErrors[1] = 0;
 
 	int e = pthread_create(&m_thread, 0, threadFunc, this);
 	if (e != 0) {
@@ -304,14 +306,13 @@ bool SerialPort::get(uint8_t* byte)
 	return true;
 }
 
-bool SerialPort::flush()
+int SerialPort::rxErrors()
 {
-	int xruns = m_xruns[1];
-	if (m_xruns[0] != xruns) {
-		m_xruns[0] = xruns;
-		return true;
-	}
-	return false;
+	// errors since last query
+	int x         = m_rxErrors[1];
+	int res       = x-m_rxErrors[0];
+	m_rxErrors[0] = x;
+	return res;
 }
 
 void* SerialPort::threadFunc(void* self)
@@ -342,7 +343,7 @@ void SerialPort::threadLoop()
 // 	printf("SerialPort: entering main loop\n");
 
 	m_running = true;
-	m_xruns[1] = 0;
+	m_rxErrors[1] = 0;
 
 	while (true) {
 		fd_set rfds;
@@ -350,41 +351,39 @@ void SerialPort::threadLoop()
 		FD_SET(fd, &rfds);
 
 		struct timeval timeout;
-		timeout.tv_sec = 1;
-		timeout.tv_usec = 0;
+		timeout.tv_sec = kReadTimeoutMs/1000;
+		timeout.tv_usec = (kReadTimeoutMs%1000)*1000;
 
 		int n = select(max_fd, &rfds, 0, 0, &timeout);
-		if (n > 0) {
-			if (FD_ISSET(fd, &rfds)) {
+		if ((n > 0) && FD_ISSET(fd, &rfds)) {
 // 				printf("poll input\n");
-				int nr = 0;
-				while (true) {
-					int n = read(fd, m_rxbuffer, kBufferSize);
+			int nr = 0;
+			while (true) {
+				int n = read(fd, m_rxbuffer, kBufferSize);
 // 					printf("read %d\n", n);
-					if (n > 0) {
-						// write data to ringbuffer
-						for (int i=0; i < n; ++i) {
-							if (!m_rxfifo.Put(m_rxbuffer[i])) {
-								m_xruns[1]++;
-								break;
-							}
+				if (n > 0) {
+					// write data to ringbuffer
+					for (int i=0; i < n; ++i) {
+						if (!m_rxfifo.Put(m_rxbuffer[i])) {
+							m_rxErrors[1]++;
+							break;
 						}
-						nr += n;
-					} else if (n == -1) {
-						if (errno == EAGAIN) break;
-						else goto done;
-					} else {
-// 						printf("SerialPort HUP\n");
-						goto done;
 					}
-				}
-				if (!m_running) {
-					// close and cleanup
+					nr += n;
+				} else if (n == -1) {
+					if (errno == EAGAIN) break;
+					else goto done;
+				} else {
+// 						printf("SerialPort HUP\n");
 					goto done;
 				}
-				if (nr > 0) {
-					dataAvailable();
-				}
+			}
+			if (!m_running) {
+				// close and cleanup
+				goto done;
+			}
+			if (nr > 0) {
+				dataAvailable();
 			}
 		} else if (n == -1) {
 			goto done;
@@ -510,12 +509,12 @@ static int prSerialPort_Put(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prSerialPort_Flush(struct VMGlobals *g, int numArgsPushed)
+static int prSerialPort_RXErrors(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
 	SerialPort* port = getSerialPort(self);
 	if (port == 0) return errFailed;
-	SetBool(self, port->flush());
+	SetInt(self, port->rxErrors());
 	return errNone;
 }
 
@@ -526,11 +525,11 @@ void initSerialPrimitives()
 	base = nextPrimitiveIndex();
 	index = 0;
 
-	definePrimitive(base, index++, "_SerialPort_Open",  prSerialPort_Open, 2+SerialPort::kNumOptions, 0);
-	definePrimitive(base, index++, "_SerialPort_Close", prSerialPort_Close, 1, 0);
-	definePrimitive(base, index++, "_SerialPort_Next",  prSerialPort_Next, 1, 0);
-	definePrimitive(base, index++, "_SerialPort_Put",   prSerialPort_Put, 2, 0);
-	definePrimitive(base, index++, "_SerialPort_Flush", prSerialPort_Flush, 1, 0);
+	definePrimitive(base, index++, "_SerialPort_Open",     prSerialPort_Open, 2+SerialPort::kNumOptions, 0);
+	definePrimitive(base, index++, "_SerialPort_Close",    prSerialPort_Close, 1, 0);
+	definePrimitive(base, index++, "_SerialPort_Next",     prSerialPort_Next, 1, 0);
+	definePrimitive(base, index++, "_SerialPort_Put",      prSerialPort_Put, 2, 0);
+	definePrimitive(base, index++, "_SerialPort_RXErrors", prSerialPort_RXErrors, 1, 0);
 
 	SerialPort::s_dataAvailable = getsym("prDataAvailable");
 }
