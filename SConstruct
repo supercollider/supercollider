@@ -833,9 +833,11 @@ sclangSources = ['source/lang/LangSource/cmdLineFuncs.cpp']
 if env['LANG']:
     libsclang = langEnv.SharedLibrary('build/sclang', libsclangSources)
     env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
-    sclang = langEnv.Program(
-	'build/sclang', sclangSources,
-	LIBS = ['scsynth', 'sclang'])
+    if PLATFORM == 'darwin':
+    	sclangLibs = ['scsynth', 'sclang']
+    else:
+    	sclangLibs = ['sclang']
+    sclang = langEnv.Program('build/sclang', sclangSources, LIBS=sclangLibs)
     env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
 
 # ======================================================================
