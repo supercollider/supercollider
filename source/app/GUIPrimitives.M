@@ -1753,6 +1753,23 @@ int prFont_SetSmoothing(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prPen_SetSmoothing(struct VMGlobals *g, int numArgsPushed);
+int prPen_SetSmoothing(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+    
+    //PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+	CGContextSetShouldAntialias(cgc, IsTrue(b));
+	
+	return errNone;
+}
+
+
 int prString_GetBounds(struct VMGlobals *g, int numArgsPushed);
 int prString_GetBounds(struct VMGlobals *g, int numArgsPushed)
 {
@@ -2988,6 +3005,6 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Font_SetSmoothing", prFont_SetSmoothing, 2, 0);
 	
 	definePrimitive(base, index++, "_TextWindow_LinkAtClickPos", prTextWindow_LinkAtClickPos, 2, 0);
-	
+	definePrimitive(base, index++, "_Pen_SetSmoothing", prPen_SetSmoothing, 2, 0);
 }
 
