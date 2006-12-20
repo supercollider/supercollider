@@ -44,6 +44,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FFT2_UGens", "PlugIns\FFT2_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GendynUGens", "PlugIns\GendynUGens.vcproj", "{75455EF9-157B-4ADC-81C9-5C53190B18EA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JoshUGens", "PlugIns\JoshUGens.vcproj", "{0532664B-3D3D-481C-A87E-CB284C211D6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -118,6 +120,10 @@ Global
 		{75455EF9-157B-4ADC-81C9-5C53190B18EA}.Debug|Win32.ActiveCfg = Debug|Win32
 		{75455EF9-157B-4ADC-81C9-5C53190B18EA}.Release|Win32.ActiveCfg = Release|Win32
 		{75455EF9-157B-4ADC-81C9-5C53190B18EA}.Release|Win32.Build.0 = Release|Win32
+		{0532664B-3D3D-481C-A87E-CB284C211D6D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0532664B-3D3D-481C-A87E-CB284C211D6D}.Debug|Win32.Build.0 = Debug|Win32
+		{0532664B-3D3D-481C-A87E-CB284C211D6D}.Release|Win32.ActiveCfg = Release|Win32
+		{0532664B-3D3D-481C-A87E-CB284C211D6D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
