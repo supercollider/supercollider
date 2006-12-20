@@ -91,7 +91,7 @@ extern "C" void *appClockTimer(void * pymod) {
 void PySCLang_Module::appClock() {
 	while(true) {
 		pthread_mutex_lock(&gLangMutex);
-		runLibrary(getsym("tick"));
+		if (compiledOK) runLibrary(getsym("tick"));
 		pthread_mutex_unlock(&gLangMutex);
 	
 #ifdef SC_WIN32
@@ -158,6 +158,10 @@ Py::Object PySCLang_Module::sendMain(const Py::Tuple &a)
     PyErr_SetString(PyExc_IndexError,"requires 1 string argument");
     return Py::Object(Py::Null());
   }
+  if (!compiledOK) {
+	PyErr_SetString(PyExc_RuntimeError,"PySCLang: The library has not been compiled successfully");
+	return Py::Object(Py::Null());
+  }
   Py::String pystr(a[0]);
   std::string str = pystr;
   const char* methodName = str.c_str();
@@ -190,11 +194,12 @@ Py::Object PySCLang_Module::setCmdLine(const Py::Tuple &a)
   int length = strlen(text);
 	
   if (!compiledOK) {
-    PyErr_SetString(PyExc_RuntimeError,"The library has not been compiled successfully");
-    return Py::Object(Py::Null());
-	}
-	pthread_mutex_lock(&gLangMutex);
-	if (compiledOK) {
+	PyErr_SetString(PyExc_RuntimeError,"PySCLang: The library has not been compiled successfully");
+	return Py::Object(Py::Null());
+  }
+  pthread_mutex_lock(&gLangMutex);
+
+  if (compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
 		
 			int textlen = length;

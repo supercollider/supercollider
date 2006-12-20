@@ -23,7 +23,7 @@ setup(
         } 
     ], 
     # options for py2exe
-    options = {"py2exe": {"compressed": 1,
+    options = {"py2exe": {"compressed": 0,
                        "optimize": 2,
                        #"packages": ["PySCLang"],
 		       "bundle_files": 2,

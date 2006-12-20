@@ -31,6 +31,7 @@
 import wx
 import wx.stc as stc
 import wx.html as html
+import wx.richtext as richtext
 import PySCLang
 import os, string, keyword, sys
 
@@ -97,10 +98,10 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
 # ---------------------------------------------------------------------
 # RTF Sub Window 
 # Issues: not editable, does not always (python versions) render rtf correctly
-class PsycolliderRTFSubWin(wx.TextCtrl):
+class PsycolliderRTFSubWin(wx.richtext.RichTextCtrl):
 
   def __init__ (self,parent):
-    wx.TextCtrl.__init__(self,parent, style = wx.TE_MULTILINE | wx.TE_RICH | wx.TE_READONLY)
+    wx.richtext.RichTextCtrl.__init__(self,parent)
     self.Bind(wx.EVT_CHAR, self.OnChar)
 
   def OnChar(self,event):
@@ -108,21 +109,25 @@ class PsycolliderRTFSubWin(wx.TextCtrl):
 
 # ---------------------------------------------------------------------
 # Code Sub Window - plain text window for code
-# Issues: cant type a capital "T"
+# Issues: 
 class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
 
   fold_symbols = 3
 
   def __init__ (self,parent):
-    wx.stc.StyledTextCtrl.__init__(self,parent)
+    stc.StyledTextCtrl.__init__(self,parent)
     font = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, "Courier New")
     self.StyleSetFont(wx.stc.STC_STYLE_DEFAULT, font)
+    #self.SetModEventMask(wx.stc.STC_MOD_INSERTTEXT | wx.stc.STC_MOD_DELETETEXT | wx.stc.STC_PERFORMED_USER)
+    # bindings
+    self.Bind(stc.EVT_STC_CHANGE, self.OnStcChange)
+    self.Bind(stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
+    self.Bind(stc.EVT_STC_MARGINCLICK, self.OnMarginClick)
+    self.Bind(wx.EVT_KEY_DOWN, self.OnKeyPressed)
     self.Bind(wx.EVT_CHAR, self.OnChar)
-    self.SetModEventMask(wx.stc.STC_MOD_INSERTTEXT | wx.stc.STC_MOD_DELETETEXT | wx.stc.STC_PERFORMED_USER)
-    self.Bind(wx.stc.EVT_STC_CHANGE, self.OnStcChange)
     
-    self.CmdKeyAssign(ord('B'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMIN)
-    self.CmdKeyAssign(ord('N'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMOUT)
+    self.CmdKeyAssign(ord('+'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMIN)
+    self.CmdKeyAssign(ord('-'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMOUT)
 
     self.SetLexer(wx.stc.STC_LEX_CPP)             # yssr
     self.SetKeyWords(0, " ".join(SC3_KEYWORDS))   # yssr
@@ -131,18 +136,14 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
     self.SetProperty("tab.timmy.whinge.level", "1")
     self.SetMargins(1,0) # yssr
 
+    # some settings for appearance
     self.SetViewWhiteSpace(False)
-    #self.SetBufferedDraw(False)
-    #self.SetViewEOL(True)
-    #self.SetEOLMode(stc.STC_EOL_CRLF)
+    self.SetViewEOL(False)
     self.SetUseAntiAliasing(True)
-
-	# this causes the grey background after 78 chars in a line...
-    #self.SetEdgeMode(stc.STC_EDGE_BACKGROUND)
-    #self.SetEdgeColumn(78)
+    self.SetWrapMode(True)
+    self.SetEdgeMode(stc.STC_EDGE_NONE)
 
     # Setup a margin to hold fold markers
-    #self.SetFoldFlags(16)  ###  WHAT IS THIS VALUE?  WHAT ARE THE OTHER FLAGS?  DOES IT MATTER?
     self.SetMarginType(2, stc.STC_MARGIN_SYMBOL)
     self.SetMarginMask(2, stc.STC_MASK_FOLDERS)
     self.SetMarginSensitive(2, True)
@@ -156,10 +157,6 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
     self.MarkerDefine(stc.STC_MARKNUM_FOLDEREND,     stc.STC_MARK_BOXPLUSCONNECTED,  "white", "#808080")
     self.MarkerDefine(stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_BOXMINUSCONNECTED, "white", "#808080")
     self.MarkerDefine(stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNER,           "white", "#808080")
-
-    self.Bind(stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
-    self.Bind(stc.EVT_STC_MARGINCLICK, self.OnMarginClick)
-    self.Bind(wx.EVT_KEY_DOWN, self.OnKeyPressed)
 
     # Make some styles,  The lexer defines what each style is used for, we
     # just have to define what each style looks like.  This set is adapted from
@@ -202,20 +199,24 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
     #wx.MessageBox("OnStcChange")
     #GetParent().setModified
 
-  def OnKeyPressed(self, event):
-    if self.CallTipActive():
-      self.CallTipCancel()
-    key = event.KeyCode()
+  def OnChar(self,event):
+    self.GetParent().GetParent().OnChildCharHook(event)
 
+  def OnStcChange(self, event):
+    self.GetParent().OnStcChange(event)
+    
+  def OnKeyPressed(self, event):
+#    if self.CallTipActive():
+#      self.CallTipCancel()
+    key = event.GetKeyCode()
+    
     if key == 32 and event.ControlDown():
       pos = self.GetCurrentPos()
 
       # Tips
       if event.ShiftDown():
         self.CallTipSetBackground("yellow")
-        self.CallTipShow(pos, 'lots of of text: blah, blah, blah\n\n'
-                 'show some suff, maybe parameters..\n\n'
-                 'fubar(param1, param2)')
+        self.CallTipShow(pos, 'we can display tips here')
       # Code completion
       else:
         #lst = []
@@ -242,6 +243,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
 
   def OnUpdateUI(self, evt):
     # check for matching braces
+    
     braceAtCaret = -1
     braceOpposite = -1
     charBefore = None
@@ -370,12 +372,6 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
     PySCLang.setCmdLine(str(sel))
     PySCLang.sendMain(methodName)
 
-  def OnChar(self,event):
-    self.GetParent().GetParent().OnChildCharHook(event)
-
-  def OnStcChange(self, event):
-    self.GetParent().OnStcChange(event)
-
 
 # ---------------------------------------------------------------------
 # Code Window
@@ -394,8 +390,8 @@ class PsycolliderCodeWin(wx.MDIChildFrame):
     return self.codeSubWin.GetSelectedText()
 
   def GetCurLineAsString(self):
-
     return self.codeSubWin.GetCurLine()
+    
   def OnStcChange(self, event):
     if not self.isModified:
       self.originalTitle = self.GetTitle()
@@ -477,6 +473,9 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     wx.MDIParentFrame.__init__(self,parent,ID,title,pos,size,style)
     self.winCount = 0
 
+    # configuration 
+    self.config  = wx.Config("Psycollider")
+
     # menu creation 
     menu = wx.Menu()
     menu.Append(ID_NewCodeWin, "&New Code Window...\tCtrl+N")
@@ -495,6 +494,13 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     menu.AppendSeparator()
     menu.Append(ID_Exit, "E&xit\tAlt+F4")
 
+    # File History
+    self.file_history = wx.FileHistory()
+    self.file_history.UseMenu(menu)
+    self.config.SetPath("/RecentFiles")
+    self.file_history.Load(self.config)
+    self.Bind(wx.EVT_MENU_RANGE, self.doFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
+
     menuLang = wx.Menu()
     menuLang.Append(ID_Lang_Stop_Server,"Stop Server")
     menuLang.Append(ID_Lang_Run,"Run\tAlt+R")
@@ -506,12 +512,12 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     menuLang.Append(ID_EvalSelection , "&Evaluate Selection\tCtrl+Enter")
     menuLang.Append(ID_Go_To_Help_File , "&Go To Help File\tF1")
     menuLang.Append(ID_Lang_ClearLogWindow, "&Clear Post Window\tAlt+P")
-
+    
     menubar = wx.MenuBar()
     menubar.Append(menu, "&File")
     menubar.Append(menuLang, "&Lang")
     self.SetMenuBar(menubar)
-
+    
     self.CreateStatusBar()
 
     self.Bind(wx.EVT_MENU, self.OnNewCodeWindow, id=ID_NewCodeWin)
@@ -567,6 +573,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     #if event.GetKeyCode() == 0x0a and event.ControlDown( ):  # CTRL+RETURN == 0x0a
     #  self.Eval( ) # evt is useless here
     #elif event.GetKeyCode() == 0x2e and event.AltDown( ):
+    
     if event.GetKeyCode() == "r" and event.AltDown( ): # '.'
       self.On_Lang_Run(None) 
     if event.GetKeyCode() == 0x2e and event.AltDown( ):
@@ -591,6 +598,12 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
   #  else:
     event.Skip( )
     pass
+  
+  def doFileHistory(self, event):
+    """Open a file from file history"""
+    file_number = event.GetId() - wx.ID_FILE1
+    filename = self.file_history.GetHistoryFile(file_number)
+    self.OpenFile(filename)
     
   def Eval(self):
     self.SendSelection("interpretPrintCmdLine")
@@ -635,6 +648,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     fileDlg = wx.FileDialog(self,style=wx.OPEN)
     if fileDlg.ShowModal( ) == wx.ID_OK:
       path = fileDlg.GetPath()
+      self.file_history.AddFileToHistory(path)
       self.OpenFile(path)
 
   def OnCloseCodeWin(self,evt): # yssr -added new def
@@ -684,12 +698,10 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
       textContent = file.read()
       file.close()
       if textContent[0:5] == '{\\rtf':
-	# this does not work anymore - we have to wait for wxPython 2.7 to have proper RTF support
-	# help will be handled through html
 	win = self.OnNewRTFWindow(None)
+	# that is still not working, needs more tweaking...
         #win.rtfSubWin.LoadFile(path)
-	win.rtfSubWin.AppendText("Sorry, RTF is currently not supported. Please open your file in an external editor (e.g. Wordpad) and copy the code here. \n")
-	win.rtfSubWin.AppendText("Full RTF support is planned as soon it is supported by wxPython 2.7")
+	win.rtfSubWin.AppendText('Sorry, still no RTF support, wxRichTextControl does not yet support reading RTF files...')
       elif (textContent.find('<html') >= 0 or textContent.find('<HTML') >= 0):
       	win = self.OnNewHTMLWindow(None)
 	win.htmlSubWin.LoadPage(path)
@@ -779,6 +791,8 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     if shouldVeto:
       event.Veto()
     else:
+      self.config.SetPath("/RecentFiles")
+      self.file_history.Save(self.config)
       self.Destroy()
 
   def OnStartServer(self, event):
@@ -889,7 +903,9 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
         if foundFilePath != "":
           break
     if foundFilePath == "":     
-      foundFilePath = os.path.join(gHelpFolder,"Help.html")
+      foundFilePath = os.path.join(gHelpFolder,"Help.help.html")
+      # for scdoc2html: also open the toc_root - as we cant handle frames...
+      self.OpenFile(os.path.join(gHelpFolder,"toc_root.html"))
     self.OpenFile(foundFilePath)
     
 
@@ -920,7 +936,7 @@ class PsycolliderApp(wx.App):
 
     # start the sc lang interpreter
     PySCLang.start( )    
-
+    
     (addr,port) = self.GetServerAddressAndPort()
     
     # Return a success flag
