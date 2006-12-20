@@ -174,6 +174,12 @@ PathName {
 		^number
 	}
 	
+	/* concatenation */
+	+/+ { | path |
+		var otherFullPath = path.respondsTo(\fullPath).if({ path.fullPath }, { path.asString });
+		^this.class.new(fullPath +/+ otherFullPath)
+	}
+
 	/* additional methods jrh */
 	
 	entries {
