@@ -299,7 +299,7 @@ Document {
 	}
 	openWikiPage {
 		var selectedText, filename, index, directory;
-		var extensions = #[".rtf", ".sc", ".txt", "", ".rtfd"];
+		var extensions = #[".rtf", ".sc", ".txt", "", ".rtfd", ".html"];
 		selectedText = this.selectedText;
 		index = this.selectionStart;
 		
