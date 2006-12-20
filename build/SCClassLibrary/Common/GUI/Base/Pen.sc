@@ -115,6 +115,12 @@ Pen {
 		_Pen_DrawAquaButton
 		^this.primitiveFailed
 	}
+	
+	*setSmoothing { arg flag=true;
+		_Pen_SetSmoothing
+		^this.primitiveFailed
+	}
+	
 
 	//PRIVATE:
 	*push {
