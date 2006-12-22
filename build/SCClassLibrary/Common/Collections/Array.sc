@@ -194,23 +194,29 @@ Array[slot] : ArrayedCollection {
 	numChannels { ^this.size }
 	
 	// multichannel UGen-poll	
-	poll { arg interval = 0.1, label = "UGen Array:";
-		if(UGen.buildSynthDef.isNil, {^this.value}); // preserve 'value' synonym for general use
-		^SynthDef.wrap({
-			var ids, responder;
-			ids = this.collect({|item| item.hash & 0x7FFFFF;});
-			switch(this.rate, 
-				\audio, {SendTrig.ar(Impulse.ar(interval.reciprocal), ids, this)},
-				\control, {SendTrig.kr(Impulse.kr(interval.reciprocal), ids, this)}
-			);
-			responder = OSCresponderNode(nil,'/tr',{ arg time, rder, msg;
-				var ind;
-				ind = ids.indexOf(msg[2]);
-				if(ind.notNil, { ("Index" + ind + "of" + label.asString + msg[3]).postln;});
-			}).add;
-			CmdPeriod.doOnce({ responder.remove });
-			this;
-		})
+	poll { arg trig, label = "UGen Array:", trigid = -1;
+		var rates, trigarray;
+		rates = Array.fill(this.size, {arg i; this[i].methodSelectorForRate});
+		trig = trig.isNumber.if({
+			Array.fill(this.size, {arg i; Impulse.perform(rates[i], trig)});
+			}, {
+			trig
+			}) ?? { 
+			Array.fill(this.size, {arg i; Impulse.perform(rates[i], 10)})
+			};
+		label = label.isKindOf(Array).if({
+			label
+			}, {
+			Array.fill(this.size, label)
+			});
+		label.postln;
+		trigid = trigid.isKindOf(Array).if({
+			trigid
+			}, {
+			Array.fill(this.size, trigid)
+			});
+          ^Array.fill(this.size, {arg i; 
+          	Poll.perform(rates[i], trig[i], this[i], label[i], trigid[i])})
 	}
 	
 	envAt { arg time;
