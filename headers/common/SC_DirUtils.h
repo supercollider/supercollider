@@ -44,6 +44,9 @@ void sc_AppendToPath(char *path, const char *component);
 // Returns the expanded path with users home directory (also in newpath2)
 char *sc_StandardizePath(const char *path, char *newpath2);
 
+// Return TRUE iff 'path' is a symbolic link.
+bool sc_IsSymlink(const char *path);
+
 // Return TRUE iff 'dirname' is an existing directory.
 bool sc_DirectoryExists(const char *dirname);
 

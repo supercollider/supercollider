@@ -111,6 +111,17 @@ bool sc_DirectoryExists(const char *dirname)
 #endif
 }
 
+bool sc_IsSymlink(const char* path)
+{
+#if defined(SC_WIN32)
+	// FIXME
+	return false;
+#else
+	struct stat buf;
+	return ((stat(path, &buf) == 0) &&
+			S_ISLNK(buf.st_mode));
+#endif
+}
 
 bool sc_IsNonHostPlatformDir(const char *name)
 {
@@ -163,11 +174,9 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 				return;
 			}
 		}
-		if (!realpath(path, returnPath))
-			strcpy(returnPath, path);
-		return;
 	}
 #elif defined(SC_LINUX)
+	isAlias = sc_IsSymlink(path);
 	if (!realpath(path, returnPath))
 		strcpy(returnPath, path);
 	return;
