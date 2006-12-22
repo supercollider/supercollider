@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf420
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 TrebuchetMS;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
-\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 UGen			
@@ -26,9 +26,8 @@ See also
 \f1\b0 .\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Convenience Methods
+\f0\b\fs28 Convenience Methods
 \f1\b0\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -51,15 +50,17 @@ Displays the output of this UGen in an individual
 s.scope; \cf4 // can still separately scope the output of the server
 \f0\b\fs24 \cf0 \
 \
-poll(interval, label)\
+poll(trig, label, trigid)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 Polls the output of this UGen every 
 \f0\b interval
 \f1\b0  seconds, and posts the result. The default 
-\f0\b interval 
-\f1\b0 is 0.1 seconds.\
+\f0\b trig 
+\f1\b0 is 10, which converts to 10 triggers per second (or every 0.1 seconds). See 
+\f0\b [Poll]
+\f1\b0  for more info on polling.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -237,18 +238,16 @@ dumpArgs
 Posts a list of the arguments for this UGen and their values.\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Other Instance Methods
+\f0\b\fs28 Other Instance Methods
 \f1\b0\fs24 \
 \
 The following methods and instance variables are largely used in the construction of synth definitions, synth descriptions (see 
 \f0\b [\ul SynthDesc\ulnone ]
 \f1\b0 ), UGen class definitions, etc., and are usually not needed for general use. Users should not attempt to set any of these values in general code.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 synthDef
+\f0\b synthDef
 \f1\b0 \
 \
 The SynthDef which contains the UGen.\
@@ -333,8 +332,9 @@ Returns the receiver.	\
 \
 Returns the receiver. Thus UGen-dup effectively returns a reference to the original and is a convenient way to copy a mono signal to multiple channels.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf5 \{ \cf6 SinOsc\cf5 .ar(\cf6 Rand\cf5 (200, 4000), 0, 0.2).dup \}.plot \cf7 // this is the same UGen
+\f3\fs18 \cf0 \{ \cf2 SinOsc\cf0 .ar(\cf2 Rand\cf0 (200, 4000), 0, 0.2).dup \}.plot \cf4 // this is the same UGen
 \f1\fs24 \cf0 \
 \'ca\'ca \'ca\
 \pard\pardeftab720\ql\qnatural
