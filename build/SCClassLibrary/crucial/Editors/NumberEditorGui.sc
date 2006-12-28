@@ -27,7 +27,9 @@ NumberEditorGui : EditorGui {
 			.action_({ arg nb;
 				model.activeValue_(nb.value).changed(numv);
 			});
-		if(consumeKeyDowns,{ numv.keyDownAction = {nil};	});
+		//if(consumeKeyDowns,{ 
+		//	numv.keyDownAction = {nil};		
+		//});
 	}
 	slider { arg layout, x=100,y=15;
 		var r;
