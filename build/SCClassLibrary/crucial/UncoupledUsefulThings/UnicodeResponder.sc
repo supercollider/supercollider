@@ -34,7 +34,7 @@ UnicodeResponder {
 		})
 	}
 	// for combinations: true/false/nil
-	register { arg unicode,shift,caps,opt,cntl,function;
+	register { arg unicode,shift,caps,opt,cntl,function,description;
 		var require=0,deny=0;
 		require = [];
 		deny = [];
@@ -66,7 +66,7 @@ UnicodeResponder {
 				deny = deny.add(KeyCodeResponder.controlModifier);
 			})
 		});
-		this.pushForUnicode(unicode.asUnicode,require,deny,function);
+		this.pushForUnicode(unicode.asUnicode,require,deny,function,description);
 	}
 	
 	// you can concatenate responders
@@ -169,10 +169,10 @@ UnicodeResponder {
 	at { arg key; ^dict.at(key) }
 	put { arg key,value; dict.put(key,value) }
 
-	*pushForUnicode { arg unicode,requireMask,denyMask,function;
-		this.global.pushForUnicode(unicode,requireMask,denyMask,function)
+	*pushForUnicode { arg unicode,requireMask,denyMask,function,description;
+		this.global.pushForUnicode(unicode,requireMask,denyMask,function,description)
 	}
-	pushForUnicode { arg unicode,requireMask,denyMask,function;
+	pushForUnicode { arg unicode,requireMask,denyMask,function,description;
 		var kdr;
 		unicode = unicode.asUnicode;
 		kdr = this.at(unicode);
@@ -180,7 +180,7 @@ UnicodeResponder {
 			kdr = KeyCodeResponderStack.new;
 			this.put(unicode,kdr);
 		});
-		kdr.addMaskTester(requireMask,denyMask,function);
+		kdr.addMaskTester(requireMask,denyMask,function,description);
 	}
 	*resetUnicode { arg unicode;
 		this.at(unicode.asUnicode).reset
@@ -194,5 +194,14 @@ UnicodeResponder {
 			SCView.globalKeyDownAction = global;
 			global
 		} 
+	}
+	guiClass { ^KeyCodeResponderGui }
+	report {
+		dict.keysValuesDo({ |k,v|
+			Post.nl;
+			//Post << k.asAscii;
+			v.report(k);
+			//Post << v;
+		});
 	}
 }

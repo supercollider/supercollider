@@ -40,7 +40,7 @@ KeyCodeResponder {
 	}
 	
 	// true, false or nil
-	register { arg keycode,shift,caps,opt,cntl,function;
+	register { arg keycode,shift,caps,opt,cntl,function,description;
 		var require=0,deny=0;
 		require = [];
 		deny = [];
@@ -72,7 +72,7 @@ KeyCodeResponder {
 				deny = deny.add(controlModifier);
 			})
 		});
-		this.pushForKeycode(keycode,require,deny,function);
+		this.pushForKeycode(keycode,require,deny,function,description);
 	}	
 
 	// true, false or nil
@@ -127,7 +127,7 @@ KeyCodeResponder {
 				});
 		})
 	}
-	
+
 	// concatenate responders
 	++ { arg that;
 		var new,keys;
@@ -194,18 +194,42 @@ KeyCodeResponder {
 	at { arg key; ^dict.at(key) }
 	put { arg key,value; dict.put(key,value) }
 
-	*pushForKeycode { arg keycode,requireMask,denyMask,function;
-		this.global.pushForKeycode(keycode,requireMask,denyMask,function)
+	*pushForKeycode { arg keycode,requireMask,denyMask,function,description;
+		this.global.pushForKeycode(keycode,requireMask,denyMask,function,description)
 	}
-	pushForKeycode { arg keycode,requireMask,denyMask,function;
+	pushForKeycode { arg keycode,requireMask,denyMask,function,description;
 		var kdr;
 		kdr = this.at(keycode);
 		if(kdr.isNil,{
 			kdr = KeyCodeResponderStack.new;
 			this.put(keycode,kdr);
 		});
-		kdr.addMaskTester(requireMask,denyMask,function);
+		kdr.addMaskTester(requireMask,denyMask,function,description);
 	}
+	*maskToString { arg m;
+		var words;
+		words = "";
+		[\shift->KeyCodeResponder.shiftModifier, \caps->KeyCodeResponder.capsModifier,
+		\option->KeyCodeResponder.optionModifier, \control->KeyCodeResponder.controlModifier]
+		.do({ |modass|
+			if((m & modass.value) == modass.value,{
+				words = words + modass.key;
+				//boos = boos + "true,";
+			},{
+				//boos = boos + "false,";	
+			});
+		});
+		^words
+	}
+	report {
+		dict.keysValuesDo({ |k,v|
+			Post.nl;
+			//Post << k.asAscii;
+			v.report(k);
+			//Post << v;
+		});
+	}
+	guiClass { ^KeyCodeResponderGui }
 }
 
 // used by both UnicodeResponder and KeyCodeResponder
@@ -217,8 +241,8 @@ KeyCodeResponderStack {
 	var <>stack;
 	
 	*new {	^super.new.reset }
-	addMaskTester { arg requireMask,denyMask,function;
-		this.addKDR( KDRMaskTester(requireMask,denyMask,function) );
+	addMaskTester { arg requireMask,denyMask,function,description;
+		this.addKDR( KDRMaskTester(requireMask,denyMask,function,description) );
 	}
 	addSimple { arg modifier,function;
 		this.addKDR( SimpleKDRUnit(modifier,function) );
@@ -247,16 +271,24 @@ KeyCodeResponderStack {
 		});
 		^new
 	}
+	guiClass { ^KeyCodeResponderStackGui }
+	report { arg key;
+		stack.do({ |kdr|
+			Post << Char.nl;
+			if(key.asAscii.isPrint,{ Post << key.asAscii },{ Post << key; });
+			kdr.report;
+		})
+	}
 }
 
 SimpleKDRUnit { 
 	// matches if the modifier combo (or single) is present,
 	// but does NOT FAIL if others are also present
 
-	 var <>requireMask,<>function;
+	 var <>requireMask,<>function,<>description;
 	 
-	*new { arg modifier,function;
-		^super.newCopyArgs(modifier,function)
+	*new { arg modifier,function,description;
+		^super.newCopyArgs(modifier,function,description)
 	}
 	value { arg char,modifier,unicode,keycode;
 		[modifier,requireMask,modifier & requireMask, (modifier & requireMask) == requireMask].debug("simple");
@@ -265,6 +297,12 @@ SimpleKDRUnit {
 	== { arg that;
 		^that.requireMask == requireMask and: {this.class === that.class }
 	}
+	guiClass { ^SimpleKDRUnitGui }
+	report {
+		Post << KeyCodeResponder.maskToString(requireMask);
+		if(description.notNil,{ Post << " : " << description; });
+	}
+	
 }
 
 
@@ -273,11 +311,11 @@ KDRMaskTester : SimpleKDRUnit {
 	
 	var <>denyMask;
 
-	*new { arg requireMask,denyMask,function;
+	*new { arg requireMask,denyMask,function,description;
 		var r=0,d=0;
 		requireMask.do({ arg m; r = r | m });
 		denyMask.do({ arg m; d = d | m });
-		^super.new(r,function).denyMask_(d)
+		^super.new(r,function,description).denyMask_(d)
 	}
 	value { arg char,modifier,unicode,keycode;
 		//[modifier & requireMask, requireMask].debug("require");
