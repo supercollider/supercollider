@@ -637,10 +637,17 @@ AbstractPlayer : AbstractFunction  {
 
 	annotate { arg thing,note;
 		if(thing.isKindOf(Node),{
-			Library.put(AbstractPlayer, \nodeAnnotations, thing.server, thing.nodeID, this.asString ++ ":" ++ note);
+			Library.put(AbstractPlayer, \nodeAnnotations, 
+				thing.server ?? {"node has no server, cannot annotate".die}, 
+				thing.nodeID ?? {"nodeID is nil, cannot annotate".die},
+			 	this.asString ++ ":" ++ note);
 		},{
 			if(thing.isKindOf(Bus),{
-				Library.put(AbstractPlayer, \busAnnotations, thing.server,thing.rate, thing.index, this.asString + thing.asString ++ ":" ++ note);
+				Library.put(AbstractPlayer, \busAnnotations, 
+					thing.server ?? {"Bus has no server, cannot annotate".die},
+					thing.rate ?? {"Bus has no rate, cannot annotate".die}, 
+					thing.index ?? {"Bus has no index, cannot annotate".die}, 
+					this.asString + thing.asString ++ ":" ++ note);
 			});
 		});			
 	}
