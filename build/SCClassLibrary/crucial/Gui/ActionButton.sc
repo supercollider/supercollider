@@ -44,6 +44,19 @@ SCViewHolder {
 	}
 }
 
+// for using inside composite views
+// bounds are expressed relative to the parent's
+RelativeToParent {
+	var <>bounds;
+	*new { arg bounds;
+		^super.newCopyArgs(bounds)
+	}
+	place { arg view;
+		view.bounds = view.bounds.moveBy(bounds.left,bounds.top)
+	}
+}
+
+
 // backwards compat because i changed the name of the class
 SCViewAdapter : SCViewHolder { }
 
