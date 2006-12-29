@@ -537,7 +537,7 @@ int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 	
 	int numargs = args->uo->size;
 	if (numargs < 1) return errFailed;
-	makeSynthMsgWithTags(&packet, args, numargs);
+	makeSynthMsgWithTags(&packet, args->uo->slots, numargs);
 	SetInt(args, packet.size());
 	return errNone;
 }
