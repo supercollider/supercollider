@@ -157,6 +157,23 @@ Env {
 	
 	// delay the onset of the envelope	delay { arg delay;		^Env([0] ++ levels,			[delay] ++ times,			if (curves.isArray) {[\lin] ++ curves} {curves},			if(releaseNode.notNil) {releaseNode = releaseNode + 1},			if(loopNode.notNil) {loopNode = loopNode + 1}		)	}
 	
+	// connect releaseNode (or end) to first node of envelope
+	circle { arg timeFromLastToFirst = 0.0, curve = 'lin';
+		var first0Then1 = Latch.kr(1.0, Impulse.kr(0.0));
+		if(releaseNode.isNil) {
+			levels = [0.0]Ê++ levels ++ 0.0;
+			curves = [curve]Ê++ curves.asArray.wrapExtend(times.size) ++ 'lin';
+			times  = [first0Then1 * timeFromLastToFirst] ++ times ++ inf;
+			releaseNode = levels.size - 2;
+		} {
+			levels = [0.0]Ê++ levels;
+			curves = [curve]Ê++ curves.asArray.wrapExtend(times.size);
+			times  = [first0Then1 * timeFromLastToFirst] ++ times;
+			releaseNode = releaseNode + 1;
+		};
+		loopNode = 0;
+	}
+	
 	/*
 	plot {
 		var timeScale;
