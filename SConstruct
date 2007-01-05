@@ -63,7 +63,7 @@ else:
 
 if CPU == 'ppc':
     DEFAULT_OPT_ARCH = '7450'
-elif CPU in [ 'i386', 'i586', 'i686' ]:
+elif CPU in [ 'i586', 'i686' ]:
     # FIXME: better detection
     DEFAULT_OPT_ARCH = CPU
 else:
@@ -106,7 +106,7 @@ def merge_lib_info(env, *others):
         env.AppendUnique(CXXFLAGS = other.get('CXXFLAGS', []))
         env.AppendUnique(LIBS = other.get('LIBS', []))
         env.AppendUnique(LIBPATH = other.get('LIBPATH', []))
-        env.AppendUnique(LINKFLAGS = other.get('LINKFLAGS', []))
+        env['LINKFLAGS'] = env['LINKFLAGS'] + other.get('LINKFLAGS', "")
 
 def make_pkgconfig_requires(*envs):
     res = []
@@ -358,7 +358,7 @@ elif env['AUDIOAPI'] == 'coreaudio':
     features['audioapi'] = 'CoreAudio'
     libraries['audioapi'] = Environment(
         CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_COREAUDIO')],
-	LINKFLAGS =  '-framework CoreAudio',
+	LINKFLAGS = '-framework CoreAudio',
         ADDITIONAL_SOURCES = []
         )
 elif env['AUDIOAPI'] == 'portaudio':
