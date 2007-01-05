@@ -218,7 +218,7 @@ def make_opt_flags(env):
 	"-ffast-math",
 	"-fstrength-reduce"
 	]
-    arch = env['OPT_ARCH']
+    arch = env.get('OPT_ARCH')
     if arch:
 	if CPU == 'ppc':
 	    flags.extend([ "-mcpu=%s" % (arch,) ])
