@@ -30,6 +30,7 @@ extern int *linestarts;
 struct ClassExtFile {
 	struct ClassExtFile *next;
 	PyrSymbol *fileSym;
+	int startPos, endPos, lineOffset;
 };
 
 typedef struct classdep {
@@ -39,12 +40,13 @@ typedef struct classdep {
 	PyrSymbol *className;
 	PyrSymbol *superClassName;
 	PyrSymbol *fileSym;
+	int startPos, endPos, lineOffset;
 } ClassDependancy;
 
 extern PyrSymbol *gCompilingFileSym;
 
 ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassName, 
-	PyrSymbol *fileSym);
+	PyrSymbol *fileSym, int startPos, int endPos, int lineOffset);
 bool parseOneClass(PyrSymbol *fileSym);
 void initPassOne();
 void finiPassOne();
@@ -55,7 +57,7 @@ void traverseDepTree(ClassDependancy *classdep, int level);
 void traverseFullDepTree2();
 void traverseDepTree2(ClassDependancy *classdep, int level);
 void compileClassExtensions();
-void compileFileSym(PyrSymbol *fileSym);
+void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset);
 
 void runLibrary(PyrSymbol* selector);
 

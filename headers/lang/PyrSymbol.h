@@ -36,7 +36,8 @@ struct PyrSymbol {
 	uint8 length;
 	union {
 		long index; // index in row table or primitive table
-		struct PyrClass *classobj;	// pointer to class with this name.	
+		struct PyrClass *classobj;	// pointer to class with this name.
+		char *source; // source code for sym_Filename; used only during compilation.
 	} u;
 	struct classdep *classdep;	
 };
