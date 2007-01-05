@@ -123,6 +123,7 @@ int maxlinestarts;
 char *text;
 int textlen;
 int textpos;
+int errLineOffset;
 int parseFailed = 0;
 bool compiledOK = false;
 
@@ -284,15 +285,30 @@ text:
     }
 }
 
-
-
-
-bool startLexer(char* filename) 
-{	
-	if (!getFileText(filename, &text, &textlen)) return false;
+bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset) 
+{
+	char *filename = fileSym->name;
 	
-	rtf2txt(text);
-	textlen = stripNonAscii(text);
+	textlen = -1;
+	
+	if(!fileSym->u.source) {
+		if (!getFileText(filename, &text, &textlen)) return false;
+		fileSym->u.source = text;
+		rtf2txt(text);
+		textlen = stripNonAscii(text);
+	}
+	else
+		text = fileSym->u.source;
+		
+	if((startPos >= 0) && (endPos > 0)) {
+		textlen = endPos - startPos;
+		text += startPos;
+	}
+	else if(textlen == -1)
+		textlen = strlen(text);
+	
+	if(lineOffset > 0) errLineOffset = lineOffset;
+	else errLineOffset = 0;
 	
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
@@ -356,7 +372,6 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 void finiLexer() 
 {
 	pyr_pool_compile->Free(linestarts);
-	pyr_pool_compile->Free(text);
 	freeLongStack(&brackets);
 	freeLongStack(&closedFuncCharNo);
 	freeLongStack(&generatorStack);
@@ -807,7 +822,7 @@ symbol3 : {
 			if (c == '\n' || c == '\r') {
                 asRelativePath(curfilename,extPath);
 				post("Symbol open at end of line on line %d in file '%s'\n", 
-					startline, extPath);
+					startline+errLineOffset, extPath);
 				yylen = 0;
 				r = 0; 
 				goto leave;
@@ -821,7 +836,7 @@ symbol3 : {
 		if (c == 0) {
             asRelativePath(curfilename,extPath);
 			post("Open ended symbol ... started on line %d in file '%s'\n", 
-				startline, extPath);
+				startline+errLineOffset, extPath);
 			yylen = 0;
 			r = 0; 
 			goto leave;
@@ -856,7 +871,7 @@ string1 : {
 		if (c == 0) {
             asRelativePath(curfilename,extPath);
 			post("Open ended string ... started on line %d in file '%s'\n", 
-				startline, extPath);
+				startline+errLineOffset, extPath);
 			yylen = 0;
 			r = 0; 
 			goto leave;
@@ -899,7 +914,7 @@ comment2 : {
 		if (c == 0) {
             asRelativePath(curfilename,extPath);
 			post("Open ended comment ... started on line %d in file '%s'\n", 
-				startline, extPath);
+				startline+errLineOffset, extPath);
 			r = 0; 
 			goto leave;
 		}
@@ -913,14 +928,14 @@ error1:
     
     asRelativePath(curfilename, extPath);
 	post("illegal input string '%s' \n   at '%s' line %d char %d\n", 
-		yytext, extPath, lineno, charno);
+		yytext, extPath, lineno+errLineOffset, charno);
 	post("code %d\n", c);
 	//postfl(" '%c' '%s'\n", c, binopchars);
 	//postfl("%d\n", strchr(binopchars, c));
 	
 error2:
     asRelativePath(curfilename, extPath);
-	post("  in file '%s' line %d char %d\n", extPath, lineno, charno);
+	post("  in file '%s' line %d char %d\n", extPath, lineno+errLineOffset, charno);
 	r = BADTOKEN; 
 	goto leave;
 	
@@ -1334,7 +1349,7 @@ void postErrorLine(int linenum, int start, int charpos)
     char extPath[MAXPATHLEN];
     asRelativePath(curfilename, extPath);
 	post("   in file '%s'\n", extPath);
-	post("   line %d char %d :\n", linenum, charpos);
+	post("   line %d char %d:\n", linenum+errLineOffset, charpos);
 	// nice: postfl previous line for context
 
 	//postfl("text '%s' %d\n", text, text);
@@ -1596,13 +1611,15 @@ int numClassDeps;
 static ClassExtFile* sClassExtFiles;
 static ClassExtFile* eClassExtFiles;
 
-ClassExtFile* newClassExtFile(PyrSymbol *fileSym);
-ClassExtFile* newClassExtFile(PyrSymbol *fileSym)
+ClassExtFile* newClassExtFile(PyrSymbol *fileSym, int startPos, int endPos);
+ClassExtFile* newClassExtFile(PyrSymbol *fileSym, int startPos, int endPos)
 {
 	ClassExtFile* classext;
 	classext = (ClassExtFile*)pyr_pool_compile->Alloc(sizeof(ClassExtFile));
 	classext->fileSym = fileSym;
 	classext->next = 0;
+	classext->startPos = startPos;
+	classext->endPos = endPos;
 	if (!sClassExtFiles) sClassExtFiles = classext;
 	else eClassExtFiles->next = classext;
 	eClassExtFiles = classext;
@@ -1611,7 +1628,7 @@ ClassExtFile* newClassExtFile(PyrSymbol *fileSym)
 
 
 ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassName, 
-	PyrSymbol *fileSym)
+	PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 {
 	ClassDependancy* classdep;
 	
@@ -1634,6 +1651,11 @@ ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassN
 	classdep->superClassDep = NULL;
 	classdep->next = NULL;
 	classdep->subclasses = NULL;
+	
+	classdep->startPos = startPos;
+	classdep->endPos = endPos;	
+	classdep->lineOffset = lineOffset;
+	
 	className->classdep = classdep;
 	return classdep;
 }
@@ -1677,11 +1699,11 @@ void traverseFullDepTree()
 	MEMFAIL(gClassCompileOrder);
 	
 	// parse and compile all files
-	initParser();
+	initParser(); // sets compiler errors to 0
 	gParserResult = -1;
 
 	traverseDepTree(s_object->classdep, 0);
-	compileDepTree();
+	compileDepTree(); // compiles backwards using the order defined in gClassCompileOrder
 	compileClassExtensions();
 	
 	pyr_pool_compile->Free(gClassCompileOrder);
@@ -1697,9 +1719,6 @@ void traverseDepTree(ClassDependancy *classdep, int level)
         
         if (!classdep) return;
 	
-	//postfl("traverse %d '%s' '%s' '%s'\n", level, classdep->className->name, classdep->superClassName->name,
-//		classdep->fileSym->name); fflush(stdout);
-	
 	subclassdep = classdep->subclasses;
 	for (; subclassdep; subclassdep = subclassdep->next) {
 		traverseDepTree(subclassdep, level+1);
@@ -1710,41 +1729,45 @@ void traverseDepTree(ClassDependancy *classdep, int level)
 								gClassCompileOrderSize * sizeof(ClassDependancy));
 		MEMFAIL(gClassCompileOrder);		
 	}
+
+/*	postfl("traverse level:%d, gClassCompileOrderNum:%d, '%s' '%s' '%s'\n", level, gClassCompileOrderNum, classdep->className->name, classdep->superClassName->name,
+		classdep->fileSym->name); fflush(stdout);
+*/
+	
 	gClassCompileOrder[gClassCompileOrderNum++] = classdep;
 }
 
 
-void compileFileSym(PyrSymbol *fileSym)
+void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 {
-	if (!(fileSym->flags & sym_Compiled)) {
-		fileSym->flags |= sym_Compiled;
-		gCompilingFileSym = fileSym;
-		gCompilingVMGlobals = 0;
-		gRootParseNode = NULL;
-		initParserPool();
-		if (startLexer(fileSym->name)) {
-			//postfl("->Parsing %s\n", fileSym->name); fflush(stdout);
-			parseFailed = yyparse();
-			//postfl("<-Parsing %s %d\n", fileSym->name, parseFailed); fflush(stdout);
-			//post("parseFailed %d\n", parseFailed); fflush(stdout);
-			if (!parseFailed && gRootParseNode) {
-				//postfl("Compiling nodes %08X\n", gRootParseNode);fflush(stdout);
-				compilingCmdLine = false;
-				compileNodeList(gRootParseNode, true);
-				//postfl("done compiling\n");fflush(stdout);
-			} else {
-				compileErrors++;
-                char extPath[MAXPATHLEN];
-                asRelativePath(fileSym->name, extPath);
-				error("file '%s' parse failed\n", extPath);
-			}
-			finiLexer();
-		} else {
-			error("file '%s' open failed\n", fileSym->name);
-		}
-		freeParserPool();
+	//fprintf(stderr, "compileClass: %d\n", fileSym->u.index);
 
+	gCompilingFileSym = fileSym;
+	gCompilingVMGlobals = 0;
+	gRootParseNode = NULL;
+	initParserPool();
+	if (startLexer(fileSym, startPos, endPos, lineOffset)) {
+		//postfl("->Parsing %s\n", fileSym->name); fflush(stdout);
+		parseFailed = yyparse();
+		//postfl("<-Parsing %s %d\n", fileSym->name, parseFailed); fflush(stdout);
+		//post("parseFailed %d\n", parseFailed); fflush(stdout);
+		if (!parseFailed && gRootParseNode) {
+			//postfl("Compiling nodes %08X\n", gRootParseNode);fflush(stdout);
+			compilingCmdLine = false;
+			compileNodeList(gRootParseNode, true);
+			//postfl("done compiling\n");fflush(stdout);
+		} else {
+			compileErrors++;
+				 char extPath[MAXPATHLEN];
+				 asRelativePath(fileSym->name, extPath);
+			error("file '%s' parse failed\n", extPath);
+			postfl("error parsing\n");
+		}
+		finiLexer();
+	} else {
+		error("file '%s' open failed\n", fileSym->name);
 	}
+	freeParserPool();
 }
 
 void compileDepTree()
@@ -1754,9 +1777,9 @@ void compileDepTree()
 	
 	for (i=gClassCompileOrderNum-1; i>=0; --i) {
 		classdep = gClassCompileOrder[i];
-		//postfl("compile %d '%s' '%s' '%s'\n", i, classdep->className->name, classdep->superClassName->name,
-		//	classdep->fileSym->name);
-		compileFileSym(classdep->fileSym);
+		/*postfl("compile %d '%s' '%s' '%s'...%d/%d/%d\n", i, classdep->className->name, classdep->superClassName->name,
+			classdep->fileSym->name, classdep->startLine, classdep->endLine, classDep->lineOffset);*/
+		compileClass(classdep->fileSym, classdep->startPos, classdep->endPos, classdep->lineOffset);
 	}
 	//postfl("<compile\n");
 }
@@ -1766,7 +1789,8 @@ void compileClassExtensions()
 	if (sClassExtFiles) {
 		ClassExtFile *classext = sClassExtFiles;
 		do {
-			compileFileSym(classext->fileSym);
+			//postfl("compile class ext: %d/%d\n", classext->startPos, classext->endPos);
+			compileClass(classext->fileSym, classext->startPos, classext->endPos, -1);
 			classext = classext->next;
 		} while (classext);
 	}
@@ -1820,12 +1844,19 @@ bool parseOneClass(PyrSymbol *fileSym)
 	ClassDependancy *classdep;
 	bool res;
 	
+	int startPos, startLine, startLineOffset;
+	
 	res = true;
+	
+	startPos = textpos;
+	startLineOffset = lineno - 1;
+	
 	token = yylex();
 	if (token == CLASSNAME) {
 		className = ((PyrSlotNode*)zzval)->mSlot.us;
 		// I think this is wrong: zzval is space pool alloced
 		//pyrfree((PyrSlot*)zzval);
+		
 		token = yylex();
 		if (token == 0) return false;
 		if (token == OPENSQUAR) {
@@ -1844,7 +1875,7 @@ bool parseOneClass(PyrSymbol *fileSym)
 				if (token == 0) return false;
 				if (token == OPENCURLY) {
 					scanForClosingBracket(); // eat class body
-					classdep = newClassDependancy(className, superClassName, fileSym);
+					classdep = newClassDependancy(className, superClassName, fileSym, startPos, textpos, startLineOffset);
 				} else {
 					compileErrors++;
 					postfl("Expected %c.  got token: '%s' %d\n", OPENCURLY, yytext, token);
@@ -1861,7 +1892,7 @@ bool parseOneClass(PyrSymbol *fileSym)
 			if (className == s_object) superClassName = s_none;
 			else superClassName = s_object;
 			scanForClosingBracket(); // eat class body
-			classdep = newClassDependancy(className, superClassName, fileSym);
+			classdep = newClassDependancy(className, superClassName, fileSym, startPos, textpos, startLineOffset);
 		} else {
 			compileErrors++;
 			post("Expected ':' or %c.  got token: '%s' %d\n", OPENCURLY, yytext, token);
@@ -1869,7 +1900,11 @@ bool parseOneClass(PyrSymbol *fileSym)
 			return false;
 		}
 	} else if (token == '+') {
-		newClassExtFile(fileSym);
+		token = yylex();
+		if (token == 0) return false;
+		scanForClosingBracket();
+
+		newClassExtFile(fileSym, startPos, textpos);
 		return false;
 	} else {
 		if (token != 0) {
@@ -2041,27 +2076,6 @@ bool isValidSourceFileName(char *filename)
             || (len>7 && strncmp(filename+len-7, ".sc.rtf",7) == 0);
 }
 
-
-#if 0
-bool passOne_ProcessOneFile(char *filename)
-{
-	bool success = true;
-	PyrSymbol *fileSym;
-	if (isValidSourceFileName(filename)) {
-		gNumCompiledFiles++;
-		if (startLexer(filename)) {
-			fileSym = getsym(filename);
-			while (parseOneClass(fileSym)) { };
-			finiLexer();
-		} else {
-			error("file '%s' open failed\n", filename);
-			success = false;
-		}
-	}
-	return success;
-}
-#endif
-
 // sekhar's replacement
 bool passOne_ProcessOneFile(char *filenamearg, int level)
 {
@@ -2082,8 +2096,9 @@ bool passOne_ProcessOneFile(char *filenamearg, int level)
 	PyrSymbol *fileSym;
 	if (isValidSourceFileName(filename)) {
 		gNumCompiledFiles++;
-		if (startLexer(filename)) {
-			fileSym = getsym(filename);
+		fileSym = getsym(filename);
+		fileSym->u.source = NULL;
+		if (startLexer(fileSym, -1, -1, -1)) {
 			while (parseOneClass(fileSym)) { };
 			finiLexer();
 		} else {
