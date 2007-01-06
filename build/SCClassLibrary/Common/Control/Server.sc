@@ -183,7 +183,7 @@ Server : Model {
 		set = Set.new;
 		internal = Server.new(\internal, NetAddr.new);
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
-		program = "cd " ++ String.scDir ++ "; ./scsynth";
+		program = "cd " ++ String.scDir.quote ++ "; ./scsynth";
 	}
 	// bundling support added
 	sendMsg { arg ... msg;
