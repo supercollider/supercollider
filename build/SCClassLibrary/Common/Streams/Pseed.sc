@@ -13,7 +13,7 @@ Pseed : FilterPattern {
 	embedInStream { arg inval;
 		var seedStream;
 		var seed, thread;
-		seedStream = randSeed.asStream;
+		seedStream = randSeed.iter;
 
 		while {
 			seed = seedStream.next;
