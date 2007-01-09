@@ -1,0 +1,388 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf420
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red191\green0\blue0;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SCQuartzComposerView		
+\fs24 view for rendering Quartz Composer Compositions\
+
+\fs36 	
+\fs28 \
+
+\fs24 superclass: SCView
+\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 SCQuartzComposerView allows for the rendering of Quartz Composer Compositions within the standard OSX SC GUI system. Quartz Composer is a visual programming environment for processing and rendering graphical data, which is distributed free of charge as part of Apple's XCode Development Tools. QC is highly optimised to work with the OSX graphics system, and in general should be more efficient than 
+\f0\b [\ul Pen\ulnone ]
+\f2\b0 . For more information on QC see: \ul http://developer.apple.com/documentation/GraphicsImaging/Conceptual/QuartzComposer/index.html\
+\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f0\b\fs28 \cf0 Accessing Ports
+\f2\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+QC compositions have typed input and output ports which can be accessed from within SC lang using keys which you specify within the composition. Instances of Float, Integer, Color, and Boolean (true and false) are supported SC objects for input and output. (Images are not supported at this time.) Arrays or IdentityDictionaries ('structures' in QC terminology) containing these types are also supported. N.B. Due to the way that structures are stored within a composition, structure outputs are always IdentityDictionaries. See the structure example below for more detail.\
+\
+You can access input and output ports using the methods 
+\f0\b setInputValue
+\f2\b0 , 
+\f0\b getInputValue
+\f2\b0  and 
+\f0\b getOutputValue
+\f2\b0 , or (do to a slight of hand in the implementation, using the port keys as getters and setters directly. The following two lines of code are thus equivalent:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs18 \cf0 myQCView.setInputValue(\cf2 \\valueIn\cf0 , 1);\
+myQCView.valueIn = 1;
+\f2\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+As are these:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs18 \cf0 x = myQCView.getOutputValue(\cf2 \\valueOut\cf0 );\
+x = myQCView.valueOut;
+\f2\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+N.B. in cases where there is an input and an output port with the same key name, getting a value using the key as a getter will read from the output port.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f0\b\fs28 \cf0 Instance Methods
+\f2\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 path_(path)
+\f2\b0 \
+\
+Load a new QC composition from the file at the location specified by the String 
+\f0\b path
+\f2\b0 .\
+\
+
+\f0\b path
+\f2\b0 \
+\
+Returns the path of the currently loaded composition as a String.\
+\
+
+\f0\b inputKeys
+\f2\b0 \
+\
+Returns an Array of Symbols corresponding to the keys of the currently loaded composition's input ports.\
+\
+
+\f0\b outputKeys
+\f2\b0 \
+\
+Returns an Array of Symbols corresponding to the keys of the currently loaded composition's output ports.
+\f0\b \
+\
+start
+\f2\b0 \
+\
+Start rendering the loaded composition.\
+\
+
+\f0\b stop
+\f2\b0 \
+\
+Stop rendering the loaded composition.\
+\
+
+\f0\b setInputValue_(key, value)
+\f2\b0 \
+\
+Set the value of an input port. 
+\f0\b key
+\f2\b0  is a String or Symbol matching the port's key, and 
+\f0\b value
+\f2\b0  is the value to set. The type of value must correspond to the type of the port, but Floats, Integers, and Booleans are converted if needed. (true = 1, false = 0)\
+\
+
+\f0\b getInputValue(key)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 Get the current value of an input port. 
+\f0\b key
+\f2\b0  is a String or Symbol matching the port's key. The type of object returned will correspond to the port's type.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 getOutputValue(key)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 Get the current value of an input port. 
+\f0\b key
+\f2\b0  is a String or Symbol matching the port's key. The type of object returned will correspond to the port's type.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 maxFPS_(rate)
+\f2\b0 \
+\
+Set the maximum frames per second at which the composition will render. A value of 0 indicates no limit.\
+\
+
+\f0\b openInQC
+\f2\b0 \
+\
+Open the currently loaded composition in Quartz Composer. You will need to reload the composition into the view before any saved changes take effect.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f0\b\fs28 \cf0 Examples
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 ////////// Simple example\cf0 \
+(\
+w = \cf4 SCWindow\cf0 (\cf5 "Simple QC Test"\cf0 ).front;\
+b = \cf4 SCButton\cf0 (w, \cf4 Rect\cf0 (0, 0, 150, 20))\
+	.states_([[\cf5 "pick another QC file"\cf0 ]])\
+	.action_(\{ \cf4 File\cf0 .openDialog(\cf5 ""\cf0 , \{ \cf4 |path|\cf0  m.path_(path) \}) \});\
+m = \cf4 SCQuartzComposerView\cf0 (w, \cf4 Rect\cf0 (0,20,400, 260));\
+m.path = \cf4 Document\cf0 .current.path.dirname ++ \cf5 "/Cells.qtz"\cf0 ;\
+)\
+m.start;\
+m.stop;\
+\
+\cf3 ////////// Set and get inputs and outputs\cf0 \
+(\
+w = \cf4 SCWindow\cf0 (\cf5 "SCTV"\cf0 ).front;\
+m = \cf4 SCQuartzComposerView\cf0 (w, \cf4 Rect\cf0 (0,20,400, 260));\
+m.path = \cf4 Document\cf0 .current.path.dirname ++ \cf5 "/SCQuartzComposerViewTest.qtz"\cf0 ;\
+m.start;\
+)\
+\
+\cf3 // get the names of input and output keys\cf0 \
+m.inputKeys;\
+m.outputKeys;\
+m.openInQC; \cf6 // you can see the published inputs and outputs in the \cf3 composition\cf0 \
+\
+\cf3 // You can access input and output ports using setInputValue, getInputValue and getOutputValue\cf0 \
+\cf3 // or directly using the keys as getters and setters\cf0 \
+m.setInputValue(\cf2 \\direction\cf0 , 1);\
+m.direction = 0;\
+m.direction;\
+m.fontSize; \cf3 // font size in QC Units\cf0 \
+m.fontSize_(0.1);\
+\
+m.string_(\cf5 "SCTV"\cf0 ).fontName_(\cf5 "Courier"\cf0 );\
+m.startColor_(\cf4 Color\cf0 .green);\
+m.billboardEnable_(\cf4 false\cf0 );\
+m.billboardEnable_(\cf4 true\cf0 );\
+m.maxFPS_(5.0);\
+m.maxFPS_(10);\
+m.maxFPS_(0.0); \cf3 // no max\cf0 \
+\
+m.getOutputValue(\cf2 \\interpResult\cf0 ); \cf6 // current rotation of the text in degrees\cf0 \
+m.interpResult;\
+m.systemTime; \cf6 // current System Time published in the composition\cf0 \
+m.endColor.class; \cf6 // yup, it's a SC Color object\cf0 \
+m.endColor == \cf4 Color\cf0 .white;\
+\
+(\
+\cf3 // probably more efficient to do this in QC, but...\cf0 \
+\{\
+c = \cf4 Color\cf0 .blue;\
+100.do(\{ m.startColor_(c = c.vary(1)); 0.1.wait; \});\
+\}.fork(\cf4 AppClock\cf0 );\
+)\
+\
+m.bounds = \cf4 Rect\cf0 (100, 20, 200, 260);\
+\
+m.stop;\
+\
+\cf3 ///////////// Fullscreen\cf0 \
+\
+(\
+w = \cf4 SCWindow\cf0 (\cf5 "SCTV"\cf0 , \cf4 Rect\cf0 (0,0,360, 280), border: \cf4 false\cf0 ).front;\
+b = \cf4 SCButton\cf0 (w, \cf4 Rect\cf0 (0, 0, 150, 20))\
+	.states_([[\cf5 "Close Me"\cf0 ]])\
+	.action_(\{w.close\});\
+m = \cf4 SCQuartzComposerView\cf0 (w, \cf4 Rect\cf0 (0,20,360, 260));\
+m.path = \cf4 Document\cf0 .current.path.dirname ++ \cf5 "/SCQuartzComposerViewTest.qtz"\cf0 ;\
+\
+m.resize = 5;\
+m.start;\
+)\
+\
+w.fullScreen;\
+\
+\
+\cf3 ////////// Structure test\cf0 \
+(\
+w = \cf4 SCWindow\cf0 (\cf5 "SCTV"\cf0 ).front;\
+m = \cf4 SCQuartzComposerView\cf0 (w, \cf4 Rect\cf0 (0,20,400, 260));\
+m.path = \cf4 Document\cf0 .current.path.dirname ++ \cf5 "/SCQuartzComposerViewStructureTest.qtz"\cf0 ;\
+m.start;\
+)\
+\
+m.inputKeys;\
+m.outputKeys;\
+m.openInQC; \cf3 // Take a look at the various inputs and outputs. Select and mouseover for key names.\cf0 \
+\
+\cf3 // set several parameters at once\cf0 \
+\cf3 // [background color, num copies, scale, string, [font size in QC units, font]]\cf0 \
+m.structure = [\cf4 Color\cf0 .red, 4, 1.5, \cf5 "Hello"\cf0 , [0.2, \cf5 "Courier"\cf0 ]];\
+m.structure = [\cf4 Color\cf0 .red, 3, 1.5, \cf5 "World"\cf0 , [0.4, \cf5 "Arial"\cf0 ]];\
+m.structure = [\cf4 Color\cf0 .red, 4, 0.1, \cf5 "!!"\cf0 , [0.7, \cf5 "Times"\cf0 ]];\
+m.structure = [\cf4 Color\cf0 .black, 4, 0.1, \cf5 "!!!"\cf0 , [0.6, \cf5 "Courier"\cf0 ]];\
+m.dictStructure = \cf4 IdentityDictionary\cf0 [\cf2 \\x\cf0 ->(-0.4), \cf2 \\y\cf0 ->0.4];\
+\
+\cf3 // get stuff out\cf0 \
+\cf3 // QCView stores all structures as instances of NSCFDictionary internally\cf0 \
+\cf3 // so all structure outputs are instances of IdentityDictionary\cf0 \
+m.structure = [\cf4 Color\cf0 .blue, 4, 0.2, \cf5 "Gruess Welt"\cf0 , [0.12, \cf5 "Zapfino"\cf0 ]];\
+x = m.stringStruct; \cf3 // separates the string into components\cf0 \
+x[\cf2 \\component_1\cf0 ];\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf6 // pass something through\cf0 \
+m.arbStructIn = [\cf5 "foo"\cf0 , \cf5 "bar", ["foobar"]\cf0 ]; \cf3 // array in\cf0 \
+x = m.arbStructOut; \cf3 // IdentDict out with Integer Symbols as keys\cf0 \
+x[\\0];\
+x[\\2][\\0];\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 // convert to array\cf0 \
+y = \cf4 Array\cf0 .newClear(x.size);\
+x.keysValuesDo(\{\cf4 |i, elem|\cf0  y[i.asInteger] = elem\});\
+y.postln;\
+)\
+\
+\cf3 // use QC to concat the strings)\cf0 \
+m.stringConcatIn = [\cf5 "foo"\cf0 , \cf5 "bar"\cf0 ]; \cf3 // array in\cf0 \
+x = m.stringConcatOut; \cf3 // String Out\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 ////////// Control some audio: Stupid Pan Example\cf0 \
+\
+(\
+w = \cf4 SCWindow\cf0 (\cf5 "Stupid Pan Example"\cf0 , \cf4 Rect\cf0 (0,20,600, 150)).front;\
+m = \cf4 SCQuartzComposerView\cf0 (w, \cf4 Rect\cf0 (0,20,600, 100));\
+m.path = \cf4 Document\cf0 .current.path.dirname ++ \cf5 "/Stupid Pan.qtz"\cf0 ;\
+m.resize = 5;\
+m.start;\
+)\
+\
+s.boot;\
+\cf3 // use mouse to set pan position\cf0 \
+(\
+\{\
+loop(\{ \
+\{ \cf4 Pan2\cf0 .ar(\cf4 Saw\cf0 .ar(mul: 0.1) * \cf4 EnvGen\cf0 .ar(\cf4 Env\cf0 .perc, timeScale: 4, doneAction: 2), m.x_pos) \}.play; \
+1.wait; \
+\});\
+\}.fork(\cf4 AppClock\cf0 );\
+)\
+\
+\cf3 ////////// Sonogram\cf0 \
+\
+\cf3 // could be better optimised, but proves the concept\cf0 \
+(\
+w = \cf4 SCWindow\cf0 (\cf5 "Sonogram"\cf0 , \cf4 Rect\cf0 (0,20,600, 300)).front;\
+m = \cf4 SCQuartzComposerView\cf0 (w, \cf4 Rect\cf0 (0,20,600, 256));\
+m.path = \cf4 Document\cf0 .current.path.dirname ++ \cf5 "/SCQCsonogramCount2.qtz"\cf0 ;\
+m.start;\
+m.setInputValue(\cf2 \\framesPerView\cf0 , 300);\
+m.setInputValue(\cf2 \\magnitudes\cf0 , (0, 0.01..1));\
+)\
+\
+s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab160\ql\qnatural
+\cf0 b = \cf4 Buffer\cf0 .alloc(s,256);\
+(\
+a = \{ \cf4 FFT\cf0 (b.bufnum, \cf4 LFSaw\cf0 .ar(4000)); 0.0 \}.play;\cf7  \cf6 // sawtooth\cf0 \
+\
+p = 0.25; i = 0;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 //m.setInputValue(\\period, p);\cf0 \
+\cf3 //m.maxFPS_(p.reciprocal * 2);\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab160\ql\qnatural
+\cf4 SystemClock\cf0 .sched(0.0, \{\
+b.getn(0, 256, \{ \cf4 arg\cf0  buf;\
+	\cf4 var\cf0  z, x;\
+	z = buf.clump(2).flop;\
+	z = [\cf4 Signal\cf0 .newFrom(z[0]), \cf4 Signal\cf0 .newFrom(z[1])];\
+	x = \cf4 Complex\cf0 (z[0], z[1]);\
+	\cf3 //\{m.setInputValue(\\magnitudes, x.magnitude.resamp1(m.bounds.height * 0.5));\}.defer\cf0 \
+	\{m.setInputValue(\cf2 \\magnitudes\cf0 , x.magnitude * 0.025); m.setInputValue(\cf2 \\count\cf0 , i);\}.defer;\
+	i = i + 1;\
+\}); p\
+\});\
+)\
+\
+a.free;\
+a = \{ \cf4 FFT\cf0 (b.bufnum, \cf4 Dust2\cf0 .ar(500) * 5); 0.0 \}.play; \cf6 // Impulses\cf0 \
+\
+a.free;\
+c = \cf4 Buffer\cf0 .read(s, \cf5 "sounds/a11wlk01.wav"\cf0 );\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 m.setInputValue(\cf2 \\framesPerView\cf0 , 50);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab160\ql\qnatural
+\cf0 a = \{ \cf4 var\cf0  colum;\
+	colum = \cf4 PlayBuf\cf0 .ar(1, c.bufnum, \cf4 BufRateScale\cf0 .kr(c.bufnum) * \cf4 Line\cf0 .kr(1, 3, 20), loop: 1);\
+	\cf4 FFT\cf0 (b.bufnum, colum); \
+	colum\
+\}.play;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab160\ql\qnatural
+\cf3 ///////////// Cheap Level Meter\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 w = \cf4 SCWindow\cf0 (\cf5 "Level Meters", \cf4 Rect\cf0 (128, 64, 200, 400)).front;\
+\
+m = \cf4 SCQuartzComposerView\cf0 (w, \cf4 Rect\cf0 (20,20,50, 360));\
+n = \cf4 SCQuartzComposerView\cf0 (w, \cf4 Rect\cf0 (130,20,50, 360));\
+m.path = \cf4 Document\cf0 .current.path.dirname ++ \cf5 "/SCLevelMeter.qtz"\cf0 ;\
+n.path = \cf4 Document\cf0 .current.path.dirname ++ \cf5 "/SCLevelMeter.qtz"\cf0 ;\
+m.maxFPS_(20); n.maxFPS_(20);\
+m.start; n.start;\
+~meters = [m, n];\
+)\
+\
+s.boot;\
+\
+\cf6 // MouseX controls noise amp\cf0 \
+(\
+o = \cf4 OSCresponder\cf0 (s.addr, \cf2 '/tr'\cf0 , \{\cf4 arg\cf0  time, resp, msg;\
+	\{~meters[msg[2]].level = (msg[3] + 0.01).explin(0.01,1.01, 0, 1);\}.defer;\
+\}).add;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab160\ql\qnatural
+\cf0 b = \cf4 Buffer\cf0 .read(s, \cf5 "sounds/a11wlk01.wav"\cf0 );	\
+a = \{ \cf4 var\cf0  colum, noise, imp, delimp;\
+	imp = \cf4 Impulse\cf0 .kr(20);\
+	delimp = \cf4 Delay1\cf0 .kr(imp);\
+	colum = \cf4 PlayBuf\cf0 .ar(1, b.bufnum, \cf4 BufRateScale\cf0 .kr(b.bufnum), loop: 1);\
+	noise = \cf4 PinkNoise\cf0 .ar(\cf4 MouseX\cf0 .kr);\
+	\cf3 // measure Peak\cf0 \
+	\cf4 SendTrig\cf0 .kr(imp, 0, \cf4 Peak\cf0 .ar(colum, delimp));\
+	\cf4 SendTrig\cf0 .kr(imp, 1, \cf4 Peak\cf0 .ar(noise, delimp));\
+	[colum, noise];\
+\}.play;\
+)\
+\
+a.free;\
+}

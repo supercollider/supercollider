@@ -4937,7 +4937,7 @@ static bool sRegisteredSCViewClasses = false;
 extern SCView* NewSCSoundFileView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-
+extern SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 void registerSCViewClasses()
 {
@@ -4969,6 +4969,7 @@ void registerSCViewClasses()
 	//these can be found in SCCocoaView.M
     new SCViewMaker("SCTextView", NewSCCocoaTextView);
     new SCViewMaker("SCMovieView", NewSCMovieView);
+	new SCViewMaker("SCQuartzComposerView", NewSCQuartzComposerView);
 }
 
 

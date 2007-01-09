@@ -29,6 +29,7 @@
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
 #include "QuickTime/Movies.h"
+#include <Quartz/Quartz.h>
 
 @interface SCCocoaTextViewResponder : NSResponder
 {
@@ -91,6 +92,25 @@ protected:
 	Movie mMovie;	
 };
 
+
+
+class SCQuartzComposerView : public SCView
+{
+public:	
+	SCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+	virtual ~SCQuartzComposerView();
+	virtual void setBounds(SCRect inBounds);
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr);
+	virtual int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type);
+	
+protected:
+	QCView *mQCView;
+	SCCocoaTextViewResponder *mCocoaToLangAction;
+};
+
 SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 

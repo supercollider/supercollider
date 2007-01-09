@@ -36,6 +36,7 @@
 #include "SC_RGen.h"
 #include "SC_BoundsMacros.h"
 #include "SC_InlineBinaryOp.h"
+#include "PyrListPrim.h"
 
 
 #include "SCCocoaView.h"
@@ -230,6 +231,7 @@ void SCCocoaTextView::setBounds(SCRect inBounds)
 }
 
 int slotColorVal(PyrSlot *slot, SCColor *sccolor);
+int setSlotColor(PyrSlot *slot, SCColor *sccolor);
 
 int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
@@ -715,3 +717,394 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 //
 //	return SCView::getProperty(symbol, slot);
 //}
+
+extern PyrSymbol *s_proto, *s_parent;
+extern int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto, ivxIdentDict_know;
+int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *value);
+extern PyrClass *class_identdict;
+
+///////////
+SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCQuartzComposerView(inParent, inObj, inBounds);
+}
+
+SCQuartzComposerView::SCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+: SCView(inParent, inObj, inBounds)
+{
+	NSRect matrect = SCtoNSRect(mBounds);
+	mQCView = [[QCView alloc] initWithFrame:matrect];
+	[mQCView setEventForwardingMask: NSAnyEventMask];
+	NSView *view = mTop->GetNSView();	
+	[view addSubview: mQCView];
+	
+}
+
+SCQuartzComposerView::~SCQuartzComposerView()
+{
+	[mQCView removeFromSuperview];
+	[mQCView release];
+}
+
+
+void SCQuartzComposerView::setBounds(SCRect screct)
+{
+	[[mQCView superview] setNeedsDisplayInRect:[mQCView frame]];
+	mBounds = screct;
+	[mQCView setFrame: SCtoNSRect(mBounds)];
+	[mQCView setNeedsDisplay: YES];
+}
+
+
+int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	char *name = symbol->name;
+	
+	if (strcmp(name, "bounds")==0) {
+		SCRect screct;
+		int err = slotGetSCRect(slot, &screct);
+		if (err) return err;
+		mBounds = screct;
+		[mQCView setFrame: SCtoNSRect(mBounds)];
+		[mQCView setNeedsDisplay: YES];
+		return errNone;
+	}
+	
+	if (strcmp(name, "loadCompositionFromFile")==0) {
+		if(!isKindOfSlot(slot, class_string)) return errWrongType;
+		PyrString* pstring = slot->uos;
+		if(!pstring) return errNone;
+		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];		
+		BOOL success = [mQCView loadCompositionFromFile: string];
+		if(!success) return errFailed;
+		[string release];
+		return errNone;
+	}
+	
+	if (strcmp(name, "stop")==0) {
+		[mQCView stopRendering];
+		return errNone;
+	}
+	
+	if (strcmp(name, "start")==0) {
+		BOOL success = [mQCView startRendering];
+		if(!success) return errFailed;
+		return errNone;	
+	}
+	
+	//// doesn't seem to work ; fix later
+	//	if (strcmp(name, "erase")==0) {
+	//		[mQCView erase];
+	//		return errNone;	
+	//	}
+	//	
+//	if (strcmp(name, "eraseColor")==0) {
+//		SCColor rgb;
+//		int err = slotColorVal(slot, &rgb);
+//		if (err) return err;
+//		NSColor *color = [NSColor colorWithCalibratedRed: rgb.red green: rgb.green blue: rgb.blue alpha: rgb.alpha];
+//		//NSLog(@"color: %@", color);
+//		//NSColor *color = [NSColor blueColor];
+//		[mQCView setEraseColor: color];
+//		[mQCView erase];
+//		return errNone;	
+//	}
+	
+	if (strcmp(name, "setMaxRenderingFrameRate")==0) {
+		float rate;
+		int err = slotFloatVal(slot, &rate);
+		if (err) return err;
+		[mQCView setMaxRenderingFrameRate: rate];
+		return errNone;	
+	}
+	
+	if (strcmp(name, "setInputValue")==0) {
+		if(!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots = slot->uo->slots;
+		PyrSymbol *keysymbol;
+		int err = slotSymbolVal(slots + 0, &keysymbol);
+		if (err) return err;
+		
+		NSString *key = [[NSString alloc] initWithCString: keysymbol->name encoding: NSASCIIStringEncoding];
+		if(![[mQCView inputKeys] containsObject: key]) {
+			[key release];
+			//post("There is no port with key \"%s\".\n\n", [key cString]); 
+			return errFailed;
+		}
+		
+		id nsObject = getNSObjectForSCObject(slots + 1, &err);
+		if(!nsObject) {[key release]; return err;}
+		BOOL success = [mQCView setValue: nsObject forInputKey: key];
+		[key release];
+		if(!success) return errFailed;
+		return errNone;	
+		
+	}
+	
+	return SCView::setProperty(symbol, slot);
+}
+
+id SCQuartzComposerView::getNSObjectForSCObject(PyrSlot *scobject, int *returnErr) {
+
+	int err;
+	// find the value type and set appropriately
+	if(((scobject->utag & 0xFFFFFFF0) != 0x7FF90000)) { // it's a float
+		float val;
+		err = slotFloatVal(scobject, &val);
+		if (err) {returnErr = &err; return NULL;}
+		NSNumber *returnObject = [NSNumber numberWithFloat: val];
+		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
+		return returnObject;
+	} else if((scobject->utag == tagInt)) { // it's an int
+		int val;
+		err = slotIntVal(scobject, &val);
+		if (err) {returnErr = &err; return NULL;}
+		NSNumber *returnObject = [NSNumber numberWithInt: val];
+		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
+		return returnObject;	
+	} else if((scobject->utag == tagTrue)) { // it's bool true
+		NSNumber *returnObject = [NSNumber numberWithBool: YES];
+		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
+		return returnObject;	
+	} else if((scobject->utag == tagFalse)) { // it's bool false
+		NSNumber *returnObject = [NSNumber numberWithBool: NO];
+		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
+		return returnObject;
+	} else if(isKindOfSlot(scobject, s_string->u.classobj)) { // it's a string
+		PyrString *string = scobject->uos;
+		if(string->size == 0) { err = errFailed; returnErr = &err; return NULL;}
+		NSString *returnObject =  [NSString stringWithCString: string->s length: string->size];
+		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
+		return returnObject;
+	} else if(isKindOfSlot(scobject, s_color->u.classobj)) { // it's a color
+		SCColor rgb;
+		err = slotColorVal(scobject, &rgb);
+		if (err) {returnErr = &err; return NULL;}
+		NSColor *returnObject = [NSColor colorWithCalibratedRed: rgb.red green: rgb.green blue: rgb.blue alpha: rgb.alpha];
+		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
+		return returnObject;
+	} else if(isKindOfSlot(scobject, s_identitydictionary->u.classobj)) { // it's a structure (dict)
+		PyrObject *array;
+		array = (scobject)->uo->slots[ivxIdentDict_array].uo;
+		if (!isKindOf((PyrObject*)array, class_array)) { err = errFailed; returnErr = &err; return NULL;}
+		NSMutableDictionary *structure = [NSMutableDictionary dictionary];
+		int len = array->size;
+		
+		for(int i=0; i<len; i=i+2){
+			PyrSlot *element = array->slots+i;
+			if(!IsNil(element)) {
+				PyrSymbol *keysymbol;
+				err = slotSymbolVal(element, &keysymbol);
+				if (err) {returnErr = &err; return NULL;}
+				NSString *key = [[NSString alloc] initWithCString: keysymbol->name encoding: NSASCIIStringEncoding];
+				int innerErr;
+				id innerSCObject = getNSObjectForSCObject(element + 1, &innerErr);
+				if(!innerSCObject) { returnErr = &innerErr; return NULL;}
+				[structure setObject: innerSCObject forKey: key];
+			}
+		}
+		err = errNone;
+		returnErr = &err;
+		return structure;
+	} else if(isKindOfSlot(scobject, class_array)) { // it's a structure (array)
+		PyrSlot *array = scobject;
+		int len = array->uo->size;
+		NSMutableArray *structure = [NSMutableArray arrayWithCapacity: (unsigned)len];
+
+		for(int i =0; i<len; i++){
+			PyrSlot *element = array->uo->slots+i;
+			int innerErr;
+			id innerSCObject = getNSObjectForSCObject(element, &innerErr);
+			if(!innerSCObject) { returnErr = &innerErr; return NULL;}
+			[structure addObject: innerSCObject];
+		}
+
+		err = errNone;
+		returnErr = &err;
+		return structure;	
+	} else {
+		err = errWrongType; // it's something else...
+		returnErr = &err;
+		return NULL;
+	}
+
+}
+
+int SCQuartzComposerView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	char *name = symbol->name;
+	if (strcmp(name, "getOutputValue")==0) {
+		PyrSymbol *keysymbol;
+		int err = slotSymbolVal(slot, &keysymbol);
+		if (err) return err;
+		
+		NSString *key = [[NSString alloc] initWithCString: keysymbol->name encoding: NSASCIIStringEncoding];
+		if(![[mQCView outputKeys] containsObject: key]) {
+			[key release];
+			//post("There is no port with key \"%s\".\n\n", [key cString]); 
+			return errFailed;
+		}
+		
+		NSDictionary *outputAttributes = [[mQCView attributes] objectForKey: key];
+		NSString *type = [outputAttributes objectForKey:QCPortAttributeTypeKey];
+		
+		id nsObject = [mQCView valueForOutputKey: key];
+		[key release];
+		err = getSCObjectForNSObject(slot, nsObject, type);
+		if (err) return err;
+		return errNone;
+		
+	} else if(strcmp(name, "getInputValue")==0) {
+		PyrSymbol *keysymbol;
+		int err = slotSymbolVal(slot, &keysymbol);
+		if (err) return err;
+		
+		NSString *key = [[NSString alloc] initWithCString: keysymbol->name encoding: NSASCIIStringEncoding];
+		if(![[mQCView inputKeys] containsObject: key]) {
+			[key release];
+			//post("There is no port with key \"%s\".\n\n", [key cString]); 
+			return errFailed;
+		}
+		
+		NSDictionary *inputAttributes = [[mQCView attributes] objectForKey: key];
+		NSString *type = [inputAttributes objectForKey:QCPortAttributeTypeKey];
+		
+		id nsObject = [mQCView valueForInputKey: key];
+		[key release];
+		err = getSCObjectForNSObject(slot, nsObject, type);
+		if (err) return err;
+		return errNone;
+		
+	} else if(strcmp(name, "getInputKeys")==0) {
+		NSArray* inputKeys = [mQCView inputKeys];
+		int size = [inputKeys count];
+		VMGlobals *g = gMainVMGlobals;
+		PyrObject* array = newPyrArray(g->gc, size, 0, true);
+		SetObject(slot, array);
+		
+		for (int i=0; i<size; ++i) {
+			NSString *name = [inputKeys objectAtIndex: i];
+			PyrString *string = newPyrString(g->gc, [name UTF8String], 0, true);
+			SetObject(array->slots + array->size, string);
+			array->size++;
+			g->gc->GCWrite(array, string);
+		}
+		
+		return errNone;
+		
+	} else if(strcmp(name, "getOutputKeys")==0) {
+		NSArray* inputKeys = [mQCView outputKeys];
+		int size = [inputKeys count];
+		VMGlobals *g = gMainVMGlobals;
+		PyrObject* array = newPyrArray(g->gc, size, 0, true);
+		SetObject(slot, array);
+		
+		for (int i=0; i<size; ++i) {
+			NSString *name = [inputKeys objectAtIndex: i];
+			PyrString *string = newPyrString(g->gc, [name UTF8String], 0, true);
+			SetObject(array->slots + array->size, string);
+			array->size++;
+			g->gc->GCWrite(array, string);
+		}
+		
+		return errNone;
+	}
+
+	return SCView::getProperty(symbol, slot);
+}
+
+int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type) 
+{
+	if([type isEqualToString:QCPortTypeBoolean]) {
+		SetBool(slot, [nsObject boolValue]);
+		return errNone;
+	} else if([type isEqualToString:QCPortTypeIndex]) {
+		SetInt(slot, [nsObject intValue]);
+		return errNone;
+	} else if([type isEqualToString:QCPortTypeNumber]) {
+		SetFloat(slot, [nsObject floatValue]);
+		return errNone;
+	} else if([type isEqualToString:QCPortTypeString]) {
+		const char * cstr = [nsObject UTF8String];
+		PyrString *string = newPyrString(NULL, cstr, 0, true);
+		SetObject(slot, string);
+		return errNone;
+	} else if([type isEqualToString:QCPortTypeColor]) {
+		
+		VMGlobals *g = gMainVMGlobals;
+		PyrObject* colorObj = instantiateObject(g->gc, s_color->u.classobj, 0, false, true);
+		SCColor rgb = SCMakeColor([nsObject redComponent], [nsObject greenComponent], [nsObject blueComponent], [nsObject alphaComponent]);
+		SetObject(slot, colorObj);
+		int err = setSlotColor(slot, &rgb);
+		if (err) { return err;}
+		return errNone;
+	} else if([type isEqualToString:QCPortTypeStructure]) {
+		//NSLog(@"QCPortTypeStructure");
+		//NSLog(@"class: %@", [nsObject class]);
+		
+		// for the moment QC seems to deal with all internal structures as NSCFDictionary
+		// but check here to be safe
+		if([nsObject isKindOfClass: [NSDictionary class]]){
+			//NSLog(@"it's a dict");
+			PyrObject *dict, *array;
+			VMGlobals *g = gMainVMGlobals;
+			
+			dict = instantiateObject(g->gc, class_identdict, 5, true, false);
+			array = newPyrArray(g->gc, 4, 0, false);
+			array->size = 4;
+			nilSlots(array->slots, array->size);
+			SetObject(dict->slots + ivxIdentDict_array, array);
+			g->gc->GCWrite(dict, array);
+			SetObject(slot, dict);
+			
+			NSEnumerator *enumerator = [nsObject keyEnumerator];
+			id key;
+			
+			while ((key = [enumerator nextObject])) {
+				//NSLog(@"key class: %@", [key class]);
+				id innerNSObject = [nsObject objectForKey: key];
+				//NSLog(@"innerNSObject: %@", innerNSObject);
+				PyrSlot innerSlot;
+				NSString *innerType;
+				
+				if([innerNSObject isKindOfClass: [NSNumber class]]){
+					//NSLog(@"objCType: %s", [innerNSObject objCType]);
+					if(!strcmp([innerNSObject objCType], @encode(BOOL))) {
+						//NSLog(@"Number");
+						innerType = QCPortTypeBoolean;
+					} else if(!strcmp([innerNSObject objCType], @encode(int))) {
+						innerType = QCPortTypeIndex;
+					} else innerType = QCPortTypeNumber;
+				} else if([innerNSObject isKindOfClass: [NSColor class]]){
+					//NSLog(@"Color");
+					innerType = QCPortTypeColor;
+				} else if([innerNSObject isKindOfClass: [NSString class]]){
+					//NSLog(@"String");
+					innerType = QCPortTypeString;
+				} else if([innerNSObject isKindOfClass: [NSArray class]] || [innerNSObject isKindOfClass: [NSDictionary class]]){
+					//NSLog(@"Structure");
+					innerType = QCPortTypeStructure;
+				} else return errWrongType; // it's something else
+				
+				//NSLog(@"innerObject Class: %@", [innerNSObject class]);
+				int err = getSCObjectForNSObject(&innerSlot, innerNSObject, innerType);
+				if(err) return err;
+				
+				PyrSlot outKey;
+				SetSymbol(&outKey, getsym([key cString]));
+				err = identDictPut(g, dict, &outKey, &innerSlot);
+				if(err) return err;
+			}
+			
+
+			return errNone;
+		}
+
+	}
+	//		else if([type isEqualToString:QCPortTypeImage]) { // not supported
+	//
+	//		}
+	return errWrongType; // it's something else	
+
+		
+}

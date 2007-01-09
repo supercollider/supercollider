@@ -732,6 +732,7 @@
 		F5ED526D02FC2E330195E057 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526B02FC2E330195E057 /* SC_ComPort.cpp */; };
 		F5ED526E02FC2E330195E057 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */; };
 		F5ED527002FC2E340195E057 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */; };
+		FE15A21B0B53C67E00AF0F11 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE15A21A0B53C67E00AF0F11 /* Quartz.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -780,8 +781,8 @@
 		88D7D583090C8737008D45B9 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
 		88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
 		88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_StandAloneInfo_Darwin.cpp; sourceTree = "<group>"; };
-		908DBC360507C63D00000098 /* GoToPanel.M */ = {isa = PBXFileReference; fileEncoding = "-2147483619"; lastKnownFileType = sourcecode.cpp.objcpp; path = GoToPanel.M; sourceTree = "<group>"; };
-		908DBC380507C65100000098 /* GoToPanel.h */ = {isa = PBXFileReference; fileEncoding = "-2147483619"; lastKnownFileType = sourcecode.c.h; path = GoToPanel.h; sourceTree = "<group>"; };
+		908DBC360507C63D00000098 /* GoToPanel.M */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.objcpp; path = GoToPanel.M; sourceTree = "<group>"; };
+		908DBC380507C65100000098 /* GoToPanel.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = GoToPanel.h; sourceTree = "<group>"; };
 		908DBC3A0507C66500000098 /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = GoToLinePanel.nib; path = resources/GoToLinePanel.nib; sourceTree = "<group>"; };
 		90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_Speech.cpp; path = source/lang/LangSource/SC_Speech.cpp; sourceTree = SOURCE_ROOT; };
 		920F883D0443F54D00A80088 /* RendezvousClient.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RendezvousClient.h; sourceTree = "<group>"; };
@@ -979,6 +980,7 @@
 		F5ED51FE02FBA97D0195E057 /* sclang */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = sclang; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5ED526B02FC2E330195E057 /* SC_ComPort.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SC_ComPort.cpp; sourceTree = "<group>"; };
 		F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SC_CoreMIDI.cpp; sourceTree = "<group>"; };
+		FE15A21A0B53C67E00AF0F11 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1011,6 +1013,7 @@
 				92E20AB7058BBE8C004A7C6F /* libsndfile.a in Frameworks */,
 				F5C7B14F033D595901A80099 /* libscsynth.a in Frameworks */,
 				6AC9B2DB08ABF480001EBDF6 /* QuickTime.framework in Frameworks */,
+				FE15A21B0B53C67E00AF0F11 /* Quartz.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1355,6 +1358,7 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FE15A21A0B53C67E00AF0F11 /* Quartz.framework */,
 				F50D069502E6A1C601CA2799 /* AppKit.framework */,
 				F50D069602E6A1C601CA2799 /* ApplicationServices.framework */,
 				F50D069702E6A1C601CA2799 /* Carbon.framework */,
