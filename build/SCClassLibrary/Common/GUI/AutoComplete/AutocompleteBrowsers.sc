@@ -81,7 +81,7 @@ AutoCompMethodBrowser {
 				// [0] is the ownerclass, [1] the method
 			masterList = masterList.asArray.sort({ |a, b| a[2] < b[2] });
 				// if previous char is a ., then class should not be displayed in argList
-			(argDoc.string(argStart-1, 1)[0] == $.).if({ skipThis = true });
+			(argStart > 0 and: { argDoc.string(argStart-1, 1)[0] == $. }).if({ skipThis = true });
 			doc = argDoc;
 			start = argStart;
 			size = argSize;
