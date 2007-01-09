@@ -107,7 +107,6 @@ public:
 	
 protected:
 	QCView *mQCView;
-	SCCocoaTextViewResponder *mCocoaToLangAction;
 };
 
 SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
