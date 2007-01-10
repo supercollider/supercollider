@@ -739,9 +739,11 @@ langEnv.Append(
     )
 if PLATFORM == 'darwin':
     langEnv.Append(
-	LINKFLAGS = '-framework CoreServices'
-	)
-    
+	LINKFLAGS = '-framework CoreServices')
+elif PLATFORM == 'linux':
+    langEnv.Append(
+	LINKFLAGS = '-Wl,-rpath,build')
+
 merge_lib_info(langEnv, libraries['audioapi'])
 
 libsclangEnv = langEnv.Copy(
