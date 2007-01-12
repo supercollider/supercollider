@@ -16,16 +16,18 @@ The onset detector has general ability to spot spectral change, so may have some
 \
 Hainsworth metric on it's own gives good results but Foote might be useful in some situations: experimental. 
 \f2\fs18 \
+
+\f1\fs24 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
-\
+\f0\b \cf0 *ar(buffer, proph=0.0, propf=0.0, threshold=1.0, waittime=0.04)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *ar(buffer, proph=0.0, propf=0.0, threshold=1.0, waittime=0.04)\
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
-
-\f0\b buffer-
+\f0\b \cf0 buffer-
 \f1\b0  FFT buffer to read from\
 \
 
@@ -44,8 +46,7 @@ Hainsworth metric on it's own gives good results but Foote might be useful in so
 \f0\b waittime-
 \f1\b0  If triggered, minimum wait until a further frame can cause another spot (useful to stop multiple detects on heavy signals)\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 See also 
+See also 
 \f0\b [\ul FFT Overview\ulnone ]
 \f1\b0 .\
 \
@@ -110,8 +111,7 @@ b=\cf3 Buffer\cf0 .alloc(s,2048,1);\
 \
 \cf2 //compare to Amplitude UGen\cf0 \
 (\
-b=\cf3 Buffer\cf0 .alloc(s,2048,1);\
-	\
+\
 \cf3 SynthDef\cf0 (\cf4 \\fftod\cf0 ,\
 \{\
  \cf3 var\cf0  source1, detect;\
@@ -129,5 +129,5 @@ b=\cf3 Buffer\cf0 .alloc(s,2048,1);\
 \
 \
 \
-	\
-	}
+\
+}
