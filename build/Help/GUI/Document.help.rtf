@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green0\blue0;
+\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Document
@@ -146,10 +146,10 @@ a.stringColor_(\cf2 Color\cf0 .red);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
-(\cf0 \
-\cf2 Document.current\cf0 .isEdited.postln;\
-\cf2 )\
-\
+\cf4 (\
+\cf5 Document\cf4 .current.isEdited.postln;\
+)\
+\cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 syntaxColorize\
@@ -205,10 +205,10 @@ a = \cf2 Document\cf0 .allDocuments.at(0).syntaxColorize; \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 \
-(\
-Document.current.selectRange(Document\cf0 .current.selectionStart, 100\cf2 );\
+\cf4 (\
+\cf5 Document\cf4 .current.selectRange(\cf5 Document\cf4 .current.selectionStart, 100);\
 )\
-\
+\cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 string(rangestart, rangesize)\
@@ -229,14 +229,14 @@ Document.current.selectRange(Document\cf0 .current.selectionStart, 100\cf2 );\
 
 \f1\b0 \cf0 get the currently selected text.
 \f2\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 var doc;\
-doc = \cf2 Document.current;\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 doc.selectRange(doc\cf0 .selectionStart-40, 10\cf2 );\
-doc.selectedString.postln;\cf0 \
-\cf2 )\
+\cf5 var\cf4  doc;\
+doc = \cf5 Document\cf4 .current;\
+doc.selectRange(doc.selectionStart-40, 10);\
+doc.selectedString.postln;\
+)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 \
@@ -247,15 +247,12 @@ string_(string, rangestart, rangesize)\
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf2 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 var doc;\
-doc = \cf2 Document(string:"");\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 doc.string_("set a String")\cf0 \
-\cf2 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\f2\b0\fs18 \cf2 \
+\cf4 (\
+\cf5 var\cf4  doc;\
+doc = \cf5 Document\cf4 (string:\cf6 ""\cf4 );\
+doc.string_(\cf6 "set a String"\cf4 )\
+)
 \f0\b\fs24 \cf0 \
 \
 selectedString_\
@@ -291,18 +288,16 @@ doc.selectedString_(txt);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
-(\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 var doc, txt;\
-doc = \cf2 Document.current;\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 doc.\cf0 keyDownAction_\cf2 (\{arg doc, key, modifiers, num;\
-	[doc, key, modifiers].postln\
+\cf4 (\
+\cf5 var\cf4  doc, txt;\
+doc = \cf5 Document\cf4 .current;\
+doc.keyDownAction_(\{\cf5 arg\cf4  doc, key, modifiers, keycode;\
+	[doc, key, modifiers, keycode].postln\
 \});\
 )\
-(\cf0 \
-\cf2 Document.current.\cf0 keyDownAction_\cf2 (nil);\cf0 \
-\cf2 )\cf0 \
+(\
+\cf5 Document\cf4 .current.keyDownAction_(\cf5 nil\cf4 );\
+)\
 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -343,7 +338,7 @@ a.toFrontAction_(\{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //need to pop proxyspace from other examples\cf0 \
+\cf7 //need to pop proxyspace from other examples\cf0 \
 q.pop\
 r.pop\
 )\cf2 \
@@ -381,9 +376,9 @@ r.pop\
 \f2\b0\fs18 \cf2 (\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //add a mouse action to this document: \cf0 \
-\cf4 //example: easy button:\cf0 \
-\cf4 //when you click in front of a 17 a SinOsc will start up;\cf0 \
+\cf7 //add a mouse action to this document: \cf0 \
+\cf7 //example: easy button:\cf0 \
+\cf7 //when you click in front of a 17 a SinOsc will start up;\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Server\cf0 .local.boot;\
 \cf2 Document\cf0 .current.mouseDownAction_(\{\cf2 arg\cf0  doc;\
@@ -442,7 +437,7 @@ doc.background_(\cf2 Color\cf0 .blue(alpha: 1.0.rand));\
 \cf2 Task\cf0 (\{\
 	100.do(\{\
 		1.01.wait;\
-		doc.selectedString_([\cf3 "\\"\cf5 \\n\cf0 #\cf3 ","\cf0 ||\cf3 ","\cf0 -\cf3 ", "\cf0 --"].choose);\
+		doc.selectedString_([\cf3 "\\"\cf8 \\n\cf0 #\cf3 ","\cf0 ||\cf3 ","\cf0 -\cf3 ", "\cf0 --"].choose);\
 	\})\
 \}).play(AppClock);\
 Task(\{\
