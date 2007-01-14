@@ -284,7 +284,7 @@ Pbind : Pattern {
 Pmono : Pattern {
 	var <>synthName, <>patternpairs;
 	*new { arg name ... pairs;
-		if (pairs.size.odd, { Error("Pmono should have even number of args.\n").throw; });
+		if (pairs.size.odd, { Error("Pmono should have odd number of args.\n").throw; });
 		^super.newCopyArgs(name, pairs)
 	}
 	
