@@ -147,7 +147,7 @@ SequenceableCollection : Collection {
 	}
 	
 	indexOfEqual { arg item, offset=0; 
-		(this.lastIndex - offset).do ({ arg i;
+		(this.lastIndex - offset + 1).do ({ arg i;
 			i = i + offset;
 			if ( item == this[i], { ^i })
 		});
