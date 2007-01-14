@@ -1,7 +1,7 @@
 Pfx : FilterPattern {
 	var <>fxname, <>pairs;
 	*new { arg pattern, fxname ... pairs;
-		if (pairs.size.odd, { Error("Pfx should have odd number of args.\n").throw });
+		if (pairs.size.odd, { Error("Pfx should have even number of args.\n").throw });
 		^super.new(pattern).fxname_(fxname).pairs_(pairs)
 	}
 	storeArgs { ^[pattern, fxname] ++ pairs }
