@@ -1,43 +1,40 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green0\blue0;
-\red0\green0\blue191;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b\fs36 \cf0 Trig1		timed trigger\
+\f0\b\fs36 \cf0 Trig1		timed trigger\
 
 \fs24 \
 Trig1.ar(in, dur)\
+Trig1.kr(in, dur)\
 
-\f0\b0 \
+\f1\b0 \
 When a nonpositive to positive transition occurs at the input, Trig outputs 1.0 for the specified duration, otherwise it outputs zero.\
 \
 
-\f1\b trig
-\f0\b0  - trigger. Trigger can be any signal. A trigger happens when the signal changes from non-positive to positive.\
+\f0\b trig
+\f1\b0  - trigger. Trigger can be any signal. A trigger happens when the signal changes from non-positive to positive.\
 
-\f1\b dur
-\f0\b0  - duration of the trigger output.\
+\f0\b dur
+\f1\b0  - duration of the trigger output. (Default 0.1)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \{ \cf2 Trig1\cf0 .ar(\cf2 Dust\cf0 .ar(1), 0.2) * \cf2 FSinOsc\cf0 .ar(800, 0.5) \}.play\
+\f2 \cf0 \
+\{ \cf2 Trig1\cf0 .ar(\cf2 Dust\cf0 .ar(1), 0.2) * \cf2 FSinOsc\cf0 .ar(800, 0, 0.5) \}.play\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf0 To create a fixed duration gate\
+\f1\fs24 \cf0 To create a fixed duration gate\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "trig1"\cf0 ,\{ arg dur=0.125;\
 	\cf2 var\cf0  gate;\
 	gate = \cf2 Trig1\cf0 .kr(1.0,dur);\
@@ -62,29 +59,30 @@ When a nonpositive to positive transition occurs at the input, Trig outputs 1.0 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 \cf0 This should sound like a continous sine wave, although it is actually a series of 0.25 second synths.
-\f2\b0\fs18 \cf0 \
-(\cf4 \
-\cf5 SynthDef\cf4 (\cf6 "trig1"\cf4 ,\{\
-	\cf5 var\cf4  gate;\
-	gate = \cf5 Trig1\cf4 .kr(1.0,0.25);\
-	\cf5 OffsetOut\cf4 .ar(0,\
-		\cf5 SinOsc\cf4 .ar(800, 0.3) \
-		* \cf5 EnvGen\cf4 .kr(\
-			\cf5 Env\cf4 ([0,0.1,0.1,0],[0.01,1.0,0.01],[-4,4],2),\
+\f0\b\fs24 \cf0 This should sound like a continous sine wave, although it is actually a series of 0.25 second synths.
+\f2\b0\fs18 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "trig1"\cf0 ,\{\
+	\cf2 var\cf0  gate;\
+	gate = \cf2 Trig1\cf0 .kr(1.0,0.25);\
+	\cf2 OffsetOut\cf0 .ar(0,\
+		\cf2 SinOsc\cf0 .ar(800, 0.3) \
+		* \cf2 EnvGen\cf0 .kr(\
+			\cf2 Env\cf0 ([0,0.1,0.1,0],[0.01,1.0,0.01],[-4,4],2),\
 			gate,\
 			doneAction: 2)\
 	)\
 \}).send(s);\
 \
-\cf5 Routine\cf4 (\{\
+\cf2 Routine\cf0 (\{\
 	1.0.wait;\
 	100.do(\{\
-		s.sendBundle(0.05,[\cf6 "s_new"\cf4 , \cf6 "trig1"\cf4  ,-1]);\
+		s.sendBundle(0.05,[\cf3 "s_new"\cf0 , \cf3 "trig1"\cf0  ,-1]);\
 		0.25.wait\
 	\})\
-\}).play(\cf5 SystemClock\cf4 )\
+\}).play(\cf2 SystemClock\cf0 )\
 \
-\cf0 )\
+)\
 \
 }
