@@ -2,11 +2,15 @@
 
 + ArrayedCollection {
 	
-	plot { arg name, bounds, discrete=false, numChannels = 1;
-		var plotter, txt, chanArray, unlaced, val, minval, maxval, window, thumbsize, zoom, width, 
-			layout, write=false;
-		bounds = bounds ?  Rect(200 , 140, 705, 410);
-		
+	plot { arg name, bounds, discrete=false, numChannels = 1, minval, maxval, parent;	
+		var plotter, txt, chanArray, unlaced, val, window, thumbsize, zoom, width, 
+			layout, write=false, msresize;
+		bounds = bounds ? parent.notNil.if({
+			parent.view.bounds
+			}, {
+			Rect(200 ,140, 705, 410);
+ 			});
+			
 		width = bounds.width-8;
 		zoom = (width / (this.size / numChannels));
 		
@@ -17,8 +21,8 @@
 		};
 		
 		name = name ? "plot";
-		minval = this.minItem;
-		maxval = this.maxItem;
+		minval = minval ? this.minItem;
+		maxval = maxval ? this.maxItem;
 		unlaced = this.unlace(numChannels);
 		chanArray = Array.newClear(numChannels);
 		unlaced.do({ |chan, j|
@@ -30,14 +34,21 @@
 			};
 			chanArray[j] = val;
 		});
-		window = SCWindow(name, bounds);
-		txt = SCStaticText(window, Rect(8, 0, width, 18))
-				.string_("index: 0, value: " ++ this[0].asString);
-		layout = SCVLayoutView(window, Rect(4, txt.bounds.height, width, 
-			bounds.height - 30 - txt.bounds.height)).resize_(5);
+		window = parent ? SCWindow(name, bounds);
+
+		layout = SCVLayoutView(window, 
+			parent.notNil.if({
+				bounds;
+				Rect(bounds.left+4, bounds.top+4, bounds.width-10, bounds.height-10);
+				}, {
+				Rect(4, 4, bounds.width - 10, bounds.height - 10); 
+				})).resize_(5);
+
+		txt = SCStaticText(layout, Rect(8, 0, width, 18))
+				.string_("index: 0, value: " ++ this[0].asString);		
 		numChannels.do({ |i|
 			plotter = SCMultiSliderView(layout, Rect(0, 0, 
-					layout.bounds.width,layout.bounds.height))
+					layout.bounds.width, layout.bounds.height - 26)) // compensate for the text
 				.readOnly_(true)
 				.drawLines_(discrete.not)
 				.drawRects_(discrete)
@@ -57,9 +68,11 @@
 					if(char === $l) { write = write.not; v.readOnly = write.not;  };
 				})
 				.value_(chanArray[i])
-				.resize_(5)
 				.elasticMode_(1);
-				
+				(numChannels	 > 1).if({ // check if there is more then 1 channel
+					plotter.resize_(5)
+					})
+
 		});
 		
 		^window.front;
@@ -78,15 +91,16 @@
 */
 
 + Wavetable {
-	plot { arg name, bounds;
-		^this.asSignal.plot;
+	plot { arg name, bounds, minval, maxval, parent;
+		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, parent: parent);
 	}
 }
 
 + Buffer {
-	plot { arg name, bounds;
+	plot { arg name, bounds, minval = -1.0, maxval = 1.0, parent;
 		this.loadToFloatArray(action: { |array, buf| {array.plot(name, bounds, 
-			numChannels: buf.numChannels) }.defer;});
+			numChannels: buf.numChannels, minval: minval, maxval: maxval, 
+			parent: parent) }.defer;});
 	}
 }
 
@@ -123,12 +137,13 @@
 		});
 	}
 	
-	plot { arg duration  = 0.01, server, bounds;
+	plot { arg duration  = 0.01, server, bounds, minval = -1.0, maxval = 1.0, parent;
 		this.loadToFloatArray(duration, server, { |array, buf|
 			var numChan;
 			numChan = buf.numChannels;
 			{
-				array.plot(bounds: bounds, numChannels: numChan) 
+				array.plot(bounds: bounds, numChannels: numChan, minval: minval, maxval: maxval,
+					parent: parent) 
 			}.defer;
 		})
 	}
