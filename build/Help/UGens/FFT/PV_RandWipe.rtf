@@ -9,7 +9,7 @@
 
 \f1\b0\fs24 \
 
-\f0\b PV_RandWipe.ar(bufferA,  bufferB,  wipe,  trig)\
+\f0\b PV_RandWipe(bufferA,  bufferB,  wipe,  trig)\
 
 \f1\b0 \
 Cross fades between two sounds by copying bins in a random order.\
@@ -50,4 +50,7 @@ c = \cf2 Buffer\cf0 .alloc(s,2048,1);\
 	chain = \cf2 PV_RandWipe\cf0 (chainA, chainB, \cf2 MouseX\cf0 .kr, \cf2 MouseY\cf0 .kr > 0.5); \
 	\cf2 Out\cf0 .ar(out, 0.5 * \cf2 IFFT\cf0 (chain).dup);\
 \}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnumA\cf0 , b.bufnum, \cf5 \\bufnumB\cf0 , c.bufnum ]);\
-)}
+)\
+\
+b.free; c.free;\
+}
