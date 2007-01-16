@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf420
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;}
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Function
@@ -289,10 +289,10 @@ Return a function that, when evaluated with nested arguments, does multichannel 
 \f2\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-\cf5 f = \{ \cf6 |a, b|\cf5  if(a > 0) \{ a + b \} \{ -\cf6 inf\cf5  \} \}.flop;\
+\cf0 f = \{ \cf2 |a, b|\cf0  if(a > 0) \{ a + b \} \{ -\cf2 inf\cf0  \} \}.flop;\
 f.value([-1, 2, 1, -3.0], [10, 1000]);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 f.value(2, 3);\
+\cf0 f.value(2, 3);\
 \
 \
 \
@@ -303,13 +303,13 @@ f.value([-1, 2, 1, -3.0], [10, 1000]);\
 \
 like flop, but implements an environment argument passing (valueEnvir). \
 Less efficient in generation than flop, but not a big difference in evaluation.
-\f2\fs18 \cf5 \
+\f2\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf0 f = \{ \cf2 |a|\cf0  if(a > 0) \{ a + 1 \} \{ -\cf2 inf\cf0  \} \}.envirFlop;\
 e = (a: [20, 40]);\
 e.use \{ f.value \}
-\f1\fs24 \cf5 \
+\f1\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
@@ -333,12 +333,12 @@ e.use \{ f.value \}
 z = [0, 1, 1.1, 1.3, 1.5, 2];\
 i = z.choose;\
 x = case\
-	\{ i == 1 \}   \{ \cf7 \\no\cf0  \}\
-	\{ i == 1.1 \} \{ \cf7 \\wrong\cf0  \}\
-	\{ i == 1.3 \} \{ \cf7 \\wrong\cf0  \}\
-	\{ i == 1.5 \} \{ \cf7 \\wrong\cf0  \}\
-	\{ i == 2 \}   \{ \cf7 \\wrong\cf0  \}\
-	\{ i == 0 \}   \{ \cf7 \\true\cf0  \};\
+	\{ i == 1 \}   \{ \cf5 \\no\cf0  \}\
+	\{ i == 1.1 \} \{ \cf5 \\wrong\cf0  \}\
+	\{ i == 1.3 \} \{ \cf5 \\wrong\cf0  \}\
+	\{ i == 1.5 \} \{ \cf5 \\wrong\cf0  \}\
+	\{ i == 2 \}   \{ \cf5 \\wrong\cf0  \}\
+	\{ i == 0 \}   \{ \cf5 \\true\cf0  \};\
 x.postln;\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -379,27 +379,27 @@ Examples:
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // no exception handler\cf0 \
-value \{ 8.zorg; \cf7 \\didnt_continue\cf0 .postln; \}\
+value \{ 8.zorg; \cf5 \\didnt_continue\cf0 .postln; \}\
 \
-try \{ 8.zorg \} \{\cf2 |error|\cf0  error.postln; \cf7 \\cleanup\cf0 .postln; \}; \cf7 \\continued\cf0 .postln;\
+try \{ 8.zorg \} \{\cf2 |error|\cf0  error.postln; \cf5 \\cleanup\cf0 .postln; \}; \cf5 \\continued\cf0 .postln;\
 \
-protect \{ 8.zorg \} \{\cf2 |error|\cf0  error.postln; \}; \cf7 \\didnt_continue\cf0 .postln;\
+protect \{ 8.zorg \} \{\cf2 |error|\cf0  error.postln; \}; \cf5 \\didnt_continue\cf0 .postln;\
 \
-try \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\catch\cf0 , error].postln \};\
+try \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\catch\cf0 , error].postln \};\
 \
-try \{ 123.postln; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\catch\cf0 , error].postln \};\
+try \{ 123.postln; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\catch\cf0 , error].postln \};\
 \
-try \{ 123.postln; \cf2 nil\cf0 .throw; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\catch\cf0 , error].postln \};\
+try \{ 123.postln; \cf2 nil\cf0 .throw; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\catch\cf0 , error].postln \};\
 \
 \
-protect \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\onExit\cf0 , error].postln \};\
+protect \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\onExit\cf0 , error].postln \};\
 \
-protect \{ 123.postln; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\onExit\cf0 , error].postln \};\
+protect \{ 123.postln; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\onExit\cf0 , error].postln \};\
 \
 (\
 try \{\
-	protect \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\onExit\cf0 , error].postln \};\
-\} \{\cf2 |error|\cf0  [\cf7 \\catch\cf0 , error].postln \};\
+	protect \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\onExit\cf0 , error].postln \};\
+\} \{\cf2 |error|\cf0  [\cf5 \\catch\cf0 , error].postln \};\
 )\
 \
 value \{ 123.postln; 456.throw; 789.postln \}\
@@ -407,37 +407,37 @@ value \{ 123.postln; 456.throw; 789.postln \}\
 value \{ 123.postln; \cf2 Error\cf0 (\cf4 "what happened?"\cf0 ).throw; 789.postln \}\
 \
 (\
-a = [\cf7 \\aaa\cf0 , \cf7 \\bbb\cf0 , \cf7 \\ccc\cf0 , \cf7 \\ddd\cf0 ];\
+a = [\cf5 \\aaa\cf0 , \cf5 \\bbb\cf0 , \cf5 \\ccc\cf0 , \cf5 \\ddd\cf0 ];\
 a[1].postln;\
-a[\cf7 \\x\cf0 ].postln;\
+a[\cf5 \\x\cf0 ].postln;\
 a[2].postln;\
 )\
 \
 (\
 try \{\
-	a = [\cf7 \\aaa\cf0 , \cf7 \\bbb\cf0 , \cf7 \\ccc\cf0 , \cf7 \\ddd\cf0 ];\
+	a = [\cf5 \\aaa\cf0 , \cf5 \\bbb\cf0 , \cf5 \\ccc\cf0 , \cf5 \\ddd\cf0 ];\
 	a[1].postln;\
-	a[\cf7 \\x\cf0 ].postln;\
+	a[\cf5 \\x\cf0 ].postln;\
 	a[2].postln;\
-\} \{\cf2 |error|\cf0  \cf7 \\caught\cf0 .postln; error.dump \}\
+\} \{\cf2 |error|\cf0  \cf5 \\caught\cf0 .postln; error.dump \}\
 )\
 \
 (\
 try \{\
-	a = [\cf7 \\aaa\cf0 , \cf7 \\bbb\cf0 , \cf7 \\ccc\cf0 , \cf7 \\ddd\cf0 ];\
+	a = [\cf5 \\aaa\cf0 , \cf5 \\bbb\cf0 , \cf5 \\ccc\cf0 , \cf5 \\ddd\cf0 ];\
 	a[1].postln;\
-	a[\cf7 \\x\cf0 ].postln;\
+	a[\cf5 \\x\cf0 ].postln;\
 	a[2].postln;\
-\} \{\cf2 |error|\cf0  \cf7 \\caught\cf0 .postln; error.dump; error.throw \}\
+\} \{\cf2 |error|\cf0  \cf5 \\caught\cf0 .postln; error.dump; error.throw \}\
 )\
 \
 (\
 protect \{\
-	a = [\cf7 \\aaa\cf0 , \cf7 \\bbb\cf0 , \cf7 \\ccc\cf0 , \cf7 \\ddd\cf0 ];\
+	a = [\cf5 \\aaa\cf0 , \cf5 \\bbb\cf0 , \cf5 \\ccc\cf0 , \cf5 \\ddd\cf0 ];\
 	a[1].postln;\
-	a[\cf7 \\x\cf0 ].postln;\
+	a[\cf5 \\x\cf0 ].postln;\
 	a[2].postln;\
-\} \{\cf2 |error|\cf0  \cf7 \\caught\cf0 .postln; error.dump \}\
+\} \{\cf2 |error|\cf0  \cf5 \\caught\cf0 .postln; error.dump \}\
 )
 \f1\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -464,7 +464,7 @@ protect \{\
 \f1\b0  with it, and returns the Synth object. A 
 \f0\b Linen
 \f1\b0  is also added to avoid clicks, which is configured to allow the resulting Synth to have its 
-\f2\fs18 \cf7 \\gate 
+\f2\fs18 \cf5 \\gate 
 \f1\fs24 \cf0 argument set, or to respond to a release message. Args in the function become args in the resulting def.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 
@@ -482,7 +482,7 @@ protect \{\
 \f1\b0  - see 
 \f0\b Synth
 \f1\b0  for a list of valid addActions. The default is 
-\f2\fs18 \cf7 \\addToHead
+\f2\fs18 \cf5 \\addToHead
 \f0\b\fs24 \cf0 .
 \f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -491,7 +491,7 @@ protect \{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 	x = \{ arg freq = 440; \cf2 SinOsc\cf0 .ar(freq, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
-	x.set(\cf7 \\freq\cf0 , 880); \cf3 // note you can set the freq argument\cf0 \
+	x.set(\cf5 \\freq\cf0 , 880); \cf3 // note you can set the freq argument\cf0 \
 	x.defName; \cf3 // the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
 	x.release(4); \cf3 // fadeout over 4 seconds
 \fs20 \cf2 \
@@ -563,7 +563,7 @@ protect \{\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 plot(duration, server, bounds)\
+\f0\b \cf0 plot(duration, server, bounds, minval, maxval, parent)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
 
@@ -593,7 +593,17 @@ protect \{\
 \f0\b Rect
 \f1\b0  or 
 \f0\b Point
-\f1\b0  indicating the bounds of the plot window.
+\f1\b0  indicating the bounds of the plot window.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
+\cf0 	
+\f0\b minval
+\f1\b0  - the minimum value in the plot. Defaults to -1.0.\
+	
+\f0\b maxval
+\f1\b0  - the maximum value in the plot. Defaults to 1.0.\
+	
+\f0\b parent
+\f1\b0  - a window to place the plot in. If nil, one will be created for you.
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -635,7 +645,7 @@ asSynthDef(rates, prependArgs, outClass, fadetime)\
 \f1\b0  for more details).\
 	
 \f0\b outClass
-\f1\b0  - The class of the output ugen as a symbol. The default is \cf7 \\Out\cf0 .\
+\f1\b0  - The class of the output ugen as a symbol. The default is \cf5 \\Out\cf0 .\
 	
 \f0\b fadeTime
 \f1\b0  - a fadein time. The default is 0.\
