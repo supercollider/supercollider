@@ -45,4 +45,5 @@ d = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
 	\cf2 Out\cf0 .ar(out,  0.1 * \cf2 IFFT\cf0 (chain).dup);\
 \}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnumA\cf0 , b.bufnum, \cf4 \\bufnumB\cf0 , c.bufnum, \cf4 \\soundBufnum\cf0 , d.bufnum]);\
 )\
-}
+\
+b.free; c.free; d.free;}
