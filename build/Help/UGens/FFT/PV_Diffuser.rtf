@@ -9,7 +9,7 @@
 
 \f1\b0\fs24 \
 
-\f0\b PV_Diffuser.ar(buffer,  trig)\
+\f0\b PV_Diffuser(buffer,  trig)\
 
 \f1\b0 \
 Adds a different constant random phase shift to each bin.\
@@ -53,4 +53,7 @@ c = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
 	chain = \cf2 PV_Diffuser\cf0 (chain, \cf2 MouseY\cf0 .kr > 0.5 ); \
 	\cf2 Out\cf0 .ar(out, 0.5 * \cf2 IFFT\cf0 (chain).dup);\
 \}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum, \cf5 \\soundBufnum\cf0 , c.bufnum]);\
-)}
+)\
+\
+b.free; c.free;\
+}
