@@ -9,7 +9,7 @@
 
 \f1\b0\fs24 \
 
-\f0\b PV_MagBelow.ar(buffer, threshold)\
+\f0\b PV_MagBelow(buffer, threshold)\
 
 \f1\b0 \
 Passes only bins whose magnitude is below a threshold.\
@@ -27,7 +27,6 @@ See also
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 s.boot;\
-\
 (\
 b = \cf2 Buffer\cf0 .alloc(s,2048,1);\
 c = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
@@ -66,4 +65,6 @@ c = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
 	\cf2 Out\cf0 .ar(out, 0.5 * \cf2 IFFT\cf0 (chain).dup);\
 \}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnum\cf0 , b.bufnum, \cf4 \\soundBufnum\cf0 , c.bufnum]);\
 )\
+\
+b.free; c.free;\
 }
