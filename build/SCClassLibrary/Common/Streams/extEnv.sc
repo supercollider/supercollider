@@ -27,6 +27,7 @@
 		^signal;
 	}
 	
-	plot { arg size = 400; this.asSignal(size).plot; }
+	plot { arg size = 400, bounds, minval, maxval, parent; 
+		this.asSignal(size).plot(bounds: bounds, minval: minval, maxval: maxval, parent: parent); }
 
 }
