@@ -9,7 +9,7 @@
 
 \f1\b0\fs24 \
 
-\f0\b PV_Max.ar(bufferA,  bufferB)\
+\f0\b PV_Max(bufferA,  bufferB)\
 
 \f1\b0 \
 Output copies bins with the maximum magnitude of the two inputs.\
@@ -51,4 +51,7 @@ d = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
 \},\{\
 	\cf3 "cancelled"\cf0 .postln;\
 \});\
-)}
+)\
+\
+b.free; c.free; d.free;\
+}
