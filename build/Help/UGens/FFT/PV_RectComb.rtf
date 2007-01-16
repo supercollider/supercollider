@@ -9,10 +9,10 @@
 
 \f1\b0\fs24 \
 
-\f0\b PV_RectComb.ar(buffer, numTeeth,  phase,  width)\
+\f0\b PV_RectComb(buffer, numTeeth,  phase,  width)\
 
 \f1\b0 \
-Makes a series of gaps in a spectrum. \
+Makes a series of gaps in a spectrum.\
 
 \f0\b buffer
 \f1\b0  - fft buffer.\
@@ -56,4 +56,6 @@ b = \cf2 Buffer\cf0 .alloc(s,2048,1);\
 	\cf2 Out\cf0 .ar(out, \cf2 IFFT\cf0 (chain).dup);\
 \}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnum\cf0 , b.bufnum]);\
 )\
+\
+b.free;\
 }
