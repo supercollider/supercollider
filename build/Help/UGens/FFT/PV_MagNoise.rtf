@@ -9,7 +9,7 @@
 
 \f1\b0\fs24 \
 
-\f0\b PV_MagNoise.ar(buffer)\
+\f0\b PV_MagNoise(buffer)\
 
 \f1\b0 \
 Magnitudes are multiplied with noise.\
@@ -24,7 +24,6 @@ See also
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 s.boot;\
-\
 (\
 b = \cf2 Buffer\cf0 .alloc(s,2048,1);\
 c = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
@@ -39,6 +38,7 @@ c = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
 	\cf2 Out\cf0 .ar(out, 0.5 * \cf2 IFFT\cf0 (chain).dup);\
 \}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnum\cf0 , b.bufnum]);\
 )\
+\
 (\
 \cf2 SynthDef\cf0 (\cf3 "help-magNoise2"\cf0 , \{  \cf2 arg\cf0  out=0, bufnum=0, soundBufnum=2;\
 	\cf2 var\cf0  in, chain;\
@@ -47,4 +47,7 @@ c = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
 	chain = \cf2 PV_MagNoise\cf0 (chain); \
 	\cf2 Out\cf0 .ar(out, 0.5 * \cf2 IFFT\cf0 (chain).dup); \
 \}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnum\cf0 , b.bufnum, \cf4 \\soundBufnum\cf0 , c.bufnum]);\
-)}
+)\
+\
+b.free; c.free;\
+}
