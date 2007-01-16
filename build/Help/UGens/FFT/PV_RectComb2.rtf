@@ -9,10 +9,10 @@
 
 \f1\b0\fs24 \
 
-\f0\b PV_RectComb2.ar(bufferA,  bufferB,  numTeeth,  phase,  width)\
+\f0\b PV_RectComb2(bufferA,  bufferB,  numTeeth,  phase,  width)\
 
 \f1\b0 \
-Alternates blocks of bins between the two inputs. \
+Alternates blocks of bins between the two inputs.\
 
 \f0\b bufferA
 \f1\b0  - fft buffer A.\
@@ -63,4 +63,6 @@ d = \cf2 Buffer\cf0 .read(s,\cf3 "sounds/a11wlk01.wav"\cf0 );\
 	\cf3 "cancelled"\cf0 .postln;\
 \});\
 )\
+\
+b.free; c.free; d.free;\
 }
