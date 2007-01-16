@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
@@ -30,7 +30,6 @@ the number of times to repeat the entire list. \
 \cf2 // Note: This SynthDef used throughout this document\cf0 \
 (\
 s = \cf3 Server\cf0 .local;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 ( \cf4 "Help-SPE3-SimpleSine"\cf0 , \{\
 	\cf3 arg\cf0  freq, dur=1.0;\
 	\cf3 var\cf0  osc;\
@@ -40,11 +39,9 @@ s = \cf3 Server\cf0 .local;\
 	\cf3 Out\cf0 .ar(0,osc);\
 \}).send(s);\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //////////////////////////////////////////////////////////////\cf0 \
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  a, b;\
 a = \cf3 Pseq\cf0 .new(#[1, 2, 3], 2);	\cf2 // repeat twice\cf0 \
 b = a.asStream;\
@@ -54,10 +51,8 @@ b = a.asStream;\
 \
 Pseq also has an offset argument which gives a starting offset into the list.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 (\
 \cf3 var\cf0  a, b;\
 a = \cf3 Pseq\cf0 .new(#[1, 2, 3, 4], 3, 2); \cf2 // repeat 3, offset 2\cf0 \
 b = a.asStream;\
@@ -71,7 +66,6 @@ You can pass a function for the repeats variable that gets evaluated when the st
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  a, b;\
 a = \cf3 Pseq\cf0 .new(#[1, 2], \{ rrand(1, 3) \});	\cf2 // repeat 1,2, or 3 times\cf0 \
 b = a.asStream;\
@@ -81,10 +75,8 @@ b = a.asStream;\
 \
 If you specify the value inf for the repeats variable, then it will repeat indefinitely.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 (\
 \cf3 var\cf0  a, b;\
 a = \cf3 Pseq\cf0 .new(#[1, 2, 3], \cf3 inf\cf0 );	\cf2 // infinite repeat\cf0 \
 b = a.asStream;\
@@ -99,10 +91,8 @@ The alternative Pseq( ... ).midicps.asStream is also possible because\
 both pattern and stream inherit from AbstractFunction for which \
 midicps is a method. ( midicps converts a midi value to cycles per second or Hz )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 (\
 \cf3 var\cf0  a, d;\
 a = \cf3 Pseq\cf0 (#[60, 61, 63, 65, 67, 63], \cf3 inf\cf0  ).asStream.midicps;\
 d = 0.3;\
@@ -122,7 +112,6 @@ the number of complete cycles. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  a, b;\
 a = \cf3 Pser\cf0 .new(#[1, 2, 3], 5);	\cf2 // return 5 items\cf0 \
 b = a.asStream;\
@@ -132,10 +121,8 @@ b = a.asStream;\
 \
 Prand returns one item from the list at random for each repeat. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 (\
 \cf3 var\cf0  a, b;\
 a = \cf3 Prand\cf0 .new(#[1, 2, 3, 4, 5], 6);	\cf2 // return 6 items\cf0 \
 b = a.asStream;\
@@ -149,9 +136,9 @@ Prand used as a sequence of pitches:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 var\cf0  a;\
+\cf3 var\cf0  a, d;\
 a = \cf3 Prand\cf0 (#[60, 61, 63, 65], \cf3 inf\cf0 ).midicps.asStream;\
+d = 0.3;\
 \cf3 Task\cf0 (\{\
 	12.do(\{\
 		\cf3 Synth\cf0 (\cf4 "Help-SPE3-SimpleSine"\cf0 ,[\cf5 \\freq\cf0 , a.next]);\
@@ -164,10 +151,8 @@ a = \cf3 Prand\cf0 (#[60, 61, 63, 65], \cf3 inf\cf0 ).midicps.asStream;\
 Pxrand, like Prand, returns one item from the list at random for each repeat, but Pxrand never\
 repeats the same element twice in a row. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 (\
 \cf3 var\cf0  a, b;\
 a = \cf3 Pxrand\cf0 .new(#[1, 2, 3], 10);	\cf2 // return 10 items\cf0 \
 b = a.asStream;\
@@ -176,11 +161,9 @@ b = a.asStream;\
 \f1 \
 \
 Pxrand used as a sequence of pitches:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  a;\
 a = \cf3 Pxrand\cf0 (#[60, 61, 63, 65], \cf3 inf\cf0 ).midicps.asStream;\
 \cf3 Task\cf0 (\{\
@@ -194,11 +177,9 @@ a = \cf3 Pxrand\cf0 (#[60, 61, 63, 65], \cf3 inf\cf0 ).midicps.asStream;\
 \
 Pshuf iterates over the list in scrambled order. The entire scrambled list is repeated\
 in the same order the number of times given by the repeats variable.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  a, b;\
 a = \cf3 Pshuf\cf0 .new(#[1, 2, 3, 4], 3);\
 b = a.asStream;\
@@ -207,11 +188,9 @@ b = a.asStream;\
 \f1 \
 \
 Pshuf used as a sequence of pitches:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  a, b;\
 a = \cf3 Pshuf\cf0 (#[60, 61, 65, 67], \cf3 inf\cf0 ).midicps.asStream;\
 \cf3 Task\cf0 (\{\
@@ -233,7 +212,6 @@ For example here is one pattern nested in another.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  a, b;\
 a = \cf3 Pseq\cf0 .new([1, \cf3 Pseq\cf0 .new([100,200], 2), 3], 3);	\
 b = a.asStream;\
@@ -260,10 +238,8 @@ b = a.asStream;\
 \
 Nested sequences of pitches:\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 (\
 \cf3 var\cf0  a;\
 a = \cf3 Prand\cf0 ([\
 		\cf3 Pseq\cf0 (#[60, 61, 63, 65, 67, 63]),\
@@ -284,10 +260,8 @@ Math operations on ListPatterns\
 \
 Pattern b plays pattern a once normally, once transposed up a fifth and once transposed up a fourth.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 (\
 \cf3 var\cf0  a, b;\
 a = \cf3 Pseq\cf0 (#[60, 62, 63, 65, 67, 63]);\
 b = \cf3 Pseq\cf0 ([ a, a + 7, a + 5], \cf3 inf\cf0 ).asStream;\
@@ -303,10 +277,8 @@ b = \cf3 Pseq\cf0 ([ a, a + 7, a + 5], \cf3 inf\cf0 ).asStream;\
 Adding two patterns together. The second pattern transposes each fifth note of the first pattern\
 down an octave.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2 (\
 \cf3 var\cf0  a;\
 a = \cf3 Pseq\cf0 (#[60, 62, 63, 65, 67, 63], \cf3 inf\cf0 ) + \cf3 Pseq\cf0 (#[0, 0, 0, 0, -12], \cf3 inf\cf0 );\
 a = a.asStream.midicps;\
@@ -331,7 +303,6 @@ a lot of objects, more readable.\
 
 \f2 \cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 ( \cf4 "Help-SPE3-Allpass6"\cf0 , \{ \cf3 arg\cf0  freq;\
 	\cf3 var\cf0  out, env;\
 	out = \cf3 RLPF\cf0 .ar(\
@@ -376,7 +347,6 @@ specify the amplitudes of impulses fed to the Decay2 generator.\
 
 \f2 \cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 ( \cf4 "Help-SPE3-Mridangam"\cf0 , \{ \cf3 arg\cf0  t_amp;\
 	\cf3 var\cf0  out;\
 \
@@ -404,10 +374,8 @@ specify the amplitudes of impulses fed to the Decay2 generator.\
 )\
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // percussion solo in 10/8\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  stream, pat, amp;\
 \
 pat = \cf3 Pseq\cf0 ([\
