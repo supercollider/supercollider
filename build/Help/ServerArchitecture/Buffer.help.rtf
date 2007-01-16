@@ -1,9 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf420
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-}
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Buffer					
@@ -354,29 +353,28 @@ Many of the methods below have two versions: a regular one which sends its corre
 \f1\b0  - An explicitly specified buffer number. Generally this is not needed.
 \f3\fs18 \
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
-\cf6 		s.boot;\
-		\cf7 // first a standard read so we can see what's in the file\cf6 \
-		b = \cf8 Buffer\cf6 .read(s, \cf9 "sounds/SinedPink.aiff"\cf6 );\
-		\cf3 // "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right\cf6 \
+		s.boot;\
+		\cf3 // first a standard read so we can see what's in the file\cf0 \
+		b = \cf2 Buffer\cf0 .read(s, \cf4 "sounds/SinedPink.aiff"\cf0 );\
+		\cf3 // "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right\cf0 \
 		b.plot;\
 		b.free;\
 		\
-		\cf7 // Now just the sine\cf6 \
-		b = \cf8 Buffer\cf6 .readChannel(s, \cf9 "sounds/SinedPink.aiff"\cf6 , channels: [0]);\
+		\cf3 // Now just the sine\cf0 \
+		b = \cf2 Buffer\cf0 .readChannel(s, \cf4 "sounds/SinedPink.aiff"\cf0 , channels: [0]);\
 		b.plot;\
 		b.free;\
 		\
-		\cf7 // Now just the pink noise\cf6 \
-		b = \cf8 Buffer\cf6 .readChannel(s, \cf9 "sounds/SinedPink.aiff"\cf6 , channels: [1]);\
+		\cf3 // Now just the pink noise\cf0 \
+		b = \cf2 Buffer\cf0 .readChannel(s, \cf4 "sounds/SinedPink.aiff"\cf0 , channels: [1]);\
 		b.plot;\
 		b.free;\
 		\
-		\cf7 // Now reverse channel order\cf6 \
-		b = \cf8 Buffer\cf6 .readChannel(s, \cf9 "sounds/SinedPink.aiff"\cf6 , channels: [1, 0]);\
+		\cf3 // Now reverse channel order\cf0 \
+		b = \cf2 Buffer\cf0 .readChannel(s, \cf4 "sounds/SinedPink.aiff"\cf0 , channels: [1, 0]);\
 		b.plot;\
 		b.free;\
-\cf0 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 \cf0 	
 \f0\b\fs24 *readNoUpdate(server, path, startFrame, numFrames, completionMessage, bufnum)\
@@ -800,14 +798,14 @@ Many of the methods below have two versions: a regular one which sends its corre
 \f0\b Function
 \f1\b0  which will return one. A Function will be passed this Buffer as an argument when evaluated.\
 		\
-\cf6 		
+		
 \f3\fs18 s.boot;\
-		b = \cf8 Buffer\cf6 .new(s);\
-		\cf7 // read only the first channel (a Sine wave) of a stereo file\cf6 \
-		b.allocReadChannel(\cf9 "sounds/SinedPink.aiff"\cf6 , channels: [0]);\
-		x = \{ \cf8 PlayBuf\cf6 .ar(1, b.bufnum, \cf8 BufRateScale\cf6 .kr(b.bufnum), loop: 1) * 0.5 \}.play;\
+		b = \cf2 Buffer\cf0 .new(s);\
+		\cf3 // read only the first channel (a Sine wave) of a stereo file\cf0 \
+		b.allocReadChannel(\cf4 "sounds/SinedPink.aiff"\cf0 , channels: [0]);\
+		x = \{ \cf2 PlayBuf\cf0 .ar(1, b.bufnum, \cf2 BufRateScale\cf0 .kr(b.bufnum), loop: 1) * 0.5 \}.play;\
 		x.free; b.free;
-\f1\fs24 		\cf0 \
+\f1\fs24 		\
 		
 \f0\b\fs28 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -1445,7 +1443,7 @@ Many of the methods below have two versions: a regular one which sends its corre
 	
 \f3\fs18 \
 
-\f0\b\fs24 	plot(name, bounds)\
+\f0\b\fs24 	plot(name, bounds, minval = -1.0, maxval = 1.0, parent)\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
 
@@ -1460,6 +1458,15 @@ Many of the methods below have two versions: a regular one which sends its corre
 \f1\b0  - An instance of 
 \f0\b Rect
 \f1\b0  determining the size of the resulting view.\
+		
+\f0\b minval
+\f1\b0  - the minimum value in the plot\
+		
+\f0\b maxval
+\f1\b0  - the maximum value in the plot\
+		
+\f0\b parent
+\f1\b0  - a window to place the plot in. If nil, one will be created for you\
 		\
 		
 \f3\fs18 s.boot;\
