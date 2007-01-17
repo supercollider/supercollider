@@ -99,8 +99,8 @@ SCWindow {
 		var b;
 		b = this.bounds;
 		w = w ? b.width;
-		if(h.isNil,{ h = b.height }, { h = h + 45 }); //+ 45 for window bar
-		this.bounds = Rect(b.left,b.top + (b.height - h  ),w,h);
+		h = h ? b.height;
+		this.bounds = Rect(b.left,b.top + (b.height - h), w,h);
 	}
 	bounds {
 		^this.prGetBounds(Rect.new);
