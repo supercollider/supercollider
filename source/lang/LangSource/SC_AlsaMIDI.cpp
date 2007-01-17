@@ -693,6 +693,7 @@ int sendMIDISysex(int port, int uid, int length, uint8* data)
 {
 	if (!gMIDIClient.mHandle) return errFailed;
 	snd_seq_event_t evt;
+	evt.type = SND_SEQ_EVENT_SYSEX; // MIDIOut.sysex patch 2007-01-16
 	snd_seq_ev_set_variable(&evt, length, data);
 	return gMIDIClient.sendEvent(port, uid, &evt, 0.f);
 }
@@ -919,6 +920,7 @@ void initMIDIPrimitives()
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
 
     definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
+	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0); // MIDIOut.sysex patch 2007-01-16
 
     cleanUpMIDI();
 }
