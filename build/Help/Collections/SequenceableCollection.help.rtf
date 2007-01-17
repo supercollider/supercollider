@@ -469,8 +469,47 @@ given probability.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 [1, 2, 3, 4, 5, 6, 7, 8].curdle(0.3).postcs;
+\f2\fs18 \cf0 [1, 2, 3, 4, 5, 6, 7, 8].curdle(0.3).postcs;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 integrate
+\f1\b0 \
+\
+Returns a collection with the incremental sums of all elements
+\f2\fs18 \
+\
+[3, 4, 1, 1].integrate;\
+\
+
+\f0\b\fs24 differentiate
+\f1\b0 \
+\
+Returns a collection with the pairwise difference between all elements
+\f2\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 [3, 4, 1, 1].differentiate;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 convertDigits(base)
+\f1\b0 \
+\
+Returns an integer resulting from interpreting the elements as digits to a given base (default 10).\
+See also 
+\f0\b asDigits
+\f1\b0  in [\ul Integer\ulnone ] for the complementary method.
+\f2\fs18 \
+\
+[1, 0, 0, 0].convertDigits;\
+[1, 0, 0, 0].convertDigits(2);\
+[1, 0, 0, 0].convertDigits(3);
 \fs24 \
+\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural

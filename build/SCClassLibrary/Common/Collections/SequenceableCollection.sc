@@ -428,6 +428,15 @@ SequenceableCollection : Collection {
 		};
 		^list
 	}
+	// complement to Integer:asDigits
+	convertDigits { arg base=10;
+		var lastIndex = this.lastIndex;
+		^this.sum { |x, i| 
+			if(x >= base) { Error("digit too large for base").throw };
+			base ** (lastIndex - i) * x 
+		}.asInteger
+			
+	}
 		
 	// pitch operations
 	degreeToKey { arg scale, stepsPerOctave=12;

@@ -8,34 +8,42 @@
 \fs24 \
 
 \f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b superclass: SimpleNumber\
+\f0\b \cf0 superclass: SimpleNumber\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 A 32 bit integer. Integer inherits most of its behaviour from its superclass.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Iteration
+\f0\b\fs28 \cf0 \ul \ulc0 Iteration
 \f1\b0\fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b do(function)\
+\f0\b \cf0 do(function)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Executes function for all integers from zero to \ul this\ulnone  minus one.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b function
+\f0\b \cf0 function
 \f1\b0  - a Function which is passed two arguments, both of which are the same\
 integer from zero to this minus one. The reason two arguments are passed is for\
 symmetry with the implementations of do in Collection.\
 \
 
 \f0\b for(endval, function)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Executes function for all integers from \ul this\ulnone  to \ul endval\ulnone , inclusive.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b endval
+\f0\b \cf0 endval
 \f1\b0  - an Integer.\
 
 \f0\b function
@@ -44,11 +52,13 @@ endval, and the second which is a number from zero to the number of iterations m
 \
 
 \f0\b forBy(endval, step, function)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Executes function for all integers from \ul this\ulnone  to \ul endval\ulnone , inclusive, stepping each time by \ul step\ulnone .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b endval
+\f0\b \cf0 endval
 \f1\b0  - an Integer.\
 
 \f0\b step
@@ -58,12 +68,14 @@ Executes function for all integers from \ul this\ulnone  to \ul endval\ulnone , 
 \f1\b0  - a Function which is passed two arguments, the first which is an integer from this to\
 endval, and the second which is a number from zero to the number of iterations minus one.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Conversion
+\f0\b\fs28 \cf0 \ul \ulc0 Conversion
 \f1\b0\fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b asAscii
+\f0\b \cf0 asAscii
 \f1\b0 \
 \
 Answer a Char which has the ASCII value of the receiver.\
@@ -75,124 +87,191 @@ Answer a Char which has the ASCII value of the receiver.\
 Answer a Char which represents the receiver as an ASCII digit. For example \
 5.asDigit returns $5.\
 \
+
+\f0\b asBinaryDigits(numDigits)
+\f1\b0 \
+\
+Answer an array with the 
+\f0\b binary digits
+\f1\b0  (integer 0 or 1). 
+\f0\b numDigits
+\f1\b0  defaults to 8.\
 \
 
-\f0\b\fs28 \ul Random Numbers\
-
-\f1\b0\fs24 \ulnone \
-
-\f0\b xrand(exclude)\
-
+\f0\b asDigits(base, numDigits)
 \f1\b0 \
-Answer a random value from zero to \ul this\ulnone , excluding the value \ul exclude\ulnone .\
+\
+Answer an array with the 
+\f0\b n-ary digits
+\f1\b0 , 
+\f0\b base
+\f1\b0  defaults to 10.\
+See also the complementary method [\ul SequenceableCollection\ulnone ] 
+\f0\b convertDigits
+\f1\b0 .\
+\
+2007.asDigits;\
+2007.asDigits(2);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b exclude
+\f0\b\fs28 \cf0 \ul \ulc0 Random Numbers\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 xrand(exclude)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Answer a random value from zero to \ul this\ulnone , excluding the value \ul exclude\ulnone .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 exclude
 \f1\b0  - an Integer.\
 \
 
 \f0\b xrand2(exclude)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Answer a random value from 
 \f0\b this
 \f1\b0 .neg to \ul this\ulnone , excluding the value \ul exclude\ulnone .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b exclude
+\f0\b \cf0 exclude
 \f1\b0  - an Integer.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Powers Of Two\
+\f0\b\fs28 \cf0 \ul \ulc0 Powers Of Two\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \ulnone \
+\f1\b0\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b nextPowerOfTwo\
+\f0\b \cf0 nextPowerOfTwo\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Answer the next power of two greater than or equal to the receiver.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 13.nextPowerOfTwo.postln;\
+\f2 \cf0 13.nextPowerOfTwo.postln;\
 64.nextPowerOfTwo.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b isPowerOfTwo\
+\f0\b \cf0 isPowerOfTwo\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Answer the whether the receiver is a power of two.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 13.isPowerOfTwo.postln;\
+\f2 \cf0 13.isPowerOfTwo.postln;\
 64.isPowerOfTwo.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Prime Numbers\
+\f0\b\fs28 \cf0 \ul \ulc0 Prime Numbers\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \ulnone \
+\f1\b0\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b nthPrime\
+\f0\b \cf0 nthPrime\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Answer the nth prime number. The receiver must be from 0 to 6541.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [0,1,2,3,4,5].collect(\{ arg i; i.nthPrime; \}).postln;\
+\f2 \cf0 [0,1,2,3,4,5].collect(\{ arg i; i.nthPrime; \}).postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b prevPrime\
+\f0\b \cf0 prevPrime\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Answer the next prime less than or equal to the receiver up to 65521.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 25.prevPrime.postln;\
+\f2 \cf0 25.prevPrime.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b nextPrime\
+\f0\b \cf0 nextPrime\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Answer the next prime less than or equal to the receiver up to 65521.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 25.nextPrime.postln;\
+\f2 \cf0 25.nextPrime.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b isPrime\
+\f0\b \cf0 isPrime\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Answer whether the receiver is prime.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 25.isPrime.postln;\
+\f2 \cf0 25.isPrime.postln;\
 13.isPrime.postln;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b indexOfPrime\
+\f0\b \cf0 indexOfPrime\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Answer the index of a prime number less than or equal to the receiver up to 65521.\
 If the receiver is not a prime, the answer is nil.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 23.indexOfPrime;\
+\f2 \cf0 23.indexOfPrime;\
 25.indexOfPrime;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Misc
+\f0\b\fs28 \cf0 \ul \ulc0 Misc
 \f1\b0\fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b getKeys
+\f0\b \cf0 getKeys
 \f1\b0 \
 \
 Returns the bits from the Macintosh GetKeys() Toolbox call. Receiver should be 0 to 3.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [0.getKeys, 1.getKeys, 2.getKeys, 3.getKeys].postln;\
+\f2 \cf0 [0.getKeys, 1.getKeys, 2.getKeys, 3.getKeys].postln;\
 }
