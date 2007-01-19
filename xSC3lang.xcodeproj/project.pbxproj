@@ -464,11 +464,6 @@
 		C21B4675046D847B00A87B78 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = C21B4673046D847B00A87B78 /* TabletEvents.m */; };
 		C26BDCCD03D0B4E900A87B78 /* SCDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */; };
 		C26BDCCF03D0B4FB00A87B78 /* SCDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = C26BDCCE03D0B4FB00A87B78 /* SCDialog.h */; };
-		CFF7A3A7058AC6610096CD03 /* AIAttributedStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CFF7A367058AC2B80096CD03 /* AIAttributedStringAdditions.m */; };
-		CFF7A3A8058AC6610096CD03 /* AIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CFF7A368058AC2B80096CD03 /* AIColorAdditions.m */; };
-		CFF7A3A9058AC6610096CD03 /* AIHTMLDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = CFF7A369058AC2B80096CD03 /* AIHTMLDecoder.m */; };
-		CFF7A3AA058AC6610096CD03 /* AIStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CFF7A36A058AC2B80096CD03 /* AIStringAdditions.m */; };
-		CFF7A3AB058AC6610096CD03 /* AITextAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = CFF7A36B058AC2B80096CD03 /* AITextAttributes.m */; };
 		F50D060702E69C2101CA2799 /* ChangeCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D04FE02E69B6B01CA2799 /* ChangeCounter.h */; };
 		F50D060802E69C2101CA2799 /* ControlSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D04FF02E69B6B01CA2799 /* ControlSpec.h */; };
 		F50D060902E69C2101CA2799 /* DrawBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050002E69B6B01CA2799 /* DrawBackground.h */; };
@@ -811,16 +806,6 @@
 		C21B4673046D847B00A87B78 /* TabletEvents.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = TabletEvents.m; path = source/app/TabletEvents.m; sourceTree = SOURCE_ROOT; };
 		C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCDialog.mm; sourceTree = "<group>"; };
 		C26BDCCE03D0B4FB00A87B78 /* SCDialog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCDialog.h; sourceTree = "<group>"; };
-		CFF7A362058AC2970096CD03 /* AIAttributedStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AIAttributedStringAdditions.h; sourceTree = "<group>"; };
-		CFF7A363058AC2970096CD03 /* AIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AIColorAdditions.h; sourceTree = "<group>"; };
-		CFF7A364058AC2970096CD03 /* AIHTMLDecoder.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AIHTMLDecoder.h; sourceTree = "<group>"; };
-		CFF7A365058AC2970096CD03 /* AIStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AIStringAdditions.h; sourceTree = "<group>"; };
-		CFF7A366058AC2970096CD03 /* AITextAttributes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AITextAttributes.h; sourceTree = "<group>"; };
-		CFF7A367058AC2B80096CD03 /* AIAttributedStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AIAttributedStringAdditions.m; sourceTree = "<group>"; };
-		CFF7A368058AC2B80096CD03 /* AIColorAdditions.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AIColorAdditions.m; sourceTree = "<group>"; };
-		CFF7A369058AC2B80096CD03 /* AIHTMLDecoder.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AIHTMLDecoder.m; sourceTree = "<group>"; };
-		CFF7A36A058AC2B80096CD03 /* AIStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AIStringAdditions.m; sourceTree = "<group>"; };
-		CFF7A36B058AC2B80096CD03 /* AITextAttributes.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AITextAttributes.m; sourceTree = "<group>"; };
 		F50D04FE02E69B6B01CA2799 /* ChangeCounter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChangeCounter.h; sourceTree = "<group>"; };
 		F50D04FF02E69B6B01CA2799 /* ControlSpec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlSpec.h; sourceTree = "<group>"; };
 		F50D050002E69B6B01CA2799 /* DrawBackground.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DrawBackground.h; sourceTree = "<group>"; };
@@ -1079,11 +1064,6 @@
 		F50D04FD02E69B6B01CA2799 /* app */ = {
 			isa = PBXGroup;
 			children = (
-				CFF7A362058AC2970096CD03 /* AIAttributedStringAdditions.h */,
-				CFF7A363058AC2970096CD03 /* AIColorAdditions.h */,
-				CFF7A364058AC2970096CD03 /* AIHTMLDecoder.h */,
-				CFF7A365058AC2970096CD03 /* AIStringAdditions.h */,
-				CFF7A366058AC2970096CD03 /* AITextAttributes.h */,
 				F50D04FE02E69B6B01CA2799 /* ChangeCounter.h */,
 				F50D04FF02E69B6B01CA2799 /* ControlSpec.h */,
 				F50D050002E69B6B01CA2799 /* DrawBackground.h */,
@@ -1218,11 +1198,6 @@
 		F50D058002E69B6B01CA2799 /* app */ = {
 			isa = PBXGroup;
 			children = (
-				CFF7A367058AC2B80096CD03 /* AIAttributedStringAdditions.m */,
-				CFF7A368058AC2B80096CD03 /* AIColorAdditions.m */,
-				CFF7A369058AC2B80096CD03 /* AIHTMLDecoder.m */,
-				CFF7A36A058AC2B80096CD03 /* AIStringAdditions.m */,
-				CFF7A36B058AC2B80096CD03 /* AITextAttributes.m */,
 				6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */,
 				F5889A2C0397F2F801A87B78 /* CocoaFilePrimitives.M */,
 				F50D058202E69B6B01CA2799 /* DrawBackground.M */,
@@ -1877,11 +1852,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CFF7A3A7058AC6610096CD03 /* AIAttributedStringAdditions.m in Sources */,
-				CFF7A3A8058AC6610096CD03 /* AIColorAdditions.m in Sources */,
-				CFF7A3A9058AC6610096CD03 /* AIHTMLDecoder.m in Sources */,
-				CFF7A3AA058AC6610096CD03 /* AIStringAdditions.m in Sources */,
-				CFF7A3AB058AC6610096CD03 /* AITextAttributes.m in Sources */,
 				F50D065902E69D5901CA2799 /* DrawBackground.M in Sources */,
 				F50D065A02E69D5901CA2799 /* GetStringFromUser.m in Sources */,
 				F50D065B02E69D5901CA2799 /* GUIPrimitives.M in Sources */,
