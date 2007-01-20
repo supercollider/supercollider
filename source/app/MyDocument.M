@@ -23,7 +23,6 @@
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
 #import "GoToPanel.h"
-#import "AIHTMLDecoder.h"
 #import "GetStringFromUser.h"
 #include "SCBase.h"
 #include "SC_DirUtils.h"
