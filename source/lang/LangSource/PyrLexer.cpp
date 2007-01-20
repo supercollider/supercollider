@@ -123,7 +123,7 @@ int maxlinestarts;
 char *text;
 int textlen;
 int textpos;
-int errLineOffset;
+int errLineOffset, errCharPosOffset;
 int parseFailed = 0;
 bool compiledOK = false;
 
@@ -310,6 +310,9 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	if(lineOffset > 0) errLineOffset = lineOffset;
 	else errLineOffset = 0;
 	
+	if(startPos > 0) errCharPosOffset = startPos;
+	else errCharPosOffset = 0;
+	
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
 	initLongStack(&generatorStack);
@@ -326,8 +329,8 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	strcpy(curfilename, filename);
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
-	linestarts[0] = 0;
-	linestarts[1] = 0;
+	linestarts[0] = errCharPosOffset;
+	linestarts[1] = errCharPosOffset;
 	
 	//postfl("<startLexer\n");
 	return true;
@@ -400,7 +403,7 @@ int input()
 				linestarts = (int*)pyr_pool_compile->Realloc(
 					linestarts,  maxlinestarts * sizeof(int*));
 			}
-			linestarts[lineno] = linepos;
+			linestarts[lineno] = linepos + errCharPosOffset;
 		}
 		charno = 0;
 	}
@@ -428,7 +431,7 @@ int input0()
 				linestarts = (int*)pyr_pool_compile->Realloc(
 					linestarts,  maxlinestarts * sizeof(int*));
 			}
-			linestarts[lineno] = linepos;
+			linestarts[lineno] = linepos + errCharPosOffset;
 		}
 		charno = 0;
 	}
