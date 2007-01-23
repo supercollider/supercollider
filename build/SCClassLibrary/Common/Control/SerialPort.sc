@@ -55,7 +55,7 @@ SerialPort
 		semaphore = Semaphore(0);
 		this.prOpen(*args);
 		allPorts = allPorts.add(this);
-		CmdPeriod.add(this);
+// 		CmdPeriod.add(this);
 	}
 
 	isOpen {
@@ -65,7 +65,7 @@ SerialPort
 		if (this.isOpen) {
 			this.prClose;
 			allPorts.remove(this);
-			CmdPeriod.remove(this);
+// 			CmdPeriod.remove(this);
 		}
 	}
 	*closeAll {
