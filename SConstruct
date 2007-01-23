@@ -382,7 +382,11 @@ else:
     features['rendezvous'] = False
 
 # alsa
-features['alsa'], libraries['alsa'] = conf.CheckPKG('alsa')
+if env['ALSA']:
+    features['alsa'], libraries['alsa'] = conf.CheckPKG('alsa')
+else:
+    features['alsa'] = False
+
 if features['alsa']:
     libraries['alsa'].Append(CPPDEFINES = ['HAVE_ALSA'])
 
@@ -809,11 +813,11 @@ if features['midiapi']:
 	libsclangSources += ['source/lang/LangSource/SC_CoreMIDI.cpp']
     else:
 	libsclangSources += ['source/lang/LangSource/SC_AlsaMIDI.cpp']
+else:
+    # fallback implementation
+    libsclangSources += ['source/lang/LangSource/SC_AlsaMIDI.cpp']
 
-if features['lid']:
-    langEnv.Append(CPPDEFINES = 'HAVE_LID')
-    libsclangSources += ['source/lang/LangSource/SC_LID.cpp']
-elif PLATFORM == 'darwin':
+if PLATFORM == 'darwin':
     langEnv.Append(
 	CPPPATH = '#source/lang/LangSource/HID_Utilities',
 	LINKFLAGS = '-framework Carbon -framework IOKit'
@@ -825,6 +829,10 @@ source/lang/LangSource/HID_Utilities/HID_Name_Lookup.c
 source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.c
 source/lang/LangSource/HID_Utilities/HID_Utilities.c
 ''')
+else:
+    if features['lid']:
+	langEnv.Append(CPPDEFINES = 'HAVE_LID')
+    libsclangSources += ['source/lang/LangSource/SC_LID.cpp']
 
 if PLATFORM == 'darwin':
     langEnv.Append(CPPDEFINES = 'HAVE_SPEECH')
