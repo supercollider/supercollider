@@ -179,7 +179,7 @@ SequenceableCollection : Collection {
 	findAll { arg arr, offset=0;
 		var indices, i=0;
 		while { 
-			i = this.findEqual(arr, offset); 
+			i = this.find(arr, offset); 
 			i.notNil
 		}{
 			indices = indices.add(i);
