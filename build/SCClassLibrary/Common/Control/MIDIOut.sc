@@ -270,42 +270,45 @@ MIDIOut {
 	}
 	
 	noteOn { arg chan, note=60, veloc=64;
-		this.write(3, 16r90, chan, note, veloc);
+		this.write(3, 16r90, chan.asInteger, note.asInteger, veloc.asInteger);
 	}
 	noteOff { arg chan, note=60, veloc=64;
-		this.write(3, 16r80, chan, note, veloc);
+		this.write(3, 16r80, chan.asInteger, note.asInteger, veloc.asInteger);
 	}
 	polyTouch { arg chan, note=60, val=64;
-		this.write(3, 16rA0, chan, note, val);
+		this.write(3, 16rA0, chan.asInteger, note.asInteger, val.asInteger);
 	}
 	control { arg chan, ctlNum=7, val=64;
-		this.write(3, 16rB0, chan, ctlNum, val);
+		this.write(3, 16rB0, chan.asInteger, ctlNum.asInteger, val.asInteger);
 	}
 	program { arg chan, num=1;
-		this.write(2, 16rC0, chan, num);
+		this.write(2, 16rC0, chan.asInteger, num.asInteger);
 	}
 	touch { arg chan, val=64;
-		this.write(2, 16rD0, chan, val);
+		this.write(2, 16rD0, chan.asInteger, val.asInteger);
 	}
 	bend { arg chan, val=8192;
+		val = val.asInteger;
 		this.write(3, 16rE0, chan, val bitAnd: 127, val >> 7);
 	}
 	allNotesOff { arg chan;
 		this.control(chan, 123, 0);
 	}
 	smpte	{ arg frames=0, seconds=0, minutes=0, hours=0, frameRate = 3;
-	var packet;
+		var packet;
 		packet = [frames, seconds, minutes, hours]
+			.asInteger
 			.collect({ arg v, i; [(i * 2 << 4) | (v & 16rF), (i * 2 + 1 << 4) | (v >> 4) ] });
 		packet = packet.flat;
 		packet.put(7, packet.at(7) | ( frameRate << 1 ) );
 		packet.do({ arg v; this.write(2, 16rF0, 16r01, v); });
 	}
 	songPtr { arg songPtr;
+		songPtr = songPtr.asInteger;
 		this.write(4, 16rF0, 16r02, songPtr & 16r7f, songPtr >> 7 & 16r7f);
 	}
 	songSelect { arg song;
-		this.write(3, 16rF0, 16r03, song);
+		this.write(3, 16rF0, 16r03, song.asInteger);
 	}	
 	midiClock { 
 		this.write(1, 16rF0, 16r08);
