@@ -1251,6 +1251,9 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 
 - (void)setBackgroundColor:(NSColor *)color
 {
+	if ([color brightnessComponent] < 0.5) [[self textView] setInsertionPointColor: [NSColor whiteColor]];
+	else [[self textView] setInsertionPointColor: [NSColor blackColor]];
+	
 	[[self textView] setBackgroundColor: color];
 	[[self initTextView] setBackgroundColor: color];
 	[[self scrollView] setBackgroundColor: color];
