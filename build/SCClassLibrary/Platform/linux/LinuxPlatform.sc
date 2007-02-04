@@ -1,6 +1,7 @@
 LinuxPlatform : UnixPlatform
 {
 	name { ^\linux }
+	startupFiles { ^#["~/.sclang.sc"] }
 	startup {
 		// Document setup
 		if (\EmacsDocument.asClass.notNil) {
@@ -22,6 +23,6 @@ LinuxPlatform : UnixPlatform
 		"JACK_START_SERVER".setenv("true");
 
 		// load user startup file
-		"~/.sclang.sc".loadPaths;
+		this.loadStartupFiles;
 	}
 }

@@ -1,12 +1,13 @@
 OSXPlatform : UnixPlatform
 {
 	name { ^\osx }
+	startupFiles { ^#["~/scwork/startup.rtf"] }
 	startup {
 		Document.startup;
 		// make server window
 		Server.internal.makeWindow;
 		Server.local.makeWindow;
-		"~/scwork/startup.rtf".loadPaths;
+		this.loadStartupFiles;
 	}
 	shutdown {
 		HIDDeviceService.releaseDeviceList;
