@@ -3599,7 +3599,7 @@ void Compander_next(Compander* unit, int inNumSamples)
             //blows up here
             float32 absx = fabs(next_gain);
             //zap gremlins, but returns 1. on failure
-            next_gain =  (absx > (float32)1e-15 && absx < (float32)1e15) ? next_gain : (float32)1.;    
+            next_gain =  (absx > (float32)1e-15 && absx < (float32)1e15) ? next_gain : (float32)0.;
 		}
 	} else {
 		if (slope_above == 1.f) {
