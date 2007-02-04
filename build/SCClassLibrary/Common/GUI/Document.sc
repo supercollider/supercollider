@@ -483,8 +483,14 @@ Document {
 	}
 	
 	//this is called after recompiling the lib
-	*numberOfOpen {
+	*prnumberOfOpen {
 		_NumberOfOpenTextWindows
+	}
+	*numberOfOpen {
+		thisProcess.platform.when(\_NumberOfOpenTextWindows) {
+			^this.prnumberOfOpen
+		};
+		^0
 	}
 	
 	*newFromIndex { arg idx;
