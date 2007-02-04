@@ -65,6 +65,14 @@ Char : Magnitude {
 		// is a decimal digit 0-9
 		_IsDecDigit
 	}
+	isUpper {
+		// is upper case alphabetic character
+		^this == this.toUpper
+	}
+	isLower {
+		// is lower case alphabetic character
+		^this == this.toLower
+	}
 	isFileSafe {
 		if(this.isPrint.not,{ ^false });
 		^this.ascii != 47 and: {this.ascii != 58} and: {this.ascii != 34}
