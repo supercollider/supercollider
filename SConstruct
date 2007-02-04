@@ -214,7 +214,7 @@ def pkg_extension_dir(prefix, *args):
 def make_opt_flags(env):
     flags = [
 	"-O3",
-	#"-fomit-frame-pointer", # can behave strangely for sclang
+	## "-fomit-frame-pointer", # can behave strangely for sclang
 	"-ffast-math",
 	"-fstrength-reduce"
 	]
@@ -226,7 +226,9 @@ def make_opt_flags(env):
 	    flags.extend([ "-march=%s" % (arch,) ])
     if CPU == 'ppc':
 	flags.extend([ "-fsigned-char", "-mhard-float",
-		       "-mpowerpc-gpopt", "-mpowerpc-gfxopt" ])
+		       ## "-mpowerpc-gpopt", # crashes sqrt
+		       "-mpowerpc-gfxopt"
+		       ])
     return flags
 
 # ======================================================================
