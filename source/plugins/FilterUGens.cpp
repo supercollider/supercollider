@@ -3598,8 +3598,10 @@ void Compander_next(Compander* unit, int inNumSamples)
 			next_gain = pow(prevmaxval / thresh, slope_below - 1.f);
             //blows up here
             float32 absx = fabs(next_gain);
-            //zap gremlins, but returns 1. on failure
-            next_gain =  (absx > (float32)1e-15 && absx < (float32)1e15) ? next_gain : (float32)0.;
+            //zap gremlins, but returns 0. if gain is too small and 1. if gain is too big
+            next_gain = 
+				(absx < (float32)1e-15) ? (float32)0. :
+				(absx > (float32)1e15) ? (float32)1. : next_gain;
 		}
 	} else {
 		if (slope_above == 1.f) {
