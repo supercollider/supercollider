@@ -41,6 +41,17 @@ Symbol {
 		_SymbolIsMetaClassName
 		// returns true if there is a meta class by this name
 	}
+	isPrefix { | other |
+		_SymbolIsPrefix
+	}
+	isPrimitiveName {
+		// returns true if symbol is a valid primitive name
+		^this.isPrefix(\_)
+	}
+	isPrimitive {
+		// returns true if symbol names a bound primitive
+		^this.isPrimitiveName and: { this.primitiveIndex > 0 }
+	}
 
 	openTextFile { arg selectionStart=0, selectionLength=0;
 		^this.asString.openTextFile(selectionStart, selectionLength)
@@ -169,6 +180,10 @@ Symbol {
 		}) 
 	}
 
+	primitiveIndex { 
+		_Symbol_PrimitiveIndex
+		^this.primitiveFailed
+	}
 	specialIndex { 
 		// used by BasicOpUGens to get an ID number for the operator
 		_Symbol_SpecialIndex

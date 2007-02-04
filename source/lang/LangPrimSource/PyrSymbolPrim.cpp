@@ -188,6 +188,16 @@ int prSymbol_AsInteger(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSymbol_PrimitiveIndex(struct VMGlobals *g, int numArgsPushed);
+int prSymbol_PrimitiveIndex(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+
+	SetInt(a, a->us->u.index);
+		
+	return errNone;
+}
+
 int prSymbol_SpecialIndex(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_SpecialIndex(struct VMGlobals *g, int numArgsPushed)
 {
@@ -227,7 +237,8 @@ void initSymbolPrimitives()
 	definePrimitive(base, index++, "_SymbolAsSetter", prSymbolAsSetter, 1, 0);	
 	definePrimitive(base, index++, "_SymbolAsGetter", prSymbolAsGetter, 1, 0);	
 	definePrimitive(base, index++, "_Symbol_AsInteger", prSymbol_AsInteger, 1, 0);	
-	definePrimitive(base, index++, "_Symbol_SpecialIndex", prSymbol_SpecialIndex, 1, 0);	
+	definePrimitive(base, index++, "_Symbol_PrimitiveIndex", prSymbol_PrimitiveIndex, 1, 0);
+	definePrimitive(base, index++, "_Symbol_SpecialIndex", prSymbol_SpecialIndex, 1, 0);
 	definePrimitive(base, index++, "_Symbol_AsFloat", prSymbol_AsFloat, 1, 0);	
 
 }
