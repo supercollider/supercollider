@@ -59,7 +59,7 @@ OSCpathDispatcher : OSCMultiResponder {
 	}
 	removeChild { arg responder;
 		 pathResponders.remove(responder);
-		 // if(this.isEmpty) { this.remove };
+		  if(this.isEmpty) { this.remove };
 	}
 	
 	isEmpty { ^(nodes.size + pathResponders.size) == 0 }
