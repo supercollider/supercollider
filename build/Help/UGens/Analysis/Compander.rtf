@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf420
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
@@ -13,19 +13,34 @@ Compander.ar(in, control, thresh, slopeBelow, slopeAbove, \
 \f1\b0 \
 General purpose (hard-knee) dynamics processor. \
 \
-in: The signal to be compressed / expanded / gated.\
-control: The signal whose amplitude determines the gain applied to the input signal. Often the same as in (for standard gating or compression) but should be different for ducking.\
+
+\f0\b in
+\f1\b0 : The signal to be compressed / expanded / gated.\
+\
+
+\f0\b control
+\f1\b0 : The signal whose amplitude determines the gain applied to the input signal. Often the same as in (for standard gating or compression) but should be different for ducking.\
 \pard\pardeftab720\ql\qnatural
 \cf0 \
-thresh: Control signal amplitude threshold, which determines the break point between slopeBelow and slopeAbove. Usually 0..1. The control signal amplitude is calculated using RMS.\
+
+\f0\b thresh
+\f1\b0 : Control signal amplitude threshold, which determines the break point between slopeBelow and slopeAbove. Usually 0..1. The control signal amplitude is calculated using RMS.\
 \
-slopeBelow: Slope of the amplitude curve below the threshold. If this slope > 1.0, the amplitude will drop off more quickly the softer the control signal gets; when the control signal is close to 0 amplitude, the output should be exactly zero -- hence, noise gating. Values < 1.0 are possible, but it means that a very low-level control signal will cause the input signal to be amplified, which would raise the noise floor.\
+
+\f0\b slopeBelow
+\f1\b0 : Slope of the amplitude curve below the threshold. If this slope > 1.0, the amplitude will drop off more quickly the softer the control signal gets; when the control signal is close to 0 amplitude, the output should be exactly zero -- hence, noise gating. Values < 1.0 are possible, but it means that a very low-level control signal will cause the input signal to be amplified, which would raise the noise floor.\
 \
-slopeAbove: Same thing, but above the threshold. Values < 1.0 achieve compression (louder signals are attenuated); > 1.0, you get expansion (louder signals are made even louder). For 3:1 compression, you would use a value of 1/3 here.\
+
+\f0\b slopeAbove
+\f1\b0 : Same thing, but above the threshold. Values < 1.0 achieve compression (louder signals are attenuated); > 1.0, you get expansion (louder signals are made even louder). For 3:1 compression, you would use a value of 1/3 here.\
 \
-clampTime: The amount of time it takes for the amplitude adjustment to kick in fully. This is usually pretty small, not much more than 10 milliseconds (the default value). I often set it as low as 2 milliseconds (0.002).\
+
+\f0\b clampTime
+\f1\b0 : The amount of time it takes for the amplitude adjustment to kick in fully. This is usually pretty small, not much more than 10 milliseconds (the default value). I often set it as low as 2 milliseconds (0.002).\
 \
-relaxTime: The amount of time for the amplitude adjustment to be released. Usually a bit longer than clampTime; if both times are too short, you can get some (possibly unwanted) artifacts.\
+
+\f0\b relaxTime
+\f1\b0 : The amount of time for the amplitude adjustment to be released. Usually a bit longer than clampTime; if both times are too short, you can get some (possibly unwanted) artifacts.\
 \
 If any of this is confusing, see \ul http://en.wikipedia.org/wiki/Audio_level_compression\ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -49,12 +64,12 @@ play(\{\
 	z = \cf3 Decay2\cf0 .ar(\
 		\cf3 Impulse\cf0 .ar(8, 0,\cf3 LFSaw\cf0 .kr(0.3, 0, -0.3, 0.3)), \
 		0.001, 0.3, \cf3 Mix\cf0 .ar(\cf3 Pulse\cf0 .ar([80,81], 0.3)));\
-	\cf3 Compander\cf0 .ar(z, z, \
-		control: \cf3 MouseX\cf0 .kr(0.1, 1), \
-		thresh: 10, \
-		slopeBelow: 1, \
-		slopeAbove: 0.01, \
-		clampTime: 0.01\
+	\cf3 Compander\cf0 .ar(z, z,\
+		thresh: \cf3 MouseX\cf0 .kr(0.1, 1),\
+		slopeBelow: 10,\
+		slopeAbove: 1,\
+		clampTime: 0.01,\
+		relaxTime: 0.01\
 	);\
 \})\
 )\
@@ -66,12 +81,12 @@ play(\{\
 	z = \cf3 Decay2\cf0 .ar(\
 		\cf3 Impulse\cf0 .ar(8, 0,\cf3 LFSaw\cf0 .kr(0.3, 0, -0.3, 0.3)), \
 		0.001, 0.3, \cf3 Mix\cf0 .ar(\cf3 Pulse\cf0 .ar([80,81], 0.3)));\
-	\cf3 Compander\cf0 .ar(z, z, \
-		control: \cf3 MouseX\cf0 .kr(0.1, 1), \
-		thresh: 1, \
-		slopeBelow: 0.5, \
-		slopeAbove: 0.01, \
-		clampTime: 0.01\
+	\cf3 Compander\cf0 .ar(z, z,\
+		thresh: \cf3 MouseX\cf0 .kr(0.1, 1),\
+		slopeBelow: 1,\
+		slopeAbove: 0.5,\
+		clampTime: 0.01,\
+		relaxTime: 0.01\
 	);\
 \})\
 )\
@@ -83,12 +98,12 @@ play(\{\
 	z = \cf3 Decay2\cf0 .ar(\
 		\cf3 Impulse\cf0 .ar(8, 0,\cf3 LFSaw\cf0 .kr(0.3, 0, -0.3, 0.3)), \
 		0.001, 0.3, \cf3 Mix\cf0 .ar(\cf3 Pulse\cf0 .ar([80,81], 0.3)));\
-	\cf3 Compander\cf0 .ar(z, z, \
-		control: \cf3 MouseX\cf0 .kr(0.1, 1), \
-		thresh: 1, \
-		slopeBelow: 0.1, \
-		slopeAbove: 0.01, \
-		clampTime: 0.01\
+	\cf3 Compander\cf0 .ar(z, z,\
+		thresh: \cf3 MouseX\cf0 .kr(0.1, 1),\
+		slopeBelow: 1,\
+		slopeAbove: 0.1,\
+		clampTime: 0.01,\
+		relaxTime: 0.01\
 	);\
 \})\
 )\
@@ -101,13 +116,13 @@ play(\{\
 	z = \cf3 Decay2\cf0 .ar(\
 		\cf3 Impulse\cf0 .ar(8, 0,\cf3 LFSaw\cf0 .kr(0.3, 0, -0.3, 0.3)), \
 		0.001, 0.3, \cf3 Mix\cf0 .ar(\cf3 Pulse\cf0 .ar([80,81], 0.3)));\
-	\cf3 Compander\cf0 .ar(z, z, \
-		control: \cf3 MouseX\cf0 .kr(0.1, 1), \
-		thresh: 0.1, \
-		slopeBelow: 1, \
-		slopeAbove: 0.01, \
-		clampTime: 0.01\
-	);\
+	\cf3 Compander\cf0 .ar(z, z,\
+		thresh: \cf3 MouseX\cf0 .kr(0.1, 1),\
+		slopeBelow: 0.1,\
+		slopeAbove: 1,\
+		clampTime: 0.01,\
+		relaxTime: 0.01\
+	)*0.1;\
 \})\
 )\
 \
