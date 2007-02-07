@@ -123,7 +123,7 @@ Server : Model {
 	
 	var <name, <addr, <clientID=0;
 	var <isLocal, <inProcess;
-	var <serverRunning = false, <serverBooting=false;
+	var <serverRunning = false, <serverBooting=false, bootNotifyFirst=false;
 	var <>options,<>latency = 0.2,<dumpMode=0, <notified=true;
 	var <nodeAllocator;
 	var <controlBusAllocator;
@@ -306,9 +306,12 @@ Server : Model {
 	}
 	
 	doWhenBooted { arg onComplete, limit=100;
+		var mBootNotifyFirst = bootNotifyFirst;
+		bootNotifyFirst = false;
+	
 		^Routine({
 			while({
-				serverRunning.not and: {(limit = limit - 1) > 0}
+				(serverRunning.not or: (serverBooting and: mBootNotifyFirst.not)) and: {(limit = limit - 1) > 0}
 			},{
 				0.2.wait;	
 			});
@@ -450,6 +453,7 @@ Server : Model {
 		if(startAliveThread, { this.startAliveThread });
 		this.newAllocators;
 		this.resetBufferAutoInfo;
+		bootNotifyFirst = true;
 		this.doWhenBooted({ 
 			if(notified, { 
 				this.notify;
