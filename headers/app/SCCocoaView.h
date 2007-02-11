@@ -83,6 +83,7 @@ public:
 	virtual ~SCMovieView();
 	virtual void setBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
 protected:
 	NSMovieView *mMovieView;
