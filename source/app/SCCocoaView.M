@@ -700,23 +700,29 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}					
 	
 	if (strcmp(name, "setCurrentTime")==0) {
-		int time;
-		err = slotIntVal(slot, &time);
+		float time;
+		err = slotFloatVal(slot, &time);
 		if(err) return err;		
-		SetMovieTimeValue(mMovie, (TimeValue) time *  mTimeRecord.scale);
+		SetMovieTimeValue(mMovie, (TimeValue) (time *  mTimeRecord.scale));
 		return errNone;		
 	}
 		
 	return SCView::setProperty(symbol, slot);
 }
-//
-//int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
-//{
-//	char *name = symbol->name;
-//GetMovieDuration([[mMovieView movie] QTMovie]);
-//
-//	return SCView::getProperty(symbol, slot);
-//}
+
+int SCMovieView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	char *name = symbol->name;
+	//GetMovieDuration([[mMovieView movie] QTMovie]);
+	if (strcmp(name, "getCurrentTime")==0) {
+		float time;
+		post("timescale: %d  \n",  mTimeRecord.scale);
+		time = (float) ((float)GetMovieTime(mMovie, NULL) / mTimeRecord.scale);
+		SetFloat(slot, time);
+		return errNone;		
+	}
+	return SCView::getProperty(symbol, slot);
+}
 
 extern PyrSymbol *s_proto, *s_parent;
 extern int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto, ivxIdentDict_know;
