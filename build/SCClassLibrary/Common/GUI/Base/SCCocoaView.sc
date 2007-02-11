@@ -150,8 +150,8 @@ SCMovieView : SCView{
 	}	
 
 	currentTime{
-		"SCMovieView-currentTime is not implemented".warn;
-//		^this.getProperty(\getCurrentTime);
+		//"SCMovieView-currentTime is not implemented".warn;
+		^this.getProperty(\getCurrentTime);
 	}	
 		
 	editable_{|bool|
