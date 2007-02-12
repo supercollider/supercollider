@@ -88,35 +88,25 @@ const WorldOptions kDefaultWorldOptions =
 #include "SC_Reply.h"
 #endif //SC_WIN32
 
-#ifndef SC_WIN32
+#ifdef SC_WIN32
+# define SC_DLLEXPORT __declspec(dllexport)
+#else
+# define SC_DLLEXPORT
+#endif
+
 extern "C" {
-	void SetPrintFunc(PrintFunc func);
-	struct World* World_New(WorldOptions *inOptions);
-	void World_OpenUDP(struct World *inWorld, int inPort);
-	void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
+	SC_DLLEXPORT void SetPrintFunc(PrintFunc func);
+	SC_DLLEXPORT struct World* World_New(WorldOptions *inOptions);
+	SC_DLLEXPORT void World_NonRealTimeSynthesis(struct World *inWorld, WorldOptions *inOptions);
+	SC_DLLEXPORT void World_OpenUDP(struct World *inWorld, int inPort);
+	SC_DLLEXPORT void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
 #ifdef SC_DARWIN
-    void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName);
+    SC_DLLEXPORT void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName);
 #endif
-	void World_WaitForQuit(struct World *inWorld);
-	bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
-	int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
-	int scprintf(const char *fmt, ...);
+	SC_DLLEXPORT void World_WaitForQuit(struct World *inWorld);
+	SC_DLLEXPORT bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
+	SC_DLLEXPORT int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
+	SC_DLLEXPORT int scprintf(const char *fmt, ...);
 }
-#else //SC_WIN32
-extern "C" {
-__declspec(dllexport) 	void SetPrintFunc(PrintFunc func);
-__declspec(dllexport) 	struct World* World_New(WorldOptions *inOptions);
-__declspec(dllexport) 	void World_OpenUDP(struct World *inWorld, int inPort);
-__declspec(dllexport) 	void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
-__declspec(dllexport) 	void World_WaitForQuit(struct World *inWorld);
-__declspec(dllexport) 	bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
-__declspec(dllexport) 	int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
-__declspec(dllexport)   int scprintf(const char *fmt, ...);
-}
-#endif //SC_WIN32
 
-
-
-
-#endif
-
+#endif // _SC_WorldOptions_

@@ -259,8 +259,19 @@ int main(int argc, char* argv[])
 	}
 	
 	struct World *world = World_New(&options);
-	if (!world) return options.mRealTime ? 1 : 0;
-	
+	if (!world) return 1;
+
+	if (!options.mRealTime) {
+		int exitCode = 0;
+		try {
+			World_NonRealTimeSynthesis(world, &options);
+		} catch (std::exception& exc) {
+			scprintf("%s\n", exc.what());
+			exitCode = 1;
+		}
+		return exitCode;
+	}
+
 	if (udpPortNum >= 0) World_OpenUDP(world, udpPortNum);
 	if (tcpPortNum >= 0) World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8);
 

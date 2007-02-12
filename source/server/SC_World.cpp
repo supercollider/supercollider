@@ -234,7 +234,6 @@ void InterfaceTable_Init()
 
 void initialize_library();
 void initializeScheduler();
-void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions);
 
 static void World_LoadGraphDefs(World* world);
 void World_LoadGraphDefs(World* world)
@@ -375,8 +374,6 @@ World* World_New(WorldOptions *inOptions)
 			}
 		} else {
 			hw->mAudioDriver = 0;
-			World_NonRealTimeSynthesis(world, inOptions);
-			world = 0;
 		}
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());
