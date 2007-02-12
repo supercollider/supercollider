@@ -101,7 +101,7 @@ extern "C" {
 	SC_DLLEXPORT void World_OpenUDP(struct World *inWorld, int inPort);
 	SC_DLLEXPORT void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
 #ifdef SC_DARWIN
-    SC_DLLEXPORT void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName);
+	SC_DLLEXPORT void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName);
 #endif
 	SC_DLLEXPORT void World_WaitForQuit(struct World *inWorld);
 	SC_DLLEXPORT bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
