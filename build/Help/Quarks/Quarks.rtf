@@ -1,6 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
-\f3\fnil\fcharset77 Verdana;\f4\fswiss\fcharset77 Helvetica-Oblique;}
+\f3\fnil\fcharset77 Verdana;\f4\fmodern\fcharset77 Courier;\f5\fswiss\fcharset77 Helvetica-Oblique;
+}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red191\green0\blue0;
 \red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -62,6 +63,48 @@ Those files are also human-readable.\
 \cf4 // checkout the specific one that you want\cf5 \
 \cf6 Quarks\cf5 .checkout( \cf7 "testquark"\cf5  )\
 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b\fs28 \cf0 Annoyances
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs24 \cf0 Quarks executes various shell commands to run svn.  If you get this:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f4\fs20 \cf0 Error validating server certificate for '{\field{\*\fldinst{HYPERLINK "https://svn.sourceforge.net:443"}}{\fldrslt https://svn.sourceforge.net:443}}':\
+- The certificate is not issued by a trusted authority. Use the\
+  fingerprint to validate the certificate manually!\
+Certificate information:\
+- Hostname: *.sourceforge.net\
+- Valid: from Jan 17 18:17:01 2007 GMT until Mar 18 18:17:01 2008 GMT\
+- Issuer: Equifax Secure Certificate Authority, Equifax, US\
+- Fingerprint: a1:3a:51:83:60:5e:81:07:be:6c:06:d1:db:34:9b:d8:b9:40:b5:d0\
+(R)eject, accept (t)emporarily or accept (p)ermanently? svn: PROPFIND request failed on '/svnroot/quarks'\
+svn: PROPFIND of '/svnroot/quarks': Server certificate verification failed: issuer is not trusted ({\field{\*\fldinst{HYPERLINK "https://svn.sourceforge.net"}}{\fldrslt https://svn.sourceforge.net}})\
+RESULT = 256
+\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2 \cf0 you want to accept (p)ermanently, but since you didn't do it through a shell you can't hit "p".  \
+Copy and paste the shell command that was posted\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs18 \cf0 eg.\
+export LANG='' ;  /usr/local/bin/svn update /Users/cruxxial/Library/Application\\ Support/SuperCollider/quarks/DIRECTORY/ 2>&1\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs24 \cf0 into your shell and run it there.  Hit the "p".  After that it won't bother you again.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs18 \cf0 \
 \
 
 \f0\b\fs26 \cf0 Install
@@ -173,8 +216,6 @@ svn add DIRECTORY/quarkname.quark\
 \
 \
 \
-\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -195,7 +236,7 @@ Nevertheless it is possible to use alreadily existing subversion quarks director
 1.	Create a directory in svn-repos (e.g. quarks-<yourname/id/institution>).\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f4\i \cf0 	!This name has to be unique to all Quark repositories you will ever check out!\
+\f5\i \cf0 	!This name has to be unique to all Quark repositories you will ever check out!\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f2\i0 \cf0 \
