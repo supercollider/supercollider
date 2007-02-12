@@ -14,8 +14,10 @@ The packages are stored in an Subversion (SVN) respository, principally the publ
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f1\fs18 \cf0 \
-https://svn.sourceforge.net/svnroot/quarks\
-\
+
+\f3\fs22 \cf0 https://svn.sourceforge.net/svnroot/quarks\
+
+\f1\fs18 \cf0 \
 
 \f2\fs24 \cf0 You will need subversion installed ( {\field{\*\fldinst{HYPERLINK "http://subversion.tigris.org/"}}{\fldrslt subversion.tigris.org}} )\
 You do not need a (free) sourceforge account to checkout quarks, but you will need one to check them in.\
@@ -50,7 +52,7 @@ You do not need a (free) sourceforge account to checkout quarks, but you will ne
 \cf6 Quarks\cf5 .updateDirectory\
 \cf0 \
 
-\f2\fs24 \cf0 That folder contains quark files with information like name, path, summary, author etc. for each quark in the repos.\
+\f2\fs24 \cf0 That folder contains simple quark files with information like name, path, summary, author etc. for each quark in the repos.\
 Those files are also human-readable.\
 
 \f1\fs18 \cf0 \
@@ -136,9 +138,13 @@ You may also use standard SVN tools which is probably easier especially for add 
 \f1\b0\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f2\fs24 \cf0 create your folder in your local quarks/ \
+\f2\fs24 \cf0 create your folder in 
+\f3\fs22 \cf0 \{Application Support\}/quarks/ 
+\f2\fs24 \cf0 \
 \
-in a shell go to \{Application Support\}/quarks , execute :\
+in a shell go to 
+\f3\fs22 \cf0 \{Application Support\}/quarks/ 
+\f2\fs24 \cf0  and  execute :\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
@@ -179,9 +185,9 @@ svn add DIRECTORY/quarkname.quark\
 \f1\b0\fs18 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f2\fs24 \cf0 Besides the public repos at sourceforge you can use any other subversion host including a respository running on your local machine.  This is useful in that you get version control and an easy way to move packages in and out of your workspace.\
+\f2\fs24 \cf0 Besides the public repos at sourceforge you can use any other subversion host including a repository running on your local machine.  This is useful in that you get version control and an easy way to manage package installation.\
 \
-For obviously reasons you need to have a running subversion system somewhere in order to use this feature.\
+For obvious reasons you need to have a running subversion system somewhere in order to use this feature.\
 Nevertheless it is possible to use alreadily existing subversion quarks directories (as the SonEnvir one).
 \f1\fs18 \
 
