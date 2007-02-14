@@ -228,6 +228,19 @@ String[char] : RawArray {
 			thisProcess.interpreter.executeFile(path);
 		});
 	}
+	include {
+		if(Quarks.isInstalled(this).not) {
+			Quarks.install(this);
+			"... the class library may have to be recompiled.".postln; 
+			// maybe check later whether there are .sc files included.
+		}
+	}
+	exclude {
+		if(Quarks.isInstalled(this)) {
+			Quarks.uninstall(this);
+			"... the class library may have to be recompiled.".postln; 
+		}
+	}
 	basename {
 		_String_Basename;
 		^this.primitiveFailed

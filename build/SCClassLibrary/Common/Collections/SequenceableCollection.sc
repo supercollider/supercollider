@@ -281,7 +281,7 @@ SequenceableCollection : Collection {
 			function.value(this.at(i), this.at(i+1), i);
 		})
 	}
-	separate { arg function;
+	separate { arg function = true;
 		var list = Array.new;
 		var sublist = this.species.new;
 		this.doAdjacentPairs({ arg a, b, i;
@@ -946,21 +946,7 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	// mirror image of String-split
-	join { arg joiner;
-		^String.streamContents({ arg stream;
-			var stop;
-			if(joiner.isNil,{
-				this.do({ arg item; stream << item });
-			},{
-				stop = this.size - 1;
-				this.do({ arg item,i;
-					stream << item;
-					if(i < stop,{ stream << joiner; });
-				});
-			})
-		})
-	}
+	
 
 	// streaming
 	*streamContents { arg function;
