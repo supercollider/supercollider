@@ -144,9 +144,8 @@ It can be used to store event Patterns globally. Changes in this global library 
 \f2\b0 \
 			value (silent event). This allows to create streams that idle on until a new pattern is inserted.
 \f1\fs18 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f2\fs24 \
 			\
 			\
 \
@@ -317,9 +316,9 @@ x.stop;\
 s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "gpdef"\cf0 , \
-	\{ \cf2 arg\cf0  out=0, freq=440, dur=0.05, amp=0.1, pan;\
+	\{ \cf2 arg\cf0  out=0, freq=440, sustain=0.05, amp=0.1, pan;\
 		\cf2 var\cf0  env;\
-		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.01, dur), doneAction:2) * amp;\
+		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.01, sustain), doneAction:2) * amp;\
 		\cf2 Out\cf0 .ar(out, Pan2.ar(\cf2 SinOsc\cf0 .ar(freq, 0, env), pan))\
 	\}).store;\
 )\cf2 \
@@ -403,9 +402,8 @@ s.boot;\
 
 \f0\b\fs24 \cf0 recursion:\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 Pdefs can be used recursively under the condition that the stream call structure allows it.\
+\f2\b0 Pdefs can be used recursively under the condition that the stream call structure allows it.\
 a structure like the following works:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -430,18 +428,16 @@ but the following would crash, because .embedInStream is called recursively with
 \
 outset\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 When quantizing to a larger number of beats, the changes become very slow if one has to wait for the next beat. Providing an outset quant value is a way to make the change so that it appears as if it had been done at the previous grid point already. The stream is fast forwarded to the current position relative to the quant grid.\
+\f2\b0 When quantizing to a larger number of beats, the changes become very slow if one has to wait for the next beat. Providing an outset quant value is a way to make the change so that it appears as if it had been done at the previous grid point already. The stream is fast forwarded to the current position relative to the quant grid.\
 Providing a number larger than zero, the next possible quant point is used as outset.\cf5 \
 \cf0 \
 For example, if quant is 32, and one has just missed the first beat when changing the pattern,\
 one has to wait for 32 beats until the change happens. Using an outset of 1, it is assumed that you had already\
 changed the pattern at the first beat, the stream is fast forwarded to the time it would be at now if you had done so. The new pattern is inserted at the next beat (outset=1).\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 quant can be: [quant, offset, outset]
+\f0\b quant can be: [quant, offset, outset]
 \f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -519,12 +515,10 @@ quant is very long. This is hard to avoid, so it simply has to be taken into acc
 
 \f0\b\fs24 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\b0 \
 
-\f0\b \cf0 update condition
+\f0\b update condition
 \f2\b0 \
 \
 \
