@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf420
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
-\f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
 }
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 MIDIOut
@@ -10,78 +10,129 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 MIDIout 
-\f2\b0 objects interface MIDI output ports defined by the operating system to the language.\
-  from the operating system to a set of user defined functions.\
-\
-All user-supplied parameters will be converted to integers with no rounding, simple truncation.\
-\
-By default, Mac OSX starts the MIDI Server with a lower scheduling priority, which can make MIDIOut timing erratic. To fix it, at present it is necessary to "renice" the MIDIServer process 
-\f3\i every time
-\f2\i0  you initialize MIDI in SC. This can be done in the terminal as follows.\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-\cf0 ps ax | grep MIDIServer\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-// see a line like this, note process ID at left\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\f0\b\fs24 \
 
-\f0\b \cf2 355
-\f2\b0 \cf0   ??  Ss     0:00.11 /System/Library/Frameworks/CoreMIDIServer.framework/MIDIServer\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-// give it a higher priority\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-\cf0 sudo renice -20 
-\f0\b \cf3 355
-\f2\b0 \cf0 \
+\f2\b0 Interface MIDI output ports defined by the operating system to a set of user defined functions.\
 \
-You will be asked for your administrator password here.\
-\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0   
-\f0\b methods
+  \
+  \
+	
+\f0\b *new(port, uid)
 \f2\b0 \
+	
+\f1\fs18 \
+
+\f2\fs24 	
+\f0\b noteOn
+\f2\b0  ( chan, note, veloc )\
+	
+\f0\b noteOff
+\f2\b0  ( chan, note, veloc )\
+	
+\f0\b polyTouch
+\f2\b0  ( chan, note, val )\
+	
+\f0\b control
+\f2\b0  ( chan, ctlNum, val )\
+	
+\f0\b program
+\f2\b0  ( chan, num )\
+	
+\f0\b touch
+\f2\b0  ( chan, val )\
+	
+\f0\b bend
+\f2\b0  ( chan, val )\
+	
+\f0\b allNotesOff
+\f2\b0  ( chan )\
+	
+\f0\b smpte
+\f2\b0  ( frames, seconds, minutes, hours, frameRate )\
+	
+\f0\b songPtr
+\f2\b0  ( songPtr )\
+	
+\f0\b songSelect
+\f2\b0  ( song )\
+	
+\f0\b midiClock
+\f2\b0  (  )\
+	
+\f0\b startClock
+\f2\b0  (  )\
+	
+\f0\b continueClock
+\f2\b0  (  )\
+	
+\f0\b stopClock
+\f2\b0  (  )\
+	
+\f0\b reset
+\f2\b0  (  )\
+	
+\f0\b sysex
+\f2\b0  ( uid, Int8Array )\
+	
+\f0\b send
+\f2\b0  ( outport, uid, len, hiStatus, loStatus, a, b, latency )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0    noteOn ( chan, note, veloc )\
-   noteOff ( chan, note, veloc )\
-   polyTouch ( chan, note, val )\
-   control ( chan, ctlNum, val )\
-   program ( chan, num )\
-   touch ( chan, val )\
-   bend ( chan, val )\
-   allNotesOff ( chan )\
-   smpte ( frames, seconds, minutes, hours, frameRate )\
-   songPtr ( songPtr )\
-   songSelect ( song )\
-   midiClock (  )\
-   startClock (  )\
-   continueClock (  )\
-   stopClock (  )\
-   reset (  )\
-   sysex ( uid, Int8Array )\
-   send ( outport, uid, len, hiStatus, loStatus, a, b, latency )\
+\f1\fs18 \
 \
+\cf2 \
+\cf3 // examples:\cf2 \
 \
-MIDIClient.init;\
+\cf4 MIDIClient\cf2 .init;\
 \
-m = MIDIOut(0, MIDIClient.destinations.at(0).uid);\
+m = \cf4 MIDIOut\cf2 (0, \cf4 MIDIClient\cf2 .destinations.at(0).uid);\
 m.noteOn(16, 60, 60);\
 \
-MIDIIn.connect;\
-MIDIIn.sysex = \{ arg uid, packet; [uid,packet].postln \};\
+\cf4 MIDIIn\cf2 .connect;\
+\cf4 MIDIIn\cf2 .sysex = \{ \cf4 arg\cf2  uid, packet; [uid,packet].postln \};\
+\cf4 MIDIIn\cf2 .sysrt = \{ \cf4 arg\cf2  src, chan, val; 	[src, chan, val].postln; \};\
+\cf4 MIDIIn\cf2 .smpte = \{ \cf4 arg\cf2  src, chan, val; 	[src, chan, val].postln; \};\
+\
+m.sysex(\cf4 MIDIClient\cf2 .destinations.at(0).uid, \cf4 Int8Array\cf2 [ 16rf0, 0, 0, 27, 11, 0,16rf7])\
+\
+m.smpte (24,16) \
+m.midiClock \
+m.start \
+m.continue \
+m.stop \
+\
+\
+\
+\cf3 // using patterns for sending midi events\cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf4 MIDIClient\cf2 .init;\
+m = \cf4 MIDIOut\cf2 (0, \cf4 MIDIClient\cf2 .destinations.at(0).uid);\
+\
+a = \cf4 Pbind\cf2 (\cf5 \\degree\cf2 , \cf4 Prand\cf2 ([1, 2, 3, [0, 5]], \cf4 inf\cf2 ), \cf5 \\bend\cf2 , \cf4 Pwhite\cf2 (0, 76, \cf4 inf\cf2 ));\
+\
+\
+\cf3 // chain a midi event into the pattern and play it (see [\ul Pchain\ulnone ])\cf2 \
+\
+(a <> (type: \cf5 \\midi\cf2 , midiout: m)).play;\
+\
+\
+\
+\cf3 // the following keys are supported by midiEvent:\cf2 \
+noteOn\
+noteOff\
+polyTouch\
+control\
+program\
+touch\
+bend\
+allNotesOff\
+smpt\
+songPtr\
+sysex\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 MIDIIn\cf0 .sysrt = \{ \cf4 arg\cf0  src, chan, val; 	[src, chan, val].postln; \};\
-\cf4 MIDIIn\cf0 .smpte = \{ \cf4 arg\cf0  src, chan, val; 	[src, chan, val].postln; \};\
+\cf2 \
 \
-m.sysex(MIDIClient.destinations.at(0).uid, Int8Array[ 16rf0, 0, 0, 27, 11, 0,16rf7])\
 \
-   m.smpte (24,16) \
-   m.midiClock \
-   m.start \
-   m.continue \
-   m.stop \
+\
  }
