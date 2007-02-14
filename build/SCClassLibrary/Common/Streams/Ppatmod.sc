@@ -8,7 +8,7 @@ Plazy : Pattern {
 //		^func.valueArray(args).asStream
 //	}
 	embedInStream { arg inval;				
-		^func.value.embedInStream(inval)
+		^func.value(inval).embedInStream(inval)
 	}
 	storeArgs { ^[func] }
 }
