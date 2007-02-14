@@ -340,10 +340,8 @@ NodeProxy : BusPlug {
 	
 	source { ^objects.at(0).source }
 	sources {^objects.array.collect(_.source) }
-	prime { arg obj, release = false;
-		if(release) { this.release };
+	prime { arg obj;
 		this.put(nil, obj, 0, nil, false);
-		
 	}
 	
 	at { arg index; 
