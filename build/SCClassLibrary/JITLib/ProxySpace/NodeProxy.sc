@@ -327,8 +327,8 @@ NodeProxy : BusPlug {
 		
 	//////////// set the source to anything that returns a valid ugen input ////////////
 	
-	add { arg obj, channelOffset=0, extraArgs;
-		this.put(objects.indices.last ? -1 + 1, obj, channelOffset, extraArgs)
+	add { arg obj, channelOffset=0, extraArgs, now = true;
+		this.put(objects.indices.last ? -1 + 1, obj, channelOffset, extraArgs, now)
 	}
 	
 	source_ { arg obj;
@@ -340,6 +340,11 @@ NodeProxy : BusPlug {
 	
 	source { ^objects.at(0).source }
 	sources {^objects.array.collect(_.source) }
+	prime { arg obj, release = false;
+		if(release) { this.release };
+		this.put(nil, obj, 0, nil, false);
+		
+	}
 	
 	at { arg index; 
 		"info: node proxy 'at' was changed to return source. " 
@@ -347,7 +352,7 @@ NodeProxy : BusPlug {
 		^objects.at(index).source 
 	}
 	
-	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
+	put { arg index, obj, channelOffset = 0, extraArgs, now = true; 			var container, bundle, orderIndex;
 			
 			if(obj.isNil) { this.removeAt(index); ^this };
 			if(index.isSequenceableCollection) { 						^this.putAll(obj.asArray, index, channelOffset) 
@@ -371,7 +376,7 @@ NodeProxy : BusPlug {
 			if(server.serverRunning) {
 				container.loadToBundle(bundle, server);
 				loaded = true;
-				if(awake) {
+				if(awake && now) {
 					this.prepareToBundle(nil, bundle);
 					container.wakeUpParentsToBundle(bundle);
 					this.sendObjectToBundle(bundle, container, extraArgs, index);
