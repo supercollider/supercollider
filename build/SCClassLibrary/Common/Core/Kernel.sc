@@ -400,7 +400,7 @@ FunctionDef {
 			var value;
 			res = res ++ name;
 			if(withDefaultValues and: { value = prototypeFrame[i]; value.notNil }) { 
-				res = res ++ " = " ++ value 
+				res = res ++ " = " ++ value.asCompileString
 			};
 			if(i != last) { res = res ++ ", " };
 		}
