@@ -1,7 +1,6 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
-\f3\fnil\fcharset77 Monaco;\f4\fnil\fcharset77 Georgia-Bold;\f5\fswiss\fcharset77 Helvetica-BoldOblique;
-}
+\f3\fnil\fcharset77 Monaco;\f4\fnil\fcharset77 Georgia-Bold;}
 {\colortbl;\red255\green255\blue255;\red163\green146\blue90;}
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
@@ -249,6 +248,9 @@ Thanks a lot for all the feedback and ideas!
 \f0\b\fs24 \cf0 RECENT CHANGES:
 \f1\b0 \
 \
+2007\
+	february		added prime method for NodeProxy to allow setting sources quietly\
+\
 2006	\
 	december		added quantize method\
 			fixed addAction bug in Monitor, updated helpfile\
@@ -257,191 +259,5 @@ Thanks a lot for all the feedback and ideas!
 			NodeProxy  adapts inputs to appropriate rate.\
 	\
 	july		optimized graph layout in NodeProxy to minimize latency\
-\
-2005	\
-	october		node proxy: developments with alberto de campo:\
-			added playN method for larger multichannel setups\
-			getKeysValues and controlKeys \
-	\
-	september\
-			node proxy: \
-				unset works (not tested for setn)\
-				nodeproxy.at now returns source, not play control object\
-				control rate proxies now crossfade really linearly.\
-				\
-				NodeProxy (BusPlug) can be passed a parentGroup now.\
-				also ProxySpace can play in a given group (proxyspace.group = ...)\
-	\
-	may\
-	pattern proxies:	added de Campo suggestion:\
-			pattern proxies have now an update condition. reset method, if stuck.\
-			there is also an .endless method that will embed the proxy endlessly.\
-			\
-	node proxy	multichannel expansion with arrays of numbers works now more like expected\
-			~x = [~a, ~b, ~c]; expands into 3 channels\
-			~x[0..] = [~a, ~b, ~c]; expands into 3 slots (mixing the inputs)\
-	\
-	april\
-	networking: 	removed PublicProxySpace, added a Dispatcher class [
-\f0\b \ul Public
-\f1\b0 \ulnone ]  that \
-			does the same for any EnvironmentRedirect.\
-	\
-	march\
-	pattern proxies: all can have an environment, and take functions as arguments as well.\
-		Tdef/TaskProxy take also a pattern as argument (for time streams).\
-		Tdef .
-\f0\b fork
-\f1\b0 : fork a thread.\
-		defaults now end (no looping by default)\
-		nodeproxy.clear and proxyspace.have a fadeTime argument now\
-		\
-	nodeproxy / nodemap: 
-\f5\i\b mapEnvir
-\f1\i0\b0  now takes not an array of keys, but multiple arguments\
-		(.mapEnvir(\\a, \\b, \\c) instead of .mapEnvir([\\a, \\b, \\c])\
-		\
-\
-	febuary\
-	improved network classes, PublicProxySpace\
-	added envir variable to pattern proxies, the respond to set / map now.\
-	\
-\
-	january\
-	nodeproxy.source now returns the sources\
-	added tutorial \
-	\
-2004\
-	december		\
-	fixed a bug when loading node proxy if the server is fresh.\
-	node proxy now removes its synthdefs from the server.\
-	Pdef: quant can now have the form [quant, offset]\
-	networking:\
-	removed Router class. see BroadcastServer helpfile.\
-	experimental network classes added, old ones changed.\
-	\
-	october\
-	fixed a bug in Tdef/Pdef where the clock wasn't passed in (.play) properly when it was set before.\
-	NodeProxy is more efficient in building SynthDefs.\
-	ProxySynthDef can be used independent of NodeProxy now\
-	\
-	september\
-	refactored Pdef: new subclasses\
-	improvements in NodeMap and NodeProxy\
-	added role scheme (helpfiles to come)\
-	\
-	august\
-	nodeProxy.mapn expands to multiple controls. (not by arrays of keys anymore!)\
-	some small efficiency improvements\
-	\
-	july\
-	Pdef/Tdef: pause and resume are now beat quantized\
-	embedInStream is more efficient now, fadeTime is only applied for transitions\
-	added recursive phrasing event\
-	corrected Client bundle size calculation\
-	NodeProxy remove/stop now differentiated, to allow ressource freeing in future (mainly cx players)\
-	nodeMap_( ) fixed (unmaps synth now)\
-	filter method for node proxy\
-	\
-	\
-	\
-	june\
-	removed N / Debug class to reduce number of classes.\
-	NodeProxy/ProxySpace:\
-	wrapForNodeProxy improved (Bus works now, NodeProxy more tolerant)\
-	simplified object wrapping\
-	added monitor class, separated monitoing from BusPlug\
-	channel expansion works with .play now (converting number of channels)\
-	removed toggle method. \
-	onClear, monitorGroup, vol slots are removed (monitorGroup, vol is in monitor)\
-	node order in multi object node proxy works more efficiently\
-	multiple put: a[2..5] = \{ ... \}\
-	Pdef:\
-	added fadeTime\
-	Pdefn default is 1.0 now, which is safer for use in time patterns.\
-	avoid occasional duplicate notes when changing pattern\
-	Tdef is more error proof.\
-	ProxySpace has a parent. the proto slot is used to store the tempo proxy.\
-	\
-	bugfixes:\
-	SynthDef-hasGateControl fixed\
-	InBus static float index works now\
-	bugfix in Order-detect\
-	fix unset/unmap bug\
-	supplementNodeMap also works for non functions.\
-	\
-	\
-	may\ul \
-	\ulnone loading large proxyspaces now works - no late messages anymore\
-	fixed bug in NodeProxy.clear when using patterns\
-	fixed group order\
-	added crossfade support for Patterns (EventStreams)\
-	added crossfaded input offset (using e.g. .ar(1, offset))\
-	removed Channel ugen, added XIn Ugens\
-	lineAt, xlineAt messages work now\
-	fixed the read example in [jitlib_efficiency]\
-	nodeProxy.send now sends all if no index is given\
-	refactoring, readability improved.\
-	\
-	april\
-	fixed bug on ProxySpace-reduce that caused infinite recursion in some cases\
-	fixed bug in BinaryOpPlug (account for function.rate returning \\stream)\
-	\
-	new version of Pdef/Pdefn/Tdef\
-	\
-	experimental: \
-	added .storeOn, .document methods for ProxySpace. see [jitlib_asCompileString] \
-	\
-	\
-	march\
-	fixed Pattern support for NodeProxy/ProxySpace due to change in Event implementation\
-	fixed Prefn\
-	removed Penvir, Sfin etc, Ensemble etc. (removed classes can be found on sc-swiki)\
-	simplifications\
-	\
-	feb\
-	added garbage collector to ProxySpace\
-	fixed unmap\
-	control rate proxies do not wrap channels anymore.\
-	\
-	jan \ul \
-	\ulnone Pref / Prefn are tested, update properly. I'm thinking of merging them with Pdef.\
-	fixed wakeUp bug in NodeProxy.\
-	fixed bug in load when no server is present\
-	\
-	embed control proxies in streams as bus index, allow multichannel mapping in patterns\
-	added possibility to use \\offset key in event streams to have offset index in multichannel proxy\
-	fixed bug in lazy init\
-	\
-2003\
-	\
-	nov\ul \
-	\ulnone Pdef, Tdef work now, also with NodeProxy.\
-	NodeProxy-releaseAndFree is replaced by .end.\
-	\
-	oct\
-	symbol input is assumed to represent a synthdef that has a gate and frees.\
-	functions and synthdefs are searched for their inner envelopes and the appropriate\
-	method of freeing / releasing is chosen accordingly.\
-	\
-	earlier:\
-	input channels now wrap. so any number of channels can be set to any proxy.\
-	\
-	ar and kr take a second argument for the channel offset within the proxy\
-	checked all helpfiles\
-	\
-	put now has a different arg order! a.put(0, obj) or a[0] = obj\
-	prependargs were removed for now.\
-	lag can be set by name a.lag(\\freq, 1)\
-	a shortcut was added to efficiently read from another proxy: a.read(b) or a.read([b, c])\
-\
-	added granular / xtexture functionality: gspawner / spawner (experimental, might change)\
-\
-\
-	a.play now does not create multiple synths if evaluated repeatedly (unless multi: true)\
-	lazy init works now.\
-	\
-	bin/unops work fully now again like any math op.\
-\
 \
 }
