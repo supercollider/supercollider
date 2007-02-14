@@ -3,19 +3,16 @@
 
 
 +Env {
-
 	embedInStream { arg inval;
 		var startTime;
 		startTime = thisThread.endBeat ? thisThread.beats;
 		thisThread.endBeat = this.times.sum + startTime;
-		while 
-			{ thisThread.beats < thisThread.endBeat }
-			{ inval = yield(this.at(thisThread.beats - startTime))};
-		^inval	
-	}	
-	
+		loop {	
+			inval = yield(this.at(thisThread.beats - startTime));
+			}
+	}
 	asStream {
-		^Routine({ arg inval; this.embedInStream(inval) }) 
+		^Routine({ arg inval; this.embedInStream(inval) })Ê
 	}
 	
 	asSignal { arg length = 400;
