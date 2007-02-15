@@ -983,6 +983,20 @@ SequenceableCollection : Collection {
 		};
 		^result
 	}
+	join { arg joiner;
+		^String.streamContents { arg stream;
+			var stop;
+			if(joiner.isNil) {
+				this.do { arg item; stream << item };
+			} {
+				stop = this.size - 1;
+				this.do { arg item,i;
+					stream << item;
+					if(i < stop) { stream << joiner };
+				};
+			}
+		}
+	}
 
 	// TempoClock play quantization
 	nextTimeOnGrid { arg clock;
