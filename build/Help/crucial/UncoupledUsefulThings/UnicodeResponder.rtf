@@ -1,8 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\froman\fcharset77 Times-Roman;
 \f3\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 UnicodeResponder
@@ -50,6 +50,30 @@ v.keyDownAction = k;\
 \
 v.focus;\
 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs24 \cf0 \
+\
+Use this to post the codes:\
+(\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 UnicodeResponder\cf0 .tester
+\f3\fs24 \
+\
+)\
+it prints a code template for you:
+\f1\fs18 \
+\
+//  shift :\
+k.register(   41  ,   true, false, false, false, \{\
+\
+\});\
+\
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
@@ -65,6 +89,7 @@ option( unicode -> function [, unicode -> function ] )\
 The view in this example is merely to have something to focus on, it \
 does nothing else.\
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  w, l;\
 w= \cf2 SCWindow\cf0 (\cf4 "test"\cf0 ).front;\
 l= \cf2 SCListView\cf0 (w, \cf2 Rect\cf0 (10, 10, 350, 350))\
@@ -92,57 +117,61 @@ l= \cf2 SCListView\cf0 (w, \cf2 Rect\cf0 (10, 10, 350, 350))\
 Note that to match shift-a you have to specify "A", not "a"\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs24 \cf0 You can also specify with ascii characters\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 (\cf5 \
+\f1\fs18 \cf0 (\
 \
-\cf6 var\cf5  w, l;\
-w= \cf6 SCWindow\cf5 (\cf7 "test"\cf5 ).front;\
-l= \cf6 SCListView\cf5 (w, \cf6 Rect\cf5 (10, 10, 350, 350))\
-	.items_(\{\cf7 "eggs"\cf5 .scramble\}.dup(12))\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  w, l;\
+w= \cf2 SCWindow\cf0 (\cf4 "test"\cf0 ).front;\
+l= \cf2 SCListView\cf0 (w, \cf2 Rect\cf0 (10, 10, 350, 350))\
+	.items_(\{\cf4 "eggs"\cf0 .scramble\}.dup(12))\
 	.focus\
 	.keyDownAction_(\
-		\cf6 UnicodeResponder\cf5 .new\
+		\cf2 UnicodeResponder\cf0 .new\
 			.normal(\
 				$a -> \{\
-					\cf7 "a "\cf5 .postln;\
+					\cf4 "a "\cf0 .postln;\
 				\},\
 				$b -> \{\
-					\cf7 "b"\cf5 .postln;\
+					\cf4 "b"\cf0 .postln;\
 				\},\
 				$; -> \{\
-					\cf7 ";"\cf5 .postln;\
+					\cf4 ";"\cf0 .postln;\
 				\},\
 				$' -> \{\
-					\cf7 "'"\cf5 .postln;\
+					\cf4 "'"\cf0 .postln;\
 				\}\
 			)\
 			.shift(\
 				$A -> \{\
-					\cf7 "shift a"\cf5 .postln;\
+					\cf4 "shift a"\cf0 .postln;\
 				\},\
 				$B -> \{\
-					\cf7 "shift b"\cf5 .postln;\
+					\cf4 "shift b"\cf0 .postln;\
 				\},\
 				$: -> \{\
-					\cf7 "shift ;"\cf5 .postln;\
+					\cf4 "shift ;"\cf0 .postln;\
 				\},\
 				$" -> \{\
-					\cf7 "shift '"\cf5 .postln;\
+					\cf4 "shift '"\cf0 .postln;\
 				\}\
 			);\
 \
 	)\
-\cf0 )\
+)\
 \
 \
 \
 \
 see also KeyCodeResponder
 \f2\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
+\f1\fs18 \cf0 \
 	\
 	
 \f3\fs24 \
