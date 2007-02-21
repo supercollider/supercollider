@@ -31,7 +31,7 @@
 #import "ChangeCounter.h"
 #import "GC.h"
 #import "SCTextView.h"
-
+#import "SCNSWindow.h"
 
 extern ChangeCounter gUIChangeCounter;
 extern NSTextView* gPostView;
@@ -1178,14 +1178,15 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 	PyrString *string = b->uos;
         NSString *title = [NSString stringWithCString: string->s length: string->size];
 
-        NSWindow *window = [[NSWindow alloc] 
+        NSWindow *window = [[SCNSWindow alloc] 
             initWithContentRect: bounds
             styleMask: mask
             backing: NSBackingStoreBuffered
             defer: NO];
         [window setTitle: title];
-    
-        SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+		[window setHasBorders: YES];
+        
+		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
         SCGraphView* view = [[SCGraphView alloc] initWithFrame: bounds];
         [view setSCObject: a->uo];
         [view setSCTopView: (SCTopView*)(f->uo->slots[0].ui)];
@@ -1625,6 +1626,21 @@ int prSCWindow_SetAcceptMouseOver(struct VMGlobals *g, int numArgsPushed)
     NSWindow *window = [view window];
 	[window setAcceptsMouseMovedEvents:accept];
     return errNone;
+}
+
+int prShowCursor(struct VMGlobals *g, int numArgsPushed);
+int prShowCursor(struct VMGlobals *g, int numArgsPushed)
+{
+   if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    BOOL show;
+    show = (BOOL) IsTrue(b);		
+    if(show) [NSCursor unhide];
+	else [NSCursor hide];
+    return errNone;	
 }
 
 int addFontAttribute(NSMutableDictionary *dict, PyrSlot *fontSlot);
@@ -2962,7 +2978,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SCWindow_GetBounds", prSCWindow_GetBounds, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_GetScreenBounds", prSCWindow_GetScreenBounds, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_SetAcceptMouseOver", prSCWindow_SetAcceptMouseOver, 2, 0);	
-
+	definePrimitive(base, index++, "_ShowCursor", prShowCursor, 2, 0);	
+	
 	definePrimitive(base, index++, "_String_GetBounds", prString_GetBounds, 3, 0);	
 	definePrimitive(base, index++, "_String_DrawAtPoint", prString_DrawAtPoint, 4, 0);	
 	definePrimitive(base, index++, "_String_DrawInRect", prString_DrawInRect, 4, 0);	
