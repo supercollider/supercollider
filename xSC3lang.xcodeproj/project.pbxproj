@@ -214,6 +214,8 @@
 		6A40718607C72B26003E9C23 /* SCSoundFileView.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A40718507C72B26003E9C23 /* SCSoundFileView.M */; };
 		6A7207D407BB709000A1F778 /* SCCocoaView.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A7207D307BB709000A1F778 /* SCCocoaView.M */; };
 		6A7207DD07BB70CB00A1F778 /* SCCocoaView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A7207DC07BB70CB00A1F778 /* SCCocoaView.h */; };
+		6A87FA3A0B8D053500B2A5A5 /* SCNSWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A87FA390B8D053500B2A5A5 /* SCNSWindow.m */; };
+		6A87FA420B8D063500B2A5A5 /* SCNSWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A87FA410B8D063500B2A5A5 /* SCNSWindow.h */; };
 		6AAC6D6508FEDC0C006134E1 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AAC6D6408FEDC0C006134E1 /* fftlib.c */; };
 		6AAC6D6608FEDC0C006134E1 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AAC6D6408FEDC0C006134E1 /* fftlib.c */; };
 		6AB6FF6F053898BC0000009F /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF64053898BC0000009F /* HID_Error_Handler.c */; };
@@ -758,6 +760,8 @@
 		6A40718507C72B26003E9C23 /* SCSoundFileView.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCSoundFileView.M; sourceTree = "<group>"; };
 		6A7207D307BB709000A1F778 /* SCCocoaView.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; name = SCCocoaView.M; path = source/app/SCCocoaView.M; sourceTree = SOURCE_ROOT; };
 		6A7207DC07BB70CB00A1F778 /* SCCocoaView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SCCocoaView.h; path = headers/app/SCCocoaView.h; sourceTree = SOURCE_ROOT; };
+		6A87FA390B8D053500B2A5A5 /* SCNSWindow.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SCNSWindow.m; sourceTree = "<group>"; };
+		6A87FA410B8D063500B2A5A5 /* SCNSWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCNSWindow.h; sourceTree = "<group>"; };
 		6AAC6D6408FEDC0C006134E1 /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = fftlib.c; path = source/plugins/fftlib.c; sourceTree = SOURCE_ROOT; };
 		6AB6FF64053898BC0000009F /* HID_Error_Handler.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = HID_Error_Handler.c; path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.c; sourceTree = SOURCE_ROOT; };
 		6AB6FF65053898BC0000009F /* HID_Error_Handler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HID_Error_Handler.h; path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.h; sourceTree = SOURCE_ROOT; };
@@ -1072,6 +1076,7 @@
 				920F883D0443F54D00A80088 /* RendezvousClient.h */,
 				F50D050302E69B6B01CA2799 /* SCGeom.h */,
 				F50D050402E69B6B01CA2799 /* SCGraphView.h */,
+				6A87FA410B8D063500B2A5A5 /* SCNSWindow.h */,
 				F50D050502E69B6B01CA2799 /* SCTextView.h */,
 				F50D050602E69B6B01CA2799 /* SCView.h */,
 				6A7207DC07BB70CB00A1F778 /* SCCocoaView.h */,
@@ -1209,6 +1214,7 @@
 				F50D058702E69B6B01CA2799 /* post_queue.M */,
 				920F88400443F59700A80088 /* RendezvousClient.M */,
 				F50D058B02E69B6B01CA2799 /* SCGraphView.M */,
+				6A87FA390B8D053500B2A5A5 /* SCNSWindow.m */,
 				F50D058C02E69B6B01CA2799 /* SCTextView.M */,
 				F50D058D02E69B6B01CA2799 /* SCView.M */,
 				6A7207D307BB709000A1F778 /* SCCocoaView.M */,
@@ -1583,6 +1589,7 @@
 				88FB09A8096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
 				53FA84000B374A5200AB10D4 /* SC_FIFO.h in Headers */,
 				53FA840A0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
+				6A87FA420B8D063500B2A5A5 /* SCNSWindow.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1931,6 +1938,7 @@
 				6A2536BB09C1C9360045AEB7 /* CocoaBridgePrimitives.M in Sources */,
 				AB7E52F60A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
 				53FA84040B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
+				6A87FA3A0B8D053500B2A5A5 /* SCNSWindow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
