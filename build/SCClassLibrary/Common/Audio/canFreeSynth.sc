@@ -26,16 +26,17 @@
 	}
 }
 
+
 + Linen {
 	canFreeSynth {
-		^(inputs.at(4) > 1) and: { inputs.at(0).isNumber.not }
+		^(inputs.at(4).isNumber.not or: { inputs.at(4) > 1 }) and: { inputs.at(0).isNumber.not }
 	}
 }
 + Line {
-	canFreeSynth { ^inputs.at(3) > 1 }
+	canFreeSynth { ^inputs.at(3).isNumber.not or: { inputs.at(3) > 1 } }
 }
 + XLine {
-	canFreeSynth { ^inputs.at(3) > 1 }
+	canFreeSynth { ^inputs.at(3).isNumber.not or: { inputs.at(3) > 1 }  }
 }
 
 + Free {
@@ -47,7 +48,15 @@
 }
 
 + DetectSilence {
-	canFreeSynth { ^inputs.at(3) > 1 }
+	canFreeSynth { ^inputs.at(3).isNumber.not or: { inputs.at(3) > 1 }  }
+}
+
++ Duty {
+	canFreeSynth { ^inputs.at(2).isNumber.not or: { inputs.at(2) > 1 }  }
+}
+
++ DemandEnvGen {
+	canFreeSynth { ^inputs.at(9).isNumber.not or: { inputs.at(9) > 1 }  }
 }
 
 + SynthDef {
