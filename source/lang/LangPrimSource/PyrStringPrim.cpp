@@ -37,6 +37,7 @@ Primitives for String.
 # include "SC_Win32Utils.h"
 #else
 # include <sys/param.h>
+# include <regex.h>
 #endif
 
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
@@ -161,6 +162,52 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 	SetObject(a, newString);
 	return errNone;
 };
+
+int matchRegexp(char *string, char *pattern)
+{
+	int    status;
+	regex_t    re;
+	printf("string: %s\n pattern: %s\n", string, pattern);
+	if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0) {
+		return(0);      /* Report error. */
+	}
+	status = regexec(&re, string, (size_t) 0, NULL, 0);
+	regfree(&re);
+		if (status != 0) {
+			return(0);      /* Report error. */
+		}
+	return(1);
+}
+
+int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
+{
+	int err, offset;
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+	
+	if (!isKindOfSlot(b, class_string)) return errWrongType;
+	if (c->utag != tagInt) return errWrongType;
+	offset = c->ui;
+	
+	if(b->uo->size <= offset) { 
+		SetFalse(a); 
+		return errNone; 
+	}
+	
+	char *string = (char*)malloc(b->uo->size + 1 - offset);
+	memcpy(string, (char*)(b->uos->s) + offset, b->uo->size + 1 - offset);
+
+	char *pattern = (char*)malloc(a->uo->size + 1);
+	err = slotStrVal(a, pattern, a->uo->size + 1);
+	if (err) return err;
+	
+	int res = matchRegexp(string, pattern);
+	if (res) { SetTrue(a); }
+	else { SetFalse(a); }
+
+	return errNone;
+}
 
 
 int memcmpi(char *a, char *b, int len)
@@ -567,6 +614,7 @@ void initStringPrimitives()
     definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
 	definePrimitive(base, index++, "_String_FindBackwards", prString_FindBackwards, 4, 0);
     definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
+	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 3, 0);
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);	
