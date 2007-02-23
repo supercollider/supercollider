@@ -178,7 +178,7 @@ SynthControl : AbstractPlayControl {
 			synthMsg = ["/n_setn", -1];
 			extraArgs.pairsDo { |key, val|
 				synthMsg = synthMsg.add(key);
-				synthMsg = synthMsg.add(val.size);
+				synthMsg = synthMsg.add(val.size.max(1));
 				synthMsg = synthMsg.addAll(val);
 			};
 			bundle.add(synthMsg);
@@ -201,7 +201,7 @@ SynthControl : AbstractPlayControl {
 			synthMsg = ["/n_setn", -1];
 			extraArgs.pairsDo { |key, val|
 				synthMsg = synthMsg.add(key);
-				synthMsg = synthMsg.add(val.size);
+				synthMsg = synthMsg.add(val.size.max(1));
 				synthMsg = synthMsg.addAll(val);
 			};
 			bundle.add(synthMsg);
