@@ -167,7 +167,6 @@ int matchRegexp(char *string, char *pattern)
 {
 	int    status;
 	regex_t    re;
-	printf("string: %s\n pattern: %s\n", string, pattern);
 	if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0) {
 		return(0);      /* Report error. */
 	}
