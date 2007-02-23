@@ -41,7 +41,7 @@ Pseg : Pstep {
 		var startTime, curTime;
 		// Array-envAt expects an Env in array form:
 		//			start	lastseg	release	loop   end    dur   shape  curve
-		evalArray = [	0,		1,		-99,		-99,	  1,     1,     0,     0];
+		evalArray = #[0,		1,		-99,		-99,	  1,     1,     0,     0];
 		if (durpattern.notNil) {
 			stream = Ptuple([levelpattern, durpattern, curvepattern]).asStream;
 		} {
