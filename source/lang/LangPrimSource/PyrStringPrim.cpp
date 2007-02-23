@@ -181,22 +181,30 @@ int matchRegexp(char *string, char *pattern)
 
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 {
-	int err, offset;
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
+	int err, start, end;
+	
+	PyrSlot *a = g->sp - 3;
+	PyrSlot *b = g->sp - 2;
+	PyrSlot *c = g->sp - 1;
+	PyrSlot *d = g->sp;
 	
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
-	if (c->utag != tagInt) return errWrongType;
-	offset = c->ui;
+	if (c->utag != tagInt || d->utag != tagInt && d->utag != tagNil) return errWrongType;
+	start = c->ui;
 	
-	if(b->uo->size <= offset) { 
+	if(d->utag == tagNil) { 
+		end = b->uo->size; 
+	} else {
+		end = d->ui;
+	}
+	
+	if(end - start <= 0) { 
 		SetFalse(a); 
 		return errNone; 
 	}
 	
-	char *string = (char*)malloc(b->uo->size + 1 - offset);
-	memcpy(string, (char*)(b->uos->s) + offset, b->uo->size + 1 - offset);
+	char *string = (char*)malloc(end - start + 1);
+	memcpy(string, (char*)(b->uos->s) + start, end - start + 1);
 
 	char *pattern = (char*)malloc(a->uo->size + 1);
 	err = slotStrVal(a, pattern, a->uo->size + 1);
@@ -614,7 +622,7 @@ void initStringPrimitives()
     definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
 	definePrimitive(base, index++, "_String_FindBackwards", prString_FindBackwards, 4, 0);
     definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
-	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 3, 0);
+	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 4, 0);
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);	

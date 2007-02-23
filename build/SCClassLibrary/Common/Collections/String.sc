@@ -58,7 +58,7 @@ String[char] : RawArray {
 	postf { arg ... items;  ^this.prFormat( items.collect(_.asString) ).post }
 	format { arg ... items; ^this.prFormat( items.collect(_.asString) ) }
 	prFormat { arg items; _String_Format ^this.primitiveFailed }
-	matchRegexp { arg string, offset=0; _String_Regexp ^this.primitiveFailed }
+	matchRegexp { arg string, start = 0, end; _String_Regexp ^this.primitiveFailed }
 
 	die { arg ... culprits;
 		("\n\nFATAL ERROR: " ++ this).postln;

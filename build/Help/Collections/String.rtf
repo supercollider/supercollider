@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red96\green96\blue96;\red191\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red96\green96\blue96;\red96\green96\blue96;\red0\green0\blue0;
+\red191\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 String\
@@ -130,27 +130,35 @@ format(\cf2 "this % a %. pi = %, list = %\\n", "is"\cf0 , \cf2 "test"\cf0 , pi.r
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 matchRegexp(string, offset)
+\f0\b\fs24 \cf0 matchRegexp(string, start, end)
 \f2\b0\fs18 \
 \
 
 \f1\fs24 returns true if the receiver (a regular expression pattern) matches the string passed to it.\
-The offset is an offset where to start searching in the string (default: 0)\
+The 
+\f0\b start
+\f1\b0  is an offset where to start searching in the string (default: 0), 
+\f0\b end
+\f1\b0  where to stop.\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 \
+\f2\fs18 \cf3 "c"\cf4 .matchRegexp(\cf3 "abcdefg"\cf4 , 2, 5); \cf5 // true\cf4 \
+\cf3 "c"\cf4 .matchRegexp(\cf3 "abcdefg"\cf4 , 4, 5); \cf5 // false\
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-\cf2 "behaviou?r"\cf0 .matchRegexp(\cf2 "behavior"\cf0 ); \cf3 // true\cf0 \
-\cf2 "behaviou?r"\cf0 .matchRegexp(\cf2 "behaviour"\cf0 ); \cf3 // true\cf0 \
-\cf2 "behaviou?r"\cf0 .matchRegexp(\cf2 "behavir"\cf0 ); \cf3 // false\
-\cf2 "b.h.v.r"\cf0 .matchRegexp(\cf2 "behavor"\cf0 ); \cf3 // true\cf0 \
-\cf2 "b.h.vi*r"\cf0 .matchRegexp(\cf2 "behaviiiiir"\cf0 ); \cf3 // true\cf0 \
-\cf2 "(a|u)nd"\cf0 .matchRegexp(\cf2 "und"\cf0 ); \cf3 // true\cf0 \
-\cf2 "(a|u)nd"\cf0 .matchRegexp(\cf2 "and"\cf0 ); \cf3 // true\
-\cf2 "[a-c]nd"\cf0 .matchRegexp(\cf2 "ind"\cf0 ); \cf3 // false
+\cf2 "behaviou?r"\cf0 .matchRegexp(\cf2 "behavior"\cf0 ); \cf6 // true\cf0 \
+\cf2 "behaviou?r"\cf0 .matchRegexp(\cf2 "behaviour"\cf0 ); \cf6 // true\cf0 \
+\cf2 "behaviou?r"\cf0 .matchRegexp(\cf2 "behavir"\cf0 ); \cf6 // false\
+\cf2 "b.h.v.r"\cf0 .matchRegexp(\cf2 "behavor"\cf0 ); \cf6 // true\cf0 \
+\cf2 "b.h.vi*r"\cf0 .matchRegexp(\cf2 "behaviiiiir"\cf0 ); \cf6 // true\cf0 \
+\cf2 "(a|u)nd"\cf0 .matchRegexp(\cf2 "und"\cf0 ); \cf6 // true\cf0 \
+\cf2 "(a|u)nd"\cf0 .matchRegexp(\cf2 "and"\cf0 ); \cf6 // true\
+\cf2 "[a-c]nd"\cf0 .matchRegexp(\cf2 "ind"\cf0 ); \cf6 // false
 \f1\fs24 \cf0 \
 
-\f2\fs18 \cf2 "[a-c]nd"\cf0 .matchRegexp(\cf2 "bnd"\cf0 ); \cf3 // true\
+\f2\fs18 \cf2 "[a-c]nd"\cf0 .matchRegexp(\cf2 "bnd"\cf0 ); \cf6 // true\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f1\fs24 \cf0 \
@@ -195,7 +203,7 @@ Compiles a String containing legal SuperCollider code and returns a Function.\
 
 \f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 var\cf0  f;\
+\cf7 var\cf0  f;\
 f = \cf2 "2 + 1"\cf0 .compile.postln;\
 f.value.postln;\
 )
@@ -212,7 +220,7 @@ Returns a String formatted for compiling.\
 
 \f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 var\cf0  f;\
+\cf7 var\cf0  f;\
 f = \cf2 "myString"\cf0 ;\
 f.postln;\
 f.asCompileString.postln;\
@@ -229,7 +237,7 @@ As postln, but posts the compileString of the reciever\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf4 List\cf0 [1, 2, [\cf2 "comment"\cf0 , [3, 2]], \{ 1.0.rand \}].postcs;\
+\f2\fs18 \cf7 List\cf0 [1, 2, [\cf2 "comment"\cf0 , [3, 2]], \{ 1.0.rand \}].postcs;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
@@ -272,7 +280,7 @@ Return a Symbol derived from the String.\
 
 \fs18 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 var\cf0  z;\
+\cf7 var\cf0  z;\
 z = \cf2 "myString"\cf0 .asSymbol.postln;\
 z.class.postln;\
 )
@@ -317,7 +325,7 @@ This is the inverse method to SimpleNumber:asTimeString. \
 \f2 \cf0  \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\fs18 \cf3 (45296.asTimeString).asSecs;\
+\fs18 \cf6 (45296.asTimeString).asSecs;\
 "32.1".asSecs;\
 "62.1".asSecs;		// warns\
 "0:0:59.9".asSecs;\
@@ -340,7 +348,7 @@ Concatenate this string with the following args.\
 
 \f2 \cf0 \
 
-\fs18 \cf2 "These are some args: "\cf0 .catArgs(\cf5 \\fish\cf0 , \cf4 SinOsc\cf0 .ar, \{4 + 3\}).postln;
+\fs18 \cf2 "These are some args: "\cf0 .catArgs(\cf8 \\fish\cf0 , \cf7 SinOsc\cf0 .ar, \{4 + 3\}).postln;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -353,7 +361,7 @@ Same as catArgs, but with spaces in between.\
 
 \f2 \cf0 \
 
-\fs18 \cf2 "These are some args: "\cf0 .scatArgs(\cf5 \\fish\cf0 , \cf4 SinOsc\cf0 .ar, \{4 + 3\}).postln;\
+\fs18 \cf2 "These are some args: "\cf0 .scatArgs(\cf8 \\fish\cf0 , \cf7 SinOsc\cf0 .ar, \{4 + 3\}).postln;\
 
 \fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -366,7 +374,7 @@ Same as catArgs, but with commas in between.\
 
 \f2 \cf0 \
 
-\fs18 \cf2 "a String"\cf0 .ccatArgs(\cf5 \\fish\cf0 , \cf4 SinOsc\cf0 .ar, \{4 + 3\}).postln;
+\fs18 \cf2 "a String"\cf0 .ccatArgs(\cf8 \\fish\cf0 , \cf7 SinOsc\cf0 .ar, \{4 + 3\}).postln;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -379,7 +387,7 @@ As catArgs, scatArgs and ccatArgs above, but takes a Collection (usually a List 
 
 \f2 \cf0 \
 
-\fs18 \cf2 "a String"\cf0 .ccatList([\cf5 \\fish\cf0 , \cf4 SinOsc\cf0 .ar, \{4 + 3\}]).postln;
+\fs18 \cf2 "a String"\cf0 .ccatList([\cf8 \\fish\cf0 , \cf7 SinOsc\cf0 .ar, \{4 + 3\}]).postln;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -426,10 +434,10 @@ Same like find, but starts at the end of the string.\
 \f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \cf3 // compare:\cf0 \
+\fs18 \cf6 // compare:\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 "These words are several words"\cf0 .find(\cf2 "words"\cf0 ); \cf3 // 6\cf0 \
-\cf2 "These words are several words"\cf0 .findBackwards(\cf2 "words"\cf0 ); \cf3 // 24\cf0 \
+\cf2 "These words are several words"\cf0 .find(\cf2 "words"\cf0 ); \cf6 // 6\cf0 \
+\cf2 "These words are several words"\cf0 .findBackwards(\cf2 "words"\cf0 ); \cf6 // 24\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -516,7 +524,7 @@ Add the escape character (\\) at the location of your choice.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 ":-(:-(:-("\cf0 .tr($(, $)); \cf3 //turn the frowns upside down\
+\f2\fs18 \cf2 ":-(:-(:-("\cf0 .tr($(, $)); \cf6 //turn the frowns upside down\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -542,12 +550,12 @@ Like
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 "Print this on Post"\cf0 .printOn(\cf4 Post\cf0 );\
+\f2\fs18 \cf2 "Print this on Post"\cf0 .printOn(\cf7 Post\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // equivalent to:\cf0 \
+\cf6 // equivalent to:\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 Post\cf0  << \cf2 "Print this on Post"\cf0 ;
+\cf7 Post\cf0  << \cf2 "Print this on Post"\cf0 ;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -559,12 +567,12 @@ Like
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 "Store this on Post"\cf0 .storeOn(\cf4 Post\cf0 );\
+\f2\fs18 \cf2 "Store this on Post"\cf0 .storeOn(\cf7 Post\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // equivalent to:\cf0 \
+\cf6 // equivalent to:\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 Post\cf0  <<< \cf2 "Store this on Post"\cf0 ;
+\cf7 Post\cf0  <<< \cf2 "Store this on Post"\cf0 ;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -584,8 +592,8 @@ Returns a new String with all RTF formatting removed.\
 
 \f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // same as File-readAllStringRTF\cf0 \
-g = \cf4 File\cf0 (\cf2 "/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf"\cf0 ,\cf2 "r"\cf0 );\
+\cf6 // same as File-readAllStringRTF\cf0 \
+g = \cf7 File\cf0 (\cf2 "/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf"\cf0 ,\cf2 "r"\cf0 );\
 g.readAllString.stripRTF.postln;\
 g.close;\
 )
@@ -602,7 +610,7 @@ g.close;\
 \cf0 \ul \ulc0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 \ulnone "echo $0"\cf0 .unixCmd; \cf3 // print the shell (sh)\cf0 \
+\f2\fs18 \cf2 \ulnone "echo $0"\cf0 .unixCmd; \cf6 // print the shell (sh)\cf0 \
 \cf2 "pwd"\cf0 .unixCmd;\
 \cf2 "cd Help/"\cf0 .unixCmd;\
 \cf2 "pwd"\cf0 .unixCmd;\
@@ -659,7 +667,7 @@ setenv(value)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf3 // all defs in this directory will be loaded when a local server boots
+\f2\fs18 \cf6 // all defs in this directory will be loaded when a local server boots
 \f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -690,7 +698,7 @@ pathMatch\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf4 Post\cf0  << \cf2 "Help/*"\cf0 .pathMatch;
+\f2\fs18 \cf7 Post\cf0  << \cf2 "Help/*"\cf0 .pathMatch;
 \fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -705,7 +713,7 @@ pathMatch\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 "Help/Collections/loadPaths example.rtf"\cf0 .loadPaths; \cf3 //This file posts some text
+\f2\fs18 \cf2 "Help/Collections/loadPaths example.rtf"\cf0 .loadPaths; \cf6 //This file posts some text
 \fs24 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -730,7 +738,7 @@ pathMatch\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 "~"\cf0 .standardizePath; \cf3 //This will print your home directory
+\f2\fs18 \cf2 "~"\cf0 .standardizePath; \cf6 //This will print your home directory
 \fs24 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -869,7 +877,7 @@ d.class;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 See also: 
-\f0\b [\ul \ulc4 SCWindow\ulnone ]
+\f0\b [\ul \ulc7 SCWindow\ulnone ]
 \f1\b0 , 
 \f0\b [\ul SCUserView\ulnone ]
 \f1\b0 , 
@@ -894,8 +902,8 @@ Draws the String at the current 0@0
 
 \f2\fs18 \cf0 \
 (\
-w = \cf4 SCWindow\cf0 .new.front;\
-w.view.background_(\cf4 Color\cf0 .white);\
+w = \cf7 SCWindow\cf0 .new.front;\
+w.view.background_(\cf7 Color\cf0 .white);\
 w.drawHook = \{\
 	\cf2 "abababababa\\n\\n\\n"\cf0 .scramble.draw\
 \};\
@@ -918,15 +926,15 @@ Draws the String at the given
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
-w = \cf4 SCWindow\cf0 .new.front;\
-w.view.background_(\cf4 Color\cf0 .white);\
+w = \cf7 SCWindow\cf0 .new.front;\
+w.view.background_(\cf7 Color\cf0 .white);\
 w.drawHook = \{\
 	\cf2 "abababababa\\n\\n\\n"\cf0 .scramble.drawAtPoint(\
 		100@100, \
-		\cf4 Font\cf0 (\cf2 "
+		\cf7 Font\cf0 (\cf2 "
 \f1 Gadget
 \f2 "\cf0 , 30), \
-		\cf4 Color\cf0 .blue(0.3, 0.5))\
+		\cf7 Color\cf0 .blue(0.3, 0.5))\
 \};\
 w.refresh\
 )\
@@ -947,13 +955,13 @@ w.refresh\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
-w = \cf4 SCWindow\cf0 .new.front;\
-r = \cf4 Rect\cf0 (100, 100, 100, 100);\
-w.view.background_(\cf4 Color\cf0 .white);\
+w = \cf7 SCWindow\cf0 .new.front;\
+r = \cf7 Rect\cf0 (100, 100, 100, 100);\
+w.view.background_(\cf7 Color\cf0 .white);\
 w.drawHook = \{\
-	\cf2 "abababababa\\n\\n\\n"\cf0 .scramble.drawInRect(\cf4 r\cf0 , \cf4 Font\cf0 (\cf2 "
+	\cf2 "abababababa\\n\\n\\n"\cf0 .scramble.drawInRect(\cf7 r\cf0 , \cf7 Font\cf0 (\cf2 "
 \f1 Gadget
-\f2 "\cf0 , 30), \cf4 Color\cf0 .blue(0.3, 0.5));\
+\f2 "\cf0 , 30), \cf7 Color\cf0 .blue(0.3, 0.5));\
 	Pen.strokeRect(r);\
 \};\
 w.refresh\
@@ -961,7 +969,7 @@ w.refresh\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf3 //	drawCenteredIn(inRect)\cf0 \
+\f0\b\fs24 \cf6 //	drawCenteredIn(inRect)\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 	draws the String into the center of the given rect with font and color into the window.\
@@ -970,15 +978,15 @@ w.refresh\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-w = \cf4 SCWindow\cf0 .new.front;\
-w.view.background_(\cf4 Color\cf0 .white);\
+w = \cf7 SCWindow\cf0 .new.front;\
+w.view.background_(\cf7 Color\cf0 .white);\
 w.drawHook = \{\
 	\cf2 "abababababa\\n\\n\\n"\cf0 .scramble.drawCenteredIn(\
-		\cf4 Rect\cf0 (100, 100, 100, 100), \
-		\cf4 Font\cf0 (\cf2 "
+		\cf7 Rect\cf0 (100, 100, 100, 100), \
+		\cf7 Font\cf0 (\cf2 "
 \f1 Gadget
 \f2 "\cf0 , 30), \
-		\cf4 Color\cf0 .blue(0.3, 0.5)\
+		\cf7 Color\cf0 .blue(0.3, 0.5)\
 	)\
 \};\
 w.refresh\
@@ -986,20 +994,20 @@ w.refresh\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf3 //	drawLeftJustIn(inRect)\cf0 \
+\f0\b\fs24 \cf6 //	drawLeftJustIn(inRect)\cf0 \
 	Unfortunately does not work for now...\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-w = \cf4 SCWindow\cf0 .new.front;\
-w.view.background_(\cf4 Color\cf0 .white);\
+w = \cf7 SCWindow\cf0 .new.front;\
+w.view.background_(\cf7 Color\cf0 .white);\
 w.drawHook = \{\
 	\cf2 "abababababa\\n\\n\\n"\cf0 .scramble.drawLeftJustIn(\
-		\cf4 Rect\cf0 (100, 100, 100, 100), \
-		\cf4 Font\cf0 (\cf2 "
+		\cf7 Rect\cf0 (100, 100, 100, 100), \
+		\cf7 Font\cf0 (\cf2 "
 \f1 Gadget
 \f2 "\cf0 , 30), \
-		\cf4 Color\cf0 .blue(0.3, 0.5)\
+		\cf7 Color\cf0 .blue(0.3, 0.5)\
 	)\
 \};\
 w.refresh\
@@ -1007,22 +1015,22 @@ w.refresh\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf3 //	drawRightJustIn(inRect)\cf0 \
+\f0\b\fs24 \cf6 //	drawRightJustIn(inRect)\cf0 \
 	Unfortunately does not work for now...\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-w = \cf4 SCWindow\cf0 .new.front;\
-w.view.background_(\cf4 Color\cf0 .white);\
+w = \cf7 SCWindow\cf0 .new.front;\
+w.view.background_(\cf7 Color\cf0 .white);\
 w.drawHook = \{\
 	\cf2 "abababababa\\n\\n\\n"\cf0 .scramble.drawLeftJustIn(\
-		\cf4 Rect\cf0 (100, 100, 100, 100), \
-		\cf4 Font\cf0 (\cf2 "
+		\cf7 Rect\cf0 (100, 100, 100, 100), \
+		\cf7 Font\cf0 (\cf2 "
 \f1 Gadget
 \f2 "\cf0 ,
 \f1  
 \f2 30), \
-		\cf4 Color\cf0 .blue(0.3, 0.5)\
+		\cf7 Color\cf0 .blue(0.3, 0.5)\
 	)\
 \};\
 w.refresh\
