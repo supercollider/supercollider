@@ -196,10 +196,14 @@ Patch : HasPatchIns  {
 	}
 	
 	loadSubject { arg name;
+		if(instr.notNil,{
+			instr.removeDependant(this);
+		});
 		instr = name.asInstr;
 		if(instr.isNil,{
 			("Instrument not found !!" + name).die;
 		});
+		//instr.addDependant(this);
 	}
 
 	createArgs { arg argargs;
@@ -256,6 +260,7 @@ Patch : HasPatchIns  {
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
 			this.watchScalars;
+			this.instr.addDependant(this);
 			synthDef
 		}
 	}
@@ -285,12 +290,17 @@ Patch : HasPatchIns  {
 				this.invalidateSynthDef;
 			})
 		});
+		if(changed === this.instr,{
+			synthDef = nil;
+			defName = nil;
+		});
 	}
 	invalidateSynthDef { 
 		synthDef = nil;
 		defName = nil;
 		readyForPlay = false;
 		this.releaseArgs;
+		this.instr.removeDependant(this);
 	}
 	releaseArgs {
 		// Sample, Env, NumberEditor are watched 

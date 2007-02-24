@@ -23,6 +23,9 @@ Instr  {
 	*put { arg instr;
 		^Library.putList([this,this.symbolizeName(instr.name),instr].flatten )
 	}
+	*remove { arg instr;
+		^Library.global.removeAt([this,this.symbolizeName(instr.name)].flatten )
+	}
 	// bulk insert an orchestra of instr
 	*orc { arg name, pairs, outSpec = \audio;
 		forBy(0,pairs.size-1,2,	{ arg i;

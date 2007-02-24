@@ -5,8 +5,9 @@ PatchGui : AbstractPlayerGui {
 		var bounds, maxHeight,vl;
 		bounds = layout.bounds;
 		maxHeight = bounds.height - 20 - (model.args.size * 15) / model.args.size;
-		
-		Tile(this.model.instr,layout);
+
+		this.instrGui(layout);		
+
 		//vl = SCVLayoutView(layout.startRow,layout.decorator.indentedRemaining);
 		vl = layout;
 		model.args.do({ arg a,i;
@@ -45,6 +46,9 @@ PatchGui : AbstractPlayerGui {
 			})
 		});
 	}
+	instrGui { arg layout;
+		Tile(this.model.instr,layout);
+	}
 }
  
 InstrSpawnerGui : PatchGui {
@@ -62,4 +66,5 @@ InterfaceGui : AbstractPlayerGui {
 	}
 	writeName {}
 }
+
 
