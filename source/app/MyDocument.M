@@ -1005,6 +1005,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		}
 	}
 // CR MODIFIED
+	[textView breakUndoCoalescing];
 	return success;
 }
 
