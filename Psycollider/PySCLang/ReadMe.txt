@@ -60,3 +60,14 @@ Example usage in python:
 
 >>> PySCLang.setCmdLine(" { SinOsc.ar(440, 0, 0.4) }.play(s) ")
 >>> PySCLang.sendMain('interpretPrintCmdLine')
+
+-------------------------------------------------------------------------------
+Compilation
+
+Windows: PySCLang is part of the Solution, please refer to the Windows documentation
+
+OSX: open the Xcode file and
+	* make sure Xcode findes libscsysnth.a (in Frameworks) - if in red navigate to it manually
+	* set the active build to "Deployment"
+
+Have fun!

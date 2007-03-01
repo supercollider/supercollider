@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A23B144D09D8482400F2959A /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A23B144C09D8482400F2959A /* libsndfile.a */; };
 		A257C6790A7E03F100509127 /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A257C6780A7E03F100509127 /* PyrPlatformPrim.cpp */; };
 		A25EAC9609444D5000B00A87 /* clz.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAC7E09444D5000B00A87 /* clz.h */; };
 		A25EAC9709444D5000B00A87 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAC7F09444D5000B00A87 /* Hash.h */; };
@@ -186,34 +185,12 @@
 		A25EB3EC0944842500B00A87 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A25EB3EB0944842500B00A87 /* Carbon.framework */; };
 		A26ECFAE0988DDCD0007F9E1 /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = A26ECFAD0988DDCD0007F9E1 /* SC_StandAloneInfo_Darwin.h */; };
 		A26ECFBF0988E7940007F9E1 /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A26ECFBE0988E7940007F9E1 /* SC_StandAloneInfo_Darwin.cpp */; };
+		A2FA13C80B9651D8007C4078 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2FA13C70B9651D8007C4078 /* PyrSerialPrim.cpp */; };
+		A2FA13CB0B965206007C4078 /* SC_FIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = A2FA13CA0B965206007C4078 /* SC_FIFO.h */; };
+		A2FA13CE0B965249007C4078 /* SC_LanguageClient.h in Headers */ = {isa = PBXBuildFile; fileRef = A2FA13CD0B965249007C4078 /* SC_LanguageClient.h */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildStyle section */
-		014CEA520018CE5811CA2923 /* Development */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				ZERO_LINK = YES;
-			};
-			name = Development;
-		};
-		014CEA530018CE5811CA2923 /* Deployment */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
-/* End PBXBuildStyle section */
-
 /* Begin PBXFileReference section */
-		A23B144C09D8482400F2959A /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = ../../../../lib/libsndfile.a; sourceTree = SOURCE_ROOT; };
 		A257C6780A7E03F100509127 /* PyrPlatformPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrPlatformPrim.cpp; sourceTree = "<group>"; };
 		A25EAC7E09444D5000B00A87 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = clz.h; path = ../../headers/plugin_interface/clz.h; sourceTree = SOURCE_ROOT; };
 		A25EAC7F09444D5000B00A87 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Hash.h; path = ../../headers/plugin_interface/Hash.h; sourceTree = SOURCE_ROOT; };
@@ -395,6 +372,9 @@
 		A25EB3EB0944842500B00A87 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		A26ECFAD0988DDCD0007F9E1 /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_StandAloneInfo_Darwin.h; path = ../../headers/common/SC_StandAloneInfo_Darwin.h; sourceTree = SOURCE_ROOT; };
 		A26ECFBE0988E7940007F9E1 /* SC_StandAloneInfo_Darwin.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_StandAloneInfo_Darwin.cpp; path = ../../source/common/SC_StandAloneInfo_Darwin.cpp; sourceTree = SOURCE_ROOT; };
+		A2FA13C70B9651D8007C4078 /* PyrSerialPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrSerialPrim.cpp; sourceTree = "<group>"; };
+		A2FA13CA0B965206007C4078 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_FIFO.h; path = ../../headers/common/SC_FIFO.h; sourceTree = SOURCE_ROOT; };
+		A2FA13CD0B965249007C4078 /* SC_LanguageClient.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_LanguageClient.h; path = ../../headers/lang/SC_LanguageClient.h; sourceTree = SOURCE_ROOT; };
 		D2AAC0630554660B00DB518D /* PySCLang.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PySCLang.so; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -412,7 +392,6 @@
 				A25EAE090944525300B00A87 /* Python.framework in Frameworks */,
 				A25EB1580944836D00B00A87 /* ApplicationServices.framework in Frameworks */,
 				A25EB3EC0944842500B00A87 /* Carbon.framework in Frameworks */,
-				A23B144D09D8482400F2959A /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,6 +490,7 @@
 		A25EAC7B09444CF200B00A87 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				A2FA13CA0B965206007C4078 /* SC_FIFO.h */,
 				A26ECFAD0988DDCD0007F9E1 /* SC_StandAloneInfo_Darwin.h */,
 				A25EAD1A09444DA100B00A87 /* dfftlib.h */,
 				A25EAD1B09444DA100B00A87 /* dlfcn.h */,
@@ -531,6 +511,7 @@
 		A25EAC7C09444CFA00B00A87 /* lang */ = {
 			isa = PBXGroup;
 			children = (
+				A2FA13CD0B965249007C4078 /* SC_LanguageClient.h */,
 				A25EACAE09444D8400B00A87 /* AdvancingAllocPool.h */,
 				A25EACAF09444D8400B00A87 /* AllocPools.h */,
 				A25EACB009444D8400B00A87 /* bullet.h */,
@@ -653,6 +634,7 @@
 		A25EAD6D09444E3100B00A87 /* LangPrimSource */ = {
 			isa = PBXGroup;
 			children = (
+				A2FA13C70B9651D8007C4078 /* PyrSerialPrim.cpp */,
 				A257C6780A7E03F100509127 /* PyrPlatformPrim.cpp */,
 				A25EAD6E09444E3100B00A87 /* Icon */,
 				A25EAD6F09444E3100B00A87 /* OSCData.cpp */,
@@ -741,7 +723,6 @@
 		A25EADE809444E6500B00A87 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A23B144C09D8482400F2959A /* libsndfile.a */,
 				A25EB3EB0944842500B00A87 /* Carbon.framework */,
 				A25EB1570944836D00B00A87 /* ApplicationServices.framework */,
 				A25EAE080944525300B00A87 /* Python.framework */,
@@ -891,6 +872,8 @@
 				A25EAE9D094467DB00B00A87 /* ChangeCounter.h in Headers */,
 				A25EAEB00944782100B00A87 /* SC_Reply.h in Headers */,
 				A26ECFAE0988DDCD0007F9E1 /* SC_StandAloneInfo_Darwin.h in Headers */,
+				A2FA13CB0B965206007C4078 /* SC_FIFO.h in Headers */,
+				A2FA13CE0B965249007C4078 /* SC_LanguageClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -907,26 +890,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_EXTENSION = so;
-				FRAMEWORK_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks";
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					PYSCLANG,
-					SC_DARWIN,
-				);
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = ./pycxx/;
-				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = /usr/local/src/SuperCollider3/build;
-				LIBRARY_STYLE = DYNAMIC;
-				PREBINDING = NO;
-				PRODUCT_NAME = PySCLang;
-			};
 			dependencies = (
 			);
 			name = PySCLang;
@@ -940,12 +903,6 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = A26ECFA10988DC6B0007F9E1 /* Build configuration list for PBXProject "PySCLang" */;
-			buildSettings = {
-			};
-			buildStyles = (
-				014CEA520018CE5811CA2923 /* Development */,
-				014CEA530018CE5811CA2923 /* Deployment */,
-			);
 			hasScannedForEncodings = 1;
 			mainGroup = 08FB7794FE84155DC02AAC07 /* PySCLang */;
 			projectDirPath = "";
@@ -1024,6 +981,7 @@
 				A25EB093094482E500B00A87 /* fftlib.c in Sources */,
 				A26ECFBF0988E7940007F9E1 /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 				A257C6790A7E03F100509127 /* PyrPlatformPrim.cpp in Sources */,
+				A2FA13C80B9651D8007C4078 /* PyrSerialPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1051,7 +1009,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ./pycxx/;
 				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = /usr/local/src/SuperCollider3/build;
+				LIBRARY_SEARCH_PATHS = ../../build;
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
@@ -1079,7 +1037,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ./pycxx/;
 				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = /usr/local/src/SuperCollider3/build;
+				LIBRARY_SEARCH_PATHS = ../../build;
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
@@ -1105,7 +1063,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ./pycxx/;
 				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = /usr/local/src/SuperCollider3/build;
+				LIBRARY_SEARCH_PATHS = ../../build;
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
