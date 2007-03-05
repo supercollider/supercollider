@@ -76,7 +76,13 @@ AbstractSFP  : AbstractPlayer {
 		// prepare all the preloads
 		segmentBuffers = List.new;
 		this.preloadData(0,nil,group,bundle,segmentBuffers);
-	}	
+	}
+	freeResourcesToBundle { arg bundle;
+		segmentBuffers.do({ |b|
+			bundle.add( b.freeMsg )
+		})
+	}
+			
 	asSynthDef {
 		^SynthDef(this.defName,{ arg i_bufnum=0,gate=1,out=0;
 			Out.ar(out,
