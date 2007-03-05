@@ -118,9 +118,7 @@ Bus {
 		this.fill(value,numChannels);
 	}
 	
-	printOn { arg stream; 
-		stream << this.class.name << "(" <<* [server.name,rate,index,numChannels]  <<")" 
-	}
+	printOn { arg stream;		stream << this.class.name << "(" <<*			[rate.asCompileString, index, numChannels, server.asCompileString]  <<")"	}
 	
 	== { arg aBus;
 		^aBus respondsTo: #[\index, \numChannels, \rate, \server]
