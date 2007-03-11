@@ -113,6 +113,9 @@ extern PyrSymbol *s_closed;
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
 - (void)flashHighlight: (BOOL)onoff atIndex: (int)index wait: (NSTimeInterval)interval timesLeft: (int)timesLeft;
+- (void)replaceOldStyleHelpLinksWithHyperLinks;
+- (IBAction)convertHelpLinksToHyperlinks:(id)sender;
+- (void)convertFileLinksToRelative:(NSTextStorage *)textStorage;
 
 @end
 
