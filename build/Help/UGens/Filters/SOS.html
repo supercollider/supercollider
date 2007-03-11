@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+span.s1 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SOS<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>second order filter section (biquad)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>SOS.ar(in, a0, a1, a2, b1, b2, mul, add)</b></p>
+<p class="p2"><br></p>
+<p class="p3">A standard second order filter section. Filter coefficients are given directly rather than calculated for you.</p>
+<p class="p3">Formula is equivalent to:</p>
+<p class="p2"><br></p>
+<p class="p4">out(i) = (a0 * in(i)) + (a1 * in(i-1)) + (a2 * in(i-2))<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>+ (b1 * out(i-1)) + (b2 * out(i-2))</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><br></p>
+<p class="p6">// example: same as TwoPole</p>
+<p class="p7">(</p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> rho, theta, b1, b2;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>theta = <span class="s1">MouseX</span>.kr(0.2pi, pi);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>rho = <span class="s1">MouseY</span>.kr(0.6, 0.99);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b1 = 2.0 * rho * cos(theta);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b2 = rho.squared.neg;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">SOS</span>.ar(<span class="s1">LFSaw</span>.ar(200, 0, 0.1), 1.0, 0.0, 0.0, b1, b2)</p>
+<p class="p7">}.play</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> rho, theta, b1, b2;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>theta = <span class="s1">MouseX</span>.kr(0.2pi, pi);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>rho = <span class="s1">MouseY</span>.kr(0.6, 0.99);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b1 = 2.0 * rho * cos(theta);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b2 = rho.squared.neg;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">SOS</span>.ar(<span class="s1">WhiteNoise</span>.ar(0.1 ! 2), 1.0, 0.0, 0.0, b1, b2)</p>
+<p class="p7">}.play</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p6">// example with SOS.kr kr as modulator</p>
+<p class="p7">(</p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> rho, theta, b1, b2, vib;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>theta = <span class="s1">MouseX</span>.kr(0.2pi, pi);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>rho = <span class="s1">MouseY</span>.kr(0.6, 0.99);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b1 = 2.0 * rho * cos(theta);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b2 = rho.squared.neg;</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>vib = <span class="s1">SOS</span>.kr(<span class="s1">LFSaw</span>.kr(3.16), 1.0, 0.0, 0.0, b1, b2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>SinOsc.ar( vib * 200 + 600) * 0.2</p>
+<p class="p7">}.play</p>
+<p class="p7">)</p>
+</body>
+</html>

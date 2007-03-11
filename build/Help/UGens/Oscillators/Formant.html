@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+span.s1 {color: #0000bf}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Formant<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>formant oscillator</b></p>
+<p class="p2"><b></b><br></p>
+<p class="p3"><b>Formant.ar(kfundfreq, kformfreq, kwidthfreq, mul, add)</b></p>
+<p class="p4"><br></p>
+<p class="p3">Generates a set of harmonics around a formant frequency at a given fundamental frequency.</p>
+<p class="p3"><b>kfundfreq</b> - fundamental frequency in Hertz.</p>
+<p class="p3"><b>kformfreq</b> - formant frequency in Hertz.</p>
+<p class="p3"><b>kwidthfreq</b> - pulse width frequency in Hertz. Controls the bandwidth of the formant.</p>
+<p class="p3">Widthfreq must be greater than or equal fundfreq.</p>
+<p class="p4"><br></p>
+<p class="p5">// modulate fundamental frequency, formant freq stays constant</p>
+<p class="p6">{ <span class="s1">Formant</span>.ar(<span class="s1">XLine</span>.kr(400,1000, 8), 2000, 800, 0.125) }.play</p>
+<p class="p7"><br></p>
+<p class="p5">// modulate formant frequency, fundamental freq stays constant</p>
+<p class="p6">{ <span class="s1">Formant</span>.ar(200, <span class="s1">XLine</span>.kr(400, 4000, 8), 200, 0.125) }.play</p>
+<p class="p7"><br></p>
+<p class="p5">// modulate width frequency, other freqs stay constant</p>
+<p class="p6">{ <span class="s1">Formant</span>.ar(400, 2000, <span class="s1">XLine</span>.kr(800, 8000, 8), 0.125) }.play</p>
+</body>
+</html>

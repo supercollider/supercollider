@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a71e12; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a71e12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #606060}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco; color: #a71e12}
+span.s3 {color: #0019b7}
+span.s4 {color: #606060}
+span.s5 {color: #000000}
+span.s6 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>SkipJack</b></span><span class="s2"> </span><b>a utility for background tasks that survive cmd-.</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*new(name, updateFunc, dt, stopTest)<span class="Apple-converted-space"> </span></b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>updateFunc<span class="Apple-tab-span">	</span></b>the function to repeat in the background</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>dt</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the time interval at which to repeat</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>stopTest<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a test whether to stop the task now</p>
+<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>name <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>is only used for posting information</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clock</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the clock that plays the task.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>default is AppClock, so SkipJack can call GUI primitives.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If you need more precise timing, you can supply your own clock,<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>and use defer only where necessary.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
+<p class="p4">w = <span class="s3">SkipJack</span>({ <span class="s4">"watch..."</span>.postln; }, 0.5, name: <span class="s4">"test"</span>);</p>
+<p class="p4">SkipJack.verbose = true;<span class="Apple-tab-span">	</span>// post stop/wakeup logs</p>
+<p class="p5"><br></p>
+<p class="p4">w.stop;</p>
+<p class="p4">w.start;</p>
+<p class="p6"><br></p>
+<p class="p7">// <span class="Apple-tab-span">	</span>now try to stop with cmd-. : SkipJack always restarts itself.</p>
+<p class="p4">thisProcess.stop;</p>
+<p class="p5"><br></p>
+<p class="p4">w.stop;</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>// use stopTest:<span class="Apple-converted-space"> </span></p>
+<p class="p4">a = 5;</p>
+<p class="p4">w = <span class="s3">SkipJack</span>({ <span class="s4">"watch..."</span>.postln; }, 0.5, { a == 10 }, <span class="s4">"test"</span>);</p>
+<p class="p4">a = 10;<span class="Apple-tab-span">	</span>// fulfil stopTest</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">//<span class="Apple-tab-span">	</span>Typical use: SkipJack updates a window displaying the state<span class="Apple-converted-space"> </span></p>
+<p class="p7">//<span class="Apple-tab-span">	</span>of some objects every now and then.<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s5">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// example is mac-only</p>
+<p class="p4">d = (a: 12, b: 24);</p>
+<p class="p4">d.win = <span class="s3">SCWindow</span>(<span class="s4">"dict"</span>, <span class="s3">Rect</span>(0,0,200,60)).front;</p>
+<p class="p4">d.views = [<span class="s6">\a</span>, <span class="s6">\b</span>].collect { <span class="s3">|name, i|</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">SCStaticText</span>(d.win, <span class="s3">Rect</span>(i * 100,0,96,20))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s3">Color</span>.yellow).align_(0).string_(name);</p>
+<p class="p4">};</p>
+<p class="p8"><span class="s5">w = </span>SkipJack<span class="s5">({<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">"..."</span>.postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s6">\a</span>, <span class="s6">\b</span>].do { <span class="s3">|name, i|</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.views[i].string_(name ++ <span class="s4">":"</span> + d[name])<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>},<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>0.5,</p>
+<p class="p4"><span class="Apple-tab-span">	</span>{ d.win.isClosed },</p>
+<p class="p9"><span class="s5"><span class="Apple-tab-span">	</span></span>"showdict"</p>
+<p class="p4">);</p>
+<p class="p4">)</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s5">d.a = 123;<span class="Apple-tab-span">	</span></span>// updates should be displayed</p>
+<p class="p4">d.b = <span class="s6">\otto</span>;<span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s5">d.win.close;<span class="Apple-tab-span">	</span></span>// when window closes, SkipJack stops.</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s5">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// the same example, but written in x´cross-platform gui style:</p>
+<p class="p4">d = (a: 12, b: 24);</p>
+<p class="p4">d.win = <span class="s3">GUI</span>(<span class="s6">\window</span>).new(<span class="s4">"dict"</span>, <span class="s3">Rect</span>(0,0,200,60)).front;</p>
+<p class="p4">d.views = [<span class="s6">\a</span>, <span class="s6">\b</span>].collect { <span class="s3">|name, i|</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">GUI</span>(<span class="s6">\staticText</span>).new(d.win, <span class="s3">Rect</span>(i * 100,0,96,20))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s3">Color</span>.yellow).align_(0).string_(name);</p>
+<p class="p4">};</p>
+<p class="p8"><span class="s5">w = </span>SkipJack<span class="s5">({<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">"..."</span>.postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s6">\a</span>, <span class="s6">\b</span>].do { <span class="s3">|name, i|</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.views[i].string_(name ++ <span class="s4">":"</span> + d[name])<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>},<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>0.5,</p>
+<p class="p4"><span class="Apple-tab-span">	</span>{ d.win.isClosed },</p>
+<p class="p9"><span class="s5"><span class="Apple-tab-span">	</span></span>"showdict"</p>
+<p class="p4">);</p>
+<p class="p4">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">//<span class="Apple-tab-span">	</span>I prefer this 'lazy' gui idea to a dependency model:<span class="Apple-converted-space"> </span></p>
+<p class="p7">//<span class="Apple-tab-span">	</span>Even when lots of changes happen fast, you don't choke your<span class="Apple-converted-space"> </span></p>
+<p class="p7">//<span class="Apple-tab-span">	</span>cpu on gui updating, you still see some intermediate states.</p>
+<p class="p5"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>//<span class="Apple-tab-span">	</span>if you need to get rid of an unreachable skipjack<span class="Apple-converted-space"> </span></p>
+<p class="p4">SkipJack({ "unreachable, unkillable...".postln }, name: "jack");</p>
+<p class="p5"><br></p>
+<p class="p4">SkipJack.stopAll<span class="Apple-tab-span">	</span>// do this to stop all;</p>
+<p class="p5"><br></p>
+<p class="p4">SkipJack.stop("jack");<span class="Apple-tab-span">	</span>// reach it by name and stop</p>
+</body>
+</html>

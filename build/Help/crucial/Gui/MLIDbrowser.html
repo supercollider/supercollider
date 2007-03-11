@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+span.s1 {color: #000000}
+span.s2 {color: #0019b7}
+span.s3 {color: #326f17}
+span.s4 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>MLIDbrowser</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">MultiLevelIdentityDictionary browser</p>
+<p class="p2"><br></p>
+<p class="p3">From any node, you can browse down to the leaves.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*new(name1,name2 ... nameN , onSelect)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>name1,name2 ... nameN</b> -<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the name of the node you wish to start browsing at.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if nil, it will browse from the top of Library.</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>onSelect</b> -</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the function that is executed when you click on a leaf node.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if nil, it will supply a function that guis the item.</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space"> </span></span>// what exactly is in Library right now ?</p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>MLIDbrowser<span class="s1">.new;</span></p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p5">(<span class="Apple-converted-space"> </span></p>
+<p class="p5">// put in something to library</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Library</span>.put(<span class="s3">\test</span>,<span class="s4">"hello"</span>);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>MLIDbrowser.new(\test);<span class="Apple-tab-span">	</span></p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p6">// browse all currently loaded instruments</p>
+<p class="p6">// if you have no Instr loaded, then Library.at(Instr) will return nil</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>Instr</span>(<span class="s4">"help-MLIDbrowser"</span>,{ arg freq=440,phase=0.0,amp=0.2;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SinOsc.ar(freq,phase,amp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span>//make a Patch when you select an instr</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">MLIDbrowser</span>(\<span class="s2">Instr</span>,{ <span class="s2">arg</span> instr; <span class="s2">Patch</span>(instr.name).topGui });</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p3">To browse all the Instr in your Instr folder, you need to load each one of them.</p>
+<p class="p4"><br></p>
+<p class="p3">Simply by accessing each one by its first name (filename and first symbol in the name list), you will force it to load.</p>
+<p class="p8"><br></p>
+<p class="p5">[<span class="s3">\oscillOrc</span>,<span class="s3">\synths</span>].do({ <span class="s2">arg</span> name; <span class="s2">Instr</span>.at(name) });</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+</body>
+</html>

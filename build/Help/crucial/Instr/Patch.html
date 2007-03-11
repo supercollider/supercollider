@@ -1,0 +1,464 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; min-height: 15.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17; min-height: 12.0px}
+span.s1 {color: #0019b7}
+span.s2 {color: #326f17}
+span.s3 {color: #000000}
+span.s4 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Patch</b></p>
+<p class="p2"><br></p>
+<p class="p3">A Patch connects an Instr function with input arguments to that function.</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Patch</span>(instr,args)</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">Instr</span>(<span class="s2">\bubbles</span>, { <span class="s1">arg</span> amp=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> f, zout;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>f = <span class="s1">LFSaw</span>.kr(0.4, 0, 24, <span class="s1">LFSaw</span>.kr([8,7.23], 0, 3, 80)).midicps;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>zout = <span class="s1">CombN</span>.ar(<span class="s1">SinOsc</span>.ar(f, 0, 0.04), 0.2, 0.2, 4);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>zout * amp</p>
+<p class="p4">});</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s3">p = </span><span class="s1">Patch</span><span class="s3">(</span>\bubbles<span class="s3">);</span></p>
+<p class="p2"><br></p>
+<p class="p6">// default server will be booted, def written and loaded</p>
+<p class="p4">p.play;</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">p.stop;</p>
+<p class="p2"><br></p>
+<p class="p6">// command-. will also stop all sounds</p>
+<p class="p2"><br></p>
+<p class="p4">p.play;</p>
+<p class="p2"><br></p>
+<p class="p4">p.run(<span class="s1">false</span>);</p>
+<p class="p2"><br></p>
+<p class="p4">p.run(<span class="s1">true</span>);</p>
+<p class="p2"><br></p>
+<p class="p4">p.insp; //inspect it</p>
+<p class="p2"><br></p>
+<p class="p4">p.gui;</p>
+<p class="p2"><br></p>
+<p class="p6">// close the window</p>
+<p class="p2"><br></p>
+<p class="p6">// open it again</p>
+<p class="p4">p.gui;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">Instr</span>(<span class="s2">\bubbles</span>, { <span class="s1">arg</span> amp=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> f, zout;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>f = <span class="s1">LFSaw</span>.kr(0.4, 0, 24, <span class="s1">LFSaw</span>.kr([8,7.23], 0, 3, 80)).midicps;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>zout = <span class="s1">CombN</span>.ar(<span class="s1">SinOsc</span>.ar(f, 0, 0.04), 0.2, 0.2, 4);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>zout * amp</p>
+<p class="p4">});</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">Instr</span>(<span class="s2">\rlpf</span>,{ <span class="s1">arg</span> audio=0,freq=500,rq=0.1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(audio, freq, rq)</p>
+<p class="p4">});</p>
+<p class="p2"><br></p>
+<p class="p4">p = <span class="s1">Patch</span>(<span class="s2">\rlpf</span>,[</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span>q = </span><span class="s1">Patch</span><span class="s3">(</span>\bubbles<span class="s3">)</span></p>
+<p class="p4">]);</p>
+<p class="p2"><br></p>
+<p class="p4">p.gui</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p7"><br></p>
+<p class="p3">Instr can be specified as<span class="Apple-converted-space"> </span></p>
+<p class="p7"><br></p>
+<p class="p3">an Instr<span class="Apple-tab-span">	</span></p>
+<p class="p4">(</p>
+<p class="p4"><span class="Apple-tab-span">	</span>i = <span class="s1">Instr</span>(<span class="s4">"help-Patch"</span>,{ <span class="s1">arg</span> freq=100,amp=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar([freq,freq + 30],0,amp)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s1">Patch</span>(i,[ 500,<span class="Apple-tab-span">	</span>0.3 ]);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p.gui</p>
+<p class="p4">)</p>
+<p class="p3">a Function</p>
+<p class="p4">(</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s1">Patch</span>({ <span class="s1">arg</span> freq=100,amp=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar([freq,freq + 30],0,amp)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>},[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>500,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.3</p>
+<p class="p4"><span class="Apple-tab-span">	</span>]);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p.gui</p>
+<p class="p8">)</p>
+<p class="p9">or by the Instr name</p>
+<p class="p10"><br></p>
+<p class="p6">// the Instr stores itself when created</p>
+<p class="p4">(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Instr</span>(<span class="s2">\bubbles</span>, { <span class="s1">arg</span> amp=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">var</span> f, zout;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f = <span class="s1">LFSaw</span>.kr(0.4, 0, 24, <span class="s1">LFSaw</span>.kr([8,7.23], 0, 3, 80)).midicps;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>zout = <span class="s1">CombN</span>.ar(<span class="s1">SinOsc</span>.ar(f, 0, 0.04), 0.2, 0.2, 4);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>zout * amp</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// the patch retrieves it</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s1">Patch</span>(<span class="s2">\bubbles</span>,[0.4] );</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p.gui</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p7"><br></p>
+<p class="p3">Patch can be easily saved to disk, and can make use of a large library of Instr functions.<span class="Apple-converted-space">  </span>An Instr can produce many different possible SynthDefs, expanding the number of output channels or , varying in output rate or number of channels or internal structure.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p11"><b>Automatic Input Creation</b></p>
+<p class="p12"><br></p>
+<p class="p3">For any nil arguments, a default control will be created.<span class="Apple-converted-space">  </span>The spec returns this from the defaultControl method.</p>
+<p class="p7"><br></p>
+<p class="p3">ControlSpec :<span class="Apple-converted-space">  </span>KrNumberEditor</p>
+<p class="p3">StaticSpec<span class="Apple-converted-space">    </span>:<span class="Apple-converted-space">  </span>NumberEditor<span class="Apple-converted-space">  </span>(for quantities or max delay times etc.)</p>
+<p class="p3">EnvSpec <span class="Apple-converted-space">      </span>: EnvEditor</p>
+<p class="p3">SampleSpec : Sample</p>
+<p class="p7"><br></p>
+<p class="p3">see the implementations of defaultControl</p>
+<p class="p7"><br></p>
+<p class="p3">This gives the impression that Patch is "an automatic gui for an Instr / SynthDef".<span class="Apple-converted-space">  </span>If you do not supply arguments, it will make default ones, simple ones, <b>but the real power of Patch is to supply functions with complex and varied inputs</b>.<span class="Apple-converted-space">  </span>Sitting there with 5 sliders on a 1 dimensional Instrument isn't really the height of synthesis.</p>
+<p class="p7"><br></p>
+<p class="p3">Most simple synth inputs (ControlSpec) will end up being KrNumberEditors.<span class="Apple-converted-space">  </span>Setting their values will control the playing synth.</p>
+<p class="p7"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>aPatch.set( index, value)</p>
+<p class="p2"><br></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p3">I recommend experimenting with factory methods to create your patches, supplying them with inputs useful for what you are working on.</p>
+<p class="p3">If you use a certain physical controller or wacom :</p>
+<p class="p2"><br></p>
+<p class="p4">buildPatch<span class="Apple-converted-space">  </span>= { <span class="s1">arg</span> instrName;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>i = <span class="s1">Instr</span>.at(instrName);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Patch</span>(instrName,[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>{ i.specAt(0).map( <span class="s1">JoyAxis</span>.kr(0,1,axis:5) ) },</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>{ i.specAt(1).map( <span class="s1">JoyAxis</span>.kr(0,1,axis:5) ) },</p>
+<p class="p4"><span class="Apple-tab-span">	</span>])</p>
+<p class="p4">};</p>
+<p class="p2"><br></p>
+<p class="p4">buildPatch.value( <span class="s2">\boingboing</span> );</p>
+<p class="p7"><br></p>
+<p class="p13"><br></p>
+<p class="p9">you can even keep your factories themselves in Instrument libraries:</p>
+<p class="p13"><br></p>
+<p class="p4"><span class="s1">Instr</span>(<span class="s2">\joysticker</span>,[ <span class="s1">arg</span> instrName;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>i = <span class="s1">Instr</span>.at(instrName);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Patch</span>(instrName,[</p>
+<p class="p4"><span class="Apple-tab-span">	</span>  { i.specAt(0).map( <span class="s1">JoyAxis</span>.kr(0,1,axis:5) ) },</p>
+<p class="p4"><span class="Apple-tab-span">	</span>  { i.specAt(1).map( <span class="s1">JoyAxis</span>.kr(0,1,axis:5) ) },</p>
+<p class="p4"><span class="Apple-tab-span">	</span>])</p>
+<p class="p4">});</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">patch = <span class="s1">Instr</span>(<span class="s2">\joysticker</span>).value( <span class="s2">\simple</span> );</p>
+<p class="p13"><br></p>
+<p class="p9">this Instr is not used for audio, its just used to build and return a Patch</p>
+<p class="p7"><br></p>
+<p class="p3">You could choose different controllers for different common inputs,</p>
+<p class="p3">you can query the argument name and the spec.</p>
+<p class="p3">Keep files in databases,<span class="Apple-converted-space">  </span>load other Patches or soundfiles from disk.</p>
+<p class="p3">You could flip coins and choose from soundfiles, audio in, other saved<span class="Apple-converted-space"> </span></p>
+<p class="p3">patches or randomly chosen net radio feeds.</p>
+<p class="p7"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p11"><b>Patch inside Patch</b></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p6">// lets collect the cast...</p>
+<p class="p4"><span class="s1">Instr</span>(<span class="s2">\bubbles</span>, { <span class="s1">arg</span> amp=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> f, zout;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>f = <span class="s1">LFSaw</span>.kr(0.4, 0, 24, <span class="s1">LFSaw</span>.kr([8,7.23], 0, 3, 80)).midicps;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>zout = <span class="s1">CombN</span>.ar(<span class="s1">SinOsc</span>.ar(f, 0, 0.04), 0.2, 0.2, 4);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>zout * amp</p>
+<p class="p4">});</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// note that the same function will work as stereo or mono</p>
+<p class="p6">// depending on what gets put into it</p>
+<p class="p4"><span class="s1">Instr</span>(<span class="s2">\rlpf</span>,{ <span class="s1">arg</span> audio=0,freq=500,rq=0.1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(audio, freq, rq)</p>
+<p class="p4">});</p>
+<p class="p2"><br></p>
+<p class="p6">// put bubbles into the filter</p>
+<p class="p4">p = <span class="s1">Patch</span>(<span class="s2">\rlpf</span>,[</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span>q = </span><span class="s1">Patch</span><span class="s3">(</span>\bubbles<span class="s3">)</span></p>
+<p class="p4">]);</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// watch the ugen count in the default server window</p>
+<p class="p6">// and also the error window results</p>
+<p class="p2"><br></p>
+<p class="p4">p.play;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">// randomize settings</p>
+<p class="p4">p.rand;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// stops the parent and the child q</p>
+<p class="p4">p.stop;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// allocates new everything</p>
+<p class="p4">p.play;</p>
+<p class="p2"><br></p>
+<p class="p6">// additional play</p>
+<p class="p6">// does not start an additional process</p>
+<p class="p4">p.play;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// stop q, but the filter p is still reading from its old bus</p>
+<p class="p4">q.stop;</p>
+<p class="p2"><br></p>
+<p class="p6">// should still have 9 ugens playing</p>
+<p class="p2"><br></p>
+<p class="p6">// sent the play message, q defaults to play out of the main outputs</p>
+<p class="p6">// not through the filter p</p>
+<p class="p4">q.play;</p>
+<p class="p2"><br></p>
+<p class="p6">// stopping p now still stops q because it is still a child of p</p>
+<p class="p4">p.stop;</p>
+<p class="p2"><br></p>
+<p class="p6">// replaying the whole structures</p>
+<p class="p4">p.play;</p>
+<p class="p2"><br></p>
+<p class="p6">// note the AudioPatchOut and the inputs: PatchIn classes</p>
+<p class="p4">p.insp;</p>
+<p class="p4">q.insp;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p9"><b>Fixed Arguments</b></p>
+<p class="p13"><br></p>
+<p class="p9">Floats and other scalar values including Envelopes, are transparently dealt with by Patch.<span class="Apple-converted-space">  </span>These items are passed to the Instr function, but not to the SynthDef or the Synth.<span class="Apple-converted-space">  </span>They are not modulateable.</p>
+<p class="p14"><br></p>
+<p class="p4">(</p>
+<p class="p6">// fixing arguments</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">Instr</span>([<span class="s2">\jmcExamples</span>,<span class="s2">'moto-rev'</span>],{ <span class="s1">arg</span> lfo=0.2,freq=1000,rq=0.1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(<span class="s1">LFPulse</span>.ar(<span class="s1">SinOsc</span>.kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);</p>
+<p class="p4">});</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s3">q = </span><span class="s1">Patch</span><span class="s3">([</span>\jmcExamples<span class="s3">,</span>'moto-rev'<span class="s3">],[</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>0.2</p>
+<p class="p4">]);</p>
+<p class="p2"><br></p>
+<p class="p4">q.gui;</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p9">You can design Instr to take parameters that are used only in the building of the SynthDef. This can be used to select from different kinds of filters or to .</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">Instr</span>(<span class="s2">\upOrDown</span>, {<span class="s1">arg</span> upDown=0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> line;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>if (upDown&gt;0,</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{line = </span><span class="s1">Line</span><span class="s3">.kr(1,0,5)}, </span>// upDown&gt;0 ==&gt; pitch goes up</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{line = </span><span class="s1">Line</span><span class="s3">.kr(0,1,5)}  </span>// upDown 0 or less ==&gt; pitch goes down</p>
+<p class="p4"><span class="Apple-tab-span">	</span>);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(440*line,0,0.2);</p>
+<p class="p4">},[</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>StaticIntegerSpec<span class="s3">(0,1)</span></p>
+<p class="p4">]);</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">Patch</span>(<span class="s2">\upOrDown</span>, [ 0]).play</p>
+<p class="p2"><br></p>
+<p class="p9">The upDown param acts as a switch between different synth def architectures.<span class="Apple-converted-space">  </span>If your Instr library is well designed you can acheive very sophisticated sound structures with automatic optimizations and code reuse.</p>
+<p class="p13"><br></p>
+<p class="p9">Note that the Patch would assume upDown to be a modulatable control input (with a default of 0.0) without the StaticIntegerSpec making it clear that its a static integer.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Busses</b></p>
+<p class="p4">(</p>
+<p class="p2"><br></p>
+<p class="p4">s.boot;</p>
+<p class="p2"><br></p>
+<p class="p4">a = <span class="s1">Group</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p4">b = <span class="s1">Group</span>.after(a);</p>
+<p class="p2"><br></p>
+<p class="p8"><span class="s3">c = </span>Bus.audio(s,1);</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">p=Patch</span>({ <span class="s1">arg</span> in,ffreq;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>// the Bus is passed in as In.ar(bus.index,bus.numChannels)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">LPF</span>.ar(in,ffreq)</p>
+<p class="p4">},[</p>
+<p class="p4"><span class="Apple-tab-span">	</span>c,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">KrNumberEditor</span>(3000,[200,8000,<span class="s2">\exp</span>])</p>
+<p class="p4">]).play(group: b);</p>
+<p class="p2"><br></p>
+<p class="p6">// play something onto this bus in a group before that of the filter</p>
+<p class="p4"><span class="s1">y = Patch</span>({<span class="Apple-tab-span">	</span><span class="s1">Saw</span>.ar(400) * 0.1<span class="Apple-converted-space">  </span>}).play(group: a, bus: c );</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">z = Patch</span>({<span class="Apple-tab-span">	</span><span class="s1">Saw</span>.ar(500) * 0.1<span class="Apple-converted-space">  </span>}).play(group: a, bus: c );</p>
+<p class="p4">z.stop;</p>
+<p class="p2"><br></p>
+<p class="p4">y.stop;</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4">// you can make the bus play to a main audio output</p>
+<p class="p4">c.play</p>
+<p class="p2"><br></p>
+<p class="p4">//command-. to stop all</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">s.boot;</p>
+<p class="p2"><br></p>
+<p class="p4">a = <span class="s1">Group</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p4">b = <span class="s1">Group</span>.after(a);</p>
+<p class="p2"><br></p>
+<p class="p6">// no index, not yet allocated</p>
+<p class="p4">c = <span class="s1">Bus</span>(<span class="s2">\audio</span>,<span class="s1">nil</span>,2);</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">y = Patch</span>({ <span class="s1">arg</span> in,ffreq;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">LPF</span>.ar(in,ffreq)</p>
+<p class="p4">},[</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span>c, </span>// a proxy, the bus is yet to be allocated</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">KrNumberEditor</span>(3000,[200,8000,<span class="s2">\exp</span>])</p>
+<p class="p4">]).play(group: b);</p>
+<p class="p2"><br></p>
+<p class="p6">// now that the patch has played, the bus allocated itself</p>
+<p class="p4">c.insp</p>
+<p class="p2"><br></p>
+<p class="p6">// play onto this bus in a group before that of the filter</p>
+<p class="p4"><span class="s1">z = Patch</span>({<span class="Apple-tab-span">	</span><span class="s1">Saw</span>.ar([400,401]) * 0.1<span class="Apple-converted-space">  </span>}).play(group: a, bus: c )</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p11"><b>Mapping values</b></p>
+<p class="p2"><br></p>
+<p class="p9">you can use a spec to map a signal :</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">var</span> spec;</p>
+<p class="p4">spec = [ 100,18000,<span class="s2">\exp</span>].asSpec;</p>
+<p class="p4">{</p>
+<p class="p2"><br></p>
+<p class="p8">SinOsc<span class="s3">.ar(</span></p>
+<p class="p4"><span class="Apple-converted-space">  </span>spec.map(<span class="Apple-converted-space">  </span><span class="s1">SinOsc</span>.kr(0.1).range(0,1) )</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4">}.play</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p9">you can use that as an input to a patch:</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">var</span> spec;</p>
+<p class="p4">spec = [ 100,18000,<span class="s2">\exp</span>].asSpec;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">Patch</span>({ <span class="s1">arg</span> freq;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(freq)</p>
+<p class="p4">},[</p>
+<p class="p4"><span class="Apple-converted-space">    </span>spec.map( { <span class="s1">SinOsc</span>.kr(0.1).range(0,1) } )</p>
+<p class="p4">]).play</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p9">or map another player's output and then use that as an input to a patch :</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">var</span> spec;</p>
+<p class="p4">spec = [ 100,18000,<span class="s2">\exp</span>].asSpec;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">Patch</span>({ <span class="s1">arg</span> freq;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(freq)</p>
+<p class="p4">},[</p>
+<p class="p4"><span class="Apple-converted-space">    </span>spec.map( <span class="s1">Patch</span>({ <span class="s1">SinOsc</span>.kr(0.1).range(0,1) }) ).debug(<span class="s4">"i am a"</span>)</p>
+<p class="p4">]).play</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p13"><br></p>
+<p class="p9">so spec.map is taking the player (which is a kind of function :</p>
+<p class="p9">a potential piece of music once it is valued )</p>
+<p class="p9">and creating a BinaryOpFunction out of it.</p>
+<p class="p9">that is to say if you do math on functions you get another function.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p9"><b>Spawning</b></p>
+<p class="p2"><br></p>
+<p class="p4">still wrong.<span class="Apple-converted-space">  </span>a should be playing already and b should just patch it in each time.</p>
+<p class="p6"><span class="s3">(</span>//</p>
+<p class="p6">//</p>
+<p class="p6">//a = Patch({</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>SinOsc.ar(800,0.0)</p>
+<p class="p6">//});</p>
+<p class="p6">//</p>
+<p class="p6">//c = Bus.audio;</p>
+<p class="p6">//a.play(bus: c);</p>
+<p class="p6">//</p>
+<p class="p6">//b = Patch({ arg tone;</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>var gate;</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>gate = Trig1.kr(1.0,0.25);</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>tone = In.ar(tone,1);</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>tone * EnvGen.kr(Env([0,1,0],[0.05,0.05],\welch,1),gate,doneAction: 2)</p>
+<p class="p6">//}[</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>c.index</p>
+<p class="p6">//]);</p>
+<p class="p6">//</p>
+<p class="p6">//b.prepareForPlay(s);</p>
+<p class="p6">//</p>
+<p class="p6">//</p>
+<p class="p6">//Routine({</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>1.0.wait;</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>100.do({</p>
+<p class="p6">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.spawn(atTime: 0.1);</p>
+<p class="p6">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.25.wait</p>
+<p class="p6">//<span class="Apple-tab-span">	</span>})</p>
+<p class="p6">//}).play(SystemClock)</p>
+<p class="p6">//</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>

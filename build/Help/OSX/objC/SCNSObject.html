@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCNSObject</b></p>
+<p class="p2"><br></p>
+<p class="p3">note: this is experimental (03/2006) things might change and be careful wrong or unsupported Cocoa-calls can crash this Application!</p>
+<p class="p2"><br></p>
+<p class="p3">SCNSObject creates a bridge between SuperCollider and Objective-C / Cocoa.</p>
+<p class="p3">It holds an NSObject and sends messages to it.</p>
+<p class="p3">The class and messages are passed as Strings. Arguments must be in an Array.</p>
+<p class="p3">On creation only the init message is passed, alloc is called internally. So all constructor messages other then alloc are not supported yet.</p>
+<p class="p2"><br></p>
+<p class="p3">Example:</p>
+<p class="p3">The Cocoa synthax:</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">NSNumber</span> *n = [[<span class="s1">NSNumber</span> alloc] initWithFloat: 1.1];</p>
+<p class="p4"><span class="Apple-tab-span">	</span>[n floatValue];</p>
+<p class="p3">turns into:</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>n = </span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSNumber"<span class="s2">, </span>"initWithFloat:"<span class="s2">, [1.1]);</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>n.invoke(<span class="s3">"floatValue"</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p3">Multiple messages are put together in one STring and their arguments in one Array.</p>
+<p class="p3">Example:</p>
+<p class="p3">Cocoa:</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">NSWindow</span> *c = [[<span class="s1">NSWindow</span> alloc] initWithContentRect: rect styleMask: 10 backing: 2 defer:<span class="s1">YES</span>];</p>
+<p class="p3">SC:</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>c = </span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSWindow"<span class="s2">, </span>"initWithContentRect:styleMask:backing:defer:"<span class="s2">,[</span><span class="s1">Rect</span><span class="s2">(0,0,400,100), 10, 2, 1]);</span></p>
+<p class="p6"><br></p>
+<p class="p3">Defer:</p>
+<p class="p6"><br></p>
+<p class="p3">Some methods need to be defered. If you want to defer ust call invoke with defer:true. Watch out there is no smart protection for methods that need defer until now! In general you should defer graphic operations.</p>
+<p class="p3">So calling this might crash sc-lang: c.invoke("makeKeyAndOrderFront:", [nil]);</p>
+<p class="p3">but this line is fine:</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>c.invoke(</span>"makeKeyAndOrderFront:"<span class="s2">, [</span><span class="s1">nil</span><span class="s2">], </span><span class="s1">true</span><span class="s2">);<span class="Apple-tab-span">	</span></span></p>
+<p class="p6"><br></p>
+<p class="p3">Types:</p>
+<p class="p6"><br></p>
+<p class="p3">SCNSObjects are converted to NSObjects.</p>
+<p class="p2"><br></p>
+<p class="p3">Some types are converted directly:</p>
+<p class="p3">Rect -&gt; NSRect</p>
+<p class="p3">Point -&gt; NSPoint</p>
+<p class="p2"><br></p>
+<p class="p3">Many obj-c types are not supported yet (NSRange, nib-files, ...).</p>
+<p class="p2"><br></p>
+<p class="p3">A String in SC is different than the cString used in Cocoa. So you might get some strange artefacts.</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s2">z =<span class="Apple-converted-space">  </span></span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSString"<span class="s2">,</span>"initWithCString:"<span class="s2">, [</span>"x 3456512"<span class="s2">]);</span></p>
+<p class="p6"><br></p>
+<p class="p3">Actions:</p>
+<p class="p2"><br></p>
+<p class="p3">.initAction is a convenience method to add an action to a gui element.</p>
+<p class="p3">Depending on the type there are different actions to be set: <span class="Apple-tab-span">	</span>"doFloatAction:"</p>
+<p class="p3"><span class="Apple-tab-span">	</span>"doIntAction:"</p>
+<p class="p3"><span class="Apple-tab-span">	</span>"doStateAction:"</p>
+<p class="p3"><span class="Apple-tab-span">	</span>"doAction:"</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">Examples:</p>
+<p class="p6"><br></p>
+<p class="p7">//create a window and add a Slider that posts its value.<span class="Apple-tab-span">	</span></p>
+<p class="p6"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">var</span> winname = <span class="s3">"cocoa test"</span>, win, nsname, slider;</p>
+<p class="p4">nsname = <span class="s1">SCNSObject</span>(<span class="s3">"NSString"</span>,<span class="s3">"initWithCString:length:"</span>, [winname, winname.size], <span class="s1">false</span>);</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s2">win = </span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSWindow"<span class="s2">, </span>"initWithContentRect:styleMask:backing:defer:"<span class="s2">,</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>[<span class="s1">Rect</span>(100,140,400,30), 10, 2, 1]);</p>
+<p class="p4">win.setDelegate.action_({</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>"closing window, releasing objects"<span class="s2">.postln;</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>[winname,nsname,slider,e].do{<span class="s1">|it|</span> it.release};</p>
+<p class="p4">});</p>
+<p class="p4">slider = <span class="s1">SCNSObject</span>(<span class="s3">"NSSlider"</span>, <span class="s3">"initWithFrame:"</span>, [<span class="s1">Rect</span>(0,0,390,20)]);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s2">e = </span><span class="s1">SCNSObject</span><span class="s2">(</span>"SCGraphView"<span class="s2">, </span>"initWithFrame:"<span class="s2">, [</span><span class="s1">Rect</span><span class="s2">(0,0,400,30)]);<span class="Apple-converted-space"> </span></span></p>
+<p class="p4">win.invoke(<span class="s3">"setContentView:"</span>, [e], <span class="s1">true</span>);</p>
+<p class="p4">e.invoke(<span class="s3">"addSubview:"</span>, [slider], <span class="s1">true</span>);</p>
+<p class="p4">slider.invoke(<span class="s3">"setFloatValue:"</span>, [0.5]);</p>
+<p class="p5"><span class="s2">win.invoke(</span>"makeKeyAndOrderFront:"<span class="s2">, [</span><span class="s1">nil</span><span class="s2">], </span><span class="s1">true</span><span class="s2">);</span></p>
+<p class="p4">win.invoke(<span class="s3">"setTitle:"</span>, [nsname]);</p>
+<p class="p6"><br></p>
+<p class="p4">{a = slider.initAction;</p>
+<p class="p4">a.action_({<span class="s1">|v,val|</span> val.postln});}.defer(0.1);</p>
+<p class="p4">~win = win;</p>
+<p class="p4">)</p>
+<p class="p4">~win.className</p>
+<p class="p4">~win.invoke("close", <span class="s1">defer:true</span>);</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">(</p>
+<p class="p5"><span class="s2">z =<span class="Apple-converted-space">  </span></span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSString"<span class="s2">,</span>"initWithCString:"<span class="s2">, [</span>"x 3456512"<span class="s2">]);</span></p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s2">c = </span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSWindow"<span class="s2">, </span>"initWithContentRect:styleMask:backing:defer:"<span class="s2">,[</span><span class="s1">Rect</span><span class="s2">(0,0,400,100), 10, 2, 1]);</span></p>
+<p class="p4">c.setDelegate.action_({</p>
+<p class="p4"><span class="Apple-tab-span">	</span>"closing window, releasing objects".postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>[z,c,d,e].do{|it| it.release};</p>
+<p class="p4">});</p>
+<p class="p5"><span class="s2">d = </span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSTextField"<span class="s2">, </span>"initWithFrame:"<span class="s2">, [</span><span class="s1">Rect</span><span class="s2">(0,0,100,20)]);<span class="Apple-converted-space"> </span></span></p>
+<p class="p4">e = <span class="s1">SCNSObject</span>(<span class="s3">"NSView"</span>, <span class="s3">"initWithFrame:"</span>, [<span class="s1">Rect</span>(0,0,400,100)]);<span class="Apple-converted-space"> </span></p>
+<p class="p4">c.invoke(<span class="s3">"setContentView:"</span>, [e], <span class="s1">true</span>);</p>
+<p class="p4">e.invoke(<span class="s3">"addSubview:"</span>, [d], <span class="s1">true</span>);</p>
+<p class="p5"><span class="s2">c.invoke(</span>"makeKeyAndOrderFront:"<span class="s2">, [</span><span class="s1">nil</span><span class="s2">], </span><span class="s1">true</span><span class="s2">);</span></p>
+<p class="p6"><br></p>
+<p class="p4">)</p>
+<p class="p4">(</p>
+<p class="p5"><span class="s2">z =<span class="Apple-converted-space">  </span></span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSString"<span class="s2">,</span>"initWithCString:"<span class="s2">, [</span>"x 3456512"<span class="s2">]);</span></p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s2">c = </span><span class="s1">SCNSObject</span><span class="s2">(</span>"NSWindow"<span class="s2">, </span>"initWithContentRect:styleMask:backing:defer:"<span class="s2">,[</span><span class="s1">Rect</span><span class="s2">(100,100,100,20), 10, 2, 1]);</span></p>
+<p class="p4">c.setDelegate.action_({</p>
+<p class="p4"><span class="Apple-tab-span">	</span>"closing window, releasing objects".postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>[z,c,d,e].do{|it| it.release};</p>
+<p class="p4">});</p>
+<p class="p4">d = <span class="s1">SCNSObject</span>(<span class="s3">"NSButton"</span>, <span class="s3">"initWithFrame:"</span>, [<span class="s1">Rect</span>(0,0,100,20)]);<span class="Apple-converted-space"> </span></p>
+<p class="p4">e = <span class="s1">SCNSObject</span>(<span class="s3">"NSView"</span>, <span class="s3">"initWithFrame:"</span>, [<span class="s1">Rect</span>(0,0,400,100)]);<span class="Apple-converted-space"> </span></p>
+<p class="p4">c.invoke(<span class="s3">"setContentView:"</span>, [e], <span class="s1">true</span>);</p>
+<p class="p4">e.invoke(<span class="s3">"addSubview:"</span>, [d], <span class="s1">true</span>);</p>
+<p class="p5"><span class="s2">c.invoke(</span>"makeKeyAndOrderFront:"<span class="s2">, [</span><span class="s1">nil</span><span class="s2">], </span><span class="s1">true</span><span class="s2">);</span></p>
+<p class="p4">d.invoke(<span class="s3">"setButtonType:"</span>, [3]);</p>
+<p class="p4">{</p>
+<p class="p5"><span class="s2">d.initAction(</span>"doStateAction:"<span class="s2">);</span></p>
+<p class="p4">d.nsAction.action_({<span class="s1">|it,val|</span> val.postln;});</p>
+<p class="p4">}.defer(0.1);</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+</body>
+</html>

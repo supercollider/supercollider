@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #a71e12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
+span.s1 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><br></p>
+<p class="p2"><b>Ringz<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ringing filter</b></p>
+<p class="p3"><br></p>
+<p class="p4"><b>Ringz.ar(in, freq, decaytime, mul, add)</b></p>
+<p class="p3"><br></p>
+<p class="p4">This is the same as Resonz, except that instead of a resonance parameter, the bandwidth is</p>
+<p class="p4">specified in a 60dB ring decay time. One Ringz is equivalent to one component of the Klank UGen.</p>
+<p class="p4"><b>in</b> - input signal to be processed</p>
+<p class="p4"><b>freq</b> - resonant frequency in Hertz</p>
+<p class="p4"><b>decaytime</b> - the 60 dB decay time of the filter</p>
+<p class="p3"><br></p>
+<p class="p5">{ <span class="s1">Ringz</span>.ar(<span class="s1">Dust</span>.ar(3, 0.3), 2000, 2) }.play</p>
+<p class="p3"><br></p>
+<p class="p5">{ <span class="s1">Ringz</span>.ar(<span class="s1">WhiteNoise</span>.ar(0.005), 2000, 0.5) }.play</p>
+<p class="p6"><br></p>
+<p class="p7">// modulate frequency</p>
+<p class="p5">{ <span class="s1">Ringz</span>.ar(<span class="s1">WhiteNoise</span>.ar(0.005), <span class="s1">XLine</span>.kr(100,3000,10), 0.5) }.play</p>
+<p class="p6"><br></p>
+<p class="p5">{ <span class="s1">Ringz</span>.ar(<span class="s1">Impulse</span>.ar(6, 0, 0.3),<span class="Apple-converted-space">  </span><span class="s1">XLine</span>.kr(100,3000,10), 0.5) }.play</p>
+<p class="p6"><br></p>
+<p class="p7">// modulate ring time</p>
+<p class="p5">{ <span class="s1">Ringz</span>.ar(<span class="s1">Impulse</span>.ar(6, 0, 0.3),<span class="Apple-converted-space">  </span>2000, <span class="s1">XLine</span>.kr(4, 0.04, 8)) }.play</p>
+<p class="p6"><br></p>
+<p class="p7">// modulate ring time opposite direction</p>
+<p class="p5">{ <span class="s1">Ringz</span>.ar(<span class="s1">Impulse</span>.ar(6, 0, 0.3), 2000, <span class="s1">XLine</span>.kr(0.04, 4, 8)) }.play</p>
+<p class="p8"><br></p>
+<p class="p3"><br></p>
+<p class="p4">(</p>
+<p class="p5">{<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> exciter;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>exciter = <span class="s1">WhiteNoise</span>.ar(0.001);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Mix</span>.arFill(10, {</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Ringz</span>.ar(exciter,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">XLine</span>.kr(exprand(100.0,5000.0), exprand(100.0,5000.0), 20),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p5">}.play</p>
+<p class="p5">)</p>
+</body>
+</html>

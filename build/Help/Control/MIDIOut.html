@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {color: #000000}
+span.s2 {color: #0019b7}
+span.s3 {color: #326f17}
+span.s4 {color: #0000ff}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>MIDIOut</b></p>
+<p class="p2"><br></p>
+<p class="p3"><br></p>
+<p class="p4">Interface MIDI output ports defined by the operating system to a set of user defined functions.</p>
+<p class="p3"><br></p>
+<p class="p3"><span class="Apple-converted-space">  </span></p>
+<p class="p3"><span class="Apple-converted-space">  </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>*new(port, uid)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>noteOn</b> ( chan, note, veloc )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>noteOff</b> ( chan, note, veloc )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>polyTouch</b> ( chan, note, val )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>control</b> ( chan, ctlNum, val )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>program</b> ( chan, num )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>touch</b> ( chan, val )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>bend</b> ( chan, val )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>allNotesOff</b> ( chan )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>smpte</b> ( frames, seconds, minutes, hours, frameRate )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>songPtr</b> ( songPtr )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>songSelect</b> ( song )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>midiClock</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>startClock</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>continueClock</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>stopClock</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>reset</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>sysex</b> ( uid, Int8Array )</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>send</b> ( outport, uid, len, hiStatus, loStatus, a, b, latency )</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">// examples:</p>
+<p class="p2"><br></p>
+<p class="p6">MIDIClient<span class="s1">.init;</span></p>
+<p class="p2"><br></p>
+<p class="p7">m = <span class="s2">MIDIOut</span>(0, <span class="s2">MIDIClient</span>.destinations.at(0).uid);</p>
+<p class="p7">m.noteOn(16, 60, 60);</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s2">MIDIIn</span>.connect;</p>
+<p class="p7"><span class="s2">MIDIIn</span>.sysex = { <span class="s2">arg</span> uid, packet; [uid,packet].postln };</p>
+<p class="p7"><span class="s2">MIDIIn</span>.sysrt = { <span class="s2">arg</span> src, chan, val; <span class="Apple-tab-span">	</span>[src, chan, val].postln; };</p>
+<p class="p7"><span class="s2">MIDIIn</span>.smpte = { <span class="s2">arg</span> src, chan, val; <span class="Apple-tab-span">	</span>[src, chan, val].postln; };</p>
+<p class="p2"><br></p>
+<p class="p7">m.sysex(<span class="s2">MIDIClient</span>.destinations.at(0).uid, <span class="s2">Int8Array</span>[ 16rf0, 0, 0, 27, 11, 0,16rf7])</p>
+<p class="p2"><br></p>
+<p class="p7">m.smpte (24,16)<span class="Apple-converted-space"> </span></p>
+<p class="p7">m.midiClock<span class="Apple-converted-space"> </span></p>
+<p class="p7">m.start<span class="Apple-converted-space"> </span></p>
+<p class="p7">m.continue<span class="Apple-converted-space"> </span></p>
+<p class="p7">m.stop<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">// using patterns for sending midi events</p>
+<p class="p2"><br></p>
+<p class="p6">MIDIClient<span class="s1">.init;</span></p>
+<p class="p7">m = <span class="s2">MIDIOut</span>(0, <span class="s2">MIDIClient</span>.destinations.at(0).uid);</p>
+<p class="p2"><br></p>
+<p class="p7">a = <span class="s2">Pbind</span>(<span class="s3">\degree</span>, <span class="s2">Prand</span>([1, 2, 3, [0, 5]], <span class="s2">inf</span>), <span class="s3">\bend</span>, <span class="s2">Pwhite</span>(0, 76, <span class="s2">inf</span>));</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">// chain a midi event into the pattern and play it (see <a href="../Streams-Patterns-Events/Pchain.html"><span class="s4">Pchain</span></a>)</p>
+<p class="p2"><br></p>
+<p class="p7">(a &lt;&gt; (type: <span class="s3">\midi</span>, midiout: m)).play;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">// the following keys are supported by midiEvent:</p>
+<p class="p7">noteOn</p>
+<p class="p7">noteOff</p>
+<p class="p7">polyTouch</p>
+<p class="p7">control</p>
+<p class="p7">program</p>
+<p class="p7">touch</p>
+<p class="p7">bend</p>
+<p class="p7">allNotesOff</p>
+<p class="p7">smpt</p>
+<p class="p7">songPtr</p>
+<p class="p7">sysex</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><span class="Apple-converted-space"> </span></p>
+</body>
+</html>

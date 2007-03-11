@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>DynKlank<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bank of resonators</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>DynKlank.ar(specificationsArrayRef, input, freqscale, freqoffset, decayscale)</b></p>
+<p class="p2"><br></p>
+<p class="p3">DynKlank is a bank of frequency resonators which can be used to simulate the resonant modes of an object. Each mode is given a ring time, which is the time for the mode to decay by 60 dB.</p>
+<p class="p2"><br></p>
+<p class="p3">Unlike Klank, the frequencies in DynKlank can be changed after it has been started.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>specificationsArrayRef</b> - a Ref to an Array of three Arrays :</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>frequencies</b> - an Array of filter frequencies.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>amplitudes</b> - an Array of filter amplitudes, or nil. If nil, then amplitudes default to 1.0</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>ring</b> <b>times</b> - an Array of 60 dB decay times for the filters.</p>
+<p class="p3">All subarrays, if not nil, should have the same length.</p>
+<p class="p3"><b>input</b> - the excitation input to the resonant filter bank.</p>
+<p class="p3"><b>freqscale</b> - a scale factor multiplied by all frequencies at initialization time.</p>
+<p class="p3"><b>freqoffset</b> - an offset added to all frequencies at initialization time.</p>
+<p class="p3"><b>decayscale</b> - a scale factor multiplied by all ring times at initialization time.</p>
+<p class="p4"><br></p>
+<p class="p5">s.boot;</p>
+<p class="p4"><br></p>
+<p class="p5">{ <span class="s1">DynKlank</span>.ar(`[[800, 1071, 1153, 1723], <span class="s1">nil</span>, [1, 1, 1, 1]], <span class="s1">Impulse</span>.ar(2, 0, 0.1)) }.play;</p>
+<p class="p4"><br></p>
+<p class="p5">{ <span class="s1">DynKlank</span>.ar(`[[800, 1071, 1353, 1723], <span class="s1">nil</span>, [1, 1, 1, 1]], <span class="s1">Dust</span>.ar(8, 0.1)) }.play;</p>
+<p class="p4"><br></p>
+<p class="p5">{ <span class="s1">DynKlank</span>.ar(`[[800, 1071, 1353, 1723], <span class="s1">nil</span>, [1, 1, 1, 1]], <span class="s1">PinkNoise</span>.ar(0.007)) }.play;</p>
+<p class="p4"><br></p>
+<p class="p5">{ <span class="s1">DynKlank</span>.ar(`[[200, 671, 1153, 1723], <span class="s1">nil</span>, [1, 1, 1, 1]], <span class="s1">PinkNoise</span>.ar([0.007,0.007])) }.play;</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p6">// change freqs and ringtimes with mouse</p>
+<p class="p5">{<span class="Apple-tab-span">	</span><span class="s1">var</span> freqs, ringtimes;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>freqs = [800, 1071, 1153, 1723] * <span class="s1">MouseX</span>.kr(0.5, 2, 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>ringtimes = [1, 1, 1, 1] * <span class="s1">MouseY</span>.kr(0.1, 10, 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">DynKlank</span>.ar(`[freqs, <span class="s1">nil</span>, ringtimes ], <span class="s1">Impulse</span>.ar(2, 0, 0.1))</p>
+<p class="p5">}.play;</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p6">// set them from outside later:</p>
+<p class="p7"><span class="s1">SynthDef</span><span class="s2">(</span>'help-dynKlank'<span class="s2">, {</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> freqs, ringtimes, signal;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>freqs = <span class="s1">Control</span>.names([<span class="s3">\freqs</span>]).kr([800, 1071, 1153, 1723]);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>ringtimes = <span class="s1">Control</span>.names([<span class="s3">\ringtimes</span>]).kr([1, 1, 1, 1]);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>signal = <span class="s1">DynKlank</span>.ar(`[freqs, <span class="s1">nil</span>, ringtimes ], <span class="s1">Impulse</span>.ar(2, 0, 0.1));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0, signal);</p>
+<p class="p5">}).load(s);</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p7"><span class="s2">a = </span><span class="s1">Synth</span><span class="s2">(</span>'help-dynKlank'<span class="s2">);</span></p>
+<p class="p4"><br></p>
+<p class="p5">a.setn(<span class="s3">\freqs</span>, <span class="s1">Array</span>.rand(4, 500, 2000));</p>
+<p class="p5">a.setn(<span class="s3">\ringtimes</span>, <span class="s1">Array</span>.rand(4, 0.2, 4) );</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">(<span class="Apple-tab-span">	</span></span>// create multichannel controls directly with literal arrays:</p>
+<p class="p8">SynthDef<span class="s2">(</span><span class="s3">'help-dynKlank'</span><span class="s2">, {</span>| freqs (#[100, 200, 300, 400]),<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>amps (#[1, 0.3, 0.2, 0.05]),<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>rings (#[1, 1, 1, 2])|</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0, <span class="s1">DynKlank</span>.ar(`[freqs, amps, rings], <span class="s1">WhiteNoise</span>.ar * 0.001))</p>
+<p class="p5">}).send(s)</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p7"><span class="s2">a = </span><span class="s1">Synth</span><span class="s2">(</span>'help-dynKlank'<span class="s2">);</span></p>
+<p class="p4"><br></p>
+<p class="p5">a.setn(<span class="s3">\freqs</span>, <span class="s1">Array</span>.rand(4, 500, 2000));</p>
+<p class="p5">a.setn(<span class="s3">\amps</span>, <span class="s1">Array</span>.exprand(4, 0.01, 1));</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {font: 12.0px Helvetica}
+span.s2 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>CountLimit</b><span class="s1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span></p>
+<p class="p2"><br></p>
+<p class="p3"><b>counts how many items have been presented to it. returns true until the limit has</b></p>
+<p class="p3"><b>been reached, thereafter returns false.</b></p>
+<p class="p2"><br></p>
+<p class="p3">superclass: AbstractConstraint</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p5">s = <span class="s2">CountLimit</span>.new(10);</p>
+<p class="p4"><br></p>
+<p class="p5">100.do({ <span class="s2">arg</span> i;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> r;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>r = 100.rand;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>if(s.value(r),{</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[i,r].postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p5">});</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">[ 0, 58 ]</p>
+<p class="p5">[ 1, 37 ]</p>
+<p class="p5">[ 2, 39 ]</p>
+<p class="p5">[ 3, 82 ]</p>
+<p class="p5">[ 4, 99 ]</p>
+<p class="p5">[ 5, 93 ]</p>
+<p class="p5">[ 6, 27 ]</p>
+<p class="p5">[ 7, 38 ]</p>
+<p class="p5">[ 8, 20 ]</p>
+<p class="p5">[ 9, 77 ]</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+</body>
+</html>

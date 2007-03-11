@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #0019b7}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Enveloper2</b></p>
+<p class="p2"><br></p>
+<p class="p3">gate the audio input with an <span class="s1">Envelope</span>;</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p2"><br></p>
+<p class="p4">b = <span class="s1">Bus</span>.control(<span class="s1">Server</span>.local);</p>
+<p class="p4">{</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> p,qnty=4,gate;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>gate = <span class="s1">In</span>.kr(b.index);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s1">Mix</span>.arFill(qnty.asInteger,{ <span class="s1">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(440 + rrand(1,5))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}) * qnty.reciprocal;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Enveloper2</span>.ar(p,gate,<span class="s1">Env</span>.adsr)</p>
+<p class="p4">}.play;</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">// On</p>
+<p class="p4">b.value = 1.0;</p>
+<p class="p2"><br></p>
+<p class="p5">// Off</p>
+<p class="p4">b.value = 0.0;</p>
+<p class="p2"><br></p>
+<p class="p4">b.value = 0.2;</p>
+<p class="p2"><br></p>
+<p class="p4">b.value = 0.0;</p>
+<p class="p2"><br></p>
+<p class="p4">b.free;</p>
+<p class="p2"><br></p>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #a71e12}
+span.s4 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCPopUpMenu</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>The 8-fold noble path</b></p>
+<p class="p4">(</p>
+<p class="p5"><span class="s1">var</span> sbs;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w = <span class="s1">SCWindow</span>.new.front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>l = [</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"right view"<span class="s2">,</span>"right thinking"<span class="s2">,</span>"right mindfulness"<span class="s2">,</span>"right speech"<span class="s2">,</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"right action"<span class="s2">,</span>"right diligence"<span class="s2">,</span>"right concentration"<span class="s2">,</span>"right livelihood"</p>
+<p class="p5"><span class="Apple-tab-span">	</span>];</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sbs = <span class="s1">SCPopUpMenu</span>(w,<span class="s1">Rect</span>(10,10,180,20));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sbs.items = l;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sbs.background_(<span class="s1">Color</span>.white);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sbs.action = { <span class="s1">arg</span> sbs;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[sbs.value, l.at(sbs.value)].postln;<span class="Apple-tab-span">	</span><span class="s3">// .value returns the integer</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>};</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p5">The underlying OS X graphics system gives special meanings to some characters</p>
+<p class="p5">- divider line</p>
+<p class="p7"><br></p>
+<p class="p5">(</p>
+<p class="p7"><br></p>
+<p class="p5"><span class="s1">var</span> sbs;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w = <span class="s1">SCWindow</span>.new.front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>l = [</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"1 absolute"<span class="s2">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">"-replaced by a divider"</span>, // starting with a -</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"3 relative",</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"4 fore &lt;= aft", // fore aft ( &lt;= disappears )</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"5 fore &lt;hello aft", // fore ello aft</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"6 something -&gt; else", // ok</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"7 fore —hello aft", // fore hello aft</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"8 fore —-hello aft", // fore -hello aft (one - )</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"9 fore -&lt;hello aft", // fore ello aft</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"10 something (else)", // item greyed out</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"11 something \(else)", // item still greyed out</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"12 something [else]", // ok</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"13 something {else}", // ok</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"14 something | else" // ok</p>
+<p class="p8"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>];</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sbs = <span class="s1">SCPopUpMenu</span>(w,<span class="s1">Rect</span>(10,10,180,20));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sbs.items = l;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sbs.background_(<span class="s1">Color</span>.white);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sbs.action = { <span class="s1">arg</span> sbs;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[sbs.value, l.at(sbs.value)].postln;<span class="Apple-tab-span">	</span><span class="s3">// .value returns the integer</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>};</p>
+<p class="p7"><br></p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">also these:</p>
+<p class="p5">&lt;</p>
+<p class="p5">=</p>
+<p class="p5">(</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+</body>
+</html>

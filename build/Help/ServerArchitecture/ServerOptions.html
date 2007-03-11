@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {text-decoration: underline}
+span.s3 {font: 9.0px Monaco; color: #326f17}
+span.s4 {font: 9.0px Monaco; color: #0019b7}
+span.s5 {color: #0000ff}
+span.s6 {color: #0019b7}
+span.s7 {color: #000000}
+span.s8 {color: #326f17}
+span.s9 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>ServerOptions</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>encapsulates the commandline options for a Server</b></p>
+<p class="p2"><br></p>
+<p class="p1">ServerOptions encapsulates the commandline options for a server app within an object. This makes it convienent to launch multiple servers with the same options, or to archive different sets of options, etc. Every <b>Server</b> has an instance of ServerOptions created for it if one is not passed as the options argument when the Server object is created. (This is the case for example with the local and internal Servers which are created at startup.)</p>
+<p class="p2"><br></p>
+<p class="p1">A Server's instance of ServerOptions is stored in its <b>options</b> instance variable, which can be accessed through corresponding getter and setter methods.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>Note: </b>A ServerOptions' instance variables are translated into commandline arguments when a server app is booted. Thus a running Server must be rebooted before changes will take effect. There are also a few commandline options which are not currently encapsulated in ServerOptions. See <b>Server-Architecture</b> for more details.</p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="s2">Class Methods</span></b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>*new</b></p>
+<p class="p2"><br></p>
+<p class="p1">Create and return a new instance of ServerOptions.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b><span class="s2">Instance Variables (The Options)</span></b></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1">The following instance variables can be changed through getter and setter methods. Note that the defaults listed below only apply to newly created instances of ServerOptions. The options for the local and internal Servers may have been changed at startup in Main-startup or in ~/scwork/startup.rtf.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>numAudioBusChannels -<span class="Apple-converted-space"> </span></b> The number of internal audio rate busses. The default is 128.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>numControlBusChannels - </b>The number of internal control rate busses. The default is 4096.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1">The following two options need not correspond to the available number of hardware inputs and outputs.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>numInputBusChannels - </b>The number of audio input bus channels. The default is 8.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>numOutputBusChannels - </b>The number of audio output bus channels. The default is 8.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b>numBuffers - </b>The number of global sample buffers available. (See <b>Buffer</b>.) The default is 1024.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>maxNodes - </b>The maximum number of Nodes. The default is 1024.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>maxSynthDefs - </b>The maximum number of SynthDefs. The default is 1024.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>protocol - </b>A symbol representing the communications protocol. Either<b><span class="Apple-converted-space">  </span></b><span class="s3">\udp</span> or <span class="s3">\tcp</span>. The default is udp.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>blockSize - </b>The number of samples in one control period. The default is 64.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>hardwareBufferSize - </b>The preferred hardware buffer size. If non-nil the server app will attempt to set the hardware buffer frame size. Not all sizes are valid. See the documentation of your audio hardware for details.</p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><b>memSize - </b>The number of kilobytes of real time memory allocated to the server. This memory is used to allocate synths and any memory that unit generators themselves allocate (for instance in the case of delay ugens which do not use buffers, such as <b>CombN</b>), and is separate from the memory used for buffers. Setting this too low is a common cause of 'exception in real time: alloc failed' errors. The default is 8192.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>numRGens - </b>The number of seedable random number generators. The default is 64.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>numWireBufs - </b>The maximum number of buffers that are allocated to interconnect unit generators. (Not to be confused with the global sample buffers represented by <b>Buffer</b>.) This sets the limit of complexity of SynthDefs that can be loaded at runtime. This value will be automatically increased if a more complex def is loaded at startup, but it cannot be increased thereafter without rebooting. The default is 64.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>sampleRate - </b>The preferred sample rate. If non-nil the server app will attempt to set the hardware sample rate.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>loadDefs - </b>A <b>Boolean</b> indicating whether or not to load the synth definitions in synthdefs/ (or anywhere set in the environment variable SC_SYNTHDEF_PATH) at startup. The default is <span class="s4">true</span>.</p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><b>inputStreamsEnabled - </b>A <b>String</b> which allows turning off input streams that you are not interested in on the audio device. If the string is "01100", for example, then only the second and third input streams on the device will be enabled. Turning off streams can reduce CPU load.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>outputStreamsEnabled - </b>A <b>String<span class="Apple-converted-space"> </span></b> which allows turning off output streams that you are not interested in on the<span class="Apple-converted-space">  </span>audio device. If the string is "11000", for example, then only the first two output streams on the device will be enabled. Turning off streams can reduce CPU load.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>blockAllocClass -</b> Specifies the class the server will use to allocate index numbers for buffers and audio and control buses. Should be given as a <b>class name</b>, not a symbol. Currently implemented choices are:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1">PowerOfTwoAllocator: The original allocator. Intended for allocating these resources very quickly for relatively stable configurations. Not ideal for situations where buses or buffers will be allocated and deallocated frequently.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1">ContiguousBlockAllocator: Designed for allocations that need to change frequently.<span class="Apple-converted-space">  </span>Sacrifices a small amount of speed for reliability. See the <a href="../Control/ContiguousBlockAllocator.html"><span class="s5">ContiguousBlockAllocator</span></a> helpfile.</p>
+<p class="p2"><br></p>
+<p class="p1">PowerOfTwoAllocator is the default.</p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="s2">Instance Methods</span></b></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b>firstPrivateBus</b> <b>- </b>Returns the index of the first audio bus on this server which is not used by the input and output hardware.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>asOptionsString</b> <b>- </b>Returns a <b>String</b> specifying the options in the format required by the command-line scsynth app.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1">For further information see <b>Server</b>, <b>Server-Architecture</b>, and <b>Server-Command-Reference</b>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="s2">Examples</span></b></p>
+<p class="p4"><br></p>
+<p class="p5">// Get the local server's options</p>
+<p class="p6"><br></p>
+<p class="p7">o = <span class="s6">Server</span>.local.options;</p>
+<p class="p6"><br></p>
+<p class="p5">// Post the number of output channels</p>
+<p class="p6"><br></p>
+<p class="p7">o.numOutputBusChannels.postln;</p>
+<p class="p6"><br></p>
+<p class="p5">// Set them to a new number</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s7">o.numOutputBusChannels = 6; </span>// The next time it boots, this will take effect</p>
+<p class="p6"><br></p>
+<p class="p5">// Create a new instance of ServerOptions</p>
+<p class="p6"><br></p>
+<p class="p8"><span class="s7">o = </span>ServerOptions<span class="s7">.new;</span></p>
+<p class="p6"><br></p>
+<p class="p5">// Set the memory size to twice the default</p>
+<p class="p6"><br></p>
+<p class="p7">o.memSize = 4096;</p>
+<p class="p6"><br></p>
+<p class="p5">// Create a new Server on the local machine using o for its options</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s6">t = Server</span>(<span class="s8">\Local2</span>, <span class="s6">NetAddr</span>(<span class="s9">"127.0.0.1"</span>, 57111), o);</p>
+<p class="p7">t.makeWindow;</p>
+<p class="p7">t.boot;</p>
+<p class="p7">t.quit;</p>
+</body>
+</html>

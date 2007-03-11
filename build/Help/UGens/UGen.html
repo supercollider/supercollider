@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Trebuchet MS; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000ff}
+span.s3 {color: #000000}
+span.s4 {color: #0019b7}
+span.s5 {color: #326f17}
+span.s6 {color: #a71e12}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>UGen<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>abstract superclass of all unit generators</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: AbstractFunction</b></p>
+<p class="p2"><br></p>
+<p class="p3">Unit generators are the basic building blocks of synths on the server, and are used to generate or process audio or control signals. The many subclasses of UGen are the client-side representations of unit generators, and are used to specify their parameters when constructing synth definitions (see <a href="../ServerArchitecture/SynthDef.html"><span class="s2">SynthDef</span></a>).<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s3">See also <a href="UGens.html">UGens</a>, <a href="Tour_of_UGens.html">Tour_of_UGens</a>, and <a href="../Tutorials/UGens-and-Synths.html">UGens-and-Synths</a>.</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Convenience Methods</b></p>
+<p class="p5"><br></p>
+<p class="p3"><b>scope(name, bufsize, zoom)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Displays the output of this UGen in an individual <a href="../GUI/Stethoscope.html"><span class="s2">Stethoscope</span></a><b> </b>window. <b>name</b> is the name of the window.</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s4">Server</span>.default = s = <span class="s4">Server</span>.internal.boot;</p>
+<p class="p6">{ <span class="s4">Ringz</span>.ar(<span class="s4">PinkNoise</span>.ar([0.1, 0.2]).scope(<span class="s5">\pink</span>), 2000, 1, 0.25) }.play; <span class="s6">// multichannel works</span></p>
+<p class="p7"><span class="s3">s.scope; </span>// can still separately scope the output of the server</p>
+<p class="p2"><br></p>
+<p class="p3"><b>poll(trig, label, trigid)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Polls the output of this UGen every <b>interval</b> seconds, and posts the result. The default <b>trig </b>is 10, which converts to 10 triggers per second (or every 0.1 seconds). See <a href="Triggers/Poll.html"><span class="s2">Poll</span></a> for more info on polling.</p>
+<p class="p2"><br></p>
+<p class="p6">{ <span class="s4">SinOsc</span>.ar(<span class="s4">LFNoise0</span>.ar(2).range(420, 460).poll(label: <span class="s5">\LFNoise</span>), 0, 0.2) }.play;</p>
+<p class="p8"><br></p>
+<p class="p7">// Multichannel is supported</p>
+<p class="p6">{ <span class="s4">SinOsc</span>.ar(<span class="s4">SinOsc</span>.ar([0.2, 0.3]).range(420, 460).poll(label: <span class="s5">\SinOscs</span>), 0, 0.2) }.play;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>range(lo, hi)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Scales the output of this UGen to be within the range of <b>lo</b> and <b>hi</b>. <b>N.B.</b> 'range' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
+<p class="p2"><br></p>
+<p class="p6">{ <span class="s4">SinOsc</span>.ar(<span class="s4">SinOsc</span>.ar(0.3).range(440, 660), 0, 0.5) * 0.1 }.play;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>exprange(lo, hi)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Maps the output of this UGen exponentially to be within the range of <b>lo</b> and <b>hi</b> using a <a href="Filters/LinExp.html"><span class="s2">LinExp</span></a> UGen. <b>lo</b> and <b>hi</b> should both be non-zero and have the same sign. <b>N.B.</b> 'exprange' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>clip(lo, hi)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="Filters/Clip.html"><span class="s2">Clip</span></a><b> </b>UGen, clipping its output at <b>lo</b> and <b>hi</b>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>fold(lo, hi)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="Filters/Fold.html"><span class="s2">Fold</span></a><b> </b>UGen, folding its output at <b>lo</b> and <b>hi</b>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>wrap(lo, hi)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="Filters/Wrap.html"><span class="s2">Wrap</span></a><b> </b>UGen, wrapping its output at <b>lo</b> and <b>hi</b>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>lag(lagTime)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="Filters/Lag.html"><span class="s2">Lag</span></a><b> </b>UGen, smoothing it's output by lagTime.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>lag2(lagTime)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="Filters/Lag2.html"><span class="s2">Lag2</span></a><b> </b>UGen, smoothing it's output by lagTime.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>lag3(lagTime)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="Filters/Lag3.html"><span class="s2">Lag3</span></a><b> </b>UGen, smoothing it's output by lagTime.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>degreeToKey(scale, stepsPerOctave)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="Control/DegreeToKey.html"><span class="s2">DegreeToKey</span></a><b> </b>UGen. The default <b>stepsPerOctave</b> is 12.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>minNyquist</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="../BinaryOps/min.html"><span class="s2">min</span></a><b> </b>UGen, such that the lesser of the receiver's output and the Nyquist frequency is output. This can be useful to prevent aliasing.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>if(trueUGen, falseUGen)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Outputs <b>trueUGen</b> when the receiver outputs 1, <b>falseUGen</b> when the receiver outputs 0. If the receiver outputs a value between 0 and 1, a mixture of both will be played. (This is implemented as: ^(this * (trueUGen - falseUGen)) + falseUGen) Note that both <b>trueUGen</b> and <b>falseUGen</b> will be calculated regardless of whether they are output, so this may not be the most efficient approach.</p>
+<p class="p2"><br></p>
+<p class="p7">// note different syntax in these two examples</p>
+<p class="p6">{ if( <span class="s4">LFNoise1</span>.kr(1.0, 0.5, 0.5) , <span class="s4">SinOsc</span>.ar, <span class="s4">Saw</span>.ar ) * 0.1 }.play;</p>
+<p class="p8"><br></p>
+<p class="p6">{ <span class="s4">Trig1</span>.ar(<span class="s4">Dust</span>.ar(3), 0.2).lag(0.1).if(<span class="s4">FSinOsc</span>.ar(440), <span class="s4">FSinOsc</span>.ar(880)) * 0.1 }.play;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>@ y</b></p>
+<p class="p2"><br></p>
+<p class="p3">Dynamic geometry support. Returns <b>Point(this, y)</b>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>asComplex</b></p>
+<p class="p2"><br></p>
+<p class="p3">Complex math support. Returns <b>Complex(this, 0.0)</b>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>dumpArgs</b></p>
+<p class="p3">        </p>
+<p class="p3">Posts a list of the arguments for this UGen and their values.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Other Instance Methods</b></p>
+<p class="p2"><br></p>
+<p class="p3">The following methods and instance variables are largely used in the construction of synth definitions, synth descriptions (see <a href="../ServerArchitecture/SynthDesc.html"><span class="s2">SynthDesc</span></a>), UGen class definitions, etc., and are usually not needed for general use. Users should not attempt to set any of these values in general code.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>synthDef</b></p>
+<p class="p2"><br></p>
+<p class="p3">The SynthDef which contains the UGen.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>inputs</b></p>
+<p class="p2"><br></p>
+<p class="p3">The array of inputs to the UGen.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3"><b>rate</b></p>
+<p class="p2"><br></p>
+<p class="p3">The output rate of the UGen which is one of the Symbols 'audio', or 'control'.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>signalRange</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns a symbol indicating the signal range of the receiver. Either <span class="s5">\bipolar</span> or <span class="s5">\unipolar</span>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>numChannels</b> </p>
+<p class="p2"><br></p>
+<p class="p3">Returns the number of output Channels. For a UGen, this will always be 1, but <a href="../Collections/Array.html"><span class="s2">Array</span></a> also implements this method, so multichannel expansion is supported. See <a href="../Other Topics/MultiChannel.html"><span class="s2">MultiChannel</span></a>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>numInputs</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns the number of inputs for this UGen.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>numOutputs</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns the number of outputs for this UGen.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>name</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns the <a href="../Core/Kernel/Class.html"><span class="s2">Class</span></a> name of the receiver as a <a href="../Collections/String.html"><span class="s2">String</span></a>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>madd(mul, add)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <b>MulAdd</b> UGen. This is only used in UGen class definitions in order to allow efficient implementation of <b>mul</b> and <b>add</b> arguments.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>isValidUGenInput</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns true.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>asUGenInput</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns the receiver.<span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p3"><b>copy</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns the receiver. Thus UGen-dup effectively returns a reference to the original and is a convenient way to copy a mono signal to multiple channels.</p>
+<p class="p2"><br></p>
+<p class="p6">{ <span class="s4">SinOsc</span>.ar(<span class="s4">Rand</span>(200, 4000), 0, 0.2).dup }.plot <span class="s6">// this is the same UGen</span></p>
+<p class="p3">    </p>
+<p class="p3">Function-dup evaluates that function multiple times, thus potentially returning distinct UGens.</p>
+<p class="p2"><br></p>
+<p class="p6">{ {<span class="s4">SinOsc</span>.ar(<span class="s4">Rand</span>(200, 4000), 0, 0.2)}.dup }.plot <span class="s6">// these are different UGens</span></p>
+</body>
+</html>

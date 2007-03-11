@@ -1,0 +1,346 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+span.s1 {font: 36.0px Georgia}
+span.s2 {color: #000000}
+span.s3 {color: #a71e12}
+span.s4 {color: #326f17}
+span.s5 {color: #0019b7}
+span.s6 {color: #0000ff}
+span.s7 {font: 9.0px Monaco; color: #000000}
+span.s8 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>proxy space - basic concepts<span class="Apple-converted-space">  <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></b><span class="s1"><b>2</b></span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">external structure of the node proxy, referencing in proxyspace and environments.</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s2">previous: <a href="jitlib_basic_concepts_01.html">jitlib_basic_concepts_01</a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>next: <a href="jitlib_basic_concepts_03.html">jitlib_basic_concepts_03</a><span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">a) <span class="Apple-tab-span">	</span>normal environment lookup</p>
+<p class="p3">b) <span class="Apple-tab-span">	</span>proxyspace as an environment</p>
+<p class="p3">c) <span class="Apple-tab-span">	</span>using the proxyspace to change processes on the fly</p>
+<p class="p3">d) <span class="Apple-tab-span">	</span>when are the node proxies initialized?</p>
+<p class="p3">e) <span class="Apple-tab-span">	</span>moving out of the proxy space</p>
+<p class="p3">f ) <span class="Apple-tab-span">	</span>using ProxySpace together with other Environments</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>a) normal environment lookup</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">currentEnvironment.postln; </span>// anEnvironment (if not, you haven't left it from last helppage..)</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~a; </span>// access the environment: there is nothing stored: nil</p>
+<p class="p6"><span class="s2">~a = 9; </span>// store something</p>
+<p class="p6"><span class="s2">~a; <span class="Apple-tab-span">	</span></span>// now 9 is stored</p>
+<p class="p6"><span class="s2">~a + 100; </span>// calculate with it</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">currentEnvironment.postln; </span>// the value is stored in the environment</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~b + ~a; </span>// cause an error: ~y is nil.</p>
+<p class="p7">~b = -90; <span class="s3">// set ~y</span></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~b + ~a; </span>// this works.</p>
+<p class="p2"><br></p>
+<p class="p6">// note that you can always access environments (or ProxySpaces) from outside as well:</p>
+<p class="p2"><br></p>
+<p class="p7">x = currentEnvironment;</p>
+<p class="p6"><span class="s2">x[</span><span class="s4">\a</span><span class="s2">] + x[</span><span class="s4">\b</span><span class="s2">] </span>// equivalent to ~b + ~a</p>
+<p class="p8"><br></p>
+<p class="p6">// or, if "know" is true,</p>
+<p class="p7">x.know = <span class="s5">true</span>;</p>
+<p class="p7">x.a + x.b;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>further readings: <a href="../../Collections/Environment.html"><span class="s6">Environment</span></a></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>b) proxyspace as an environment</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">one can replace the current environment with a special type of environment, a proxy space</p>
+<p class="p3">this environment represents processes that play audio on a server.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">p = </span><span class="s5">ProxySpace</span><span class="s2">.new(s); </span>// create a new environment, store it in variable p for now.</p>
+<p class="p6"><span class="s2">p.push;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// push it, so i becomes the current environment.</p>
+<p class="p7">currentEnvironment.postln;<span class="Apple-converted-space"> </span></p>
+<p class="p7">currentEnvironment === p; <span class="s3">// this is identical.</span></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~x;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span>// accessing creates a NodeProxy (uninitialized) automatically.</p>
+<p class="p6"><span class="s2">~x + ~y; <span class="Apple-tab-span">	</span></span>// this works immediately, because the lookup does not return nil,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">    </span></span>// but a placeholder (proxy) instead</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">p.postln; </span>// now there is two placeholders in the environment.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>c) using the proxyspace to change processes on the fly</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">//<span class="Apple-converted-space">  </span>boot the server</p>
+<p class="p7">s.boot;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// as soon as a sound function (or any compatible input) is assigned to a proxy</p>
+<p class="p6">// this sound plays on its own private bus (so it is not audible yet.)</p>
+<p class="p7">(</p>
+<p class="p7">~x = {</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s5">RLPF</span>.ar(<span class="s5">Impulse</span>.ar(4) * 20, [850, 950], 0.2)</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p7">}</p>
+<p class="p7">)</p>
+<p class="p2"><br></p>
+<p class="p6">// the proxy has been initialized by its first assignment.</p>
+<p class="p6">// it plays at audio rate (because we have assigned an audio rate ugen function)</p>
+<p class="p6">// and it has two channels (because the function has stereo output)</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~x.index; </span>// what bus index is it? this posts the index to the postwindow<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// before it was .ir(nil), now it is initialized to .ar(2)</p>
+<p class="p6"><span class="s2">~x.bus </span>// what bus is it?</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~x.play; </span>// now listen to it. a monitor is created (see <a href="../nodeproxy/Monitor.html"><span class="s6">Monitor</span></a>) that plays<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// the signal onto a public bus. This is independent of the proxy itself.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// for further info see: <a href="jitlib_basic_concepts_03.html"><span class="s6">jitlib_basic_concepts_03</span></a> (part c)</p>
+<p class="p8"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// the sound function can be changed at any time:</p>
+<p class="p7">(</p>
+<p class="p7">~x = {</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">RLPF</span>.ar(<span class="s5">Impulse</span>.ar([5, 7]) * 5, [1450, 1234], 0.2)</p>
+<p class="p7">}</p>
+<p class="p7">)</p>
+<p class="p2"><br></p>
+<p class="p6">// You can tune a sound function to your liking very easily</p>
+<p class="p6">// by replacing it with little (or big) variations:</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// filter freqs higher:</p>
+<p class="p7">~x = {<span class="Apple-tab-span">	</span><span class="s5">RLPF</span>.ar(<span class="s5">Impulse</span>.ar([5, 7]) * 5, [1800, 2000], 0.2) }</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// same pulse ratio (5/8), different pulse tempo:</p>
+<p class="p7">~x = {<span class="Apple-tab-span">	</span><span class="s5">RLPF</span>.ar(<span class="s5">Impulse</span>.ar([5, 8] * 3.2) * 5, [1800, 2000], 0.2) }</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// different filter:</p>
+<p class="p7">~x = {<span class="Apple-tab-span">	</span><span class="s5">Ringz</span>.ar(<span class="s5">Impulse</span>.ar([5, 8] * 3.2), [1800, 2000], 0.05) }</p>
+<p class="p2"><br></p>
+<p class="p6">// and if you set the proxy's fadeTime, you can create little<span class="Apple-converted-space"> </span></p>
+<p class="p6">// textures by hand:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p7">~x.fadeTime = 3;<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// different filter freqs every time:</p>
+<p class="p7">~x = {<span class="Apple-tab-span">	</span><span class="s5">Ringz</span>.ar(<span class="s5">Impulse</span>.ar([5, 8] * rrand(0.5, 1.5)) * 0.5, ({ exprand(200, 4000) } ! 2), 0.05) }</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// here is another proxy:</p>
+<p class="p7">~y = { <span class="s5">Pan2</span>.ar(<span class="s5">Dust</span>.ar(20), 0) };</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~y.bus; </span>// it has two channels, just as the ~x., but it plays on another (private) bus.</p>
+<p class="p2"><br></p>
+<p class="p6">// note that ~y is not audible directly,</p>
+<p class="p6">// but it can be used in any other proxy:</p>
+<p class="p7">(</p>
+<p class="p7">~x = {</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s5">RLPF</span>.ar(~y.ar * 8,<span class="Apple-converted-space">  </span>[1450, 1234], 0.2)</p>
+<p class="p7">}</p>
+<p class="p7">)</p>
+<p class="p2"><br></p>
+<p class="p6">// when the proxy changes, the result changes dynamically:</p>
+<p class="p2"><br></p>
+<p class="p7">~y = { <span class="s5">Impulse</span>.ar(<span class="s5">MouseX</span>.kr(2, 18, 1)) * [1, 1] };</p>
+<p class="p2"><br></p>
+<p class="p7">~y = { <span class="s5">PinkNoise</span>.ar(<span class="s5">MouseX</span>.kr(0, 0.2) * [1, 1]) };</p>
+<p class="p2"><br></p>
+<p class="p7">~y = { <span class="s5">Impulse</span>.ar([<span class="s5">MouseX</span>.kr(2, 18, 1), <span class="s5">MouseY</span>.kr(2, 18, 1)]) };</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// stop listening. the proxies run in the background.</p>
+<p class="p2"><br></p>
+<p class="p7">~x.stop;</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~y.bus; </span>// ~y is playing on another bus.</p>
+<p class="p6"><span class="s2">~x.bus; </span>// than ~x</p>
+<p class="p2"><br></p>
+<p class="p6">// we can also listen to ~y directly:</p>
+<p class="p7">~y.play;</p>
+<p class="p2"><br></p>
+<p class="p6">// to remove an input, nil can be used:</p>
+<p class="p2"><br></p>
+<p class="p7">~y = <span class="s5">nil</span>;</p>
+<p class="p2"><br></p>
+<p class="p6">// stop listening</p>
+<p class="p7">~y.stop;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s7"><span class="Apple-tab-span">	</span></span><span class="s2">further readings: <a href="proxyspace_examples.html">proxyspace_examples</a> <a href="../../ServerArchitecture/Bus.html">Bus</a> <a href="../../Core/Kernel/AbstractFunction.html">AbstractFunction</a> <a href="../../UGens/UGens.html">UGens</a></span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>d) when are the node proxies initialized?</b></p>
+<p class="p2"><br></p>
+<p class="p3">bus initialization of a node proxy happens as soon as it is used for the first time.</p>
+<p class="p3">later inputs are adjusted to this bus, as far as it is possible.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~z2 = { <span class="s5">LFNoise0</span>.kr([1, 2, 3, 4]) }; // a four channel control rate proxy</p>
+<p class="p7">~z2.bus.postln;</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~z100 = 0.5; // a constant value causes a single channel control rate proxy.</p>
+<p class="p7">~z100.bus.postln;</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~z34.ar(3) <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// the first access allocates the bus</p>
+<p class="p6"><span class="s2">~z34.bus.postln;<span class="Apple-tab-span">	</span> // a 3 channel audio proxy</p>
+<p class="p2"><br></p>
+<p class="p6">// these initializations can be removed by using clear:</p>
+<p class="p7">~z34.clear;</p>
+<p class="p7">~z34.bus.postln;</p>
+<p class="p2"><br></p>
+<p class="p3">This initialisation happens whenever the proxy is first used. Later, the proxy can</p>
+<p class="p3">be accessed with other rate/numChannels combinations as needed (rates are converted,</p>
+<p class="p3">numChannels are extended by wrapping).</p>
+<p class="p4"><br></p>
+<p class="p3">Note that this might cause ambiguous initialisation in which case the proxy should</p>
+<p class="p3">be always initialized first. A typical problem is demonstrated here:</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~u.play(0, 2); <span class="Apple-tab-span">	</span>// initialize 2 audio channels (default). 0 is the output bus number.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// if the proxy is not inititialized, play defaults to 2 channels.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// here it is explicitly given only to make it more clear.</p>
+<p class="p7">~u = { <span class="s5">PinkNoise</span>.ar(0.2) }; <span class="s3">// use only one</span></p>
+<p class="p7">~u.numChannels; <span class="s3">// 2 channels</span></p>
+<p class="p7">~u.clear;</p>
+<p class="p2"><br></p>
+<p class="p3">if evaluated the other way round, only one channel is used:</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~u = { <span class="s5">PinkNoise</span>.ar(0.2) }; // initialize 1 audio channel</p>
+<p class="p6"><span class="s2">~u.play(0, 2); <span class="Apple-tab-span">	</span>// play 2 channels: the 1 channel is expanded into 2.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// numChannels of .play defaults to the proxy's numChannels.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// here it is explicitly given, so to expand the channels</p>
+<p class="p7">~u.numChannels; <span class="s3">// 1 channel</span></p>
+<p class="p7">~u.clear;</p>
+<p class="p8"><br></p>
+<p class="p3">Thus it can be useful to explicitly initialize proxies that use variable type inputs:</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s2">~b.kr(8); ~c.ar; // explicit initialisation</p>
+<p class="p6"><span class="s2">p.postln;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// post the whole proxy space</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>e) moving out of the proxy space:</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// play the audio:</p>
+<p class="p7">~x.play;</p>
+<p class="p2"><br></p>
+<p class="p7">~x = { <span class="s5">PinkNoise</span>.ar(0.5) };</p>
+<p class="p2"><br></p>
+<p class="p6">// p is the proxy space:</p>
+<p class="p7">p.postln;</p>
+<p class="p2"><br></p>
+<p class="p6">// to end all processes in p, use end:</p>
+<p class="p6"><span class="s2">p.end(2) // 2 seconds fade out.</p>
+<p class="p2"><br></p>
+<p class="p6">// to remove all bus objects and free them from the bus allocato, use clear:</p>
+<p class="p7">p.clear;</p>
+<p class="p2"><br></p>
+<p class="p7">currentEnvironment.postln;</p>
+<p class="p2"><br></p>
+<p class="p6">// restore original environment:</p>
+<p class="p2"><br></p>
+<p class="p7">p.pop;</p>
+<p class="p2"><br></p>
+<p class="p7">currentEnvironment.postln;</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~a + ~b; // the old values are still here.</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s2">p === currentEnvironment; // this is not the case anymore.</p>
+<p class="p2"><br></p>
+<p class="p6">// remove the content, so the garbage collector can release their memory.</p>
+<p class="p7">p.clear;</p>
+<p class="p2"><br></p>
+<p class="p6">// note that if you use this kind of accessing scheme, the objects are not garbage collected</p>
+<p class="p6">// until the keys are set to nil. This is a common mistake when using normal environments.</p>
+<p class="p2"><br></p>
+<p class="p6">// clear all in the normal environment:</p>
+<p class="p2"><br></p>
+<p class="p7">currentEnvironment.clear;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>f) using ProxySpace together with other Environments</b></p>
+<p class="p2"><br></p>
+<p class="p3">using proxy space as an access scheme for node proxies can get in the way of the</p>
+<p class="p3">normal use of environments as pseudo variables. Here is some ways to cope with this.</p>
+<p class="p8"><br></p>
+<p class="p6">// if you want to keep using the current environment as usual, you can restrict the</p>
+<p class="p6">// scope of proxyspace to one document (note: this is mac-only currently)</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s5">EnvirDocument</span>(p, <span class="s8">"proxyspace"</span>); <span class="Apple-tab-span">	</span>// to test this, check for currentEnvironment here<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// and in the envir document.</p>
+<p class="p2"><br></p>
+<p class="p6">// you can also access the proxy space indirectly:</p>
+<p class="p7">p[<span class="s4">\x</span>].play;</p>
+<p class="p7">p[<span class="s4">\x</span>] = { <span class="s5">SinOsc</span>.ar(450, 0, 0.1) };</p>
+<p class="p2"><br></p>
+<p class="p6">// or: when the proxyspace is pushed, you can use a normal environment indirectly:</p>
+<p class="p7">p.push;</p>
+<p class="p7">d = ();</p>
+<p class="p7">d[<span class="s4">\buffer1</span>] = <span class="s5">Buffer</span>.alloc(s, 1024);</p>
+<p class="p6"><span class="s2">d.use { ~buffer1.postln; ~zz = 81; }; // for more than one access to the environment, use use</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// to access the inner environment of proxy space directly,<span class="Apple-converted-space"> </span></p>
+<p class="p6">// without creating new proxies, use .envir:</p>
+<p class="p2"><br></p>
+<p class="p7">p.envir.postln;</p>
+<p class="p7">p.envir[<span class="s4">\x</span>].postln;</p>
+<p class="p2"><br></p>
+<p class="p6">// this can be useful for lookup, when you want to know if a certain proxy exists already.</p>
+<p class="p6">// direct access would create that proxy, which would not make sense in that case.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s2">previous: <a href="jitlib_basic_concepts_01.html">jitlib_basic_concepts_01</a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>next: <a href="jitlib_basic_concepts_03.html">jitlib_basic_concepts_03</a><span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><br></p>
+</body>
+</html>

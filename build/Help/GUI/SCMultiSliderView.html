@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #0019b7}
+span.s2 {color: #606060}
+span.s3 {color: #326f17}
+span.s4 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCMultiSliderView</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>isFilled = true</b></p>
+<p class="p4">looks like a candlestick graph</p>
+<p class="p4">(</p>
+<p class="p5">//use as table</p>
+<p class="p4"><span class="s1">var</span> size;</p>
+<p class="p4">size = 350 / 6;</p>
+<p class="p4">a = <span class="s1">SCWindow</span>(<span class="s2">"test"</span>, <span class="s1">Rect</span>(200 , 450, 450, 150));</p>
+<p class="p4">a.view.decorator =<span class="Apple-converted-space">  </span><span class="s1">FlowLayout</span>(a.view.bounds);</p>
+<p class="p4">b = <span class="s1">SCMultiSliderView</span>(a, <span class="s1">Rect</span>(0, 0, 350, 100));</p>
+<p class="p2"><br></p>
+<p class="p4">c = <span class="s1">Array</span>.new;</p>
+<p class="p4">size.do({<span class="s1">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>c = c.add(0.01);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p4">c = c.reverse;</p>
+<p class="p4">b.value_(c);</p>
+<p class="p2"><br></p>
+<p class="p4">b.isFilled_(<span class="s1">true</span>);</p>
+<p class="p2"><br></p>
+<p class="p5">// width in pixels of each stick<span class="Apple-converted-space"> </span></p>
+<p class="p4">b.indexThumbSize_(2.0);</p>
+<p class="p5">// spacing on the value axis</p>
+<p class="p4">b.gap_(4);</p>
+<p class="p2"><br></p>
+<p class="p4">a.front;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>flip by 90 degree</b></p>
+<p class="p4">(</p>
+<p class="p4">b.indexIsHorizontal_(<span class="s1">false</span>);</p>
+<p class="p2"><br></p>
+<p class="p4">a.bounds_(<span class="s1">Rect</span>(200 , 450, 150, 430));</p>
+<p class="p4">b.bounds_( <span class="s1">Rect</span>(10, 0, 100, 390));</p>
+<p class="p2"><br></p>
+<p class="p4">b.background_(<span class="s1">Color</span>.black);</p>
+<p class="p4">b.strokeColor_(<span class="s1">Color</span>.white);</p>
+<p class="p4">b.fillColor_(<span class="s1">Color</span>.white);</p>
+<p class="p2"><br></p>
+<p class="p4">b.gap = 1;</p>
+<p class="p2"><br></p>
+<p class="p4">a.front;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>isFilled = false</b></p>
+<p class="p3">individual squares for each point</p>
+<p class="p4">(</p>
+<p class="p5">//use as multislider</p>
+<p class="p4"><span class="s1">var</span> size;</p>
+<p class="p4">size = 12;</p>
+<p class="p4">a = <span class="s1">SCWindow</span>(<span class="s2">"test"</span>, <span class="s1">Rect</span>(200 , 450, 10 + (size * 17), 10 + (size * 17)));</p>
+<p class="p4">a.view.decorator =<span class="Apple-converted-space">  </span><span class="s1">FlowLayout</span>(a.view.bounds);</p>
+<p class="p4">b = <span class="s1">SCMultiSliderView</span>(a, <span class="s1">Rect</span>(0, 0, size * 17, size * 17));</p>
+<p class="p4">b.action = {<span class="s1">arg</span> xb; (<span class="s2">"index: "</span> ++ xb.index ++<span class="s2">" value: "</span> ++ xb.currentvalue).postln};</p>
+<p class="p2"><br></p>
+<p class="p4">c = <span class="s1">Array</span>.new;</p>
+<p class="p4">size.do({<span class="s1">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>c = c.add(i/size);</p>
+<p class="p4">});</p>
+<p class="p4">b.value_(c);</p>
+<p class="p2"><br></p>
+<p class="p4">b.isFilled = false;</p>
+<p class="p2"><br></p>
+<p class="p4">b.xOffset_(5);</p>
+<p class="p4">b.thumbSize_(12.0);</p>
+<p class="p2"><br></p>
+<p class="p5">// value axis size of each blip in pixels</p>
+<p class="p4">b.valueThumbSize_(15.0);</p>
+<p class="p5">// index axis size of each blip in pixels</p>
+<p class="p4">b.indexThumbSize_( b.bounds.width / c.size );</p>
+<p class="p4">b.gap = 0;</p>
+<p class="p2"><br></p>
+<p class="p4">b.strokeColor_(<span class="s1">Color</span>.blue);</p>
+<p class="p4">b.fillColor_(<span class="s1">Color</span>.blue);</p>
+<p class="p2"><br></p>
+<p class="p4">a.front;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>read only mode</b></p>
+<p class="p4">(</p>
+<p class="p4">b.readOnly = <span class="s1">true</span>;</p>
+<p class="p5">// show an area as selected, used like a cursor</p>
+<p class="p4">b.showIndex = <span class="s1">true</span>;</p>
+<p class="p5">// move the selection index</p>
+<p class="p4">b.index = 4;</p>
+<p class="p5">// 1 item wide</p>
+<p class="p4">b.selectionSize = 1;</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4">b.index;</p>
+<p class="p4">b.selectionSize;</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p5">//use it as sequencer</p>
+<p class="p4">b.setProperty(<span class="s3">\showIndex</span>, <span class="s1">true</span>);</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s4">r = </span>Routine<span class="s4">({</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> j = 0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>20.do({ <span class="s1">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.index_(j);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if (j &lt; 11 ,{j = j + 1},{j = 0});</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p4"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>20.do({ <span class="s1">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[0.1,0.2].choose.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.index_(b.size.rand);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p4">});</p>
+<p class="p4"><span class="s1">AppClock</span>.play(r);</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p4">Note: this forces the entire view to redraw at each step and will spend a lot of CPU.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>drawLines</b></p>
+<p class="p4">(</p>
+<p class="p5">//use as multislider II with lines</p>
+<p class="p4"><span class="s1">var</span> size;</p>
+<p class="p4">size = 12;</p>
+<p class="p4">a = <span class="s1">SCWindow</span>(<span class="s2">"test"</span>, <span class="s1">Rect</span>(200 , 450, 450, 150));</p>
+<p class="p4">a.view.decorator =<span class="Apple-converted-space">  </span><span class="s1">FlowLayout</span>(a.view.bounds);</p>
+<p class="p4">b = <span class="s1">SCMultiSliderView</span>(a, <span class="s1">Rect</span>(0, 0, size * 17, 50));</p>
+<p class="p4">a.view.decorator.nextLine;</p>
+<p class="p5">//e = SCDragBoth(a , Rect(0, 0, size * 17, 50));</p>
+<p class="p4">e = <span class="s1">SCMultiSliderView</span>(a, <span class="s1">Rect</span>(0, 0, size * 17, 50));</p>
+<p class="p4">c = <span class="s1">Array</span>.new;</p>
+<p class="p4">size.do({<span class="s1">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>c = c.add(i/size);</p>
+<p class="p4">});</p>
+<p class="p4">b.value_(c);</p>
+<p class="p2"><br></p>
+<p class="p4">b.xOffset_(18);</p>
+<p class="p4">b.thumbSize_(1);</p>
+<p class="p4">b.strokeColor_(<span class="s1">Color</span>.blue);</p>
+<p class="p4">b.drawLines_(<span class="s1">true</span>);</p>
+<p class="p4">b.drawRects_(<span class="s1">true</span>);</p>
+<p class="p4">b.indexThumbSize_(1);</p>
+<p class="p4">b.valueThumbSize_(1);</p>
+<p class="p2"><br></p>
+<p class="p4">a.front;</p>
+<p class="p4">)</p>
+<p class="p4">c = <span class="s1">Array</span>.newClear(12);</p>
+<p class="p4">b.getProperty(<span class="s3">\referenceValues</span>, <span class="s1">Array</span>.newClear(12));</p>
+<p class="p4">c.size;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p5">//press shift to extend the selection</p>
+<p class="p5">//use as waveView: scrubbing over the view returns index</p>
+<p class="p5">//if showIndex(false) the view is not refreshed (faster);</p>
+<p class="p5">//otherwise you can make a selection with shift - drag.</p>
+<p class="p4"><span class="s1">var</span> size, file, maxval, minval;</p>
+<p class="p4">size = 640;</p>
+<p class="p4">a = <span class="s1">SCWindow</span>(<span class="s2">"test"</span>, <span class="s1">Rect</span>(200 , 140, 650, 150));</p>
+<p class="p4">a.view.decorator =<span class="Apple-converted-space">  </span><span class="s1">FlowLayout</span>(a.view.bounds);</p>
+<p class="p4">b = <span class="s1">SCMultiSliderView</span>(a, <span class="s1">Rect</span>(0, 0, size, 50));</p>
+<p class="p4">b.readOnly_(<span class="s1">true</span>);</p>
+<p class="p4">a.view.decorator.nextLine;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">d = <span class="s1">Array</span>.new;</p>
+<p class="p4">c = <span class="s1">FloatArray</span>.newClear(65493);</p>
+<p class="p2"><br></p>
+<p class="p4">e = <span class="s1">SCSlider</span>( a, <span class="s1">Rect</span>(0, 0, size, 12));</p>
+<p class="p4">e.action = {<span class="s1">arg</span> ex; b.setProperty(<span class="s3">\xOffset</span>, (ex.value * 4) + 1 )};</p>
+<p class="p2"><br></p>
+<p class="p4">file = <span class="s1">SoundFile</span>.new;</p>
+<p class="p7"><span class="s4">file.openRead(</span>"sounds/a11wlk01.wav"<span class="s4">);</span></p>
+<p class="p4">file.numFrames.postln;</p>
+<p class="p4">file.readData(c);</p>
+<p class="p5">//file.inspect;</p>
+<p class="p4">file.close;</p>
+<p class="p4">minval = 0;</p>
+<p class="p4">maxval = 0;</p>
+<p class="p4">f = <span class="s1">Array</span>.new;</p>
+<p class="p4">d = <span class="s1">Array</span>.new;</p>
+<p class="p4">c.do({<span class="s1">arg</span> fi, i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>if(fi &lt; minval, {minval = fi});</p>
+<p class="p4"><span class="Apple-tab-span">	</span>if(fi &gt; maxval, {maxval = fi});</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>//f.postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>if(i % 256 == 0,{</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d = d.add((1 + maxval ) * 0.5 );</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f = f.add((1 + minval ) * 0.5 );</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>minval = 0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>maxval = 0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p4">});</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">b.reference_(d); </span>//this is used to draw the upper part of the table</p>
+<p class="p4">b.value_(f);</p>
+<p class="p2"><br></p>
+<p class="p4">e = <span class="s1">SCSlider</span>( a, <span class="s1">Rect</span>(0, 0, size, 12));</p>
+<p class="p4">e.action = {<span class="s1">arg</span> ex; b.setProperty(<span class="s3">\startIndex</span>, ex.value *f.size )};</p>
+<p class="p2"><br></p>
+<p class="p5">//b.enabled_(false);</p>
+<p class="p4">b.action = {<span class="s1">arg</span> xb; (<span class="s2">"index: "</span> ++ xb.index).postln};</p>
+<p class="p4">b.drawLines_(<span class="s1">true</span>);</p>
+<p class="p4">b.drawRects_(<span class="s1">false</span>);</p>
+<p class="p4">b.isFilled_(<span class="s1">true</span>);</p>
+<p class="p4">b.selectionSize_(10);</p>
+<p class="p4">b.index_(10);</p>
+<p class="p4">b.thumbSize_(1);<span class="Apple-converted-space"> </span></p>
+<p class="p4">b.gap_(0);</p>
+<p class="p4">b.colors_(<span class="s1">Color</span>.black, <span class="s1">Color</span>.blue(1.0,1.0));</p>
+<p class="p4">b.showIndex_(<span class="s1">true</span>);</p>
+<p class="p4">a.front;</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>the "index" is also the "selection"</b></p>
+<p class="p4">setting showIndex = true will allow selections.</p>
+<p class="p4">shift click and drag will select an area.</p>
+<p class="p4">setting selectionSize will set that selection area.</p>
+<p class="p4">this dispay may also be used to look like an index as in the above sequencer example.</p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">var</span> size;</p>
+<p class="p4">size = 12;</p>
+<p class="p4">a = <span class="s1">SCWindow</span>(<span class="s2">"test"</span>, <span class="s1">Rect</span>(200 , 450, 10 + (size * 17), 10 + (size * 17)));</p>
+<p class="p4">a.view.decorator =<span class="Apple-converted-space">  </span><span class="s1">FlowLayout</span>(a.view.bounds);</p>
+<p class="p4">b = <span class="s1">SCMultiSliderView</span>(a, <span class="s1">Rect</span>(0, 0, size * 17, size * 17));</p>
+<p class="p4">b.action = { <span class="s1">arg</span> xb; (<span class="s2">"index: "</span> ++ xb.index ++<span class="s2">" value: "</span> ++ xb.currentvalue).postln};</p>
+<p class="p2"><br></p>
+<p class="p4">c = <span class="s1">Array</span>.new;</p>
+<p class="p4">size.do({ <span class="s1">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>c = c.add(i/size);</p>
+<p class="p4">});</p>
+<p class="p4">b.value_(c);</p>
+<p class="p2"><br></p>
+<p class="p4">b.xOffset_(5);</p>
+<p class="p4">b.thumbSize_(12.0);</p>
+<p class="p4">b.strokeColor_(<span class="s1">Color</span>.blue);</p>
+<p class="p4">b.fillColor_(<span class="s1">Color</span>.blue);</p>
+<p class="p2"><br></p>
+<p class="p4">b.drawLines(<span class="s1">false</span>);</p>
+<p class="p2"><br></p>
+<p class="p4">b.showIndex = true;</p>
+<p class="p4">b.index_(4);</p>
+<p class="p4">a.front;</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4">// this means the x-dimension size in pixels</p>
+<p class="p4">b.indexThumbSize = 40</p>
+<p class="p2"><br></p>
+<p class="p4">// not the selection size<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">// value pixels, the y-dimension</p>
+<p class="p4">b.valueThumbSize = 100</p>
+<p class="p2"><br></p>
+</body>
+</html>

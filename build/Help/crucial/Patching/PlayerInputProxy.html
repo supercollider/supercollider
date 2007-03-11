@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {font: 12.0px Helvetica}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>PlayerInputProxy</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>represents an audio or control input for a player that is to be dynamically<span class="Apple-converted-space"> </span></b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>patchable at runtime.</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>eg. <span class="Apple-tab-span">	</span>an input to an effect.</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a potential controller/interface input</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>PlayerInputProxy(spec)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>p = <span class="s1">Patch</span>({ <span class="s1">arg</span> audio,ffreq;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(audio,ffreq)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>},[</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>PlayerInputProxy<span class="s2">.new</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>]);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>it holds the place.<span class="Apple-converted-space">  </span>if the patch is played, it is silent. <span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>p.play</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>other classes can detect these inputs and patch into them.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">notes:</p>
+<p class="p2"><br></p>
+<p class="p6">/*</p>
+<p class="p2"><br></p>
+<p class="p8"><span class="s1">XFadeEfxFunc</span><span class="s2">.new(</span>"Patches/breaks/felaoopkunnzz"<span class="s2">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Patch</span><span class="s2">.new([ </span>'efxFilters3'<span class="s2">, </span>'combN'<span class="s2"> ], [<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>PlayerInputProxy<span class="s2">.new,<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">StreamKrDur</span>.new(<span class="s1">PbrownGUI</span>.new(600, 1000, 100, <span class="s1">inf</span>), 8, 1), -0.02 ]</p>
+<p class="p6"><span class="Apple-tab-span">	</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>0.5,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>1,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1)</p>
+<p class="p2"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></p>
+<p class="p6"><span class="Apple-converted-space"> </span>*/</p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p3"><span class="Apple-converted-space"> </span>the XFadeEfxFunc would know numChannels and rate of input,</p>
+<p class="p3"><span class="Apple-converted-space">  </span>and sets it on the PlayerInputProxy</p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p3"><span class="Apple-converted-space">  </span>so pip can save blank</p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p3"><span class="Apple-converted-space">  </span>if pip is played (silent), it has defaults and would play it as mono</p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></span>PlayerInputProxy.new.play</p>
+<p class="p2"><span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-converted-space">  </span>if the channels changes while playing, it would have to respawn</p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+<p class="p10"><span class="Apple-converted-space">  </span></p>
+</body>
+</html>

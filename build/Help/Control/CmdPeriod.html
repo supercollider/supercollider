@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000ff}
+span.s3 {color: #606060}
+span.s4 {color: #000000}
+span.s5 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>CmdPeriod<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>register objects to be cleared when Cmd-. is pressed</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Superclass: Object</b></p>
+<p class="p2"><br></p>
+<p class="p3">CmdPeriod allows you to register objects to perform an action when the user presses Cmd-. These objects must implement a method called -cmdPeriod which performs the necessary tasks. (You can add such a method in your custom classes.) Note that since <a href="../Core/Kernel/Function.html"><span class="s2">Function</span></a><b> </b>implements -cmdPeriod as a synonym for -value, it is possible to register any function (and thus any arbitrary code) for evaluation when Cmd-. is pressed.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>N.B. </b>Cmd-. uses an <a href="../Collections/IdentitySet.html"><span class="s2">IdentitySet</span></a> to store its registered objects. For this reason you cannot rely on the order in which the objects will be cleared. If you need -cmdPeriod to be called on a set of objects in a given order then it is best to wrap those within a <a href="../Core/Kernel/Function.html"><span class="s2">Function</span></a> and register that. (See example below.)</p>
+<p class="p4"><br></p>
+<p class="p5"><b>Class Methods</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>*add(object)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Registers an object to be cleared when Cmd-. is pressed. This object will stay registered until it is explicitly removed, and will thus respond to additional presses of Cmd-.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*remove(object)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Removes an object that was previously registered.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*doOnce(object)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Registers an Object o be evaluated once, and then unregistered.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*objects</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>return the list of objects that are called when CmdPeriod is evaluated.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*objects_(array)</b><span class="Apple-tab-span">	</span>set the list of objects that are called when CmdPeriod is evaluated.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*era</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>number of times CmdPeriod has been called since startup.</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><b>Examples</b></p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p7">f = {<span class="s3">"foo"</span>.postln };</p>
+<p class="p7">g = {<span class="s3">"bar"</span>.postln };</p>
+<p class="p8">CmdPeriod<span class="s4">.add(f);</span></p>
+<p class="p8">CmdPeriod<span class="s4">.add(g);</span></p>
+<p class="p7">)</p>
+<p class="p9"><br></p>
+<p class="p10">// Now press Cmd-.</p>
+<p class="p9"><br></p>
+<p class="p7"><span class="s5">CmdPeriod</span>.remove(g);</p>
+<p class="p9"><br></p>
+<p class="p10">// Now press Cmd-. Only f executes</p>
+<p class="p9"><br></p>
+<p class="p10"><span class="s5">CmdPeriod</span><span class="s4">.remove(f); </span>// must explicitly cleanup</p>
+<p class="p9"><br></p>
+<p class="p10">//// Controlling order of execution</p>
+<p class="p7">(</p>
+<p class="p7">f = {<span class="s3">"first"</span>.postln };</p>
+<p class="p7">g = {<span class="s3">"second"</span>.postln };</p>
+<p class="p9"><br></p>
+<p class="p10">// order is arbitrary, so wrap in a function</p>
+<p class="p9"><br></p>
+<p class="p7">h = { f.cmdPeriod; g.cmdPeriod;};</p>
+<p class="p9"><br></p>
+<p class="p8">CmdPeriod<span class="s4">.add(h);</span></p>
+<p class="p7">)</p>
+<p class="p9"><br></p>
+<p class="p10">// Now press Cmd-.</p>
+<p class="p9"><br></p>
+<p class="p7"><span class="s5">CmdPeriod</span>.remove(h);</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p10">// note that often you want to automatically remove the function once it is evaluated</p>
+<p class="p10">// instead of</p>
+<p class="p9"><br></p>
+<p class="p7">f = { <span class="s3">"foo"</span>.postln; <span class="s5">CmdPeriod</span>.remove(f) };</p>
+<p class="p8">CmdPeriod<span class="s4">.add(f);</span></p>
+<p class="p9"><br></p>
+<p class="p10">// you can write:</p>
+<p class="p9"><br></p>
+<p class="p7"><span class="s5">CmdPeriod</span>.doOnce { <span class="s3">"foo"</span>.postln }</p>
+<p class="p9"><br></p>
+<p class="p10">// a typical example:</p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s5">SCWindow</span>.new(<span class="s3">"close on cmd-."</span>).front;</p>
+<p class="p7"><span class="s5">CmdPeriod</span>.doOnce { w.close };</p>
+<p class="p7">)</p>
+<p class="p9"><br></p>
+</body>
+</html>

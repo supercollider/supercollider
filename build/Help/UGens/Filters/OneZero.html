@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><br></p>
+<p class="p2"><b>OneZero<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>one zero filter</b></p>
+<p class="p3"><br></p>
+<p class="p4"><b>OneZero.ar(in, coef, mul, add)</b></p>
+<p class="p3"><br></p>
+<p class="p4">A one zero filter. Implements the formula :</p>
+<p class="p3"><br></p>
+<p class="p5">out(i) = ((1 - abs(coef)) * in(i)) + (coef * in(i-1))</p>
+<p class="p3"><br></p>
+<p class="p4"><b>in</b> - input signal to be processed</p>
+<p class="p4"><b>coef</b> - feed forward coefficient. +0.5 makes a two point averaging filter (see also LPZ1),<span class="Apple-converted-space"> </span></p>
+<p class="p4">-0.5 makes a differentiator (see also HPZ1),<span class="Apple-converted-space">  </span>+1 makes a single sample delay (see also Delay1),<span class="Apple-converted-space"> </span></p>
+<p class="p4">-1 makes an inverted single sample delay.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p6">{ OneZero.ar(WhiteNoise.ar(0.5), 0.5) }.play</p>
+<p class="p7"><br></p>
+<p class="p6">{ OneZero.ar(WhiteNoise.ar(0.5), -0.5) }.play</p>
+<p class="p7"><br></p>
+<p class="p6">{ OneZero.ar(WhiteNoise.ar(0.5), Line.kr(-0.5, 0.5, 10)) }.play</p>
+<p class="p7"><br></p>
+</body>
+</html>

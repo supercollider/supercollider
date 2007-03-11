@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 14.0px; text-indent: -14.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #a71e12}
+span.s4 {color: #326f17}
+span.s5 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SharedIn<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>read from a shared control bus</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: AbstractIn</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>SharedIn.kr(bus, numChannels)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Reads from a control bus shared between the internal server and the SC client. Control rate only. Writing to a shared control bus from the client is synchronous. When not using the internal server use node arguments or the set method of <b>Bus</b> (or /c_set in messaging style).<span class="Apple-converted-space"> </span></p>
+<p class="p3"><b>bus</b> - the index of the shared control bus to read from</p>
+<p class="p4"><b>numChannels </b>- the number of channels (i.e. adjacent buses) to read in. The default is 1. You cannot modulate this number by assigning it to an argument in a SynthDef.</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p6">// only works with the internal server</p>
+<p class="p5">s = <span class="s1">Server</span>.internal;</p>
+<p class="p5">s.boot;</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">(</p>
+<p class="p8"><span class="s1">SynthDef</span><span class="s2">(</span>"help-SharedIn1"<span class="s2">, {</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0, <span class="s1">SinOsc</span>.ar(<span class="s1">Lag</span>.kr(<span class="s1">SharedIn</span>.kr(0, 1), 0.01), 0, 0.2));</p>
+<p class="p5">}).send(s);</p>
+<p class="p8"><span class="s1">SynthDef</span><span class="s2">(</span>"help-SharedIn2"<span class="s2">, {</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(1, <span class="s1">SinOsc</span>.ar(<span class="s1">Lag</span>.kr(<span class="s1">SharedIn</span>.kr(0, 1), 0.01, 1.5), 0, 0.2));</p>
+<p class="p5">}).send(s);</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">(</p>
+<p class="p5">s.setSharedControl(0, 300); <span class="s3">// an initial value</span></p>
+<p class="p5">s.sendMsg(<span class="s4">\s_new</span>, <span class="s5">"help-SharedIn1"</span>, x = s.nextNodeID, 0, 1);</p>
+<p class="p5">s.sendMsg(<span class="s4">\s_new</span>, <span class="s5">"help-SharedIn2"</span>, y = s.nextNodeID, 0, 1);</p>
+<p class="p7"><br></p>
+<p class="p9">Routine<span class="s2">({</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>30.do({</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.setSharedControl(0, 300 * (10.rand + 1));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.2.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p5"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\n_free</span>, x);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\n_free</span>, y);</p>
+<p class="p5">}).play;</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p5">s.quit;</p>
+<p class="p2"><br></p>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+span.s1 {color: #000000}
+span.s2 {color: #0019b7}
+span.s3 {color: #606060}
+span.s4 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>PV_MagClip<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>clip bins to a threshold</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>PV_MagClip(buffer,<span class="Apple-converted-space">  </span>threshold)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Clips bin magnitudes to a maximum threshold.</p>
+<p class="p3"><b>buffer</b> - fft buffer.</p>
+<p class="p3"><b>threshold</b> - magnitude threshold.</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">See also <a href="FFT Overview.html">FFT Overview</a>.</span></p>
+<p class="p2"><br></p>
+<p class="p5">s.boot;</p>
+<p class="p5">(</p>
+<p class="p5">b = <span class="s2">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p6"><span class="s1">c = </span><span class="s2">Buffer</span><span class="s1">.read(s,</span>"sounds/a11wlk01.wav"<span class="s1">);</span></p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s2">SynthDef</span>(<span class="s3">"help-magClip"</span>, { <span class="s2">arg</span> out=0, bufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s2">Mix</span>.arFill(3, { <span class="s2">LFSaw</span>.ar(exprand(100, 500), 0, 0.1); });</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s2">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s2">PV_MagClip</span>(chain, <span class="s2">MouseX</span>.kr(0, 15));<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, 0.5 * <span class="s2">IFFT</span>(chain).dup);</p>
+<p class="p5">}).play(s,[<span class="s4">\out</span>, 0, <span class="s4">\bufnum</span>, b.bufnum]);</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s2">SynthDef</span>(<span class="s3">"help-magClip2"</span>, { <span class="s2">arg</span> out=0, bufnum=0, soundBufnum=2;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s2">PlayBuf</span>.ar(1, soundBufnum, <span class="s2">BufRateScale</span>.kr(soundBufnum), loop: 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s2">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s2">PV_MagClip</span>(chain, <span class="s2">MouseX</span>.kr(0, 50));<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, 0.5 * <span class="s2">IFFT</span>(chain).dup);</p>
+<p class="p5">}).play(s,[<span class="s4">\out</span>, 0, <span class="s4">\bufnum</span>, b.bufnum, <span class="s4">\soundBufnum</span>, c.bufnum]);</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">b.free; c.free;</p>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 14.0px; text-indent: -14.0px; font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0000ff}
+span.s4 {font: 12.0px Helvetica}
+span.s5 {color: #0019b7}
+span.s6 {color: #000000}
+span.s7 {color: #606060}
+span.s8 {color: #326f17}
+span.s9 {text-decoration: underline}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>In</b></span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>read a signal from a bus</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: AbstractIn</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s2"><span class="Apple-tab-span">	</span></span><b>*ar(bus, numChannels) </b>- read a signal from an audio bus.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>*kr(bus, numChannels) </b>-<b> </b>read a signal from a control bus.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>bus </b>- the index of the bus to read in from.</p>
+<p class="p5"><b>numChannels </b>- the number of channels (i.e. adjacent buses) to read in. The default is 1. You cannot modulate this number by assigning it to an argument in a SynthDef.</p>
+<p class="p2"><br></p>
+<p class="p3">In.kr is functionally similar to <a href="InFeedback.html"><span class="s3">InFeedback</span></a><b>. </b>That is it reads all data on the bus whether it is from the current cycle or not. This allows for it to receive data from later in the node order. In.ar reads only data from the current cycle, and will zero data from earlier cycles (for use within that synth; the data remains on the bus). Because of this and the fact that the various out ugens <i>mix</i> their output with data from the current cycle but <i>overwrite</i> data from an earlier cycle it may be necessary to use a private control bus when this type of feedback is desired. There is an example below which demonstrates the problem. See the <a href="InFeedback.html"><span class="s3">InFeedback</span></a> and <a href="../../ServerArchitecture/Order-of-execution.html"><span class="s3">Order-of-execution</span></a> helpfiles for more details.</p>
+<p class="p4"><br></p>
+<p class="p3">Note that using the <b>Bus</b> class to allocate a multichannel bus simply reserves a series of adjacent bus indices with the <a href="../../ServerArchitecture/Server.html"><span class="s3">Server</span></a> object's bus allocators. abus.index simply returns the first of those indices. When using a Bus with an <b>In</b> or <a href="Out.html"><span class="s3">Out</span></a> ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts. See the <a href="../../ServerArchitecture/Server-Architecture.html"><span class="s3">Server-Architecture</span></a> and <a href="../../ServerArchitecture/Bus.html"><span class="s3">Bus</span></a> helpfiles for more information on buses and how they are used.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">The hardware input busses begin just after the hardware output busses and can be read from using In.ar. (See<span class="Apple-converted-space">  </span><a href="../../ServerArchitecture/Server-Architecture.html"><span class="s3">Server-Architecture</span></a> for more details.) The number of hardware input and output busses can vary depending on your Server's options. For a convienent wrapper class which deals with this issue see <a href="AudioIn.html"><span class="s3">AudioIn</span></a>.</p>
+<p class="p4"><br></p>
+<p class="p3">read from an audio bus</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span>s = <span class="s5">Server</span>.local;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>s.boot;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>(</p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="s5">SynthDef</span><span class="s6">(</span>"help-PinkNoise"<span class="s6">, { </span><span class="s5">arg</span><span class="s6"> out=0;<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">PinkNoise</span>.ar(0.1))<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">SynthDef</span>(<span class="s7">"help-In"</span>, { <span class="s5">arg</span> out=0, in=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> input;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>input = <span class="s5">In</span>.ar(in, 1);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, input);</p>
+<p class="p7"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>//play noise on the right channel</p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span>x = </span><span class="s5">Synth</span><span class="s6">(</span>"help-PinkNoise"<span class="s6">, [</span><span class="s8">\out</span><span class="s6">, 1]);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>//read the input and play it out on the left channel</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">Synth</span>.after(x, <span class="s7">"help-In"</span>, [<span class="s8">\out</span>, 0, <span class="s8">\in</span>, 1]);<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><br></p>
+<p class="p3"><span class="s9">read from a</span><span class="Apple-converted-space">  </span><span class="s9">control bus</span></p>
+<p class="p7"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">SynthDef</span>(<span class="s7">"help-InKr"</span>,{ <span class="s5">arg</span> out=0, in=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">SinOsc</span>.ar(In.kr(in, 1), 0, 0.1)</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>S<span class="s5">ynthDef</span>(<span class="s7">"help-lfo"</span>, { <span class="s5">arg</span> out=0;<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s5">Out</span><span class="s6">.kr(out, </span>LFNoise1.kr(0.3, 200, 800)<span class="s6">)<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>b = <span class="s5">Bus</span>.control(s,1);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>b.set(800);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">Synth</span>(<span class="s7">"help-InKr"</span>,[<span class="s8">\in</span>, b.index]);<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>b.set(400);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>b.set(300);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>Synth("help-lfo", [\out, b.index]);</p>
+<p class="p7"><br></p>
+<p class="p3">read control data from a synth later in the node order</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>(</p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="s5">SynthDef</span><span class="s6">(</span>"help-Infreq"<span class="s6">, { </span><span class="s5">arg</span><span class="s6"> bus;</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(0, <span class="s5">FSinOsc</span>.ar(<span class="s5">In</span>.kr(bus), 0, 0.5));</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">SynthDef</span>(<span class="s7">"help-Outfreq"</span>, { <span class="s5">arg</span> freq = 400, bus;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.kr(bus, <span class="s5">SinOsc</span>.kr(1, 0, freq/40, freq));</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>b = <span class="s5">Bus</span>.control(s,1);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// add the first control Synth at the tail of the default server; no audio yet</p>
+<p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s5">Synth</span>.tail(s, <span class="s7">"help-Outfreq"</span>, [<span class="s8">\bus</span>, b.index]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// add the sound producing Synth BEFORE it; It receives x's data from the previous cycle</p>
+<p class="p6"><span class="Apple-tab-span">	</span>y = <span class="s5">Synth</span>.before(x, <span class="s7">"help-Infreq"</span>, [<span class="s8">\bus</span>, b.index]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// add another control Synth before y, at the head of the server</p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// It now overwrites x's cycle old data before y receives it</p>
+<p class="p6"><span class="Apple-tab-span">	</span>z = <span class="s5">Synth</span>.head(s, <span class="s7">"help-Outfreq"</span>, [<span class="s8">\bus</span>, b.index, <span class="s8">\freq</span>, 800]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// get another bus</p>
+<p class="p6"><span class="Apple-tab-span">	</span>c = <span class="s5">Bus</span>.control(s, 1);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// now y receives x's data even though z is still there</p>
+<p class="p6"><span class="Apple-tab-span">	</span>y.set(<span class="s8">\bus</span>, c.index); x.set(<span class="s8">\bus</span>, c.index);</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>x.free; y.free; z.free;</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+</body>
+</html>

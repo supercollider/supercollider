@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 8.0px Monaco; min-height: 11.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {font: 17.0px Helvetica}
+span.s2 {color: #0000ff}
+span.s3 {color: #0019b7}
+span.s4 {color: #a71e12}
+span.s5 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>BusPlug<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a listener on a bus</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: AbstractFunction</b></p>
+<p class="p4"><br></p>
+<p class="p3">a superclass to node proxy that listens to a bus.</p>
+<p class="p5"><br></p>
+<p class="p3">it is mainly a basic subclass of <b>NodeProxy</b>, but it can be used as well for other things.</p>
+<p class="p3">for most methods see NodeProxy.help.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>monitor</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>returns the current monitor (see <a href="Monitor.html"><span class="s2">Monitor</span></a> )</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">//using as a control bus listener</p>
+<p class="p2"><br></p>
+<p class="p7">s.boot;</p>
+<p class="p7">z = <span class="s3">Bus</span>.control(s, 16);</p>
+<p class="p7">a = <span class="s3">BusPlug</span>.for(z);</p>
+<p class="p2"><br></p>
+<p class="p7">m = { <span class="s3">Mix</span>(<span class="s3">SinOsc</span>.ar(a.kr(16), 0, 0.1)) }.play;</p>
+<p class="p2"><br></p>
+<p class="p7">z.setn(<span class="s3">Array</span>.rand(16, 300, 320).put(16.rand, rrand(500, 1000)));</p>
+<p class="p7">z.setn(<span class="s3">Array</span>.rand(16, 300, 320).put(16.rand, rrand(500, 1000)));</p>
+<p class="p7">z.setn(<span class="s3">Array</span>.rand(16, 300, 320).put(16.rand, rrand(500, 1000)));</p>
+<p class="p2"><br></p>
+<p class="p7">m.free;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p7">m = { <span class="s3">SinOsc</span>.ar(a.kr(2, <span class="s3">MouseX</span>.kr(0, 19)), 0, 0.1) }.play; <span class="s4">//modulate channel offset</span></p>
+<p class="p2"><br></p>
+<p class="p7">z.setn(<span class="s3">Array</span>.rand(16, 300, 1320).put(16.rand, rrand(500, 1000)));</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p7">m.free; z.free;</p>
+<p class="p2"><br></p>
+<p class="p6">//using as a audio monitor</p>
+<p class="p2"><br></p>
+<p class="p7">p = <span class="s3">BusPlug</span>.audio(s,2);</p>
+<p class="p7">d = { <span class="s3">Out</span>.ar(p.index, <span class="s3">PinkNoise</span>.ar([0.1, 0.1])) }.play;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s5">p.play; </span>//monitor whatever plays in p (the execution order does not matter)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p7">d.free;</p>
+<p class="p7">d = { <span class="s3">Out</span>.ar(p.index, <span class="s3">PinkNoise</span>.ar([0.1, 0.1])) }.play;</p>
+<p class="p2"><br></p>
+<p class="p7">p.stop;</p>
+<p class="p7">p.play;</p>
+<p class="p2"><br></p>
+<p class="p6">//also p can play to another bus:</p>
+<p class="p2"><br></p>
+<p class="p7">p.stop;</p>
+<p class="p7">p.play(12);</p>
+<p class="p2"><br></p>
+<p class="p6">//listen to that bus for a test:</p>
+<p class="p7">x = { <span class="s3">InFeedback</span>.ar(12,2) }.play;</p>
+<p class="p7">x.free;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>

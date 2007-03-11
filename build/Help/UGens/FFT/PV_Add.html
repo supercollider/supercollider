@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #0019b7}
+span.s4 {color: #606060}
+span.s5 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>PV_Add<span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span></b></span><b>complex addition</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>PV_Add(bufferA,<span class="Apple-converted-space">  </span>bufferB)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Complex Addition: RealA + RealB, ImagA + ImagB</p>
+<p class="p3"><b>bufferA</b> - fft buffer A.</p>
+<p class="p3"><b>bufferB</b> - fft buffer B.</p>
+<p class="p4"><span class="s2">See also <a href="FFT Overview.html">FFT Overview</a>.</span></p>
+<p class="p2"><br></p>
+<p class="p5">s.boot;</p>
+<p class="p5">(</p>
+<p class="p5">b = <span class="s3">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p5">c = <span class="s3">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p6"><span class="s2">d = </span><span class="s3">Buffer</span><span class="s2">.read(s,</span>"sounds/a11wlk01.wav"<span class="s2">);</span></p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-add"</span>, { <span class="s3">arg</span> out=0, bufnumA=0, bufnumB=1, soundBufnum;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> inA, chainA, inB, chainB, chain ;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s3">PlayBuf</span>.ar(1, soundBufnum, <span class="s3">BufRateScale</span>.kr(soundBufnum), loop: 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inB =<span class="Apple-converted-space">  </span><span class="s3">PlayBuf</span>.ar(1, soundBufnum, <span class="s3">BufRateScale</span>.kr(soundBufnum) * 0.5, loop: 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(bufnumA, inA);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(bufnumB, inB);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_Add</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.1 * <span class="s3">IFFT</span>(chain).dup);</p>
+<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnumA</span>, b.bufnum, <span class="s5">\bufnumB</span>, c.bufnum, <span class="s5">\soundBufnum</span>, d.bufnum]);</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">b.free; c.free; d.free;</p>
+</body>
+</html>

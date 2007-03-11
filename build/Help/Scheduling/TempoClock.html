@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #0019b7}
+span.s4 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>TempoClock<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>tempo based scheduler</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">TempoClock is a scheduler like SystemClock, but it schedules relative to a tempo in beats per second.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*new(tempo, beats, seconds)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Create a new TempoClock scheduler with the given tempo and starting times.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">If not given, <b>tempo</b> defaults to one, <b>beats</b> defaults to zero and <b>seconds</b> defaults to the current elapsed time.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>stop</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>destroy the scheduler. releases the OS thread running the scheduler.</p>
+<p class="p2"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>tempo</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>get the current tempo in beats per second.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>tempo_(beatsPerSecond)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the current tempo.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>t.tempo = 2.0;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>or</p>
+<p class="p3"><span class="Apple-tab-span">	</span>t.tempo_(2.0);</p>
+<p class="p2"><br></p>
+<p class="p3"><b>beatDur</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>get the current beat duration in seconds.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p3"><b>elapsedBeats</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>get the current elapsed time in beats.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>This is equivalent to: <span class="Apple-converted-space">  </span>tempoClock.secs2beats(Main.elapsedTime).</p>
+<p class="p3"><span class="Apple-tab-span">	</span>It is often preferrable to use <b>beats</b> instead of <b>elapsedBeats </b>because <b>beats</b> uses a thread's logical time.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>beats</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Returns the appropriate beat time of the clock from any thread. If the receiver is the clock of the current thread, this returns the current logical time: thisThread.beats. If the receiver is not the current thread's clock then this translates the current thread's logical time in seconds to this clock's logical time in beats.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>schedAbs(beat,function)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Schedule a function to be evaluated at a particular beat.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sched(delta,function)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Schedule a function to be evaluated delta beats from the current logical time in this clock. If the receiver is the clock of the current thread, the delta is applied to the current logical time. If the receiver is not the current thread's clock then the delta is applied to the clock's elapsed time.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>clear</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>remove all tasks from the scheduling queue.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>permanent_(bool)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>if false (default) the clock is stopped (and thus removed) on cmd-period.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>If set to true it persists, just like TempoClock.default does.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>beats2secs(beats)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>convert absolute beats to absolute seconds. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.</p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><b>secs2beats(seconds)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>convert absolute seconds to absolute beats. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Example:</b></p>
+<p class="p2"><br></p>
+<p class="p4">////////////////////////</p>
+<p class="p5"><br></p>
+<p class="p4"><span class="s2">t = </span><span class="s3">TempoClock</span><span class="s2">(1); </span>// create a TempoClock</p>
+<p class="p5"><br></p>
+<p class="p4">// schedule an event at next whole beat</p>
+<p class="p6">t.schedAbs(t.beats.ceil, { <span class="s3">arg</span> beat, sec; [beat, sec].postln; 1 });</p>
+<p class="p5"><br></p>
+<p class="p6">t.tempo = 2;</p>
+<p class="p6">t.tempo = 4;</p>
+<p class="p6">t.tempo = 0.5;</p>
+<p class="p6">t.tempo = 1;</p>
+<p class="p5"><br></p>
+<p class="p6">t.clear;</p>
+<p class="p5"><br></p>
+<p class="p6">t.schedAbs(t.beats.ceil, { <span class="s3">arg</span> beat, sec; [beat, sec].postln; 1 });</p>
+<p class="p5"><br></p>
+<p class="p6">t.stop;</p>
+<p class="p5"><br></p>
+<p class="p4">////////////////////////</p>
+<p class="p7"><br></p>
+<p class="p6">(</p>
+<p class="p4">// get elapsed time, round up to next second</p>
+<p class="p6">v = <span class="s3">Main</span>.elapsedTime.ceil;</p>
+<p class="p5"><br></p>
+<p class="p4">// create two clocks in a 5:2 relation, starting at time v.<span class="Apple-converted-space"> </span></p>
+<p class="p6">t = <span class="s3">TempoClock</span>(1, 0, v);</p>
+<p class="p6">u = <span class="s3">TempoClock</span>(0.4, 0, v);</p>
+<p class="p5"><br></p>
+<p class="p4">// start two functions at beat zero in each clock.</p>
+<p class="p6">t.schedAbs(0, { <span class="s3">arg</span> beat, sec; [<span class="s4">\t</span>, beat, sec].postln; 1 });</p>
+<p class="p6">u.schedAbs(0, { <span class="s3">arg</span> beat, sec; [<span class="s4">\u</span>, beat, sec].postln; 1 });</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p6">u.tempo = u.tempo * 3;</p>
+<p class="p6">t.tempo = t.tempo * 3;</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p6">u.tempo = u.tempo * 1/4;</p>
+<p class="p6">t.tempo = t.tempo * 1/4;</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p6">t.stop;</p>
+<p class="p6">u.stop;</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p4">////////////////////////</p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p4">// get elapsed time, round up to next second</p>
+<p class="p6">v = <span class="s3">Main</span>.elapsedTime.ceil;</p>
+<p class="p5"><br></p>
+<p class="p4">// create two clocks, starting at time v.<span class="Apple-converted-space"> </span></p>
+<p class="p6">t = <span class="s3">TempoClock</span>(1, 0, v);</p>
+<p class="p6">u = <span class="s3">TempoClock</span>(1, 0, v);</p>
+<p class="p5"><br></p>
+<p class="p4">// start two functions at beat zero in each clock.</p>
+<p class="p4">// t controls u's tempo. They should stay in sync.</p>
+<p class="p6">t.schedAbs(0, { <span class="s3">arg</span> beat, sec; u.tempo = t.tempo * [1,2,3,4,5].choose; [<span class="s4">\t</span>, beat, sec].postln; 1 });</p>
+<p class="p6">u.schedAbs(0, { <span class="s3">arg</span> beat, sec; [<span class="s4">\u</span>, beat, sec].postln; 1 });</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p6">u.tempo = u.tempo * 3;</p>
+<p class="p6">t.tempo = t.tempo * 3;</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p6">u.tempo = u.tempo * 1/4;</p>
+<p class="p6">t.tempo = t.tempo * 1/4;</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p6">t.stop;</p>
+<p class="p6">u.stop;</p>
+<p class="p6">)</p>
+</body>
+</html>

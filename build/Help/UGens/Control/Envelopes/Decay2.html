@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><br></p>
+<p class="p2"><b>Decay2<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exponential decay</b></p>
+<p class="p3"><br></p>
+<p class="p4"><b>Decay2.ar(in, attackTime, decayTime, mul, add)</b></p>
+<p class="p3"><br></p>
+<p class="p4"><b>Decay</b> has a very sharp attack and can produce clicks. Decay2 rounds off the attack by subtracting one Decay from another. Decay2.ar(in, attackTime, decayTime) is equivalent to:</p>
+<p class="p3"><br></p>
+<p class="p4">Decay.ar(in, decayTime) - Decay.ar(in, attackTime)</p>
+<p class="p3"><br></p>
+<p class="p4"><b>in</b> - input signal</p>
+<p class="p4"><b>attackTime</b> - 60 dB attack time in seconds.</p>
+<p class="p4"><b>decayTime</b> - 60 dB decay time in seconds.</p>
+<p class="p3"><br></p>
+<p class="p5">//plot({ Decay2.ar(Impulse.ar(1), 0.001, 0.01) })</p>
+<p class="p6"><br></p>
+<p class="p5">// since attack and decay are a difference of two Decays, if you swap the values,<span class="Apple-converted-space"> </span></p>
+<p class="p5">// then the envelope turns upside down</p>
+<p class="p5">//plot({ Decay2.ar(Impulse.ar(1), 0.01, 0.001) })</p>
+<p class="p6"><br></p>
+<p class="p5">// used as an envelope</p>
+<p class="p7">{ <span class="s1">Decay2</span>.ar(<span class="s1">Impulse</span>.ar(<span class="s1">XLine</span>.kr(1,50,20), 0.25), 0.01, 0.2, <span class="s1">FSinOsc</span>.ar(600)) }.play;</p>
+<p class="p6"><br></p>
+<p class="p5">// compare the above with Decay used as the envelope</p>
+<p class="p7">{ <span class="s1">Decay</span>.ar(<span class="s1">Impulse</span>.ar(<span class="s1">XLine</span>.kr(1,50,20), 0.25), 0.2, <span class="s1">FSinOsc</span>.ar(600), 0)<span class="Apple-converted-space">  </span>}.play;</p>
+<p class="p1"><br></p>
+</body>
+</html>

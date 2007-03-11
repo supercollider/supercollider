@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 20.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Creating Stand-Alone Applications</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Contents</b></p>
+<p class="p2"><br></p>
+<p class="p4">Introduction</p>
+<p class="p4">Creating a stand-alone application using the Finder</p>
+<p class="p4">Creating a stand-alone application using Xcode</p>
+<p class="p4">Adding your own behavior</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Introduction</b></p>
+<p class="p2"><br></p>
+<p class="p4">On OS X, applications are special directories known as "bundles." This allows you to create stand-alone applications running SuperCollider code that are opaque, in the sense that the user does not need to install SuperCollider, run SuperCollider code, or even know that SuperCollider is involved. (Of course, your application must be open-source and comply with the GPL.) This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Creating a stand-alone application using the Finder</b></p>
+<p class="p5"><br></p>
+<p class="p4"><b>Step 1: </b>Make a copy of the SuperCollider application, and name it whatever you'd like your application to be called. Then control-click on the copy and select "Show Package Contents" from the contextual menu. You'll get a new Finder window that shows you the inside of the application bundle. Navigate to Contents/Resources. This is where the folders that normally reside outside the SuperCollider application will go.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Step 2:</b> Option-drag the following items into the Resources folder as needed:</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>• <b>SCClassLibrary</b>--this is absolutely necessary, and of course can contain your own classes.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>• <b>plugins</b>--your application will launch without this, but you won't get very far making sound.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>• <b>recordings</b>--not necessary if your application does not allow recording, or if you have the user select the recording directory.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>• <b>sounds</b>--if your application requires any preexisting soundfiles, put them here.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>• <b>synthdefs</b>--not absolutely necessary, but very handy.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>• <b>Help</b>--if your users aren't dealing with SuperCollider code, they don't need the SuperCollider help files, but you should create a <b>Help.help.rtf</b> file for your own application and put it in here.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>• If you want your application to be able to use the local server, drag in <b>scsynth</b>. This is not recommended for most applications, though; see <b>Adding your own behavior</b>, below.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Step 3:</b> Edit <b>MainMenu.nib</b> by double-clicking on it. It will in open in InterfaceBuilder, presenting you with a "virtual" menubar that you can modify as you wish (deleting the <b>Help</b> menu, for example). The exception is the name of the application menu ("SuperCollider")--you can change it here, but the change will not be picked up by the application. See step 4.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Step 4:</b> Edit <b>English.lproj/InfoPlist.strings</b>, replacing "SuperCollider" with the name of your application in the <b>CFBundleName</b> line. This will show up in your application's main menu.</p>
+<p class="p2"><br></p>
+<p class="p4">Now you have an application that behaves exactly like SuperCollider, but is entirely self-contained (can be dragged anywhere with no accompanying files) and has its own name. To make it behave like an ordinary application (with its own main window, etc.), see <b>Adding your own behavior</b> below.</p>
+<p class="p2"><br></p>
+<p class="p4">Now when you launch the copy, it will use the items you dragged in (and any modifications of the class library will be stored there instead of the original). You can drag it anywhere, give it to other people, etc.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Creating a stand-alone application using Xcode</b></p>
+<p class="p2"><br></p>
+<p class="p4">In the SuperCollider source, there's an Xcode project called <b>xSC_StandAlone</b>. This is an Xcode 2.1 project, and will not open in earlier versions. It has two targets:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>• <b>SC_StandAlone</b>. This creates a simple but complete application in its final form.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>• <b>SC_StandAlone_Devel</b>. This creates a development version of the same application, the differences being that <b>Main-startup</b> is not modified, so that the server and post windows are created, and that an alias of its class library is used, so that any modifications are made to the original in the code folder, rather than in the bundle.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4">To create your own application:</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Step 1:</b> Make a copy of the <b>SCSA_Aux</b> folder (inside the <b>SuperCollider3</b> folder), and name it after your application (e.g. <b>MyApp_Aux</b>). Change the names of all its subfolders similarly. Edit the <b>MainMenu.nib</b> and <b>English.lproj/InfoPlist.strings </b>files in both <b>MyApp_Resources</b> and <b>MyApp_Devel_Resources</b> as described in the previous section.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Step 2:</b> Make a copy of the <b>xSC_StandAlone</b> project, name it after your application, and open it in Xcode. Delete the <b>SCSA_Resources</b> and <b>SCSA_Devel_Resources</b> groups (choosing <b>Delete References Only</b> at the dialog), and add <b>MyApp_Resources</b> and <b>MyApp_Devel_Resources</b> to the SC_StandAlone and SC_StandAlone_Devel targets, respectively (selecting the <b>Recursively Add Groups</b> option in the dialog). Make sure you're adding them to the right targets.</p>
+<p class="p2"><br></p>
+<p class="p4">Delete the <b>SCSA_Library</b> folder (choosing <b>Delete References Only</b> at the dialog), and add <b>MyApp_Library</b> in its place, selecting the <b>Create Folder</b> option (it should show up as a blue folder instead of a yellow one). Drag it to the <b>Copy Files</b> build phase of the <b>SC_StandAlone</b> target. You don't need to add it to the <b>SC_StandAlone_Devel</b> target.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Step 3:</b> Rename the the <b>SC_StandAlone_Devel</b> target to <b>MyApp_Devel</b> (by control-clicking on the target icon and selecting "Rename" from the contextual menu). Double-click on the <b>MyApp_Devel</b> target. In the Base Product Name field, change "SC_StandAlone_Devel" to "MyApp_Devel". Do the same thing in the <b>Info.Plist Entries</b> section. Click the <b>Run Script</b> box. In the script that appears, replace <b>SCSA</b> with <b>MyApp</b> wherever it appears (three times).</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Step 4:</b> Repeat step 3 for the SC_StandAlone target (leaving off _Devel, of course).</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Step 5:</b> Build away!</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Adding your own behavior</b></p>
+<p class="p5"><br></p>
+<p class="p4">Using either of the above methods, you've created an application that behaves exactly like SuperCollider. To run your own code on launch and simulate an ordinary application rather than a development environment, you'll need to modify Main-startup. Here's an example (the same code used by the <b>SC_StandAlone</b> target):</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span>startup {</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">super</span>.startup;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Document</span>.startup;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// set the 's' interpreter variable to the internal server.</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// You should use the internal server for standalone applications--</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// otherwise, if your application has a problem, the user will</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// be stuck with a process, possibly making sound, that he won't know<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// how to kill.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>interpreter.s = <span class="s1">Server</span>.internal;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// server windows turned off for stand-alone application</p>
+<p class="p8">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Server.internal.makeWindow;</p>
+<p class="p8">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Server.local.makeWindow;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Start the application using internal server</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>interpreter.s.waitForBoot({</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">var</span> sb, demo;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sb = <span class="s1">SCWindow</span>.screenBounds;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>demo = <span class="s1">SCSA_Demo</span>.new(</p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"the cheese stands alone"<span class="s2">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Rect</span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(sb.width - <span class="s1">SCSA_Demo</span>.width) * 0.5,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(sb.height - <span class="s1">SCSA_Demo</span>.height) * 0.5,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SCSA_Demo</span>.width,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SCSA_Demo</span>.height</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>interpreter.s</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>demo.front;</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Close post window after application launches. If you want</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// to hide it completely, put this line after Document.startup instead.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Document</span>.closeAll(<span class="s1">false</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}, 25);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// You probably don't want to include this, since the user won't have it</p>
+<p class="p8">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"~/scwork/startup.rtf".loadPaths;</p>
+<p class="p2"><br></p>
+<p class="p4">The class <b>SCSA_Demo </b>contains the entire application, including the main window. This is the tidiest way to work, and requires the least modification to SuperCollider. If you don't want to write a class, you can execute an .rtf file instead:</p>
+<p class="p2"><br></p>
+<p class="p6">interpreter.executeFile(<span class="s1">String</span>.scDir ++ <span class="s3">"/myapp.rtf"</span>);</p>
+<p class="p2"><br></p>
+<p class="p4">However, any sizable application will benefit from encapsulation in classes.</p>
+<p class="p2"><br></p>
+<p class="p4">Note that the example uses the internal server. This is part and parcel of keeping the application stand-alone; it shouldn't call extraneous processes behind the user's back that will persist if the application fails. If you need to use the local server for some reason, make sure <b>scsynth</b> is in the application's bundle.</p>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+</style>
+</head>
+<body>
+<p class="p1"><b>Set</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Superclass: Collection</b></p>
+<p class="p2"><br></p>
+<p class="p3">A Set is collection of objects, no two of which are equal.</p>
+<p class="p3">Most of its methods are inherited from Collection.</p>
+<p class="p3">The contents of a Set are unordered. You must not depend on the order of items in a set.</p>
+<p class="p2"><br></p>
+<p class="p4"><b><i>Adding and Removing:</i></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>add(anObject)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Add anObject to the Set. An object which is equal to an object already in the Set will not be added.</p>
+<p class="p5"><br></p>
+<p class="p6">Set[1, 2, 3].add(4).postln;</p>
+<p class="p5"><br></p>
+<p class="p6">Set[1, 2, 3].add(3).postln;</p>
+<p class="p5"><br></p>
+<p class="p6">Set["abc", "def", "ghi"].add("jkl").postln;</p>
+<p class="p5"><br></p>
+<p class="p6">Set["abc", "def", "ghi"].add("def").postln;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>remove(anObject)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Remove anObject from the Set.</p>
+<p class="p2"><br></p>
+<p class="p6">Set[1, 2, 3].remove(3).postln;</p>
+<p class="p5"><br></p>
+<p class="p7"><br></p>
+<p class="p4"><b><i>Iteration:</i></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>do(function)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Evaluates function for each item in the Set.</p>
+<p class="p3">The function is passed two arguments, the item and an integer index.</p>
+<p class="p2"><br></p>
+<p class="p6">Set[1, 2, 3, 300].do({ arg item, i; item.postln });</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>

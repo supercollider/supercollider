@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {text-decoration: underline}
+span.s4 {font: 12.0px Monaco}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Ref<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a reference to a value</b></p>
+<p class="p2"><b>superclass: AbstractFunction</b></p>
+<p class="p3"><br></p>
+<p class="p2">A Ref<span class="Apple-converted-space">  </span>instance is an object with a single slot named 'value' that serves as a holder of<span class="Apple-converted-space"> </span></p>
+<p class="p2">an object. Ref.new(object) one way to create a Ref, but there is a syntactic shortcut.<span class="Apple-converted-space"> </span></p>
+<p class="p2">The backquote ` is a unary operator that is equivalent to calling Ref.new(something).</p>
+<p class="p3"><br></p>
+<p class="p2">example:<span class="Apple-converted-space">   </span></p>
+<p class="p3"><br></p>
+<p class="p4">x = <span class="s1">Ref</span>.new(<span class="s1">nil</span>);</p>
+<p class="p5"><span class="s2">z = obj.method(x);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// method puts something in reference</p>
+<p class="p5"><span class="s2">x.value.doSomething;<span class="Apple-tab-span">	</span></span>// retrieve value and use it</p>
+<p class="p6"><br></p>
+<p class="p2">Ref is also used as a quoting device to protect against multi channel expansion in certain UGens that require Arrays.</p>
+<p class="p3"><br></p>
+<p class="p7"><b><span class="s3">Class methods:</span></b></p>
+<p class="p3"><br></p>
+<p class="p2"><b>new(anObject)</b></p>
+<p class="p3"><br></p>
+<p class="p2">create a Ref of an object.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>`anObject</b></p>
+<p class="p3"><br></p>
+<p class="p2">create a Ref of an object.</p>
+<p class="p3"><br></p>
+<p class="p7"><b><span class="s3">Instance methods:</span></b></p>
+<p class="p3"><br></p>
+<p class="p2"><b>value</b></p>
+<p class="p3"><br></p>
+<p class="p2">Answer the value.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>value_(aValue)</b></p>
+<p class="p3"><br></p>
+<p class="p2">set the value.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>get</b></p>
+<p class="p3"><br></p>
+<p class="p2">Answer the value.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>set(aValue)</b></p>
+<p class="p3"><br></p>
+<p class="p2">set the value.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>dereference</b></p>
+<p class="p3"><br></p>
+<p class="p2">Answer the value. This message is also defined in class Object where it just returns the receiver.<span class="Apple-converted-space">  </span>Therefore <span class="s4">anything.dereference</span> will remove a Ref if there is one. This is slightly different than the value message, because value will also cause functions to evaluate themselves whereas dereference will not.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>asRef</b></p>
+<p class="p3"><br></p>
+<p class="p2">Answers the receiver. In class Object this message is defined to create a Ref of the object.</p>
+<p class="p3"><br></p>
+</body>
+</html>
