@@ -846,11 +846,11 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			desiredURL = [NSURL fileURLWithPath: helpPath];
 			if([[NSFileManager defaultManager] fileExistsAtPath: [desiredURL path]]) {
 				doc = (MyDocument*)[docctl documentForURL: [desiredURL absoluteURL]];
-			} else NSLog(@"file doesn't exist at path2");
+			} else post("file doesn't exist at path: '%s'\n", [[desiredURL path] cString]);
 			if (!doc) {
 				doc = [docctl openDocumentWithContentsOfURL: desiredURL display: true];
 				if(!doc) {
-					post("Can't open Help File Document2: '%s'\n", [[desiredURL path] cString]);
+					post("Can't open Help File Document: '%s'\n", [[desiredURL path] cString]);
 					return YES;
 				}
 			}
@@ -1091,7 +1091,6 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			success = data ? [data writeToFile: path atomically: YES] : NO;
 		}
 	}
-	[textView breakUndoCoalescing];
 	[textView breakUndoCoalescing];
 	return success;
 }
