@@ -737,6 +737,9 @@ Server : Model {
 				
 		probe.value(0);
 	}
+	printOn { |stream|
+		stream << name;
+	}
 	storeOn { arg stream;
 		stream << "(Server.named[" << name.asCompileString << "] ?? { Server(" <<<* [name, addr, options, clientID] << ") })" ;
 	}
