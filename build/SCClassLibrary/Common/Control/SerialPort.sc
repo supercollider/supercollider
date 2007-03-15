@@ -13,7 +13,7 @@ SerialPort
 	// device listing
 	*devices {
 		^(devicePattern ?? {
-			thisProcess.platform.switch(
+			thisProcess.platform.name.switch(
 				\linux,   "/dev/ttyS*",
 				\osx,     "/dev/tty.*",
 				\windows, "COM"
