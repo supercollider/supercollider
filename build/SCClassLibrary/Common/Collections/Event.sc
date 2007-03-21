@@ -15,6 +15,10 @@ Event : Environment {
 	*silent { arg dur = 1.0;
 		^Event.new(8, nil, defaultParentEvent, true).put(\type, \rest).put(\dur, dur)
 	}
+	*addEventType { arg type, func;
+		var types = partialEvents.playerEvent.eventTypes;
+		types.put(type, func)
+	}
 	
 	next { arg inval; ^composeEvents(inval, this) }
 	
@@ -531,6 +535,17 @@ Event : Environment {
 										});
 									};
 							};
+						}
+					},
+					setProperties:  {
+						var receiver = ~receiver;
+						~args.do { |each|	
+								var selector, value = each.envirGet;
+								if(value.notNil) {
+									selector = each.asSetter;
+									// ("%.%_(%)\n").postf(receiver, selector, value);
+								 	receiver.perform(selector.asSetter, value)
+								 };
 						}
 					},
 					monoOff:  #{|server|
