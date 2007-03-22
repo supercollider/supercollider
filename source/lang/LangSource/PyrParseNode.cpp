@@ -73,6 +73,7 @@ long gInliningLevel;
 int compileErrors = 0;
 
 extern bool compilingCmdLine;
+extern int errLineOffset, errCharPosOffset;
 
 char* nodename[] = {
 	"ClassNode",
@@ -610,7 +611,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, classobj);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
-						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
+						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno] + errCharPosOffset);
 						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
 						methraw->methType = methReturnInstVar;
 						methraw->specialIndex = instVarIndex;
@@ -640,7 +641,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetObject(&method->ownerclass, classobj);
 						SetSymbol(&method->name, setterSym);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
-						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
+						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno] + errCharPosOffset);
 
 						methraw->methType = methAssignInstVar;
 						methraw->specialIndex = instVarIndex;
@@ -676,7 +677,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
 						SetSymbol(&method->selectors, classobj->name.us);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
-						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
+						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno] + errCharPosOffset);
 
 						methraw->methType = methReturnClassVar;
 						methraw->specialIndex = classVarIndex + classobj->classVarIndex.ui;
@@ -705,7 +706,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetSymbol(&method->name, setterSym);
 						SetSymbol(&method->selectors, classobj->name.us);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
-						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
+						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno] + errCharPosOffset);
 
 						methraw->methType = methAssignClassVar;
 						methraw->specialIndex = classVarIndex + classobj->classVarIndex.ui;
@@ -740,7 +741,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetObject(&method->ownerclass, metaclassobj);
 						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
-						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
+						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno] + errCharPosOffset);
 
 						methraw->methType = methReturnLiteral;
 						method->selectors.ucopy = litslot.ucopy;
@@ -908,9 +909,9 @@ void PyrClassNode::compile(PyrSlot *result)
 	gCurrentMetaClass = metaclassobj;
 	if (gCompilingFileSym) {
 		SetSymbol(&classobj->filenameSym, gCompilingFileSym);
-		SetInt(&classobj->charPos, linestarts[mClassName->mLineno]);
+		SetInt(&classobj->charPos, linestarts[mClassName->mLineno] + errCharPosOffset);
 		SetSymbol(&metaclassobj->filenameSym, gCompilingFileSym);
-		SetInt(&metaclassobj->charPos, linestarts[mClassName->mLineno]);
+		SetInt(&metaclassobj->charPos, linestarts[mClassName->mLineno] + errCharPosOffset);
 	} else {
 		SetNil(&classobj->filenameSym);
 		SetNil(&metaclassobj->filenameSym);
@@ -1259,7 +1260,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 	method->contextDef = o_nil;
 	method->name = mMethodName->mSlot;
 	if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
-	SetInt(&method->charPos, linestarts[mMethodName->mLineno]);
+	SetInt(&method->charPos, linestarts[mMethodName->mLineno] + errCharPosOffset);
 	if (mPrimitiveName) {
 		hasPrimitive = true;
 		method->primitiveName = mPrimitiveName->mSlot;

@@ -223,18 +223,6 @@ bool getFileText(char* filename, char **text, int *length)
 
 int bugctr = 0;
 
-int stripNonAscii(char *txt)
-{
-    int rdpos=0, wrpos=0; 
-	int c = 0;
-	do {
-		c = txt[rdpos++];
-    if (isprint(c) || isspace(c) || c == 0) 
-      txt[wrpos++] = c;
-  } while(c);
-	return wrpos;
-}
-
 // strips out all the RichTextFile crap
 int rtf2txt(char* txt)  
 {
@@ -294,8 +282,7 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	if(!fileSym->u.source) {
 		if (!getFileText(filename, &text, &textlen)) return false;
 		fileSym->u.source = text;
-		rtf2txt(text);
-		textlen = stripNonAscii(text);
+		rtf2txt(text);		
 	}
 	else
 		text = fileSym->u.source;
@@ -329,10 +316,9 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	strcpy(curfilename, filename);
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
-	linestarts[0] = errCharPosOffset;
-	linestarts[1] = errCharPosOffset;
+	linestarts[0] = 0;
+	linestarts[1] = 0;
 	
-	//postfl("<startLexer\n");
 	return true;
 }
 
@@ -348,9 +334,6 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	textlen = textbuflen + 1;
 	
 	rtf2txt(text);
-	textlen = stripNonAscii(text);
-	
-	//postfl("text '%s' %d\n", text, text);
 		
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
@@ -370,6 +353,9 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
 	linestarts[1] = 0;
+	
+	errLineOffset = 0;
+	errCharPosOffset = 0;
 }
 
 void finiLexer() 
@@ -403,7 +389,7 @@ int input()
 				linestarts = (int*)pyr_pool_compile->Realloc(
 					linestarts,  maxlinestarts * sizeof(int*));
 			}
-			linestarts[lineno] = linepos + errCharPosOffset;
+			linestarts[lineno] = linepos;
 		}
 		charno = 0;
 	}
@@ -431,7 +417,7 @@ int input0()
 				linestarts = (int*)pyr_pool_compile->Realloc(
 					linestarts,  maxlinestarts * sizeof(int*));
 			}
-			linestarts[lineno] = linepos + errCharPosOffset;
+			linestarts[lineno] = linepos;
 		}
 		charno = 0;
 	}
@@ -606,6 +592,10 @@ start:
 		}
 	}
 	else if (strchr(binopchars, c))  goto binop;
+	else if(!(isprint(c) || isspace(c) || c == 0)) {
+		yylen = 0;
+		goto start;
+	}
 	else goto error1;
 
 ident:
@@ -1687,6 +1677,8 @@ void buildDepTree()
 	//postfl("<-buildDepTree\n"); fflush(stdout);
 }
 
+extern PyrClass *gClassList;
+
 ClassDependancy **gClassCompileOrder;
 int gClassCompileOrderNum = 0;
 int gClassCompileOrderSize = 1000;
@@ -1710,7 +1702,7 @@ void traverseFullDepTree()
 	compileClassExtensions();
 	
 	pyr_pool_compile->Free(gClassCompileOrder);
-	
+
 	finiParser();
 	//postfl("<-traverseFullDepTree\n"); fflush(stdout);
 }

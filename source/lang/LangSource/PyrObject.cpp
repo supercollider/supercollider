@@ -435,7 +435,6 @@ PyrClass* newClassObj(PyrClass *classObjSuperClass,
 	if (numConsts) {
 		symarray = newPyrSymbolArray(NULL, numConsts, obj_permanent | obj_immutable, false);
 		SetObject(&classobj->constNames, symarray);
-		nilSlots(array->slots, numConsts);
 		
 		array = newPyrArray(NULL, numConsts, obj_permanent | obj_immutable, false);
 		SetObject(&classobj->constValues, array);
@@ -503,12 +502,10 @@ void reallocClassObj(PyrClass* classobj,
 	if (numClassVars) {
 		//post("reallocClassObj %s numClassVars %d\n", classobj->name.us->name, numClassVars);
 		symarray = newPyrSymbolArray(NULL, numClassVars, obj_permanent | obj_immutable, false);
-		//array->size = numClassVars;
 		SetObject(&classobj->classVarNames, symarray);
 		nilSlots(array->slots, numClassVars);
 		
 		array = newPyrArray(NULL, numClassVars, obj_permanent | obj_immutable, false);
-		//array->size = numClassVars;
 		SetObject(&classobj->cprototype, array);
 		nilSlots(array->slots, numClassVars);
 	} else {
@@ -519,12 +516,9 @@ void reallocClassObj(PyrClass* classobj,
 	if (numConsts) {
 		//post("reallocClassObj %s numConsts %d\n", classobj->name.us->name, numConsts);
 		symarray = newPyrSymbolArray(NULL, numConsts, obj_permanent | obj_immutable, false);
-		//array->size = numConsts;
 		SetObject(&classobj->constNames, symarray);
-		nilSlots(array->slots, numConsts);
 		
 		array = newPyrArray(NULL, numConsts, obj_permanent | obj_immutable, false);
-		//array->size = numConsts;
 		SetObject(&classobj->constValues, array);
 		nilSlots(array->slots, numConsts);
 	} else {
