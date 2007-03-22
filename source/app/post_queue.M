@@ -49,7 +49,7 @@ void SetupHomeDirectory()
 	CFStringGetCString(sharedPath, path+mainPathLen+1, 2048-mainPathLen-1, kCFStringEncodingUTF8);
 	*/
 	
-	gHomePath = (char*)malloc(mainPathLen);
+	gHomePath = (char*)malloc(mainPathLen + 1);
 	strcpy(gHomePath, path);
 	chdir(gHomePath);
 }
