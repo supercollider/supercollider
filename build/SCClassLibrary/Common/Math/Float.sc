@@ -55,4 +55,7 @@ Float : SimpleNumber {
 	}
 
 	archiveAsCompileString { ^true }
+	
+	asString {		var	str = super.asString;		^if(str.find(".").isNil) { str ++ ".0" } { str }
+	}
 }
