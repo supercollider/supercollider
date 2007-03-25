@@ -106,6 +106,18 @@ UGen : AbstractFunction {
 	lag3 { arg lagTime=0.1;
 		^Lag3.multiNew(this.rate, this, lagTime)
 	}
+	linlin { arg inMin, inMax, outMin, outMax;
+		^LinLin.multiNew(this.rate, inMin, inMax, outMin, outMax) // clip not yet implemented.
+	}
+	linexp { arg inMin, inMax, outMin, outMax;
+		^LinExp.multiNew(this.rate, inMin, inMax, outMin, outMax)
+	}
+	explin { arg inMin, inMax, outMin, outMax;
+		^(log(this/inMin)) / (log(inMax/inMin)) * (outMax-outMin) + outMin; // no separate ugen yet
+	}
+	expexp { arg inMin, inMax, outMin, outMax;
+		^pow(outMax/outMin, log(this/inMin) / log(inMax/inMin)) * outMin;
+	}
 	
 	signalRange { ^\bipolar }
 	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
