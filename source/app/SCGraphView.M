@@ -35,6 +35,16 @@ extern PyrSymbol *s_callDrawHook;
 
 @implementation SCGraphView
 
+- (void)setAcceptsClickThrough:(BOOL)boo
+{
+	acceptsClickThrough = boo;
+}
+
+- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+{
+	return acceptsClickThrough;
+}
+
 - (BOOL)isFlipped
 {
 	return YES;
@@ -135,6 +145,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 	mWindowObj = 0;
 	mTopView = 0;
     windowShouldClose = YES;
+	acceptsClickThrough = YES;
     return self;
 }
 
@@ -156,7 +167,8 @@ static NSString *sSCObjType = @"SuperCollider object address";
     BOOL keepOn = YES;
     //BOOL isInside = YES;
     NSPoint mouseLoc;
-    
+	//NSLog(@"Click count: %i", [theEvent clickCount]);
+	//if([theEvent clickCount] == 2) return;
 	if (!mTopView) return;
     unsigned int modifiers = [theEvent modifierFlags];
     mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];

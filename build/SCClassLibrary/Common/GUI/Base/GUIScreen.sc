@@ -7,6 +7,7 @@ SCWindow {
 	var <>drawHook;
 	var <acceptsMouseOver=false;
 	var <isClosed = false;
+	var <acceptsClickThrough = true;
 	
 	*initClass {
 		UI.registerForShutdown({ this.closeAll });
@@ -73,6 +74,15 @@ SCWindow {
 	
 	prSetAlwaysOnTop{|boolean=true|
 		_SCWindow_AlwaysOnTop	
+	}
+	
+	acceptsClickThrough_{|boolean=true|
+		acceptsClickThrough = boolean;
+		this.prSetAcceptsClickThrough(boolean);	
+	}
+	
+	prSetAcceptsClickThrough{|boolean=true|
+		_SCWindow_AcceptsClickThrough	
 	}
 	
 	refresh {

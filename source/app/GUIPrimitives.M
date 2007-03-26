@@ -1419,6 +1419,23 @@ int prSCWindow_AlwaysOnTop(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSCWindow_AcceptsClickThrough(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_AcceptsClickThrough(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+	
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+    
+    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    if (!view) return errNone;
+	if(IsTrue(b))
+		[view setAcceptsClickThrough:YES];
+	else
+		[view setAcceptsClickThrough:NO];		
+	return errNone;
+}
+
 int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed)
 {
@@ -2970,7 +2987,8 @@ void initGUIPrimitives()
     
 	definePrimitive(base, index++, "_SCWindow_Show", prSCWindow_Show, 1, 0);	
 	definePrimitive(base, index++, "_SCWindow_Hide", prSCWindow_Hide, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_AlwaysOnTop", prSCWindow_AlwaysOnTop, 2, 0);	
+	definePrimitive(base, index++, "_SCWindow_AlwaysOnTop", prSCWindow_AlwaysOnTop, 2, 0);
+	definePrimitive(base, index++, "_SCWindow_AcceptsClickThrough", prSCWindow_AcceptsClickThrough, 2, 0);
 
 	definePrimitive(base, index++, "_SCWindow_SetName", prSCWindow_SetName, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_SetAlpha", prSCWindow_SetAlpha, 2, 0);	
