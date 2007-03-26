@@ -10,7 +10,7 @@ FileReader {
 	*read { arg path, skipEmptyLines=false, skipBlanks=false, func, delimiter; 
 		var f, table; 
 		f = File(path, "r"); 
-		if (f.isOpen.not) { warn("TabFileReader: file" + path + "not found.") ^nil };
+		if (f.isOpen.not) { warn("FileReader: file" + path + "not found.") ^nil };
 		table = this.new(f).read(skipEmptyLines, skipBlanks, func, (delimiter));
 		f.close;
 		^table;
