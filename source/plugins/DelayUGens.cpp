@@ -1015,6 +1015,10 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 	float recLevel_slope = CALCSLOPE(recLevel, unit->m_recLevel);
 	float preLevel_slope = CALCSLOPE(preLevel, unit->m_preLevel);
 	
+	/* reset recLevel and preLevel to use the previous value ... bug fix */
+	recLevel = unit->m_recLevel;
+	preLevel = unit->m_preLevel;
+	
 	if (loop) {
 		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 			unit->mDone = false;
