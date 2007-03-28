@@ -62,7 +62,59 @@ NetAddr {
 		_NetAddr_SendBundle
 		^this.primitiveFailed;
 	}
+	sendStatusMsg {
+		this.sendMsg("/status");
+	}
+	sendClumpedBundles { arg time ... args;		
+		if(args.bundleSize > 65535) {// udp max size.
+				args.clumpBundles.do { |item|
+					if(time.notNil) { time = time + 1e-9 }; // make it a nanosecond later
+					this.sendBundle(time, *item) 
+				};
+			} {
+				this.sendBundle(time, *args)
+		}
+	}
 	
+	sync { arg condition, bundles, latency; // array of bundles that cause async action
+		var resp, id;
+		if (condition.isNil) { condition = Condition.new };
+		if(bundles.isNil) {
+			id = this.makeSyncResponder(condition);
+			this.sendBundle(latency, ["/sync", id]);
+			condition.wait;
+		} {
+			if(bundles.bundleSize > 65515) { // 65515 = 65535 - 16 - 4 (sync msg size)
+				bundles.clumpBundles.do { |item|
+					id = this.makeSyncResponder(condition);
+					this.sendBundle(latency, *(item ++ [["/sync", id]]));
+					if(latency.notNil) { latency = latency + 1e-9 };
+					condition.wait;
+				}
+			} {
+				id = this.makeSyncResponder(condition);
+				this.sendBundle(latency, *(bundles ++ [["/sync", id]]));
+				condition.wait;
+			}
+		};
+		// maybe needed: a timeout
+	}
+	
+	makeSyncResponder { arg condition;
+			var id = UniqueID.next;
+			var resp;
+			
+			resp = OSCresponderNode(this, "/synced", {|time, resp, msg|
+				if (msg[1] == id) {
+					resp.remove;
+					condition.test = true;
+					condition.signal;
+				};
+			}).add;
+			condition.test = false;
+			^id
+	}
+			
 	isConnected {
 		^socket.notNil
 	}
@@ -90,6 +142,8 @@ NetAddr {
 	ip {
 		^addr.asIPString
 	}
+	
+	hasBundle { ^false }
 
 	printOn { | stream |
 		super.printOn(stream);
@@ -119,6 +173,7 @@ NetAddr {
 
 BundleNetAddr : NetAddr {
 	var <saveAddr, <>bundle;
+	var <async = false;
 
 	*copyFrom { arg addr, bundle;
 		^super.newCopyArgs(addr.addr, addr.port, addr.hostname, addr.socket, addr, bundle ? []);
@@ -133,25 +188,55 @@ BundleNetAddr : NetAddr {
 	sendBundle { arg time ... args;
 		bundle = bundle.addAll( args );
 	}
-	
-	closeBundle { arg time;
-		var size;
-		if(time != false) {
-			size = bundle.bundleSize;
-			if(size > 65535) {// udp max size.
-				bundle.clumpBundles.do { |item, i|
-					item.postln;
-					saveAddr.sendBundle(1e-9 * i + time, *item) 
-				};
-			} {
-				saveAddr.sendBundle(time, *bundle)
-			}
-		};
-		^bundle
+	sendClumpedBundles { arg time ... args;
+		bundle = bundle.addAll( args );
 	}
+	sendStatusMsg {} // ignore status messages
 		
 	recover {
 		^saveAddr.recover
 	}
-}
+	hasBundle { ^true }
 
+		
+	sync { arg condition, bundles, latency;
+		bundle = bundle.add([\syncFlag, bundles, latency]); 
+			// not sure about condition. here we ignore it.
+		async = true;
+	}
+
+	closeBundle { arg time;
+		var bundleList, lastBundles;
+		if(async.not) {
+			^saveAddr.sendClumpedBundles(time, *bundle);
+		};
+		if(time != false) {
+			forkIfNeeded {
+					bundleList = this.splitBundles(time);
+					lastBundles = bundleList.pop;
+					bundleList.do { |bundles|
+						var t = bundles.removeAt(0);
+						saveAddr.sync(nil, bundles, t); // make an independent condition.
+					};
+					saveAddr.sendClumpedBundles(*lastBundles);  // time ... args
+			}
+		};
+		^bundle
+	}
+	
+	splitBundles { arg time;
+		var res, curr;
+		curr = [time]; // first element in the array is always the time
+		bundle.do { |item|
+			if(item[0] === \syncFlag) {
+				curr = curr.addAll(item[1]); // then comes the messages
+				res = res.add(curr);
+				curr = [item[2]]; // time
+			} {
+				curr = curr.add(item)
+			}
+		};
+		res = res.add(curr);
+		^res
+	}
+}

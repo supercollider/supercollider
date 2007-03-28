@@ -1,7 +1,7 @@
 
 + Server {
 	makeWindow { arg w;
-		var active, booter, killer, makeDefault, running, booting, stopped;
+		var active, booter, killer, makeDefault, running, booting, stopped, bundling;
 		var recorder, scoper;
 		var countsViews, ctlr;
 		var dumping=false, label;
@@ -120,28 +120,41 @@
 				active.stringColor_(Color.yellow(0.9));
 				//booter.setProperty(\value,0);
 			};
+			bundling = {
+				active.stringColor_(Color.new255(237, 157, 196));
+				booter.setProperty(\value,1);
+				recorder.enabled = false;
+			};
 			
 			w.onClose = {
-				//OSCresponder.removeAddr(addr);
-				//this.stopAliveThread;
-				//this.quit;
 				window = nil;
 				ctlr.remove;
 			};
 		},{	
 			running = {
+				active.stringColor = Color.red;
 				active.background = Color.red;
 				recorder.enabled = true;
 			};
 			stopped = {
+				active.stringColor = Color.red;
 				active.background = Color.black;
 				recorder.setProperty(\value,0);
 				recorder.enabled = false;
 
 			};
 			booting = {
+				active.stringColor = Color.red;
 				active.background = Color.yellow;
 			};
+			
+			bundling = {
+				active.stringColor = Color.new255(237, 157, 196);
+				active.background = Color.red(0.5);
+				booter.setProperty(\value,1);
+				recorder.enabled = false;
+			};
+			
 			w.onClose = {
 				// but do not remove other responders
 				this.stopAliveThread;
@@ -193,7 +206,8 @@
 			})
 			.put(\cmdPeriod,{
 				recorder.setProperty(\value,0);
-			});	
+			})
+			.put(\bundling, bundling);	
 		this.startAliveThread;
 	}
 }

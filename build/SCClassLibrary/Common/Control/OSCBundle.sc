@@ -37,10 +37,13 @@ OSCBundle {
 	
 	doPrepare { arg server, onComplete;
 		if(preparationMessages.isNil) { ^onComplete.value };
+		
 		Routine.run {
+			/*
 			var packetSize = 16, bundle;
 			if(safeSizes) {
 				bundle = [];
+				
 				preparationMessages.do { |msg|
 					var msgSize = msg.msgSize; 
 										// this is not exactly true, as we'll pack it in a 
@@ -58,9 +61,14 @@ OSCBundle {
 				if(packetSize > 0) { // send last one
 					server.sync(Condition.new, bundle);
 				}
+				
+				
 			} {
 				server.sync(Condition.new,preparationMessages)
 			};
+			*/
+			//postf("preparationMessages: %\n", preparationMessages.asCompileString);
+			server.sync(Condition.new, preparationMessages);
 			onComplete.value;
 		};
 	}

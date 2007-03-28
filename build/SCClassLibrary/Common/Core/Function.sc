@@ -129,6 +129,10 @@ Function : AbstractFunction {
 		^Routine(this, stackSize).play(clock, quant);
 	}
 	
+	forkIfNeeded {
+		if(thisThread.isKindOf(Routine), this, { Routine.run(this) })
+	}
+	
 	awake { arg beats, seconds, clock;
 		var time = seconds; // prevent optimization
 		^this.value(beats, seconds, clock)

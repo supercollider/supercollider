@@ -215,23 +215,7 @@ Server : Model {
 	}
 	
 	sync { arg condition, bundles, latency; // array of bundles that cause async action
-		var resp, id;
-		if (condition.isNil) { condition = Condition.new };
-		id = UniqueID.next;
-		resp = OSCresponderNode(addr, "/synced", {|time, resp, msg|
-			if (msg[1] == id) {
-				resp.remove;
-				condition.test = true;
-				condition.signal;
-			};
-		}).add;
-		condition.test = false;
-		if(bundles.isNil) {
-			addr.sendBundle(latency, ["/sync", id]);
-		} {
-			addr.sendBundle(latency, *(bundles ++ [["/sync", id]]));
-		};
-		condition.wait;
+		addr.sync(condition, bundles, latency)
 	}
 	
 	schedSync { arg func;
@@ -281,11 +265,15 @@ Server : Model {
 	}
 	
 	serverRunning_ { arg val;
-		if (val != serverRunning, {
-			serverRunning = val;
-			if (serverRunning.not) { recordNode = nil; };
-			{ this.changed(\serverRunning); }.defer;
-		});
+		if(addr.hasBundle) {
+			{ this.changed(\bundling); }.defer;
+		} {
+			if (val != serverRunning) {
+				serverRunning = val;
+				if (serverRunning.not) { recordNode = nil };
+				{ this.changed(\serverRunning); }.defer;
+			}
+		};
 	}
 	
 	wait { arg responseName;
@@ -500,7 +488,7 @@ Server : Model {
 	}
 	
 	status {
-		addr.sendMsg("/status");
+		addr.sendStatusMsg
 	}
 	notify { arg flag=true;
 		notified = flag;
@@ -562,7 +550,14 @@ Server : Model {
 	}
 	
 	// bundling support
-	openBundle { arg bundle;  // pass in a bundle that you want to continue adding to, or nil for a new bundle.
+	
+	
+	openBundle { arg bundle;	// pass in a bundle that you want to 
+							// continue adding to, or nil for a new bundle.
+		if(addr.hasBundle) { 
+			bundle = addr.bundle.addAll(bundle);
+			addr.bundle = []; // debatable
+		};
 		addr = BundleNetAddr.copyFrom(addr, bundle);
 	}
 	closeBundle { arg time; // set time to false if you don't want to send.
@@ -581,6 +576,9 @@ Server : Model {
 			error.throw
 		}
 		^bundle
+	}
+	bind { arg func;
+		^this.makeBundle(this.latency, func)
 	}
 	
 	// internal server commands
