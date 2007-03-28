@@ -10,7 +10,7 @@
 Thread : Stream {
 	var <state=0, func, stack, method, block, frame, ip=0, sp=0;
 	var numpop=0, receiver, numArgsPushed=0;
-	var parent, terminalValue;
+	var <parent, terminalValue;
 	var <primitiveError=0, <primitiveIndex=0, randData=0;
 	var <beats=0.0, <seconds=0.0, <clock, <nextBeat, <>endBeat, <>endValue;
 	var environment;
@@ -51,6 +51,10 @@ Thread : Stream {
 		_Thread_GetRandData
 	}
 	failedPrimitiveName { _PrimName }
+	
+	handleError { arg error;
+		(exceptionHandler ? parent).handleError(error)
+	}
 	
 	// these make Thread act like an Object not like Stream.
 	next { ^this }
@@ -103,14 +107,14 @@ Routine : Thread {
 		^this.primitiveFailed
 	}
 	
-	p { ^Prout(func) }
+	p { ^Prout(func) }	
 	
 	storeArgs { ^[func] }
 	storeOn { arg stream;
 		stream << this.class.name;
 		this.storeParamsOn(stream);
 		this.storeModifiersOn(stream);
-	}	
+	}
 		
 	// PRIVATE
 	awake { arg inBeats, inSeconds, inClock;
@@ -124,4 +128,3 @@ Routine : Thread {
 		nil.alwaysYield;
 	}
 }
-

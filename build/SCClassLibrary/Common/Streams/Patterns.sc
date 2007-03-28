@@ -564,3 +564,22 @@ Ptime : Pattern {
 	}
 }
 
+// if an error is thrown in the stream, func is evaluated 
+
+Pprotect : FilterPattern {
+	var <>func;
+	*new { arg pattern, func;
+		^super.new(pattern).func_(func)
+	}
+	asStream {
+		var rout = Routine(pattern.embedInStream(_));
+		rout.exceptionHandler = { |error|Ê
+			func.value(error, rout); 
+			nil.handleError(error) 
+		};
+		^rout
+	}
+}
+
+
+

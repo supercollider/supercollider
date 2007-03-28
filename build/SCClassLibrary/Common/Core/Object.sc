@@ -243,7 +243,7 @@ Object  {
 			this.dump;
 			^this
 		};
-		thisThread.exceptionHandler.handleError(this);
+		thisThread.handleError(this);
 	}
 	
 			
