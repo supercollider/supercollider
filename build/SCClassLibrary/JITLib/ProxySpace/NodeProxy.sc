@@ -372,10 +372,13 @@ NodeProxy : BusPlug {
 			};
 			
 			if(server.serverRunning) {
+				now = awake && now;
+				if(now) {
+					this.prepareToBundle(nil, bundle);
+				};
 				container.loadToBundle(bundle, server);
 				loaded = true;
-				if(awake && now) {
-					this.prepareToBundle(nil, bundle);
+				if(now) {
 					container.wakeUpParentsToBundle(bundle);
 					this.sendObjectToBundle(bundle, container, extraArgs, index);
 				};
@@ -556,11 +559,17 @@ NodeProxy : BusPlug {
 	controlKeysValues { arg keys, except = #[\out, \i_out, \gate, \fadeTime];
 		var list, fullList = this.controlNames(except);
 		if(keys.isNil or: { keys.isEmpty }) {
-			list = fullList.collect { |el, i| [el.name, el.defaultValue] }
+			list = Array(fullList.size * 2);
+			fullList.do { |cn| list.add(cn.name).add(cn.defaultValue) }
 		} {
-			list = keys.collect { |key| [key, fullList.detect { |pair| pair.first == key }] }
+			list = Array(keys.size * 2);
+			keys.do { |key|
+				var val = fullList.detect { |cn| cn.name == key };
+				val = if(val.isNil)Ê{ 0 }Ê{ val.defaultName };
+				list.add(key).add(val)
+			}
 		}
-		^list.flat;
+		^list;
 	}
 	
 	// derive names and default args from synthDefs
@@ -696,7 +705,7 @@ NodeProxy : BusPlug {
 				NodeWatcher.register(group);
 				group.isPlaying = server.serverRunning;
 				if(argGroup.isNil and: { parentGroup.isPlaying }) { argGroup = parentGroup };
-				bundle.add(group.newMsg(argGroup ?? { server.asGroup }, addAction));
+				bundle.addPrepare(group.newMsg(argGroup ?? { server.asGroup }, addAction));
 		}
 	}
 
