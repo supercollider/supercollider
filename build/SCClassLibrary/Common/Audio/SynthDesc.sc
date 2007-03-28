@@ -18,7 +18,7 @@ SynthDesc {
 	var <>controls, <>inputs, <>outputs; 
 	
 	var <>constants, <>def;
-	var <>msgFunc, <>hasGate = false;
+	var <>msgFunc, <>hasGate = false, <>canFreeSynth = false;
 	
 	send { arg server, completionMsg; 
 		def.send(server, completionMsg);
@@ -171,6 +171,8 @@ SynthDesc {
 					if (control.notNil) { bus = control.name };
 				};
 				outputs = outputs.add( IODesc(rate, numInputs - ugenClass.numFixedArgs, bus))
+			} {
+				canFreeSynth = canFreeSynth or: { ugen.canFreeSynth };
 			}}
 		};
 	}
