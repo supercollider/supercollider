@@ -164,7 +164,17 @@ PatternProxy : Pattern {
 	*put {}
 	key_ {}
 	
-	// clear { this.class.all.removeAt(this.key).stop; ^nil }	
+	clear { 
+		this.stop;
+		this.source = nil;
+		^nil 
+	}
+	
+	remove {
+		this.class.all.removeAt(this.key);
+		this.clear;
+	}
+		
 	repositoryArgs { ^[this.key, this.source] }
 	
 	*postRepository { arg keys, stream;
@@ -253,14 +263,10 @@ TaskProxy : PatternProxy {
 	convertFunction { arg func;
 			^Prout {
 					var inval = func.def.prototypeFrame !? { this.defaultEvent };
-					try { // this error handling only helps if error is not in substream
-						func.value(inval);
-					} { |error|
-						player.streamError;
-						error.throw; 
-					}
+					func.value(inval)
 			}
 	}
+	
 	
 	isEventPattern { ^true }
 	
@@ -284,7 +290,7 @@ TaskProxy : PatternProxy {
 	
 	playOnce { arg argClock, doReset = (false), quant;
 		clock = argClock ? clock;
-		^PauseStream.new(this.asStream).play(clock, doReset, quant ? this.quant)
+		^PauseStream.new(this.asProtectedStream).play(clock, doReset, quant ? this.quant)
 	}
 	
 	play { arg argClock, doReset=false, quant;
@@ -304,6 +310,9 @@ TaskProxy : PatternProxy {
 	}
 	wakeUp {	
 			if(this.isPlaying) { this.play(quant:playQuant) }	}
+	asProtectedStream {
+		^Pprotect(this, { if(this.player.notNil) { this.player.streamError } }).asStream
+	}
 	
 	// check playing states:
 	isPlaying { ^player.notNil and: { player.wasStopped.not } }
@@ -392,7 +401,6 @@ EventPatternProxy : TaskProxy {
 			} {
 				new = pattern
 			};
-		//	if(new.isKindOf(Event)) { new = Pn(new) }; // loop single event
 			if(fadeTime.isNil) {
 				if(delta == 0) {
 					str.next(nil); // finish
@@ -435,7 +443,7 @@ EventPatternProxy : TaskProxy {
 	play { arg argClock, protoEvent, quant, doReset=false;
 		playQuant = quant ? this.quant;
 		if(player.isNil) { 
-			player = EventStreamPlayer(this.asStream, protoEvent);
+			player = EventStreamPlayer(this.asProtectedStream, protoEvent);
 			player.play(argClock, doReset, quant ? this.quant);
 		} {
 				// resets  when stream has ended or after pause/cmd-period:
@@ -646,4 +654,3 @@ Pdict : Pattern {
 		^inval
 	}
 }
-
