@@ -11,9 +11,7 @@ UGen : AbstractFunction {
 	
 	// instance creation
 	*new1 { arg rate ... args;
-		if (rate.isKindOf(Symbol).not) { 
-			^Error("rate must be Symbol. probably called 'new' instead of .ar or .kr") 
-		};
+		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
 		^super.new.rate_(rate).addToSynth.init( *args ) 
 	}
 	*newFromDesc { arg rate, numOutputs, inputs, specialIndex;
