@@ -5,20 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a0915f; min-height: 12.0px}
-span.s1 {font: 8.3px Helvetica}
-span.s2 {color: #0000ff}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9e9062; min-height: 12.0px}
+span.s1 {font: 6.9px Helvetica}
+span.s2 {color: #0024f8}
 span.s3 {font: 11.0px Georgia}
-span.s4 {font: 12.0px Helvetica; color: #0000ff}
+span.s4 {font: 12.0px Helvetica; color: #0024f8}
 span.s5 {color: #000000}
 span.s6 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
@@ -34,7 +34,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">Disclaimer: there is no time, really; punctuality is your personal responsibility though.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p4"><i>Just in time programming</i> (or: <i>live coding</i><span class="s1"><i><sup>1</sup></i></span><i>, on-the fly-programming, interactive programming </i><span class="s1"><i><sup>2</sup></i></span>) is a paradigm that includes the programming activity itself in the program's operation. This means a program is not seen as a tool that is made first, then to be productive, but a dynamic construction process of description and conversation - writing code becomes a closer part of musical practice. SuperCollider, being a dynamic programming language, provides several possibilities for modification of a running program - this library attempts to extend, simplify and develop them, mainly by providing placeholders<i> (proxies)</i> that can be modified and used in calcuations while playing. There is some specific networking classes which are made to simplify the distribution of<span class="Apple-converted-space">  </span>live coding activity.</p>
+<p class="p4"><i>Just in time programming</i> (or: <i>live coding</i><span class="s1"><i><sup>1</sup></i></span><i>, on-the fly-programming, interactive programming </i><span class="s1"><i><sup>2</sup></i></span>) is a paradigm that includes the programming activity itself in the program's operation. This means a program is not seen as a tool that is made first, then to be productive, but a dynamic construction process of description and conversation - writing code becomes a closer part of musical practice. SuperCollider, being a dynamic programming language, provides several possibilities for modification of a running program - this library attempts to extend, simplify and develop them, mainly by providing abstract placeholders<i> (proxies)</i> that can be modified and used in calculations while playing. There is some specific networking classes which are made to simplify the distribution of<span class="Apple-converted-space">  </span>live coding activity.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4">Jitlib consists of a number of <i>placeholders</i> (server side and client side) and <i>schemes of access</i>.</p>
@@ -84,8 +84,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">• there is also direct access <i>without</i> using the access schemes: NodeProxy, TaskProxy etc. provide it.</p>
 <p class="p4"><span class="Apple-tab-span">	</span>internally the former use these as base classes.</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>client side: <span class="Apple-tab-span">	</span><a href="Patterns/PatternProxy.html">PatternProxy</a><b>, </b><a href="Patterns/EventPatternProxy.html">EventPatternProxy</a>, <a href="Patterns/TaskProxy.html">TaskProxy</a>, <a href="Patterns/PbindProxy.html">PbindProxy</a><b>, </b><a href="Patterns/Pdict.html">Pdict</a></span></p>
-<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>server side: <span class="Apple-tab-span">	</span><a href="nodeproxy/NodeProxy.html">NodeProxy</a><b>, </b><a href="nodeproxy/RecNodeProxy.html">RecNodeProxy</a></span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>client side: <span class="Apple-tab-span">	</span><a href="Patterns/PatternProxy.html"><span class="s6">PatternProxy</span></a><b>, </b><a href="Patterns/EventPatternProxy.html"><span class="s6">EventPatternProxy</span></a>, <a href="Patterns/TaskProxy.html"><span class="s6">TaskProxy</span></a>, <a href="Patterns/PbindProxy.html"><span class="s6">PbindProxy</span></a><b>, </b><a href="Patterns/Pdict.html"><span class="s6">Pdict</span></a></span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>server side: <span class="Apple-tab-span">	</span><a href="nodeproxy/NodeProxy.html"><span class="s6">NodeProxy</span></a><b>, </b><a href="nodeproxy/RecNodeProxy.html"><span class="s6">RecNodeProxy</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p4">• in remote and local networks thanks to sc-architecture node proxies can be used on any server,<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>as long as it notifies the client and has a correctly initialized default node.</p>
@@ -94,31 +94,32 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>by sharing a common server, using SharedNodeProxy and exchanging code and comments<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>in a chat (see Client)</p>
 <p class="p4"><span class="Apple-tab-span">	</span>networking classes:<span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>experimental:</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="networking/Public.html"><span class="s2">Public</span></a> distribute environments over networks.</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="networking/public_proxy_space.html"><span class="s2">public_proxy_space</span></a><b> </b>how to distribute a ProxySpace<span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="networking/Client.html"><span class="s2">Client</span></a><b> </b>simplifies client-to-client networking.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stable:</p>
-<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="networking/BroadcastServer.html">BroadcastServer</a></span></p>
-<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="../Control/OSCBundle.html">OSCBundle</a></span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="networking/BroadcastServer.html"><span class="s6">BroadcastServer</span></a></span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="../Control/OSCBundle.html"><span class="s6">OSCBundle</span></a></span></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="s5">tutorials:<span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/proxyspace_examples.html">proxyspace_examples</a></span></p>
-<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_efficiency.html">jitlib_efficiency</a></span></p>
-<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/the_lazy_proxy.html">the_lazy_proxy</a></span></p>
-<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_fading.html">jitlib_fading</a></span></p>
-<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_asCompileString.html">jitlib_asCompileString</a></span></p>
-<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/recursive_phrasing.html">recursive_phrasing</a></span></p>
-<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_networking.html">jitlib_networking</a></span></p>
+<p class="p6"><span class="s5">tutorials:<span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span></b><a href="tutorials/proxyspace_examples.html"><span class="s6">proxyspace_examples</span></a></span></p>
+<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_efficiency.html"><span class="s6">jitlib_efficiency</span></a></span></p>
+<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/the_lazy_proxy.html"><span class="s6">the_lazy_proxy</span></a></span></p>
+<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_fading.html"><span class="s6">jitlib_fading</span></a></span></p>
+<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_asCompileString.html"><span class="s6">jitlib_asCompileString</span></a></span></p>
+<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/recursive_phrasing.html"><span class="s6">recursive_phrasing</span></a></span></p>
+<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_networking.html"><span class="s6">jitlib_networking</span></a></span></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p4">live coding without jitlib:<span class="Apple-tab-span">	</span><a href="tutorials/basic_live_coding_techniques.html"><span class="s2">basic_live_coding_techniques</span></a></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4">storage:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="nodeproxy/NodeMap.html"><span class="s2">NodeMap</span></a> storing control setting</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="nodeproxy/Order.html"><span class="s2">Order</span></a> <span class="Apple-tab-span">	</span>ordered collection</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="nodeproxy/Order.html"><span class="s2">Order</span></a> <span class="Apple-tab-span">	</span>ordered collection</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -127,7 +128,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p4"><b>UGens<span class="Apple-tab-span">	</span></b></p>
 <p class="p4"><b><span class="Apple-tab-span">	</span></b>TChoose</p>
-<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span></b><a href="ugens/TWChoose.html">TWChoose</a></span></p>
+<p class="p6"><span class="s5"><b><span class="Apple-tab-span">	</span></b><a href="ugens/TWChoose.html"><span class="s6">TWChoose</span></a></span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p7"><br></p>
@@ -138,6 +139,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">Julian Rohrhuber,<span class="Apple-converted-space">  </span>rohrhuber@uni-hamburg.de</p>
 <p class="p2"><br></p>
 <p class="p4">Thanks a lot for all the feedback and ideas!</p>
+<p class="p2"><br></p>
+<p class="p4">History and GUI classes are written by Alberto de Campo.</p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
 <p class="p4">[1] see for example <i>http://toplap.org</i></p>
@@ -157,15 +160,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">2007</p>
 <p class="p4"><span class="Apple-tab-span">	</span>february<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>added prime method for NodeProxy to allow setting sources quietly</p>
+<p class="p4"><span class="Apple-tab-span">	</span>march<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>errors in Pdef classes are handled correctly, so that proxy player stops.</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>clear an remove messages added to PatternProxy.</p>
 <p class="p2"><br></p>
 <p class="p4">2006<span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>december<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>added quantize method</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>fixed addAction bug in Monitor, updated helpfile</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>fixed addAction bug in Monitor, updated helpfile</p>
 <p class="p4"><span class="Apple-tab-span">	</span>august<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>EnvironmentRedirect (and so ProxySpace) now return the source when<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>using the setter envirPut: ~out = 8; returns 8 now.</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>NodeProxy<span class="Apple-converted-space">  </span>adapts inputs to appropriate rate.</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>using the setter envirPut: ~out = 8; returns 8 now.</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>NodeProxy<span class="Apple-converted-space">  </span>adapts inputs to appropriate rate.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>july<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>optimized graph layout in NodeProxy to minimize latency</p>
+<p class="p4"><span class="Apple-tab-span">	</span>july<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>optimized graph layout in NodeProxy to minimize latency</p>
 <p class="p2"><br></p>
 </body>
 </html>
