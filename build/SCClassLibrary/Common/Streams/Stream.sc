@@ -2,6 +2,7 @@
 Stream : AbstractFunction {	
 	// 'reset' is defined in class Object to do nothing.
 	// reading
+	
 	next { ^this.subclassResponsibility(thisMethod) }
 	iter { ^this }
 		
@@ -296,10 +297,10 @@ CleanupStream : Stream {
 
 PauseStream : Stream
 {
-	var <stream, <originalStream, <clock, <nextBeat, <streamHasEnded=false;
+	var <stream, <originalStream, <clock, <nextBeat, <>streamHasEnded=false;
 	var isWaiting = false, era=0;
 	
-	*new { arg argStream, clock; 
+	*new { arg argStream, clock;
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default) 
 	}
 	
@@ -310,7 +311,7 @@ PauseStream : Stream
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
 		streamHasEnded = false;
-		stream = originalStream; 
+		stream = originalStream;			
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
 		era = CmdPeriod.era;
@@ -329,7 +330,7 @@ PauseStream : Stream
 		isWaiting = false;
 	}
 	removedFromScheduler { nextBeat = nil; this.stop }
-	streamError { this.removedFromScheduler; streamHasEnded = true; }
+	streamError { stream = nextBeat = nil;  streamHasEnded = true; isWaiting = false; }
 	
 	wasStopped { 
 		^streamHasEnded.not and: { stream.isNil } // stopped by clock or stop-message
@@ -387,17 +388,7 @@ EventStreamPlayer : PauseStream {
 		^super.new(stream).event_(event ? Event.default);
 	}
 	
-		// play can and should inherit from PauseStream, don't know why it's duplicated here
-//	play { arg argClock, doReset = false, quant=1.0;
-//		if (stream.notNil) { "already playing".postln; ^this };
-//		if (doReset) { this.reset };
-//		clock = argClock ? clock ? TempoClock.default;
-//		streamHasEnded = false;
-//		stream = originalStream; 
-//		clock.play(this, quant);
-//	}
-	
-	stop { stream.next(nil); stream = nextBeat = nil;  }
+	stop { stream.next(nil); stream = nextBeat = nil; isWaiting = false;  }
 	mute { muteCount = muteCount + 1; }
 	unmute { muteCount = muteCount - 1; }
 	
@@ -418,7 +409,6 @@ EventStreamPlayer : PauseStream {
 	
 	asEventStreamPlayer { ^this }
 }
-
 
 ////////////////////////////////////////////////////////////////////////
 
