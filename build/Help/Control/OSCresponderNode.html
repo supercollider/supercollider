@@ -96,7 +96,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">x.free;</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p10"><span class="s4"><b>Watching</b></span><b> for something specific</b></p>
+<p class="p10"><b>Watching for something specific</b></p>
 <p class="p6"><br></p>
 <p class="p5">// end of group message</p>
 <p class="p6"><br></p>
@@ -115,7 +115,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">g.free;</p>
 <p class="p6"><br></p>
 <p class="p7">a.remove;</p>
-<p class="p11"><br></p>
+<p class="p6"><br></p>
 <p class="p11"><br></p>
 <p class="p4"><b>Watching for errors</b></p>
 <p class="p11"><br></p>
@@ -128,9 +128,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>secs = (time%60).round(0.1);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(secs&lt;10,{ secs = <span class="s5">"0"</span>++secs.asString; },{ secs=secs.asString;});</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// put this on a gui</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//errors.label = msg[1].asString + msg[2].asString + "("++(mins.asString++":"++secs)++")";</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//errors.label = "% % (%:%)".format(msg[1], msg[2], mins, secs);</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//errors.stringColor = Color.white;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(msg[1].asString + msg[2].asString + <span class="s5">"("</span>++(mins.asString++<span class="s5">":"</span>++secs)++<span class="s5">")"</span>).postln;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">"% % (%:%)"</span>.format(msg[1], msg[2], mins, secs).postln;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}.defer</p>
 <p class="p7">});</p>
 <p class="p7">f.add;</p>
