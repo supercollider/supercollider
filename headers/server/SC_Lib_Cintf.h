@@ -118,8 +118,10 @@ enum {
 
 	cmd_b_allocReadChannel = 54,
 	cmd_b_readChannel = 55,
+	
+	cmd_g_dumptree = 56,
 
-	NUMBER_OF_COMMANDS = 56
+	NUMBER_OF_COMMANDS = 57
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];

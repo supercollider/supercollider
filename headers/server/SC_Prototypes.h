@@ -160,6 +160,7 @@ void Group_SetControl(struct Group *inGroup, int32 inHash, int32 *inName, uint32
 void Group_MapControl(Group* inGroup, uint32 inIndex, uint32 inBus);
 void Group_MapControl(Group* inGroup, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus);
 void Group_Trace(Group* inGroup);
+void Group_DumpTree(Group* inGroup);
 
 ////////////////////////////////////////////////////////////////////////
 

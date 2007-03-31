@@ -92,7 +92,37 @@ void Group_Trace(Group *inGroup)
 	}
 }
 
+void Group_DumpNodeTree(Group *inGroup)
+{
+	static int tabCount = 0;
+	if(tabCount == 0) scprintf("NODE TREE Group %d\n", inGroup->mNode.mID);
+	tabCount++;
+	Node *child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		for(int i = 0; i < tabCount; i ++) scprintf("   "); // small 'tabs'
+		scprintf("%d %s\n", child->mID, (char*)child->mDef->mName);
+		if (child->mIsGroup) {
+			Group_DumpTree((Group*)child);
+		}
+		(*child->mCalcFunc)(child);
+		child = next;
+	}			
+	tabCount--;
+}
 
+void Group_CalcDumpTree(Group *inGroup)
+{
+	Group_DumpNodeTree(inGroup);
+	inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
+}
+
+void Group_DumpTree(Group* inGroup)
+{
+	if (inGroup->mNode.mCalcFunc == (NodeCalcFunc)&Group_Calc) {
+		inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_CalcDumpTree;
+	}
+}
 
 void Group_DeleteAll(Group *inGroup)
 {

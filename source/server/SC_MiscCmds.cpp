@@ -219,6 +219,21 @@ SCErr meth_n_trace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 	return kSCErr_None;
 }
 
+SCErr meth_g_dumptree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_dumptree(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+{
+	sc_msg_iter msg(inSize, inData);	
+	while (msg.remain()) {
+		Group *group = Msg_GetGroup(inWorld, msg);
+		if (!group) return kSCErr_GroupNotFound;
+		
+		Group_DumpTree(group);
+	}
+	
+	return kSCErr_None;
+}
+
+
 SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
@@ -1462,7 +1477,8 @@ void initMiscCommands()
 	NEW_COMMAND(b_query);
 			
 	NEW_COMMAND(s_noid);		
-	NEW_COMMAND(sync);		
+	NEW_COMMAND(sync);
+	NEW_COMMAND(g_dumptree);
 }
 
 
