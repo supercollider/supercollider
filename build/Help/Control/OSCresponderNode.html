@@ -5,22 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
+span.s2 {color: #0024f8}
 span.s3 {color: #000000}
-span.s4 {color: #0019b7}
+span.s4 {color: #0000bf}
 span.s5 {color: #606060}
-span.s6 {color: #326f17}
+span.s6 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -43,18 +46,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// application 1:</p>
 <p class="p5"><span class="s3">n = </span><span class="s4">NetAddr</span><span class="s3">(</span><span class="s5">"127.0.0.1"</span><span class="s3">, 57120); </span>// the url should be the one of computer of app 2 (or nil)</p>
 <p class="p6"><br></p>
-<p class="p7">o = <span class="s4">OSCresponder</span>(n, <span class="s6">'/chat'</span>, { <span class="s4">|t, r, msg|</span> msg[1].postln }).add;</p>
+<p class="p7">o = <span class="s4">OSCresponder</span>(n, <span class="s6">'/chat'</span>, { <span class="s4">|t, r, msg|</span> (<span class="s5">"time:"</span> + t).postln; msg[1].postln }).add;</p>
 <p class="p6"><br></p>
 <p class="p5">// application 2:</p>
 <p class="p5"><span class="s3">m = </span><span class="s4">NetAddr</span><span class="s3">(</span><span class="s5">"127.0.0.1"</span><span class="s3">, 57120); </span>// the url should be the one of computer of app 1</p>
 <p class="p8"><span class="s3">m.sendMsg(</span>"/chat"<span class="s3">, </span>"Hello App 1"<span class="s3">);</span></p>
+<p class="p6"><br></p>
+<p class="p5">// sending bundles (including timestamps)</p>
+<p class="p7">(</p>
+<p class="p8"><span class="s3">m.sendBundle(2.0, [</span>"/chat"<span class="s3">, </span>"Hello App 1"<span class="s3">], [</span>"/chat"<span class="s3">, </span>"Hallo Wurld"<span class="s3">]);</span></p>
+<p class="p8"><span class="s3">m.sendBundle(0.0, [</span>"/chat"<span class="s3">, </span>"Hello App 1"<span class="s3">], [</span>"/chat"<span class="s3">, </span>"Hallo Wurld"<span class="s3">]);</span></p>
+<p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p5">// end application 2:</p>
 <p class="p7">m.disconnect;</p>
 <p class="p6"><br></p>
 <p class="p5">// end application 1:</p>
 <p class="p7">n.disconnect; o.remove;</p>
-<p class="p3"><br></p>
+<p class="p9"><br></p>
 <p class="p3"><br></p>
 <p class="p4"><b>Sending data from server to client</b></p>
 <p class="p3"><br></p>
@@ -72,22 +81,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">}).send(s);</p>
 <p class="p6"><br></p>
 <p class="p5">// register to receive this message</p>
-<p class="p7"><span class="s4">a = OSCresponderNode</span>(s.addr, <span class="s6">'/tr'</span>, { <span class="s4">arg</span> time, responder, msg;</p>
+<p class="p7">a = <span class="s4">OSCresponderNode</span>(s.addr, <span class="s6">'/tr'</span>, { <span class="s4">arg</span> time, responder, msg;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>[time, responder, msg].postln;</p>
 <p class="p7">}).add;</p>
-<p class="p7"><span class="s4">b = OSCresponderNode</span>(s.addr, <span class="s6">'/tr'</span>, { <span class="s4">arg</span> time, responder, msg;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>"this is another call".postln;</p>
+<p class="p7">b = <span class="s4">OSCresponderNode</span>(s.addr, <span class="s6">'/tr'</span>, { <span class="s4">arg</span> time, responder, msg;</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>"this is another call"<span class="s3">.postln;</span></p>
 <p class="p7">}).add;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p8"><span class="s4">x = Synth</span><span class="s3">.new(</span>"help-SendTrig"<span class="s3">);</span></p>
+<p class="p8"><span class="s3">x = </span><span class="s4">Synth</span><span class="s3">.new(</span>"help-SendTrig"<span class="s3">);</span></p>
 <p class="p7">a.remove;</p>
 <p class="p7">b.remove;</p>
 <p class="p7">x.free;</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p4"><b>Watching for something specific</b></p>
+<p class="p10"><span class="s4"><b>Watching</b></span><b> for something specific</b></p>
 <p class="p6"><br></p>
 <p class="p5">// end of group message</p>
 <p class="p6"><br></p>
@@ -106,10 +115,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">g.free;</p>
 <p class="p6"><br></p>
 <p class="p7">a.remove;</p>
-<p class="p6"><br></p>
-<p class="p6"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
 <p class="p4"><b>Watching for errors</b></p>
-<p class="p6"><br></p>
+<p class="p11"><br></p>
 <p class="p5">// example from ServerErrorGui in crucial lib</p>
 <p class="p6"><br></p>
 <p class="p7">f = <span class="s4">OSCresponderNode</span>(s.addr, <span class="s6">'/fail'</span>, { <span class="s4">arg</span> time, responder, msg;</p>
@@ -118,7 +127,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>mins = (time/60).round(1);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>secs = (time%60).round(0.1);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(secs&lt;10,{ secs = <span class="s5">"0"</span>++secs.asString; },{ secs=secs.asString;});</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// put this on a gui</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// put this on a gui</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//errors.label = msg[1].asString + msg[2].asString + "("++(mins.asString++":"++secs)++")";</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//errors.stringColor = Color.white;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(msg[1].asString + msg[2].asString + <span class="s5">"("</span>++(mins.asString++<span class="s5">":"</span>++secs)++<span class="s5">")"</span>).postln;</p>
@@ -126,8 +135,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">});</p>
 <p class="p7">f.add;</p>
 <p class="p6"><br></p>
-<p class="p7">// cause a failure</p>
-<p class="p7">Synth("gthhhhppppppp!");</p>
+<p class="p5">// cause a failure</p>
+<p class="p8"><span class="s4">Synth</span><span class="s3">(</span>"gthhhhppppppp!"<span class="s3">);</span></p>
 <p class="p6"><br></p>
 <p class="p7">f.remove</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
