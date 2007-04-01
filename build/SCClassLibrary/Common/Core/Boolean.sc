@@ -7,6 +7,7 @@ Boolean {
 	|| { ^this.subclassResponsibility(thisMethod) }
 	and { ^this.subclassResponsibility(thisMethod) }
 	or { ^this.subclassResponsibility(thisMethod) }
+	nand { ^this.subclassResponsibility(thisMethod) }
 	
 	
 	keywordWarnings { 
@@ -31,6 +32,7 @@ True : Boolean {
 	|| { arg that; ^this }
 	and { arg that; ^that.value }
 	or { arg that; ^this }
+	nand { arg that; ^that.value.not }
 	binaryValue { ^1 }
 }
 
@@ -41,5 +43,6 @@ False : Boolean  {
 	|| { arg that; ^that.value }
 	and { arg that; ^this }
 	or { arg that; ^that.value }
+	nand { arg that; ^true }
 	binaryValue { ^0 }
 }
