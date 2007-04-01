@@ -14,18 +14,18 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #df2918}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #c43722}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #671b4e}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #5b224c}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0022f5}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0030eb}
 span.s1 {font: 12.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
-span.s4 {color: #0022f5}
+span.s4 {color: #0030eb}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -232,7 +232,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">The server sends an <b>/n_info</b> message for each node to registered clients.<span class="Apple-converted-space"> </span></p>
 <p class="p3">See <b>Node Notifications </b>below for the format of the <b>/n_info</b> message.</p>
 <p class="p2"><br></p>
-<p class="p3"><b>/n_trace<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>trace a node</b></p>
+<p class="p3"><b>/n_trace<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>trace a node</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - node ID</p>
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
@@ -339,6 +339,26 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Traverses all groups below this group and frees all the synths. Sub-groups are not freed. A list of groups may be specified.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>/g_dumpTree<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>post a representation of this group's node subtree.</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>[</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - group ID</p>
+<p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">Posts a representation of this group's node subtree, i.e. all the groups and synths contained within it.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>/g_queryTree<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>get a representation of this group's node subtree.</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>[</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - group ID</p>
+<p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">Request a representation of this group's node subtree, i.e. all the groups and synths contained within it. Replies to the sender with a <b>/g_queryTree.reply </b>message listing all of the nodes contained within the group in the following format:</p>
+<p class="p3"><span class="Apple-tab-span">	</span>[</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - node ID</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - number of child nodes contained within this node. If &gt; 0 this must be a group</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>symbol - the SynthDef name for this node. Groups are named 'group'</p>
+<p class="p3"><span class="Apple-tab-span">	</span>] * number of nodes contained within the group + 1 (for the original group)</p>
+<p class="p3">The order of nodes corresponds to their execution order on the server. Child nodes (those contained within a group) are listed immediately following their parent.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p6"><b>Unit Generator Commands</b></p>

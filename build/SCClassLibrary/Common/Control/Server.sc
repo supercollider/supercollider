@@ -656,84 +656,36 @@ Server : Model {
 	
 	defaultGroup { ^Group.basicNew(this, 1) }
 	
-	// from Crucial
 	queryAllNodes {
-		var probe,probing,resp,nodes,server,report,indent = 0,order=0;
-		var nodeWatcher;
-		
-		nodeWatcher = NodeWatcher.newFrom(this);
-		
-		nodes = IdentityDictionary.new;
-		probing = List.new;
-		
-		probe = { arg nodeID;
-			probing.add(nodeID);
-			this.sendMsg("/n_query",nodeID);
-		};
-		("\nnodes on" + name ++ ":").postln;
-		
-		report = { arg nodeID=0;
-			var child, synth, defName;
-			indent.do({ " ".post });
-			nodes.at(nodeID).use({
-				~order = order;
-				if(~isGroup,{ 
-					("Group(" ++ nodeID ++ ")").postln;
-					child = ~head;
-					indent = indent + 8;
-					while({
-						child > 0
-					},{
-						order = order + 1;
-						report.value(child);
-						child = nodes.at(child).at(\next);
-					});
-					indent = indent - 8;
-				},{
-					synth = nodeWatcher.nodes.at(nodeID);
-					if(synth.notNil, {
-						("Synth" + synth.nodeID + (synth.defName.asString.quote ? "")).postln;
-					},{
-						("Synth" + nodeID).postln;
-					});
-				});
-			});
-		};
-			
-		resp = OSCresponder(this.addr,'/n_info',{ arg a,b,c;
-					var cmd,nodeID,parent,prev,next,isGroup,head,tail;
-					# cmd,nodeID,parent,prev,next,isGroup,head,tail = c;
-					
-					//[cmd,nodeID,parent,prev,next,isGroup,head,tail].debug;
-					
-					nodes.put(nodeID,
-						Environment.make({
-							~nodeID = nodeID;
-							~parent = parent;
-							~prev = prev;
-							~next = next;
-							~isGroup = isGroup == 1;
-							~head = head;
-							~tail = tail;
-						})
-					);
-					
-					if(next > 0,{
-						probe.value(next);
-					});
-					if(isGroup==1,{
-						if(head > 0,{
-							probe.value(head);
+		var resp, done = false;
+		if(isLocal.not, {this.sendMsg("/g_dumpTree", 0);}, {
+			resp = OSCresponderNode(addr, '/g_queryTree.reply', { arg time, responder, msg;
+				var i = 1, tabs = 0, dumpFunc;
+				("NODE TREE Group" + msg[1]).postln;
+				if(msg[2] > 0, {
+					dumpFunc = {|numChildren|
+						tabs = tabs + 1;
+						numChildren.do({
+							i = i + 3;
+							tabs.do({ "   ".post });
+							msg[i].post;
+							(" " ++ msg[i + 2]).postln;
+							if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });	
 						});
-					});
-					probing.remove(nodeID);
-					if(probing.size == 0,{
-						resp.remove;
-						report.value;
-					});
-				}).add;
-				
-		probe.value(0);
+						tabs = tabs - 1;
+					};
+					dumpFunc.value(msg[2]);
+				});
+				done = true;
+			}).add.removeWhenDone;
+			this.sendMsg("/g_queryTree", 0);
+			SystemClock.sched(3, { 
+				done.not.if({
+					resp.remove;
+					"Remote server failed to respond to queryAllNodes!".warn;
+				}); 
+			});
+		})
 	}
 	printOn { |stream|
 		stream << name;

@@ -271,6 +271,25 @@ Group : Node {
 		^[50, nodeID] //"/g_deepFree"
 	}
 	
+	// Introspection
+	dumpTree {
+		server.sendMsg("/g_dumpTree", nodeID)
+	}
+//	queryTree { |action|
+//		var resp, done = false;
+//		resp = OSCresponderNode(server.addr, '/g_queryTree.reply', { arg time, responder, msg;
+//				action.value(msg);
+//				done = true;
+//			}).add.removeWhenDone;
+//		server.sendMsg("/g_queryTree", nodeID);
+//		SystemClock.sched(3, { 
+//			done.not.if({
+//				resp.remove;
+//				"Server failed to respond to Group:queryTree!".warn;
+//			}); 
+//		});
+//	}
+	
 }
 
 Synth : Node {

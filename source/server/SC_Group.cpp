@@ -29,6 +29,7 @@
 #include "SC_Str4.h"
 #include "SC_World.h"
 #include "SC_Errors.h"
+#include "scsynthsend.h"
 
 NodeDef gGroupNodeDef;
 
@@ -122,6 +123,59 @@ void Group_DumpTree(Group* inGroup)
 	if (inGroup->mNode.mCalcFunc == (NodeCalcFunc)&Group_Calc) {
 		inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_CalcDumpTree;
 	}
+}
+
+// count the children for this group (deep)
+void Group_CountNodes(Group* inGroup, int* count)
+{
+	Node *child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		(*count)++;
+		if (child->mIsGroup) {
+			Group_CountNodes((Group*)child, count);
+		}
+		child = next;
+	}	
+}
+
+void Group_QueryTree(Group* inGroup, big_scpacket *packet)
+{
+	packet->addtag('i');
+	packet->addi(inGroup->mNode.mID);
+	
+	// count the children for this group, but not their children (shallow)
+	int count = 0;
+	Node *child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		count++;
+		child = next;
+	}
+	
+	packet->addtag('i');
+	packet->addi(count);
+	
+	packet->addtag('s');
+	packet->adds("group");
+	
+	// now iterate over the children
+	// id, numChildren, defname
+	child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		if (child->mIsGroup) {
+			Group_QueryTree((Group*)child, packet);
+		} else {
+			packet->addtag('i');
+			packet->addtag('i');
+			packet->addtag('s');
+			packet->addi(child->mID);
+			packet->addi(0);
+			packet->adds((char*)child->mDef->mName);
+		}
+		child = next;
+	}	
 }
 
 void Group_DeleteAll(Group *inGroup)

@@ -25,6 +25,7 @@
 #include <ctype.h> // for size_t
 
 #include "SC_Types.h"
+#include "scsynthsend.h"
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -161,6 +162,8 @@ void Group_MapControl(Group* inGroup, uint32 inIndex, uint32 inBus);
 void Group_MapControl(Group* inGroup, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus);
 void Group_Trace(Group* inGroup);
 void Group_DumpTree(Group* inGroup);
+void Group_CountNodes(Group* inGroup, int* count);
+void Group_QueryTree(Group* inGroup, big_scpacket* packet);
 
 ////////////////////////////////////////////////////////////////////////
 

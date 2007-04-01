@@ -219,8 +219,8 @@ SCErr meth_n_trace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 	return kSCErr_None;
 }
 
-SCErr meth_g_dumptree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_g_dumptree(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_g_dumpTree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_dumpTree(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
@@ -232,6 +232,34 @@ SCErr meth_g_dumptree(World *inWorld, int inSize, char *inData, ReplyAddress* /*
 	
 	return kSCErr_None;
 }
+
+SCErr meth_g_queryTree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_queryTree(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{
+	sc_msg_iter msg(inSize, inData);
+	while (msg.remain()) {	
+		Group *group = Msg_GetGroup(inWorld, msg);
+		if (!group) return kSCErr_GroupNotFound;
+		
+		// first count the total number of nodes to know how many tags the packet should have
+		int numNodes = 1; // include this one
+		
+		Group_CountNodes(group, &numNodes);
+		
+		big_scpacket packet;
+		packet.adds("/g_queryTree.reply");
+		packet.maketags(numNodes * 3 + 1);
+		packet.addtag(',');
+		
+		Group_QueryTree(group, &packet);
+		
+		if (packet.size()) {
+			CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+		}
+	}
+	return kSCErr_None;
+}
+
 
 
 SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
@@ -1478,7 +1506,8 @@ void initMiscCommands()
 			
 	NEW_COMMAND(s_noid);		
 	NEW_COMMAND(sync);
-	NEW_COMMAND(g_dumptree);
+	NEW_COMMAND(g_dumpTree);
+	NEW_COMMAND(g_queryTree);
 }
 
 
