@@ -68,6 +68,8 @@ PatternProxy : Pattern {
 	
 	isEventPattern { ^false }
 	
+	receiveEvent {}
+	
 	embedInStream { arg inval;
 		var pat, stream, outval, test, resetTest, count=0;
 		pat = pattern;
@@ -75,6 +77,7 @@ PatternProxy : Pattern {
 		resetTest = reset;
 		stream = pattern.asStream;
 		while {
+			this.receiveEvent(inval);
 			if(
 				(reset !== resetTest) 
 				or: { pat !== pattern and: { test.value(outval, count) } }
