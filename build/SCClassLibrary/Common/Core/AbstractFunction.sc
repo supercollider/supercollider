@@ -151,6 +151,7 @@ AbstractFunction {
 	|| { arg function, adverb; ^this.composeBinaryOp('||', function, adverb) }
 	&& { arg function, adverb; ^this.composeBinaryOp('&&', function, adverb) }
 	xor { arg function, adverb; ^this.composeBinaryOp('xor', function, adverb) }
+	nand { arg function, adverb; ^this.composeBinaryOp('nand', function, adverb) }
 	not { ^this.composeUnaryOp('not') }
 	
 	// nary operators
@@ -214,7 +215,7 @@ UnaryOpFunction : AbstractFunction {
 	storeOn { arg stream;
 		stream <<< a << "." << selector;
 	}
-
+	
 	
 }
 
