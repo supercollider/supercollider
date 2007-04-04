@@ -656,29 +656,53 @@ Server : Model {
 	
 	defaultGroup { ^Group.basicNew(this, 1) }
 	
-	queryAllNodes {
+	queryAllNodes { arg queryControls = false;
 		var resp, done = false;
-		if(isLocal.not, {this.sendMsg("/g_dumpTree", 0);}, {
+		if(isLocal, {this.sendMsg("/g_dumpTree", 0, queryControls.binaryValue);}, {
 			resp = OSCresponderNode(addr, '/g_queryTree.reply', { arg time, responder, msg;
-				var i = 1, tabs = 0, dumpFunc;
-				("NODE TREE Group" + msg[1]).postln;
-				if(msg[2] > 0, {
+				var i = 2, tabs = 0, printControls = false, dumpFunc;
+				if(msg[1] != 0, {printControls = true});
+				("NODE TREE Group" + msg[2]).postln;
+				if(msg[3] > 0, {
 					dumpFunc = {|numChildren|
+						var j;
 						tabs = tabs + 1;
 						numChildren.do({
-							i = i + 3;
+							if(msg[i + 1] >=0, {i = i + 2}, {
+								i = i + 3 + if(printControls, {msg[i + 3] * 2 + 1}, {0});
+							});
 							tabs.do({ "   ".post });
-							msg[i].post;
-							(" " ++ msg[i + 2]).postln;
-							if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });	
+							msg[i].post; // nodeID
+							if(msg[i + 1] >=0, {
+								" group".postln;
+								if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });
+							}, {
+								(" " ++ msg[i + 2]).postln; // defname
+								if(printControls, {
+									if(msg[i + 3] > 0, {
+										" ".post;
+										tabs.do({ "   ".post });
+									});
+									j = 0;
+									msg[i + 3].do({
+										" ".post;
+										if(msg[i + 4 + j].isSymbol, {
+											(msg[i + 4 + j] ++ ": ").post;
+										});
+										msg[i + 5 + j].post;
+										j = j + 2;
+									});
+									"\n".post;
+								});
+							});		
 						});
 						tabs = tabs - 1;
 					};
-					dumpFunc.value(msg[2]);
+					dumpFunc.value(msg[3]);
 				});
 				done = true;
 			}).add.removeWhenDone;
-			this.sendMsg("/g_queryTree", 0);
+			this.sendMsg("/g_queryTree", 0, queryControls.binaryValue);
 			SystemClock.sched(3, { 
 				done.not.if({
 					resp.remove;

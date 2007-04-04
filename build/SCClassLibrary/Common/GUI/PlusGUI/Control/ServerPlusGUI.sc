@@ -72,7 +72,8 @@
 			var startDump, stopDump, stillRunning;
 			
 			case 
-			{char === $n} { this.queryAllNodes }
+			{char === $n} { this.queryAllNodes(false) }
+			{char === $N} { this.queryAllNodes(true) }
 			{char === $ } { if(serverRunning.not) { this.boot } }
 			{char === $s and: {this.inProcess}} { this.scope }
 			{char == $d} {

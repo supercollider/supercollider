@@ -162,8 +162,11 @@ void Group_MapControl(Group* inGroup, uint32 inIndex, uint32 inBus);
 void Group_MapControl(Group* inGroup, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus);
 void Group_Trace(Group* inGroup);
 void Group_DumpTree(Group* inGroup);
-void Group_CountNodes(Group* inGroup, int* count);
+void Group_DumpTreeAndControls(Group* inGroup);
+void Group_CountNodeTags(Group* inGroup, int* count);
+void Group_CountNodeAndControlTags(Group* inGroup, int* count, int* controlAndDefCount);
 void Group_QueryTree(Group* inGroup, big_scpacket* packet);
+void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet);
 
 ////////////////////////////////////////////////////////////////////////
 

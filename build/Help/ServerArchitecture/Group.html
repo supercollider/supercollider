@@ -17,25 +17,26 @@ p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #83301e}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #753422}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #bf0000}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #a71e12}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #83301e}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #753422}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #062ba9}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0d31a3}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #932919}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {font: 9.0px Monaco; color: #4f6929}
+span.s2 {font: 9.0px Monaco; color: #56672f}
 span.s3 {font: 9.0px Monaco}
 span.s4 {color: #000000}
-span.s5 {color: #062ba9}
-span.s6 {color: #4f6929}
+span.s5 {color: #0d31a3}
+span.s6 {color: #56672f}
 span.s7 {text-decoration: underline}
 span.s8 {font: 12.0px Helvetica}
-span.s9 {color: #0022f5}
-span.s10 {color: #606060}
+span.s9 {color: #0000ff}
+span.s10 {color: #0030eb}
+span.s11 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -167,14 +168,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Free all Synths in the group, and all Synths in any enclosed groups, but do not free this group or any of its enclosed groups.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><b>dumpTree</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span><b>dumpTree(postControls)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Post a representation of this groups node subtree. (Sends a message of the type <b>g_dumpTree</b>.)</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Post a representation of this group's node subtree. (Sends a message of the type <b>g_dumpTree</b>.) If <b>postControls</b> is true, then the current <a href="../UGens/Control/Control.html"><span class="s9">Control</span></a> (arg) values for any synths contained in this group will be posted as well. The default is false.</p>
 <p class="p7"><br></p>
 <p class="p13">// not working yet<span class="Apple-tab-span">	</span><span class="s4"><span class="Apple-tab-span">	</span></span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>queryTree(action)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Queries the server for a message describing this group's node subtree. (Sends a message of the type <b>g_queryTree</b>.) This reply is passed to the action function as an argument. See <b>g_querytree</b> in <a href="Server-Command-Reference.html"><span class="s9">Server-Command-Reference</span></a> or the example below for information on how the reply is structured.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Queries the server for a message describing this group's node subtree. (Sends a message of the type <b>g_queryTree</b>.) This reply is passed to the action function as an argument. See <b>g_queryTree</b> in <a href="Server-Command-Reference.html"><span class="s10">Server-Command-Reference</span></a> or the example below for information on how the reply is structured.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p12"><b>Examples</b></p>
@@ -185,7 +186,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">)</p>
 <p class="p2"><br></p>
 <p class="p14">(</p>
-<p class="p14"><span class="s5">SynthDef</span>(<span class="s10">"help-Group-moto-rev"</span>, { <span class="s5">arg</span> out=0,freq=100,ffreq=120;</p>
+<p class="p14"><span class="s5">SynthDef</span>(<span class="s11">"help-Group-moto-rev"</span>, { <span class="s5">arg</span> out=0,freq=100,ffreq=120;</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="s5">var</span> x;</p>
 <p class="p14"><span class="Apple-tab-span">	</span>x = <span class="s5">RLPF</span>.ar(<span class="s5">LFPulse</span>.ar(<span class="s5">SinOsc</span>.kr(0.2, 0, 10, freq), [0,0.1], 0.1),<span class="Apple-converted-space"> </span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq, 0.1).clip2(0.4);</p>
@@ -193,7 +194,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">}).send(s);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s5">SynthDef</span>(<span class="s10">"help-Group-wah"</span>, { <span class="s5">arg</span> out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;</p>
+<p class="p14"><span class="s5">SynthDef</span>(<span class="s11">"help-Group-wah"</span>, { <span class="s5">arg</span> out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="s5">var</span> zin, zout, q;</p>
 <p class="p2"><br></p>
 <p class="p14"><span class="Apple-tab-span">	</span>zin = <span class="s5">In</span>.ar(out, 2);</p>
@@ -219,16 +220,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">)</p>
 <p class="p2"><br></p>
 <p class="p15">// set all controls that match "ffreq" in all nodes in g to 90</p>
-<p class="p14">g.set(<span class="s10">"ffreq"</span>,300);</p>
+<p class="p14">g.set(<span class="s11">"ffreq"</span>,300);</p>
 <p class="p2"><br></p>
-<p class="p14">g.set(<span class="s10">"freq"</span>,80);</p>
+<p class="p14">g.set(<span class="s11">"freq"</span>,80);</p>
 <p class="p2"><br></p>
 <p class="p15">// since we stored the Synths in an Array, we can also control them individually</p>
 <p class="p14">(</p>
 <p class="p17"><span class="s4">r = </span>Routine<span class="s4">({</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="s5">inf</span>.do({</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l.do({ <span class="s5">arg</span> node;</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node.set(<span class="s10">"freq"</span>,rrand(10,120));</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node.set(<span class="s11">"freq"</span>,rrand(10,120));</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0.wait;</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p14"><span class="Apple-tab-span">	</span>})</p>
@@ -241,7 +242,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">g.group.inspect;</p>
 <p class="p2"><br></p>
 <p class="p15">// asking a wah to go order-of-execution after g, in the same group as g.</p>
-<p class="p14">x = <span class="s5">Synth</span>.after(g,<span class="s10">"help-Group-wah"</span>,[<span class="s10">"out"</span>,0]);<span class="Apple-converted-space"> </span></p>
+<p class="p14">x = <span class="s5">Synth</span>.after(g,<span class="s11">"help-Group-wah"</span>,[<span class="s11">"out"</span>,0]);<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p18">// now dump my tree to confirm</p>
 <p class="p14">g.dumpTree;</p>

@@ -272,8 +272,8 @@ Group : Node {
 	}
 	
 	// Introspection
-	dumpTree {
-		server.sendMsg("/g_dumpTree", nodeID)
+	dumpTree { arg postControls = false;
+		server.sendMsg("/g_dumpTree", nodeID, postControls.binaryValue)
 	}
 //	queryTree { |action|
 //		var resp, done = false;

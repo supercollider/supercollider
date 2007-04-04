@@ -20,7 +20,7 @@
 
 
 #include "SC_Group.h"
-#include "SC_SynthDef.h"
+#include "SC_GraphDef.h"
 #include "Hash.h"
 #include "sc_msg_iter.h"
 #include <string.h>
@@ -111,6 +111,67 @@ void Group_DumpNodeTree(Group *inGroup)
 	}			
 	tabCount--;
 }
+	
+void Group_DumpNodeTreeAndControls(Group *inGroup)
+{
+	static int tabCount = 0;
+	if(tabCount == 0) scprintf("NODE TREE Group %d\n", inGroup->mNode.mID);
+	tabCount++;
+	Node *child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		int i;
+		for(i = 0; i < tabCount; i ++) scprintf("   "); // small 'tabs'
+		scprintf("%d %s", child->mID, (char*)child->mDef->mName); // def will be 'group' if it's a group
+		if (child->mIsGroup) {
+			Group_DumpTreeAndControls((Group*)child);
+		} else {
+			Graph* childGraph = (Graph*)child;
+			int numControls = childGraph->mNumControls;
+			if(numControls > 0) {
+				scprintf("\n ");
+				for(i = 0; i < tabCount; i ++) scprintf("   ");
+				char *names[numControls];
+				
+				for(i = 0; i < numControls; i++){
+					names[i] = NULL;
+				}
+				
+				// check the number of named controls and stash their names at the correct index
+				GraphDef* def = (GraphDef*)(child->mDef);
+				int numNamedControls = def->mNumParamSpecs;
+				for(i = 0; i < numNamedControls; i++){
+					ParamSpec *paramSpec = def->mParamSpecs + i;
+					names[paramSpec->mIndex] = (char*)paramSpec->mName;
+				}
+				
+				// now print the names and values in index order, checking for mappings
+				for(i=0; i < numControls; i++){
+					float *ptr = childGraph->mControls + i;
+					
+					if(names[i]){
+						scprintf(" %s: ", names[i]);
+					} else {
+						scprintf(" ", names[i]);
+					}
+					// the ptr in nMapControls should be the same as the control itself, if not, it's mapped.
+					if((childGraph->mMapControls[i]) != ptr){
+						// it's mapped
+						int bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
+						//scprintf("bus: %d\n", bus);
+						scprintf("c%d", bus);
+					} else {
+						scprintf("%.14g", *ptr);
+					}
+				}
+			}
+		}
+		scprintf("\n");
+		(*child->mCalcFunc)(child);
+		child = next;
+	}			
+	tabCount--;
+}
 
 void Group_CalcDumpTree(Group *inGroup)
 {
@@ -125,15 +186,45 @@ void Group_DumpTree(Group* inGroup)
 	}
 }
 
+void Group_CalcDumpTreeAndControls(Group *inGroup)
+{
+	Group_DumpNodeTreeAndControls(inGroup);
+	inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
+}
+
+void Group_DumpTreeAndControls(Group* inGroup)
+{
+	if (inGroup->mNode.mCalcFunc == (NodeCalcFunc)&Group_Calc) {
+		inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_CalcDumpTreeAndControls;
+	}
+}
+
 // count the children for this group (deep)
-void Group_CountNodes(Group* inGroup, int* count)
+void Group_CountNodeTags(Group* inGroup, int* count)
+{
+	Node *child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		(*count)+= 2;
+		if (child->mIsGroup) {
+			Group_CountNodeTags((Group*)child, count);
+		} else { (*count)++; } // for the defname
+		child = next;
+	}	
+}
+	
+// count the children for this group (deep)
+void Group_CountNodeAndControlTags(Group* inGroup, int* count, int* controlAndDefCount)
 {
 	Node *child = inGroup->mHead;
 	while (child) {
         Node *next = child->mNext;
 		(*count)++;
 		if (child->mIsGroup) {
-			Group_CountNodes((Group*)child, count);
+			Group_CountNodeAndControlTags((Group*)child, count, controlAndDefCount);
+		} else {
+			//(*controlCount) += ((Graph*)child)->mNumControls + ((GraphDef*)(child->mDef))->mNumParamSpecs + 1; 
+			(*controlAndDefCount) += ((Graph*)child)->mNumControls * 2 + 2; // def, numControls, name or index and value for each
 		}
 		child = next;
 	}	
@@ -154,10 +245,7 @@ void Group_QueryTree(Group* inGroup, big_scpacket *packet)
 	}
 	
 	packet->addtag('i');
-	packet->addi(count);
-	
-	packet->addtag('s');
-	packet->adds("group");
+	packet->addi(count); // numChildren; for a Group >= 0
 	
 	// now iterate over the children
 	// id, numChildren, defname
@@ -167,16 +255,98 @@ void Group_QueryTree(Group* inGroup, big_scpacket *packet)
 		if (child->mIsGroup) {
 			Group_QueryTree((Group*)child, packet);
 		} else {
-			packet->addtag('i');
-			packet->addtag('i');
-			packet->addtag('s');
+			packet->addtag('i');			// nodeID
+			packet->addtag('i');			// numChildren
+			packet->addtag('s');			// defname
 			packet->addi(child->mID);
-			packet->addi(0);
+			packet->addi(-1);
 			packet->adds((char*)child->mDef->mName);
 		}
 		child = next;
 	}	
 }
+	
+void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
+{
+	packet->addtag('i');
+	packet->addi(inGroup->mNode.mID);
+	
+	// count the children for this group, but not their children (shallow)
+	int count = 0;
+	Node *child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		count++;
+		child = next;
+	}
+	
+	packet->addtag('i');
+	packet->addi(count);
+	
+	// now iterate over the children
+	// id, numChildren, defname
+	child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		if (child->mIsGroup) {
+			Group_QueryTreeAndControls((Group*)child, packet);
+		} else {
+			packet->addtag('i');
+			packet->addtag('i');
+			packet->addtag('s');
+			packet->addi(child->mID);					// nodeID
+			packet->addi(-1);							// numChildren
+			packet->adds((char*)child->mDef->mName);	// defName
+			
+			Graph* childGraph = (Graph*)child;
+			int numControls = childGraph->mNumControls;
+			packet->addtag('i');
+			packet->addi(numControls);
+			
+			char *names[numControls];
+			int i;
+			for(i = 0; i < numControls; i++){
+				names[i] = NULL;
+			}
+			
+			// check the number of named controls and stash their names
+			GraphDef* def = (GraphDef*)(child->mDef);
+			int numNamedControls = def->mNumParamSpecs;
+			for(i = 0; i < numNamedControls; i++){
+				ParamSpec *paramSpec = def->mParamSpecs + i;
+				names[paramSpec->mIndex] = (char*)paramSpec->mName;
+			}
+			
+			// now add the names and values in index order, checking for mappings
+			for(i=0; i < numControls; i++){
+				float *ptr = childGraph->mControls + i;
+				
+				if(names[i]){
+					packet->addtag('s');
+					packet->adds(names[i]);
+				} else {
+					packet->addtag('i');
+					packet->addi(i);
+				}
+				// the ptr in nMapControls should be the same as the control itself, if not, it's mapped.
+				if((childGraph->mMapControls[i]) != ptr){
+					// it's mapped
+					int bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
+					//scprintf("bus: %d\n", bus);
+					char buf[10]; //should be long enough
+					sprintf(buf, "%c%d", 'c', bus);
+					packet->addtag('s');
+					packet->adds(buf);
+				} else {
+					packet->addtag('f');
+					packet->addf(*ptr);
+				}
+			}
+		}
+		child = next;
+	}	
+}
+
 
 void Group_DeleteAll(Group *inGroup)
 {

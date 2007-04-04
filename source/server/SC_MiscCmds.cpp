@@ -226,13 +226,44 @@ SCErr meth_g_dumpTree(World *inWorld, int inSize, char *inData, ReplyAddress* /*
 	while (msg.remain()) {
 		Group *group = Msg_GetGroup(inWorld, msg);
 		if (!group) return kSCErr_GroupNotFound;
-		
-		Group_DumpTree(group);
+		int32 flag = msg.geti();
+		if(flag) {
+			Group_DumpTreeAndControls(group);
+		} else {
+			Group_DumpTree(group);
+		}
 	}
 	
 	return kSCErr_None;
 }
 
+//SCErr meth_g_queryTree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+//SCErr meth_g_queryTree(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+//{
+//	sc_msg_iter msg(inSize, inData);
+//	while (msg.remain()) {	
+//		Group *group = Msg_GetGroup(inWorld, msg);
+//		if (!group) return kSCErr_GroupNotFound;
+//		
+//		// first count the total number of nodes to know how many tags the packet should have
+//		int numNodes = 1; // include this one
+//		
+//		Group_CountNodes(group, &numNodes);
+//		
+//		big_scpacket packet;
+//		packet.adds("/g_queryTree.reply");
+//		packet.maketags(numNodes * 3 + 1);
+//		packet.addtag(',');
+//		
+//		Group_QueryTree(group, &packet);
+//		
+//		if (packet.size()) {
+//			CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+//		}
+//	}
+//	return kSCErr_None;
+//}
+	
 SCErr meth_g_queryTree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_g_queryTree(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
 {
@@ -240,18 +271,30 @@ SCErr meth_g_queryTree(World *inWorld, int inSize, char *inData, ReplyAddress* i
 	while (msg.remain()) {	
 		Group *group = Msg_GetGroup(inWorld, msg);
 		if (!group) return kSCErr_GroupNotFound;
-		
-		// first count the total number of nodes to know how many tags the packet should have
-		int numNodes = 1; // include this one
-		
-		Group_CountNodes(group, &numNodes);
-		
 		big_scpacket packet;
 		packet.adds("/g_queryTree.reply");
-		packet.maketags(numNodes * 3 + 1);
-		packet.addtag(',');
-		
-		Group_QueryTree(group, &packet);
+		int32 flag = msg.geti();
+		if(flag) {
+			// first count the total number of nodes to know how many tags the packet should have
+			int numNodes = 1; // include this one
+			int numControlsAndDefs = 0;
+			Group_CountNodeAndControlTags(group, &numNodes, &numControlsAndDefs);
+			// nodeID and numChildren + numControlsAndDefs + controlFlag
+			packet.maketags(numNodes * 2 + numControlsAndDefs + 2);
+			packet.addtag(',');
+			packet.addtag('i');
+			packet.addi(1); // include controls flag
+			Group_QueryTreeAndControls(group, &packet);
+		} else {
+			// first count the total number of nodes to know how many tags the packet should have
+			int numNodeTags = 2; // include this one
+			Group_CountNodeTags(group, &numNodeTags);
+			packet.maketags(numNodeTags + 2); // nodeID and numChildren
+			packet.addtag(',');
+			packet.addtag('i');
+			packet.addi(0); // include controls flag
+			Group_QueryTree(group, &packet);
+		}
 		
 		if (packet.size()) {
 			CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
