@@ -146,6 +146,7 @@ Server : Model {
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
 	}
+	
 	init { arg argName, argAddr, argOptions, argClientID;
 		name = argName;
 		addr = argAddr;
@@ -185,6 +186,13 @@ Server : Model {
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		program = "cd " ++ String.scDir.quote ++ "; ./scsynth";
 	}
+	
+	*fromName { arg name;
+		^Server.named[name] ?? {
+			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new, 0) 
+		}
+	}
+	
 	// bundling support added
 	sendMsg { arg ... msg;
 		addr.sendMsg(*msg);
@@ -562,8 +570,12 @@ Server : Model {
 	}
 	closeBundle { arg time; // set time to false if you don't want to send.
 		var bundle;
-		bundle = addr.closeBundle(time);
-		addr = addr.saveAddr;
+		if(addr.hasBundle) {
+			bundle = addr.closeBundle(time);
+			addr = addr.saveAddr;
+		} {
+			"there is no open bundle.".warn
+		};
 		^bundle;
 	}
 	makeBundle { arg time, func, bundle;
@@ -715,7 +727,7 @@ Server : Model {
 		stream << name;
 	}
 	storeOn { arg stream;
-		stream << "(Server.named[" << name.asCompileString << "] ?? { Server(" <<<* [name, addr, options, clientID] << ") })" ;
+		stream << "Server.fromName(" << name.asCompileString << ")"
 	}
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
