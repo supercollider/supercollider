@@ -19,7 +19,7 @@ FuncProxy : Ref {
 Maybe : FuncProxy {
 	classvar <callers, <>callFunc;
 	classvar <>defaultValue;
-	classvar <>protected = false;
+	classvar <>protected = false, <>verbose = false;
 	
 	value { arg ... args;
 		^this.reduceFuncProxy(args)
@@ -36,8 +36,16 @@ Maybe : FuncProxy {
 			}
 		} ?? { this.valueEmpty(args) };
 	}
-	apply { arg args;
+	// this allows recursion
+	apply { arg ... args;
 		^this.reduceFuncProxy(args, false)
+	}
+	// function composition
+	o { arg ... args;
+		^NAryValueProxy(this, args)
+	}
+	<> { arg that;
+		^o (this, that)
 	}
 	
 	// used by AbstractFunction:reduceFuncProxy 
@@ -49,7 +57,9 @@ Maybe : FuncProxy {
 	}
 		
 	valueEmpty { arg args;
-		(Char.bullet ++ " ? incomplete definition: %\n").postf(this.infoString(args));
+		if(verbose) {
+			(Char.bullet ++ " ? incomplete definition: %\n").postf(this.infoString(args))
+		};
 		^defaultValue
 	}
 	
@@ -58,8 +68,10 @@ Maybe : FuncProxy {
 		try {
 			protect {
 				if(this.includedInCallers) {
-					(Char.bullet ++ " ! Couldn't solve a recursive definition in %\n")
-						.postf(this.infoString);
+					if(verbose) {
+						(Char.bullet ++ " ! Couldn't solve a recursive definition in %\n")
+						.postf(this.infoString)
+					};
 					callFunc.value(this, callers, \recursion);
 					this.throw;
 				};
@@ -120,6 +132,7 @@ Maybe : FuncProxy {
 	composeNAryOp { arg aSelector, anArgList;
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
+	storeOn { arg stream; stream << this.class.name << "(" <<< value << ")" }
 	
 }
 
@@ -146,7 +159,7 @@ Fdef : FuncProxy {
 }
 
 /*
-MaybeEval : Maybe {
+MaybeDef : Maybe {
 	classvar <>all;
 	
 	*initClass { 
@@ -167,7 +180,7 @@ MaybeEval : Maybe {
 
 }
 
-MaybeApply : Eval {
+MaybeApply : MaybeDef {
 	*new { arg key ... args;
 		^all[key].valueArray(args)
 	}

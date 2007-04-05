@@ -90,3 +90,18 @@ NAryOpFunctionProxy : NAryOpFunction {
 	}
 
 }
+
+// maybe make it an abstract function object.
+NAryValueProxy : NAryOpFunctionProxy {
+	*new { arg receiver, args;
+		^super.new(nil, receiver, args ? [])
+	}
+	reduceFuncProxy { arg args;
+		^a.reduceFuncProxy(arglist.collect(_.reduceFuncProxy(args)))
+	}
+	storeOn { arg stream;
+		stream << "o(" <<< a << "," <<<* arglist << ")" // is ist always so?
+	}
+}
+
+
