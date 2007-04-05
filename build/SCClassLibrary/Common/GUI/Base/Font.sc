@@ -1,5 +1,3 @@
-
-
 Font {
 	classvar <>default;
 	var <>name, <>size;
@@ -23,5 +21,20 @@ Font {
 		^this.primitiveFailed
 	}
 	storeArgs { ^[name,size] }
+	
+	boldVariant {
+		^if( name.endsWith( "-Bold" ), this, { this.class.new( name ++ "-Bold", size )});
+	}
+	
+	*defaultSansFace {
+		^"Helvetica";
+	}
+	
+	*defaultSerifFace {
+		^"Times";
+	}
+	
+	*defaultMonoFace {
+		^"Monaco";
+	}
 }
-

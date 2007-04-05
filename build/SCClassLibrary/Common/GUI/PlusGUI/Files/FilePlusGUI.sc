@@ -1,7 +1,10 @@
 + File {
 	*openDialog { arg prompt, successFunc, cancelFunc;
-		// replace with platform independant stuff later
-		CocoaDialog.getPaths({arg paths; successFunc.value(paths.first) },cancelFunc,3);
+		var gui;
+		gui = GUI.current;
+		gui.dialog.getPaths(
+			{ arg paths; GUI.use( gui, { successFunc.value( paths.first )})},
+			{ GUI.use( gui, cancelFunc )}, 3 );
 
 		// 	var path;
 		//	path = this.prOpenDialog(prompt);
@@ -9,8 +12,10 @@
 	}
 	
 	*saveDialog { arg prompt, defaultName, successFunc, cancelFunc;
+		var gui;
+		gui = GUI.current;
 		// no prompts or defaultNames in cocoa
-		CocoaDialog.savePanel(successFunc,cancelFunc);
+		gui.dialog.savePanel({ GUI.use( gui, successFunc )}, { GUI.use( gui, cancelFunc )});
 
 		//	var path;
 		//	path = this.prSaveDialog(prompt, defaultName);

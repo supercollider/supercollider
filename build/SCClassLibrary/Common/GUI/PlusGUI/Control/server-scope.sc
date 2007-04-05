@@ -1,19 +1,21 @@
 + Server {
 
 	scope { arg numChannels, index, bufsize = 4096, zoom, rate;
-			numChannels = (numChannels ? 2).min(16);
-			if(scopeWindow.isNil) {
-				scopeWindow = 
-					Stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil, 
-						this.options.numBuffers); 
-						// prevent buffer conflicts by using reserved bufnum
-				CmdPeriod.add(this);
-			} {
-				scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
-				scopeWindow.run;
-				scopeWindow.window.front;
-			};
-			^scopeWindow
+		var gui;
+		numChannels = (numChannels ? 2).min(16);
+		if(scopeWindow.isNil) {
+			gui = GUI.current;
+			scopeWindow = 
+				gui.stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil, 
+					this.options.numBuffers); 
+					// prevent buffer conflicts by using reserved bufnum
+			CmdPeriod.add(this);
+		} {
+			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
+			scopeWindow.run;
+			scopeWindow.window.front;
+		};
+		^scopeWindow
 	}
 	
 }
@@ -27,9 +29,10 @@
 
 + Function {
 	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
-		var synth, synthDef, bytes, synthMsg, outUGen, server;
-		server = Server.internal;
-		if(server.serverRunning.not) { "internal server not running!".postln; ^nil };
+		var synth, synthDef, bytes, synthMsg, outUGen, server, gui;
+		gui = GUI.current;
+		server = gui.stethoscope.defaultServer;
+		if(server.serverRunning.not) { (server.name.asString ++ " server not running!").postln; ^nil };
 		synthDef = this.asSynthDef(fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
 		

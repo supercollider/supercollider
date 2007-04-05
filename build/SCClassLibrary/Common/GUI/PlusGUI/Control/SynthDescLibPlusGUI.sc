@@ -12,10 +12,14 @@
 		var hvBold12;
 		var updateViews;
 		var btn, testFn;
+		var fntMono, gui;
 		
-		hvBold12 = Font("Helvetica-Bold", 12);		
+		gui = GUI.current;
 		
-		w = SCWindow("SynthDef browser", Rect(128, 320, 700, 608));
+		hvBold12	= gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
+		fntMono	= gui.font.new( gui.font.defaultMonoFace, 10 );
+		
+		w = gui.window.new("SynthDef browser", Rect(128, 320, 700, 608));
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
 		w.view.decorator.shift(220);
@@ -35,45 +39,45 @@
 			};
 		};
 		
-		btn = SCButton(w, 48 @ 20);
+		btn = gui.button.new(w, 48 @ 20);
 		btn.states = [["test", Color.black, Color.clear]];
 		btn.action = testFn;
 		
-		btn = SCButton(w, 48 @ 20);
+		btn = gui.button.new(w, 48 @ 20);
 		btn.states = [["window", Color.black, Color.clear]];
 		btn.action = {
 			var item;
 			item = this[synthDescListView.item.asSymbol];
 			if (item.notNil) {
-				item.makeWindow;
+				GUI.use( gui, { item.makeWindow });
 			}
 		};
 		
 		w.view.decorator.nextLine;
-		SCStaticText(w, Rect(0,0,220,24)).string_("SynthDescLibs").font_(hvBold12);
-		SCStaticText(w, Rect(0,0,220,24)).string_("SynthDefs").font_(hvBold12);
-		SCStaticText(w, Rect(0,0,220,24)).string_("UGens").font_(hvBold12);
+		gui.staticText.new(w, Rect(0,0,220,24)).string_("SynthDescLibs").font_(hvBold12);
+		gui.staticText.new(w, Rect(0,0,220,24)).string_("SynthDefs").font_(hvBold12);
+		gui.staticText.new(w, Rect(0,0,220,24)).string_("UGens").font_(hvBold12);
 		w.view.decorator.nextLine;
 		
-		synthDescLibListView = SCListView(w, Rect(0,0, 220, 320)).focus;
-		synthDescListView = SCListView(w, Rect(0,0, 220, 320));
+		synthDescLibListView = gui.listView.new(w, Rect(0,0, 220, 320)).focus;
+		synthDescListView = gui.listView.new(w, Rect(0,0, 220, 320));
 		synthDescListView.beginDragAction_({arg v;
 			v.items[v.value].asSymbol;
 		});
-		ugensListView = SCListView(w, Rect(0,0, 220, 320));
+		ugensListView = gui.listView.new(w, Rect(0,0, 220, 320));
 		
 		w.view.decorator.nextLine;
-		SCStaticText(w, Rect(0,0,240,24)).string_("SynthDef Controls")
+		gui.staticText.new(w, Rect(0,0,240,24)).string_("SynthDef Controls")
 			.font_(hvBold12).align_(\center);
-		SCStaticText(w, Rect(0,0,200,24)).string_("SynthDef Inputs")
+		gui.staticText.new(w, Rect(0,0,200,24)).string_("SynthDef Inputs")
 			.font_(hvBold12).align_(\center);
-		SCStaticText(w, Rect(0,0,200,24)).string_("SynthDef Outputs")
+		gui.staticText.new(w, Rect(0,0,200,24)).string_("SynthDef Outputs")
 			.font_(hvBold12).align_(\center);
 		w.view.decorator.nextLine;
 		
-		controlsListView = SCListView(w, Rect(0,0, 240, 160));
-		inputsListView = SCListView(w, Rect(0,0, 200, 160));
-		outputsListView = SCListView(w, Rect(0,0, 200, 160));
+		controlsListView = gui.listView.new(w, Rect(0,0, 240, 160));
+		inputsListView = gui.listView.new(w, Rect(0,0, 200, 160));
+		outputsListView = gui.listView.new(w, Rect(0,0, 200, 160));
 		controlsListView.resize = 4;
 		inputsListView.resize = 4;
 		outputsListView.resize = 4;
@@ -86,9 +90,9 @@
 		inputsListView.selectedStringColor = Color.black;
 		outputsListView.selectedStringColor = Color.black;
 		
-		controlsListView.font = Font("Monaco", 10);
-		inputsListView.font = Font("Monaco", 10);
-		outputsListView.font = Font("Monaco", 10);
+		controlsListView.font	= fntMono;
+		inputsListView.font	= fntMono;
+		outputsListView.font	= fntMono;
 		
 		w.view.decorator.nextLine;
 		

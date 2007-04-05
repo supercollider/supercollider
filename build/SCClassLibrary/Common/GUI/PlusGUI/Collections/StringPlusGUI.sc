@@ -37,26 +37,26 @@
 		_String_DrawInRect
 		^this.primitiveFailed
 	}
-	drawCenteredIn { arg inRect;
-		this.drawAtPoint(this.bounds.centerIn(inRect).origin);
+	drawCenteredIn { arg inRect, font, color;
+		this.drawAtPoint(this.bounds( font ).centerIn(inRect), font, color);
 	}
-	drawLeftJustIn { arg inRect;
+	drawLeftJustIn { arg inRect, font, color;
 		var pos, bounds;
-		bounds = this.bounds;
+		bounds = this.bounds( font );
 		pos = bounds.centerIn(inRect);
 		pos.x = inRect.left + 2;
-		this.drawAtPoint(pos);
+		this.drawAtPoint(pos, font, color);
 	}
-	drawRightJustIn { arg inRect;
+	drawRightJustIn { arg inRect, font, color;
 		var pos, bounds;
-		bounds = this.bounds;
+		bounds = this.bounds( font );
 		pos = bounds.centerIn(inRect);
 		pos.x = inRect.right - 2 - bounds.width;
-		this.drawAtPoint(pos);
+		this.drawAtPoint(pos, font, color);
 	}
 		
-	bounds { ^this.prBounds(Rect.new) }
-	prBounds { arg rect;
+	bounds { arg font; ^this.prBounds(Rect.new, font) }
+	prBounds { arg rect, font;
 		_String_GetBounds
 		^this.primitiveFailed
 	}

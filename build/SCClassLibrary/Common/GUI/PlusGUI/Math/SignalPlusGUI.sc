@@ -4,55 +4,62 @@
 	
 	plot { arg name, bounds, discrete=false, numChannels = 1, minval, maxval, parent;	
 		var plotter, txt, chanArray, unlaced, val, window, thumbsize, zoom, width, 
-			layout, write=false, msresize;
-		bounds = bounds ? parent.notNil.if({
-			parent.view.bounds
+			layout, write=false, msresize, gui;
+			
+		gui = GUI.current;
+			
+		bounds = bounds ?? { parent.notNil.if({
+				parent.view.bounds
 			}, {
-			Rect(200 ,140, 705, 410);
+				Rect(200 ,140, 705, 410);
  			});
+ 		};
 			
 		width = bounds.width-8;
-		zoom = (width / (this.size / numChannels));
-		
-		if(discrete) {
-			thumbsize = max(1.0, zoom);
-		}{
-			thumbsize = 1;
-		};
 		
 		name = name ? "plot";
-		minval = minval ? this.minItem;
-		maxval = maxval ? this.maxItem;
+		minval = minval ?? { this.minItem };
+		maxval = maxval ?? { this.maxItem };
 		unlaced = this.unlace(numChannels);
 		chanArray = Array.newClear(numChannels);
-		unlaced.do({ |chan, j|
-			val = Array.newClear(width);
-			width.do { arg i;
-				var x;
-				x = chan.blendAt(i / zoom);
-				val[i] = x.linlin(minval, maxval, 0.0, 1.0);
-			};
-			chanArray[j] = val;
+		if( discrete, {
+			zoom = 1;
+			thumbsize = max(1.0, width / (this.size / numChannels));
+			unlaced.do({ |chan, j|
+				chanArray[j] = chan.linlin( minval, maxval, 0.0, 1.0 );
+
+			});
+		}, {
+			zoom = (width / (this.size / numChannels));
+			thumbsize = 1;
+			unlaced.do({ |chan, j|
+				val = Array.newClear(width);
+				width.do { arg i;
+					var x;
+					x = chan.blendAt(i / zoom);
+					val[i] = x.linlin(minval, maxval, 0.0, 1.0);
+				};
+				chanArray[j] = val;
+			});
 		});
-		window = parent ? SCWindow(name, bounds);
+		window = parent ?? { gui.window.new( name, bounds )};
 
-		layout = SCVLayoutView(window, 
-			parent.notNil.if({
-				bounds;
-				Rect(bounds.left+4, bounds.top+4, bounds.width-10, bounds.height-10);
-				}, {
-				Rect(4, 4, bounds.width - 10, bounds.height - 10); 
-				})).resize_(5);
+		layout = gui.vLayoutView.new( window, parent.notNil.if({
+			Rect(bounds.left+4, bounds.top+4, bounds.width-10, bounds.height-10);
+		}, {
+			Rect(4, 4, bounds.width - 10, bounds.height - 10); 
+		})).resize_(5);
 
-		txt = SCStaticText(layout, Rect(8, 0, width, 18))
-				.string_("index: 0, value: " ++ this[0].asString);		
+		txt = gui.staticText.new(layout, Rect( 8, 0, width, 18))
+				.string_("index: 0, value: " ++ this[0].asString);
+
 		numChannels.do({ |i|
-			plotter = SCMultiSliderView(layout, Rect(0, 0, 
+			plotter = gui.multiSliderView.new(layout, Rect(0, 0, 
 					layout.bounds.width, layout.bounds.height - 26)) // compensate for the text
 				.readOnly_(true)
 				.drawLines_(discrete.not)
 				.drawRects_(discrete)
-				.thumbSize_(thumbsize) 
+				.indexThumbSize_(thumbsize) 
 				.valueThumbSize_(1)
 				.background_(Color.white)
 				.colors_(Color.black, Color.blue(1.0,1.0))
@@ -62,17 +69,16 @@
 					
 					txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++ 
 					", value: " ++ curval);
-					if(write) { this[(v.index / zoom).asInteger]  = curval };
+					if(write) { this[(v.index / zoom).asInteger * numChannels + i ]  = curval };
 				})
 				.keyDownAction_({ |v, char|
 					if(char === $l) { write = write.not; v.readOnly = write.not;  };
 				})
 				.value_(chanArray[i])
 				.elasticMode_(1);
-				(numChannels	 > 1).if({ // check if there is more then 1 channel
-					plotter.resize_(5)
-					})
-
+			(numChannels > 1).if({ // check if there is more then 1 channel
+				plotter.resize_(5);
+			});
 		});
 		
 		^window.front;
@@ -98,9 +104,15 @@
 
 + Buffer {
 	plot { arg name, bounds, minval = -1.0, maxval = 1.0, parent;
-		this.loadToFloatArray(action: { |array, buf| {array.plot(name, bounds, 
-			numChannels: buf.numChannels, minval: minval, maxval: maxval, 
-			parent: parent) }.defer;});
+		var gui;
+		gui = GUI.current;
+		this.loadToFloatArray(action: { |array, buf| 
+			{
+				GUI.use( gui, {
+					array.plot(name, bounds, numChannels: buf.numChannels, minval: minval, maxval: maxval, parent: parent);
+				});
+			}.defer;
+		});
 	}
 }
 
@@ -138,12 +150,16 @@
 	}
 	
 	plot { arg duration  = 0.01, server, bounds, minval = -1.0, maxval = 1.0, parent;
+		var gui;
+		gui = GUI.current;
 		this.loadToFloatArray(duration, server, { |array, buf|
 			var numChan;
 			numChan = buf.numChannels;
 			{
-				array.plot(bounds: bounds, numChannels: numChan, minval: minval, maxval: maxval,
-					parent: parent) 
+				GUI.use( gui, {
+					array.plot(bounds: bounds, numChannels: numChan, minval: minval, maxval: maxval,
+						parent: parent) 
+				});
 			}.defer;
 		})
 	}
@@ -154,13 +170,14 @@
 
 + SoundFile{
 	plot{ arg bounds;
-		var win, view;
-		bounds = bounds ?  Rect(200 , 140, 705, 410);
-		win = SCWindow(this.path.split.last, bounds).front;
-		view = SCSoundFileView(win, win.bounds.width@win.bounds.height).resize_(5);
+		var win, view, gui;
+		gui = GUI.current;
+		bounds = bounds ?? { Rect( 200, 140, 705, 410 )};
+		win = gui.window.new(this.path.split.last, bounds);
+		view = gui.soundFileView.new(win, win.bounds.width@win.bounds.height).resize_(5);
 		view.soundfile_(this);
-		view.readWithTask;
 		view.elasticMode_(1);
+		win.front;
+		view.readWithTask;
 	}
 }
-

@@ -216,5 +216,18 @@ Stethoscope {
 		^ugenScopes
 	}
 	
-
+	/**
+	 *	@return	(Server) the default server to scope on
+	 */
+	*defaultServer {
+		^Server.internal;
+	}
+	
+	/**
+	 *	@param	aServer	(Server) a server to test for scoping
+	 *	@return			(Boolean) indication whether the server can be scope'ed
+	 */
+	*isValidServer { arg aServer;
+		^aServer.inProcess;
+	}
 }

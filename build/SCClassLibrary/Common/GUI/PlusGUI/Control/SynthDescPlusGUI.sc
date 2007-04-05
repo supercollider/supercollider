@@ -4,9 +4,11 @@
 		var id, cmdPeriodFunc;
 		var synthDesc;
 		var usefulControls, numControls;
-		var getSliderValues;
+		var getSliderValues, gui;
 
 		s = Server.default;
+		
+		gui = GUI.current;
 				
 		usefulControls = controls.select {|controlName, i|
 			var ctlname;
@@ -20,15 +22,17 @@
 		id = s.nextNodeID; // generate a note id.
 		
 		// make the window
-		w = SCWindow("another control panel", Rect(20, 400, 440, 180));
-		w.front; // make window visible and front window.
+//		w = gui.window.new("another control panel", Rect(20, 400, 440, 180));
+		w = gui.window.new("another control panel", Rect(20, 400, 440, numControls * 28 + 32));
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
-		w.view.background = HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
-							[\h,\v].choose, 100, rrand(0.1,0.9));
+		if( gui.id === \cocoa, {
+			w.view.background = HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
+								[\h,\v].choose, 100, rrand(0.1,0.9));
+		});
 		
 		// add a button to start and stop the sound.
-		startButton = SCButton(w, 75 @ 24);
+		startButton = gui.button.new(w, 75 @ 24);
 		startButton.states = [
 			["Start", Color.black, Color.green],
 			["Stop", Color.white, Color.red]
@@ -73,11 +77,11 @@
 			w.view.decorator.nextLine;
 			spec = ctlname.asSymbol.asSpec;
 			if (spec.notNil) {
-				sliders[i] = EZSlider(w, 400 @ 24, capname, spec, 
+				sliders[i] = gui.ezSlider.new(w, 400 @ 24, capname, spec, 
 					{|ez| s.sendMsg("/n_set", id, ctlname, ez.value); }, controlName.defaultValue);
 			}{
 				spec = ControlSpec(-1e10,1e10);
-				sliders[i] = EZNumber(w, 400 @ 24, capname, spec, 
+				sliders[i] = gui.ezNumber.new(w, 400 @ 24, capname, spec, 
 					{|ez| s.sendMsg("/n_set", id, ctlname, ez.value); }, controlName.defaultValue);
 			};
 		};
@@ -93,6 +97,7 @@
 			CmdPeriod.remove(cmdPeriodFunc);
 		};
 		
+		w.front; // make window visible and front window.
 	}
 }
 

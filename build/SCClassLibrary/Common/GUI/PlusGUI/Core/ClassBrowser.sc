@@ -28,17 +28,20 @@ ClassBrowser {
 	}
 
 	init { arg class;
+		var gui;
 		
 		currentClass = class;
 		history = [currentClass];
 		
-		w = SCWindow("class browser", Rect(128, 320, 640, 560))
+		gui	= GUI.current;
+		
+		w = gui.window.new("class browser", Rect(128, 320, 640, 560))
 			.onClose_({ this.free });
 
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
-		currentClassNameView = SCTextField(w, Rect(0,0, 256, 32));
-		currentClassNameView.font = Font("Helvetica-Bold", 18);
+		currentClassNameView = gui.textField.new(w, Rect(0,0, 256, 32));
+		currentClassNameView.font = gui.font.new( gui.font.defaultSansFace, 18 ).boldVariant;
 		currentClassNameView.boxColor = Color.clear;
 		currentClassNameView.align = \center;
 		
@@ -46,12 +49,12 @@ ClassBrowser {
 			this.currentClass_( currentClassNameView.string.asSymbol.asClass );
 		};
 		
-		superClassNameView = SCStaticText(w, Rect(0,0, 256, 32));
-		superClassNameView.font = hvBold12 = Font("Helvetica-Bold", 12);
+		superClassNameView = gui.staticText.new(w, Rect(0,0, 256, 32));
+		superClassNameView.font = hvBold12 = gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
 		
 		w.view.decorator.nextLine;
 		
-		bakButton = SCButton(w, Rect(0,0, 24, 24));
+		bakButton = gui.button.new(w, Rect(0,0, 24, 24));
 		bakButton.states = [["<", Color.black, Color.clear]];
 		bakButton.action = {
 			if (historyPos > 0) {
@@ -61,7 +64,7 @@ ClassBrowser {
 			}
 		};
 		
-		fwdButton = SCButton(w, Rect(0,0, 24, 24));
+		fwdButton = gui.button.new(w, Rect(0,0, 24, 24));
 		fwdButton.states = [[">", Color.black, Color.clear]];
 		fwdButton.action = {
 			if (historyPos < (history.size - 1)) {
@@ -72,14 +75,14 @@ ClassBrowser {
 		};
 		
 		
-		superButton = SCButton(w, Rect(0,0, 50, 24));
+		superButton = gui.button.new(w, Rect(0,0, 50, 24));
 		superButton.states = [["super", Color.black, Color.clear]];
 		
 		superButton.action = {
 			this.currentClass_( currentClass.superclass );
 		};
 		
-		metaButton = SCButton(w, Rect(0,0, 50, 24));
+		metaButton = gui.button.new(w, Rect(0,0, 50, 24));
 		metaButton.states = [["meta", Color.black, Color.clear]];
 		
 		metaButton.action = {
@@ -87,7 +90,7 @@ ClassBrowser {
 		};
 		
 		
-		helpButton = SCButton(w, Rect(0,0, 50, 24));
+		helpButton = gui.button.new(w, Rect(0,0, 50, 24));
 		helpButton.states = [["help", Color.black, Color.clear]];
 		
 		helpButton.action = {	
@@ -96,35 +99,35 @@ ClassBrowser {
 			}
 		};
 		
-		classSourceButton = SCButton(w, Rect(0,0, 90, 24));
+		classSourceButton = gui.button.new(w, Rect(0,0, 90, 24));
 		classSourceButton.states = [["class source", Color.black, Color.clear]];
 		
 		classSourceButton.action = {
 			currentClass.openCodeFile;
 		};
 		
-		methodSourceButton = SCButton(w, Rect(0,0, 90, 24));
+		methodSourceButton = gui.button.new(w, Rect(0,0, 90, 24));
 		methodSourceButton.states = [["method source", Color.black, Color.clear]];
 		
 		methodSourceButton.action = {
 			currentMethod.openCodeFile;
 		};
 		
-		implementationButton = SCButton(w, Rect(0,0, 100, 24));
+		implementationButton = gui.button.new(w, Rect(0,0, 100, 24));
 		implementationButton.states = [["implementations", Color.black, Color.clear]];
 		implementationButton.action = {
 			thisProcess.interpreter.cmdLine = currentMethod.name.asString;
 			thisProcess.methodTemplates;
 		};
 		
-		refsButton = SCButton(w, Rect(0,0, 70, 24));
+		refsButton = gui.button.new(w, Rect(0,0, 70, 24));
 		refsButton.states = [["references", Color.black, Color.clear]];
 		refsButton.action = {
 			thisProcess.interpreter.cmdLine = currentMethod.name.asString;
 			thisProcess.methodReferences;
 		};
 		
-		cvsButton = SCButton(w, Rect(0,0, 32, 24));
+		cvsButton = gui.button.new(w, Rect(0,0, 32, 24));
 		cvsButton.states = [["cvs", Color.black, Color.clear]];
 		cvsButton.action = {
 			var filename, cvsAddr;
@@ -138,34 +141,33 @@ ClassBrowser {
 		
 		w.view.decorator.nextLine;
 		
-		filenameView = SCStaticText(w, Rect(0,0, 600, 18));
-		filenameView.font = Font("Helvetica", 10);
-		
+		filenameView = gui.staticText.new(w, Rect(0,0, 600, 18));
+		filenameView.font = gui.font.new( gui.font.defaultSansFace, 10 );
 		
 		w.view.decorator.nextLine;
-		SCStaticText(w, Rect(0,0, 180, 24))
+		gui.staticText.new(w, Rect(0,0, 180, 24))
 			.font_(hvBold12).align_(\center).string_("class vars");
-		SCStaticText(w, Rect(0,0, 180, 24))
+		gui.staticText.new(w, Rect(0,0, 180, 24))
 			.font_(hvBold12).align_(\center).string_("instance vars");
 		w.view.decorator.nextLine;
 		
-		classVarView = SCListView(w, Rect(0,0, 180, 130));
-		instVarView = SCListView(w, Rect(0,0, 180, 130));
+		classVarView = gui.listView.new(w, Rect(0,0, 180, 130));
+		instVarView = gui.listView.new(w, Rect(0,0, 180, 130));
 		classVarView.value = 0;
 		instVarView.value = 0;
 		w.view.decorator.nextLine;
 		
-		SCStaticText(w, Rect(0,0, 220, 24))
+		gui.staticText.new(w, Rect(0,0, 220, 24))
 			.font_(hvBold12).align_(\center).string_("subclasses  (press return)");
-		SCStaticText(w, Rect(0,0, 180, 24))
+		gui.staticText.new(w, Rect(0,0, 180, 24))
 			.font_(hvBold12).align_(\center).string_("methods");
-		SCStaticText(w, Rect(0,0, 180, 24))
+		gui.staticText.new(w, Rect(0,0, 180, 24))
 			.font_(hvBold12).align_(\center).string_("arguments");
 		w.view.decorator.nextLine;
 		
-		subclassView = SCListView(w, Rect(0,0, 220, 260));
-		methodView = SCListView(w, Rect(0,0, 180, 260));
-		argView = SCListView(w, Rect(0,0, 180, 260));
+		subclassView = gui.listView.new(w, Rect(0,0, 220, 260));
+		methodView = gui.listView.new(w, Rect(0,0, 180, 260));
+		argView = gui.listView.new(w, Rect(0,0, 180, 260));
 		subclassView.resize = 4;
 		methodView.resize = 4;
 		argView.resize = 4;
