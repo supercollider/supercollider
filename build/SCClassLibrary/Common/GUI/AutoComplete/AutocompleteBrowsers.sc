@@ -185,10 +185,10 @@ AutoCompMethodBrowser {
 			(boundsTemp.width - wWidth) / 2, (boundsTemp.height - wHeight) / 2,
 			wWidth, wHeight
 		)).onClose_({ this.free });
-		gui.staticText(w, Rect(5, 25, wWidth-10, 20))
+		gui.staticText.new(w, Rect(5, 25, wWidth-10, 20))
 			.string_("Type a bit or click and [cr] in the list");
-		textField = gui.textField(w, Rect(5, 50, wWidth - 10, 20)).resize_(2);
-		listView = gui.listView(w, Rect(5, 75, wWidth - 10, wHeight - 80))
+		textField = gui.textField.new(w, Rect(5, 50, wWidth - 10, 20)).resize_(2);
+		listView = gui.listView.new(w, Rect(5, 75, wWidth - 10, wHeight - 80))
 			.resize_(5)
 //			.items_(this.itemList(masterList))
 			.keyDownAction_({ |listV, char, modifiers, keycode|

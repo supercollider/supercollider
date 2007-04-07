@@ -6,8 +6,11 @@
  *	@version	0.1, 29-Jan-06
  */
 CocoaGUI {
-	*initClass {
-		Class.initClassTree( GUI );
+	classvar	<inited = false;
+	
+	*initClass { |mustInitGUI = true|
+		inited = true;
+		mustInitGUI.if({ Class.initClassTree( GUI ); });
 		GUI.add( this );
 	}
 
@@ -67,4 +70,7 @@ CocoaGUI {
 			
 //	checkBox: SCCheckBox,
 //	tabbedPane: SCTabbedPane
+
+	///////////////// crucial /////////////////
+	*startRow { ^StartRow }
 }

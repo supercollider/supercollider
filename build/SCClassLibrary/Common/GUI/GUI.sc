@@ -13,7 +13,7 @@
  *	@version	0.15, 04-Apr-07
  */
 GUI { 
-	classvar <scheme, schemes, <skin, skins;
+	classvar <scheme, <schemes, <skin, skins;
 	
 	*new { arg key; ^scheme.perform( key )}
 
@@ -123,8 +123,17 @@ GUI {
 			///////////////// extras /////////////////
 			
 			checkBox: JSCCheckBox,
-			tabbedPane: JSCTabbedPane
+			tabbedPane: JSCTabbedPane,
+
+			///////////////// crucial /////////////////
+			startRow: JStartRow
+
 		));
+
+			// this used to be unnecessary, until someone split cocoa classes out into CocoaGUI
+		(\CocoaGUI.asClass.notNil and: { CocoaGUI.inited.not }).if({
+			CocoaGUI.initClass(false);
+		});
 	}
 
 	/**
