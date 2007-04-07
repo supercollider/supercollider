@@ -21,7 +21,7 @@ NumberEditorGui : EditorGui {
 	}
 	box { arg layout;
 		var r;
-		numv = SCNumberBox(layout,Rect(0,0,40,17))
+		numv = GUI.numberBox.new(layout,Rect(0,0,40,17))
 			.object_(model.poll)
 			//.stringColor_(this.background)
 			.action_({ arg nb;
@@ -33,7 +33,7 @@ NumberEditorGui : EditorGui {
 	}
 	slider { arg layout, x=100,y=15;
 		var r;
-		slv = SCSlider(layout, Rect(0,0,100,17));
+		slv = GUI.slider.new(layout, Rect(0,0,100,17));
 		slv.setProperty(\value,model.spec.unmap(model.poll));
 		//slv.background_(this.background);
 		slv.action_({arg th; 
@@ -66,7 +66,7 @@ PopUpEditorGui : EditorGui {
 	guiBody { arg layout;
 		var horSize;
 		horSize = model.labels.maxValue({arg item; item.size }) * 12;
-		popV = SCPopUpMenu(layout,Rect(0,0,horSize,15))
+		popV = GUI.popUpMenu.new(layout,Rect(0,0,horSize,15))
 			.items_(model.labels)
 			.action_({ arg nb;
 				model.selectByIndex(popV.value).changed(this)
@@ -88,9 +88,9 @@ BooleanEditorGui : EditorGui {
 	guiBody { arg layout;
 		var bg;
 		bg = layout.background;
-		cb = SCButton.new( layout,Rect(0,0,14,14));
+		cb = GUI.button.new( layout,Rect(0,0,14,14));
 		cb.states = [[" ",bg,bg],["X",Color.black,bg]];
-		cb.font = Font("Helvetica",9);
+		cb.font = GUI.font.new("Helvetica",9);
 		cb.setProperty(\value,model.value.binaryValue);
 		cb.action = { model.activeValue_(cb.value != 0,this) };
 		if(consumeKeyDowns,{ cb.keyDownAction = {nil}; });

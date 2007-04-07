@@ -14,7 +14,7 @@ SampleGui : ObjectGui {
 		var n;
 		n = model.class.asString;
 		InspectorLink.icon(model,layout);
-		SCDragSource(layout,Rect(0,0,(n.size * 7.5).max(70),17))
+		GUI.dragSource.new(layout,Rect(0,0,(n.size * 7.5).max(70),17))
 			.stringColor_(Color.new255(70, 130, 200))
 			.background_(Color.white)
 			.align_(\center)
@@ -61,10 +61,10 @@ SampleGui : ObjectGui {
 
 		size = layout.asView.bounds.width - 220;
 		layout.startRow;
-		v = SCSoundFileView.new(layout, Rect(0, 0, size, 80))
+		v = GUI.soundFileView.new(layout, Rect(0, 0, size, 80))
 			.canFocus_(true).gridOn_(true).timeCursorOn_(false);
-		//d = SCSlider(layout, Rect(0,0,size,7)).action_({|slider| v.scrollTo(slider.value) });
-		d = SC2DSlider(layout, size@30)
+		//d = GUI.slider(layout, Rect(0,0,size,7)).action_({|slider| v.scrollTo(slider.value) });
+		d = GUI.slider2D.new(layout, size@30)
 			.action_({|sl| 
 				var y;
 				v.zoomToFrac(y = sl.y * 0.9 + 0.1);
@@ -74,8 +74,8 @@ SampleGui : ObjectGui {
 			
 		layout.startRow;
 		CXLabel(layout,"Resolution:");
-		//SCStaticText.new(layout, Rect(0, 0, 40, 18)).string_("Resolution:").align_(\right);
-		SCNumberBox(layout, Rect(0, 0, 30, 18)).value_(block)
+		//GUI.staticText.new(layout, Rect(0, 0, 40, 18)).string_("Resolution:").align_(\right);
+		GUI.numberBox.new(layout, Rect(0, 0, 30, 18)).value_(block)
 			.action_({|numbox|
 				numbox.value = max(numbox.value,1);
 				if (numbox.value != block, {
@@ -88,17 +88,17 @@ SampleGui : ObjectGui {
 
 			});
 		CXLabel(layout,"divs/beat:");
-		//SCStaticText.new(layout, Rect(0, 0, 40, 18)).string_("Divs/beat:").align_(\right);
-		SCNumberBox(layout, Rect(0, 0, 30, 18)).value_(divs)
+		//GUI.staticText.new(layout, Rect(0, 0, 40, 18)).string_("Divs/beat:").align_(\right);
+		GUI.numberBox.new(layout, Rect(0, 0, 30, 18)).value_(divs)
 			.action_({|numbox|
 				numbox.value = max(numbox.value,1);
 				divs = numbox.value;
 				v.gridResolution_(60/tempoG.value/divs);
 			});
-		SCStaticText.new(layout, Rect(0, 0, 50, 18)).string_("Start:").align_(\right);
-		selectionStartG = SCStaticText.new(layout, Rect(0, 0, 100, 18));
-		SCStaticText.new(layout, Rect(10, 0, 30, 18)).string_("Size:").align_(\right);
-		selectionSizeG = SCStaticText.new(layout, Rect(0, 0, 100, 18));
+		GUI.staticText.new(layout, Rect(0, 0, 50, 18)).string_("Start:").align_(\right);
+		selectionStartG = GUI.staticText.new(layout, Rect(0, 0, 100, 18));
+		GUI.staticText.new(layout, Rect(10, 0, 30, 18)).string_("Size:").align_(\right);
+		selectionSizeG = GUI.staticText.new(layout, Rect(0, 0, 100, 18));
 	
 		v.mouseUpAction = {
 			selectionStartG.string = v.selectionStart(0);

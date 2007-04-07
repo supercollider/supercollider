@@ -26,7 +26,7 @@ TempoGui : ObjectGui {
 				1.0)
 		]);
 
-		gn = SCButton(layout,17@17);
+		gn = GUI.button.new(layout,17@17);
 		gn.states = [ ["M",Color.black,Color.white],["M",Color.white,Color.black]];
 		gn.action = {
 			if(gnome.isPlaying.not,{ 

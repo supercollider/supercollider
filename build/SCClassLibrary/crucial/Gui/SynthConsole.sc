@@ -256,7 +256,7 @@ SoundFileFormats { // an interface
 	gui { arg layout;
 		var items;
 		items = #['float32', 'aiff16', 'aiff24','wav16'];
-		SCPopUpMenu(layout,Rect(0,0,80,16))
+		GUI.sCPopUpMenu.new(layout,Rect(0,0,80,16))
 			.items_(items)
 			.action_({ arg pop;
 				format = items.at(pop.value);

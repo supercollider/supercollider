@@ -15,7 +15,7 @@ CXMenu : SCViewHolder { // multiple actions
 	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=160;
 		buttonWidth = argbuttonWidth;
 		layout= lay ?? {MultiPageLayout.new("menu",Rect(20,20,windowWidth,height))};
-		view = SCVLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));
+		view = GUI.vLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));
 		this.guiBody;
 		this.enableKeyDowns;
 		if(lay.isNil,{ layout.front });

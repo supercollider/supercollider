@@ -19,6 +19,7 @@ SCViewHolder {
 		});
 	}
 
+	action { ^view.action }
 	action_ { arg f; view.action_(f) }
 	doAction { view.doAction }
 	keyDownAction_ { arg f;
@@ -41,6 +42,17 @@ SCViewHolder {
 	// should move lower
 	font_ { arg f;
 		view.font = f;
+	}
+	
+		// allow all messages the view understands to delegate to the view
+	doesNotUnderstand { |selector ... args|
+		var	result;
+		view.respondsTo(selector).if({
+			result = view.performList(selector, args);
+			^(result === view).if({ this }, { result });
+		}, {
+			DoesNotUnderstandError(this, selector, args).throw;
+		});
 	}
 }
 
@@ -82,9 +94,9 @@ StartRow : SCViewHolder {
 /**
   * a composite view with a FlowLayout as its decorator
   */
-FlowView : SCLayoutView {
+FlowView : SCViewHolder {
 
-	var autoRemoves;
+	var /*<children, */autoRemoves;
 	
 	*layout { arg f,bounds;
 		var v;
@@ -92,68 +104,76 @@ FlowView : SCLayoutView {
 		f.value(v);
 		^v
 	}
-	*viewClass { ^SCCompositeView }
-	init { arg parent,bounds;
+	*viewClass { ^GUI.compositeView }
+	*new { arg parent, bounds;
+		^super.new.init(parent, bounds);
+	}
+	init { arg parent, bounds;
 		var w;
 		if(parent.isNil,{ 
-			parent = SCWindow.new("",bounds).front;
+			parent = GUI.window.new("",bounds).front;
 		});
 		bounds = if(bounds.notNil,{
 			bounds.asRect.moveTo(0,0)
 		},{
 			parent.asView.bounds.insetAll(2,2,2,2)
 		});
-		super.init(parent , bounds);
+			// this adds the composite view to the parent composite view
+		view = this.class.viewClass.new(parent.asView, bounds);
+			// now a tricky hack... recursiveResize needs the FlowView as a child, not the composite view
+			// so I will replace the last-added child with THIS
+		parent.asView.children[parent.asView.children.size-1] = this;
+
 		// after i am placed by parent...
-		decorator = FlowLayout(this.bounds,Point(2,2),Point(4,4));
+		view.decorator = FlowLayout(this.bounds,Point(2,2),Point(4,4));
 		autoRemoves = IdentitySet.new;
 	}
 
 	reflowAll {
-		decorator.reset;
-		this.children.do({ arg view;
-			if(view.isKindOf(StartRow),{
-				decorator.nextLine
+		view.decorator/*.bounds_(this.bounds)*/.reset;
+		view.children.do({ |widget|
+			if(widget.isStartRow,{
+				view.decorator.nextLine
 			},{
-				decorator.place(view);
+				view.decorator.place(widget);
 			})
 		});
 	}
-	innerBounds { ^decorator.innerBounds }
+	innerBounds { ^view.decorator.innerBounds }
 	resizeToFit { arg reflow = false,tryParent = false;
 		var used,new;
 
 		if(reflow,{ this.reflowAll; });
 
-		used = decorator.used;
+		used = view.decorator.used;
 		// should respect any settings !
 		//used.width = used.width.clip(this.getProperty(\minWidth),this.getProperty(\maxWidth));
 		//used.height = used.height.clip(this.getProperty(\minHeight),this.getProperty(\maxHeight));
 		
-		new = this.bounds.resizeTo(used.width,used.height);
-		super.bounds = new;
+		new = view.bounds.resizeTo(used.width,used.height);
+		view.bounds = new;
 
-		decorator.bounds = new; // if the left/top moved this buggers it
+		view.decorator.bounds = new; // if the left/top moved this buggers it
 		if(reflow,{ this.reflowAll; });
 		if(tryParent,{
-			this.parent.tryPerform(\resizeToFit,reflow,tryParent);
+			view.parent.tryPerform(\resizeToFit,reflow,tryParent);
 		});
 		^new
 	}
-	bounds_ { arg b;
-		if(b != this.bounds,{
-			super.bounds = b;
-			if(decorator.notNil,{
-				decorator.bounds = b;
-				this.reflowAll;
+	bounds_ { arg b, reflow = true;
+		if(b != view.bounds,{
+			view.bounds = b;
+			if(view.decorator.notNil,{
+				view.decorator.bounds = b;
+				reflow.if({ this.reflowAll; });
 			})
 		});
 	}
-	wouldExceedBottom { arg aBounds; ^decorator.wouldExceedBottom(aBounds) }
+	wouldExceedBottom { arg aBounds; ^view.decorator.wouldExceedBottom(aBounds) }
 	anyChildExceeds {
 		var r;
-		r = this.bounds;
-		^this.children.any({ arg c;
+		r = view.bounds;
+		^view.children.any({ arg c;
 			r.containsRect( c.bounds ).not
 		});
 	}
@@ -163,23 +183,43 @@ FlowView : SCLayoutView {
 		^Rect(0,0,x,y)
 	}
 	startRow {
-		this.add(StartRow.new); //won't really put a view in there yet
-		decorator.nextLine
+		view.add(GUI.startRow.new); //won't really put a view in there yet
+		view.decorator.nextLine
 	}
 	removeOnClose { arg updater;
 		autoRemoves.add(updater);
 	}
+	remove {
+		autoRemoves.do({ |updater| updater.remove });
+		autoRemoves = nil;
+		view.remove;
+	}
 	viewDidClose {
 		autoRemoves.do({ arg u; u.remove });
 		autoRemoves = nil;
-		super.viewDidClose;
+		view.viewDidClose;
 	}
 	hr { arg color,height=3,borderStyle=1; // html joke
 		this.startRow;
 		// should fill all and still return a minimal bounds 
-		SCStaticText(this,Rect(0,0,decorator.innerBounds.width - (2 * 4), height,0))
+		GUI.staticText.new(this,Rect(0,0,view.decorator.innerBounds.width - (2 * 4), height,0))
 				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
 	}
+	
+		// other messages to delegate -- must mimic SCLayoutView interface
+	children { ^view.children }
+	decorator { ^view.decorator }
+	decorator_ { |dec| view.decorator = dec }
+	add { |child|
+		view.add(child);
+	}
+	removeAll {
+		view.removeAll;
+	}
+	prRemoveChild { |child|
+		view.prRemoveChild(child);
+	}
+	prClose { view.prClose }
 }
 
 // abstract
@@ -192,12 +232,12 @@ SCButtonAdapter : SCViewHolder {
 		//if((layout.isKindOf(SCLayoutView) or: layout.isKindOf(FlowView)).not,{
 		//	layout = layout.asFlowView;
 		//});
-		if(layout.isNil,{ layout = nil.asFlowView; });
-		this.view = SCButton(layout,Rect(0,0,x,y ? defaultHeight));
+		if((layout.isNil or: { layout.isKindOf(MultiPageLayout) }),{ layout = layout.asFlowView; });
+		this.view = GUI.button.new(layout,Rect(0,0,x,y ? defaultHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}) });
 	}
 	flowMakeView { arg layout,x,y;
-		this.view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
+		this.view = GUI.button.new(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}); });
 	}		
 
@@ -248,7 +288,7 @@ ActionButton : SCButtonAdapter {
 		this.makeViewWithStringSize(layout,title.size,minWidth,minHeight);
 		view.states_([[title,color ?? {Color.black}, 
 			backcolor ?? {Color.new255(205, 201, 201)}]]);
-		view.font_(font ?? {Font("Helvetica",12.0)});
+		view.font_(font ?? {GUI.font.new("Helvetica",12.0)});
 		view.action_(function);
 		if(consumeKeyDowns,{ this.keyDownAction = {nil}; });
 	}

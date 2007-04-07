@@ -9,7 +9,7 @@ EnvEditorGui : ObjectGui {
 		
 		var curves,levels,times,temp=0.0;
 		
-		ev = SCEnvelopeView(layout,layout.layRight(100,40))
+		ev = GUI.envelopeView.new(layout,layout.layRight(100,40))
 			.thumbSize_(5);
 		ev.drawLines = true;
 		ev.selectionColor = Color.red;

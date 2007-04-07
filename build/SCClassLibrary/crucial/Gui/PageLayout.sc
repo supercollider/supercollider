@@ -15,10 +15,10 @@ MultiPageLayout  {
 	
 	init { arg title,bounds,argmargin,argmetal=true;
 		var w,v;
-		bounds = if(bounds.notNil,{  bounds.asRect },{SCWindow.screenBounds.insetAll(10,20,0,25)});
+		bounds = if(bounds.notNil,{  bounds.asRect },{GUI.window.screenBounds.insetAll(10,20,0,25)});
 		windows=windows.add
 		(	
-			w=SCWindow.new("< " ++ title.asString ++ " >",
+			w=GUI.window.new("< " ++ title.asString ++ " >",
 						bounds, border: true )
 				.onClose_({
 					this.close; // close all windows in this layout
@@ -138,7 +138,7 @@ MultiPageLayout  {
 	}
 	fullScreen {
 		windows.reverse.do({ arg w;
-			w.bounds = SCWindow.screenBounds.insetAll(10,20,0,25);
+			w.bounds = GUI.window.screenBounds.insetAll(10,20,0,25);
 				// .fullScreen   issues
 		});
 	}
@@ -250,7 +250,7 @@ PageLayout  {
 		vspacer = argvspacer;
 		windows=windows.add
 		(	
-			w=SCWindow.new("< " ++ title.asString ++ " >",
+			w=GUI.window.new("< " ++ title.asString ++ " >",
 				Rect.new( posx, posy, width, height ) )
 			.onClose_({  	
 						this.close; // close all windows in this layout
@@ -360,7 +360,7 @@ PageLayout  {
 		var r;
 		this.startRow;
 		r=this.layRight(this.margin.width - (2 * hspacer), height,0);
-		SCStaticText(this.window,r).string_("").background_(color ? hrcolor).resize_(2)
+		GUI.staticText.new(this.window,r).string_("").background_(color ? hrcolor).resize_(2)
 	}
 	tab {
 		this.layRight(10,10);

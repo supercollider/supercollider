@@ -77,17 +77,17 @@ InspManager {
 			menu = \pleaseWait;
 			{
 				var h,fb,f,w;
-				f = SCWindow.new("inspect",Rect(100,100,1000,900));
+				f = GUI.window.new("inspect",Rect(100,100,1000,900));
 				f.view.background = Color.white;
 				h = f.bounds.height - 50;
 				w = f.bounds.width;
-				menu = SCListView.new(f,Rect(3,0,200,h));
-				menu.font = Font("Courier",10);
+				menu = GUI.listView.new(f,Rect(3,0,200,h));
+				menu.font = GUI.font.new("Courier",10);
 				menu.background = Color(0.7,0.7,0.7,0.5);
 				menu.items = [insp.name];
 				menu.action = { this.showInsp(insps.at(menu.value)) };
 				
-				inspView = SCCompositeView(f, Rect(210,0,w - 170,h));
+				inspView = GUI.compositeView.new(f, Rect(210,0,w - 170,h));
 				inspView.background = Color(0.17,0.1,0.1,0.15);
 				this.showInsp(insp);
 

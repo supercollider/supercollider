@@ -9,10 +9,10 @@ ServerGui : ObjectGui {
 		var active,booter;
 		
 		if(model.isLocal,{
-			booter = SCButton(layout, Rect(0,0, 47, 17));
+			booter = GUI.button.new(layout, Rect(0,0, 47, 17));
 			booter.states = [["Boot", Color.black, Color.clear],
 						   ["Quit", Color.black, Color.clear]];
-			booter.font = Font("Helvetica",10);
+			booter.font = GUI.font.new("Helvetica",10);
 			booter.action = { arg view; 
 				if(view.value == 1, {
 					booting.value;
@@ -28,10 +28,10 @@ ServerGui : ObjectGui {
 			booter.setProperty(\value,model.serverRunning.binaryValue);
 		});
 		
-		active = SCStaticText(layout, Rect(0,0, 60, 17));
+		active = GUI.staticText.new(layout, Rect(0,0, 60, 17));
 		active.string = model.name.asString;
 		active.align = \center;
-		active.font = Font("Helvetica-Bold", 11);
+		active.font = GUI.font.new("Helvetica-Bold", 11);
 		active.background = Color.black;
 		if(model.serverRunning,running,stopped);		
 		
@@ -68,7 +68,7 @@ ServerGui : ObjectGui {
 		});
 			
 		status = CXLabel(layout,"               ");
-		status.font = Font("Helvetica",9);
+		status.font = GUI.font.new("Helvetica",9);
 		status.background = Color.black;
 		status.stringColor = Color.green;
 		status.align = \right;
@@ -76,7 +76,7 @@ ServerGui : ObjectGui {
 			model.startAliveThread(0.0,1.0);
 		});
 		
-		recorder = SCButton(layout, Rect(0,0, 10, 17));
+		recorder = GUI.button.new(layout, Rect(0,0, 10, 17));
 		recorder.states = [
 			["*", Color.black, Color.clear],
 			["*", Color.red, Color.gray(0.1)],
@@ -114,7 +114,7 @@ ServerErrorGui : ObjectGui {
 	writeName {}
 	guiBody { arg layout;
 		errors = CXLabel(layout,"                                          ");
-		errors.font = Font("Helvetica-Bold",12);
+		errors.font = GUI.font.new("Helvetica-Bold",12);
 		errors.background = Color.grey(0.4,0.8);
 		errors.stringColor = Color.white;
 		errors.align = \left;

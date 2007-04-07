@@ -3,11 +3,11 @@ CXObjectInspector : ObjectGui {
 
 	writeName { arg layout;
 		ClassNameLabel.newBig(model.class,layout);
-		SCDragSource(layout,Rect(0,0,500,30))
+		GUI.dragSource.new(layout,Rect(0,0,500,30))
 			.object_(model)
 			.background_(Color.white)
 			.align_(\center)
-			.font_(Font("Helvetica-Bold",18));
+			.font_(GUI.font.new("Helvetica-Bold",18));
 	}
 
 	guiBody { arg layout;
@@ -38,8 +38,8 @@ CXObjectInspector : ObjectGui {
 			});
 		});
 		
-		list = SCListView(layout,500@600);
-		list.font = Font("Courier",10);
+		list = GUI.listView.new(layout,500@600);
+		list.font = GUI.font.new("Courier",10);
 		list.background = Color(0.65,0.75,0.65,0.15);
 		list.items = listItems.array.add("");
 		list.action = { 
@@ -123,7 +123,7 @@ ClassGui : CXObjectInspector { // ClassGui
 		layout.startRow;
 		ActionButton(layout, "Source",{
 			model.openCodeFile;
-		}).font_(Font("Monaco",9.0));	
+		}).font_(GUI.font.new("Monaco",9.0));	
 		ActionButton(layout,"Help",{ 
 			var path;
 			model.openHelpFile;

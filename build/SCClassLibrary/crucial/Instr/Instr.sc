@@ -11,7 +11,8 @@ Instr  {
 	*new { arg name, func, specs, outSpec = \audio;
 		var previous;
 		if(func.isNil,{ ^this.at(name) });
-		previous = Library.atList(this.symbolizeName(name).addFirst(Instr));
+		name = this.symbolizeName(name);
+		previous = Library.atList(name.addFirst(Instr));
 		if(previous.notNil,{
 			previous.func = func;
 			previous.init(specs,outSpec);
@@ -21,7 +22,7 @@ Instr  {
 		^super.newCopyArgs(name,func).init(specs,outSpec)
 	}
 	*put { arg instr;
-		^Library.putList([this,this.symbolizeName(instr.name),instr].flatten )
+		^Library.putList([Instr,this.symbolizeName(instr.name),instr].flatten )
 	}
 	*remove { arg instr;
 		^Library.global.removeAt([this,this.symbolizeName(instr.name)].flatten )
@@ -325,7 +326,7 @@ Instr  {
 		w = lines.maxValue({ |l| l.size }) * 10;
 		h = lines.size * 20;
 		
-		tf = SCTextField(layout,Rect(0,0,w,h));
+		tf = GUI.textField.new(layout,Rect(0,0,w,h));
 		tf.string = source;
 		
 		if(path.notNil,{
@@ -346,6 +347,47 @@ Instr  {
 		});
 		ActionButton(layout,"make Patch",{ Patch(this.name).topGui });
 	}
+
+
+		// added by HJH
+	*wrap { |name, inputs, prefix|
+		^this.at(name).wrap(inputs, prefix)
+	}
+	wrap { |inputs, prefix|
+		var	default, synthdef, player, instr, args, argNames, argOffset, outputProxies, inp;
+		var	saveControlNames;
+		(inputs.size == 0).if({ inputs = [] });
+		synthdef = UGen.buildSynthDef;
+		saveControlNames = synthdef.controlNames;	// because I am going to call buildControls later
+		synthdef.controlNames = nil;
+		argNames = this.argNames;
+		prefix.notNil.if({
+			argNames = argNames.collect({ |name| (prefix ++ name).asSymbol })
+		});
+		player = InstrSynthDef.currentPlayer;
+		instr = player.tryPerform(\instr);
+		args = (player.tryPerform(\args) ?? { [] });
+		argOffset = args.size;	// for initForSynthDef call -- must do this before extend
+		inp = player.addArgs(inputs, this, prefix, true);  // flag to indicate I'm wrapping
+		inp.do({ |in, i|
+			in.initForSynthDef(synthdef, argOffset+i);
+				// should I add all args to the patch, or only non-scalars?
+				// for testing I'll just put them all in
+			in.addToSynthDef(synthdef, argNames[i]);
+			(in.notNil and: { inputs[i].isNil }).if({
+				args = args.add(in);
+			});
+		});
+		
+		outputProxies = synthdef.buildControls
+			[..this.argsSize]	// crop the array
+			.collect({ |ctl, i| inp[i].instrArgFromControl(ctl) });
+		synthdef.controlNames = saveControlNames;
+			// if the current patch exposes instr args, add the args to the patch
+		player.tryPerform(\args_, args);
+		^func.valueArray(outputProxies)
+	}
+
 }
 
 

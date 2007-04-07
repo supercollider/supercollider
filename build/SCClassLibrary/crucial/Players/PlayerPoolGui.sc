@@ -15,7 +15,7 @@ PlayerPoolGui : AbstractPlayerGui {
 			model.list.collect({arg sf,i;
 				var ind;
 				if(i % wrapEvery == 0,{ layout.startRow });
-				ind = SCButton(layout,20@16);
+				ind = GUI.button.new(layout,20@16);
 				ind.action = { 
 					this.unselect(model.selected); 
 					model.select(i); 
@@ -26,7 +26,7 @@ PlayerPoolGui : AbstractPlayerGui {
 				ind
 			});
 		});
-		selectedBox =  SCCompositeView(layout,Rect(0,0,layout.innerBounds.width,500));
+		selectedBox =  GUI.compositeView.new(layout,Rect(0,0,layout.innerBounds.width,500));
 		
 		rect = selectedBox.bounds;
 		guis = Array.newClear(model.list.size);

@@ -20,19 +20,19 @@
 	}
 	horz { arg func,bounds;
 		var comp;
-		comp = SCHLayoutView(this,bounds ?? { this.bounds });
+		comp = GUI.hLayoutView.new(this,bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
 	vert { arg func,bounds;
 		var comp;
-		comp = SCVLayoutView(this,bounds ?? { this.bounds });
+		comp = GUI.vLayoutView.new(this,bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
 	comp { arg func,bounds;
 		var comp;
-		comp = SCCompositeView(this,bounds ?? { this.bounds });
+		comp = GUI.compositeView.new(this,bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}		
@@ -42,7 +42,7 @@
 
 	flow { arg func,bounds;
 		var f;
-		f = FlowView(this,bounds ?? { decorator.indentedRemaining });
+		f = FlowView(this,bounds ?? { this.decorator.indentedRemaining });
 		func.value(f);
 		f.resizeToFit;
 		this.reflowAll; // annoying and slow
@@ -53,23 +53,23 @@
 
 	horz { arg func,bounds;
 		var comp;
-		comp = SCHLayoutView(this,bounds ?? { decorator.indentedRemaining });
+		comp = GUI.hLayoutView.new(this,bounds ?? { this.decorator.indentedRemaining });
 		func.value(comp);
 		^comp
 	}
 	vert { arg func,bounds;
 		var comp;
-		comp = SCVLayoutView(this,bounds ?? { decorator.indentedRemaining });
+		comp = GUI.vLayoutView.new(this,bounds ?? { this.decorator.indentedRemaining });
 		func.value(comp);
 		^comp
 	}
 	comp { arg func,bounds;
 		var comp;
-		comp = SCCompositeView(this,bounds ?? { this.bounds });
+		comp = GUI.compositeView.new(this,bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
-	indentedRemaining { ^decorator.indentedRemaining }
+	indentedRemaining { ^this.decorator.indentedRemaining }
 }
 
 + MultiPageLayout {

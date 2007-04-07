@@ -10,7 +10,7 @@ ClassNameLabel : ActionButton {
 	*newBig { arg  class,layout,minWidth=200,minHeight=30;
 		^super.new(layout,class.name.asString,{class.ginsp},minWidth,minHeight, Color.white,
 			Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 ),
-			Font("Helvetica-Bold",18))
+			GUI.font.new("Helvetica-Bold",18))
 	}
 
 }
@@ -20,15 +20,15 @@ MethodLabel : ActionButton {
 	// show args and prototypes
 	*new { arg  method,layout,minWidth=100;
 		^super.new(layout,method.ownerClass.name.asString ++ "-" ++ method.name.asString,
-			{method.ginsp},minWidth,17,nil,Color.new255(245, 222, 179),Font("Monaco",9));
+			{method.ginsp},minWidth,17,nil,Color.new255(245, 222, 179),GUI.font.new("Monaco",9));
 	}
 	*withoutClass { arg  method,layout,minWidth=100;
 		^super.new(layout, method.name.asString,{method.ginsp},minWidth,17,nil,
-			Color.new255(245, 222, 179),Font("Monaco",9));
+			Color.new255(245, 222, 179),GUI.font.new("Monaco",9));
 	}
 	*classMethod { arg  method,layout,minWidth=100;
 		^super.new(layout,"*" ++ method.name.asString,{method.ginsp},minWidth,17,nil,
-			Color.new255(245, 222, 179),Font("Monaco",9));
+			Color.new255(245, 222, 179),GUI.font.new("Monaco",9));
 	}
 	
 //	// search by selector link
@@ -63,21 +63,21 @@ InspectorLink : ActionButton {
 		^super.new(layout,target.asString,{target.insp},minWidth,nil,
 			Color.new255(70, 130, 200),
 			Color.white,
-			Font("Helvetica",12)
+			GUI.font.new("Helvetica",12)
 		)
 	}
 	*big { arg  target,layout,minWidth=200;
 		^super.new(layout,target.asString,{target.insp},minWidth,30,
-			Color.black,Color.white,Font("Helvetica-Bold",18))
+			Color.black,Color.white,GUI.font.new("Helvetica-Bold",18))
 	}
 	*icon { arg target,layout;
-		^SCButton(layout,Rect(0,0,6,17))
+		^GUI.button.new(layout,Rect(0,0,6,17))
 			.action_({ target.insp })
 			.states_([["i",Color.black,Color.white]])
-			.font_(Font("Helvetica-Bold",9));
+			.font_(GUI.font.new("Helvetica-Bold",9));
 			
 		/*^super.new(layout,"|",{target.insp},1,nil,
-			Color.black,Color.white,Font("Helvetica-Bold",9))*/
+			Color.black,Color.white,GUI.font.new("Helvetica-Bold",9))*/
 	}		
 }
 
