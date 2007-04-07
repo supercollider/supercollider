@@ -30,9 +30,11 @@ Pinbox : PatternProxy {
 	}
 	
 	receiveEvent { arg inval;
-		if(inval.notNil) {	// multiple keys, or even a pattern matching.
-				if(inval.at(\news).notNil) {
-					this.source = inval.at(\news).at(name) ? pattern
+		var news;
+		if(inval.notNil) {	// some other class: multiple keys, or even a pattern matching.
+				news = inval.at(\news);
+				if(news.notNil) {
+					this.source = news.at(name) ? pattern
 				}
 		};
 	}
