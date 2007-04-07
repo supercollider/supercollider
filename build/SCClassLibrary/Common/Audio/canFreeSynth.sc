@@ -17,7 +17,7 @@
 
 + EnvGen {
 	canFreeSynth {
-		^(inputs.at(4) > 1) and: //doneAction
+		^(inputs.at(4).isNumber.not or: {inputs.at(4) > 1}) and: //doneAction
 			{ // it can happen that the gate is 1 and the envelope runs out
 				inputs.at(0).isNumber.not or: //variable gate
 				{ inputs.at(7) == -99 }		//or self releasing envelope
