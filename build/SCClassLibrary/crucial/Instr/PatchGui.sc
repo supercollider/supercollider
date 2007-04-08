@@ -14,12 +14,12 @@ PatchGui : AbstractPlayerGui {
 			var gui,disclosed=true,box;
 			layout.startRow;
 			//ArgNameLabel(model.instr.argNames.at(i),layout);
-			SCDragSink(vl,Rect(0,0,100,15))
+			GUI.dragSink.new(vl,Rect(0,0,100,15))
 				.background_(Color( 0.47843137254902, 0.72941176470588, 0.50196078431373 ))
-				.font_(Font("Helvetica",10))
+				.font_(GUI.font.new("Helvetica",10))
 				.align_(\left)
 				.canReceiveDragHandler_({  
-					model.instr.specs.at(i).canAccept(SCView.currentDrag);
+					model.instr.specs.at(i).canAccept(GUI.view.currentDrag);
 				})
 				.object_(model.instr.argNames.at(i))
 				.action_({ arg sink;
