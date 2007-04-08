@@ -68,6 +68,9 @@ Platform
 	*userAppSupportDir { ^thisProcess.platform.userAppSupportDir }
 	*systemExtensionDir { ^thisProcess.platform.systemExtensionDir }
 	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
+
+		// swing is compatible with all platforms; so declare it as global default
+	defaultGUIScheme { ^\swing }
 }
 
 UnixPlatform : Platform

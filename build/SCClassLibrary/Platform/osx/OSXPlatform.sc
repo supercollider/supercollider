@@ -12,4 +12,7 @@ OSXPlatform : UnixPlatform
 	shutdown {
 		HIDDeviceService.releaseDeviceList;
 	}
+
+		// only osx uses Cocoa guis
+	defaultGUIScheme { ^\cocoa }
 }

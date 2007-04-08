@@ -134,12 +134,15 @@ GUI {
 		(\CocoaGUI.asClass.notNil and: { CocoaGUI.inited.not }).if({
 			CocoaGUI.initClass(false);
 		});
+		
+			// set platform-specific default gui scheme
+		this.tryPerform(thisProcess.platform.defaultGUIScheme);
 	}
 
 	/**
 	 *	Makes Cocoa (Mac OS X GUI) the current scheme
 	 *	and returns it. Subsequent GUI object calls
-	 *	to GUI are deligated to cocoa.
+	 *	to GUI are delegated to cocoa.
 	 *
 	 *	@return	the current (cocoa) scheme
 	 */
@@ -150,7 +153,7 @@ GUI {
 	/**
 	 *	Makes Swing (Java GUI) the current scheme
 	 *	and returns it. Subsequent GUI object calls
-	 *	to GUI are deligated to swing.
+	 *	to GUI are delegated to swing.
 	 *
 	 *	@return	the current (swing) scheme
 	 */
