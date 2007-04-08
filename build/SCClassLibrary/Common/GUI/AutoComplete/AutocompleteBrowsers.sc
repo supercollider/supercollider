@@ -178,44 +178,46 @@ AutoCompMethodBrowser {
 
 	*prInit { arg title;
 		var boundsTemp, gui;
-		gui = GUI.current;
-		boundsTemp = gui.window.screenBounds;
-			// center the window on screen
-		w = gui.window.new(title, Rect(
-			(boundsTemp.width - wWidth) / 2, (boundsTemp.height - wHeight) / 2,
-			wWidth, wHeight
-		)).onClose_({ this.free });
-		gui.staticText.new(w, Rect(5, 25, wWidth-10, 20))
-			.string_("Type a bit or click and [cr] in the list");
-		textField = gui.textField.new(w, Rect(5, 50, wWidth - 10, 20)).resize_(2);
-		listView = gui.listView.new(w, Rect(5, 75, wWidth - 10, wHeight - 80))
-			.resize_(5)
-//			.items_(this.itemList(masterList))
-			.keyDownAction_({ |listV, char, modifiers, keycode|
-				case 
-					{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63232) }
+		\CocoaGUI.asClass.notNil.if({
+			gui = CocoaGUI;  // maybe GUI.current will be supportable later
+			boundsTemp = gui.window.screenBounds;
+				// center the window on screen
+			w = gui.window.new(title, Rect(
+				(boundsTemp.width - wWidth) / 2, (boundsTemp.height - wHeight) / 2,
+				wWidth, wHeight
+			)).onClose_({ this.free });
+			gui.staticText.new(w, Rect(5, 25, wWidth-10, 20))
+				.string_("Type a bit or click and [cr] in the list");
+			textField = gui.textField.new(w, Rect(5, 50, wWidth - 10, 20)).resize_(2);
+			listView = gui.listView.new(w, Rect(5, 75, wWidth - 10, wHeight - 80))
+				.resize_(5)
+	//			.items_(this.itemList(masterList))
+				.keyDownAction_({ |listV, char, modifiers, keycode|
+					case 
+						{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63232) }
+							{ listView.value = (listView.value - 1) % reducedList.size }
+						{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63233) }
+							{ listView.value = (listView.value + 1) % reducedList.size }					{ char.ascii == 13 } { GUI.use( gui, {Êthis.finish })}
+						{ char.ascii == 27 } { this.free }
+				});
+	
+			textField.keyDownAction_({ |txt, char, modifiers, unicode|
+				case
+					{ (modifiers bitAnd: 10485760 > 0) and: (unicode == 63232) }
 						{ listView.value = (listView.value - 1) % reducedList.size }
-					{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63233) }
-						{ listView.value = (listView.value + 1) % reducedList.size }					{ char.ascii == 13 } { GUI.use( gui, {Êthis.finish })}
+					{ (modifiers bitAnd: 10485760 > 0) and: (unicode == 63233) }
+						{ listView.value = (listView.value + 1) % reducedList.size }
+					{ char.ascii == 13 } { GUI.use( gui, { this.finish })}
 					{ char.ascii == 27 } { this.free }
-			});
-
-		textField.keyDownAction_({ |txt, char, modifiers, unicode|
-			case
-				{ (modifiers bitAnd: 10485760 > 0) and: (unicode == 63232) }
-					{ listView.value = (listView.value - 1) % reducedList.size }
-				{ (modifiers bitAnd: 10485760 > 0) and: (unicode == 63233) }
-					{ listView.value = (listView.value + 1) % reducedList.size }
-				{ char.ascii == 13 } { GUI.use( gui, { this.finish })}
-				{ char.ascii == 27 } { this.free }
-					// default:
-				{	txt.defaultKeyDownAction(char, modifiers, unicode);
-					this.restrictList(txt.string);
-				};
-		})
-			.action_({ GUI.use( gui, {Êthis.finish })})
-			.focus;
-		w.front;
+						// default:
+					{	txt.defaultKeyDownAction(char, modifiers, unicode);
+						this.restrictList(txt.string);
+					};
+			})
+				.action_({ GUI.use( gui, {Êthis.finish })})
+				.focus;
+			w.front;
+		});
 	}
 
 }
