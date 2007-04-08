@@ -56,6 +56,8 @@ Float : SimpleNumber {
 
 	archiveAsCompileString { ^true }
 	
-	asString {		var	str = super.asString;		^if(str.find(".").isNil) { str ++ ".0" } { str }
+	storeOn { |stream|
+		var	str = super.asString;
+		stream << (if(str != "inf" and: { str.find(".").isNil }) { str ++ ".0" } { str })
 	}
 }
