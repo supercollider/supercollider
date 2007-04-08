@@ -89,6 +89,10 @@ StartRow : SCViewHolder {
 	bounds { ^Rect(0,0,0,0) }
 	bounds_ {}
 	prClose {}
+		// flowview needs to know which object is a StartRow
+		// it used to say view.isKindOf(StartRow) but that doesn't work with JStartRow in SwingOSC
+		// so...
+	isStartRow { ^true }
 }
 
 /**
