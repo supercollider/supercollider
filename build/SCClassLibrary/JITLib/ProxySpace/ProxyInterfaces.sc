@@ -156,7 +156,7 @@ PatternControl : StreamControl {
 
 SynthControl : AbstractPlayControl {
 	var <server, <>nodeID;
-	var <canReleaseSynth=true, <canFreeSynth=true;
+	var <canReleaseSynth=false, <canFreeSynth=true; // correct assumption?
 	
 	
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
@@ -165,8 +165,12 @@ SynthControl : AbstractPlayControl {
 	
 	build { arg proxy; 	// assumes audio, if proxy is not initialized
 		var rate, desc;
-		desc = this.synthDesc; // might be false assumption:
-		if(desc.notNil) { canFreeSynth = canReleaseSynth = desc.hasGate }; 		if(proxy.isNeutral) { rate = \audio };
+		desc = this.synthDesc;
+		if(desc.notNil) { 
+			canFreeSynth = desc.canFreeSynth;
+			canReleaseSynth = desc.hasGate && canFreeSynth;
+		};
+		if(proxy.isNeutral) { rate = \audio };
 		^proxy.initBus(rate, proxy.numChannels ? 2);
 	}
 	
@@ -212,7 +216,7 @@ SynthControl : AbstractPlayControl {
 		^nodeID
 	}
 	
-	stopToBundle { arg bundle;
+	stopToBundle { arg bundle; // todo: find right behavior for synth defs that are passed in.
 		if(nodeID.notNil) {
 			if(canReleaseSynth) {
 					bundle.add([15, nodeID, \gate, 0.0]); //to be sure.
@@ -246,7 +250,7 @@ SynthControl : AbstractPlayControl {
 	
 	synthDesc { var dict;
 		dict = SynthDescLib.global.synthDescs;
-		^if(dict.notNil) { dict.at(source) } { nil }; // source is symbol: synth def name
+		^if(dict.notNil) { dict.at(this.asDefName.asSymbol) } { nil }; 
 	}
 
 	controlNames { var desc; 
@@ -329,6 +333,7 @@ SynthDefControl : SynthControl {
 	}
 	
 	asDefName { ^synthDef.name }
+	
 	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
 		parents.do { arg proxy; proxy.wakeUpToBundle(bundle, checkedAlready) }
