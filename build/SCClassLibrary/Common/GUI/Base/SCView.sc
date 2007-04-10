@@ -19,7 +19,8 @@ SCView {  // abstract class
 	
 	init { arg argParent, argBounds;
 		parent = argParent.asView; // actual view
-		this.prInit(parent, argBounds.asRect,this.class.viewClass);
+			// call asView again because parent by this point might be a FlowView
+		this.prInit(parent.asView, argBounds.asRect,this.class.viewClass);
 		argParent.add(this);//maybe window or viewadapter
 	}
 	
