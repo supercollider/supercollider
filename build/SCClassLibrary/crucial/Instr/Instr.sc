@@ -277,7 +277,7 @@ Instr  {
 		Library.global.removeAt(this.name)
 	}
 
-	asString { ^"Instr(" ++ this.defName ++ ")" }
+	asString { ^"Instr(" ++ this.defName.asCompileString ++ ")" }
 		
 	*initClass {
 		Class.initClassTree(Document);

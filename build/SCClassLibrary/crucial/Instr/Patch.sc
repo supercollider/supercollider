@@ -383,7 +383,7 @@ Patch : HasPatchIns  {
 	
 	children { ^args }
 
-	printOn { arg s; s << this.class.name << instr.name; }
+	printOn { arg s; s << this.class.name << "(" << instr.name.asCompileString << " )"; }
 	storeParamsOn { arg stream;
 		var last;
 		if(this.class === Patch,{ // an indulgence ...
