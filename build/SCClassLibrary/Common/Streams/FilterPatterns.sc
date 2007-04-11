@@ -59,6 +59,7 @@ Pfset : FuncFilterPattern {
 			inevent =stream.next(event);
 			if (inevent.isNil) { ^event };
 			event = yield(inevent);
+			if(event.isNil) { nil.yield; ^inevent }
 		};
 	}
 }
@@ -92,6 +93,7 @@ Psetpre : FilterPattern {
 			inevent = evtStream.next(filteredEvent);
 			if (inevent.isNil) { ^event };
 			event = yield(inevent);
+			if(event.isNil) { nil.yield; ^inevent }
 		}
 	}
 }
