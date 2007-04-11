@@ -12,7 +12,7 @@ Instr  {
 		var previous;
 		if(func.isNil,{ ^this.at(name) });
 		name = this.symbolizeName(name);
-		previous = Library.atList(name.addFirst(Instr));
+		previous = Library.atList(name.copy.addFirst(Instr));
 		if(previous.notNil,{
 			previous.func = func;
 			previous.init(specs,outSpec);
@@ -22,7 +22,7 @@ Instr  {
 		^super.newCopyArgs(name,func).init(specs,outSpec)
 	}
 	*put { arg instr;
-		^Library.putList([Instr,this.symbolizeName(instr.name),instr].flatten )
+		^Library.putList([Instr,this.symbolizeName(instr.name),instr].flatten.debug("putList") )
 	}
 	*remove { arg instr;
 		^Library.global.removeAt([this,this.symbolizeName(instr.name)].flatten )
@@ -200,8 +200,8 @@ Instr  {
 
 	*objectAt { arg name;
 		var symbolized,search,path,pathParts,rootPath;
-		symbolized = Instr.symbolizeName(name);
-		search = Library.atList([this] ++ symbolized);
+		symbolized = Instr.symbolizeName(name).debug("symbolized");
+		search = Library.atList(([this] ++ symbolized).debug("searching"));
 		if(search.notNil,{ ^search });
 
 		// look for a file
