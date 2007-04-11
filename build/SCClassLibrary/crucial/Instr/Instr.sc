@@ -22,7 +22,7 @@ Instr  {
 		^super.newCopyArgs(name,func).init(specs,outSpec)
 	}
 	*put { arg instr;
-		^Library.putList([Instr,this.symbolizeName(instr.name),instr].flatten.debug("putList") )
+		^Library.putList([Instr,this.symbolizeName(instr.name),instr].flatten )
 	}
 	*remove { arg instr;
 		^Library.global.removeAt([this,this.symbolizeName(instr.name)].flatten )
