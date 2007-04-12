@@ -60,7 +60,6 @@ private:
   Py::Object setCmdLine(const Py::Tuple &a);
   Py::Object start(const Py::Tuple &a);
   Py::Object compiledOK__(const Py::Tuple &a);
-  Py::Object Rtf2Ascii(const Py::Tuple &a);
   Py::Object setSCLogSink(const Py::Tuple &a);
   Py::Object setPyPrOpenWinTextFile(const Py::Tuple &a);
 };

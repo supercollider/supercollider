@@ -114,7 +114,6 @@ void PySCLang_Module::appClock() {
     add_varargs_method("start", &PySCLang_Module::start, "start");
     add_varargs_method("setSCLogSink", &PySCLang_Module::setSCLogSink, "setSCLogSink");
     add_varargs_method("compiledOK", &PySCLang_Module::compiledOK__, "compiledOK");
-    add_varargs_method("Rtf2Ascii", &PySCLang_Module::Rtf2Ascii, "Rtf2Ascii");
     add_varargs_method("setPyPrOpenWinTextFile", &PySCLang_Module::setPyPrOpenWinTextFile, "setPyPrOpenWinTextFile callable with (path,startRange,rangeSize)");
     
     initialize( "<documentation for the PySCLang_Module forthcoming>" );
@@ -248,34 +247,6 @@ Py::Object PySCLang_Module::start(const Py::Tuple &a)
 //	[[RendezvousClient sharedClient] findOSCServices];
 //!!!
   return Py::Nothing();
-}
-
-
-int rtf2txt(char* txt);
-int stripNonAscii(char *txt);
-Py::Object PySCLang_Module::Rtf2Ascii(const Py::Tuple &a)
-{
-  if(a.size() != 1) {
-    PyErr_SetString(PyExc_IndexError,"requires 1 string argument");
-    return Py::Object(Py::Null());
-  }
-  Py::String pystr(a[0]);
-  std::string str = pystr;
-  const char* rtfContent = str.c_str();
-  pthread_mutex_lock(&gLangMutex);
-  int rtfContentLen = strlen(rtfContent);
-  char* inplaceTxt = reinterpret_cast<char*>(malloc(sizeof(char)*(rtfContentLen+1)));
-  strcpy(inplaceTxt,rtfContent);
-  int processedLen = rtf2txt(inplaceTxt);
-  if(processedLen != 0) {
-    inplaceTxt[processedLen+1] = 0;
-    processedLen = stripNonAscii(inplaceTxt);
-    inplaceTxt[processedLen+1] = 0;
-  }
-  pthread_mutex_unlock(&gLangMutex);
-  Py::String pyRetStr(inplaceTxt);
-  free(inplaceTxt);
-  return pyRetStr;
 }
 
 PyObject* PySCLang_Module::scLogSink_s = NULL;
