@@ -207,10 +207,12 @@ BundleNetAddr : NetAddr {
 
 	closeBundle { arg time;
 		var bundleList, lastBundles;
-		if(async.not) {
-			^saveAddr.sendClumpedBundles(time, *bundle);
-		};
 		if(time != false) {
+			if(async.not) {
+				saveAddr.sendClumpedBundles(time, *bundle);
+				^bundle;
+			};
+		
 			forkIfNeeded {
 					bundleList = this.splitBundles(time);
 					lastBundles = bundleList.pop;
