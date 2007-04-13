@@ -11,7 +11,7 @@ ClassBrowser {
 	var subclassView, <methodView, argView;
 	var instVarView, classVarView;
 	var filenameView;
-	var cvsButton;
+	var svnButton;
 	var bakButton, fwdButton;
 	var <superButton, metaButton, helpButton;
 	var methodSourceButton, classSourceButton;
@@ -127,15 +127,14 @@ ClassBrowser {
 			thisProcess.methodReferences;
 		};
 		
-		cvsButton = gui.button.new(w, Rect(0,0, 32, 24));
-		cvsButton.states = [["cvs", Color.black, Color.clear]];
-		cvsButton.action = {
-			var filename, cvsAddr;
-			cvsAddr = "http://cvs.sourceforge.net/viewcvs.py/"
-						"supercollider/SuperCollider3/build/";
+		svnButton = gui.button.new(w, Rect(0,0, 32, 24));
+		svnButton.states = [["svn", Color.black, Color.clear]];
+		svnButton.action = {
+			var filename, svnAddr;
+			svnAddr = "http://supercollider.svn.sourceforge.net/viewvc/supercollider/trunk/build/";
 			filename = currentClass.filenameSymbol.asString;
-			cvsAddr = cvsAddr ++ filename.drop(filename.find("SCClassLibrary"));
-			systemCmd("open \"" ++ cvsAddr ++ "\"");
+			svnAddr = svnAddr ++ filename.drop(filename.find("SCClassLibrary"));
+			systemCmd("open \"" ++ svnAddr ++ "\"");
 		};
 		
 		
@@ -282,7 +281,7 @@ ClassBrowser {
 	free {
 		(w.notNil and: { w.isClosed.not }).if({ w.close });
 		w = currentClassNameView = superClassNameView = subclassView = methodView = argView
-			= instVarView = classVarView = filenameView = cvsButton = bakButton = fwdButton
+			= instVarView = classVarView = filenameView = svnButton = bakButton = fwdButton
 			= superButton = metaButton = helpButton = methodSourceButton = classSourceButton
 			= implementationButton = refsButton = currentClass = currentMethod = subclassArray
 			= classMethodArray = methodArray = updateViews = setNewClass = hvBold12 = history 			= historyPos = nil;
