@@ -107,7 +107,6 @@ void PySCLang_Module::appClock() {
 #ifdef SC_WIN32
     PySCLang_InitNetwork( );
 #endif
-    add_varargs_method("sum", &PySCLang_Module::ex_sum, "DEBUG STUFF : sum(arglist) = sum of arguments");
     add_varargs_method("sendMain", &PySCLang_Module::sendMain, "sendMain");
     add_varargs_method("compileLibrary", &PySCLang_Module::compileLibrary, "compileLibrary");
     add_varargs_method("setCmdLine", &PySCLang_Module::setCmdLine, "setCmdLine");
@@ -126,29 +125,6 @@ extern "C" {
   void initPySCLang_d() {
     initPySCLang(); 
   }
-}
-
-Py::Object PySCLang_Module::ex_sum(const Py::Tuple &a)
-{
-  // this is just to test the function verify_length:
-  try
-  {
-    a.verify_length(0);
-    std::cout << "I see that you refuse to give me any work to do." << std::endl;
-  }
-  catch (Exception& e)
-  {
-    e.clear();
-    std::cout << "I will now add up your elements, oh great one." << std::endl;
-  }
-
-  Float f(0.0);
-  for( Sequence::size_type i = 0; i < a.length(); i++ )
-  {    
-    Float g (a[i]);
-    f = f + g;
-  }
-  return f;
 }
 
 Py::Object PySCLang_Module::sendMain(const Py::Tuple &a)

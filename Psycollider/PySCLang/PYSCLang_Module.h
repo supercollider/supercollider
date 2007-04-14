@@ -54,7 +54,6 @@ public:
 	void appClock();
 	
 private:
-  Py::Object ex_sum(const Py::Tuple &a);
   Py::Object sendMain(const Py::Tuple &a);
   Py::Object compileLibrary(const Py::Tuple &a);
   Py::Object setCmdLine(const Py::Tuple &a);
