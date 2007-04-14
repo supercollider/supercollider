@@ -1075,6 +1075,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = ../../build;
+				MACH_O_TYPE = mh_bundle;
 			};
 			name = Development;
 		};
@@ -1082,6 +1083,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = ../../build;
+				MACH_O_TYPE = mh_bundle;
 			};
 			name = Deployment;
 		};
@@ -1089,6 +1091,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = ../../build;
+				MACH_O_TYPE = mh_bundle;
 			};
 			name = Default;
 		};
