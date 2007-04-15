@@ -5,33 +5,34 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #982316}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0025b2}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #1831f5}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0e2cf5; min-height: 14.0px}
-span.s1 {color: #0019b7}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0d3dee}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0039ee; min-height: 14.0px}
+span.s1 {color: #0025b2}
 span.s2 {color: #000000}
-span.s3 {font: 9.0px Monaco}
-span.s4 {font: 9.0px Monaco; color: #0019b7}
-span.s5 {color: #326f17}
-span.s6 {color: #1831f5}
+span.s3 {color: #0000ff}
+span.s4 {font: 9.0px Monaco}
+span.s5 {font: 9.0px Monaco; color: #0025b2}
+span.s6 {color: #416d1f}
+span.s7 {color: #0d3dee}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>More on Getting Help</b></p>
 <p class="p2"><br></p>
-<p class="p3">SuperCollider 3 is a work in progress. As such much is undocumented. Many of the helpfiles have been copied over from SC2, and have unworking examples, etc. These are in the process of being updated.<span class="Apple-converted-space"> </span></p>
+<p class="p3">SuperCollider 3 is a work in progress. As such, some things are undocumented, and there are still a few helpfiles which have unworking examples, etc. These are in the process of being updated.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3">Below are listed a few techniques for tracking down documentation and functionality. <b>Note: </b>If some of the terms used below (e.g. class, method, inheritance, etc.) are unclear to you, you may wish to read the <b>Language</b> helpfiles which are listed in the main help window for detail on some of these concepts. Reading a general tutorial on Object Oriented Programming at some point could also be useful, as could reading a FAQ, etc. about Smalltalk. Smalltalk is the general purpose OOP language upon which the the design of the SuperCollider language is based. It's syntax is different than SC's, but conceptually it has much in common.</p>
 <p class="p2"><br></p>
@@ -47,7 +48,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">play // Cmd-shift-? on this will open a helpfile detailing different implementations of this method</p>
 <p class="p2"><br></p>
-<p class="p3">In addition there are a many helpfiles which explain important concepts. Most of these are listed in the main help window (Help.help.rtf, which will open if you press Cmd-Shift-? with no text selected), or in the overviews listed there. Cmd-Shift-? on this text for an example: <b>Tutorial</b></p>
+<p class="p3">In addition there are a many helpfiles which explain important concepts. Most of these are listed in the main help window (Help.html, which will open if you press Cmd-Shift-? with no text selected), or in the overviews listed there. The file called <a href="Tutorials/Tutorial.html"><span class="s3"><b>Tutorial</b></span></a> is one example.</p>
 <p class="p2"><br></p>
 <p class="p3">A convention of the documentation is that text in bold face or between brackets <b>[]</b> refers to other helpfiles. Double-click to select that text and press Cmd-Shift-? to open the corresponding helpfile. An example is the text <b>Undocumented-Classes </b>in the next section.</p>
 <p class="p2"><br></p>
@@ -71,7 +72,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p7"><span class="s1">Array</span><span class="s2">.dumpInterface; </span>// Look at the post window (the one that opened when you started SC)</p>
 <p class="p2"><br></p>
-<p class="p3">Note that since the SuperCollider language is object-oriented many classes inherit methods from farther up the class hierarchy. (The many subclasses of Collection are a good example of this. See the <b>Collections</b> overview for more detail.) It would be impractical and redundant to document every inherited method that a class responds to, so it is important to be able to track down documentation and method definitions. <span class="Apple-converted-space"> </span></p>
+<p class="p3">Note that since the SuperCollider language is object-oriented many classes inherit methods from farther up the class hierarchy. (The many subclasses of Collection are a good example of this. See the <a href="Collections/Collections.html"><span class="s3"><b>Collections</b></span></a> overview for more detail.) It would be impractical and redundant to document every inherited method that a class responds to, so it is important to be able to track down documentation and method definitions. <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3">The method dumpFullInterface applied to any Class will list all class and instance methods that a class responds to, sorted by the class in which they are implemented. This will include inherited methods. Methods overidden in a subclass are listed under the subclass.</p>
 <p class="p2"><br></p>
@@ -86,7 +87,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p9">SequenceableCollection<span class="s2">.browse;</span></p>
 <p class="p2"><br></p>
-<p class="p3">Selecting any method and pressing Cmd-y will open a window with a list of all the classes that <i>implement</i> that method. (See the <b>Polymorphism </b>helpfile for detail on why different classes might implement methods with the same name.)</p>
+<p class="p3">Selecting any method and pressing Cmd-y will open a window with a list of all the classes that <i>implement</i> that method. (See the <a href="Language/Polymorphism.html"><span class="s3"><b>Polymorphism</b></span></a><b> </b>helpfile for detail on why different classes might implement methods with the same name.)</p>
 <p class="p2"><br></p>
 <p class="p7"><span class="s2">select </span>// try it on this method</p>
 <p class="p2"><br></p>
@@ -96,19 +97,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">asStream<span class="Apple-converted-space"> </span></p>
 <p class="p8">SCWindow</p>
 <p class="p2"><br></p>
-<p class="p3">In the resulting window selecting any class and method and pressing Cmd-j will take you to that method definition in that class definition. For example try selecting <span class="s3">Pattern-select</span> in the window resulting from the previous example. Note that SC supports defining methods in separate files, so a class' methods may be defined in more than one place. If you try Cmd-j on the following you will see that it will open a file called dumpFullInterface.sc rather than one called Class.sc (its main class definition file). The <span class="s3">+ </span><span class="s4">Class</span><span class="s3"> {...</span>. syntax indicates that these are additional methods.</p>
+<p class="p3">In the resulting window selecting any class and method and pressing Cmd-j will take you to that method definition in that class definition. For example try selecting <span class="s4">Pattern-select</span> in the window resulting from the previous example. Note that SC supports defining methods in separate files, so a class' methods may be defined in more than one place. If you try Cmd-j on the following you will see that it will open a file called dumpFullInterface.sc rather than one called Class.sc (its main class definition file). The <span class="s4">+ </span><span class="s5">Class</span><span class="s4"> {...</span>. syntax indicates that these are additional methods.</p>
 <p class="p2"><br></p>
 <p class="p8">Class-dumpFullInterface</p>
 <p class="p2"><br></p>
 <p class="p3">If you know that a class responds to a particular message, you can use findRespondingMethod to find out which class it inherits the corresponding method from.</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s1">Array</span><span class="s2">.findRespondingMethodFor(</span><span class="s5">'select'</span><span class="s2">); </span>// you can Cmd-J on the result in the post window</p>
+<p class="p7"><span class="s1">Array</span><span class="s2">.findRespondingMethodFor(</span><span class="s6">'select'</span><span class="s2">); </span>// you can Cmd-J on the result in the post window</p>
 <p class="p2"><br></p>
 <p class="p3">Similarly, helpFileForMethod will open the helpfile of the class in which the responding method is defined (if the helpfile exists). Note that this does not guarantee that the method is documented therein. As noted above, some documentation is incomplete, and some methods are 'private' or not intended for general use.</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s1">Array</span><span class="s2">.helpFileForMethod(</span><span class="s5">'select'</span><span class="s2">); </span>// this will open the Collection helpfile; scroll down for select</p>
+<p class="p7"><span class="s1">Array</span><span class="s2">.helpFileForMethod(</span><span class="s6">'select'</span><span class="s2">); </span>// this will open the Collection helpfile; scroll down for select</p>
 <p class="p2"><br></p>
-<p class="p3">In general poking around can be a good way to learn about how things work. See <b>Internal-Snooping</b> for more advanced information about how to look 'under the hood.'</p>
+<p class="p3">In general poking around can be a good way to learn about how things work. See <a href="Other Topics/Internal-Snooping.html"><span class="s3"><b>Internal-Snooping</b></span></a> for more advanced information about how to look 'under the hood.'</p>
 <p class="p10"><br></p>
 <p class="p4"><b>For Further Info</b></p>
 <p class="p10"><br></p>
@@ -126,6 +127,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p11">http://swiki.hfbk-hamburg.de:8888/MusicTechnology/437</p>
 <p class="p2"><br></p>
-<p class="p3">Requests for documentation of undocumented methods or classes, as well as reports of errata, omissions, etc. in helpfiles can be sent to: <span class="s6">mullmusik@users.sourceforge.net</span> or to the user's list above.</p>
+<p class="p3">Requests for documentation of undocumented methods or classes, as well as reports of errata, omissions, etc. in helpfiles can be sent to: <span class="s7">mullmusik@users.sourceforge.net</span> or to the user's list above.</p>
 </body>
 </html>
