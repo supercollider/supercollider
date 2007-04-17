@@ -105,10 +105,11 @@ UGen : AbstractFunction {
 		^Lag3.multiNew(this.rate, this, lagTime)
 	}
 	linlin { arg inMin, inMax, outMin, outMax;
-		^LinLin.multiNew(this.rate, inMin, inMax, outMin, outMax) // clip not yet implemented.
+		^LinLin.multiNew(this.rate, this, inMin, inMax, outMin, outMax) 
+		// clip not yet implemented.
 	}
 	linexp { arg inMin, inMax, outMin, outMax;
-		^LinExp.multiNew(this.rate, inMin, inMax, outMin, outMax)
+		^LinExp.multiNew(this.rate, this, inMin, inMax, outMin, outMax)
 	}
 	explin { arg inMin, inMax, outMin, outMax;
 		^(log(this/inMin)) / (log(inMax/inMin)) * (outMax-outMin) + outMin; // no separate ugen yet
