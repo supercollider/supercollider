@@ -185,4 +185,25 @@ Quarks
 		("rm " +  Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name ++ "/" ++ q.path).systemCmd;
 		(q.name + "uninstalled").inform;
 	}
+	
+	*help {|name| ^this.global.help(name)}
+	help { |name|
+		var q, helpdoc, path;
+		
+		q = local.findQuark(name);
+		if(q.isNil,{
+			Error(name.asString + "not found in local quarks.  Not yet downloaded from the repository ?").throw;
+		});
+		
+		helpdoc = q.info.helpdoc;
+		
+		if(helpdoc.isNil, {
+			("No primary helpdoc listed for Quark"+name).postln;
+		}, {
+			path = Quarks.local.path.select{|c| (c != $\\)}
+				++ "/" ++ q.path ++ "/" ++ helpdoc;
+			Document.open(path);
+		});
+	}
+	
 }
