@@ -250,7 +250,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 {
 	NSPoint mouseLoc;
 	if (!mTopView) return;
-    //unsigned int modifiers = [theEvent modifierFlags];
+    unsigned int modifiers = [theEvent modifierFlags];
     mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
@@ -258,7 +258,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 		mDragStarted = NO;
 		mMenuView = 0;
 //        view->makeFocus(true);
-        view->mouseOver(scpoint);
+        view->mouseOver(scpoint, modifiers, theEvent);
 	}
 }
 
