@@ -92,6 +92,8 @@ public:
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseOver(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void draggingEntered (SCPoint where);
+	virtual void draggingUpdated (SCPoint where);
 	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	virtual void keyUp(int character, int modifiers, unsigned short keycode);
 	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
