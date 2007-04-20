@@ -451,7 +451,7 @@ void SCView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 	mouseTrack(where, modifiers,theEvent);
 }
 
-void SCView::mouseOver(SCPoint where)
+void SCView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
 {
     pthread_mutex_lock (&gLangMutex);
     PyrSymbol *method = getsym("mouseOver");
@@ -461,8 +461,8 @@ void SCView::mouseOver(SCPoint where)
         ++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetInt(g->sp, (int) where.x); 
         ++g->sp;  SetInt(g->sp, (int) where.y); 
-
-        runInterpreter(g, method, 3);
+        ++g->sp;  SetInt(g->sp, modifiers); 
+        runInterpreter(g, method, 4);
         g->canCallOS = false;
     }
     pthread_mutex_unlock (&gLangMutex);
@@ -3503,6 +3503,7 @@ SCListView::SCListView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 		mSelectedStringColor = SCMakeColor(1,1,1,1);
         mHiliteColor = SCMakeColor(0,0,0,1);
 		mValue = 0;
+		mItemBackgroundColor = NULL;
 }
 
 SCListView::~SCListView()
@@ -3579,11 +3580,19 @@ void SCListView::draw(SCRect inDamage)
 		int maxIndex = (int)(minIndex + 1 + (bounds.height + itemHeight - 1) / itemHeight);
 		if (maxIndex > numItems - 1) maxIndex = numItems - 1;
 		itemBounds.y += minIndex * itemHeight;
+		itemBounds.x += 8; 
 
+				
 		for (int i = minIndex; i <= maxIndex; ++i) 
 		{
 			NSString* nsstring = (NSString*)CFArrayGetValueAtIndex(mArray, i);
 			NSSize size;
+			if(mItemBackgroundColor){
+				SCColor color = mItemBackgroundColor[i];
+				CGContextSetRGBFillColor(cgc, color.red, color.green, color.blue, color.alpha);
+				CGRect drawRect = SCtoCGRect(itemBounds);
+				CGContextFillRect (cgc, drawRect);					
+			}			
 			if (i == mValue) {
 				CGContextSetRGBFillColor(cgc, mHiliteColor.red, mHiliteColor.green, mHiliteColor.blue, mHiliteColor.alpha);
 				CGRect drawRect = SCtoCGRect(itemBounds);
@@ -3592,6 +3601,18 @@ void SCListView::draw(SCRect inDamage)
 			} else {
 				nsStringDrawInRectAlign(nsstring, itemBounds, mFontName, mFontSize, mStringColor, mAlignment, -1, &size);
 			}
+		// draw item pic
+		SCRect picBounds = itemBounds;
+		picBounds.x -= 6;
+
+		picBounds.width = 4;
+		picBounds.height -= 8;
+		picBounds.y += 4;
+		
+		CGContextSetRGBFillColor(cgc, 1.0, 0, 0, 0.5);
+		CGRect drawRect = SCtoCGRect(picBounds);
+		CGContextFillRect (cgc, drawRect);	
+		
 			itemBounds.y += itemBounds.height;
 		}
 		CGContextRestoreGState(cgc);
@@ -3712,6 +3733,42 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
+	if (strcmp(name, "itemColors")==0) {
+		if (IsNil(slot)) {
+			if (mItemBackgroundColor) { 
+//				CFRelease(mItemBackgroundColor);
+				delete(mItemBackgroundColor);
+				mItemBackgroundColor = NULL;
+			}
+			refresh();
+			return errNone;
+		}
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		
+		// wipe out old
+		if (mItemBackgroundColor) { 
+//			CFRelease(mItemBackgroundColor);
+			delete(mItemBackgroundColor);
+			mItemBackgroundColor = NULL;
+		}
+		
+		PyrObject *array = slot->uo;
+		int numItems = array->size;
+		
+//		mItemBackgroundColor = (CFMutableArrayRef)CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+		mItemBackgroundColor = (SCColor*) malloc(numItems * sizeof(SCColor));
+		for (int i=0; i<numItems; ++i) {
+			PyrSlot *slot = array->slots + i;
+
+			SCColor color;
+			int err = slotColorVal(slot, &color);
+			if (err) return err;
+			mItemBackgroundColor[i] =  color;
+		}
+		refresh();
+		return errNone;
+	}
+	
 	if (strcmp(name, "selectedStringColor")==0) {
 		err = slotColorVal(slot, &mSelectedStringColor);
 		if (err) return err;
