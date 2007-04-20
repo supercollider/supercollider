@@ -71,6 +71,15 @@ A2K : UGen { // audio rate to control rate converter. only needed in specific ca
 	}
 }
 
+T2K : A2K { // audio rate to control rate trigger converter.
+	checkInputs {
+		if(inputs.at(0).rate != \audio) { 
+			^"first input is not audio rate"
+		};
+		^nil
+	}
+}
+
 DC : MultiOutUGen {
 	*ar { arg in;
 		^this.multiNewList(['audio'] ++ in)

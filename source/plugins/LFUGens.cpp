@@ -164,6 +164,11 @@ struct A2K : public Unit
 
 };
 
+struct T2K : public Unit
+{
+
+};
+
 struct DC : public Unit
 {
 float m_val;
@@ -252,6 +257,9 @@ extern "C"
 	
 	void A2K_next(A2K *unit, int inNumSamples);
 	void A2K_Ctor(A2K* unit);
+	
+	void T2K_next(T2K *unit, int inNumSamples);
+	void T2K_Ctor(T2K* unit);
 	
 	void DC_next(DC *unit, int inNumSamples);
 	void DC_Ctor(DC* unit);
@@ -1143,6 +1151,29 @@ void A2K_Ctor(A2K* unit)
 	SETCALC(A2K_next);
 	A2K_next(unit, 1);
 	
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void T2K_next(T2K *unit, int inNumSamples)
+{
+	float max = 0.f, zout = 0.f;
+	int n;
+	n = (int)unit->mWorld->mBufRate.mSampleRate;
+	for (int i=0; i<n; ++i) {
+			float zin = IN(0)[i];
+			if(fabs(zin) > max) { 
+				zout = zin; 
+				max = fabs(zin); 
+			}
+	}
+	ZOUT0(0) = zout;
+}
+
+void T2K_Ctor(T2K* unit)
+{
+	SETCALC(T2K_next);
+	T2K_next(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3518,6 +3549,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(SyncSaw);
 	DefineSimpleUnit(K2A);
 	DefineSimpleUnit(A2K);
+	DefineSimpleUnit(T2K);
 	DefineSimpleUnit(DC);
 	DefineSimpleUnit(Silent);
 	DefineSimpleUnit(Line);
