@@ -477,6 +477,16 @@ void SCView::receiveDrag()
 {
 }
 
+void SCView::draggingEntered (SCPoint where)
+{
+	mouseOver(where, 0, NULL);
+}
+void SCView::draggingUpdated (SCPoint where)
+{
+	mouseOver(where, 0, NULL);
+
+}
+
 void SCView::setDragHilite(bool inFlag)
 {
     bool prevFlag = mDragHilite;
