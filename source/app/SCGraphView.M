@@ -502,7 +502,7 @@ const int circDiam = 20;
 		view = mTopView;
     if (view) {
         bool flag = view->canReceiveDrag();
-		view->mouseOver(scpoint);
+		view->draggingEntered(scpoint );
         mTopView->setDragView(flag ? view : 0);
         [self displayIfNeeded];
         return flag ? NSDragOperationEvery : NSDragOperationNone;
@@ -516,6 +516,7 @@ const int circDiam = 20;
 - (unsigned int)draggingUpdated:(id)dragInfo {
 	if (!mTopView) return NSDragOperationNone;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
+	
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
 	if(!view && mTopView->ConstructionMode())
@@ -523,7 +524,7 @@ const int circDiam = 20;
     if (view) {
         bool flag = view->canReceiveDrag();
         mTopView->setDragView(flag ? view : 0);
-		view->mouseOver(scpoint);		
+		view->draggingUpdated(scpoint);		
         [self displayIfNeeded];
         return flag ? NSDragOperationEvery : NSDragOperationNone;
     } else {
