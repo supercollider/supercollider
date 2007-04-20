@@ -91,7 +91,7 @@ public:
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
-	virtual void mouseOver(SCPoint where);
+	virtual void mouseOver(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	virtual void keyUp(int character, int modifiers, unsigned short keycode);
 	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
@@ -544,13 +544,14 @@ protected:
 	SCColor mStringColor;
 	SCColor mSelectedStringColor;
 	SCColor mHiliteColor;
+	SCColor * mItemBackgroundColor;
     int mAlignment;
 	NSSize mStrSize;
 	bool mScrolling;
 };
 SCView* NewSCListView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
-//by jan trutzschler (jt@kandos.de)
+//by jan trutzschler 
 class SCMultiSliderView : public SCView
 {
 public:	
