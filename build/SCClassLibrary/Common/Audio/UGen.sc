@@ -104,18 +104,35 @@ UGen : AbstractFunction {
 	lag3 { arg lagTime=0.1;
 		^Lag3.multiNew(this.rate, this, lagTime)
 	}
-	linlin { arg inMin, inMax, outMin, outMax;
-		^LinLin.multiNew(this.rate, this, inMin, inMax, outMin, outMax) 
-		// clip not yet implemented.
+	prune { arg min, max, type;
+		switch(type, 
+			\minmax, {
+				^this.clip(min, max);
+			},
+			\min, {
+				^this.max(min);
+			},
+			\max, {
+				^this.min(max);
+			}
+		);
+		^this
 	}
-	linexp { arg inMin, inMax, outMin, outMax;
-		^LinExp.multiNew(this.rate, this, inMin, inMax, outMin, outMax)
+	linlin { arg inMin, inMax, outMin, outMax, clip;
+		^LinLin.multiNew(this.rate, this.prune(clip, inMin, inMax), 
+						inMin, inMax, outMin, outMax) 
 	}
-	explin { arg inMin, inMax, outMin, outMax;
-		^(log(this/inMin)) / (log(inMax/inMin)) * (outMax-outMin) + outMin; // no separate ugen yet
+	linexp { arg inMin, inMax, outMin, outMax, clip;
+		^LinExp.multiNew(this.rate, this.prune(clip, inMin, inMax), 
+						inMin, inMax, outMin, outMax)
 	}
-	expexp { arg inMin, inMax, outMin, outMax;
-		^pow(outMax/outMin, log(this/inMin) / log(inMax/inMin)) * outMin;
+	explin { arg inMin, inMax, outMin, outMax, clip;
+		^(log(this.prune(clip, inMin, inMax)/inMin)) 
+			/ (log(inMax/inMin)) * (outMax-outMin) + outMin; // no separate ugen yet
+	}
+	expexp { arg inMin, inMax, outMin, outMax, clip;
+		^pow(outMax/outMin, log(this.prune(clip, inMin, inMax)/inMin) 
+			/ log(inMax/inMin)) * outMin;
 	}
 	
 	signalRange { ^\bipolar }

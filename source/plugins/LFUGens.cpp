@@ -298,6 +298,9 @@ extern "C"
 	void InRect_Ctor(InRect* unit);
 
 	void LinExp_next(LinExp *unit, int inNumSamples);
+	void LinExp_next_kk(LinExp *unit, int inNumSamples);
+	void LinExp_next_ak(LinExp *unit, int inNumSamples);
+	void LinExp_next_ka(LinExp *unit, int inNumSamples);
 	void LinExp_Ctor(LinExp* unit);
 
 	void LinLin_next(LinLin *unit, int inNumSamples);
@@ -1619,10 +1622,105 @@ void LinExp_next(LinExp *unit, int inNumSamples)
 	);
 }
 
-void LinExp_Ctor(LinExp* unit)
+void LinExp_next_kk(LinExp *unit, int inNumSamples)
 {
-	SETCALC(LinExp_next);
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float srclo = ZIN0(1);
+	float srchi = ZIN0(2);
+	float dstlo = ZIN0(3);
+	float dsthi = ZIN0(4);
+	float dstratio = dsthi/dstlo;
+	float rsrcrange = 1. / (srchi - srclo);
+	float rrminuslo = rsrcrange * -srclo;
 
+	LOOP(inNumSamples, 
+		ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+	);
+}
+
+void LinExp_next_aa(LinExp *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float *srclo = ZIN(1);
+	float *srchi = ZIN(2);
+	float *dstlo = ZIN(3);
+	float *dsthi = ZIN(4);
+	
+
+	LOOP(inNumSamples,
+		float zdsthi = ZXP(dsthi);
+		float zdstlo = ZXP(dstlo);
+		float zsrchi = ZXP(srchi);
+		float zsrclo = ZXP(srclo);
+		float dstratio = zdsthi/zdstlo;
+		float rsrcrange = 1. / (zsrchi - zsrclo);
+		float rrminuslo = rsrcrange * -zsrclo;
+		ZXP(out) = zdstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+	);
+}
+
+void LinExp_next_ak(LinExp *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float *srclo = ZIN(1);
+	float *srchi = ZIN(2);
+	float dstlo = ZIN0(3);
+	float dsthi = ZIN0(4);
+	float dstratio = dsthi/dstlo;
+
+	LOOP(inNumSamples,
+		float zsrchi = ZXP(srchi);
+		float zsrclo = ZXP(srclo);
+		
+		float rsrcrange = 1. / (zsrchi - zsrclo);
+		float rrminuslo = rsrcrange * -zsrclo;
+		ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+	);
+}
+
+void LinExp_next_ka(LinExp *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float srclo = ZIN0(1);
+	float srchi = ZIN0(2);
+	float *dstlo = ZIN(3);
+	float *dsthi = ZIN(4);
+	float rsrcrange = 1. / (srchi - srclo);
+	float rrminuslo = rsrcrange * -srclo;
+	
+	LOOP(inNumSamples,
+		float zdsthi = ZXP(dsthi);
+		float zdstlo = ZXP(dstlo);
+		float dstratio = zdsthi/zdstlo;
+		ZXP(out) = zdstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+	);
+}
+
+
+void LinExp_SetCalc(LinExp* unit)
+{
+
+	if(INRATE(1) == calc_FullRate || INRATE(2) == calc_FullRate) {
+		if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
+			SETCALC(LinExp_next_aa); return;
+		} else {
+			SETCALC(LinExp_next_ak); return;
+		}
+	} else {
+		if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
+			SETCALC(LinExp_next_ka); return;
+		}
+	}
+	for(int i = 1; i<5; i++) {
+		if(INRATE(i) != calc_ScalarRate) {
+			SETCALC(LinExp_next_kk); return;
+		}
+	};
+	SETCALC(LinExp_next);
 	float srclo = ZIN0(1);
 	float srchi = ZIN0(2);
 	float dstlo = ZIN0(3);
@@ -1632,6 +1730,19 @@ void LinExp_Ctor(LinExp* unit)
 	unit->m_rsrcrange = 1. / (srchi - srclo);	
 	unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
 
+}
+
+void LinExp_Ctor(LinExp* unit)
+{
+	LinExp_SetCalc(unit);
+	float srclo = ZIN0(1);
+	float srchi = ZIN0(2);
+	float dstlo = ZIN0(3);
+	float dsthi = ZIN0(4);
+	unit->m_dstlo = dstlo;
+	unit->m_dstratio = dsthi/dstlo;
+	unit->m_rsrcrange = 1. / (srchi - srclo);	
+	unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
 	LinExp_next(unit, 1);
 }
 
@@ -1650,10 +1761,103 @@ void LinLin_next(LinLin *unit, int inNumSamples)
 	);
 }
 
-void LinLin_Ctor(LinLin* unit)
+void LinLin_next_kk(LinLin *unit, int inNumSamples)
 {
-	SETCALC(LinLin_next);
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float srclo = ZIN0(1);
+	float srchi = ZIN0(2);
+	float dstlo = ZIN0(3);
+	float dsthi = ZIN0(4);
+	float scale = (dsthi - dstlo) / (srchi - srclo);
+	float offset = dstlo - scale * srclo;
 
+	LOOP(inNumSamples, 
+		ZXP(out) = scale * ZXP(in) + offset;
+	);
+}
+
+void LinLin_next_aa(LinLin *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float *srclo = ZIN(1);
+	float *srchi = ZIN(2);
+	float *dstlo = ZIN(3);
+	float *dsthi = ZIN(4);
+	
+
+	LOOP(inNumSamples,
+		float zdsthi = ZXP(dsthi);
+		float zdstlo = ZXP(dstlo);
+		float zsrchi = ZXP(srchi);
+		float zsrclo = ZXP(srclo);
+		
+		float scale = (zdsthi - zdstlo) / (zsrchi - zsrclo);
+		float offset = zdstlo - scale * zsrclo;
+		ZXP(out) = scale * ZXP(in) + offset;
+	);
+}
+
+
+void LinLin_next_ak(LinLin *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float *srclo = ZIN(1);
+	float *srchi = ZIN(2);
+	float dstlo = ZIN0(3);
+	float dsthi = ZIN0(4);
+
+	LOOP(inNumSamples,
+		float zsrchi = ZXP(srchi);
+		float zsrclo = ZXP(srclo);
+		
+		float scale = (dsthi - dstlo) / (zsrchi - zsrclo);
+		float offset = dstlo - scale * zsrclo;
+		ZXP(out) = scale * ZXP(in) + offset;
+	);
+}
+
+void LinLin_next_ka(LinLin *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float srclo = ZIN0(1);
+	float srchi = ZIN0(2);
+	float *dstlo = ZIN(3);
+	float *dsthi = ZIN(4);
+	
+	LOOP(inNumSamples,
+		float zdsthi = ZXP(dsthi);
+		float zdstlo = ZXP(dstlo);
+		
+		float scale = (zdsthi - zdstlo) / (srchi - srclo);
+		float offset = zdstlo - scale * srclo;
+		ZXP(out) = scale * ZXP(in) + offset;
+	);
+}
+
+void LinLin_SetCalc(LinLin* unit)
+{
+
+	if(INRATE(1) == calc_FullRate || INRATE(2) == calc_FullRate) {
+		if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
+			SETCALC(LinLin_next_aa); return;
+		} else {
+			SETCALC(LinLin_next_ak); return;
+		}
+	} else {
+		if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
+			SETCALC(LinLin_next_ka); return;
+		}
+	}
+	for(int i = 1; i<5; i++) {
+		if(INRATE(i) != calc_ScalarRate) {
+			SETCALC(LinLin_next_kk); return;
+		}
+	};
+	SETCALC(LinLin_next);
 	float srclo = ZIN0(1);
 	float srchi = ZIN0(2);
 	float dstlo = ZIN0(3);
@@ -1662,6 +1866,11 @@ void LinLin_Ctor(LinLin* unit)
 	unit->m_scale = (dsthi - dstlo) / (srchi - srclo);
 	unit->m_offset = dstlo - unit->m_scale * srclo;
 
+}
+
+void LinLin_Ctor(LinLin* unit)
+{
+	LinLin_SetCalc(unit);
 	LinLin_next(unit, 1);
 }
 
