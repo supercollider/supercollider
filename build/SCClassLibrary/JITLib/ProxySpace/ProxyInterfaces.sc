@@ -156,8 +156,7 @@ PatternControl : StreamControl {
 
 SynthControl : AbstractPlayControl {
 	var <server, <>nodeID;
-	var <canReleaseSynth=false, <canFreeSynth=true; // correct assumption?
-	
+	var <canReleaseSynth=false, <canFreeSynth=false; // correct assumption?	
 	
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
 	asDefName { ^source }
