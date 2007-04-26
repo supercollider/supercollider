@@ -3,18 +3,27 @@
  *	for Mac OS X. It can be accessed from the GUI
  *	class using GUI.cocoa, GUI.fromID( \cocoa ) or GUI.get( \cocoa ).
  *
- *	@version	0.1, 29-Jan-06
+ *	@version	0.12, 25-Apr-07
  */
 CocoaGUI {
-	classvar	<inited = false;
-	
-	*initClass { |mustInitGUI = true|
-		inited = true;
-		mustInitGUI.if({ Class.initClassTree( GUI ); });
+	classvar extraClasses;
+
+	*initClass {
+		Class.initClassTree( Event );
+		extraClasses = Event.new;
+		Class.initClassTree( GUI );
 		GUI.add( this );
 	}
 
 	*id { ^\cocoa }
+
+	*put { arg key, object;
+		extraClasses.put( key, object );
+	}
+
+	*doesNotUnderstand { arg selector ... args;
+		^extraClasses.perform( selector, *args );
+	}
 	
 	///////////////// Common -> GUI -> Base /////////////////
 

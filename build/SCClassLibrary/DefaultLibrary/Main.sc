@@ -5,6 +5,7 @@ Main : Process {
 		super.startup;
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
+		GUI.fromID( this.platform.defaultGUIScheme );
 		this.platform.startup;
 		StartUp.run;
 	}

@@ -10,7 +10,7 @@
  *		- jrh added makeGUI
  *		- sciss added add, set, get, use, useID
  *
- *	@version	0.15, 04-Apr-07
+ *	@version	0.16, 10-Apr-07
  */
 GUI { 
 	classvar <scheme, <schemes, <skin, skins;
@@ -48,95 +48,6 @@ GUI {
 		
 		skin		= skins.default;
 		schemes	= IdentityDictionary.new;
-		
-		// this will be removed eventually ...
-		schemes.put( \swing, (
-			id: \swing,
-
-			///////////////// Common -> GUI -> Base /////////////////
-
-			view: JSCView,
-
-			window: JSCWindow,
-
-// abstract
-//			containerView: JSCContainerView,
-			compositeView: JSCCompositeView,
-//			topView: JSCTopView,
-// quasi abstract
-//			layoutView: JSCLayoutView, 
-			hLayoutView: JSCHLayoutView,
-			vLayoutView: JSCVLayoutView,
-			
-			slider: JSCSlider,
-//			knob: JSCKnob, 
-			rangeSlider: JSCRangeSlider,
-			slider2D: JSC2DSlider,
-//			tabletSlider2D: JSC2DTabletSlider,
-			
-			button: JSCButton,
-			popUpMenu: JSCPopUpMenu,
-			staticText: JSCStaticText,
-			listView: JSCListView,
-
-			dragSource: JSCDragSource,
-			dragSink: JSCDragSink,
-			dragBoth: JSCDragBoth, 
-
-			numberBox: JSCNumberBox,
-			textField: JSCTextField,
-
-			userView: JSCUserView,
-			multiSliderView: JSCMultiSliderView,
-			envelopeView: JSCEnvelopeView,
-				
-//			tabletView: JSCTabletView,
-			soundFileView: JSCSoundFileView,
-			movieView: JSCMovieView,
-			textView: JSCTextView,
-//			quartzComposerView: JSCQuartzComposerView,
-						
-			scopeView: JSCScope,
-			freqScope: JFreqScope,
-			freqScopeView: JSCFreqScope,
-			
-			ezSlider: JEZSlider, 
-			ezNumber: JEZNumber,
-			stethoscope: JStethoscope,
-			
-			font: JFont,
-			
-			///////////////// Common -> Audio /////////////////
-
-			mouseX: JMouseX, 
-			mouseY: JMouseY,
-			mouseButton: JMouseButton,
-//			keyState: JKeyState,
-
-			///////////////// Common -> OSX /////////////////
-
-			pen: JPen,
-
-			dialog: SwingDialog,
-//			speech: JSpeech,
-
-			///////////////// extras /////////////////
-			
-			checkBox: JSCCheckBox,
-			tabbedPane: JSCTabbedPane,
-
-			///////////////// crucial /////////////////
-			startRow: JStartRow
-
-		));
-
-			// this used to be unnecessary, until someone split cocoa classes out into CocoaGUI
-		(\CocoaGUI.asClass.notNil and: { CocoaGUI.inited.not }).if({
-			CocoaGUI.initClass(false);
-		});
-		
-			// set platform-specific default gui scheme
-		this.tryPerform(thisProcess.platform.defaultGUIScheme);
 	}
 
 	/**
@@ -146,8 +57,8 @@ GUI {
 	 *
 	 *	@return	the current (cocoa) scheme
 	 */
-	*cocoa { 
-		^scheme = schemes[ \cocoa ];
+	*cocoa {
+		^this.fromID( \cocoa );
 	}
 	
 	/**
@@ -157,13 +68,8 @@ GUI {
 	 *
 	 *	@return	the current (swing) scheme
 	 */
-	*swing { 
-		if (\JSCWindow.asClass.isNil) { 
-			warn("	You do not seem to have SwingOSC installed - JSCWindow is missing." 
-			     "	So, no switching to SwingOSC, GUI.scheme is still " ++ scheme.id ++ ".");
-			^scheme;
-		};
-		^scheme = schemes[ \swing ];
+	*swing {
+		^this.fromID( \swing );
 	}
 	
 	/**
@@ -175,7 +81,14 @@ GUI {
 	 *	@return	the new current scheme
 	 */
 	*fromID { arg id;
-		^scheme = schemes[ id.asSymbol ];
+		var newScheme = schemes[ id.asSymbol ];
+		if( newScheme.notNil, {
+			scheme = newScheme;
+		}, {
+			("GUI.fromID : The GUI scheme '" ++ id ++ "' is not installed\n" ++
+			 "The current scheme is still '" ++ if( scheme.notNil, { scheme.id }) ++ "'!").warn;
+		});
+		^scheme;
 	}
 
 	/**
