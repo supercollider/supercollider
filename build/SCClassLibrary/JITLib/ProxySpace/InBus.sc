@@ -133,8 +133,10 @@ Monitor {
 			oldGroup.release(fadeTime);
 			SystemClock.sched(fadeTime, { oldGroup.free })
 		};
-		group.isPlaying = false;
-		group = nil;
+		if (group.notNil) { 
+			group.isPlaying = false;
+			group = nil;
+		};
 	}
 	
 	isPlaying { ^group.isPlaying }
