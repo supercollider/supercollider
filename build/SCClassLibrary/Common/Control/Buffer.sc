@@ -546,5 +546,7 @@ Buffer {
 			player * mul; 
 		}.play(server);
 	}
+
+	duration { ^numFrames / sampleRate }
 }
 
