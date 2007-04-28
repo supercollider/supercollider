@@ -1,5 +1,6 @@
 Main : Process {
 	var platform, argv;
+	var <>recvOSCfunc;
 
 	startup {
 		super.startup;
@@ -33,10 +34,12 @@ Main : Process {
 	}
 	
 	recvOSCmessage { arg time, replyAddr, msg;
+		/// added by tboverma on Jul-17-2006
+		recvOSCfunc.value(time, replyAddr, msg);
 		// this method is called when an OSC message is received.
 		OSCresponder.respond(time, replyAddr, msg);
 	}
-	
+
 	recvOSCbundle { arg time, replyAddr ... msgs;
 		// this method is called when an OSC bundle is received.
 		msgs.do({ arg msg; 
