@@ -565,7 +565,7 @@ NodeProxy : BusPlug {
 			list = Array(keys.size * 2);
 			keys.do { |key|
 				var val = fullList.detect { |cn| cn.name == key };
-				val = if(val.isNil)Ê{ 0 }Ê{ val.defaultName };
+				val = if(val.isNil) { 0 } { val.name };
 				list.add(key).add(val)
 			}
 		}
