@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {text-decoration: underline ; color: #0000ff}
+span.s2 {color: #0000ff}
+span.s3 {color: #606060}
+span.s4 {color: #0000bf}
+span.s5 {color: #bf0000}
+span.s6 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>plot<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Plot data in a GUI</b></p>
+<p class="p2"><br></p>
+<p class="p3">The <b>.plot</b> method provides the ability to plot data in a GUI window. The method is implemented in the <a href="../Collections/ArrayedCollection.html"><span class="s1">ArrayedCollection</span></a> class but is also available for other classes for convenience, including <a href="../Core/Kernel/Function.html"><span class="s2">Function</span></a>, <a href="../Control/Env.html"><span class="s2">Env</span></a>, <a href="../ServerArchitecture/Buffer.html"><span class="s2">Buffer</span></a>, <a href="../Files/SoundFile.html"><span class="s2">SoundFile</span></a>, <a href="../Collections/Wavetable.html"><span class="s2">Wavetable</span></a>.</p>
+<p class="p2"><br></p>
+<p class="p3">Arguments (all optional):</p>
+<p class="p2"><br></p>
+<p class="p3"><b>name</b> - the name to be used as the GUI window title.</p>
+<p class="p3"><b>bounds</b> - a [Rect] providing coordinates for the GUI location.</p>
+<p class="p3"><b>discrete</b> - plots are line-plots by default. Set this to true for bar charts.</p>
+<p class="p3"><b>numChannels</b> - the number of interleaved channels that an array represents. For Buffers this argument is not available, since it's filled in automatically.</p>
+<p class="p3"><b>minval</b> - minimum value(s) for the display range. For a Buffer this defaults to -1 but can be changed.</p>
+<p class="p3"><b>maxval</b> - maximum value(s) for the display range. For a Buffer this defaults to +1 but can be changed.</p>
+<p class="p3"><b>parent</b> - by default the plot is placed in a new GUI window. This argument can be used to specify an existing GUI container to send the plot to.</p>
+<p class="p2"><br></p>
+<p class="p3">If <b>minval</b> and/or <b>maxval</b> are set to nil (this is default, except for Buffers), they will be automatically calculated from the dataset minimum and/or maximum. For multi-channel data, <b>minval</b> and <b>maxval</b> may be arrays, specifying the range independently for each channel (including use of nil, in which case the min/max will be calculated for the specific channel rather than for the overall dataset).</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Examples</b></p>
+<p class="p2"><br></p>
+<p class="p3">(See some of the classes linked above for more examples)</p>
+<p class="p2"><br></p>
+<p class="p4">// Arrays</p>
+<p class="p5">[5, 6, 7, 6.5, 4.5, 3.5].plot(<span class="s3">"Some data"</span>)</p>
+<p class="p5">[5, 6, 7, 6.5, 4.5, 3.5].plot(<span class="s3">"Some data, in stereo"</span>, numChannels:2)</p>
+<p class="p5">[5, 6, 7, 6.5, 4.5, 3.5].plot(<span class="s3">"Some data, in stereo"</span>, numChannels:2, discrete:<span class="Apple-converted-space">  </span><span class="s4">true</span>)</p>
+<p class="p4">// 3-channel interlaced data</p>
+<p class="p5">b = [{1.0.rand}.dup(50), {20.0.rand - 30}.dup(50),{10.0.rand}.dup(50)].lace(150);</p>
+<p class="p5">b.plot(numChannels:3, minval: <span class="s4">nil</span>, maxval: <span class="s4">nil</span>); <span class="s5">// Common rescaling</span></p>
+<p class="p5">b.plot(numChannels:3, minval: [<span class="s4">nil</span>, <span class="s4">nil</span>, <span class="s4">nil</span>], maxval: [<span class="s4">nil</span>, <span class="s4">nil</span>, <span class="s4">nil</span>]); <span class="s5">// Separate rescaling</span></p>
+<p class="p6"><br></p>
+<p class="p4">// Envelopes</p>
+<p class="p5"><span class="s4">Env</span>.adsr(0.4, 0.4, 0.8, 0.9).plot</p>
+<p class="p7"><br></p>
+<p class="p4">//Buffers</p>
+<p class="p5">s.boot;</p>
+<p class="p8"><span class="s6">b = </span><span class="s4">Buffer</span><span class="s6">.read(s,</span>"sounds/a11wlk01.wav"<span class="s6">);</span></p>
+<p class="p4"><span class="s6">b.plot; </span>// +-1 range</p>
+<p class="p5">b.plot(minval: <span class="s4">nil</span>, maxval: <span class="s4">nil</span>); <span class="s5">// auto range</span></p>
+<p class="p5">b.plot(minval: 0, maxval: <span class="s4">nil</span>); <span class="s5">// semi-auto range</span></p>
+<p class="p7"><br></p>
+</body>
+</html>
