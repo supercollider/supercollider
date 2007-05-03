@@ -18,16 +18,25 @@
 		width = bounds.width-8;
 		
 		name = name ? "plot";
-		minval = minval ?? { this.minItem };
-		maxval = maxval ?? { this.maxItem };
+		
 		unlaced = this.unlace(numChannels);
+		minval = if(minval.isArray, {
+			minval.collect({|oneminval, index| oneminval ?? { unlaced[index].minItem } })
+		}, {
+			{minval ?? { this.minItem }}.dup(numChannels);
+		});
+		maxval = if(maxval.isArray, {
+			maxval.collect({|onemaxval, index| onemaxval ?? { unlaced[index].maxItem } })
+		}, {
+			{maxval ?? { this.maxItem }}.dup(numChannels);
+		});
+		
 		chanArray = Array.newClear(numChannels);
 		if( discrete, {
 			zoom = 1;
 			thumbsize = max(1.0, width / (this.size / numChannels));
 			unlaced.do({ |chan, j|
-				chanArray[j] = chan.linlin( minval, maxval, 0.0, 1.0 );
-
+				chanArray[j] = chan.linlin( minval[j], maxval[j], 0.0, 1.0 );
 			});
 		}, {
 			zoom = (width / (this.size / numChannels));
@@ -37,7 +46,7 @@
 				width.do { arg i;
 					var x;
 					x = chan.blendAt(i / zoom);
-					val[i] = x.linlin(minval, maxval, 0.0, 1.0);
+					val[i] = x.linlin(minval[j], maxval[j], 0.0, 1.0);
 				};
 				chanArray[j] = val;
 			});
@@ -65,7 +74,7 @@
 				.colors_(Color.black, Color.blue(1.0,1.0))
 				.action_({|v| 
 					var curval;
-					curval = v.currentvalue.linlin(0.0, 1.0, minval, maxval);
+					curval = v.currentvalue.linlin(0.0, 1.0, minval[i], maxval[i]);
 					
 					txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++ 
 					", value: " ++ curval);
