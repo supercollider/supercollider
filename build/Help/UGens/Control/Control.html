@@ -12,12 +12,16 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-span.s1 {color: #0019b7}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #92251d}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {color: #0024ae}
 span.s2 {color: #606060}
 span.s3 {color: #000000}
-span.s4 {color: #326f17}
-span.s5 {color: #a71e12}
+span.s4 {color: #456c23}
+span.s5 {color: #92251d}
+span.s6 {color: #0000bf}
+span.s7 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -122,5 +126,49 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p4">s.sendMsg(<span class="s4">\n_trace</span>, 2000);</p>
 <p class="p4">s.sendMsg(<span class="s4">\n_free</span>, 2000);</p>
+<p class="p5"><br></p>
+<p class="p3">Similar examples using the Node Object style:</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s6">SynthDef</span><span class="s3">(</span>"help-Control-Sines"<span class="s3">, {</span><span class="s6">arg</span><span class="s3"> out=0;</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s6">var</span> sines, control, numsines;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>numsines = 20;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>control = <span class="s6">Control</span>.names(<span class="s7">\array</span>).kr(<span class="s6">Array</span>.rand(numsines, 400.0, 1000.0));</p>
+<p class="p4"><span class="Apple-tab-span">	</span>sines = <span class="s6">Mix</span>(<span class="s6">SinOsc</span>.ar(control, 0, numsines.reciprocal)) ;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(out, sines ! 2);</p>
+<p class="p4">}).send(s);</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">b = </span><span class="s6">Synth</span><span class="s3">(</span>"help-Control-Sines"<span class="s3">);</span></p>
+<p class="p4">b.setn(<span class="s7">\array</span>, <span class="s6">Array</span>.rand(20, 200, 1600));</p>
+<p class="p4">b.setn(<span class="s7">\array</span>, <span class="s6">Array</span>.rand(20, 200, 1600));</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p4">(</p>
+<p class="p7"><span class="s6">SynthDef</span><span class="s3">(</span>"help-Control-DynKlank"<span class="s3">, { </span><span class="s6">arg</span><span class="s3"> out=0, freq;</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s6">var</span> klank, n, harm, amp, ring;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>n = 9;</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// harmonics</p>
+<p class="p4"><span class="Apple-tab-span">	</span>harm = <span class="s6">Control</span>.names(<span class="s7">\harm</span>).kr(<span class="s6">Array</span>.series(4,1,1));</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// amplitudes</p>
+<p class="p4"><span class="Apple-tab-span">	</span>amp = <span class="s6">Control</span>.names(<span class="s7">\amp</span>).kr(<span class="s6">Array</span>.fill(4,0.05));</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// ring times</p>
+<p class="p4"><span class="Apple-tab-span">	</span>ring = <span class="s6">Control</span>.names(<span class="s7">\ring</span>).kr(<span class="s6">Array</span>.fill(4,1));</p>
+<p class="p4"><span class="Apple-tab-span">	</span>klank = <span class="s6">DynKlank</span>.ar(`[harm,amp,ring], {<span class="s6">ClipNoise</span>.ar(0.003)}.dup, freq);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(out, klank);</p>
+<p class="p4">}).send(s);</p>
+<p class="p4">)</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">a = </span><span class="s6">Synth</span><span class="s3">(</span>"help-Control-DynKlank"<span class="s3">, [</span><span class="s7">\freq</span><span class="s3">, 300]);</span></p>
+<p class="p7"><span class="s3">b = </span><span class="s6">Synth</span><span class="s3">(</span>"help-Control-DynKlank"<span class="s3">, [</span><span class="s7">\freq</span><span class="s3">, 400]);</span></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p4">a.setn(<span class="s7">\harm</span>,  <span class="s6">Array</span>.rand(4, 1.0, 4.7))</p>
+<p class="p4">a.setn(<span class="s7">\amp</span>, <span class="s6">Array</span>.rand(4, 0.005, 0.1))</p>
+<p class="p4">a.setn(<span class="s7">\ring</span>, <span class="s6">Array</span>.rand(4, 0.005, 1.0))</p>
+<p class="p5"><br></p>
+<p class="p4">b.setn(<span class="s7">\harm</span>,  <span class="s6">Array</span>.rand(4, 1.0, 4.7))</p>
+<p class="p4">b.setn(<span class="s7">\amp</span>, <span class="s6">Array</span>.rand(4, 0.005, 0.1))</p>
+<p class="p4">b.setn(<span class="s7">\ring</span>, <span class="s6">Array</span>.rand(4, 0.005, 1.0))</p>
+<p class="p5"><br></p>
 </body>
 </html>
