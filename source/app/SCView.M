@@ -3590,7 +3590,6 @@ void SCListView::draw(SCRect inDamage)
 		int maxIndex = (int)(minIndex + 1 + (bounds.height + itemHeight - 1) / itemHeight);
 		if (maxIndex > numItems - 1) maxIndex = numItems - 1;
 		itemBounds.y += minIndex * itemHeight;
-		itemBounds.x += 8; 
 
 				
 		for (int i = minIndex; i <= maxIndex; ++i) 
@@ -3611,17 +3610,6 @@ void SCListView::draw(SCRect inDamage)
 			} else {
 				nsStringDrawInRectAlign(nsstring, itemBounds, mFontName, mFontSize, mStringColor, mAlignment, -1, &size);
 			}
-		// draw item pic
-		SCRect picBounds = itemBounds;
-		picBounds.x -= 6;
-
-		picBounds.width = 4;
-		picBounds.height -= 8;
-		picBounds.y += 4;
-		
-		CGContextSetRGBFillColor(cgc, 1.0, 0, 0, 0.5);
-		CGRect drawRect = SCtoCGRect(picBounds);
-		CGContextFillRect (cgc, drawRect);	
 		
 			itemBounds.y += itemBounds.height;
 		}
