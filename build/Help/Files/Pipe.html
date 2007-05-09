@@ -10,14 +10,15 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a42113}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-span.s1 {text-decoration: underline}
-span.s2 {color: #0019b7}
-span.s3 {color: #000000}
-span.s4 {color: #606060}
-span.s5 {color: #a71e12}
+span.s1 {color: #0000ff}
+span.s2 {text-decoration: underline}
+span.s3 {color: #001db6}
+span.s4 {color: #000000}
+span.s5 {color: #606060}
+span.s6 {color: #a42113}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -26,7 +27,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>superclass: UnixFILE</b></p>
 <p class="p2"><br></p>
-<p class="p3">Pipe stdin to, or stdout from, a unix shell command. Pipe treats the shell command as if it were a <b>UnixFILE</b>, and returns nil when done. See <b>UnixFILE </b>for details of the access methods. Pipe must be explicitly closed. Do not rely on the garbage collector to do this for you!</p>
+<p class="p3">Pipe stdin to, or stdout from, a unix shell command. Pipe treats the shell command as if it were a <b>UnixFILE</b>, and returns nil when done. See <a href="UnixFILE.html"><span class="s1"><b>UnixFILE</b></span></a><b> </b>for details of the access methods. Pipe must be explicitly closed. Do not rely on the garbage collector to do this for you!</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Note: </b>due to a bug in the current os x (10.3) , unix commands like pipe do not work when the server is booted.</p>
@@ -42,28 +43,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>close</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span></b>Closes the pipe. You must do this explicitly before the Pipe object is garbage collected.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><b><span class="s1">Examples</span></b></p>
+<p class="p3"><b><span class="s2">Examples</span></b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p4">// quit the server</p>
 <p class="p5">s.quit;</p>
 <p class="p6"><br></p>
 <p class="p4">// this pipes in stdout from ls</p>
 <p class="p5">(</p>
-<p class="p5"><span class="s2">var</span> p, l;</p>
-<p class="p4"><span class="s3">p = </span><span class="s2">Pipe</span><span class="s3">.new(</span><span class="s4">"ls -l"</span><span class="s3">, </span><span class="s4">"r"</span><span class="s3">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// list directory contents in long format</p>
-<p class="p5">l = p.getLine;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">// get the first line</span></p>
-<p class="p5">while({l.notNil}, {l.postln; l = p.getLine; });<span class="Apple-tab-span">	</span><span class="s5">// post until l = nil</span></p>
-<p class="p4"><span class="s3">p.close;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// close the pipe to avoid that nasty buildup</p>
+<p class="p5"><span class="s3">var</span> p, l;</p>
+<p class="p4"><span class="s4">p = </span><span class="s3">Pipe</span><span class="s4">.new(</span><span class="s5">"ls -l"</span><span class="s4">, </span><span class="s5">"r"</span><span class="s4">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// list directory contents in long format</p>
+<p class="p5">l = p.getLine;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">// get the first line</span></p>
+<p class="p5">while({l.notNil}, {l.postln; l = p.getLine; });<span class="Apple-tab-span">	</span><span class="s6">// post until l = nil</span></p>
+<p class="p4"><span class="s4">p.close;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// close the pipe to avoid that nasty buildup</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p5">A more time-intensive request:</p>
 <p class="p5">(</p>
-<p class="p5"><span class="s2">var</span> p, l;</p>
-<p class="p4"><span class="s3">p = </span><span class="s2">Pipe</span><span class="s3">.new(</span><span class="s4">"ping -c10 sourceforge.net"</span><span class="s3">, </span><span class="s4">"r"</span><span class="s3">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// list directory contents in long format</p>
-<p class="p5">l = p.getLine;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">// get the first line</span></p>
-<p class="p5">while({l.notNil}, {l.postln; l = p.getLine; });<span class="Apple-tab-span">	</span><span class="s5">// post until l = nil</span></p>
-<p class="p4"><span class="s3">p.close;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// close the pipe to avoid that nasty buildup</p>
+<p class="p5"><span class="s3">var</span> p, l;</p>
+<p class="p4"><span class="s4">p = </span><span class="s3">Pipe</span><span class="s4">.new(</span><span class="s5">"ping -c10 sourceforge.net"</span><span class="s4">, </span><span class="s5">"r"</span><span class="s4">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// list directory contents in long format</p>
+<p class="p5">l = p.getLine;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">// get the first line</span></p>
+<p class="p5">while({l.notNil}, {l.postln; l = p.getLine; });<span class="Apple-tab-span">	</span><span class="s6">// post until l = nil</span></p>
+<p class="p4"><span class="s4">p.close;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// close the pipe to avoid that nasty buildup</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
