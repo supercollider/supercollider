@@ -89,7 +89,7 @@ Node {
 		args = args.asNodeArg; 
 		nargs = List.new;
 		args.pairsDo({ arg control, moreVals; 
-			nargs.addAll([control, moreVals.size, moreVals].flat)}
+			nargs.addAll([control.asSymbol, moreVals.size, moreVals].flat)}
 		);
 		^[16, nodeID] ++ nargs; 
 			// "n_setn"
