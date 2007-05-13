@@ -622,8 +622,10 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	int32 addAction = msg.geti();
 
 	GraphDef *def = World_GetGraphDef(inWorld, defname);
-	if (!def) return kSCErr_SynthDefNotFound;
-	
+	if (!def) {
+		scprintf("*** ERROR: SynthDef %s not found\n", (char*)defname);
+		return kSCErr_SynthDefNotFound;
+	}
 
 	Graph *graph = 0;
 	switch (addAction) {
