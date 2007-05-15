@@ -71,3 +71,7 @@ TabFileReader : FileReader {
 CSVFileReader : FileReader { 
 	classvar <delim = $,;
 }
+
+SemiColonFileReader : FileReader { 
+	classvar <delim = $;;
+}
