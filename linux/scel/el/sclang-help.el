@@ -19,6 +19,7 @@
   (require 'cl)
   (require 'font-lock))
 
+;; (require 'emacs-w3m)
 (require 'sclang-util)
 (require 'sclang-interp)
 (require 'sclang-language)
@@ -73,7 +74,7 @@
 (make-variable-buffer-local 'sclang-help-file)
 
 (defconst sclang-help-file-regexp
-  "\\(\\(\\(\\.help\\)?\\.\\(rtf\\|scd\\)\\)\\|\\(\\.help\\.sc\\)\\|\\.rtfd/TXT\\.rtf\\)$"
+  "\\(\\(\\(\\.help\\)?\\.\\(rtf\\|scd\\|html\\)\\)\\|\\(\\.help\\.sc\\.html\\)\\|\\.rtfd/TXT\\.rtf\\.html\\)$"
   "Regular expression matching help files.")
 
 ;; =====================================================================
@@ -94,6 +95,11 @@
 (defun sclang-rtf-file-p (file-name)
   (let ((case-fold-search t))
     (string-match ".*\\.rtf$" file)))
+
+;; ========= ADDITION for HTML help files??
+(defun sclang-html-file-p (file-name)
+   (let ((case-fold-search t))
+     (string-match ".*\\.html$" file)))
 
 (defun sclang-sc-file-p (file-name)
   (let ((case-fold-search t))
@@ -499,6 +505,12 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 					     (sclang-index-help-topics)
 					   (error nil))))
 (add-to-list 'auto-mode-alist '("\\.rtf$" . sclang-help-mode))
+;; ========= ADDITION for HTML help files?? ============
+;; (add-to-list 'auto-mode-alist '("\\.html$" . sclang-help-mode))
+;; (setq mm-text-html-renderer 'w3m)
+;;  (setq mm-inline-text-html-with-images t)
+;;  (setq mm-inline-text-html-with-w3m-keymap nil)
+;; =====================================================
 (sclang-fill-help-syntax-table sclang-help-mode-syntax-table)
 (sclang-fill-help-mode-map sclang-help-mode-map)
 
