@@ -293,7 +293,7 @@ TaskProxy : PatternProxy {
 	
 	playOnce { arg argClock, doReset = (false), quant;
 		clock = argClock ? clock;
-		^PauseStream.new(this.asProtectedStream).play(clock, doReset, quant ? this.quant)
+		^PauseStream.new(this.asProtected.asStream).play(clock, doReset, quant ? this.quant)
 	}
 	
 	play { arg argClock, doReset=false, quant;
@@ -313,8 +313,8 @@ TaskProxy : PatternProxy {
 	}
 	wakeUp {	
 			if(this.isPlaying) { this.play(quant:playQuant) }	}
-	asProtectedStream {
-		^Pprotect(this, { if(this.player.notNil) { this.player.streamError } }).asStream
+	asProtected {
+		^Pprotect(this, { if(this.player.notNil) { this.player.streamError } })
 	}
 	
 	// check playing states:
@@ -446,7 +446,7 @@ EventPatternProxy : TaskProxy {
 	play { arg argClock, protoEvent, quant, doReset=false;
 		playQuant = quant ? this.quant;
 		if(player.isNil) { 
-			player = EventStreamPlayer(this.asProtectedStream, protoEvent);
+			player = EventStreamPlayer(this.asProtected.asStream, protoEvent);
 			player.play(argClock, doReset, quant ? this.quant);
 		} {
 				// resets  when stream has ended or after pause/cmd-period:
@@ -523,6 +523,8 @@ Pdef : EventPatternProxy {
 						outerEvent.put(\embeddingLevel, embeddingLevel + 1);
 						outerEvent.parent_(Event.parentEvents.default);
 					};
+					// maybe add a Pprotect here.
+					// pat.asProtected
 					pat = Pfindur(~sustain.value, pat);
 					outerEvent.put(\delta, nil); // block delta modification by Ppar
 					outerEvent.put(\instrument, ~synthDef ? \default);

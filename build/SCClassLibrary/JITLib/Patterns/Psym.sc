@@ -1,7 +1,14 @@
 Psym : FilterPattern {
 	var <>dict;
 	
+	*new { arg pattern, dict;
+		^super.new(pattern).dict_(dict)
+	}
+	
 	lookupClass { ^Pdef }
+	lookUp { arg key;
+		^(dict ?? { this.lookupClass.all }).at(key) ?? { this.lookupClass.default }
+	}
 	
 	embedInStream { arg inval;
 		var str, outval, pat;
@@ -10,28 +17,41 @@ Psym : FilterPattern {
 			outval = str.next(inval);
 			outval.notNil
 		} {
-			inval = (
-				(dict ??  { this.lookupClass.all }).at(outval.asSymbol) ?? { Pdef.default }
-			).embedInStream(inval);
+			
+			pat = if(outval.isSequenceableCollection) {
+				this.parallelise(
+					outval.collect {|key|
+						this.lookUp(key.asSymbol)
+					}
+				);
+			} {
+				this.lookUp(outval.asSymbol)
+			};
+			
+			inval = pat.embedInStream(inval);
 		}
 	
 	}
+	parallelise { arg pat; ^Ppar(pat) }
+	
 }
 
 Pnsym : Psym {
 	lookupClass { ^Pdefn }
+	parallelise { arg pat; ^Ptuple(pat) }
+
 }
 
 
 Pinbox : PatternProxy {
 	var <>name;
-	*new { arg name, source; // some other condition?
-		^super.new.source_(source).name_(name)
+	*new { arg name, source, condition; // could also be: name, quant, condition
+		^super.new.source_(source).name_(name).condition_(condition)
 	}
 	
 	receiveEvent { arg inval;
 		var news;
-		if(inval.notNil) {	// some other class: multiple keys, or even a pattern matching.
+		if(inval.notNil) {	// maybe some other class: multiple keys, or even a pattern matching.
 				news = inval.at(\news);
 				if(news.notNil) {
 					this.source = news.at(name) ? pattern
