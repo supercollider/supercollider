@@ -10,30 +10,30 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #862b1c}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #783020}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #862b1c; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #783020; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #062cab}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #062cab; min-height: 12.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4d6a27}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0e32a5}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #932919}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0e32a5; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #55682e}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0032ee}
+span.s2 {color: #093ce5}
 span.s3 {color: #000000}
-span.s4 {color: #062cab}
+span.s4 {color: #0e32a5}
 span.s5 {font: 12.0px Helvetica}
 span.s6 {color: #606060}
-span.s7 {color: #0000ff}
+span.s7 {color: #0022f5}
 span.s8 {font: 9.0px Monaco}
-span.s9 {color: #4d6a27}
-span.s10 {color: #862b1c}
-span.s11 {color: #0019b7}
-span.s12 {color: #326f17}
+span.s9 {color: #55682e}
+span.s10 {color: #783020}
+span.s11 {color: #0024b0}
+span.s12 {color: #446c21}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -176,7 +176,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2 - print the contents in hexadecimal.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3 - print both the parsed and hexadecimal representations of the contents.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><b>queryAllNodes - </b>Post a representation of this Server's current node tree to the post window. Very helpful for debugging. For local servers this uses g_dumptree and for remote g_querytree. See <a href="Group.html"><span class="s7">Group</span></a> and <a href="Server-Command-Reference.html"><span class="s7">Server-Command-Reference</span></a> for more info.</p>
+<p class="p1"><b>queryAllNodes - </b>Post a representation of this Server's current node tree to the post window. Very helpful for debugging. For local servers this uses g_dumpTree and for remote g_queryTree. See <a href="Group.html"><span class="s7">Group</span></a> and <a href="Server-Command-Reference.html"><span class="s7">Server-Command-Reference</span></a> for more info.</p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.boot;</p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>s.queryAllNodes; </span>// note the root node (ID 0) and the default group (ID 1)</p>
@@ -299,7 +299,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>space</b>:<span class="Apple-tab-span">	</span>start the server</p>
 <p class="p1"><b>d</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>toggle dumpOSC</p>
-<p class="p1"><b>n</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node query</p>
+<p class="p1"><b>n</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>post a representation of the node tree</p>
+<p class="p1"><b>N<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>post a representation of the node tree and the current control values of any synths</p>
 <p class="p1"><b>s</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scope (internal server only)</p>
 <p class="p10"><br></p>
 <p class="p2"><br></p>
