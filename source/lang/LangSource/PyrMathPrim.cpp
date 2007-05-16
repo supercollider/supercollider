@@ -1068,7 +1068,10 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 		second = IsInt(b) ? b->ui : (first < last ? first + 1 : first - 1);
 		step = second - first;
 
-		size = ((last - first) / step) + 1;
+		if ( step == 0 )
+			size = 1;
+		else
+			size = ((last - first) / step) + 1;
 
 		PyrObject *obj = newPyrArray(g->gc, size, 0, true);
 		obj->size = size;
