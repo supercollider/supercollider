@@ -732,6 +732,11 @@ env.Alias('install-plugins', env.Install(
 # source/lang
 # ======================================================================
 
+if env['TERMINAL_CLIENT'] == True:
+	env['TERMINAL_CLIENT'] = 1
+else:
+	env['TERMINAL_CLIENT'] = 0
+
 langEnv = env.Copy()
 langEnv.Append(
     CPPPATH = ['#headers/common',
