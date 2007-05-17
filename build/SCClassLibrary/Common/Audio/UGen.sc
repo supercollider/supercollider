@@ -104,6 +104,17 @@ UGen : AbstractFunction {
 	lag3 { arg lagTime=0.1;
 		^Lag3.multiNew(this.rate, this, lagTime)
 	}
+
+	lagud { arg lagTimeU=0.1, lagTimeD=0.1;
+		^LagUD.multiNew(this.rate, this, lagTimeU, lagTimeD)
+	}
+	lag2ud { arg lagTimeU=0.1, lagTimeD=0.1;
+		^Lag2UD.multiNew(this.rate, this, lagTimeU, lagTimeD)
+	}
+	lag3ud { arg lagTimeU=0.1, lagTimeD=0.1;
+		^Lag3UD.multiNew(this.rate, this, lagTimeU, lagTimeD)
+	}
+
 	prune { arg min, max, type;
 		switch(type, 
 			\minmax, {

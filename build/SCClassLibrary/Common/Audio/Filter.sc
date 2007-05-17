@@ -82,6 +82,20 @@ Lag2 : Lag {}
 Lag3 : Lag {}
 Ramp : Lag {}
 
+/// added by nescivi - 15 may 2007
+LagUD : Filter {
+	
+	*ar { arg in = 0.0, lagTimeU = 0.1, lagTimeD = 0.1,  mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, lagTimeU, lagTimeD).madd(mul, add)
+	}
+	*kr { arg in = 0.0, lagTimeU = 0.1, lagTimeD = 0.1, mul = 1.0, add = 0.0;
+		^this.multiNew('control', in, lagTimeU, lagTimeD).madd(mul, add)
+	}
+}
+
+Lag2UD : LagUD {}
+Lag3UD : LagUD {}
+
 LeakDC : Filter {
 	
 	*ar { arg in = 0.0, coef = 0.995, mul = 1.0, add = 0.0;

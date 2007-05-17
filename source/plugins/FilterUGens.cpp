@@ -44,6 +44,23 @@ struct Lag3 : public Unit
 	float m_lag, m_b1, m_y1a, m_y1b, m_y1c;
 };
 
+/// added by nescivi - 15 may 2007
+struct LagUD : public Unit
+{
+	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1;
+};
+
+struct Lag2UD : public Unit
+{
+	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1a, m_y1b;
+};
+
+struct Lag3UD : public Unit
+{
+	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1a, m_y1b, m_y1c;
+};
+///---------------------------
+
 struct OnePole : public Unit
 {
 	float m_b1, m_y1;
@@ -282,6 +299,17 @@ extern "C"
 	void Lag3_next(Lag3 *unit, int inNumSamples);
 	void Lag3_Ctor(Lag3* unit);
 
+/// added by nescivi - 15 may 2007
+	void LagUD_next(LagUD *unit, int inNumSamples);
+	void LagUD_Ctor(LagUD* unit);
+
+	void Lag2UD_next(Lag2UD *unit, int inNumSamples);
+	void Lag2UD_Ctor(Lag2UD* unit);
+
+	void Lag3UD_next(Lag3UD *unit, int inNumSamples);
+	void Lag3UD_Ctor(Lag3UD* unit);
+///-----------------------------------
+
 	void OnePole_next_a(OnePole *unit, int inNumSamples);
 	void OnePole_next_k(OnePole *unit, int inNumSamples);
 	void OnePole_Ctor(OnePole* unit);
@@ -417,6 +445,7 @@ extern "C"
 
 	void Hilbert_Ctor(Hilbert* unit);
 	void Hilbert_next(Hilbert *unit, int inNumSamples);
+
 /*
 	void Lag_next(Lag *unit, int inNumSamples);
 	void Lag_Ctor(Lag* unit);
@@ -531,6 +560,58 @@ void Lag_Ctor(Lag* unit)
 	Lag_next(unit, 1);
 
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// added by nescivi - 15 may 2007
+void LagUD_next(LagUD *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float lagu = ZIN0(1);
+	float lagd = ZIN0(2);
+
+	float y1 = unit->m_y1;
+	float b1u = unit->m_b1u;
+	float b1d = unit->m_b1d;
+
+	if ( (lagu == unit->m_lagu) && (lagd == unit->m_lagd) ) {
+		LOOP(inNumSamples,
+			float y0 = ZXP(in);
+			if ( y0 > y1 )
+				ZXP(out) = y1 = y0 + b1u * (y1 - y0);
+			else
+				ZXP(out) = y1 = y0 + b1d * (y1 - y0);
+		);
+	} else {
+		unit->m_b1u = lagu == 0.f ? 0.f : exp(log001 / (lagu * unit->mRate->mSampleRate));
+		float b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
+		unit->m_lagu = lagu;
+		unit->m_b1d = lagd == 0.f ? 0.f : exp(log001 / (lagd * unit->mRate->mSampleRate));
+		float b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
+		unit->m_lagd = lagd;
+		LOOP(inNumSamples, 
+			b1u += b1u_slope;
+			b1d += b1d_slope;
+			float y0 = ZXP(in);
+			if ( y0 > y1 )
+				ZXP(out) = y1 = y0 + b1u * (y1 - y0);
+			else
+				ZXP(out) = y1 = y0 + b1d * (y1 - y0);
+		);
+	}
+	unit->m_y1 = zapgremlins(y1);
+}
+
+void LagUD_Ctor(LagUD* unit)
+{
+	SETCALC(LagUD_next);
+		
+	unit->m_lagu = 0.f;
+	unit->m_lagd = 0.f;
+	unit->m_b1u = 0.f;
+	unit->m_b1d = 0.f;
+	unit->m_y1 = ZIN0(0);
+	LagUD_next(unit, 1);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -577,6 +658,75 @@ void Lag2_Ctor(Lag2* unit)
 	unit->m_b1 = 0.f;
 	unit->m_y1a = unit->m_y1b = ZIN0(0);
 	Lag2_next(unit, 1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Lag2UD_next(Lag2UD *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float lagu = ZIN0(1);
+	float lagd = ZIN0(2);
+
+
+	float y1a = unit->m_y1a;
+	float y1b = unit->m_y1b;
+	float b1u = unit->m_b1u;
+	float b1d = unit->m_b1d;
+
+	if ( (lagu == unit->m_lagu) && (lagd == unit->m_lagd) ) {
+		LOOP(inNumSamples, 
+			float y0a = ZXP(in); 
+			if ( y0a > y1a ) {
+				y1a = y0a + b1u * (y1a - y0a);
+			} else {
+				y1a = y0a + b1d * (y1a - y0a);
+			}
+			if ( y1a > y1b )
+				y1b = y1a + b1u * (y1b - y1a);
+			else
+				y1b = y1a + b1d * (y1b - y1a);
+			ZXP(out) = y1b;
+		);
+	} else {
+		unit->m_b1u = lagu == 0.f ? 0.f : exp(log001 / (lagu * unit->mRate->mSampleRate));
+		float b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
+		unit->m_lagu = lagu;
+		unit->m_b1d = lagd == 0.f ? 0.f : exp(log001 / (lagd * unit->mRate->mSampleRate));
+		float b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
+		unit->m_lagd = lagd;
+		LOOP(inNumSamples, 
+			b1u += b1u_slope;
+			b1d += b1d_slope;
+			float y0a = ZXP(in); 
+			if ( y0a > y1a ) {
+				y1a = y0a + b1u * (y1a - y0a);
+			} else {
+				y1a = y0a + b1d * (y1a - y0a);
+			}
+			if ( y1a > y1b )
+				y1b = y1a + b1u * (y1b - y1a);
+			else
+				y1b = y1a + b1d * (y1b - y1a);
+			ZXP(out) = y1b;
+		);
+	}
+	unit->m_y1a = zapgremlins(y1a);
+	unit->m_y1b = zapgremlins(y1b);
+		
+}
+
+void Lag2UD_Ctor(Lag2UD* unit)
+{
+	SETCALC(Lag2UD_next);
+	
+	unit->m_lagu = 0.f;
+	unit->m_lagd = 0.f;
+	unit->m_b1u = 0.f;
+	unit->m_b1d = 0.f;
+	unit->m_y1a = unit->m_y1b = ZIN0(0);
+	Lag2UD_next(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -628,6 +778,90 @@ void Lag3_Ctor(Lag3* unit)
 	unit->m_b1 = 0.f;
 	unit->m_y1a = unit->m_y1b = unit->m_y1c = ZIN0(0);
 	Lag3_next(unit, 1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Lag3UD_next(Lag3UD *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float lagu = ZIN0(1);
+	float lagd = ZIN0(2);
+
+
+	float y1a = unit->m_y1a;
+	float y1b = unit->m_y1b;
+	float y1c = unit->m_y1c;
+	float b1u = unit->m_b1u;
+	float b1d = unit->m_b1d;
+
+	if ( (lagu == unit->m_lagu) && (lagd == unit->m_lagd) ) {
+		LOOP(inNumSamples, 
+			float y0a = ZXP(in); 
+			if ( y0a > y1a ) {
+				y1a = y0a + b1u * (y1a - y0a);
+			} else {
+				y1a = y0a + b1d * (y1a - y0a);
+			}
+			if ( y1a > y1b ) {
+				y1b = y1a + b1u * (y1b - y1a);
+			} else {
+				y1b = y1a + b1d * (y1b - y1a);
+			}
+			if ( y1a > y1b ) {
+				y1c = y1b + b1u * (y1c - y1b);
+			} else {
+				y1c = y1b + b1d * (y1c - y1b);
+			}
+			ZXP(out) = y1c;
+		);
+	} else {
+		unit->m_b1u = lagu == 0.f ? 0.f : exp(log001 / (lagu * unit->mRate->mSampleRate));
+		float b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
+		unit->m_lagu = lagu;
+		unit->m_b1d = lagd == 0.f ? 0.f : exp(log001 / (lagd * unit->mRate->mSampleRate));
+		float b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
+		unit->m_lagd = lagd;
+		LOOP(inNumSamples, 
+			b1u += b1u_slope;
+			b1d += b1d_slope;
+			float y0a = ZXP(in); 
+			if ( y0a > y1a ) {
+				y1a = y0a + b1u * (y1a - y0a);
+			} else {
+				y1a = y0a + b1d * (y1a - y0a);
+			}
+			if ( y1a > y1b ) {
+				y1b = y1a + b1u * (y1b - y1a);
+			} else {
+				y1b = y1a + b1d * (y1b - y1a);
+			}
+			if ( y1a > y1b ) {
+				y1c = y1b + b1u * (y1c - y1b);
+			} else {
+				y1c = y1b + b1d * (y1c - y1b);
+			}
+			ZXP(out) = y1c;
+		);
+	}
+	unit->m_y1a = zapgremlins(y1a);
+	unit->m_y1b = zapgremlins(y1b);
+	unit->m_y1c = zapgremlins(y1c);
+		
+}
+
+void Lag3UD_Ctor(Lag3UD* unit)
+{
+	SETCALC(Lag3UD_next);
+
+	unit->m_lagu = 0.f;
+	unit->m_lagd = 0.f;
+	unit->m_b1u = 0.f;
+	unit->m_b1d = 0.f;
+	
+	unit->m_y1a = unit->m_y1b = unit->m_y1c = ZIN0(0);
+	Lag3UD_next(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4054,6 +4288,7 @@ void Hilbert_next(Hilbert *unit, int inNumSamples)
     }
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void load(InterfaceTable *inTable)
@@ -4064,6 +4299,9 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Lag);
 	DefineSimpleUnit(Lag2);
 	DefineSimpleUnit(Lag3);
+	DefineSimpleUnit(LagUD);
+	DefineSimpleUnit(Lag2UD);
+	DefineSimpleUnit(Lag3UD);
 	DefineSimpleUnit(OnePole);
 	DefineSimpleUnit(OneZero);
 	DefineSimpleUnit(TwoPole);
@@ -4112,6 +4350,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(DetectSilence);
 
 	DefineSimpleUnit(Hilbert);
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
