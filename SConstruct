@@ -145,6 +145,7 @@ def flatten_dir(dir):
     res = []
     for root, dirs, files in os.walk(dir):
         if 'CVS' in dirs: dirs.remove('CVS')
+	if '.svn' in dirs: dirs.remove('.svn')
         for f in files:
             res.append(os.path.join(root, f))
     return res
@@ -155,6 +156,7 @@ def install_dir(env, src_dir, dst_dir, filter_re, strip_levels=0):
         src_paths = []
         dst_paths = []
         if 'CVS' in dirs: dirs.remove('CVS')
+	if '.svn' in dirs: dirs.remove('.svn')
         for d in dirs[:]:
             if filter_re.match(d):
                 src_paths += flatten_dir(os.path.join(root, d))
@@ -988,6 +990,7 @@ def dist_paths():
         if not re: re = ANY_FILE_RE
         for root, dirs, files in os.walk(base):
             if 'CVS' in dirs: dirs.remove('CVS')
+	    if '.svn' in dirs: dirs.remove('.svn')
             for path in dirs[:]:
                 if re.match(path):
                     specs.append((os.path.join(root, path), re))
