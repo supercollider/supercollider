@@ -107,7 +107,7 @@ SoundFile {
 		^this.primitiveFailed;
 	}
 
-	seek { arg offset, origin; 
+	seek { arg offset = 0, origin = 0; 
 		// offset is in frames
 		// origin is an integer, one of: 
 		// 0 - from beginning of file

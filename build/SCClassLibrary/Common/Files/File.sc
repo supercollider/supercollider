@@ -52,7 +52,7 @@ File : UnixFILE {
 		toPos = toPos.clip(0, this.length - 1);
 		this.seek(toPos, 0);
 	}
-	seek { arg offset, origin; 
+	seek { arg offset = 0, origin = 0; 
 		// origin is an integer, one of: 
 		// 0 - from beginning of file
 		// 1 - from current position
