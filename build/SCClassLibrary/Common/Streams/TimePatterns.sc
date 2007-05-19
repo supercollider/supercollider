@@ -1,7 +1,7 @@
 Pstep : Pattern {
 	var <>levelpattern, <>durpattern;
 
-	*new { arg levelpattern, durpattern, curvepattern = \lin;
+	*new { arg levelpattern, durpattern;
 		^super.new
 			.levelpattern_(levelpattern)
 			.durpattern_(durpattern)
@@ -25,6 +25,9 @@ Pstep : Pattern {
 				{ inval = yield(val) }
 			)
 		};
+	}
+	storeArgs {
+		^[levelpattern, durpattern]
 	}	
 }
 Pseg : Pstep {
@@ -80,6 +83,9 @@ Pseg : Pstep {
 				)
 			};
 		};
+	}
+	storeArgs {
+		^[levelpattern, durpattern, curvepattern]
 	}	
 }
 

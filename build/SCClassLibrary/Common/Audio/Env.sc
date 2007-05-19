@@ -68,6 +68,11 @@ Env {
 		^this.asArray.envAt(time)
 	}
 	
+	asPseg {
+		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves) };
+		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy
+	}
+	
 	// methods to make some typical shapes :
 	
 	// fixed duration envelopes
