@@ -7,18 +7,18 @@
 <meta name="Generator" content="Cocoa HTML Writer">
 <meta name="CocoaVersion" content="824.42">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-span.s1 {color: #0019b7}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #000000}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+span.s1 {color: #0000bf}
 span.s2 {color: #000000}
 span.s3 {color: #606060}
+span.s4 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -30,8 +30,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p4">In one respect this is simply a lazy contraction of this :</p>
 <p class="p5"><br></p>
-<p class="p4">w = <span class="s1">SCWindow</span>.new;</p>
-<p class="p4">w.view.decorator = <span class="s1">FlowLayout</span>.new( w.bounds );</p>
+<p class="p4">w = SCWindow.new;</p>
+<p class="p4">w.view.decorator = FlowLayout.new( w.bounds );</p>
 <p class="p4">w.front;</p>
 <p class="p5"><br></p>
 <p class="p2">crucial style gui objects and normal sc views can easily coexist here.</p>
@@ -43,26 +43,26 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2">(</p>
 <p class="p7">// makes a window automatically</p>
 <p class="p2">f = <span class="s1">FlowView</span>.new;</p>
-<p class="p8"><br></p>
+<p class="p3"><br></p>
 <p class="p7">//lazy crucial gui objects work</p>
-<p class="p9">ActionButton<span class="s2">(f,</span><span class="s3">"a"</span><span class="s2">);</span></p>
-<p class="p8"><br></p>
+<p class="p8">ActionButton<span class="s2">(f,</span><span class="s3">"a"</span><span class="s2">);</span></p>
+<p class="p3"><br></p>
 <p class="p7">// normal sc views are flowed</p>
 <p class="p2"><span class="s1">SCSlider</span>(f,<span class="s1">Rect</span>(0,0,100,100));</p>
 <p class="p3"><br></p>
 <p class="p7">// flow within a flow</p>
 <p class="p2">g = f.flow({ <span class="s1">arg</span> g;</p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>ActionButton<span class="s2">(g,</span><span class="s3">"a"</span><span class="s2">);</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>ActionButton<span class="s2">(g,</span><span class="s3">"a"</span><span class="s2">);</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="s1">SCSlider</span>(g,<span class="s1">Rect</span>(0,0,100,100)).backColor_(<span class="s1">Color</span>.rand);</p>
 <p class="p2">}).background_(<span class="s1">Color</span>.black);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>// shrinks to fit the contents afterwards</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>// shrinks to fit the contents afterwards</p>
 <p class="p3"><br></p>
 <p class="p7">// rather than this :<span class="Apple-converted-space">  </span>f.decorator.nextLine<span class="Apple-converted-space"> </span></p>
 <p class="p7">// talk to the FlowView</p>
 <p class="p2">f.startRow;</p>
 <p class="p7">// it will insert a StartRow object as a pseudo-view,</p>
 <p class="p7">// this will keep the flow as you specified it for views that follow it :</p>
-<p class="p9">ActionButton<span class="s2">(f,</span><span class="s3">"next line"</span><span class="s2">);</span></p>
+<p class="p8">ActionButton<span class="s2">(f,</span><span class="s3">"next line"</span><span class="s2">);</span></p>
 <p class="p7">// even after you resize a parent view etc.</p>
 <p class="p3"><br></p>
 <p class="p2">)</p>
@@ -71,7 +71,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p2">// tests</p>
+<p class="p7">// tests</p>
 <p class="p2">(</p>
 <p class="p2"><span class="s1">FlowView</span>.new.flow({ <span class="s1">arg</span> f;</p>
 <p class="p7">//<span class="Apple-tab-span">	</span>b = ActionButton(f,"hi",minWidth:140)</p>
@@ -184,7 +184,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p2">(</p>
 <p class="p3"><br></p>
-<p class="p2"><span class="s1">FlowView</span>.new.flow({ <span class="s1">arg</span> f;</p>
+<p class="p2">a = <span class="s1">FlowView</span>.new.flow({ <span class="s1">arg</span> f;</p>
 <p class="p2"><span class="Apple-tab-span">	</span>g = f;</p>
 <p class="p2"><span class="Apple-tab-span">	</span>w = f.flow({ <span class="s1">arg</span> f;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = f.flow({ <span class="s1">arg</span> f;</p>
@@ -196,14 +196,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p2">)</p>
 <p class="p3"><br></p>
-<p class="p2">b.remove(true);</p>
-<p class="p2">w.resizeToFit(true,true);</p>
+<p class="p2">b.remove(<span class="s1">true</span>);</p>
+<p class="p2">w.resizeToFit(<span class="s1">true</span>,<span class="s1">true</span>);</p>
 <p class="p3"><br></p>
-<p class="p8"><br></p>
+<p class="p3"><br></p>
 <p class="p7">// add something big back in</p>
 <p class="p2"><span class="s1">ActionButton</span>(w,<span class="s3">"i'm back"</span>,minWidth: 200);</p>
 <p class="p7">//its messed up, outside of the bounds</p>
-<p class="p2">w.resizeToFit(true,true);</p>
+<p class="p2">w.resizeToFit(<span class="s1">true</span>,<span class="s1">true</span>);</p>
+<p class="p7">// w.resizeToFit fixes the white box but its container (grey) is still messed up</p>
+<p class="p2">g.resizeToFit(<span class="s1">true</span>,<span class="s1">true</span>);</p>
 <p class="p3"><br></p>
+<p class="p7">// resizeToFit does not search recursively through all children</p>
+<p class="p7">// if you have dewdrop_lib you can use g.recursiveResize</p>
+<p class="p7">// which fixes the whole lot in one go</p>
+<p class="p7">// <span class="s4">http://www.dewdrop-world.net/sc3/index.php#dewdroplib</span></p>
 </body>
 </html>
