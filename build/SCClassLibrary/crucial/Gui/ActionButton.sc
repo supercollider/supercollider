@@ -196,7 +196,12 @@ FlowView : SCViewHolder {
 	remove {
 		autoRemoves.do({ |updater| updater.remove });
 		autoRemoves = nil;
-		view.remove;
+			// am I still alive in the window?
+		view.notClosed.if({
+				// since this is in the parent's children array, view.remove is not enough by itself
+			this.parent.prRemoveChild(this);
+			view.remove;
+		});
 	}
 	viewDidClose {
 		autoRemoves.do({ arg u; u.remove });
