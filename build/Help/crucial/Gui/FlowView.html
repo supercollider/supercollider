@@ -7,7 +7,7 @@
 <meta name="Generator" content="Cocoa HTML Writer">
 <meta name="CocoaVersion" content="824.42">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #000000}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #0000bf}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
@@ -18,25 +18,24 @@ p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {color: #0000bf}
 span.s2 {color: #000000}
 span.s3 {color: #606060}
-span.s4 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>FlowView</b></p>
-<p class="p2">superclass: SCLayoutView</p>
+<p class="p2">superclass: <span class="s1">SCLayoutView</span></p>
 <p class="p3"><br></p>
-<p class="p4">an SCCompositeView with a FlowLayout inside of it.</p>
+<p class="p4">an <span class="s1">SCCompositeView</span> with a <span class="s1">FlowLayout</span> inside of it.</p>
 <p class="p5"><br></p>
-<p class="p4">In one respect this is simply a lazy contraction of this :</p>
+<p class="p4"><span class="s1">In</span> one respect <span class="s1">this</span> is simply a lazy contraction of <span class="s1">this</span> :</p>
 <p class="p5"><br></p>
-<p class="p4">w = SCWindow.new;</p>
-<p class="p4">w.view.decorator = FlowLayout.new( w.bounds );</p>
+<p class="p4">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p4">w.view.decorator = <span class="s1">FlowLayout</span>.new( w.bounds );</p>
 <p class="p4">w.front;</p>
 <p class="p5"><br></p>
 <p class="p2">crucial style gui objects and normal sc views can easily coexist here.</p>
 <p class="p3"><br></p>
-<p class="p6"><b>FlowView(parent,bounds)</b></p>
+<p class="p6"><span class="s1"><b>FlowView</b></span><b>(parent,bounds)</b></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
@@ -204,12 +203,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="s1">ActionButton</span>(w,<span class="s3">"i'm back"</span>,minWidth: 200);</p>
 <p class="p7">//its messed up, outside of the bounds</p>
 <p class="p2">w.resizeToFit(<span class="s1">true</span>,<span class="s1">true</span>);</p>
-<p class="p7">// w.resizeToFit fixes the white box but its container (grey) is still messed up</p>
-<p class="p2">g.resizeToFit(<span class="s1">true</span>,<span class="s1">true</span>);</p>
 <p class="p3"><br></p>
-<p class="p7">// resizeToFit does not search recursively through all children</p>
-<p class="p7">// if you have dewdrop_lib you can use g.recursiveResize</p>
-<p class="p7">// which fixes the whole lot in one go</p>
-<p class="p7">// <span class="s4">http://www.dewdrop-world.net/sc3/index.php#dewdroplib</span></p>
 </body>
 </html>

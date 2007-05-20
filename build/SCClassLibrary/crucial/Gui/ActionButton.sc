@@ -100,7 +100,8 @@ StartRow : SCViewHolder {
   */
 FlowView : SCViewHolder {
 
-	var /*<children, */autoRemoves;
+	var	<parent;
+	var	autoRemoves;
 	
 	*layout { arg f,bounds;
 		var v;
@@ -112,11 +113,9 @@ FlowView : SCViewHolder {
 	*new { arg parent, bounds;
 		^super.new.init(parent, bounds);
 	}
-	init { arg parent, bounds;
+	init { arg argParent, bounds;
 		var w;
-		if(parent.isNil,{ 
-			parent = GUI.window.new("",bounds).front;
-		});
+		parent = argParent ?? { GUI.window.new("",bounds).front };
 		bounds = if(bounds.notNil,{
 			bounds.asRect.moveTo(0,0)
 		},{
@@ -160,7 +159,7 @@ FlowView : SCViewHolder {
 		view.decorator.bounds = new; // if the left/top moved this buggers it
 		if(reflow,{ this.reflowAll; });
 		if(tryParent,{
-			view.parent.tryPerform(\resizeToFit,reflow,tryParent);
+			this.parent.tryPerform(\resizeToFit,reflow,tryParent);
 		});
 		^new
 	}
