@@ -130,19 +130,19 @@ UGen : AbstractFunction {
 		^this
 	}
 	linlin { arg inMin, inMax, outMin, outMax, clip;
-		^LinLin.multiNew(this.rate, this.prune(clip, inMin, inMax), 
+		^LinLin.multiNew(this.rate, this.prune(inMin, inMax, clip), 
 						inMin, inMax, outMin, outMax) 
 	}
 	linexp { arg inMin, inMax, outMin, outMax, clip;
-		^LinExp.multiNew(this.rate, this.prune(clip, inMin, inMax), 
+		^LinExp.multiNew(this.rate, this.prune(inMin, inMax, clip), 
 						inMin, inMax, outMin, outMax)
 	}
 	explin { arg inMin, inMax, outMin, outMax, clip;
-		^(log(this.prune(clip, inMin, inMax)/inMin)) 
+		^(log(this.prune(inMin, inMax, clip)/inMin)) 
 			/ (log(inMax/inMin)) * (outMax-outMin) + outMin; // no separate ugen yet
 	}
 	expexp { arg inMin, inMax, outMin, outMax, clip;
-		^pow(outMax/outMin, log(this.prune(clip, inMin, inMax)/inMin) 
+		^pow(outMax/outMin, log(this.prune(inMin, inMax, clip)/inMin) 
 			/ log(inMax/inMin)) * outMin;
 	}
 	
