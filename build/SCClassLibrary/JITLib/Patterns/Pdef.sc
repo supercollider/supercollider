@@ -380,6 +380,10 @@ EventPatternProxy : TaskProxy {
 		this.wakeUp;
 		source = obj;
 	}
+	envir_ { arg dict;
+		envir = dict;
+		this.source = source;
+	}
 	
 	*defaultValue { ^Event.silent }
 
