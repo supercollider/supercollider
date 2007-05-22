@@ -25,6 +25,10 @@
   "Major mode for working with SuperCollider source code."
   :group 'sclang)
 
+(defgroup sclang-minor-mode nil
+  "Minor mode for working with SuperCollider source code."
+  :group 'sclang)
+
 (defgroup sclang-interface nil
   "Interface to the SuperCollider process."
   :group 'sclang)
@@ -57,6 +61,7 @@
     (require 'sclang-language)
     (require 'sclang-document)
     (require 'sclang-mode)
+    (require 'sclang-minor-mode)
     (require 'sclang-help)
     (require 'sclang-server)
     (require 'sclang-widgets)))

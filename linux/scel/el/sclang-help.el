@@ -19,12 +19,13 @@
   (require 'cl)
   (require 'font-lock))
 
-;; (require 'emacs-w3m)
+(require 'w3m)
 (require 'sclang-util)
 (require 'sclang-interp)
 (require 'sclang-language)
 (require 'sclang-mode)
 (require 'sclang-vars)
+(require 'sclang-minor-mode)
 
 (defcustom sclang-help-directory "~/SuperCollider/Help"
   "*Directory where the SuperCollider help files are kept. OBSOLETE."
@@ -52,6 +53,12 @@
 
 (defcustom sclang-rtf-editor-program "ted"
   "*Name of an RTF editor program used to edit SuperCollider help files."
+  :group 'sclang-programs
+  :version "21.3"
+  :type 'string)
+
+(defcustom sclang-html-editor-program "html"
+  "*Name of an HTML editor program used to edit SuperCollider help files."
   :group 'sclang-programs
   :version "21.3"
   :type 'string)
@@ -454,6 +461,10 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 		(start-process (sclang-make-buffer-name (format "HelpEditor:%s" file))
 			       nil sclang-rtf-editor-program file)
 	      (find-file file))
+	  (if (sclang-html-file-p file)
+		(start-process (sclang-make-buffer-name (format "HelpEditor:%s" file))
+			       nil sclang-html-editor-program file)
+	    (find-file file))
 	  (sclang-message "Help file not found")))
     (sclang-message "Buffer has no associated help file")))
 
@@ -485,6 +496,10 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 	    (let* ((buffer-name (sclang-help-buffer-name topic))
 		   (buffer (get-buffer buffer-name)))
 	      (unless buffer
+		(if (sclang-html-file-p file)
+			(w3m-find-file file)
+			;;(w3m-next-buffer))
+		;; not a sclang-html file
 		(setq buffer (get-buffer-create buffer-name))
 		(with-current-buffer buffer
 		  (insert-file-contents file)
@@ -492,7 +507,7 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 			(default-directory (file-name-directory file)))
 		    (sclang-help-mode))
 		  (set-buffer-modified-p nil)))
-	      (switch-to-buffer buffer))
+	      (switch-to-buffer buffer)))
 	  (sclang-message "Help file not found") nil)
       (sclang-message "No help for \"%s\"" topic) nil)))
 
