@@ -15,10 +15,9 @@
 		var gui;
 		gui = GUI.current;
 		// no prompts or defaultNames in cocoa
-		gui.dialog.savePanel({ GUI.use( gui, successFunc )}, { GUI.use( gui, cancelFunc )});
-
-		//	var path;
-		//	path = this.prSaveDialog(prompt, defaultName);
-		//	if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
+		gui.dialog.savePanel({ arg args;
+			GUI.use( gui, { successFunc.value( args )})}, {
+			GUI.use( gui, cancelFunc )}
+		);
 	}	
 }
