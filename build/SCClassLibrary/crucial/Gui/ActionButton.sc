@@ -117,13 +117,13 @@ FlowView : SCViewHolder {
 		var w;
 		parent = argParent ?? { GUI.window.new("",bounds).front };
 		bounds = if(bounds.notNil,{
-			bounds.asRect.moveTo(0,0)
+			bounds.asRect  // .moveTo(0,0)  // why was this here? bad idea
 		},{
 			parent.asView.bounds.insetAll(2,2,2,2)
 		});
 			// this adds the composite view to the parent composite view
 		view = this.class.viewClass.new(parent.asView, bounds);
-			// now a tricky hack... recursiveResize needs the FlowView as a child, not the composite view
+			// now a tricky hack... the parent needs the FlowView as a child, not the composite view
 			// so I will replace the last-added child with THIS
 		parent.asView.children[parent.asView.children.size-1] = this;
 
