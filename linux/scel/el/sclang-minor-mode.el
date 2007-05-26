@@ -19,6 +19,37 @@ sclang code with the normal command C-c C-c and C-c C-x."
  '(("\C-c\C-c" . sclang-eval-region-or-line)
    ("\C-c\C-x" . sclang-eval-region)
    ("\C-c\C-h" . sclang-find-help)
+   ("\C-c\C-s" . sclang-main-stop)
 ))
 
 (provide 'sclang-minor-mode)
+
+(easy-mmode-define-minor-mode sclang-help-minor-mode
+  "Toggle sclang-minor-mode.
+With no argument, this command toggles the mode. 
+Non-null prefix argument turns on the mode.
+Null prefix argument turns off the mode.
+
+When sclang-help-minor-mode is enabled, you can execute
+sclang code with the normal command C-c C-c and C-c C-x."
+ ;; The initial value.
+ nil
+ ;; The indicator for the mode line.
+ " sclang-help"
+ ;; The minor mode bindings.
+ '(("\C-c\C-c" . sclang-eval-region-or-line)
+   ("\C-c\C-x" . sclang-eval-region)
+   ("\C-c\C-h" . sclang-find-help)
+   ("\C-c\C-s" . sclang-main-stop)
+   ("\C-c\C-v" . sclang-edit-help-file)
+))
+
+(provide 'sclang-help-minor-mode)
+
+(add-hook 'sclang-help-minor-mode-hook 'sclang-minor-hooks)
+(add-hook 'sclang-minor-mode-hook 'sclang-minor-hooks)
+
+(defun sclang-minor-hooks ()
+  (sclang-init-document)
+  (sclang-make-document)
+  )

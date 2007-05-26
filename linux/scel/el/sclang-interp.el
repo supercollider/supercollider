@@ -639,9 +639,9 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 	  (insert line)
 	  (insert "// SuperCollider Workspace\n")
 	  (insert line)
-	  (insert "// using HTML Help: C-c C-h as usual, then switch to w3m buffer\n")
-	  (insert "// and do M-x sclang-minor-mode in order te enable sclang code execution\n")
-	  (insert line)
+;;	  (insert "// using HTML Help: C-c C-h as usual, then switch to w3m buffer\n")
+;;	  (insert "// and do M-x sclang-minor-mode in order te enable sclang code execution\n")
+;;	  (insert line)
 	  (insert "\n"))
 	(set-buffer-modified-p nil)
 	;; cwd to sclang-runtime-directory

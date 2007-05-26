@@ -94,6 +94,7 @@
      "-"
      ["Index Help Topics"	sclang-index-help-topics]
      ["Find Help ..."		sclang-find-help]
+     ["Switch to Help Browser"  sclang-goto-help-browser]
      "-"
      ["Run Main"		sclang-main-run]
      ["Stop Main"		sclang-main-stop]
@@ -122,6 +123,7 @@
   (define-key map "\C-c{"			'sclang-dump-interface)
   ;; documentation access
   (define-key map "\C-c\C-h"			'sclang-find-help)
+  (define-key map "\C-\M-h"                     'sclang-goto-help-browser)
   ;; language control
   (define-key map "\C-c\C-r"			'sclang-main-run)
   (define-key map "\C-c\C-s"			'sclang-main-stop)
@@ -580,6 +582,17 @@ Returns the column to indent to."
    (let ((doc (and (integerp arg) (sclang-get-document arg))))
      (and doc (switch-to-buffer doc)))
    nil))
+
+(sclang-set-command-handler
+ '_documentPutString
+(lambda (arg)
+   (multiple-value-bind (id str) arg
+     (let ((doc (and (integerp id) (sclang-get-document id))))
+       (when doc
+	 (with-current-buffer doc
+	 (insert str)
+	 )
+       nil)))))
 
 (sclang-set-command-handler
  '_documentPopTo

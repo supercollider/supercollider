@@ -103,7 +103,7 @@
   (let ((case-fold-search t))
     (string-match ".*\\.rtf$" file)))
 
-;; ========= ADDITION for HTML help files??
+;; ========= ADDITION for HTML help files
 (defun sclang-html-file-p (file-name)
    (let ((case-fold-search t))
      (string-match ".*\\.html$" file)))
@@ -111,6 +111,10 @@
 (defun sclang-sc-file-p (file-name)
   (let ((case-fold-search t))
     (string-match ".*\\.sc$" file)))
+
+(defun sclang-scd-file-p (file-name)
+  (let ((case-fold-search t))
+    (string-match ".*\\.scd$" file)))
 
 (defun sclang-help-file-p (file-name)
   (string-match sclang-help-file-regexp file-name))
@@ -481,6 +485,32 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 	(car (assoc (buffer-substring-no-properties beg end)
 		    sclang-help-topic-alist))))))
 
+(defun sclang-goto-help-browser ()
+  "Switch to the *w3m* buffer to browse help files"
+  (interactive)
+  (let* ((buffer-name "*w3m*")
+	 (buffer (get-buffer buffer-name)))
+    (if buffer
+      (switch-to-buffer buffer)
+      ;; else
+      (let* ((buffer-name "*SC_Help:w3m*")
+	     (buffer2 (get-buffer buffer-name)))
+	(if buffer2
+	    (switch-to-buffer buffer2)
+	  ;; else
+	  (sclang-find-help "Help")
+	  )
+	)
+      )
+    (if buffer
+	(rename-buffer "*SC_Help:w3m*")
+      )
+    (if buffer
+	(sclang-help-minor-mode)
+      )
+    )
+  )
+
 (defun sclang-find-help (topic)
   (interactive
    (list
@@ -497,8 +527,8 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 		   (buffer (get-buffer buffer-name)))
 	      (unless buffer
 		(if (sclang-html-file-p file)
-			(w3m-find-file file)
-			;;(w3m-next-buffer))
+		     (w3m-find-file file)
+		   ;;  (sclang-goto-help-browser)
 		;; not a sclang-html file
 		(setq buffer (get-buffer-create buffer-name))
 		(with-current-buffer buffer
@@ -507,7 +537,10 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 			(default-directory (file-name-directory file)))
 		    (sclang-help-mode))
 		  (set-buffer-modified-p nil)))
-	      (switch-to-buffer buffer)))
+	      (switch-to-buffer buffer))
+	      (if (sclang-html-file-p file)
+		  (sclang-goto-help-browser))
+	      )
 	  (sclang-message "Help file not found") nil)
       (sclang-message "No help for \"%s\"" topic) nil)))
 
