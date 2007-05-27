@@ -71,6 +71,7 @@ Platform
 
 		// swing is compatible with all platforms; so declare it as global default
 	defaultGUIScheme { ^\swing }
+	defaultHIDScheme { ^\none }
 }
 
 UnixPlatform : Platform

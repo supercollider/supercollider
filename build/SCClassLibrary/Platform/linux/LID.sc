@@ -30,7 +30,9 @@ LIDAbsInfo {
 
 LID {
 	var dataPtr, <path, <info, <caps, <spec, <slots, <isGrabbed=false, <>action;
-	classvar all, eventTypes, <>specs, <>deviceRoot = "/dev/input", <deviceTable;
+	var <>closeAction;
+	classvar all, eventTypes, <>specs, <>deviceRoot = "/dev/input", <deviceList;
+	classvar < eventLoopIsRunning = true;
 	
 	*initClass {
 		all = [];
@@ -68,10 +70,20 @@ LID {
 	}
 
 	*buildDeviceTable{ |name|
+		"WARNING: buildDeviceTable is obsolete, please use buildDeviceList".postln;
+		^LID.buildDeviceList( name );
+	}
+
+	*deviceTable{
+		"WARNING: deviceTable is obsolete, please use deviceList".postln;
+		^deviceList;
+	}
+
+	*buildDeviceList{ |name|
 		var table, devices, d, open;
 		name = name ? "event";
 		devices = (deviceRoot++"/"++name++"*").pathMatch;
-		deviceTable = Array.fill( devices.size, 0 );
+		deviceList = Array.fill( devices.size, 0 );
 		devices.do{ |it,i|
 			open = false;
 			if ( all.detect({ | dev | dev.path == it }).notNil,
@@ -79,15 +91,15 @@ LID {
 			d = try { LID( it ) };
 			if ( d != nil,
 				{
-					deviceTable[i] = [ it, d.info ];
+					deviceList[i] = [ it, d.info, d.slots ];
 					if ( open.not,
 						{d.close});
 				},
 				{
-					deviceTable[i] = [ it, "could not open device" ];
+					deviceList[i] = [ it, "could not open device" ];
 				});
 		};
-		^deviceTable;
+		^deviceList;
 	}
 
 	*mouseDeviceSpec {
@@ -366,6 +378,7 @@ LID {
 	prInit { | argPath |
 		this.prOpen(argPath);
 		all = all.add(this);
+		closeAction = {};
 		path = argPath;
 		info = this.prGetInfo(LIDInfo.new);
 		spec = specs.atFail(info.name, { IdentityDictionary.new });
@@ -427,6 +440,14 @@ LID {
 			slots[evtType][evtCode].value_(evtValue);
 		}
 	}
+
+	// this prevents a high cpu cycle when device was detached; added by marije
+	prReadError{
+		this.close;
+		("WARNING: Device was removed: " + this.path + this.info).postln;
+		closeAction.value;
+	}
+
 	prSetLedState { |evtCode, evtValue|	// added by Marije Baalman
 		// set LED value
 		_LID_SetLedState
@@ -436,13 +457,20 @@ LID {
 
 LIDSlot {
 	var <device, <type, <code, value=0, <spec, <>action;
-	classvar slotTypeMap;
+	classvar slotTypeMap, <slotTypeStrings;
 
 	*initClass {
 		slotTypeMap = IdentityDictionary.new.addAll([
 			0x0001 -> LIDKeySlot,
 			0x0002 -> LIDRelSlot,
 			0x0003 -> LIDAbsSlot
+		]);
+		slotTypeStrings = IdentityDictionary.new.addAll([
+			0x0000 -> "Collection",
+			0x0001 -> "Button",
+			0x0002 -> "Relative",
+			0x0003 -> "Absolute",
+			0x0011 -> "LED"
 		]);
 	}
 	*new { | device, evtType, evtCode |
@@ -474,17 +502,24 @@ LIDKeySlot : LIDSlot {
 }
 
 LIDRelSlot : LIDSlot {
+	var delta, <>deltaAction;
+
 	initSpec { }
 	value { ^value }
-	value_ { | delta |
+	value_ { | dta |
+		delta = dta;
 		value = value + delta;
 		action.value(this);
+		deltaAction.value(this);
 	}
+
+	delta { ^delta }
 }
 
 LIDAbsSlot : LIDSlot {
+	var <info;
+
 	initSpec {
-		var info;
 		info = device.getAbsInfo(code);
 		spec = ControlSpec(info.min, info.max, \lin, 1);
 		spec.default = spec.map(0.5).asInteger;

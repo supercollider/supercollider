@@ -15,4 +15,5 @@ OSXPlatform : UnixPlatform
 
 		// only osx uses Cocoa guis
 	defaultGUIScheme { ^\cocoa }
+	defaultHIDScheme { ^\osx_hid }
 }

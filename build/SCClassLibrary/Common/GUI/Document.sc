@@ -16,7 +16,7 @@ Document {
 	
 	*startup {
 		var num, doc;
-		
+		allDocuments = [];
 		num = this.numberOfOpen;
 		num.do({arg i;
 			doc = this.newFromIndex(i);
