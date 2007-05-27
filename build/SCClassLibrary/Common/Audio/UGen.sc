@@ -95,15 +95,36 @@ UGen : AbstractFunction {
  	
  	minNyquist { ^min(this, SampleRate.ir * 0.5) }
  	
- 	lag { arg lagTime=0.1;
+	lag { arg t1=0.1, t2;
+		^if(t2.isNil) {
+			Lag.multiNew(this.rate, this, t1)
+		} {
+			LagUD.multiNew(this.rate, this, t1, t2)
+		}
+	}
+	lag2 { arg t1=0.1, t2;
+		^if(t2.isNil) {
+			Lag2.multiNew(this.rate, this, t1)
+		} {
+			Lag2UD.multiNew(this.rate, this, t1, t2)
+		}
+	}
+	lag3 { arg t1=0.1, t2;
+		^if(t2.isNil) {
+			Lag3.multiNew(this.rate, this, t1)
+		} {
+			Lag3UD.multiNew(this.rate, this, t1, t2)
+		}
+	}
+	/*	lag { arg lagTime=0.1;
 		^Lag.multiNew(this.rate, this, lagTime)
-	}
-	lag2 { arg lagTime=0.1;
+		}
+		lag2 { arg lagTime=0.1;
 		^Lag2.multiNew(this.rate, this, lagTime)
-	}
-	lag3 { arg lagTime=0.1;
+		}
+		lag3 { arg lagTime=0.1;
 		^Lag3.multiNew(this.rate, this, lagTime)
-	}
+		}*/
 
 	lagud { arg lagTimeU=0.1, lagTimeD=0.1;
 		^LagUD.multiNew(this.rate, this, lagTimeU, lagTimeD)

@@ -5,6 +5,14 @@ SCEL -- SuperCollider/Emacs interface
 $Id"
 ------------------------------------------------------------------------
 
+installation (requirements)
+---------------------------
+
+For the HTML help system, you will need emacs-w3m support.
+Building scel will fail if you do not have the package.
+If you insist on not installing the package, remove the line
+(require 'w3m) from el/sclang-help.el
+
 installation (default)
 -----------------------
 
@@ -59,6 +67,24 @@ C-h m
 
 a window with key bindings in sclang-mode will pop up.
 
+C-x C-h lets you search for a help file
+C-M-h opens the Help browser (if no Help file has been opened, 
+the default Help file will be opened)
+
+To enable moving around in the help file with arrow keys add the following
+in your ~/.emacs:
+
+(eval-after-load "w3m"
+ '(progn
+ (define-key w3m-mode-map [left] 'backward-char)
+ (define-key w3m-mode-map [right] 'forward-char)
+ (define-key w3m-mode-map [up] 'previous-line)
+ (define-key w3m-mode-map [down] 'next-line)))
+
+This ensures that the arrow keys are just for moving through the document,
+and not from hyperlink to hyperlink, which is the default in w3m-mode.
+
+
 customization
 --------------
 
@@ -67,8 +93,7 @@ customization interface, type
 
 M-x sclang-customize
 
-in particular, you will have to customize `sclang-runtime-directory'
-and `sclang-help-directory'.
+in particular, you will have to customize `sclang-runtime-directory'.
 
 server control
 ---------------

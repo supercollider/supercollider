@@ -14,7 +14,7 @@ main homepage is at
 
    http://www.audiosynth.com
 
-the source code can be obtained via CVS from
+the source code can be obtained via SVN from
 
    http://supercollider.sourceforge.net
 
@@ -87,6 +87,8 @@ build requirements (optional features)
    http://www.kernel.org/
 
    for sclang's linux input device (LID) interface
+
+ o for scel: the Emacs interface see the README in the directory scel
 
 ------------------------------------------------------------------------
 build requirements (debian users)
@@ -241,6 +243,7 @@ maurizio umberto puxeddu
 rohan drape
 mario lang
 john yates
+nescivi (marije baalman)
 
 ------------------------------------------------------------------------
 outro
