@@ -465,6 +465,7 @@ Switches w3m to edit mode (actually HTML mode)."
   "Edit the help file to make code variations.
 Switches to text mode with sclang-minor-mode."
   (interactive)
+  (w3m-copy-buffer)
   (text-mode)
   (sclang-minor-mode)
   (toggle-read-only)
