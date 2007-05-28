@@ -454,6 +454,24 @@
 	  (sclang-make-help-topic-alist (sclang-help-directories) nil))
     (sclang-message "Indexing help topics ... Done")))
 
+(defun sclang-edit-html-help-file ()
+  "Edit the help file associated with the current buffer.
+Switches w3m to edit mode (actually HTML mode)."
+  (interactive)
+  (w3m-edit-current-url)
+  )
+
+(defun sclang-edit-help-code ()
+  "Edit the help file to make code variations.
+Switches to text mode with sclang-minor-mode."
+  (interactive)
+  (text-mode)
+  (sclang-minor-mode)
+  (toggle-read-only)
+  (rename-buffer "*SC_Help:CodeEdit*")
+  )
+
+
 (defun sclang-edit-help-file ()
   "Edit the help file associated with the current buffer.
 Either visit file internally (.sc) or start external editor (.rtf)."
@@ -466,9 +484,9 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 			       nil sclang-rtf-editor-program file)
 	      (find-file file))
 	  (if (sclang-html-file-p file)
-		(start-process (sclang-make-buffer-name (format "HelpEditor:%s" file))
-			       nil sclang-html-editor-program file)
-	    (find-file file))
+	      (w3m-edit-current-url)
+	   ;; (find-file file)
+	   )
 	  (sclang-message "Help file not found")))
     (sclang-message "Buffer has no associated help file")))
 
@@ -503,11 +521,15 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 	)
       )
     (if buffer
-	(rename-buffer "*SC_Help:w3m*")
+	(with-current-buffer buffer
+	  (rename-buffer "*SC_Help:w3m*")
+	  (sclang-help-minor-mode)
+	  ;;(setq buffer-read-only false)
+	  )
       )
-    (if buffer
-	(sclang-help-minor-mode)
-      )
+;    (if buffer
+;	
+;      )
     )
   )
 

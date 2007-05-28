@@ -41,7 +41,8 @@ sclang code with the normal command C-c C-c and C-c C-x."
    ("\C-c\C-x" . sclang-eval-region)
    ("\C-c\C-h" . sclang-find-help)
    ("\C-c\C-s" . sclang-main-stop)
-   ("\C-c\C-v" . sclang-edit-help-file)
+   ("\C-c\C-v" . sclang-edit-html-help-file)
+   ("E" . sclang-edit-help-code)
 ))
 
 (provide 'sclang-help-minor-mode)
