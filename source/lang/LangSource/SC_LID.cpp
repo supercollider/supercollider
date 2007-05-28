@@ -67,6 +67,7 @@ static PyrSymbol* s_inputDeviceClass = 0;
 static PyrSymbol* s_inputDeviceInfoClass = 0;
 static PyrSymbol* s_absInfoClass = 0;
 static PyrSymbol* s_handleEvent = 0;
+static PyrSymbol* s_readError = 0;
 
 // =====================================================================
 // SC_LID
@@ -91,6 +92,7 @@ struct SC_LID
 
 	int grab(int flag);
 	void handleEvent(struct input_event& evt);
+	void readError();
 
 	static PyrObject* getObject(PyrSlot* slot)
 	{
@@ -102,10 +104,10 @@ struct SC_LID
 		return (SC_LID*)obj->slots[0].uptr;
 	}
 
-	SC_LID*				m_next;
-	PyrObject*			m_obj;
-	int					m_fd;
-	int					m_lastEventType;
+	SC_LID*			m_next;
+	PyrObject*		m_obj;
+	int			m_fd;
+	int			m_lastEventType;
 	unsigned long		m_eventTypeCaps[NBITS(EV_MAX)];
 	unsigned long		m_eventCodeCaps[NBITS(KEY_MAX)];
 	unsigned long		m_keyState[NBITS(KEY_MAX)];
@@ -138,11 +140,11 @@ private:
 
 	struct Command
 	{
-		int				id;
+		int	id;
 		union
 		{
-			SC_LID*		dev;
-		}				arg;
+			SC_LID*	dev;
+		}	arg;
 	};
 
 	int sendCommand(const Command& cmd);
@@ -153,13 +155,13 @@ private:
 
 	static void* threadFunc(void*);
 
-	pthread_t			m_thread;
+	pthread_t		m_thread;
 	pthread_mutex_t		m_mutex;
-	bool				m_running;
-	int					m_cmdFifo[2];
-	int					m_nfds;
-	fd_set				m_fds;
-	SC_LID*				m_devices;
+	bool			m_running;
+	int			m_cmdFifo[2];
+	int			m_nfds;
+	fd_set			m_fds;
+	SC_LID*			m_devices;
 };
 
 // =====================================================================
@@ -301,6 +303,19 @@ void SC_LID::handleEvent(struct input_event& evt)
 		}
 		pthread_mutex_unlock(&gLangMutex);
 	}
+}
+
+void SC_LID::readError()
+{
+	pthread_mutex_lock(&gLangMutex);
+	if (compiledOK) {
+		VMGlobals* g = gMainVMGlobals;
+		g->canCallOS = false;
+ 		++g->sp; SetObject(g->sp, m_obj);
+		runInterpreter(g, s_readError, 1);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock(&gLangMutex);
 }
 
 // =====================================================================
@@ -476,6 +491,9 @@ void SC_LIDManager::loop()
 						struct input_event evt;
 						if (read(fd, &evt, sizeof(evt)) == sizeof(evt)) {
 							dev->handleEvent(evt);
+						}
+						else {
+							dev->readError();
 						}
 					}
 					dev = dev->m_next;
@@ -717,6 +735,7 @@ void SC_LIDInit()
 	s_inputDeviceInfoClass = getsym("LIDInfo");
 	s_absInfoClass = getsym("LIDAbsInfo");
 	s_handleEvent = getsym("prHandleEvent");
+	s_readError = getsym("prReadError");
 
 	base = nextPrimitiveIndex();
 	index = 0;
