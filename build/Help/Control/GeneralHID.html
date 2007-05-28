@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {color: #0000bf}
+span.s2 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1">/// testing state!!!</p>
+<p class="p1">/// still to do:</p>
+<p class="p2"><br></p>
+<p class="p1">Get deviceSpecs working</p>
+<p class="p1">Fix identical numbers between Linux and Mac (this may mean that the slot structure will change!)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">GeneralHID</span> is a cross platform wrapper for accessing <span class="s1">HID</span> devices.</p>
+<p class="p4"><span class="s1">Currently</span> the <span class="s1">MacOSX</span> and <span class="s1">Linux</span> <span class="s1">HID</span> support has been wrapped.</p>
+<p class="p4"><span class="s1">Some</span> of the code is inspired by the <span class="s1">GUI</span> wrapper.</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Get</span> the current scheme:</p>
+<p class="p5"><span class="Apple-tab-span">	</span>GeneralHID<span class="s2">.scheme</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>GeneralHID<span class="s2">.scheme.id</span></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Build</span> a device list:</p>
+<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.buildDeviceList;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Get</span> the device list:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>d = <span class="s1">GeneralHID</span>.deviceList;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">this</span> works also:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>d = <span class="s1">GeneralHID</span>.buildDeviceList;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Post</span> the devices found:</p>
+<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.postDevices;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Post</span> the devices and their capabilities:</p>
+<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.postDevicesAndProperties;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Start</span> the event loop with rate (default is 0.005):</p>
+<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.startEventLoop( 0.002 );</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Stop</span> the event loop:</p>
+<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.stopEventLoop;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Check</span> status of eventloop:</p>
+<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.eventLoopIsRunning;</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Open</span> a device:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>a = <span class="s1">GeneralHID</span>.open( d[2] );</p>
+<p class="p4">You need to take a device that shows up in the DeviceTable. You can do any kind of automatic detection to always get the device you want (e.g. on vendor and product id's)</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Get</span> the device info:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>a.info;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Check</span> whether device is open:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>a.isOpen;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">A</span> dictionary with all slots:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>a.slots;</p>
+<p class="p3"><br></p>
+<p class="p4">The devices capabilities in a more readable form:</p>
+<p class="p6"><span class="Apple-tab-span">	</span>a.caps;</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">See</span> if data is coming in:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>a.debug_( <span class="s1">true</span> );</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s1">Turn</span> it off again:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>a.debug_( <span class="s1">false</span> );</p>
+<p class="p3"><br></p>
+<p class="p4">(debugging can be turned on for each slot individually, if necessary)</p>
+<p class="p3"><br></p>
+<p class="p4">Actions can be mapped to each slot individually.</p>
+<p class="p3"><br></p>
+<p class="p1">// close the device:</p>
+<p class="p4">a.close;</p>
+<p class="p3"><br></p>
+</body>
+</html>

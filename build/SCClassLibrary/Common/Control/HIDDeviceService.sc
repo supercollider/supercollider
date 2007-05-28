@@ -1,24 +1,59 @@
+HIDInfo{
+	var <name, <bustype=0, <vendor, <product, <version=0;
+
+	*new{arg  product, bustype, vendorID, productID, version;
+		^super.newCopyArgs( product, bustype, vendorID, productID, version ).init;
+	}
+	
+	init{
+	}
+
+	printOn { | stream |
+		super.printOn(stream);
+		stream << $( << name << ", ";
+		[
+			bustype,
+			vendor,
+			product,
+			version
+		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
+		stream.put($));
+	}
+}
+
 HIDDevice {
-	var <manufacturer, < product, <usage, < vendorID, < productID, < locID;
+	var <manufacturer, < product, <usage, < vendorID, < productID, < locID, < version, < serial;
 	var < elements;
-	*new{arg manufacturer, product, usage, vendorID, productID, locID;
-		^super.newCopyArgs(manufacturer, product, usage, vendorID, productID, locID).init;
+	var < isQueued = false;
+	var < info, <> closeAction;
+	*new{arg manufacturer, product, usage, vendorID, productID, locID, version, serial;
+		^super.newCopyArgs(manufacturer, product, usage, vendorID, productID, locID, version, serial).init;
 	}
 	init{
+		info = HIDInfo.new( product, 0, vendorID, productID, version );
+		closeAction = {};
 		elements = Array.new;
 	}
 
 	value{arg elementNum=0;
 		^HIDDeviceService.value(locID,elements.at(elementNum).cookie)
 	}
+	valueByCookie{arg cookie;
+		^HIDDeviceService.value(locID,cookie)
+	}
 	setValue{|elementNum, val|
 		HIDDeviceService.setValue(locID,elements.at(elementNum).cookie, val)
 	}
+	setValueByCookie{|cookie, val|
+		HIDDeviceService.setValue(locID,cookie, val)
+	}
 	queueDevice{
+		isQueued = true;
 		HIDDeviceService.queueDevice(locID);
 	}
 	
 	dequeueDevice{
+		isQueued = false;
 		HIDDeviceService.dequeueDevice(locID);
 	}
 	
@@ -30,16 +65,21 @@ HIDDevice {
 		HIDDeviceService.dequeueElement(locID, elements.at(elementNum).cookie);
 	}
 	
+	wasClosed{
+		("WARNING: Device was removed: " + info).postln;
+		closeAction.value;
+	}
+	
 	//private:
-	prAddElement{arg type, usage, cookie, min, max;
-		elements = elements.add(HIDDeviceElement(type, usage, cookie, min, max));
+	prAddElement{arg type, usage, cookie, min, max, ioType, usagePage, usageType;
+		elements = elements.add(HIDDeviceElement(type, usage, cookie, min, max, ioType, usagePage, usageType));
 	}
 }
 
 HIDDeviceElement {
-	var < type, <usage, < cookie, <min, <max;
-	*new{arg type, usage, cookie, min, max;
-		^super.newCopyArgs(type, usage, cookie, min, max);
+	var < type, <usage, < cookie, <min, <max, <ioType, <usagePage, < usageType;
+	*new{arg type, usage, cookie, min, max, ioType, usagePage, usageType;
+		^super.newCopyArgs(type, usage, cookie, min, max, ioType, usagePage, usageType);
 	}
 //	value_{|val|
 //		HIDDeviceService.setValue(locID, cookie, val)
@@ -52,9 +92,11 @@ HIDDeviceService{
 	classvar < initialized = false;
 	classvar < deviceSpecs;
 	classvar < eventLoopIsRunning = false;
+	classvar <> closeAction;
 
 	*initClass {
 		deviceSpecs = IdentityDictionary.new;
+		closeAction = {};
 	}
 	
 	*keyToIndex { arg key, locID=0;
@@ -81,12 +123,12 @@ HIDDeviceService{
 		devlist ?? {"HIDDeviceService: no devices found".warn; ^nil};
 		devlist.do({arg dev;
 			var newdev;
-			newdev = HIDDevice(dev.at(0), dev.at(1), dev.at(2), dev.at(3), dev.at(4), dev.at(5));
+			newdev = HIDDevice(dev.at(0), dev.at(1), dev.at(2), dev.at(3), dev.at(4), dev.at(5), dev.at(6), dev.at(7));
 			elelist = this.prbuildElementList(newdev.locID,
 				Array.newClear(HIDDeviceService.prGetElementListSize(newdev.locID)));
 			elelist.do({arg ele;
 				if(ele.notNil){
-					newdev.prAddElement(ele.at(0), ele.at(1), ele.at(2), ele.at(3), ele.at(4));
+					newdev.prAddElement(ele.at(0), ele.at(1), ele.at(2), ele.at(3), ele.at(4), ele.at(5), ele.at(6), ele.at(7));
 				};
 			});
 			devices = devices.add(newdev);
@@ -137,8 +179,16 @@ HIDDeviceService{
 		_HIDStopEventLoop
 	}
 
-	*hidAction{arg vendorID, productID, locID, cookie, val;
+	*prHidAction{arg vendorID, productID, locID, cookie, val;
 		action.value(vendorID, productID, locID, cookie, val);
+	}
+	
+	*prReadError{ arg locID;
+		var dev;
+		HIDDeviceService.dequeueDevice( locID );
+		dev = devices.detect( { |dv| dv.locID == locID } );
+		dev.wasClosed;
+		closeAction.value( locID );
 	}
 	
 	*queueDevice{arg locID;

@@ -4,6 +4,7 @@
  *
  *  Created by Jan Truetzschler v. Falkenstein on Tue Sep 30 2003.
  *  Copyright (c) 2003 jan.t. All rights reserved.
+ *  modifications by Marije Baalman in May 2007
  *	part of ...
 	SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
@@ -54,7 +55,7 @@
 #include "PyrSched.h"
 #include "GC.h"
 
-
+PyrSymbol * s_readError;
 PyrSymbol * s_hidAction;
 PyrSymbol * s_hid;
 extern bool compiledOK;
@@ -86,7 +87,7 @@ int prHIDGetElementListSize(VMGlobals *g, int numArgsPushed)
 	while (pCurrentHIDDevice && (pCurrentHIDDevice->locID !=locID))
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
-	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeAll);
+	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeAll );
 	SetInt(a, numElements);
 	return errNone;
 }
@@ -108,30 +109,40 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	
-	pRecElement	devElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
-	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeAll);
+	pRecElement	devElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll );
+	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeAll );
 
 //		PyrObject* devAllElementsArray = newPyrArray(g->gc, numElements * sizeof(PyrObject), 0 , true);
 		PyrObject *devAllElementsArray = c->uo;
 //		post("numElements: %d\n", numElements);
 		numElements = sc_clip(numElements, 0, devAllElementsArray->size);
-		for(int i=0; i<numElements; i++){
+		for(uint i=0; i<numElements; i++){
 			if(devElement){
 				char cstrElementName [256];
-				PyrObject* devElementArray = newPyrArray(g->gc, 5 * sizeof(PyrObject), 0 , true);
+				PyrObject* devElementArray = newPyrArray(g->gc, 8 * sizeof(PyrObject), 0 , true);
+				// type name (1)
 				HIDGetTypeName((IOHIDElementType) devElement->type, cstrElementName);
 				PyrString *devstring = newPyrString(g->gc, cstrElementName, 0, true);
 				SetObject(devElementArray->slots+devElementArray->size++, devstring);
 				//g->gc->GCWrite(devElementArray, (PyrObject*) devstring);
-				//usage
+				//usage (2)
 				HIDGetUsageName (devElement->usagePage, devElement->usage, cstrElementName);
 				PyrString *usestring = newPyrString(g->gc, cstrElementName, 0, true);			
 				SetObject(devElementArray->slots+devElementArray->size++, usestring);
 				//g->gc->GCWrite(devElementArray, (PyrObject*) usestring);
-				//cookie
+				//cookie (3)
 				SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->cookie);
+				// min (4)
 				SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->min);
+				// max (5)
 				SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->max);
+				
+				// IO type as int: (6)
+				SetInt(devElementArray->slots+devElementArray->size++, (int) devElement->type);
+				// Usage page as int: (7)
+				SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->usagePage);
+				// Usage type as int: (8)
+				SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->usage);
 				
 				SetObject(devAllElementsArray->slots+i, devElementArray);
 				//g->gc->GCWrite(devAllElementsArray, (PyrObject*) devElementArray);
@@ -191,7 +202,7 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 	PyrObject* allDevsArray = newPyrArray(g->gc, numdevs * sizeof(PyrObject), 0 , true);
 	for(int i=0; i<numdevs; i++){
 		//device:
-		PyrObject* devNameArray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
+		PyrObject* devNameArray = newPyrArray(g->gc, 8 * sizeof(PyrObject), 0 , true);
 		//manufacturer:
 		PyrString *devstring = newPyrString(g->gc, pCurrentHIDDevice->manufacturer, 0, true);
 		SetObject(devNameArray->slots+devNameArray->size++, devstring);
@@ -211,6 +222,14 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 		SetInt(devNameArray->slots+devNameArray->size++, pCurrentHIDDevice->productID);
 		//locID
 		SetInt(devNameArray->slots+devNameArray->size++, pCurrentHIDDevice->locID);
+		
+		//version
+		SetInt(devNameArray->slots+devNameArray->size++, pCurrentHIDDevice->version);
+		
+		//serial
+		devstring = newPyrString(g->gc, pCurrentHIDDevice->serial, 0, true);
+		SetObject(devNameArray->slots+devNameArray->size++, devstring);
+		g->gc->GCWrite(devNameArray, (PyrObject*) devstring);
 		
 		SetObject(allDevsArray->slots+allDevsArray->size++, devNameArray);
 		g->gc->GCWrite(allDevsArray, (PyrObject*) devNameArray);
@@ -312,9 +331,9 @@ int prHIDSetValue(VMGlobals *g, int numArgsPushed)
 		};
 		SInt32 value = HIDSetElementValue (pCurrentHIDDevice, pCurrentHIDElement, &event);
 		 // if it's not a button and it's not a hatswitch then calibrate
-		if(( pCurrentHIDElement->type != kIOHIDElementTypeInput_Button ) &&
-			( pCurrentHIDElement->usagePage == 0x01 && pCurrentHIDElement->usage != kHIDUsage_GD_Hatswitch)) 
-			value = HIDCalibrateValue ( value, pCurrentHIDElement );
+	//	if(( pCurrentHIDElement->type != kIOHIDElementTypeInput_Button ) &&
+	//		( pCurrentHIDElement->usagePage == 0x01 && pCurrentHIDElement->usage != kHIDUsage_GD_Hatswitch)) 
+	//		value = HIDCalibrateValue ( value, pCurrentHIDElement );
 		SetInt(a, value);
 	}
 	else SetNil(a);
@@ -351,6 +370,22 @@ void PushQueueEvents_RawValue (){
 			g->canCallOS = false; // cannot call the OS
 			pthread_mutex_unlock (&gLangMutex); 
 		}
+		
+	/* FIXME: this does not seem to be working	
+		if ( !HIDIsValidDevice(pCurrentHIDDevice) )
+		{ // readError
+		 post("HID: read Error\n");
+			int locID = pCurrentHIDDevice->locID;
+			VMGlobals *g = gMainVMGlobals;
+			pthread_mutex_lock (&gLangMutex); 
+			g->canCallOS = false; // cannot call the OS
+			++g->sp; SetObject(g->sp, s_hid->u.classobj); // Set the class HIDService
+			++g->sp;SetInt(g->sp, locID); 
+			runInterpreter(g, s_readError, 2);
+			g->canCallOS = false; // cannot call the OS
+			pthread_mutex_unlock (&gLangMutex); 
+		}
+		*/
 	pCurrentHIDDevice = HIDGetNextDevice(pCurrentHIDDevice);
 	}
 }
@@ -396,6 +431,20 @@ void PushQueueEvents_CalibratedValue (){
 			pthread_mutex_unlock (&gLangMutex); 
 			}
 		}
+	/* FIXME: this does not seem to be working!
+		if ( !HIDIsValidDevice(pCurrentHIDDevice) )
+		{ // readError
+		 post("HID: read Error\n");
+			int locID = pCurrentHIDDevice->locID;
+			VMGlobals *g = gMainVMGlobals;
+			pthread_mutex_lock (&gLangMutex); 
+			g->canCallOS = false; // cannot call the OS
+			++g->sp; SetObject(g->sp, s_hid->u.classobj); // Set the class HIDService
+			++g->sp;SetInt(g->sp, locID); 
+			runInterpreter(g, s_readError, 2);
+			g->canCallOS = false; // cannot call the OS
+			pthread_mutex_unlock (&gLangMutex); 
+		}*/
 	pCurrentHIDDevice = HIDGetNextDevice(pCurrentHIDDevice);
 	}
 }
@@ -561,7 +610,8 @@ void initHIDPrimitives()
 	releaseHIDDevices();
 	
 	s_hid = getsym("HIDDeviceService");
-	s_hidAction = getsym("hidAction");
+	s_hidAction = getsym("prHidAction");
+	s_readError = getsym("prReadError");
 
 	base = nextPrimitiveIndex();
 	index = 0;
