@@ -2,6 +2,7 @@
 # FILE:         SConstruct
 # CONTENTS:     scons build script for SuperCollider
 # AUTHOR:       sk AT k-hornz DOT de
+# modifications: nescivi AT gmail DOT com
 # ======================================================================
 
 # ======================================================================
@@ -270,9 +271,11 @@ opts.AddOptions(
     BoolOption('RENDEZVOUS',
                'Enable Zeroconf/Rendezvous.', 1),
     BoolOption('SCEL',
-               'Enable the SCEL user interface', 1),
+               'Enable the SCEL user interface; NOTE for the HTML help system you need emacs-w3m', 1),
     BoolOption('SSE',
                'Build with SSE support', 1),
+    BoolOption('CROSSCOMPILE',
+               'Crosscompile for another platform (does not do SSE support check)', 0),
     BoolOption('TERMINAL_CLIENT',
 	       'Build with terminal client interface', 1),
     PackageOption('X11',
@@ -435,7 +438,20 @@ if env['SSE']:
 	CCFLAGS = ['-msse', '-mfpmath=sse'],
 	CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
     sseConf = Configure(libraries['sse'])
-    features['sse'] = sseConf.CheckCHeader('xmmintrin.h')
+    hasSSEHeader = sseConf.CheckCHeader('xmmintrin.h')
+    if env['CROSSCOMPILE']:
+	build_host_supports_sse = True
+	print 'NOTICE: cross compiling for another platform: assuming SSE support'
+    else:
+        build_host_supports_sse = False
+        flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
+        x86_flags = flag_line.split (": ")[1:][0].split ()
+        if "sse" in x86_flags:
+           build_host_supports_sse = True
+    	   print 'NOTICE: CPU has SSE support'
+        else:
+	   print 'NOTICE: CPU does not have SSE support'
+    features['sse'] = hasSSEHeader and build_host_supports_sse
     sseConf.Finish()
 else:
     features['sse'] = False
@@ -512,6 +528,7 @@ print ' PREFIX:                  %s' % env['PREFIX']
 print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
 print ' SSE:                     %s' % yesorno(features['sse'])
+print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
 print ' TERMINAL_CLIENT:         %s' % yesorno(env['TERMINAL_CLIENT'])
 print ' X11:                     %s' % yesorno(features['x11'])
 print '------------------------------------------------------------------------'

@@ -19,7 +19,7 @@
   (require 'cl)
   (require 'font-lock))
 
-(require 'w3m)
+;; (require 'w3m) ;; not needed during compilation
 (require 'sclang-util)
 (require 'sclang-interp)
 (require 'sclang-language)
