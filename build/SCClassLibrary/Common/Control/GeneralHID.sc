@@ -95,6 +95,7 @@ GeneralHIDDevice{
 		^device.info;
 	}
 	debug_{ |onoff|
+		device.class.debug_( onoff );
 		slots.do{ |sl|
 			sl.do{ |slt| slt.debug_( onoff ) } };
 	}
@@ -124,7 +125,8 @@ GeneralHIDSlot{
 			0x0014 -> "Rep",
 			0x0015 -> "Force Feedback",
 			0x0016 -> "Power",
-			0x0017 -> "Force Feedback Status"
+			0x0017 -> "Force Feedback Status",
+			0x0FFF -> "Linear"
 		]);
 	}
 

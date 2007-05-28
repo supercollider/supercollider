@@ -2,6 +2,7 @@
 
 GLID{
 	classvar extraClasses;
+	classvar <debug = false;
 	var <device;
 
 	*initClass{
@@ -78,6 +79,10 @@ GLID{
 
 	*eventLoopIsRunning{
 		^LID.eventLoopIsRunning;
+	}
+
+	*debug_{ |onoff|
+		debug = onoff;
 	}
 
 	*open { arg dev;
