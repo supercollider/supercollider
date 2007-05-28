@@ -68,8 +68,12 @@ C-h m
 a window with key bindings in sclang-mode will pop up.
 
 C-x C-h lets you search for a help file
-C-M-h opens the Help browser (if no Help file has been opened, 
-the default Help file will be opened)
+
+C-M-h opens the Help browser (if no Help file has been opened, the default Help file will be opened)
+
+E copies the buffer, puts it in text mode and sclang-minor-mode, to enable you to edit the code parts to try out variations of the provided code in the help file. With C-M-h you can then return to the Help browser and browse further from the Help file.
+
+C-c C-e allows you to edit the source of the HTML file, for example if you want to improve it and commit it to the repository.
 
 To enable moving around in the help file with arrow keys add the following
 in your ~/.emacs:
