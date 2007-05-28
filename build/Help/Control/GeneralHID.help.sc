@@ -15,7 +15,7 @@ Get the device list (not working currently):
 d = GeneralHID.deviceList;
 this works however:
 d = GeneralHID.buildDeviceList;
-
+d
 Post the devices found:
 GeneralHID.postDevices;
 
@@ -30,15 +30,64 @@ GeneralHID.stopEventLoop;
 
 Check status of eventloop:
 GeneralHID.eventLoopIsRunning;
-LID.eventLoopIsRunning;
 
-d.at(1)
 
-// open a device:
-a = GeneralHID.open( d[0] );
-d[0]
+Open a device:
+a = GeneralHID.open( d[1] );
+
+Get the device info:
+a.info;
+
+Check whether device is open:
+a.isOpen;
+
+A dictionary with all slots:
+a.slots;
+
+See if data is coming in:
+a.debug_( true );
+
+Turn it off again:
+a.debug_( false );
+
+(debugging can be turned on for each slot individually)
+
+a.caps;
+
 // close the device:
 a.close;
 
-a.device.info
-a.device.isOpen
+
+a.device.slots
+b = 
+(
+b = IdentityDictionary.new;
+a.device.slots.keysValuesDo{ |key,value,i|
+	(""++i+"key"+key+"value"+value).postcs;
+	b[key] = IdentityDictionary.new;
+	value.keysValuesDo{ |key2,value2,i2|
+		b[key][key2] = GeneralHIDSlot.new( key, key2, a.device, value2 );
+	};
+};a.device.slotsa.device.slotsa.device.sa.device.slots
+b = 
+(
+b = IdentityDictionary.new;lots
+b = 
+(
+b = IdentityDictionary.new;
+b = 
+(
+b = IdentityDictionary.new;
+b = 
+(
+b = IdentityDictionary.new;
+)
+
+(
+b.keysValuesDo{ |key,value,i|
+	(""++i+"key"+key).postln;
+	value.keysValuesDo{ |key2,value2,i2|
+		value2.asString.postln;
+	};
+}
+)

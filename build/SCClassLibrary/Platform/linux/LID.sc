@@ -31,7 +31,7 @@ LIDAbsInfo {
 LID {
 	var dataPtr, <path, <info, <caps, <spec, <slots, <isGrabbed=false, <>action;
 	var <>closeAction;
-	classvar all, eventTypes, <>specs, <>deviceRoot = "/dev/input", <deviceList;
+	classvar all, eventTypes, <>specs, <>deviceRoot = "/dev/input", deviceList;
 	classvar < eventLoopIsRunning = true;
 	
 	*initClass {
@@ -76,6 +76,10 @@ LID {
 
 	*deviceTable{
 		"WARNING: deviceTable is obsolete, please use deviceList".postln;
+		^deviceList;
+	}
+
+	*deviceList{
 		^deviceList;
 	}
 
@@ -463,14 +467,21 @@ LIDSlot {
 		slotTypeMap = IdentityDictionary.new.addAll([
 			0x0001 -> LIDKeySlot,
 			0x0002 -> LIDRelSlot,
-			0x0003 -> LIDAbsSlot
+			0x0003 -> LIDAbsSlot,
+			0x0011 -> LIDLedSlot
 		]);
 		slotTypeStrings = IdentityDictionary.new.addAll([
-			0x0000 -> "Collection",
+			0x0000 -> "Syn",
 			0x0001 -> "Button",
 			0x0002 -> "Relative",
 			0x0003 -> "Absolute",
-			0x0011 -> "LED"
+			0x0004 -> "MSC",
+			0x0011 -> "LED",
+			0x0012 -> "Sound",
+			0x0014 -> "Rep",
+			0x0015 -> "Force Feedback",
+			0x0016 -> "Power",
+			0x0017 -> "Force Feedback Status"
 		]);
 	}
 	*new { | device, evtType, evtCode |
@@ -514,6 +525,17 @@ LIDRelSlot : LIDSlot {
 	}
 
 	delta { ^delta }
+}
+
+LIDLedSlot : LIDSlot {
+
+	initSpec { }
+	value { ^value }
+	value_ { | v |
+		value = v;
+		device.setLEDState( code, value );
+		action.value(this);
+	}
 }
 
 LIDAbsSlot : LIDSlot {

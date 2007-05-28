@@ -22,72 +22,80 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1">// =====================================================================</p>
-<p class="p1">// LID -- Linux Input Device</p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">//</p>
-<p class="p1">// This class provides a way to access devices in the linux input</p>
-<p class="p1">// layer, which supports many input devices (mouse, keyboard,</p>
-<p class="p1">// joystick, gamepad, tablet) and busses (serial, PS/2, USB).</p>
+<p class="p1">
+=====================================================================<br>
+LID -- Linux Input Device<br>
+=====================================================================</p>
+This class provides a way to access devices in the linux input<br>
+layer, which supports many input devices (mouse, keyboard,<br>
+joystick, gamepad, tablet) and busses (serial, PS/2, USB).</p>
+<p class="p1">
+=====================================================================<br>
+Opening a device<br>
+=====================================================================</p>
+<p class="p1">
+Input devices are accessed through device nodes, typically<br>
+/dev/input/event[0-9]. When using a userspace daemon like udev,<br>
+meaningful names can be assigned to devices.</p>
+
+<p class="p1">raw device name:</p>
+<p class="p3">
+<span class="s1">d = </span>
+<span class="s2">LID</span><span class="s1">(</span>"/dev/input/event4"<span class="s1">);</span></p>
 <p class="p2"><br></p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">// Opening a device</p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">//</p>
-<p class="p1">// Input devices are accessed through device nodes, typically</p>
-<p class="p1">// /dev/input/event[0-9]. When using a userspace daemon like udev,</p>
-<p class="p1">// meaningful names can be assigned to devices.</p>
-<p class="p2"><br></p>
-<p class="p1">// raw device name</p>
-<p class="p3"><span class="s1">d = </span><span class="s2">LID</span><span class="s1">(</span>"/dev/input/event4"<span class="s1">);</span></p>
-<p class="p2"><br></p>
-<p class="p1">// symbolic device name</p>
+
+<p class="p1">symbolic device name</p>
 <p class="p3"><span class="s1">d = </span><span class="s2">LID</span><span class="s1">(</span>"/dev/input/trackball"<span class="s1">);</span></p>
 <p class="p2"><br></p>
-<p class="p1">// device name relative to LID.deviceRoot</p>
+
+<p class="p1">device name relative to LID.deviceRoot</p>
 <p class="p3"><span class="s1">d = </span><span class="s2">LID</span><span class="s1">(</span>"gamepad"<span class="s1">);</span></p>
 <p class="p2"><br></p>
-<p class="p1">// build a table of the available devices:</p>
+<p class="p1">build a list of the available devices:</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s2">LID</span>.buildDeviceTable</p>
+<p class="p4"><span class="s2">LID</span>.buildDeviceList</p>
 <p class="p2"><br></p>
-<p class="p1">// buildDeviceTable builds a table of the devices found in LID.deviceRoot+"/event",</p>
-<p class="p1">// trying to open all that it finds, looking up its name and closing them again.</p>
-<p class="p1">// the results is returned and can later be accessed by LID.deviceTable.</p>
-<p class="p1">// you can query another name than "/event" by passing an argument.</p>
-<p class="p1">// (the search will be: LID.deviceRoot++"/"++name++"*")</p>
+<p class="p1">
+buildDeviceList builds a table of the devices found in LID.deviceRoot+"/event",
+trying to open all that it finds, looking up its name and closing them again.
+The result is returned and can later be accessed by LID.deviceList.</p>
+<p class="p1">
+You can query another name than "/event" by passing an argument. (the search will be: LID.deviceRoot++"/"++name++"*")</p>
+
+<p class="p4"><span class="s2">LID</span>.buildDeviceList( <span class="s3">"mouse"</span> );</p>
+<p class="p1">Note: this is likely to give the info that the devices could not be opened, as "mouse"  uses another interface (you can of course access mice via the "event" interface)
+</p>
+<p class="p1">
+=====================================================================<br>
+Querying device information<br>
+=====================================================================</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s2">LID</span>.buildDeviceTable( <span class="s3">"mouse"</span> );</p>
+<p class="p4">
+d.info;<br>
+d.info.name;<br>
+d.info.vendor.asHexString(4);<br>
+d.info.product.asHexString(4);<br>
+</p>
+<p class="p1">
+=====================================================================<br>
+Querying device capabilities<br>
+=====================================================================</p>
+
+<p class="p1">
+Device capabilities are reported as event type and event code mappings. Event type and event code constants can be found in /usr/include/linux/input.h</p>
 <p class="p2"><br></p>
-<p class="p1">// is likely to give the info that the devices could not be opened, as "mouse"</p>
-<p class="p1">// uses another interface (you can of course access mice via the "event" interface)</p>
+<p class="p4">
+d.caps;<br>
+d.dumpCaps;</p>
 <p class="p2"><br></p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">// Querying device information</p>
-<p class="p1">// =====================================================================</p>
-<p class="p2"><br></p>
-<p class="p4">d.info;</p>
-<p class="p4">d.info.name;</p>
-<p class="p4">d.info.vendor.asHexString(4);</p>
-<p class="p4">d.info.product.asHexString(4);</p>
-<p class="p2"><br></p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">// Querying device capabilities</p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">//</p>
-<p class="p1">// Device capabilities are reported as event type and event code</p>
-<p class="p1">// mappings. Event type and event code constants can be found in</p>
-<p class="p1">// /usr/include/linux/input.h</p>
-<p class="p2"><br></p>
-<p class="p4">d.caps;</p>
-<p class="p4">d.dumpCaps;</p>
-<p class="p2"><br></p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">// Event actions (raw events)</p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">//</p>
-<p class="p1">// The device's 'action' instance variable can be used for event</p>
-<p class="p1">// notifications. it is passed the event type, code and current value.</p>
+<p class="p1">
+=====================================================================<br>
+Event actions (raw events)<br>
+=====================================================================<br>
+
+<p class="p1">
+The device's 'action' instance variable can be used for event notifications. it is passed the event type, code and current value.</p>
+
 <p class="p2"><br></p>
 <p class="p4">(</p>
 <p class="p5"><span class="s1">d.action = { </span>| evtType, evtCode, evtValue |</p>
@@ -97,21 +105,36 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">d.action = <span class="s2">nil</span>;</p>
 <p class="p2"><br></p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">// Event actions (raw slot events)</p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">//</p>
-<p class="p1">// When 'action' is nil, actions can be bound to specific events.</p>
+
+<p class="p1">
+If a device is detached LID will detect this, and close the device. It will execute a closeAction, which can be defined by the user:
+</p>
+<p class="p2"><br></p>
+<p class="p4">d.closeAction = <span class="s2">{ "device was detached".postln; }</span>;</p>
+<p class="p2"><br></p>
+
+<p class="p1">
+=====================================================================<br>
+Event actions (raw slot events)<br>
+=====================================================================</p>
+<p class="p1">
+When 'action' is nil, actions can be bound to specific events.</p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
 <p class="p4">d.slot(0x0001, 0x0120).action = { <span class="s2">| slot |</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>[slot.type.asHexString(4), slot.code.asHexString(4), slot.rawValue].postln;</p>
 <p class="p4">}</p>
 <p class="p4">)</p>
+<p class="p2">Relative slots can have deltaActions:</p>
+<p class="p4">d.slot(0x0002, 0x0001).deltaAction = { <span class="s2">| slot |</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>[slot.type.asHexString(4), slot.code.asHexString(4), slot.delta].postln;</p>
+<p class="p4">}</p>
+<p class="p4">)</p>
 <p class="p2"><br></p>
-<p class="p1">// =====================================================================</p>
-<p class="p1">// Device specs</p>
-<p class="p1">// =====================================================================</p>
+<p class="p1">
+=====================================================================<br>
+Device specs<br>
+=====================================================================</p>
 <p class="p1">//</p>
 <p class="p1">// Device specs are mappings between event codes and symbolic control</p>
 <p class="p1">// names. New specs can be added to LID.specs via LID&gt;&gt;*register.</p>

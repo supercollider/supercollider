@@ -29,7 +29,6 @@ GLID{
 		^LID.buildDeviceList;
 	}
 
-	//FIXME: not working
 	*deviceList{
 		^LID.deviceList;
 	}
@@ -38,8 +37,7 @@ GLID{
 		LID.deviceList.do({arg dev;
 			//			"".postln;
 			if ( dev[1].isKindOf( LIDInfo ), {
-				
-				[dev[0], dev[1].name, dev[1].product, dev[1].vendor, dev[1].version].postcs;
+				[ dev[1].vendor, dev[1].asString, dev[0]].postcs;
 			},{
 				dev.postcs;
 			});
@@ -51,7 +49,8 @@ GLID{
 			"".postln;
 			if ( dev[1].isKindOf( LIDInfo ), {
 				
-				[dev[0], dev[1].name, dev[1].product, dev[1].vendor, dev[1].version].postcs;
+				[ dev[1].vendor, dev[1].asString, dev[0]].postcs;
+				//[dev[0], dev[1].name, dev[1].product, dev[1].vendor, dev[1].version].postcs;
 				dev[2].keysValuesDo{ |key,slotgroup,i|
 					("\t"++key+LIDSlot.slotTypeStrings[key]).postln;
 					slotgroup.do{ |slot|
@@ -88,13 +87,28 @@ GLID{
 	init{ |dev|
 		var mydev;
 		mydev = dev[0];
-		mydev.postln;
+		//mydev.postln;
 		if ( mydev[1].isKindOf( LIDInfo ),
 				{ 
 					device = LID.new( mydev[0] );
+					^GeneralHIDDevice.new( this );
 				},{
 					"not a valid device or could not open device".warn;
+					^nil;
 				});
+	}
+
+	getSlots{
+		var mySlots = IdentityDictionary.new;
+		var devSlots = device.slots;
+		devSlots.keysValuesDo{ |key,value,i|
+			//		(""++i+"key"+key+"value"+value).postcs;
+			mySlots[key] = IdentityDictionary.new;
+			value.keysValuesDo{ |key2,value2,i2|
+				mySlots[key][key2] = GeneralHIDSlot.new( key, key2, device, value2 );
+			};
+		};
+		^mySlots;
 	}
 
 	close{
@@ -110,6 +124,16 @@ GLID{
 				^device.isOpen;
 			},{
 				^false;
+			}
+		);
+	}
+
+	info{
+		if ( device.notNil,
+			{
+				^device.info;
+			},{
+				^nil;
 			}
 		);
 	}
