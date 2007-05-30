@@ -444,11 +444,12 @@ if env['SSE']:
 	print 'NOTICE: cross compiling for another platform: assuming SSE support'
     else:
         build_host_supports_sse = False
-        flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
-        x86_flags = flag_line.split (": ")[1:][0].split ()
-        if "sse" in x86_flags:
-           build_host_supports_sse = True
-    	   print 'NOTICE: CPU has SSE support'
+	if CPU != 'ppc':
+        	flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
+        	x86_flags = flag_line.split (": ")[1:][0].split ()
+        	if "sse" in x86_flags:
+           		build_host_supports_sse = True
+    	   		print 'NOTICE: CPU has SSE support'
         else:
 	   print 'NOTICE: CPU does not have SSE support'
     features['sse'] = hasSSEHeader and build_host_supports_sse
