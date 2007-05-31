@@ -18,7 +18,7 @@ Score {
 	}
 	
 	init { arg list;
-		score = list;
+		score = list.copy;
 		this.initTree;
 	}
 	
