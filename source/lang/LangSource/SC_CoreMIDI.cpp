@@ -539,6 +539,7 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
     Byte *data = (Byte *)pk + sizeof(MIDISysexSendRequest);
 
     memcpy(data,packet->b, size);
+	pk->complete = false;
     pk -> destination = dest;
     pk -> data = data;
     pk -> bytesToSend = size;
