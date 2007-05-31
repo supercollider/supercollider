@@ -15,21 +15,26 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA
 
-EmacsDocument : Document
+EmacsDocument
+// : Document
 {
-	classvar documentMap;
+	classvar documentMap, <>current;
+	var <>sceld;
 	var title, path;
+	var dataptr;
 	var <isEdited, <isListener, <envir;
 
 	*initClass {
 		documentMap = IdentityDictionary.new;
 		Class.initClassTree(EmacsInterface);
+		Class.initClassTree(ScelDocument);
 		EmacsInterface
 		.put(\documentNew, { | id, makeEnvir |
 			var doc;
 			if (documentMap.includesKey(id).not) {
-// 				[\documentNew, id, makeEnvir].postln;
+				//				[\documentNew, id, makeEnvir].postln;
 				doc = this.prBasicNew.prInitFromLisp(id);
+				// is this necessary?? when is this the case??
 				if (makeEnvir.notNil) {
 					doc.envir = Environment.new;
 				};
@@ -39,7 +44,7 @@ EmacsDocument : Document
 		.put(\documentClosed, { | id |
 			this.documentDo(id, { | doc |
 // 				[\documentClosed, doc].postln;
-				doc.closed;
+				doc.sceld.closed;
 			});
 			nil
 		})
@@ -96,7 +101,10 @@ EmacsDocument : Document
 		Emacs.sendToLisp(\_documentRename, [this, argName], {
 			completionFunc.value(this);
 		});
-		super.title_(argName);
+	}
+
+	title{
+		^title;
 	}
 
 	background_ {arg color, rangestart= -1, rangesize = 0;
@@ -127,53 +135,60 @@ EmacsDocument : Document
 		Emacs.sendToLisp(\_documentRemoveUndo, this);
 	}
 
-	string {arg rangestart, rangesize = 1;
+	/*	string {arg rangestart, rangesize = 1;
 		^""
+		}*/
+
+	string_{|string|
+		Emacs.sendToLisp(\_documentPutString, [this, string]);
 	}
 	
-	currentLine {
+	/*	currentLine {
 		^""
-	}
+		}*/
 	
 	// environment support
-	envir_ { | environment |
+	/*	envir_ { | environment |
 		envir = environment;
 		if (this === current) {
 			envir.push;
 		}
 	}
+	*/
 
 	didBecomeKey {
 		if (envir.notNil) {
 			envir.push;
 		};
-		super.didBecomeKey;
+		current = this;
 	}
-
+	
 	didResignKey {
 		if (envir === currentEnvironment) {
 			envir.pop;
 		};
-		super.didBecomeKey;
+		if ( current === this, { current = nil } );
+		//super.didResignKey;
 	}	
+	
 
 	// PRIVATE
 	*prNewFromPath { | argPath, selectionStart, selectionLength, completionFunc |
-		argPath = this.standardizePath(argPath);
+		argPath = Document.standardizePath(argPath);
 		Emacs.sendToLisp(
 			\_documentOpen,
 			[argPath, selectionStart + 1, selectionLength],
 			{ | id |
 				if (id.isNil) {
-					"Couldn't create document".warn;
+			 		"Couldn't create document".warn;
 				}{
 					this.documentDo(id, completionFunc);
 				}
 			});
-	}
+	} 
 	*prNewFromString { | name, str, makeListener, completionFunc |
 		Emacs.sendToLisp(
-			\_documentNew,
+		 	\_documentNew,
 			[name, str, makeListener],
 			{ | id |
 				if (id.isNil) {
@@ -193,12 +208,15 @@ EmacsDocument : Document
 		}
 	}
 	prAdd {
-		allDocuments = allDocuments.add(this);
+		ScelDocument.addToList( this );
+		//		allDocuments = allDocuments.add(this);
 		documentMap.put(dataptr, this);
-		initAction.value(this);
+		//initAction.value(this);
 	}
+
 	prRemove {
-		allDocuments.remove(this);
+		ScelDocument.removeFromList( this );
+		//	allDocuments.remove(this);
 		documentMap.removeAt(dataptr);
 		dataptr = nil;
 	}
@@ -209,26 +227,32 @@ EmacsDocument : Document
 	prSetTitle { | argTitle |
 		title = argTitle;
 	}
+	
+	
 	prGetFileName {
 		^path
 	}
 	prSetFileName { | argPath |
 		path = argPath;
 		if (path.notNil) {
-			path = this.class.standardizePath(path);
+			path = Document.standardizePath(path);
 		}
 	}
+	
 	prSetIsListener { | flag |
 		isListener = flag.notNil;
 	}
 	prSetEditable { | flag |
-		editable = flag.notNil;
+		//		sceld.editable = flag.notNil;
 	}
 	prSetEdited { | flag |
 		isEdited = flag.notNil;
 	}
 
+	*prBasicNew { ^super.new }
+
 	// unimplemented methods
+/*
 	prGetBounds { | bounds | ^bounds }
 	prSetBounds { }
 	setFont { }
@@ -268,7 +292,8 @@ EmacsDocument : Document
 	}
 	prGetLastIndex {
 		^this.shouldNotImplement(thisMethod)
-	}
+		}
+*/
 }
 
 // EOF

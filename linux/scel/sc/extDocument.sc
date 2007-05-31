@@ -17,16 +17,23 @@
 
 + Document {
 	// Document class for Emacs interface.
-	// Delegates to EmacsDocument.
+	//	// Delegates to EmacsDocument.
+	// Delegates to ScelDocument
 
-	*initClass { }
-	*open { | path, selectionStart = 0, selectionLength = 0, completionFunc |
-		EmacsDocument.prNewFromPath(path, selectionStart, selectionLength, completionFunc);
-		^nil
+	*initClass {
+		//		allDocuments = Array.new;
+		//		allDocuments.dump;
 	}
-	*new { | title = "Untitled", string = "", makeListener = false,  completionFunc |
-		EmacsDocument.prNewFromString(title, string, makeListener, completionFunc);
-		^nil
+	*open { | path, selectionStart = 0, selectionLength = 0 | //, completionFunc |
+		//		EmacsDocument.prNewFromPath(path, selectionStart, selectionLength, completionFunc);
+		//		^nil
+		^ScelDocument.open( path, selectionStart, selectionLength );
+	}
+	*new { | title = "Untitled", string = "", makeListener = false | //,  completionFunc |
+		//		EmacsDocument.prNewFromString(title, string, makeListener, completionFunc);
+		//		^nil
+		//		"Document.new".postln;
+		^ScelDocument.new( title, string, makeListener );
 	}
 	*listener { ^allDocuments.detectMsg(\isListener) }
 

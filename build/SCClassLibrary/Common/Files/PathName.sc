@@ -220,13 +220,35 @@ PathName {
 	isCVS {
 		^this.fileName == "CVS";
 	}
+	foldersWithoutSVN { arg path;
+		^this.folders(path).reject({ arg item; item.isSVN })
+	}
+	isSVN {
+		^this.fileName == ".svn";
+	}
 	filesDo { arg func;
+		this.files.do(func);
+		this.foldersWithoutSVN.do { arg pathname;
+			pathname.filesDo(func)
+		}
+	}
+	filesDoNoCVS { arg func;
 		this.files.do(func);
 		this.foldersWithoutCVS.do { arg pathname;
 			pathname.filesDo(func)
 		}
 	}
 	streamTree { arg str, tabs=0;
+		str << this.fullPath << Char.nl;
+		this.files.do({ arg item; 
+			tabs.do({ str << Char.tab });
+			str << item.fileNameWithoutExtension  << Char.nl
+		});
+		this.foldersWithoutSVN.do({ arg item; 
+			item.streamTree(str, tabs + 1);
+		});
+	}
+	streamTreeNoCVS { arg str, tabs=0;
 		str << this.fullPath << Char.nl;
 		this.files.do({ arg item; 
 			tabs.do({ str << Char.tab });
@@ -256,11 +278,22 @@ PathName {
 
 }
 
-Help : PathName {
+// Help : PathName
+Help {
 
 	*all {
-		^this.new("Help/").dumpToDoc("all-helpfiles");
-	}
-
+		//		^this.new("Help/").dumpToDoc("all-helpfiles");
+		var doc;
+		var str = CollStream.new;
+		doc = Document.new("all-helpfiles");
+		[ 
+			Platform.classLibraryDir,
+			Platform.systemAppSupportDir,
+			Platform.userAppSupportDir,
+			Platform.systemExtensionDir,
+			Platform.userExtensionDir
+		].do{ |it| PathName.new( it ).foldersWithoutSVN.select{ |it| it.fullPath.contains("Help") }.do{ |help| help.streamTree(str) } };
+		doc.string = str.collection;
+	}	
 }
 

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
-<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="generator" content="Bluefish 1.0.7">
 <meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
@@ -13,77 +13,262 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1">All SuperCollider shortcuts across three supported platforms -</p>
-<p class="p1">- adc, p.plessas, 3/2007 --</p>
+<p class="p1">All SuperCollider shortcuts across three supported platforms - and two editors for Linux (emacs-scel and sced)</p>
+<p class="p1">- adc, p.plessas, 3/2007 - nescivi, 5/2007-</p>
 <p class="p2"><br></p>
-<p class="p1">Functions<span class="Apple-converted-space">                      </span>OSX<span class="Apple-converted-space">          </span>Win <span class="Apple-converted-space">        </span>emacs</p>
-<p class="p2"><br></p>
-<p class="p1">Files:<span class="Apple-converted-space"> </span></p>
-<p class="p1">Open text document <span class="Apple-converted-space">            </span>cmd-o<span class="Apple-converted-space">        </span>ctl-o <span class="Apple-converted-space">      </span>C-x C-f <span class="Apple-converted-space"> </span></p>
-<p class="p1">New text document<span class="Apple-converted-space">              </span>cmd-n<span class="Apple-converted-space">        </span>ctl-n <span class="Apple-converted-space">      </span>(open non-existent file w. new name) <span class="Apple-converted-space"> </span></p>
-<p class="p1">Close text document<span class="Apple-converted-space">            </span>cmd-w<span class="Apple-converted-space">        </span>ctl-w <span class="Apple-converted-space">      </span>C-x k</p>
-<p class="p1">Save text document <span class="Apple-converted-space">            </span>cmd-s<span class="Apple-converted-space">        </span>ctl-s<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>C-x C-s</p>
-<p class="p1">Save text document as<span class="Apple-converted-space">          </span>cmd-sh-s <span class="Apple-converted-space">    </span>ctl-sh-s<span class="Apple-converted-space">    </span>C-x C-w<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>HTML doc window -&gt; code win <span class="Apple-converted-space">              </span>Ctl-t</p>
+<p class="p1">Functions
+<span class="Apple-tab-span">                </span>OSX
+<span class="Apple-tab-span">          </span>Win
+<span class="Apple-tab-span">            </span>sced
+<span class="Apple-tab-span">            </span>emacs</p>
+<p class="p2"><br></p>  
+<p class="p1">Files:</p>
+<p class="p1">Open text document 
+<span class="Apple-tab-span">    </span>cmd-o
+<span class="Apple-tab-span">     </span>ctl-o
+<span class="Apple-tab-span">     </span>ctl-o
+<span class="Apple-tab-span">     </span>C-x C-f</p>
+<p class="p1">New text document
+<span class="Apple-tab-span">     </span>cmd-n
+<span class="Apple-tab-span">     </span>ctl-n
+<span class="Apple-tab-span">     </span>ctl-n
+<span class="Apple-tab-span">     </span>(open non-existent file w. new name) </p>
+<p class="p1">Close text document
+<span class="Apple-tab-span">  </span>cmd-w
+<span class="Apple-tab-span">     </span>ctl-w
+<span class="Apple-tab-span">  </span>ctl-w
+<span class="Apple-tab-span">     </span>C-x k</p>
+<p class="p1">Save text document 
+<span class="Apple-tab-span">   </span>cmd-s
+<span class="Apple-tab-span">     </span>ctl-s
+<span class="Apple-tab-span">  </span>ctl-s
+<span class="Apple-tab-span">        </span>C-x C-s
+</p>
+<p class="p1">Save text document as
+<span class="Apple-tab-span"></span>cmd-sh-s
+<span class="Apple-tab-span">     </span>ctl-sh-s
+<span class="Apple-tab-span">   </span>ctl-sh-s
+<span class="Apple-tab-span">   </span>C-x C-w</p>
+<p class="p1">
+HTML doc window -&gt; code win 
+<span class="Apple-tab-span">     </span> 
+<span class="Apple-tab-span">        </span>Ctl-t 
+<span class="Apple-tab-span">   </span> 
+<span class="Apple-tab-span">        </span>M-x sclang-minor-mode / M-x sclang-mode</p>
 <p class="p1">-----------------</p>
 <p class="p1">Text Editing:</p>
-<p class="p1">Undo <span class="Apple-converted-space">                          </span>cmd-z<span class="Apple-converted-space">        </span>ctl-z <span class="Apple-converted-space">      </span>C-x u</p>
-<p class="p1">Redo <span class="Apple-converted-space">                          </span>cmd-sh-Z <span class="Apple-converted-space">    </span>ctl-y</p>
-<p class="p1">Copy <span class="Apple-converted-space">                          </span>cmd-c<span class="Apple-converted-space">        </span>ctl-c <span class="Apple-converted-space">      </span>M-w</p>
-<p class="p1">Paste<span class="Apple-converted-space">                          </span>cmd-v<span class="Apple-converted-space">        </span>ctl-v <span class="Apple-converted-space">      </span>C-y</p>
-<p class="p1">Cut<span class="Apple-converted-space">                            </span>cmd-x<span class="Apple-converted-space">        </span>ctl-x <span class="Apple-converted-space">      </span>C-w</p>
-<p class="p1">select all <span class="Apple-converted-space">                    </span>cmd-a<span class="Apple-converted-space">        </span>ctl-a</p>
-<p class="p1">goto line ...<span class="Apple-converted-space">                  </span>cmd-,</p>
-<p class="p1">Find ... <span class="Apple-converted-space">                      </span>cmd-f<span class="Apple-converted-space">                    </span>C-s</p>
-<p class="p1">Find next<span class="Apple-converted-space">                      </span>cmd-g<span class="Apple-converted-space">                    </span>C-s</p>
-<p class="p1">replace and find next<span class="Apple-converted-space">          </span>cmd-l<span class="Apple-converted-space">                    </span>M-%</p>
-<p class="p1">find previous<span class="Apple-converted-space">                  </span>cmd-d</p>
-<p class="p1">replace<span class="Apple-converted-space">                        </span>cmd-=</p>
+<p class="p1">Undo
+<span class="Apple-tab-span">             </span>cmd-z
+<span class="Apple-tab-span">    </span>ctl-z
+<span class="Apple-tab-span">    </span>ctl-z
+<span class="Apple-tab-span">    </span>C-x u</p>
+<p class="p1">Redo 
+<span class="Apple-tab-span">    </span>cmd-sh-Z
+<span class="Apple-tab-span">    </span>ctl-y
+<span class="Apple-tab-span">    </span>ctl-sh-z
+</p>
+<p class="p1">Copy
+<span class="Apple-tab-span">    </span>cmd-c
+<span class="Apple-tab-span">    </span>ctl-c
+<span class="Apple-tab-span">    </span>ctl-c  
+<span class="Apple-tab-span">    </span>M-w
+</p>
+<p class="p1">Paste
+<span class="Apple-tab-span">    </span>cmd-v
+<span class="Apple-tab-span">    </span>ctl-v
+<span class="Apple-tab-span">    </span>ctl-v
+<span class="Apple-tab-span">    </span>C-y
+</p>
+<p class="p1">Cut
+<span class="Apple-tab-span">    </span>cmd-x
+<span class="Apple-tab-span">    </span>ctl-x
+<span class="Apple-tab-span">    </span>ctl-x  
+<span class="Apple-tab-span">    </span>C-w
+</p>
+<p class="p1">select all
+<span class="Apple-tab-span">    </span>cmd-a
+<span class="Apple-tab-span">    </span>ctl-a
+<span class="Apple-tab-span">    </span>ctl-a
+<span class="Apple-tab-span">    </span>C-x a
+</p>
+<p class="p1">select block
+<span class="Apple-tab-span">                    </span>
+<span class="Apple-tab-span">        </span>
+<span class="Apple-tab-span">        </span>ctl-b
+<span class="Apple-tab-span">        </span>
+</p>
+<p class="p1">goto line ...
+<span class="Apple-tab-span">                  </span>cmd-,
+<span class="Apple-tab-span">                  </span>
+<span class="Apple-tab-span">                  </span>ctl-i
+<span class="Apple-tab-span">                  </span>
+</p>
+<p class="p1">Find ...
+<span class="Apple-tab-span">                      </span>cmd-f
+<span class="Apple-tab-span">                      </span>
+<span class="Apple-tab-span">                      </span>ctl-f
+<span class="Apple-tab-span">                    </span>C-s
+</p>
+<p class="p1">Find next
+<span class="Apple-tab-span">                      </span>cmd-g
+<span class="Apple-tab-span">                      </span>
+<span class="Apple-tab-span">                      </span>ctl-g
+<span class="Apple-tab-span">                    </span>C-s
+</p>
+<p class="p1">Find previous
+<span class="Apple-tab-span">                      </span>cmd-d
+<span class="Apple-tab-span">                      </span>
+<span class="Apple-tab-span">                      </span>ctl-sh-g
+<span class="Apple-tab-span">                    </span>
+</p>
+<p class="p1">replace and find next
+<span class="Apple-tab-span">          </span>cmd-l
+<span class="Apple-tab-span">          </span>
+<span class="Apple-tab-span">          </span>
+<span class="Apple-tab-span">                    </span>M-%</p>
+<p class="p1">replace
+<span class="Apple-tab-span">          </span>cmd-=
+</p>
 <p class="p1">-</p>
-<p class="p1">copy text style only <span class="Apple-converted-space">          </span>cmd-alt-c</p>
-<p class="p1">paste text style only<span class="Apple-converted-space">          </span>cmd-alt-v</p>
+
+<p class="p1">copy text style only
+<span class="Apple-tab-span">          </span>cmd-alt-c</p>
+<p class="p1">paste text style only
+<span class="Apple-tab-span">          </span>cmd-alt-v</p>
+
 <p class="p1">-----------------</p>
-<p class="p1">Language-Specific Commands:<span class="Apple-converted-space"> </span></p>
-<p class="p1">Interpret Selection<span class="Apple-converted-space">            </span>enter <span class="Apple-converted-space">      </span>ctl-enter<span class="Apple-converted-space">    </span>C-c C-x</p>
-<p class="p1">Interpret current line <span class="Apple-converted-space">        </span>enter <span class="Apple-converted-space">      </span>ctl-enter<span class="Apple-converted-space">    </span>C-c C-c</p>
-<p class="p1">stop <span class="Apple-converted-space">                          </span>cmd-. <span class="Apple-converted-space">      </span>alt-.<span class="Apple-converted-space">        </span>C-c C-s</p>
-<p class="p1">Run Main-run <span class="Apple-converted-space">                  </span>cmd-r <span class="Apple-converted-space">      </span>alt-r<span class="Apple-converted-space">        </span>C-c C-r</p>
-<p class="p1">recompile library<span class="Apple-converted-space">              </span>cmd-k <span class="Apple-converted-space">      </span>alt-k<span class="Apple-converted-space">        </span>C-c C-l (fails often (3/07))</p>
-<p class="p1">clear post window<span class="Apple-converted-space">              </span>cmd-sh-K<span class="Apple-converted-space">    </span>alt-p<span class="Apple-converted-space">        </span>C-c &lt;</p>
+
+<p class="p1">Language-Specific Commands:
+<span class="Apple-tab-span"> </span></p>
+<p class="p1">Interpret Selection
+<span class="Apple-tab-span">            </span>enter
+<span class="Apple-tab-span">      </span>ctl-enter
+<span class="Apple-tab-span">      </span>ctl-e
+<span class="Apple-tab-span">      </span>C-c C-x / C-c C-c
+</p>
+<p class="p1">Interpret current line
+<span class="Apple-tab-span">        </span>enter
+<span class="Apple-tab-span">      </span>ctl-enter
+<span class="Apple-tab-span">      </span>ctl-e
+<span class="Apple-tab-span">      </span>C-c C-c
+</p>
+<p class="p1">stop
+<span class="Apple-tab-span">                          </span>cmd-.
+<span class="Apple-tab-span">        </span>alt-.
+<span class="Apple-tab-span">        </span>escape
+<span class="Apple-tab-span">        </span>C-c C-s
+</p>
+<p class="p1">Run Main-run 
+<span class="Apple-tab-span">                  </span>cmd-r 
+<span class="Apple-tab-span">      </span>alt-r
+<span class="Apple-tab-span">      </span>
+<span class="Apple-tab-span">      </span>C-c C-r
+</p>
+<p class="p1">recompile library
+<span class="Apple-tab-span">              </span>cmd-k
+<span class="Apple-tab-span">      </span>alt-k
+<span class="Apple-tab-span">      </span>
+<span class="Apple-tab-span">      </span>C-c C-l (fails often (3/07))
+</p>
+<p class="p1">clear post window
+<span class="Apple-tab-span">              </span>cmd-sh-K
+<span class="Apple-tab-span">    </span>alt-p
+<span class="Apple-tab-span">    </span>
+<span class="Apple-tab-span">        </span>C-c &lt;</p>
 <p class="p1">-</p>
-<p class="p1">Open Help File <span class="Apple-converted-space">                </span>cmd-? <span class="Apple-converted-space">      </span>F1 <span class="Apple-converted-space">          </span>C-c C-h</p>
-<p class="p1">Open Class Definition<span class="Apple-converted-space">          </span>cmd-j <span class="Apple-converted-space">      </span>alt-j<span class="Apple-converted-space">        </span>C-c :</p>
-<p class="p1">(look up class file, either <span class="Apple-converted-space">   </span></p>
+<p class="p1">Open Help File 
+<span class="Apple-tab-span">                </span>cmd-? 
+<span class="Apple-tab-span">      </span>F1
+<span class="Apple-tab-span">      </span> 
+<span class="Apple-tab-span">      </span>C-c C-h</p>
+<p class="p1">Open Class Definition
+<span class="Apple-tab-span">          </span>cmd-j 
+<span class="Apple-tab-span">      </span>alt-j
+<span class="Apple-tab-span">      </span>
+<span class="Apple-tab-span">        </span>C-c :</p>
+<p class="p1">(look up class file, either</p>
 <p class="p1">Class name or Class:method)</p>
 <p class="p1">e.g. Object, Object:dump</p>
 <p class="p1">-</p>
-<p class="p1">Implementations of <span class="Apple-converted-space">            </span>cmd-y <span class="Apple-converted-space">      </span>alt-y<span class="Apple-converted-space">        </span>?</p>
-<p class="p1"><span class="Apple-converted-space">  </span>(which objects have code <span class="Apple-converted-space">                </span>(broken in<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>that defines methods,<span class="Apple-converted-space">                    </span>dec06 v)</p>
-<p class="p1"><span class="Apple-converted-space">  </span>e.g. 'play')</p>
+<p class="p1">Implementations of
+<span class="Apple-tab-span">            </span>cmd-y
+<span class="Apple-tab-span">      </span>alt-y
+<span class="Apple-tab-span">      </span>
+<span class="Apple-tab-span">        </span>C-c ;
+</p>
+<p class="p1">
+<span class="Apple-tab-span">  </span>(which objects have code <span class="Apple-tab-span">                </span>(broken in</p>
+<p class="p1">
+<span class="Apple-tab-span">  </span>that defines methods,
+<span class="Apple-tab-span">                    </span>dec06 v)</p>
+<p class="p1">
+<span class="Apple-tab-span">  </span>e.g. 'play')</p>
 <p class="p1">-</p>
-<p class="p1">References to (where in the<span class="Apple-converted-space">    </span>cmd-sh-Y<span class="Apple-converted-space">    </span>alt-sh-Y <span class="Apple-converted-space">    </span>C-c ;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>source files is e.g. the <span class="Apple-converted-space">                </span>(broken in<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>method 'play' used?) <span class="Apple-converted-space">                    </span>dec06 v)</p>
+<p class="p1">References to (where in the<span class="Apple-tab-span">    </span>cmd-sh-Y<span class="Apple-tab-span">    </span>alt-sh-Y <span class="Apple-tab-span">    </span>C-c ;</p>
+<p class="p1"><span class="Apple-tab-span">  </span>source files is e.g. the <span class="Apple-tab-span">                </span>(broken in<span class="Apple-tab-span"> </span></p>
+<p class="p1"><span class="Apple-tab-span">  </span>method 'play' used?) <span class="Apple-tab-span">                    </span>dec06 v)</p>
 <p class="p1">-----------------</p>
-<p class="p1">Formatting:<span class="Apple-converted-space"> </span></p>
-<p class="p1">Syntax Colorise<span class="Apple-converted-space">                </span>cmd-'</p>
-<p class="p1">Balance (find next matched <span class="Apple-converted-space">    </span>cmd-sh-B</p>
-<p class="p1"><span class="Apple-converted-space">  </span>parens/curly braces and<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>select everything enclosed)</p>
+<p class="p1">Formatting:
+<span class="Apple-tab-span"> </span></p>
+<p class="p1">Syntax Colorise
+<span class="Apple-tab-span">                </span>cmd-'
+<span class="Apple-tab-span">                </span>
+<span class="Apple-tab-span">                </span>auto
+<span class="Apple-tab-span">                </span>auto
+</p>
+<p class="p1">Balance (find next matched 
+<span class="Apple-tab-span">    </span>cmd-sh-B
+<span class="Apple-tab-span">                </span>
+<span class="Apple-tab-span">                </span>
+<span class="Apple-tab-span">                </span>
+</p>
+
+<p class="p1">
+<span class="Apple-tab-span">  </span>parens/curly braces and
+<span class="Apple-tab-span"> </span></p>
+<p class="p1">
+<span class="Apple-tab-span">  </span>select everything enclosed)</p>
 <p class="p1">-</p>
-<p class="p1">Comment (add // in front)<span class="Apple-converted-space">      </span>cmd-/</p>
-<p class="p1">Uncomment (remove //s) <span class="Apple-converted-space">        </span>cmd-sh-/</p>
-<p class="p1">Shift left (move selected<span class="Apple-converted-space">      </span>cmd-[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>text by one tab) <span class="Apple-converted-space">       </span></p>
-<p class="p1">Shift right (by one tab) <span class="Apple-converted-space">      </span>cmd-]</p>
-<p class="p1">Insert (): enclose <span class="Apple-converted-space">            </span>cmd-(</p>
-<p class="p1"><span class="Apple-converted-space">  </span>selected text with (txt)</p>
-<p class="p1">Insert []: enclose <span class="Apple-converted-space">            </span>cmd-alt-[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>selected text with [txt]</p>
-<p class="p1">Insert {}: enclose <span class="Apple-converted-space">            </span>cmd-{</p>
-<p class="p1"><span class="Apple-converted-space">  </span>selected text with {txt}</p>
-<p class="p1">Insert /* */: enclose<span class="Apple-converted-space">          </span>cmd-*</p>
-<p class="p1"><span class="Apple-converted-space">  </span>selected text with /*txt*/</p>
+<p class="p1">Comment (add // in front)
+<span class="Apple-tab-span">      </span>cmd-/
+<span class="Apple-tab-span">      </span>
+<span class="Apple-tab-span">      </span>ctl-/
+<span class="Apple-tab-span">      </span>
+</p>
+<p class="p1">Uncomment (remove //s)
+<span class="Apple-tab-span">        </span>cmd-sh-/
+<span class="Apple-tab-span">        </span>
+<span class="Apple-tab-span">        </span>ctl-sh-/
+<span class="Apple-tab-span">        </span>
+</p>
+<p class="p1">Indent / Shift left (move selected
+<span class="Apple-tab-span">      </span>cmd-[
+<span class="Apple-tab-span">      </span>
+<span class="Apple-tab-span">      </span>ctl-t
+<span class="Apple-tab-span">      </span>
+</p>
+<p class="p1">
+<span class="Apple-tab-span">  </span>text by one tab)
+</p>
+<p class="p1">Unindent / Shift right (by one tab)
+<span class="Apple-tab-span">      </span>cmd-]
+<span class="Apple-tab-span">      </span>
+<span class="Apple-tab-span">      </span>ctl-sh-t
+<span class="Apple-tab-span">      </span>
+</p>
+<p class="p1">Insert (): enclose 
+<span class="Apple-tab-span">            </span>cmd-(
+</p>
+<p class="p1"><span class="Apple-tab-span">  </span>selected text with (txt)
+</p>
+<p class="p1">Insert []: enclose 
+<span class="Apple-tab-span">            </span>cmd-alt-[
+</p>
+<p class="p1"><span class="Apple-tab-span">  </span>selected text with [txt]</p>
+<p class="p1">Insert {}: enclose <span class="Apple-tab-span">            </span>cmd-{</p>
+<p class="p1"><span class="Apple-tab-span">  </span>selected text with {txt}</p>
+<p class="p1">Insert /* */: enclose
+<span class="Apple-tab-span">          </span>cmd-*</p>
+<p class="p1"><span class="Apple-tab-span">  </span>selected text with /*txt*/</p>
 </body>
 </html>
