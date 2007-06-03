@@ -69,6 +69,10 @@ struct FoldIndex : public BufUnit
 {
 };
 
+struct IndexInBetween : public BufUnit
+{
+};
+
 struct Shaper : public BufUnit
 {
 	float mOffset;
@@ -273,6 +277,13 @@ void Shaper_Ctor(Shaper *unit);
 void Shaper_next_1(Shaper *unit, int inNumSamples);
 void Shaper_next_k(Shaper *unit, int inNumSamples);
 void Shaper_next_a(Shaper *unit, int inNumSamples);
+
+
+void IndexInBetween_Ctor(IndexInBetween *unit);
+void IndexInBetween_next_1(IndexInBetween *unit, int inNumSamples);
+void IndexInBetween_next_k(IndexInBetween *unit, int inNumSamples);
+void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples);
+
 
 void SigOsc_Ctor(SigOsc *unit);
 void SigOsc_next_1(SigOsc *unit, int inNumSamples);
@@ -862,6 +873,82 @@ void WrapIndex_next_a(WrapIndex *unit, int inNumSamples)
 	);
 
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+
+float IndexInBetween_FindIndex(float* table, float in, int32 maxindex)
+{
+	for(int32 i = 0; i <= maxindex; i++) {
+		if(table[i] > in) {
+			if(i == 0) { 
+				return 0.f; 
+			} else {
+				return ((in - table[i - 1]) / (table[i] - table[i - 1]) + i - 1);
+			}
+		}
+	}
+	return (float)maxindex;
+}
+
+void IndexInBetween_Ctor(IndexInBetween *unit)
+{
+	unit->m_fbufnum = -1e9f;
+	if (BUFLENGTH == 1) {
+		SETCALC(IndexInBetween_next_1);
+	} else if (INRATE(0) == calc_FullRate) {
+		SETCALC(IndexInBetween_next_a);
+	} else {
+		SETCALC(IndexInBetween_next_k);
+	}
+	IndexInBetween_next_1(unit, 1);
+}
+
+void IndexInBetween_next_1(IndexInBetween *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+		float *table = bufData;
+		int32 maxindex = tableSize - 1;
+	
+	float in = ZIN0(1);
+	ZOUT0(0) = IndexInBetween_FindIndex(table, in, maxindex);
+
+}
+
+void IndexInBetween_next_k(IndexInBetween *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+		float *table = bufData;
+		int32 maxindex = tableSize - 1;
+
+	float *out = ZOUT(0);
+	float in = ZIN0(1);
+	
+	float val = IndexInBetween_FindIndex(table, in, maxindex);
+	LOOP(inNumSamples,
+		ZXP(out) = val;
+	);
+
+}
+
+
+void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+		float *table = bufData;
+		int32 maxindex = tableSize - 1;
+
+	float *out = ZOUT(0);
+	float *in = ZIN(1);
+
+	LOOP(inNumSamples,
+		ZXP(out) = IndexInBetween_FindIndex(table, ZXP(in), maxindex);
+	);
+
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 
@@ -3975,6 +4062,20 @@ void add_wchebyshev(int size, float *data, double partial, double amp)
 	}
 }
 
+void cantorFill(int size, float *data) // long offset, double amp)
+{
+//	if (amp == 0.0) return;
+	for (int i=0; i<(size); ++i) {
+		int j = i;
+		float flag = 1.f;
+		while ((j > 0) && (flag == 1.f) ) {
+			if (j % 3 == 1) { flag = 0.f; }
+			j = j / 3;
+		}
+		if(flag) { data[i] += 1.f; }
+	}
+}
+
 
 enum {
 	flag_Normalize = 1,
@@ -4150,6 +4251,16 @@ void CopyBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	}
 }
 
+void CantorFill(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
+{		
+	float *data = buf->data;
+	int size = buf->samples;
+//	double offset = msg->getf();
+//	double amp = msg->getf();
+//	long offs = (long) offset;
+	cantorFill(size, data);
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4164,6 +4275,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Index);
 	DefineSimpleUnit(FoldIndex);
 	DefineSimpleUnit(WrapIndex);
+	DefineSimpleUnit(IndexInBetween);
 	DefineSimpleUnit(Shaper);
 	DefineSimpleUnit(SigOsc);
 	DefineSimpleUnit(FSinOsc);
@@ -4191,6 +4303,7 @@ void load(InterfaceTable *inTable)
 	DefineBufGen("normalize", NormalizeBuf);
 	DefineBufGen("wnormalize", NormalizeWaveBuf);
 	DefineBufGen("copy", CopyBuf);
+	DefineBufGen("cantorFill", CantorFill);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
