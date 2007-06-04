@@ -387,6 +387,7 @@ if env['RENDEZVOUS']:
             libraries['rendezvous'].Append(CPPDEFINES = ['HAVE_HOWL'])
 else:
     features['rendezvous'] = False
+    libraries['rendezvous'] = False
 
 # alsa
 if env['ALSA']:
