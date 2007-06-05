@@ -525,7 +525,7 @@ print ' DEBUG:                   %s' % yesorno(env['DEBUG'])
 # print ' DESTDIR:                 %s' % env['DESTDIR']
 print ' DEVELOPMENT:             %s' % yesorno(env['DEVELOPMENT'])
 print ' LANG:                    %s' % yesorno(env['LANG'])
-print ' LID:                     %s' % yesorno(features['LID'])
+print ' LID:                     %s' % yesorno(features['lid'])
 print ' PREFIX:                  %s' % env['PREFIX']
 print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
