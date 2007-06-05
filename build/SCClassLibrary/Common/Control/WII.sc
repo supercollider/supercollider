@@ -43,65 +43,65 @@ WiiMote {
 		all = [];
 	}
 
-	*deviceSpec {
+	deviceSpec {
 		^(
-			ax: { remote_motion[0] };
-			ay: { remote_motion[1] };
-			az: { remote_motion[2] };
-			ao: { remote_motion[3] };
+			ax: { remote_motion[0] },
+			ay: { remote_motion[1] },
+			az: { remote_motion[2] },
+			ao: { remote_motion[3] },
 
-			bA: { remote_buttons[0] };
-			bB: { remote_buttons[1] };
-			bOne: { remote_buttons[2] };
-			bTwo: { remote_buttons[3] };
-			bMinus: { remote_buttons[4] };
-			bHome: { remote_buttons[5] };
-			bPlus: { remote_buttons[6] };
-			bUp: { remote_buttons[7] };
-			bDown: { remote_buttons[8] };
-			bLeft: { remote_buttons[9] };
-			bRight: { remote_buttons[10] };
+			bA: { remote_buttons[0] },
+			bB: { remote_buttons[1] },
+			bOne: { remote_buttons[2] },
+			bTwo: { remote_buttons[3] },
+			bMinus: { remote_buttons[4] },
+			bHome: { remote_buttons[5] },
+			bPlus: { remote_buttons[6] },
+			bUp: { remote_buttons[7] },
+			bDown: { remote_buttons[8] },
+			bLeft: { remote_buttons[9] },
+			bRight: { remote_buttons[10] },
 
-			px: { remote_ir[0] };
-			py: { remote_ir[1] };
-			angle: { remote_ir[2] };
-			tracking: { remote_ir[3] };
+			px: { remote_ir[0] },
+			py: { remote_ir[1] },
+			angle: { remote_ir[2] },
+			tracking: { remote_ir[3] },
 
-			nax: { nunchuck_motion[0] };
-			nay: { nunchuck_motion[1] };
-			naz: { nunchuck_motion[2] };
-			nao: { nunchuck_motion[4] };
+			nax: { nunchuck_motion[0] },
+			nay: { nunchuck_motion[1] },
+			naz: { nunchuck_motion[2] },
+			nao: { nunchuck_motion[4] },
 
-			nsx: { nunchuck_stick[0] };
-			nsy: { nunchuck_stick[1] };
+			nsx: { nunchuck_stick[0] },
+			nsy: { nunchuck_stick[1] },
 
-			nbZ: { nunchuck_buttons[0] };
-			nbC: { nunchuck_buttons[1] };
+			nbZ: { nunchuck_buttons[0] },
+			nbC: { nunchuck_buttons[1] },
 
-			cbX: { classic_buttons[0] };
-			cbY: { classic_buttons[1] };
-			cbA: { classic_buttons[2] };
-			cbB: { classic_buttons[3] };
-			cbL: { classic_buttons[4] };
-			cbR: { classic_buttons[5] };
-			cbZL: { classic_buttons[6] };
-			cbZR: { classic_buttons[7] };
-			cbUp: { classic_buttons[8] };
-			cbDown: { classic_buttons[9] };
-			cbLeft: { classic_buttons[10] };
-			cbRight: { classic_buttons[11] };
-			cbMinus: { classic_buttons[12] };
-			cbHome: { classic_buttons[13] };
-			cbPlus: { classic_buttons[14] };
+			cbX: { classic_buttons[0] },
+			cbY: { classic_buttons[1] },
+			cbA: { classic_buttons[2] },
+			cbB: { classic_buttons[3] },
+			cbL: { classic_buttons[4] },
+			cbR: { classic_buttons[5] },
+			cbZL: { classic_buttons[6] },
+			cbZR: { classic_buttons[7] },
+			cbUp: { classic_buttons[8] },
+			cbDown: { classic_buttons[9] },
+			cbLeft: { classic_buttons[10] },
+			cbRight: { classic_buttons[11] },
+			cbMinus: { classic_buttons[12] },
+			cbHome: { classic_buttons[13] },
+			cbPlus: { classic_buttons[14] },
 
-			csx1: { classic_stick1[0] };
-			csy1: { classic_stick1[1] };
+			csx1: { classic_stick1[0] },
+			csy1: { classic_stick1[1] },
 
-			csx2: { classic_stick2[0] };
-			csy2: { classic_stick2[1] };
+			csx2: { classic_stick2[0] },
+			csy2: { classic_stick2[1] },
 
-			caleft: { classic_analog[0] };
-			caright: { classic_analog[1] };
+			caleft: { classic_analog[0] },
+			caright: { classic_analog[1] }
 		)
 	}
 
@@ -132,15 +132,15 @@ WiiMote {
 	at { | controlName |
 		^this.spec.atFail(controlName, {
 			Error("invalid control name").throw
-		}))
+		});
 	}
 	getLEDState { |id|
-		prWiiGetLED( led[0], led[1], led[2], led[3] )
-		^led[id]
+		prWiiGetLED( remote_led[0], remote_led[1], remote_led[2], remote_led[3] );
+		^remote_led[id]
 	}
 	setLEDState { |id,state|
-		led[id] = state;
-		^this.prWiiSetLED( led[0], led[1], led[2], led[3] )
+		remote_led[id] = state;
+		^this.prWiiSetLED( remote_led[0], remote_led[1], remote_led[2], remote_led[3] )
 	}
 
 	*start{
@@ -182,70 +182,70 @@ WiiMote {
 // 		slots = IdentityDictionary.new;
 	}
 	*prStart { 
-		eventLoopIsRunning = true;
-		_WiiStart
+		//eventLoopIsRunning = true;
+		_WiiStart;
 		^this.primitiveFailed
 	}
 	*prStop {
-		eventLoopIsRunning = false;
-		_WiiStop
+		//eventLoopIsRunning = false;
+		_WiiStop;
 		^this.primitiveFailed
 	}
 	prOpen { 
-		_WiiOpen
+		_WiiOpen;
 		^this.primitiveFailed
 	}
 	prClose {
-		_WiiClose
+		_WiiClose;
 		^this.primitiveFailed
 	}
 	prAddress { |address|
-		_WiiAddress
+		_WiiAddress;
 		^this.primitiveFailed
 	}
 	prConnect {
-		_WiiConnect
+		_WiiConnect;
 		^this.primitiveFailed
 	}
 	prDisconnect {
-		_WiiDisconnect
+		_WiiDisconnect;
 		^this.primitiveFailed
 	}
 	prCalibration { |calib|
-		_WiiCalibration
+		_WiiCalibration;
 		^this.primitiveFailed
 	}
 	prGetExpansion {
-		_WiiGetExpansion
+		_WiiGetExpansion;
 		^this.primitiveFailed
 	}
 	prGetBattery {
-		_WiiGetBattery
+		_WiiGetBattery;
 		^this.primitiveFailed
 	}
 	prEnableExpansion { |onoff|
-		_WiiEnableExpansion
+		_WiiEnableExpansion;
 		^this.primitiveFailed
 	}
 	prEnableIRSensor { |onoff|
-		_WiiEnableIRSensor
+		_WiiEnableIRSensor;
 		^this.primitiveFailed
 	}
 	prEnableMotionSensor { |onoff|
-		_WiiEnableMotionSensor
+		_WiiEnableMotionSensor;
 		^this.primitiveFailed
 	}
 	prSetVibration { |onoff|
-		_WiiSetVibration
+		_WiiSetVibration;
 		^this.primitiveFailed
 	}
 	prWiiGetLED { | ledstate |
-		_WiiGetLED
+		_WiiGetLED;
 		^this.primitiveFailed
 	}
 	prWiiSetLED { |enable1,enable2,enable3,enable4|	// added by Marije Baalman
 		// set LED value
-		_WiiSetLED
+		_WiiSetLED;
 		^this.primitiveFailed
 	}
 	prHandleEvent { | buttonData, posX, posY, angle, tracking, accX, accY, accZ, orientation, cButtonData, cStickX1, cStickY1, cStickX2, cStickY2, cAnalogL, cAnalogR, nButtonData, nStickX, nStickY, nAccX, nAccY, nAccZ, nOrientation |
