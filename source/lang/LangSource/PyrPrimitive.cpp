@@ -3981,6 +3981,9 @@ void initCocoaBridgePrimitives();
 
 void initSerialPrimitives();
 	initSerialPrimitives();
+	
+void initWiiPrimitives();
+initWiiPrimitives();
 #endif
 
 // CR ADDED
