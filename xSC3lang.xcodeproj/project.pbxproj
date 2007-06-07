@@ -216,6 +216,17 @@
 		6A7207DD07BB70CB00A1F778 /* SCCocoaView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A7207DC07BB70CB00A1F778 /* SCCocoaView.h */; };
 		6A87FA3A0B8D053500B2A5A5 /* SCNSWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A87FA390B8D053500B2A5A5 /* SCNSWindow.m */; };
 		6A87FA420B8D063500B2A5A5 /* SCNSWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A87FA410B8D063500B2A5A5 /* SCNSWindow.h */; };
+		6AA05EE80C15EE18000367C8 /* COPYRIGHT.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6AA05EE40C15EE18000367C8 /* COPYRIGHT.txt */; };
+		6AA05EE90C15EE18000367C8 /* HISTORY.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6AA05EE50C15EE18000367C8 /* HISTORY.txt */; };
+		6AA05EEA0C15EE18000367C8 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EE60C15EE18000367C8 /* wiiremote.c */; };
+		6AA05EEB0C15EE18000367C8 /* wiiremote.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AA05EE70C15EE18000367C8 /* wiiremote.h */; };
+		6AA05EEC0C15EE18000367C8 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EE60C15EE18000367C8 /* wiiremote.c */; };
+		6AA05EED0C15EE18000367C8 /* wiiremote.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AA05EE70C15EE18000367C8 /* wiiremote.h */; };
+		6AA05F3E0C15F543000367C8 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA05F3D0C15F543000367C8 /* IOBluetooth.framework */; };
+		6AA05F3F0C15F544000367C8 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA05F3D0C15F543000367C8 /* IOBluetooth.framework */; };
+		6AA05F490C15F596000367C8 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EE60C15EE18000367C8 /* wiiremote.c */; };
+		6AA21A700C162DE300CD1F2C /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EEE0C15EE46000367C8 /* SC_Wii.cpp */; };
+		6AA21A710C162DE400CD1F2C /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EEE0C15EE46000367C8 /* SC_Wii.cpp */; };
 		6AAC6D6508FEDC0C006134E1 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AAC6D6408FEDC0C006134E1 /* fftlib.c */; };
 		6AAC6D6608FEDC0C006134E1 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AAC6D6408FEDC0C006134E1 /* fftlib.c */; };
 		6AB6FF6F053898BC0000009F /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF64053898BC0000009F /* HID_Error_Handler.c */; };
@@ -762,6 +773,12 @@
 		6A7207DC07BB70CB00A1F778 /* SCCocoaView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SCCocoaView.h; path = headers/app/SCCocoaView.h; sourceTree = SOURCE_ROOT; };
 		6A87FA390B8D053500B2A5A5 /* SCNSWindow.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SCNSWindow.m; sourceTree = "<group>"; };
 		6A87FA410B8D063500B2A5A5 /* SCNSWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCNSWindow.h; sourceTree = "<group>"; };
+		6AA05EE40C15EE18000367C8 /* COPYRIGHT.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = COPYRIGHT.txt; sourceTree = "<group>"; };
+		6AA05EE50C15EE18000367C8 /* HISTORY.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = HISTORY.txt; sourceTree = "<group>"; };
+		6AA05EE60C15EE18000367C8 /* wiiremote.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = wiiremote.c; sourceTree = "<group>"; };
+		6AA05EE70C15EE18000367C8 /* wiiremote.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = wiiremote.h; sourceTree = "<group>"; };
+		6AA05EEE0C15EE46000367C8 /* SC_Wii.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Wii.cpp; sourceTree = "<group>"; };
+		6AA05F3D0C15F543000367C8 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = /System/Library/Frameworks/IOBluetooth.framework; sourceTree = "<absolute>"; };
 		6AAC6D6408FEDC0C006134E1 /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = fftlib.c; path = source/plugins/fftlib.c; sourceTree = SOURCE_ROOT; };
 		6AB6FF64053898BC0000009F /* HID_Error_Handler.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = HID_Error_Handler.c; path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.c; sourceTree = SOURCE_ROOT; };
 		6AB6FF65053898BC0000009F /* HID_Error_Handler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HID_Error_Handler.h; path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.h; sourceTree = SOURCE_ROOT; };
@@ -1003,6 +1020,7 @@
 				F5C7B14F033D595901A80099 /* libscsynth.a in Frameworks */,
 				6AC9B2DB08ABF480001EBDF6 /* QuickTime.framework in Frameworks */,
 				FE15A21B0B53C67E00AF0F11 /* Quartz.framework in Frameworks */,
+				6AA05F3E0C15F543000367C8 /* IOBluetooth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1018,12 +1036,24 @@
 				F5ED526802FBB0110195E057 /* ApplicationServices.framework in Frameworks */,
 				F5709AEE033E525101A80099 /* libscsynth.a in Frameworks */,
 				6AB6FFA30538A90A0000009F /* IOKit.framework in Frameworks */,
+				6AA05F3F0C15F544000367C8 /* IOBluetooth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6AA05EE30C15EE18000367C8 /* WiiMote_OSX */ = {
+			isa = PBXGroup;
+			children = (
+				6AA05EE40C15EE18000367C8 /* COPYRIGHT.txt */,
+				6AA05EE50C15EE18000367C8 /* HISTORY.txt */,
+				6AA05EE60C15EE18000367C8 /* wiiremote.c */,
+				6AA05EE70C15EE18000367C8 /* wiiremote.h */,
+			);
+			path = WiiMote_OSX;
+			sourceTree = "<group>";
+		};
 		6AB6FF62053898BC0000009F /* HID_Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -1279,12 +1309,14 @@
 		F50D05A302E69B6B01CA2799 /* LangSource */ = {
 			isa = PBXGroup;
 			children = (
+				6AA05EE30C15EE18000367C8 /* WiiMote_OSX */,
 				6AB6FF62053898BC0000009F /* HID_Utilities */,
 				6AB6FF83053898F00000009F /* SC_HID.cpp */,
 				F5ED526B02FC2E330195E057 /* SC_ComPort.cpp */,
 				F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */,
 				90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */,
 				92B4EA5A059398FE00CA25E4 /* SC_LibraryConfig.cpp */,
+				6AA05EEE0C15EE46000367C8 /* SC_Wii.cpp */,
 				F50D05A502E69B6B01CA2799 /* AdvancingAllocPool.cpp */,
 				F50D05A602E69B6B01CA2799 /* alloca.cpp */,
 				F50D05A702E69B6B01CA2799 /* ByteCodeArray.cpp */,
@@ -1339,6 +1371,7 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6AA05F3D0C15F543000367C8 /* IOBluetooth.framework */,
 				FE15A21A0B53C67E00AF0F11 /* Quartz.framework */,
 				F50D069502E6A1C601CA2799 /* AppKit.framework */,
 				F50D069602E6A1C601CA2799 /* ApplicationServices.framework */,
@@ -1590,6 +1623,7 @@
 				53FA84000B374A5200AB10D4 /* SC_FIFO.h in Headers */,
 				53FA840A0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
 				6A87FA420B8D063500B2A5A5 /* SCNSWindow.h in Headers */,
+				6AA05EEB0C15EE18000367C8 /* wiiremote.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1672,6 +1706,7 @@
 				88FB09AA096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
 				53FA84020B374A5200AB10D4 /* SC_FIFO.h in Headers */,
 				53FA840C0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
+				6AA05EED0C15EE18000367C8 /* wiiremote.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1749,6 +1784,8 @@
 				908DBC3B0507C66500000098 /* GoToLinePanel.nib in Resources */,
 				9284649D06DFB69C00964E7E /* SCcube.icns in Resources */,
 				88723045090870B30002E26A /* InfoPlist.strings in Resources */,
+				6AA05EE80C15EE18000367C8 /* COPYRIGHT.txt in Resources */,
+				6AA05EE90C15EE18000367C8 /* HISTORY.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1852,6 +1889,7 @@
 				88FB09AD096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 				AB7E52F70A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
 				53FA84050B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
+				6AA05F490C15F596000367C8 /* wiiremote.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1939,6 +1977,8 @@
 				AB7E52F60A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
 				53FA84040B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
 				6A87FA3A0B8D053500B2A5A5 /* SCNSWindow.m in Sources */,
+				6AA05EEA0C15EE18000367C8 /* wiiremote.c in Sources */,
+				6AA21A700C162DE300CD1F2C /* SC_Wii.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2003,6 +2043,8 @@
 				88FB09AE096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
 				AB7E52F80A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
 				53FA84060B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
+				6AA05EEC0C15EE18000367C8 /* wiiremote.c in Sources */,
+				6AA21A710C162DE400CD1F2C /* SC_Wii.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
