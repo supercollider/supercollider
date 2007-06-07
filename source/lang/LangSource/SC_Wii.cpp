@@ -31,7 +31,10 @@
 #include <string.h>
 #include <Carbon/Carbon.h>
 
-#include "WiiMote_OSX/wiiremote.h"
+//#include "WiiMote_OSX/wiiremote.h"
+extern "C"{
+#include "wiiremote.h"
+}
 
 #include <mach/mach.h>
 #include <mach/mach_error.h>
@@ -61,7 +64,23 @@ static PyrSymbol* s_readError = 0;
 
 extern bool compiledOK;
 //int gNumberOfWiiDevices = 0;
-EventLoopTimerRef gTimer = NULL; // timer for element data updates
+//EventLoopTimerRef gTimer = NULL; // timer for element data updates
+
+//extern "C"{
+// void			wiiremote_init(WiiRemoteRef wiiremote);
+//Boolean			wiiremote_isconnected(WiiRemoteRef wiiremote);
+//Boolean			wiiremote_search(WiiRemoteRef wiiremote, char *address);
+//Boolean			wiiremote_stopsearch(WiiRemoteRef wiiremote);
+//Boolean			wiiremote_connect(WiiRemoteRef wiiremote);
+//Boolean			wiiremote_disconnect(WiiRemoteRef wiiremote);
+//void			wiiremote_getaddress(WiiRemoteRef wiiremote, char *address);
+//Boolean			wiiremote_motionsensor(WiiRemoteRef wiiremote, Boolean enabled);
+//Boolean			wiiremote_irsensor(WiiRemoteRef wiiremote, Boolean enabled);
+//Boolean			wiiremote_vibration(WiiRemoteRef wiiremote, Boolean enabled);
+//Boolean			wiiremote_led(WiiRemoteRef wiiremote, Boolean enabled1, Boolean enabled2, Boolean enabled3, Boolean enabled4);
+//Boolean			wiiremote_expansion(WiiRemoteRef wiiremote, Boolean enabled);
+//Boolean			wiiremote_getstatus(WiiRemoteRef wiiremote);
+
 
 
 // --------------- SC_WII structure --------------
@@ -163,6 +182,7 @@ public:
 
 	int add(SC_WII *dev);
 	int remove(SC_WII *dev);
+	
 
 private:
 	SC_WIIManager();
@@ -492,7 +512,7 @@ SC_WIIManager::SC_WIIManager()
 	NumVersion	outSoftwareVersion;
 	BluetoothHCIVersionInfo	outHardwareVersion;
 	
-	post("aka.wiiremote 1.0B6-UB by Masayuki Akamatsu");
+//	post("aka.wiiremote 1.0B6-UB by Masayuki Akamatsu");
 
 	if (IOBluetoothGetVersion(&outSoftwareVersion, &outHardwareVersion)==kIOReturnSuccess)
 	{
@@ -508,7 +528,7 @@ SC_WIIManager::SC_WIIManager()
 		return;
 	}
 
-	post("\tSC port by Marije Baalman");
+//	post("\tSC port by Marije Baalman, compiled with the help of J. Trutzschler & many others ;-)");
 }
 
 SC_WIIManager::~SC_WIIManager()
