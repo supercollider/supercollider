@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #000000}
+span.s2 {color: #326f17}
+span.s3 {color: #606060}
+span.s4 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>CXMenu</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">A pop up menu that does its action and closes itself after you select an item.</p>
+<p class="p2"><br></p>
+<p class="p3">The difference between this and PopUp is that here there are separate functions for</p>
+<p class="p3">each menu item, and with PopUp there is one action.</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p5"><span class="s1">m = </span>CXMenu<span class="s1">(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">\soup</span>-&gt;{ <span class="s3">"soup"</span>.postln; },</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">\pork</span>-&gt;{ <span class="s3">"pork"</span>.postln; },</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">\duck</span>-&gt;{ <span class="s3">"duck"</span>.postln; },</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">\tiramisu</span>-&gt;{ <span class="s3">"tiramisu"</span>.postln; }</p>
+<p class="p4">);</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">m.gui(nil);</p>
+<p class="p6"><br></p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p4">(</p>
+<p class="p5"><span class="s1">m = </span>CXMenu<span class="s1">(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">\myName</span>-&gt;{ <span class="s3">"you hit myName"</span>.postln; },</p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">\yourName</span><span class="s1">-&gt;{ </span>"you hit yourName"<span class="s1">.postln; }</span></p>
+<p class="p4">);</p>
+<p class="p6"><br></p>
+<p class="p4">m.closeOnSelect = <span class="s4">false</span>;</p>
+<p class="p6"><br></p>
+<p class="p4">m.gui;</p>
+<p class="p6"><br></p>
+<p class="p4">)<span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><br></p>
+<p class="p3"><b>On another layout</b></p>
+<p class="p4">(</p>
+<p class="p4">Sheet({ arg f;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>CXLabel(f,"partials:");</p>
+<p class="p4"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p5"><span class="s1"><span class="Apple-tab-span">	</span>m = </span>CXMenu.newWith<span class="s1">(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Array.fill(15,{ arg i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.asString.asSymbol -&gt; { i.postln }</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
+<p class="p4"><span class="Apple-tab-span">	</span>);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>m.closeOnSelect = false;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>m.gui(f);</p>
+<p class="p4">})</p>
+<p class="p4">)</p>
+<p class="p3">You can add things to the menu above</p>
+<p class="p4">m.add(\more-&gt;{ "more".postln; });</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p3"><b>On a normal SCWindow</b></p>
+<p class="p6"><br></p>
+<p class="p4">(</p>
+<p class="p6"><br></p>
+<p class="p4">w = <span class="s4">SCWindow</span>.new;</p>
+<p class="p4">w.front;</p>
+<p class="p6"><br></p>
+<p class="p4">x = <span class="s4">CXMenu</span>( <span class="s2">\a</span> -&gt; { <span class="s3">"a"</span>.postln },<span class="s2">\b</span> -&gt; { <span class="s3">"b"</span>.postln },<span class="s2">\c</span> -&gt; { <span class="s3">"c"</span>.postln });</p>
+<p class="p4">x.closeOnSelect = <span class="s4">false</span>;</p>
+<p class="p4">x.gui(w);</p>
+<p class="p6"><br></p>
+<p class="p4">)</p>
+<p class="p3">Note that the arrow keys work to navigate once you are focused on any of the buttons.</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+</body>
+</html>

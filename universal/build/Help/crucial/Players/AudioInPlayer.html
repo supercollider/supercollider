@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {color: #0019b7}
+span.s2 {color: #326f17}
+span.s3 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>AudioInPlayer</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">Plays the first two channels of your Audio input.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>AudioInPlayer(numChannels,firstChannel)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>firstChannel - starting at 0</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>AudioInPlayer.new.play</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>AudioInPlayer.new.gui</b></p>
+<p class="p2"><br></p>
+<p class="p3">watch the feedback</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p5"><br></p>
+<p class="p4"><span class="s1">Instr</span>([<span class="s2">\audioIn</span>,<span class="s2">\filter</span>],{ <span class="s1">arg</span> audio,ffreq=400,rq=0.1,amp=0.1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar( audio, ffreq, rq) * amp</p>
+<p class="p4">});</p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s1">Patch</span><span class="s3">([</span>\audioIn<span class="s3">,</span>\filter<span class="s3">],[</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>AudioInPlayer<span class="s3">.new</span></p>
+<p class="p4">]).gui</p>
+<p class="p5"><br></p>
+<p class="p4">)</p>
+</body>
+</html>

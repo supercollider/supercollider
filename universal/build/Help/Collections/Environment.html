@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {color: #316c17}
+span.s2 {color: #0019b7}
+span.s3 {color: #000000}
+span.s4 {color: #a71e12}
+span.s5 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Environment</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: IdentityDictionary</b></p>
+<p class="p2"><br></p>
+<p class="p3">An Environment is an IdentityDictionary mapping Symbols to values. There is always one current Environment which is stored in the currentEnvironment class variable of class Object.</p>
+<p class="p2"><br></p>
+<p class="p3">Symbol and value pairs may be put into the current Environment as follows:</p>
+<p class="p2"><br></p>
+<p class="p4">currentEnvironment.put(<span class="s1">\myvariable</span>, 999);</p>
+<p class="p2"><br></p>
+<p class="p3">and retrieved from the current Environment as follows:</p>
+<p class="p2"><br></p>
+<p class="p4">currentEnvironment.at(<span class="s1">\myvariable</span>).postln;</p>
+<p class="p5"><br></p>
+<p class="p3">The compiler provides a shorthand for the two constructs above .</p>
+<p class="p2"><br></p>
+<p class="p4">~myvariable = 888;</p>
+<p class="p2"><br></p>
+<p class="p3">is equivalent to:</p>
+<p class="p2"><br></p>
+<p class="p4">currentEnvironment.put(\<span class="s1">myvariable</span>, 888);</p>
+<p class="p2"><br></p>
+<p class="p3">and:</p>
+<p class="p2"><br></p>
+<p class="p4">~myvariable.postln;</p>
+<p class="p5"><br></p>
+<p class="p3">is equivalent to:</p>
+<p class="p2"><span class="Apple-converted-space"> </span></p>
+<p class="p4">currentEnvironment.at(\<span class="s1">myvariable</span>).postln;</p>
+<p class="p5"><br></p>
+<p class="p6"><b>Making an Environment</b></p>
+<p class="p2"><br></p>
+<p class="p3">Environment has a class method <b>make</b> which can be used to create an Environment and fill it with values. What <b>make</b> does is temporarily replace the current Environment with a new one, call your function where you fill the Environment with values, then it replaces the previous current Environment and returns you the new one.</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> a;</p>
+<p class="p4">a = <span class="s2">Environment</span>.make({</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~a = 100;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~b = 200;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~c = 300;</p>
+<p class="p4">});</p>
+<p class="p4">a.postln;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p6"><b>Using an Environment</b></p>
+<p class="p2"><br></p>
+<p class="p3">The instance method <b>use</b> lets you temporarily replace the current Environment with one you have made. The <b>use</b> method returns the result of your function instead of the Environment like <b>make</b> does.</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> a;</p>
+<p class="p4">a = <span class="s2">Environment</span>.make({</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~a = 10;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~b = 200;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~c = 3000;</p>
+<p class="p4">});</p>
+<p class="p4">a.use({</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~a + ~b + ~c</p>
+<p class="p4">}).postln;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p3">There is also a <b>use</b> class method for when you want to make and use the result from an Environment directly.</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> a;</p>
+<p class="p7"><span class="s3">a = </span>Environment<span class="s3">.use({</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>~a = 10;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~b = 200;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~c = 3000;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~a + ~b + ~c</p>
+<p class="p4">}).postln;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p6"><b>Calling Functions with arguments from the current Environment</b></p>
+<p class="p2"><br></p>
+<p class="p3">It is possible to call a Function and have it look up any unspecified argument values from the current Environment. This is done with the <b>valueEnvir</b> and <b>valueArrayEnvir</b> methods. These methods will, for any unspecified argument value, look in the current Environment for a symbol with the same name as the argument. If the argument is not found then whatever the function defines as the default value for that argument is used.</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> f;</p>
+<p class="p8"><br></p>
+<p class="p9">// define a function</p>
+<p class="p4">f = { <span class="s2">arg</span> x, y, z; [x, y, z].postln; };</p>
+<p class="p8"><br></p>
+<p class="p7">Environment<span class="s3">.use({</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>~x = 7;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~y = 8;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>~z = 9;</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>f.valueEnvir(1, 2, 3);<span class="Apple-tab-span">	</span><span class="s4">// all values supplied</span></p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span>f.valueEnvir(1, 2);<span class="Apple-tab-span">	</span></span>// z is looked up in the current Environment</p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span>f.valueEnvir(1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// y and z are looked up in the current Environment<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span>f.valueEnvir;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// all arguments are looked up in the current Environment</p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span>f.valueEnvir(z: 1);<span class="Apple-tab-span">	</span></span>// x and y are looked up in the current Environment</p>
+<p class="p4">});</p>
+<p class="p4">)</p>
+<p class="p5"><br></p>
+<p class="p3">Now here is how this can be used with an instrument function. Environments allow you to define instruments without having to worry about argument ordering conflicts. Even though the three functions below have the freq, amp and pan args declared in different orders it does not matter, because valueEnvir looks them up in the</p>
+<p class="p3">environment.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">s.boot;</p>
+<p class="p8"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> a, b, c, orc;</p>
+<p class="p8"><br></p>
+<p class="p4">a = { <span class="s2">arg</span> freq, amp, pan;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Pan2</span>.ar(<span class="s2">SinOsc</span>.ar(freq), pan, amp);</p>
+<p class="p4">};</p>
+<p class="p4">b =<span class="Apple-converted-space">  </span>{ <span class="s2">arg</span> amp, pan, freq;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Pan2</span>.ar(<span class="s2">RLPF</span>.ar(<span class="s2">Saw</span>.ar(freq), freq * 6, 0.1), pan, amp);</p>
+<p class="p4">};</p>
+<p class="p4">c =<span class="Apple-converted-space">  </span>{ <span class="s2">arg</span> pan, freq, amp;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Pan2</span>.ar(<span class="s2">Resonz</span>.ar(<span class="s2">GrayNoise</span>.ar, freq * 2, 0.1), pan, amp * 2);</p>
+<p class="p4">};</p>
+<p class="p4">orc = [a, b, c];</p>
+<p class="p9">// 'reverb'</p>
+<p class="p4">{ <span class="s2">var</span> in; in = <span class="s2">In</span>.ar(0, 2); <span class="s2">CombN</span>.ar(in, 0.2, 0.2, 3, 1, in); }.play(addAction: <span class="s5">\addToTail</span>);</p>
+<p class="p8"><br></p>
+<p class="p4">{ loop({</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Environment<span class="s3">.use({</span></p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// set values in the environment</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~freq = exprand(80, 600);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~amp = 0.1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~pan = 1.0.rand2;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// call a randomly chosen instrument function<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// with values from the environment</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> x = { orc.choose.valueEnvir; }.play(fadeTime: 0.2, addAction: <span class="s5">\addToHead</span>);<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> 0.2.wait;<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> x.release(0.2);<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p4">}) }.fork;</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p4">)</p>
+</body>
+</html>

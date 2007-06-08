@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+span.s1 {color: #0000ff}
+span.s2 {color: #0019b7}
+span.s3 {color: #000000}
+span.s4 {color: #606060}
+span.s5 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Routine</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Superclass: Thread</b></p>
+<p class="p2"><br></p>
+<p class="p3">Routines are functions that can return in the middle and then resume where<span class="Apple-converted-space"> </span></p>
+<p class="p3">they left off when called again. Routines can be used to implement co-routines</p>
+<p class="p3">as found in Scheme and some other languages.</p>
+<p class="p3">Routines are useful for writing things that behave like Streams.</p>
+<p class="p3">Routines inherit behaviour for math operations and filtering from <a href="../../Streams-Patterns-Events/Stream.html"><span class="s1">Stream</span></a>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*new(func, stackSize, seed)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Creates a Routine instance with the given function.</p>
+<p class="p3">The stackSize and random seed may be overridden if desired.</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">a = <span class="s2">Routine</span>.new({ 1.yield; 2.yield; });</p>
+<p class="p4">a.next.postln;</p>
+<p class="p4">a.next.postln;</p>
+<p class="p4">a.next.postln;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>value(inval)</b></p>
+<p class="p3"><b>resume(inval)</b></p>
+<p class="p3"><b>next(inval)</b></p>
+<p class="p2"><br></p>
+<p class="p3">These are all synonyms for the same method.</p>
+<p class="p2"><br></p>
+<p class="p3">The Routine function is either started if it has not been called yet, or it is<span class="Apple-converted-space"> </span></p>
+<p class="p3">resumed from where it left off. The argument inval is passed as the argument</p>
+<p class="p3">to the Routine function if it is being started, or as the result of the yield</p>
+<p class="p3">method if it is being resumed from a yield. The result of the method will be</p>
+<p class="p3">what the Routine yields.</p>
+<p class="p2"><br></p>
+<p class="p3">There are basically 2 conditions for a Routine: one is when the routine starts. The other case is<span class="Apple-converted-space"> </span></p>
+<p class="p3">that the routine continues after it has yielded.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3">When the routine starts (by calling the above methods), you are passing in a first inval.<span class="Apple-converted-space"> </span></p>
+<p class="p3">This inval is accessible as the routine function argument:</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">Routine</span> { <span class="s2">arg</span> inval;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval.postln;</p>
+<p class="p5"><span class="s3">}.value(</span>"hello routine"<span class="s3">);</span></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p3">When there is a yield in the routine, the next time you call <i>next</i> (or synonym), the routine continues</p>
+<p class="p3">from there, and you get a chance to pass in a value from the outside. To access that value within the</p>
+<p class="p3">continuing routine, you have to assign the <b><i>result of the yield call</i></b> to a variable:</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">r = <span class="s2">Routine</span> { <span class="s2">arg</span> inval;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> valuePassedInbyYield;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval.postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>valuePassedInbyYield = 123.yield;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>valuePassedInbyYield.postln;</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p4">}</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s3">r.value(</span>"hello routine"<span class="s3">);</span></p>
+<p class="p5"><span class="s3">r.value(</span>"goodbye world"<span class="s3">);</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">Typically the name <i>inval</i> (or inevent) is reused, instead of declaring a variable like "valuePassedInbyYield":</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">r = <span class="s2">Routine</span> { <span class="s2">arg</span> inval;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval.postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval = 123.yield;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval.postln;</p>
+<p class="p4">}</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s3">r.value(</span>"hello routine"<span class="s3">);</span></p>
+<p class="p5"><span class="s3">r.value(</span>"goodbye world"<span class="s3">);</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">Typically a routine uses a multiple yield, in which the inval is reassigned repeatedly:</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">r = <span class="s2">Routine</span> { <span class="s2">arg</span> inval;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval.postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>5.do { <span class="s2">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>inval = (i + 10).yield;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>inval.postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}</p>
+<p class="p4">}</p>
+<p class="p4">)</p>
+<p class="p4">(</p>
+<p class="p4">5.do {</p>
+<p class="p4"><span class="Apple-tab-span">	</span>r.value(<span class="s4">"hello routine"</span>).postln;</p>
+<p class="p4">}</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>reset</b></p>
+<p class="p2"><br></p>
+<p class="p3">Causes the Routine to start from the beginning next time it is called.</p>
+<p class="p3">A Routine cannot reset itself except by calling the yieldAndReset method.</p>
+<p class="p2"><br></p>
+<p class="p3">See also in class <b>Object :</b></p>
+<p class="p3"><b>yield(outval)</b></p>
+<p class="p3"><b>yieldAndReset(outval)</b></p>
+<p class="p3"><b>alwaysYield(outval)</b></p>
+<p class="p2"><br></p>
+<p class="p3">If a Routine's function returns then it will always yield nil until reset.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>play(clock, quant)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clock</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a Clock, <b>TempoClock</b> by default</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>quant</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>either a number<b> n</b> (quantize to <b>n </b>beats)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or an array<b> [n, m]</b> (quantize to <b>n</b> beats, with offset <b>m</b>)</p>
+<p class="p2"><br></p>
+<p class="p3">In the SuperCollider application, a Routine can be played using a Clock, as can any Stream.</p>
+<p class="p3">every time the Routine yields, it should do so with a float, the clock will interpret that, usually</p>
+<p class="p3">pausing for that many seconds, and then resume the routine, passing it it the clock's current time.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p7"><b>Accessible instance variables</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b><i>Routine</i> inherits from <i>Thread</i>, which allows access to some of its state:</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>beats</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>return the elapsed beats (logical time) of the routine. The beats do not proceed when the routine is</p>
+<p class="p3"><span class="Apple-tab-span">	</span>not playing.</p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><b>seconds</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b>return the elapsed seconds (logical time) of the routine. The seconds do not proceed when the routine is</p>
+<p class="p3"><span class="Apple-tab-span">	</span>not playing, it is the converted beat value.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>clock</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>return the thread's clock. If it hs not played, it is the SystemClock.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">r = <span class="s2">Routine</span> { <span class="s2">arg</span> inval;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>loop {</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// thisThread refers to the routine.</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(</span>"beats: % seconds: % time: % \n"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">thisThread</span>.beats, <span class="s2">thisThread</span>.seconds, <span class="s2">Main</span>.elapsedTime</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0.yield;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>}</p>
+<p class="p4">}.play;</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p4">r.stop;</p>
+<p class="p4">r.beats;</p>
+<p class="p4">r.seconds;</p>
+<p class="p4">r.clock;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Routine Example:</b></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> r, outval;</p>
+<p class="p4">r = <span class="s2">Routine</span>.new({ <span class="s2">arg</span> inval;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(<span class="s4">"-&gt;inval was "</span> ++ inval).postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval = 1.yield;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(<span class="s4">"-&gt;inval was "</span> ++ inval).postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval = 2.yield;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(<span class="s4">"-&gt;inval was "</span> ++ inval).postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>inval = 99.yield;</p>
+<p class="p4">});</p>
+<p class="p6"><br></p>
+<p class="p4">outval = r.next(<span class="s5">'a'</span>);</p>
+<p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
+<p class="p4">outval = r.next(<span class="s5">'b'</span>);</p>
+<p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
+<p class="p4">r.reset; <span class="s4">"reset"</span>.postln;</p>
+<p class="p4">outval = r.next(<span class="s5">'c'</span>);</p>
+<p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
+<p class="p4">outval = r.next(<span class="s5">'d'</span>);</p>
+<p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
+<p class="p4">outval = r.next(<span class="s5">'e'</span>);</p>
+<p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
+<p class="p4">outval = r.next(<span class="s5">'f'</span>);</p>
+<p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> r;</p>
+<p class="p4">r = <span class="s2">Routine</span>.new({</p>
+<p class="p4"><span class="Apple-tab-span">	</span>10.do({ <span class="s2">arg</span> a;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.postln;</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Often you might see Wait being used to pause a routine</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// This waits for one second between each number</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// Wait half second before saying we're done</p>
+<p class="p4"><span class="Apple-tab-span">	</span>0.5.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">"done"</span>.postln;</p>
+<p class="p4">});</p>
+<p class="p6"><br></p>
+<p class="p9">SystemClock<span class="s3">.play(r);</span></p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p10"><span class="Apple-converted-space"> </span></p>
+</body>
+</html>

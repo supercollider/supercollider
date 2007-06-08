@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 12.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 10.0px Helvetica; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 10.0px Helvetica}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 9.0px Helvetica}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 9.0px Helvetica; min-height: 11.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 10.0px Lucida Grande; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #0019b7}
+span.s2 {font: 9.0px Helvetica}
+span.s3 {font: 10.0px Helvetica}
+span.s4 {color: #606060}
+span.s5 {color: #000000}
+span.s6 {color: #326f17}
+span.s7 {color: #a71e12}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCView</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: Object</b></p>
+<p class="p4"><br></p>
+<p class="p3">SCView is the abstract superclass for all SC GUI widgets. Currently this system is OSX only. On Linux there is another GUI implementation, SCUM, which has its own documentation. Several key methods and variables are defined in SCView and inherited in its subclasses.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>resize_(int)</b></p>
+<p class="p4"><br></p>
+<p class="p3">This setting controls how the widget will behave when it's window or enclosing view is resized. This is illustrated graphically below:</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1<span class="Apple-converted-space">  </span>2<span class="Apple-converted-space">  </span>3</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4<span class="Apple-converted-space">  </span>5<span class="Apple-converted-space">  </span>6</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>7<span class="Apple-converted-space">  </span>8<span class="Apple-converted-space">  </span>9</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1 - fixed to left, fixed to top</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2 - horizontally elastic, fixed to top</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3 - fixed to right, fixed to top</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4 - fixed to left, vertically elastic</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>5 - horizontally elastic, vertically elastic</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>6 - fixed to right, vertically elastic</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>7 - fixed to left, fixed to bottom</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>8 - horizontally elastic, fixed to bottom</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>9 - fixed to right, fixed to bottom</p>
+<p class="p2"><br></p>
+<p class="p3"><b>resize</b></p>
+<p class="p4"><br></p>
+<p class="p3">Return an Integer corresponding to the current resize behaviour (see above).</p>
+<p class="p2"><br></p>
+<p class="p3"><b>keyDownAction_(aFunction)</b></p>
+<p class="p4"><br></p>
+<p class="p3">Register a <b>Function</b> to be evaluated when a keystroke is received and this view is in focus.</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p6">// select the slider, type something and watch the post window</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>c = <span class="s1">SCSlider</span>(w,<span class="s1">Rect</span>(0,0,100,30));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.keyDownAction = { <span class="s1">arg</span> view,char,modifiers,unicode,keycode;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[char,modifiers,unicode,keycode].postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>};</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p3">If you return nil from your function, or you have no function registered, the event will bubble up to the parent view which may then respond.<span class="Apple-converted-space">  </span>It will continue to bubble up unless something responds or it hits the topView of the window.<span class="Apple-converted-space">  </span>You may register a function in the window's topView to respond to all unhandled events for the window.</p>
+<p class="p2"><br></p>
+<p class="p3">There are default keyDownActions for some views, which will be overridden when you set a keydown action.</p>
+<p class="p4"><br></p>
+<p class="p3">When called, the function will be passed the following arguments:</p>
+<p class="p4"><br></p>
+<p class="p7"><b>view -</b> The receiving instance of SCView.</p>
+<p class="p8"><br></p>
+<p class="p7"><b>char - </b>The character pressed, possibly unprintable.<span class="Apple-converted-space">  </span>Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e).<span class="Apple-converted-space">  </span>This will also vary depending on the nationality the keyboard is set to.</p>
+<p class="p9"><br></p>
+<p class="p7"><b>modifiers - </b>An integer bit field indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator.</p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>65536 NSAlphaShiftKeyMask<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>Set if Caps Lock key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>131072 NSShiftKeyMask<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>Set if Shift key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>262144 NSControlKeyMask<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>Set if Control key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>524288 NSAlternateKeyMask<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>Set if Option or Alternate key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>1048576 NSCommandKeyMask<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>Set if Command key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>2097152 NSNumericPadKeyMask<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>Set if any key in the numeric keypad is pressed. The numeric keypad is generally on the right side of the keyboard.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>4194304 NSHelpKeyMask<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>Set if the Help key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>8388608 NSFunctionKeyMask<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>Set if any function key is pressed. The function keys include the F keys at the top of most keyboards (F1, F2, and so on) and the navigation keys in the center of most keyboards (Help, Forward Delete, Home, End, Page Up, Page Down, and the arrow keys).<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>arrow keys have an extra modifier value of <span class="s2">10485760</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>so for a shift arrow key do a bitwise 'or' with the shift mask:</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10485760 | 131072</p>
+<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span>= </span>10616832 // this is the mask for shift arrow key</p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b>unicode - </b>The unicode integer, identical to the char.</p>
+<p class="p14"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b>keycode - </b>The hardware dependent keycode indicating the physical key.<span class="Apple-converted-space">  </span>This will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.<span class="Apple-converted-space">  </span>In order to play little melodies, this code will identify which key you consider to be special.</p>
+<p class="p9"><br></p>
+<p class="p7"><b>N.B.:</b> Function key modifier may change the keycode.</p>
+<p class="p8"><br></p>
+<p class="p7">For various reasons these don't make it through cocoa:</p>
+<p class="p7"><span class="Apple-tab-span">	</span>most command modifiers</p>
+<p class="p7"><span class="Apple-tab-span">	</span> cntl-tab</p>
+<p class="p7"><span class="Apple-tab-span">	</span> cntl-escape</p>
+<p class="p7"><span class="Apple-tab-span">	</span> tab and shift tab are currently trapped by SC itself for cycling the focus through the views.</p>
+<p class="p7"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>(we could change this)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>keyDownAction</b></p>
+<p class="p4"><br></p>
+<p class="p3">Return the current keyDownAction function for this view if there is one, otherwise return nil.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*globalKeyDownAction_(func)</b></p>
+<p class="p4"><br></p>
+<p class="p3">A function that is evaluated for every keyDown event on every SCView. See <b>keyDownAction_</b> for details.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>focus</b></p>
+<p class="p4"><br></p>
+<p class="p3">Brings this view into focus.</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>c = <span class="s1">SCSlider</span>(w,<span class="s1">Rect</span>(0,0,100,30));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>d = <span class="s1">SCSlider</span>(w,<span class="s1">Rect</span>(0,30,100,30));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.focus;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>d.focus;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w.close;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>refresh</b></p>
+<p class="p4"><br></p>
+<p class="p3">Under certain circumstances a view will not automatically update its appearance. This forces a redraw.</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>c = <span class="s1">SCButton</span>(w,<span class="s1">Rect</span>(0,0,100,30));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.states = [[<span class="s4">"a"</span>,<span class="s1">Color</span>.black,<span class="s1">Color</span>.red]];</p>
+<p class="p5"><span class="Apple-tab-span">	</span>d = <span class="s1">SCButton</span>(w,<span class="s1">Rect</span>(0,30,100,30));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>d.states = [[<span class="s4">"a"</span>,<span class="s1">Color</span>.black,<span class="s1">Color</span>.red]];</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>// won't display change...</p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.states = [[<span class="s4">"b"</span>,<span class="s1">Color</span>.red,<span class="s1">Color</span>.black]];</p>
+<p class="p5"><span class="Apple-tab-span">	</span>d.states = [[<span class="s4">"b"</span>,<span class="s1">Color</span>.red,<span class="s1">Color</span>.black]];</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>//until</p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.refresh;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>//needs separate refresh</p>
+<p class="p5"><span class="Apple-tab-span">	</span>d.refresh;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>// in some cases might be better to refresh the whole window</p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>// which does refresh on all damaged areas (it keeps track, doesn't redraw whole thing)</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.states = [[<span class="s4">"a"</span>,<span class="s1">Color</span>.black,<span class="s1">Color</span>.red]];</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w.refresh;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>w.close;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>addAction(func, selector)</b></p>
+<p class="p3"><b>removeAction(func, selector)</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>func:</b> a function to be evaluated when action happens</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>selector: </b>what function to add to (default: slider action)</p>
+<p class="p4"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(</p>
+<p class="p15"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = </span><span class="s1">SCWindow</span><span class="s5">(</span>"add action test"<span class="s5">);</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c = <span class="s1">SCSlider</span>(w,<span class="s1">Rect</span>(170, 50, 30, 270));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>u = { <span class="s1">|x|</span> x.value.postln };</p>
+<p class="p5"><span class="Apple-tab-span">	</span>v = { <span class="s1">|x|</span> x.value.round(1).value.postln };</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>c.addAction(u); </span>// slider posts value</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>c.addAction(v); </span>// slider posts value and rounded value</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>c.removeAction(u); </span>// slider posts rounded value only</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>c.removeAction(v); </span>// slider posts nothing</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>c.action; </span>// nil again</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>c.addAction(u, </span><span class="s6">\mouseDownAction</span><span class="s5">); </span>// slider posts value on mouse down</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.mouseDownAction.postln; <span class="s7">// a function</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span>c.addAction(v, </span><span class="s6">\mouseDownAction</span><span class="s5">); </span>// slider posts rounded value on mouse down</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.mouseDownAction.postln; <span class="s7">// a function list</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.removeAction(u, <span class="s6">\mouseDownAction</span>);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.mouseDownAction.postln; <span class="s7">// a function<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.removeAction(v, <span class="s6">\mouseDownAction</span>);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c.mouseDownAction.postln; <span class="s7">// nil again</span></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>w = c = u = v = nil;</p>
+<p class="p2"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>drag and drop</b></p>
+<p class="p4"><br></p>
+<p class="p3">Each view subclass has a default object that it exports when dragged from.<span class="Apple-converted-space">  </span>For sliders its the value of the slider, for lists it is the currently selected numeric index etc. <span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">By setting the beginDragAction handler you can return a different object based on the context and your application.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>beginDragAction(theView)</b> - return the object you wish your view to export by dragging</p>
+<p class="p5"><span class="Apple-tab-span">	</span>aView.beginDragAction =<span class="Apple-converted-space">  </span>{ <span class="s1">arg</span> theView;<span class="Apple-converted-space">  </span>someList[ theView.value ]<span class="Apple-converted-space">  </span>}</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3">The current dragged thing can be found in the classvar SCView.currentDrag.<span class="Apple-converted-space">  </span>Objects dragged from within<span class="Apple-converted-space"> </span></p>
+<p class="p3">SuperCollider are also in SCView.currentDragString as a compile string.<span class="Apple-converted-space">  </span>Text dragged</p>
+<p class="p3">from other applications is in SCView.currentDragString and the results of attempting to</p>
+<p class="p3">compile that as sc code is in SCView.currentDrag</p>
+<p class="p4"><br></p>
+<p class="p3">Each view subclass has a defaultCanReceiveDrag method that determines if the current object being dragged is possible for this view to accept, and a defaultReceiveDrag method for actually receiving the drag.<span class="Apple-converted-space">  </span>Sliders accept numbers, simple text labels do not accept drags etc.<span class="Apple-converted-space">  </span>After receiving the drag, the SCView.currentDrag is set to nil.</p>
+<p class="p4"><br></p>
+<p class="p3">By setting the canReceiveDragHandler and receiveDragHandler you can make any view accept and receive objects based on the context and your application.<span class="Apple-converted-space">  </span>(Note: currently not possible for SCStaticText)</p>
+<p class="p4"><br></p>
+<p class="p3"><b>canReceiveDrag(theView)</b> - return true/false if you are willing to accept the current drag.</p>
+<p class="p5"><span class="Apple-tab-span">	</span>aView.canReceiveDrag = <span class="s1">false</span>; <span class="s7">// no, leave me alone</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>aView.canReceiveDrag = { <span class="s1">SCView</span>.currentDrag.isString };</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>receiveDrag(theView)</b> - accept the drag.</p>
+<p class="p5"><span class="Apple-tab-span">	</span>aView.receiveDrag = {<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SCView</span>.currentDrag.postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p3">The default drag object from a list view is the currently selected integer index.</p>
+<p class="p3">Here a list view is made to export a string.</p>
+<p class="p5">(</p>
+<p class="p5"><span class="Apple-tab-span">	</span>f = <span class="s1">SCWindow</span>.new.front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>a = <span class="s1">SCListView</span>(f,100@100);</p>
+<p class="p15"><span class="s5"><span class="Apple-tab-span">	</span>a.items = [</span>"eh?"<span class="s5">,</span>"bee!"<span class="s5">,</span>"sea."<span class="s5">];</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>a.beginDragAction = { arg listView;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>listView.items[ listView.value ].debug("begun dragging");</p>
+<p class="p5"><span class="Apple-tab-span">	</span>};</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>c = nil;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b = SCButton(f,Rect(0,200,200,20));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.states = [["Drop stuff on me"]];</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.canReceiveDragHandler = { SCView.currentDrag.isString };</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.receiveDragHandler = {<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.states = [[SCView.currentDrag]];</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c = SCView.currentDrag;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>};</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.action = {</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.postln</p>
+<p class="p5"><span class="Apple-tab-span">	</span>};</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+</body>
+</html>

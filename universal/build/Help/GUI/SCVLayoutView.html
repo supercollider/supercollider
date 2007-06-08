@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+span.s1 {color: #0019b7}
+span.s2 {color: #a71e12}
+span.s3 {color: #326f17}
+span.s4 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCVLayoutView</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">(</p>
+<p class="p3">q = 10;</p>
+<p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">SCVLayoutView</span>(w,<span class="s1">Rect</span>(10,10,300,300));</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{ arg i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">SCSlider</span>(v,<span class="s1">Rect</span>(0,0,75,20)).value_(i / q)</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p3">w.front</p>
+<p class="p3">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>elastic</b></p>
+<p class="p3">resize the window ... oooh</p>
+<p class="p3">(</p>
+<p class="p3">q = 10;</p>
+<p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">SCVLayoutView</span>(w,<span class="s1">Rect</span>(10,10,300,300));</p>
+<p class="p3">v.resize = 5; <span class="s2">// <span class="Apple-converted-space">  </span>elastic</span></p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{<span class="Apple-converted-space">  </span>arg i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> s;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s = <span class="s1">SCSlider</span>(v,<span class="s1">Rect</span>(0,0,75,20));</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p3">w.front</p>
+<p class="p3">)</p>
+<p class="p2"><br></p>
+<p class="p3">(</p>
+<p class="p3">q = 10;</p>
+<p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">SCVLayoutView</span>(w,<span class="s1">Rect</span>(10,10,300,300));</p>
+<p class="p3">v.resize = 5; <span class="s2">// <span class="Apple-converted-space">  </span>elastic</span></p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{<span class="Apple-converted-space">  </span><span class="s1">arg</span> i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> s;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s = <span class="s1">SCSlider</span>(v,<span class="s1">Rect</span>(0,0,75,20));</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s2">// elastic</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p3">w.front</p>
+<p class="p3">)</p>
+<p class="p2"><br></p>
+<p class="p3">(</p>
+<p class="p3">q = 5;</p>
+<p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">SCVLayoutView</span>(w,<span class="s1">Rect</span>(10,10,300,300));</p>
+<p class="p3">v.resize = 5; <span class="s2">// <span class="Apple-converted-space">  </span>elastic</span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{<span class="Apple-converted-space">  </span><span class="s1">arg</span> i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> s;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s = <span class="s1">SCSlider</span>(v,<span class="s1">Rect</span>(0,0,75,20));</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.value = i / 5;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>if(i &lt; 2,{</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s2">// some elastic</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.setProperty(<span class="s3">\minHeight</span>,20);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>},{</p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 1; </span>// some not elastic</p>
+<p class="p3"><span class="Apple-tab-span">	</span>});</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p3">w.front</p>
+<p class="p3">)</p>
+<p class="p2"><br></p>
+<p class="p3">(</p>
+<p class="p3">q = 5;</p>
+<p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">SCVLayoutView</span>(w,<span class="s1">Rect</span>(10,10,300,300));</p>
+<p class="p3">v.resize = 5; <span class="s2">// <span class="Apple-converted-space">  </span>elastic</span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{<span class="Apple-converted-space">  </span><span class="s1">arg</span> i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> s;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s = <span class="s1">SCSlider</span>(v,<span class="s1">Rect</span>(0,0,75,20));</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.value = i / 5;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.resize = 5;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.setProperty(\minHeight,20);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.setProperty(\maxHeight,40);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p3">w.front</p>
+<p class="p3">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4"><b>spacing</b></p>
+<p class="p3">(</p>
+<p class="p3">q = 10;</p>
+<p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">SCVLayoutView</span>(w,<span class="s1">Rect</span>(10,10,300,300));</p>
+<p class="p3">v.setProperty(\spacing,0);</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">SCSlider</span>(v,<span class="s1">Rect</span>(0,0,75,20))</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p3">w.front</p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+</body>
+</html>

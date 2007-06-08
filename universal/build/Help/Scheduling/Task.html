@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.41">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {color: #0025b2}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Task<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a pauseable process</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: PauseStream<span class="Apple-converted-space"> </span></b></p>
+<p class="p4"><br></p>
+<p class="p3">Task is a pauseable process. It is implemented by wrapping a PauseStream around a Routine. Most of it's methods (start, stop, reset) are inherited from PauseStream.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>Task.new(func, clock)</b></p>
+<p class="p3"><b>func </b>- A <b>Function</b> to be evaluated.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><b>clock </b>- A Clock in which to play the <b>Routine</b>. If you do not provide a Clock the default is an instance of TempoClock. Remember that methods which call Cocoa primitives (i.e. GUI functions) must be played in AppClock.</p>
+<p class="p4"><br></p>
+<p class="p2"><br></p>
+<p class="p5">t = <span class="s1">Task</span>({<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>50.do({ <span class="s1">arg</span> i;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.squared.postln;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5.wait<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p2"><br></p>
+<p class="p5">t.start;</p>
+<p class="p5">t.pause;</p>
+<p class="p5">t.resume;</p>
+<p class="p5">t.reset;</p>
+<p class="p5">t.stop;</p>
+</body>
+</html>

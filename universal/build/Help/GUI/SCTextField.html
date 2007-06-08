@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {color: #000000}
+span.s2 {color: #0019b7}
+span.s3 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCTextField</b></p>
+<p class="p2"><br></p>
+<p class="p3">superclass: SCNumberBox</p>
+<p class="p2"><br></p>
+<p class="p4">Sheet<span class="s1">({ </span>arg<span class="s1"> l;</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s2">SCTextField</span>(l,Rect(0,0,150,30));</p>
+<p class="p3"><span class="Apple-tab-span">	</span>b.string = "hi there";</p>
+<p class="p3"><span class="Apple-tab-span">	</span>b.action = {<span class="s2">arg</span> field; field.value.postln; }</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">// does not do the action</p>
+<p class="p3">b.value = "yo";</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">b.setProperty(<span class="s3">\boxColor</span>,<span class="s2">Color</span>.grey);</p>
+<p class="p3">b.setProperty(<span class="s3">\stringColor</span>,<span class="s2">Color</span>.white);</p>
+<p class="p3">b.setProperty(<span class="s3">\align</span>,<span class="s3">\center</span>);</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">Does not handle composed character sequences ( é ø etc. )</p>
+<p class="p2"><br></p>
+<p class="p3">option-e appears to freeze it ?</p>
+</body>
+</html>

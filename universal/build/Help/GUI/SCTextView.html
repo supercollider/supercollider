@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {font: 15.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCTextView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><span class="s1"><b>a text editor</b></span></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>superclass: SCView</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>see also: Document</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>*new(window, bounds);</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>string_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the text</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>string</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>get the text</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>setString(string, rangestart, rangesize)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set text into a range<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>selectedString</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>get the selected text only</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>selectionStart</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>get the current position in the text<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>selectionSize</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>get the current size of selection in the text<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>stringColor_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the color of the whole text<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>setStringColor(color, start, size)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the color of a selection of text<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>setStringColor(color, start, size)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>autoHideScrollers_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>hasVerticalScroller_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>hasHorizontalScroller_</b></p>
+<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span></span><b>textBounds_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>font_</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>usesTabToFocusNextView_</b></p>
+<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span></span><b>enterInterpretsSelection_</b></p>
+<p class="p3"><br></p>
+<p class="p2"><br></p>
+<p class="p5">//examples</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p6">(</p>
+<p class="p6"><span class="s3">var</span> win, txtv;</p>
+<p class="p2"><br></p>
+<p class="p6">win = <span class="s3">SCWindow</span>.new.front;</p>
+<p class="p6">win.view.decorator_(FlowLayout(win.view.bounds));</p>
+<p class="p6">txtv = <span class="s3">SCTextView</span>(win,<span class="s3">Rect</span>(0,0, 300,200))</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.hasVerticalScroller_(true)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.autohidesScrollers_(true)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.focus(true);</p>
+<p class="p4">)</p>
+</body>
+</html>

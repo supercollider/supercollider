@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p10 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helvetica}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {text-decoration: underline}
+span.s4 {color: #606060}
+span.s5 {font: 9.0px Monaco}
+span.s6 {font: 12.0px Helvetica}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SoundFile</b></p>
+<p class="p2"><br></p>
+<p class="p3">In most cases you will wish to send commands to the server to get it to load SoundFiles directly into Buffers.<span class="Apple-converted-space">  </span>You will not use this class for this.<span class="Apple-converted-space">  </span>See <b>Server-Command-Reference.</b><span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">This class is used to check the size, format, channels etc. when the client needs this information about a SoundFile.</p>
+<p class="p4"><br></p>
+<p class="p3">Some manipulation of the sound file data is possible. Soundfile data can be read and written incrementally, so with properly designed code, there is no restriction on the file size.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p2"><br></p>
+<p class="p5">f = <span class="s1">SoundFile</span>.new;</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">f.openRead(</span>"sounds/a11wlk01.wav"<span class="s2">);</span></p>
+<p class="p2"><br></p>
+<p class="p5">f.inspect;</p>
+<p class="p2"><br></p>
+<p class="p5">f.close;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7"><b><span class="s3">Creating</span></b></p>
+<p class="p4"><br></p>
+<p class="p3"><b>*new</b></p>
+<p class="p4"><br></p>
+<p class="p3">Creates a new SoundFile instance.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3"><b>*collect(pattern = "sounds/*")</b></p>
+<p class="p4"><br></p>
+<p class="p3">Returns an array of SoundFile objects whose paths match the pattern. <span class="Apple-converted-space"> </span></p>
+<p class="p3">(The associated files are closed. These objects can be used to cue playback buffers)</p>
+<p class="p4"><br></p>
+<p class="p7"><b>Playback</b></p>
+<p class="p4"><br></p>
+<p class="p3"><b>cue(event | Nil, playNow = false)</b></p>
+<p class="p4"><br></p>
+<p class="p3">Allocates a buffer and cues the SoundFile for playback. Returns an event parameterized to play that buffer.</p>
+<p class="p3">(See <b>NodeEvent </b>for a description of how events can be used to control running synths.)</p>
+<p class="p3">The event responds to <b>play, stop, pause, resume</b>, keeping both the file and buffer open.</p>
+<p class="p3">The file is closed and the<span class="Apple-converted-space">  </span>buffer is freed when the event is sent a <b>close </b>message.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>arguments</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>event | Nil</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b>An <b>event </b>can passed as an argument allowing playback to be customized using the following keys:</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span>key<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>default value<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>what it does</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// buffer and playback position:<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bufferSize<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>65536</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>firstFrame<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>first frame to play</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>lastFrame<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>nil<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>last frame to play (nil plays to end of file)</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// synth parameters</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sets output bus</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>server:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Server.default<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>which server</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>group:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>what target</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>addAction:<span class="Apple-tab-span">	</span>0<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>head/tail/before/after</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>amp:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>amplitude</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument:<span class="Apple-tab-span">	</span>nil<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if nil SoundFile:cue determines the SynthDef</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(one of diskIn1, diskIn2, ...diskIn16)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Here is the default SynthDef used for stereo files:</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SynthDef<span class="s2">(</span><span class="s4">"diskIn2"</span><span class="s2">, { </span>| bufnum, out,<span class="Apple-converted-space">  </span>gate = 1, sustain,<span class="Apple-converted-space">  </span>amp = 1, ar = 0, dr = 0.01 |</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out, <span class="s1">DiskIn</span>.ar(2, bufnum)<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* Linen.kr(gate, ar, 1, dr, 2)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.linen(0, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>The control <b>sustain</b> determines playback duration based on the firstFrame and lastFrame.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The control <b>gate </b>allows early termination of the playback</p>
+<p class="p2"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span><b>playNow</b></p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>This is a boolean that determines whether the file is to be played immediately after cueing.</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span>example:</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>f = SoundFile.collect("sounds/*")</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>e = f[1].cue;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>e = f[1].cue( (addAction: 2, group: 1) );<span class="Apple-tab-span">	</span>// synth will play ahead of the default group</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="s3">Read/Write</span></b></p>
+<p class="p4"><br></p>
+<p class="p3"><b>openRead(inPathname)</b></p>
+<p class="p4"><br></p>
+<p class="p3">Read the header of a file. Answers a Boolean whether the read was successful.</p>
+<p class="p3">sets the numFrames,numChannels and sampleRate.<span class="Apple-converted-space">  </span>does not set the headerFormat and sampleFormat.</p>
+<p class="p3"><b>inPathname</b> - a String specifying the path name of the file to read.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>readData(rawArray)</b></p>
+<p class="p4"><br></p>
+<p class="p3">Reads the sample data of the file into the raw array you supply. You<span class="Apple-converted-space">  </span>must have already called openRead.</p>
+<p class="p4"><br></p>
+<p class="p3">The raw array must be a FloatArray. Regardless of the sample format of the file, the array will be populated with floating point values. For integer formats, the floats will all be in the range -1..1.</p>
+<p class="p4"><br></p>
+<p class="p3">The size of the FloatArray determines the maximum number of single samples (<i>not</i> sample frames) that will be read. If there are not enough samples left in the file, the size of the array after the readData call will be less than the original size.</p>
+<p class="p4"><br></p>
+<p class="p3">When you reach EOF, the array's size will be 0. Checking the array size is an effective termination condition when looping through a sound file. See the method channelPeaks for example.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>openWrite(inPathname)</b></p>
+<p class="p4"><br></p>
+<p class="p3">Write the header of a file. Answers a Boolean whether the write was successful.</p>
+<p class="p3"><b>inPathname</b> - a String specifying the path name of the file to write.</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p3"><b>writeData(rawArray)</b></p>
+<p class="p4"><br></p>
+<p class="p3">Writes the rawArray to the sample data of the file. You<span class="Apple-converted-space">  </span>must have already called openWrite.</p>
+<p class="p4"><br></p>
+<p class="p3">The raw array must be a FloatArray or Signal, with all values between -1 and 1 to avoid clipping during playback.</p>
+<p class="p4"><br></p>
+<p class="p3">Example:</p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p5">f = <span class="s1">SoundFile</span>.new.headerFormat_(<span class="s4">"AIFF"</span>).sampleFormat_(<span class="s4">"int16"</span>).numChannels_(1);</p>
+<p class="p6"><span class="s2">f.openWrite(</span>"sounds/sfwrite.aiff"<span class="s2">);</span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>// sawtooth</p>
+<p class="p5">b = <span class="s1">Signal</span>.sineFill(100, (1..20).reciprocal);</p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>// write multiple cycles (441 * 100 = 1 sec worth)</p>
+<p class="p5">441.do({ f.writeData(b) });</p>
+<p class="p5">f.close;</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p3"><b>isOpen</b></p>
+<p class="p3">answers if the file is open</p>
+<p class="p4"><br></p>
+<p class="p3"><b>close</b></p>
+<p class="p3">closes the file</p>
+<p class="p4"><br></p>
+<p class="p3"><b>duration</b></p>
+<p class="p3">the duration in seconds of the file</p>
+<p class="p4"><br></p>
+<p class="p7"><b><span class="s3">Normalizing</span></b></p>
+<p class="p4"><br></p>
+<p class="p3"><b>*normalize(path, outPath, newHeaderFormat, newSampleFormat, startFrame, numFrames, maxAmp, linkChannels, chunkSize)</b></p>
+<p class="p4"><br></p>
+<p class="p3"><b>normalize(outPath, newHeaderFormat, newSampleFormat, startFrame, numFrames, maxAmp, linkChannels, chunkSize)</b></p>
+<p class="p4"><br></p>
+<p class="p3">Normalizes a soundfile to a level set by the user. The normalized audio will be written into a second file.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3"><b>Note:</b> While the normalizer is working, there is no feedback to the user. It will look like SuperCollider is hung, but it will eventually complete the operation.</p>
+<p class="p4"><br></p>
+<p class="p3">Arguments:</p>
+<p class="p4"><br></p>
+<p class="p10"><b>path:</b> a path to the source file</p>
+<p class="p10"><b>outPath:</b> a path to the destination file</p>
+<p class="p10"><b>newHeaderFormat:</b> the desired header format of the new file; if not specified, the header format of the source file will be used</p>
+<p class="p10"><b>newSampleFormat:</b> the desired sample format of the new file; if not specified, the sample format of the source file will be used</p>
+<p class="p10"><b>startFrame:</b> an index to the sample frame to start normalizing (default 0)</p>
+<p class="p10"><b>numFrames:</b> the number of sample frames to copy into the destination file (default nil, or entire soundfile)</p>
+<p class="p10"><b>maxAmp:</b> the desired maximum amplitude. Provide a floating point number or, if desired, an array to specify a different level for each channel. The default is 1.0.</p>
+<p class="p10"><b>linkChannels:</b> a Boolean specifying whether all channels should be scaled by the same amount. The default is <b>true</b>, meaning that the peak calculation will be based on the largest sample in any channel. If false, each channel's peak will be calculated independently and all channels will be scaled to maxAmp (this would alter the relative loudness of each channel).</p>
+<p class="p10"><b>chunkSize:</b> how many samples to read at once (default is 4194304, or 16 MB)<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">Using the class method (SoundFile.normalize) will automatically open the source file for you. You may also openRead the SoundFile yourself and call normalize on it. In that case, the source path is omitted because the file is already open.</p>
+<p class="p4"><br></p>
+<p class="p3">The normalizer may be used to convert a soundfile from one sample format to another (e.g., to take a floating point soundfile produced by SuperCollider and produce an int16 or int24 soundfile suitable for use in other applications).</p>
+<p class="p4"><br></p>
+<p class="p7"><b><span class="s3">Instance Variables</span></b></p>
+<p class="p4"><br></p>
+<p class="p3"><b>&lt;path</b></p>
+<p class="p4"><br></p>
+<p class="p3">Get the pathname of the file. This variable is set via the openRead or openWrite calls.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>&lt;&gt;headerFormat</b></p>
+<p class="p4"><br></p>
+<p class="p3">This is a String indicating the header format which was read by openRead and will be written by openWrite. In order to write a file with a certain header format you set this variable.</p>
+<p class="p4"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Sound File Format symbols:</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>header formats:</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>read/write formats:</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"AIFF", <span class="Apple-tab-span">	</span>- Apple's AIFF</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"WAV","RIFF" <span class="Apple-tab-span">	</span>- MicrosSoft .WAV</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"Sun", <span class="Apple-tab-span">	</span>- NeXT/Sun</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"IRCAM", <span class="Apple-tab-span">	</span>- old IRCAM format</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"none"<span class="Apple-tab-span">	</span>- no header = raw data</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A huge number of other formats are supported read only.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><br></p>
+<p class="p12"><br></p>
+<p class="p3"><b>&lt;&gt;sampleFormat</b></p>
+<p class="p4"><br></p>
+<p class="p3">A String indicating the format of the sample data which was read by openRead and will be written by openWrite. Not all header formats support all sample formats. The possible header formats are:</p>
+<p class="p12"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample formats:</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"int8", "int16", "int24", "int32"</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"mulaw", "alaw",</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"float32"</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>not all header formats support all sample formats.</p>
+<p class="p12"><br></p>
+<p class="p12"><br></p>
+<p class="p3"><b>&lt;numFrames</b></p>
+<p class="p4"><br></p>
+<p class="p3">The number of sample frames in the file.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>&lt;numChannels</b></p>
+<p class="p4"><br></p>
+<p class="p3">The number of channels in the file.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>&lt;&gt;sampleRate</b></p>
+<p class="p4"><br></p>
+<p class="p3">The sample rate of the file.</p>
+<p class="p4"><br></p>
+</body>
+</html>

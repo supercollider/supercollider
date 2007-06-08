@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0019b7}
+span.s4 {color: #326f17}
+span.s5 {color: #000000}
+span.s6 {color: #606060}
+span.s7 {color: #a71e12}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>History</b></span><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>keeps a history of interpreted lines of code</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1">History keeps track of all code lines that are being executed, in order to forward them to other players, to easily reuse earlier versions, or to store and reproduce a performance. Since it records everything that is interpreted, there is only one instance of History.</p>
+<p class="p1">(adc 2006)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*start / *stop</b><span class="Apple-tab-span">	</span>start/stop adding interpreted code to history</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*clear</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>remove all items from history</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*enter(obj)</b><span class="Apple-tab-span">	</span>add an entry by hand</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*document</b><span class="Apple-tab-span">	</span>post the history in a new document</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*drop(n)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>drop the newest n lines from history. if n is negative, drop the oldest n lines</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*keep(n)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>keep only the newest n lines from history. if n is negative, keep the oldest n lines</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*saveCS(path, forward)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>store the history as one compileString</p>
+<p class="p3"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*saveStory(path)</b> <span class="Apple-tab-span">	</span>store in a file, in historical order as individual code snippets</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// example</p>
+<p class="p3"><br></p>
+<p class="p5"><span class="s3">History</span>.clear;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s3">History</span>.start;<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p5">1 + 2;</p>
+<p class="p5">s.boot;</p>
+<p class="p5">a = { <span class="s3">|freq=440|</span> <span class="s3">SinOsc</span>.ar(freq, 0, 0.2) }.play;</p>
+<p class="p3"><br></p>
+<p class="p5">a.set(<span class="s4">\freq</span>, 500);</p>
+<p class="p3"><br></p>
+<p class="p5">a.free;</p>
+<p class="p6"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.stop;<span class="Apple-tab-span">	</span></span>// stop collecting</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.document; </span>// create a document with all the changes</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.makeWin; </span>// gui window</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.play;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// posts lines by default;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.play(verbose: </span><span class="s3">false</span><span class="s5">); </span>// just do it, no posting;</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p5">10 + 200;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// enter 5 more lines</p>
+<p class="p3"><br></p>
+<p class="p5">s.boot;</p>
+<p class="p3"><br></p>
+<p class="p5">a = { <span class="s3">|freq=330|</span> <span class="s3">SinOsc</span>.ar(freq, 0, 0.2) }.play;</p>
+<p class="p3"><br></p>
+<p class="p5">a.set(<span class="s4">\freq</span>, 660);</p>
+<p class="p3"><br></p>
+<p class="p5">a.free;</p>
+<p class="p6"><br></p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s5"> </span>// play specific lines only: may or may not work,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> //<span class="Apple-converted-space">  </span>as code depends on previous state.</p>
+<p class="p5"><span class="s3">History</span>.play(start: 5, end: 10);</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// removing and adding lines</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.enter(</span><span class="s6">"2 + 2"</span><span class="s5">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// make a simple entry by hand.</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.drop(-1); </span>// drop the oldest memory</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.drop(1); </span>// drop the newest memory</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// more examples</p>
+<p class="p3"><br></p>
+<p class="p5"><span class="s3">History</span>.start;</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s5">1 + 2;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// code line gets stored</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s5">(</span><span class="s3">nil</span><span class="s5"> + 2).postln;<span class="Apple-tab-span">	</span></span>// error lines<span class="Apple-converted-space">  </span>are ignored <span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span></span>// comment-only is kept, empty lines not:</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s5">s.boot;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// do some things</p>
+<p class="p5">p = <span class="s3">ProxySpace</span>.push;</p>
+<p class="p3"><br></p>
+<p class="p5">(</p>
+<p class="p5">~test = { <span class="s3">Blip</span>.ar(50 * [1, 1.02], 8) * 0.1 };</p>
+<p class="p5">~test.playN;</p>
+<p class="p5">)</p>
+<p class="p3"><br></p>
+<p class="p5">~test = { <span class="s3">Blip</span>.ar(<span class="s3">LFNoise1</span>.kr(3 ! 2, 200, 500), 4) * 0.1 };</p>
+<p class="p5">~test = { <span class="s3">Blip</span>.ar(<span class="s3">LFNoise1</span>.kr(3 ! 2, 200, 500), <span class="s3">LFNoise1</span>.kr(5 ! 2, 5, 8)) * 0.1 };</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p5">~test.vol_(0.1);</p>
+<p class="p3"><br></p>
+<p class="p5">~test.stop;</p>
+<p class="p3"><br></p>
+<p class="p5">~test.clear;</p>
+<p class="p3"><br></p>
+<p class="p5">History.document;</p>
+<p class="p4"><span class="s3">History</span><span class="s5">.removeAt(0);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// clear last line</p>
+<p class="p4"><span class="s3">History</span><span class="s5">.removeAt((0..3));<span class="Apple-tab-span">	</span></span>// clear last 4 lines</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.postDoc(0);<span class="Apple-tab-span">	</span></span>// post most recent line</p>
+<p class="p4"><span class="s3">History</span><span class="s5">.postDoc(4);<span class="Apple-tab-span">	</span></span>// go back 4 lines</p>
+<p class="p3"><br></p>
+<p class="p5"><span class="s3">History</span>.keep(4);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// keep newest 4</p>
+<p class="p7">History<span class="s5">.stop;</span></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.saveCS; </span>// save as compilestring for reloading.</p>
+<p class="p8"><br></p>
+<p class="p5"><span class="s3">History</span>.saveCS("~/Desktop/testHist.txt", forward: true);</p>
+<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// save with special name, in forward time order.</p>
+<p class="p3"><br></p>
+<p class="p8"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.saveStory;<span class="Apple-tab-span">	</span></span>// write all to file in historical order</p>
+<p class="p8"><br></p>
+<p class="p5"><span class="s3">History</span>.saveStory("~/Desktop/myTest.sc");<span class="Apple-tab-span">	</span><span class="s7">// ... with given filename.<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s3">History</span><span class="s5">.clear;<span class="Apple-tab-span">	</span></span>// start over with a clean slate.</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// To Do:</p>
+<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// History Reloaded - from a saved file:</p>
+<p class="p4">//<span class="Apple-tab-span">	</span>History.loadCS("~/Desktop/testHist.sc");</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// auto-save by appending to a file ...<span class="Apple-converted-space"> </span></p>
+<p class="p4">//<span class="Apple-tab-span">	</span>History.autoSave_(true);<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//<span class="Apple-converted-space">  </span>save as one runnable task/script.</p>
+<p class="p4">//<span class="Apple-tab-span">	</span>History.saveScript;<span class="Apple-converted-space"> </span></p>
+<p class="p4">//<span class="Apple-tab-span">	</span>History.saveScript("~/Desktop/histScript.sc");<span class="Apple-tab-span">	</span>// with given filename.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+</body>
+</html>

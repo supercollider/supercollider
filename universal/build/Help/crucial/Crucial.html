@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {color: #000000}
+span.s2 {color: #0019b7}
+span.s3 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Crucial</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: Object</b></p>
+<p class="p2"><br></p>
+<p class="p4">If you are looking for the intro to the library, see [<b>CRUCIAL-LIBRARY</b>].</p>
+<p class="p2"><br></p>
+<p class="p4">This class initializes some lightweight resources relevant to crucial library and loads some useful utilities into the Library (a shared dictionary of reusable functions).</p>
+<p class="p2"><br></p>
+<p class="p5"><br></p>
+<p class="p6">Crucial.menu;</p>
+<p class="p2"><br></p>
+<p class="p4">You can put this in Main if you like:</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span>run { </span>// called by command-R</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Crucial</span>.menu;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p4">You should set personal preferences in Main-startUp, as this file (Crucial.sc) will get overwritten</p>
+<p class="p4">by CVS updates from time to time.<span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">In Main-startUp you can set:</p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>// you can move all of your documents to your home directory</p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Document</span><span class="s1">.dir = </span>"~/Documents/SuperCollider/"<span class="s1">;<span class="Apple-tab-span">	</span></span></p>
+<p class="p9"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see </span>Document</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Instr</span><span class="s1">.dir = </span>"~/Documents/SuperCollider/Instr/"<span class="s1">;</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <span class="s2">Instr</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>// this would allow your sounds to be shared by other applications</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">Sample</span>.soundsDir = <span class="s3">"~/Sounds/"</span>;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <span class="s2">Sample</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// copy a11wlk01.wav to there for use in helpfiles !</p>
+<p class="p5"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p4"><b>everything is called in *initClass</b></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>preferences: Colors, root paths.</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>creates some useful common Specs</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>installs some general use Library functions.</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>see [<b>Library</b>]</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+</body>
+</html>

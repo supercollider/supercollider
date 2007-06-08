@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #a71e12}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>ArrayBuffer</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: BufferProxy</b></p>
+<p class="p2"><br></p>
+<p class="p3">Passes an array into a Patch for use in UGens which need an array supplied as a buffer index.</p>
+<p class="p3">If saved as a compile string to disk, saves the array with it.</p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>ArrayBuffer.new( array )</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p5">// modal space - jmc</p>
+<p class="p5">// mouse x controls discrete pitch in dorian mode</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">Patch</span>({ <span class="s1">arg</span> scale;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> mix;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>mix =<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>// lead tone</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>SinOsc<span class="s2">.ar(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>DegreeToKey<span class="s2">.kr(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale.bufnumIr,</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">MouseX</span><span class="s2">.kr(0,15),<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// mouse indexes into scale</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>12,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// 12 notes per octave</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">// mul = 1</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>72<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// offset by 72 notes</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ </span><span class="s1">LFNoise1</span><span class="s2">.kr([3,3], 0.04)<span class="Apple-tab-span">	</span></span>// add some low freq stereo detuning</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>).midicps,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// convert midi notes to hertz</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1)</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>// drone 5ths</p>
+<p class="p4"><span class="Apple-tab-span">	</span>+ <span class="s1">RLPF</span>.ar(<span class="s1">LFPulse</span>.ar([48,55].midicps, 0.15),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.kr(0.1, 0, 10, 72).midicps, 0.1, 0.1);</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>// add some 70's euro-space-rock echo</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">CombN</span>.ar(mix, 0.31, 0.31, 2, 1, mix)</p>
+<p class="p4">},[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">ArrayBuffer</span>(<span class="s1">FloatArray</span>[0, 2, 3, 5, 7, 9, 10])</p>
+<p class="p4">]).gui</p>
+<p class="p7"><br></p>
+<p class="p4">)</p>
+</body>
+</html>

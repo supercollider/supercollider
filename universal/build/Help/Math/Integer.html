@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+span.s1 {text-decoration: underline}
+span.s2 {color: #0000ff}
+</style>
+</head>
+<body>
+<p class="p1"><b>Integer</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: SimpleNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">A 32 bit integer. Integer inherits most of its behaviour from its superclass.</p>
+<p class="p2"><br></p>
+<p class="p4"><b><span class="s1">Iteration</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>do(function)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Executes function for all integers from zero to <span class="s1">this</span> minus one.</p>
+<p class="p3"><b>function</b> - a Function which is passed two arguments, both of which are the same</p>
+<p class="p3">integer from zero to this minus one. The reason two arguments are passed is for</p>
+<p class="p3">symmetry with the implementations of do in Collection.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>for(endval, function)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Executes function for all integers from <span class="s1">this</span> to <span class="s1">endval</span>, inclusive.</p>
+<p class="p3"><b>endval</b> - an Integer.</p>
+<p class="p3"><b>function</b> - a Function which is passed two arguments, the first which is an integer from this to</p>
+<p class="p3">endval, and the second which is a number from zero to the number of iterations minus one.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>forBy(endval, step, function)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Executes function for all integers from <span class="s1">this</span> to <span class="s1">endval</span>, inclusive, stepping each time by <span class="s1">step</span>.</p>
+<p class="p3"><b>endval</b> - an Integer.</p>
+<p class="p3"><b>step</b> - an Integer.</p>
+<p class="p3"><b>function</b> - a Function which is passed two arguments, the first which is an integer from this to</p>
+<p class="p3">endval, and the second which is a number from zero to the number of iterations minus one.</p>
+<p class="p2"><br></p>
+<p class="p4"><b><span class="s1">Conversion</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>asAscii</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer a Char which has the ASCII value of the receiver.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>asDigit</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer a Char which represents the receiver as an ASCII digit. For example<span class="Apple-converted-space"> </span></p>
+<p class="p3">5.asDigit returns $5.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>asBinaryDigits(numDigits)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer an array with the <b>binary digits</b> (integer 0 or 1). <b>numDigits</b> defaults to 8.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>asDigits(base, numDigits)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer an array with the <b>n-ary digits</b>, <b>base</b> defaults to 10.</p>
+<p class="p3">See also the complementary method <a href="../Collections/SequenceableCollection.html"><span class="s2">SequenceableCollection</span></a> <b>convertDigits</b>.</p>
+<p class="p2"><br></p>
+<p class="p3">2007.asDigits;</p>
+<p class="p3">2007.asDigits(2);</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b><span class="s1">Random Numbers</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>xrand(exclude)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer a random value from zero to <span class="s1">this</span>, excluding the value <span class="s1">exclude</span>.</p>
+<p class="p3"><b>exclude</b> - an Integer.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>xrand2(exclude)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer a random value from <b>this</b>.neg to <span class="s1">this</span>, excluding the value <span class="s1">exclude</span>.</p>
+<p class="p3"><b>exclude</b> - an Integer.</p>
+<p class="p2"><br></p>
+<p class="p4"><b><span class="s1">Powers Of Two</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>nextPowerOfTwo</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer the next power of two greater than or equal to the receiver.</p>
+<p class="p2"><br></p>
+<p class="p5">13.nextPowerOfTwo.postln;</p>
+<p class="p5">64.nextPowerOfTwo.postln;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>isPowerOfTwo</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer the whether the receiver is a power of two.</p>
+<p class="p2"><br></p>
+<p class="p5">13.isPowerOfTwo.postln;</p>
+<p class="p5">64.isPowerOfTwo.postln;</p>
+<p class="p2"><br></p>
+<p class="p4"><b><span class="s1">Prime Numbers</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>nthPrime</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer the nth prime number. The receiver must be from 0 to 6541.</p>
+<p class="p2"><br></p>
+<p class="p5">[0,1,2,3,4,5].collect({ arg i; i.nthPrime; }).postln;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>prevPrime</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer the next prime less than or equal to the receiver up to 65521.</p>
+<p class="p2"><br></p>
+<p class="p5">25.prevPrime.postln;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>nextPrime</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer the next prime less than or equal to the receiver up to 65521.</p>
+<p class="p2"><br></p>
+<p class="p5">25.nextPrime.postln;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>isPrime</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer whether the receiver is prime.</p>
+<p class="p2"><br></p>
+<p class="p5">25.isPrime.postln;</p>
+<p class="p5">13.isPrime.postln;</p>
+<p class="p6"><br></p>
+<p class="p3"><b>indexOfPrime</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer the index of a prime number less than or equal to the receiver up to 65521.</p>
+<p class="p3">If the receiver is not a prime, the answer is nil.</p>
+<p class="p2"><br></p>
+<p class="p5">23.indexOfPrime;</p>
+<p class="p5">25.indexOfPrime;</p>
+<p class="p6"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b><span class="s1">Misc</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>getKeys</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns the bits from the Macintosh GetKeys() Toolbox call. Receiver should be 0 to 3.</p>
+<p class="p2"><br></p>
+<p class="p5">[0.getKeys, 1.getKeys, 2.getKeys, 3.getKeys].postln;</p>
+</body>
+</html>

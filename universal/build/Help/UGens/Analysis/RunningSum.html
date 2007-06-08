@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 22.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+span.s1 {text-decoration: underline}
+span.s2 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>RunningSum</b></p>
+<p class="p2"><br></p>
+<p class="p3">A running sum over a user specified number of samples, useful for running RMS power windowing.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="s1">Class Methods</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>*ar(in, numsamp=40)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>in-</b> Input signal</p>
+<p class="p2"><br></p>
+<p class="p3"><b>numsamp-</b> How many samples to take the running sum over (initialisation time only, not modulatable)</p>
+<p class="p2"><br></p>
+<p class="p3"><i>Examples</i></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><br></p>
+<p class="p5">//overloads of course- would need scaling<span class="Apple-tab-span">	</span></p>
+<p class="p6">{<span class="s2">RunningSum</span>.ar(<span class="s2">AudioIn</span>.ar)}.play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p5">//Running Average over x samples<span class="Apple-tab-span">	</span></p>
+<p class="p6">(</p>
+<p class="p6">{</p>
+<p class="p6"><span class="s2">var</span> x =100;</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">RunningSum</span>.ar(<span class="s2">LFSaw.ar</span>,x)*(x.reciprocal)</p>
+<p class="p6">}.play</p>
+<p class="p6">)</p>
+<p class="p7"><br></p>
+<p class="p5">//RMS Power</p>
+<p class="p6">(</p>
+<p class="p6">{</p>
+<p class="p6"><span class="s2">var</span> input, numsamp;</p>
+<p class="p4"><br></p>
+<p class="p6">input= <span class="s2">LFSaw</span>.ar;</p>
+<p class="p6">numsamp=30;</p>
+<p class="p4"><br></p>
+<p class="p6">(<span class="s2">RunningSum</span>.ar(input.squared,numsamp)/numsamp).sqrt</p>
+<p class="p6">}.play</p>
+<p class="p6">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">//shortcut in class</p>
+<p class="p6">{<span class="s2">RunningSum</span>.rms(<span class="s2">AudioIn</span>.ar)}.play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">//play around</p>
+<p class="p6">(</p>
+<p class="p6">{</p>
+<p class="p6"><span class="s2">var</span> input, numsamp, power;</p>
+<p class="p4"><br></p>
+<p class="p6">input= <span class="s2">AudioIn</span>.ar;</p>
+<p class="p6">numsamp=500;</p>
+<p class="p6">power= <span class="s2">MouseX</span>.kr(0.1,4);</p>
+<p class="p4"><br></p>
+<p class="p6">(<span class="s2">RunningSum</span>.ar(input**power,numsamp)/numsamp)**(power.reciprocal)</p>
+<p class="p6">}.play</p>
+<p class="p6">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+</body>
+</html>

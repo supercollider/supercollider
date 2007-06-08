@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0019b7}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>ModalFreq</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Control rate player</b></p>
+<p class="p2"><br></p>
+<p class="p3">For backwards compatiblity and convenience.<span class="Apple-converted-space">  </span>This actually returns a Patch on the pseudo-ugen ModalFreqUGen.</p>
+<p class="p2"><br></p>
+<p class="p3">Takes floats or player inputs and puts out control rate signal of frequency.</p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>ModalFreq.new( degree, scaleArray, root, octave, stepsPerOctave )</b></p>
+<p class="p2"><br></p>
+<p class="p3">Used as a kr rate Player.</p>
+<p class="p4">(</p>
+<p class="p4">m = <span class="Apple-tab-span">	</span><span class="s1">ModalFreq</span>.new(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">StreamKrDur</span>.new(<span class="s1">Pbrown</span>(1,12,2,<span class="s1">inf</span>), 0.25, 0.1),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">FloatArray</span>[ 0, 1, 2, 3, 4, 7,10 ],<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">StreamKrDur</span>.new(<span class="s1">Pseq</span>(#[ 7, 6,1,10 ], <span class="s1">inf</span>), 0.25, 0.1),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">StreamKrDur</span>(<span class="s1">Pbrown</span>(2,6,1),<span class="s1">Prand</span>([0.25,1.0,4.0,8.0])),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>12</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="s1">Patch</span>({ <span class="s1">arg</span> freq=200;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Pulse</span>.ar(</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>freq, freq * 0.5]<span class="s2">,</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">LFNoise1</span>.kr([0.3,0.1],0.5,0.5),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.2)</p>
+<p class="p4">},[</p>
+<p class="p4"><span class="Apple-tab-span">	</span>m</p>
+<p class="p4">]).play</p>
+<p class="p5"><br></p>
+<p class="p4">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p3">Used as a Stream.<span class="Apple-converted-space">  </span>Can also be used with Pbind or any other Pattern.</p>
+<p class="p3">Not as efficient as using it directly as a Player.</p>
+<p class="p4">(</p>
+<p class="p5"><br></p>
+<p class="p3"><span class="s1">Patch</span>({ <span class="s1">arg</span> freq=100,amp=1.0;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar([freq,freq + 30],0,amp)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>},[<span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>StreamKrDur<span class="s2">(</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">ModalFreq</span>(<span class="s1">Pseq</span>([1,2,3,4],<span class="s1">inf</span>)),<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseq</span>([0.25,0.5,0.75],<span class="s1">inf</span>),</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1),</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1</p>
+<p class="p3"><span class="Apple-tab-span">	</span>]).play;</p>
+<p class="p5"><br></p>
+<p class="p4">)</p>
+<p class="p5"><br></p>
+</body>
+</html>

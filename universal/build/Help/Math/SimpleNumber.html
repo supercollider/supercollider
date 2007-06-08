@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+span.s1 {text-decoration: underline}
+span.s2 {font: 12.0px Helvetica}
+span.s3 {color: #a71e12}
+span.s4 {color: #0019b7}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SimpleNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: Number</b></p>
+<p class="p2"><br></p>
+<p class="p3">Represents numbers which can be represented by a single one dimensional value.</p>
+<p class="p3">Most of the Unary and Binary operations are also implemented by UnaryOpUGen</p>
+<p class="p3">and BinaryOpUGen, so you can get more examples by looking at the help for those.</p>
+<p class="p2"><br></p>
+<p class="p4"><b><span class="s1">Unary Operations</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>neg</b></p>
+<p class="p2"><br></p>
+<p class="p3">negation</p>
+<p class="p2"><br></p>
+<p class="p3"><b>bitNot</b></p>
+<p class="p2"><br></p>
+<p class="p3">ones complement</p>
+<p class="p2"><br></p>
+<p class="p3"><b>abs</b></p>
+<p class="p2"><br></p>
+<p class="p3">absolute value.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>ceil</b></p>
+<p class="p2"><br></p>
+<p class="p3">next larger integer.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>floor</b></p>
+<p class="p2"><br></p>
+<p class="p3">next smaller integer</p>
+<p class="p2"><br></p>
+<p class="p3"><b>frac</b></p>
+<p class="p2"><br></p>
+<p class="p3">fractional part.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sign</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer -1 if negative, +1 if positive or 0 if zero.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>squared</b></p>
+<p class="p2"><br></p>
+<p class="p3">The square of the number.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>cubed</b></p>
+<p class="p2"><br></p>
+<p class="p3">The cube of the number.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sqrt</b></p>
+<p class="p2"><br></p>
+<p class="p3">The square root of the number.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>exp</b></p>
+<p class="p2"><br></p>
+<p class="p3">e to the power of the receiver.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>reciprocal</b></p>
+<p class="p2"><br></p>
+<p class="p3">1 / this</p>
+<p class="p2"><br></p>
+<p class="p3"><b>midicps</b></p>
+<p class="p2"><br></p>
+<p class="p3">Convert MIDI note to cycles per second</p>
+<p class="p2"><br></p>
+<p class="p3"><b>cpsmidi</b></p>
+<p class="p2"><br></p>
+<p class="p3">Convert cycles per second to MIDI note.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>midiratio</b></p>
+<p class="p2"><br></p>
+<p class="p3">Convert an interval in semitones to a ratio.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>ratiomidi</b></p>
+<p class="p2"><br></p>
+<p class="p3">Convert a ratio to an interval in semitones.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>ampdb</b></p>
+<p class="p2"><br></p>
+<p class="p3">Convert a linear amplitude to decibels.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>dbamp</b></p>
+<p class="p2"><br></p>
+<p class="p3">Convert a decibels to a linear amplitude.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>octcps</b></p>
+<p class="p2"><br></p>
+<p class="p3">Convert decimal octaves to cycles per second.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>cpsoct</b></p>
+<p class="p2"><br></p>
+<p class="p3">Convert cycles per second to decimal octaves.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>log</b></p>
+<p class="p2"><br></p>
+<p class="p3">Base e logarithm.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>log2</b></p>
+<p class="p2"><br></p>
+<p class="p3">Base 2 logarithm.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>log10</b></p>
+<p class="p2"><br></p>
+<p class="p3">Base 10 logarithm.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sin</b></p>
+<p class="p2"><br></p>
+<p class="p3">Sine.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>cos</b></p>
+<p class="p2"><br></p>
+<p class="p3">Cosine.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>tan</b></p>
+<p class="p2"><br></p>
+<p class="p3">Tangent.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>asin</b></p>
+<p class="p2"><br></p>
+<p class="p3">Arcsine.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>acos</b></p>
+<p class="p2"><br></p>
+<p class="p3">Arccosine.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>atan</b></p>
+<p class="p2"><br></p>
+<p class="p3">Arctangent.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sinh</b></p>
+<p class="p2"><br></p>
+<p class="p3">Hyperbolic sine.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>cosh</b></p>
+<p class="p2"><br></p>
+<p class="p3">Hyperbolic cosine.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>tanh</b></p>
+<p class="p2"><br></p>
+<p class="p3">Hyperbolic tangent.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>rand</b></p>
+<p class="p2"><br></p>
+<p class="p3">Random number from zero up to the receiver, exclusive.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>rand2</b></p>
+<p class="p2"><br></p>
+<p class="p3">Random number from -this to +this.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>linrand</b></p>
+<p class="p2"><br></p>
+<p class="p3">Linearly distributed random number from zero to this.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>bilinrand</b></p>
+<p class="p2"><br></p>
+<p class="p3">Bilateral linearly distributed random number from -this to +this.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sum3rand</b></p>
+<p class="p2"><br></p>
+<p class="p3">A random number<span class="Apple-converted-space">  </span>from -this to +this that is the result of summing three uniform random generators</p>
+<p class="p3">to yield a bell-like distribution. This was suggested by Larry Polansky as a poor man's gaussian.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>distort</b></p>
+<p class="p2"><br></p>
+<p class="p3">a nonlinear distortion function.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>softclip</b></p>
+<p class="p2"><br></p>
+<p class="p3">Distortion with a perfectly linear region from -0.5 to +0.5</p>
+<p class="p2"><br></p>
+<p class="p3"><b>coin</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answers a Boolean which is the result of a random test whose probability of success in a range from<span class="Apple-converted-space"> </span></p>
+<p class="p3">zero to one is <span class="s1">this</span>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>even</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer if the number is even.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>odd</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer if the number is odd.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>isPositive</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer if the number is &gt;= 0.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>isNegative</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer if the number is &lt; 0.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>isStrictlyPositive</b></p>
+<p class="p2"><br></p>
+<p class="p3">Answer if the number is &gt; 0.</p>
+<p class="p2"><br></p>
+<p class="p4"><b><span class="s1">Binary Operations</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>+ aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Addition</p>
+<p class="p2"><br></p>
+<p class="p3"><b>- aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Subtraction</p>
+<p class="p2"><br></p>
+<p class="p3"><b>* aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Multiplication</p>
+<p class="p2"><br></p>
+<p class="p3"><b>/ aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Division</p>
+<p class="p2"><br></p>
+<p class="p3"><b>% aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Modulo</p>
+<p class="p2"><br></p>
+<p class="p3"><b>div(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Integer Division</p>
+<p class="p2"><br></p>
+<p class="p3"><b>** aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Exponentiation</p>
+<p class="p2"><br></p>
+<p class="p3"><b>min(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Minimum</p>
+<p class="p2"><br></p>
+<p class="p3"><b>max(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Maximum</p>
+<p class="p2"><br></p>
+<p class="p3"><b>&amp; aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Bitwise And</p>
+<p class="p2"><br></p>
+<p class="p3"><b>| aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Bitwise Or</p>
+<p class="p2"><br></p>
+<p class="p3"><b>bitXor(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Bitwise Exclusive Or</p>
+<p class="p2"><br></p>
+<p class="p3"><b>lcm(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Least common multiple</p>
+<p class="p2"><br></p>
+<p class="p3"><b>gcd(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Greatest common divisor</p>
+<p class="p2"><br></p>
+<p class="p3"><b>round(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Round to multiple of aNumber</p>
+<p class="p2"><br></p>
+<p class="p3"><b>trunc(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Truncate to multiple of aNumber</p>
+<p class="p2"><br></p>
+<p class="p3"><b>atan2(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Arctangent of (this/aNumber)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>hypot(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Square root of the sum of the squares.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>&lt;&lt; aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Binary shift left.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>&gt;&gt; aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Binary shift right.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>+&gt;&gt; aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Unsigned binary shift right.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>fill(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>ring1(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">(a * b) + a</p>
+<p class="p2"><br></p>
+<p class="p3"><b>ring2(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">((a*b) + a + b)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>ring3(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">(a*a *b)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>ring4(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">((a*a *b) - (a*b*b))</p>
+<p class="p2"><br></p>
+<p class="p3"><b>difsqr(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">(a*a) - (b*b)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sumsqr(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">(a*a) + (b*b)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sqrdif(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">(a - b)**2</p>
+<p class="p2"><br></p>
+<p class="p3"><b>sqrsum(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">(a + b)**2</p>
+<p class="p2"><br></p>
+<p class="p3"><b>absdif(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">(a - b).abs</p>
+<p class="p2"><br></p>
+<p class="p3"><b>amclip(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">0<span class="Apple-converted-space">  </span>when<span class="Apple-converted-space">  </span>b &lt;= 0,<span class="Apple-converted-space">  </span>a*b<span class="Apple-converted-space">  </span>when<span class="Apple-converted-space">  </span>b &gt; 0</p>
+<p class="p2"><br></p>
+<p class="p3"><b>scaleneg(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">a*b when a &lt; 0, otherwise a.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>clip2(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">clips receiver to +/- aNumber</p>
+<p class="p2"><br></p>
+<p class="p3"><b>excess(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns the difference of the receiver and its clipped form: (a - clip2(a,b)).</p>
+<p class="p2"><br></p>
+<p class="p3"><b>&lt;! aNumber</b></p>
+<p class="p2"><br></p>
+<p class="p3">Return the receiver. aNumber is ignored.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>asFraction(denominator, fasterBetter)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Return an array of denominator and divisor of the nearest and smallest fraction</p>
+<p class="p2"><br></p>
+<p class="p3"><b>rrand(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Returns a random number in the interval [a, b). If both a and b are Integer then the result will be an Integer.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>exprand(aNumber)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Returns an exponentially distributed random number in the interval [a, b). Always returns a Float.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>degreeToKey(scale, stepsPerOctave)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>the value is truncated to an integer and used as an index into an octave repeating table of note values.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Indices wrap around the table and shift octaves as they do</p>
+<p class="p3"><span class="Apple-tab-span">	</span>stepsPerOctave is 12 by default</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s3">// pentatonic scale</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(1, 2..15).collect { <span class="s4">|i|</span> i.degreeToKey(l, 12) }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>keyToDegree(scale, stepsPerOctave)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>inverse of degreeToKey.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>stepsPerOctave is 12 by default</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s3">// pentatonic scale</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(60, 61..75).collect { <span class="s4">|i|</span> i.keyToDegree(l, 12) }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s3">// pentatonic scale</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(60, 61..75).postln.collect { <span class="s4">|i|</span> i.keyToDegree(l, 12).degreeToKey(l) }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>nearestInList(list)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>returns the value in the collection closest to this</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 0.5, 0.9, 1];</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(0, 0.05..1).collect { |i| i.nearestInList(l) }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>nearestInScale(scale, stepsPerOctave)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>returns the value in the collection closest to this, assuming an octave repeating table of note values.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>stepsPerOctave is 12 by default</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s3">// pentatonic scale</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(60, 61..76).collect { |i| i.nearestInScale(l, 12) }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>asTimeString(precision)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>returns a string corresponding to the hours:minutes:seconds based on the receiver as number of seconds</p>
+<p class="p3"><span class="Apple-tab-span">	</span>precision is 0.1 by default</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var start;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>start = Main.elapsedTime;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ loop({(Main.elapsedTime - start).asTimeString.postln; 0.05.wait}) }.fork;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+</body>
+</html>

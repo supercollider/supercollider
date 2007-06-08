@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #606060}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #606060}
+span.s4 {font: 9.0px Monaco; color: #000000}
+span.s5 {font: 9.0px Monaco}
+span.s6 {font: 9.0px Arial}
+span.s7 {font: 9.0px Helvetica}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCStaticText</b></p>
+<p class="p2"><br></p>
+<p class="p3">A non-editable textfield</p>
+<p class="p2"><br></p>
+<p class="p3"><b>string_(string)</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b>set the text.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>font_(font)</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b>set the font.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>stringColor_(color)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the color of the string.</p>
+<p class="p4"><br></p>
+<p class="p5"><b>Examples</b></p>
+<p class="p4"><br></p>
+<p class="p6">(</p>
+<p class="p6">w = <span class="s1">SCWindow</span>.new.front;</p>
+<p class="p6">a = <span class="s1">SCStaticText</span>(w, <span class="s1">Rect</span>(10, 10, 100, 20));</p>
+<p class="p7"><span class="s2">a.string = </span>"Rolof's Rolex"<span class="s2">;</span></p>
+<p class="p6">)</p>
+<p class="p4"><br></p>
+<p class="p8">// adjust bounds</p>
+<p class="p6">a.bounds = <span class="s1">Rect</span>(5, 5, 100, 20)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p8">///// dynamic</p>
+<p class="p4"><br></p>
+<p class="p6">(</p>
+<p class="p6">w = <span class="s1">SCWindow</span>.new.front;</p>
+<p class="p6">a = <span class="s1">Array</span>.fill(20, {<span class="s1">SCStaticText</span>(w, <span class="s1">Rect</span>(w.bounds.extent.x.rand, w.bounds.extent.y.rand, 100, 16))</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.string_(<span class="s3">"Rolof's Rolex"</span>.scramble)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.stringColor_(Color.rand)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.font_(Font([</p>
+<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"</span><b>Helvetica-Bold</b><span class="s5">",</span></p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"</span>Helvetica<span class="s5">",</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"Monaco",</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"<span class="s6">Arial</span>",</p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"</span>Gadget<span class="s5">",</span></p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"</span>MarkerFelt-Thin<span class="s7">"</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>].choose, 16))</p>
+<p class="p6">});</p>
+<p class="p6">)</p>
+<p class="p4"><br></p>
+<p class="p6">r = {<span class="s1">inf</span>.do{<span class="s1">|i|</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">thisThread</span>.randSeed_(1284);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>a.do{<span class="s1">|item|</span><span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{item.bounds = <span class="s1">Rect</span>(5+w.bounds.extent.x.rand * (cos(i*0.01)).abs, w.bounds.extent.y.rand * sin(i*0.001), 100, 20)}.defer;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>};</p>
+<p class="p6"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p6">}}.fork</p>
+<p class="p4"><br></p>
+<p class="p6">r.stop</p>
+<p class="p4"><br></p>
+</body>
+</html>

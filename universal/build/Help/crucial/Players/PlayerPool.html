@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0019b7}
+span.s3 {color: #326f17}
+span.s4 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>PlayerPool</b></span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>switch between players</b></p>
+<p class="p2"><br></p>
+<p class="p1">superclass: PlayerSocket</p>
+<p class="p2"><br></p>
+<p class="p1">This is a PlayerSocket with a supplied pool of players that it can switch between.</p>
+<p class="p3"><br></p>
+<p class="p4">See PlayerSocket regarding Envelopes and .release</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Instr</span>([<span class="s3">\oscillOrc</span>,<span class="Apple-tab-span">	</span><span class="s3">\pmosc</span>],{ <span class="s2">arg</span> freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0,gate=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PMOsc</span>.ar(freq,freq2,pmindex,phasemod,amp)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.adsr,gate)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span>p = </span><span class="s2">Patch</span><span class="s4">.new([ </span>'oscillOrc'<span class="s4">, </span>'pmosc'<span class="s4"> ],</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>[</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>KrNumberEditor<span class="s4">(240.06,</span><span class="s3">\freq</span><span class="s4">),<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317,</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></span>KrNumberEditor<span class="s4">(1.0,</span><span class="s3">\gate</span><span class="s4">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> ]);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> q = <span class="s2">Patch</span>.new([ <span class="s3">'oscillOrc'</span>, <span class="s3">'pmosc'</span> ],</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>KrNumberEditor<span class="s4">(90,</span><span class="s3">\freq</span><span class="s4">),<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></span><span class="s2">Patch</span><span class="s4">.new([ </span>'oscillOrc'<span class="s4">, </span>'pmosc'<span class="s4"> ],</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">KrNumberEditor</span>(150.06,<span class="s3">\freq</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Patch</span><span class="s4">.new([ </span>'oscillOrc'<span class="s4">, </span>'pmosc'<span class="s4"> ],</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">KrNumberEditor</span>(150.06,<span class="s3">\freq</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span>KrNumberEditor<span class="s4">(1.0,</span><span class="s3">\gate</span><span class="s4">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> ]);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> r =<span class="Apple-converted-space">  </span><span class="s2">Patch</span>.new([ <span class="s3">'oscillOrc'</span>, <span class="s3">'pmosc'</span> ], [</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>KrNumberEditor<span class="s4">(40,</span><span class="s3">\freq</span><span class="s4">),<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span><span class="s2">nil</span>,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span><span class="s2">Patch</span>.new([ <span class="s3">'oscillOrc'</span>, <span class="s3">'pmosc'</span> ], [</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">KrNumberEditor</span>(150.06,<span class="s3">\freq</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Patch</span><span class="s4">.new([ </span>'oscillOrc'<span class="s4">, </span>'pmosc'<span class="s4"> ], [</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">KrNumberEditor</span>(150.06,<span class="s3">\freq</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span>KrNumberEditor<span class="s4">(1.0,</span><span class="s3">\gate</span><span class="s4">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> ]);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> <span class="s2">PlayerPool</span>([ p,q,r ],round:1.0).gui</p>
+<p class="p4">)</p>
+<p class="p1">Since we don't know how big the gui is going to be, it assumes to hog all the space.</p>
+<p class="p1">When you know, you can explictly gui it to that size:</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">PlayerPool</span>([p,q,r],round: 1.0).gui(<span class="s2">nil</span>, 500@300)</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p1">Easiest to use with lists of paths to saved players.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>eg. <span class="s2">PlayerPool</span>( paths )</p>
+<p class="p3"><br></p>
+<p class="p1">If the patches had been loaded from disk, they would display their filenames in the select buttons.</p>
+<p class="p3"><br></p>
+<p class="p7">//PlayerPool([p,q,r],round:1.0).smallGui</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p8"><b>Without gui</b></p>
+<p class="p4">(</p>
+<p class="p4">o = <span class="s2">PlayerPool</span>([p,q,r],</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env: <span class="s2">Env</span>.asr(1.0,release: 8.0),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>round: 0.0);</p>
+<p class="p3"><br></p>
+<p class="p4">o.play</p>
+<p class="p4">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">o.choose;</p>
+<p class="p3"><br></p>
+<p class="p4">o.select(1);</p>
+<p class="p3"><br></p>
+<p class="p4">o.release;</p>
+<p class="p3"><br></p>
+<p class="p4">o.free;</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// getPaths is broken and only gets one path :()</p>
+<p class="p4">(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">CocoaDialog</span>.getPaths({ <span class="s2">arg</span> paths;<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>PlayerPool<span class="s4">(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>paths.collect({ <span class="s2">arg</span> path;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SFP</span>(path)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>).gui</p>
+<p class="p4"><span class="Apple-tab-span">	</span>})</p>
+<p class="p4">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p1"><b>Sending the PlayerPool through an effect patch</b></p>
+<p class="p3"><br></p>
+<p class="p1">the gate inputs on p, q, and r are left high. when the PlayerPool switches, it sends a release by dropping the gate, then calling .stop</p>
+<p class="p2"><br></p>
+<p class="p1">since PlayerPool is a subclass of PlayerSocket, it already envelopes the audio output of the players.</p>
+<p class="p1">this example shows:</p>
+<p class="p1"><span class="Apple-tab-span">	</span>1.<span class="Apple-converted-space">  </span>putting the entire thing through another Patch effect process</p>
+<p class="p1"><span class="Apple-tab-span">	</span>2. that all the \gate args in a synth will be released when .release is called</p>
+<p class="p3"><br></p>
+<p class="p4">still a bug with EnvelopedPlayer.</p>
+<p class="p3"><br></p>
+<p class="p4">first time a patch plays, its in the wrong group</p>
+<p class="p4">(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Instr</span>([<span class="s3">\oscillOrc</span>,<span class="Apple-tab-span">	</span><span class="s3">\pmosc</span>],{ <span class="s2">arg</span> freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0,gate=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PMOsc</span>.ar(freq,freq2,pmindex,phasemod,amp) * <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.adsr,gate: gate)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span>p = </span><span class="s2">Patch</span><span class="s4">.new([ </span>'oscillOrc'<span class="s4">, </span>'pmosc'<span class="s4"> ],</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>[</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>KrNumberEditor<span class="s4">(240.06,</span><span class="s3">\freq</span><span class="s4">),<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317,</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></span>KrNumberEditor<span class="s4">(1,</span><span class="s3">\gate</span><span class="s4">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> ]);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> q = <span class="s2">Patch</span>.new([ <span class="s3">'oscillOrc'</span>, <span class="s3">'pmosc'</span> ],</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>KrNumberEditor<span class="s4">(90,</span><span class="s3">\freq</span><span class="s4">),<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></span><span class="s2">Patch</span><span class="s4">.new([ </span>'oscillOrc'<span class="s4">, </span>'pmosc'<span class="s4"> ],</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">KrNumberEditor</span>(150.06,<span class="s3">\freq</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317,</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></span>KrNumberEditor<span class="s4">(1,</span><span class="s3">\gate</span><span class="s4">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Patch</span><span class="s4">.new([ </span>'oscillOrc'<span class="s4">, </span>'pmosc'<span class="s4"> ],</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">KrNumberEditor</span>(150.06,<span class="s3">\freq</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317,</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></span>KrNumberEditor<span class="s4">(1,</span><span class="s3">\gate</span><span class="s4">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span>KrNumberEditor<span class="s4">(1,</span><span class="s3">\gate</span><span class="s4">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> ]);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> r =<span class="Apple-converted-space">  </span><span class="s2">Patch</span>.new([ <span class="s3">'oscillOrc'</span>, <span class="s3">'pmosc'</span> ], [</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>KrNumberEditor<span class="s4">(40,</span><span class="s3">\freq</span><span class="s4">),<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span><span class="s2">nil</span>,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span><span class="s2">Patch</span>.new([ <span class="s3">'oscillOrc'</span>, <span class="s3">'pmosc'</span> ], [</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">KrNumberEditor</span>(150.06,<span class="s3">\freq</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317,</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span>BeatClockPlayer<span class="s4">(10)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Patch</span><span class="s4">.new([ </span>'oscillOrc'<span class="s4">, </span>'pmosc'<span class="s4"> ], [</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">KrNumberEditor</span>(150.06,<span class="s3">\freq</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>27.7707,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>1.3,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317,</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span>BeatClockPlayer<span class="s4">(12)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span>BeatClockPlayer<span class="s4">(16)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span> ]);</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s2">Patch</span>({ <span class="s2">arg</span> audio,delayTime=0.3,feedback=0.2,buffer;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">PingPong</span>.ar(buffer.bufnumIr, [audio,audio],delayTime,feedback)</p>
+<p class="p4">},[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">PlayerPool</span>([p,q,r],</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env: <span class="s2">Env</span>.adsr(1.0,releaseTime: 8.0),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>round: 0.0),</p>
+<p class="p4"><span class="Apple-tab-span">	</span>0.3,</p>
+<p class="p4"><span class="Apple-tab-span">	</span>0.5,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">BufferProxy</span>.new(44100,2)</p>
+<p class="p4">]).gui</p>
+<p class="p3"><br></p>
+<p class="p4">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">/* stress testing</p>
+<p class="p4"><span class="Apple-tab-span">	</span>players aren't designed to be played this fast.<span class="Apple-converted-space">  </span>for fast iterations,</p>
+<p class="p4"><span class="Apple-tab-span">	</span>use InstrGateSpawner etc.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>but this test shows where the weakness is.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(releases are overlapping next starts)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>being worked on.</p>
+<p class="p4">*/</p>
+<p class="p4">(</p>
+<p class="p4">var a,pool;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s2">Instr</span>([<span class="s3">\klankperc</span>,<span class="s3">\k2a</span>],{ <span class="s2">arg</span> trig=0.0,sfreqScale=1.0,sfreqOffset=0.0,stimeScale=1.0,foldAt=0.1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Klank</span>.ar(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>`[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">FloatArray</span>[ rrand(40,1000), rrand(40,1000) ],</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">nil</span>,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">FloatArray</span>[ 0.165394, 0.15595 ]</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">K2A</span>.ar(trig),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sfreqScale,sfreqOffset,stimeScale</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>).squared.fold2(foldAt)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4">},[</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>nil<span class="s4">,</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>[0.01,100],</p>
+<p class="p4"><span class="Apple-tab-span">	</span>[0,10000],</p>
+<p class="p4"><span class="Apple-tab-span">	</span>[0.01,100]</p>
+<p class="p4">]);</p>
+<p class="p3"><br></p>
+<p class="p4">a =<span class="Apple-tab-span">	</span><span class="s2">Array</span>.fill(5,{ <span class="s2">arg</span> i;</p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Patch</span><span class="s4">.new([</span>\klankperc<span class="s4">,</span>\k2a<span class="s4">],</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>BeatClockPlayer<span class="s4">(16),</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i * (3.midiratio),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i * (3.midiratio),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>pool = <span class="s2">PlayerPool</span>( a,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env: <span class="s2">Env</span>.asr(0.01,releaseTime: 0.001),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>round: 0.25);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>pool.play;</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>Routine({</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loop {</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.05.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pool.select(a.size.rand.debug("selecting:"));</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}).play(AppClock);</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4">)</p>
+<p class="p3"><br></p>
+</body>
+</html>

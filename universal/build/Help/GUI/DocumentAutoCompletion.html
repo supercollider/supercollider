@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 23.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0019b7}
+span.s1 {color: #0019b7}
+span.s2 {color: #606060}
+span.s3 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SuperCollider autocompletion v0.3</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Usage:<span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><br></p>
+<p class="p4">To open a text window with the auto-complete feature enabled, execute the following in SuperCollider:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s1">Document</span>.autoComplete</p>
+<p class="p2"><br></p>
+<p class="p4">(ac is a shortcut for Auto-complete, to make it easier to type.)</p>
+<p class="p2"><br></p>
+<p class="p4">To open a file by pathname:</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s1">Document</span>.openFileAutoComplete(<span class="s2">"myPath.rtf"</span>);</p>
+<p class="p6"><span class="s1">Document</span><span class="s3">.openFileAutoComplete(</span><span class="s2">"*.sc"</span><span class="s3">);<span class="Apple-tab-span">	</span></span>// wildcards are supported</p>
+<p class="p2"><br></p>
+<p class="p4">To bring up an open-file dialog:</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s1">Document</span>.openAutoComplete</p>
+<p class="p2"><br></p>
+<p class="p4">Autocompletion will be integrated more tightly into the code editor.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Summary:<span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><br></p>
+<p class="p4">While editing code in an auto-complete code window, the following keystrokes initiate special actions:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4"><b>(</b> -- attempt to match the preceding identifier to method names containing that string, and display a list of methods with their defining classes. Making a selection will insert a method template into your document.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">( will also match classnames, with the .new method: Rect( will show you a method template for Rect-*new.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>.</b> -- attempt to match the preceding identifier to an exact class name, and present a list of class methods (not instance methods). Your selection will insert a method template into the document.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4"><b>ctrl-.</b> -- attempt to match the preceding identifier to class names containing the identifier, and present a list of those class names. Your selection will open a class browser. You can navigate through the class tree to find the method you want, and press enter in the method list to insert a method template.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4"><b>Shortcut in the class browser:</b> type ^ in the method list to go to the superclass. This allows speedier location of methods inherited from superclasses.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Special behavior for ctrl-.</b> -- when you choose a method in a class browser, its class will be compared to the class you chose in the opening list. If the initial class responds to the method, the initial class will be put into the document; otherwise, the class from the class browser.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Feature description:<span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><br></p>
+<p class="p4">When you type a dot, SuperCollider will to check the previous text to see if it refers to a valid class. If so, a window will be presented with all the class methods (not instance methods) of the class.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">So, for example, if you type:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p7">SinOsc<span class="s3">.</span></p>
+<p class="p2"><br></p>
+<p class="p4">the window will display the options:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">ar(freq, phase, mul, add)</p>
+<p class="p4">buildSynthDef()</p>
+<p class="p4">buildSynthDef_()</p>
+<p class="p4">....<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">If you type the first few letters into the text box, the list will reduce itself to the matching entries. If you type 'a', then the list will contain only:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">ar(freq, phase, mul, add)</p>
+<p class="p2"><br></p>
+<p class="p4">Press enter or return, and the method name with all its arguments will be added to your document, leaving the text:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s1">SinOsc</span>.ar(freq, phase, mul, add)</p>
+<p class="p2"><br></p>
+<p class="p4">You can also click on the item you want in the list (or move through the list with the up and down arrow keys), and then press return.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">Pressing escape or closing the window will cancel the auto-complete. Text typed into the text box prior to canceling will be added to the document--so, if you keep typing while the box comes up and you want to ignore it, your text will not be lost.</p>
+<p class="p2"><br></p>
+<p class="p4">Similar behavior for method names: when you type an open parenthesis '(', SuperCollider will display a list of all classes that define this method. Type the first few letters of the class name (don't forget to capitalize) to choose the right one.</p>
+<p class="p2"><br></p>
+<p class="p4">This treatment is necessary because variables in SuperCollider are not typed. If you enter 'func.value(', the text editor has no way to know what kind of object will be contained in func at the time of execution. So, it presents you with all possible options and allows you to choose.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4"><b>New: </b>The autocompleter now supports partial string matching for methods (triggered by typing open-paren) and classes (not by typing dot, but by typing ctrl-dot). In the case of classes, you will be given a list of classes matching the string typed. After you choose from the list, a full class browser will be opened. When you select a method and press enter, a method template will be dropped into the current document.</p>
+<p class="p2"><br></p>
+<p class="p4">Because the class browser does not show methods defined by superclasses, you may press ^ to go to the superclass.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Further configuration:<span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><br></p>
+<p class="p4">Place the startup.rtf file in a folder called scwork in your home user directory. You can define class names and method names to be excluded from the browsers. I like to exclude the most common flow of control mechanisms (while, do, if, etc.).</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Quirks and caveats:<span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><br></p>
+<p class="p4">The auto complete features will be lost from all documents when recompiling the class library.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">Because of the way the document class works, the identifiers will not be extracted correctly if the cursor is at the very end of the document. You should leave a couple of empty lines below what you're typing for the feature to work.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">The method browser does not handle inheritance. If you're browsing a method like 'add', you won't find Array in the list (but you will find its superclass ArrayedCollection).</p>
+<p class="p2"><br></p>
+<p class="p4">Comments or questions to jamshark70@yahoo.com, please. No SPAM!</p>
+</body>
+</html>

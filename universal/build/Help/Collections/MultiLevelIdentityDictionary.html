@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #a71e12}
+span.s1 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>MultiLevelIdentityDictionary</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: Collection</b></p>
+<p class="p2"><br></p>
+<p class="p4">A tree of IdentityDictionaries.<span class="Apple-converted-space">  </span>Addresses within the tree are specified with a series of keys.<span class="Apple-converted-space">  </span>Library is its most useful subclass.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>at(key1,key2 ... keyN)</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>retrieves a leaf node or nil if not found.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><b>put(key1,key2 ... keyN, item)</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>puts the item as a leaf node, internally creating new branches as needed to accommodate the list of keys.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><b>choose</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>choose a branch at each level, descend the tree until a leaf is chosen.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><b>choose(key1,key2 ... keyN)</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>starting at an address within the tree, descend the tree until a leaf is chosen.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><b>putTree</b>(key1,[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>key2a, item1-2a,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>key2b, item1-2b,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>key3, item1-3</p>
+<p class="p5"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>] </span>// etc...</p>
+<p class="p4"><span class="Apple-tab-span">	</span>]);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>A way to insert objects into the tree with a syntax similar to the organization of the tree</p>
+<p class="p4"><span class="Apple-tab-span">	</span>itself.</p>
+</body>
+</html>

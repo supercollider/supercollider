@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #a71e12}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #606060}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0019b7}
+span.s1 {color: #0019b7}
+span.s2 {color: #606060}
+span.s3 {color: #000000}
+span.s4 {color: #a71e12}
+</style>
+</head>
+<body>
+<p class="p1"><b>Bag</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Superclass: Collection</b></p>
+<p class="p2"><br></p>
+<p class="p3">A Bag is an unordered collection of objects.<span class="Apple-converted-space">  </span>In some languages it is referred to as a counted set.<span class="Apple-converted-space">  </span>A Bag keeps track of the number of times objects are inserted and requires that objects be removed the same number of times.<span class="Apple-converted-space">  </span>There is only one instance of an object in a Bag even if the object has been added to the Bag multiple times (test is for <b>equality</b>)</p>
+<p class="p4"><span class="Apple-converted-space"> </span></p>
+<p class="p3">Most of Bag's methods are inherited from Collection.</p>
+<p class="p3">The contents of a Bag are unordered. You must not depend on the order of items in a set.</p>
+<p class="p2"><br></p>
+<p class="p5"><b>Adding and Removing:</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>add(anObject)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Add anObject to the Bag. A Bag may contain multiple entries of the same object.</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s1">Bag</span>[1, 2, 3].add(4).postln;</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s1">Bag</span>[1, 2, 3].add(3).postln;</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s1">Bag</span>[<span class="s2">"abc"</span>, <span class="s2">"def"</span>, <span class="s2">"ghi"</span>].add(<span class="s2">"jkl"</span>).postln;</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s1">Bag</span>[<span class="s2">"abc"</span>, <span class="s2">"def"</span>, <span class="s2">"ghi"</span>].add(<span class="s2">"def"</span>).postln;</p>
+<p class="p2"><br></p>
+<p class="p3"><b>remove(anObject)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Remove anObject from the Bag.</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s1">Bag</span>[1, 2, 3].remove(3).postln;</p>
+<p class="p6"><br></p>
+<p class="p3"><b>contents</b></p>
+<p class="p6"><br></p>
+<p class="p3">Returns the dictionary that stores the objects in pairs (obj -&gt; numberOfObjects)</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s1">Bag</span>["a", "b", "c", "c"].contents;</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p5"><b>Iteration:</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>do(function)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Evaluates function for each item in the Bag.</p>
+<p class="p3">The function is passed two arguments, the item and an integer index.</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s1">Bag</span>[1, 2, 3, 300].do({ <span class="s1">arg</span> item, i; item.postln });</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><b>Difference between Bag and IdentityBag:</b></p>
+<p class="p6"><br></p>
+<p class="p9">// the two strings are equal, but not identical</p>
+<p class="p10">"something"<span class="s3"> == </span>"something"<span class="s3">; </span><span class="s4">// true</span></p>
+<p class="p10">"something"<span class="s3"> === </span>"something"<span class="s3"> </span><span class="s4">// false</span></p>
+<p class="p6"><br></p>
+<p class="p7">a = <span class="s1">Bag</span>.new;</p>
+<p class="p10"><span class="s3">a.add(</span>"something"<span class="s3">);</span></p>
+<p class="p10"><span class="s3">a.add(</span>"something"<span class="s3">);</span></p>
+<p class="p9"><span class="s3">a.contents; </span>// only one object in the bag really</p>
+<p class="p6"><br></p>
+<p class="p11"><span class="s3">a = </span>IdentityBag<span class="s3">.new;</span></p>
+<p class="p10"><span class="s3">a.add(</span>"something"<span class="s3">);</span></p>
+<p class="p10"><span class="s3">a.add(</span>"something"<span class="s3">);</span></p>
+<p class="p9"><span class="s3">a.contents; </span>// two objects in the bag</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>

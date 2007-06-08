@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0000bf}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>Timer</b></span><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>returns time since last triggered</b></p>
+<p class="p2"><br></p>
+<p class="p1">superclass: UGen</p>
+<p class="p3"><b></b><br></p>
+<p class="p3"><br></p>
+<p class="p3"><b></b><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*ar(trig)</b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*kr(trig)</b></p>
+<p class="p3"><b></b><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4">// using timer to modulate sine frequency: the slower the trigger is the higher the frequency</p>
+<p class="p5">(</p>
+<p class="p5">{ <span class="s3">var</span> trig;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>trig = <span class="s3">Impulse</span>.kr(<span class="s3">MouseX</span>.kr(0.5, 20, 1));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">SinOsc</span>.ar(<span class="s3">Timer</span>.kr(trig) * 500 + 500, 0, 0.2)</p>
+<p class="p5">}.play;</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #932919}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0024b0}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0024b0; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0024b0}
+span.s4 {color: #606060}
+span.s5 {color: #000000}
+span.s6 {color: #932919}
+span.s7 {color: #446c21}
+span.s8 {font: 9.0px Monaco; color: #932919}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>SCWindow<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>user interface window</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>*new(name, bounds, resizable, border);</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>bounds</b>: a Rect(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>distance from left,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>distance from bottom,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>width,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>height</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>*closeAll</b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>closes all windows</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>*allWindows</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a list of all windows</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>fullScreen</b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>fullscreeen mode, no way to close it then. so don't forget the button</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>endFullScreen</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>end the fullscreen mode</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>userCanClose_</b> <span class="Apple-tab-span">	</span>if set to false, window is uncloseable</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>close</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>close the window</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>front</b><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>display the window, bring it to the front.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>refresh</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sometimes this has to becalled so the views are updated</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>alpha_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tranparency channel value (0...1)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>bounds_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the bounds to a Rect</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>onClose_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be set to a function</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">//examples</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">//how to add views</p>
+<p class="p6">(</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s3">var</span> w;</p>
+<p class="p6">w = S<span class="s3">CWindow</span>(<span class="s4">"my name is... panel"</span>, <span class="s3">Rect</span>(128, 64, 340, 360));</p>
+<p class="p2"><br></p>
+<p class="p6">32.do({ <span class="s3">arg</span> i;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>b = <span class="s3">SCButton</span>(w, <span class="s3">Rect</span>(rrand(20,300),rrand(20,300), 75, 24));</p>
+<p class="p6"><span class="Apple-tab-span">	</span>b.states = [[<span class="s4">"Start "</span>++i, <span class="s3">Color</span>.black, <span class="s3">Color</span>.rand],</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s4">"Stop "</span>++i, <span class="s3">Color</span>.white, <span class="s3">Color</span>.red]];</p>
+<p class="p6">});</p>
+<p class="p2"><br></p>
+<p class="p6">w.front;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>view</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>every window has an SCTopView instance, which contains all the other views.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p7">(</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s3">var</span> w;</p>
+<p class="p6">w = <span class="s3">SCWindow</span>(<span class="s4">"my name is... panel"</span>, <span class="s3">Rect</span>(128, 64, 340, 360));</p>
+<p class="p2"><br></p>
+<p class="p6">w.view.decorator = <span class="s3">FlowLayout</span>(w.view.bounds);</p>
+<p class="p6">w.view.background = <span class="s3">Color</span>(0.6,0.8,0.8);</p>
+<p class="p6">w.front;</p>
+<p class="p2"><br></p>
+<p class="p6">32.do({ <span class="s3">arg</span> i;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>b = <span class="s3">SCButton</span>(w, <span class="s3">Rect</span>(rrand(20,300),rrand(20,300), 75, 24));</p>
+<p class="p6"><span class="Apple-tab-span">	</span>b.states = [[<span class="s4">"Start "</span>++i, <span class="s3">Color</span>.black, <span class="s3">Color</span>.rand],</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s4">"Stop "</span>++i, <span class="s3">Color</span>.white, <span class="s3">Color</span>.red]];</p>
+<p class="p6">});</p>
+<p class="p2"><br></p>
+<p class="p6">w.front;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p4"><b>bounds_(aRect)</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>set the bounds of the window</p>
+<p class="p6">(</p>
+<p class="p2"><br></p>
+<p class="p6">x = <span class="s3">SCWindow</span>.new;</p>
+<p class="p6">x.front;</p>
+<p class="p2"><br></p>
+<p class="p6">x.bounds_(<span class="s3">Rect</span>(10,10,100,30));</p>
+<p class="p2"><br></p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p4">Note that the setting of the bounds doesn't happen until the application finishes its current application event cycle. Thus, if you check the bounds in the same chunk of code, the SCWindow will not yet have it updated.</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5"><span class="Apple-tab-span">	</span></span>// execute this all at once</p>
+<p class="p6"><span class="Apple-tab-span">	</span>w = <span class="s3">SCWindow</span>.new(<span class="s4">"test"</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>w.bounds = <span class="s3">Rect</span>(50, 50, 50, 50);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>w.bounds.postln;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>{ w.bounds.postln; <span class="s3">nil</span> }.defer(0.1); <span class="s6">// next application event cycle</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>setInnerExtent(width,height)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Changes the size of the window while keeping the top left corner fixed.<span class="Apple-converted-space">  </span>This is the usual desired behavior, but quick draw and Rect have flipped coordinate systems.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>userCanClose_(boolean)</b></p>
+<p class="p3"><br></p>
+<p class="p4">Set this to true to prevent command-w from closing the window.<span class="Apple-converted-space">  </span>window.close will still close it, and it will still close on recompiling the library.</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><b>border argument</b></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="s3">SCWindow</span><span class="s5">.new(border:</span><span class="s3">false</span><span class="s5">).front; </span>//can't be closed, as it has no buttons, also cmd-w not.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">SCWindow</span>.closeAll;</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>onClose</b></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>get the current onClose function.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>onClose_</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b>set a function that will be evaluated when the window is closed.</p>
+<p class="p3"><br></p>
+<p class="p5">//close the window and the synth plays</p>
+<p class="p6">(</p>
+<p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s3">SCWindow</span>.new.front;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>x.alpha = 0.8;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>x.onClose_({ <span class="s3">Synth</span>.new(<span class="s7">\default</span>) });</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p4"><b>acceptsClickThrough</b></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>returns a boolean indicating whether the window receives clicks when not frontmost.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>acceptsClickThrough_(boolean)</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b>sets whether the window receives clicks when not frontmost. The default is true.<span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>

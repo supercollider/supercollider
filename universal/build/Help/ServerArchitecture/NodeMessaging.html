@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {color: #606060}
+span.s2 {color: #000000}
+span.s3 {color: #0019b7}
+span.s4 {color: #326f17}
+span.s5 {font: 12.0px Helvetica}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Node Messaging</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">The most direct and fast way to send commands to the server is to send messages to the Server object, if you are within sc-lang.<span class="Apple-converted-space">  </span>If you are in a shell you can use <b>sendOSC</b> (available from CNMAT).</p>
+<p class="p4"><br></p>
+<p class="p3">this messaging scheme is explained in detail in<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>Server-Architecture</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>Server-Command-Reference</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>Tutorial</b></p>
+<p class="p4"><br></p>
+<p class="p3">When creating nodes on the server (synths and groups) the only things we need to know are the nodeID and the server (its address to be precise).</p>
+<p class="p4"><br></p>
+<p class="p3">In order to communicate with a synth, one sends messages with its nodeID. If you do not intend to communicate with the node after its creation (and the node will cause itself to end without external messaging), the node id can be set to -1, which is the server's equivalent to nil.</p>
+<p class="p4"><br></p>
+<p class="p3">As soon as you want to pass around the reference to a certain node, assuming that you might not have only one server, it can be useful to create a Synth or Group object. These objects also respond to messages, and when needed can be used to obtain the state of the server side node.</p>
+<p class="p4"><br></p>
+<p class="p3">see <b>Node</b>, <b>Synth</b>, and <b>Group</b> help for more detailed helpfiles on node objects.</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">// the equivalent of</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"default"</span>, n);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_free"</span>, n);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p6">// is<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>n = </span><span class="s3">Synth</span><span class="s2">(</span>"default"<span class="s2">);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.free;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p6">// when passing arguments:</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"default"</span>, n, 0, 0, <span class="s4">\freq</span>, 850);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_set"</span>, n, <span class="s4">\freq</span>, 500);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_free"</span>, n);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p6">// it is</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s3">Synth</span>(<span class="s1">"default"</span>, [<span class="s4">\freq</span>, 850]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.set(<span class="s4">\freq</span>, 500)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.free;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><br></p>
+<p class="p3">The answer to the question of whether one should work with <b>node objects </b>or <b>directly with messages</b> depends to some extent on context, and to some extent is a matter of personal taste.</p>
+<p class="p4"><br></p>
+<p class="p3">The encapsulation of node objects results in a certain generalization, meaning that other compound objects can respond to the same messages and thus exploit polymorphism. They also provide a certain level of convienence, keeping track of indexes and IDs, etc.</p>
+<p class="p5"><br></p>
+<p class="p3">In certain cases, such as for granular synthesis it is recommended to use messages directly, because there is no benefit to be gained from the node objects (i.e. no need to message them) and they add cpu load to the client side.</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>SynthDef<span class="s2">(</span><span class="s1">"grain"</span><span class="s2">, {<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, <span class="s3">Line</span>.kr(0.1, 0, 0.01, doneAction:2) * <span class="s3">FSinOsc</span>.ar(12000))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>(</p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>Routine<span class="s2">({<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>20.do({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"grain"</span>, -1);<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.01.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).play;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><br></p>
+<p class="p3">In cases where you need to keep track of the synth's state, it is advisable to use node objects and register them with a <b>NodeWatcher</b>. (see helpfile)</p>
+<p class="p4"><br></p>
+<p class="p3">Apart from such cases it is a matter of taste whether you want to use the combination of message and a numerical global representation or an object representation. The two can be mixed, and certain advantages of the object style can be accessed when using messaging style. For instance Server.nextNodeID allows one to use dynamically assigned IDs in messaging style. As a gross generalization, it is probably fair to say that object style is more convienent, but messaging style is more efficient, due to reduce client-side CPU load.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>IMPORTANT NOTE:</b> If you wish to have the functionality of the <b>default_group</b> (e.g. problem free use of Server's record and scope functionality) you should treat ID 1 (the default_group) as the root of your node tree rather than ID 0 (the <b>RootNode</b>). See <b>default_group</b> for more details.</p>
+<p class="p5"><br></p>
+<p class="p3">Note that <b>Function-play</b> and <b>SynthDef-play</b> return a synth object that can be used to send messages to.</p>
+<p class="p5"><br></p>
+<p class="p7">x = { <span class="s3">arg</span> freq=1000; <span class="s3">Ringz</span>.ar(<span class="s3">Crackle</span>.ar(1.95, 0.1), freq, 0.05) }.play(s);</p>
+<p class="p7">x.set(<span class="s4">\freq</span>, 1500);</p>
+<p class="p7">x.free;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+</body>
+</html>

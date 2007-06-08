@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {color: #0000bf}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>LFPulse<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pulse oscillator</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>LFPulse.ar(freq, iphase,width, mul, add)</b></p>
+<p class="p3"><b>LFPulse.kr(freq, iphase,width, mul, add)</b></p>
+<p class="p2"><br></p>
+<p class="p3">A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.</p>
+<p class="p3"><b>freq</b> - frequency in Hertz</p>
+<p class="p3"><b>iphase</b> - initial phase offset in cycles ( 0..1 )</p>
+<p class="p3"><b>width</b> - pulse width duty cycle from zero to one.</p>
+<p class="p2"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s1">Server</span>.internal.boot;</p>
+<p class="p5">({ <span class="s1">LFPulse</span>.ar(500, 0, <span class="s1">MouseX</span>.kr, 0.5) }).scope;</p>
+<p class="p6"><br></p>
+<p class="p7">// used as both Oscillator and LFO:</p>
+<p class="p5">({ <span class="s1">LFPulse</span>.ar(<span class="s1">LFPulse</span>.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) }).scope;</p>
+<p class="p6"><br></p>
+<p class="p7">//compare with band limited Pulse UGen:</p>
+<p class="p5">(</p>
+<p class="p5">{[<span class="Apple-tab-span">	</span><span class="s1">Pulse</span>.ar(100, 0.3, 0.5),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">LFPulse</span>.ar(100, 0, 0.3, 0.5)</p>
+<p class="p5">]}.scope(bufsize: 44100, zoom: 5)</p>
+<p class="p5">)</p>
+</body>
+</html>

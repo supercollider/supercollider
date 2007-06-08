@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 20.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #326f17}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
+span.s1 {color: #000000}
+span.s2 {color: #326f17}
+span.s3 {color: #0019b7}
+span.s4 {color: #a71e12}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>ObjectSpec : Spec</b></p>
+<p class="p2"><br></p>
+<p class="p3">Allows any kind of object to be specified as a default for an Instr argument.</p>
+<p class="p2"><br></p>
+<p class="p3">The object should be a kind of object that does not have an Editor in the Patch system... e.g., for Env, the spec should be an EnvSpec. The object will not be editable after patch creation.</p>
+<p class="p2"><br></p>
+<p class="p3">Suitable objects for ObjectSpec are static Arrays, other data structures used to build parallel or serial structures, or even Functions that provide additional UGens to the Patch.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>*new(obj)</b></p>
+<p class="p2"><br></p>
+<p class="p3">obj is the object that will be used as the default when the Patch is built.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>defaultControl</b></p>
+<p class="p3"><b>defaultControl_</b></p>
+<p class="p2"><br></p>
+<p class="p3">Access or change the object.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Example:</b></p>
+<p class="p2"><br></p>
+<p class="p3">In this patch, the Instr defines a filter structure, but leaves the choice of exciter up to the user. If the user doesn't provide an exciter, a default will be used.</p>
+<p class="p2"><br></p>
+<p class="p3">Since the Formlet filter's impulse response is a sine wave, formHarmRatios and formHarmAmps accept arrays that create an additive array of Formlets. Formlet is a very efficient UGen, so the Patch is still CPU cheap!</p>
+<p class="p2"><br></p>
+<p class="p3">The result resembles CHANT (IRCA/M, 1979).</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p5">// define the Instr</p>
+<p class="p6">Instr<span class="s1">([</span><span class="s2">\analog</span><span class="s1">, </span><span class="s2">\voxlet</span><span class="s1">], { </span>|freq, gate, exciterFunc, detune, formfreq, ffreq, env, formfreqenv, attacktime, decaytime, vsens, fenvsens, formHarmRatios, formHarmAmps|</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">var</span> amp, sig;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>formfreq = formfreq * ((<span class="s3">EnvGen</span>.kr(formfreqenv, gate) * fenvsens) + 1);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>amp = (<span class="s3">Latch</span>.kr(gate, gate)-1) * vsens + 1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>sig = exciterFunc.value(freq, detune);<span class="Apple-tab-span">	</span><span class="s4">// this func is user supplied</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>sig = <span class="s3">Formlet</span>.ar(sig,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>formHarmRatios.notNil.if({ formfreq * formHarmRatios }, { formfreq }),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>attacktime, decaytime, mul: formHarmAmps ?? { 1 });</p>
+<p class="p5"><span class="s1"><span class="Apple-tab-span">	</span></span>// formlet is a bit volatile, so limit its amplitude</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(<span class="s3">Limiter</span>.ar(<span class="s3">LPF</span>.ar(<span class="s3">Mix</span>.ar(sig), ffreq), 0.9, 0.06)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s3">EnvGen</span>.kr(env, gate, doneAction:2)) ! 2</p>
+<p class="p4">}, [</p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>\freq<span class="s1">,</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>\amp<span class="s1">,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// default func is an audio-rate impulse to provide the base frequency</p>
+<p class="p5"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// override this with a func for a different exciter</p>
+<p class="p5"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// your func may have a frequency and detune argument</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// it should output 1 channel only</p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span>ObjectSpec<span class="s1">({ </span>|fr|<span class="s1"> </span>Impulse<span class="s1">.ar(fr) }),</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>\mydetune<span class="s1">,</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>\freq<span class="s1">,</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>#[20, 20000, <span class="s2">\exp</span>, 0, 1200],</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">EnvSpec</span>(<span class="s3">Env</span>.adsr(0.07, 0.2, 0.8, 0.11)),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">EnvSpec</span>(<span class="s3">Env</span>(#[0, 0], [1])),</p>
+<p class="p4"><span class="Apple-tab-span">	</span>#[0.0001, 1, <span class="s2">\exp</span>, 0, 0.01],</p>
+<p class="p4"><span class="Apple-tab-span">	</span>#[0.0001, 1, <span class="s2">\exp</span>, 0, 0.1],</p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>\amp<span class="s1">,</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>\amp<span class="s1">,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s3">ObjectSpec</span><span class="s1">(</span><span class="s3">nil</span><span class="s1">),<span class="Apple-tab-span">	</span></span>// arrays by default are nil -- ugenfunc fills in the true default here</p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span>ObjectSpec<span class="s1">(</span>nil<span class="s1">)</span></p>
+<p class="p4">]);</p>
+<p class="p4">)</p>
+<p class="p8"><br></p>
+<p class="p5">// use the default exciter</p>
+<p class="p4">p = <span class="s3">Patch</span>([<span class="s2">\analog</span>, <span class="s2">\voxlet</span>], [<span class="s3">Patch</span>({ <span class="s3">MouseX</span>.kr(20, 20000, 1, 0.1) }), 0.5, <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">Patch</span>({ <span class="s3">MouseY</span>.kr(20, 20000, 1, 0.1) }), <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, 1, 0]);</p>
+<p class="p4">p.play;</p>
+<p class="p5">// move the mouse to control base freq and formant freq</p>
+<p class="p5">// watch the volume--amplitude can spike at times in this patch</p>
+<p class="p8"><br></p>
+<p class="p5">// when done:</p>
+<p class="p4">p.free;</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p5">// free the patch ("free" button) and try this to change the exciter</p>
+<p class="p4">p = <span class="s3">Patch</span>([<span class="s2">\analog</span>, <span class="s2">\voxlet</span>], [<span class="s3">Patch</span>({ <span class="s3">MouseX</span>.kr(20, 20000, 1, 0.1) }), 0.25, { <span class="s3">|fr, detune|</span> <span class="s3">Mix</span>.ar(<span class="s3">Saw</span>.ar([fr, fr*detune])) }, <span class="s3">nil</span>, <span class="s3">Patch</span>({ <span class="s3">MouseY</span>.kr(20, 20000, 1, 0.1) }), <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, 1, 0]);</p>
+<p class="p4">p.play;</p>
+<p class="p8"><br></p>
+<p class="p4">p.free;</p>
+<p class="p8"><br></p>
+<p class="p5">// now let's add some additiveness to the filters</p>
+<p class="p4">p = <span class="s3">Patch</span>([<span class="s2">\analog</span>, <span class="s2">\voxlet</span>], [<span class="s3">Patch</span>({ <span class="s3">MouseX</span>.kr(20, 20000, 1, 0.1) }), 0.25, { <span class="s3">|fr, detune|</span> <span class="s3">Mix</span>.ar(<span class="s3">Saw</span>.ar([fr, fr*detune])) }, <span class="s3">nil</span>, <span class="s3">Patch</span>({ <span class="s3">MouseY</span>.kr(20, 20000, 1, 0.1) }), <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, <span class="s3">nil</span>, 1, 0, (1..6), (1..6).reciprocal]);</p>
+<p class="p4">p.play;</p>
+<p class="p8"><br></p>
+<p class="p4">p.free;</p>
+</body>
+</html>

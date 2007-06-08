@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #a71e12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #316c17}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #0019b7}
+span.s2 {color: #316c17}
+span.s3 {color: #000000}
+span.s4 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>NotificationCenter</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">Objects can send notifications to the NotificationCenter, and all functions that were registered for</p>
+<p class="p3">that notification will be excecuted.</p>
+<p class="p2"><br></p>
+<p class="p3">implements the <span class="s1">Notification</span> pattern.</p>
+<p class="p3">This is similar to MVC, except here the model object does not ever</p>
+<p class="p3">know anything about who is dependant on it.</p>
+<p class="p3">This allows any interested client object to be notified of special events such as the object being</p>
+<p class="p3">saved to disk, the object recording a sound file version of itself etc.</p>
+<p class="p2"><br></p>
+<p class="p3">For instance when a Sample is saved it emits a \didSave notification:</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">NotificationCenter</span>(notify,<span class="s1">Sample</span>,<span class="s2">\didSave</span>,soundFilePath);</p>
+<p class="p2"><br></p>
+<p class="p3">You can listen for this:</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>NotificationCenter<span class="s3">.register(</span>Sample<span class="s3">,</span><span class="s2">\didSave</span><span class="s3">,</span><span class="s2">\sampleWatcher</span><span class="s3">, { </span>arg<span class="s3"> path;</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>path.postln;<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p6"><br></p>
+<p class="p2"><br></p>
+<p class="p7">//in the following examples <b>this </b>is the interpreter</p>
+<p class="p3"><span class="s1">this</span>.postln<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s3">an </span>Interpreter</p>
+<p class="p6"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p4">(</p>
+<p class="p9">// nothing is yet registered</p>
+<p class="p9">// so notify finds nothing to do</p>
+<p class="p5">NotificationCenter<span class="s3">.notify(</span>this<span class="s3">,</span><span class="s2">\didRecord</span><span class="s3">);</span></p>
+<p class="p6"><br></p>
+<p class="p9">// register a function</p>
+<p class="p10"><span class="s1">NotificationCenter</span><span class="s3">.register(</span><span class="s1">this</span><span class="s3">,</span>\didRecord<span class="s3">,</span>\theRequestingObject<span class="s3">, { </span><span class="s4">"hello"</span><span class="s3">.postln; });</span></p>
+<p class="p6"><br></p>
+<p class="p9">// now it has something to do</p>
+<p class="p5">NotificationCenter<span class="s3">.notify(</span>this<span class="s3">,</span><span class="s2">\didRecord</span><span class="s3">);</span></p>
+<p class="p4">hello</p>
+<p class="p6"><br></p>
+<p class="p9">// unregister, thus releasing yourself for GC</p>
+<p class="p10"><span class="s1">NotificationCenter</span><span class="s3">.unregister(</span><span class="s1">this</span><span class="s3">,</span>\didRecord<span class="s3">,</span>\theRequestingObject<span class="s3">)</span></p>
+<p class="p6"><br></p>
+<p class="p9">// theRequestingObject is no longer interested in this notification</p>
+<p class="p5">NotificationCenter<span class="s3">.notify(</span>this<span class="s3">,</span><span class="s2">\didRecord</span><span class="s3">);</span></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p3">The listener argument is somewhat unimportant as far as you the client is concerned. <span class="Apple-converted-space"> </span></p>
+<p class="p3">It is used to identify the notification and to find it later to remove it when needed.</p>
+<p class="p2"><br></p>
+<p class="p3">There can only be one notification per listener, but you may use anything for the listener object, such</p>
+<p class="p3">as an arbitrary symbol.</p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s3">(</span>// two symbols</p>
+<p class="p11"><span class="s1">NotificationCenter</span><span class="s3">.register(</span><span class="s1">this</span><span class="s3">,</span><span class="s2">\didRecord</span><span class="s3">,</span><span class="s2">\thingOne</span><span class="s3">, { </span>"this will get overwritten by the next registration"<span class="s3">.postln; });</span></p>
+<p class="p4"><span class="s1">NotificationCenter</span>.register(<span class="s1">this</span>,<span class="s2">\didRecord</span>,<span class="s2">\thingOne</span>, { <span class="s4">"do this"</span>.postln; });</p>
+<p class="p4"><span class="s1">NotificationCenter</span>.register(<span class="s1">this</span>,<span class="s2">\didRecord</span>,<span class="s2">\thingTwo</span>, { <span class="s4">"do this also"</span>.postln; });</p>
+<p class="p6"><br></p>
+<p class="p5">NotificationCenter<span class="s3">.notify(</span>this<span class="s3">,</span><span class="s2">\didRecord</span><span class="s3">);</span></p>
+<p class="p6"><br></p>
+<p class="p4">do this</p>
+<p class="p4">do this also</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">NotificationCenter</span>.register(<span class="s1">this</span>,<span class="s2">\didRecord</span>,<span class="s2">this</span>, { arg path,comments; <span class="s4">path</span>.postln; comments.postln; });</p>
+<p class="p6"><br></p>
+<p class="p4">// after the addressing, an array of arguments can be supplied to be passed into the function</p>
+<p class="p10"><span class="s1">NotificationCenter</span><span class="s3">.notify(</span><span class="s1">this</span><span class="s3">,</span>\didRecord,[":SoundFiles:blurb.aiff",'yo mama']<span class="s3">);</span></p>
+<p class="p4">:SoundFiles:blurb.aiff</p>
+<p class="p4">yo mama</p>
+<p class="p6"><br></p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">You can also remove the Notification registration by getting the layout to remove you</p>
+<p class="p4">when the window closes:</p>
+<p class="p6"><br></p>
+<p class="p4">guiBody { <span class="s1">arg</span> layout;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>layout.removeOnClose(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">NotificationCenter</span>.register(model,<span class="s2">\didRecord</span>,<span class="s1">this</span>, {</p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// do things</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p4"><span class="Apple-tab-span">	</span>);</p>
+<p class="p4">}</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+</body>
+</html>

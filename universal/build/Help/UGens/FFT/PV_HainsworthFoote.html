@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 22.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {color: #000000}
+span.s2 {color: #0019b7}
+span.s3 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>PV_HainsworthFoote</b></p>
+<p class="p2"><br></p>
+<p class="p3">FFT onset detector based on work described in<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3">Hainsworth, S. (2003) Techniques for the Automated Analysis of Musical Audio. PhD, University of Cambridge engineering dept. See especially p128. The Hainsworth metric is a modification of the Kullback Liebler distance.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3">The onset detector has general ability to spot spectral change, so may have some ability to track chord changes<span class="Apple-converted-space">  </span>aside from obvious transient jolts, but there's no guarantee it won't be confused by frequency modulation artifacts.<span class="Apple-converted-space">   </span></p>
+<p class="p2"><br></p>
+<p class="p3">Hainsworth metric on it's own gives good results but Foote might be useful in some situations: experimental.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>*ar(buffer, proph=0.0, propf=0.0, threshold=1.0, waittime=0.04)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>buffer-</b> FFT buffer to read from</p>
+<p class="p2"><br></p>
+<p class="p3"><b>proph-</b> What strength of detection signal from Hainsworth metric to use.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>propf-</b> What strength of detection signal from Foote metric to use. The Foote metric is normalised to [0.0,1.0]</p>
+<p class="p2"><br></p>
+<p class="p3"><b>threshold-</b> Threshold hold level for allowing a detection</p>
+<p class="p2"><br></p>
+<p class="p3"><b>waittime-</b> If triggered, minimum wait until a further frame can cause another spot (useful to stop multiple detects on heavy signals)</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">See also <a href="FFT Overview.html">FFT Overview</a>.</span></p>
+<p class="p2"><br></p>
+<p class="p3"><i>Examples</i></p>
+<p class="p5"><br></p>
+<p class="p6">//just Hainsworth metric with low threshold<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7">(</p>
+<p class="p7">b=<span class="s2">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8">SynthDef<span class="s1">(</span><span class="s3">\fftod</span><span class="s1">,</span></p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-converted-space"> </span><span class="s2">var</span> source1, detect;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s2">AudioIn</span>.ar(1);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>detect= <span class="s2">PV_HainsworthFoote</span>.ar(<span class="s2">FFT</span>(b.bufnum,source1), 1.0, 0.0);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0,<span class="s2">SinOsc</span>.ar([440,445],0,<span class="s2">Decay</span>.ar(0.1*detect,0.1)));</p>
+<p class="p7">}).play(s);<span class="Apple-tab-span">	</span></p>
+<p class="p7">)<span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><br></p>
+<p class="p6">//spot note transitions<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7">(</p>
+<p class="p7">b=<span class="s2">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8">SynthDef<span class="s1">(</span><span class="s3">\fftod</span><span class="s1">,</span></p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-converted-space"> </span><span class="s2">var</span> source1, detect;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s2">LFSaw</span>.ar(<span class="s2">LFNoise0</span>.kr(1,90,400),0,0.5);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>detect= <span class="s2">PV_HainsworthFoote</span>.ar(<span class="s2">FFT</span>(b.bufnum,source1), 1.0, 0.0, 0.9, 0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0,<span class="s2">Pan2</span>.ar(source1,-1.0)+ <span class="s2">Pan2</span>.ar(<span class="s2">SinOsc</span>.ar(440,0,<span class="s2">Decay</span>.ar(0.1*detect,0.1)),1.0));</p>
+<p class="p7">}).play(s);<span class="Apple-tab-span">	</span></p>
+<p class="p7">)<span class="Apple-tab-span">	</span></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">//Foote solo- never triggers with threshold over 1.0, threshold under mouse control<span class="Apple-tab-span">	</span></p>
+<p class="p7">(</p>
+<p class="p7">b=<span class="s2">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8">SynthDef<span class="s1">(</span><span class="s3">\fftod</span><span class="s1">,</span></p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-converted-space"> </span><span class="s2">var</span> source1, detect;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s2">AudioIn</span>.ar(1);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>detect= <span class="s2">PV_HainsworthFoote</span>.ar(<span class="s2">FFT</span>(b.bufnum,source1), 0.0, 1.0, <span class="s2">MouseX</span>.kr(0.0,1.1), 0.02);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0,<span class="s2">Pan2</span>.ar(source1,-1.0)+ <span class="s2">Pan2</span>.ar(<span class="s2">SinOsc</span>.ar(440,0,<span class="s2">Decay</span>.ar(0.1*detect,0.1)),1.0));</p>
+<p class="p7">}).play(s);<span class="Apple-tab-span">	</span></p>
+<p class="p7">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">//compare to Amplitude UGen</p>
+<p class="p7">(</p>
+<p class="p5"><br></p>
+<p class="p8">SynthDef<span class="s1">(</span><span class="s3">\fftod</span><span class="s1">,</span></p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-converted-space"> </span><span class="s2">var</span> source1, detect;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s2">AudioIn</span>.ar(1);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>detect= (<span class="s2">Amplitude</span>.ar(source1)) &gt; (<span class="s2">MouseX</span>.kr(0.0,1.1));</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0,<span class="s2">Pan2</span>.ar(source1,-1.0)+ <span class="s2">Pan2</span>.ar(<span class="s2">SinOsc</span>.ar(440,0,<span class="s2">Decay</span>.ar(0.1*detect,0.1)),1.0));</p>
+<p class="p7">}).play(s);<span class="Apple-tab-span">	</span></p>
+<p class="p7">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+</body>
+</html>

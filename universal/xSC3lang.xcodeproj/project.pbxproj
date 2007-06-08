@@ -1,0 +1,2508 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		F5B7410802E9534D01CA2799 /* All */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 88332477090AC12E00A4A7E4 /* Build configuration list for PBXAggregateTarget "All" */;
+			buildPhases = (
+			);
+			dependencies = (
+				F5B7410902E9534D01CA2799 /* PBXTargetDependency */,
+				F59DF0C003073AEB01CE0C16 /* PBXTargetDependency */,
+			);
+			name = All;
+			productName = All;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXApplicationTarget section */
+		F50D060502E69C2101CA2799 /* SuperCollider */ = {
+			isa = PBXApplicationTarget;
+			buildConfigurationList = 8833246F090AC12E00A4A7E4 /* Build configuration list for PBXApplicationTarget "SuperCollider" */;
+			buildPhases = (
+				F50D060602E69C2101CA2799 /* Headers */,
+				F50D061902E69C2101CA2799 /* Resources */,
+				F50D061A02E69C2101CA2799 /* Sources */,
+				F50D061B02E69C2101CA2799 /* Frameworks */,
+				F50D061C02E69C2101CA2799 /* Rez */,
+			);
+			dependencies = (
+			);
+			name = SuperCollider;
+			productInstallPath = "$(USER_APPS_DIR)";
+			productName = SC_Lang;
+			productReference = F50D060402E69C2101CA2799 /* SuperCollider.app */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>rtf</string>
+				<string>RTF</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>rtf.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>NSRTFPboardType</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>RTF </string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>rtfd</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>rtfd.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>NSRTFDPboardType</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>txt</string>
+				<string>TXT</string>
+				<string>text</string>
+				<string>*</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>txt.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>NSStringPboardType</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>****</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>txt.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Apple SimpleText document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>TEXT</string>
+				<string>sEXT</string>
+				<string>ttro</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sc</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>txt.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>SuperCollider document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>html</string>
+				<string>htm</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>html.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/html</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>SC Help (HTML)</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>HTML</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>scd</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>txt.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>scel document (scd)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+	</array>
+	<key>CFBundleExecutable</key>
+	<string>SuperCollider</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIconFile</key>
+	<string>SCcube.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string></string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>SCjm</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.1d1</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+</dict>
+</plist>
+";
+		};
+/* End PBXApplicationTarget section */
+
+/* Begin PBXBuildFile section */
+		53FA84000B374A5200AB10D4 /* SC_FIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */; };
+		53FA84010B374A5200AB10D4 /* SC_FIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */; };
+		53FA84020B374A5200AB10D4 /* SC_FIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */; };
+		53FA84040B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */; };
+		53FA84050B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */; };
+		53FA84060B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */; };
+		53FA840A0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */; };
+		53FA840B0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */; };
+		53FA840C0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */; };
+		6A2536BB09C1C9360045AEB7 /* CocoaBridgePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */; };
+		6A40715507C7240E003E9C23 /* SCSoundFileView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A40715407C7240E003E9C23 /* SCSoundFileView.h */; };
+		6A40717407C72426003E9C23 /* SCTextView.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A40717307C72426003E9C23 /* SCTextView.M */; };
+		6A40718607C72B26003E9C23 /* SCSoundFileView.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A40718507C72B26003E9C23 /* SCSoundFileView.M */; };
+		6A7207D407BB709000A1F778 /* SCCocoaView.M in Sources */ = {isa = PBXBuildFile; fileRef = 6A7207D307BB709000A1F778 /* SCCocoaView.M */; };
+		6A7207DD07BB70CB00A1F778 /* SCCocoaView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A7207DC07BB70CB00A1F778 /* SCCocoaView.h */; };
+		6A87FA3A0B8D053500B2A5A5 /* SCNSWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A87FA390B8D053500B2A5A5 /* SCNSWindow.m */; };
+		6A87FA420B8D063500B2A5A5 /* SCNSWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A87FA410B8D063500B2A5A5 /* SCNSWindow.h */; };
+		6AA05EE80C15EE18000367C8 /* COPYRIGHT.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6AA05EE40C15EE18000367C8 /* COPYRIGHT.txt */; };
+		6AA05EE90C15EE18000367C8 /* HISTORY.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6AA05EE50C15EE18000367C8 /* HISTORY.txt */; };
+		6AA05EEA0C15EE18000367C8 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EE60C15EE18000367C8 /* wiiremote.c */; };
+		6AA05EEB0C15EE18000367C8 /* wiiremote.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AA05EE70C15EE18000367C8 /* wiiremote.h */; };
+		6AA05EEC0C15EE18000367C8 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EE60C15EE18000367C8 /* wiiremote.c */; };
+		6AA05EED0C15EE18000367C8 /* wiiremote.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AA05EE70C15EE18000367C8 /* wiiremote.h */; };
+		6AA05F3E0C15F543000367C8 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA05F3D0C15F543000367C8 /* IOBluetooth.framework */; };
+		6AA05F3F0C15F544000367C8 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA05F3D0C15F543000367C8 /* IOBluetooth.framework */; };
+		6AA05F490C15F596000367C8 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EE60C15EE18000367C8 /* wiiremote.c */; };
+		6AA21A700C162DE300CD1F2C /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EEE0C15EE46000367C8 /* SC_Wii.cpp */; };
+		6AA21A710C162DE400CD1F2C /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AA05EEE0C15EE46000367C8 /* SC_Wii.cpp */; };
+		6AAC6D6508FEDC0C006134E1 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AAC6D6408FEDC0C006134E1 /* fftlib.c */; };
+		6AAC6D6608FEDC0C006134E1 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AAC6D6408FEDC0C006134E1 /* fftlib.c */; };
+		6AB6FF6F053898BC0000009F /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF64053898BC0000009F /* HID_Error_Handler.c */; };
+		6AB6FF70053898BC0000009F /* HID_Error_Handler.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF65053898BC0000009F /* HID_Error_Handler.h */; };
+		6AB6FF71053898BC0000009F /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF66053898BC0000009F /* HID_Name_Lookup.c */; };
+		6AB6FF72053898BC0000009F /* HID_Name_Lookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF67053898BC0000009F /* HID_Name_Lookup.h */; };
+		6AB6FF73053898BC0000009F /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF68053898BC0000009F /* HID_Queue_Utilities.c */; };
+		6AB6FF74053898BC0000009F /* HID_Queue_Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF69053898BC0000009F /* HID_Queue_Utilities.h */; };
+		6AB6FF75053898BC0000009F /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF6A053898BC0000009F /* HID_Utilities.c */; };
+		6AB6FF76053898BC0000009F /* HID_Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6B053898BC0000009F /* HID_Utilities.h */; };
+		6AB6FF77053898BC0000009F /* HID_Utilities_External.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6C053898BC0000009F /* HID_Utilities_External.h */; };
+		6AB6FF78053898BC0000009F /* HID_Utilities_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6D053898BC0000009F /* HID_Utilities_Internal.h */; };
+		6AB6FF79053898BC0000009F /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF64053898BC0000009F /* HID_Error_Handler.c */; };
+		6AB6FF7A053898BC0000009F /* HID_Error_Handler.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF65053898BC0000009F /* HID_Error_Handler.h */; };
+		6AB6FF7B053898BC0000009F /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF66053898BC0000009F /* HID_Name_Lookup.c */; };
+		6AB6FF7C053898BC0000009F /* HID_Name_Lookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF67053898BC0000009F /* HID_Name_Lookup.h */; };
+		6AB6FF7D053898BC0000009F /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF68053898BC0000009F /* HID_Queue_Utilities.c */; };
+		6AB6FF7E053898BC0000009F /* HID_Queue_Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF69053898BC0000009F /* HID_Queue_Utilities.h */; };
+		6AB6FF7F053898BC0000009F /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF6A053898BC0000009F /* HID_Utilities.c */; };
+		6AB6FF80053898BC0000009F /* HID_Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6B053898BC0000009F /* HID_Utilities.h */; };
+		6AB6FF81053898BC0000009F /* HID_Utilities_External.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6C053898BC0000009F /* HID_Utilities_External.h */; };
+		6AB6FF82053898BC0000009F /* HID_Utilities_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6D053898BC0000009F /* HID_Utilities_Internal.h */; };
+		6AB6FF84053898F00000009F /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF83053898F00000009F /* SC_HID.cpp */; };
+		6AB6FF85053898F00000009F /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF83053898F00000009F /* SC_HID.cpp */; };
+		6AB6FFA20538A90A0000009F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
+		6AB6FFA30538A90A0000009F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
+		6AC9B2DB08ABF480001EBDF6 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
+		88723045090870B30002E26A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88723043090870B30002E26A /* InfoPlist.strings */; };
+		88723046090870B30002E26A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88723043090870B30002E26A /* InfoPlist.strings */; };
+		88C3944A09172B6900B740D4 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */; };
+		88D7D584090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
+		88D7D585090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
+		88D7D586090C8737008D45B9 /* SC_DirUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D7D583090C8737008D45B9 /* SC_DirUtils.h */; };
+		88FB09A8096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */; };
+		88FB09A9096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */; };
+		88FB09AA096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */; };
+		88FB09AC096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */; };
+		88FB09AD096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */; };
+		88FB09AE096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */; };
+		908DBC370507C63D00000098 /* GoToPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = 908DBC360507C63D00000098 /* GoToPanel.M */; };
+		908DBC390507C65100000098 /* GoToPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 908DBC380507C65100000098 /* GoToPanel.h */; };
+		908DBC3B0507C66500000098 /* GoToLinePanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 908DBC3A0507C66500000098 /* GoToLinePanel.nib */; };
+		90A4CDA1044D5AF2000000AF /* SC_Speech.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */; };
+		90A4CDA2044D5AF2000000AF /* SC_Speech.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */; };
+		920F883E0443F54D00A80088 /* RendezvousClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 920F883D0443F54D00A80088 /* RendezvousClient.h */; };
+		920F883F0443F54D00A80088 /* RendezvousClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 920F883D0443F54D00A80088 /* RendezvousClient.h */; };
+		920F88410443F59700A80088 /* RendezvousClient.M in Sources */ = {isa = PBXBuildFile; fileRef = 920F88400443F59700A80088 /* RendezvousClient.M */; };
+		9284649D06DFB69C00964E7E /* SCcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 9284649C06DFB69C00964E7E /* SCcube.icns */; };
+		9284649E06DFB69C00964E7E /* SCcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 9284649C06DFB69C00964E7E /* SCcube.icns */; };
+		9286AE9F057D30B9000EBAEB /* SCService.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9286AE9E057D30B9000EBAEB /* SCService.mm */; };
+		9286AEA0057D30B9000EBAEB /* SCService.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9286AE9E057D30B9000EBAEB /* SCService.mm */; };
+		9286AEA4057D30EC000EBAEB /* SCService.h in Headers */ = {isa = PBXBuildFile; fileRef = 9286AEA3057D30EC000EBAEB /* SCService.h */; };
+		9286AEA5057D30EC000EBAEB /* SCService.h in Headers */ = {isa = PBXBuildFile; fileRef = 9286AEA3057D30EC000EBAEB /* SCService.h */; };
+		92B4EA56059397C600CA25E4 /* SC_LibraryConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 92B4EA55059397C600CA25E4 /* SC_LibraryConfig.h */; };
+		92B4EA57059397C600CA25E4 /* SC_LibraryConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 92B4EA55059397C600CA25E4 /* SC_LibraryConfig.h */; };
+		92B4EA5B059398FE00CA25E4 /* SC_LibraryConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B4EA5A059398FE00CA25E4 /* SC_LibraryConfig.cpp */; };
+		92B4EA5C059398FE00CA25E4 /* SC_LibraryConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B4EA5A059398FE00CA25E4 /* SC_LibraryConfig.cpp */; };
+		92B4EA62059399DD00CA25E4 /* SC_StringBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 92B4EA61059399DD00CA25E4 /* SC_StringBuffer.h */; };
+		92B4EA63059399DD00CA25E4 /* SC_StringBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 92B4EA61059399DD00CA25E4 /* SC_StringBuffer.h */; };
+		92B4EA67059399F300CA25E4 /* SC_StringBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B4EA66059399F300CA25E4 /* SC_StringBuffer.cpp */; };
+		92B4EA68059399F300CA25E4 /* SC_StringBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B4EA66059399F300CA25E4 /* SC_StringBuffer.cpp */; };
+		92B5F3450547488200496808 /* ChangeCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D04FE02E69B6B01CA2799 /* ChangeCounter.h */; };
+		92B5F3460547488200496808 /* ControlSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D04FF02E69B6B01CA2799 /* ControlSpec.h */; };
+		92B5F3470547488200496808 /* DrawBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050002E69B6B01CA2799 /* DrawBackground.h */; };
+		92B5F3480547488200496808 /* GetStringFromUser.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050102E69B6B01CA2799 /* GetStringFromUser.h */; };
+		92B5F3490547488200496808 /* MyDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050202E69B6B01CA2799 /* MyDocument.h */; };
+		92B5F34A0547488200496808 /* SCGeom.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050302E69B6B01CA2799 /* SCGeom.h */; };
+		92B5F34B0547488200496808 /* SCGraphView.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050402E69B6B01CA2799 /* SCGraphView.h */; };
+		92B5F34C0547488200496808 /* SCTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050502E69B6B01CA2799 /* SCTextView.h */; };
+		92B5F34D0547488200496808 /* SCView.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050602E69B6B01CA2799 /* SCView.h */; };
+		92B5F34E0547488200496808 /* SCVirtualMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050702E69B6B01CA2799 /* SCVirtualMachine.h */; };
+		92B5F34F0547488200496808 /* TextFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050802E69B6B01CA2799 /* TextFinder.h */; };
+		92B5F3500547488200496808 /* UserPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050902E69B6B01CA2799 /* UserPanel.h */; };
+		92B5F3510547488200496808 /* dfftlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050B02E69B6B01CA2799 /* dfftlib.h */; };
+		92B5F3520547488200496808 /* dlfcn.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050C02E69B6B01CA2799 /* dlfcn.h */; };
+		92B5F3530547488200496808 /* fftlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050D02E69B6B01CA2799 /* fftlib.h */; };
+		92B5F3540547488200496808 /* SC_AllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050E02E69B6B01CA2799 /* SC_AllocPool.h */; };
+		92B5F3550547488200496808 /* scsynthsend.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050F02E69B6B01CA2799 /* scsynthsend.h */; };
+		92B5F3560547488200496808 /* VMGlobals.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054402E69B6B01CA2799 /* VMGlobals.h */; };
+		92B5F3570547488200496808 /* AdvancingAllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051102E69B6B01CA2799 /* AdvancingAllocPool.h */; };
+		92B5F3580547488200496808 /* AllocPools.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051202E69B6B01CA2799 /* AllocPools.h */; };
+		92B5F3590547488200496808 /* bullet.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051302E69B6B01CA2799 /* bullet.h */; };
+		92B5F35A0547488200496808 /* ByteCodeArray.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051402E69B6B01CA2799 /* ByteCodeArray.h */; };
+		92B5F35B0547488200496808 /* FIFOT.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051502E69B6B01CA2799 /* FIFOT.h */; };
+		92B5F35C0547488200496808 /* GC.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051602E69B6B01CA2799 /* GC.h */; };
+		92B5F35D0547488200496808 /* HashTable.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051702E69B6B01CA2799 /* HashTable.h */; };
+		92B5F35E0547488200496808 /* InitAlloc.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051802E69B6B01CA2799 /* InitAlloc.h */; };
+		92B5F35F0547488200496808 /* MiscInlineMath.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051902E69B6B01CA2799 /* MiscInlineMath.h */; };
+		92B5F3600547488200496808 /* Opcodes.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051A02E69B6B01CA2799 /* Opcodes.h */; };
+		92B5F3610547488200496808 /* OSCData.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051B02E69B6B01CA2799 /* OSCData.h */; };
+		92B5F3620547488200496808 /* PowerOfTwoAllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051C02E69B6B01CA2799 /* PowerOfTwoAllocPool.h */; };
+		92B5F3630547488200496808 /* PredefinedSymbols.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051D02E69B6B01CA2799 /* PredefinedSymbols.h */; };
+		92B5F3640547488200496808 /* PriorityQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051E02E69B6B01CA2799 /* PriorityQueue.h */; };
+		92B5F3650547488200496808 /* PyrArchiverT.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051F02E69B6B01CA2799 /* PyrArchiverT.h */; };
+		92B5F3660547488200496808 /* PyrDeepCopier.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052002E69B6B01CA2799 /* PyrDeepCopier.h */; };
+		92B5F3670547488200496808 /* PyrDeepFreezer.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052102E69B6B01CA2799 /* PyrDeepFreezer.h */; };
+		92B5F3680547488200496808 /* PyrErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052202E69B6B01CA2799 /* PyrErrors.h */; };
+		92B5F3690547488200496808 /* PyrFilePrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052302E69B6B01CA2799 /* PyrFilePrim.h */; };
+		92B5F36A0547488200496808 /* PyrFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052402E69B6B01CA2799 /* PyrFileUtils.h */; };
+		92B5F36B0547488200496808 /* PyrInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052502E69B6B01CA2799 /* PyrInterpreter.h */; };
+		92B5F36C0547488200496808 /* PyrKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052602E69B6B01CA2799 /* PyrKernel.h */; };
+		92B5F36D0547488200496808 /* PyrKernelProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052702E69B6B01CA2799 /* PyrKernelProto.h */; };
+		92B5F36E0547488200496808 /* PyrLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052802E69B6B01CA2799 /* PyrLexer.h */; };
+		92B5F36F0547488200496808 /* PyrListPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052902E69B6B01CA2799 /* PyrListPrim.h */; };
+		92B5F3700547488200496808 /* PyrMathPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052A02E69B6B01CA2799 /* PyrMathPrim.h */; };
+		92B5F3710547488200496808 /* PyrMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052B02E69B6B01CA2799 /* PyrMessage.h */; };
+		92B5F3720547488200496808 /* PyrObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052C02E69B6B01CA2799 /* PyrObject.h */; };
+		92B5F3730547488200496808 /* PyrObjectProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052D02E69B6B01CA2799 /* PyrObjectProto.h */; };
+		92B5F3740547488200496808 /* PyrParseNode.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052E02E69B6B01CA2799 /* PyrParseNode.h */; };
+		92B5F3750547488200496808 /* PyrPrimitive.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052F02E69B6B01CA2799 /* PyrPrimitive.h */; };
+		92B5F3760547488200496808 /* PyrPrimitiveProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053002E69B6B01CA2799 /* PyrPrimitiveProto.h */; };
+		92B5F3770547488200496808 /* PyrSched.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053102E69B6B01CA2799 /* PyrSched.h */; };
+		92B5F3780547488200496808 /* PyrSignal.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053202E69B6B01CA2799 /* PyrSignal.h */; };
+		92B5F3790547488200496808 /* PyrSignalPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053302E69B6B01CA2799 /* PyrSignalPrim.h */; };
+		92B5F37A0547488200496808 /* PyrSlot.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053402E69B6B01CA2799 /* PyrSlot.h */; };
+		92B5F37B0547488200496808 /* PyrSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053502E69B6B01CA2799 /* PyrSymbol.h */; };
+		92B5F37C0547488200496808 /* PyrSymbolTable.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053602E69B6B01CA2799 /* PyrSymbolTable.h */; };
+		92B5F37D0547488200496808 /* readSamples.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053702E69B6B01CA2799 /* readSamples.h */; };
+		92B5F37E0547488200496808 /* ReadWriteMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053802E69B6B01CA2799 /* ReadWriteMacros.h */; };
+		92B5F37F0547488200496808 /* Samp.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053902E69B6B01CA2799 /* Samp.h */; };
+		92B5F3800547488200496808 /* SC_ComPort.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053A02E69B6B01CA2799 /* SC_ComPort.h */; };
+		92B5F3810547488200496808 /* SC_List.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053B02E69B6B01CA2799 /* SC_List.h */; };
+		92B5F3820547488200496808 /* SC_LogFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053C02E69B6B01CA2799 /* SC_LogFile.h */; };
+		92B5F3830547488200496808 /* SC_Msg.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053D02E69B6B01CA2799 /* SC_Msg.h */; };
+		92B5F3840547488200496808 /* SC_SynthImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053F02E69B6B01CA2799 /* SC_SynthImpl.h */; };
+		92B5F3850547488200496808 /* SC_UnorderedList.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054002E69B6B01CA2799 /* SC_UnorderedList.h */; };
+		92B5F3860547488200496808 /* SCBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054102E69B6B01CA2799 /* SCBase.h */; };
+		92B5F3870547488200496808 /* SFHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054202E69B6B01CA2799 /* SFHeaders.h */; };
+		92B5F3880547488200496808 /* SimpleStack.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054302E69B6B01CA2799 /* SimpleStack.h */; };
+		92B5F3890547488200496808 /* SC_Types.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D055702E69B6B01CA2799 /* SC_Types.h */; };
+		92B5F38A0547488200496808 /* clz.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054602E69B6B01CA2799 /* clz.h */; };
+		92B5F38B0547488200496808 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054702E69B6B01CA2799 /* Hash.h */; };
+		92B5F38C0547488200496808 /* SC_BoundsMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054802E69B6B01CA2799 /* SC_BoundsMacros.h */; };
+		92B5F38D0547488200496808 /* lang11d_tab.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D05B702E69B6B01CA2799 /* lang11d_tab.h */; };
+		92B5F38E0547488200496808 /* SC_RGen.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4643030B8CE601E9DD5D /* SC_RGen.h */; };
+		92B5F38F0547488200496808 /* SC_InlineBinaryOp.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D464A030B8FF501E9DD5D /* SC_InlineBinaryOp.h */; };
+		92B5F3900547488200496808 /* SC_InlineUnaryOp.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D464B030B8FF501E9DD5D /* SC_InlineUnaryOp.h */; };
+		92B5F3910547488200496808 /* sc_msg_iter.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4650030B905201E9DD5D /* sc_msg_iter.h */; };
+		92B5F3920547488200496808 /* SC_Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4653030B934D01E9DD5D /* SC_Constants.h */; };
+		92B5F3930547488200496808 /* SC_Sem.h in Headers */ = {isa = PBXBuildFile; fileRef = F561BDB50335370801C816AC /* SC_Sem.h */; };
+		92B5F3940547488200496808 /* SC_World.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C7B150033D5B4801A80099 /* SC_World.h */; };
+		92B5F3950547488200496808 /* SC_WorldOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C7B154033D5EDC01A80099 /* SC_WorldOptions.h */; };
+		92B5F3960547488200496808 /* SC_Reply.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C7B156033D611701A80099 /* SC_Reply.h */; };
+		92B5F3970547488200496808 /* SC_SndBuf.h in Headers */ = {isa = PBXBuildFile; fileRef = F5BAFADE037F805101CA27E6 /* SC_SndBuf.h */; };
+		92B5F3980547488200496808 /* SCDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = C26BDCCE03D0B4FB00A87B78 /* SCDialog.h */; };
+		92B5F3990547488200496808 /* RendezvousClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 920F883D0443F54D00A80088 /* RendezvousClient.h */; };
+		92B5F39A0547488200496808 /* TabletEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = C21B4672046D847B00A87B78 /* TabletEvents.h */; };
+		92B5F39B0547488200496808 /* SC_Endian.h in Headers */ = {isa = PBXBuildFile; fileRef = AAE9248C048143A400A8010B /* SC_Endian.h */; };
+		92B5F39C0547488200496808 /* GoToPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 908DBC380507C65100000098 /* GoToPanel.h */; };
+		92B5F39D0547488200496808 /* HID_Error_Handler.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF65053898BC0000009F /* HID_Error_Handler.h */; };
+		92B5F39E0547488200496808 /* HID_Name_Lookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF67053898BC0000009F /* HID_Name_Lookup.h */; };
+		92B5F39F0547488200496808 /* HID_Queue_Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF69053898BC0000009F /* HID_Queue_Utilities.h */; };
+		92B5F3A00547488200496808 /* HID_Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6B053898BC0000009F /* HID_Utilities.h */; };
+		92B5F3A10547488200496808 /* HID_Utilities_External.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6C053898BC0000009F /* HID_Utilities_External.h */; };
+		92B5F3A20547488200496808 /* HID_Utilities_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AB6FF6D053898BC0000009F /* HID_Utilities_Internal.h */; };
+		92B5F3A40547488200496808 /* FindPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06A602E6A60F01CA2799 /* FindPanel.nib */; };
+		92B5F3A50547488200496808 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F50D06A802E6A60F01CA2799 /* Credits.rtf */; };
+		92B5F3A60547488200496808 /* SCGraphView.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06AA02E6A60F01CA2799 /* SCGraphView.nib */; };
+		92B5F3A70547488200496808 /* MyDocument.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06AC02E6A60F01CA2799 /* MyDocument.nib */; };
+		92B5F3A80547488200496808 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06AE02E6A60F01CA2799 /* MainMenu.nib */; };
+		92B5F3AA0547488200496808 /* GetStringDlg.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06B202E6A60F01CA2799 /* GetStringDlg.nib */; };
+		92B5F3AB0547488200496808 /* FindPanel.strings in Resources */ = {isa = PBXBuildFile; fileRef = F50D06B402E6A60F01CA2799 /* FindPanel.strings */; };
+		92B5F3AD0547488200496808 /* GoToLinePanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 908DBC3A0507C66500000098 /* GoToLinePanel.nib */; };
+		92B5F3AF0547488200496808 /* DrawBackground.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058202E69B6B01CA2799 /* DrawBackground.M */; };
+		92B5F3B00547488200496808 /* GetStringFromUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F50D058302E69B6B01CA2799 /* GetStringFromUser.m */; };
+		92B5F3B10547488200496808 /* GUIPrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058402E69B6B01CA2799 /* GUIPrimitives.M */; };
+		92B5F3B20547488200496808 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F50D058502E69B6B01CA2799 /* main.m */; };
+		92B5F3B30547488200496808 /* MyDocument.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058602E69B6B01CA2799 /* MyDocument.M */; };
+		92B5F3B40547488200496808 /* post_queue.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058702E69B6B01CA2799 /* post_queue.M */; };
+		92B5F3B50547488200496808 /* SCGraphView.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058B02E69B6B01CA2799 /* SCGraphView.M */; };
+		92B5F3B60547488200496808 /* SCTextView.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058C02E69B6B01CA2799 /* SCTextView.M */; };
+		92B5F3B70547488200496808 /* SCView.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058D02E69B6B01CA2799 /* SCView.M */; };
+		92B5F3B80547488200496808 /* SCVirtualMachine.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058E02E69B6B01CA2799 /* SCVirtualMachine.M */; };
+		92B5F3B90547488200496808 /* syntaxColorize.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058F02E69B6B01CA2799 /* syntaxColorize.M */; };
+		92B5F3BA0547488200496808 /* TextFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = F50D059002E69B6B01CA2799 /* TextFinder.m */; };
+		92B5F3BB0547488200496808 /* UserPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D059102E69B6B01CA2799 /* UserPanel.M */; };
+		92B5F3BC0547488200496808 /* PyrArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059802E69B6B01CA2799 /* PyrArchiver.cpp */; };
+		92B5F3BD0547488200496808 /* PyrArrayPrimitives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059902E69B6B01CA2799 /* PyrArrayPrimitives.cpp */; };
+		92B5F3BE0547488200496808 /* PyrBitPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059A02E69B6B01CA2799 /* PyrBitPrim.cpp */; };
+		92B5F3BF0547488200496808 /* PyrCharPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059B02E69B6B01CA2799 /* PyrCharPrim.cpp */; };
+		92B5F3C00547488200496808 /* PyrFilePrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059D02E69B6B01CA2799 /* PyrFilePrim.cpp */; };
+		92B5F3C10547488200496808 /* PyrListPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059E02E69B6B01CA2799 /* PyrListPrim.cpp */; };
+		92B5F3C20547488200496808 /* PyrStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059F02E69B6B01CA2799 /* PyrStringPrim.cpp */; };
+		92B5F3C30547488200496808 /* PyrSymbolPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A002E69B6B01CA2799 /* PyrSymbolPrim.cpp */; };
+		92B5F3C40547488200496808 /* PyrUnixPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A102E69B6B01CA2799 /* PyrUnixPrim.cpp */; };
+		92B5F3C50547488200496808 /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A502E69B6B01CA2799 /* AdvancingAllocPool.cpp */; };
+		92B5F3C60547488200496808 /* alloca.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A602E69B6B01CA2799 /* alloca.cpp */; };
+		92B5F3C70547488200496808 /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A702E69B6B01CA2799 /* ByteCodeArray.cpp */; };
+		92B5F3C80547488200496808 /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05AA02E69B6B01CA2799 /* dumpByteCodes.cpp */; };
+		92B5F3C90547488200496808 /* DumpParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05AB02E69B6B01CA2799 /* DumpParseNode.cpp */; };
+		92B5F3CA0547488200496808 /* GC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05B802E69B6B01CA2799 /* GC.cpp */; };
+		92B5F3CB0547488200496808 /* InitAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BA02E69B6B01CA2799 /* InitAlloc.cpp */; };
+		92B5F3CC0547488200496808 /* PyrFileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BD02E69B6B01CA2799 /* PyrFileUtils.cpp */; };
+		92B5F3CD0547488200496808 /* PyrInterpreter3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BE02E69B6B01CA2799 /* PyrInterpreter3.cpp */; };
+		92B5F3CE0547488200496808 /* PyrLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */; };
+		92B5F3CF0547488200496808 /* PyrMathOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C002E69B6B01CA2799 /* PyrMathOps.cpp */; };
+		92B5F3D00547488200496808 /* PyrMathPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C102E69B6B01CA2799 /* PyrMathPrim.cpp */; };
+		92B5F3D10547488200496808 /* PyrMathSupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C202E69B6B01CA2799 /* PyrMathSupport.cpp */; };
+		92B5F3D20547488200496808 /* PyrMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C302E69B6B01CA2799 /* PyrMessage.cpp */; };
+		92B5F3D30547488200496808 /* PyrObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C402E69B6B01CA2799 /* PyrObject.cpp */; };
+		92B5F3D40547488200496808 /* PyrParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C502E69B6B01CA2799 /* PyrParseNode.cpp */; };
+		92B5F3D50547488200496808 /* PyrPrimitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C602E69B6B01CA2799 /* PyrPrimitive.cpp */; };
+		92B5F3D60547488200496808 /* PyrSched.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C702E69B6B01CA2799 /* PyrSched.cpp */; };
+		92B5F3D70547488200496808 /* PyrSignal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C802E69B6B01CA2799 /* PyrSignal.cpp */; };
+		92B5F3D80547488200496808 /* PyrSignalPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C902E69B6B01CA2799 /* PyrSignalPrim.cpp */; };
+		92B5F3D90547488200496808 /* PyrSymbolTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CA02E69B6B01CA2799 /* PyrSymbolTable.cpp */; };
+		92B5F3DA0547488200496808 /* Samp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CB02E69B6B01CA2799 /* Samp.cpp */; };
+		92B5F3DB0547488200496808 /* SimpleStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CE02E69B6B01CA2799 /* SimpleStack.cpp */; };
+		92B5F3DC0547488200496808 /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CF02E69B6B01CA2799 /* VMGlobals.cpp */; };
+		92B5F3DD0547488200496808 /* lang11d_tab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05B602E69B6B01CA2799 /* lang11d_tab.cpp */; };
+		92B5F3DE0547488200496808 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526B02FC2E330195E057 /* SC_ComPort.cpp */; };
+		92B5F3DF0547488200496808 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */; };
+		92B5F3E00547488200496808 /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = F59DF065030733E801CE0C16 /* dlopen.c */; };
+		92B5F3E10547488200496808 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF066030733E801CE0C16 /* SC_AllocPool.cpp */; };
+		92B5F3E20547488200496808 /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF067030733E801CE0C16 /* scsynthsend.cpp */; };
+		92B5F3E30547488200496808 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF0C5030777A101CE0C16 /* SC_Sem.cpp */; };
+		92B5F3E40547488200496808 /* OSCData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5285E0D0316170401CA2799 /* OSCData.cpp */; };
+		92B5F3E50547488200496808 /* CocoaFilePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = F5889A2C0397F2F801A87B78 /* CocoaFilePrimitives.M */; };
+		92B5F3E60547488200496808 /* SCDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */; };
+		92B5F3E70547488200496808 /* RendezvousClient.M in Sources */ = {isa = PBXBuildFile; fileRef = 920F88400443F59700A80088 /* RendezvousClient.M */; };
+		92B5F3E80547488200496808 /* SC_Speech.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */; };
+		92B5F3E90547488200496808 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = C21B4673046D847B00A87B78 /* TabletEvents.m */; };
+		92B5F3EA0547488200496808 /* GoToPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = 908DBC360507C63D00000098 /* GoToPanel.M */; };
+		92B5F3EB0547488200496808 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF64053898BC0000009F /* HID_Error_Handler.c */; };
+		92B5F3EC0547488200496808 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF66053898BC0000009F /* HID_Name_Lookup.c */; };
+		92B5F3ED0547488200496808 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF68053898BC0000009F /* HID_Queue_Utilities.c */; };
+		92B5F3EE0547488200496808 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF6A053898BC0000009F /* HID_Utilities.c */; };
+		92B5F3EF0547488200496808 /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AB6FF83053898F00000009F /* SC_HID.cpp */; };
+		92B5F3F10547488200496808 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069602E6A1C601CA2799 /* ApplicationServices.framework */; };
+		92B5F3F20547488200496808 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069702E6A1C601CA2799 /* Carbon.framework */; };
+		92B5F3F30547488200496808 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069802E6A1C601CA2799 /* Cocoa.framework */; };
+		92B5F3F40547488200496808 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069902E6A1C601CA2799 /* CoreAudio.framework */; };
+		92B5F3F50547488200496808 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
+		92B5F3F60547488200496808 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
+		92B5F3F80547488200496808 /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C7B14E033D595901A80099 /* libscsynth.a */; };
+		92B5F3F90547488200496808 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
+		92E20AB7058BBE8C004A7C6F /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
+		92FC9D7506EAFCE900AA3E95 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 92FC9D7306EAFCE900AA3E95 /* dtoa.c */; };
+		92FC9DD906EB002800AA3E95 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 92FC9DD806EB002800AA3E95 /* g_fmt.c */; };
+		92FC9EF906EB774800AA3E95 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 92FC9D7306EAFCE900AA3E95 /* dtoa.c */; };
+		92FC9EFB06EB774900AA3E95 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 92FC9DD806EB002800AA3E95 /* g_fmt.c */; };
+		AAE9248D048143A400A8010B /* SC_Endian.h in Headers */ = {isa = PBXBuildFile; fileRef = AAE9248C048143A400A8010B /* SC_Endian.h */; };
+		AB7E52F60A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */; };
+		AB7E52F70A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */; };
+		AB7E52F80A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */; };
+		B22686290916E0B500FEBB03 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */; };
+		C21B4674046D847B00A87B78 /* TabletEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = C21B4672046D847B00A87B78 /* TabletEvents.h */; };
+		C21B4675046D847B00A87B78 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = C21B4673046D847B00A87B78 /* TabletEvents.m */; };
+		C26BDCCD03D0B4E900A87B78 /* SCDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */; };
+		C26BDCCF03D0B4FB00A87B78 /* SCDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = C26BDCCE03D0B4FB00A87B78 /* SCDialog.h */; };
+		F50D060702E69C2101CA2799 /* ChangeCounter.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D04FE02E69B6B01CA2799 /* ChangeCounter.h */; };
+		F50D060802E69C2101CA2799 /* ControlSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D04FF02E69B6B01CA2799 /* ControlSpec.h */; };
+		F50D060902E69C2101CA2799 /* DrawBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050002E69B6B01CA2799 /* DrawBackground.h */; };
+		F50D060A02E69C2101CA2799 /* GetStringFromUser.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050102E69B6B01CA2799 /* GetStringFromUser.h */; };
+		F50D060B02E69C2101CA2799 /* MyDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050202E69B6B01CA2799 /* MyDocument.h */; };
+		F50D060C02E69C2101CA2799 /* SCGeom.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050302E69B6B01CA2799 /* SCGeom.h */; };
+		F50D060D02E69C2101CA2799 /* SCGraphView.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050402E69B6B01CA2799 /* SCGraphView.h */; };
+		F50D060E02E69C2101CA2799 /* SCTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050502E69B6B01CA2799 /* SCTextView.h */; };
+		F50D060F02E69C2101CA2799 /* SCView.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050602E69B6B01CA2799 /* SCView.h */; };
+		F50D061002E69C2101CA2799 /* SCVirtualMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050702E69B6B01CA2799 /* SCVirtualMachine.h */; };
+		F50D061102E69C2101CA2799 /* TextFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050802E69B6B01CA2799 /* TextFinder.h */; };
+		F50D061202E69C2101CA2799 /* UserPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050902E69B6B01CA2799 /* UserPanel.h */; };
+		F50D061302E69C2101CA2799 /* dfftlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050B02E69B6B01CA2799 /* dfftlib.h */; };
+		F50D061402E69C2101CA2799 /* dlfcn.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050C02E69B6B01CA2799 /* dlfcn.h */; };
+		F50D061502E69C2101CA2799 /* fftlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050D02E69B6B01CA2799 /* fftlib.h */; };
+		F50D061602E69C2101CA2799 /* SC_AllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050E02E69B6B01CA2799 /* SC_AllocPool.h */; };
+		F50D061702E69C2101CA2799 /* scsynthsend.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D050F02E69B6B01CA2799 /* scsynthsend.h */; };
+		F50D061802E69C2101CA2799 /* VMGlobals.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054402E69B6B01CA2799 /* VMGlobals.h */; };
+		F50D061E02E69C5601CA2799 /* AdvancingAllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051102E69B6B01CA2799 /* AdvancingAllocPool.h */; };
+		F50D061F02E69C5601CA2799 /* AllocPools.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051202E69B6B01CA2799 /* AllocPools.h */; };
+		F50D062002E69C5601CA2799 /* bullet.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051302E69B6B01CA2799 /* bullet.h */; };
+		F50D062102E69C5601CA2799 /* ByteCodeArray.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051402E69B6B01CA2799 /* ByteCodeArray.h */; };
+		F50D062202E69D5901CA2799 /* FIFOT.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051502E69B6B01CA2799 /* FIFOT.h */; };
+		F50D062302E69D5901CA2799 /* GC.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051602E69B6B01CA2799 /* GC.h */; };
+		F50D062402E69D5901CA2799 /* HashTable.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051702E69B6B01CA2799 /* HashTable.h */; };
+		F50D062502E69D5901CA2799 /* InitAlloc.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051802E69B6B01CA2799 /* InitAlloc.h */; };
+		F50D062602E69D5901CA2799 /* MiscInlineMath.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051902E69B6B01CA2799 /* MiscInlineMath.h */; };
+		F50D062702E69D5901CA2799 /* Opcodes.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051A02E69B6B01CA2799 /* Opcodes.h */; };
+		F50D062802E69D5901CA2799 /* OSCData.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051B02E69B6B01CA2799 /* OSCData.h */; };
+		F50D062902E69D5901CA2799 /* PowerOfTwoAllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051C02E69B6B01CA2799 /* PowerOfTwoAllocPool.h */; };
+		F50D062A02E69D5901CA2799 /* PredefinedSymbols.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051D02E69B6B01CA2799 /* PredefinedSymbols.h */; };
+		F50D062B02E69D5901CA2799 /* PriorityQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051E02E69B6B01CA2799 /* PriorityQueue.h */; };
+		F50D062C02E69D5901CA2799 /* PyrArchiverT.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051F02E69B6B01CA2799 /* PyrArchiverT.h */; };
+		F50D062D02E69D5901CA2799 /* PyrDeepCopier.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052002E69B6B01CA2799 /* PyrDeepCopier.h */; };
+		F50D062E02E69D5901CA2799 /* PyrDeepFreezer.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052102E69B6B01CA2799 /* PyrDeepFreezer.h */; };
+		F50D062F02E69D5901CA2799 /* PyrErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052202E69B6B01CA2799 /* PyrErrors.h */; };
+		F50D063002E69D5901CA2799 /* PyrFilePrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052302E69B6B01CA2799 /* PyrFilePrim.h */; };
+		F50D063102E69D5901CA2799 /* PyrFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052402E69B6B01CA2799 /* PyrFileUtils.h */; };
+		F50D063202E69D5901CA2799 /* PyrInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052502E69B6B01CA2799 /* PyrInterpreter.h */; };
+		F50D063302E69D5901CA2799 /* PyrKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052602E69B6B01CA2799 /* PyrKernel.h */; };
+		F50D063402E69D5901CA2799 /* PyrKernelProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052702E69B6B01CA2799 /* PyrKernelProto.h */; };
+		F50D063502E69D5901CA2799 /* PyrLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052802E69B6B01CA2799 /* PyrLexer.h */; };
+		F50D063602E69D5901CA2799 /* PyrListPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052902E69B6B01CA2799 /* PyrListPrim.h */; };
+		F50D063702E69D5901CA2799 /* PyrMathPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052A02E69B6B01CA2799 /* PyrMathPrim.h */; };
+		F50D063802E69D5901CA2799 /* PyrMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052B02E69B6B01CA2799 /* PyrMessage.h */; };
+		F50D063902E69D5901CA2799 /* PyrObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052C02E69B6B01CA2799 /* PyrObject.h */; };
+		F50D063A02E69D5901CA2799 /* PyrObjectProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052D02E69B6B01CA2799 /* PyrObjectProto.h */; };
+		F50D063B02E69D5901CA2799 /* PyrParseNode.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052E02E69B6B01CA2799 /* PyrParseNode.h */; };
+		F50D063C02E69D5901CA2799 /* PyrPrimitive.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052F02E69B6B01CA2799 /* PyrPrimitive.h */; };
+		F50D063D02E69D5901CA2799 /* PyrPrimitiveProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053002E69B6B01CA2799 /* PyrPrimitiveProto.h */; };
+		F50D063E02E69D5901CA2799 /* PyrSched.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053102E69B6B01CA2799 /* PyrSched.h */; };
+		F50D063F02E69D5901CA2799 /* PyrSignal.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053202E69B6B01CA2799 /* PyrSignal.h */; };
+		F50D064002E69D5901CA2799 /* PyrSignalPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053302E69B6B01CA2799 /* PyrSignalPrim.h */; };
+		F50D064102E69D5901CA2799 /* PyrSlot.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053402E69B6B01CA2799 /* PyrSlot.h */; };
+		F50D064202E69D5901CA2799 /* PyrSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053502E69B6B01CA2799 /* PyrSymbol.h */; };
+		F50D064302E69D5901CA2799 /* PyrSymbolTable.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053602E69B6B01CA2799 /* PyrSymbolTable.h */; };
+		F50D064402E69D5901CA2799 /* readSamples.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053702E69B6B01CA2799 /* readSamples.h */; };
+		F50D064502E69D5901CA2799 /* ReadWriteMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053802E69B6B01CA2799 /* ReadWriteMacros.h */; };
+		F50D064602E69D5901CA2799 /* Samp.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053902E69B6B01CA2799 /* Samp.h */; };
+		F50D064702E69D5901CA2799 /* SC_ComPort.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053A02E69B6B01CA2799 /* SC_ComPort.h */; };
+		F50D064802E69D5901CA2799 /* SC_List.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053B02E69B6B01CA2799 /* SC_List.h */; };
+		F50D064902E69D5901CA2799 /* SC_LogFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053C02E69B6B01CA2799 /* SC_LogFile.h */; };
+		F50D064A02E69D5901CA2799 /* SC_Msg.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053D02E69B6B01CA2799 /* SC_Msg.h */; };
+		F50D064C02E69D5901CA2799 /* SC_SynthImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053F02E69B6B01CA2799 /* SC_SynthImpl.h */; };
+		F50D064D02E69D5901CA2799 /* SC_UnorderedList.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054002E69B6B01CA2799 /* SC_UnorderedList.h */; };
+		F50D064E02E69D5901CA2799 /* SCBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054102E69B6B01CA2799 /* SCBase.h */; };
+		F50D064F02E69D5901CA2799 /* SFHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054202E69B6B01CA2799 /* SFHeaders.h */; };
+		F50D065002E69D5901CA2799 /* SimpleStack.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054302E69B6B01CA2799 /* SimpleStack.h */; };
+		F50D065102E69D5901CA2799 /* SC_Types.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D055702E69B6B01CA2799 /* SC_Types.h */; };
+		F50D065202E69D5901CA2799 /* clz.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054602E69B6B01CA2799 /* clz.h */; };
+		F50D065302E69D5901CA2799 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054702E69B6B01CA2799 /* Hash.h */; };
+		F50D065402E69D5901CA2799 /* SC_BoundsMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054802E69B6B01CA2799 /* SC_BoundsMacros.h */; };
+		F50D065502E69D5901CA2799 /* lang11d_tab.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D05B702E69B6B01CA2799 /* lang11d_tab.h */; };
+		F50D065902E69D5901CA2799 /* DrawBackground.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058202E69B6B01CA2799 /* DrawBackground.M */; };
+		F50D065A02E69D5901CA2799 /* GetStringFromUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F50D058302E69B6B01CA2799 /* GetStringFromUser.m */; };
+		F50D065B02E69D5901CA2799 /* GUIPrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058402E69B6B01CA2799 /* GUIPrimitives.M */; };
+		F50D065C02E69D5901CA2799 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F50D058502E69B6B01CA2799 /* main.m */; };
+		F50D065D02E69D5901CA2799 /* MyDocument.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058602E69B6B01CA2799 /* MyDocument.M */; };
+		F50D065E02E69D5901CA2799 /* post_queue.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058702E69B6B01CA2799 /* post_queue.M */; };
+		F50D066202E69D5901CA2799 /* SCGraphView.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058B02E69B6B01CA2799 /* SCGraphView.M */; };
+		F50D066302E69D5901CA2799 /* SCTextView.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058C02E69B6B01CA2799 /* SCTextView.M */; };
+		F50D066402E69D5901CA2799 /* SCView.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058D02E69B6B01CA2799 /* SCView.M */; };
+		F50D066502E69D5901CA2799 /* SCVirtualMachine.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058E02E69B6B01CA2799 /* SCVirtualMachine.M */; };
+		F50D066602E69D5901CA2799 /* syntaxColorize.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D058F02E69B6B01CA2799 /* syntaxColorize.M */; };
+		F50D066702E69D5901CA2799 /* TextFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = F50D059002E69B6B01CA2799 /* TextFinder.m */; };
+		F50D066802E69D5901CA2799 /* UserPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = F50D059102E69B6B01CA2799 /* UserPanel.M */; };
+		F50D066902E69D5901CA2799 /* PyrArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059802E69B6B01CA2799 /* PyrArchiver.cpp */; };
+		F50D066A02E69D5901CA2799 /* PyrArrayPrimitives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059902E69B6B01CA2799 /* PyrArrayPrimitives.cpp */; };
+		F50D066B02E69D5901CA2799 /* PyrBitPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059A02E69B6B01CA2799 /* PyrBitPrim.cpp */; };
+		F50D066C02E69D5901CA2799 /* PyrCharPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059B02E69B6B01CA2799 /* PyrCharPrim.cpp */; };
+		F50D066E02E69D5901CA2799 /* PyrFilePrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059D02E69B6B01CA2799 /* PyrFilePrim.cpp */; };
+		F50D066F02E69D5901CA2799 /* PyrListPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059E02E69B6B01CA2799 /* PyrListPrim.cpp */; };
+		F50D067002E69D5901CA2799 /* PyrStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059F02E69B6B01CA2799 /* PyrStringPrim.cpp */; };
+		F50D067102E69D5901CA2799 /* PyrSymbolPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A002E69B6B01CA2799 /* PyrSymbolPrim.cpp */; };
+		F50D067202E69D5901CA2799 /* PyrUnixPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A102E69B6B01CA2799 /* PyrUnixPrim.cpp */; };
+		F50D067502E69D5901CA2799 /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A502E69B6B01CA2799 /* AdvancingAllocPool.cpp */; };
+		F50D067602E69D5901CA2799 /* alloca.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A602E69B6B01CA2799 /* alloca.cpp */; };
+		F50D067702E69D5901CA2799 /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A702E69B6B01CA2799 /* ByteCodeArray.cpp */; };
+		F50D067A02E69D5901CA2799 /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05AA02E69B6B01CA2799 /* dumpByteCodes.cpp */; };
+		F50D067B02E69D5901CA2799 /* DumpParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05AB02E69B6B01CA2799 /* DumpParseNode.cpp */; };
+		F50D067C02E69D5901CA2799 /* GC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05B802E69B6B01CA2799 /* GC.cpp */; };
+		F50D067D02E69D5901CA2799 /* InitAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BA02E69B6B01CA2799 /* InitAlloc.cpp */; };
+		F50D068002E69D5901CA2799 /* PyrFileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BD02E69B6B01CA2799 /* PyrFileUtils.cpp */; };
+		F50D068102E69D5901CA2799 /* PyrInterpreter3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BE02E69B6B01CA2799 /* PyrInterpreter3.cpp */; };
+		F50D068202E69D5901CA2799 /* PyrLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */; };
+		F50D068302E69D5901CA2799 /* PyrMathOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C002E69B6B01CA2799 /* PyrMathOps.cpp */; };
+		F50D068402E69D5901CA2799 /* PyrMathPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C102E69B6B01CA2799 /* PyrMathPrim.cpp */; };
+		F50D068502E69D5901CA2799 /* PyrMathSupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C202E69B6B01CA2799 /* PyrMathSupport.cpp */; };
+		F50D068602E69D5901CA2799 /* PyrMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C302E69B6B01CA2799 /* PyrMessage.cpp */; };
+		F50D068702E69D5901CA2799 /* PyrObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C402E69B6B01CA2799 /* PyrObject.cpp */; };
+		F50D068802E69D5901CA2799 /* PyrParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C502E69B6B01CA2799 /* PyrParseNode.cpp */; };
+		F50D068902E69D5901CA2799 /* PyrPrimitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C602E69B6B01CA2799 /* PyrPrimitive.cpp */; };
+		F50D068A02E69D5901CA2799 /* PyrSched.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C702E69B6B01CA2799 /* PyrSched.cpp */; };
+		F50D068B02E69D5901CA2799 /* PyrSignal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C802E69B6B01CA2799 /* PyrSignal.cpp */; };
+		F50D068C02E69D5901CA2799 /* PyrSignalPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C902E69B6B01CA2799 /* PyrSignalPrim.cpp */; };
+		F50D068D02E69D5901CA2799 /* PyrSymbolTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CA02E69B6B01CA2799 /* PyrSymbolTable.cpp */; };
+		F50D068E02E69D5901CA2799 /* Samp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CB02E69B6B01CA2799 /* Samp.cpp */; };
+		F50D069102E69D5901CA2799 /* SimpleStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CE02E69B6B01CA2799 /* SimpleStack.cpp */; };
+		F50D069202E69D5901CA2799 /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CF02E69B6B01CA2799 /* VMGlobals.cpp */; };
+		F50D069302E69D5901CA2799 /* lang11d_tab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05B602E69B6B01CA2799 /* lang11d_tab.cpp */; };
+		F50D069F02E6A1C601CA2799 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069602E6A1C601CA2799 /* ApplicationServices.framework */; };
+		F50D06A002E6A1C601CA2799 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069702E6A1C601CA2799 /* Carbon.framework */; };
+		F50D06A102E6A1C601CA2799 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069802E6A1C601CA2799 /* Cocoa.framework */; };
+		F50D06A202E6A1C601CA2799 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069902E6A1C601CA2799 /* CoreAudio.framework */; };
+		F50D06A302E6A1C601CA2799 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
+		F50D06A402E6A1C601CA2799 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
+		F50D06B602E6A60F01CA2799 /* FindPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06A602E6A60F01CA2799 /* FindPanel.nib */; };
+		F50D06B702E6A60F01CA2799 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F50D06A802E6A60F01CA2799 /* Credits.rtf */; };
+		F50D06B802E6A60F01CA2799 /* SCGraphView.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06AA02E6A60F01CA2799 /* SCGraphView.nib */; };
+		F50D06B902E6A60F01CA2799 /* MyDocument.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06AC02E6A60F01CA2799 /* MyDocument.nib */; };
+		F50D06BA02E6A60F01CA2799 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06AE02E6A60F01CA2799 /* MainMenu.nib */; };
+		F50D06BC02E6A60F01CA2799 /* GetStringDlg.nib in Resources */ = {isa = PBXBuildFile; fileRef = F50D06B202E6A60F01CA2799 /* GetStringDlg.nib */; };
+		F50D06BD02E6A60F01CA2799 /* FindPanel.strings in Resources */ = {isa = PBXBuildFile; fileRef = F50D06B402E6A60F01CA2799 /* FindPanel.strings */; };
+		F5285E0E0316170401CA2799 /* OSCData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5285E0D0316170401CA2799 /* OSCData.cpp */; };
+		F5285E0F0316170401CA2799 /* OSCData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5285E0D0316170401CA2799 /* OSCData.cpp */; };
+		F53D4644030B8CE701E9DD5D /* SC_RGen.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4643030B8CE601E9DD5D /* SC_RGen.h */; };
+		F53D4645030B8CE701E9DD5D /* SC_RGen.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4643030B8CE601E9DD5D /* SC_RGen.h */; };
+		F53D4646030B8CE701E9DD5D /* SC_BoundsMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054802E69B6B01CA2799 /* SC_BoundsMacros.h */; };
+		F53D4647030B8CE701E9DD5D /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054702E69B6B01CA2799 /* Hash.h */; };
+		F53D4648030B8CE701E9DD5D /* clz.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054602E69B6B01CA2799 /* clz.h */; };
+		F53D4649030B8CE701E9DD5D /* SC_Types.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D055702E69B6B01CA2799 /* SC_Types.h */; };
+		F53D464C030B8FF501E9DD5D /* SC_InlineBinaryOp.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D464A030B8FF501E9DD5D /* SC_InlineBinaryOp.h */; };
+		F53D464D030B8FF501E9DD5D /* SC_InlineUnaryOp.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D464B030B8FF501E9DD5D /* SC_InlineUnaryOp.h */; };
+		F53D464E030B8FF601E9DD5D /* SC_InlineBinaryOp.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D464A030B8FF501E9DD5D /* SC_InlineBinaryOp.h */; };
+		F53D464F030B8FF601E9DD5D /* SC_InlineUnaryOp.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D464B030B8FF501E9DD5D /* SC_InlineUnaryOp.h */; };
+		F53D4651030B905201E9DD5D /* sc_msg_iter.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4650030B905201E9DD5D /* sc_msg_iter.h */; };
+		F53D4652030B905201E9DD5D /* sc_msg_iter.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4650030B905201E9DD5D /* sc_msg_iter.h */; };
+		F53D4654030B934D01E9DD5D /* SC_Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4653030B934D01E9DD5D /* SC_Constants.h */; };
+		F53D4655030B934D01E9DD5D /* SC_Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = F53D4653030B934D01E9DD5D /* SC_Constants.h */; };
+		F561BDB60335370801C816AC /* SC_Sem.h in Headers */ = {isa = PBXBuildFile; fileRef = F561BDB50335370801C816AC /* SC_Sem.h */; };
+		F5709AEE033E525101A80099 /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C7B14E033D595901A80099 /* libscsynth.a */; };
+		F59DF068030733E901CE0C16 /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = F59DF065030733E801CE0C16 /* dlopen.c */; };
+		F59DF069030733E901CE0C16 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF066030733E801CE0C16 /* SC_AllocPool.cpp */; };
+		F59DF06A030733E901CE0C16 /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF067030733E801CE0C16 /* scsynthsend.cpp */; };
+		F59DF06E030733E901CE0C16 /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = F59DF065030733E801CE0C16 /* dlopen.c */; };
+		F59DF06F030733E901CE0C16 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF066030733E801CE0C16 /* SC_AllocPool.cpp */; };
+		F59DF070030733E901CE0C16 /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF067030733E801CE0C16 /* scsynthsend.cpp */; };
+		F59DF0C203073BC901CE0C16 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526B02FC2E330195E057 /* SC_ComPort.cpp */; };
+		F59DF0C6030777A201CE0C16 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF0C5030777A101CE0C16 /* SC_Sem.cpp */; };
+		F59DF0C8030777A201CE0C16 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59DF0C5030777A101CE0C16 /* SC_Sem.cpp */; };
+		F5BAFADF037F805101CA27E6 /* SC_SndBuf.h in Headers */ = {isa = PBXBuildFile; fileRef = F5BAFADE037F805101CA27E6 /* SC_SndBuf.h */; };
+		F5BAFAE0037F805101CA27E6 /* SC_SndBuf.h in Headers */ = {isa = PBXBuildFile; fileRef = F5BAFADE037F805101CA27E6 /* SC_SndBuf.h */; };
+		F5C7B14F033D595901A80099 /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C7B14E033D595901A80099 /* libscsynth.a */; };
+		F5C7B151033D5B4801A80099 /* SC_World.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C7B150033D5B4801A80099 /* SC_World.h */; };
+		F5C7B155033D5EDC01A80099 /* SC_WorldOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C7B154033D5EDC01A80099 /* SC_WorldOptions.h */; };
+		F5C7B157033D611701A80099 /* SC_Reply.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C7B156033D611701A80099 /* SC_Reply.h */; };
+		F5E8B845039BD69C01A87B78 /* CocoaFilePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = F5889A2C0397F2F801A87B78 /* CocoaFilePrimitives.M */; };
+		F5ED520502FBAEBE0195E057 /* AdvancingAllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051102E69B6B01CA2799 /* AdvancingAllocPool.h */; };
+		F5ED520602FBAEBE0195E057 /* AllocPools.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051202E69B6B01CA2799 /* AllocPools.h */; };
+		F5ED520702FBAEBE0195E057 /* bullet.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051302E69B6B01CA2799 /* bullet.h */; };
+		F5ED520802FBAEBE0195E057 /* ByteCodeArray.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051402E69B6B01CA2799 /* ByteCodeArray.h */; };
+		F5ED520902FBAEBE0195E057 /* FIFOT.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051502E69B6B01CA2799 /* FIFOT.h */; };
+		F5ED520A02FBAEBE0195E057 /* GC.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051602E69B6B01CA2799 /* GC.h */; };
+		F5ED520B02FBAEBE0195E057 /* HashTable.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051702E69B6B01CA2799 /* HashTable.h */; };
+		F5ED520C02FBAEBE0195E057 /* InitAlloc.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051802E69B6B01CA2799 /* InitAlloc.h */; };
+		F5ED520D02FBAEBE0195E057 /* MiscInlineMath.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051902E69B6B01CA2799 /* MiscInlineMath.h */; };
+		F5ED520E02FBAEBE0195E057 /* Opcodes.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051A02E69B6B01CA2799 /* Opcodes.h */; };
+		F5ED520F02FBAEBE0195E057 /* OSCData.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051B02E69B6B01CA2799 /* OSCData.h */; };
+		F5ED521002FBAEBE0195E057 /* PowerOfTwoAllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051C02E69B6B01CA2799 /* PowerOfTwoAllocPool.h */; };
+		F5ED521102FBAEBE0195E057 /* PredefinedSymbols.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051D02E69B6B01CA2799 /* PredefinedSymbols.h */; };
+		F5ED521202FBAEBE0195E057 /* PriorityQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051E02E69B6B01CA2799 /* PriorityQueue.h */; };
+		F5ED521302FBAEBE0195E057 /* PyrArchiverT.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D051F02E69B6B01CA2799 /* PyrArchiverT.h */; };
+		F5ED521402FBAEBE0195E057 /* PyrDeepCopier.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052002E69B6B01CA2799 /* PyrDeepCopier.h */; };
+		F5ED521502FBAEBE0195E057 /* PyrDeepFreezer.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052102E69B6B01CA2799 /* PyrDeepFreezer.h */; };
+		F5ED521602FBAEBE0195E057 /* PyrErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052202E69B6B01CA2799 /* PyrErrors.h */; };
+		F5ED521702FBAEBE0195E057 /* PyrFilePrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052302E69B6B01CA2799 /* PyrFilePrim.h */; };
+		F5ED521802FBAEBE0195E057 /* PyrFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052402E69B6B01CA2799 /* PyrFileUtils.h */; };
+		F5ED521902FBAEBE0195E057 /* PyrInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052502E69B6B01CA2799 /* PyrInterpreter.h */; };
+		F5ED521A02FBAEBE0195E057 /* PyrKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052602E69B6B01CA2799 /* PyrKernel.h */; };
+		F5ED521B02FBAEBE0195E057 /* PyrLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052802E69B6B01CA2799 /* PyrLexer.h */; };
+		F5ED521C02FBAEBE0195E057 /* PyrKernelProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052702E69B6B01CA2799 /* PyrKernelProto.h */; };
+		F5ED521D02FBAEBE0195E057 /* PyrListPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052902E69B6B01CA2799 /* PyrListPrim.h */; };
+		F5ED521E02FBAEBE0195E057 /* PyrMathPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052A02E69B6B01CA2799 /* PyrMathPrim.h */; };
+		F5ED521F02FBAEBE0195E057 /* PyrMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052B02E69B6B01CA2799 /* PyrMessage.h */; };
+		F5ED522002FBAEBE0195E057 /* PyrObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052C02E69B6B01CA2799 /* PyrObject.h */; };
+		F5ED522102FBAEBE0195E057 /* PyrObjectProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052D02E69B6B01CA2799 /* PyrObjectProto.h */; };
+		F5ED522202FBAEBE0195E057 /* PyrParseNode.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052E02E69B6B01CA2799 /* PyrParseNode.h */; };
+		F5ED522302FBAEBE0195E057 /* PyrPrimitive.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D052F02E69B6B01CA2799 /* PyrPrimitive.h */; };
+		F5ED522402FBAEBE0195E057 /* PyrPrimitiveProto.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053002E69B6B01CA2799 /* PyrPrimitiveProto.h */; };
+		F5ED522502FBAEBE0195E057 /* PyrSched.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053102E69B6B01CA2799 /* PyrSched.h */; };
+		F5ED522602FBAEBE0195E057 /* PyrSignal.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053202E69B6B01CA2799 /* PyrSignal.h */; };
+		F5ED522702FBAEBE0195E057 /* PyrSignalPrim.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053302E69B6B01CA2799 /* PyrSignalPrim.h */; };
+		F5ED522802FBAEBE0195E057 /* PyrSlot.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053402E69B6B01CA2799 /* PyrSlot.h */; };
+		F5ED522902FBAEBE0195E057 /* PyrSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053502E69B6B01CA2799 /* PyrSymbol.h */; };
+		F5ED522A02FBAEBE0195E057 /* PyrSymbolTable.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053602E69B6B01CA2799 /* PyrSymbolTable.h */; };
+		F5ED522B02FBAEBE0195E057 /* readSamples.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053702E69B6B01CA2799 /* readSamples.h */; };
+		F5ED522C02FBAEBE0195E057 /* ReadWriteMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053802E69B6B01CA2799 /* ReadWriteMacros.h */; };
+		F5ED522D02FBAEBE0195E057 /* Samp.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053902E69B6B01CA2799 /* Samp.h */; };
+		F5ED522E02FBAEBE0195E057 /* SC_ComPort.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053A02E69B6B01CA2799 /* SC_ComPort.h */; };
+		F5ED522F02FBAEBE0195E057 /* SC_List.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053B02E69B6B01CA2799 /* SC_List.h */; };
+		F5ED523002FBAEBE0195E057 /* SC_LogFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053C02E69B6B01CA2799 /* SC_LogFile.h */; };
+		F5ED523102FBAEBE0195E057 /* SC_Msg.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053D02E69B6B01CA2799 /* SC_Msg.h */; };
+		F5ED523302FBAEBE0195E057 /* SC_SynthImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D053F02E69B6B01CA2799 /* SC_SynthImpl.h */; };
+		F5ED523402FBAEBE0195E057 /* SC_UnorderedList.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054002E69B6B01CA2799 /* SC_UnorderedList.h */; };
+		F5ED523502FBAEBE0195E057 /* SCBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054102E69B6B01CA2799 /* SCBase.h */; };
+		F5ED523602FBAEBE0195E057 /* SFHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054202E69B6B01CA2799 /* SFHeaders.h */; };
+		F5ED523702FBAEBE0195E057 /* SimpleStack.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054302E69B6B01CA2799 /* SimpleStack.h */; };
+		F5ED523802FBAEBE0195E057 /* VMGlobals.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D054402E69B6B01CA2799 /* VMGlobals.h */; };
+		F5ED523902FBAEBE0195E057 /* lang11d_tab.h in Headers */ = {isa = PBXBuildFile; fileRef = F50D05B702E69B6B01CA2799 /* lang11d_tab.h */; };
+		F5ED523A02FBAEBE0195E057 /* PyrArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059802E69B6B01CA2799 /* PyrArchiver.cpp */; };
+		F5ED523B02FBAEBE0195E057 /* PyrArrayPrimitives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059902E69B6B01CA2799 /* PyrArrayPrimitives.cpp */; };
+		F5ED523C02FBAEBE0195E057 /* PyrBitPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059A02E69B6B01CA2799 /* PyrBitPrim.cpp */; };
+		F5ED523D02FBAEBE0195E057 /* PyrCharPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059B02E69B6B01CA2799 /* PyrCharPrim.cpp */; };
+		F5ED523E02FBAEBE0195E057 /* PyrFilePrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059D02E69B6B01CA2799 /* PyrFilePrim.cpp */; };
+		F5ED523F02FBAEBE0195E057 /* PyrListPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059E02E69B6B01CA2799 /* PyrListPrim.cpp */; };
+		F5ED524002FBAEBE0195E057 /* PyrStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D059F02E69B6B01CA2799 /* PyrStringPrim.cpp */; };
+		F5ED524102FBAEBE0195E057 /* PyrSymbolPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A002E69B6B01CA2799 /* PyrSymbolPrim.cpp */; };
+		F5ED524202FBAEBE0195E057 /* PyrUnixPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A102E69B6B01CA2799 /* PyrUnixPrim.cpp */; };
+		F5ED524402FBAEBE0195E057 /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A502E69B6B01CA2799 /* AdvancingAllocPool.cpp */; };
+		F5ED524502FBAEBE0195E057 /* alloca.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A602E69B6B01CA2799 /* alloca.cpp */; };
+		F5ED524602FBAEBE0195E057 /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A702E69B6B01CA2799 /* ByteCodeArray.cpp */; };
+		F5ED524702FBAEBE0195E057 /* cmdLineFuncs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05A802E69B6B01CA2799 /* cmdLineFuncs.cpp */; };
+		F5ED524902FBAEBE0195E057 /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05AA02E69B6B01CA2799 /* dumpByteCodes.cpp */; };
+		F5ED524A02FBAEBE0195E057 /* DumpParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05AB02E69B6B01CA2799 /* DumpParseNode.cpp */; };
+		F5ED524B02FBAEBE0195E057 /* GC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05B802E69B6B01CA2799 /* GC.cpp */; };
+		F5ED524C02FBAEBE0195E057 /* lang11d_tab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05B602E69B6B01CA2799 /* lang11d_tab.cpp */; };
+		F5ED524D02FBAEBE0195E057 /* InitAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BA02E69B6B01CA2799 /* InitAlloc.cpp */; };
+		F5ED524F02FBAEBE0195E057 /* PyrFileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BD02E69B6B01CA2799 /* PyrFileUtils.cpp */; };
+		F5ED525002FBAEBE0195E057 /* PyrInterpreter3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BE02E69B6B01CA2799 /* PyrInterpreter3.cpp */; };
+		F5ED525102FBAEBE0195E057 /* PyrLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */; };
+		F5ED525202FBAEBE0195E057 /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CF02E69B6B01CA2799 /* VMGlobals.cpp */; };
+		F5ED525302FBAEBE0195E057 /* SimpleStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CE02E69B6B01CA2799 /* SimpleStack.cpp */; };
+		F5ED525602FBAEBE0195E057 /* Samp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CB02E69B6B01CA2799 /* Samp.cpp */; };
+		F5ED525702FBAEBE0195E057 /* PyrSymbolTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05CA02E69B6B01CA2799 /* PyrSymbolTable.cpp */; };
+		F5ED525802FBAEBE0195E057 /* PyrSignalPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C902E69B6B01CA2799 /* PyrSignalPrim.cpp */; };
+		F5ED525902FBAEBE0195E057 /* PyrSignal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C802E69B6B01CA2799 /* PyrSignal.cpp */; };
+		F5ED525A02FBAEBE0195E057 /* PyrSched.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C702E69B6B01CA2799 /* PyrSched.cpp */; };
+		F5ED525B02FBAEBE0195E057 /* PyrPrimitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C602E69B6B01CA2799 /* PyrPrimitive.cpp */; };
+		F5ED525C02FBAEBE0195E057 /* PyrParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C502E69B6B01CA2799 /* PyrParseNode.cpp */; };
+		F5ED525D02FBAEBE0195E057 /* PyrObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C402E69B6B01CA2799 /* PyrObject.cpp */; };
+		F5ED525E02FBAEBE0195E057 /* PyrMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C302E69B6B01CA2799 /* PyrMessage.cpp */; };
+		F5ED525F02FBAEBE0195E057 /* PyrMathSupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C202E69B6B01CA2799 /* PyrMathSupport.cpp */; };
+		F5ED526002FBAEBE0195E057 /* PyrMathPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C102E69B6B01CA2799 /* PyrMathPrim.cpp */; };
+		F5ED526102FBAEBE0195E057 /* PyrMathOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05C002E69B6B01CA2799 /* PyrMathOps.cpp */; };
+		F5ED526202FBB0110195E057 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
+		F5ED526402FBB0110195E057 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
+		F5ED526502FBB0110195E057 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
+		F5ED526602FBB0110195E057 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069902E6A1C601CA2799 /* CoreAudio.framework */; };
+		F5ED526702FBB0110195E057 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069702E6A1C601CA2799 /* Carbon.framework */; };
+		F5ED526802FBB0110195E057 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069602E6A1C601CA2799 /* ApplicationServices.framework */; };
+		F5ED526D02FC2E330195E057 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526B02FC2E330195E057 /* SC_ComPort.cpp */; };
+		F5ED526E02FC2E330195E057 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */; };
+		F5ED527002FC2E340195E057 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */; };
+		FE15A21B0B53C67E00AF0F11 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE15A21A0B53C67E00AF0F11 /* Quartz.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		92B5F2D20547314E00496808 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5ED51FF02FBA97D0195E057;
+			remoteInfo = sclang;
+		};
+		92B5F2D30547314E00496808 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F50D060502E69C2101CA2799;
+			remoteInfo = SuperCollider;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		43C4FB06050E29C9004C2729 /* libraryConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = libraryConfig.cpp; sourceTree = "<group>"; };
+		53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_FIFO.h; sourceTree = "<group>"; };
+		53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrSerialPrim.cpp; sourceTree = "<group>"; };
+		53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_LanguageClient.h; sourceTree = "<group>"; };
+		6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaBridgePrimitives.M; sourceTree = "<group>"; };
+		6A40715407C7240E003E9C23 /* SCSoundFileView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCSoundFileView.h; sourceTree = "<group>"; };
+		6A40717307C72426003E9C23 /* SCTextView.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCTextView.M; sourceTree = "<group>"; };
+		6A40718507C72B26003E9C23 /* SCSoundFileView.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCSoundFileView.M; sourceTree = "<group>"; };
+		6A7207D307BB709000A1F778 /* SCCocoaView.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; name = SCCocoaView.M; path = source/app/SCCocoaView.M; sourceTree = SOURCE_ROOT; };
+		6A7207DC07BB70CB00A1F778 /* SCCocoaView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SCCocoaView.h; path = headers/app/SCCocoaView.h; sourceTree = SOURCE_ROOT; };
+		6A87FA390B8D053500B2A5A5 /* SCNSWindow.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SCNSWindow.m; sourceTree = "<group>"; };
+		6A87FA410B8D063500B2A5A5 /* SCNSWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCNSWindow.h; sourceTree = "<group>"; };
+		6AA05EE40C15EE18000367C8 /* COPYRIGHT.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = COPYRIGHT.txt; sourceTree = "<group>"; };
+		6AA05EE50C15EE18000367C8 /* HISTORY.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = HISTORY.txt; sourceTree = "<group>"; };
+		6AA05EE60C15EE18000367C8 /* wiiremote.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = wiiremote.c; sourceTree = "<group>"; };
+		6AA05EE70C15EE18000367C8 /* wiiremote.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = wiiremote.h; sourceTree = "<group>"; };
+		6AA05EEE0C15EE46000367C8 /* SC_Wii.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Wii.cpp; sourceTree = "<group>"; };
+		6AA05F3D0C15F543000367C8 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = /System/Library/Frameworks/IOBluetooth.framework; sourceTree = "<absolute>"; };
+		6AAC6D6408FEDC0C006134E1 /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = fftlib.c; path = source/plugins/fftlib.c; sourceTree = SOURCE_ROOT; };
+		6AB6FF64053898BC0000009F /* HID_Error_Handler.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = HID_Error_Handler.c; path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.c; sourceTree = SOURCE_ROOT; };
+		6AB6FF65053898BC0000009F /* HID_Error_Handler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HID_Error_Handler.h; path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.h; sourceTree = SOURCE_ROOT; };
+		6AB6FF66053898BC0000009F /* HID_Name_Lookup.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = HID_Name_Lookup.c; path = source/lang/LangSource/HID_Utilities/HID_Name_Lookup.c; sourceTree = SOURCE_ROOT; };
+		6AB6FF67053898BC0000009F /* HID_Name_Lookup.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HID_Name_Lookup.h; path = source/lang/LangSource/HID_Utilities/HID_Name_Lookup.h; sourceTree = SOURCE_ROOT; };
+		6AB6FF68053898BC0000009F /* HID_Queue_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = HID_Queue_Utilities.c; path = source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.c; sourceTree = SOURCE_ROOT; };
+		6AB6FF69053898BC0000009F /* HID_Queue_Utilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HID_Queue_Utilities.h; path = source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.h; sourceTree = SOURCE_ROOT; };
+		6AB6FF6A053898BC0000009F /* HID_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = HID_Utilities.c; path = source/lang/LangSource/HID_Utilities/HID_Utilities.c; sourceTree = SOURCE_ROOT; };
+		6AB6FF6B053898BC0000009F /* HID_Utilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HID_Utilities.h; path = source/lang/LangSource/HID_Utilities/HID_Utilities.h; sourceTree = SOURCE_ROOT; };
+		6AB6FF6C053898BC0000009F /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HID_Utilities_External.h; path = source/lang/LangSource/HID_Utilities/HID_Utilities_External.h; sourceTree = SOURCE_ROOT; };
+		6AB6FF6D053898BC0000009F /* HID_Utilities_Internal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HID_Utilities_Internal.h; path = source/lang/LangSource/HID_Utilities/HID_Utilities_Internal.h; sourceTree = SOURCE_ROOT; };
+		6AB6FF83053898F00000009F /* SC_HID.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_HID.cpp; path = source/lang/LangSource/SC_HID.cpp; sourceTree = SOURCE_ROOT; };
+		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
+		6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		88723044090870B30002E26A /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		88D7D583090C8737008D45B9 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
+		88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
+		88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_StandAloneInfo_Darwin.cpp; sourceTree = "<group>"; };
+		908DBC360507C63D00000098 /* GoToPanel.M */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.objcpp; path = GoToPanel.M; sourceTree = "<group>"; };
+		908DBC380507C65100000098 /* GoToPanel.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = GoToPanel.h; sourceTree = "<group>"; };
+		908DBC3A0507C66500000098 /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = GoToLinePanel.nib; path = resources/GoToLinePanel.nib; sourceTree = "<group>"; };
+		90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_Speech.cpp; path = source/lang/LangSource/SC_Speech.cpp; sourceTree = SOURCE_ROOT; };
+		920F883D0443F54D00A80088 /* RendezvousClient.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RendezvousClient.h; sourceTree = "<group>"; };
+		920F88400443F59700A80088 /* RendezvousClient.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = RendezvousClient.M; sourceTree = "<group>"; };
+		9284649C06DFB69C00964E7E /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = SCcube.icns; path = resources/SCcube.icns; sourceTree = "<group>"; };
+		9286AE9E057D30B9000EBAEB /* SCService.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCService.mm; sourceTree = "<group>"; };
+		9286AEA3057D30EC000EBAEB /* SCService.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCService.h; sourceTree = "<group>"; };
+		92B4EA55059397C600CA25E4 /* SC_LibraryConfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_LibraryConfig.h; sourceTree = "<group>"; };
+		92B4EA5A059398FE00CA25E4 /* SC_LibraryConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_LibraryConfig.cpp; sourceTree = "<group>"; };
+		92B4EA61059399DD00CA25E4 /* SC_StringBuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_StringBuffer.h; sourceTree = "<group>"; };
+		92B4EA66059399F300CA25E4 /* SC_StringBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_StringBuffer.cpp; sourceTree = "<group>"; };
+		92B5F3FC0547488200496808 /* Info-SuperCollider__xc_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info-SuperCollider__xc_.plist"; sourceTree = "<group>"; };
+		92B5F3FD0547488300496808 /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		92D3BEA8060769D3000FE5DD /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/FindPanel.nib; sourceTree = "<group>"; };
+		92D3BEA9060769D3000FE5DD /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/SCGraphView.nib; sourceTree = "<group>"; };
+		92D3BEAA060769D3000FE5DD /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/MainMenu.nib; sourceTree = "<group>"; };
+		92D3BEAB060769D3000FE5DD /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/GetStringDlg.nib; sourceTree = "<group>"; };
+		92D3BEAC060769D3000FE5DD /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Japanese; path = Japanese.lproj/FindPanel.strings; sourceTree = "<group>"; };
+		92D3BEAD060769D3000FE5DD /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/MyDocument.nib; sourceTree = "<group>"; };
+		92FC9D7306EAFCE900AA3E95 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
+		92FC9DD806EB002800AA3E95 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
+		AAE9248C048143A400A8010B /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
+		AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrPlatformPrim.cpp; sourceTree = "<group>"; };
+		B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
+		C21B4672046D847B00A87B78 /* TabletEvents.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TabletEvents.h; sourceTree = "<group>"; };
+		C21B4673046D847B00A87B78 /* TabletEvents.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = TabletEvents.m; path = source/app/TabletEvents.m; sourceTree = SOURCE_ROOT; };
+		C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCDialog.mm; sourceTree = "<group>"; };
+		C26BDCCE03D0B4FB00A87B78 /* SCDialog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCDialog.h; sourceTree = "<group>"; };
+		F50D04FE02E69B6B01CA2799 /* ChangeCounter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChangeCounter.h; sourceTree = "<group>"; };
+		F50D04FF02E69B6B01CA2799 /* ControlSpec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlSpec.h; sourceTree = "<group>"; };
+		F50D050002E69B6B01CA2799 /* DrawBackground.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DrawBackground.h; sourceTree = "<group>"; };
+		F50D050102E69B6B01CA2799 /* GetStringFromUser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GetStringFromUser.h; sourceTree = "<group>"; };
+		F50D050202E69B6B01CA2799 /* MyDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyDocument.h; sourceTree = "<group>"; };
+		F50D050302E69B6B01CA2799 /* SCGeom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCGeom.h; sourceTree = "<group>"; };
+		F50D050402E69B6B01CA2799 /* SCGraphView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCGraphView.h; sourceTree = "<group>"; };
+		F50D050502E69B6B01CA2799 /* SCTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCTextView.h; sourceTree = "<group>"; };
+		F50D050602E69B6B01CA2799 /* SCView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCView.h; sourceTree = "<group>"; };
+		F50D050702E69B6B01CA2799 /* SCVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCVirtualMachine.h; sourceTree = "<group>"; };
+		F50D050802E69B6B01CA2799 /* TextFinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextFinder.h; sourceTree = "<group>"; };
+		F50D050902E69B6B01CA2799 /* UserPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserPanel.h; sourceTree = "<group>"; };
+		F50D050B02E69B6B01CA2799 /* dfftlib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
+		F50D050C02E69B6B01CA2799 /* dlfcn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dlfcn.h; sourceTree = "<group>"; };
+		F50D050D02E69B6B01CA2799 /* fftlib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
+		F50D050E02E69B6B01CA2799 /* SC_AllocPool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
+		F50D050F02E69B6B01CA2799 /* scsynthsend.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = scsynthsend.h; sourceTree = "<group>"; };
+		F50D051102E69B6B01CA2799 /* AdvancingAllocPool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AdvancingAllocPool.h; sourceTree = "<group>"; };
+		F50D051202E69B6B01CA2799 /* AllocPools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AllocPools.h; sourceTree = "<group>"; };
+		F50D051302E69B6B01CA2799 /* bullet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bullet.h; sourceTree = "<group>"; };
+		F50D051402E69B6B01CA2799 /* ByteCodeArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ByteCodeArray.h; sourceTree = "<group>"; };
+		F50D051502E69B6B01CA2799 /* FIFOT.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIFOT.h; sourceTree = "<group>"; };
+		F50D051602E69B6B01CA2799 /* GC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GC.h; sourceTree = "<group>"; };
+		F50D051702E69B6B01CA2799 /* HashTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HashTable.h; sourceTree = "<group>"; };
+		F50D051802E69B6B01CA2799 /* InitAlloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InitAlloc.h; sourceTree = "<group>"; };
+		F50D051902E69B6B01CA2799 /* MiscInlineMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MiscInlineMath.h; sourceTree = "<group>"; };
+		F50D051A02E69B6B01CA2799 /* Opcodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Opcodes.h; sourceTree = "<group>"; };
+		F50D051B02E69B6B01CA2799 /* OSCData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSCData.h; sourceTree = "<group>"; };
+		F50D051C02E69B6B01CA2799 /* PowerOfTwoAllocPool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PowerOfTwoAllocPool.h; sourceTree = "<group>"; };
+		F50D051D02E69B6B01CA2799 /* PredefinedSymbols.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PredefinedSymbols.h; sourceTree = "<group>"; };
+		F50D051E02E69B6B01CA2799 /* PriorityQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PriorityQueue.h; sourceTree = "<group>"; };
+		F50D051F02E69B6B01CA2799 /* PyrArchiverT.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrArchiverT.h; sourceTree = "<group>"; };
+		F50D052002E69B6B01CA2799 /* PyrDeepCopier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrDeepCopier.h; sourceTree = "<group>"; };
+		F50D052102E69B6B01CA2799 /* PyrDeepFreezer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrDeepFreezer.h; sourceTree = "<group>"; };
+		F50D052202E69B6B01CA2799 /* PyrErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrErrors.h; sourceTree = "<group>"; };
+		F50D052302E69B6B01CA2799 /* PyrFilePrim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrFilePrim.h; sourceTree = "<group>"; };
+		F50D052402E69B6B01CA2799 /* PyrFileUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrFileUtils.h; sourceTree = "<group>"; };
+		F50D052502E69B6B01CA2799 /* PyrInterpreter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrInterpreter.h; sourceTree = "<group>"; };
+		F50D052602E69B6B01CA2799 /* PyrKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrKernel.h; sourceTree = "<group>"; };
+		F50D052702E69B6B01CA2799 /* PyrKernelProto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrKernelProto.h; sourceTree = "<group>"; };
+		F50D052802E69B6B01CA2799 /* PyrLexer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrLexer.h; sourceTree = "<group>"; };
+		F50D052902E69B6B01CA2799 /* PyrListPrim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrListPrim.h; sourceTree = "<group>"; };
+		F50D052A02E69B6B01CA2799 /* PyrMathPrim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrMathPrim.h; sourceTree = "<group>"; };
+		F50D052B02E69B6B01CA2799 /* PyrMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrMessage.h; sourceTree = "<group>"; };
+		F50D052C02E69B6B01CA2799 /* PyrObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrObject.h; sourceTree = "<group>"; };
+		F50D052D02E69B6B01CA2799 /* PyrObjectProto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrObjectProto.h; sourceTree = "<group>"; };
+		F50D052E02E69B6B01CA2799 /* PyrParseNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrParseNode.h; sourceTree = "<group>"; };
+		F50D052F02E69B6B01CA2799 /* PyrPrimitive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrPrimitive.h; sourceTree = "<group>"; };
+		F50D053002E69B6B01CA2799 /* PyrPrimitiveProto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrPrimitiveProto.h; sourceTree = "<group>"; };
+		F50D053102E69B6B01CA2799 /* PyrSched.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrSched.h; sourceTree = "<group>"; };
+		F50D053202E69B6B01CA2799 /* PyrSignal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrSignal.h; sourceTree = "<group>"; };
+		F50D053302E69B6B01CA2799 /* PyrSignalPrim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrSignalPrim.h; sourceTree = "<group>"; };
+		F50D053402E69B6B01CA2799 /* PyrSlot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrSlot.h; sourceTree = "<group>"; };
+		F50D053502E69B6B01CA2799 /* PyrSymbol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrSymbol.h; sourceTree = "<group>"; };
+		F50D053602E69B6B01CA2799 /* PyrSymbolTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PyrSymbolTable.h; sourceTree = "<group>"; };
+		F50D053702E69B6B01CA2799 /* readSamples.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = readSamples.h; sourceTree = "<group>"; };
+		F50D053802E69B6B01CA2799 /* ReadWriteMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReadWriteMacros.h; sourceTree = "<group>"; };
+		F50D053902E69B6B01CA2799 /* Samp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Samp.h; sourceTree = "<group>"; };
+		F50D053A02E69B6B01CA2799 /* SC_ComPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_ComPort.h; sourceTree = "<group>"; };
+		F50D053B02E69B6B01CA2799 /* SC_List.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_List.h; sourceTree = "<group>"; };
+		F50D053C02E69B6B01CA2799 /* SC_LogFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_LogFile.h; sourceTree = "<group>"; };
+		F50D053D02E69B6B01CA2799 /* SC_Msg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_Msg.h; sourceTree = "<group>"; };
+		F50D053F02E69B6B01CA2799 /* SC_SynthImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_SynthImpl.h; sourceTree = "<group>"; };
+		F50D054002E69B6B01CA2799 /* SC_UnorderedList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_UnorderedList.h; sourceTree = "<group>"; };
+		F50D054102E69B6B01CA2799 /* SCBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCBase.h; sourceTree = "<group>"; };
+		F50D054202E69B6B01CA2799 /* SFHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SFHeaders.h; sourceTree = "<group>"; };
+		F50D054302E69B6B01CA2799 /* SimpleStack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimpleStack.h; sourceTree = "<group>"; };
+		F50D054402E69B6B01CA2799 /* VMGlobals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMGlobals.h; sourceTree = "<group>"; };
+		F50D054602E69B6B01CA2799 /* clz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
+		F50D054702E69B6B01CA2799 /* Hash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		F50D054802E69B6B01CA2799 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
+		F50D055702E69B6B01CA2799 /* SC_Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_Types.h; sourceTree = "<group>"; };
+		F50D058202E69B6B01CA2799 /* DrawBackground.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DrawBackground.M; sourceTree = "<group>"; };
+		F50D058302E69B6B01CA2799 /* GetStringFromUser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GetStringFromUser.m; sourceTree = "<group>"; };
+		F50D058402E69B6B01CA2799 /* GUIPrimitives.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GUIPrimitives.M; sourceTree = "<group>"; };
+		F50D058502E69B6B01CA2799 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F50D058602E69B6B01CA2799 /* MyDocument.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MyDocument.M; sourceTree = "<group>"; };
+		F50D058702E69B6B01CA2799 /* post_queue.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = post_queue.M; sourceTree = "<group>"; };
+		F50D058B02E69B6B01CA2799 /* SCGraphView.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SCGraphView.M; sourceTree = "<group>"; };
+		F50D058C02E69B6B01CA2799 /* SCTextView.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SCTextView.M; sourceTree = "<group>"; };
+		F50D058D02E69B6B01CA2799 /* SCView.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SCView.M; sourceTree = "<group>"; };
+		F50D058E02E69B6B01CA2799 /* SCVirtualMachine.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SCVirtualMachine.M; sourceTree = "<group>"; };
+		F50D058F02E69B6B01CA2799 /* syntaxColorize.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = syntaxColorize.M; sourceTree = "<group>"; };
+		F50D059002E69B6B01CA2799 /* TextFinder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TextFinder.m; sourceTree = "<group>"; };
+		F50D059102E69B6B01CA2799 /* UserPanel.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = UserPanel.M; sourceTree = "<group>"; };
+		F50D059802E69B6B01CA2799 /* PyrArchiver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrArchiver.cpp; sourceTree = "<group>"; };
+		F50D059902E69B6B01CA2799 /* PyrArrayPrimitives.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PyrArrayPrimitives.cpp; path = source/lang/LangPrimSource/PyrArrayPrimitives.cpp; sourceTree = SOURCE_ROOT; };
+		F50D059A02E69B6B01CA2799 /* PyrBitPrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrBitPrim.cpp; sourceTree = "<group>"; };
+		F50D059B02E69B6B01CA2799 /* PyrCharPrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrCharPrim.cpp; sourceTree = "<group>"; };
+		F50D059D02E69B6B01CA2799 /* PyrFilePrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrFilePrim.cpp; sourceTree = "<group>"; };
+		F50D059E02E69B6B01CA2799 /* PyrListPrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrListPrim.cpp; sourceTree = "<group>"; };
+		F50D059F02E69B6B01CA2799 /* PyrStringPrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrStringPrim.cpp; sourceTree = "<group>"; };
+		F50D05A002E69B6B01CA2799 /* PyrSymbolPrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrSymbolPrim.cpp; sourceTree = "<group>"; };
+		F50D05A102E69B6B01CA2799 /* PyrUnixPrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrUnixPrim.cpp; sourceTree = "<group>"; };
+		F50D05A502E69B6B01CA2799 /* AdvancingAllocPool.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AdvancingAllocPool.cpp; sourceTree = "<group>"; };
+		F50D05A602E69B6B01CA2799 /* alloca.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = alloca.cpp; sourceTree = "<group>"; };
+		F50D05A702E69B6B01CA2799 /* ByteCodeArray.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ByteCodeArray.cpp; sourceTree = "<group>"; };
+		F50D05A802E69B6B01CA2799 /* cmdLineFuncs.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cmdLineFuncs.cpp; sourceTree = "<group>"; };
+		F50D05AA02E69B6B01CA2799 /* dumpByteCodes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = dumpByteCodes.cpp; sourceTree = "<group>"; };
+		F50D05AB02E69B6B01CA2799 /* DumpParseNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DumpParseNode.cpp; sourceTree = "<group>"; };
+		F50D05B402E69B6B01CA2799 /* lang11d */ = {isa = PBXFileReference; lastKnownFileType = text; path = lang11d; sourceTree = "<group>"; };
+		F50D05B602E69B6B01CA2799 /* lang11d_tab.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = lang11d_tab.cpp; sourceTree = "<group>"; };
+		F50D05B702E69B6B01CA2799 /* lang11d_tab.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lang11d_tab.h; sourceTree = "<group>"; };
+		F50D05B802E69B6B01CA2799 /* GC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GC.cpp; sourceTree = "<group>"; };
+		F50D05BA02E69B6B01CA2799 /* InitAlloc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InitAlloc.cpp; sourceTree = "<group>"; };
+		F50D05BD02E69B6B01CA2799 /* PyrFileUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrFileUtils.cpp; sourceTree = "<group>"; };
+		F50D05BE02E69B6B01CA2799 /* PyrInterpreter3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrInterpreter3.cpp; sourceTree = "<group>"; };
+		F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrLexer.cpp; sourceTree = "<group>"; };
+		F50D05C002E69B6B01CA2799 /* PyrMathOps.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrMathOps.cpp; sourceTree = "<group>"; };
+		F50D05C102E69B6B01CA2799 /* PyrMathPrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrMathPrim.cpp; sourceTree = "<group>"; };
+		F50D05C202E69B6B01CA2799 /* PyrMathSupport.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrMathSupport.cpp; sourceTree = "<group>"; };
+		F50D05C302E69B6B01CA2799 /* PyrMessage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrMessage.cpp; sourceTree = "<group>"; };
+		F50D05C402E69B6B01CA2799 /* PyrObject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrObject.cpp; sourceTree = "<group>"; };
+		F50D05C502E69B6B01CA2799 /* PyrParseNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrParseNode.cpp; sourceTree = "<group>"; };
+		F50D05C602E69B6B01CA2799 /* PyrPrimitive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrPrimitive.cpp; sourceTree = "<group>"; };
+		F50D05C702E69B6B01CA2799 /* PyrSched.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrSched.cpp; sourceTree = "<group>"; };
+		F50D05C802E69B6B01CA2799 /* PyrSignal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrSignal.cpp; sourceTree = "<group>"; };
+		F50D05C902E69B6B01CA2799 /* PyrSignalPrim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrSignalPrim.cpp; sourceTree = "<group>"; };
+		F50D05CA02E69B6B01CA2799 /* PyrSymbolTable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PyrSymbolTable.cpp; sourceTree = "<group>"; };
+		F50D05CB02E69B6B01CA2799 /* Samp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Samp.cpp; sourceTree = "<group>"; };
+		F50D05CE02E69B6B01CA2799 /* SimpleStack.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleStack.cpp; sourceTree = "<group>"; };
+		F50D05CF02E69B6B01CA2799 /* VMGlobals.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VMGlobals.cpp; sourceTree = "<group>"; };
+		F50D060402E69C2101CA2799 /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		F50D069602E6A1C601CA2799 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		F50D069702E6A1C601CA2799 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		F50D069802E6A1C601CA2799 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		F50D069902E6A1C601CA2799 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
+		F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = /System/Library/Frameworks/CoreMIDI.framework; sourceTree = "<absolute>"; };
+		F50D069B02E6A1C601CA2799 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
+		F50D069C02E6A1C601CA2799 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		F50D06A702E6A60F01CA2799 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/FindPanel.nib; sourceTree = "<group>"; };
+		F50D06A902E6A60F01CA2799 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F50D06AB02E6A60F01CA2799 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SCGraphView.nib; sourceTree = "<group>"; };
+		F50D06AD02E6A60F01CA2799 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MyDocument.nib; sourceTree = "<group>"; };
+		F50D06AF02E6A60F01CA2799 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
+		F50D06B302E6A60F01CA2799 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/GetStringDlg.nib; sourceTree = "<group>"; };
+		F50D06B502E6A60F01CA2799 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/FindPanel.strings; sourceTree = "<group>"; };
+		F50D06C002E7F29001CA2799 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = /usr/local/lib/libsndfile.a; sourceTree = "<absolute>"; };
+		F5285E0D0316170401CA2799 /* OSCData.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = OSCData.cpp; sourceTree = "<group>"; };
+		F53D4643030B8CE601E9DD5D /* SC_RGen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_RGen.h; sourceTree = "<group>"; };
+		F53D464A030B8FF501E9DD5D /* SC_InlineBinaryOp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_InlineBinaryOp.h; sourceTree = "<group>"; };
+		F53D464B030B8FF501E9DD5D /* SC_InlineUnaryOp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_InlineUnaryOp.h; sourceTree = "<group>"; };
+		F53D4650030B905201E9DD5D /* sc_msg_iter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = sc_msg_iter.h; sourceTree = "<group>"; };
+		F53D4653030B934D01E9DD5D /* SC_Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_Constants.h; sourceTree = "<group>"; };
+		F561BDB50335370801C816AC /* SC_Sem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_Sem.h; sourceTree = "<group>"; };
+		F5889A2C0397F2F801A87B78 /* CocoaFilePrimitives.M */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaFilePrimitives.M; sourceTree = "<group>"; };
+		F59DF065030733E801CE0C16 /* dlopen.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dlopen.c; sourceTree = "<group>"; };
+		F59DF066030733E801CE0C16 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
+		F59DF067030733E801CE0C16 /* scsynthsend.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = scsynthsend.cpp; sourceTree = "<group>"; };
+		F59DF0C5030777A101CE0C16 /* SC_Sem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Sem.cpp; sourceTree = "<group>"; };
+		F5BAFADE037F805101CA27E6 /* SC_SndBuf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SC_SndBuf.h; sourceTree = "<group>"; };
+		F5C7B14E033D595901A80099 /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
+		F5C7B150033D5B4801A80099 /* SC_World.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SC_World.h; path = headers/plugin_interface/SC_World.h; sourceTree = SOURCE_ROOT; };
+		F5C7B154033D5EDC01A80099 /* SC_WorldOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SC_WorldOptions.h; path = headers/plugin_interface/SC_WorldOptions.h; sourceTree = SOURCE_ROOT; };
+		F5C7B156033D611701A80099 /* SC_Reply.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SC_Reply.h; path = headers/server/SC_Reply.h; sourceTree = SOURCE_ROOT; };
+		F5ED51FE02FBA97D0195E057 /* sclang */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = sclang; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5ED526B02FC2E330195E057 /* SC_ComPort.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SC_ComPort.cpp; sourceTree = "<group>"; };
+		F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SC_CoreMIDI.cpp; sourceTree = "<group>"; };
+		FE15A21A0B53C67E00AF0F11 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		92B5F3F00547488200496808 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92B5F3F10547488200496808 /* ApplicationServices.framework in Frameworks */,
+				92B5F3F20547488200496808 /* Carbon.framework in Frameworks */,
+				92B5F3F30547488200496808 /* Cocoa.framework in Frameworks */,
+				92B5F3F40547488200496808 /* CoreAudio.framework in Frameworks */,
+				92B5F3F50547488200496808 /* CoreMIDI.framework in Frameworks */,
+				92B5F3F60547488200496808 /* CoreServices.framework in Frameworks */,
+				92B5F3F80547488200496808 /* libscsynth.a in Frameworks */,
+				92B5F3F90547488200496808 /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50D061B02E69C2101CA2799 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F50D069F02E6A1C601CA2799 /* ApplicationServices.framework in Frameworks */,
+				F50D06A002E6A1C601CA2799 /* Carbon.framework in Frameworks */,
+				F50D06A102E6A1C601CA2799 /* Cocoa.framework in Frameworks */,
+				F50D06A202E6A1C601CA2799 /* CoreAudio.framework in Frameworks */,
+				F50D06A302E6A1C601CA2799 /* CoreMIDI.framework in Frameworks */,
+				F50D06A402E6A1C601CA2799 /* CoreServices.framework in Frameworks */,
+				6AB6FFA20538A90A0000009F /* IOKit.framework in Frameworks */,
+				92E20AB7058BBE8C004A7C6F /* libsndfile.a in Frameworks */,
+				F5C7B14F033D595901A80099 /* libscsynth.a in Frameworks */,
+				6AC9B2DB08ABF480001EBDF6 /* QuickTime.framework in Frameworks */,
+				FE15A21B0B53C67E00AF0F11 /* Quartz.framework in Frameworks */,
+				6AA05F3E0C15F543000367C8 /* IOBluetooth.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5ED520202FBA97D0195E057 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5ED526202FBB0110195E057 /* libsndfile.a in Frameworks */,
+				F5ED526402FBB0110195E057 /* CoreServices.framework in Frameworks */,
+				F5ED526502FBB0110195E057 /* CoreMIDI.framework in Frameworks */,
+				F5ED526602FBB0110195E057 /* CoreAudio.framework in Frameworks */,
+				F5ED526702FBB0110195E057 /* Carbon.framework in Frameworks */,
+				F5ED526802FBB0110195E057 /* ApplicationServices.framework in Frameworks */,
+				F5709AEE033E525101A80099 /* libscsynth.a in Frameworks */,
+				6AB6FFA30538A90A0000009F /* IOKit.framework in Frameworks */,
+				6AA05F3F0C15F544000367C8 /* IOBluetooth.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6AA05EE30C15EE18000367C8 /* WiiMote_OSX */ = {
+			isa = PBXGroup;
+			children = (
+				6AA05EE40C15EE18000367C8 /* COPYRIGHT.txt */,
+				6AA05EE50C15EE18000367C8 /* HISTORY.txt */,
+				6AA05EE60C15EE18000367C8 /* wiiremote.c */,
+				6AA05EE70C15EE18000367C8 /* wiiremote.h */,
+			);
+			path = WiiMote_OSX;
+			sourceTree = "<group>";
+		};
+		6AB6FF62053898BC0000009F /* HID_Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				6AB6FF64053898BC0000009F /* HID_Error_Handler.c */,
+				6AB6FF65053898BC0000009F /* HID_Error_Handler.h */,
+				6AB6FF66053898BC0000009F /* HID_Name_Lookup.c */,
+				6AB6FF67053898BC0000009F /* HID_Name_Lookup.h */,
+				6AB6FF68053898BC0000009F /* HID_Queue_Utilities.c */,
+				6AB6FF69053898BC0000009F /* HID_Queue_Utilities.h */,
+				6AB6FF6A053898BC0000009F /* HID_Utilities.c */,
+				6AB6FF6B053898BC0000009F /* HID_Utilities.h */,
+				6AB6FF6C053898BC0000009F /* HID_Utilities_External.h */,
+				6AB6FF6D053898BC0000009F /* HID_Utilities_Internal.h */,
+			);
+			name = HID_Utilities;
+			path = source/lang/LangSource/HID_Utilities;
+			sourceTree = SOURCE_ROOT;
+		};
+		F50D04F802E68E8201CA2799 = {
+			isa = PBXGroup;
+			children = (
+				F50D04FB02E69B6B01CA2799 /* headers */,
+				F50D057E02E69B6B01CA2799 /* source */,
+				F50D060302E69C2101CA2799 /* Products */,
+				F50D069402E6A1C601CA2799 /* Frameworks */,
+				F50D069D02E6A1C601CA2799 /* Resources */,
+				92B5F3FC0547488200496808 /* Info-SuperCollider__xc_.plist */,
+			);
+			sourceTree = "<group>";
+		};
+		F50D04FB02E69B6B01CA2799 /* headers */ = {
+			isa = PBXGroup;
+			children = (
+				F50D04FD02E69B6B01CA2799 /* app */,
+				F50D050A02E69B6B01CA2799 /* common */,
+				F50D051002E69B6B01CA2799 /* lang */,
+				F50D054502E69B6B01CA2799 /* plugin_interface */,
+			);
+			path = headers;
+			sourceTree = "<group>";
+		};
+		F50D04FD02E69B6B01CA2799 /* app */ = {
+			isa = PBXGroup;
+			children = (
+				F50D04FE02E69B6B01CA2799 /* ChangeCounter.h */,
+				F50D04FF02E69B6B01CA2799 /* ControlSpec.h */,
+				F50D050002E69B6B01CA2799 /* DrawBackground.h */,
+				F50D050102E69B6B01CA2799 /* GetStringFromUser.h */,
+				F50D050202E69B6B01CA2799 /* MyDocument.h */,
+				920F883D0443F54D00A80088 /* RendezvousClient.h */,
+				F50D050302E69B6B01CA2799 /* SCGeom.h */,
+				F50D050402E69B6B01CA2799 /* SCGraphView.h */,
+				6A87FA410B8D063500B2A5A5 /* SCNSWindow.h */,
+				F50D050502E69B6B01CA2799 /* SCTextView.h */,
+				F50D050602E69B6B01CA2799 /* SCView.h */,
+				6A7207DC07BB70CB00A1F778 /* SCCocoaView.h */,
+				6A40715407C7240E003E9C23 /* SCSoundFileView.h */,
+				F50D050702E69B6B01CA2799 /* SCVirtualMachine.h */,
+				F50D050802E69B6B01CA2799 /* TextFinder.h */,
+				F50D050902E69B6B01CA2799 /* UserPanel.h */,
+				C26BDCCE03D0B4FB00A87B78 /* SCDialog.h */,
+				C21B4672046D847B00A87B78 /* TabletEvents.h */,
+				908DBC380507C65100000098 /* GoToPanel.h */,
+				9286AEA3057D30EC000EBAEB /* SCService.h */,
+			);
+			path = app;
+			sourceTree = "<group>";
+		};
+		F50D050A02E69B6B01CA2799 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				53FA83FF0B374A5200AB10D4 /* SC_FIFO.h */,
+				88FB09A7096DC6F20012327A /* SC_StandAloneInfo_Darwin.h */,
+				88D7D583090C8737008D45B9 /* SC_DirUtils.h */,
+				F5C7B150033D5B4801A80099 /* SC_World.h */,
+				F5C7B154033D5EDC01A80099 /* SC_WorldOptions.h */,
+				F5C7B156033D611701A80099 /* SC_Reply.h */,
+				F50D050B02E69B6B01CA2799 /* dfftlib.h */,
+				F50D050C02E69B6B01CA2799 /* dlfcn.h */,
+				F50D050D02E69B6B01CA2799 /* fftlib.h */,
+				F50D050E02E69B6B01CA2799 /* SC_AllocPool.h */,
+				F50D050F02E69B6B01CA2799 /* scsynthsend.h */,
+				F561BDB50335370801C816AC /* SC_Sem.h */,
+				AAE9248C048143A400A8010B /* SC_Endian.h */,
+				92B4EA61059399DD00CA25E4 /* SC_StringBuffer.h */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
+		F50D051002E69B6B01CA2799 /* lang */ = {
+			isa = PBXGroup;
+			children = (
+				53FA84090B374AD800AB10D4 /* SC_LanguageClient.h */,
+				F50D051102E69B6B01CA2799 /* AdvancingAllocPool.h */,
+				F50D051202E69B6B01CA2799 /* AllocPools.h */,
+				F50D051302E69B6B01CA2799 /* bullet.h */,
+				F50D051402E69B6B01CA2799 /* ByteCodeArray.h */,
+				F50D051502E69B6B01CA2799 /* FIFOT.h */,
+				F50D051602E69B6B01CA2799 /* GC.h */,
+				F50D051702E69B6B01CA2799 /* HashTable.h */,
+				F50D051802E69B6B01CA2799 /* InitAlloc.h */,
+				F50D051902E69B6B01CA2799 /* MiscInlineMath.h */,
+				F50D051A02E69B6B01CA2799 /* Opcodes.h */,
+				F50D051B02E69B6B01CA2799 /* OSCData.h */,
+				F50D051C02E69B6B01CA2799 /* PowerOfTwoAllocPool.h */,
+				F50D051D02E69B6B01CA2799 /* PredefinedSymbols.h */,
+				F50D051E02E69B6B01CA2799 /* PriorityQueue.h */,
+				F50D051F02E69B6B01CA2799 /* PyrArchiverT.h */,
+				F50D052002E69B6B01CA2799 /* PyrDeepCopier.h */,
+				F50D052102E69B6B01CA2799 /* PyrDeepFreezer.h */,
+				F50D052202E69B6B01CA2799 /* PyrErrors.h */,
+				F50D052302E69B6B01CA2799 /* PyrFilePrim.h */,
+				F50D052402E69B6B01CA2799 /* PyrFileUtils.h */,
+				F50D052502E69B6B01CA2799 /* PyrInterpreter.h */,
+				F50D052602E69B6B01CA2799 /* PyrKernel.h */,
+				F50D052702E69B6B01CA2799 /* PyrKernelProto.h */,
+				F50D052802E69B6B01CA2799 /* PyrLexer.h */,
+				F50D052902E69B6B01CA2799 /* PyrListPrim.h */,
+				F50D052A02E69B6B01CA2799 /* PyrMathPrim.h */,
+				F50D052B02E69B6B01CA2799 /* PyrMessage.h */,
+				F50D052C02E69B6B01CA2799 /* PyrObject.h */,
+				F50D052D02E69B6B01CA2799 /* PyrObjectProto.h */,
+				F50D052E02E69B6B01CA2799 /* PyrParseNode.h */,
+				F50D052F02E69B6B01CA2799 /* PyrPrimitive.h */,
+				F50D053002E69B6B01CA2799 /* PyrPrimitiveProto.h */,
+				F50D053102E69B6B01CA2799 /* PyrSched.h */,
+				F50D053202E69B6B01CA2799 /* PyrSignal.h */,
+				F50D053302E69B6B01CA2799 /* PyrSignalPrim.h */,
+				F50D053402E69B6B01CA2799 /* PyrSlot.h */,
+				F50D053502E69B6B01CA2799 /* PyrSymbol.h */,
+				F50D053602E69B6B01CA2799 /* PyrSymbolTable.h */,
+				F50D053702E69B6B01CA2799 /* readSamples.h */,
+				F50D053802E69B6B01CA2799 /* ReadWriteMacros.h */,
+				F50D053902E69B6B01CA2799 /* Samp.h */,
+				F50D053A02E69B6B01CA2799 /* SC_ComPort.h */,
+				92B4EA55059397C600CA25E4 /* SC_LibraryConfig.h */,
+				F50D053B02E69B6B01CA2799 /* SC_List.h */,
+				F50D053C02E69B6B01CA2799 /* SC_LogFile.h */,
+				F50D053D02E69B6B01CA2799 /* SC_Msg.h */,
+				F50D053F02E69B6B01CA2799 /* SC_SynthImpl.h */,
+				F50D054002E69B6B01CA2799 /* SC_UnorderedList.h */,
+				F50D054102E69B6B01CA2799 /* SCBase.h */,
+				F50D054202E69B6B01CA2799 /* SFHeaders.h */,
+				F50D054302E69B6B01CA2799 /* SimpleStack.h */,
+				F50D054402E69B6B01CA2799 /* VMGlobals.h */,
+			);
+			path = lang;
+			sourceTree = "<group>";
+		};
+		F50D054502E69B6B01CA2799 /* plugin_interface */ = {
+			isa = PBXGroup;
+			children = (
+				F50D054602E69B6B01CA2799 /* clz.h */,
+				F50D054702E69B6B01CA2799 /* Hash.h */,
+				F50D054802E69B6B01CA2799 /* SC_BoundsMacros.h */,
+				F53D4653030B934D01E9DD5D /* SC_Constants.h */,
+				F53D4643030B8CE601E9DD5D /* SC_RGen.h */,
+				F5BAFADE037F805101CA27E6 /* SC_SndBuf.h */,
+				F50D055702E69B6B01CA2799 /* SC_Types.h */,
+				F53D464A030B8FF501E9DD5D /* SC_InlineBinaryOp.h */,
+				F53D464B030B8FF501E9DD5D /* SC_InlineUnaryOp.h */,
+				F53D4650030B905201E9DD5D /* sc_msg_iter.h */,
+			);
+			path = plugin_interface;
+			sourceTree = "<group>";
+		};
+		F50D057E02E69B6B01CA2799 /* source */ = {
+			isa = PBXGroup;
+			children = (
+				F50D058002E69B6B01CA2799 /* app */,
+				F50D059202E69B6B01CA2799 /* common */,
+				F50D059302E69B6B01CA2799 /* lang */,
+			);
+			path = source;
+			sourceTree = "<group>";
+		};
+		F50D058002E69B6B01CA2799 /* app */ = {
+			isa = PBXGroup;
+			children = (
+				6A2536BA09C1C9360045AEB7 /* CocoaBridgePrimitives.M */,
+				F5889A2C0397F2F801A87B78 /* CocoaFilePrimitives.M */,
+				F50D058202E69B6B01CA2799 /* DrawBackground.M */,
+				F50D058302E69B6B01CA2799 /* GetStringFromUser.m */,
+				908DBC360507C63D00000098 /* GoToPanel.M */,
+				F50D058402E69B6B01CA2799 /* GUIPrimitives.M */,
+				F50D058502E69B6B01CA2799 /* main.m */,
+				F50D058602E69B6B01CA2799 /* MyDocument.M */,
+				F50D058702E69B6B01CA2799 /* post_queue.M */,
+				920F88400443F59700A80088 /* RendezvousClient.M */,
+				F50D058B02E69B6B01CA2799 /* SCGraphView.M */,
+				6A87FA390B8D053500B2A5A5 /* SCNSWindow.m */,
+				F50D058C02E69B6B01CA2799 /* SCTextView.M */,
+				F50D058D02E69B6B01CA2799 /* SCView.M */,
+				6A7207D307BB709000A1F778 /* SCCocoaView.M */,
+				6A40717307C72426003E9C23 /* SCTextView.M */,
+				F50D058E02E69B6B01CA2799 /* SCVirtualMachine.M */,
+				6A40718507C72B26003E9C23 /* SCSoundFileView.M */,
+				F50D058F02E69B6B01CA2799 /* syntaxColorize.M */,
+				F50D059002E69B6B01CA2799 /* TextFinder.m */,
+				F50D059102E69B6B01CA2799 /* UserPanel.M */,
+				C26BDCCC03D0B4E900A87B78 /* SCDialog.mm */,
+				9286AE9E057D30B9000EBAEB /* SCService.mm */,
+				C21B4673046D847B00A87B78 /* TabletEvents.m */,
+			);
+			path = app;
+			sourceTree = "<group>";
+		};
+		F50D059202E69B6B01CA2799 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				88FB09AB096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp */,
+				B22686280916E0B500FEBB03 /* SC_DirUtils.cpp */,
+				6AAC6D6408FEDC0C006134E1 /* fftlib.c */,
+				F59DF065030733E801CE0C16 /* dlopen.c */,
+				F59DF066030733E801CE0C16 /* SC_AllocPool.cpp */,
+				F59DF0C5030777A101CE0C16 /* SC_Sem.cpp */,
+				F59DF067030733E801CE0C16 /* scsynthsend.cpp */,
+				92B4EA66059399F300CA25E4 /* SC_StringBuffer.cpp */,
+				92FC9D7306EAFCE900AA3E95 /* dtoa.c */,
+				92FC9DD806EB002800AA3E95 /* g_fmt.c */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
+		F50D059302E69B6B01CA2799 /* lang */ = {
+			isa = PBXGroup;
+			children = (
+				F50D059502E69B6B01CA2799 /* LangPrimSource */,
+				F50D05A302E69B6B01CA2799 /* LangSource */,
+			);
+			path = lang;
+			sourceTree = "<group>";
+		};
+		F50D059502E69B6B01CA2799 /* LangPrimSource */ = {
+			isa = PBXGroup;
+			children = (
+				53FA84030B374A7200AB10D4 /* PyrSerialPrim.cpp */,
+				F5285E0D0316170401CA2799 /* OSCData.cpp */,
+				F50D059802E69B6B01CA2799 /* PyrArchiver.cpp */,
+				F50D059902E69B6B01CA2799 /* PyrArrayPrimitives.cpp */,
+				F50D059A02E69B6B01CA2799 /* PyrBitPrim.cpp */,
+				F50D059B02E69B6B01CA2799 /* PyrCharPrim.cpp */,
+				F50D059D02E69B6B01CA2799 /* PyrFilePrim.cpp */,
+				F50D059E02E69B6B01CA2799 /* PyrListPrim.cpp */,
+				AB7E52F50A6AA31B0011A23B /* PyrPlatformPrim.cpp */,
+				F50D059F02E69B6B01CA2799 /* PyrStringPrim.cpp */,
+				F50D05A002E69B6B01CA2799 /* PyrSymbolPrim.cpp */,
+				F50D05A102E69B6B01CA2799 /* PyrUnixPrim.cpp */,
+			);
+			path = LangPrimSource;
+			sourceTree = "<group>";
+		};
+		F50D05A302E69B6B01CA2799 /* LangSource */ = {
+			isa = PBXGroup;
+			children = (
+				6AA05EE30C15EE18000367C8 /* WiiMote_OSX */,
+				6AB6FF62053898BC0000009F /* HID_Utilities */,
+				6AB6FF83053898F00000009F /* SC_HID.cpp */,
+				F5ED526B02FC2E330195E057 /* SC_ComPort.cpp */,
+				F5ED526C02FC2E330195E057 /* SC_CoreMIDI.cpp */,
+				90A4CDA0044D5AF2000000AF /* SC_Speech.cpp */,
+				92B4EA5A059398FE00CA25E4 /* SC_LibraryConfig.cpp */,
+				6AA05EEE0C15EE46000367C8 /* SC_Wii.cpp */,
+				F50D05A502E69B6B01CA2799 /* AdvancingAllocPool.cpp */,
+				F50D05A602E69B6B01CA2799 /* alloca.cpp */,
+				F50D05A702E69B6B01CA2799 /* ByteCodeArray.cpp */,
+				F50D05A802E69B6B01CA2799 /* cmdLineFuncs.cpp */,
+				F50D05AA02E69B6B01CA2799 /* dumpByteCodes.cpp */,
+				F50D05AB02E69B6B01CA2799 /* DumpParseNode.cpp */,
+				F50D05AC02E69B6B01CA2799 /* erase-compiler */,
+				F50D05B802E69B6B01CA2799 /* GC.cpp */,
+				F50D05BA02E69B6B01CA2799 /* InitAlloc.cpp */,
+				F50D05BD02E69B6B01CA2799 /* PyrFileUtils.cpp */,
+				F50D05BE02E69B6B01CA2799 /* PyrInterpreter3.cpp */,
+				F50D05BF02E69B6B01CA2799 /* PyrLexer.cpp */,
+				F50D05C002E69B6B01CA2799 /* PyrMathOps.cpp */,
+				F50D05C102E69B6B01CA2799 /* PyrMathPrim.cpp */,
+				F50D05C202E69B6B01CA2799 /* PyrMathSupport.cpp */,
+				F50D05C302E69B6B01CA2799 /* PyrMessage.cpp */,
+				F50D05C402E69B6B01CA2799 /* PyrObject.cpp */,
+				F50D05C502E69B6B01CA2799 /* PyrParseNode.cpp */,
+				F50D05C602E69B6B01CA2799 /* PyrPrimitive.cpp */,
+				F50D05C702E69B6B01CA2799 /* PyrSched.cpp */,
+				F50D05C802E69B6B01CA2799 /* PyrSignal.cpp */,
+				F50D05C902E69B6B01CA2799 /* PyrSignalPrim.cpp */,
+				F50D05CA02E69B6B01CA2799 /* PyrSymbolTable.cpp */,
+				F50D05CB02E69B6B01CA2799 /* Samp.cpp */,
+				F50D05CE02E69B6B01CA2799 /* SimpleStack.cpp */,
+				F50D05CF02E69B6B01CA2799 /* VMGlobals.cpp */,
+				43C4FB06050E29C9004C2729 /* libraryConfig.cpp */,
+			);
+			path = LangSource;
+			sourceTree = "<group>";
+		};
+		F50D05AC02E69B6B01CA2799 /* erase-compiler */ = {
+			isa = PBXGroup;
+			children = (
+				F50D05B402E69B6B01CA2799 /* lang11d */,
+				F50D05B602E69B6B01CA2799 /* lang11d_tab.cpp */,
+				F50D05B702E69B6B01CA2799 /* lang11d_tab.h */,
+			);
+			path = "erase-compiler";
+			sourceTree = "<group>";
+		};
+		F50D060302E69C2101CA2799 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F50D060402E69C2101CA2799 /* SuperCollider.app */,
+				F5ED51FE02FBA97D0195E057 /* sclang */,
+				92B5F3FD0547488300496808 /* SuperCollider.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F50D069402E6A1C601CA2799 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6AA05F3D0C15F543000367C8 /* IOBluetooth.framework */,
+				FE15A21A0B53C67E00AF0F11 /* Quartz.framework */,
+				F50D069502E6A1C601CA2799 /* AppKit.framework */,
+				F50D069602E6A1C601CA2799 /* ApplicationServices.framework */,
+				F50D069702E6A1C601CA2799 /* Carbon.framework */,
+				F50D069802E6A1C601CA2799 /* Cocoa.framework */,
+				F50D069902E6A1C601CA2799 /* CoreAudio.framework */,
+				F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */,
+				F50D069B02E6A1C601CA2799 /* CoreServices.framework */,
+				F50D069C02E6A1C601CA2799 /* Foundation.framework */,
+				6AB6FFA10538A90A0000009F /* IOKit.framework */,
+				6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */,
+				F50D06C002E7F29001CA2799 /* libsndfile.a */,
+				F5C7B14E033D595901A80099 /* libscsynth.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F50D069D02E6A1C601CA2799 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				88723043090870B30002E26A /* InfoPlist.strings */,
+				908DBC3A0507C66500000098 /* GoToLinePanel.nib */,
+				F50D06A602E6A60F01CA2799 /* FindPanel.nib */,
+				F50D06A802E6A60F01CA2799 /* Credits.rtf */,
+				F50D06AA02E6A60F01CA2799 /* SCGraphView.nib */,
+				F50D06AC02E6A60F01CA2799 /* MyDocument.nib */,
+				F50D06AE02E6A60F01CA2799 /* MainMenu.nib */,
+				F50D06B202E6A60F01CA2799 /* GetStringDlg.nib */,
+				F50D06B402E6A60F01CA2799 /* FindPanel.strings */,
+				9284649C06DFB69C00964E7E /* SCcube.icns */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		92B5F3440547488200496808 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92B5F3450547488200496808 /* ChangeCounter.h in Headers */,
+				92B5F3460547488200496808 /* ControlSpec.h in Headers */,
+				92B5F3470547488200496808 /* DrawBackground.h in Headers */,
+				92B5F3480547488200496808 /* GetStringFromUser.h in Headers */,
+				92B5F3490547488200496808 /* MyDocument.h in Headers */,
+				92B5F34A0547488200496808 /* SCGeom.h in Headers */,
+				92B5F34B0547488200496808 /* SCGraphView.h in Headers */,
+				92B5F34C0547488200496808 /* SCTextView.h in Headers */,
+				92B5F34D0547488200496808 /* SCView.h in Headers */,
+				92B5F34E0547488200496808 /* SCVirtualMachine.h in Headers */,
+				92B5F34F0547488200496808 /* TextFinder.h in Headers */,
+				92B5F3500547488200496808 /* UserPanel.h in Headers */,
+				92B5F3510547488200496808 /* dfftlib.h in Headers */,
+				92B5F3520547488200496808 /* dlfcn.h in Headers */,
+				92B5F3530547488200496808 /* fftlib.h in Headers */,
+				92B5F3540547488200496808 /* SC_AllocPool.h in Headers */,
+				92B5F3550547488200496808 /* scsynthsend.h in Headers */,
+				92B5F3560547488200496808 /* VMGlobals.h in Headers */,
+				92B5F3570547488200496808 /* AdvancingAllocPool.h in Headers */,
+				92B5F3580547488200496808 /* AllocPools.h in Headers */,
+				92B5F3590547488200496808 /* bullet.h in Headers */,
+				92B5F35A0547488200496808 /* ByteCodeArray.h in Headers */,
+				92B5F35B0547488200496808 /* FIFOT.h in Headers */,
+				92B5F35C0547488200496808 /* GC.h in Headers */,
+				92B5F35D0547488200496808 /* HashTable.h in Headers */,
+				92B5F35E0547488200496808 /* InitAlloc.h in Headers */,
+				92B5F35F0547488200496808 /* MiscInlineMath.h in Headers */,
+				92B5F3600547488200496808 /* Opcodes.h in Headers */,
+				92B5F3610547488200496808 /* OSCData.h in Headers */,
+				92B5F3620547488200496808 /* PowerOfTwoAllocPool.h in Headers */,
+				92B5F3630547488200496808 /* PredefinedSymbols.h in Headers */,
+				92B5F3640547488200496808 /* PriorityQueue.h in Headers */,
+				92B5F3650547488200496808 /* PyrArchiverT.h in Headers */,
+				92B5F3660547488200496808 /* PyrDeepCopier.h in Headers */,
+				92B5F3670547488200496808 /* PyrDeepFreezer.h in Headers */,
+				92B5F3680547488200496808 /* PyrErrors.h in Headers */,
+				92B5F3690547488200496808 /* PyrFilePrim.h in Headers */,
+				92B5F36A0547488200496808 /* PyrFileUtils.h in Headers */,
+				92B5F36B0547488200496808 /* PyrInterpreter.h in Headers */,
+				92B5F36C0547488200496808 /* PyrKernel.h in Headers */,
+				92B5F36D0547488200496808 /* PyrKernelProto.h in Headers */,
+				92B5F36E0547488200496808 /* PyrLexer.h in Headers */,
+				92B5F36F0547488200496808 /* PyrListPrim.h in Headers */,
+				92B5F3700547488200496808 /* PyrMathPrim.h in Headers */,
+				92B5F3710547488200496808 /* PyrMessage.h in Headers */,
+				92B5F3720547488200496808 /* PyrObject.h in Headers */,
+				92B5F3730547488200496808 /* PyrObjectProto.h in Headers */,
+				92B5F3740547488200496808 /* PyrParseNode.h in Headers */,
+				92B5F3750547488200496808 /* PyrPrimitive.h in Headers */,
+				92B5F3760547488200496808 /* PyrPrimitiveProto.h in Headers */,
+				92B5F3770547488200496808 /* PyrSched.h in Headers */,
+				92B5F3780547488200496808 /* PyrSignal.h in Headers */,
+				92B5F3790547488200496808 /* PyrSignalPrim.h in Headers */,
+				92B5F37A0547488200496808 /* PyrSlot.h in Headers */,
+				92B5F37B0547488200496808 /* PyrSymbol.h in Headers */,
+				92B5F37C0547488200496808 /* PyrSymbolTable.h in Headers */,
+				92B5F37D0547488200496808 /* readSamples.h in Headers */,
+				92B5F37E0547488200496808 /* ReadWriteMacros.h in Headers */,
+				92B5F37F0547488200496808 /* Samp.h in Headers */,
+				92B5F3800547488200496808 /* SC_ComPort.h in Headers */,
+				92B5F3810547488200496808 /* SC_List.h in Headers */,
+				92B5F3820547488200496808 /* SC_LogFile.h in Headers */,
+				92B5F3830547488200496808 /* SC_Msg.h in Headers */,
+				92B5F3840547488200496808 /* SC_SynthImpl.h in Headers */,
+				92B5F3850547488200496808 /* SC_UnorderedList.h in Headers */,
+				92B5F3860547488200496808 /* SCBase.h in Headers */,
+				92B5F3870547488200496808 /* SFHeaders.h in Headers */,
+				92B5F3880547488200496808 /* SimpleStack.h in Headers */,
+				92B5F3890547488200496808 /* SC_Types.h in Headers */,
+				92B5F38A0547488200496808 /* clz.h in Headers */,
+				92B5F38B0547488200496808 /* Hash.h in Headers */,
+				92B5F38C0547488200496808 /* SC_BoundsMacros.h in Headers */,
+				92B5F38D0547488200496808 /* lang11d_tab.h in Headers */,
+				92B5F38E0547488200496808 /* SC_RGen.h in Headers */,
+				92B5F38F0547488200496808 /* SC_InlineBinaryOp.h in Headers */,
+				92B5F3900547488200496808 /* SC_InlineUnaryOp.h in Headers */,
+				92B5F3910547488200496808 /* sc_msg_iter.h in Headers */,
+				92B5F3920547488200496808 /* SC_Constants.h in Headers */,
+				92B5F3930547488200496808 /* SC_Sem.h in Headers */,
+				92B5F3940547488200496808 /* SC_World.h in Headers */,
+				92B5F3950547488200496808 /* SC_WorldOptions.h in Headers */,
+				92B5F3960547488200496808 /* SC_Reply.h in Headers */,
+				92B5F3970547488200496808 /* SC_SndBuf.h in Headers */,
+				92B5F3980547488200496808 /* SCDialog.h in Headers */,
+				92B5F3990547488200496808 /* RendezvousClient.h in Headers */,
+				92B5F39A0547488200496808 /* TabletEvents.h in Headers */,
+				92B5F39B0547488200496808 /* SC_Endian.h in Headers */,
+				92B5F39C0547488200496808 /* GoToPanel.h in Headers */,
+				92B5F39D0547488200496808 /* HID_Error_Handler.h in Headers */,
+				92B5F39E0547488200496808 /* HID_Name_Lookup.h in Headers */,
+				92B5F39F0547488200496808 /* HID_Queue_Utilities.h in Headers */,
+				92B5F3A00547488200496808 /* HID_Utilities.h in Headers */,
+				92B5F3A10547488200496808 /* HID_Utilities_External.h in Headers */,
+				92B5F3A20547488200496808 /* HID_Utilities_Internal.h in Headers */,
+				9286AEA5057D30EC000EBAEB /* SCService.h in Headers */,
+				88D7D585090C8737008D45B9 /* SC_DirUtils.h in Headers */,
+				88FB09A9096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
+				53FA84010B374A5200AB10D4 /* SC_FIFO.h in Headers */,
+				53FA840B0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50D060602E69C2101CA2799 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F50D060702E69C2101CA2799 /* ChangeCounter.h in Headers */,
+				F50D060802E69C2101CA2799 /* ControlSpec.h in Headers */,
+				F50D060902E69C2101CA2799 /* DrawBackground.h in Headers */,
+				F50D060A02E69C2101CA2799 /* GetStringFromUser.h in Headers */,
+				F50D060B02E69C2101CA2799 /* MyDocument.h in Headers */,
+				F50D060C02E69C2101CA2799 /* SCGeom.h in Headers */,
+				F50D060D02E69C2101CA2799 /* SCGraphView.h in Headers */,
+				F50D060E02E69C2101CA2799 /* SCTextView.h in Headers */,
+				F50D060F02E69C2101CA2799 /* SCView.h in Headers */,
+				F50D061002E69C2101CA2799 /* SCVirtualMachine.h in Headers */,
+				F50D061102E69C2101CA2799 /* TextFinder.h in Headers */,
+				F50D061202E69C2101CA2799 /* UserPanel.h in Headers */,
+				F50D061302E69C2101CA2799 /* dfftlib.h in Headers */,
+				F50D061402E69C2101CA2799 /* dlfcn.h in Headers */,
+				F50D061502E69C2101CA2799 /* fftlib.h in Headers */,
+				F50D061602E69C2101CA2799 /* SC_AllocPool.h in Headers */,
+				F50D061702E69C2101CA2799 /* scsynthsend.h in Headers */,
+				F50D061802E69C2101CA2799 /* VMGlobals.h in Headers */,
+				F50D061E02E69C5601CA2799 /* AdvancingAllocPool.h in Headers */,
+				F50D061F02E69C5601CA2799 /* AllocPools.h in Headers */,
+				F50D062002E69C5601CA2799 /* bullet.h in Headers */,
+				F50D062102E69C5601CA2799 /* ByteCodeArray.h in Headers */,
+				F50D062202E69D5901CA2799 /* FIFOT.h in Headers */,
+				F50D062302E69D5901CA2799 /* GC.h in Headers */,
+				F50D062402E69D5901CA2799 /* HashTable.h in Headers */,
+				F50D062502E69D5901CA2799 /* InitAlloc.h in Headers */,
+				F50D062602E69D5901CA2799 /* MiscInlineMath.h in Headers */,
+				F50D062702E69D5901CA2799 /* Opcodes.h in Headers */,
+				F50D062802E69D5901CA2799 /* OSCData.h in Headers */,
+				F50D062902E69D5901CA2799 /* PowerOfTwoAllocPool.h in Headers */,
+				F50D062A02E69D5901CA2799 /* PredefinedSymbols.h in Headers */,
+				F50D062B02E69D5901CA2799 /* PriorityQueue.h in Headers */,
+				F50D062C02E69D5901CA2799 /* PyrArchiverT.h in Headers */,
+				F50D062D02E69D5901CA2799 /* PyrDeepCopier.h in Headers */,
+				F50D062E02E69D5901CA2799 /* PyrDeepFreezer.h in Headers */,
+				F50D062F02E69D5901CA2799 /* PyrErrors.h in Headers */,
+				F50D063002E69D5901CA2799 /* PyrFilePrim.h in Headers */,
+				F50D063102E69D5901CA2799 /* PyrFileUtils.h in Headers */,
+				F50D063202E69D5901CA2799 /* PyrInterpreter.h in Headers */,
+				F50D063302E69D5901CA2799 /* PyrKernel.h in Headers */,
+				F50D063402E69D5901CA2799 /* PyrKernelProto.h in Headers */,
+				F50D063502E69D5901CA2799 /* PyrLexer.h in Headers */,
+				F50D063602E69D5901CA2799 /* PyrListPrim.h in Headers */,
+				F50D063702E69D5901CA2799 /* PyrMathPrim.h in Headers */,
+				F50D063802E69D5901CA2799 /* PyrMessage.h in Headers */,
+				F50D063902E69D5901CA2799 /* PyrObject.h in Headers */,
+				F50D063A02E69D5901CA2799 /* PyrObjectProto.h in Headers */,
+				F50D063B02E69D5901CA2799 /* PyrParseNode.h in Headers */,
+				F50D063C02E69D5901CA2799 /* PyrPrimitive.h in Headers */,
+				F50D063D02E69D5901CA2799 /* PyrPrimitiveProto.h in Headers */,
+				F50D063E02E69D5901CA2799 /* PyrSched.h in Headers */,
+				F50D063F02E69D5901CA2799 /* PyrSignal.h in Headers */,
+				F50D064002E69D5901CA2799 /* PyrSignalPrim.h in Headers */,
+				F50D064102E69D5901CA2799 /* PyrSlot.h in Headers */,
+				F50D064202E69D5901CA2799 /* PyrSymbol.h in Headers */,
+				F50D064302E69D5901CA2799 /* PyrSymbolTable.h in Headers */,
+				F50D064402E69D5901CA2799 /* readSamples.h in Headers */,
+				F50D064502E69D5901CA2799 /* ReadWriteMacros.h in Headers */,
+				F50D064602E69D5901CA2799 /* Samp.h in Headers */,
+				F50D064702E69D5901CA2799 /* SC_ComPort.h in Headers */,
+				F50D064802E69D5901CA2799 /* SC_List.h in Headers */,
+				F50D064902E69D5901CA2799 /* SC_LogFile.h in Headers */,
+				F50D064A02E69D5901CA2799 /* SC_Msg.h in Headers */,
+				F50D064C02E69D5901CA2799 /* SC_SynthImpl.h in Headers */,
+				F50D064D02E69D5901CA2799 /* SC_UnorderedList.h in Headers */,
+				F50D064E02E69D5901CA2799 /* SCBase.h in Headers */,
+				F50D064F02E69D5901CA2799 /* SFHeaders.h in Headers */,
+				F50D065002E69D5901CA2799 /* SimpleStack.h in Headers */,
+				F50D065102E69D5901CA2799 /* SC_Types.h in Headers */,
+				F50D065202E69D5901CA2799 /* clz.h in Headers */,
+				F50D065302E69D5901CA2799 /* Hash.h in Headers */,
+				F50D065402E69D5901CA2799 /* SC_BoundsMacros.h in Headers */,
+				F50D065502E69D5901CA2799 /* lang11d_tab.h in Headers */,
+				F53D4644030B8CE701E9DD5D /* SC_RGen.h in Headers */,
+				F53D464C030B8FF501E9DD5D /* SC_InlineBinaryOp.h in Headers */,
+				F53D464D030B8FF501E9DD5D /* SC_InlineUnaryOp.h in Headers */,
+				F53D4651030B905201E9DD5D /* sc_msg_iter.h in Headers */,
+				F53D4654030B934D01E9DD5D /* SC_Constants.h in Headers */,
+				F561BDB60335370801C816AC /* SC_Sem.h in Headers */,
+				F5C7B151033D5B4801A80099 /* SC_World.h in Headers */,
+				F5C7B155033D5EDC01A80099 /* SC_WorldOptions.h in Headers */,
+				F5C7B157033D611701A80099 /* SC_Reply.h in Headers */,
+				F5BAFADF037F805101CA27E6 /* SC_SndBuf.h in Headers */,
+				C26BDCCF03D0B4FB00A87B78 /* SCDialog.h in Headers */,
+				920F883E0443F54D00A80088 /* RendezvousClient.h in Headers */,
+				C21B4674046D847B00A87B78 /* TabletEvents.h in Headers */,
+				AAE9248D048143A400A8010B /* SC_Endian.h in Headers */,
+				908DBC390507C65100000098 /* GoToPanel.h in Headers */,
+				6AB6FF70053898BC0000009F /* HID_Error_Handler.h in Headers */,
+				6AB6FF72053898BC0000009F /* HID_Name_Lookup.h in Headers */,
+				6AB6FF74053898BC0000009F /* HID_Queue_Utilities.h in Headers */,
+				6AB6FF76053898BC0000009F /* HID_Utilities.h in Headers */,
+				6AB6FF77053898BC0000009F /* HID_Utilities_External.h in Headers */,
+				6AB6FF78053898BC0000009F /* HID_Utilities_Internal.h in Headers */,
+				9286AEA4057D30EC000EBAEB /* SCService.h in Headers */,
+				92B4EA57059397C600CA25E4 /* SC_LibraryConfig.h in Headers */,
+				92B4EA63059399DD00CA25E4 /* SC_StringBuffer.h in Headers */,
+				6A7207DD07BB70CB00A1F778 /* SCCocoaView.h in Headers */,
+				6A40715507C7240E003E9C23 /* SCSoundFileView.h in Headers */,
+				88D7D584090C8737008D45B9 /* SC_DirUtils.h in Headers */,
+				88FB09A8096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
+				53FA84000B374A5200AB10D4 /* SC_FIFO.h in Headers */,
+				53FA840A0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
+				6A87FA420B8D063500B2A5A5 /* SCNSWindow.h in Headers */,
+				6AA05EEB0C15EE18000367C8 /* wiiremote.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5ED520002FBA97D0195E057 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5ED520502FBAEBE0195E057 /* AdvancingAllocPool.h in Headers */,
+				F5ED520602FBAEBE0195E057 /* AllocPools.h in Headers */,
+				F5ED520702FBAEBE0195E057 /* bullet.h in Headers */,
+				F5ED520802FBAEBE0195E057 /* ByteCodeArray.h in Headers */,
+				F5ED520902FBAEBE0195E057 /* FIFOT.h in Headers */,
+				F5ED520A02FBAEBE0195E057 /* GC.h in Headers */,
+				F5ED520B02FBAEBE0195E057 /* HashTable.h in Headers */,
+				F5ED520C02FBAEBE0195E057 /* InitAlloc.h in Headers */,
+				F5ED520D02FBAEBE0195E057 /* MiscInlineMath.h in Headers */,
+				F5ED520E02FBAEBE0195E057 /* Opcodes.h in Headers */,
+				F5ED520F02FBAEBE0195E057 /* OSCData.h in Headers */,
+				F5ED521002FBAEBE0195E057 /* PowerOfTwoAllocPool.h in Headers */,
+				F5ED521102FBAEBE0195E057 /* PredefinedSymbols.h in Headers */,
+				F5ED521202FBAEBE0195E057 /* PriorityQueue.h in Headers */,
+				F5ED521302FBAEBE0195E057 /* PyrArchiverT.h in Headers */,
+				F5ED521402FBAEBE0195E057 /* PyrDeepCopier.h in Headers */,
+				F5ED521502FBAEBE0195E057 /* PyrDeepFreezer.h in Headers */,
+				F5ED521602FBAEBE0195E057 /* PyrErrors.h in Headers */,
+				F5ED521702FBAEBE0195E057 /* PyrFilePrim.h in Headers */,
+				F5ED521802FBAEBE0195E057 /* PyrFileUtils.h in Headers */,
+				F5ED521902FBAEBE0195E057 /* PyrInterpreter.h in Headers */,
+				F5ED521A02FBAEBE0195E057 /* PyrKernel.h in Headers */,
+				F5ED521B02FBAEBE0195E057 /* PyrLexer.h in Headers */,
+				F5ED521C02FBAEBE0195E057 /* PyrKernelProto.h in Headers */,
+				F5ED521D02FBAEBE0195E057 /* PyrListPrim.h in Headers */,
+				F5ED521E02FBAEBE0195E057 /* PyrMathPrim.h in Headers */,
+				F5ED521F02FBAEBE0195E057 /* PyrMessage.h in Headers */,
+				F5ED522002FBAEBE0195E057 /* PyrObject.h in Headers */,
+				F5ED522102FBAEBE0195E057 /* PyrObjectProto.h in Headers */,
+				F5ED522202FBAEBE0195E057 /* PyrParseNode.h in Headers */,
+				F5ED522302FBAEBE0195E057 /* PyrPrimitive.h in Headers */,
+				F5ED522402FBAEBE0195E057 /* PyrPrimitiveProto.h in Headers */,
+				F5ED522502FBAEBE0195E057 /* PyrSched.h in Headers */,
+				F5ED522602FBAEBE0195E057 /* PyrSignal.h in Headers */,
+				F5ED522702FBAEBE0195E057 /* PyrSignalPrim.h in Headers */,
+				F5ED522802FBAEBE0195E057 /* PyrSlot.h in Headers */,
+				F5ED522902FBAEBE0195E057 /* PyrSymbol.h in Headers */,
+				F5ED522A02FBAEBE0195E057 /* PyrSymbolTable.h in Headers */,
+				F5ED522B02FBAEBE0195E057 /* readSamples.h in Headers */,
+				F5ED522C02FBAEBE0195E057 /* ReadWriteMacros.h in Headers */,
+				F5ED522D02FBAEBE0195E057 /* Samp.h in Headers */,
+				F5ED522E02FBAEBE0195E057 /* SC_ComPort.h in Headers */,
+				F5ED522F02FBAEBE0195E057 /* SC_List.h in Headers */,
+				F5ED523002FBAEBE0195E057 /* SC_LogFile.h in Headers */,
+				F5ED523102FBAEBE0195E057 /* SC_Msg.h in Headers */,
+				F5ED523302FBAEBE0195E057 /* SC_SynthImpl.h in Headers */,
+				F5ED523402FBAEBE0195E057 /* SC_UnorderedList.h in Headers */,
+				F5ED523502FBAEBE0195E057 /* SCBase.h in Headers */,
+				F5ED523602FBAEBE0195E057 /* SFHeaders.h in Headers */,
+				F5ED523702FBAEBE0195E057 /* SimpleStack.h in Headers */,
+				F5ED523802FBAEBE0195E057 /* VMGlobals.h in Headers */,
+				F5ED523902FBAEBE0195E057 /* lang11d_tab.h in Headers */,
+				F53D4645030B8CE701E9DD5D /* SC_RGen.h in Headers */,
+				F53D4646030B8CE701E9DD5D /* SC_BoundsMacros.h in Headers */,
+				F53D4647030B8CE701E9DD5D /* Hash.h in Headers */,
+				F53D4648030B8CE701E9DD5D /* clz.h in Headers */,
+				F53D4649030B8CE701E9DD5D /* SC_Types.h in Headers */,
+				F53D464E030B8FF601E9DD5D /* SC_InlineBinaryOp.h in Headers */,
+				F53D464F030B8FF601E9DD5D /* SC_InlineUnaryOp.h in Headers */,
+				F53D4652030B905201E9DD5D /* sc_msg_iter.h in Headers */,
+				F53D4655030B934D01E9DD5D /* SC_Constants.h in Headers */,
+				F5BAFAE0037F805101CA27E6 /* SC_SndBuf.h in Headers */,
+				920F883F0443F54D00A80088 /* RendezvousClient.h in Headers */,
+				6AB6FF7A053898BC0000009F /* HID_Error_Handler.h in Headers */,
+				6AB6FF7C053898BC0000009F /* HID_Name_Lookup.h in Headers */,
+				6AB6FF7E053898BC0000009F /* HID_Queue_Utilities.h in Headers */,
+				6AB6FF80053898BC0000009F /* HID_Utilities.h in Headers */,
+				6AB6FF81053898BC0000009F /* HID_Utilities_External.h in Headers */,
+				6AB6FF82053898BC0000009F /* HID_Utilities_Internal.h in Headers */,
+				92B4EA56059397C600CA25E4 /* SC_LibraryConfig.h in Headers */,
+				92B4EA62059399DD00CA25E4 /* SC_StringBuffer.h in Headers */,
+				88D7D586090C8737008D45B9 /* SC_DirUtils.h in Headers */,
+				88FB09AA096DC6F20012327A /* SC_StandAloneInfo_Darwin.h in Headers */,
+				53FA84020B374A5200AB10D4 /* SC_FIFO.h in Headers */,
+				53FA840C0B374AD800AB10D4 /* SC_LanguageClient.h in Headers */,
+				6AA05EED0C15EE18000367C8 /* wiiremote.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		92B5F3430547488200496808 /* SuperCollider (xc) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8833247B090AC12E00A4A7E4 /* Build configuration list for PBXNativeTarget "SuperCollider (xc)" */;
+			buildPhases = (
+				92B5F3440547488200496808 /* Headers */,
+				92B5F3A30547488200496808 /* Resources */,
+				92B5F3AE0547488200496808 /* Sources */,
+				92B5F3F00547488200496808 /* Frameworks */,
+				92B5F3FA0547488200496808 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SuperCollider (xc)";
+			productInstallPath = "$(USER_APPS_DIR)";
+			productName = SC_Lang;
+			productReference = 92B5F3FD0547488300496808 /* SuperCollider.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F50D04F702E68E8201CA2799 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "xSC3lang" */;
+			hasScannedForEncodings = 1;
+			mainGroup = F50D04F802E68E8201CA2799;
+			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
+			projectDirPath = "";
+			targets = (
+				F5B7410802E9534D01CA2799 /* All */,
+				F50D060502E69C2101CA2799 /* SuperCollider */,
+				92B5F3430547488200496808 /* SuperCollider (xc) */,
+				F5ED51FF02FBA97D0195E057 /* sclang */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		92B5F3A30547488200496808 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92B5F3A40547488200496808 /* FindPanel.nib in Resources */,
+				92B5F3A50547488200496808 /* Credits.rtf in Resources */,
+				92B5F3A60547488200496808 /* SCGraphView.nib in Resources */,
+				92B5F3A70547488200496808 /* MyDocument.nib in Resources */,
+				92B5F3A80547488200496808 /* MainMenu.nib in Resources */,
+				92B5F3AA0547488200496808 /* GetStringDlg.nib in Resources */,
+				92B5F3AB0547488200496808 /* FindPanel.strings in Resources */,
+				92B5F3AD0547488200496808 /* GoToLinePanel.nib in Resources */,
+				9284649E06DFB69C00964E7E /* SCcube.icns in Resources */,
+				88723046090870B30002E26A /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50D061902E69C2101CA2799 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F50D06B602E6A60F01CA2799 /* FindPanel.nib in Resources */,
+				F50D06B702E6A60F01CA2799 /* Credits.rtf in Resources */,
+				F50D06B802E6A60F01CA2799 /* SCGraphView.nib in Resources */,
+				F50D06B902E6A60F01CA2799 /* MyDocument.nib in Resources */,
+				F50D06BA02E6A60F01CA2799 /* MainMenu.nib in Resources */,
+				F50D06BC02E6A60F01CA2799 /* GetStringDlg.nib in Resources */,
+				F50D06BD02E6A60F01CA2799 /* FindPanel.strings in Resources */,
+				908DBC3B0507C66500000098 /* GoToLinePanel.nib in Resources */,
+				9284649D06DFB69C00964E7E /* SCcube.icns in Resources */,
+				88723045090870B30002E26A /* InfoPlist.strings in Resources */,
+				6AA05EE80C15EE18000367C8 /* COPYRIGHT.txt in Resources */,
+				6AA05EE90C15EE18000367C8 /* HISTORY.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		92B5F3FA0547488200496808 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50D061C02E69C2101CA2799 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5ED520302FBA97D0195E057 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		92B5F3AE0547488200496808 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92B5F3AF0547488200496808 /* DrawBackground.M in Sources */,
+				92B5F3B00547488200496808 /* GetStringFromUser.m in Sources */,
+				92B5F3B10547488200496808 /* GUIPrimitives.M in Sources */,
+				92B5F3B20547488200496808 /* main.m in Sources */,
+				92B5F3B30547488200496808 /* MyDocument.M in Sources */,
+				92B5F3B40547488200496808 /* post_queue.M in Sources */,
+				92B5F3B50547488200496808 /* SCGraphView.M in Sources */,
+				92B5F3B60547488200496808 /* SCTextView.M in Sources */,
+				92B5F3B70547488200496808 /* SCView.M in Sources */,
+				92B5F3B80547488200496808 /* SCVirtualMachine.M in Sources */,
+				92B5F3B90547488200496808 /* syntaxColorize.M in Sources */,
+				92B5F3BA0547488200496808 /* TextFinder.m in Sources */,
+				92B5F3BB0547488200496808 /* UserPanel.M in Sources */,
+				92B5F3BC0547488200496808 /* PyrArchiver.cpp in Sources */,
+				92B5F3BD0547488200496808 /* PyrArrayPrimitives.cpp in Sources */,
+				92B5F3BE0547488200496808 /* PyrBitPrim.cpp in Sources */,
+				92B5F3BF0547488200496808 /* PyrCharPrim.cpp in Sources */,
+				92B5F3C00547488200496808 /* PyrFilePrim.cpp in Sources */,
+				92B5F3C10547488200496808 /* PyrListPrim.cpp in Sources */,
+				92B5F3C20547488200496808 /* PyrStringPrim.cpp in Sources */,
+				92B5F3C30547488200496808 /* PyrSymbolPrim.cpp in Sources */,
+				92B5F3C40547488200496808 /* PyrUnixPrim.cpp in Sources */,
+				92B5F3C50547488200496808 /* AdvancingAllocPool.cpp in Sources */,
+				92B5F3C60547488200496808 /* alloca.cpp in Sources */,
+				92B5F3C70547488200496808 /* ByteCodeArray.cpp in Sources */,
+				92B5F3C80547488200496808 /* dumpByteCodes.cpp in Sources */,
+				92B5F3C90547488200496808 /* DumpParseNode.cpp in Sources */,
+				92B5F3CA0547488200496808 /* GC.cpp in Sources */,
+				92B5F3CB0547488200496808 /* InitAlloc.cpp in Sources */,
+				92B5F3CC0547488200496808 /* PyrFileUtils.cpp in Sources */,
+				92B5F3CD0547488200496808 /* PyrInterpreter3.cpp in Sources */,
+				92B5F3CE0547488200496808 /* PyrLexer.cpp in Sources */,
+				92B5F3CF0547488200496808 /* PyrMathOps.cpp in Sources */,
+				92B5F3D00547488200496808 /* PyrMathPrim.cpp in Sources */,
+				92B5F3D10547488200496808 /* PyrMathSupport.cpp in Sources */,
+				92B5F3D20547488200496808 /* PyrMessage.cpp in Sources */,
+				92B5F3D30547488200496808 /* PyrObject.cpp in Sources */,
+				92B5F3D40547488200496808 /* PyrParseNode.cpp in Sources */,
+				92B5F3D50547488200496808 /* PyrPrimitive.cpp in Sources */,
+				92B5F3D60547488200496808 /* PyrSched.cpp in Sources */,
+				92B5F3D70547488200496808 /* PyrSignal.cpp in Sources */,
+				92B5F3D80547488200496808 /* PyrSignalPrim.cpp in Sources */,
+				92B5F3D90547488200496808 /* PyrSymbolTable.cpp in Sources */,
+				92B5F3DA0547488200496808 /* Samp.cpp in Sources */,
+				92B5F3DB0547488200496808 /* SimpleStack.cpp in Sources */,
+				92B5F3DC0547488200496808 /* VMGlobals.cpp in Sources */,
+				92B5F3DD0547488200496808 /* lang11d_tab.cpp in Sources */,
+				92B5F3DE0547488200496808 /* SC_ComPort.cpp in Sources */,
+				92B5F3DF0547488200496808 /* SC_CoreMIDI.cpp in Sources */,
+				92B5F3E00547488200496808 /* dlopen.c in Sources */,
+				92B5F3E10547488200496808 /* SC_AllocPool.cpp in Sources */,
+				92B5F3E20547488200496808 /* scsynthsend.cpp in Sources */,
+				92B5F3E30547488200496808 /* SC_Sem.cpp in Sources */,
+				92B5F3E40547488200496808 /* OSCData.cpp in Sources */,
+				92B5F3E50547488200496808 /* CocoaFilePrimitives.M in Sources */,
+				92B5F3E60547488200496808 /* SCDialog.mm in Sources */,
+				92B5F3E70547488200496808 /* RendezvousClient.M in Sources */,
+				92B5F3E80547488200496808 /* SC_Speech.cpp in Sources */,
+				92B5F3E90547488200496808 /* TabletEvents.m in Sources */,
+				92B5F3EA0547488200496808 /* GoToPanel.M in Sources */,
+				92B5F3EB0547488200496808 /* HID_Error_Handler.c in Sources */,
+				92B5F3EC0547488200496808 /* HID_Name_Lookup.c in Sources */,
+				92B5F3ED0547488200496808 /* HID_Queue_Utilities.c in Sources */,
+				92B5F3EE0547488200496808 /* HID_Utilities.c in Sources */,
+				92B5F3EF0547488200496808 /* SC_HID.cpp in Sources */,
+				9286AEA0057D30B9000EBAEB /* SCService.mm in Sources */,
+				88FB09AD096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				AB7E52F70A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
+				53FA84050B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
+				6AA05F490C15F596000367C8 /* wiiremote.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50D061A02E69C2101CA2799 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F50D065902E69D5901CA2799 /* DrawBackground.M in Sources */,
+				F50D065A02E69D5901CA2799 /* GetStringFromUser.m in Sources */,
+				F50D065B02E69D5901CA2799 /* GUIPrimitives.M in Sources */,
+				F50D065C02E69D5901CA2799 /* main.m in Sources */,
+				F50D065D02E69D5901CA2799 /* MyDocument.M in Sources */,
+				F50D065E02E69D5901CA2799 /* post_queue.M in Sources */,
+				F50D066202E69D5901CA2799 /* SCGraphView.M in Sources */,
+				F50D066302E69D5901CA2799 /* SCTextView.M in Sources */,
+				F50D066402E69D5901CA2799 /* SCView.M in Sources */,
+				F50D066502E69D5901CA2799 /* SCVirtualMachine.M in Sources */,
+				F50D066602E69D5901CA2799 /* syntaxColorize.M in Sources */,
+				F50D066702E69D5901CA2799 /* TextFinder.m in Sources */,
+				F50D066802E69D5901CA2799 /* UserPanel.M in Sources */,
+				F50D066902E69D5901CA2799 /* PyrArchiver.cpp in Sources */,
+				F50D066A02E69D5901CA2799 /* PyrArrayPrimitives.cpp in Sources */,
+				F50D066B02E69D5901CA2799 /* PyrBitPrim.cpp in Sources */,
+				F50D066C02E69D5901CA2799 /* PyrCharPrim.cpp in Sources */,
+				F50D066E02E69D5901CA2799 /* PyrFilePrim.cpp in Sources */,
+				F50D066F02E69D5901CA2799 /* PyrListPrim.cpp in Sources */,
+				F50D067002E69D5901CA2799 /* PyrStringPrim.cpp in Sources */,
+				F50D067102E69D5901CA2799 /* PyrSymbolPrim.cpp in Sources */,
+				F50D067202E69D5901CA2799 /* PyrUnixPrim.cpp in Sources */,
+				F50D067502E69D5901CA2799 /* AdvancingAllocPool.cpp in Sources */,
+				F50D067602E69D5901CA2799 /* alloca.cpp in Sources */,
+				F50D067702E69D5901CA2799 /* ByteCodeArray.cpp in Sources */,
+				F50D067A02E69D5901CA2799 /* dumpByteCodes.cpp in Sources */,
+				F50D067B02E69D5901CA2799 /* DumpParseNode.cpp in Sources */,
+				F50D067C02E69D5901CA2799 /* GC.cpp in Sources */,
+				F50D067D02E69D5901CA2799 /* InitAlloc.cpp in Sources */,
+				F50D068002E69D5901CA2799 /* PyrFileUtils.cpp in Sources */,
+				F50D068102E69D5901CA2799 /* PyrInterpreter3.cpp in Sources */,
+				F50D068202E69D5901CA2799 /* PyrLexer.cpp in Sources */,
+				F50D068302E69D5901CA2799 /* PyrMathOps.cpp in Sources */,
+				F50D068402E69D5901CA2799 /* PyrMathPrim.cpp in Sources */,
+				F50D068502E69D5901CA2799 /* PyrMathSupport.cpp in Sources */,
+				F50D068602E69D5901CA2799 /* PyrMessage.cpp in Sources */,
+				F50D068702E69D5901CA2799 /* PyrObject.cpp in Sources */,
+				F50D068802E69D5901CA2799 /* PyrParseNode.cpp in Sources */,
+				F50D068902E69D5901CA2799 /* PyrPrimitive.cpp in Sources */,
+				F50D068A02E69D5901CA2799 /* PyrSched.cpp in Sources */,
+				F50D068B02E69D5901CA2799 /* PyrSignal.cpp in Sources */,
+				F50D068C02E69D5901CA2799 /* PyrSignalPrim.cpp in Sources */,
+				F50D068D02E69D5901CA2799 /* PyrSymbolTable.cpp in Sources */,
+				F50D068E02E69D5901CA2799 /* Samp.cpp in Sources */,
+				F50D069102E69D5901CA2799 /* SimpleStack.cpp in Sources */,
+				F50D069202E69D5901CA2799 /* VMGlobals.cpp in Sources */,
+				F50D069302E69D5901CA2799 /* lang11d_tab.cpp in Sources */,
+				F5ED526D02FC2E330195E057 /* SC_ComPort.cpp in Sources */,
+				F5ED526E02FC2E330195E057 /* SC_CoreMIDI.cpp in Sources */,
+				F59DF068030733E901CE0C16 /* dlopen.c in Sources */,
+				F59DF069030733E901CE0C16 /* SC_AllocPool.cpp in Sources */,
+				F59DF06A030733E901CE0C16 /* scsynthsend.cpp in Sources */,
+				F59DF0C6030777A201CE0C16 /* SC_Sem.cpp in Sources */,
+				F5285E0E0316170401CA2799 /* OSCData.cpp in Sources */,
+				F5E8B845039BD69C01A87B78 /* CocoaFilePrimitives.M in Sources */,
+				C26BDCCD03D0B4E900A87B78 /* SCDialog.mm in Sources */,
+				920F88410443F59700A80088 /* RendezvousClient.M in Sources */,
+				90A4CDA1044D5AF2000000AF /* SC_Speech.cpp in Sources */,
+				C21B4675046D847B00A87B78 /* TabletEvents.m in Sources */,
+				908DBC370507C63D00000098 /* GoToPanel.M in Sources */,
+				6AB6FF6F053898BC0000009F /* HID_Error_Handler.c in Sources */,
+				6AB6FF71053898BC0000009F /* HID_Name_Lookup.c in Sources */,
+				6AB6FF73053898BC0000009F /* HID_Queue_Utilities.c in Sources */,
+				6AB6FF75053898BC0000009F /* HID_Utilities.c in Sources */,
+				6AB6FF84053898F00000009F /* SC_HID.cpp in Sources */,
+				9286AE9F057D30B9000EBAEB /* SCService.mm in Sources */,
+				92B4EA5C059398FE00CA25E4 /* SC_LibraryConfig.cpp in Sources */,
+				92B4EA68059399F300CA25E4 /* SC_StringBuffer.cpp in Sources */,
+				92FC9D7506EAFCE900AA3E95 /* dtoa.c in Sources */,
+				92FC9DD906EB002800AA3E95 /* g_fmt.c in Sources */,
+				6A7207D407BB709000A1F778 /* SCCocoaView.M in Sources */,
+				6A40717407C72426003E9C23 /* SCTextView.M in Sources */,
+				6A40718607C72B26003E9C23 /* SCSoundFileView.M in Sources */,
+				6AAC6D6508FEDC0C006134E1 /* fftlib.c in Sources */,
+				B22686290916E0B500FEBB03 /* SC_DirUtils.cpp in Sources */,
+				88FB09AC096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				6A2536BB09C1C9360045AEB7 /* CocoaBridgePrimitives.M in Sources */,
+				AB7E52F60A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
+				53FA84040B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
+				6A87FA3A0B8D053500B2A5A5 /* SCNSWindow.m in Sources */,
+				6AA05EEA0C15EE18000367C8 /* wiiremote.c in Sources */,
+				6AA21A700C162DE300CD1F2C /* SC_Wii.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5ED520102FBA97D0195E057 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5ED523A02FBAEBE0195E057 /* PyrArchiver.cpp in Sources */,
+				F5ED523B02FBAEBE0195E057 /* PyrArrayPrimitives.cpp in Sources */,
+				F5ED523C02FBAEBE0195E057 /* PyrBitPrim.cpp in Sources */,
+				F5ED523D02FBAEBE0195E057 /* PyrCharPrim.cpp in Sources */,
+				F5ED523E02FBAEBE0195E057 /* PyrFilePrim.cpp in Sources */,
+				F5ED523F02FBAEBE0195E057 /* PyrListPrim.cpp in Sources */,
+				F5ED524002FBAEBE0195E057 /* PyrStringPrim.cpp in Sources */,
+				F5ED524102FBAEBE0195E057 /* PyrSymbolPrim.cpp in Sources */,
+				F5ED524202FBAEBE0195E057 /* PyrUnixPrim.cpp in Sources */,
+				F5ED524402FBAEBE0195E057 /* AdvancingAllocPool.cpp in Sources */,
+				F5ED524502FBAEBE0195E057 /* alloca.cpp in Sources */,
+				F5ED524602FBAEBE0195E057 /* ByteCodeArray.cpp in Sources */,
+				F5ED524702FBAEBE0195E057 /* cmdLineFuncs.cpp in Sources */,
+				F5ED524902FBAEBE0195E057 /* dumpByteCodes.cpp in Sources */,
+				F5ED524A02FBAEBE0195E057 /* DumpParseNode.cpp in Sources */,
+				F5ED524B02FBAEBE0195E057 /* GC.cpp in Sources */,
+				F5ED524C02FBAEBE0195E057 /* lang11d_tab.cpp in Sources */,
+				F5ED524D02FBAEBE0195E057 /* InitAlloc.cpp in Sources */,
+				F5ED524F02FBAEBE0195E057 /* PyrFileUtils.cpp in Sources */,
+				F5ED525002FBAEBE0195E057 /* PyrInterpreter3.cpp in Sources */,
+				F5ED525102FBAEBE0195E057 /* PyrLexer.cpp in Sources */,
+				F5ED525202FBAEBE0195E057 /* VMGlobals.cpp in Sources */,
+				F5ED525302FBAEBE0195E057 /* SimpleStack.cpp in Sources */,
+				F5ED525602FBAEBE0195E057 /* Samp.cpp in Sources */,
+				F5ED525702FBAEBE0195E057 /* PyrSymbolTable.cpp in Sources */,
+				F5ED525802FBAEBE0195E057 /* PyrSignalPrim.cpp in Sources */,
+				F5ED525902FBAEBE0195E057 /* PyrSignal.cpp in Sources */,
+				F5ED525A02FBAEBE0195E057 /* PyrSched.cpp in Sources */,
+				F5ED525B02FBAEBE0195E057 /* PyrPrimitive.cpp in Sources */,
+				F5ED525C02FBAEBE0195E057 /* PyrParseNode.cpp in Sources */,
+				F5ED525D02FBAEBE0195E057 /* PyrObject.cpp in Sources */,
+				F5ED525E02FBAEBE0195E057 /* PyrMessage.cpp in Sources */,
+				F5ED525F02FBAEBE0195E057 /* PyrMathSupport.cpp in Sources */,
+				F5ED526002FBAEBE0195E057 /* PyrMathPrim.cpp in Sources */,
+				F5ED526102FBAEBE0195E057 /* PyrMathOps.cpp in Sources */,
+				F5ED527002FC2E340195E057 /* SC_CoreMIDI.cpp in Sources */,
+				F59DF06E030733E901CE0C16 /* dlopen.c in Sources */,
+				F59DF06F030733E901CE0C16 /* SC_AllocPool.cpp in Sources */,
+				F59DF070030733E901CE0C16 /* scsynthsend.cpp in Sources */,
+				F59DF0C203073BC901CE0C16 /* SC_ComPort.cpp in Sources */,
+				F59DF0C8030777A201CE0C16 /* SC_Sem.cpp in Sources */,
+				F5285E0F0316170401CA2799 /* OSCData.cpp in Sources */,
+				90A4CDA2044D5AF2000000AF /* SC_Speech.cpp in Sources */,
+				6AB6FF79053898BC0000009F /* HID_Error_Handler.c in Sources */,
+				6AB6FF7B053898BC0000009F /* HID_Name_Lookup.c in Sources */,
+				6AB6FF7D053898BC0000009F /* HID_Queue_Utilities.c in Sources */,
+				6AB6FF7F053898BC0000009F /* HID_Utilities.c in Sources */,
+				6AB6FF85053898F00000009F /* SC_HID.cpp in Sources */,
+				92B4EA5B059398FE00CA25E4 /* SC_LibraryConfig.cpp in Sources */,
+				92B4EA67059399F300CA25E4 /* SC_StringBuffer.cpp in Sources */,
+				92FC9EF906EB774800AA3E95 /* dtoa.c in Sources */,
+				92FC9EFB06EB774900AA3E95 /* g_fmt.c in Sources */,
+				6AAC6D6608FEDC0C006134E1 /* fftlib.c in Sources */,
+				88C3944A09172B6900B740D4 /* SC_DirUtils.cpp in Sources */,
+				88FB09AE096DC7040012327A /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				AB7E52F80A6AA31B0011A23B /* PyrPlatformPrim.cpp in Sources */,
+				53FA84060B374A7300AB10D4 /* PyrSerialPrim.cpp in Sources */,
+				6AA05EEC0C15EE18000367C8 /* wiiremote.c in Sources */,
+				6AA21A710C162DE400CD1F2C /* SC_Wii.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F59DF0C003073AEB01CE0C16 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5ED51FF02FBA97D0195E057 /* sclang */;
+			targetProxy = 92B5F2D20547314E00496808 /* PBXContainerItemProxy */;
+		};
+		F5B7410902E9534D01CA2799 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F50D060502E69C2101CA2799 /* SuperCollider */;
+			targetProxy = 92B5F2D30547314E00496808 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXToolTarget section */
+		F5ED51FF02FBA97D0195E057 /* sclang */ = {
+			isa = PBXToolTarget;
+			buildConfigurationList = 88332473090AC12E00A4A7E4 /* Build configuration list for PBXToolTarget "sclang" */;
+			buildPhases = (
+				F5ED520002FBA97D0195E057 /* Headers */,
+				F5ED520102FBA97D0195E057 /* Sources */,
+				F5ED520202FBA97D0195E057 /* Frameworks */,
+				F5ED520302FBA97D0195E057 /* Rez */,
+			);
+			dependencies = (
+			);
+			name = sclang;
+			productInstallPath = /usr/local/bin;
+			productName = sc_lang;
+			productReference = F5ED51FE02FBA97D0195E057 /* sclang */;
+		};
+/* End PBXToolTarget section */
+
+/* Begin PBXVariantGroup section */
+		88723043090870B30002E26A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				88723044090870B30002E26A /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F50D06A602E6A60F01CA2799 /* FindPanel.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F50D06A702E6A60F01CA2799 /* English */,
+				92D3BEA8060769D3000FE5DD /* Japanese */,
+			);
+			name = FindPanel.nib;
+			sourceTree = "<group>";
+		};
+		F50D06A802E6A60F01CA2799 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F50D06A902E6A60F01CA2799 /* English */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		F50D06AA02E6A60F01CA2799 /* SCGraphView.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F50D06AB02E6A60F01CA2799 /* English */,
+				92D3BEA9060769D3000FE5DD /* Japanese */,
+			);
+			name = SCGraphView.nib;
+			sourceTree = "<group>";
+		};
+		F50D06AC02E6A60F01CA2799 /* MyDocument.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F50D06AD02E6A60F01CA2799 /* English */,
+				92D3BEAD060769D3000FE5DD /* Japanese */,
+			);
+			name = MyDocument.nib;
+			sourceTree = "<group>";
+		};
+		F50D06AE02E6A60F01CA2799 /* MainMenu.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F50D06AF02E6A60F01CA2799 /* English */,
+				92D3BEAA060769D3000FE5DD /* Japanese */,
+			);
+			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+		F50D06B202E6A60F01CA2799 /* GetStringDlg.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F50D06B302E6A60F01CA2799 /* English */,
+				92D3BEAB060769D3000FE5DD /* Japanese */,
+			);
+			name = GetStringDlg.nib;
+			sourceTree = "<group>";
+		};
+		F50D06B402E6A60F01CA2799 /* FindPanel.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F50D06B502E6A60F01CA2799 /* English */,
+				92D3BEAC060769D3000FE5DD /* Japanese */,
+			);
+			name = FindPanel.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		88332470090AC12E00A4A7E4 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-Wstrict-aliasing",
+				);
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = SuperCollider;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		88332471090AC12E00A4A7E4 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
+				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-Wstrict-aliasing",
+				);
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = SuperCollider;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		88332472090AC12E00A4A7E4 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-Wstrict-aliasing",
+				);
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = SuperCollider;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = app;
+			};
+			name = Default;
+		};
+		88332474090AC12E00A4A7E4 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				LIBRARY_SEARCH_PATHS = "";
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = sclang;
+				REZ_EXECUTABLE = YES;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		88332475090AC12E00A4A7E4 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				LIBRARY_SEARCH_PATHS = "";
+				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = sclang;
+				REZ_EXECUTABLE = YES;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		88332476090AC12E00A4A7E4 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = sclang;
+				REZ_EXECUTABLE = YES;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Default;
+		};
+		88332478090AC12E00A4A7E4 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = All;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		88332479090AC12E00A4A7E4 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = All;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		8833247A090AC12E00A4A7E4 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = All;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Default;
+		};
+		8833247C090AC12E00A4A7E4 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = SC_DARWIN;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "Info-SuperCollider__xc_.plist";
+				LIBRARY_SEARCH_PATHS = "";
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = SuperCollider;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		8833247D090AC12E00A4A7E4 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = SC_DARWIN;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "Info-SuperCollider__xc_.plist";
+				LIBRARY_SEARCH_PATHS = "";
+				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = SuperCollider;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		8833247E090AC12E00A4A7E4 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = SC_DARWIN;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "Info-SuperCollider__xc_.plist";
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = SuperCollider;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Default;
+		};
+		88332484090AC12E00A4A7E4 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Development;
+		};
+		88332485090AC12E00A4A7E4 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Deployment;
+		};
+		88332486090AC12E00A4A7E4 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8833246F090AC12E00A4A7E4 /* Build configuration list for PBXApplicationTarget "SuperCollider" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				88332470090AC12E00A4A7E4 /* Development */,
+				88332471090AC12E00A4A7E4 /* Deployment */,
+				88332472090AC12E00A4A7E4 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		88332473090AC12E00A4A7E4 /* Build configuration list for PBXToolTarget "sclang" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				88332474090AC12E00A4A7E4 /* Development */,
+				88332475090AC12E00A4A7E4 /* Deployment */,
+				88332476090AC12E00A4A7E4 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		88332477090AC12E00A4A7E4 /* Build configuration list for PBXAggregateTarget "All" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				88332478090AC12E00A4A7E4 /* Development */,
+				88332479090AC12E00A4A7E4 /* Deployment */,
+				8833247A090AC12E00A4A7E4 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		8833247B090AC12E00A4A7E4 /* Build configuration list for PBXNativeTarget "SuperCollider (xc)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8833247C090AC12E00A4A7E4 /* Development */,
+				8833247D090AC12E00A4A7E4 /* Deployment */,
+				8833247E090AC12E00A4A7E4 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "xSC3lang" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				88332484090AC12E00A4A7E4 /* Development */,
+				88332485090AC12E00A4A7E4 /* Deployment */,
+				88332486090AC12E00A4A7E4 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F50D04F702E68E8201CA2799 /* Project object */;
+}

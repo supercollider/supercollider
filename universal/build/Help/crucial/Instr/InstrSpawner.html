@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #606060}
+span.s4 {color: #a71e12}
+span.s5 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>InstrSpawner</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: Patch</b></p>
+<p class="p2"><br></p>
+<p class="p4"><b>InstrSpawner( instr , args, delta )</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>instr</b> - as per Patch, may be a function or an Instr name.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>args</b><span class="Apple-converted-space">  </span>- as per Patch, nil args will be auto-created.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>args that are Players will play continously in their own synths and be patched into</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>each spawn event synth.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>args that are of rate \stream (all Patterns) will be streamed.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>args that are of rate \scalar (floats, Envs, samples) will be passed into the instr</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>function and are subsequently fixed.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>delta</b> - a float or pattern.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>in <b>seconds</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <b>InstrGateSpawner</b> for beats and for variable legato</p>
+<p class="p2"><br></p>
+<p class="p5"><br></p>
+<p class="p6">// start and pchRatio are streamed</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">InstrSpawner</span>({ <span class="s1">arg</span> sample,start=0,pchRatio=1.0,env;</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>PlayBuf<span class="s2">.ar(<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.numChannels,<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufnumIr,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pchRatio,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>start * sample.bufFramesIr,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>) * <span class="s1">EnvGen</span>.kr(env,doneAction: 2)</p>
+<p class="p7">},[</p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Sample</span><span class="s2">(</span>"a11wlk01.wav"<span class="s2">),</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Pbrown</span>(0,1,0.1,<span class="s1">inf</span>),</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>Prand<span class="s2">(</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Array</span>.fill(4,{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseries</span>(rrand(-20,30),[2,-2].choose,rrand(5,20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}),<span class="s1">inf</span>).midiratio,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Env</span>.sine(0.2,0.4)</p>
+<p class="p5"><br></p>
+<p class="p7">],0.06).play</p>
+<p class="p5"><br></p>
+<p class="p7">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">// pchRatio will not stream, is fixed at -1</p>
+<p class="p7">(</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s1">InstrSpawner</span>({ <span class="s1">arg</span> sample,start=0,pchRatio=1.0,env;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar( sample.numChannels, sample.bufnumIr,pchRatio,1,start * sample.bufFramesIr,1 )</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> * <span class="s1">EnvGen</span>.kr(env,doneAction: 2)</p>
+<p class="p7">},[</p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Sample</span><span class="s2">(</span>"a11wlk01.wav"<span class="s2">),</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Pbrown</span>(0,1,0.1,<span class="s1">inf</span>),</p>
+<p class="p7"><span class="Apple-tab-span">	</span>-1,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Env</span>.sine(0.2,0.4)</p>
+<p class="p5"><br></p>
+<p class="p7">],0.125).play</p>
+<p class="p5"><br></p>
+<p class="p7">)</p>
+<p class="p5"><br></p>
+<p class="p3"><b><span class="Apple-converted-space"> </span>the </b><span class="s1"><b>Patch</b></span><b> in the width input plays continuously and is patched into each spawn event</b></p>
+<p class="p7">(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">InstrSpawner</span>({ <span class="s1">arg</span> freq,rq,width,fenv,fenvmod,envperc;</p>
+<p class="p7"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>width.debug(<span class="s3">"width"</span>);<span class="Apple-converted-space">  </span><span class="s4">// an OutputProxy</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pulse</span>.ar(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>width</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">EnvGen</span>.kr(fenv,levelScale: fenvmod),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rq)</p>
+<p class="p7"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>* <span class="s1">EnvGen</span>.kr(envperc, 1.0,0.3,doneAction: 2)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>},[</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pfunc</span>({<span class="Apple-converted-space">  </span>15.rand.degreeToKey([ 0, 2, 3, 5, 7, 8, 10 ]).midicps * 3 }),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Patch</span>({ <span class="s1">FSinOsc</span>.kr(0.05).range(0.01,0.99) }),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>.asr,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>6000,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>.perc(releaseTime: 0.8)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>],0.125).play</p>
+<p class="p7">)<span class="Apple-converted-space"> </span></p>
+<p class="p7">note: for beats see InstrGateSpawner</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p3"><b><span class="Apple-converted-space"> </span>the stereo </b><span class="s1"><b>Patch</b></span><b> in the width input causes the </b><span class="s1"><b>InstrSpawner</b></span><b> to expand to stereo</b></p>
+<p class="p7">(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">InstrSpawner</span>({ <span class="s1">arg</span> freq,rq,width,fenv,fenvmod,envperc;</p>
+<p class="p7"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>width.debug(<span class="s3">"width"</span>);<span class="Apple-converted-space">  </span><span class="s4">// an OutputProxy</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pulse</span>.ar(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>width</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">EnvGen</span>.kr(fenv,levelScale: fenvmod),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rq)</p>
+<p class="p7"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>* <span class="s1">EnvGen</span>.kr(envperc, 1.0,0.3,doneAction: 2)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>},[</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pfunc</span>({<span class="Apple-converted-space">  </span>15.rand.degreeToKey([ 0, 2, 3, 5, 7, 8, 10 ]).midicps * 3 }),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Patch</span>({<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="Apple-tab-span">	</span><span class="s1">FSinOsc</span>.kr(0.05,0.0).range(0.01,0.99),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">FSinOsc</span>.kr(0.05,0.5).range(0.01,0.99),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> }),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>.asr,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>6000,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>.perc(releaseTime: 0.8)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>],0.125).play</p>
+<p class="p7">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">(</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s1">Instr</span>(<span class="s5">\InstrSpawner</span>,{ <span class="s1">arg</span> freq=1000,amp=0.1,env;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(freq,mul: amp)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(env,doneAction: 2)</p>
+<p class="p7">});</p>
+<p class="p5"><br></p>
+<p class="p10"><span class="s2">i = </span><span class="s1">InstrSpawner</span><span class="s2">(</span>\InstrSpawner<span class="s2">,[</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pbrown</span>(45,90,3,<span class="s1">inf</span>).midicps,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1,</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">Env</span><span class="s2">.sine </span>// does not get streamed</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7">i.play</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">sliders are polled on the gui</p>
+<p class="p7">(</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s1">Instr</span>(<span class="s5">\InstrSpawner</span>,{ <span class="s1">arg</span> freq=1000,amp=0.1,env;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(freq,mul: amp)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(env,doneAction: 2)</p>
+<p class="p7">});</p>
+<p class="p5"><br></p>
+<p class="p10"><span class="s1">InstrSpawner</span><span class="s2">(</span>\InstrSpawner<span class="s2">,[</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>nil, </span>// accept a default KrNumberEditor</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">nil</span><span class="s2">, </span>// accept a default KrNumberEditor</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">Env</span><span class="s2">.sine </span>// does not get streamed</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">NumberEditor</span>(0.1,[0.05,1.0]) <span class="s4">// polled each time</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>).gui<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">// how to get eventCount like sc2 Spawn</p>
+<p class="p7">(</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">InstrSpawner</span>({ <span class="s1">arg</span> eventCount=0, freq,rq,width,fenv,fenvmod,envperc;</p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// do something with eventCount if you need it...</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pulse</span>.ar(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>width</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">EnvGen</span>.kr(fenv,levelScale: fenvmod),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rq)</p>
+<p class="p7"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>* <span class="s1">EnvGen</span>.kr(envperc, doneAction: 2)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>},[</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">Pseries</span><span class="s2">(0,1,</span><span class="s1">inf</span><span class="s2">), </span>// infinite counting</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>//aeolian</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pfunc</span>({<span class="Apple-converted-space">  </span>15.rand.degreeToKey([ 0, 2, 3, 5, 7, 8, 10 ]).midicps * 3 }),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Patch</span>({ <span class="s1">LFTri</span>.kr(0.1,[0.0,0.5],0.5,0.5) }),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>.asr,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>6000,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>.perc(releaseTime: 0.1)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>],0.25).play</p>
+<p class="p7">)</p>
+<p class="p3">this is more flexible, is only on when you need it, and lets you do wrapping or scaling etc.</p>
+<p class="p3">of the event count all in the pattern domain.</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+</body>
+</html>

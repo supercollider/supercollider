@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0000ff}
+span.s4 {color: #0019b7}
+span.s5 {color: #000000}
+span.s6 {color: #326f17}
+span.s7 {color: #606060}
+span.s8 {color: #a71e12}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>Tdef<span class="Apple-tab-span">	</span></b></span><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span><b>task reference definition</b></p>
+<p class="p2"><br></p>
+<p class="p1">superclass: TaskProxy</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p1">keeps a reference to a task (<b><i>time pattern</i></b>) that can be replaced while playing.</p>
+<p class="p1">It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.</p>
+<p class="p3"><br></p>
+<p class="p1">Tdef(key) returns the instance, Tdef(key, pat) defines the pattern and returns the instance, like Pdef and Ndef.</p>
+<p class="p1">it is very similar to <a href="TaskProxy.html"><span class="s3">TaskProxy</span></a></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*new(key, obj)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>store the task in a global dictionary under key.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if there is already a Tdef there, replace its task</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>with the new one.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>obj</b> is a function or a pattern of time values.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*new(key)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>acess the task at that key (if none is there, a default task is created)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*default</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a default source, if none is given. the default is a loop that does nothing with a 1.0 beat wait time</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*removeAll</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>remove all tasks</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*all</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dict that stores all Tdefs</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*all_(envir)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the global environment</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>quant_(beats)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the quantisation time for beat accurate scheduling</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be a pair [offset, quant]</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>*<b>defaultQuant_(beats)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the default quantisation for new instances (default: 1.0)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be a pair [offset, quant]</p>
+<p class="p3"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>condition_(func)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>provide a condition under which the pattern is switched when a new one is inserted.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the stream value and a count is passed into the function.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the methods <b>count_(n) </b>simply counts up to n and switches the pattern then</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>reset</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>switch the pattern immediately. (stuck conditions can be subverted by this)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>envir_(event)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>provide a default environment for the proxy.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If given,<span class="Apple-converted-space">  </span>it is used as an environment for the routine<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>function. When set for the first time, the routine pattern is rebuilt.</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>set(key, val, key2, val2, ...)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set arguments in the environment.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If there is none, it is created and the routine pattern is rebuilt.</p>
+<p class="p3"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>endless</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns a Proutine that plays the proxy endlessly, replacing <b>nil</b> with a <b>default</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>value (1 s. wait time). This allows to create streams that idle on until a new pattern is inserted.</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p1"><b><i>a) using it as stream reference</i></b></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>embedInStream(inval)</b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>just like any stream, embeds itself in stream.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see example for usage.</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b><i>b) using it as Task</i></b></p>
+<p class="p3"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>play(clock, doReset, quant)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>starts the Pdef and creates a player.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if you want to play multiple instances, use <b>.playOnce(clock, doReset, quant)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>quant </b>can be an array of [quant, phase]</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>stop</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stops the task</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>player</b><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the current task (if the Tdef is simply used in other streams this is nil)</p>
+<p class="p3"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>pause / resume / reset / mute / unmute</b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>perform player method<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>isPlaying</b><span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns true if Tdef is running.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if a Tdef is playing and its stream ends, it will schedule a task for playing<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>as soon as a new function is assigned to it.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b><i>a) using Tdef as a task player</i></b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s4">Tdef</span><span class="s5">(</span><span class="s6">\x</span><span class="s5">).play; </span>// create an empty Tdef and play it.</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, { loop({ <span class="s7">"ggggggggggggggggg9999ggg999ggg999gg"</span>.scramble.postln; 0.5.wait; }) });</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, { loop({ <span class="s7">"---------////----------------------"</span>.scramble.postln; 0.25.wait; }) });</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, { loop({ <span class="s4">thisThread</span>.seconds.postln; 1.wait; }) });</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, { loop({ <span class="s4">thisThread</span>.seconds.postln; 1.01.wait; }) });</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">TempoClock</span>.default.tempo = 2;</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, { <span class="s7">"the end"</span>.postln });</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, { <span class="s7">"one more"</span>.postln });</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, { loop({ <span class="s7">"some more"</span>.scramble.postln; 0.25.wait; }) });</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">TempoClock</span>.default.tempo = 1;</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>).stop;</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>).play;</p>
+<p class="p2"><br></p>
+<p class="p6">Tdef(\x)<span class="s5">.clear;</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">// sound example</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p4">// load a synthdef</p>
+<p class="p5">s.boot;</p>
+<p class="p7"><span class="s4">SynthDef</span><span class="s5">(</span>"pdef_grainlet"<span class="s5">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, dur=0.05;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(0.01, dur, 0.3), doneAction:2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).store;</p>
+<p class="p5">)</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>).play;</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, {<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s7">"/s_new"</span>, <span class="s7">"pdef_grainlet"</span>, -1,0,0, <span class="s6">\freq</span>, rrand(600, 640));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p5">})</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, {<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> x;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>x = <span class="s4">Pseries</span>(300, 20, 100).loop.asStream;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s7">"/s_new"</span>, <span class="s7">"pdef_grainlet"</span>, -1,0,0, <span class="s6">\freq</span>, x.next);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.05.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p5">})</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, {<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> x;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>x = <span class="s4">Plazy</span>({ Pseries(300 + 300.rand, 10 + 30.rand, 10 + 30.rand) }).loop.asStream;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s7">"/s_new"</span>, <span class="s7">"pdef_grainlet"</span>, -1,0,0, <span class="s6">\freq</span>, x.next);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.05.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p5">})</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p4">// metronome</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\y</span>, { loop({ s.sendMsg(<span class="s7">"/s_new"</span>, <span class="s7">"pdef_grainlet"</span>, -1,0,0, <span class="s6">\freq</span>, 1500); 1.wait; }) }).play;</p>
+<p class="p2"><br></p>
+<p class="p4">// play ending stream once</p>
+<p class="p5">(</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>, {<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> x, dt;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>dt = [0.1, 0.125, 0.05].choose;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>x = <span class="s4">Plazy</span>({ <span class="s4">Pseries</span>(1300 + 300.rand, 110 + 130.rand, 16) }).asStream;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>x.do({ <span class="s4">arg</span> item;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s7">"/s_new"</span>, <span class="s7">"pdef_grainlet"</span>, -1,0,0, <span class="s6">\freq</span>, item);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dt.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p5">})</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p5">... and so on ...</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\x</span>).stop;</p>
+<p class="p5"><span class="s4">Tdef</span>.removeAll;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b><i>b) embedding Tdef into other Tasks / Routines</i></b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\a</span>, { <span class="s7">"one"</span>.postln; 1.wait; <span class="s7">"two"</span>.postln });</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\c</span>, { <span class="s4">var</span> z; z = <span class="s4">Synth</span>(<span class="s6">\default</span>); 0.5.wait; z.release });</p>
+<p class="p5">r = <span class="s4">Task</span>({</p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>"counting..."<span class="s5">.postln;</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>2.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Tdef</span>(<span class="s6">\a</span>).embedInStream;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Tdef</span>(<span class="s6">\c</span>).embedInStream;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s7">"done."</span>.postln;</p>
+<p class="p5">});</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">r.play; </span>// play a stream</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\c</span>, { <span class="s4">var</span> z; z = <span class="s4">Synth</span>(<span class="s6">\default</span>, [<span class="s6">\freq</span>, 300]); 1.5.wait; z.release }); <span class="s8">// change the def</span></p>
+<p class="p2"><br></p>
+<p class="p5">r.reset;</p>
+<p class="p5">r.play;</p>
+<p class="p2"><br></p>
+<p class="p4">// of course Tdefs can be used in other Tdefs:</p>
+<p class="p5">(</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\b</span>, {</p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>"counting..."<span class="s5">.postln;</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>2.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Tdef</span>(<span class="s6">\a</span>).embedInStream;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Tdef</span>(<span class="s6">\c</span>).embedInStream;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s7">"done."</span>.postln;</p>
+<p class="p5">});</p>
+<p class="p5">)</p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\b</span>).asStream.play;</p>
+<p class="p2"><br></p>
+<p class="p4">// if one wants to branch off a stream in a separate thread, asStream is used.</p>
+<p class="p4">// also the method playOnce can be used</p>
+<p class="p5">(</p>
+<p class="p6">Routine<span class="s5">({</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Tdef</span>(<span class="s6">\c</span>).asStream.play;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Tdef</span>(<span class="s6">\c</span>).asStream.play;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Tdef</span>(<span class="s6">\a</span>).asStream.play;</p>
+<p class="p2"><br></p>
+<p class="p5">}).play;</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b><i>Tdef as a time pattern</i></b></p>
+<p class="p2"><br></p>
+<p class="p1">Instead of using a Pdefn for time values, it can be useful to use a Tdef.<span class="Apple-converted-space"> </span></p>
+<p class="p1">When changing its source, it keeps the stream of values synchronized to its clock.</p>
+<p class="p3"><br></p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p4">// load a synthdef</p>
+<p class="p5">s.boot;</p>
+<p class="p7"><span class="s4">SynthDef</span><span class="s5">(</span>"pdef_grainlet"<span class="s5">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, dur=0.05;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(0.01, dur, 0.3), doneAction:2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).store;</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\z</span>, <span class="s4">Pseq</span>([1, 1, 1, 0.5, 0.5], <span class="s4">inf</span>));</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="s4">Pset</span><span class="s5">(</span>\instrument<span class="s5">, </span>\pdef_grainlet<span class="s5">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Ppar</span>([</p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s5">(</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">\dur</span>, <span class="s4">Tdef</span>(<span class="s6">\z</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">\note</span>, <span class="s4">Pseq</span>([1, 3, 2, 1, 0], <span class="s4">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">\x</span>, <span class="s4">Pfunc</span> { <span class="s4">TempoClock</span>.default.elapsedBeats.postln } <span class="s8">// posts the onset times</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>),</p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s5">(</span></p>
+<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s6">\dur</span><span class="s5">, 4, </span>// reference beat</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">\sustain</span>, 0.1,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">\note</span>, 8</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>).play(quant:1);</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">Tdef</span>(<span class="s6">\z</span>, <span class="s4">Prand</span>([1, 1, 0.23, 0.5, 0.5], <span class="s4">inf</span>)); <span class="s8">// exchange time pattern</span></p>
+<p class="p4"><span class="s4">Tdef</span><span class="s5">(</span><span class="s6">\z</span><span class="s5">, </span><span class="s4">Pseq</span><span class="s5">([1, 1, 1, 1], </span><span class="s4">inf</span><span class="s5">)); </span>// pattern stays in sync.</p>
+<p class="p4"><span class="s4">Tdef</span><span class="s5">(</span><span class="s6">\z</span><span class="s5">, </span><span class="s4">Pseq</span><span class="s5">([1, 1, 1, 0.5, 0.5], </span><span class="s4">inf</span><span class="s5">)); </span>// but might be in different order (</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// to avoid this, set the quant to a appropriate value.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {color: #0019b7}
+span.s2 {color: #606060}
+span.s3 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCEnvelopeView</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">value_([times,values])</p>
+<p class="p3"><span class="Apple-tab-span">	</span>where times and values are all 0..1</p>
+<p class="p4"><br></p>
+<p class="p3">value</p>
+<p class="p3"><span class="Apple-tab-span">	</span>[times,values]</p>
+<p class="p3"><span class="Apple-tab-span">	</span>where times and values are all 0..1</p>
+<p class="p4"><br></p>
+<p class="p3">action</p>
+<p class="p3"><span class="Apple-tab-span">	</span>function is passed the view</p>
+<p class="p4"><br></p>
+<p class="p3">index</p>
+<p class="p3"><span class="Apple-tab-span">	</span>the current or last moved node</p>
+<p class="p4"><br></p>
+<p class="p3">drawRect_(boolean)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>set wether to show the points or not</p>
+<p class="p4"><br></p>
+<p class="p3">drawLines_(boolean)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>draw lines between the point</p>
+<p class="p4"><br></p>
+<p class="p3">setThumbSize(index, size)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the size of a point for the specified index, if the index is -1 set the size for all points</p>
+<p class="p4"><br></p>
+<p class="p3">thumbSize_(size)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the size of all points</p>
+<p class="p4"><br></p>
+<p class="p3">setThumbWidth(index, width)<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the width of a point for the specified index, if the index is -1 set the width for all points</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3">thumbWidth_( width)<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the width of all points</p>
+<p class="p4"><br></p>
+<p class="p3">setThumbHeight(index, heigth)<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the height of a point for the specified index, if the index is -1 set the height for all points</p>
+<p class="p4"><br></p>
+<p class="p3">thumbHeight_(heigth)<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the height of all points</p>
+<p class="p4"><br></p>
+<p class="p3">setEditable(index, boolean)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>makes a specified point unmovable</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3">editable_(boolean)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>makes all points unmovable</p>
+<p class="p4"><br></p>
+<p class="p3">selectionColor_(color)<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the color of the point when selected</p>
+<p class="p4"><br></p>
+<p class="p3">setFillColor(index, color)<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the point color</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3">fillColor_(color)<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set the color for all points</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3">setString(index, string)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>give a point a string</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3">connect_(index, arrayofpoints)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>connect a point to others and do not use the standart connection scheme</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p5">use as envelope view</p>
+<p class="p5">(</p>
+<p class="p6">//use shift-click to keep a node selected</p>
+<p class="p5">a = <span class="s1">SCWindow</span>(<span class="s2">"envelope"</span>, <span class="s1">Rect</span>(200 , 450, 250, 100));</p>
+<p class="p5">a.view.decorator =<span class="Apple-converted-space">  </span><span class="s1">FlowLayout</span>(a.view.bounds);</p>
+<p class="p7"><br></p>
+<p class="p5">b = <span class="s1">SCEnvelopeView</span>(a, <span class="s1">Rect</span>(0, 0, 230, 80))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.drawLines_(<span class="s1">true</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.selectionColor_(<span class="s1">Color</span>.red)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.drawRects_(<span class="s1">true</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.resize_(5)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({arg b; [b.index,b.value].postln})</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span>.</span>thumbSize_<span class="s3">(5)</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>.value_([[0.0, 0.1, 0.5, 1.0],[0.1,1.0,0.8,0.0]]);</p>
+<p class="p7"><br></p>
+<p class="p5">a.front;</p>
+<p class="p5">)</p>
+<p class="p5">(</p>
+<p class="p6">//make the first point unmoveable</p>
+<p class="p5">b.setEditable(0,<span class="s1">false</span>);</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">(</p>
+<p class="p6">//use shift click to select/unselect the points</p>
+<p class="p5">a = <span class="s1">SCWindow</span>(<span class="s2">"test"</span>, <span class="s1">Rect</span>(200 , 450, 450, 150));</p>
+<p class="p5">a.view.decorator =<span class="Apple-converted-space">  </span><span class="s1">FlowLayout</span>(a.view.bounds);</p>
+<p class="p7"><br></p>
+<p class="p5">b = <span class="s1">SCEnvelopeView</span>(a, <span class="s1">Rect</span>(0, 0, 350, 100))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.thumbSize_(5)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.drawLines_(<span class="s1">true</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.fillColor_(<span class="s1">Color</span>.green)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.selectionColor_(<span class="s1">Color</span>.red)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.drawRects_(<span class="s1">true</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.value_([(0.0, 0.1 .. 1.0), (0.0, 0.1 .. 1.0)])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.setEditable(0,<span class="s1">false</span>);</p>
+<p class="p7"><br></p>
+<p class="p5">a.front;</p>
+<p class="p5">)</p>
+<p class="p5">(</p>
+<p class="p9"><span class="s3">r = </span>Routine<span class="s3">({</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> j = 0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>20.do({ <span class="s1">arg</span> i;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.select((b.size -1).rand.abs);</p>
+<p class="p7"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.x_(1.0.rand.abs);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.y_(1.0.rand.abs);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.select(-1);</p>
+<p class="p7"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">AppClock</span>.play(r);</p>
+<p class="p5">)<span class="Apple-tab-span">	</span></p>
+<p class="p7"><br></p>
+<p class="p5">c = b.xvalues;</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p6">//show boxes with a string in it:</p>
+<p class="p5">(</p>
+<p class="p5">a = <span class="s1">SCWindow</span>(<span class="s2">"text-boxes"</span>, <span class="s1">Rect</span>(200 , 450, 450, 450));</p>
+<p class="p5">a.view.decorator =<span class="Apple-converted-space">  </span><span class="s1">FlowLayout</span>(a.view.bounds);</p>
+<p class="p7"><br></p>
+<p class="p5">b = <span class="s1">SCEnvelopeView</span>(a, <span class="s1">Rect</span>(0, 0, 440, 440))</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span>.</span>thumbWidth<span class="s3">_(60.0)</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span>.</span>thumbHeight<span class="s3">_(15.0)</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>.drawLines_(<span class="s1">true</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.drawRects_(<span class="s1">true</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.selectionColor_(<span class="s1">Color</span>.red)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.value_([[0.1, 0.4, 0.5, 0.3], [0.1, 0.2, 0.9, 0.7]]);</p>
+<p class="p6">//b.setStatic(0,true);</p>
+<p class="p5">4.do({<span class="s1">arg</span> i;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.setString(i, [<span class="s2">"this"</span>, <span class="s2">"is"</span>, <span class="s2">"so much"</span>, <span class="s2">"fun"</span>].at(i));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.setFillColor(i,[<span class="s1">Color</span>.yellow, <span class="s1">Color</span>.white, <span class="s1">Color</span>.green].choose);</p>
+<p class="p5">});</p>
+<p class="p5">a.front;</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p5">the text objects can be connected:</p>
+<p class="p5">(</p>
+<p class="p5">b.connect(3, [2.0,0.0,1.0]);</p>
+<p class="p6">b.connect(0,[2.0,3.0,1.0]);</p>
+<p class="p5">b.drawLines_(<span class="s1">true</span>);</p>
+<p class="p5">)</p>
+</body>
+</html>

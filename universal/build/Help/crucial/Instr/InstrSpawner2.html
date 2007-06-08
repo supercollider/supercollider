@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {color: #0019b7}
+span.s2 {color: #326f17}
+span.s3 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>InstrSpawner2</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>InstrSpawner2.new(name,args,noteOn, beatsPerStep,tempo)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>name</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>the instr name</p>
+<p class="p3"><b>args</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>each argument is taken .asStream and the stream is iterated during play</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>noteOn</b> is a stream of values meaning:</p>
+<p class="p3"><span class="Apple-tab-span">	</span>1<span class="Apple-converted-space">  </span>noteOn</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg streams are iterated and sent to a new synth</p>
+<p class="p3"><span class="Apple-tab-span">	</span>0<span class="Apple-converted-space">  </span>rest</p>
+<p class="p3"><span class="Apple-tab-span">	</span>-1 legato<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg streams are interated and sent to the last synth</p>
+<p class="p4"><br></p>
+<p class="p3"><b>beatsPerStep</b> (default 0.25)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>how many beats to wait between each step</p>
+<p class="p3"><b>tempo</b><span class="Apple-converted-space">        </span>(default is global Tempo)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>the Tempo object used for conversions</p>
+<p class="p4"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5">(</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s1">Instr</span>(<span class="s2">\InstrSpawner</span>,{ <span class="s1">arg</span> freq=1000,amp=1.0,env;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Saw</span>.ar(freq,mul: amp)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(env,doneAction: 2)</p>
+<p class="p5">});</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s3">z = </span>InstrSpawner2<span class="s3">(</span><span class="s2">\InstrSpawner</span><span class="s3">,[</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pbrown</span>(40,90,3,<span class="s1">inf</span>).midicps,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.2,</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">Env</span><span class="s3">.sine </span>// does not get streamed</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseq</span>([1,-1,-1,0,0,0,0,0,0,1,0,0,0],<span class="s1">inf</span>),</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.25 </span>// 16th notes</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5">z.play;</p>
+<p class="p2"><br></p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p5">z.stop;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">z.gui</p>
+<p class="p2"><br></p>
+</body>
+</html>

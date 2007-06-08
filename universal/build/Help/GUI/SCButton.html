@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {color: #0019b7}
+span.s2 {color: #606060}
+span.s3 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCButton</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">each state:</p>
+<p class="p3"><span class="Apple-tab-span">	</span>[ name, text color, background color ]</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p5"><br></p>
+<p class="p4">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p4">w.front;</p>
+<p class="p5"><br></p>
+<p class="p4">b = <span class="s1">SCButton</span>(w,<span class="s1">Rect</span>(20,20,340,30));</p>
+<p class="p4">b.states = [</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s2">"suffering"</span>,<span class="s1">Color</span>.black,<span class="s1">Color</span>.red],</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"origins of suffering"<span class="s3">,</span><span class="s1">Color</span><span class="s3">.white,</span><span class="s1">Color</span><span class="s3">.black],</span></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"cessation of creating suffering"<span class="s3">,</span><span class="s1">Color</span><span class="s3">.red,</span><span class="s1">Color</span><span class="s3">.white],</span></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"the path to cessation of creating suffering"<span class="s3">,</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Color</span>.blue,<span class="s1">Color</span>.clear]</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>];</p>
+<p class="p4">b.action = { arg butt;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>butt.value.postln;<span class="Apple-tab-span">	</span></p>
+<p class="p4">};</p>
+<p class="p4">)</p>
+<p class="p5"><br></p>
+<p class="p7">Failure to set any states at all results in an invisible button.</p>
+<p class="p8"><br></p>
+<p class="p5"><br></p>
+<p class="p9">// does not do action</p>
+<p class="p4">b.value = 2;</p>
+<p class="p5"><br></p>
+<p class="p9">// does action if it results in a change of value</p>
+<p class="p4">b.valueAction =<span class="Apple-converted-space">  </span>3;</p>
+<p class="p5"><br></p>
+<p class="p9">// clips to size of states</p>
+<p class="p4">b.valueAction =<span class="Apple-converted-space">  </span>-1;</p>
+<p class="p5"><br></p>
+<p class="p9">// floats no problem</p>
+<p class="p4">b.valueAction =<span class="Apple-converted-space">  </span>3.3;</p>
+<p class="p5"><br></p>
+<p class="p8"><br></p>
+<p class="p5"><br></p>
+<p class="p4">(</p>
+<p class="p5"><br></p>
+<p class="p4">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p4">w.front;</p>
+<p class="p5"><br></p>
+<p class="p4">b = <span class="s1">SCButton</span>(w,<span class="s1">Rect</span>(20,20,340,30));</p>
+<p class="p4">b.states = [</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s2">"suffering"</span>,<span class="s1">Color</span>.black,<span class="s1">Color</span>.red]</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>];</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p9">// new state doesn't take effect until ...</p>
+<p class="p4">b.states = [</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"cessation of suffering"<span class="s3">,</span><span class="s1">Color</span><span class="s3">.red,</span><span class="s1">Color</span><span class="s3">.black]</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>];</p>
+<p class="p9">//window is refreshed</p>
+<p class="p4">w.refresh;</p>
+<p class="p5"><br></p>
+<p class="p9">//or the view itself is refreshed</p>
+<p class="p4">b.refresh;</p>
+<p class="p5"><br></p>
+<p class="p4">)</p>
+</body>
+</html>

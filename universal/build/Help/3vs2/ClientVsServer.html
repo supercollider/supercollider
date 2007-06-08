@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+span.s1 {color: #a71e12}
+span.s2 {color: #0019b7}
+span.s3 {color: #000000}
+span.s4 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Client versus Server Operations</b></p>
+<p class="p2"><br></p>
+<p class="p3">Unlike in SC2 where language and synthesis were unified in a single application, SC3 divides its operations between a language application (the SuperCollider app on which you double-clicked to startup SC) and<span class="Apple-converted-space">  </span>a synthesis-server application (a UNIX command-line application called scsynth, which is started when you press the boot button on the 'local' server window that is created by default at startup, or when you boot a Server from code). The two applications communicate between each other through UDP or TCP using a subset of CNMAT's Open Sound Control.</p>
+<p class="p2"><br></p>
+<p class="p3">This is a radical departure from the previous architecture (a more detailed discussion of this and other matters can be found in the file <b>sc3 intro 2 </b>in the Examples folder) and yields several important advantages:</p>
+<p class="p2"><br></p>
+<p class="p3">The server can be controlled by programs other than the language app.</p>
+<p class="p3">The language app can crash and synthesis will not stop.</p>
+<p class="p3">The server can crash and the language will not.</p>
+<p class="p3">The language and server apps can be running on different machines, even in different parts of the world. This allows for efficient 'division of labour' and network interactivity.</p>
+<p class="p2"><br></p>
+<p class="p3">There is one notable drawback: The messaging process introduces a small amount of latency. This should not be confused with audio latency which can be quite low. It only means that there is a small, usually insignificant delay between the one side sending a message and the other receiving it and acting upon it. (This can be minimized by using the 'internal' server. See <b>Server</b> for more detail.)</p>
+<p class="p2"><br></p>
+<p class="p3">What is crucial to understand is the distinct functions of each side. The server app is a lean and efficient program dedicated to audio functions. It knows nothing about SC code, objects, OOP, or anything else to do with the SC language. It has (at least for the moment) little programmatic ability.</p>
+<p class="p2"><br></p>
+<p class="p3">When one creates a Synth object in the language app, that object is only the clientside <i>representation</i> of a node on the server. The language app provides you with convienent OOP functionality to keep track of and manipulate things on the server. All of this functionality is possible to do 'by hand' using the sendMsg method of <b>Server</b>, and other similar messages. For instance:</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span>s = <span class="s2">Server</span>.default;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>s.boot;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p6">// this</p>
+<p class="p4"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span>s.sendMsg(</span><span class="s4">"/s_new"</span><span class="s3">, </span><span class="s4">"default"</span><span class="s3">, n); </span>// use the SynthDef "default"</p>
+<p class="p4"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">"/n_free"</span>, n);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p6">// is equivalent to</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span>x = </span><span class="s2">Synth</span><span class="s3">(</span><span class="s4">"default"</span><span class="s3">);<span class="Apple-tab-span">	</span></span>// create a synth on the default server (s) and allocate an ID for it</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span>x.free;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// free the synth, its ID and resources</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p3">The latter method gives you certain functionality. It gets a node ID for you automatically, it allows you to control the Synth in syntactically elegant and efficient ways (see the <b>Synth</b> and <b>Node</b> helpfiles), and to access all the advantages of object oriented programming while doing so.<span class="Apple-converted-space">  </span>Encapsulating the complexities and bookeeping greatly reduces the chance of bugs in your own code.</p>
+<p class="p2"><br></p>
+<p class="p3">It also has a small amount of overhead. It requires clientside CPU cycles and memory to create and manipulate an object. Normally this is not significant, but there may be times when you would prefer to use the less elegant, and less expensive first method, for instance when creating large numbers of grains which will simply play and then deallocate themselves.</p>
+<p class="p2"><br></p>
+<p class="p3">Thus it is possible to create synth nodes on the server without actually creating Synth objects, providing you are willing to do the required housekeeping yourself. The same is true of group nodes, buffers, and buses. A more detailed discussion of these concepts can be found in the <b>NodeMessaging</b> helpfile.</p>
+<p class="p2"><br></p>
+<p class="p3">In conclusion, the crucial thing to remember is the distinction between things like nodes, busses, buffers, and servers and the objects that <i>represent </i>them in the language app (i.e. instances of <b>Node</b>, <b>Bus</b>, <b>Buffer</b>, and <b>Server</b>). Keeping these conceptually distinct will help avoid much confusion.</p>
+</body>
+</html>

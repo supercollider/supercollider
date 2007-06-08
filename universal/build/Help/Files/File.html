@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {font: 12.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #0019b7}
+span.s4 {font: 9.0px Monaco}
+span.s5 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>File</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Superclass: </b>UnixFILE</p>
+<p class="p2"><br></p>
+<p class="p3">A class for reading and writing files.<span class="Apple-converted-space">  </span>Not sound files.</p>
+<p class="p2"><br></p>
+<p class="p3">see also the superclass for further docs.</p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>*new(pathname, mode)</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Create a File instance and open the file. If the open fails, isOpen will return false.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>pathname</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a String containing the path name of the file to open.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>mode</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a String indicating one of the following modes:</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>"r" - read only text</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"w" - read and write text</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"a" - read and append text</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"rb" - read only binary</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"wb" - read and write binary</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"ab" - read and append binary</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"r+" - read only text</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"w+" - read and write text</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"a+" - read and append text</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"rb+" - read only binary</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"wb+" - read and write binary</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"ab+" - read and append binary</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>open</b></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Open the file. Files are automatically opened upon creation, so this call is only necessary<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if you are closing and opening the same file object repeatedly.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>NOTE:<span class="Apple-converted-space">  </span>it is possible when saving files with a standard file dialog to elect to "hide the extension"<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>and save it as RTF.<span class="Apple-converted-space">  </span>When opening the file you must specify the real filename:<span class="Apple-converted-space">  </span>"filename.rtf",<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>even though you can't see in file load dialogs or in the Finder.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>close</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Close the file.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>*exists(pathName)</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>answers if a file exists at that path.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>*delete(pathName)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>deletes the file at that path.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>use only for good, never for evil.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>*openDialog(prompt,sucessFunc,cancelFunc)</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>*saveDialog("hello",{},{})</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>not yet implemented</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>*getcwd</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>POSIX standard 'get current working directory'.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// example;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">File</span>.getcwd</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s4"><span class="Apple-tab-span">	</span></span><b>*use(function)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>open the file, evaluate the function with the file and close it.</p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s4"><span class="Apple-tab-span">	</span></span><b>readAllString</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Reads the entire file as a String.</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>readAllStringRTF</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Reads the entire file as a String, stripping RTF formatting.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Examples:</b></p>
+<p class="p9"><br></p>
+<p class="p6">// write some string to a file:</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s3">var</span> f, g;</p>
+<p class="p10"><span class="s2">f = </span><span class="s3">File</span><span class="s2">(</span>"test"<span class="s2">,</span>"w"<span class="s2">);</span></p>
+<p class="p10"><span class="s2">f.write(</span>"Does this work?\n is this thing on ?\n"<span class="s2">);</span></p>
+<p class="p7">f.close;</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p6">// read it again:</p>
+<p class="p7">(</p>
+<p class="p10"><span class="s2">g = </span><span class="s3">File</span><span class="s2">(</span>"test"<span class="s2">,</span>"r"<span class="s2">);</span></p>
+<p class="p7">g.readAllString.postln;</p>
+<p class="p7">g.close;</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p6">// try the above with File.use:</p>
+<p class="p8"><br></p>
+<p class="p10"><span class="s3">File</span><span class="s2">.use(</span>"test"<span class="s2">, </span>"w"<span class="s2">, { </span><span class="s3">|f|</span><span class="s2"> f.write(</span>"Doesn't this work?\n is this thing really on ?\n"<span class="s2">); })</span></p>
+<p class="p7"><span class="s3">File</span>.use(<span class="s5">"test"</span>, <span class="s5">"r"</span>, { <span class="s3">|f|</span> f.readAllString.postln })</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p6">// more file writing/reading examples:</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s3">var</span> h, k;</p>
+<p class="p10"><span class="s2">h = </span><span class="s3">File</span><span class="s2">(</span>"test2"<span class="s2">, </span>"wb"<span class="s2">);</span></p>
+<p class="p7">h.inspect;</p>
+<p class="p7">h.write( <span class="s3">FloatArray</span>[1.1, 2.2, 3.3, pi, 3.sqrt] );</p>
+<p class="p7">h.close;</p>
+<p class="p8"><br></p>
+<p class="p10"><span class="s2">k = </span><span class="s3">File</span><span class="s2">(</span>"test2"<span class="s2">, </span>"rb"<span class="s2">);</span></p>
+<p class="p7">(k.length div: 4).do({ k.getFloat.postln; });</p>
+<p class="p7">k.close;</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s3">var</span> f, g;</p>
+<p class="p10"><span class="s2">f = </span><span class="s3">File</span><span class="s2">(</span>"test3"<span class="s2">,</span>"w"<span class="s2">);</span></p>
+<p class="p7">100.do({ f.putChar([$a, $b, $c, $d, $e, $\n].choose); });</p>
+<p class="p7">f.close;</p>
+<p class="p8"><br></p>
+<p class="p10"><span class="s2">g = </span><span class="s3">File</span><span class="s2">(</span>"test3"<span class="s2">,</span>"r"<span class="s2">);</span></p>
+<p class="p7">g.readAllString.postln;</p>
+<p class="p7">g.close;</p>
+<p class="p8"><br></p>
+<p class="p7">g = File("test3","r");</p>
+<p class="p7">g.getLine(1024).postln;</p>
+<p class="p7">"*".postln;</p>
+<p class="p7">g.getLine(1024).postln;</p>
+<p class="p7">"**".postln;</p>
+<p class="p7">g.getLine(1024).postln;</p>
+<p class="p7">"***".postln;</p>
+<p class="p7">g.getLine(1024).postln;</p>
+<p class="p7">"****".postln;</p>
+<p class="p7">g.close;</p>
+<p class="p8"><br></p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p6">//var f, g;</p>
+<p class="p10"><span class="s2">f = </span><span class="s3">File</span><span class="s2">(</span>"test3"<span class="s2">,</span>"wb"<span class="s2">);</span></p>
+<p class="p7">f.inspect;</p>
+<p class="p7">100.do({ f.putFloat(1.0.rand); });</p>
+<p class="p8"><br></p>
+<p class="p7">f.inspect;</p>
+<p class="p7">f.close;</p>
+<p class="p8"><br></p>
+<p class="p10"><span class="s2">g = </span><span class="s3">File</span><span class="s2">(</span>"test3"<span class="s2">,</span>"rb"<span class="s2">);</span></p>
+<p class="p7">100.do({</p>
+<p class="p7"><span class="Apple-tab-span">	</span>g.getFloat.postln;</p>
+<p class="p7">});</p>
+<p class="p7">g.inspect;</p>
+<p class="p7">g.close;</p>
+<p class="p8"><br></p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p6">//var f, g;</p>
+<p class="p10"><span class="s2">f = </span><span class="s3">File</span><span class="s2">(</span>"test3"<span class="s2">,</span>"r"<span class="s2">);</span></p>
+<p class="p7">f.inspect;</p>
+<p class="p8"><br></p>
+<p class="p7">f.getLine(1024).postln;</p>
+<p class="p8"><br></p>
+<p class="p7">f.close;</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p7">)</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+</body>
+</html>

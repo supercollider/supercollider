@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #a71e12}
+span.s4 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Using the Startup File</b></p>
+<p class="p2"><br></p>
+<p class="p3">Once the class library is finished compiling the interpreter looks for a file at the path "~/scwork/startup.rtf" and if such a file exists, executes any code within it. (This happens within Main-startup.) By creating a file in this location you can make user specific customizations. A common example would be to alter the options of the local and internal Servers:</p>
+<p class="p4"><br></p>
+<p class="p5">// placing the following code in "~/scwork/startup.rtf" will cause these modifications to be made</p>
+<p class="p5">// at startup</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s1">Server</span><span class="s2">.local.options.numOutputBusChannels = 4;<span class="Apple-tab-span">	</span></span>// change number of input and output channels</p>
+<p class="p7"><span class="s1">Server</span>.local.options.numInputBusChannels = 4;</p>
+<p class="p7"><span class="s1">Server</span>.internal.options.numOutputBusChannels = 4;</p>
+<p class="p7"><span class="s1">Server</span>.internal.options.numInputBusChannels = 4;</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s1">Server</span>.local.options.blockSize = 128; <span class="s3">// increase block size</span></p>
+<p class="p7"><span class="s1">Server</span>.internal.options.blockSize = 128;</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s1">Server</span><span class="s2">.local.options.sampleRate = 96000; </span>// increase sampling rate (if your hardware supports it)</p>
+<p class="p7"><span class="s1">Server</span>.internal.options.sampleRate = 96000;</p>
+<p class="p6"><br></p>
+<p class="p5">// change the standard synthDef directory to a custom one:</p>
+<p class="p7"><span class="s1">SynthDef</span>.synthDefDir = <span class="s4">"~/scwork/synthdefs"</span>.standardizePath;</p>
+<p class="p6"><br></p>
+<p class="p5">// change the standard archive path to a custom one:</p>
+<p class="p7"><span class="s1">Archive</span>.archiveDir = <span class="s4">"~/scwork"</span>.standardizePath;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3">Naturally the file must contain only valid SC expressions.</p>
+</body>
+</html>

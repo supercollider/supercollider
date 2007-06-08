@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {font: 19.0px Helvetica}
+span.s2 {color: #0000ff}
+span.s3 {color: #0019b7}
+span.s4 {color: #326f17}
+span.s5 {color: #000000}
+span.s6 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>ControlSpec<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>specification for a control input</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>superclass: Spec</b></p>
+<p class="p2"><br></p>
+<p class="p4">The original, and most common spec.<span class="Apple-converted-space">  </span>(see <a href="Spec.html"><span class="s2">Spec</span></a> )</p>
+<p class="p5"><br></p>
+<p class="p4"><b>ControlSpec.new( minval, maxval, warp, step, default,units);</b></p>
+<p class="p5"><br></p>
+<p class="p4">The most common way to create one is by<span class="Apple-converted-space"> </span></p>
+<p class="p5"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>anObject.asSpec</p>
+<p class="p5"><br></p>
+<p class="p6">// nil becomes a default ControlSpec</p>
+<p class="p7"><span class="s3">nil</span>.asSpec.dump</p>
+<p class="p7"><span class="s3">Instance</span> of <span class="s3">ControlSpec</span> {<span class="Apple-converted-space">    </span>(0313<span class="s3">FF18</span>, gc=00, fmt=00, flg=00, set=03)</p>
+<p class="p7"><span class="Apple-converted-space">  </span>instance variables [6]</p>
+<p class="p7"><span class="Apple-converted-space">    </span>minval : <span class="s3">Float</span> 0</p>
+<p class="p7"><span class="Apple-converted-space">    </span>maxval : <span class="s3">Float</span> 1</p>
+<p class="p7"><span class="Apple-converted-space">    </span>warp : <span class="s3">Symbol</span> <span class="s4">'linear'</span></p>
+<p class="p7"><span class="Apple-converted-space">    </span>step : <span class="s3">Float</span> 0</p>
+<p class="p7"><span class="Apple-converted-space">    </span>default : <span class="s3">Float</span> 0</p>
+<p class="p7">}</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p6">// array is used as arguments to ControlSpec.new( minval, maxval, warp, step, default)</p>
+<p class="p7">[300,3000,<span class="s4">\exponential</span>,100].asSpec.dump</p>
+<p class="p7"><span class="s3">Instance</span> of <span class="s3">ControlSpec</span> {<span class="Apple-converted-space">    </span>(0313<span class="s3">FC08</span>, gc=00, fmt=00, flg=00, set=03)</p>
+<p class="p7"><span class="Apple-converted-space">  </span>instance variables [6]</p>
+<p class="p7"><span class="Apple-converted-space">    </span>minval : <span class="s3">Integer</span> 300</p>
+<p class="p7"><span class="Apple-converted-space">    </span>maxval : <span class="s3">Integer</span> 3000</p>
+<p class="p9"><span class="s5"><span class="Apple-converted-space">    </span>warp : </span><span class="s3">Symbol</span><span class="s5"> </span>'exponential'</p>
+<p class="p7"><span class="Apple-converted-space">    </span>step : <span class="s3">Integer</span> 100</p>
+<p class="p7"><span class="Apple-converted-space">    </span>default : <span class="s3">Integer</span> 300</p>
+<p class="p7">}</p>
+<p class="p6">// partially specified ...</p>
+<p class="p7">[-48,48].asSpec.dump</p>
+<p class="p7"><span class="s3">Instance</span> of <span class="s3">ControlSpec</span> {<span class="Apple-converted-space">    </span>(0313<span class="s3">FF18</span>, gc=00, fmt=00, flg=00, set=03)</p>
+<p class="p7"><span class="Apple-converted-space">  </span>instance variables [6]</p>
+<p class="p7"><span class="Apple-converted-space">    </span>minval : <span class="s3">Integer</span> -48</p>
+<p class="p7"><span class="Apple-converted-space">    </span>maxval : <span class="s3">Integer</span> 48</p>
+<p class="p7"><span class="Apple-converted-space">    </span>warp : <span class="s3">Symbol</span> <span class="s4">'linear'</span></p>
+<p class="p7"><span class="Apple-converted-space">    </span>step : <span class="s3">Float</span> 0</p>
+<p class="p7"><span class="Apple-converted-space">    </span>default : <span class="s3">Integer</span> -48</p>
+<p class="p7">}</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p4"><b>constrain</b> (value)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>clips and rounds the value to within the spec</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><b>map</b> (value)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>maps a value from [0..1] to spec range</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><b>unmap</b> (value)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>maps a value from the spec range to [0..1]</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p10"><span class="Apple-tab-span">	</span>// example</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>// make a frquency spec with an exponential range from 20 to 20000,<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>// give it a rounding of 30 (Hz)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>a = <span class="s4">\freq</span>.asSpec;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>a.step = 100;</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>// equivalent:</p>
+<p class="p7"><span class="Apple-tab-span">	</span>a = [20, 20000, <span class="s4">'exp'</span>, 100, 440].asSpec;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>a.dump;</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span>a.constrain(800); </span>// make sure it is in range and round it.</p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span>a.constrain(803); </span>// make sure it is in range and round it.<span class="s5"><span class="Apple-tab-span">	</span></span></p>
+<p class="p8"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>a.map(0.5);</p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span>a.map(0.0); </span>// returns min</p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span>a.map(1.5); </span>// exceeds the area: clip, returns max</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>a.unmap(4000);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>a.unmap(22.0);<span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>// using spec for sliders:</p>
+<p class="p7"><span class="Apple-tab-span">	</span>(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> w, c, d;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>w = <span class="s3">SCWindow</span>(<span class="s6">"control"</span>, <span class="s3">Rect</span>(128, 64, 340, 160));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>c = <span class="s3">SCSlider</span>(w, <span class="s3">Rect</span>(10, 10, 300, 30));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>d = <span class="s3">SCStaticText</span>(w, <span class="s3">Rect</span>(10, 40, 300, 30));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>c.action = { </p>
+<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.string = </span>"unmapped value"</p>
+<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span> + c.value.round(0.01)<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> + </span>"......"<span class="s5"><span class="Apple-converted-space"> </span></span></p>
+<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> + </span>"mapped value"<span class="s5"><span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> + a.map(c.value)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>};</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+</body>
+</html>

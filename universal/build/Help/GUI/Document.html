@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Monaco; color: #0019b7}
+span.s1 {color: #0019b7}
+span.s2 {color: #000000}
+span.s3 {color: #606060}
+span.s4 {font: 9.0px Monaco}
+span.s5 {color: #326f17}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Document</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Document(title, text, isPostWindow);</b></p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s1">Document</span><span class="s2">.new(</span>"this is the title"<span class="s2">, </span>"this is the text"<span class="s2">);</span></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p3"><b>Document.open(path);</b></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s1">Document</span><span class="s2">.open(</span>"Help/Help.help.rtf"<span class="s2">);</span></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Document.allDocuments</b></p>
+<p class="p3">array where all open documents are stored.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Document.current</b></p>
+<p class="p3">returns the current Document.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Document.hasEditedDocuments</b></p>
+<p class="p3">returns true if there are unsaved changes in one of the open Document.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Document.closeAll(leavePostOpen)</b></p>
+<p class="p3">by default the postWindow stays open.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Document.closeAllUnedited(leavePostOpen)</b></p>
+<p class="p3">by default the postWindow stays open.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>background_</b></p>
+<p class="p3">set the background color of a Document</p>
+<p class="p6">(</p>
+<p class="p5"><span class="s2">a = </span><span class="s1">Document</span><span class="s2">(</span>"background", "'hardly see anything"<span class="s2">);</span></p>
+<p class="p7">a.background_(<span class="s1">Color</span>.blue(alpha:0.8));</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>stringColor_</b></p>
+<p class="p3">set the text color of a Document</p>
+<p class="p6">(</p>
+<p class="p5"><span class="s2">a = </span><span class="s1">Document</span><span class="s2">(</span>"background", "where are my glasses?"<span class="s2">);</span></p>
+<p class="p7">a.background_(<span class="s1">Color</span>.red(alpha:0.8));</p>
+<p class="p7">a.stringColor_(<span class="s1">Color</span>.red);</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>font_(font, rangestart, rangesize)</b></p>
+<p class="p3">set font. if rangestart = -1 for the whole document</p>
+<p class="p2"><br></p>
+<p class="p3"><b>bounds_(Rect)</b></p>
+<p class="p3">set bounds</p>
+<p class="p2"><br></p>
+<p class="p3"><b>close</b></p>
+<p class="p3">close a Document</p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p6">Task<span class="s2">({</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> doc;</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>doc = </span><span class="s1">Document</span><span class="s2">(</span>"background", "closing in 2 seconds"<span class="s2">);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>doc.stringColor_(<span class="s1">Color</span>.red);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>1.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>doc.background_(<span class="s1">Color</span>.red(alpha:0.8));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>1.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>doc.close;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).play(<span class="s1">AppClock</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>isEdited</b></p>
+<p class="p3">returns true if a Document has unsaved changes unless it is the postWindow</p>
+<p class="p2"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">Document</span>.current.isEdited.postln;</p>
+<p class="p7">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>syntaxColorize</b></p>
+<p class="p3">same as command'<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p7">a = <span class="s1">Document</span>.allDocuments.at(0).syntaxColorize;<span class="Apple-converted-space"> </span></p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>selectLine</b></p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p7"><span class="s1">Document</span>.current.selectLine(1);</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>selectionStart</b></p>
+<p class="p3">get the current position in the text<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p7"><span class="s1">Document</span>.current.selectionStart.postln;</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>selectionSize</b></p>
+<p class="p3">get the current size of selection in the text<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p7"><span class="s1">Document</span>.current.selectionSize.postln;</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>selectRange(start, length)</b></p>
+<p class="p2"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">Document</span>.current.selectRange(<span class="s1">Document</span>.current.selectionStart, 100);</p>
+<p class="p7">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>string(rangestart, rangesize)</b></p>
+<p class="p3">get the text of a document. If no rangestart is applied the whole text is returned.</p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p7"><span class="s1">Document</span>.current.string;</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>selectedString</b></p>
+<p class="p3">get the currently selected text.</p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">var</span> doc;</p>
+<p class="p7">doc = <span class="s1">Document</span>.current;</p>
+<p class="p7">doc.selectRange(doc.selectionStart-40, 10);</p>
+<p class="p7">doc.selectedString.postln;</p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p3"><b>string_(string, rangestart, rangesize)</b></p>
+<p class="p3">set the text of a document. if rangestart is -1 (default) the whole text is replaced</p>
+<p class="p2"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">var</span> doc;</p>
+<p class="p7">doc = <span class="s1">Document</span>(string:<span class="s3">""</span>);</p>
+<p class="p5"><span class="s2">doc.string_(</span>"set a String"<span class="s2">)</span></p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p3"><b>selectedString_</b></p>
+<p class="p3">insert text at the current position</p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p7"><span class="s1">var</span> doc, txt;</p>
+<p class="p7">doc = <span class="s1">Document</span>.current;</p>
+<p class="p5"><span class="s2">txt = </span>"doc.postln; \n"<span class="s2">;</span></p>
+<p class="p7">doc.selectedString_(txt);</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>front</b></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">Document</span>.allDocuments.at(0).front;<span class="Apple-converted-space"> </span></p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>keyDownAction_</b></p>
+<p class="p3">register a keyDownAction. this is useful for macros</p>
+<p class="p2"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">var</span> doc, txt;</p>
+<p class="p7">doc = <span class="s1">Document</span>.current;</p>
+<p class="p7">doc.keyDownAction_({<span class="s1">arg</span> doc, key, modifiers, keycode;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>[doc, key, modifiers, keycode].postln</p>
+<p class="p7">});</p>
+<p class="p7">)</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">Document</span>.current.keyDownAction_(<span class="s1">nil</span>);</p>
+<p class="p7">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>toFrontAction_</b></p>
+<p class="p3">called when the window is clicked to front</p>
+<p class="p2"><br></p>
+<p class="p6">example:</p>
+<p class="p6">associate a proxyspace to two different windows.</p>
+<p class="p6">(</p>
+<p class="p7">s = <span class="s1">Server</span>.local;</p>
+<p class="p7">s.boot;</p>
+<p class="p6">q = ProxySpace<span class="s2">.push(s);</span></p>
+<p class="p7">q.pop;</p>
+<p class="p7">r = <span class="s1">ProxySpace</span>.push(r);</p>
+<p class="p7">r.pop;</p>
+<p class="p7">a = Document("proxy r", "//this is proxyspace r \n x = ~out.play; \n ~out = { <span class="s1">SinOsc</span>.ar([400, 500]*0.9, 0, 0.2) };");</p>
+<p class="p7">a.background_(Color(0.8, 1.0, 1.0));</p>
+<p class="p8"><br></p>
+<p class="p7">b = Document( "proxy q", "//this is proxyspace q \n x = ~out.play; \n ~out = { <span class="s1">SinOsc</span>.ar([1400, 1500]*0.9, 0, 0.2) };");</p>
+<p class="p7">b.background_(Color(1.0, 1.0, 0.8));</p>
+<p class="p8"><br></p>
+<p class="p7">b.toFrontAction_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span>if(currentEnvironment == r,{r.pop});</p>
+<p class="p7"><span class="Apple-tab-span">	</span>q.push;</p>
+<p class="p7">});</p>
+<p class="p7">a.toFrontAction_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span>if(currentEnvironment == q,{q.pop});</p>
+<p class="p7"><span class="Apple-tab-span">	</span>r.push;</p>
+<p class="p8"><br></p>
+<p class="p7">});</p>
+<p class="p6">)</p>
+<p class="p7">(</p>
+<p class="p9">//need to pop proxyspace from other examples</p>
+<p class="p7">q.pop</p>
+<p class="p7">r.pop</p>
+<p class="p7">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>onClose_</b></p>
+<p class="p3">register a close - action.</p>
+<p class="p6">(</p>
+<p class="p7"><span class="s1">Document</span>.current.onClose_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> doc;</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>doc = </span><span class="s1">Document</span><span class="s2">(</span>"before closing","did you call me?"<span class="s2">);</span></p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>Task<span class="s2">({</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>doc.stringColor_(<span class="s1">Color</span>.red);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>doc.background_(<span class="s1">Color</span>.red(alpha:0.8));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.3.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>doc.close;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).play(<span class="s1">AppClock</span>);</p>
+<p class="p8"><br></p>
+<p class="p7">})</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p3"><b>mouseDownAction_</b></p>
+<p class="p6">(</p>
+<p class="p8"><br></p>
+<p class="p9">//add a mouse action to this document:<span class="Apple-converted-space"> </span></p>
+<p class="p9">//example: easy button:</p>
+<p class="p9">//when you click in front of a 17 a SinOsc will start up;</p>
+<p class="p7"><span class="s1">Server</span>.local.boot;</p>
+<p class="p7"><span class="s1">Document</span>.current.mouseDownAction_({<span class="s1">arg</span> doc;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> char;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>char = doc.rangeText(doc.selectionStart, 2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>if(char == <span class="s3">"17"</span>,{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{EnvGen.kr(<span class="s1">Env</span>.perc, doneAction:2) * <span class="s1">SinOsc</span>.ar([600,720,300].choose, 0, 0.5)}.play;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>});</p>
+<p class="p7"><span class="Apple-tab-span">	</span>if(char == <span class="s3">"23"</span>,{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{EnvGen.kr(<span class="s1">Env</span>.perc, doneAction:2) * <span class="s1">PinkNoise</span>.ar(0.2)}.play;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>});</p>
+<p class="p7">})</p>
+<p class="p8"><br></p>
+<p class="p6">)</p>
+<p class="p3">test here and click in front of the number:</p>
+<p class="p10"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s2"><span class="Apple-tab-span">	</span></span>17</p>
+<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>23</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>unfocusedFront_</b></p>
+<p class="p6">(</p>
+<p class="p7"><span class="s1">Document</span>.allDocuments.at(0).unfocusedFront</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p8"><br></p>
+<p class="p7"><span class="s1">var</span> doc;</p>
+<p class="p7">doc = <span class="s1">Document</span>(<span class="s3">"", "||"</span>);</p>
+<p class="p7">doc.background_(<span class="s1">Color</span>.blue(alpha: 1.0.rand));</p>
+<p class="p6">Task<span class="s2">({</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>1000.do({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>doc.setFont(size: [7,8,9,24].choose);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.08.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>})</p>
+<p class="p7">}).play(<span class="s1">AppClock</span>);</p>
+<p class="p6">Task<span class="s2">({</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>100.do({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.01.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>doc.stringColor_([<span class="s1">Color</span>.red(alpha: 1.0.rand), <span class="s1">Color</span>.green(alpha: 1.0.rand)].choose);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>})</p>
+<p class="p7">}).play(<span class="s1">AppClock</span>);</p>
+<p class="p6">Task<span class="s2">({</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>100.do({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.01.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>doc.selectedString_([<span class="s3">"\"</span><span class="s5">\n</span>#<span class="s3">","</span>||<span class="s3">","</span>-<span class="s3">", "</span>--"].choose);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>})</p>
+<p class="p7">}).play(AppClock);</p>
+<p class="p7">Task({</p>
+<p class="p7"><span class="Apple-tab-span">	</span>var co, mul;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>co = 0.1;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>mul = 1.02;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>100.do({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.16.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>co = co * mul;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(co &gt; 0.99, { co = 0.1 });</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>doc.background_(Color.blue(alpha: co));</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p7"><span class="Apple-tab-span">	</span>doc.close;</p>
+<p class="p7">}).play(AppClock)</p>
+<p class="p8"><br></p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p6">//</p>
+<p class="p3">Utilities and settings for dealing with documents such as super collider code files.<span class="Apple-converted-space">  </span>By default the document directory is SuperCollider's application directory.</p>
+<p class="p4"><br></p>
+<p class="p3">In Main-startUp you can set this to a more practical directory:</p>
+<p class="p8"><br></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Document</span><span class="s2">.dir = </span>"~/Documents/SuperCollider"<span class="s2">;</span></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p3"><b>*standardizePath</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>if it is a relative path, expand it to an absolute path relative to your document directory.<span class="Apple-tab-span">	</span>expand tildes in path (your home directory), resolve symbolic links (but not aliases).</p>
+<p class="p3"><span class="Apple-tab-span">	</span>also converts from OS9 macintosh path format.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Document</span>.standardizePath(</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>":Patches:newfoots:fastRuckAndTuck"</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>/Volumes/Macintosh HD/Users/cruxxial/Documents/SC3docs/Patches/newfoots/fastRuckAndTuck</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Document</span>.standardizePath(</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"~/Documents/SC3docs/Patches/newfoots/fastRuckAndTuck"</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>Patches/newfoots/fastRuckAndTuck</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Document</span>.standardizePath(</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"Patches/newfoots/fastRuckAndTuck"</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>Patches/newfoots/fastRuckAndTuck</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><br></p>
+<p class="p3"><b>*abrevPath</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>reduce the path relative to your document directory if possible.</p>
+<p class="p2"><br></p>
+</body>
+</html>

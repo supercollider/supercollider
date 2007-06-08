@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0019b7}
+span.s4 {color: #606060}
+span.s5 {color: #326f17}
+span.s6 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>SharedProxySpace</b></span><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>distributed system</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>experimental.</b></p>
+<p class="p2"><br></p>
+<p class="p1">superclass: ProxySpace</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*new(broadcastServer, name, clock)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>return a new instance. the server should be a fresh, unused <b>BroadcastServer</b></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*push(broadcastServer, name, clock)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>return a new instance and make it the currentEnvironment</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>broadcast</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>return the broadcast server</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>server</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>return the home server</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>makeSharedProxy(key, rate, numChannels)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>create a SharedNodeProxy with a group id that is derived from the<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>key: only short strings work. This should be done with a fresh, unused server.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>addSharedKeys(controlKeys, audioKeys, firstAudioKey)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>create multiple SharedNodeProxies.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>This should be done with a fresh, unused server</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>controlKeys</b>: names of the control rate proxies</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>audioKeys</b>: names of the audio rate proxies</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>firstAudioKey</b>: if the above are not given, generate them automatically.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>using the letters a-z.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>this is a character (default: $s) of the first audio key in alphabet</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// examples:</p>
+<p class="p3"><br></p>
+<p class="p4">// prepare and boot two servers</p>
+<p class="p5">(</p>
+<p class="p5">x = <span class="s3">NetAddr</span>(<span class="s4">"127.0.0.1"</span>, 57201);</p>
+<p class="p5">y = <span class="s3">NetAddr</span>(<span class="s4">"127.0.0.1"</span>, 57202);</p>
+<p class="p3"><br></p>
+<p class="p5">a = <span class="s3">BroadcastServer</span>(<span class="s5">\B1</span>, x, <span class="s3">nil</span>, 0).allAddr_( [x, y]);</p>
+<p class="p5">b = <span class="s3">BroadcastServer</span>(<span class="s5">\B2</span>, y, <span class="s3">nil</span>, 1).allAddr_( [x, y]);</p>
+<p class="p3"><br></p>
+<p class="p5">a.boot;</p>
+<p class="p5">b.boot;</p>
+<p class="p5">a.makeWindow;</p>
+<p class="p5">b.makeWindow;</p>
+<p class="p5">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p5">(</p>
+<p class="p6"><span class="s6">p = </span>SharedProxySpace<span class="s6">.new(a, </span><span class="s4">"Elizabeth"</span><span class="s6">);</span></p>
+<p class="p6"><span class="s6">r = </span>SharedProxySpace<span class="s6">.new(b, </span><span class="s4">"George"</span><span class="s6">);</span></p>
+<p class="p3"><br></p>
+<p class="p4">// this has to be done with the fresh servers:</p>
+<p class="p5">p.makeSharedProxy(<span class="s5">\ensemble</span>, <span class="s5">\audio, 1</span>);</p>
+<p class="p5">r.makeSharedProxy(<span class="s5">\ensemble</span>, <span class="s5">\audio, 1</span>);</p>
+<p class="p5">)</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s6">p.envir[</span><span class="s5">\ensemble</span><span class="s6">]; </span>// returns a shared node proxy.</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// Elizabeth pushes her proxspace:</p>
+<p class="p5">p.push;</p>
+<p class="p5">currentEnvironment === p;</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s6">~out.play; </span>// play locally</p>
+<p class="p3"><br></p>
+<p class="p4">// play sine tone with freq dependant on ensemble, but a little random.</p>
+<p class="p5">~out = { <span class="s3">SinOsc</span>.ar(440 + (300 * ~ensemble.ar) + <span class="s3">Rand</span>(0, 10), 0, 0.1) };<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="s6">~ensemble = 1; </span>// tune up a bit;</p>
+<p class="p5">~ensemble = { <span class="s3">Line</span>.ar(0, 2, 10) };</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// Henry pushes his proxyspace</p>
+<p class="p5">r.push;</p>
+<p class="p5">~out.play;</p>
+<p class="p5">~out = { <span class="s3">Ringz</span>.ar(<span class="s3">Impulse</span>.ar(9, 0, 0.8), ~ensemble.ar * 300 + 400, 0.2) };</p>
+<p class="p4"><span class="s6">~ensemble = 0.5; </span>// now both depend on the "same" bus.</p>
+<p class="p5">~ensemble = { <span class="s3">SinOsc</span>.ar(0.4, 0, 0.6) };</p>
+<p class="p3"><br></p>
+<p class="p4">// Elizabeth</p>
+<p class="p3"><br></p>
+<p class="p5">p.push;</p>
+<p class="p3"><br></p>
+<p class="p5">~freq = 300 * ~ensemble + 400;</p>
+<p class="p5">~out = { <span class="s3">SinOsc</span>.ar(~freq.ar * [1, 1.02], <span class="s3">SinOsc</span>.ar(~freq.ar, 0, pi)) * 0.1 };</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s6">~out.stop; </span>// stop only locally</p>
+<p class="p3"><br></p>
+<p class="p4">// Henry</p>
+<p class="p3"><br></p>
+<p class="p5">r.push;</p>
+<p class="p4"><span class="s6">~out.stop;<span class="Apple-converted-space">  </span></span>// stop only locally</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// finish:</p>
+<p class="p5">r.clear;</p>
+<p class="p5">p.clear;</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4">// quit the servers</p>
+<p class="p5">a.quit;</p>
+<p class="p5">b.quit;</p>
+<p class="p3"><br></p>
+</body>
+</html>
