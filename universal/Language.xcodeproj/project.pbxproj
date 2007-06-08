@@ -522,7 +522,7 @@
 		949318150C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		949318160C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		949318170C192C120018AB50 /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
-		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94B8F16C0B463EC000097F2D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -585,7 +585,7 @@
 		9456F5BD0C19E25900634E4D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9456F5C70C19E25900634E4D /* scsynth */,
+				9456F5C70C19E25900634E4D /* scsynth2 */,
 				9456F5C90C19E25900634E4D /* libscsynth.framework */,
 			);
 			name = Products;
@@ -1044,10 +1044,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		9456F5C70C19E25900634E4D /* scsynth */ = {
+		9456F5C70C19E25900634E4D /* scsynth2 */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = scsynth;
+			path = scsynth2;
 			remoteRef = 9456F5C60C19E25900634E4D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
