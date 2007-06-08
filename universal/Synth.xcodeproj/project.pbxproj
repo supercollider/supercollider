@@ -25,6 +25,7 @@
 		942F96F00B03380700E00399 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
 		942F96F10B03380700E00399 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
 		942F96F20B03380700E00399 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
+		9456F8460C1A203300634E4D /* libscsynth-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9456F8160C1A1FBC00634E4D /* libscsynth-Info.plist */; };
 		94930B030C190FB10018AB50 /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CA0C190FB10018AB50 /* dlopen.c */; };
 		94930B040C190FB10018AB50 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CB0C190FB10018AB50 /* dtoa.c */; };
 		94930B050C190FB10018AB50 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CC0C190FB10018AB50 /* g_fmt.c */; };
@@ -178,13 +179,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 94930E610C1917460018AB50 /* libscsynth */;
+			remoteGlobalIDString = 94930E610C1917460018AB50;
 			remoteInfo = libscsynth;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
+		942F96540B0337D600E00399 /* scsynth2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth2; sourceTree = BUILT_PRODUCTS_DIR; };
+		9456F8160C1A1FBC00634E4D /* libscsynth-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "libscsynth-Info.plist"; sourceTree = "<group>"; };
 		949309CA0C190FB10018AB50 /* dlopen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dlopen.c; sourceTree = "<group>"; };
 		949309CB0C190FB10018AB50 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
 		949309CC0C190FB10018AB50 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
@@ -287,7 +289,6 @@
 		94930C070C190FB80018AB50 /* SC_UnitSpec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_UnitSpec.h; sourceTree = "<group>"; };
 		94930C080C190FB80018AB50 /* SC_WireSpec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_WireSpec.h; sourceTree = "<group>"; };
 		94930E620C1917460018AB50 /* libscsynth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = libscsynth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		94930E630C1917460018AB50 /* libscsynth-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "libscsynth-Info.plist"; sourceTree = "<group>"; };
 		94B6B0C30AF5390900E478BB /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
 		F50D06C002E7F29001CA2799 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = /usr/local/lib/libsndfile.a; sourceTree = "<absolute>"; };
 		F53F78F503B2842D011C068F /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
@@ -318,6 +319,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9456F7F60C1A1FBC00634E4D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9456F8160C1A1FBC00634E4D /* libscsynth-Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		949309AF0C190FB10018AB50 /* Source */ = {
 			isa = PBXGroup;
 			children = (
@@ -477,7 +486,7 @@
 			isa = PBXGroup;
 			children = (
 				F5EB7BE503184B8C01CA2799 /* libscsynth_exp */,
-				94930E630C1917460018AB50 /* libscsynth-Info.plist */,
+				9456F7F60C1A1FBC00634E4D /* Resources */,
 				94930B770C190FB80018AB50 /* Headers */,
 				949309AF0C190FB10018AB50 /* Source */,
 				F50D060302E69C2101CA2799 /* Products */,
@@ -488,7 +497,7 @@
 		F50D060302E69C2101CA2799 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				942F96540B0337D600E00399 /* scsynth */,
+				942F96540B0337D600E00399 /* scsynth2 */,
 				94930E620C1917460018AB50 /* libscsynth.framework */,
 			);
 			name = Products;
@@ -596,7 +605,7 @@
 			);
 			name = scsynth;
 			productName = scsynth2;
-			productReference = 942F96540B0337D600E00399 /* scsynth */;
+			productReference = 942F96540B0337D600E00399 /* scsynth2 */;
 			productType = "com.apple.product-type.tool";
 		};
 		94930E610C1917460018AB50 /* libscsynth */ = {
@@ -640,6 +649,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9456F8460C1A203300634E4D /* libscsynth-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -811,6 +821,10 @@
 				);
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 			};
 			name = Deployment;
@@ -882,7 +896,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "libscsynth-Info.plist";
+				INFOPLIST_FILE = "Resources/libscsynth-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
@@ -906,7 +920,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "libscsynth-Info.plist";
+				INFOPLIST_FILE = "Resources/libscsynth-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
@@ -927,7 +941,7 @@
 				88331E28090AB77300A4A7E4 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		88331E2A090AB77300A4A7E4 /* Build configuration list for PBXProject "Synth" */ = {
 			isa = XCConfigurationList;
@@ -936,7 +950,7 @@
 				88331E2C090AB77300A4A7E4 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		942F96FD0B03380E00E00399 /* Build configuration list for PBXNativeTarget "scsynth" */ = {
 			isa = XCConfigurationList;
@@ -945,7 +959,7 @@
 				942F96FF0B03380E00E00399 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		94930E640C1917460018AB50 /* Build configuration list for PBXNativeTarget "libscsynth" */ = {
 			isa = XCConfigurationList;
@@ -954,7 +968,7 @@
 				94930E660C1917460018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 /* End XCConfigurationList section */
 	};
