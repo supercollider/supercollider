@@ -185,7 +185,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		942F96540B0337D600E00399 /* scsynth2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth2; sourceTree = BUILT_PRODUCTS_DIR; };
+		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
 		9456F8160C1A1FBC00634E4D /* libscsynth-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "libscsynth-Info.plist"; sourceTree = "<group>"; };
 		949309CA0C190FB10018AB50 /* dlopen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dlopen.c; sourceTree = "<group>"; };
 		949309CB0C190FB10018AB50 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
@@ -497,7 +497,7 @@
 		F50D060302E69C2101CA2799 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				942F96540B0337D600E00399 /* scsynth2 */,
+				942F96540B0337D600E00399 /* scsynth */,
 				94930E620C1917460018AB50 /* libscsynth.framework */,
 			);
 			name = Products;
@@ -605,7 +605,7 @@
 			);
 			name = scsynth;
 			productName = scsynth2;
-			productReference = 942F96540B0337D600E00399 /* scsynth2 */;
+			productReference = 942F96540B0337D600E00399 /* scsynth */;
 			productType = "com.apple.product-type.tool";
 		};
 		94930E610C1917460018AB50 /* libscsynth */ = {
