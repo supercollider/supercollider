@@ -1,9 +1,0 @@
-#! /bin/sh
-# This takes the build products and makes a distribution folder.  
-# This also creates an Extensions folder in Application Support.
-
-mkdir ../SuperCollider_f
-cp -r build/SuperCollider.app build/plugins build/scsynth ../SuperCollider_f
-mkdir -p ~/Library/Application\ Support/SuperCollider/Extensions
-
-svn export --force build ../SuperCollider_f
