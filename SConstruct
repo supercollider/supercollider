@@ -347,7 +347,7 @@ if env['AUDIOAPI'] == 'jack':
     if success:
         libraries['audioapi'].Append(
             CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_JACK')],
-            ADDITIONAL_SOURCES = ['source/server/SC_Jack.cpp']
+            ADDITIONAL_SOURCES = ['Source/server/SC_Jack.cpp']
             )
     else:
         success, libraries['audioapi'] = conf.CheckPKG('jack')
@@ -355,7 +355,7 @@ if env['AUDIOAPI'] == 'jack':
         libraries['audioapi'].Append(
             CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_JACK'),
                           'SC_USE_JACK_CLIENT_NEW'],
-            ADDITIONAL_SOURCES = ['source/server/SC_Jack.cpp']
+            ADDITIONAL_SOURCES = ['Source/server/SC_Jack.cpp']
             )
     libraries['audioapi'].Append(
         CPPDEFINES = [('SC_JACK_USE_DLL', env['JACK_DLL']),
@@ -446,13 +446,17 @@ if env['SSE']:
     else:
         build_host_supports_sse = False
 	if CPU != 'ppc':
-        	flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
-        	x86_flags = flag_line.split (": ")[1:][0].split ()
-        	if "sse" in x86_flags:
-           		build_host_supports_sse = True
-    	   		print 'NOTICE: CPU has SSE support'
+           if PLATFORM != 'darwin':
+              flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
+              x86_flags = flag_line.split (": ")[1:][0].split ()
+           else:
+              machine_info = os.popen ("sysctl -a machdep.cpu").read()[:-1]
+              x86_flags = machine_info.split()
+           if "sse" in [x.lower() for x in x86_flags]:
+              build_host_supports_sse = True
+              print 'NOTICE: CPU has SSE support'
         else:
-	   print 'NOTICE: CPU does not have SSE support'
+           print 'NOTICE: CPU does not have SSE support'
     features['sse'] = hasSSEHeader and build_host_supports_sse
     sseConf.Finish()
 else:
@@ -536,14 +540,14 @@ print ' X11:                     %s' % yesorno(features['x11'])
 print '------------------------------------------------------------------------'
 
 # ======================================================================
-# source/common
+# Source/common
 # ======================================================================
 
 commonEnv = env.Copy()
 commonEnv.Append(
-    CPPPATH = ['#headers/common',
-               '#headers/plugin_interface',
-               '#headers/server'],
+    CPPPATH = ['#Headers/common',
+               '#Headers/plugin_interface',
+               '#Headers/server'],
     CCFLAGS = ['-fPIC']
     )
 
@@ -556,31 +560,31 @@ if conf.CheckFunc('strtod'):
 commonEnv = conf.Finish()
 
 commonSources = Split('''
-source/common/SC_AllocPool.cpp
-source/common/SC_DirUtils.cpp
-source/common/SC_Sem.cpp
-source/common/SC_StringBuffer.cpp
-source/common/SC_StringParser.cpp
-source/common/g_fmt.c
-source/common/dtoa.c
-source/common/scsynthsend.cpp
+Source/common/SC_AllocPool.cpp
+Source/common/SC_DirUtils.cpp
+Source/common/SC_Sem.cpp
+Source/common/SC_StringBuffer.cpp
+Source/common/SC_StringParser.cpp
+Source/common/g_fmt.c
+Source/common/dtoa.c
+Source/common/scsynthsend.cpp
 ''')
 if PLATFORM == 'darwin':
     commonSources += [
-	'source/common/dlopen.c',
-	'source/common/SC_StandAloneInfo_Darwin.cpp'
+	'Source/common/dlopen.c',
+	'Source/common/SC_StandAloneInfo_Darwin.cpp'
 	]
 commonEnv.Library('build/common', commonSources)
 
 # ======================================================================
-# source/server
+# Source/server
 # ======================================================================
 
 serverEnv = env.Copy()
 serverEnv.Append(
-    CPPPATH = ['#headers/common',
-               '#headers/plugin_interface',
-               '#headers/server'],
+    CPPPATH = ['#Headers/common',
+               '#Headers/plugin_interface',
+               '#Headers/server'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
     LIBS = ['common', 'pthread', 'dl'],
     LIBPATH = 'build')
@@ -615,36 +619,36 @@ if features['rendezvous']:
     merge_lib_info(serverEnv, libraries['rendezvous'])
 
 libscsynthSources = Split('''
-source/server/Rendezvous.cpp
-source/server/Samp.cpp
-source/server/SC_BufGen.cpp
-source/server/SC_Carbon.cpp
-source/server/SC_Complex.cpp
-source/server/SC_ComPort.cpp
-source/server/SC_CoreAudio.cpp
-source/server/SC_Dimension.cpp
-source/server/SC_Errors.cpp
-source/server/SC_Graph.cpp
-source/server/SC_GraphDef.cpp
-source/server/SC_Group.cpp
-source/server/SC_Lib_Cintf.cpp
-source/server/SC_Lib.cpp
-source/server/SC_MiscCmds.cpp
-source/server/SC_Node.cpp
-source/server/SC_Rate.cpp
-source/server/SC_SequencedCommand.cpp
-source/server/SC_Str4.cpp
-source/server/SC_SyncCondition.cpp
-source/server/SC_Unit.cpp
-source/server/SC_UnitDef.cpp
-source/server/SC_World.cpp
+Source/server/Rendezvous.cpp
+Source/server/Samp.cpp
+Source/server/SC_BufGen.cpp
+Source/server/SC_Carbon.cpp
+Source/server/SC_Complex.cpp
+Source/server/SC_ComPort.cpp
+Source/server/SC_CoreAudio.cpp
+Source/server/SC_Dimension.cpp
+Source/server/SC_Errors.cpp
+Source/server/SC_Graph.cpp
+Source/server/SC_GraphDef.cpp
+Source/server/SC_Group.cpp
+Source/server/SC_Lib_Cintf.cpp
+Source/server/SC_Lib.cpp
+Source/server/SC_MiscCmds.cpp
+Source/server/SC_Node.cpp
+Source/server/SC_Rate.cpp
+Source/server/SC_SequencedCommand.cpp
+Source/server/SC_Str4.cpp
+Source/server/SC_SyncCondition.cpp
+Source/server/SC_Unit.cpp
+Source/server/SC_UnitDef.cpp
+Source/server/SC_World.cpp
 ''') + libraries['audioapi']['ADDITIONAL_SOURCES']
 
 def make_static_object(env, source):
     obj = os.path.splitext(source)[0] + "_a"
     return env.StaticObject(obj, source)
 
-scsynthSources = ['source/server/scsynth_main.cpp']
+scsynthSources = ['Source/server/scsynth_main.cpp']
 
 libscsynth = serverEnv.SharedLibrary('build/scsynth', libscsynthSources)
 env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
@@ -657,7 +661,7 @@ scsynth = serverEnv.Program('build/scsynth', scsynthSources, LIBS = ['scsynth'])
 env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [scsynth]))
 
 # ======================================================================
-# source/plugins
+# Source/plugins
 # ======================================================================
 
 pluginEnv = env.Copy(
@@ -665,9 +669,9 @@ pluginEnv = env.Copy(
     SHLIBSUFFIX = PLUGIN_EXT
     )
 pluginEnv.Append(
-    CPPPATH = ['#headers/common',
-               '#headers/plugin_interface',
-               '#headers/server']
+    CPPPATH = ['#Headers/common',
+               '#Headers/plugin_interface',
+               '#Headers/server']
     )
 if PLATFORM == 'darwin':
     pluginEnv['SHLINKFLAGS'] = '$LINKFLAGS -bundle -flat_namespace -undefined suppress'
@@ -701,18 +705,18 @@ UnaryOpUGens
         make_plugin_target(name), os.path.join('source', 'plugins', name + '.cpp')))
 
 # fft ugens
-fftSources = Split('source/plugins/fftlib.c source/plugins/SCComplex.cpp')
+fftSources = Split('Source/common/fftlib.c Source/plugins/SCComplex.cpp')
 plugins.append(
     pluginEnv.SharedLibrary(
-    make_plugin_target('FFT_UGens'), ['source/plugins/FFT_UGens.cpp'] + fftSources))
+    make_plugin_target('FFT_UGens'), ['Source/plugins/FFT_UGens.cpp'] + fftSources))
     
 plugins.append(
     pluginEnv.SharedLibrary(
     make_plugin_target('PV_ThirdParty'),
-    ['source/plugins/Convolution.cpp',
-     'source/plugins/FFT2InterfaceTable.cpp',
-     'source/plugins/FeatureDetection.cpp',
-     'source/plugins/PV_ThirdParty.cpp'] + fftSources))
+    ['Source/plugins/Convolution.cpp',
+     'Source/plugins/FFT2InterfaceTable.cpp',
+     'Source/plugins/FeatureDetection.cpp',
+     'Source/plugins/PV_ThirdParty.cpp'] + fftSources))
 
 # diskio ugens
 diskIOEnv = pluginEnv.Copy(
@@ -725,8 +729,8 @@ if PLATFORM == 'darwin':
 	)
 
 diskIOSources = [
-    diskIOEnv.SharedObject('source/plugins/SC_SyncCondition', 'source/server/SC_SyncCondition.cpp'),
-    'source/plugins/DiskIO_UGens.cpp']
+    diskIOEnv.SharedObject('Source/plugins/SC_SyncCondition', 'Source/server/SC_SyncCondition.cpp'),
+    'Source/plugins/DiskIO_UGens.cpp']
 merge_lib_info(diskIOEnv, libraries['sndfile'])
 plugins.append(
     diskIOEnv.SharedLibrary(
@@ -739,18 +743,18 @@ if PLATFORM == 'darwin':
 	LINKFLAGS = '-framework CoreServices -framework Carbon'
 	)
     plugins.append(
-        macUGensEnv.SharedLibrary(make_plugin_target('MacUGens'), 'source/plugins/MacUGens.cpp'))
+        macUGensEnv.SharedLibrary(make_plugin_target('MacUGens'), 'Source/plugins/MacUGens.cpp'))
 elif features['x11']:
     macUGensEnv = pluginEnv.Copy()
     merge_lib_info(macUGensEnv, libraries['x11'])
     plugins.append(
-        macUGensEnv.SharedLibrary(make_plugin_target('MacUGens'), 'source/plugins/MacUGens.cpp'))
+        macUGensEnv.SharedLibrary(make_plugin_target('MacUGens'), 'Source/plugins/MacUGens.cpp'))
 
 env.Alias('install-plugins', env.Install(
     pkg_lib_dir(INSTALL_PREFIX, 'plugins'), plugins))
 
 # ======================================================================
-# source/lang
+# Source/lang
 # ======================================================================
 
 if env['TERMINAL_CLIENT'] == True:
@@ -760,11 +764,11 @@ else:
 
 langEnv = env.Copy()
 langEnv.Append(
-    CPPPATH = ['#headers/common',
-               '#headers/plugin_interface',
-               '#headers/lang',
-               '#headers/server',
-               '#source/lang/LangSource/erase-compiler'],
+    CPPPATH = ['#Headers/common',
+               '#Headers/plugin_interface',
+               '#Headers/lang',
+               '#Headers/server',
+               '#Source/lang/LangSource/Bison'],
     CPPDEFINES = [['USE_SC_TERMINAL_CLIENT', env['TERMINAL_CLIENT']]],
     LIBS = ['common', 'scsynth', 'pthread', 'dl', 'm'],
     LIBPATH = 'build'
@@ -791,82 +795,84 @@ libsclangEnv = langEnv.Copy(
 merge_lib_info(langEnv, libraries['sndfile'])
 
 libsclangSources = Split('''
-source/lang/LangSource/AdvancingAllocPool.cpp
-source/lang/LangSource/ByteCodeArray.cpp
-source/lang/LangSource/DumpParseNode.cpp
-source/lang/LangSource/GC.cpp
-source/lang/LangSource/InitAlloc.cpp
-source/lang/LangSource/PyrFileUtils.cpp
-source/lang/LangSource/PyrInterpreter3.cpp
-source/lang/LangSource/PyrLexer.cpp
-source/lang/LangSource/PyrMathOps.cpp
-source/lang/LangSource/PyrMathPrim.cpp
-source/lang/LangSource/PyrMathSupport.cpp
-source/lang/LangSource/PyrMessage.cpp
-source/lang/LangSource/PyrObject.cpp
-source/lang/LangSource/PyrParseNode.cpp
-source/lang/LangSource/PyrPrimitive.cpp
-source/lang/LangSource/PyrSched.cpp
-source/lang/LangSource/PyrSignal.cpp
-source/lang/LangSource/PyrSignalPrim.cpp
-source/lang/LangSource/PyrSymbolTable.cpp
-source/lang/LangSource/SC_ComPort.cpp
-source/lang/LangSource/SC_LanguageClient.cpp
-source/lang/LangSource/SC_LibraryConfig.cpp
-source/lang/LangSource/SC_TerminalClient.cpp
-source/lang/LangSource/Samp.cpp
-source/lang/LangSource/SimpleStack.cpp
-source/lang/LangSource/VMGlobals.cpp
-source/lang/LangSource/alloca.cpp
-source/lang/LangSource/dumpByteCodes.cpp
-source/lang/LangSource/erase-compiler/lang11d_tab.cpp
-source/lang/LangPrimSource/OSCData.cpp
-source/lang/LangPrimSource/PyrArchiver.cpp
-source/lang/LangPrimSource/PyrArrayPrimitives.cpp
-source/lang/LangPrimSource/PyrBitPrim.cpp
-source/lang/LangPrimSource/PyrCharPrim.cpp
-source/lang/LangPrimSource/PyrFilePrim.cpp
-source/lang/LangPrimSource/PyrListPrim.cpp
-source/lang/LangPrimSource/PyrPlatformPrim.cpp
-source/lang/LangPrimSource/PyrSerialPrim.cpp
-source/lang/LangPrimSource/PyrStringPrim.cpp
-source/lang/LangPrimSource/PyrSymbolPrim.cpp
-source/lang/LangPrimSource/PyrUnixPrim.cpp
-''') + [libsclangEnv.SharedObject('source/lang/LangSource/fftlib', 'source/plugins/fftlib.c')]
+Source/lang/LangSource/AdvancingAllocPool.cpp
+Source/lang/LangSource/ByteCodeArray.cpp
+Source/lang/LangSource/DumpParseNode.cpp
+Source/lang/LangSource/GC.cpp
+Source/lang/LangSource/InitAlloc.cpp
+Source/lang/LangSource/PyrFileUtils.cpp
+Source/lang/LangSource/PyrInterpreter3.cpp
+Source/lang/LangSource/PyrLexer.cpp
+Source/lang/LangSource/PyrMathOps.cpp
+Source/lang/LangSource/PyrMathSupport.cpp
+Source/lang/LangSource/PyrMessage.cpp
+Source/lang/LangSource/PyrObject.cpp
+Source/lang/LangSource/PyrParseNode.cpp
+Source/lang/LangSource/PyrSignal.cpp
+Source/lang/LangSource/PyrSymbolTable.cpp
+Source/lang/LangSource/SC_LanguageClient.cpp
+Source/lang/LangSource/SC_LibraryConfig.cpp
+Source/lang/LangSource/SC_TerminalClient.cpp
+Source/lang/LangSource/Samp.cpp
+Source/lang/LangSource/SimpleStack.cpp
+Source/lang/LangSource/VMGlobals.cpp
+Source/lang/LangSource/alloca.cpp
+Source/lang/LangSource/dumpByteCodes.cpp
+Source/lang/LangSource/Bison/lang11d_tab.cpp
+Source/lang/LangPrimSource/SC_Wii.cpp
+Source/lang/LangPrimSource/PyrSignalPrim.cpp
+Source/lang/LangPrimSource/PyrSched.cpp
+Source/lang/LangPrimSource/PyrPrimitive.cpp
+Source/lang/LangPrimSource/PyrMathPrim.cpp
+Source/lang/LangPrimSource/SC_ComPort.cpp
+Source/lang/LangPrimSource/OSCData.cpp
+Source/lang/LangPrimSource/PyrArchiver.cpp
+Source/lang/LangPrimSource/PyrArrayPrimitives.cpp
+Source/lang/LangPrimSource/PyrBitPrim.cpp
+Source/lang/LangPrimSource/PyrCharPrim.cpp
+Source/lang/LangPrimSource/PyrFilePrim.cpp
+Source/lang/LangPrimSource/PyrListPrim.cpp
+Source/lang/LangPrimSource/PyrPlatformPrim.cpp
+Source/lang/LangPrimSource/PyrSerialPrim.cpp
+Source/lang/LangPrimSource/PyrStringPrim.cpp
+Source/lang/LangPrimSource/PyrSymbolPrim.cpp
+Source/lang/LangPrimSource/PyrUnixPrim.cpp
+''') + [libsclangEnv.SharedObject('Source/lang/LangSource/fftlib', 'Source/common/fftlib.c')]
 
 # optional features
 if features['midiapi']:
     merge_lib_info(langEnv, libraries['midiapi'])
     if features['midiapi'] == 'CoreMIDI':
-	libsclangSources += ['source/lang/LangSource/SC_CoreMIDI.cpp']
+	libsclangSources += ['Source/lang/LangPrimSource/SC_CoreMIDI.cpp']
     else:
-	libsclangSources += ['source/lang/LangSource/SC_AlsaMIDI.cpp']
+	libsclangSources += ['Source/lang/LangPrimSource/SC_AlsaMIDI.cpp']
 else:
     # fallback implementation
-    libsclangSources += ['source/lang/LangSource/SC_AlsaMIDI.cpp']
+    libsclangSources += ['Source/lang/LangPrimSource/SC_AlsaMIDI.cpp']
 
 if PLATFORM == 'darwin':
     langEnv.Append(
-	CPPPATH = '#source/lang/LangSource/HID_Utilities',
-	LINKFLAGS = '-framework Carbon -framework IOKit'
+	CPPPATH = '#Source/lang/LangPrimSource/HID_Utilities',
+	LINKFLAGS = '-framework Carbon -framework IOKit -framework IOBluetooth'
 	)
     libsclangSources += Split('''
-source/lang/LangSource/SC_HID.cpp
-source/lang/LangSource/HID_Utilities/HID_Error_Handler.c
-source/lang/LangSource/HID_Utilities/HID_Name_Lookup.c
-source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.c
-source/lang/LangSource/HID_Utilities/HID_Utilities.c
+Source/lang/LangPrimSource/SC_HID.cpp
+Source/lang/LangPrimSource/HID_Utilities/HID_Error_Handler.c
+Source/lang/LangPrimSource/HID_Utilities/HID_Name_Lookup.c
+Source/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
+Source/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
+Source/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 ''')
 else:
     if features['lid']:
 	langEnv.Append(CPPDEFINES = 'HAVE_LID')
-    libsclangSources += ['source/lang/LangSource/SC_LID.cpp']
+    libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
 
 if PLATFORM == 'darwin':
     langEnv.Append(CPPDEFINES = 'HAVE_SPEECH')
-    libsclangSources += ['source/lang/LangSource/SC_Speech.cpp']
+    libsclangSources += ['Source/lang/LangPrimSource/SC_Speech.cpp']
 
-sclangSources = ['source/lang/LangSource/cmdLineFuncs.cpp']
+sclangSources = ['Source/lang/LangSource/cmdLineFuncs.cpp']
 
 if env['LANG']:
     libsclang = langEnv.SharedLibrary('build/sclang', libsclangSources)
@@ -938,7 +944,7 @@ if env['DEVELOPMENT']:
             re.compile('.*\.h(h|pp)?'), 1))
     # other useful headers
     env.Alias('install-dev',
-              env.Install(pkg_include_dir(INSTALL_PREFIX, 'plugin_interface'), 'source/plugins/FFT_UGens.h'))
+              env.Install(pkg_include_dir(INSTALL_PREFIX, 'plugin_interface'), 'Source/plugins/FFT_UGens.h'))
     pkgconfig_files = [
         libscsynthEnv.Command('linux/libscsynth.pc', 'SConstruct',
                               build_pkgconfig_file),
@@ -968,8 +974,7 @@ env.Alias('install', installEnv['ALL'])
 DIST_FILES = Split('''
 COPYING
 SConstruct
-changes.rtf
-compile-xcode.sh
+clean-compile.sh
 compile.sh
 distro
 linux/ChangeLog
@@ -984,21 +989,11 @@ scsynthlib_exp
 ''')
 
 DIST_SPECS = [
-    ('English.lproj', None),
-    ('Japanese.lproj', None),
-    ('Psycollider', None),
-    ('SuperCollider3Service', None),
     ('build', HELP_FILE_RE),
-    ('doc', None),
     ('headers', SRC_FILE_RE),
     ('linux/scel/sc', SC_FILE_RE),
     ('linux/scel/el', re.compile('.*\.el$')),
-    ('resources', None),
-    ('source', SRC_FILE_RE),
-    ('windows', None),
-    ('xSC3lang.pbproj', None),
-    ('xSC3plugins.pbproj', None),
-    ('xSC3synth.pbproj', None)
+    ('Source', SRC_FILE_RE)
     ]
 
 def dist_paths():
