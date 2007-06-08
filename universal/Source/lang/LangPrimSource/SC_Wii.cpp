@@ -31,9 +31,8 @@
 #include <string.h>
 #include <Carbon/Carbon.h>
 
-//#include "WiiMote_OSX/wiiremote.h"
 extern "C"{
-#include "wiiremote.h"
+#include "WiiMote_OSX/wiiremote.h"
 }
 
 #include <mach/mach.h>

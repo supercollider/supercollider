@@ -1,4 +1,3 @@
-
 ------------------------------------------------------------------------
 intro
 ------------------------------------------------------------------------
@@ -7,7 +6,7 @@ this is the OS X version of james mccartney's supercollider synthesis engine
 (scsynth) and programming language (sclang). 
 supercollider's main homepage is at
 
-   http://www.audiosynth.com
+   http://supercollider.sourceforge.net/
 
 the source code can be obtained via CVS from
 
@@ -19,17 +18,13 @@ should subscribe to the mailing lists
    http://www.create.ucsb.edu/mailman/listinfo/sc-users
    http://www.create.ucsb.edu/mailman/listinfo/sc-dev
 
-Much critical information is only discussed there
-
-
 ------------------------------------------------------------------------
 System Requirements
 ------------------------------------------------------------------------
 
-	os x 10.3.X
+	OS X 10.4
+	XCode Tools
 	libsndfile
-	XCode Tools December 02 or later
-
 
 ------------------------------------------------------------------------
 Compiling libsndfile
@@ -46,59 +41,21 @@ Compiling libsndfile
 	$ make
 	$ sudo make install
 
-
-	note: if the "make" fails with various errors including things like "-lSystem is not an object file", 
-	you need to update your installation of Apple's Developer Tools so that you've got gcc v4 rather than v3.
-
 ------------------------------------------------------------------------
 Building
 ------------------------------------------------------------------------
 
-
 	There are three projects that should be BUILT IN THIS ORDER :
 
-	synth
+	Synth
 	 - the synthesis server application
-	plugins
+	Plugins
 	 - the UGens and plugins
-	lang
+	Language
 	 - the OS X application with text editor, language interpreter, event scheduling etc.
 
-XCode 2 :
-
-	xSC3synth.pbproj
-	xSC3plugins.pbproj
-	xSC3lang.pbproj
-
-	or use the script
-
-	compile.sh
-
-
-
-XCode 2.1 + :
-
-	xSC3synth.xcodeproj
-	xSC3plugins.xcodeproj
-	xSC3synth.xcodeproj
-
-	or use the script
-
-	compile-xcode.sh
-
-	IMPORTANT:
-	Xcode 2.1 changed where it puts build products, putting them in per configuration build directories. This causes builds of SC to fail because they are expected to all be in the same location. The fix for this is as follows:
-
-	Open a Terminal window. Type this on the command line:
-
-	defaults write com.apple.Xcode UsePerConfigurationBuildLocations NO
-
-	This will cause Xcode to revert to placing build products directly in the build directory as in Xcode version 2.0.
-
-	--- james mccartney 
-
-
-
+	Or you can use the script:
+	   compile.sh
 
 ------------------------------------------------------------------------
 outro
