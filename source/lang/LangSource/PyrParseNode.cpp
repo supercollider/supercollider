@@ -2142,11 +2142,11 @@ void PyrCallNode::compileCall(PyrSlot *result)
 				break;
 			case selAnd :
 				if (numArgs == 2) compileAndMsg(argnode, argnode->mNext);
-				else goto defaultCase;
+				else goto special;
 				break;
 			case selOr :
 				if (numArgs == 2) compileOrMsg(argnode, argnode->mNext);
-				else goto defaultCase;
+				else goto special;
 				break;
 			case selQuestionMark :
 				if (numArgs == 2) compileQMsg(argnode, argnode->mNext);
