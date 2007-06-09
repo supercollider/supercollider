@@ -585,7 +585,7 @@
 		9456F5BD0C19E25900634E4D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9456F5C70C19E25900634E4D /* scsynth2 */,
+				9456F5C70C19E25900634E4D /* scsynth */,
 				9456F5C90C19E25900634E4D /* libscsynth.framework */,
 			);
 			name = Products;
@@ -1044,10 +1044,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		9456F5C70C19E25900634E4D /* scsynth2 */ = {
+		9456F5C70C19E25900634E4D /* scsynth */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = scsynth2;
+			path = scsynth;
 			remoteRef = 9456F5C60C19E25900634E4D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1388,6 +1388,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Development;
 		};
@@ -1408,6 +1409,7 @@
 				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
 		};

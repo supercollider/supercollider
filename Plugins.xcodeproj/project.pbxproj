@@ -1308,6 +1308,7 @@
 				MACH_O_TYPE = mh_bundle;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_LDFLAGS = "-lm";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SYMROOT = build/plugins;
 			};
 			name = Development;
@@ -1329,6 +1330,7 @@
 				MACH_O_TYPE = mh_bundle;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_LDFLAGS = "-lm";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SYMROOT = build/plugins;
 			};
 			name = Deployment;
