@@ -702,7 +702,7 @@ UnaryOpUGens
 '''):
     plugins.append(
         pluginEnv.SharedLibrary(
-        make_plugin_target(name), os.path.join('source', 'plugins', name + '.cpp')))
+        make_plugin_target(name), os.path.join('Source', 'plugins', name + '.cpp')))
 
 # fft ugens
 fftSources = Split('Source/common/fftlib.c Source/plugins/SCComplex.cpp')
