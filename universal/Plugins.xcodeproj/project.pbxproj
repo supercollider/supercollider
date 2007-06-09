@@ -40,6 +40,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		942C38E60C1B409D00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C38430C1B407900360A35 /* libsndfile.a */; };
 		949318980C192F0E0018AB50 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 9493187D0C192E160018AB50 /* fftlib.c */; };
 		949318990C192F1C0018AB50 /* FFT_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05D802E69B6B01CA2799 /* FFT_UGens.cpp */; };
 		9493189A0C192F2B0018AB50 /* SCComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E202E69B6B01CA2799 /* SCComplex.cpp */; };
@@ -87,7 +88,6 @@
 		94931A060C1933E10018AB50 /* DemandUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92F246630628AB3E0063D98D /* DemandUGens.cpp */; };
 		94931A070C1933E90018AB50 /* DynNoiseUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B969DA0C0691887B0096E93F /* DynNoiseUGens.cpp */; };
 		94931A080C1933F10018AB50 /* ChaosUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92962B0707853BDA0049266B /* ChaosUGens.cpp */; };
-		94931B1A0C1949EA0018AB50 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5D127DE03383D340164B34C /* libsndfile.a */; };
 		94931B1C0C1949FD0018AB50 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92CCC51F045B4BDE00CA2167 /* Carbon.framework */; };
 /* End PBXBuildFile section */
 
@@ -247,6 +247,8 @@
 		92CCC51E045B451100CA2167 /* MacUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MacUGens.cpp; sourceTree = "<group>"; };
 		92CCC51F045B4BDE00CA2167 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		92F246630628AB3E0063D98D /* DemandUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DemandUGens.cpp; sourceTree = "<group>"; };
+		942C38430C1B407900360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
+		942C38EA0C1B40BB00360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		949318790C192DCC0018AB50 /* PhysicalModelingUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicalModelingUGens.cpp; path = Source/plugins/PhysicalModelingUGens.cpp; sourceTree = SOURCE_ROOT; };
 		9493187D0C192E160018AB50 /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = fftlib.c; sourceTree = "<group>"; };
 		949318870C192E350018AB50 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fftlib.h; path = Headers/common/fftlib.h; sourceTree = SOURCE_ROOT; };
@@ -315,7 +317,6 @@
 		F5959CFD03399CED01A80099 /* SC_Lock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Lock.h; path = headers/server/SC_Lock.h; sourceTree = SOURCE_ROOT; };
 		F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_SyncCondition.cpp; path = source/server/SC_SyncCondition.cpp; sourceTree = SOURCE_ROOT; };
 		F5D127DA03355EE10164B34C /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Sem.h; path = common/SC_Sem.h; sourceTree = "<group>"; };
-		F5D127DE03383D340164B34C /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = libsndfile.a; path = /usr/local/lib/libsndfile.a; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -347,7 +348,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94931B1A0C1949EA0018AB50 /* libsndfile.a in Frameworks */,
+				942C38E60C1B409D00360A35 /* libsndfile.a in Frameworks */,
 				949319CB0C1932730018AB50 /* Carbon.framework in Frameworks */,
 				949318E10C1931110018AB50 /* vecLib.framework in Frameworks */,
 			);
@@ -495,21 +496,23 @@
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
-				F50D04FB02E69B6B01CA2799 /* headers */,
-				F50D057E02E69B6B01CA2799 /* source */,
+				F50D04FB02E69B6B01CA2799 /* Headers */,
+				F50D057E02E69B6B01CA2799 /* Source */,
 				F50D060302E69C2101CA2799 /* Products */,
 				F50D069402E6A1C601CA2799 /* Frameworks */,
 				F50D069D02E6A1C601CA2799 /* Resources */,
 			);
 			sourceTree = "<group>";
 		};
-		F50D04FB02E69B6B01CA2799 /* headers */ = {
+		F50D04FB02E69B6B01CA2799 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				942C38EA0C1B40BB00360A35 /* sndfile.h */,
 				F5D127DC03355EEC0164B34C /* common */,
 				F50D054502E69B6B01CA2799 /* plugin_interface */,
 				F5959CFC0339983D01A80099 /* server */,
 			);
+			name = Headers;
 			path = headers;
 			sourceTree = "<group>";
 		};
@@ -543,13 +546,14 @@
 			path = plugin_interface;
 			sourceTree = "<group>";
 		};
-		F50D057E02E69B6B01CA2799 /* source */ = {
+		F50D057E02E69B6B01CA2799 /* Source */ = {
 			isa = PBXGroup;
 			children = (
 				9493187A0C192E160018AB50 /* common */,
 				F50D05D302E69B6B01CA2799 /* plugins */,
 				F5959D010339A71301A80099 /* server */,
 			);
+			name = Source;
 			path = source;
 			sourceTree = "<group>";
 		};
@@ -616,7 +620,7 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F5D127DE03383D340164B34C /* libsndfile.a */,
+				942C38430C1B407900360A35 /* libsndfile.a */,
 				F5499A1103A3023A01BA7E76 /* vecLib.framework */,
 				92CCC51F045B4BDE00CA2167 /* Carbon.framework */,
 			);
@@ -1324,6 +1328,7 @@
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_UNROLL_LOOPS = YES;
 				LINK_WITH_STANDARD_LIBRARIES = YES;
@@ -1518,6 +1523,11 @@
 				GCC_UNROLL_LOOPS = YES;
 				INSTALL_PATH = /usr/local/lib;
 				KEEP_PRIVATE_EXTERNS = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = YES;
 				PRODUCT_NAME = DiskIOUGens;
@@ -1539,6 +1549,11 @@
 				GCC_UNROLL_LOOPS = YES;
 				INSTALL_PATH = /usr/local/lib;
 				KEEP_PRIVATE_EXTERNS = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = YES;
 				PRODUCT_NAME = DiskIOUGens;
@@ -2228,7 +2243,7 @@
 				88332414090ABD1F00A4A7E4 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		940E42760B45B6D0002DADC8 /* Build configuration list for PBXAggregateTarget "All" */ = {
 			isa = XCConfigurationList;
@@ -2237,7 +2252,7 @@
 				940E42780B45B6D0002DADC8 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949318AA0C192F540018AB50 /* Build configuration list for PBXNativeTarget "FFT_UGens" */ = {
 			isa = XCConfigurationList;
@@ -2246,7 +2261,7 @@
 				949318AC0C192F540018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949318C10C1931070018AB50 /* Build configuration list for PBXNativeTarget "BinaryOpUGens" */ = {
 			isa = XCConfigurationList;
@@ -2255,7 +2270,7 @@
 				949318C30C1931070018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949318D70C19310F0018AB50 /* Build configuration list for PBXNativeTarget "DelayUGens" */ = {
 			isa = XCConfigurationList;
@@ -2264,7 +2279,7 @@
 				949318D90C19310F0018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949318E20C1931110018AB50 /* Build configuration list for PBXNativeTarget "DiskIOUGens" */ = {
 			isa = XCConfigurationList;
@@ -2273,7 +2288,7 @@
 				949318E40C1931110018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949318ED0C1931120018AB50 /* Build configuration list for PBXNativeTarget "FilterUGens" */ = {
 			isa = XCConfigurationList;
@@ -2282,7 +2297,7 @@
 				949318EF0C1931120018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949318F80C1931130018AB50 /* Build configuration list for PBXNativeTarget "IOUGens" */ = {
 			isa = XCConfigurationList;
@@ -2291,7 +2306,7 @@
 				949318FA0C1931130018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319030C1931150018AB50 /* Build configuration list for PBXNativeTarget "LFUGens" */ = {
 			isa = XCConfigurationList;
@@ -2300,7 +2315,7 @@
 				949319050C1931150018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		9493190E0C1931160018AB50 /* Build configuration list for PBXNativeTarget "MulAddUGens" */ = {
 			isa = XCConfigurationList;
@@ -2309,7 +2324,7 @@
 				949319100C1931160018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319190C1931180018AB50 /* Build configuration list for PBXNativeTarget "NoiseUGens" */ = {
 			isa = XCConfigurationList;
@@ -2318,7 +2333,7 @@
 				9493191B0C1931180018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319240C19311A0018AB50 /* Build configuration list for PBXNativeTarget "OSCUGens" */ = {
 			isa = XCConfigurationList;
@@ -2327,7 +2342,7 @@
 				949319260C19311A0018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		9493192F0C19311C0018AB50 /* Build configuration list for PBXNativeTarget "PanUGens" */ = {
 			isa = XCConfigurationList;
@@ -2336,7 +2351,7 @@
 				949319310C19311C0018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		9493193A0C19311E0018AB50 /* Build configuration list for PBXNativeTarget "TriggerUGens" */ = {
 			isa = XCConfigurationList;
@@ -2345,7 +2360,7 @@
 				9493193C0C19311E0018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319450C1931260018AB50 /* Build configuration list for PBXNativeTarget "UnaryOpUGens" */ = {
 			isa = XCConfigurationList;
@@ -2354,7 +2369,7 @@
 				949319470C1931260018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319500C1931280018AB50 /* Build configuration list for PBXNativeTarget "MacUGens" */ = {
 			isa = XCConfigurationList;
@@ -2363,7 +2378,7 @@
 				949319520C1931280018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		9493197B0C1931A30018AB50 /* Build configuration list for PBXNativeTarget "GendynUGens" */ = {
 			isa = XCConfigurationList;
@@ -2372,7 +2387,7 @@
 				9493197D0C1931A30018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319860C1931A40018AB50 /* Build configuration list for PBXNativeTarget "PhysicalModellingUGens" */ = {
 			isa = XCConfigurationList;
@@ -2381,7 +2396,7 @@
 				949319880C1931A40018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319910C1931A50018AB50 /* Build configuration list for PBXNativeTarget "FFT2_UGens" */ = {
 			isa = XCConfigurationList;
@@ -2390,7 +2405,7 @@
 				949319930C1931A50018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		9493199C0C1931A60018AB50 /* Build configuration list for PBXNativeTarget "DemandUGens" */ = {
 			isa = XCConfigurationList;
@@ -2399,7 +2414,7 @@
 				9493199E0C1931A60018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319A70C1931A70018AB50 /* Build configuration list for PBXNativeTarget "DynNoiseUGens" */ = {
 			isa = XCConfigurationList;
@@ -2408,7 +2423,7 @@
 				949319A90C1931A70018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 		949319B20C1931A80018AB50 /* Build configuration list for PBXNativeTarget "ChaosUGens" */ = {
 			isa = XCConfigurationList;
@@ -2417,7 +2432,7 @@
 				949319B40C1931A80018AB50 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Deployment;
 		};
 /* End XCConfigurationList section */
 	};
