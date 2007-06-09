@@ -26,6 +26,9 @@
 		94070C5F0C19DEF6002304F7 /* rtf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5C0C19DEF6002304F7 /* rtf.icns */; };
 		94070C600C19DEF6002304F7 /* sc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5D0C19DEF6002304F7 /* sc.icns */; };
 		9415B1780B2B5D1F00C87737 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
+		942C390D0C1B40EF00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
+		942C390E0C1B40EF00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
+		942C39100C1B40F700360A35 /* sndfile.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 942C390F0C1B40F700360A35 /* sndfile.h */; };
 		9456F5CA0C19E26300634E4D /* libscsynth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9456F5C90C19E25900634E4D /* libscsynth.framework */; };
 		9456F5CF0C19E26A00634E4D /* libscsynth.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9456F5C90C19E25900634E4D /* libscsynth.framework */; };
 		9456F5EF0C19E2ED00634E4D /* libscsynth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9456F5C90C19E25900634E4D /* libscsynth.framework */; };
@@ -179,7 +182,6 @@
 		9493153A0C192A6E0018AB50 /* SimpleStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9493110F0C1921F90018AB50 /* SimpleStack.cpp */; };
 		9493153B0C192A6E0018AB50 /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311100C1921F90018AB50 /* VMGlobals.cpp */; };
 		9493153C0C192A6E0018AB50 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 949314390C1925B90018AB50 /* fftlib.c */; };
-		949317AE0C192A7A0018AB50 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
 		949317AF0C192A7A0018AB50 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069702E6A1C601CA2799 /* Carbon.framework */; };
 		949317B00C192A7A0018AB50 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
 		949317B10C192A7A0018AB50 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069802E6A1C601CA2799 /* Cocoa.framework */; };
@@ -210,7 +212,6 @@
 		94B6AEFC0AF45DA800E478BB /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
 		94B6AEFD0AF45DA800E478BB /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
 		94B6AEFE0AF45DA800E478BB /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
-		94B6AEFF0AF45DA800E478BB /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
 		94B6AF000AF45DA800E478BB /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
@@ -275,6 +276,7 @@
 				9456F6BC0C19E79F00634E4D /* HID_Utilities.h in CopyFiles */,
 				9456F6BD0C19E79F00634E4D /* HID_Utilities_External.h in CopyFiles */,
 				9456F6BE0C19E79F00634E4D /* HID_Utilities_Internal.h in CopyFiles */,
+				942C39100C1B40F700360A35 /* sndfile.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,6 +289,8 @@
 		94070C5C0C19DEF6002304F7 /* rtf.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rtf.icns; sourceTree = "<group>"; };
 		94070C5D0C19DEF6002304F7 /* sc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = sc.icns; sourceTree = "<group>"; };
 		9415B1730B2B5CD700C87737 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
+		942C390C0C1B40EF00360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
+		942C390F0C1B40F700360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		9456F5BC0C19E25900634E4D /* Synth.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Synth.xcodeproj; sourceTree = "<group>"; };
 		9456F67F0C19E6E500634E4D /* SC_AlsaMIDI.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AlsaMIDI.cpp; sourceTree = "<group>"; };
 		9456F6800C19E6E500634E4D /* SC_ComPort.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_ComPort.cpp; sourceTree = "<group>"; };
@@ -533,7 +537,6 @@
 		F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = /System/Library/Frameworks/CoreMIDI.framework; sourceTree = "<absolute>"; };
 		F50D069B02E6A1C601CA2799 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		F50D069C02E6A1C601CA2799 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		F50D06C002E7F29001CA2799 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = /usr/local/lib/libsndfile.a; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -542,7 +545,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9456F5EF0C19E2ED00634E4D /* libscsynth.framework in Frameworks */,
-				949317AE0C192A7A0018AB50 /* libsndfile.a in Frameworks */,
 				949317AF0C192A7A0018AB50 /* Carbon.framework in Frameworks */,
 				949317B00C192A7A0018AB50 /* CoreServices.framework in Frameworks */,
 				949317B10C192A7A0018AB50 /* Cocoa.framework in Frameworks */,
@@ -555,6 +557,7 @@
 				949317B80C192A7A0018AB50 /* QTKit.framework in Frameworks */,
 				949317B90C192A7A0018AB50 /* QuartzCore.framework in Frameworks */,
 				949317BA0C192A7A0018AB50 /* IOBluetooth.framework in Frameworks */,
+				942C390E0C1B40EF00360A35 /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,7 +566,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9456F5CA0C19E26300634E4D /* libscsynth.framework in Frameworks */,
-				94B6AEFF0AF45DA800E478BB /* libsndfile.a in Frameworks */,
 				94B6AEF90AF45DA800E478BB /* Carbon.framework in Frameworks */,
 				94B6AEFD0AF45DA800E478BB /* CoreServices.framework in Frameworks */,
 				94B6AEFA0AF45DA800E478BB /* Cocoa.framework in Frameworks */,
@@ -576,6 +578,7 @@
 				94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */,
 				94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */,
 				949313CC0C19234D0018AB50 /* IOBluetooth.framework in Frameworks */,
+				942C390D0C1B40EF00360A35 /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -767,6 +770,7 @@
 		9493126D0C19222B0018AB50 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				942C390F0C1B40F700360A35 /* sndfile.h */,
 				9493126E0C19222B0018AB50 /* app */,
 				949312830C19222B0018AB50 /* common */,
 				949312930C19222B0018AB50 /* lang */,
@@ -960,9 +964,9 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				942C390C0C1B40EF00360A35 /* libsndfile.a */,
 				949313CB0C19234D0018AB50 /* IOBluetooth.framework */,
 				94930F320C1919C30018AB50 /* libscsynth.framework */,
-				F50D06C002E7F29001CA2799 /* libsndfile.a */,
 				9415B1730B2B5CD700C87737 /* Quartz.framework */,
 				94B8F16C0B463EC000097F2D /* QTKit.framework */,
 				F50D069502E6A1C601CA2799 /* AppKit.framework */,
@@ -1428,6 +1432,11 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				PRODUCT_NAME = sclang;
@@ -1448,6 +1457,11 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				PRODUCT_NAME = sclang;
@@ -1485,8 +1499,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
@@ -1540,8 +1556,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (

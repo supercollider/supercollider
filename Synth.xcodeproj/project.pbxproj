@@ -22,7 +22,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		942F96F00B03380700E00399 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
+		942C379A0C1B3F9F00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C37990C1B3F9F00360A35 /* libsndfile.a */; };
+		942C379B0C1B3F9F00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C37990C1B3F9F00360A35 /* libsndfile.a */; };
+		942C379D0C1B3FB600360A35 /* sndfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 942C379C0C1B3FB600360A35 /* sndfile.h */; };
 		942F96F10B03380700E00399 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
 		942F96F20B03380700E00399 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
 		9456F8460C1A203300634E4D /* libscsynth-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9456F8160C1A1FBC00634E4D /* libscsynth-Info.plist */; };
@@ -162,7 +164,6 @@
 		94930EDB0C19181F0018AB50 /* SC_UnitDef.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930C060C190FB80018AB50 /* SC_UnitDef.h */; };
 		94930EDC0C19181F0018AB50 /* SC_UnitSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930C070C190FB80018AB50 /* SC_UnitSpec.h */; };
 		94930EDD0C19181F0018AB50 /* SC_WireSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930C080C190FB80018AB50 /* SC_WireSpec.h */; };
-		94930EE80C19187D0018AB50 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D06C002E7F29001CA2799 /* libsndfile.a */; };
 		94930EE90C19187D0018AB50 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
 		94930EEA0C19187D0018AB50 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
 /* End PBXBuildFile section */
@@ -185,6 +186,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		942C37990C1B3F9F00360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
+		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
 		9456F8160C1A1FBC00634E4D /* libscsynth-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "libscsynth-Info.plist"; sourceTree = "<group>"; };
 		949309CA0C190FB10018AB50 /* dlopen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dlopen.c; sourceTree = "<group>"; };
@@ -290,7 +293,6 @@
 		94930C080C190FB80018AB50 /* SC_WireSpec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_WireSpec.h; sourceTree = "<group>"; };
 		94930E620C1917460018AB50 /* libscsynth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = libscsynth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		94B6B0C30AF5390900E478BB /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
-		F50D06C002E7F29001CA2799 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = /usr/local/lib/libsndfile.a; sourceTree = "<absolute>"; };
 		F53F78F503B2842D011C068F /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		F5EB7BE503184B8C01CA2799 /* libscsynth_exp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = libscsynth_exp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -300,9 +302,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				942F96F00B03380700E00399 /* libsndfile.a in Frameworks */,
 				942F96F10B03380700E00399 /* CoreAudio.framework in Frameworks */,
 				942F96F20B03380700E00399 /* CoreServices.framework in Frameworks */,
+				942C379B0C1B3F9F00360A35 /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,9 +312,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94930EE80C19187D0018AB50 /* libsndfile.a in Frameworks */,
 				94930EE90C19187D0018AB50 /* CoreAudio.framework in Frameworks */,
 				94930EEA0C19187D0018AB50 /* CoreServices.framework in Frameworks */,
+				942C379A0C1B3F9F00360A35 /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +390,7 @@
 		94930B770C190FB80018AB50 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				942C379C0C1B3FB600360A35 /* sndfile.h */,
 				94930B8D0C190FB80018AB50 /* common */,
 				94930BD40C190FB80018AB50 /* plugin_interface */,
 				94930BED0C190FB80018AB50 /* server */,
@@ -506,7 +509,7 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F50D06C002E7F29001CA2799 /* libsndfile.a */,
+				942C37990C1B3F9F00360A35 /* libsndfile.a */,
 				94B6B0C30AF5390900E478BB /* CoreAudio.framework */,
 				F53F78F503B2842D011C068F /* CoreServices.framework */,
 			);
@@ -586,6 +589,7 @@
 				94930EA80C19180E0018AB50 /* SC_StringParser.h in Headers */,
 				94930EA90C19180E0018AB50 /* SC_Win32Utils.h in Headers */,
 				94930EAA0C19180E0018AB50 /* scsynthsend.h in Headers */,
+				942C379D0C1B3FB600360A35 /* sndfile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -845,7 +849,11 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "$(HOME)/bin";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-faltivec",
@@ -872,7 +880,11 @@
 				ICC_OPTLEVEL = speedHLO;
 				ICC_OPT_PARALLEL = YES;
 				INSTALL_PATH = "$(HOME)/bin";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-faltivec",
@@ -900,11 +912,16 @@
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "Resources/libscsynth-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
@@ -924,6 +941,11 @@
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "Resources/libscsynth-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
