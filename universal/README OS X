@@ -24,22 +24,19 @@ System Requirements
 
 	OS X 10.4
 	XCode Tools
-	libsndfile
+
 
 ------------------------------------------------------------------------
-Compiling libsndfile
+On libsndfile
 ------------------------------------------------------------------------
 
-	get it from:
-	http://www.mega-nerd.com/libsndfile/#Download
+Compiling a universal binary of libsndfile requires access to both a
+i386 and PPC Mac. The reasons for this are described here:
 
-	or:
-	$ curl -fLO http://www.mega-nerd.com/libsndfile/libsndfile-1.0.12.tar.gz 
-	$ tar xvzf libsndfile-1.0.12.tar.gz
-	$ cd libsndfile-1.0.12
-	$ ./configure
-	$ make
-	$ sudo make install
+http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
+
+Because of this, libsndfile is included with the source as a precompiled
+universal binary.
 
 ------------------------------------------------------------------------
 Building
