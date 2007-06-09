@@ -185,7 +185,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
+		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
 		9456F8160C1A1FBC00634E4D /* libscsynth-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "libscsynth-Info.plist"; sourceTree = "<group>"; };
 		949309CA0C190FB10018AB50 /* dlopen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dlopen.c; sourceTree = "<group>"; };
 		949309CB0C190FB10018AB50 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
@@ -809,6 +809,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Development;
 		};
@@ -826,6 +827,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
 		};
