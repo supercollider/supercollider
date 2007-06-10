@@ -19,7 +19,7 @@ p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 12.0px Helvetica}
 span.s3 {text-decoration: underline}
-span.s4 {color: #0000bf}
+span.s4 {color: #001ab6}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -33,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>Differences between InterplEnv and Env</b></p>
 <p class="p2"><br></p>
 <p class="p1">InterplEnvs do not have release or loop nodes.<span class="Apple-converted-space">  </span>They are of a fixed duration. Mostly, it is meant to be used with IEnvGen, where 'times' are actually an index into the envelope curves that are described.</p>
-<p class="p4"><b></b><br></p>
+<p class="p4"><br></p>
 <p class="p3"><b>Basic Creation</b></p>
 <p class="p2"><br></p>
 <p class="p1">*<b>new(levels, times, curves, offset = 0.0)</b></p>
@@ -52,6 +52,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a Float - a curvature value for all segments.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An Array of Floats - curvature values for each segments.</p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>offset</b> - used to offset an envelope into negative starttimes.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1"><b>*newXYC( [x0, y0, curve0 x1, y1, curve1 ... xn, yn])</b></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span>Create a new InterplEnv with given x and y breakpoints. curve describes the curve to the next breakpoint.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b>*newPairs( [x0, y0, x1, y1 ... xn, yn], curve)</b></p>
+<p class="p2"><b></b><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Instance Methods</b></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
