@@ -3981,7 +3981,8 @@ void initCocoaBridgePrimitives();
 
 void initSerialPrimitives();
 	initSerialPrimitives();
-	
+#endif
+#ifdef SC_DARWIN
 void initWiiPrimitives();
 initWiiPrimitives();
 #endif
