@@ -18,7 +18,29 @@ InterplEnv {
 		// make an envelope for filling in later.
 		^this.new(Array.fill(numSegments+1,0), Array.fill(numSegments,1))
 	}
-
+	
+	*newXYC {arg xyc;
+		var x, y, c, times, levels, curves, offset;
+		#x, y, c = xyc.clump(3).flop;  // still needs clump
+		offset = x[0];
+		levels = y;
+		times = x.differentiate;
+		times.removeAt(0);
+		c.removeAt(c.size - 1);
+		^this.new(levels, times, c, offset);
+		}
+		
+	*newPairs {arg pairs, curve;
+		var x, y, times, levels, offset;
+		curve = curve ? \lin;
+		#x, y = pairs.clump(2).flop; //still needs clump
+		offset = x[0];
+		levels = y;
+		times = x.differentiate;
+		times.removeAt(0);
+		^this.new(levels, times, curve, offset);
+		}
+		
 	*initClass {
 		shapeNames = IdentityDictionary[
 			\step -> 0,
@@ -101,28 +123,16 @@ InterplEnv {
 // InterplXYC([0, 0, \lin], [1, 2, \sin], [2, 0])
 // at time 0, value 0, lin to time 1, value 2, sin to time 2, value 0
 
-InterplXYC : InterplEnv {
+InterplXYC {
 	*new {arg ... xyc;
-		var x, y, c, times, levels, curves, offset;
-		#x, y, c = xyc.flat.clump(3).flop;
-		offset = x[0];
-		levels = y;
-		times = Array.fill(x.size - 1, {arg i; x[i + 1] - x[i]});
-		c.removeAt(c.size - 1);
-		^InterplEnv.new(levels, times, c, offset);
+		^InterplEnv.newXYC(xyc.flat);
 		}
 	}
 
 
-InterplPairs : InterplEnv {
+InterplPairs {
 	*new {arg pairs, curve;
-		var x, y, times, levels, offset;
-		curve = curve ? \lin;
-		#x, y = pairs.flat.clump(2).flop;
-		offset = x[0];
-		levels = y;
-		times = Array.fill(x.size - 1, {arg i; x[i + 1] - x[i]});
-		^InterplEnv.new(levels, times, curve, offset);
+		^InterplEnv.newPairs(pairs.flat, curve);
 		}
 	}
 	
