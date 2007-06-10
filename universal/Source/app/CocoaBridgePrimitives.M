@@ -25,6 +25,7 @@
 
 
 #import <Cocoa/Cocoa.h>
+#import <objc/objc-runtime.h>
 #import "PyrPrimitive.h"
 #import "PyrObject.h"
 #import "PyrKernel.h"
@@ -32,7 +33,7 @@
 #import "MyDocument.h"
 #import "GC.h"
 #import "SCVirtualMachine.h"
-#include "/usr/include/objc/objc-runtime.h"
+
 //put this in a .h
 @interface SCCocoaToLangAction : NSResponder
 {
