@@ -40,7 +40,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		942C38E60C1B409D00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C38430C1B407900360A35 /* libsndfile.a */; };
+		9451F55B0C1CA7A00037197F /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C38430C1B407900360A35 /* libsndfile.a */; };
 		949318980C192F0E0018AB50 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 9493187D0C192E160018AB50 /* fftlib.c */; };
 		949318990C192F1C0018AB50 /* FFT_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05D802E69B6B01CA2799 /* FFT_UGens.cpp */; };
 		9493189A0C192F2B0018AB50 /* SCComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E202E69B6B01CA2799 /* SCComplex.cpp */; };
@@ -249,29 +249,29 @@
 		92F246630628AB3E0063D98D /* DemandUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DemandUGens.cpp; sourceTree = "<group>"; };
 		942C38430C1B407900360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
 		942C38EA0C1B40BB00360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
+		9451F5E20C1CAC250037197F /* OSCUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = OSCUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5E30C1CAC250037197F /* BinaryOpUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = BinaryOpUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5E40C1CAC250037197F /* NoiseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = NoiseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5E50C1CAC250037197F /* UnaryOpUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = UnaryOpUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5E60C1CAC250037197F /* DelayUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DelayUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5E70C1CAC250037197F /* DemandUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DemandUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5E80C1CAC250037197F /* LFUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = LFUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5E90C1CAC250037197F /* IOUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = IOUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5EA0C1CAC250037197F /* FilterUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = FilterUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5EB0C1CAC250037197F /* ChaosUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = ChaosUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5EC0C1CAC250037197F /* FFT_UGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = FFT_UGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5ED0C1CAC250037197F /* PanUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = PanUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5EE0C1CAC250037197F /* FFT2_UGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = FFT2_UGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5EF0C1CAC250037197F /* DiskIOUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DiskIOUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5F00C1CAC250037197F /* PhysicalModellingUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = PhysicalModellingUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5F10C1CAC250037197F /* GendynUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = GendynUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5F20C1CAC250037197F /* MulAddUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = MulAddUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5F30C1CAC250037197F /* MacUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = MacUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5F40C1CAC250037197F /* TriggerUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = TriggerUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5F50C1CAC250037197F /* DynNoiseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DynNoiseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		949318790C192DCC0018AB50 /* PhysicalModelingUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicalModelingUGens.cpp; path = Source/plugins/PhysicalModelingUGens.cpp; sourceTree = SOURCE_ROOT; };
 		9493187D0C192E160018AB50 /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = fftlib.c; sourceTree = "<group>"; };
 		949318870C192E350018AB50 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fftlib.h; path = Headers/common/fftlib.h; sourceTree = SOURCE_ROOT; };
-		949318950C192F040018AB50 /* FFT_UGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = FFT_UGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949318C40C1931070018AB50 /* BinaryOpUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = BinaryOpUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949318DA0C19310F0018AB50 /* DelayUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DelayUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949318E50C1931110018AB50 /* DiskIOUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DiskIOUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949318F00C1931120018AB50 /* FilterUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = FilterUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949318FB0C1931130018AB50 /* IOUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = IOUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319060C1931150018AB50 /* LFUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = LFUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319110C1931160018AB50 /* MulAddUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = MulAddUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		9493191C0C1931180018AB50 /* NoiseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = NoiseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319270C19311A0018AB50 /* OSCUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = OSCUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319320C19311C0018AB50 /* PanUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = PanUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		9493193D0C19311E0018AB50 /* TriggerUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = TriggerUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319480C1931260018AB50 /* UnaryOpUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = UnaryOpUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319530C1931280018AB50 /* MacUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = MacUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		9493197E0C1931A30018AB50 /* GendynUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = GendynUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319890C1931A40018AB50 /* PhysicalModellingUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = PhysicalModellingUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319940C1931A50018AB50 /* FFT2_UGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = FFT2_UGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		9493199F0C1931A60018AB50 /* DemandUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DemandUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319AA0C1931A70018AB50 /* DynNoiseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DynNoiseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		949319B50C1931A80018AB50 /* ChaosUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = ChaosUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAE924420481416E00A8010B /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Endian.h; path = common/SC_Endian.h; sourceTree = "<group>"; };
 		B969DA0C0691887B0096E93F /* DynNoiseUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DynNoiseUGens.cpp; sourceTree = "<group>"; };
 		F50D054602E69B6B01CA2799 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
@@ -348,7 +348,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				942C38E60C1B409D00360A35 /* libsndfile.a in Frameworks */,
+				9451F55B0C1CA7A00037197F /* libsndfile.a in Frameworks */,
 				949319CB0C1932730018AB50 /* Carbon.framework in Frameworks */,
 				949318E10C1931110018AB50 /* vecLib.framework in Frameworks */,
 			);
@@ -593,26 +593,26 @@
 		F50D060302E69C2101CA2799 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				949318950C192F040018AB50 /* FFT_UGens.scx */,
-				949318C40C1931070018AB50 /* BinaryOpUGens.scx */,
-				949318DA0C19310F0018AB50 /* DelayUGens.scx */,
-				949318E50C1931110018AB50 /* DiskIOUGens.scx */,
-				949318F00C1931120018AB50 /* FilterUGens.scx */,
-				949318FB0C1931130018AB50 /* IOUGens.scx */,
-				949319060C1931150018AB50 /* LFUGens.scx */,
-				949319110C1931160018AB50 /* MulAddUGens.scx */,
-				9493191C0C1931180018AB50 /* NoiseUGens.scx */,
-				949319270C19311A0018AB50 /* OSCUGens.scx */,
-				949319320C19311C0018AB50 /* PanUGens.scx */,
-				9493193D0C19311E0018AB50 /* TriggerUGens.scx */,
-				949319480C1931260018AB50 /* UnaryOpUGens.scx */,
-				949319530C1931280018AB50 /* MacUGens.scx */,
-				9493197E0C1931A30018AB50 /* GendynUGens.scx */,
-				949319890C1931A40018AB50 /* PhysicalModellingUGens.scx */,
-				949319940C1931A50018AB50 /* FFT2_UGens.scx */,
-				9493199F0C1931A60018AB50 /* DemandUGens.scx */,
-				949319AA0C1931A70018AB50 /* DynNoiseUGens.scx */,
-				949319B50C1931A80018AB50 /* ChaosUGens.scx */,
+				9451F5E20C1CAC250037197F /* OSCUGens.scx */,
+				9451F5E30C1CAC250037197F /* BinaryOpUGens.scx */,
+				9451F5E40C1CAC250037197F /* NoiseUGens.scx */,
+				9451F5E50C1CAC250037197F /* UnaryOpUGens.scx */,
+				9451F5E60C1CAC250037197F /* DelayUGens.scx */,
+				9451F5E70C1CAC250037197F /* DemandUGens.scx */,
+				9451F5E80C1CAC250037197F /* LFUGens.scx */,
+				9451F5E90C1CAC250037197F /* IOUGens.scx */,
+				9451F5EA0C1CAC250037197F /* FilterUGens.scx */,
+				9451F5EB0C1CAC250037197F /* ChaosUGens.scx */,
+				9451F5EC0C1CAC250037197F /* FFT_UGens.scx */,
+				9451F5ED0C1CAC250037197F /* PanUGens.scx */,
+				9451F5EE0C1CAC250037197F /* FFT2_UGens.scx */,
+				9451F5EF0C1CAC250037197F /* DiskIOUGens.scx */,
+				9451F5F00C1CAC250037197F /* PhysicalModellingUGens.scx */,
+				9451F5F10C1CAC250037197F /* GendynUGens.scx */,
+				9451F5F20C1CAC250037197F /* MulAddUGens.scx */,
+				9451F5F30C1CAC250037197F /* MacUGens.scx */,
+				9451F5F40C1CAC250037197F /* TriggerUGens.scx */,
+				9451F5F50C1CAC250037197F /* DynNoiseUGens.scx */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -681,7 +681,7 @@
 			);
 			name = FFT_UGens;
 			productName = FFT_UGens;
-			productReference = 949318950C192F040018AB50 /* FFT_UGens.scx */;
+			productReference = 9451F5EC0C1CAC250037197F /* FFT_UGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949318BA0C1931070018AB50 /* BinaryOpUGens */ = {
@@ -697,7 +697,7 @@
 			);
 			name = BinaryOpUGens;
 			productName = FFT_UGens;
-			productReference = 949318C40C1931070018AB50 /* BinaryOpUGens.scx */;
+			productReference = 9451F5E30C1CAC250037197F /* BinaryOpUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949318D00C19310F0018AB50 /* DelayUGens */ = {
@@ -713,7 +713,7 @@
 			);
 			name = DelayUGens;
 			productName = FFT_UGens;
-			productReference = 949318DA0C19310F0018AB50 /* DelayUGens.scx */;
+			productReference = 9451F5E60C1CAC250037197F /* DelayUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949318DB0C1931110018AB50 /* DiskIOUGens */ = {
@@ -729,7 +729,7 @@
 			);
 			name = DiskIOUGens;
 			productName = FFT_UGens;
-			productReference = 949318E50C1931110018AB50 /* DiskIOUGens.scx */;
+			productReference = 9451F5EF0C1CAC250037197F /* DiskIOUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949318E60C1931120018AB50 /* FilterUGens */ = {
@@ -745,7 +745,7 @@
 			);
 			name = FilterUGens;
 			productName = FFT_UGens;
-			productReference = 949318F00C1931120018AB50 /* FilterUGens.scx */;
+			productReference = 9451F5EA0C1CAC250037197F /* FilterUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949318F10C1931130018AB50 /* IOUGens */ = {
@@ -761,7 +761,7 @@
 			);
 			name = IOUGens;
 			productName = FFT_UGens;
-			productReference = 949318FB0C1931130018AB50 /* IOUGens.scx */;
+			productReference = 9451F5E90C1CAC250037197F /* IOUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949318FC0C1931150018AB50 /* LFUGens */ = {
@@ -777,7 +777,7 @@
 			);
 			name = LFUGens;
 			productName = FFT_UGens;
-			productReference = 949319060C1931150018AB50 /* LFUGens.scx */;
+			productReference = 9451F5E80C1CAC250037197F /* LFUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319070C1931160018AB50 /* MulAddUGens */ = {
@@ -793,7 +793,7 @@
 			);
 			name = MulAddUGens;
 			productName = FFT_UGens;
-			productReference = 949319110C1931160018AB50 /* MulAddUGens.scx */;
+			productReference = 9451F5F20C1CAC250037197F /* MulAddUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319120C1931180018AB50 /* NoiseUGens */ = {
@@ -809,7 +809,7 @@
 			);
 			name = NoiseUGens;
 			productName = FFT_UGens;
-			productReference = 9493191C0C1931180018AB50 /* NoiseUGens.scx */;
+			productReference = 9451F5E40C1CAC250037197F /* NoiseUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		9493191D0C19311A0018AB50 /* OSCUGens */ = {
@@ -825,7 +825,7 @@
 			);
 			name = OSCUGens;
 			productName = FFT_UGens;
-			productReference = 949319270C19311A0018AB50 /* OSCUGens.scx */;
+			productReference = 9451F5E20C1CAC250037197F /* OSCUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319280C19311C0018AB50 /* PanUGens */ = {
@@ -841,7 +841,7 @@
 			);
 			name = PanUGens;
 			productName = FFT_UGens;
-			productReference = 949319320C19311C0018AB50 /* PanUGens.scx */;
+			productReference = 9451F5ED0C1CAC250037197F /* PanUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319330C19311E0018AB50 /* TriggerUGens */ = {
@@ -857,7 +857,7 @@
 			);
 			name = TriggerUGens;
 			productName = FFT_UGens;
-			productReference = 9493193D0C19311E0018AB50 /* TriggerUGens.scx */;
+			productReference = 9451F5F40C1CAC250037197F /* TriggerUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		9493193E0C1931260018AB50 /* UnaryOpUGens */ = {
@@ -873,7 +873,7 @@
 			);
 			name = UnaryOpUGens;
 			productName = FFT_UGens;
-			productReference = 949319480C1931260018AB50 /* UnaryOpUGens.scx */;
+			productReference = 9451F5E50C1CAC250037197F /* UnaryOpUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319490C1931280018AB50 /* MacUGens */ = {
@@ -889,7 +889,7 @@
 			);
 			name = MacUGens;
 			productName = FFT_UGens;
-			productReference = 949319530C1931280018AB50 /* MacUGens.scx */;
+			productReference = 9451F5F30C1CAC250037197F /* MacUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319740C1931A30018AB50 /* GendynUGens */ = {
@@ -905,7 +905,7 @@
 			);
 			name = GendynUGens;
 			productName = FFT_UGens;
-			productReference = 9493197E0C1931A30018AB50 /* GendynUGens.scx */;
+			productReference = 9451F5F10C1CAC250037197F /* GendynUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		9493197F0C1931A40018AB50 /* PhysicalModellingUGens */ = {
@@ -921,7 +921,7 @@
 			);
 			name = PhysicalModellingUGens;
 			productName = FFT_UGens;
-			productReference = 949319890C1931A40018AB50 /* PhysicalModellingUGens.scx */;
+			productReference = 9451F5F00C1CAC250037197F /* PhysicalModellingUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		9493198A0C1931A50018AB50 /* FFT2_UGens */ = {
@@ -937,7 +937,7 @@
 			);
 			name = FFT2_UGens;
 			productName = FFT_UGens;
-			productReference = 949319940C1931A50018AB50 /* FFT2_UGens.scx */;
+			productReference = 9451F5EE0C1CAC250037197F /* FFT2_UGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319950C1931A60018AB50 /* DemandUGens */ = {
@@ -953,7 +953,7 @@
 			);
 			name = DemandUGens;
 			productName = FFT_UGens;
-			productReference = 9493199F0C1931A60018AB50 /* DemandUGens.scx */;
+			productReference = 9451F5E70C1CAC250037197F /* DemandUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319A00C1931A70018AB50 /* DynNoiseUGens */ = {
@@ -969,7 +969,7 @@
 			);
 			name = DynNoiseUGens;
 			productName = FFT_UGens;
-			productReference = 949319AA0C1931A70018AB50 /* DynNoiseUGens.scx */;
+			productReference = 9451F5F50C1CAC250037197F /* DynNoiseUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319AB0C1931A80018AB50 /* ChaosUGens */ = {
@@ -985,7 +985,7 @@
 			);
 			name = ChaosUGens;
 			productName = FFT_UGens;
-			productReference = 949319B50C1931A80018AB50 /* ChaosUGens.scx */;
+			productReference = 9451F5EB0C1CAC250037197F /* ChaosUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 /* End PBXNativeTarget section */
@@ -1308,12 +1308,18 @@
 				);
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
+				EXECUTABLE_EXTENSION = scx;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				KEEP_PRIVATE_EXTERNS = NO;
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				MACH_O_TYPE = mh_bundle;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "-lm";
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SYMROOT = build/plugins;
+				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
@@ -1326,14 +1332,17 @@
 				);
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
+				EXECUTABLE_EXTENSION = scx;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
+				KEEP_PRIVATE_EXTERNS = NO;
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				MACH_O_TYPE = mh_bundle;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "-lm";
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SYMROOT = build/plugins;
@@ -1386,843 +1395,290 @@
 		949318AB0C192F540018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = FFT_UGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949318AC0C192F540018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = FFT_UGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949318C20C1931070018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = BinaryOpUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949318C30C1931070018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = BinaryOpUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949318D80C19310F0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = DelayUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949318D90C19310F0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = DelayUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949318E30C1931110018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = DiskIOUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949318E40C1931110018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = DiskIOUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949318EE0C1931120018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = FilterUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949318EF0C1931120018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = FilterUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949318F90C1931130018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = IOUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949318FA0C1931130018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = IOUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319040C1931150018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = LFUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319050C1931150018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = LFUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		9493190F0C1931160018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = MulAddUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319100C1931160018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = MulAddUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		9493191A0C1931180018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = NoiseUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		9493191B0C1931180018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = NoiseUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319250C19311A0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = OSCUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319260C19311A0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = OSCUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319300C19311C0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = PanUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319310C19311C0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = PanUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		9493193B0C19311E0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = TriggerUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		9493193C0C19311E0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = TriggerUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319460C1931260018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = UnaryOpUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319470C1931260018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = UnaryOpUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319510C1931280018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = MacUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319520C1931280018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = MacUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		9493197C0C1931A30018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = GendynUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		9493197D0C1931A30018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = GendynUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319870C1931A40018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = PhysicalModellingUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319880C1931A40018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = PhysicalModellingUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319920C1931A50018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = FFT2_UGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319930C1931A50018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = FFT2_UGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		9493199D0C1931A60018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = DemandUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		9493199E0C1931A60018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = DemandUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319A80C1931A70018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = DynNoiseUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319A90C1931A70018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = DynNoiseUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		949319B30C1931A80018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = ChaosUGens;
-				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		949319B40C1931A80018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_EXTENSION = scx;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_UNROLL_LOOPS = YES;
-				INSTALL_PATH = /usr/local/lib;
-				KEEP_PRIVATE_EXTERNS = NO;
-				OTHER_CFLAGS = "-DSC_DARWIN";
-				PREBINDING = YES;
 				PRODUCT_NAME = ChaosUGens;
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
