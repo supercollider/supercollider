@@ -588,7 +588,7 @@
 		9456F5BD0C19E25900634E4D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9456F5C70C19E25900634E4D /* scsynth */,
+				9456F5C70C19E25900634E4D /* scsynth2 */,
 				9456F5C90C19E25900634E4D /* libscsynth.framework */,
 			);
 			name = Products;
@@ -1029,6 +1029,7 @@
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "Language" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
@@ -1039,6 +1040,8 @@
 					ProjectRef = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
 				},
 			);
+			projectRoot = "";
+			shouldCheckCompatibility = 1;
 			targets = (
 				F5B7410802E9534D01CA2799 /* All */,
 				94B6ABBF0AF45D2900E478BB /* SuperCollider */,
@@ -1048,10 +1051,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		9456F5C70C19E25900634E4D /* scsynth */ = {
+		9456F5C70C19E25900634E4D /* scsynth2 */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = scsynth;
+			path = scsynth2;
 			remoteRef = 9456F5C60C19E25900634E4D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};

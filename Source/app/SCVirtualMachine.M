@@ -18,7 +18,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
+#import <objc/objc-class.h>
 #import "SCVirtualMachine.h"
 #import "MyDocument.h"
 #import "SCGraphView.h"
@@ -33,7 +33,6 @@
 #include "GC.h"
 #include "VMGlobals.h"
 #include "UserPanel.h"
-#include </usr/include/objc/objc-class.h>
 
 #include <pthread.h>
 

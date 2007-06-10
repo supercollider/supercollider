@@ -19,7 +19,7 @@
 */
 
 #import "UserPanel.h"
-#include </usr/include/objc/objc-class.h>
+#import <objc/objc-class.h>
 
 #include "PyrObject.h"
 #include "PyrKernel.h"
