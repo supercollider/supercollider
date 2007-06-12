@@ -10,4 +10,4 @@ fi
 svn export --force build SuperCollider
 cp -R build/SuperCollider.app build/scsynth build/sclang SuperCollider
 cp build/plugins/* SuperCollider/plugins/
-zip -r -9 "SuperCollider $DATE.zip" SuperCollider 
+zip -r -9 "SuperCollider_$DATE.zip" SuperCollider 

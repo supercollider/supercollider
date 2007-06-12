@@ -28,22 +28,12 @@
 		9415B1780B2B5D1F00C87737 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
 		942C390D0C1B40EF00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
 		942C390E0C1B40EF00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
-		942C39100C1B40F700360A35 /* sndfile.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 942C390F0C1B40F700360A35 /* sndfile.h */; };
-		9456F5CA0C19E26300634E4D /* libscsynth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9456F5C90C19E25900634E4D /* libscsynth.framework */; };
-		9456F5CF0C19E26A00634E4D /* libscsynth.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9456F5C90C19E25900634E4D /* libscsynth.framework */; };
-		9456F5EF0C19E2ED00634E4D /* libscsynth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9456F5C90C19E25900634E4D /* libscsynth.framework */; };
 		9456F6820C19E6E500634E4D /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6800C19E6E500634E4D /* SC_ComPort.cpp */; };
 		9456F6840C19E6E500634E4D /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6800C19E6E500634E4D /* SC_ComPort.cpp */; };
 		9456F6B50C19E79F00634E4D /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AB0C19E79F00634E4D /* HID_Error_Handler.c */; };
-		9456F6B60C19E79F00634E4D /* HID_Error_Handler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9456F6AC0C19E79F00634E4D /* HID_Error_Handler.h */; };
 		9456F6B70C19E79F00634E4D /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
-		9456F6B80C19E79F00634E4D /* HID_Name_Lookup.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9456F6AE0C19E79F00634E4D /* HID_Name_Lookup.h */; };
 		9456F6B90C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
-		9456F6BA0C19E79F00634E4D /* HID_Queue_Utilities.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9456F6B00C19E79F00634E4D /* HID_Queue_Utilities.h */; };
 		9456F6BB0C19E79F00634E4D /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6B10C19E79F00634E4D /* HID_Utilities.c */; };
-		9456F6BC0C19E79F00634E4D /* HID_Utilities.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9456F6B20C19E79F00634E4D /* HID_Utilities.h */; };
-		9456F6BD0C19E79F00634E4D /* HID_Utilities_External.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9456F6B30C19E79F00634E4D /* HID_Utilities_External.h */; };
-		9456F6BE0C19E79F00634E4D /* HID_Utilities_Internal.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9456F6B40C19E79F00634E4D /* HID_Utilities_Internal.h */; };
 		9456F6BF0C19E79F00634E4D /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AB0C19E79F00634E4D /* HID_Error_Handler.c */; };
 		9456F6C00C19E79F00634E4D /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
 		9456F6C10C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
@@ -215,6 +205,8 @@
 		94B6AF000AF45DA800E478BB /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
+		94F5FC7F0C1E6F7F005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
+		94F5FC810C1E6F92005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -224,27 +216,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 942F96540B0337D600E00399;
 			remoteInfo = scsynth;
-		};
-		9456F5C80C19E25900634E4D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 94930E620C1917460018AB50;
-			remoteInfo = libscsynth;
-		};
-		9456F6340C19E35B00634E4D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 94930E610C1917460018AB50;
-			remoteInfo = libscsynth;
-		};
-		9456F6360C19E36400634E4D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 94930E610C1917460018AB50;
-			remoteInfo = libscsynth;
 		};
 		949314E40C192A660018AB50 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -260,27 +231,28 @@
 			remoteGlobalIDString = 94B6ABBF0AF45D2900E478BB;
 			remoteInfo = SuperCollider;
 		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		94931AFA0C19477C0018AB50 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				9456F5CF0C19E26A00634E4D /* libscsynth.framework in CopyFiles */,
-				9456F6B60C19E79F00634E4D /* HID_Error_Handler.h in CopyFiles */,
-				9456F6B80C19E79F00634E4D /* HID_Name_Lookup.h in CopyFiles */,
-				9456F6BA0C19E79F00634E4D /* HID_Queue_Utilities.h in CopyFiles */,
-				9456F6BC0C19E79F00634E4D /* HID_Utilities.h in CopyFiles */,
-				9456F6BD0C19E79F00634E4D /* HID_Utilities_External.h in CopyFiles */,
-				9456F6BE0C19E79F00634E4D /* HID_Utilities_Internal.h in CopyFiles */,
-				942C39100C1B40F700360A35 /* sndfile.h in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
+		94F5FC190C1E6D33005CDF9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 94F5FAD10C1E6B95005CDF9F /* libscsynth.a */;
+			remoteInfo = libscsynth2;
 		};
-/* End PBXCopyFilesBuildPhase section */
+		94F5FC380C1E6E70005CDF9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
+			remoteInfo = libscsynth;
+		};
+		94F5FC3A0C1E6E7A005CDF9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
+			remoteInfo = libscsynth;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
@@ -305,7 +277,6 @@
 		9456F6B20C19E79F00634E4D /* HID_Utilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities.h; sourceTree = "<group>"; };
 		9456F6B30C19E79F00634E4D /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_External.h; sourceTree = "<group>"; };
 		9456F6B40C19E79F00634E4D /* HID_Utilities_Internal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_Internal.h; sourceTree = "<group>"; };
-		94930F320C1919C30018AB50 /* libscsynth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libscsynth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		949310A60C1921F90018AB50 /* CocoaBridgePrimitives.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaBridgePrimitives.M; sourceTree = "<group>"; };
 		949310A70C1921F90018AB50 /* CocoaFilePrimitives.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaFilePrimitives.M; sourceTree = "<group>"; };
 		949310A80C1921F90018AB50 /* DrawBackground.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = DrawBackground.M; sourceTree = "<group>"; };
@@ -529,6 +500,7 @@
 		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94B8F16C0B463EC000097F2D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
+		94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		F50D069602E6A1C601CA2799 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		F50D069702E6A1C601CA2799 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -544,7 +516,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9456F5EF0C19E2ED00634E4D /* libscsynth.framework in Frameworks */,
+				94F5FC810C1E6F92005CDF9F /* libscsynth.a in Frameworks */,
+				942C390E0C1B40EF00360A35 /* libsndfile.a in Frameworks */,
 				949317AF0C192A7A0018AB50 /* Carbon.framework in Frameworks */,
 				949317B00C192A7A0018AB50 /* CoreServices.framework in Frameworks */,
 				949317B10C192A7A0018AB50 /* Cocoa.framework in Frameworks */,
@@ -557,7 +530,6 @@
 				949317B80C192A7A0018AB50 /* QTKit.framework in Frameworks */,
 				949317B90C192A7A0018AB50 /* QuartzCore.framework in Frameworks */,
 				949317BA0C192A7A0018AB50 /* IOBluetooth.framework in Frameworks */,
-				942C390E0C1B40EF00360A35 /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -565,7 +537,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9456F5CA0C19E26300634E4D /* libscsynth.framework in Frameworks */,
+				94F5FC7F0C1E6F7F005CDF9F /* libscsynth.a in Frameworks */,
+				942C390D0C1B40EF00360A35 /* libsndfile.a in Frameworks */,
 				94B6AEF90AF45DA800E478BB /* Carbon.framework in Frameworks */,
 				94B6AEFD0AF45DA800E478BB /* CoreServices.framework in Frameworks */,
 				94B6AEFA0AF45DA800E478BB /* Cocoa.framework in Frameworks */,
@@ -578,7 +551,6 @@
 				94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */,
 				94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */,
 				949313CC0C19234D0018AB50 /* IOBluetooth.framework in Frameworks */,
-				942C390D0C1B40EF00360A35 /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -589,7 +561,7 @@
 			isa = PBXGroup;
 			children = (
 				9456F5C70C19E25900634E4D /* scsynth */,
-				9456F5C90C19E25900634E4D /* libscsynth.framework */,
+				94F5FC1A0C1E6D33005CDF9F /* libscsynth.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -964,9 +936,9 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */,
 				942C390C0C1B40EF00360A35 /* libsndfile.a */,
 				949313CB0C19234D0018AB50 /* IOBluetooth.framework */,
-				94930F320C1919C30018AB50 /* libscsynth.framework */,
 				9415B1730B2B5CD700C87737 /* Quartz.framework */,
 				94B8F16C0B463EC000097F2D /* QTKit.framework */,
 				F50D069502E6A1C601CA2799 /* AppKit.framework */,
@@ -997,7 +969,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				9456F6370C19E36400634E4D /* PBXTargetDependency */,
+				94F5FC3B0C1E6E7A005CDF9F /* PBXTargetDependency */,
 			);
 			name = sclang;
 			productName = sclang;
@@ -1011,12 +983,11 @@
 				94B6ABBC0AF45D2900E478BB /* Resources */,
 				94B6ABBD0AF45D2900E478BB /* Sources */,
 				94B6ABBE0AF45D2900E478BB /* Frameworks */,
-				94931AFA0C19477C0018AB50 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				9456F6350C19E35B00634E4D /* PBXTargetDependency */,
+				94F5FC390C1E6E70005CDF9F /* PBXTargetDependency */,
 			);
 			name = SuperCollider;
 			productName = test2;
@@ -1055,11 +1026,11 @@
 			remoteRef = 9456F5C60C19E25900634E4D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		9456F5C90C19E25900634E4D /* libscsynth.framework */ = {
+		94F5FC1A0C1E6D33005CDF9F /* libscsynth.a */ = {
 			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = libscsynth.framework;
-			remoteRef = 9456F5C80C19E25900634E4D /* PBXContainerItemProxy */;
+			fileType = archive.ar;
+			path = libscsynth.a;
+			remoteRef = 94F5FC190C1E6D33005CDF9F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1249,16 +1220,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		9456F6350C19E35B00634E4D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = libscsynth;
-			targetProxy = 9456F6340C19E35B00634E4D /* PBXContainerItemProxy */;
-		};
-		9456F6370C19E36400634E4D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = libscsynth;
-			targetProxy = 9456F6360C19E36400634E4D /* PBXContainerItemProxy */;
-		};
 		949314E50C192A660018AB50 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 949314DC0C192A550018AB50 /* sclang */;
@@ -1268,6 +1229,16 @@
 			isa = PBXTargetDependency;
 			target = 94B6ABBF0AF45D2900E478BB /* SuperCollider */;
 			targetProxy = 94B6AFFC0AF534B400E478BB /* PBXContainerItemProxy */;
+		};
+		94F5FC390C1E6E70005CDF9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libscsynth;
+			targetProxy = 94F5FC380C1E6E70005CDF9F /* PBXContainerItemProxy */;
+		};
+		94F5FC3B0C1E6E7A005CDF9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libscsynth;
+			targetProxy = 94F5FC3A0C1E6E7A005CDF9F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1383,15 +1354,12 @@
 		88332484090AC12E00A4A7E4 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				ZERO_LINK = YES;
 			};
@@ -1414,6 +1382,7 @@
 				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
@@ -1430,8 +1399,12 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PRODUCT_NAME = sclang;
 			};
@@ -1449,8 +1422,12 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PRODUCT_NAME = sclang;
 			};
@@ -1473,9 +1450,13 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-Wstrict-aliasing",
@@ -1508,9 +1489,13 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-Wstrict-aliasing",
