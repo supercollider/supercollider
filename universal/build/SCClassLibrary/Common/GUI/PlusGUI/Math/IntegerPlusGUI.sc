@@ -1,4 +1,0 @@
-+ Integer {
-	getKeys { _GetKeys } 
-}
-

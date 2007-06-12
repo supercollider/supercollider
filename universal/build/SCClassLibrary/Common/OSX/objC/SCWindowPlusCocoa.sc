@@ -1,6 +1,0 @@
-+ SCWindow{
-
-	dataptr{
-		^dataptr
-	}
-}

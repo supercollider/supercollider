@@ -1,5 +1,0 @@
-#! /bin/sh
-# This takes the build products and makes a distribution folder.
-mkdir SuperCollider_f
-cd build
-cp -R examples SCClassLibrary server SuperCollider.app ../SuperCollider_f

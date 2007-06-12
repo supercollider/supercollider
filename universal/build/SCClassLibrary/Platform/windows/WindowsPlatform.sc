@@ -1,4 +1,0 @@
-WindowsPlatform : Platform
-{
-	name { ^\windows }
-}
