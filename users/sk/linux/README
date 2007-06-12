@@ -1,0 +1,254 @@
+-*-text-*---------------------------------------------------------------
+supercollider 3 for linux
+------------------------------------------------------------------------
+$Id$
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+intro
+------------------------------------------------------------------------
+
+this is a port of james mccartney's supercollider synthesis engine
+(scsynth) and programming language (sclang) to linux. supercollider's
+main homepage is at
+
+   http://www.audiosynth.com
+
+the source code can be obtained via CVS from
+
+   http://supercollider.sourceforge.net
+
+to get further information on supercollider usage or development, you
+might consider subscribing to the mailing lists
+
+   http://www.create.ucsb.edu/mailman/listinfo/sc-users
+   http://www.create.ucsb.edu/mailman/listinfo/sc-dev
+
+------------------------------------------------------------------------
+build requirements
+------------------------------------------------------------------------
+
+ * gcc >= 3.0
+
+   http://www.gnu.org/software/gcc/
+
+   gcc versions < 3.0 are missing some required c++ features
+
+ * jack
+
+   http://jackit.sourceforge.net/
+
+   jack audio connection kit
+
+ * libsndfile >= 1.0
+
+   http://www.mega-nerd.com/libsndfile/
+
+   _the_ soundfile i/o library
+
+ * pkg-config >= 0.14.0
+
+   http://www.freedesktop.org/software/pkgconfig/
+
+   facilitates checking for installed packages when compiling from
+   source
+
+ * scons >= 0.96
+
+   http://www.scons.org/
+
+   configuration and build tool based on python
+
+------------------------------------------------------------------------
+build requirements (optional features)
+------------------------------------------------------------------------
+
+ o alsa
+
+   http://www.alsa-project.org/
+
+   advanced linux sound architecture drivers and library, for sclang's
+   MIDI interface
+
+ o libhowl (obsolete)
+
+   http://www.porchdogsoft.com/products/howl/
+
+   zeroconf service dicovery implementation
+
+ o libavahi-client
+
+   http://www.avahi.org/
+
+   a more powerful zeroconf service discovery implementation
+
+ o linux kernel >= 2.6
+
+   http://www.kernel.org/
+
+   for sclang's linux input device (LID) interface
+
+------------------------------------------------------------------------
+build requirements (debian users)
+------------------------------------------------------------------------
+
+on debian (unstable) you can install the following packages and be set
+for building supercollider:
+
+   gcc
+   libjack0.100.0-dev
+   libsndfile1-dev
+   libasound2-dev
+   libavahi-client-dev
+   pkg-config
+   scons
+
+------------------------------------------------------------------------
+building
+------------------------------------------------------------------------
+
+building with scons is not really different from building with
+autoconf, automake and related tools.
+
+   $ scons -H
+
+gives an overview of scons options.
+
+   $ scons -h
+
+lists package specific options variables and their default values.
+
+options can be set on the command line
+
+   $ scons VARIABLE=VALUE
+
+and are cached in a file called scache.conf (which can be edited with
+your favorite editor) for use in the next scons invocation.
+
+in order to build the whole package, call scons without arguments
+(apart from option variables). in order to install the package, call
+scons with the `install' target:
+
+   $ scons install
+
+any target (including `install') can be cleaned with the `-c' option
+to scons; note that cleaning the `install' target also removes locally
+built files.
+
+------------------------------------------------------------------------
+running scsynth (standalone)
+------------------------------------------------------------------------
+
+run scsynth without options to get an option summary. don't forget to
+start jackd before trying to use scsynth. if you want to add
+directories to supercollider's search path or assign default jack
+ports, set up your environment as described below.
+
+you can specify the number of jack input/output channels created with
+the options -i and -o, respectively.
+
+the -H option can be used to specify a jack server to connect to and
+to set the jack client identifier. the format is either
+
+    <SERVER-NAME>:<CLIENT-NAME>
+
+or just
+
+    <CLIENT-NAME>
+
+when connecting to the default server.
+
+------------------------------------------------------------------------
+running sclang
+------------------------------------------------------------------------
+
+it is recommended to use sclang in combination with the SCEL emacs
+interface in `scel'. see the README in this directory for installation
+and usage.
+
+sclang executes the startup file `~/.sclang.sc' after class library
+initialization. this file can contain statements you don't want to put
+in a custom Main class, like setting default variables. an example can
+be found in `examples/sclang.sc'.
+
+you _have_ to have a `synthdefs' subdirectory in sclang's working
+directory, because some default synthdefs are written on startup;
+otherwise the language will signal a runtime error. the runtime
+directory is either the current working directory or the path
+specified with the `-d' option.
+
+for advanced setups, sclang's compilation search path can be
+customized with a library configuration file. an example is provided
+in `examples/sclang.cfg'; install it as `/etc/sclang.cfg' or
+`~/.sclang.cfg'.
+
+------------------------------------------------------------------------
+environment
+------------------------------------------------------------------------
+
+the jack audio driver interface is configured based on various
+environment variables:
+
+ * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that
+   scsynth's inputs should connect to by default
+
+   $ export SC_JACK_DEFAULT_INPUTS="alsa_pcm:capture_1,alsa_pcm:capture_2"
+
+ * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that
+   scsynth's outputs should be connected to by default.
+
+   $ export SC_JACK_DEFAULT_OUTPUTS="alsa_pcm:playback_1,alsa_pcm:playback_2"
+
+two additional environment variables add directories to the default
+search path for plugins and synth definitions, respectively. directory
+names are separated by ':' as in the unix PATH variable:
+
+ * SC_PLUGIN_PATH, SC_SYNTHDEF_PATH
+
+   $ export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
+
+------------------------------------------------------------------------
+documentation
+------------------------------------------------------------------------
+
+apart from the sites listed above, some more documentation links ...
+
+a wiki for supercollider, set up by julian rohrhuber, is at
+
+    http://swiki.hfbk-hamburg.de:8888/MusicTechnology/6
+
+linux specific information can be found at
+
+    http://swiki.hfbk-hamburg.de:8888/MusicTechnology/478
+
+if and when i get around to update the site, you'll find some more at
+
+   http://v00d00.k-hornz.de/sc.html
+
+------------------------------------------------------------------------
+reporting bugs
+------------------------------------------------------------------------
+
+please report bugs either to the sc-users or sc-dev mailing lists.
+
+------------------------------------------------------------------------
+contributors
+------------------------------------------------------------------------
+
+stefan kersten <sk AT k-hornz DOT de>
+andi pieper
+maurizio umberto puxeddu
+rohan drape
+mario lang
+john yates
+
+------------------------------------------------------------------------
+outro
+------------------------------------------------------------------------
+
+thanks to james mccartney, for making this great piece of audio
+software publically and freely available.
+
+------------------------------------------------------------------------
+eof
+------------------------------------------------------------------------

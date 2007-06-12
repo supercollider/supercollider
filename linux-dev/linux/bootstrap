@@ -1,0 +1,17 @@
+#!/bin/sh
+# =====================================================================
+# file:		bootstrap
+# contents:	build system bootstrap script
+# author:	stefan kersten <steve@k-hornz.de>
+# CVS:		$Id$
+# =====================================================================
+
+set -x
+
+aclocal \
+&& libtoolize --automake --force \
+&& autoheader \
+&& automake --add-missing --force-missing --foreign \
+&& autoconf
+
+# EOF

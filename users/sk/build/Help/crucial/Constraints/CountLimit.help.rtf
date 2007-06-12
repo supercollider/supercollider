@@ -1,0 +1,43 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 CountLimit
+\fs24 				\
+\
+counts how many items have been presented to it. returns true until the limit has\
+been reached, thereafter returns false.\
+
+\f1\b0 \
+superclass: AbstractConstraint\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\
+(\
+s = \cf2 CountLimit\cf0 .new(10);\
+\
+100.do(\{ \cf2 arg\cf0  i;\
+	\cf2 var\cf0  r;\
+	r = 100.rand;\
+	if(s.value(r),\{\
+		[i,r].postln;\
+	\})\
+\});\
+\
+\
+[ 0, 58 ]\
+[ 1, 37 ]\
+[ 2, 39 ]\
+[ 3, 82 ]\
+[ 4, 99 ]\
+[ 5, 93 ]\
+[ 6, 27 ]\
+[ 7, 38 ]\
+[ 8, 20 ]\
+[ 9, 77 ]\
+)\
+\
+}

@@ -1,0 +1,64 @@
+------------------------------------------------------------------------
+intro
+------------------------------------------------------------------------
+
+this is the OS X version of james mccartney's supercollider synthesis engine
+(scsynth) and programming language (sclang). 
+supercollider's main homepage is at
+
+   http://supercollider.sourceforge.net/
+
+the source code can be obtained via CVS from
+
+   http://supercollider.sourceforge.net
+
+to get further information on supercollider usage or development, you
+should subscribe to the mailing lists
+
+   http://www.create.ucsb.edu/mailman/listinfo/sc-users
+   http://www.create.ucsb.edu/mailman/listinfo/sc-devel
+
+------------------------------------------------------------------------
+System Requirements
+------------------------------------------------------------------------
+
+	OS X 10.4
+	XCode Tools
+
+
+------------------------------------------------------------------------
+On libsndfile
+------------------------------------------------------------------------
+
+Compiling a universal binary of libsndfile requires access to both a
+i386 and PPC Mac. The reasons for this are described here:
+
+http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
+
+Because of this, libsndfile is included with the source as a precompiled
+universal binary.
+
+------------------------------------------------------------------------
+Building
+------------------------------------------------------------------------
+
+	There are three projects that should be BUILT IN THIS ORDER :
+
+	Synth
+	 - the synthesis server application
+	Plugins
+	 - the UGens and plugins
+	Language
+	 - the OS X application with text editor, language interpreter, event scheduling etc.
+
+	Or you can use the script:
+	   compile.sh
+
+------------------------------------------------------------------------
+outro
+------------------------------------------------------------------------
+
+thanks to james mccartney, for making this great piece of audio
+software publicly and freely available.
+
+------------------------------------------------------------------------

@@ -1,0 +1,629 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica-Oblique;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs36 \cf0 Randomness in SC
+\f0\b0\fs24 \
+\
+As in any computer program, there are no "truly random" number generators in SC. \
+They are pseudo-random, meaning they use very complex, but deterministic \
+algorithms to generate sequences of numbers that are long enough and complicated enough \
+to seem "random" for human beings. (i.e. the patterns are too complex for us to detect.)\
+\
+If you start a random number generator algorithm with the same "seed" number \
+several times, you get the same sequence of random numbers. \
+(See example below, 
+\f2\i randomSeed
+\f0\i0 )\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Create single random numbers:
+\f0\b0\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 1. Between zero and <number>:
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 5.rand				\cf2 // evenly distributed.\cf0 \
+\
+1.0.linrand			\cf2 // probability decreases linearly from 0 to <number>.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 2. Between -<number> and <number>:
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 5.0.rand2				\cf2 // evenly distributed.\cf0 \
+\
+10.bilinrand			\cf2 // probability is highest around 0, \cf0 \
+					\cf2 // decreases linearly toward +-<number>.\cf0 \
+\
+1.0.sum3rand			\cf2 // quasi-gaussian, bell-shaped distribution.
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 3. Within a given range:
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 rrand(24, 48)			\cf2 // linear distribution in the given range.\cf0 \
+\
+exprand(0.01, 1)		\cf2 // exponential distribution; \cf0 \
+					\cf2 // both numbers must have the same sign.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 Test them multiple times with a do loop:
+\f0\b0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 20.do(\{ 5.rand.postln; \});			\cf2 // evenly distributed\cf0 \
+\
+20.do(\{ 1.0.linrand.postln; \});		\cf2 // probability decreases linearly from 0 to 1.0\cf0 \
+\
+\
+20.do(\{ 5.0.rand2.postln; \});		\cf2 // even\cf0 \
+\
+20.do(\{ 10.bilinrand.postln; \});		\cf2 // probability is highest around 0, \cf0 \
+							\cf2 // decreases linearly toward +-<number>.\cf0 \
+							\
+20.do(\{ 1.0.sum3rand.postln; \});	\cf2 // quasi-gaussian, bell-shaped.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 Collect the results in an array:
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf3 Array\cf0 .fill(10, \{ 1000.linrand \}).postln; \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // or more compact: \cf0 \
+\
+\{ 1.0.sum3rand \}.dup(100) \
+\
+\cf2 // or:\cf0 \
+\
+(\{ 1.0.sum3rand \} ! 100)
+\f0\fs24 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 You can seed a random generator in order to repeat \
+the same sequence of random numbers:
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+5.do(\{ \
+	\cf3 thisThread\cf0 .randSeed = 4;\
+	\cf3 Array\cf0 .fill(10, \{ 1000.linrand\}).postln; \
+\});\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // Just to check, no seeding:\cf0 \
+\
+(\
+5.do(\{ \cf3 Array\cf0 .fill(10, \{ 1000.linrand\}).postln; \});\
+)\
+\
+\cf2 // see also [\cf2 \ul \ulc2 randomSeed\cf2 \ulnone ].\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 Demonstrate the various statistical distributions visually, with histograms:
+\f0\b0 \
+\
+[plot may not work in non-Mac SC3 versions.]\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf3 Array\cf0 .fill(500, \{  1.0.rand \}).plot(\cf4 "Sequence of 500x 1.0.rand"\cf0 );\
+\
+\cf3 Array\cf0 .fill(500, \{  1.0.linrand \}).plot(\cf4 "Sequence of 500x 1.0.linrand"\cf0 );\
+\
+\cf3 Array\cf0 .fill(500, \{  1.0.sum3rand \}).plot(\cf4 "Sequence of 500x 1.0.sum3rand"\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // Use a histogram to display how often each (integer) \cf0 \
+\cf2 // occurs in a collection of random numbers, :\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  randomNumbers, histogram, maxValue = 500, numVals = 10000;\
+\
+randomNumbers = \cf3 Array\cf0 .fill(numVals, \{ maxValue.rand; \});\
+\
+histogram = \cf3 Signal\cf0 .newClear(maxValue);\
+\
+randomNumbers.do(\{ \cf3 arg\cf0  each; \cf3 var\cf0  count, histoIndex; \
+	histoIndex = each.asInteger;\
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});\
+\
+histogram.plot(\cf4 "histogram for rand 0 - "\cf0  ++ maxValue);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 A histogram for linrand:
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\cf3 var\cf0  randomNumbers, histogram, maxValue = 500.0, numVals = 10000;\
+\
+randomNumbers = \cf3 Array\cf0 .fill(numVals, \{ maxValue.linrand; \});\
+\
+histogram = \cf3 Signal\cf0 .newClear(maxValue);\
+\
+randomNumbers.do(\{ \cf3 arg\cf0  each; \cf3 var\cf0  count, histoIndex; \
+	histoIndex = each.asInteger;\
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});\
+\
+histogram.plot(\cf4 "histogram for linrand 0 - "\cf0  ++ maxValue);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 A histogram for bilinrand:
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\cf3 var\cf0  randomNumbers, histogram, minValue = -250, maxValue = 250, numVals = 10000, numBins = 500;\
+\
+randomNumbers = \cf3 Array\cf0 .fill(numVals, \{ maxValue.bilinrand; \});\
+histogram = \cf3 Signal\cf0 .newClear(numBins);\
+\
+randomNumbers.do(\{ \cf3 arg\cf0  each; \cf3 var\cf0  count, histoIndex; \
+	histoIndex = ( each - minValue );\
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});\
+\
+histogram.plot(\cf4 "histogram for bilinrand"\cf0  + minValue + \cf4 "to"\cf0  + maxValue);\
+)
+\f0\fs24 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 A histogram for exprand:
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\cf3 var\cf0  randomNumbers, histogram, minValue = 5.0, maxValue = 500, numVals = 10000, numBins = 500;\
+\
+randomNumbers = \cf3 Array\cf0 .fill(numVals, \{ exprand(minValue, maxValue); \});\
+histogram = \cf3 Signal\cf0 .newClear(numBins);\
+\
+randomNumbers.do(\{ \cf3 arg\cf0  each; \cf3 var\cf0  count, histoIndex; \
+	histoIndex = ( each - minValue ).round(1).asInteger;\
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1);\
+\});\
+\
+histogram.plot(\cf4 "histogram for exprand: "\cf0  ++ minValue ++ \cf4 " to "\cf0  ++ maxValue);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 And for sum3rand (cheap quasi-gaussian):
+\f0\b0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\
+\cf3 var\cf0  randomNumbers, histogram, minValue = -250, maxValue = 250, numVals = 10000, numBins = 500;\
+\
+randomNumbers = \cf3 Array\cf0 .fill(numVals, \{ maxValue.sum3rand; \});\
+histogram = \cf3 Signal\cf0 .newClear(numBins);\
+\
+randomNumbers.do(\{ \cf3 arg\cf0  each; \cf3 var\cf0  count, histoIndex; \
+	histoIndex = ( each - minValue ).round(1).asInteger;	\cf2 // catch float indices.\cf0 \
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});\
+\
+histogram.plot(\cf4 "histogram for sum3rand "\cf0  ++ minValue ++ \cf4 " to "\cf0  ++ maxValue);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\
+All of the single-number methods also work for (Sequenceable)Collections, \
+simply by applying the given random message to each element of the collection:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 [ 1.0, 10, 100.0, \cf5 \\aSymbol\cf0  ].rand.postln;		\cf2 // note: Symbols are left as they are.\cf0 \
+\cf3 List\cf0 [ 10, -3.0, \cf5 \\aSymbol\cf0  ].sum3rand.postln;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 Arbitrary random distributions\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b0 \cf0 \
+An 
+\f2\i integral table
+\f0\i0  can be used to create an arbitrary random distribution quite efficiently. The table\
+building is expensive though.  The more points there are in the randomTable the more accurate the\
+distribution is, of course\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 (\cf6 \
+\cf7 var\cf6  randomNumbers, histogram, distribution, randomTable, randTableSize=200;\
+\cf7 var\cf6  minValue = -250, maxValue = 250, numVals = 10000, numBins = 500;\
+\
+\cf8 // create some random distribution with values between 0 and 1\cf6 \
+distribution = \cf7 Array\cf6 .fill(\cf0 randTableSize\cf6 , \
+	\{ \cf7 arg\cf6  i; (i/ \cf0 randTableSize * 35)\cf6 .sin.max(0) * (i / \cf0 randTableSize\cf6 ) \}\
+);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // render a randomTable\cf6 \
+randomTable = distribution.asRandomTable; \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // get random numbers, scale them\cf6 \
+\
+randomNumbers = \cf7 Array\cf6 .fill(numVals, \{ randomTable.tableRand * (maxValue - \cf0 minValue) + minValue\cf6 ; \}); \
+\
+histogram = \cf7 Signal\cf6 .newClear(numBins);\
+\
+randomNumbers.do(\{ \cf7 arg\cf6  each; \cf7 var\cf6  count, histoIndex; \
+	histoIndex = ( each - minValue ).round(1).asInteger;	\cf8 // catch float indices.\cf6 \
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});\
+\
+histogram.plot(\cf9 "this is the histogram we got"\cf6 );\
+distribution.plot(\cf9 "this was the histogram we wanted"\cf6 );\
+\cf0 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Random decisions:
+\f0\b0\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 coin
+\f0\b0  	simulates a coin toss and results in true or false. \
+		1.0 is always true, 0.0 is always false, 0.5 is 50:50 chance.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 20.do(\{ 0.5.coin.postln \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+biased random decision can be simulated bygenerating a single value \
+and check against a threshhold:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 20.do(\{ (1.0.linrand > 0.5).postln \});\
+20.do(\{ (exprand(0.05, 1.0) > 0.5).postln \});
+\f0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Generating Collections of random numbers:
+\f0\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 		\cf2 // size, minVal, maxVal \cf0 \
+\cf3 Array\cf0 .rand(7, 0.0, 1.0).postln;				\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // is short for:\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Array\cf0 .fill(7, \{ rrand(0.0, 1.0) \}).postln;	\
+\
+\
+		\cf2 // size, minVal, maxVal \cf0 \
+\cf3 List\cf0 .linrand(7, 10.0, 15.0).postln;			\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // is short for:\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 List\cf0 .fill(7, \{ 10 + 5.0.linrand \}).postln;	\
+\
+\cf3 Signal\cf0 .exprand(10, 0.1, 1);\
+\
+\cf3 Signal\cf0 .rand2(10, 1.0);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Random choice from Collections
+\f0\b0\fs24 \
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 choose 
+\f0\b0 			equal chance for each element.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 10.do(\{ [ 1, 2, 3 ].choose.postln \});
+\f0\fs24 			\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 Weighted choice:
+\f0\b0 \
+\
+
+\f1\b wchoose(weights)
+\f0\b0 	An array of weights sets the chance for each element.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 10.do(\{ [ 1, 2, 3 ].wchoose([0.1, 0.2, 0.7]).postln \});	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Randomize the order of a Collection: 
+\f0\b0\fs24 	\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 scramble
+\f0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf3 List\cf0 [ 1, 2, 3, 4, 5 ].scramble.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Randomly group a Collection:	
+\f0\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 curdle(probability)
+\f0\b0 \
+\
+The probability argument sets the chance that two adjacent elements will be separated.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 [ 1, 2, 3, 4, 5, 6, 7, 8 ].curdle(0.2).postln;	\cf2 // big groups\cf0 \
+\
+[ 1, 2, 3, 4, 5, 6, 7, 8 ].curdle(0.75).postln;	\cf2 // small groups\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Random signal generators, i.e. UGens:
+\f0\b0\fs24 \
+\
+PinkNoise\
+WhiteNoise\
+GrayNoise\
+BrownNoise\
+PinkerNoise\
+ClipNoise\
+LFNoise0\
+LFNoise1\
+LFNoise2\
+LFClipNoise\
+LFDNoise0\
+LFDNoise1\
+LFDNoise3\
+LFDClipNoise\
+Dust\
+Dust2\
+Crackle\
+LinCong\
+Latoocarfian\
+Rossler		[not installed yet]\
+NoahNoise	[not installed yet]\
+\
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 UGens that generate random numbers once, or on trigger:
+\f0\b0 \
+\
+Rand		uniform distribution of float between (lo, hi), as for numbers.\
+IRand		uniform distribution of integer numbers.\
+TRand		uniform distribution of float numbers, triggered\
+TIRand		uniform distribution of integer numbers, triggered\
+LinRand		skewed distribution of float numbers, triggered\
+NRand 		sum of n uniform distributions, approximates gaussian distr. with higher n.\
+ExpRand 		exponential distribution\
+TExpRand	exponential distribution, triggered\
+CoinGate		statistical gate for a trigger\
+TWindex		triggered weighted choice between a list\
+\
+	Like using randSeed to set the random generatorsfor each thread in sclang,  \
+	you can choose which of several random generators on the server to use,\
+	and you can reset (seed) these random generators: \
+RandID\
+RandSeed\
+\
+\
+
+\f1\b UGens that generate random numbers on demand ("Demand UGens"):
+\f0\b0 \
+\
+Dwhite\
+Dbrown\
+Diwhite\
+Dibrown\
+Drand\
+Dxrand\
+\
+see random patterns with analogous names\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Random Patterns: 
+\f0\b0\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf3 Prand\cf0 ([ 1, 2, 3 ], \cf3 inf\cf0 );		\cf2 // choose randomly one from a list ( list, numRepeats)\cf0 \
+\cf3 Pxrand\cf0 ([ 1, 2, 3 ]);			\cf2 // choose one element from a list, no repeat of previous choice\cf0 \
+\cf3 Pwhite\cf0 (24, 72);				\cf2 // within range [<hi>, <lo>], choose a random value.\cf0 \
+\cf3 Pbrown\cf0 (24, 72, 5)				\cf2 // within range [<hi>, <lo>], do a random walk\cf0 \
+							\cf2 // with a maximum <step> to the next value.\cf0 \
+						\
+\cf3 Pwrand\cf0 ([ 1, 2, 3 ], [0.1, 0.3, 0.6], 20);	\cf2 // choose from a list, probabilities by weights\cf0 \
+\
+\cf3 Pshuf\cf0 ([ 1, 2, 3, 4 ], 2);		\cf2 // scramble the list, then repeat that order <repeats> times.\cf0 \
+\
+\cf3 Pwalk\cf0 ( (0 .. 10), \cf3 Prand\cf0 ([ -2,-1, 1, 2], \cf3 inf\cf0 ));		\cf2 // random walk. \cf0 \
+\
+\cf3 Pfsm\cf0  						\cf2 // random finite state machine pattern, see its help file. \cf0 \
+							\cf2 // see also MarkovSet on sc-swiki\cf0 \
+\
+\cf3 Pseed\cf0 (seed, pattern)			\cf2 // sets the random seed for that stream.\cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // some basic examples\cf0 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Pbind\cf0 (\cf5 \\note\cf0 , \cf3 Prand\cf0 ([ 0, 2, 4 ], \cf3 inf\cf0 ), \
+	\cf5 \\dur\cf0 , 0.2\
+).play;\
+)\
+\
+(\
+\cf3 Pbind\cf0 (\
+	\cf5 \\note\cf0 , \cf3 Pxrand\cf0 ([ 0, 2, 4 ], \cf3 inf\cf0 ),\
+	\cf5 \\dur\cf0 , 0.2\
+).play;\
+)\
+\
+(\
+\cf3 Pbind\cf0 (\
+	\cf5 \\note\cf0 , \cf3 Pwrand\cf0 ([ 0, 2, 4 ], [0.1, 0.3, 0.6], \cf3 inf\cf0 ),\
+	\cf5 \\dur\cf0 , 0.2\
+).play;\
+)\
+\
+(\
+\cf3 Pbind\cf0 (\
+	\cf5 \\midinote\cf0 , \cf3 Pwhite\cf0 (48, 72, \cf3 inf\cf0 ),\
+	\cf5 \\dur\cf0 , 0.2\
+).play;\
+)\
+\
+(\
+\cf3 Pbind\cf0 (\
+	\cf5 \\midinote\cf0 , \cf3 Pbrown\cf0 (48, 72, 5, \cf3 inf\cf0 ),\
+	\cf5 \\dur\cf0 , 0.2\
+).play;\
+)\
+\
+}

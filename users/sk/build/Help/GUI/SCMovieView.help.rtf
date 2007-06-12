@@ -1,0 +1,79 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf230
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red96\green96\blue96;
+\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b\fs36 \cf2 SCMovieView
+\f1\b0\fs18 \cf3 \
+\
+can play movies such as .mov and mpg, \
+and image files like jpg, png, tiff and others.\
+(currently, it gets stuck on picts.)\
+\cf2 This\cf3  is basically a wrapper for a \cf2 Cocoa\cf3  \cf2 Quicktime\cf3  view.\
+\
+\
+\
+(\
+w = \cf2 SCWindow\cf3 (\cf4 "mov"\cf3 ).front;\
+b = \cf2 SCButton\cf3 (w, \cf2 Rect\cf3 (0, 0, 150, 20))\
+	.states_([[\cf4 "pick a file"\cf3 ]])\
+	.action_(\{ \cf2 File\cf3 .openDialog(\cf4 ""\cf3 , \{ \cf2 |path|\cf3  m.path_(path) \}) \});\
+m = \cf2 SCMovieView\cf3 (w, \cf2 Rect\cf3 (0,20,360, 260));\
+)\
+\
+	\cf5 // random-pick a tiff from the Help folder\cf3 \
+m.path_(\cf4 "Help/*/*/*.tiff"\cf3 .pathMatch.choose);\
+\
+	\cf5 // or point it to a movie (you may have that one too):\cf3 \
+m.path_(\cf4 "/Library/Application\\ Support/iDVD/Tutorial/Movies/Our\\ First\\ Snowman.mov"\cf3 );\
+\
+\
+m.start;			\cf5 // playback\cf3 \
+m.muted_(\cf2 true\cf3 );	\cf5 // thank god\cf3 \
+m.stop;		\
+	\
+	\cf5 //rate\cf3 \
+m.rate_(0.2);	\
+	\cf5 // backwards\cf3 \
+m.gotoEnd.rate_(-1).start;\
+\
+	\cf5 // select a range on the controller and play it\cf3 \
+m.rate_(1).playSelectionOnly_(\cf2 true\cf3 ).start;\
+\
+	\cf5 // loopModes:\cf3 \
+m.loopMode_(1);	\cf5 // only one direction\cf3 \
+m.loopMode_(0).start;	\cf5 // back and forth\cf3 \
+\
+\
+\
+m.stop;\
+m.gotoBeginning;\
+	\
+	\cf5 // single steps\cf3 \
+m.stepForward;\
+\
+10.do \{ m.stepForward; \};\
+m.stepBack;\
+\
+\cf5 // select with shift-drag, copy paste between movieviews or quicktime player\cf3 \
+m.editable_(\cf2 true\cf3 );\
+\
+\
+m.showControllerAndAdjustSize(\cf2 true\cf3 , \cf2 true\cf3 );\
+	\cf5 // resize compared to image size:\cf3 \
+m.resizeWithMagnification(0.75);	\
+\
+	//goto time (in seconds)\
+m.currentTime_(1);\
+\
+		\cf5 // not there yet, but would be nice to have:\cf3 \
+		\cf5 // startFrame, length\cf3 \
+m.setSelection_(20, 15);\
+\
+		\
+m.frame_(frame);	\cf5 // jump to frame\cf3 \
+m.frame.postln;	\cf5 // poll current frame pos\cf3 \
+\
+\
+}

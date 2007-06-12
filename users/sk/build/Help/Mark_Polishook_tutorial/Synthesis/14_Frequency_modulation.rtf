@@ -1,0 +1,244 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fnil\fcharset77 LucidaGrande;\f4\fnil\fcharset77 LucidaGrande-Bold;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Carriers and modulators
+\f1\b0\fs18 \
+\
+In its simplest form, frequency modulation (FM) synthesis - famous since the Yamaha DX7 of the 1980's - uses one oscillator to modulate the frequency of another. The modulating oscillator in FM synthesis usually runs at the audio rate and its amplitude often is shaped by an envelope or other controller, such as a low frequency oscillator.\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "fm1"\cf0 , \{ \cf2 arg\cf0  bus = 0, freq = 440, carPartial = 1, modPartial = 1, index = 3, mul = 0.05;\
+\
+	\cf4 // index values usually are between 0 and 24\cf0 \
+	\cf4 // carPartial :: modPartial => car/mod ratio\cf0 \
+	\
+	\cf2 var\cf0  mod;\
+	\cf2 var\cf0  car;\
+	\
+	mod = \cf2 SinOsc\cf0 .ar(\
+		freq * modPartial, \
+		0, \
+		freq * index * \cf2 LFNoise1\cf0 .kr(5.reciprocal).abs\
+	);\
+		\
+	car = \cf2 SinOsc\cf0 .ar(\
+		(freq * carPartial) + mod, \
+		0, \
+		mul\
+	);\
+	\
+	\cf2 Out\cf0 .ar(\
+		bus,\
+		car\
+	)\
+\}).load(s);\
+)\
+\
+(\
+\cf2 Synth\cf0 (\cf3 "fm1"\cf0 , [\cf5 \\bus\cf0 , 0, \cf5 \\freq\cf0 , 440, \cf5 \\carPartial\cf0 , 1, \cf5 \\modPartial\cf0 , 2.4]);\
+\cf2 Synth\cf0 (\cf3 "fm1"\cf0 , [\cf5 \\bus\cf0 , 1, \cf5 \\freq\cf0 , 442, \cf5 \\carPartial\cf0 , 1, \cf5 \\modPartial\cf0 , 2.401]);\
+)\
+\
+(\
+s.queryAllNodes;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 \
+////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b \cf0 \
+
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 FM synthesis and reverb\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // ... a reverb adapted from the "01 Why SuperCollider document" in the SC2 distribution\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 (\
+SynthDef\cf0 (\cf3 "preDelay"\cf0 , \{ arg inbus = 2;\
+	\cf2 ReplaceOut\cf0 .ar(\
+		4,\
+		\cf2 DelayN\cf0 .ar(\cf2 In\cf0 .ar(inbus, 1), 0.048, 0.048)\
+	)\
+\}).load(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "combs"\cf0 , \{\
+	\cf2 ReplaceOut\cf0 .ar(\
+		6,\
+		\cf2 Mix\cf0 .arFill(7, \{ \cf2 CombL\cf0 .ar(\cf2 In\cf0 .ar(4, 1), 0.1, \cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0, 0.1), 0.04, 0.05), 15) \})\
+	)\
+\}).load(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "allpass"\cf0 , \{ \cf2 arg\cf0  gain = 0.2;\
+	\cf2 var\cf0  source;\
+	source = \cf2 In\cf0 .ar(6, 1);\
+	4.do(\{ source = \cf2 AllpassN\cf0 .ar(source, 0.050, [\cf2 Rand\cf0 (0, 0.05), \cf2 Rand\cf0 (0, 0.05)], 1) \});\
+	\cf2 ReplaceOut\cf0 .ar(\
+		8,\
+		source * gain\
+	)\
+\}).load(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "theMixer"\cf0 , \{ arg gain = 1;\
+	\cf2 ReplaceOut\cf0 .ar(\
+		0,\
+		\cf2 Mix\cf0 .ar([\cf2 In\cf0 .ar(2, 1), \cf2 In\cf0 .ar(8, 2)]) * gain\
+	)\
+\}).load(s);\
+)\
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 (\cf3 "fm1"\cf0 , [\cf5 \\bus\cf0 , 2, \cf5 \\freq\cf0 , 440, \cf5 \\carPartial\cf0 , 1, \cf5 \\modPartial\cf0 , 1.99, \cf5 \\mul\cf0 , 0.071]);\
+\cf2 Synth\cf0 (\cf3 "fm1"\cf0 , [\cf5 \\bus\cf0 , 2, \cf5 \\freq\cf0 , 442, \cf5 \\carPartial\cf0 , 1, \cf5 \\modPartial\cf0 , 2.401, \cf5 \\mul\cf0 , 0.071]);\
+\cf2 Synth\cf0 .tail(s, \cf3 "preDelay"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "combs"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "allpass"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "theMixer"\cf0 , [\cf5 \\gain\cf0 , 0.64]);\
+)\
+\
+(\
+s.queryAllNodes;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 \
+////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Components\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+Dividing the "fm" synth def into two pieces, a synthdef for a modulator and a synthdef for the carrier, gives more functionality - carrier signals can shaped by two or more modulators.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "carrier"\cf0 , \{ \cf2 arg\cf0  inbus = 2, outbus = 0, freq = 440, carPartial = 1, index = 3, mul = 0.2;\
+\
+	\cf4 // index values usually are between 0 and 24\cf0 \
+	\cf4 // carPartial :: modPartial => car/mod ratio\cf0 \
+	\
+	\cf2 var\cf0  mod;\
+	\cf2 var\cf0  car;\
+	\
+	mod = \cf2 In\cf0 .ar(inbus, 1);\
+\
+	\cf2 Out\cf0 .ar(\
+		outbus,\
+		\cf2 SinOsc\cf0 .ar((freq * carPartial) + mod, 0, mul);\
+	)\
+\}).load(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "modulator"\cf0 , \{ \cf2 arg\cf0  outbus = 2, freq, modPartial = 1, index = 3;\
+	\cf2 Out\cf0 .ar(\
+		outbus,\
+		\cf2 SinOsc\cf0 .ar(freq * modPartial, 0, freq) \
+		* \
+		\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (3, 6).reciprocal).abs \
+		* \
+		index\
+	)\
+\}).load(s);\
+)\
+\
+(\
+\cf2 var\cf0  freq = 440;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // modulators for the left channel\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 2, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 0.649, \cf5 \\index\cf0 , 2]);\
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 2, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 1.683, \cf5 \\index\cf0 , 2.31]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // modulators for the right channel\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 4, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 0.729, \cf5 \\index\cf0 , 1.43]);\
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 4, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 2.19, \cf5 \\index\cf0 , 1.76]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // left and right channel carriers\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .tail(s, \cf3 "carrier"\cf0 , [\cf5 \\inbus\cf0 , 2, \cf5 \\outbus\cf0 , 0, \cf5 \\freq\cf0 , freq, \cf5 \\carPartial\cf0 , 1]);\
+\cf2 Synth\cf0 .tail(s, \cf3 "carrier"\cf0 , [\cf5 \\inbus\cf0 , 4, \cf5 \\outbus\cf0 , 1, \cf5 \\freq\cf0 , freq, \cf5 \\carPartial\cf0 , 0.97]);\
+)\
+\
+(\
+s.queryAllNodes;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////
+\f2 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Reverberation and frequency modulation\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  freq;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // generate a random base frequency for the carriers and the modulators\
+\cf0 freq = 330.0.rrand(500);\
+\
+\cf4 // modulators for the left channel\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 60, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 0.649, \cf5 \\index\cf0 , 2]);\
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 60, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 1.683, \cf5 \\index\cf0 , 2.31]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // modulators for the right channel\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 62, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 1.11, \cf5 \\index\cf0 , 1.43]);\
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 62, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 0.729, \cf5 \\index\cf0 , 1.76]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // left and right channel carriers\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .tail(s, \cf3 "carrier"\cf0 , [\cf5 \\inbus\cf0 , 60, \cf5 \\outbus\cf0 , 100, \cf5 \\freq\cf0 , freq, \cf5 \\carPartial\cf0 , 1]);\
+\cf2 Synth\cf0 .tail(s, \cf3 "carrier"\cf0 , [\cf5 \\inbus\cf0 , 62, \cf5 \\outbus\cf0 , 100, \cf5 \\freq\cf0 , freq+1, \cf5 \\carPartial\cf0 , 2.91]);
+\f2 \
+\
+
+\f1 \cf2 Synth\cf0 .tail(s, \cf3 "preDelay"\cf0 , [\cf5 \\inbus\cf0 , 100]);\
+\cf2 Synth\cf0 .tail(s, \cf3 "combs"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "allpass"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "theMixer"\cf0 , [\cf5 \\gain\cf0 , 0.2]);\
+)\
+\
+(\
+s.queryAllNodes;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs24 \cf0 go to 
+\f4\b 15_Scheduling
+\f1\b0\fs18 \
+}

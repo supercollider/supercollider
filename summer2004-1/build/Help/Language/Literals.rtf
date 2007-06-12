@@ -1,0 +1,245 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Literals\
+\
+
+\f1\b0\fs24 Literals are values which have a direct syntactic representation. \
+The following sections describe the types of literals that can be represented.\
+\
+
+\f0\b\fs36 Numbers\
+
+\f1\b0\fs24 \
+An integer is any series of digits optionally preceeded by a minus sign.\
+examples of integers :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 	-13      \
+	666      \
+	2112      \
+	96\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+A float is one or more decimal digits followed by a decimal point followed by one or more decimal digits. \
+You must have digits on both sides of the decimal point.  This distinguishes floating point numbers from \
+integer expressions like:\
+\
+	
+\f2 8.rand
+\f1 \
+ \
+examples of floats :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 	0.39      \
+	98.6      \
+	1.0      \
+	-0.5     \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 Exponential notation is also supported.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+	1.2e4\
+	1e-4\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+The constant pi can be appended to a number to create floating point constant:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 	2pi    \
+	0.5pi\
+	-0.25pi\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 Numbers can also be written in radices other than base 10 up to base 36. \
+The radix is specified in base 10 followed by the letter 'r' followed by the value written in\
+that radix using characters 0-9,A-Z, or a-z, for digit values from 0 to 35. \
+For example you can write hexidecimal numbers as follows:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 16rF0
+\f1 \
+
+\f2 16rA9FF
+\f1 \
+\
+Binary numbers can be written as follows:
+\f2 \
+\
+2r01101011\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 Floating point values may also be specified in any base:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 12r4A.A\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+
+\f0\b\fs36 Characters\
+
+\f1\b0\fs24 \
+Characters are preceeded by a dollar sign:\
+	$A     \
+	$B     \
+	$C       \
+\
+Tab, linefeed, carriage return, and backslash are preceeded by a backslash:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 	$\\t\
+	$\\n\
+	$\\r\
+	$\\\\\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Symbols
+\f1\b0\fs24  \
+\
+A symbol is written as a string enclosed in single quotes. \
+examples of symbols:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 	'x'\
+	'aiff'\
+	'BigSwiftyAndAssoc'\
+	'nowhere here'  \
+	'somewhere there' \
+	'.+o*o+.'\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 A symbol consisting of a single word can be written with a preceeding backslash.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+	\\x\
+	\\aiff\
+	\\BigSwiftyAndAssoc\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+
+\f0\b\fs36 Strings
+\f1\b0\fs24 \
+\
+Strings are written in double quotes:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 	"This is a string."\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 	\
+If two or more strings are lexically adjacent, then they combine into a larger string. \
+\
+example:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 	"This" " is " "also a " "string."\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+Strings may span more than one line. If so, then the new line characters become part of the string.\
+example:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 "This\
+is \
+also a\
+string.\
+"\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 	\
+
+\f0\b\fs36 Identifiers
+\f1\b0\fs24  \
+\
+Names of methods and variables begin with a lower case alphabetic character, followed  by zero or more \
+alphanumeric characters. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 var abc, z123, func;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+
+\f0\b\fs36 Class Names\
+
+\f1\b0\fs24 \
+Class names always begin with a capital letter followed  by zero or more  alphanumeric characters.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 Object\
+Point\
+Synth\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+\
+
+\f0\b\fs36 Special Values\
+
+\f1\b0\fs24 \
+The singular instances of the classes True, False, Nil and Infinitum are written as the \
+words true, false, nil and inf.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 x = true;\
+y = false;\
+z = nil;\
+n = inf;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Literal Arrays
+\f1\b0\fs24 \
+\
+Arrays of literals are created at compile time and are written with a # preceeding the array as follows:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 #[1, 2, 'abc', "def", 4]\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 Literal arrays must be used as is and may not be altered at run time.\
+Arrays and other collections may also be created dynamically which is explained in Collections.help.\
+Using a literal Array is faster than building an array dynamically every time you need it.
+\f2 \
+\
+
+\f1 When nesting literal arrays, only the outermost literal array needs the '#' character.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+#[[1, 2, 3], [4, 5, 6]]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+}

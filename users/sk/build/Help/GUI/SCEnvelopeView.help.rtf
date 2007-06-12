@@ -1,0 +1,172 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SCEnvelopeView
+\f1\b0\fs18 \cf2 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 value_([times,values])\
+	where times and values are all 0..1\
+\
+value\
+	[times,values]\
+	where times and values are all 0..1\
+\
+action\
+	function is passed the view\
+\
+index\
+	the current or last moved node\
+\
+drawRect_(boolean)\
+	set wether to show the points or not\
+\
+drawLines_(boolean)\
+	draw lines between the point\
+\
+setThumbSize(index, size)\
+	set the size of a point for the specified index, if the index is -1 set the size for all points\
+\
+thumbSize_(size)\
+	set the size of all points\
+\
+setThumbWidth(index, width)	\
+	set the width of a point for the specified index, if the index is -1 set the width for all points\
+	\
+thumbWidth_( width)	\
+	set the width of all points\
+\
+setThumbHeight(index, heigth)	\
+	set the height of a point for the specified index, if the index is -1 set the height for all points\
+\
+thumbHeight_(heigth)	\
+	set the height of all points\
+\
+setEditable(index, boolean)\
+	makes a specified point unmovable\
+		\
+editable_(boolean)\
+	makes all points unmovable\
+\
+selectionColor_(color)	\
+	set the color of the point when selected\
+\
+setFillColor(index, color)	\
+	set the point color\
+		\
+fillColor_(color)	\
+	set the color for all points\
+	\
+setString(index, string)\
+	give a point a string\
+	\
+connect_(index, arrayofpoints)\
+	connect a point to others and do not use the standart connection scheme\
+\
+\
+\
+	
+\f1\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 use as envelope view\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //use shift-click to keep a node selected\cf0 \
+a = \cf3 SCWindow\cf0 (\cf4 "envelope"\cf0 , \cf3 Rect\cf0 (200 , 450, 250, 100));\
+a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
+\
+b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 230, 80))\
+	.drawLines_(\cf3 true\cf0 )\
+	.selectionColor_(\cf3 Color\cf0 .red)\
+	.drawRects_(\cf3 true\cf0 )\
+	.resize_(5)\
+	.action_(\{arg b; [b.index,b.value].postln\})\
+	.\cf5 thumbSize_\cf0 (5)\
+	.value_([[0.0, 0.1, 0.5, 1.0],[0.1,1.0,0.8,0.0]]);\
+\
+a.front;\
+)\
+(\
+\cf2 //make the first point unmoveable\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 b.setEditable(0,\cf3 false\cf0 );\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //use shift click to select/unselect the points\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 a = \cf3 SCWindow\cf0 (\cf4 "test"\cf0 , \cf3 Rect\cf0 (200 , 450, 450, 150));\
+a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
+\
+b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 350, 100))\
+	.thumbSize_(5)\
+	.drawLines_(\cf3 true\cf0 )\
+	.fillColor_(\cf3 Color\cf0 .green)\
+	.selectionColor_(\cf3 Color\cf0 .red)\
+	.drawRects_(\cf3 true\cf0 )\
+	.value_([(0.0, 0.1 .. 1.0), (0.0, 0.1 .. 1.0)])\
+	.setEditable(0,\cf3 false\cf0 );\
+\
+a.front;\
+)\
+(\
+r = \cf3 Routine\cf0 (\{\
+	\cf3 var\cf0  j = 0;\
+	20.do(\{ \cf3 arg\cf0  i;\
+	b.select((b.size -1).rand.abs);\
+\
+	0.1.wait;\
+	b.x_(1.0.rand.abs);\
+	b.y_(1.0.rand.abs);\
+	\});\
+	b.select(-1);\
+\
+	\});\
+	\cf3 AppClock\cf0 .play(r);\
+)	\
+\
+c = b.xvalues;\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //show boxes with a string in it:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
+a = \cf3 SCWindow\cf0 (\cf4 "text-boxes"\cf0 , \cf3 Rect\cf0 (200 , 450, 450, 450));\
+a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
+\
+b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 440, 440))\
+	.\cf5 thumbWidth\cf0 _(60.0)\
+	.\cf5 thumbHeight\cf0 _(15.0)\
+	.drawLines_(\cf3 true\cf0 )\
+	.drawRects_(\cf3 true\cf0 )\
+	.selectionColor_(\cf3 Color\cf0 .red)\
+	.value_([[0.1, 0.4, 0.5, 0.3], [0.1, 0.2, 0.9, 0.7]]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //b.setStatic(0,true);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 4.do(\{\cf3 arg\cf0  i;\
+	b.setString(i, [\cf4 "this"\cf0 , \cf4 "is"\cf0 , \cf4 "so much"\cf0 , \cf4 "fun"\cf0 ].at(i));\
+	b.setFillColor(i,[\cf3 Color\cf0 .yellow, \cf3 Color\cf0 .white, \cf3 Color\cf0 .green].choose);\
+\});\
+a.front;\
+)\
+\
+\
+the text objects can be connected:\
+(\
+b.connect(3, [2.0,0.0,1.0]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 b.connect(0,[2.0,3.0,1.0]);\cf0 \
+b.drawLines_(\cf3 true\cf0 );\
+)}

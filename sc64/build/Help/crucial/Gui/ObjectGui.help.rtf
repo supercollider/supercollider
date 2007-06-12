@@ -1,0 +1,127 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 ObjectGui
+\fs24 \
+\
+The guiClass is the class used to build a gui for an object.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+In the MVC architecture it is the Controller, which creates Views for manipulating the properties of your Model, and receives messages from the View and enacts the changes on the Model.\
+\
+The default guiClass for an Object is ObjectGui.  \
+\
+ \
+Many subclasses overide the 
+\f0\b guiClass
+\f1\b0  method to specify a different class.  All gui classes should inherit from ObjectGui.\
+
+\f2\fs20 \
+see [gui]\
+
+\f1\fs24 \
+It is the simplest display, just the the object asString.\
+\
+if you click on the "nameplate", you will open object's inspector.\
+\
+\
+\
+
+\f0\b\fs28 an example gui class\
+
+\f2\b0\fs20 \
+
+\fs18 \cf2 YourSimpleGuiClass\cf3  : \cf2 ObjectGui\cf3  \{\
+\
+	guiBody \{ \cf2 arg\cf3  layout;\
+	\
+		\cf4 // we refer to the model and\
+\cf3 		\cf4 // access its variable howFast.\
+\cf3 		\cf4 // if its a simple number, it will display\
+\cf3 		\cf4 // using the default ObjectGui class, which\
+\cf3 		\cf4 // will simply show its value as a string.\
+\cf3 		model.howFast.gui(layout);\
+	\}\
+\}\
+\
+\
+\cf4 // more complex\
+\cf2 YourGuiClass\cf3  : \cf2 ObjectGui\cf3  \{\
+	\
+	\cf2 var\cf3  numberEditor;\
+	\
+	\cf4 //for example\
+\cf3 	guiBody \{ \cf2 arg\cf3  layout;\
+		\cf2 var\cf3  r;\
+		\cf4 // the object you are making a gui for is referred to as the model\
+\cf3 		\
+		\cf4 // display some param on screen.\
+\cf3 		\cf4 // here we assume that someParam is something that\
+\cf3 		\cf4 //  has a suitable gui class\
+\cf3 		\cf4 // implemented, or that the default ObjectGui is sufficient.\
+\cf3 		model.someParam.gui(layout);\
+		\
+		\cf4 // using non 'gui' objects\
+\cf3 		r = layout.layRight(300,300); \cf4 // allocate yourself some space\
+\cf3 		\cf2 ButtonView\cf3 (layout.win,r)\
+			.action_(\{ \cf2 arg\cf3  butt;\
+				model.goApeShit;\
+			\});\
+			\
+		numberEditor = \cf2 NumberEditor\cf3 (model.howFast,[0,100])\
+			.action_(\{ \cf2 arg\cf3  val; \
+				model.howFast = val; \
+				model.changed(\cf2 this\cf3 ); \
+				\cf4 // tell the model that this gui changed it\
+\cf3 			\});\
+		numberEditor.gui(layout);\
+	\}\
+	\
+	\cf4 // your gui object will have update called any time the .changed message\
+\cf3 	\cf4 // is sent to your model\
+\cf3 	update \{ \cf2 arg\cf3  changed,changer;\
+	\
+		if(changer !== \cf2 this\cf3 ,\{ \
+			\cf4 /* if it is this gui object that changed the value\
+				using the numberEditor, then we already have a correct\
+				display and don't need to waste cpu to update it.\
+				if anyone else changed anything about the model,\
+				we will update ourselves here.\
+			*/\cf3 \
+			numberEditor.value = model.howFast;\
+			\cf4 /*\
+				note that \
+					numberEditor.value = model.howFast;\
+				is passive, and does not fire the numberEditor's action.	\
+\
+					numberEditor.activeValue = model.howFast\
+				would fire the action as well, resulting in a loop that would\
+				probably crash your machine.\
+			*/\cf3 \
+		\}\
+	\}\
+\
+\}\
+\
+\
+(\cf4 // you can gui an object more than once.\
+// they are both active interfaces to the object.\
+\cf3 \
+	n = \cf2 NumberEditor\cf3 .new;\
+\
+	\cf2 Sheet\cf3 (\{ \cf2 arg\cf3  f;\
+		n.gui(f);\
+		n.gui(f);\
+	\})\
+)
+\fs20 \cf0 \
+\
+
+\f1\fs24 When the PageLayout window closes that your gui object (Controller) is on, it will be removed as a dependent on the Model, so it will no longer be sent the update message, and will then be free for garbage collection.\
+\
+}

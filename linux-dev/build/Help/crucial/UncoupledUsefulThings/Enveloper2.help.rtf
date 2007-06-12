@@ -1,0 +1,40 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Enveloper2
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 gate the audio input with an Envelope;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+(\
+\
+b = Bus.control(Server.local);\
+\{\
+	\cf2 var\cf0  p,qnty=4,gate;\
+	gate = In.kr(b.index);\
+	p = \cf2 Mix\cf0 .arFill(qnty.asInteger,\{ \cf2 arg\cf0  i;\
+			\cf2 SinOsc\cf0 .ar(440 + rrand(1,5))\
+		\}) * qnty.reciprocal;\
+\
+	\cf2 Enveloper2\cf0 .ar(p,gate,Env.adsr)\
+\}.play\
+\
+\
+b.value = 1.0;\
+\
+b.value = 0.0;\
+\
+b.value = 0.2;\
+\
+b.value = 0.0;\
+\
+b.free;\
+\
+)}

@@ -1,0 +1,112 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 RecordBuf		record or overdub into a Buffer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Records input into a 
+\f0\b Buffer
+\f2\b0 .\
+\
+
+\f0\b RecordBuf.ar(inputArray, bufnum, offset, recLevel, preLevel, run, loop, trigger)\
+\
+
+\f2\b0 If recLevel is 1.0 and preLevel is 0.0 then the new input overwrites the old data.\
+If they are both 1.0 then the new data is added to the existing data. (Any other settings\
+are also valid.)
+\f0\b \
+
+\f2\b0 \
+	
+\f0\b inputArray
+\f2\b0  - an Array of input channels\
+	
+\f0\b bufnum
+\f2\b0  - the index of the buffer to use\
+	
+\f0\b offset
+\f2\b0    - an offset into the buffer in frames, the default is 0.0.\
+	
+\f0\b recLevel
+\f2\b0  - value to multiply by input before mixing with existing data. Default is 1.0.\
+
+\f0\b 	preLevel
+\f2\b0  - value to multiply to existing data in buffer before mixing with input. Default is 0.0.\
+	
+\f0\b run
+\f2\b0  - If zero, then recording stops, otherwise recording proceeds. Default is 1.\
+	
+\f0\b loop
+\f2\b0   - If zero then don't loop, otherwise do.  This is modulate-able. Default is 1.\
+	
+\f0\b trigger
+\f2\b0  - a trigger causes a jump to the 
+\f0\b offset
+\f2\b0  position in the Buffer. \
+		A trigger occurs when a signal changes from <= 0 to > 0.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // Execute the following in order\cf0 \
+(\
+\cf2 // allocate a Buffer\cf0 \
+s = \cf3 Server\cf0 .local;\
+b = \cf3 Buffer\cf0 .alloc(s, 44100 * 4.0, 1); \cf2 // a four second 1 channel Buffer\cf0 \
+)\
+\
+\cf2 // record for four seconds\cf0 \
+(\
+\cf3 SynthDef\cf0 (\cf4 "help-RecordBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+	\cf3 var\cf0  formant;\
+	\cf2 // XLine will free the Synth when done\cf0 \
+	formant = \cf3 Formant\cf0 .ar(\cf3 XLine\cf0 .kr(400,1000, 4, doneAction: 2), 2000, 800, 0.125);\
+	\cf3 RecordBuf\cf0 .ar(formant, bufnum);\
+\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+)\
+\
+\cf2 // play it back\cf0 \
+(\
+\cf3 SynthDef\cf0 (\cf4 "help-RecordBuf play"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+	\cf3 var\cf0  playbuf;\
+	playbuf = \cf3 PlayBuf\cf0 .ar(1,bufnum);\
+	\cf3 FreeSelfWhenDone\cf0 .kr(playbuf); \cf2 // frees the synth when the PlayBuf is finished\cf0 \
+	\cf3 Out\cf0 .ar(out, playbuf);\
+\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+)\
+\
+\cf2 // overdub\cf0 \
+(\
+\cf3 SynthDef\cf0 (\cf4 "help-RecordBuf overdub"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
+	\cf3 var\cf0  formant;\
+	\cf2 // XLine will free the Synth when done\cf0 \
+	formant = \cf3 Formant\cf0 .ar(\cf3 XLine\cf0 .kr(200, 1000, 4, doneAction: 2), 2000, 800, 0.125);\
+	\cf3 RecordBuf\cf0 .ar(formant, bufnum, 0, 0.5, 0.5); \cf2 // mixes equally with existing data\cf0 \
+\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+)\
+\
+\cf2 // play back the overdubbed version\cf0 \
+\cf3 Synth\cf0 .new(\cf4 "help-RecordBuf play"\cf0 , [\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum], s);\
+\
+\cf2 // write the contents of the buffer to a file\cf0 \
+b.write(\cf4 "recordings/RecordBuf-test.aiff"\cf0 , sampleFormat: \cf5 'int16'\cf0 );\
+\
+b.close; b.free; \cf2 // cleanup\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Note again that the number of channels must be fixed for the SynthDef, it cannot vary depending on which buffer you use.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+}

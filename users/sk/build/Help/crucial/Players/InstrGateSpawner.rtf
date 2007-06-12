@@ -1,0 +1,395 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+\f3\fnil\fcharset77 Verdana-Bold;\f4\fnil\fcharset77 Verdana;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs36 \cf0 InstrGateSpawner
+\f0\b0\fs24 \
+\
+superclass: InstrSpawner, Patch\
+\
+see InstrSpawner\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 instr
+\f0\b0  - as per Patch and InstrSpawner\
+	the Synth is expected to end itself via EnvGen doneAction or similar.
+\f2\fs18 \
+
+\f1\b\fs24 args
+\f0\b0  - as per InstrSpawner\
+	each arg that is a stream (its rate returns \\stream) is passed the InstrGateSpawner as an \
+	arg.  Two useful things can be done with this: asking the  .
+\f1\b beat
+\f0\b0  and the current .
+\f1\b delta
+\f0\b0 \
+	till the next event.\
+
+\f1\b delta
+\f0\b0  - a float, function or stream in 
+\f1\b beats
+\f0\b0 \
+		\
+it stops when any arg or the delta returns nil.\
+
+\f2\fs18 \
+(\
+	Tempo.bpm = 140.0;\
+	\cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  freq=440,rq=0.1,width=0.5,fenv,fenvmod=1000,envadsr,dur=0.1,tempo;\
+		\cf2 var\cf0  gate;\
+		gate = \cf2 Trig1\cf0 .kr(1.0,dur / tempo);\
+		\cf2 RLPF\cf0 .ar(\
+			\cf2 VarSaw\cf0 .ar(\
+				freq,\
+				0.0,\
+				width\
+			),\
+			\cf2 EnvGen\cf0 .kr(fenv,gate,levelScale: fenvmod),\
+			rq)\
+	 		  * \cf2 EnvGen\cf0 .kr(envadsr,gate,0.2, doneAction: 2)\
+	\},[\
+		\cf2 Pseq\cf0 ((70 + [ 0, 1, 5, 6, 10 ]).midicps ,\cf2 inf\cf0 ) *\
+			Prand(2 ** [0,-1,2,-2,-3],inf), // octave shifts\
+		0.2,\
+		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(0.1,[0.0,0.5],0.5,0.5) \}),\
+		\cf2 Env\cf0 .adsr(0.3,sustainLevel: 0.4),\
+		\cf2 Pbrown\cf0 (2000,10000,100),\
+		\cf2 Env\cf0 .adsr(releaseTime: 0.5),\
+		\
+		// dur uses a Pfunc to ask the delta till the next event\
+		\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;  (igs.delta * 0.9) \}),\
+		\
+		\cf2 TempoPlayer\cf0 .new\
+	],\
+		0.25\
+	).play\
+)\
+(\
+	\cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  freq=440,rq=0.1,width=0.5,fenv,fenvmod=1000,envadsr,dur=0.1,tempo;\
+		\cf2 var\cf0  gate;\
+		gate = \cf2 Trig1\cf0 .kr(1.0,dur / tempo);\
+		\cf2 RLPF\cf0 .ar(\
+			\cf2 VarSaw\cf0 .ar(\
+				freq,\
+				0.0,\
+				width\
+			),\
+			\cf2 EnvGen\cf0 .kr(fenv,gate,levelScale: fenvmod),\
+			rq)\
+	 		  * \cf2 EnvGen\cf0 .kr(envadsr,gate,0.15, doneAction: 2)\
+	\},[\
+		\cf2 PdurStutter\cf0 (\
+			\cf2 Pseq\cf0 (#[1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,0,4,4],\cf2 inf\cf0 ),\
+			\cf2 Pseq\cf0 ((70 + [ 0, 1, 4, 8, 10, 15 ]).midicps ,\cf2 inf\cf0 )\
+		),\
+		0.2,\
+		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(FSinOsc.kr(1.0).range(0.1,3.0),[0.0,0.5],0.5,0.5) \}),\
+		\cf2 Env\cf0 .adsr(0.3,sustainLevel: 0.1),\
+		\cf2 Pbrown\cf0 (6000,10000,100),\
+		\cf2 Env\cf0 .adsr(releaseTime: 0.5),\
+		\
+		// dur uses a Pfunc to ask the delta till the next event\
+		\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;  (igs.delta * rrand(0.9,2.0)) \}),\
+		\
+		\cf2 TempoPlayer\cf0 .new\
+	],\
+		\cf2 Prand\cf0 ([	\
+			\cf2 Pn\cf0 (0.125,16),\
+			\cf2 Pn\cf0 (0.25,8),\
+			\cf2 Prand\cf0 ([0.5,0.25,0.125,0.3],4),\
+			0.5,0.75,2.0],\cf2 inf\cf0 ) \cf3 // in beats\cf0 \
+	).play\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b\fs22 \cf0 Chord changes\
+
+\f4\b0\fs18 however crazy the durations get, the current chord and pitch is determined by indexing into\
+a chord progression using the current beat: igs.beat\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 (\
+	\cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  freq,rq,width,fenv,fenvmod,envperc,dur,tempo;\
+		\cf2 var\cf0  gate;\
+		gate = \cf2 Trig1\cf0 .kr(1.0,dur / tempo);\
+		\cf2 RLPF\cf0 .ar(\
+			\cf2 Pulse\cf0 .ar(\
+				freq,\
+				width\
+			),\
+			\cf2 EnvGen\cf0 .kr(fenv,gate,levelScale: fenvmod),\
+			rq)\
+	 		  * \cf2 EnvGen\cf0 .kr(envperc,gate,0.3, doneAction: 2)\
+	\},[\
+		\cf3 // using the beat to index into chord changes\cf0 \
+		\cf2 Pfunc\cf0 (\{  \cf2 arg\cf0  igs;\
+			(\
+				\cf3 // choose degree convert it via a scale to a note number\cf0 \
+				( [1,3,5].choose.degreeToKey([ 0, 1, 4, 8, 12 ]) )\
+				\cf3 // choose an octave\cf0 \
+				+ 30 + [0,11,23,35].choose\
+				\cf3 // 1 4 5 1 chord progression\cf0 \
+				+ [1,4,5,1].wrapAt(igs.beat div: 16)\
+			).midicps \
+		\}),\
+		// rq input is a mono kr rate patch\
+		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(\cf2 FSinOsc\cf0 .kr(0.05).range(0.01,1.0),0.0).range(0.01,0.4) \}),\
+		\cf3 //
+\f0\fs24 \cf3 note that the patch has expanded to stereo because the width input is a stereo kr rate Patch :
+\f2\fs18 \cf0 \
+		\cf2 Patch\cf0 (\{ \
+			\cf2 LFTri\cf0 .kr(\cf2 FSinOsc\cf0 .kr(0.05).range(0.01,1.0),[0.0,0.5],0.5,0.5) \
+		\}),\
+		\cf2 Env\cf0 .adsr(0.2,0.01,0.1),\
+		12000,\
+		\cf2 Env\cf0 .adsr(0.01,0.1,0.2, 0.05),\
+		\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;  (igs.delta * rrand(0.1,5.0)) \}),\
+		\cf2 TempoPlayer\cf0 .new\
+	],\
+		\cf2 PdurStutter\cf0 (\
+			\cf2 Pseq\cf0 ([1,1,1,1,2,2,2,2,2,2,2,2,4,4,3,3,0,2,1,1,1,1],\cf2 inf\cf0 ),\
+			0.25\
+		)\
+	).play\
+)\
+
+\f0\fs24 \
+anything that returns a rate of \\stream (a Pattern or Function) will cause an .ir rate input to be created for the synth.\
+\
+\
+// if you click on the sample's filename, you can select a new sample while playing\
+// and it will load it.\
+// note that the old tempo settings persist until the end of the bar\
+(\
+
+\f2\fs18 \
+\cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  sample,start=0,dur,env,tempo;\
+	var gate;\
+	gate = \cf2 Trig1\cf0 .kr(1.0,dur / tempo);\
+\
+	\cf2 PlayBuf\cf0 .ar( \
+		sample.numChannels, \
+		sample.bufnumIr,\
+		sample.pchRatioKr,\
+		1,\
+		start * sample.beatsizeIr,\
+		1\
+	) * \cf2 EnvGen\cf0 .kr(env,gate, doneAction: 2)\
+\},[\
+	\cf2 Sample\cf0 (\cf4 "a11wlk01.wav"\cf0 ),\
+	0,//Pseq([0,1,2,3],inf),\
+	4.0,\
+	\cf2 Env\cf0 .adsr(0.02,releaseTime:0.01)\
+\
+],4.0).gui\
+\
+)
+\f0\fs24 \
+\
+// basic time stretching\
+// change the (global) tempo using the tempo control at the top\
+// you can also change the beats setting on the sample\
+(\
+
+\f2\fs18 \cf2 var\cf0  sample;\
+\cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  sample,start=0,dur,pchRatio,env,tempo;\
+	\cf2 var\cf0  gate;\
+	gate = \cf2 Trig1\cf0 .kr(1.0,dur / tempo);\
+\
+	\cf2 PlayBuf\cf0 .ar( \
+		sample.numChannels, \
+		sample.bufnumIr,\
+		sample.bufRateScaleIr * pchRatio,\
+		1,\
+		start,\
+		1\
+	) * \cf2 EnvGen\cf0 .kr(env,gate, doneAction: 2)\
+\},[\
+	sample = \cf2 Sample\cf0 (\cf4 "a11wlk01.wav"\cf0 ),\
+	\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;\
+		(igs.beat * sample.beatsize).wrap(0,sample.end) \cf3 // in samples\cf0 \
+	\}),\
+	0.125,\
+	\cf2 KrNumberEditor\cf0 (1.0,[-4.0,4.0]),\
+	\cf2 Env\cf0 .adsr(0.02,releaseTime:0.1)\
+\
+],0.125).gui\
+\
+
+\f0\fs24 )\
+\
+There is a large client side performance hit to build the sample's waveform display\
+during which the grain commands stop getting sent.  (someone will make a better\
+waveform display some day...)\
+\
+There is also a problem (currently) on the server whereby it can't accept the OSC commands\
+while it is dealing with loading the sample.  You can use 
+\f2\fs18 ScurryableInstrGateSpawner-scurry,\
+
+\f0\fs24 a subclass of InstrGateSpawner that can scurry ahead of time, sending OSC bundles\
+to keep the server's synthesis thread occupied while the thread that does the soundfile\
+loading is busy.  This issue will probably be resolved on the server.\
+\
+See [
+\f1\b Interface]
+\f0\b0  so you can design guis with no sample display or interfaces with no gui at all.\
+\
+\
+\
+when using your own guis :\
+to use a slider:\
+	Pfunc(\{ numberEditor.value \})\
+	or\
+	AsStream( NumberEditor.new )\
+or make your own gui and poll the slider:\
+	Pfunc(\{ slider.value \})\
+\
+
+\f1\b A metro-gnome
+\f0\b0 \
+
+\f2\fs18 (\
+\cf2 var\cf0  nome,layout;\
+nome = \cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  freq,amp;\
+		\cf2 Decay2\cf0 .ar(\
+			\cf2 Impulse.ar(0.0)\cf0 , 0.01,0.11, \
+			\cf2 SinOsc\cf0 .ar( freq, 0, amp )\
+		) * EnvGen.kr(Env.perc,doneAction: 2)\
+	\},[\
+			\cf2 Pseq\cf0 ([ 750, 500, 300, 500, 750, 500, 400, 500, 750, 500, 400, 500, 750, 500, 400, 500 ],\cf2 inf\cf0 ), \
+			\cf2 Pseq\cf0 ([1,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25] * 0.1,\cf2 inf\cf0 )\
+	],1.0);\
+	\
+layout = \cf2 FlowView\cf0 .new;\
+\
+\cf2 ToggleButton\cf0 (layout,\cf4 "Gnome"\cf0 ,\{\
+	if(nome.isPlaying.not,\{ nome.play(atTime: 1) \})\
+\},\{\
+	if(nome.isPlaying,\{ nome.stop \})\
+\},minWidth: 250);\
+\
+)\
+
+\f0\fs24 	\
+\
+
+\f1\b Compared to Pbind\
+
+\f0\b0 \
+Its a different approach and has plusses and minuses.\
+\
+Pbind streams each item, whether it is going to change or not (a float will not change, an Env will not change).\
+so InstrGateSpawner has much more simple/efficient event handling, \
+	not using an environment\
+	streamed items are placed directly into the OSC message to be sent\
+	only using the features that are needed for the ugenFunc\
+		no lag, offsetChannel etc.\
+	But as computers and SC get faster, this speed advantage is less significant.\
+	\
+allows easy patching of players into the inputs\
+allows easy patching of Samples and allocates them seamlessly.\
+beat is passed into each stream item\
+	this solves a common 'sync' problem with event stream's note-by-note streaming.\
+	but you could use the same solution in a Pfunc and just query the clock to find out the current beat.\
+the usual flexibility of players with regards to saving\
+\
+cons:\
+	can't do Pseq([ Pbind, Pbind ] ) etc.\
+		it isn't a pattern, doesn't end with a nil, so you can't sequence sections with it.\
+		but it is possible to use CropPlayer and Pseq or PlayerSeqTrack.\
+	can't use pattern filters\
+	can't switch ugenFuncs dynamically\
+	\
+\
+compare with the first example from Pbind help
+\f2\fs18 \
+\
+(\
+\cf2 SynthDef\cf0 (\cf5 \\cfstring1\cf0 .postln, \{ \cf2 arg\cf0  i_out, freq = 360, gate = 1, pan, amp=0.1;\
+	\cf2 var\cf0  out, eg, fc, osc, a, b, w;\
+	fc = \cf2 LinExp\cf0 .kr(\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0.25,0.4)), -1,1,500,2000);\
+	osc = \cf2 Mix\cf0 .fill(8, \{ \cf2 LFSaw\cf0 .ar(freq * [\cf2 Rand\cf0 (0.99,1.01),\cf2 Rand\cf0 (0.99,1.01)], 0, amp) \}).distort * 0.2;\
+	eg = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(1,1,1), gate, doneAction:2);\
+	out = eg * \cf2 RLPF\cf0 .ar(osc, fc, 0.1);\
+	#a, b = out;\
+	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3])));\
+\}).load(s);\
+\cf2 \
+SynthDescLib\cf0 .global.read;\
+\
+)\
+\
+e = \cf2 Pbind\cf0 (\cf5 \\degree\cf0 , \cf2 Pwhite\cf0 (0,12), \cf5 \\dur\cf0 , 0.2, \cf5 \\instrument\cf0 , \cf5 \\cfstring1\cf0 ).play; \cf3 // returns an EventStream\cf0 \
+\
+\
+\
+(\
+\cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  freq = 360,  pan=0, amp=0.1,dur=0.2,tempo;\
+	\cf2 var\cf0  out, eg, fc, osc, a, b, w,gate;\
+	gate = \cf2 Trig\cf0 .kr(1.0,dur / tempo);\
+	fc = \cf2 LinExp\cf0 .kr(\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0.25,0.4)), -1,1,500,2000);\
+	osc = \cf2 Mix\cf0 .fill(8, \{ \cf2 LFSaw\cf0 .ar(freq * [\cf2 Rand\cf0 (0.99,1.01),\cf2 Rand\cf0 (0.99,1.01)], 0, amp) \}).distort * 0.2;\
+	eg = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(1,1,1), gate, doneAction:2);\
+	out = eg * \cf2 RLPF\cf0 .ar(osc, fc, 0.1);\
+	#a, b = out;\
+	\cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3]))\
+\},[\
+\
+\cf2 	(Pwhite\cf0 (0,12).degreeToKey([0, 2, 4, 5, 7, 9, 11] + (5*12)) ).midicps,\
+	0,\
+	0.1,\
+	0.2,\
+	TempoPlayer.new\
+],\
+	0.2\
+).play\
+\
+)\
+
+\f0\fs24 the server usage is identical as should be expected, but the client side (using top) is about half the cpu.\
+
+\f2\fs18 on another day, the test shows equal usage ! \
+and then a minute later Pbind does show more usage.\
+top is not really a good measure.\
+simply because there is a lot less code running, InstrGateSpawner must be faster.\
+they both have advantages in their way of working, and can both be used side by side.\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+	a compile-string-saveable way to express the Pfunc\
+\
+		ValueAndAsStream(\
+			Patch([\\ampPatterns,\\accent], [ accentArray ])\
+		)\
+		\
+		Instr([\\ampPatterns,\\accent],\
+				\{ arg accentArray;\
+					Pfunc(\{ arg beat; accentArray.at((beat % 4).asInteger) \})\
+				\});\
+				\
+		\
+	the ValueAndAsStream values the Patch which returns the Pfunc.\
+	\
+	\
+	\
+	\
+		\
+		\
+		\
+	\
+}

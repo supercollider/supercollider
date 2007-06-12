@@ -1,0 +1,96 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fmodern\fcharset77 Courier-Oblique;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 writeAsPlist
+\f1\b0\fs24 \
+\
+
+\f0\b Object method\
+
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 object.writeAsPlist(path);
+\f1\fs24 \
+\
+Write the object to disk as a PropertyList.  It is used commonly in OS X to store data.  \
+\
+This is an XML format that may be read from easily from Objective-C, Java or any language that uses the CoreFoundation(Cocoa) framework.  \
+\
+Objective-C:\
+\
+
+\f2\fs18 id rootObject = [\cf2 NSKeyedUnarchiver\cf0   unarchiveObjectWithFile: path ];\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+The file may be double-clicked to open it in Property List Editor.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\fs20 \cf0  
+\f1\i0\fs24 \
+When opening the PropertyList:\
+\
+your SC objects are converted to Foundation objects in this fashion:\
+\
+SimpleNumber -> NSNumber.\
+SequenceableCollections -> NSArray with each item converted\
+Strings -> NSString\
+Symbols -> NSString\
+Char -> NSString\
+Nil -> NSNull\
+Boolean ->NSNumber (numberWithBool:) equivalent to a CFBoolean\
+Dictionary ->NSDictionary (each item converted)\
+	\
+Other objects  -> NSNull\
+\
+Most commonly the root object is an NSDictionary or NSArray.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 4.0.writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+4.writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 "string"\cf0 .writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 'symbol'\cf0 .writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+$c.writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+\cf2 nil\cf0 .writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+\cf2 true\cf0 .writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+\cf2 false\cf0 .writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+[1,\cf2 false\cf0 ,\cf4 'symbol'\cf0 ].writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+List[1,false,\\symbol].writeAsPlist("\cf3 testWritePlist.plist"\cf0 );\
+\
+\cf5 // cannot convert these objects\
+\cf0 [\cf2 Ref\cf0 (pi),\cf2 Pbind\cf0 .new].writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+\cf2 Dictionary\cf0 [\
+	\cf4 \\a\cf0  -> \cf3 "a"\cf0 ,\
+	\cf3 "b"\cf0  -> \cf4 \\b\cf0 ,\
+	3 -> 3.0\
+	].writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+\
+\
+\cf2 IdentityDictionary\cf0 [\
+	\cf4 \\a\cf0  -> \cf3 "a"\cf0 ,\
+	\cf3 "b"\cf0  -> \cf4 \\b\cf0 ,\
+	3 -> 3.0\
+	].writeAsPlist(\cf3 "testWritePlist.plist"\cf0 );\
+	\
+	\
+}

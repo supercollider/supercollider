@@ -1,0 +1,238 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green0\blue0;
+\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 \
+
+\fs52 KeyCodeResponder
+\f1\b0\fs20 \
+
+\fs22 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+Handles multiple registrations for keystroke and modifier combinations.  This object can be set directly as the keydown or keyup action for a view.\
+\
+KeyCodes are hardware dependant, and change from machine to machine.  \
+\
+see [
+\f0\b SCView]
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\
+(\
+// return key on tibook 
+\f1\fs24 (possibly other powerbooks).
+\f2\fs18 \
+k = \cf2 KeyCodeResponder\cf0 .new;\
+k.normal( 36 -> \{  36.postln \});\
+k.option( 36 -> \{ "option 36".postln \});\
+k.shift( 36 -> \{ \cf3 "shift 36"\cf0 .postln \});\
+\
+w = \cf2 SCWindow\cf0 .new.front;\
+v = \cf2 SCSlider\cf0 .new(w,\cf2 Rect\cf0 (10,10,100,100));\
+v.keyDownAction = k;\
+v.focus;\
+\
+)
+\f1\fs24 \
+\
+\
+Use this to post the keycodes\
+(\
+\
+
+\f2\fs18 \cf2 KeyCodeResponder\cf0 .tester
+\f1\fs24 \
+\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 register(keycode, shift, caps, opt, cntl, function)\
+	
+\f1\b0 \
+	for shift, caps,opt,cntl\
+		
+\f0\b true
+\f1\b0  indicates a required modifier\
+		
+\f0\b false
+\f1\b0  indicates an excluded modifier\
+		
+\f0\b nil
+\f1\b0   expresses that you really don't care one way or the other
+\f2\fs18 \
+	\
+\
+
+\f0\b\fs24 normal(keycode -> function)\
+normal(keycode -> fuction, keycode2 -> function2 , ... keycodeN -> functionN )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 	note the association ( key  -> value )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 shift(keycode -> function)\
+shift(keycode -> fuction, keycode2 -> function2 , ... keycodeN -> functionN )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 option(keycode -> function)\
+option(keycode -> fuction, keycode2 -> function2 , ... keycodeN -> functionN )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 control(keycode -> function)\
+control(keycode -> fuction, keycode2 -> function2 , ... keycodeN -> functionN )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+\
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Any player's gui can have its keyDownAction set\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+\cf4 aPatchGui = aPatch.gui;\
+aPatchGui.keyDownAction =  \{\};\
+\
+or\
+\
+kcr = \cf5 KeyCodeResponder\cf4 .new;\
+kcr.option( 36 -> \{ \cf6 "option 36"\cf4 .postln \});\
+kcr.shift( 36 -> \{ \cf6 "shift 36"\cf4 .postln \});\
+\cf0 aPatchGui = aPatch.gui;\cf4 \
+aPatchGui.keyDownAction = kcr;\cf0 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 You can concatenate KeyCodeResponders using ++\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+\
+\
+\
+\
+global keydowns not yet tested....\
+\
+(\
+\cf2 KeyCodeResponder\cf0 .clear;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 /*\
+this will fire on shift-'r'\
+	shift must be held down\
+	caps must NOT be down\
+	cntl or opt status is irrelevant\
+*/\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 KeyCodeResponder\cf0 .register(15,\cf2 true\cf0 ,\cf2 false\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\{ \cf3 "shift, no caps"\cf0 .postcln \});\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 /*\
+this will fire on shift-'r'\
+	shift must be held down\
+	caps may or may not be down\
+	cntl or opt status is irrelevant\
+*/\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 KeyCodeResponder\cf0 .register(15,\cf2 true\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\{ \cf3 "shift, yes/no caps"\cf0 .postcln \});\
+\cf2 Sheet\cf0 (\{ \cf2 arg\cf0  f; \cf2 ActionButton\cf0 (f).focus \});\
+\
+\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+	\
+This is very useful when using CAPS-LOCK to switch interface modes etc.\
+\
+Only one function per deny/require mask combination is possible per keycode:\
+( // hit shift - r\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 KeyCodeResponder\cf0 .register(15,\cf2 true\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\{ \cf3 "shift r"\cf0 .postcln \});\
+\cf2 KeyCodeResponder\cf0 .register(15,\cf2 true\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\{ \cf3 "overwrote the previous one"\cf0 .postcln \});\
+\cf2 Sheet\cf0 (\{ \cf2 arg\cf0  f; \cf2 ActionButton\cf0 (f).focus \});\
+\
+)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 The simpler, older method is :\
+\
+	
+\f2\b0\fs18 \cf2 KeyCodeResponder\cf0 .registerKeycode(2,28,\{      \});\cf7 // *\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 whereby that modifier and only that modifier will fire the funtion.\
+see SCView for modifier values or use this :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+(\
+\
+	\cf2 KeyCodeResponder\cf0 .tester\
+\
+)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 // using characters  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 KeyCodeResponder\cf0 .registerChar(0,$q,\{  \}); \cf7 // q no modifier\
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+
+\f0\b Gotcha
+\f1\b0 : it is easy to forget that you registered a function with KeyCodeResponder\
+that holds a reference to a large object.  GC will not remove the object until\
+you have released your reference.\
+\
+solution:\
+	// place this at the top of your performance code to start with a clean slate\
+	KeyCodeResponder.clear;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs22 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 		\
+	}

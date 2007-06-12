@@ -1,0 +1,200 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fswiss\fcharset77 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs36 \cf0 Efficient coding with NodeProxy
+\f1\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 NodeProxy (and, in disguise ProxySpace) represent "pronouns", placeholders for all kinds\
+of sound producing objects that are able to write to a specific bus on the server.\
+\
+To prepare such an object for playing, different objects require different preparation,\
+some very little, some more. As working with the placholders does not show directly\
+which actions take hardly any calculations and which are expensive, it is shown here more in detail.\
+This is also important if you want to automate certain processes - some things in this\
+library are not meant to be used in certain ways (A) and better solutions should be used\
+instead then, others are much more efficient (B, C)
+\f1\fs18 \
+\
+a = NodeProxy.audio;\
+ProxySpace.push;\
+\
+a.source = ... is equivalent to ~a = ...\
+a.add(...) a.put(0,...) a[0] = ... ~a[0] = ... are equivalent in cpu load.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b\fs24 \cf0 A) rebuild and send: 
+\f2\b0 manual rate\
+the following code requires a rebuild and send of a SynthDef and is thus most cpu-expensive.\
+though fine for slower use (esp.hand-use) for automatisation it is better to build a synthdef and assign it
+\f1\fs18 \
+\
+	~a = \{ someUGenFunction \}; \
+	~a = \cf2 Patch\cf0 (instrname, args);\
+	~a = \cf2 SynthDef\cf0 (\cf3 \\name\cf0 , \{ someUGenFunction \});\
+	\
+	\
+	\cf4 //the same applies to rebuilding the graphs:\cf0 \
+	~a.rebuild\
+	\
+	\cf4 //this rebuild is also used when setting one of the following properties:\cf0 \
+	server, bus, setRates\
+	\
+
+\f3\b\fs24 B) starting synths and tasks
+\f2\b0 \
+the following code sends commands to the server to start synths, which is load mainly on the server\
+and depends on the characteristics of the synthdef:
+\f1\fs18 \
+\
+	~a = \cf3 \\synthDefName\cf0 ; \cf4 //the synthdef is already on the server\cf0 \
+	~a = \cf2 Pbind\cf0 (\cf3 \\instrument\cf0 , name, \cf3 \\freq\cf0 , ...);\
+	~a = \cf2 Routine\cf0 (\{ loop(\{ s.sendMsg(\cf5 "/s_new"\cf0 , name, ...)\})  \});\
+	\
+	~a.refresh; ~a.wakeUp; \cf4 //waking up a stopped proxy does not require a resend\cf0 \
+	\
+	
+\f2\fs24 these resend the synth with new properies
+\f1\fs18 \
+\
+	~a.send(...) \cf4 //directly sends a message. the mapping bundle of the proxy is cached\cf0 \
+	~a.sendAll(...)\
+	\
+				\cf4 //for the following the bundle is recalculated if a new key is assigned.\
+				//if you use the same key with a different value, the bundle is modified\
+				\cf0 \
+	~a.xset(...) ~a.xmap(...) 	\
+	~a.nodeMap_(a map) \
+	~a.fadeToMap(a map)\
+	\
+	\cf4 //synthdefs for these things are on the server already.\cf0 \
+	\
+	~a.gate, ~a.env, ~a.line, ~a.xline\
+	\
+	\cf4 //some more calculations have to be made on client side, so if automated, it is better to use\cf0 \
+	\cf4 //the above or a lag in the synth. \cf0 \
+	\
+	~a.lineAt(key), ~a.xlineAt(key)\
+	 \
+	 \
+	\
+
+\f3\b\fs24 C) sending messages to running synths: 
+\f2\b0 for these the least calculation has to be done
+\f1\fs18 \
+\
+\
+	~a.set(\\freq, 400, \\dt, 0.2); ~a.unset(\\freq); \cf4 //if running the bundle will be recalculated\cf0 \
+	~a.map(\\freq, ~lfo); ~a.unmap(\\freq);\
+	~a.fadeTime = 2;\
+	~a.gateAt(key)	\
+	\
+	\cf4 //for avoiding bundle recalculation you can directly talk to the group.\cf0 \
+	\cf4 //this setting will not be kept when you exchange the synth\cf0 \
+	~a.group.set(\\freq, 500);\
+	 \
+	\
+	\
+	\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b\fs28 \cf0 switching audio\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+	
+\f2\fs24 control rate sources can be easily and efficiently switched using 
+\f3\b map
+\f2\b0  or 
+\f3\b xmap
+\f2\b0 .\
+	here is an example of how already running audio rate inputs can be switched.\
+	it is about as efficient as (B) - first example (setting a defname)\
+	it works only for 1 or 2 channels right now.
+\f1\fs18 \
+\
+(\
+s = \cf2 Server\cf0 .local;\
+p = \cf2 ProxySpace\cf0 .push(s.boot);\
+)\
+\
+\
+~out.play;\
+\
+~s1 = \{ \cf2 Blip\cf0 .ar(\cf2 Rand\cf0 (32,15), 100, 0.5) \};\
+~s2 = \{ \cf2 SinOsc\cf0 .ar(740, 0, 0.1) \};\
+~s3 = \{ \cf2 Pulse\cf0 .ar(140, 0.2, 0.1) \};\
+\
+\
+~out = \{  \cf2 Pan2\cf0 .ar(~mix.ar(1), \cf2 MouseX\cf0 .kr(-1,1)) \};\
+\
+~mix.read(~s1);\
+~mix.read(~s2);\
+~mix.read(~s3);\
+\
+//resetting the source stops reading\
+~mix = \\default;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 //now you can also crossfade audio efficiently:\cf0 \
+~mix.fadeTime = 1.5;\
+\
+~mix.read(~s1);\
+~mix.read(~s2);\
+~mix.read(~s3);\
+\
+\cf4 //automatation:\cf0 \
+(\
+t = \cf2 Task\cf0 (\{\
+	var dt;\
+	loop(\{\
+		dt = rrand(0.01, 0.3);\
+		~mix.fadeTime = dt;\
+		~mix.read([~s1, ~s2, ~s3].choose);\
+		dt.wait;\
+	\});\
+\});\
+)\
+\
+t.play(\cf2 SystemClock\cf0 );\
+\
+\
+\cf4 //change the sources meanwhile:\cf0 \
+~s1 = \{ \cf2 Blip\cf0 .ar(105, 100, 0.2) \};\
+~s2 = \{ \cf2 SinOsc\cf0 .ar(350, 0, 0.1) \};\
+~s3 = \{ \cf2 Pulse\cf0 .ar(60, 0.2, 0.1) \};\
+\
+~freq = \{ \cf2 MouseX\cf0 .kr(200, 600, 2) \};\
+\
+~s1 = \{ \cf2 Blip\cf0 .ar(~freq.kr * 0.3, 10, 0.2) \};\
+~s2 = \{ \cf2 SinOsc\cf0 .ar(~freq.kr, 0, 0.1) \};\
+~s3 = \{ \cf2 Pulse\cf0 .ar(~freq.kr * 0.2, 0.2, 0.1) \};\
+\
+	\
+t.stop;\
+	\
+\cf4 //note that when restarting ~out, the inputs have to be woken up.\cf0 \
+\cf4 //to avoid this, you can add the inputs to the mix nodeMap parents:\cf0 \
+\
+~mix.nodeMap.parents.putAll( (s1: ~s1, s2: ~s2, s3: ~s3) );\
+\
+\cf4 //also the task can be added to the proxy:\cf0 \
+(\
+~mix.task = \cf2 Routine\cf0 (\{\
+	loop(\{\
+		~mix.fadeTime = rrand(0.01, 0.1);\
+		~mix.read([~s1, ~s2, ~s3].choose);\
+		[0.2, 0.4].choose.wait;\
+	\});\
+\});\
+)\
+\
+}

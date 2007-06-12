@@ -1,0 +1,158 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fnil\fcharset77 LucidaGrande;\f4\fnil\fcharset77 LucidaGrande-Bold;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green0\blue191;\red0\green0\blue0;\red96\green96\blue96;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 SynthDefs \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+Use the SynthDef class to build the engines for synths that will run on the server. The engines, which can be saved to disk and reused, are analogous to presets on commercial hardware and software synthesizers. \
+\
+When notated as code in client programs, the engines have two essential parts: a name and a function. In the jargon of SuperCollider, the function is called a ugenGraphFunc.\
+\
+The term ugenGraphFunc derives from the notion of a graph, which is the data structure that SuperCollider uses to organize unit generators. SuperCollider constructs the graph for you from the code it finds in your function which means that don't have to know how a graph works or that it even exists.\
+\
+If you wish to know more about graphs, visit the Wikipedia at \
+\
+http://en.wikipedia.org/wiki/Graph_(data_structure). \
+\
+Or, go to\
+\
+http://www.nist.gov/dads/HTML/graph.html\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Template
+\f1\b0\fs18 \
+\
+Here's a template for a synthdef showing that it consists of a name and a ugenGraphFunc\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\
+	\cf4 "aSynthDef"\cf0 ,						\cf2 // the 1st argument is the name\cf0 \
+	\{ .... i am a ugenGraphFunc ... \}	\cf2 // the 2nd argument is the ugenGraphFunc\cf0 \
+)\
+\
+To make the template functional \
+\
+1. put code into the ugenGraphFunc\
+2. send a .load message to the synthdef\
+\
+(\
+\cf3 SynthDef\cf0 (\
+	\cf4 "aSynthDef"\cf0 , 						\cf2 // the name of the synthdef\cf0 \
+	\{ 								\cf2 // the ugenGraphFunc with actual code\cf0 \
+		\cf3 arg\cf0  freq;\
+		\cf3 Out\cf0 .ar(\
+			0,\
+			\cf3 SinOsc\cf0 .ar(freq, 0, 0.1)\
+		)\
+	\}\
+).load(s);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 The .load message and the variable 's'
+\f1\b0\fs18 \
+\
+The .load message writes synthdefs to disk and also sends them to the default server. The default server is defined by SuperCollider at startup time (as the localhost server) at which point it's also assigned to the variable 's'.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 The .send message and a remote server
+\f1\b0\fs18 \
+\
+On the other hand, .send message, \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 SynthDef\cf6 ( .... ).send(s);\
+\cf0 \
+instead of a .load message \
+\
+\cf3 SynthDef\cf0 ( .... ).load(s);\
+\
+is another way to get a synthdef to a server. The .send message, unlike the .load message, doesn't first write the synthdef to disk; instead it just transmits the synthdef directly to the server. This is therefore the message to use to define a synthdef on one computer but send it to another.\
+\
+(\cf6 \
+\cf5 var\cf6  \cf0 aServer\cf6 ;\
+\cf0 aServer\cf6  = \
+	\cf5 Server\cf6 (\
+		\cf7 "aRemoteServerOnAnotherMachine"\cf6 , \
+		\cf5 NetAddr\cf6 (\cf7 "... an ip # ..."\cf6 , 57110)	\cf8 // a server on another computer\cf6 \
+	);\
+\cf5 SynthDef\cf6 ( .... ).send(\cf0 aServer\cf6 );\
+\cf0 )\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 SynthDef browsers\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 Use the synthdef browser to examine synthdefs that have been written to disk. \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // a synthdef browswer\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDescLib\cf0 .global.read;\
+\cf3 SynthDescLib\cf0 .global.browse;\
+)\
+\
+The middle box (in the top row) shows the names of synthsdefs. Each name, when selected, causes the other boxes to display the ugens, controls, and inputs and outputs for a particular synthdef. \
+\
+The box labeled "SynthDef controls" is useful because it shows the arguments that can be passed to a given synthdef.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 The browser shows that the synthdef defined above - "aSynthDef" - is composed from four ugens, one control, no inputs, and one output. The four ugens include instances of Control, SinOsc, BinaryOpUGen, and Out classes.\
+\
+The one control is "freq". A control is an argument that a synth can use when it is created or at any time while it (the synth) exists on the server. The browser also shows that "aSynth" has no inputs (which means that it doesn't use data from audio or control buses) and that it sends one channel of audio out to an audio Bus.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 For further context, see the 
+\f0\b\fs24 SynthDef
+\f1\b0\fs18 , 
+\f0\b\fs24 In
+\f1\b0\fs18 , 
+\f0\b\fs24 Out
+\f1\b0\fs18 , 
+\f0\b\fs24 SinOsc
+\f1\b0\fs18 , 
+\f0\b\fs24 Control
+\f1\b0\fs18 , 
+\f0\b\fs24 BinaryOpUGen
+\f1\b0\fs18  files in the SuperCollider help system.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs24 \cf0 go to 
+\f4\b 4_Rates}

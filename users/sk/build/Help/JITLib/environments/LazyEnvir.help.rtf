@@ -1,0 +1,94 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 LazyEnvir
+\f1\b0\fs18 				
+\f0\b\fs24 lazy environment
+\f2\b0 \
+\
+superclass: EnvironmentRedirect\
+\
+Environment with deferred evaluation and default values.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 put(key, val)
+\f2\b0 		sets the value of the reference at 
+\f0\b key
+\f2\b0 \
+
+\f0\b at(key)
+\f2\b0 			returns a reference to the object at 
+\f0\b key.
+\f2\b0  \
+				If none is present, the default value is returned (integer 
+\f0\b 1
+\f2\b0 )\
+\
+\
+Consequently, calculations can be done with nonexisting objects which can then be assigned later.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // examples\cf0 \
+\
+l = \cf3 LazyEnvir\cf0 .push;\
+\
+\cf2 // default objects are created on access\cf0 \
+~a; \
+~a.value; \cf2 // defaults to 1\cf0 \
+\
+\cf2 // operations on placeholders\cf0 \
+(\
+~c = ~a + ~b;\
+\
+~c.value; \cf2 // defaults to 2.\cf0 \
+)\
+\
+\
+\cf2 // variables can be assigned later\cf0 \
+(\
+~a = 800;\
+~b = \{ 1.0.rand \};\
+\
+~c.value; \
+)\
+\
+\
+\cf2 // variables can be exchanged later\cf0 \
+(\
+~b = \{ 1000.rand \}; \
+~c.value; \
+)\
+\
+\
+\cf2 // making pattern space using LazyEnvir\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 a = \cf3 LazyEnvir\cf0 .new;\
+a.proxyClass=\cf4 \\PatternProxy\cf0 ;\
+\
+a.push;\
+\
+~x = \cf3 Pseq\cf0 ([1, 2, 30], 1);\
+~y = \cf3 Pseq\cf0 ([~x], \cf3 inf\cf0 );\
+\
+z = ~y.asStream;\
+\
+z.next;\
+z.next;\
+z.next;\
+~x = \cf3 Pseq\cf0 ([100, 2, 300], 1);\
+z.next;\
+z.next;\
+z.next;\
+\
+a.pop;\
+}

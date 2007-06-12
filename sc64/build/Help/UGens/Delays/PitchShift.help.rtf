@@ -1,0 +1,73 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 PitchShift
+\f1\b0 \
+
+\fs24 \
+
+\f0\b PitchShift.ar(in, windowSize, pitchRatio, pitchDispersion, timeDispersion, mul, add)\
+
+\f1\b0 \
+A time domain granular pitch shifter.\
+Grains have a triangular amplitude envelope and an overlap of 4:1.\
+
+\f0\b in
+\f1\b0  - the input signal.\
+
+\f0\b windowSize
+\f1\b0  - the size of the grain window in seconds. This value cannot be modulated.\
+
+\f0\b pitchRatio
+\f1\b0  - the ratio of the pitch shift. Must be from 0.0 to 4.0.\
+
+\f0\b pitchDispersion
+\f1\b0  - the maximum random deviation of the pitch from the pitchRatio.\
+
+\f0\b timeDispersion
+\f1\b0  - a random offset of from zero to timeDispersion seconds is added to the delay\
+of each grain. Use of some dispersion can alleviate a hard comb filter effect due to uniform\
+grain placement. It can also be an effect in itself. timeDispersion can be no larger than windowSize.
+\f0\b \
+
+\f2\b0 \
+
+\fs18 \cf2 (\
+play(\{\
+	z = \cf3 Blip\cf2 .ar(800, 6, 0.1);\
+	\cf3 PitchShift\cf2 .ar(z, 0.02, \cf3 Line\cf2 .kr(0.1,4,20), 0, 0.0001)\
+\}))\
+\
+(\
+\cf4 // pitch shift input - USE HEADPHONES to prevent feedback.\cf2 \
+play(\{\
+	\cf3 PitchShift\cf2 .ar(\
+		\cf3 AudioIn\cf2 .ar([1,2]),	\cf4 // stereo audio input\cf2 \
+		0.1, 			\cf4 // grain size\cf2 \
+		\cf3 MouseX\cf2 .kr(0,2),	\cf4 // mouse x controls pitch shift ratio\cf2 \
+		0, 				\cf4 // pitch dispersion\cf2 \
+		0.004			\cf4 // time dispersion\cf2 \
+	)\
+\}))\
+\
+(\
+\cf4 // use PitchShift to granulate input - USE HEADPHONES to prevent feedback.\cf2 \
+\cf4 // upper left corner is normal playback. x = pitch dispersion, y = time dispersion\cf2 \
+\cf3 var\cf2  grainSize;\
+grainSize = 0.5;\
+play(\{\
+	\cf3 PitchShift\cf2 .ar(\
+		\cf3 AudioIn\cf2 .ar([1,2]), \
+		grainSize, 		\
+		1,						\cf4 // nominal pitch rate = 1\cf2 \
+		\cf3 MouseX\cf2 .kr(0,1), 			\cf4 // pitch dispersion\cf2 \
+		\cf3 MouseY\cf2 .kr(0, grainSize)	\cf4 // time dispersion\cf2 \
+	)\
+\}))
+\fs24 \cf0 \
+\
+}

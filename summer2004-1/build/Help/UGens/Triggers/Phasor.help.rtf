@@ -1,0 +1,106 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red191\green0\blue0;\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Phasor
+\f1\b0\fs18 			
+\f0\b\fs24 triggered linear ramp between two levels
+\f1\b0\fs18 \
+\
+
+\f2\fs24 superclass: UGen
+\f0\b \
+\
+
+\f2\b0 starts a linear ramp when trig input crosses from non-positive to positive.
+\f0\b \
+\
+	\
+	*ar(trig, rate, start, end, resetPos)\
+	*kr(trig, rate, start, end, resetPos)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 		
+\f0\b\fs24 trig
+\f2\b0 \
+			sets phase to resetPos (default: 0, equivalent to start)\
+		
+\f0\b rate
+\f2\b0 \
+			rate value in 1 / frameDur \
+			(at 44.1 kHz sample rate: rate 1 is eqivalent to 44100/sec)\
+		\
+		
+\f0\b start, end
+\f2\b0 \
+			start and end points of ramp\
+		\
+		
+\f0\b resetPos
+\f2\b0 \
+			determines where to jump to on recieving a trigger.\
+			the value at that position can be calculated as follows:\
+			(end - start) * resetPos\
+\
+
+\f1\fs18 \
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // phasor controls sine frequency: end frequency matches a second sine wave.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+(\cf3 \
+\{ \cf4 var\cf3  trig, rate, x, sr;\
+	rate = \cf4 MouseX\cf3 .kr(0.2, 2, 1);\
+	trig = \cf4 Impulse\cf3 .ar(rate);\
+	sr = \cf4 SampleRate\cf3 .ir;\
+	x = \cf4 Phasor\cf3 .ar(trig, rate / sr);\
+	\cf4 SinOsc\cf3 .ar(\
+		[\
+			\cf4 LinLin\cf3 .kr(x, 0, 1, 600, 1000), \cf5 // convert range from 0..1 to 600..1000\cf3 \
+			1000 \cf5 // constant second frequency\cf3 \
+		], 0, 0.2)\
+\
+\}.play;\
+\cf0 )\
+\
+\
+\cf5 // two phasors control two sine frequencies: mouse y \cf2 controls resetPos of the second\cf3 \
+(\
+\{ \cf4 var\cf3  trig, rate, x, sr;\
+	rate = \cf4 MouseX\cf3 .kr(1, 200, 1);\
+	trig = \cf4 Impulse\cf3 .ar(rate);\
+	sr = \cf4 SampleRate\cf3 .ir;\
+	x = \cf4 Phasor\cf3 .ar(trig, rate / sr, 0, 1, [0, \cf4 MouseY\cf3 .kr(0, 1)]);\
+	\cf4 SinOsc\cf3 .ar(x * 500 + 500, 0, 0.2)\
+\}.play;\
+)\
+\
+\
+\cf5 // use phasor to index into a sound file\
+\cf3 \
+\cf5 // allocate a buffer with a sound file\cf3 \
+s.sendMsg(\cf6 "/b_allocRead"\cf3 , 0, \cf6 "sounds/a11wlk01.wav"\cf3 );\
+\
+\cf5 // simple playback (more examples: see BufRd)\cf3 \
+\{ \cf4 BufRd\cf3 .ar(1, 0, \cf4 Phasor\cf3 .ar(0, \cf4 BufRateScale\cf3 .kr(0), 0, \cf4 BufFrames\cf3 .kr(0))) \}.play;\
+\
+\
+\cf5 // two phasors control two sound file positions: mouse y controls resetPos of the second\cf3 \
+(\
+\{ \cf4 var\cf3  trig, rate, framesInBuffer;\
+	rate = \cf4 MouseX\cf3 .kr(0.1, 100, 1);\
+	trig = \cf4 Impulse\cf3 .ar(rate);\
+	framesInBuffer = \cf4 BufFrames\cf3 .kr(0);\
+	x = \cf4 Phasor\cf3 .ar(trig, \cf4 BufRateScale\cf3 .kr(0), 0, framesInBuffer, [0, \cf4 MouseY\cf3 .kr(0, framesInBuffer)]);\
+	\cf4 BufRd\cf3 .ar(1, 0, x);\
+\}.play;\
+)\
+\
+\
+\
+}

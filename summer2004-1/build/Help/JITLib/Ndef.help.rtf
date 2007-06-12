@@ -1,0 +1,79 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Ndef	
+\f1\b0\fs18 			 
+\f0\b\fs24 node proxy definition
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 superclass: NodeProxy\
+\
+\
+\
+reference to a proxy, forms an alternative to ProxySpace\
+\
+Ndef(key) returns the instance, Ndef(key, obj) stores the object and returns the instance, like Tdef and Pdef.\
+see also 
+\f0\b ProxySpace
+\f2\b0 , 
+\f0\b NodeProxy
+\f2\b0 \
+\
+\
+	
+\f0\b *new(key, object, server)
+\f2\b0 \
+			craete a new node proxy and store it in a global dictionary under key.\
+			if there is already an Ndef there, replace its object with the new one.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	
+\f0\b\fs24 *clear 
+\f2\b0 \
+			clear all proxies
+\f1\fs18 \
+\
+	
+\f0\b\fs24 *at(server, key)\
+			
+\f2\b0 return an instance at that key for that server
+\f1\fs18 \
+			\
+	
+\f0\b\fs24 defaultServer_(a server)\
+			
+\f2\b0 set the default server (default: Server.local)
+\f1\fs18 \
+\
+\
+\cf2 // examples\cf3 \
+\
+s = \cf4 Server\cf3 .local.boot;\
+\
+\cf4 Ndef\cf3 (\cf5 \\sound\cf3 ).play;\
+\cf4 Ndef\cf3 (\cf5 \\sound\cf3 ).fadeTime = 1;\
+\cf4 Ndef\cf3 (\cf5 \\sound\cf3 , \{ \cf4 SinOsc\cf3 .ar([600, 635], 0, \cf4 SinOsc\cf3 .kr(2).max(0) * 0.2) \});\
+\cf4 Ndef\cf3 (\cf5 \\sound\cf3 , \{ \cf4 SinOsc\cf3 .ar([600, 635] * 3, 0, \cf4 SinOsc\cf3 .kr(2 * 3).max(0) * 0.2) \});\
+\cf4 Ndef\cf3 (\cf5 \\sound\cf3 , \{ \cf4 SinOsc\cf3 .ar([600, 635] * 2, 0, \cf4 SinOsc\cf3 .kr(2 * 3).max(0) * 0.2) \});\
+\cf4 Ndef\cf3 (\cf5 \\sound\cf3 , \cf4 Pbind\cf3 (\cf5 \\dur\cf3 , 0.17, \cf5 \\freq\cf3 , \cf4 Pfunc\cf3 (\{ rrand(300, 700) \})) );\
+\
+\cf4 Ndef\cf3 (\cf5 \\lfo\cf3 , \{ \cf4 LFNoise1\cf3 .kr(3, 400, 800) \});\
+\cf4 Ndef\cf3 (\cf5 \\sound\cf3 ).map(\cf5 \\freq\cf3 , \cf4 Ndef\cf3 (\cf5 \\lfo\cf3 ));\
+\cf4 Ndef\cf3 (\cf5 \\sound\cf3 , \{ \cf4 arg\cf3  freq; \cf4 SinOsc\cf3 .ar([600, 635] + freq, 0, \cf4 SinOsc\cf3 .kr(2 * 3).max(0) * 0.2) \});\
+\cf6 Ndef\cf0 (\cf7 \\lfo\cf0 , \{ \cf6 LFNoise1\cf0 .kr(300, 400, 800) \});\
+\cf3 \
+\cf4 Ndef\cf3 .clear; \cf2 //clear all\cf3 \
+\cf8 \
+\
+\
+\
+\
+}

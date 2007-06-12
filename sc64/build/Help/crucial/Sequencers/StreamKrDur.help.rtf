@@ -1,0 +1,326 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green112\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs52 \cf0 StreamKrDur
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 superclass: StreamKr ... AbstractPlayer\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 StreamKrDur.new(pattern,durations,lagTime)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+This plays a pattern in real time on the client, and sends those values as /c_set messages to its bus on the server.
+\f0\b \
+
+\f1\b0 Durations are specified in beats by a second pattern.\
+\
+Its timing are exact, its messages are sent to the server with a small latency period before they should be played.  That is to say when you start playing a StreamKrDur, it will run slightly and exactly ahead of time.\
+It is cancellable and stoppable within the value of Server-latency.\
+\
+It is extremely efficient in CPU usage on the client, using less than it takes to switch from one text window to another.\
+\
+	
+\f0\b pattern\
+
+\f1\b0 		a Pattern or Stream of floats	\
+	
+\f0\b durations
+\f1\b0 \
+		a float specifying the beat constant duration\
+		a stream or pattern of beat durations\
+		or a ref to an array of beat durations eg `[0.25,0.5,1]\
+	
+\f0\b lag\
+		
+\f1\b0 lag time for a Lag.kr that will be added to the output.  \
+		if 0.0 (default) no Lag will be used.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf2 dalek mating season I\cf0 \
+
+\f1\b0\fs20 (
+\f2\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	var\cf0  freq;\
+	\
+	
+\fs20 freq = 
+\fs18 \cf3 StreamKrDur\cf0 ( \
+			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
+			 0.25,
+\fs20 \cf2 // a float
+\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 			 0.1)
+\fs20 ;\
+\
+	\cf3 Tempo\cf0 .bpm = 100; \cf2 // times are in beats\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\
+	Patch(\{ arg freq;\
+		
+\fs18 \cf3 Saw\cf0 .ar(freq,0.2)\
+	\},[\
+		freq\
+	]).play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs20 \cf0 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 (
+\f2\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	var\cf0  freq;\
+	\
+	
+\fs20 freq =  \cf3 StreamKrDur\cf0 ( \
+	  		
+\fs18 \cf3 Pbrown\cf0 (40,100,100,\cf3 inf\cf0 ), \
+	  		`[ 1,2, 0.25], \cf2 // an array \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	  		0.05);
+\fs20 \
+\
+	\cf3 Tempo\cf0 .bpm = 100; \cf2 // times are in beats\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	Patch(\{ arg freq=440;\
+		SinOsc.ar(freq,SinOsc.ar(600,0,0.3))\
+		//
+\fs18 \cf3 PMOsc\cf0 .ar(freq,100,1.0,0,0.3)\
+	\},[\
+		freq\
+	]).play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs20 \cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 		 
+\fs20 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf2 dalek mating season II\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  freq,freq2,pmindex;\
+	\
+	
+\fs20 freq = 
+\fs18 \cf3 StreamKrDur\cf0 ( \
+			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
+			 0.25,
+\fs20 \cf2 // a float
+\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 			 0.1)
+\fs20 ;\
+			 \
+	freq2 =   \cf3 StreamKrDur\cf0 ( \
+	  		
+\fs18 \cf3 Pbrown\cf0 (40,100,100,\cf3 inf\cf0 ), \
+	  		`[ 1,2, 0.25], \cf2 // an array \
+\cf0 	  		0.05);\
+	  		
+\fs20 \
+	 pmindex = \cf3 StreamKrDur\cf0 ( \
+		  		\cf3 Pbrown\cf0 (1.5,3.0,0.1,\cf3 inf\cf0 ), \
+		  		\cf3 Prand\cf0 ([0.25,0.125,1.0,3.0],\cf3 inf\cf0 ), \cf2 // a pattern\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		  		0.1);\
+\
+	\cf3 Tempo\cf0 .bpm = 100; \cf2 // times are in beats\
+\cf0 	\cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq,freq2,pmindex;\
+			
+\fs18 \cf3 PMOsc\cf0 .ar(freq,freq2,pmindex,0,0.3)\
+	\},[\
+		freq,\
+		freq2,\
+		pmindex\
+	]).gui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs20 \cf0 )\
+\
+\
+
+\f0\b\fs24 \cf2 same thing with a separated Instr\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (
+\f2\b0 \
+	\cf3 Instr\cf0 ([\cf4 \\oscillOrc\cf0 ,\cf4 \\pmosc\cf0 ],\{ \cf3 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+			\cf3 PMOsc\cf0 .ar(freq,freq2,pmindex,phasemod,amp)\
+	\});
+\fs26 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 	p=\cf3 Patch\cf0 .new([ \cf4 'oscillOrc'\cf0 , \cf4 'pmosc'\cf0  ],\
+	[\
+		
+\fs18 \cf3 StreamKrDur\cf0 ( \
+			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
+			 0.25,
+\fs20 \cf2 // a float
+\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 			 0.1)
+\fs20 ,\
+	  	\cf3 StreamKrDur\cf0 ( \
+	  		
+\fs18 \cf3 Pbrown\cf0 (40,100,100,\cf3 inf\cf0 ), \
+	  		`[ 1,2, 0.25], \cf2 // an array \
+\cf0 	  		0.05), 
+\fs20 \
+	  	\cf3 StreamKrDur\cf0 ( \
+	  		
+\fs18 \cf3 Pbrown\cf0 (1.5,3.0,0.1,\cf3 inf\cf0 ), \
+	  		\cf3 Prand\cf0 ([0.25,0.125,1.0,3.0],\cf3 inf\cf0 ), \cf2 // a pattern\
+\cf0 	  		0.1), 
+\fs20 \
+	  	0, \
+	  	0.3	 \
+	  ]);\
+	 	  \
+	 p.gui;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 )\
+\
+A metronome\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  nome,layout;\
+nome = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  beat,freq,amp;\
+		\cf3 Decay2\cf0 .ar( \
+			\cf3 K2A\cf0 .ar(beat), 0.01,0.11, \
+			\cf3 SinOsc\cf0 .ar( freq, 0, amp )\
+		)\
+	\},[\
+		\cf3 BeatClockPlayer\cf0 .new(4.0),\
+		\cf3 StreamKrDur\cf0 (\
+			\cf3 Pseq\cf0 ([ 750, 500, 300, 500, 750, 500, 400, 500, 750, 500, 400, 500, 750, 500, 400, 500 ],\cf3 inf\cf0 ), \
+			1.0),\
+		\cf3 StreamKrDur\cf0 (\
+			\cf3 Pseq\cf0 ([1,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25] * 0.01,\cf3 inf\cf0 ),\
+			1.0)\
+	]);\
+layout = \cf3 FlowView\cf0 .new;\
+\
+\cf3 ToggleButton\cf0 (layout,\cf5 "Nome"\cf0 ,\{\
+	if(nome.isPlaying.not,\{ nome.play(atTime: 4) \})\
+\},\{\
+	if(nome.isPlaying,\{ nome.stop \})\
+\},minWidth: 250);\
+\
+)\
+\
+In this case since the beat clock, and both stream kr durs are running all at the same tempo, you\
+could better use an InstrGateSpawner and do separate events. Only one scheduler then instead of 2. \
+See the example there.\
+\
+But if you wanted them in different syncs, different streams and a continous running synth \
+(have fun with the Decay), then this would be a good starting point.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 with a Pbind you are creating a new event for every note and creating new UGens and a new Synth each time.  this is not so efficient.  what I am doing here is like an analog synth:  the oscillators play constantly and it is gated to create notes.  its more fluid, liquid and uses significantly less cpu.  this can even be done with samples.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\cf3 Tempo\cf0 .bpm = 130;\
+	\
+	\cf3 Instr\cf0 ([\cf4 \\oscillOrc\cf0 ,\cf4 \\trigged\cf0 , \cf4 \\pmosc\cf0 ],\{ \cf3 arg\cf0  trig=0.0,freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+			\cf3 PMOsc\cf0 .ar(\
+				freq,\
+				freq2,\
+				pmindex,\
+				phasemod,\
+				\cf3 Decay2\cf0 .kr(trig)\
+			)\
+	\});\
+\
+	p=\cf3 Patch\cf0 .new([\cf4 \\oscillOrc\cf0 ,\cf4 \\trigged\cf0 , \cf4 \\pmosc\cf0 ],\
+	[\
+		\cf3 BeatClockPlayer\cf0 (16.0),\
+		\
+		\cf3 StreamKrDur\cf0 ( \
+			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
+			 0.25,\cf2 // a float\
+\cf0 			 0.1),\
+	  	\cf3 StreamKrDur\cf0 ( \
+	  		\cf3 Pbrown\cf0 (40,100,100,\cf3 inf\cf0 ), \
+	  		`[ 1,2, 0.25], \cf2 // an array \
+\cf0 	  		0.05), \
+	  	\cf3 StreamKrDur\cf0 ( \
+	  		\cf3 Pbrown\cf0 (1.5,3.0,0.1,\cf3 inf\cf0 ), \
+	  		\cf3 Prand\cf0 ([0.25,0.125,1.0,3.0],\cf3 inf\cf0 ), \cf2 // a pattern\
+\cf0 	  		0.1), \
+	  	0, \
+	  	0.3	 \
+	  ]);\
+	 	  \
+	 p.gui;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+	\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf2 //durations will be multiples of trigger pulse\
+//\
+//stream kr dur has to find the lowest common multiple\
+//\
+//l = [0.125,0.25,1.0,1.5];\
+//\
+//l = [0.25,0.25 + 0.125, 1.0,1.5];\
+//\
+////fails\
+//l = Array.fill(8,\{ rrand(0.1,0.5) \});\
+//\
+//(l % (l.minItem)) every is 0\
+//or\
+//\
+//g = (l % (l.minItem)).reject(\{ arg t; t==0 \}).minItem\
+//\
+//l / g  should be all integers\
+//	or it fails\
+//\
+}

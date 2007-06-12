@@ -1,0 +1,211 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Class
+\f1\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 superclass: Object\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+A Class describes the structure and implementation of a set objects which are its instances.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Utilities
+\f1\b0\fs24 \ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 browse\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Open a graphical browser for this Class. (OSX only). Shows methods, arguments, variables, subclasses, and has buttons for navigating to the superclass, source, helpfile, cvs, etc.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+findMethod(methodName)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Find the Method referred to by name. If not found, return nil.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 findRespondingMethodFor(methodName)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+As above, but climb the class tree to see if the method is inherited from a superclass. If not found, return nil.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 dumpAllMethods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Post all instance methods which instances of this class responde too, including inherited ones. this.class.dumpAllMethods will post all class methods which this class responds to.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 dumpByteCodes(methodName)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Dump the byte codes of the named method.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 dumpClassSubtree
+\f1\b0 \
+\
+Post the tree of all Classes that inherit from this class.\
+\
+
+\f0\b dumpInterface
+\f1\b0 \
+\
+Post all the methods defined by this Class and their arguments.\
+\
+
+\f0\b dumpFullInterface\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Post all the class and instance methods that this class responds to (i.e. those defined in this class and those inherited by it).\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 openHelpFile\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Opens the help file for this Class if it exists.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 helpFilePath\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Returns the path of this Class's helpfile as a String.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 helpFileForMethod(methodSymbol)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Opens the helpfile for the class in which the responding method is implemented.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 Array\cf0 .helpFileForMethod(\cf3 'select'\cf0 ); \cf4 // This will open the Collection helpfile
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Conversion
+\f1\b0\fs24 \ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 asClass
+\f1\b0 \
+\
+Return this.\
+\
+
+\f0\b asString
+\f1\b0 \
+\
+Return the name of the class as a String.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Accessing
+\f1\b0\fs24 \ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 name
+\f1\b0 \
+\
+A Symbol that is the name of the class.\
+\
+
+\f0\b nextclass
+\f1\b0 \
+\
+The next class in a linked list of all classes.\
+\
+
+\f0\b superclass
+\f1\b0 \
+\
+The Class from which this class directly inherits.\
+\
+
+\f0\b superclasses
+\f1\b0 \
+\
+An Array of this class's superclasses, going back to Object.\
+\
+
+\f0\b subclasses
+\f1\b0 \
+\
+An Array of the direct subclasses of this.\
+\
+
+\f0\b allSubclasses
+\f1\b0 \
+\
+An Array of all subclasses of this.\
+\
+
+\f0\b methods
+\f1\b0 \
+\
+An Array of the methods of this class.\
+\
+
+\f0\b instVarNames
+\f1\b0 \
+\
+An Array of the names of the instance variables for this class.\
+\
+
+\f0\b classVarNames
+\f1\b0 \
+\
+An Array of the names of the class variables for this class.\
+\
+
+\f0\b iprototype
+\f1\b0 \
+\
+An Array of the initial values of instance variables.\
+\
+
+\f0\b cprototype
+\f1\b0 \
+\
+An Array of the initial values of class variables.\
+\
+
+\f0\b filenameSymbol
+\f1\b0 \
+\
+A Symbol which is a path to the file which defines the Class.\
+\
+}

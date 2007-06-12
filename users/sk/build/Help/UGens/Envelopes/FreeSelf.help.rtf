@@ -1,0 +1,69 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 FreeSelf			
+\fs26 when triggered, free enclosing synth
+\fs36 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 superclass: UGen\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 	
+\f1\b0 \
+	free enclosing synth when input signal crosses from non-positive to positive\
+
+\f0\b 	\
+	*kr(src)  src
+\f1\b0  - input signal\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	\cf2 //example\cf0 \
+	\
+	(\
+	\cf3 SynthDef\cf0 (\cf4 "freeSelf-help"\cf0 , \{\'ca\cf3 arg\cf0  out, t_trig;\
+		FreeSelf.kr(t_trig);\
+		\cf3 Out\cf0 .ar(out, \cf3 SinOsc\cf0 .ar(400,0,0.2));\
+	\}).send(s);\
+	)\
+	\
+	s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "freeSelf-help"\cf0 , 1731);\
+	s.sendMsg(\cf4 "/n_set"\cf0 , 1731, \\t_trig, 1);\
+\
+	\cf2 // a single impulse SynthDef:\cf0 \
+	\
+	(\
+	\cf3 SynthDef\cf0 (\cf4 "dirac"\cf0 , \{\'ca\cf3 arg\cf0  out, amp=0.1;\
+		\cf3 var\cf0  u;\
+		u = \cf3 Impulse\cf0 .ar(1);\
+		\cf3 FreeSelf\cf0 .kr(u);\
+		\cf3 Out\cf0 .ar(out, u * amp); \
+			\cf2 // multiply by amp after using for release, so amp = 0 \cf0 \
+			\cf2 // doesn't cause synth buildup.\cf0 \
+	\}).send(s);\
+	)\
+	\
+	(\
+	\cf3 Task\cf0  \{\
+		loop(\{\
+			fork \{\
+				exprand(34, 156).do \{\cf3 |i|\cf0 \
+					i = i + 1;\
+					s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "dirac"\cf0 , -1,0,0, \cf5 \\amp\cf0 , 1 / i);\
+					(0.006 * i).wait;\
+				\};\
+			\};	\
+			1.wait;\
+		\})\
+	\} .play;\
+	)\
+	}

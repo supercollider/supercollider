@@ -1,0 +1,52 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 ContiguousBlockAllocator
+\f1\b0\fs24 \
+\
+A more robust replacement for the default server block allocator, PowerOfTwoAllocator. May be used in the Server class to allocate audio/control bus numbers and buffer numbers.\
+\
+To configure a server to use ContiguousBlockAllocator, execute the following:\
+\
+
+\f2\fs18 \cf2 aServer.options.blockAllocClass = \cf3 ContiguousBlockAllocator\cf2 ;
+\f1\fs24 \cf0 \
+\
+Normally you will not need to address the allocators directly. However, ContiguousBlockAllocator adds one feature not present in PowerOfTwoAllocator, namely the 
+\f3\i reserve
+\f1\i0  method.\
+\
+
+\f0\b *new(size, pos = 0)
+\f1\b0 \
+\
+Create a new allocator with 
+\f3\i size
+\f1\i0  slots. You may block off the first 
+\f3\i pos
+\f1\i0  slots (the server's audioBusAllocator does this to reserve the hardware input and output buses).\
+\
+
+\f0\b alloc(n = 1)
+\f1\b0 \
+\
+Return the starting index of a free block that is 
+\f3\i n
+\f1\i0  slots wide. The default is 1 slot.\
+\
+
+\f0\b free(address)
+\f1\b0 \
+\
+Free a previously allocated block starting at 
+\f3\i address
+\f1\i0 .\
+\
+
+\f0\b reserve(address, size = 1)
+\f1\b0 \
+\
+Mark a specific range of addresses as used so that the alloc method will not return any addresses within that range.}

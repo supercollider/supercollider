@@ -1,0 +1,376 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fnil\fcharset77 LucidaGrande;\f4\fnil\fcharset77 LucidaGrande-Bold;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Time-based filters
+\f1\b0\fs18 \
+
+\f0\b\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 The Delay, Comb, and Allpass family of ugens create time-based effects to give a sense of location and space.\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // 2 synthdefs - the 1st to make grains and the 2nd to delay them\
+\cf0 \
+\cf2 // the synthdef that makes the grains is on the left channel\cf0 \
+\cf2 // the synthdef that delays the grains is on the right channel\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "someGrains"\cf0 , \{ arg centerFreq = 777, freqDev = 200, grainFreq = 2;\
+	\cf3 var\cf0  gate;\
+	gate = \cf3 Impulse\cf0 .kr(grainFreq);\
+	\cf3 Out\cf0 .ar(\
+		0,\
+		\cf3 SinOsc\cf0 .ar(\
+			\cf3 LFNoise0\cf0 .kr(4, freqDev, centerFreq),\
+			0,\
+			\cf3 EnvGen\cf0 .kr(\cf3 Env.sine(0.1)\cf0 , gate, 0.1)\
+		)\
+	)\
+\}).load(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 "aDelay"\cf0 , \{ arg delay = 0.25;\
+	\cf3 Out\cf0 .ar(\
+		1,\
+		\cf3 DelayN\cf0 .ar(\
+			\cf3 In\cf0 .ar(0, 1),\
+			delay,\
+			delay\
+		)\
+	)\
+\}).load(s);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////\cf0 \
+\cf2 // test the grains ... and then turn them off\cf0 \
+\cf2 // ... they're all on the left channel ... good!\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Synth\cf0 (\cf4 "someGrains"\cf0 );\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////\cf0 \
+\
+\cf2 // make 2 groups, the 1st for sources and the 2nd for effects\cf0 \
+(\
+~source = \cf3 Group\cf0 .head(s);\
+~effects = \cf3 Group\cf0 .tail(s);\
+)\
+\
+\cf2 // place grains into the delay ... source is on the left and delayed source is on the right\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Synth\cf0 .head(~source, \cf4 "someGrains"\cf0 );\
+\cf3 Synth\cf0 .head(~effects, \cf4 "aDelay"\cf0 );\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Feedback filters\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+Comb and Allpass filters are examples of ugens that feed some of their output back into their input. Allpass filters change the phase of signals passed through them. For this reason, they're useful even though don't seeem to differ much from comb filters. \
+\
+\cf2 \
+/////////////////////////////////////////////////////////////////////////////////////////\
+// TURN ON THE INTERNAL SERVER!!\cf0 \
+\cf2 // first a comb filter and then an allpass with (with the same parameters) - compare them\cf0 \
+\cf2 /////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\cf2 // comb example\cf0 \
+(\cf5 \
+\{\
+	\cf6 CombN\cf5 .ar(\
+		\cf6 SinOsc\cf5 .ar(500.rrand(1000), 0, 0.2) * \cf6 Line\cf5 .kr(1, 0, 0.1),\
+		0.3,\
+		0.25,\
+		6\
+	)\
+\}.scope;\
+\cf0 )\
+\
+\cf2 // allpass example - not much difference from the comb example\cf0 \
+(\
+\{\
+	\cf3 AllpassN\cf0 .ar(\
+		\cf3 SinOsc\cf0 .ar(500.rrand(1000), 0, 0.2) * \cf3 Line\cf0 .kr(1, 0, 0.1),\
+		0.3,\
+		0.25,\
+		6\
+	)\
+\}.scope;\
+)\
+\
+\cf2 /////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\cf2 // \cf0 \
+\cf2 // first a comb example and then an allpass\cf0 \
+\cf2 // both examples have the same parameters\cf0 \
+\cf2 // the 2 examples have relatively short delay times ... 0.1 seconds\cf0 \
+\cf2 /\cf0 /\
+\cf2 /////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\
+\cf2 // comb\cf0 \
+(\
+\{\
+	\cf3 CombN\cf0 .ar(\
+		\cf3 SinOsc\cf0 .ar(500.rrand(1000), 0, 0.2) * \cf3 Line\cf0 .kr(1, 0, 0.1),\
+		0.1,\
+		0.025,\
+		6\
+	)\
+\}.scope;	\
+)\
+\
+\cf2 // allpass ... what's the difference between this example and the comb filter?\cf0 \
+(\
+\{\
+	\cf3 AllpassN\cf0 .ar(\
+		\cf3 SinOsc\cf0 .ar(500.rrand(1000), 0, 0.2) * \cf3 Line\cf0 .kr(1, 0, 0.1),\
+		0.1,\
+		0.025,\
+		6\
+	)\
+\}.scope\
+)\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Reverberation
+\f1\b0\fs18 \
+\
+The next example is by James McCartney. It comes from the 
+\f0\b\fs24 01 Why SuperCollider
+\f1\b0\fs18  document that was part of the SuperCollider2 distribution. \
+\
+The example is more or less a Schroeder reverb - a signal passed through a parallel bank of comb filters which then pass through a series of allpass filters.\
+\
+(\
+\{\
+var s, z, y;\
+	\cf2 // 10 voices of a random sine percussion sound :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 s = \cf3 Mix\cf0 .ar(\cf3 Array\cf0 .fill(10, \{ \cf3 Resonz\cf0 .ar(\cf3 Dust\cf0 .ar(0.2, 50), 200 + 3000.0.rand, 0.003)\}) );\
+	\cf2 // reverb predelay time :\
+\cf0 z = \cf3 DelayN\cf0 .ar(s, 0.048);\
+	\cf2 // 7 length modulated comb delays in parallel :\
+\cf0 y = \cf3 Mix\cf0 .ar(\cf3 Array\cf0 .fill(7,\{ \cf3 CombL\cf0 .ar(z, 0.1, \cf3 LFNoise1\cf0 .kr(0.1.rand, 0.04, 0.05), 15) \})); \
+	\cf2 // two parallel chains of 4 allpass delays (8 total) :\
+\cf0 4.do(\{ y = \cf3 AllpassN\cf0 .ar(y, 0.050, [0.050.rand, 0.050.rand], 1) \});\
+	\cf2 // add original sound to reverb and play it :\
+\cf0 s+(0.2*y)\
+\}.scope \
+)\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Components
+\f1\b0\fs18 \
+\
+The following shows one way to divide the JMC example into components.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 (\cf0 \
+\cf3 SynthDef\cf0 (\cf4 "filteredDust"\cf0 , \{\
+	\cf3 Out\cf0 .ar(\
+		2,\
+		\cf3 Mix\cf0 .arFill(10, \{ \cf3 Resonz\cf0 .ar(\cf3 Dust\cf0 .ar(0.2, 50), \cf3 Rand\cf0 (200, 3200), 0.003) \})\
+	)\
+\}).load(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 "preDelay"\cf0 , \{\
+	\cf3 ReplaceOut\cf0 .ar(\
+		4,\
+		\cf3 DelayN\cf0 .ar(\cf3 In\cf0 .ar(2, 1), 0.048, 0.048)\
+	)\
+\}).load(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 "combs"\cf0 , \{\
+	\cf3 ReplaceOut\cf0 .ar(\
+		6,\
+		\cf3 Mix\cf0 .arFill(7, \{ \cf3 CombL\cf0 .ar(\cf3 In\cf0 .ar(4, 1), 0.1, \cf3 LFNoise1\cf0 .kr(\cf3 Rand\cf0 (0, 0.1), 0.04, 0.05), 15) \})\
+	)\
+\}).load(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 "allpass"\cf0 , \{ \cf3 arg\cf0  gain = 0.2;\
+	\cf3 var\cf0  source;\
+	source = \cf3 In\cf0 .ar(6, 1);\
+	4.do(\{ source = \cf3 AllpassN\cf0 .ar(source, 0.050, [\cf3 Rand\cf0 (0, 0.05), \cf3 Rand\cf0 (0, 0.05)], 1) \});\
+	\cf3 ReplaceOut\cf0 .ar(\
+		8,\
+		source * gain\
+	)\
+\}).load(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 "theMixer"\cf0 , \{ arg gain = 1;\
+	\cf3 ReplaceOut\cf0 .ar(\
+		0,\
+		\cf3 Mix\cf0 .ar([\cf3 In\cf0 .ar(2, 1), \cf3 In\cf0 .ar(8, 2)]) * gain\
+	)\
+\}).load(s);\
+)\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // as each line is executed, it becomes the tail node. the result is that\cf0 \
+\cf2 // "filteredDust" is the first node and  "theMixer" is the last node ...\cf0 \
+\cf2 // ... exactly what we need\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Synth\cf0 .tail(s, \cf4 "filteredDust"\cf0 );\
+\cf3 Synth\cf0 .tail(s, \cf4 "preDelay"\cf0 );\
+\cf3 Synth\cf0 .tail(s, \cf4 "combs"\cf0 );\
+\cf3 Synth\cf0 .tail(s, \cf4 "allpass"\cf0 );\
+\cf3 Synth\cf0 .tail(s, \cf4 "theMixer"\cf0 );\
+)\
+\
+(\
+s.queryAllNodes;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b\fs24 \cf0 \
+
+\f1\b0\fs18 \
+Or, use groups to control the order of execution.\
+\
+(\
+~source = \cf3 Group\cf0 .tail(s);\
+~proc1 = \cf3 Group\cf0 .tail(s);\
+~proc2 = \cf3 Group\cf0 .tail(s);\
+~proc3 = \cf3 Group\cf0 .tail(s);\
+~final = \cf3 Group\cf0 .tail(s);\
+)\
+\
+\cf2 // the nodes, below, are assigned to the groups, as ordered above,\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Synth\cf0 .head(~final, \cf4 "theMixer"\cf0 );\
+\cf3 Synth\cf0 .head(~proc3, \cf4 "allpass"\cf0 );\
+\cf3 Synth\cf0 .head(~proc2, \cf4 "combs"\cf0 );\
+\cf3 Synth\cf0 .head(~proc1, \cf4 "preDelay"\cf0 );\
+\cf3 Synth\cf0 .head(~source, \cf4 "filteredDust"\cf0 );\
+)\
+\
+(\
+s.queryAllNodes;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b\fs24 \cf0 \
+\
+
+\f1\b0\fs18 For context, here, below, is the complete text of the 
+\f0\b\fs24 01 Why SuperCollider
+\f1\b0\fs18  document (by James McCartney) from the SuperCollider 2 distribution.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+ 	
+\f0\b\fs36 SuperCollider 2.0\
+
+\f2\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Why SuperCollider 2.0 ?\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \
+SuperCollider version 2.0 is a new programming language. 
+\f0\b Why invent a new language\
+and not use an existing language?
+\f2\b0  Computer music composition is a specification problem.\
+Both sound synthesis and the composition of sounds are complex problems and demand a \
+language which is highly expressive in order to deal with that complexity. Real time signal \
+processing is a problem demanding an efficient implementation with bounded time operations.\
+There was no language combining the features I wanted and needed for doing digital music \
+synthesis. The SuperCollider language is most like Smalltalk. Everything is an object. It has\
+class objects, methods, dynamic typing, full closures, default arguments, variable\
+length argument lists, multiple assignment, etc. The implementation provides fast,\
+constant time method lookup, real time garbage collection, and stack allocation of most\
+function contexts while maintaining full closure semantics. \
+The SuperCollider virtual machine is designed so that it can be run at interrupt level.\
+There was no other language readily available that was high level, real time and\
+capable of running at interrupt level.\
+\
+SuperCollider version 1.0 was completely rewritten to make it both more expressive\
+and more efficient. This required rethinking the implementation in light of the experience\
+of the first version. It is my opinion that the new version has benefitted significantly\
+from this rethink. It is not simply version 1.0 with more features.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Why use a text based language rather than a graphical language?
+\f2\b0  \
+There are at least two answers to this. 
+\f0\b Dynamism:
+\f2\b0  Most graphical synthesis environments \
+use statically allocated unit generators. In SuperCollider, the user can create structures which\
+spawn events dynamically and in a nested fashion. Patches can be built dynamically and\
+parameterized not just by floating point numbers from a static score, but by other\
+graphs of unit generators as well. Or you can construct patches algorithmically on the fly.\
+This kind of fluidity is not possible in a language with statically allocated unit generators. \
+
+\f0\b Brevity:
+\f2\b0  In SuperCollider, symmetries in a patch can be exploited by either multichannel \
+expansion or programmatic patch building. For example, the following short program \
+generates a patch of 49 unit generators. In a graphical program this might require a significant \
+amount of time and space to wire up. Another advantage is that the size of the patch below can \
+be easily expanded or contracted just by changing a few constants.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+(\
+\{\
+	\cf2 // 10 voices of a random sine percussion sound :\
+\cf0 s = \cf3 Mix\cf0 .ar(\cf3 Array\cf0 .fill(10, \{ \cf3 Resonz\cf0 .ar(\cf3 Dust\cf0 .ar(0.2, 50), 200 + 3000.0.rand, 0.003)\}) );\
+	\cf2 // reverb predelay time :\
+\cf0 z = \cf3 DelayN\cf0 .ar(s, 0.048);\
+	\cf2 // 7 length modulated comb delays in parallel :\
+\cf0 y = \cf3 Mix\cf0 .ar(\cf3 Array\cf0 .fill(7,\{ \cf3 CombL\cf0 .ar(z, 0.1, \cf3 LFNoise1\cf0 .kr(0.1.rand, 0.04, 0.05), 15) \})); \
+	\cf2 // two parallel chains of 4 allpass delays (8 total) :\
+\cf0 4.do(\{ y = \cf3 AllpassN\cf0 .ar(y, 0.050, [0.050.rand, 0.050.rand], 1) \});\
+	\cf2 // add original sound to reverb and play it :\
+\cf0 s+(0.2*y)\
+\}.play )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Graphical synthesis environments are becoming a dime a dozen. It seems like a new one\
+is announced every month. None of them have the dynamic flexibility of SuperCollider's \
+complete programming environment. Look through the SuperCollider help files and examples \
+and see for yourself.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf0 go to 
+\f4\b 14_Frequency_modulation
+\f2\b0 \
+}

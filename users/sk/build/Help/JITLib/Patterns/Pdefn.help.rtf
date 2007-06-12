@@ -1,0 +1,439 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fswiss\fcharset77 Helvetica-BoldOblique;\f4\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pdefn     		
+\fs24 value-stream reference definition
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 superclass: PatternProxy
+\f1\fs18 \
+\
+\
+\
+\
+
+\f2\fs24 access and assignment are done by *new\
+\
+keeps a reference to a task that can be replaced while playing.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Pdefn(key)
+\f2\b0  returns the instance, 
+\f0\b Pdefn(key, pat) 
+\f2\b0 defines the pattern \
+and returns the instance, like Pdef, Tdef and Ndef.\
+it is very similar to [
+\f0\b \ul PatternProxy\ulnone ]
+\f2\b0 \
+\
+it can be used to store value patterns globally (for event patterns, see 
+\f0\b Pdef
+\f2\b0 ).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 	*new(key, pattern)
+\f2\b0 \
+			store the pattern in a global dictionary under key.\
+			the 
+\f0\b pattern
+\f2\b0  can be anything that embeds in a stream.\
+			instead of a pattern, a 
+\f0\b function
+\f2\b0  can be passed in, creating a routine. (see example below).\
+			\
+	
+\f0\b *new(key)
+\f2\b0 \
+			acess the pattern at that key (if none is there, a default pattern is created)\
+		\
+	
+\f0\b *default
+\f2\b0 \
+			a default source, if none is given. \
+			the default is 1.0 (it is not 0.0 in order to make it safe for durations)		\
+	
+\f0\b *removeAll
+\f2\b0 \
+			remove all patterns\
+	
+\f0\b *all
+\f2\b0 \
+			dict that stores all Pdefn\
+	\
+	
+\f0\b *all_(envir)
+\f2\b0 \
+			set the global environment\
+				\
+	
+\f0\b quant_(beats)
+\f2\b0 \
+			set the quantisation time for beat accurate scheduling\
+			can be a pair [quant, offset]\
+				\
+	*
+\f0\b defaultQuant_(beats)
+\f2\b0 \
+			set the default quantisation for new instances (default: nil)\
+			can be a pair [quant, offset]\
+	\
+	
+\f0\b condition_(func)
+\f2\b0 \
+			provide a condition under which the pattern is switched when a new one is inserted.\
+			the stream value and a count is passed into the function (see example)\
+			the methods 
+\f0\b count_(n) 
+\f2\b0 simply counts up to n and switches the pattern then\
+			\ul \
+	
+\f0\b \ulnone source_	\
+			
+\f2\b0 set the pattern (internally done by *new(key, pattern).\
+			if quant is not nil, the change is scheduled to the beat\
+			(
+\f0\b pattern_
+\f2\b0 (..) is equivalent)\
+	\
+	
+\f0\b embedInStream(inval)\
+			
+\f2\b0 just like any stream, embeds itself in stream.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	
+\f0\b\fs24 reset
+\f2\b0 		\
+			switch the pattern immediately. (stuck conditions can be subverted by this)\
+			\
+\
+	
+\f0\b envir_(event)
+\f2\b0 \
+			provide a default environment for the proxy. \
+			If given,  it is used as an environment for the routine \
+			function. When set for the first time, the routine pattern is rebuilt.\
+	\
+	
+\f0\b set(key, val, key2, val2, ...)
+\f2\b0 \
+			set arguments in the environment. \
+			If there is none, it is created and the pattern is rebuilt.\
+			\
+	
+\f0\b map(key, pdefKey, key, pdefKey ...)
+\f2\b0 \
+			map one Pdefn to the other. the patterns can be accessed via the currentEnvironment
+\f1\fs18 \
+\
+\
+	
+\f0\b\fs24 endless
+\f2\b0 \
+			returns a Proutine that plays the proxy endlessly, replacing 
+\f0\b nil
+\f2\b0  with a 
+\f0\b default
+\f2\b0 \
+			value (1). This allows to create streams that idle on until a new pattern is inserted.
+\f1\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+Pdefn is similar to [\ul Pdef\ulnone ]  and [\ul Tdef\ulnone ]  . see the other helpfiles for comparison.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b\fs24 \cf0 Pdefn in expressions
+\f1\i0\b0\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\c\cf0 , \cf2 Pdefn\cf0 (\cf3 \\a\cf0 ) + \cf2 Pdefn\cf0 (\cf3 \\b\cf0 ));\
+\
+t = \cf2 Pdefn\cf0 (\cf3 \\c\cf0 ).asStream; \cf4 // create a stream from Pdefn(\\c)\cf0 \
+\
+t.value; \cf4 // default value for a Pdefn is 1, so that it is a good time value default.\cf0 \
+\
+\cf2 Pdefn\cf0 (\cf3 \\a\cf0 , 100); \cf4 // (re)define Pdefn(\\a) as 100\cf0 \
+\
+t.value;\
+\
+\cf2 Pdefn\cf0 (\cf3 \\b\cf0 , \cf2 Pseq\cf0 ([1, 2, 3], \cf2 inf\cf0 )); \cf4 // (re)define Pdefn(\\b) as Pseq([1, 2, 3], inf)\cf0 \
+\
+3.do \{ t.value.postln \};\
+\
+\cf2 Pdefn\cf0 (\cf3 \\c\cf0 , \cf2 Pdefn\cf0 (\cf3 \\a\cf0 ) * \cf2 Pdefn\cf0 (\cf3 \\b\cf0 ) - \cf2 Pdefn\cf0 (\cf3 \\a\cf0 )); \cf4 // (re)define Pdefn(\\c) \cf0 \
+\
+8.do \{ t.value.postln \};\
+\
+\cf2 Pdefn\cf0 (\cf3 \\a\cf0 , \cf2 Prand\cf0 ([1, 4, 2], \cf2 inf\cf0 ));  \cf4 // (re)define Pdefn(\\a) \cf0 \
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b\fs24 \cf0 Embedding Pdefn in other patterns
+\f4\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\i0\fs18 \cf0 \
+\
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ([1, 2, 3],\cf2 inf\cf0 ));\
+\
+x = \cf2 Pseq\cf0 ([0, 0, \cf2 Pdefn\cf0 (\cf3 \\x\cf0 )], \cf2 inf\cf0 ).asStream;\
+\
+\cf2 t = Task\cf0 (\{ loop(\{ x.next.postln; 0.3.wait \}) \}).play;\
+\
+\
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ([55, 66, 77],\cf2 inf\cf0 ));\
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ([55, 66, 77],\cf2 1\cf0 ));\
+\
+t.stop;\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // Pdefn can be accessed in multiple streams\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\cf0 (\
+\cf2 SynthDef\cf0 (\cf5 "Pdefhelp"\cf0 , \{ \cf2 arg\cf0  out, freq, sustain=1, amp=1, pan;\
+	\cf2 var\cf0  env, u=1;\
+	env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.03, sustain), 1, doneAction:2);\
+	5.do \{ var d; d = exprand(0.01, 1); u = \cf2 SinOsc\cf0 .ar(d * 300, u, rrand(0.1,1.2) * d, 1) \};\
+	\cf2 Out\cf0 .ar(out, \cf2 Pan2\cf0 .ar(\cf2 SinOsc\cf0 .ar(u + 1 * freq, 0, amp * env), pan));\
+\
+\}).store;\
+s.boot;\
+)\
+\
+(\
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \cf2 Pseq\cf0 ([0, 3, 2],\cf2 inf\cf0 ));\
+\
+\cf2 Pset\cf0 (\cf3 \\instrument\cf0 , \cf3 \\Pdefhelp\cf0 , \
+	\cf2 Ppar\cf0 ([\
+		\cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 )),\
+		\cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pdefn\cf0 (\cf3 \\deg\cf0 ), \cf3 \\dur\cf0 , 1/3)\
+])\
+).play;\
+)\
+\
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \cf2 Prand\cf0 ([0, 3, [1s, 4]],\cf2 inf\cf0 ));\
+\
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , Pn(\cf2 Pshuf\cf0 ([0, 3, 2, 7, 6],\cf2 2\cf0 ),inf));\
+\
+(\
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \cf2 Plazy\cf0  \{ var pat;\
+				pat = [\cf2 Pshuf\cf0 ([0, 3, 2, 7, 6],2), \cf2 Pseries\cf0 (0, 1, 11), \cf2 Pseries\cf0 (11, -1, 11)].choose;\
+				\cf2 Pn\cf0 (pat, inf)\
+		\});\
+)\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b\fs24 \cf0 Timing: when does the definition change?
+\f4\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\i0\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // if quant is set, the update is done at the next beat or whatever is specified:\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 ).quant = 4;\
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \cf2 Pn\cf0 (\cf2 Pseries\cf0 (0, 1, 8),\cf2 inf\cf0 ));\
+\
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 ).quant = \cf2 nil\cf0 ; \cf4 // activate immediately again\
+\cf0 \
+(\
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \{\
+	loop \{\
+	5.do \{ \cf2 |i|\cf0 \
+		#[1, 3, 4].choose.yield;\
+		#[5, 0, 12].choose.yield;\
+		#[14, 3, 4].choose.do \{ \cf2 |j|\cf0 \'ca(i % j).postln.yield \};\
+	\}\
+	\}\
+\})\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 update condition
+\f2\b0 \
+\
+\
+In order to be able to switch to a new pattern under a certain condition, the instance variable\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b \cf0 condition
+\f2\i0\b0  can be set to a function that returns a boolean. Value and a count index are passed to the function.\
+The condition is always valid for the 
+\f3\i\b next pattern
+\f2\i0\b0  inserted. For stuck conditions, the 
+\f0\b reset
+\f2\b0  message can be used.\
+\
+As counting up (such as 
+\f4\i "every nth event, a swap can happen"
+\f2\i0 ) is a common task, there is a method for this,\
+called 
+\f0\b count(n).
+\f2\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\cf6 z = \cf7 Pbind\cf6 (\cf8 \\degree\cf6 , \cf7 Pdefn\cf6 (\cf8 \\x\cf6 ), \\dur, 0.25).play;\
+\cf7 Pdefn\cf6 (\cf8 \\x\cf6 , \cf7 Pseq\cf6 ((0..5), \cf7 inf\cf6 )).condition_(\{ \cf7 |val, i|\cf6  i.postln % 6 == 0 \});\
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ((0..8), \cf2 inf\cf0 )).condition_(\{ \cf2 |val, i|\cf0  i.postln % 9 == 0 \});\
+\cf6 \
+\
+\cf9 //\cf4  the above is equvalent to:\cf0 \
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 , \cf2 Pseq\cf0 ((0..8), \cf2 inf\cf0 )).count(9);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 reset
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // reset to change immediately:\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\x\cf0 ).reset;\
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b\fs24 \cf0 Functions as arguments to Pdefn:\
+(experimental, bound to change!)
+\f4\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\i0\fs18 \cf0 \
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \{ loop \{ yield(0.1.rand.round(0.01) + [2, 3, 9].choose) \} \});\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // equivalent to:\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\deg\cf0 , \cf2 Proutine\cf0  \{ loop \{ yield(0.1.rand.round(0.01) + [2, 3, 9].choose) \} \});\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // this is not exactly true, see below..\cf0 \
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b\fs24 \cf0 The (inner) environment\
+\
+when passing a function to 
+\f4\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\i0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // set() creates a local environment that overrides the outer currentEnvironment\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).set(\cf3 \\a\cf0 , 1, \cf3 \\b\cf0 , 5);\
+(\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \{ \cf2 |e|\cf0   \
+	loop \{\'cayield((e.a + e.b) + 0.1.rand.round(0.01)) \} \
+\})\
+); \cf4 // [1]\cf0 \
+\
+t = \cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).asStream;\
+\
+t.nextN(3);\
+\
+(\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \{ \cf2 |e|\cf0   \
+	\cf4 //(e.a + e.b) + 0.1.rand.round(0.01) 1\cf0 \
+	\cf2 Pseq\cf0 ([1, 2, e.b], 1)\
+\})\
+); \
+\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 , \cf2 Pseq\cf0 ([1, 2, 3], 1)); \
+\
+\cf2 e = Pdefn\cf0 (\cf3 \\z\cf0 ).envir\
+d\
+\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).set(\cf3 \\a\cf0 , 3);\
+\
+t.next;\
+\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).set(\cf3 \\a\cf0 , \cf2 Pseq\cf0 ([1, 2, 3], \cf2 inf\cf0 ));\
+\
+t.nextN(3);\
+\
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).envir; \cf4 // post the envir\cf0 \
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // using the "map" message one can map one Pdefn to the other:\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).map(\cf3 \\a\cf0 , \cf3 \\other\cf0 );\
+\
+t.nextN(3); \cf4 // Pdefn default value (1) is used\cf0 \
+\
+\cf2 Pdefn\cf0 (\cf3 \\other\cf0 , \cf2 Prand\cf0 ([200, 300, 400], \cf2 inf\cf0 )); \cf4 // assign a pattern to \\other\
+\
+\cf0 t.nextN(3);\cf4 \
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // if you want to keep using the currentEnvironment at the same time, \cf0 \
+\cf4 // assign the currentEnvironment to the envir's parent (or proto) field\
+// (this shouldn't be a proxy space of course.)\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdefn\cf0 (\cf3 \\z\cf0 ).envir.parent = currentEnvironment;\
+~a = 9;\
+~b = 10; \
+\
+t.nextN(3);\
+\
+\
+}

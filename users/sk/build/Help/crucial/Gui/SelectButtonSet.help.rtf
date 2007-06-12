@@ -1,0 +1,135 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SelectButtonSet\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+\
+Radio button style set, fashioned as a single object.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 SelectButtonSet.new( layout, \
+	labels, // array of labels or a quantity\
+	action,\
+	color, // or color function\
+	selectedColor, // or selectedColor function\
+	x,y // optional size of each button\
+	)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+	\cf2 SelectButtonSet\cf0 ( \cf2 nil\cf0 ,  [ \cf3 "one"\cf0 , \cf3 "two"\cf0 ,\cf3 "three"\cf0 ,\cf3 "four"\cf0 ] ,  \
+		\{ \cf2 arg\cf0  selectedIndex,\cf2 selectButtonSet\cf0 ;\
+			[ selectedIndex, \cf2 selectButtonSet\cf0  ].postln;\
+		\},width: 60 \
+	)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 	\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 (
+\f2\fs18 \
+\
+	\cf2 SelectButtonSet\cf0 ( \cf2 nil\cf0 ,  \
+		16 , //  make 16 buttons  \
+		\{ \cf2 arg\cf0  selectedIndex,\cf2 selectButtonSet\cf0 ;\
+			[ selectedIndex, \cf2 selectButtonSet\cf0  ].postln;\
+		\}	 \
+	)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+.
+\f0\b selected
+\f1\b0 \
+	selected index\
+.
+\f0\b selectedLabel
+\f1\b0 \
+	label of the selected\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 select( index)\
+passiveSelect( index ) \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	action not performed\
+	\
+color and selectedColor may be either a Color object or a function\
+that will be passed the selected index when valued.\
+	\
+\
+on various kinds of layouts/windows/nil :\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 SelectButtonSet\cf0 (\
+	nil,\
+		[\cf3 "1"\cf0 , \cf3 "2"\cf0 ],  \
+		\{\cf2 |i|\cf0  (\cf3 "Input"\cf0  + i).postln\},\
+		width: 40, height: 30\
+	);\
+)	\
+\
+(\
+\cf2 SelectButtonSet\cf0 (\
+	FlowView.new,\
+		[\cf3 "1"\cf0 , \cf3 "2"\cf0 ],  \
+		\{\cf2 |i|\cf0  (\cf3 "Input"\cf0  + i).postln\},\
+		width: 40, height: 30\
+	);\
+)\
+(\
+\cf2 SelectButtonSet\cf0 (\
+	SCWindow.new.front,\
+		[\cf3 "1"\cf0 , \cf3 "2"\cf0 ],  \
+		\{\cf2 |i|\cf0  (\cf3 "Input"\cf0  + i).postln\},\
+		width: 40, height: 30\
+	);\
+)\
+(\
+\cf2 SelectButtonSet\cf0 (\
+	SCHLayoutView.new(SCWindow.new.front,400@400),\
+		[\cf3 "1"\cf0 , \cf3 "2"\cf0 ],  \
+		\{\cf2 |i|\cf0  (\cf3 "Input"\cf0  + i).postln\},\
+		width: 40, height: 30\
+	);\
+)\
+\
+(\
+// vertical\
+\cf2 SelectButtonSet\cf0 (\
+	SCVLayoutView.new(SCWindow.new.front,100@400),\
+		[\cf3 "1"\cf0 , \cf3 "2"\cf0 ],  \
+		\{\cf2 |i|\cf0  (\cf3 "Input"\cf0  + i).postln\},\
+		width: 40, height: 30\
+	);\
+\
+)	\
+	\
+	
+\f1 \
+	\
+}

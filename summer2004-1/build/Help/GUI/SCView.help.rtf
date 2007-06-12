@@ -1,0 +1,242 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\froman\fcharset77 Times-Roman;\f4\fmodern\fcharset77 Courier;\f5\fnil\fcharset77 LucidaGrande;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SCView
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 abstract class\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 resize_(int)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+		1  2  3\
+		4  5  6\
+		7  8  9\
+		\
+		1 - fixed to left, fixed to top\
+		2 - horizontally elastic, fixed to top\
+		3 - fixed to right, fixed to top\
+		\
+		4 - fixed to left, vertically elastic\
+		5 - horizontally elastic, vertically elastic\
+		6 - fixed to right, vertically elastic\
+		\
+		7 - fixed to left, fixed to bottom\
+		8 - horizontally elastic, fixed to bottom\
+		9 - fixed to right, fixed to bottom\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 keyDownAction
+\f1\b0\fs18 \
+(\
+	w = \cf2 SCWindow\cf0 .new;\
+	c = \cf2 SCSlider\cf0 (w,\cf2 Rect\cf0 (0,0,100,30));\
+	c.keyDownAction = \{ \cf2 arg\cf0  view,char,modifiers,unicode,keycode;\
+		[char,modifiers,unicode,keycode].postln;\
+	\};\
+	w.front;\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 If you return nil from your function, or you have no function registered, the event will bubble up to the parent view which may then respond.  It will continue to bubble up unless something responds or it hits the topView of the window.  You may register a function in the window's topView to respond to all unhandled events for the window.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 There are default keyDownActions for some views, which will be overridden when you set a keydown action.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 char
+\f1\b0\fs18 \
+
+\f2\fs24 	the character, possibly unprintable.  character sequences (par example \'8e) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e).  this will also vary depending on the nationality the keyboard is set to.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 modifiers
+\f3\b0 \
+
+\f2 	an integer bit field indicating the modifier keys in effect. You can examine individual flag settings \
+	using the C bitwise AND operator \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs20 \cf0 	
+\f1 \
+	\
+	65536
+\f4  NSAlphaShiftKeyMask \
+	
+\f5 Set if Caps Lock key is pressed. \
+	\
+	
+\f1 131072 
+\f4 NSShiftKeyMask \
+	
+\f5 Set if Shift key is pressed. \
+	\
+	
+\f1 262144 
+\f4 NSControlKeyMask \
+	
+\f5 Set if Control key is pressed. \
+	\
+	
+\f1 524288 
+\f4 NSAlternateKeyMask \
+	
+\f5 Set if Option or Alternate key is pressed. \
+	\
+	
+\f1 1048576 
+\f4 NSCommandKeyMask \
+	
+\f5 Set if Command key is pressed. \
+	\
+	
+\f1 2097152 
+\f4 NSNumericPadKeyMask \
+	
+\f5 Set if any key in the numeric keypad is pressed. The numeric keypad is generally on the right side of the keyboard. \
+	\
+	
+\f1 4194304 
+\f4 NSHelpKeyMask \
+	
+\f5 Set if the Help key is pressed. \
+	\
+	
+\f1 8388608 
+\f4 NSFunctionKeyMask \
+	
+\f5 Set if any function key is pressed. The function keys include the F keys at the top of most keyboards (F1, F2, and so on) and the navigation keys in the center of most keyboards (Help, Forward Delete, Home, End, Page Up, Page Down, and the arrow keys). \
+	\
+	arrow keys have an extra modifier value of 
+\f1\fs18 10485760\
+	so for a shift arrow key do a bitwise 'or' with the shift mask:\
+		10485760 | 131072
+\f5\fs20 \
+	= 
+\f1\fs18 10616832 // this is the mask for shift arrow key\
+	\
+	\
+	\
+	
+\f5\fs20 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 unicode
+\f5\b0\fs20 \
+
+\f2\fs24 	the unicode integer, identical to the char.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f5\fs20 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 keycode
+\f5\b0\fs20 \
+
+\f2\fs24 	the hardware dependent keycode indicating the physical key.  this will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.  in order to play little melodies, this code will identify which key you consider to be special.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+	warning: function key modifier may change keycode.\
+\
+\
+for various reasons these don't make it through cocoa:\
+	most command modifiers\
+	 cntl-tab\
+	 cntl-escape\
+	 tab and shift tab are currently trapped by SC itself for cycling the focus through the views.\
+	 	(we could change this)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 *globalKeyDownAction_(func)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 	A function that is evaluated for every keyDown event.\
+	same arguments as keyDownAction\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 focus
+\f1\b0\fs18 \
+(\
+	w = \cf2 SCWindow\cf0 .new;\
+	c = \cf2 SCSlider\cf0 (w,\cf2 Rect\cf0 (0,0,100,30));\
+	d = \cf2 SCSlider\cf0 (w,\cf2 Rect\cf0 (0,30,100,30));\
+	w.front;\
+)\
+\
+	c.focus;\
+	\
+	d.focus;\
+\
+\
+
+\f0\b\fs28 refresh
+\f1\b0\fs18 \
+(\
+	w = \cf2 SCWindow\cf0 .new;\
+	c = \cf2 SCButton\cf0 (w,\cf2 Rect\cf0 (0,0,100,30));\
+	c.states = [[\cf3 "a"\cf0 ,\cf2 Color\cf0 .black,\cf2 Color\cf0 .red]];\
+	w.front;\
+)	\
+	\cf4 // won't display change...\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	c.states = [[\cf3 "b"\cf0 ,\cf2 Color\cf0 .red,\cf2 Color\cf0 .black]];\
+	\
+	\cf4 //until\
+\cf0 	c.refresh;\
+\
+\
+(\
+	w = \cf2 SCWindow\cf0 .new;\
+	c = \cf2 SCButton\cf0 (w,\cf2 Rect\cf0 (0,0,100,30));\
+	c.states = [[\cf3 "a"\cf0 ,\cf2 Color\cf0 .black,\cf2 Color\cf0 .red]];\
+	d = \cf2 SCButton\cf0 (w,\cf2 Rect\cf0 (0,30,100,30));\
+	d.states = [[\cf3 "a"\cf0 ,\cf2 Color\cf0 .black,\cf2 Color\cf0 .red]];\
+	w.front;\
+)\
+\
+	\cf4 // won't display change...\
+\cf0 	c.states = [[\cf3 "b"\cf0 ,\cf2 Color\cf0 .red,\cf2 Color\cf0 .black]];\
+	d.states = [[\cf3 "b"\cf0 ,\cf2 Color\cf0 .red,\cf2 Color\cf0 .black]];\
+	\
+	\cf4 //until\
+\cf0 	c.refresh;\
+	\
+	\cf4 //needs separate refresh\
+\cf0 	d.refresh;\
+	\
+	\cf4 // in some cases might be better to refresh the whole window\
+\cf0 	\cf4 // which does refresh on all damaged areas (it keeps track, doesn't redraw whole thing)\
+\cf0 	\
+}

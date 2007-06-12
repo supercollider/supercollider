@@ -1,0 +1,601 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
+\f3\fnil\fcharset77 Monaco;\f4\fswiss\fcharset77 Helvetica-BoldOblique;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SynthDef				
+\fs30 client-side representation of a synth definition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+
+\f0\b superclass: Object
+\f1\b0 \
+\
+The server application uses synth definitions as templates for creating 
+\f0\b [\ul Synth\ulnone ]
+\f1\b0  nodes. (Methods such as 
+\f0\b Function-play
+\f1\b0 , etc. are simply conveniences which automatically create a def for you.) The SynthDef class encapsulates the client-side representation of a given def, and provides methods for creating new defs, writing them to disk, and streaming them to a server.\
+\
+SynthDef is one of the more complicated classes in SC and an exhaustive explanation of it is beyond the scope of this document. As such, the examples at the bottom of this document and those found in the various tutorials accessible from 
+\f0\b [\ul Help\ulnone ]
+\f1\b0  may be necessary to make some aspects of its use clear.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 UGen Graph Functions and Special Argument Forms\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+The core of a def is its unit generator graph function. This is an instance of 
+\f0\b [\ul Function\ulnone ]
+\f1\b0  which details how the def's unit generators are interconnected, its inputs and outputs, and what parameters are available for external control. In a synth based on the def, arguments to the function will become instances of 
+\f0\b [\ul Control\ulnone ]
+\f1\b0 . These can have default values, or can be set at the time the synth is created. After creation they will be controllable through Node's 
+\f0\b set
+\f1\b0  and 
+\f0\b setn
+\f1\b0  methods, or the n_set and n_setn OSC messages.\
+\
+There are three special types of arguments, which are treated differently:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li560\fi-560\ql\qnatural
+
+\f0\b \cf0 initial rate 
+\f1\b0 -
+\f0\b  
+\f1\b0 Arguments that begin with "i_" (e.g. i_freq), or that are specified as 
+\f0\b \\ir
+\f1\b0  in the def's rates argument (see below), will be static and non-modulatable. They will not respond to /n_set or /n_map. This is slightly more efficient in terms of CPU than a regular arg.\
+\
+
+\f0\b trigger rate 
+\f1\b0 -
+\f0\b  
+\f1\b0 Arguments that begin with "t_" (e.g. t_trig), or that are specified as 
+\f0\b \\tr
+\f1\b0  in the def's rates argument (see below), will be made as a 
+\f0\b TrigControl
+\f1\b0 . Setting the argument will create a control-rate impulse at the set value. This is useful for triggers.\
+\
+
+\f0\b literal arrays
+\f1\b0  -
+\f0\b  
+\f1\b0 Arguments which have literal arrays as default values (see 
+\f0\b [\ul Literals\ulnone ]
+\f1\b0 ) result in multichannel controls, which can be set as a group with 
+\f0\b Node-setn
+\f1\b0  or n_setn. When setting such controls 
+\f2\i no bounds checking is done
+\f1\i0 , so you are responsible for making sure that you set the correct number of arguments.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+See the examples below for more detail on how this works.\
+\
+Certain argument names (such as 'out' to specify an out bus) are in such common use that adopting them might be said to constitute 'good style'. One of these, '
+\f0\b gate
+\f1\b0 ' when used to control the gate input of an 
+\f0\b [\ul EnvGen\ulnone ]
+\f1\b0 , deserves special mention, as it allows one to use Node's 
+\f0\b release
+\f1\b0  method. See 
+\f0\b [\ul Node\ulnone ]
+\f1\b0  for an example and more detail.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Static versus Dynamic Elements\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+It is important to understand that although a single def can provide a great deal of flexibility through its arguments, etc., it is nevertheless a static entity. A def's UGen graph function (and the SC code within it) is evaluated 
+\f2\i only
+\f1\i0  when the def is created. Thus 'if' statements, etc. will have no further effect at the time the def is used to create a Synth, and it is important to understand that a UGen graph function should not be designed in the same way as functions in the language, where multiple evaluations can yield different results. It will be evaluated 
+\f2\i once and only once
+\f1\i0 .\
+\
+There are other ways of achieving similar results, however, often using UGens such as 
+\f0\b [\ul Rand\ulnone ]
+\f1\b0 . For example, the following def will have a single randomly generated frequency, which will be the same for every Synth based on it:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf2 (\
+\cf3 SynthDef\cf2 (\cf4 "help-notRand"\cf2 , \{ \cf3 Out\cf2 .ar(0, \cf3 SinOsc\cf2 .ar(rrand(400, 800), 0, 0.2) \
+	* \cf3 Line\cf2 .kr(1, 0, 1, doneAction: 2)); \}).send(s);\
+)\
+a = \cf3 Synth\cf2 (\cf4 "help-notRand"\cf2 );\
+b = \cf3 Synth\cf2 (\cf4 "help-notRand"\cf2 ); \cf5 // the same freq as a
+\f1\fs24 \cf0 \
+\
+This one on the other hand will have a different random freq for each Synth created:\
+\
+
+\f3\fs18 (\
+\cf6 SynthDef\cf0 (\cf7 "help-isRand"\cf0 , \{ \cf6 Out\cf0 .ar(0, \cf6 SinOsc\cf0 .ar(\cf6 Rand\cf0 (400, 800), 0, 0.2) \
+	* \cf6 Line\cf0 .kr(1, 0, 1, doneAction: 2)); \}).send(s);\
+)\
+\cf2 a = \cf3 Synth\cf2 (\cf4 "help-isRand"\cf2 );\
+b = \cf3 Synth\cf2 (\cf4 "help-isRand"\cf2 ); \cf5 // a different randomly selected freq
+\f1\fs24 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Class Methods
+\f1\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 *new(name, ugenGraphFunc, rates, prependArgs, variants)\
+
+\f1\b0 	\
+	Create a SynthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+\cf0 	
+\f0\b name 
+\f1\b0 - A 
+\f0\b [\ul String\ulnone ]
+\f1\b0  or 
+\f0\b [\ul Symbol\ulnone ]
+\f1\b0  (i.e. "name" or \\name). This name will be used to refer to the SynthDef when creating a 
+\f0\b [\ul Synth\ulnone ]
+\f1\b0  based upon it, and should be unique.\
+			\
+	
+\f0\b ugenGraphFunc
+\f1\b0  - An instance of 
+\f0\b [\ul Function\ulnone ] 
+\f1\b0 specifying how the def's UGens are interconnected. See the discussion above for information on how the Function's arguments are specified.\
+	\
+	
+\f0\b rates
+\f1\b0  - An optional Array of specifications for the ugenGraphFunc's arguments. The order corresponds to the order of arguments. See the examples below to see how these are used.\
+		A specification can be:\
+			
+\f0\b nil/zero
+\f1\b0 	A standard control rate 
+\f0\b [\ul Control\ulnone ]
+\f1\b0  is created.\
+			
+\f0\b a float
+\f1\b0 	the Control will have a lag of the specified time. This can be used to create \
+					smooth transitions between different values. t_ and i_ args cannot be lagged.\
+			
+\f0\b \\ir
+\f1\b0 		The Control can be set only at creation ('initial rate'). See discussion above.\
+			
+\f0\b \\tr
+\f1\b0 		The Control is used as a trigger. See discussion above.\
+			\
+	
+\f0\b prependArgs 
+\f1\b0 - An optional Array of objects which will be passed as the first arguments to the 
+\f0\b ugenGraphFunc
+\f1\b0  when it is evaluated. Arguments which receive values in this way will not be converted to instances of 
+\f0\b [\ul Control\ulnone ]
+\f1\b0 . See the *
+\f0\b wrap
+\f1\b0  example below for an example of how this can be used.\
+	\
+	
+\f0\b variants
+\f1\b0  - An optional 
+\f0\b [\ul Event\ulnone ]
+\f1\b0  containing default argument settings. These can override the defaults specified in the 
+\f0\b ugenGraphFunc
+\f1\b0 . When creating a Synth a variant can be requested by appending the defName argument in the form "name.variant". See example below.\
+\
+
+\f0\b *writeOnce(name, ugenGraphFunc, rates, prependArgs, dir)\
+			\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li560\ql\qnatural
+
+\f1\b0 \cf0 Create a new SynthDef and write it to disk, providing a def file with this name does not already exist. This is useful in class definitions so that the def is not written every time the library is compiled. Note that this will not check for differences, so you will need to delete the defFile to get it to rebuild. Default for 
+\f0\b dir
+\f1\b0  is synthdefs/.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+\cf0 \
+
+\f0\b *wrap(ugenGraphFunc, rates, prependArgs)\
+\
+	
+\f1\b0 Wraps a def within an enclosing synthdef. Can be useful for mass-producing defs. See example below.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+
+\f0\b \cf0 *synthDefDir\
+*synthDefDir_(dir)\
+\
+	
+\f1\b0 Get or set the default directory to which defs are written.\
+\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Instance Methods
+\fs24 \ul \ulc0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \ulnone 	
+\f0\b \
+writeDefFile(dir)
+\f1\b0  \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li560\fi-560\ql\qnatural
+\cf0 	Writes the def as a file called name.scsyndef in a form readable by a server. Default for 
+\f0\b dir
+\f1\b0  is synthdefs/. Defs stored in the default directory will be automatically loaded by the local and internal Servers when they are booted.
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li560\fi-560\ql\qnatural
+\cf0 load(server, completionMessage, dir)\
+	\
+	
+\f1\b0 Write the defFile and send a message to 
+\f0\b server
+\f1\b0  to load this file. When this asynchronous command is completed, the 
+\f0\b completionMessage
+\f1\b0  (a valid OSC message) is immediately executed by the server. Default for 
+\f0\b dir
+\f1\b0  is synthdefs/.\
+		\
+
+\f0\b send(server, completionMessage)\
+		
+\f1\b0 	\
+	Compile the def and send it to 
+\f0\b server
+\f1\b0  without writing to disk (thus avoiding that annoying SynthDef buildup). When this asynchronous command is completed, the 
+\f0\b completionMessage
+\f1\b0  (a valid OSC message) is immediately executed by the server.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+store(libname, dir, completionMessage) 
+\f1\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li560\fi-560\ql\qnatural
+\cf0 	Write the defFile and store it in the 
+\f0\b SynthDescLib
+\f1\b0  specified by 
+\f0\b libname
+\f1\b0 , and send a message to the library's server to load this file. When this asynchronous command is completed, the 
+\f0\b completionMessage
+\f1\b0  (a valid OSC  message) is immediately executed by the server. Default for 
+\f0\b libname
+\f1\b0  is \\global, for 
+\f0\b dir
+\f1\b0  is synthdefs/. This is needed to use defs with the event stream system. See 
+\f0\b [\ul Streams\ulnone ]
+\f1\b0  and 
+\f0\b [\ul Pattern\ulnone ]
+\f1\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li560\fi-560\ql\qnatural
+
+\f0\b \cf0 play(target, args, addAction)\
+\
+	
+\f1\b0 A convenience method which compiles the def and send it to 
+\f0\b target's
+\f1\b0  server. When this asynchronous command is completed, create one synth from this definition, using the argument values specified in the Array 
+\f0\b args
+\f1\b0 . Returns a corresponding 
+\f0\b Synth
+\f1\b0  object. For a list of valid 
+\f0\b addActions
+\f1\b0  see 
+\f0\b [\ul Synth\ulnone ]
+\f1\b0 . The default is \cf8 \\addToHead\cf0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 name
+\f1\b0 \
+	\
+	Return this def's name.\
+	\
+
+\f0\b variants
+\f1\b0 \
+	\
+	Return an 
+\f0\b [\ul Event\ulnone ]
+\f1\b0  containing this def's variants.\
+	\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 Examples
+\f1\b0\fs24 \ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Basic
+\f3\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf9 \
+// Note that constructions like SynthDef(...) and Synth(...) are short for SynthDef.new(...), etc.\cf0 \
+\cf9 // With SynthDef it is common to chain this with calls on the resulting instance,\
+// e.g. SynthDef(...).send(s) or \cf9 SynthDef(...).play\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // make a simple def and send it to the server\cf2 \
+\
+s.boot;\
+\cf3 SynthDef\cf2 (\cf10 \\SimpleSine\cf2 , \{ \cf3 arg\cf2  freq = 440; \cf3 Out\cf2 .ar(0, \cf3 SinOsc\cf2 .ar(freq, 0, 0.2)) \}).send(s);\
+\
+\cf5 // the above is essentially the same as the following:\cf2 \
+d = \cf3 SynthDef\cf2 .new(\cf10 \\SimpleSine\cf2 , \{ \cf3 arg\cf2  freq = 440; \cf3 Out\cf2 .ar(0, \cf3 SinOsc\cf2 .ar(freq, 0, 0.2)) \});\
+d.send(s);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // now make a synth from it, using the default value for freq, then another with a different value\cf2 \
+x = \cf3 Synth\cf2 (\cf10 \\SimpleSine\cf2 );\
+y = \cf3 Synth\cf2 (\cf10 \\SimpleSine\cf2 , [\cf10 \\freq\cf2 , 660]);\
+\
+\cf5 // now change the freq value for x\cf2 \
+x.set(\cf10 \\freq\cf2 , 880);\
+\
+x.free; y.free;\
+\
+\cf5 // using the play convenience method\cf2 \
+x = \cf3 SynthDef\cf2 (\cf10 \\SimpleSine\cf2 , \{ \cf3 arg\cf2  freq = 440; \cf3 Out\cf2 .ar(0, \cf3 SinOsc\cf2 .ar(freq, 0, 0.2)) \}).play\
+x.free;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Argument Rates
+\f3\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // the following two defs are equivalent. The first uses a 't_' arg:\cf2 \
+(\
+\cf3 SynthDef\cf2 (\cf4 "trigTest"\cf2 , \{ \cf3 arg\cf2  t_trig=0, freq=440; \cf5 // t_trig creates a TrigControl\cf2 \
+	\cf3 Out\cf2 .ar(0, \cf3 SinOsc\cf2 .ar(freq+[0,1], 0, \cf3 Decay2\cf2 .kr(t_trig, 0.005, 1.0)));\
+\}, [0, 4]		\cf5 // lag the freq by 4 seconds (the second arg), but not t_trig (won't work anyway)\cf2 \
+);\
+)\
+\
+\cf5 // This second version makes trig a \\tr arg by specifying it in the rates array. Send this one.\cf2 \
+(\
+\cf3 SynthDef\cf2 (\cf4 "trigTest2"\cf2 , \{ \cf3 arg\cf2  trig=0, freq=440; \
+	\cf3 Out\cf2 .ar(0, \cf3 SinOsc\cf2 .ar(freq+[0,1], 0, \cf3 Decay2\cf2 .kr(trig, 0.005, 1.0)));\
+	\}, [\cf10 \\tr\cf2 , 4]		\cf5 // lag the freq (lagtime: 4s), \\tr creates a TrigControl for trig\cf2 \
+).send(s); 		\
+)\
+\
+\cf5 // Using the second version create a synth\cf2 \
+z = \cf3 Synth\cf2 .head(s, \cf10 \\trigTest2\cf2 );\
+\
+\cf5 // now trigger the decay envelope\cf2 \
+z.set(\cf10 \\trig\cf2 , 1); 				\cf5 // you can do this multiple times \cf2 \
+z.set(\cf10 \\trig\cf2 , 1, \cf10 \\freq\cf2 , 220); 	\cf5 // hear how the freq lags\cf2 \
+z.set(\cf10 \\trig\cf2 , 1, \cf10 \\freq\cf2 , 880);\
+\
+z.free; \cf5 //free the synth
+\f1\fs24 \cf2 \
+
+\f3\fs18 \
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Variants\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0\fs18 \cf0 \
+\cf5 // create a def with some variants\cf2 \
+(\
+\cf3 SynthDef\cf2 (\cf4 "vartest"\cf2 , \{\cf3 |out=0, freq=440, amp=0.2, a = 0.01, r = 1|\cf2 \
+	\cf5 // the EnvGen with doneAction: 2 frees the synth automatically when done\cf2 \
+	\cf3 Out\cf2 .ar(out, \cf3 SinOsc\cf2 .ar(freq, 0, \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .perc(a, r, amp), doneAction: 2)));\
+\}, variants: (alpha: [a: 0.5, r: 0.5], beta: [a: 3, r: 0.01], gamma: [a: 0.01, r: 4])\
+).send(s);\
+)\
+\
+\cf5 // now make some synths. First using the arg defaults\cf2 \
+\cf3 Synth\cf2 (\cf4 "vartest"\cf2 );\
+\
+\cf5 // now the variant defaults\cf2 \
+\cf3 Synth\cf2 (\cf4 "vartest.alpha"\cf2 );\
+\cf3 Synth\cf2 (\cf4 "vartest.beta"\cf2 );\
+\cf3 Synth\cf2 (\cf4 "vartest.gamma"\cf2 );\
+\
+\cf5 // override a variant\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Synth\cf2 (\cf4 "vartest.alpha"\cf2 , [\cf10 \\release\cf2 , 3, \cf10 \\freq\cf2 , 660]);\cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Literal Array Arguments
+\f3\b0\fs18 \
+
+\f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf5 // freqs has a literal array of defaults. This makes a multichannel Control of the same size.\cf2 \
+(\
+\cf3 SynthDef\cf2 (\cf4 "arrayarg"\cf2 , \{ \cf3 arg\cf2  amp = 0.1, freqs = #[300, 400, 500, 600], gate = 1;\
+	\cf3 var\cf2  env, sines;\
+	env = \cf3 Linen\cf2 .kr(gate, 0.1, 1, 1, 2) * amp;\
+	sines = \cf3 SinOsc\cf2 .ar(freqs +.t [0,0.5]).cubed.sum; \cf5 // A mix of 4 oscillators\cf2 \
+	\cf3 Out\cf2 .ar(0, sines * env); \
+\}, [0, 0.1, 0]).send(s);\
+)\
+\
+x = \cf3 Synth\cf2 (\cf4 "arrayarg"\cf2 );\
+x.setn(\cf4 "freqs"\cf2 , [440, 441, 442, 443]);\
+\
+\cf5 // Don't \cf9 accidentally\cf5  set too many values, or you may have unexpected side effects\
+// The code below inadvertantly sets the gate arg, and frees the synth\cf2 \
+x.setn(\cf4 "freqs"\cf2 , [300, 400, 500, 600, 0]);\
+\
+\cf5 // Mr. McCartney's more complex example\cf2 \
+(\
+fork \{ 	\
+	z = \cf3 Synth\cf2 (\cf4 "arrayarg"\cf2 );\
+	\
+	2.wait;\
+	10.do \{\
+		z.setn(\cf10 \\freqs\cf2 , \{exprand(200,800.0)\} ! 4);\
+		(2 ** (0..3).choose * 0.2).wait;\
+	\};\
+\
+	z.set(\cf10 \\amp\cf2 , -40.dbamp);\
+\
+	10.do \{\
+		z.setn(\cf10 \\freqs\cf2 , \{exprand(200,800.0)\} ! 4);\
+		(2 ** (0..3).choose * 0.2).wait;\
+	\};\
+	2.wait;\
+	\
+	z.release;\
+\};\
+)\
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Wrapping Example: 'factory' production of effects defs\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0\fs18 \cf0 \
+\cf5 // The makeEffect function below wraps a simpler function within itself and provides\cf2 \
+\cf5 // a crossfade into the effect (so you can add it without clicks), control over wet\
+// and dry mix, etc.\cf2 \
+\cf5 // Such functionality is useful for a variety of effects, and SynthDef-wrap\
+// lets you reuse the common code.\cf2 \
+(\
+\cf5 // the basic wrapper\cf2 \
+~ makeEffect = \{ \cf3 arg\cf2  name, func, lags, numChannels = 2;\
+\
+	\cf3 SynthDef\cf2 (name, \{ \cf3 arg\cf2  i_bus = 0, gate = 1, wet = 1;\
+	 	\cf3 var\cf2  in, out, env, lfo;\
+	 	in = \cf3 In\cf2 .ar(i_bus, numChannels);\
+		env = \cf3 Linen\cf2 .kr(gate, 2, 1, 2, 2); \cf5 // fade in the effect\cf2 \
+		\
+		\cf5 // call the wrapped function. The in and env arguments are passed to the function\cf2 \
+		\cf5 // as the first two arguments (prependArgs). \cf2 \
+		\cf5 // Any other arguments of the wrapped function will be Controls.\cf2 \
+		out = \cf3 SynthDef\cf2 .wrap(func, lags, [in, env]);\
+		\
+		\cf3 XOut\cf2 .ar(i_bus, wet * env, out);\
+	\}, [0, 0, 0.1] ).send(s);\
+\
+\};\
+)\
+\
+\cf5 // now make a wah\cf2 \
+(\
+~makeEffect.value(\cf10 \\wah\cf2 , \{ \cf3 arg\cf2  in, env, rate = 0.7, ffreq = 1200, depth = 0.8, rq = 0.1;\
+	\cf5 // in and env come from the wrapper. The rest are controls\cf2 \
+ 	\cf3 var\cf2  lfo;\
+	lfo = \cf3 LFNoise1\cf2 .kr(rate, depth * ffreq, ffreq);\
+	\cf3 RLPF\cf2 .ar(in, lfo, rq, 10).distort * 0.15; \},\
+	[0.1, 0.1, 0.1, 0.1],  \cf5 // lags for rate ffreq, depth and rq\cf2 \
+	2	\cf5 // numChannels\cf2 \
+);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // now make a simple reverb\cf2 \
+(\
+~makeEffect.value(\cf10 \\reverb\cf2 , \{ \cf3 arg\cf2  in, env;\
+	\cf5 // in and env come from the wrapper.\cf2 \
+	\cf3 var\cf2  input;\
+	input = in;\
+	16.do(\{ input = \cf3 AllpassC\cf2 .ar(input, 0.04, \cf3 Rand\cf2 (0.001,0.04), 3)\});\
+	input; \},\
+	\cf3 nil\cf2 ,  \cf5 // no lags\cf2 \
+	2	\cf5 // numChannels\cf2 \
+);\
+)\
+\
+\cf5 // something to process\cf2 \
+x = \{ \{\cf3 Decay2\cf2 .ar(\cf3 Dust2\cf2 .ar(3), mul: \cf3 PinkNoise\cf2 .ar(0.2))\} ! 2\}.play;\
+\
+y = \cf3 Synth\cf2 .tail(s, \cf10 \\wah\cf2 );\
+z = \cf3 Synth\cf2 .tail(s, \cf10 \\reverb\cf2 , [\cf10 \\wet\cf2 , 0.5]);\
+\
+\cf5 // we used an arg named gate, so Node-release can crossfade out the effects\cf2 \
+y.release; \
+\
+\cf5 // setting gate to zero has the same result\cf2 \
+z.set(\cf10 \\gate\cf2 , 0);\
+\
+x.free;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 common argument names: 
+\f4\i out
+\f0\i0  
+\f1\b0 and
+\f0\b  
+\f4\i gate
+\f1\i0\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf5 // arguments named 'out' and 'gate' are commonly used to specify an output bus and\cf2 \
+\cf5 // EnvGen gate respectively. Although not required, using them can help with consistency\cf2 \
+\cf5 // and interchangeability. 'gate' is particularly useful, as it allows for Node's release\cf2 \
+\cf5 // method.\cf2 \
+(\
+\cf3 SynthDef\cf2 (\cf10 \\synthDefTest\cf2 , \{ \cf3 arg\cf2  out, gate=1, freq=440; \
+	\cf5 // doneAction: 2 frees the synth when EnvGen is done\cf2 \
+	\cf3 Out\cf2 .ar(out, \cf3 SinOsc\cf2 .ar(freq) * \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .asr(0.1, 0.3, 1.3), gate, doneAction:2));\
+\}).store; \cf5 // use store for compatibility with pattern example below\cf2 \
+)\
+\
+x = \cf3 Synth\cf2 (\cf10 \\synthDefTest\cf2 , [\cf10 \\out\cf2 , 0]); \cf5 // play out through hardware output bus 0 (see Out.help)\cf2 \
+x.release; \cf5 // releases and frees the synth (if doneAction is > 2; see EnvGen)\cf2 \
+\
+\cf5 //equivalent:\cf2 \
+\
+x = \cf3 Synth\cf2 (\cf10 \\synthDefTest\cf2 ); \cf5 // out defaults to zero, if no default arg is given.\cf2 \
+x.set(\cf10 \\gate\cf2 , 0);\
+\
+\cf5 // if value is negative, it overrides the release time, to -1 - gate\cf2 \
+x = \cf3 Synth\cf2 (\cf10 \\synthDefTest\cf2 );\
+x.set(\cf10 \\gate\cf2 , -5); \cf5 // 4 second release\cf2 \
+\
+\cf5 //equivalent:\cf2 \
+x = \cf3 Synth\cf2 (\cf10 \\synthDefTest\cf2 );\
+x.release(4);\
+\
+\cf5 // if the out arg is used in a standard way, it can always be changed without knowing the synth def\cf2 \
+x = \cf3 Synth\cf2 (\cf10 \\synthDefTest\cf2 , [\cf10 \\out\cf2 , 0]);\
+x.set(\cf10 \\out\cf2 , 1); \cf5 //play through channel 1\cf2 \
+x.release;\
+\
+\cf5 // Another good example of this is with patterns, which can use gate to release notes\cf2 \
+(\
+\cf3 Pbind\cf2 (\
+	\cf10 \\instrument\cf2 , \cf10 \\synthDefTest\cf2 ,\
+	\cf10 \\freq\cf2 , \cf3 Pseq\cf2 ([500, 600, \cf3 Prand\cf2 ([200, 456, 345],1)], \cf3 inf\cf2 ),\
+	\cf10 \\legato\cf2 , \cf3 Pseq\cf2 ([1.5, 0.2], \cf3 inf\cf2 ),\
+	\cf10 \\dur\cf2 , 0.4,\
+	\cf10 \\out\cf2 , \cf3 Pseq\cf2 ([0, 1], \cf3 inf\cf2 )\
+).play;\
+)\
+}

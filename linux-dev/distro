@@ -1,0 +1,5 @@
+#! /bin/sh
+# This takes the build products and makes a distribution folder.
+mkdir SuperCollider_f
+cd build
+cp -R examples SCClassLibrary Help plugins synthdefs sounds scsynth SuperCollider.app ../SuperCollider_f

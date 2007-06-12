@@ -1,0 +1,71 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf0 \
+
+\f1\b\fs36 CoinGate				
+\fs24 statistical gate
+\fs36 \
+\
+
+\fs24 	*kr(prob, trig)\
+	*ar(prob, trig)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+When it receives a trigger, it tosses a coin, and either passes the trigger or doesn't.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 \
+	prob
+\f2\b0 		value between 0 and 1 determines probability of either possibilities\
+
+\f1\b 	trig
+\f2\b0 		input signal\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf2 //examples\cf3 \
+\
+(\
+a = \cf4 SynthDef\cf3 (\cf5 "help-TCoin"\cf3 , \{ \cf4 arg\cf3  out=0, prob=0.5;\
+	\cf4 var\cf3  trig;\
+	trig = \cf4 CoinGate\cf3 .kr(prob, \cf4 Impulse\cf3 .kr(10));\
+	\cf4 Out\cf3 .ar(out, \
+		\cf4 SinOsc\cf3 .ar(\
+			\cf4 TRand\cf3 .kr(300.0, 400.0, trig),0,0.2 \
+		)\
+	)\
+\}).play;\
+)\
+\
+a.set(\cf6 \\prob\cf3 , 1.0);\
+a.set(\cf6 \\prob\cf3 , 0.0);\
+a.set(\cf6 \\prob\cf3 , 0.1);\
+\
+\
+(\
+a = \cf4 SynthDef\cf3 (\cf5 "help-TCoin"\cf3 , \{ \cf4 arg\cf3  out=0, prob=0.5;\
+	\cf4 var\cf3  trig;\
+	trig = \cf4 Impulse\cf3 .ar(20, 0, \cf4 SinOsc\cf3 .kr(0.5,0,1,1));\
+	\cf4 Out\cf3 .ar(out, \
+		\cf4 Mix\cf3 .fill(3, \{\cf4 Ringz\cf3 .ar(\cf4 CoinGate\cf3 .ar(prob, trig*0.5), #[1,1.5]*\cf4 Rand\cf3 (1000, 9000), 0.01)\})\
+	)\
+\}).play;\
+)\
+\
+a.set(\cf6 \\prob\cf3 , 1.0);\
+a.set(\cf6 \\prob\cf3 , 0.0);\
+a.set(\cf6 \\prob\cf3 , 0.1);\
+\
+\
+\
+\cf0 \
+}

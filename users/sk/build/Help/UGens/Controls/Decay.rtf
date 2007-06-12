@@ -1,0 +1,35 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+
+\f1\b\fs36 Decay			exponential decay
+\f2\b0\fs24 \
+\
+
+\f1\b Decay.ar(in, decayTime, mul, add)\
+
+\f2\b0 \
+This is essentially the same as 
+\f1\b Integrator
+\f2\b0  except that instead of supplying the coefficient directly, it is caculated from a 60 dB decay time. This is the time required for the integrator to lose 99.9 % of its value or -60dB. This is useful for exponential decaying envelopes triggered by impulses.\
+\
+
+\f1\b in
+\f2\b0  - input signal\
+
+\f1\b decayTime
+\f2\b0  - 60 dB decay time in seconds.\
+\
+
+\f0\fs18 \cf2 // plot(\{ Decay.ar(Impulse.ar(1), 0.01) \});\cf3 \
+\
+\cf2 // used as an envelope\cf3 \
+play(\{ \cf4 Decay\cf3 .ar(\cf4 Impulse\cf3 .ar(\cf4 XLine\cf3 .kr(1,50,20), 0.25), 0.2, \cf4 PinkNoise\cf3 .ar, 0) \});
+\fs24 \cf0 \
+\
+}

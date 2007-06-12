@@ -1,0 +1,84 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs44 \cf0 RunningSum
+\f1\b0\fs24 \
+\
+A running sum over a user specified number of samples, useful for running RMS power windowing. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \ul \ulc0 Class Methods
+\f1\b0 \ulnone \
+\
+
+\f0\b *ar(in, numsamp=40)\
+
+\f1\b0 \
+
+\f0\b in-
+\f1\b0  Input signal\
+\
+
+\f0\b numsamp-
+\f1\b0  How many samples to take the running sum over (initialisation time only, not modulatable)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\i \cf0 Examples\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i0\fs18 \cf0 	\
+\cf2 \
+\cf3 //overloads of course- would need scaling	\cf2 \
+\{\cf4 RunningSum\cf2 .ar(\cf4 AudioIn\cf2 .ar)\}.play		\
+	\
+\cf3 //Running Average over x samples	\cf2 \
+(\
+\{\
+\cf4 var\cf2  x =100;\
+\
+\cf4 RunningSum\cf2 .ar(\cf4 LFSaw.ar\cf2 ,x)*(x.reciprocal)\
+\}.play\
+)\
+\cf3 \
+//RMS Power\cf2 \
+(\
+\{\
+\cf4 var\cf2  input, numsamp;\
+\
+input= \cf4 LFSaw\cf2 .ar;\
+numsamp=30;\
+\
+(\cf4 RunningSum\cf2 .ar(input.squared,numsamp)/numsamp).sqrt\
+\}.play\
+)\
+\
+\
+\cf3 //shortcut in class\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \{\cf4 RunningSum\cf2 .rms(\cf4 AudioIn\cf2 .ar)\}.play		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\cf3 //play around\cf2 \
+(\
+\{\
+\cf4 var\cf2  input, numsamp, power;\
+\
+input= \cf4 AudioIn\cf2 .ar;\
+numsamp=500;\
+power= \cf4 MouseX\cf2 .kr(0.1,4);\
+\
+(\cf4 RunningSum\cf2 .ar(input**power,numsamp)/numsamp)**(power.reciprocal)\
+\}.play\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\
+}

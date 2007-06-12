@@ -1,0 +1,3 @@
+PlayerUnop : AbstractPlayer {	var <>operator, <>a;		*new { arg operator, a;		^super.new.a_(loadDocument(a)).operator_(operator)	}	ar {		^a.value.perform(operator)	}	storeArgs { ^[operator,a] }
+
+	guiClass { ^PlayerUnopGui }}PlayerBinop : AbstractPlayer{	var <>operator, <>a, <>b;	*new { arg operator, a, b;		^super.new.a_(loadDocument(a)).b_(loadDocument(b)).operator_(operator)	}	ar {		^a.value.perform(operator,b.value)	}	storeArgs { ^[operator,a,b] }	guiClass { ^PlayerBinopGui }}

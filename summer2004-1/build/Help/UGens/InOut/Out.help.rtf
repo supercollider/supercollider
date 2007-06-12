@@ -1,0 +1,72 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Out
+\fs28 				write a signal to a bus\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 superclass:  AbstractOut
+\f2\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 	*ar(bus, channelsArray)  
+\f2\b0 - write a signal to an audio bus.
+\f0\b \
+	*kr(bus, channelsArray)  
+\f2\b0 -
+\f0\b  
+\f2\b0 write a signal to a control bus.
+\f1\fs18 \cf2 \
+	\
+
+\f2\fs24 \cf0 	
+\f0\b 	bus 
+\f2\b0 - the index of the bus to write out to. The lowest numbers are written to the audio hardware.\
+		
+\f0\b channelsArray 
+\f2\b0 - an Array of channels or single output to write out.\
+		\
+Note that using the 
+\f0\b Bus
+\f2\b0  class to allocate a multichannel bus simply reserves a series of adjacent bus indices with the 
+\f0\b Server
+\f2\b0  object's bus allocators. abus.index simply returns the first of those indices. When using a Bus with an 
+\f0\b In
+\f2\b0  or 
+\f0\b Out
+\f2\b0  ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.\
+\
+See the 
+\f0\b Server-Architecture
+\f2\b0  and 
+\f0\b Bus
+\f2\b0  helpfiles for more information on buses and how they are used.
+\f1\fs18 \cf2 \
+\
+	(\
+	SynthDef\cf0 (\cf3 "help-out"\cf0 , \{ \cf2 arg\cf0  out=0, freq=440;\
+		\cf2 var\cf0  source;\
+			source = \cf2 SinOsc\cf0 .ar(freq, 0, 0.1);\
+\
+			\cf4 // write to the bus, adding to previous contents\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 			\cf2 Out\cf0 .ar(out, source);\
+\
+	\}).send(s);\
+	)\
+	\
+	\
+	\cf2 Synth\cf0 (\cf3 "help-out"\cf0 , [\cf5 \\freq\cf0 , 500]);\
+	\cf2 Synth\cf0 (\cf3 "help-out"\cf0 , [\cf5 \\freq\cf0 , 600]);\
+	\cf2 Synth\cf0 (\cf3 "help-out"\cf0 , [\cf5 \\freq\cf0 , 700]);\
+}

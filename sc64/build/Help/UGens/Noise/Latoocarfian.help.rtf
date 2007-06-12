@@ -1,0 +1,102 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fmodern\fcharset77 Courier;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs36 \cf0 Latoocarfian			chaotic function\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 Latoocarfian.ar(a, b, c, d, mul, add)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b0 \cf0 \
+This is a function given inClifford Pickover's book \ul Chaos In Wonderland\ulnone , pg 26. \
+The function has four parameters a, b, c, and d.\
+The function is:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 xnew = sin(y * b) + c * sin(x * b);\
+ynew = sin(x * a) + d * sin(y * a);\
+x = xnew;\
+y = ynew;\
+output = x;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0 \cf0 According to Pickover, parameters 
+\f1\b a
+\f0\b0  and 
+\f1\b b
+\f0\b0  should be in the range from -3 to +3,\
+and parameters 
+\f1\b c
+\f0\b0  and 
+\f1\b d
+\f0\b0  should be in the range from 0.5 to 1.5.\
+The function can, depending on the parameters given, give continuous chaotic\
+output, converge to a single value (silence)  or oscillate in a cycle (tone).\
+This UGen is experimental and not optimized currently, so is rather hoggish of CPU.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf2 //not installed yet!\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "help-Latoocarfian"\cf0 , \{ \cf3 arg\cf0  out=0, a=1.0, b=1.0, c=0.7, d=0.7;\
+	\cf3 var\cf0  env, a, b, c, d;\
+	env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .linen(0.1, 1, 0.1), doneAction:2);\
+	\cf3 Out\cf0 .ar(out, \
+		\cf3 Latoocarfian\cf0 .ar(a, b, c, d, 0.05)\
+	)\
+\}).send(s);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 \{\
+	\cf3 Synth\cf0 .new(\cf4 "help-Latoocarfian", [\
+		\\a, 3.0.rand, \\b, 3.0.rand, \
+		\\c, 0.5 + 1.5.rand, \\d, 0.5 + 1.5.rand]\
+	\cf0 );\
+	1.0.wait;\
+\}.play;
+\f0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf0 \
+//todo:\
+(\
+// GUI version:\
+w = GUIWindow.new("Latoocarfian", Rect.newBy(40,40,200,300));\
+SliderView.new(w, Rect.newBy(8,8,20,280), nil, 0, -3, 3);\
+SliderView.new(w, Rect.newBy(32,8,20,280), nil, 0, -3, 3);\
+SliderView.new(w, Rect.newBy(56,8,20,280), nil, 1, 0.5, 1.5);\
+SliderView.new(w, Rect.newBy(80,8,20,280), nil, 1, 0.5, 1.5);\
+\{ XFadeTexture.ar(\{\
+	w.views.at(0).value = 3.0.rand2;\
+	w.views.at(1).value = 3.0.rand2;\
+	w.views.at(2).value = 0.5 + 1.0.rand;\
+	w.views.at(3).value = 0.5 + 1.0.rand;\
+	//[a, b, c, d].postln;\
+	Latoocarfian.ar(w.views.at(0).value, w.views.at(1).value, \
+		w.views.at(2).value, w.views.at(3).value, 0.05)\
+\},  1, 0.1, 1) \}.play;\
+)\
+\
+}

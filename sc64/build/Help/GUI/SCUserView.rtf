@@ -1,0 +1,253 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fnil\fcharset77 GadgetRegular;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b\fs36 \cf0 SCUserView				
+\fs28 user-definable view
+\f1\b0\fs24 \
+\
+
+\f0\b superclass: SCView
+\f1\b0 \
+\
+SCUserView is a user-definable View intended mainly for use with Pen and drawHooks.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 See also: 
+\f0\b [\ul SCWindow\ulnone ]
+\f1\b0 , 
+\f0\b [\ul Pen\ulnone ], [\ul Color\ulnone ]
+\f1\b0 , and 
+\f0\b [\ul String\ulnone ]
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b \cf0 keyDownFunc_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\b0 \cf0 \
+Set the function which should be evaluated if the view is in focus and a key is pressed. This function will be passed four arguments: the View, the key pressed as a 
+\f0\b Char
+\f1\b0 , modifier keys (shift, alt, etc.), and the unicode value. See 
+\f0\b [\ul SCView\ulnone ]
+\f1\b0  for more details.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	(\
+	\cf2 // select the window, type something and watch the post window\cf0 \
+		w = \cf3 SCWindow\cf0 .new("select this window and type something");\
+		c = \cf3 SCUserView\cf0 (w,\cf3 w.view.bounds\cf0 );\
+		c.keyDownFunc = \{ \cf3 arg\cf0  view,char,modifiers,unicode;\
+			[char, modifiers, unicode].postln;\
+			c.drawFunc = \{\
+				char.asString.drawAtPoint(180@150, \cf3 Font\cf0 (\cf4 "
+\f3 \cf4 Gadget
+\f2 \cf4 "\cf0 , 70), \cf3 Color\cf0 .blue(0.3, 0.5))\
+			\};\
+			w.refresh;\
+		\};\
+		w.front; c.focus;\
+	)
+\f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b \cf0 drawFunc_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\b0 \cf0 \
+Set the function which should be evaluated if the view is refreshed. This happens every time the whole window is refreshed (manually by calling SCWindow-refresh or e.g. by selecting the view or resizing the window).\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs18 \cf0 	(\cf5 \
+	\cf6 var\cf5  func;\
+	\
+	func = \{\cf6 |me|\cf5 \
+		\cf6 Pen\cf5 .use\{\
+			\cf7 // clipping into the boundingbox\cf5 \
+			\cf6 Pen\cf5 .moveTo((me.bounds.left)@(me.bounds.top));\
+			\cf6 Pen\cf5 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (me.bounds.width@0));\
+			\cf6 Pen\cf5 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (me.bounds.width@me.bounds.height));\
+			\cf6 Pen\cf5 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (0@me.bounds.height));\
+			\cf6 Pen\cf5 .lineTo((me.bounds.left)@(me.bounds.top));\
+			\cf6 Pen\cf5 .clip;\
+			\
+			\cf7 // draw background\cf5 \
+			\cf6 Color\cf5 .gray(0.5).set;\
+			\cf6 Pen\cf5 .moveTo((me.bounds.left)@(me.bounds.top));\
+			\cf6 Pen\cf5 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (me.bounds.width@0));\
+			\cf6 Pen\cf5 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (me.bounds.width@me.bounds.height));\
+			\cf6 Pen\cf5 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (0@me.bounds.height));\
+			\cf6 Pen\cf5 .lineTo((me.bounds.left)@(me.bounds.top));\
+			\cf6 Pen\cf5 .fill;			\
+\
+			\cf6 Pen\cf5 .translate(100, 100);\
+			10.do\{\
+				\cf6 Color\cf5 .red(rrand(0.0, 1), rrand(0.0, 0.5)).set;\
+				\cf6 Pen\cf5 .addArc((400.exprand(2))@(100.rand), rrand(10, 100), 2pi.rand, pi);\
+				\cf6 Pen\cf5 .perform([\cf8 \\stroke\cf5 , \cf8 \\fill\cf5 ].choose);\
+			\}\
+		\}\
+	\};\
+\
+	w = \cf6 SCWindow\cf5 .new(\cf9 "DrawFunc Examples"\cf5 ).front;\
+	w.view.background_(\cf6 Color\cf5 .white);\
+	3.do\{\cf6 |i|\cf5 \
+		v = \cf6 SCUserView\cf5 (w, \cf6 Rect\cf5 (20+(i*120), 100, 100, 100));\
+		v.drawFunc = func;\
+	\};\
+	w.refresh;\
+	\cf0 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\fs24 \cf0 \
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b \cf0 mouseBeginTrackFunc_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\b0 \cf0 \
+Set the function which should be evaluated if the mouse is at the beginning of tracking (mouse-down). This function will be passed four arguments: theView, x coordinate, y coordinate, and keyboard modifiers.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b \cf0 mouseTrackFunc_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f1\b0 \cf0 \
+Set the function which should be evaluated if the mouse is tracked. This function will be passed four arguments: theView, x coordinate, y coordinate, and keyboard modifiers.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\b \cf0 mouseEndTrackFunc_
+\f1\b0 \
+\
+Set the function which should be evaluated if the mouse is at the end of tracking (mouse-up). This function will be passed four arguments: theView, x coordinate, y coordinate, and keyboard modifiers.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs18 \cf0 	(\
+	\cf3 var\cf0  drawFunc, beginTrackFunc, endTrackFunc, trackFunc, sat = 0, absX;\
+	\
+	drawFunc = \{\cf3 |me|\cf0 \
+		\cf3 Pen\cf0 .use\{\
+			\cf2 // clipping into the boundingbox\cf0 \
+			\cf3 Pen\cf0 .moveTo((me.bounds.left)@(me.bounds.top));\
+			\cf3 Pen\cf0 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (me.bounds.width@0));\
+			\cf3 Pen\cf0 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (me.bounds.width@me.bounds.height));\
+			\cf3 Pen\cf0 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (0@me.bounds.height));\
+			\cf3 Pen\cf0 .lineTo((me.bounds.left)@(me.bounds.top));\
+			\cf3 Pen\cf0 .clip;\
+			\
+			\cf2 // draw background\cf0 \
+			\cf3 Color\cf0 .gray(sat).set;\
+			\cf3 Pen\cf0 .moveTo((me.bounds.left)@(me.bounds.top));\
+			\cf3 Pen\cf0 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (me.bounds.width@0));\
+			\cf3 Pen\cf0 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (me.bounds.width@me.bounds.height));\
+			\cf3 Pen\cf0 .lineTo(((me.bounds.left)@(me.bounds.top))\
+					+ (0@me.bounds.height));\
+			\cf3 Pen\cf0 .lineTo((me.bounds.left)@(me.bounds.top));\
+			\cf3 Pen\cf0 .fill;			\
+\
+			\cf3 Pen\cf0 .translate(100, 100);\
+			10.do\{\
+				\cf3 Color\cf0 .red(rrand(0.0, 1), rrand(0.0, 0.5)).set;\
+				\cf3 Pen\cf0 .addArc((400.exprand(2))@(100.rand), rrand(10, 100), 2pi.rand, pi);\
+				\cf3 Pen\cf0 .perform([\cf10 \\stroke\cf0 , \cf10 \\fill\cf0 ].choose);\
+			\}\
+		\}\
+	\};\
+	beginTrackFunc = \{\cf3 |me, x, y, mod|\cf0 \
+		absX = x;\
+		postf(\cf4 "begin path: x=%\\n"\cf0 ,absX);\
+	\};\
+	endTrackFunc = \{\cf3 |me, x, y, mod|\cf0 \
+		postf(\cf4 "end path: (absX-x)=%\\n"\cf0 , (absX-x))\
+	\};\
+	trackFunc = \{\cf3 |me, x, y, mod|\cf0 \
+		sat = ((absX-x)/100);\
+		me.refresh;\
+	\};\
+\
+	w = \cf3 SCWindow\cf0 .new.front;\
+	w.view.background_(\cf3 Color\cf0 .white);\
+	3.do\{\cf3 |i|\cf0 \
+		v = \cf3 SCUserView\cf0 (w, \cf3 Rect\cf0 (20+(i*120), 100, 100, 100));\
+		\cf2 //v.background_(Color.white); // not affecting anything...\cf0 \
+		v.drawFunc = drawFunc;\
+		v.mouseBeginTrackFunc = beginTrackFunc;\
+		v.mouseEndTrackFunc = endTrackFunc;\
+		v.mouseTrackFunc = trackFunc;\
+	\};\
+	w.refresh;\
+	)
+\f1\fs24 \
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f2\fs18 \cf7 // draw on the view\
+\cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li200\ql\qnatural\pardirnatural
+\cf5 	(\
+	\cf6 var\cf5  w, txt, tmppoints, all;\
+	tmppoints = [];\
+	\
+	w = \cf6 SCWindow\cf5 (\cf9 "draw on me"\cf5 , \cf6 Rect\cf5 (128, 64, 340, 360));\
+	w.drawHook_\{\
+\cf6 		Pen\cf5 .use \{	\
+			\cf6 Pen\cf5 .width = 1;\
+			\cf6 Pen\cf5 .beginPath;\
+			\
+			tmppoints.do\{\cf6 	|p, i|\cf5 \
+				if(i == 0)\{\
+				\cf6 Pen\cf5 .moveTo(p);\
+				\}\{\
+				\cf6 Pen\cf5 .lineTo(p);\
+				\}\
+			\};\
+			all.do\{\cf6 |points|\cf5 \
+				points.do\{\cf6 |p, i|\cf5 \
+					if(i == 0)\{\
+						\cf6 Pen\cf5 .moveTo(p);\
+					\}\{\
+						\cf6 Pen\cf5 .lineTo(p);\
+					\}\
+				\};\
+			\};\
+			\cf6 Pen\cf5 .stroke;\
+		\};\
+	\};\
+	v = \cf6 SCUserView\cf5 (w,\cf6 Rect\cf5 (0, 0, 340, 360))\
+		.mouseTrackFunc_(\{\cf6 |v,x,y|\cf5 \
+			tmppoints = tmppoints.add(x@y);\
+			w.refresh;\
+	\})\
+		.mouseEndTrackFunc_(\{\cf6 |v,x,y|\cf5 \
+			all = all.add(tmppoints.copy);\
+			tmppoints = [];\
+			w.refresh;\
+	\});\
+		\
+	w.front;\
+	)}

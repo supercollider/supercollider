@@ -1,0 +1,422 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Synth
+\f1\b0\fs24 \
+\
+superclass: Node\
+\
+A Synth is a single sound producing unit.  A SynthDef specifies what UGens are used and how they are patched together.  It also specifies what inputs the Synth will have.  It writes a synthDef file which the server can read, and a Synth can then be created by specifying the synthDefName.  The Synth plays the sound that the SynthDef has defined.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Creation Methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \ulnone \
+	Synth.new(synthDefName)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 		create and start a Synth playing the synthDef on the \
+		default Server at the head of the top group\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	Synth.new(synthDefName,[ index1,arg1,... indexN,argN  ])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 		create and start a Synth playing the synthDef on the \
+		default Server at the head of the top group\
+		using the initial arguments supplied\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+	Much of the time these two methods are sufficient to specify and play\
+	a synth.\
+	\
+	To specify a server other than the default, you need to specify a target. \
+	First you need to understand ...\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 \
+Order of Execution\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	sound ->  filter\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	\
+If a sound is to be passed through a filter, the synth that does the filter must be later in the\
+order of execution than the sound which is it's input.  The computer must calculate a buffers worth of sound, and then the computer moves on to calculate a buffers worth of filter of that sound.\
+\
+Do not confuse this with audio patching !  Audio patching is accomplished by using the  Busses, but you must get your order or execution correct in order for your patching to work !\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul More Creation Methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	Synth.after(aSynth,synthDefName,[ index1,arg1,... indexN,argN  ])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 		create a synth and add immediately after aSynth, \
+		in the same group,\
+		on the same server \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+	Synth.before(aSynth,synthDefName,[ index1,arg1,... indexN,argN  ])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 		create a synth and add immediately before aSynth, \
+		in the same group,\
+		on the same server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 	
+\f0\b\fs24 Synth.head(aTarget,synthDefName,[ index1,arg1,... indexN,argN  ])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 		create and return a synth...\
+		if the target is \
+			a group\
+				add to the head of that group\
+			a synth\
+				add to the head of that synth's group\
+			a server\
+				add to the head of the RootNode of that server\
+			nil\
+				add to the head of the RootNode of the defaultServer\
+				this would be equivalent to: Synth.new(synthDefName, args)\
+				\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	
+\f0\b\fs24 Synth.tail(aTaget,synthDefName,[ index1,arg1,... indexN,argN  ])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 		create and return a synth...\
+		if the target is \
+			a group\
+				add to the tail of that group\
+			a synth\
+				add to the tail of that synth's group\
+			a server\
+				add to the tail of the RootNode of that server\
+			nil\
+				add to the tail of the RootNode of the defaultServer\
+				\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+	Synth.new(synthDefName,[ index1,arg1,... indexN,argN  ],target,addAction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 		this method accomplishes the same exact thing as the four methods above.\
+\
+		here we specify a target node and an addAction that specifies\
+		the relative position your Synth should be to that target: \
+		(before, after, head of the target's group, tail of that target's group)\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 			
+\f0\b\fs24 target\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 				using the method asTarget, the argument will be converted\
+				to a Node.
+\f2\fs18 \
+
+\f1\fs24 					nil :  the RootNode of the defaultServer\
+						this is the top level group.\
+					Synth, Group, RootNode :\
+						these objects are already Nodes and need \
+						no conversion\
+					Server: the RootNode of that server\
+					\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 			
+\f0\b\fs24 addAction:  
+\f1\b0 a symbol
+\f2\fs18 \
+				\cf2 \\addToHead
+\f1\fs24 \cf0  (default)
+\f2\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 					if the target is \
+						a group\
+							add to the head of that group\
+						a synth\
+							add to the head of that synth's group\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 				\cf2 \\addToTail\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 					if the target is \
+						a group\
+							add to the tail of that group\
+						a synth\
+							add to the tail of that synth's group\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 				\cf2 \\addAfter\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 					add immediately after the target, \
+					in the same group,\
+					on the same server \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 				\cf2 \\addBefore\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 					add immediately before the target, \
+					in the same group,\
+					on the same server\
+				
+\f2\fs18 \cf2 \\addReplace\
+
+\f1\fs24 \cf0 					replace the target,\
+					in the same group,\
+					on the same server,\
+					keeping the same nodeID\
+					\
+		
+\f0\b Synth.replace(nodeToReplace, synthDefName,\
+							[ index1,arg1,... indexN,argN  ])\
+
+\f1\b0 				returns a new synth by replacing a node \
+				\
+		
+\f0\b Synth.newLoad(synthDefName,[ index1,arg1,... indexN,argN  ], \
+				target,addAction)\
+
+\f1\b0 				loads the synth def to the server and starts it when the load\
+				is completed.\
+				\
+		
+\f0\b Synth.newPaused(synthDefName,[ index1,arg1,... indexN,argN  ],\
+				target,addAction)\
+
+\f1\b0 				creates a Synth with the run flag set to false.\
+				use synth.run to start it.\
+	
+\f2\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Control\ulnone \
+\
+See  [Node] for the control commands: (run,free,set,setn,fill,map) \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+trace
+\f1\b0 \
+	post tracing information.  \
+	see 
+\f0\b Server-Command-Reference
+\f1\b0  : /s_trace	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\
+\
+( // boot the server, load synth defs\
+s = \cf3 Server\cf0 .local;\
+s.boot;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "tpulse"\cf0 , \{ \cf3 arg\cf0  out=0,freq=700,sawFreq=440.0; \
+	\cf3 Out\cf0 .ar(out, \cf3 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) ) \
+\}).writeDefFile;\
+\
+s.loadSynthDef(\cf4 "tpulse"\cf0 );\
+\
+)\
+\
+\
+(\
+// make a new synth\
+y = \cf3 Synth\cf0 (\cf4 "tpulse"\cf0 );\
+\
+// pause\
+y.run(\cf3 false\cf0 );\
+\
+y.run(\cf3 true\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // by argument name\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 y.set(\cf4 "freq"\cf0 ,200);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // or by index\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 y.set(2,100.0);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 \
+// modulate out to bus number 1 (the other speaker)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 y.set(0,1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 //  multiple set commands in one message\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 y.set(\cf4 "out"\cf0 ,0,\cf4 "freq"\cf0 ,300);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // free the synth from the server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 y.free;\
+\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Moving the order of execution\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 	See [Node]\
+	\
+	\
+	\
+	
+\f2\b0\fs18 \
+( \cf5 // first collect some things to play with\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "moto-rev"\cf0 , \{ \cf3 arg\cf0  out=0;\
+	\cf3 var\cf0  x;\
+	x = \cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 0, 10, 21), [0,0.1], 0.1), \
+		100, 0.1).clip2(0.4);\
+	\cf3 Out\cf0 .ar(out, x);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf0 (\cf4 "bubbles"\cf0 , \{ \cf3 arg\cf0  out=0;\
+	\cf3 var\cf0  f, zout;\
+	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \
+	zout = \cf3 CombN\cf0 .ar(\cf3 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf5 // echoing sine wave\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\cf3 Out\cf0 .ar(out, zout);\
+\}).writeDefFile;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "rlpf"\cf0 ,\{ \cf3 arg\cf0  out=0,ffreq=600,rq=0.1;\
+	\cf3 ReplaceOut\cf0 .ar( out, \cf3 RLPF\cf0 .ar( \cf3 In\cf0 .ar(out), ffreq,rq) )\
+\}).writeDefFile;\
+\
+\
+\cf3 SynthDef\cf0 (\cf4 "wah"\cf0 , \{ \cf3 arg\cf0  out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;\
+	\cf3 var\cf0  zin, zout;\
+\
+	zin = \cf3 In\cf0 .ar(out, 2);\
+	cfreq = \cf3 Lag3\cf0 .kr(cfreq, 0.1);\
+	mfreq = \cf3 Lag3\cf0 .kr(mfreq, 0.1);\
+	rq   = \cf3 Ramp\cf0 .kr(rq, 0.1);\
+	zout = \cf3 RLPF\cf0 .ar(zin, \cf3 LFNoise1\cf0 .kr(rate, mfreq, cfreq), rq, 10).distort \
+					* 0.15;\
+\
+	\cf5 // replace the incoming bus with the effected version\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\cf3 ReplaceOut\cf0 .ar( out , zout ); \
+	\
+\}).writeDefFile;\
+\
+s.loadSynthDef(\cf4 "moto-rev"\cf0 );\
+s.loadSynthDef(\cf4 "bubbles"\cf0 );\
+s.loadSynthDef(\cf4 "rlpf"\cf0 );\
+s.loadSynthDef(\cf4 "wah"\cf0 );\
+\
+)\
+\
+( \cf5 // execute these one at a time\
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // y is playing on bus 0\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 y = \cf3 Synth\cf0 (\cf4 "moto-rev"\cf0 ,[\cf4 "out"\cf0 ,0]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // z is reading from bus 0 and replacing that\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 z = \cf3 Synth\cf0 .after(y,\cf4 "wah"\cf0 ,[\cf4 "out"\cf0 ,0]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // stop the wah-ing\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 z.run(\cf3 false\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // resume the wah-ing\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 z.run(\cf3 true\cf0 );\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // add a rlpf after that, reading and writing to the same buss\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 x = \cf3 Synth\cf0 .after(z,\cf4 "rlpf"\cf0 ,[\cf4 "out"\cf0 ,0]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // create another rlpf after x\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 t = \cf3 Synth\cf0 .after(x,\cf4 "rlpf"\cf0 ,[\cf4 "out"\cf0 ,0]);\
+\
+x.set(\cf4 "ffreq"\cf0 ,400);\
+\
+x.set(\cf4 "ffreq"\cf0 ,800);\
+\
+x.free;\
+z.free;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // now place another synth after y, on the same bus\
+// they both write to the buss, adding their outputs\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 r = \cf3 Synth\cf0 .after(y,\cf4 "bubbles"\cf0 ,[\cf4 "out"\cf0 ,0]);\
+\
+\
+\
+y.free;\
+\
+r.free;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // look at the Server window\
+// still see 4 Ugens ?\
+// you can't hear me, but don't forget to turn me off\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 t.free;\
+\
+\
+)\
+\
+\
+\
+\
+\
+}

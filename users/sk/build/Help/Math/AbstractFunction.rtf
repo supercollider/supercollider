@@ -1,0 +1,127 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 AbstractFunction
+\f1\b0\fs24 \
+\
+\
+An AbstractFunction is an object which responds to a set of messages that represent\
+mathematical functions. Subclasses override a smaller set of messages to respond\
+to the mathematical functions. The intent is to provide a mechanism for functions\
+that do not calculate values directly but instead compose structures for calculating.\
+\
+Function, Pattern, Stream and UGen are subclasses of AbstractFunction.\
+For example, if you multiply two UGens together the receiver responds by answering a new\
+instance of class BinaryOpUGen which has the two operands as inputs.\
+\
+\
+
+\f0\b Unary Messages:
+\fs28 \ul \
+
+\f1\b0\fs24 \ulnone \
+All of the following messages send the message composeUnaryOp to the receiver with the\
+unary message selector as an argument.\
+\
+
+\f0\b neg, reciprocal, bitNot, abs, asFloat, asInt, ceil, floor, frac, sign, squared, cubed, sqrt\
+exp, midicps, cpsmidi, midiratio, ratiomidi, ampdb, dbamp, octcps, cpsoct, log, log2,\
+log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, rand, rand2, linrand, bilinrand,\
+sum3rand, distort, softclip, nyqring, coin, even, odd, isPositive, isNegative,\
+isStrictlyPositive\
+
+\f1\b0 \
+\
+\
+
+\f0\b Binary Messages:
+\fs28 \ul \
+
+\f1\b0 \ulnone \
+
+\fs24 All of the following messages send the message composeBinaryOp to the receiver with the\
+binary message selector and the second operand as arguments.\
+\
+
+\f0\b +, -, *, /, div, %, **, min, max, <, <=, >, >=, &, |, bitXor, lcm, gcd, round, trunc, atan2, \
+hypot, >>, +>>, fill, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip,\
+scaleneg, clip2, excess, <!, rrand, exprand\
+\
+\
+\
+Messages with more arguments:\
+\
+
+\f1\b0 All of the following messages send the message composeNAryOp to the receiver with the\
+binary message selector and the other operands as arguments.
+\f0\b \
+\
+clip, wrap, fold, blend, linlin, linexp, explin, expexp\
+\
+\
+\
+\
+Function Composition:\
+\
+
+\f1\b0 when unary, binary or n-ary operators are appied to an abstract function, it returns an object that represents\
+this operation, without evaluating the function: UnaryOpFunction, BinaryOpFunction, NAryOpFunction.\
+Note that different subclasses like Pattern or UGen have their own composition scheme analogous to the one of AbstractFunction itself. More about functions, see [\ul Function\ulnone ]\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 \
+// examples\cf3 \
+\
+a = \{ 1.0.rand \}\'ca+ 8;\
+a.value;\
+\
+\cf0 \
+y = \{ 8 \}\'ca+ \{ 1.0.rand \};\
+y.value;\
+\
+\cf2 // arguments are passed into both functions\cf3 \
+\
+y = \{ \cf4 |x=0|\cf3  x \} + \{\'ca1.0.rand \};\
+y.value(10);\
+\
+\
+y = \{ \cf4 |x=0|\cf3  x * 3 \} + \{\'ca|x=0| x + 1.0.rand \};\
+y.value(10);\
+\
+y.postcs;\
+\
+y = \{ \cf4 |x=0|\cf3  x * 3 \} + \{\'ca|x=0| x + 1.0.rand \} * \{ \cf4 |x=0|\cf3  [50, 100].choose + x \} + 1.0;\
+y.value(10);\
+\
+\cf2 // environments can be used as a lookup with valueEnvir:\cf3 \
+\
+(\
+\cf4 Environment\cf3 .use \{\
+	~y = 10;\
+	~x = 2;\
+	~z = \{ \cf4 |x=8|\cf3  x \} + \{ \cf4 |y=0|\cf3  y + 1.0.rand \};\
+	~z.valueEnvir;\
+\}\
+)\
+\
+\cf2 // n-ary operators:\cf3 \
+\
+a = blend(\{ 3.0.rand \}, \{\'ca1000.rand \}, \{ \cf4 |frac|\cf3  frac \});\
+a.value(0.5);\
+\
+a.value((0, 0.06..1)); \cf2 // creates a range of values..\
+\
+\
+\
+\
+\cf0 \
+\cf3 \
+\
+\
+\
+}

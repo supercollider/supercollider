@@ -1,0 +1,152 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf330
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Duty				
+\fs26 demand results from demand rate ugens
+\fs36 \
+
+\fs24 \
+
+\f1\b0 superclass: UGen\
+
+\f0\b \
+Duty.ar(duration, reset, level, doneAction)
+\f2\b0\fs18 \
+\
+\
+\
+
+\f1\fs24 A value is demanded each ugen in the list and output according to a stream of duration values. \
+The unit generators in the list should be 'demand' rate.\
+When there is a trigger at the reset input, the demand rate ugens in the list and the duration are reset.\
+The reset input may also be a demand ugen, providing a stream of reset times.\
+\
+\
+
+\f0\b duration
+\f1\b0 		time values. Can be a demand ugen or any signal. \
+			The next level is acquired after duration.\
+		\
+
+\f0\b reset
+\f1\b0 		trigger or reset time values. Resets the list of ugens and the duration ugen when triggered.\
+			The reset input may also be a demand ugen, providing a stream of reset times.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+
+\f0\b\fs24 level		
+\f1\b0 	demand ugen providing the output values.\
+\
+
+\f0\b doneAction
+\f1\b0 	a doneAction that is evaluated when the duration stream ends.\
+			See 
+\f0\b [\ul UGen-doneActions\ulnone ]
+\f1\b0  for more detail.
+\fs18 \
+
+\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // examples\cf0 \
+\
+s.boot;\
+\
+\
+(\
+	\{\
+		\cf3 var\cf0  freq;\
+		freq = \cf3 Duty\cf0 .kr(\
+				\cf3 Drand\cf0 ([0.01, 0.2, 0.4], \cf3 inf\cf0 ), \cf2 // demand ugen as durations\cf0 \
+				0, \
+				\cf3 Dseq\cf0 ([204, 400, 201, 502, 300, 200], \cf3 inf\cf0 )\
+			); \
+		\cf3 SinOsc\cf0 .ar(freq * [1, 1.01]) * 0.1\
+	\
+	\}.play;\
+)\
+\
+(\
+	\{\
+		\cf3 var\cf0  freq;\
+		freq = \cf3 Duty\cf0 .kr(\
+				\cf3 MouseX\cf0 .kr(0.001, 2, 1), \cf2 // control rate ugen as durations\cf0 \
+				0, \
+				\cf3 Dseq\cf0 ([204, 400, 201, 502, 300, 200], \cf3 inf\cf0 )\
+			); \
+		\cf3 SinOsc\cf0 .ar(freq * [1, 1.01]) * 0.1\
+	\
+	\}.play;\
+)\
+\
+\
+\
+\cf2 // resetting the demand ugens\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+(\
+	\{\
+		\cf3 var\cf0  freq;\
+		freq = \cf3 Duty\cf0 .kr(\
+				\cf3 Dseq\cf0 ([0.2, 0.3, 0.4, \cf3 Dseq\cf0 ([1, 1, 1, 2, 1, 2], \cf3 inf\cf0 )]) / 2, \
+				\cf3 Dust\cf0 .kr(1), \cf2 // control rate reset\cf0 \
+				\cf3 Dseq\cf0 ([0, 1, 2, \cf3 Dseq\cf0 ([1, 2, 3, 4, 5], \cf3 inf\cf0 )])\
+			) * 30 + 250; \
+		\cf3 SinOsc\cf0 .ar(freq * [1, 1.01]) * 0.1\
+	\
+	\}.play;\
+)\
+\
+(\
+	\{\
+		\cf3 var\cf0  freq;\
+		freq = \cf3 Duty\cf0 .kr(\
+				\cf3 Dseq\cf0 ([0.2, 0.3, 0.4, \cf3 Dseq\cf0 ([1, 1, 1, 2, 1, 2], \cf3 inf\cf0 )]) / 2, \
+				\cf3 Dseq\cf0 ([1, 2, 4, 5], \cf3 inf\cf0 ), \cf2 // demand rate reset\cf0 \
+				\cf3 Dseq\cf0 ([0, 1, 2, \cf3 Dseq\cf0 ([1, 2, 3, 4, 5], \cf3 inf\cf0 )])\
+			) * 30 + 250; \
+		\cf3 SinOsc\cf0 .ar(freq * [1, 1.01]) * 0.1\
+	\
+	\}.play;\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // demand ugen as audio oscillator\cf0 \
+\
+(\
+	\{\
+		\cf3 var\cf0  a, n=5, m=64;\
+		a = \{\
+			\cf3 var\cf0  x;\
+			x = \{ 0.2.rand2 \} ! m;\
+			x = x ++ (\{  Drand(\{ 0.2.rand2 \} ! n) \} ! m.rand);\
+			\cf3 Dseq\cf0 (x.scramble, \cf3 inf\cf0 )\
+		\} ! n;\
+		\cf3 Duty\cf0 .ar(\
+				\cf3 MouseX\cf0 .kr(1, 125, 1) * \cf3 SampleDur\cf0 .ir * [1, 1.02],\
+				0,\
+				\cf3 Dswitch1\cf0 (a, \cf3 MouseY\cf0 .kr(0, n-1))\
+			)\
+	\
+	\}.play;\
+)\
+\
+\
+\
+}

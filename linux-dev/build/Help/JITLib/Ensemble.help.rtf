@@ -1,0 +1,249 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 \
+Ensemble\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs26 \cf0 superclass: AbstractEnsemble / Group
+\fs36 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs26 \cf0 keeps any mappings or control settings for all \
+nodes that get moved to or that are created within this group.\
+these settings are stored in a 
+\f0\b NodeMap
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+	\
+	
+\f0\b\fs26 map(key1,bus1, key2, bus2...)\
+	
+\f1\b0 	map the controls to a bus\
+	
+\f0\b unmap(key1, key2, ...)\
+	
+\f2\b0\fs18 	
+\f1\fs26 remove the mapping\
+		
+\f2\fs18 \
+	
+\f0\b\fs26 map(key1,arg1, key2, arg2...)\
+		
+\f1\b0 set controls
+\f0\b \
+	unset(key1, key2, ...)\
+		
+\f1\b0 remove the setting\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+\cf2 //start the server\
+\cf0 s = \cf3 Server\cf0 .local;\
+s.boot;\
+\
+\cf2 //send some synthdefs\
+\cf0 (\
+\cf3 SynthDef\cf0 (\cf4 "sine2"\cf0 , \{ \cf3 arg\cf0  out=0,freq=440.0; \
+	\cf3 Out\cf0 .ar(out, \cf3 SinOsc\cf0 .ar(freq*[1,1.1], 0,0.1) ) \
+\}).load(s);\
+\cf3 SynthDef\cf0 (\cf4 "lfo"\cf0 , \{ \cf3 arg\cf0  out=0,freq=440.0, rate=0.3, depth=0.2; \
+	\cf3 Out\cf0 .kr(out, \cf3 LFNoise1\cf0 .kr(rate, freq*depth, freq) ) \
+\}).load(s);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 setting the group controls
+\f2\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //create a new ensemble group\
+\cf0 g = \cf3 Ensemble\cf0 (s);\
+\
+\cf2 //start a synth inside and set the group\
+\cf0 x = \cf3 Synth\cf0 .tail(g, \cf4 "sine2"\cf0 );\
+g.set(\cf5 \\freq\cf0 , 300);\
+\
+\cf2 //free the synth and start a new one: it has the group settings\
+\cf0 x.free;\
+x = \cf3 Synth\cf0 .tail(g, \cf4 "sine2"\cf0 );\
+\
+\cf2 //remove the control setting\
+\cf0 g.unset(\cf5 \\freq\cf0 );\
+x.free;\
+\
+\cf2 //new synth is not set anymore\
+\cf0 x = \cf3 Synth\cf0 .tail(g, \cf4 "sine2"\cf0 );\
+x.free;\
+\
+\cf2 //set the control setting\
+\cf0 g.set(\cf5 \\freq\cf0 , 300);\
+\
+\cf2 //create a synth outside of group a:\
+\cf0 x = \cf3 Synth\cf0 (\cf4 "sine2"\cf0 );\
+\
+\cf2 //move it to patched group \
+\cf0 g.moveNodeToTail(x);\
+\
+\
+\cf2 //create another one\
+\cf0 y = \cf3 Synth\cf0 (\cf4 "sine2"\cf0 );\
+\
+\cf2 //move it before the one in the group\
+\cf0 y.moveBefore(x);\
+\
+\cf2 //move it after the group and set freq to something different\
+\cf0 y.moveAfter(g);\
+y.set(\cf5 \\freq\cf0 , 1500);\
+\
+\cf2 //move it before the one in the group\
+\cf0 y.moveAfter(x);\
+\
+\cf2 //free all nodes in a\
+\cf0 g.freeAll;\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 mapping the group to buses
+\f2\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //create a new synth in the group\
+\cf0 c = \cf3 Synth\cf0 .head(g, \cf4 "sine2"\cf0 );\
+\cf2 //create a control synth outside (before) the group (plays to bus 0)\
+\cf0 d = \cf3 Synth\cf0 .before(g, \cf4 "lfo"\cf0 );\
+\
+\cf2 //map the freq key of the group to bus 0\
+\cf0 g.map(\cf5 \\freq\cf0 , 0);\
+\
+\cf2 //set the parameters of control synth\
+\cf0 d.set(\cf5 \\rate\cf0 , 10);\
+d.set(\cf5 \\freq\cf0 , 500);\
+\
+\cf2 //free the synth\
+\cf0 c.free;\
+\
+\cf2 //and now....\
+//put a new synth in the group, and it is mapped automatically\
+\cf0 c = \cf3 Synth\cf0 .head(g, \cf4 "sine2"\cf0 );\
+\
+d.set(\cf5 \\freq\cf0 , 10000);\
+d.set(\cf5 \\rate\cf0 , 60);\
+g.freeAll;\
+\
+\
+\
+\cf2 //free the group:\
+\cf0 g.free;\
+\
+\
+\cf2 //see the node map:\
+\cf0 g.nodeMap.values;\
+g.nodeMap.mappings;\
+\
+\
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 using multiple ensembles\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+j = \cf3 Ensemble\cf0 (s);\
+k = \cf3 Ensemble\cf0 (s);\
+l = \cf3 Ensemble\cf0 (s);\
+m = \cf3 Ensemble\cf0 (s);\
+\
+\
+j.set(\cf5 \\freq\cf0 , 550, \cf5 \\rate\cf0 , 5);\
+k.set(\cf5 \\freq\cf0 , 250, \cf5 \\rate\cf0 , 50);\
+l.set(\cf5 \\freq\cf0 , 1000, \cf5 \\rate\cf0 , 120);\
+\
+\
+//prepare some control\
+x = Synth.before(l, "lfo", [\\out, 16, \\rate, 2, \\freq, 6]);\
+j.map(\\rate, 16);\
+\
+//make sound\
+a = \cf3 Synth\cf0 .after(l, \cf4 "sine2"\cf0 );\
+c = \cf3 Synth\cf0 (\cf4 "lfo"\cf0 , [\cf5 \\out\cf0 , 0]);\
+a.map(\cf5 \\freq\cf0 , 0);\
+\
+c.moveToHead(j);\
+c.moveToHead(k);\
+c.moveToHead(l);\
+l.set(\cf5 \\freq\cf0 , 300, \cf5 \\rate\cf0 , 120);\
+\
+//free the node by moving it into the group.\
+//that doesn't make too much sense, but shows the fact\
+\
+m.addCommand(["/n_free"]);\
+a.moveToHead(m); \
+\cf3 RootNode\cf0 .stop; \cf2 //end all\
+\cf0 \
+\
+\
+ \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 the envelope automatation example using ensembles\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+(\
+\cf3 SynthDef\cf0 (\cf4 "env"\cf0 , \{ \cf3 arg\cf0  i_outbus=0;\
+	\cf3 var\cf0  env, envctl;\
+	\
+	\cf2 // make a dummy 8 segment envelope\
+\cf0 	env = \cf3 Env\cf0 .newClear(8);\
+	\
+	\cf2 // create a control argument array\
+\cf0 	envctl = \cf3 Control\cf0 .names([\cf5 \\env\cf0 ]).kr( env.asArray );\
+	\
+	\cf3 ReplaceOut\cf0 .kr(i_outbus, \cf3 EnvGen\cf0 .kr(envctl, doneAction: 2));\
+\}).load(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 "sine"\cf0 , \{\
+	\cf3 Out\cf0 .ar(0, \cf3 SinOsc\cf0 .ar(\cf3 In\cf0 .kr(0), 0, 0.2));\
+\}).load(s);\
+)\
+\
+\
+\
+s.sendMsg(\cf5 \\c_set\cf0 , 0, 800);\
+a = \cf3 Synth\cf0 .new(\cf4 "sine"\cf0 );\
+\
+g = Ensemble.after(a);\
+h = Ensemble.after(a);\
+\
+e = \cf3 Env\cf0 ([1000,1000,800,1000,900,1000], [1,1,1,1,1]*0.3, \cf5 \\step\cf0 ).asArray; \
+g.setn(\cf5 \\env\cf0 , e);\
+e = \cf3 Env\cf0 ([700,900,900,800], [1,1,1]*0.4, \cf5 \\step\cf0 ).asArray;\
+h.setn(\cf5 \\env\cf0 , e);\
+\
+\cf3 Synth\cf0 .head(g, \cf4 "env"\cf0 );\
+\cf3 Synth\cf0 .head(h, \cf4 "env"\cf0 );\
+\
+\
+a.free;\
+\
+\
+}

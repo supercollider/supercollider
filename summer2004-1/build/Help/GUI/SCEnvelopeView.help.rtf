@@ -1,0 +1,188 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SCEnvelopeView
+\f1\b0\fs18 \cf2 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 use as envelope view\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //use shift-click to keep a node selected\cf0 \
+a = \cf3 SCWindow\cf0 (\cf4 "envelope"\cf0 , \cf3 Rect\cf0 (200 , 450, 250, 100));\
+a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
+\
+b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 230, 80));\
+\
+b.setProperty(\cf5 \\thumbWidth\cf0 , 5.0);\
+b.setProperty(\cf5 \\thumbHeight\cf0 , 5.0);\
+b.drawLines_(\cf3 true\cf0 );\
+b.selectionColor_(\cf3 Color\cf0 .red);\
+b.drawRects_(\cf3 true\cf0 );\
+b.action = \{arg b; [b.index,b.value].postln\};\
+\
+b.value_([[0.0, 0.1, 0.5, 1.0],[0.1,1.0,0.8,0.0]]);\
+\
+a.front;\
+)\
+(\
+\cf2 //make the first point unmoveable\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 b.setStatic(0,\cf3 true\cf0 );\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 value_([times,values])\
+	where times and values are all 0..1\
+value\
+	[times,values]\
+	where times and values are all 0..1\
+action\
+	function is passed the view\
+index\
+	the current or last moved node
+\f1\fs18 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //use shift click to select/unselect the points\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 a = \cf3 SCWindow\cf0 (\cf4 "test"\cf0 , \cf3 Rect\cf0 (200 , 450, 450, 150));\
+a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
+\
+b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 350, 100));\
+b.setProperty(\cf5 \\thumbHeight\cf0 , 5.0);\
+b.setProperty(\cf5 \\thumbWidth\cf0 , 5.0);\
+\
+\
+b.drawLines_(\cf3 true\cf0 );\
+b.fillColor_(\cf3 Color\cf0 .green);\
+b.selectionColor_(\cf3 Color\cf0 .red);\
+b.drawRects_(\cf3 true\cf0 );\
+\
+//b.action = \{b.index.postln\};\
+\
+c = \cf3 Array\cf0 .newClear(0);\
+d = \cf3 Array\cf0 .newClear(0);\
+5.do(\{\cf3 arg\cf0  i;\
+	c = c.add(i*0.1);\
+	\});\
+d = \cf3 Array\cf0 .with(c,c);\
+\
+b.value_(d);\
+b.setStatic(0,\cf3 true\cf0 );\
+\
+a.front;\
+\
+)\
+(\
+r = \cf3 Routine\cf0 (\{\
+	\cf3 var\cf0  j = 0;\
+	20.do(\{ \cf3 arg\cf0  i;\
+	b.select((b.size -1).rand.abs);\
+\
+	0.1.wait;\
+	b.x_(1.0.rand.abs);\
+	b.y_(1.0.rand.abs);\
+	\});\
+	b.select(-1);\
+\
+	\});\
+	\cf3 AppClock\cf0 .play(r);\
+)	\
+\
+c = b.xvalues;\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //show boxes with a string in it:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
+a = \cf3 SCWindow\cf0 (\cf4 "text-boxes"\cf0 , \cf3 Rect\cf0 (200 , 450, 450, 450));\
+a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
+\
+b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 440, 440));\
+\
+b.setProperty(\cf5 \\thumbWidth\cf0 , 60.0);\
+b.setProperty(\cf5 \\thumbHeight\cf0 , 15.0);\
+\
+\
+b.drawLines_(\cf3 false\cf0 );\
+b.selectionColor_(\cf3 Color\cf0 .red);\
+b.drawRects_(\cf3 true\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //b.action = \{b.index.postln\};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+b.value_([[0.1, 0.4, 0.5, 0.3], [0.1, 0.2, 0.9, 0.7]]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //b.setStatic(0,true);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 4.do(\{\cf3 arg\cf0  i;\
+	b.select(i);\
+	b.string_([\cf4 "this"\cf0 , \cf4 "is"\cf0 , \cf4 "so much"\cf0 , \cf4 "fun"\cf0 ].at(i));\
+	b.fillColor_([\cf3 Color\cf0 .yellow, \cf3 Color\cf0 .white, \cf3 Color\cf0 .green].choose);\
+\});\
+b.select(-1); \cf2 //unselect\
+\cf0 a.front;\
+)\
+the text objects can be connected:\
+(\
+b.select(3);\
+b.connect([2.0,0.0,1.0]);\
+b.select(0);\
+b.connect([2.0,3.0,1.0]);\
+b.drawLines_(\cf3 true\cf0 );\
+)\
+\
+\
+\
+\
+use as pd/max style view (experimental)\
+use ctrl-click to connect \
+(\
+a = \cf3 SCWindow\cf0 (\cf4 "oh"\cf0 , \cf3 Rect\cf0 (200 , 450, 450, 450));\
+a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
+\
+b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 440, 440));\
+\
+b.setProperty(\cf5 \\thumbWidth\cf0 , 60.0);\
+b.setProperty(\cf5 \\thumbHeight\cf0 , 15.0);\
+\
+\
+b.drawLines_(\cf3 true\cf0 );\
+\
+b.selectionColor_(\cf3 Color\cf0 .red);\
+b.drawRects_(\cf3 true\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //b.action = \{b.index.postln\};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+c = [[0.1, 0.4, 0.5, 0.3], [0.1, 0.2, 0.9, 0.7]];\
+b.value_(c);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //b.setStatic(0,true);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 4.do(\{\cf3 arg\cf0  i;\
+	b.select(i);\
+	b.string_([\cf4 "this"\cf0 , \cf4 "is"\cf0 , \cf4 "not"\cf0 , \cf4 "max"\cf0 ].at(i));\
+	b.fillColor_([\cf3 Color\cf0 .yellow, \cf3 Color\cf0 .white, \cf3 Color\cf0 .green].choose);\
+\});\
+b.select(-1); \cf2 //unselect\
+b.\cf0 setPdStyle;\cf2 \
+\cf0 a.front;\
+)\
+\
+\
+\
+}

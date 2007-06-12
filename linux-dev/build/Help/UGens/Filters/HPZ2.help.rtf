@@ -1,0 +1,30 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fmodern\fcharset77 Courier;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+
+\f1\b\fs36 HPZ2					two zero fixed highpass\
+
+\f0\b0\fs24 \
+
+\f1\b HPZ2.ar(in, mul, add)\
+
+\f0\b0 \
+A special case fixed filter. Implements the formula:\
+\
+
+\f2 out(i) = 0.25 * (in(i) - (2*in(i-1)) + in(i-2))\
+
+\f0 \
+Compare:\
+\
+
+\f3 \{ WhiteNoise.ar(0.25) \}.play;\
+\
+\{ HPZ2.ar(WhiteNoise.ar(0.25)) \}.play;\
+
+\f0 \
+}

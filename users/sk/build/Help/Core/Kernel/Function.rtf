@@ -1,0 +1,676 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf110
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Function
+\f1\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 superclass: AbstractFunction\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\
+A Function is a reference to a [\ul FunctionDef\ulnone ] and its defining context [\ul Frame\ulnone ]. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the [\ul Functions\ulnone ] help file for a basic introduction.\
+\
+Because it inherits from [\ul AbstractFunction\ulnone ], Functions can respond to math operations by creating a new Function. For example:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  a, b, c;\
+a = \{ [100, 200, 300].choose \};	\cf3 // a Function\cf0 \
+b = \{ 10.rand + 1 \};	\cf3 // another Function\cf0 \
+c = a + b; 	\cf3 // c is a Function.\cf0 \
+c.value.postln;	\cf3 // evaluate c and print the result\cf0 \
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 See [\ul AbstractFunction
+\f0\b \ulnone ]
+\f1\b0  for function composition examples.\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Accessing
+\f1\b0\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 def
+\f1\b0 \
+\
+Get the FunctionDef definition of the Function.\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Evaluation
+\f1\b0\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 value(...args)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Evaluates the FunctionDef referred to by the Function. The Function is passed the args given.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \{ \cf2 arg\cf0  a, b; (a * b).postln \}.value(3, 10);
+\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 valueArray(..args..)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \{ \cf2 arg\cf0  a, b, c; ((a * b) + c).postln \}.valueArray([3, 10, 7]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray([1, 2, 3]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, [1, 2, 3]);\
+\
+\{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, 10, [1, 2, 3]);
+\fs20 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 valueEnvir(...args)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+As value above. Unsupplied argument names are looked up in the current 
+\f0\b Environment
+\f1\b0 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Environment\cf0 .use(\{\
+~a = 3;\
+~b = 10;\
+\{ \cf2 arg\cf0  a, b; (a * b).postln \}.valueEnvir;\
+\});\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 valueArrayEnvir(..args..)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method. Unsupplied argument names are looked up in the current 
+\f0\b Environment
+\f1\b0 .\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 loop
+\f1\b0 \
+\
+Repeat this function. Useful with 
+\f0\b Task
+\f1\b0  and Clocks.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 t = \cf2 Task\cf0 (\{ \{ \cf4 "I'm loopy"\cf0 .postln; 1.wait;\}.loop \});\
+t.start;\
+t.stop;
+\f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+\
+defer(delta)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Delay the evaluation of this Function by 
+\f0\b delta
+\f1\b0  in seconds. Uses 
+\f0\b AppClock
+\f1\b0 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \{ \cf4 "2 seconds have passed."\cf0 .postln; \}.defer(2);
+\f1\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 dup(n)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Return an Array consisting of the results of n evaluations of this Function.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 x = \{ 4.rand; \}.dup(4);\
+x.postln;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 ! n
+\f1\b0 \
+\
+equivalent to dup(n)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+x = \{ 4.rand \} ! 4;\
+x.postln;
+\f1\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 sum(n)
+\f1\b0 \
+\
+return the sum of n values produced.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \{ 4.rand \}.sum(8);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 bench(print)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Returns the amount of time this function takes to evaluate. 
+\f0\b print
+\f1\b0  is a boolean indicating whether the result is posted. The default is true.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \{ 1000000.do(\{ 1.0.rand \}); \}.bench;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 fork(clock, quant, stackSize)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Returns a Routine using the receiver as it's function, and plays it in a 
+\f0\b TempoClock
+\f1\b0 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \{ 4.do(\{ \cf4 "Threadin..."\cf0 .postln; 1.wait;\}) \}.fork;
+\f1\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 block
+\f1\b0 \
+\
+Break from a loop. Calls the receiver with an argument which is a function that returns from the method block. To exit the loop, call .value on the function passed in. You can pass a value to this function and that value will be returned from the block method.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 block \{\cf2 |break|\cf0 \
+	100.do \{\cf2 |i|\cf0 \
+		i.postln;\
+		if (i == 7) \{ break.value(999) \}\
+	\};\
+\}\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 thunk
+\f2\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Return a Thunk, which is an unevaluated value that can be used in calculations \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 x = thunk \{ 4.rand \};\
+x.value;\
+x.value;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 flop\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluting the receiver function for each channel.
+\f2\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf5 f = \{ \cf6 |a, b|\cf5  if(a > 0) \{ a + b \} \{ -\cf6 inf\cf5  \} \}.flop;\
+f.value([-1, 2, 1, -3.0], [10, 1000]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 f.value(2, 3);\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 flopEnvir
+\f1\b0 \
+\
+like flop, but implements an environment argument passing (valueEnvir). \
+Less efficient in generation than flop, but not a big difference in evaluation.
+\f2\fs18 \cf5 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf0 f = \{ \cf2 |a|\cf0  if(a > 0) \{ a + 1 \} \{ -\cf2 inf\cf0  \} \}.envirFlop;\
+e = (a: [20, 40]);\
+e.use \{ f.value \}
+\f1\fs24 \cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 case(cases)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Function implements a 
+\f0\b case 
+\f1\b0 method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Unlike Object-switch, this is inlined and is therefore just as efficient as nested if statements.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  i, x, z;\
+z = [0, 1, 1.1, 1.3, 1.5, 2];\
+i = z.choose;\
+x = case\
+	\{ i == 1 \}   \{ \cf7 \\no\cf0  \}\
+	\{ i == 1.1 \} \{ \cf7 \\wrong\cf0  \}\
+	\{ i == 1.3 \} \{ \cf7 \\wrong\cf0  \}\
+	\{ i == 1.5 \} \{ \cf7 \\wrong\cf0  \}\
+	\{ i == 2 \}   \{ \cf7 \\wrong\cf0  \}\
+	\{ i == 0 \}   \{ \cf7 \\true\cf0  \};\
+x.postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Exception Handling\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone \
+\
+For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 try(handler)
+\f1\b0 \
+\
+Executes the receiver. If an exception is thrown the catch function 
+\f0\b handler
+\f1\b0  is executed with the error as an argument. 
+\f0\b handler
+\f1\b0  itself can rethrow the error if desired.\
+\
+
+\f0\b protect(handler)
+\f1\b0 \
+\
+Executes the receiver. The cleanup function 
+\f0\b handler 
+\f1\b0 is executed with an error as an argument, or nil if there was no error. The error continues to be in effect. \
+\
+Examples:
+\f2\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // no exception handler\cf0 \
+value \{ 8.zorg; \cf7 \\didnt_continue\cf0 .postln; \}\
+\
+try \{ 8.zorg \} \{\cf2 |error|\cf0  error.postln; \cf7 \\cleanup\cf0 .postln; \}; \cf7 \\continued\cf0 .postln;\
+\
+protect \{ 8.zorg \} \{\cf2 |error|\cf0  error.postln; \}; \cf7 \\didnt_continue\cf0 .postln;\
+\
+try \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\catch\cf0 , error].postln \};\
+\
+try \{ 123.postln; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\catch\cf0 , error].postln \};\
+\
+try \{ 123.postln; \cf2 nil\cf0 .throw; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\catch\cf0 , error].postln \};\
+\
+\
+protect \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\onExit\cf0 , error].postln \};\
+\
+protect \{ 123.postln; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\onExit\cf0 , error].postln \};\
+\
+(\
+try \{\
+	protect \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf7 \\onExit\cf0 , error].postln \};\
+\} \{\cf2 |error|\cf0  [\cf7 \\catch\cf0 , error].postln \};\
+)\
+\
+value \{ 123.postln; 456.throw; 789.postln \}\
+\
+value \{ 123.postln; \cf2 Error\cf0 (\cf4 "what happened?"\cf0 ).throw; 789.postln \}\
+\
+(\
+a = [\cf7 \\aaa\cf0 , \cf7 \\bbb\cf0 , \cf7 \\ccc\cf0 , \cf7 \\ddd\cf0 ];\
+a[1].postln;\
+a[\cf7 \\x\cf0 ].postln;\
+a[2].postln;\
+)\
+\
+(\
+try \{\
+	a = [\cf7 \\aaa\cf0 , \cf7 \\bbb\cf0 , \cf7 \\ccc\cf0 , \cf7 \\ddd\cf0 ];\
+	a[1].postln;\
+	a[\cf7 \\x\cf0 ].postln;\
+	a[2].postln;\
+\} \{\cf2 |error|\cf0  \cf7 \\caught\cf0 .postln; error.dump \}\
+)\
+\
+(\
+try \{\
+	a = [\cf7 \\aaa\cf0 , \cf7 \\bbb\cf0 , \cf7 \\ccc\cf0 , \cf7 \\ddd\cf0 ];\
+	a[1].postln;\
+	a[\cf7 \\x\cf0 ].postln;\
+	a[2].postln;\
+\} \{\cf2 |error|\cf0  \cf7 \\caught\cf0 .postln; error.dump; error.throw \}\
+)\
+\
+(\
+protect \{\
+	a = [\cf7 \\aaa\cf0 , \cf7 \\bbb\cf0 , \cf7 \\ccc\cf0 , \cf7 \\ddd\cf0 ];\
+	a[1].postln;\
+	a[\cf7 \\x\cf0 ].postln;\
+	a[2].postln;\
+\} \{\cf2 |error|\cf0  \cf7 \\caught\cf0 .postln; error.dump \}\
+)
+\f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul \ulc0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone Audio\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+
+\f0\b \cf0 play(target, outbus, fadetime, addAction)\
+
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+\cf0 	This is probably the simplest way to get audio in SC3. It wraps the Function in a 
+\f0\b SynthDef
+\f1\b0  (adding an 
+\f0\b Out
+\f1\b0  ugen if needed), creates and starts a new 
+\f0\b Synth
+\f1\b0  with it, and returns the Synth object. A 
+\f0\b Linen
+\f1\b0  is also added to avoid clicks, which is configured to allow the resulting Synth to have its 
+\f2\fs18 \cf7 \\gate 
+\f1\fs24 \cf0 argument set, or to respond to a release message. Args in the function become args in the resulting def.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+
+\f0\b \cf0 \
+	target 
+\f1\b0 - a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.\
+
+\f0\b 	outbus 
+\f1\b0 - the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
+
+\f0\b 	fadeTime
+\f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.\
+
+\f0\b 	addAction
+\f1\b0  - see 
+\f0\b Synth
+\f1\b0  for a list of valid addActions. The default is 
+\f2\fs18 \cf7 \\addToHead
+\f0\b\fs24 \cf0 .
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 	x = \{ arg freq = 440; \cf2 SinOsc\cf0 .ar(freq, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
+	x.set(\cf7 \\freq\cf0 , 880); \cf3 // note you can set the freq argument\cf0 \
+	x.defName; \cf3 // the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
+	x.release(4); \cf3 // fadeout over 4 seconds
+\fs20 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+\cf0 	Many of the examples in SC3 make use of the Function.play syntax. Note that reusing such code in a 
+\f0\b SynthDef
+\f1\b0  requires the addition of an 
+\f0\b Out
+\f1\b0  ugen.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf3 	// the following two lines produce equivalent results\cf0 \
+	\{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.play(fadeTime: 0.0); \
+	\cf2 SynthDef\cf0 (\cf4 "help-FuncPlay"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(440, 0, 0.3))\}).play;
+\fs20 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+
+\f1\fs24 \cf0 	Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. \
+	\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 scope(numChannels, outbus, fadeTime, bufsize, zoom)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+\cf0 	As 
+\f0\b play 
+\f1\b0 above, but plays it on the internal 
+\f0\b Server
+\f1\b0 , and calls Server-scope to open a scope window in which to view the output. Currently only works on OSX.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+\cf0 	
+\f0\b numChannels
+\f1\b0  - The number of channels to display in the scope window, starting from 
+\f0\b outbus
+\f1\b0 . The default is 2.
+\f0\b \
+	outbus 
+\f1\b0 - The output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
+	
+\f0\b fadeTime
+\f1\b0  - A fadein time. The default is 0.02 seconds, which is just enough to avoid a click.\
+	
+\f0\b bufsize 
+\f1\b0 - The size of the buffer for the ScopeView. The default is 4096.\
+	
+\f0\b zoom
+\f1\b0  - A zoom value for the scope's X axis. Larger values show more. The default is 1.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	\{ \cf2 FSinOsc\cf0 .ar(440, 0, 0.3) \}.scope(1)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 plot(duration, server, bounds)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+
+\f1\b0 \cf0 	Calculates 
+\f0\b duration
+\f1\b0  in seconds worth of the output of this function, and plots it in a GUI window. Currently only works on OSX. Unlike 
+\f0\b play
+\f1\b0  and 
+\f0\b scope
+\f1\b0  it will not work with explicit Out Ugens, so your function should return a UGen or an 
+\f0\b Array
+\f1\b0  of them. The plot will be calculated in realtime.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+
+\f0\b \cf0 	duration
+\f1\b0  - The duration of the function to plot in seconds. The default is 0.01.
+\f0\b \
+	server 
+\f1\b0 - The 
+\f0\b Server
+\f1\b0  on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the default server will be used.\
+	
+\f0\b bounds
+\f1\b0  - An instance of 
+\f0\b Rect
+\f1\b0  or 
+\f0\b Point
+\f1\b0  indicating the bounds of the plot window.
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	\{ \cf2 SinOsc\cf0 .ar(440) \}.plot(0.01, bounds: \cf2 SCWindow\cf0 .screenBounds);\
+	\
+	\{ \{\cf2 |i|\cf0  \cf2 SinOsc\cf0 .ar(1 + i)\}.dup(7) \}.plot(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Conversion\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \ulnone \
+\
+\
+asSynthDef(rates, prependArgs, outClass, fadetime)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+	Returns a SynthDef based on this Function, adding a 
+\f0\b Linen 
+\f1\b0 and an 
+\f0\b Out
+\f1\b0  ugen if needed.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+\cf0 	rates 
+\f1\b0 - An Array of rates and lagtimes for the function's arguments (see 
+\f0\b SynthDef
+\f1\b0  for more details).\
+	
+\f0\b outClass
+\f1\b0  - The class of the output ugen as a symbol. The default is \cf7 \\Out\cf0 .\
+	
+\f0\b fadeTime
+\f1\b0  - a fadein time. The default is 0.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+\
+\
+asDefName\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Performs asSynthDef (see above), sends the resulting def to the local server and returns the SynthDefs name. This is asynchronous.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 x = \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.asDefName; \cf3 // this must complete first\cf0 \
+y = \cf2 Synth\cf0 .new(x);
+\fs20 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 asRoutine\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Returns a 
+\f0\b Routine
+\f1\b0  using this as its func argument.\
+\
+\
+\
+\
+\
+}

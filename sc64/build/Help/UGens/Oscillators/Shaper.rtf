@@ -1,0 +1,43 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+
+\f1\b\fs36 Shaper		wave shaper
+\f0\b0\fs24 \
+\
+
+\f1\b Shaper.ar(bufnum, in, mul, add)\
+
+\f0\b0 \
+Performs waveshaping on the input signal by indexing into the table.\
+
+\f1\b bufnum
+\f0\b0  - the number of a buffer filled in wavetable format containing the transfer function.\
+
+\f1\b in
+\f0\b0  - the input signal.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf2 Server\cf3 .default = s = \cf2 Server\cf3 .internal; s.boot;\
+b = \cf2 Buffer\cf3 .alloc(s, 512, 1, \{\cf2 arg\cf3  buf; buf.chebyMsg([1,0,1,1,0,1])\});\
+(\
+scope(\{ \
+	\cf2 Shaper\cf3 .ar(\
+		b.bufnum, \
+		\cf2 SinOsc\cf3 .ar(300, 0, \cf2 Line\cf3 .kr(0,1,6)),\
+		0.5\
+	) \
+\});\
+)
+\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0 \cf3 \
+}

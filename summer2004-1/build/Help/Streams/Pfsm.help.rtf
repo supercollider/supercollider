@@ -1,0 +1,106 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pfsm\
+
+\f1\b0\fs24 \
+
+\f0\b superclass: ListPatterns\
+
+\f1\b0 \
+finite state machine: every state links to possible 
+\f0\b next states (indices)
+\f1\b0 .\
+starting from one of the 
+\f0\b entry states 
+\f1\b0 one of these links is randomly\
+chosen used to get the next state. When an end state is reached, the stream ends.\
+\
+\
+
+\f0\b Pfsm(list,repeats)
+\f1\b0 \
+\
+
+\f0\b list
+\f1\b0 :\
+	[\
+		 [ entry states ],\
+	 	item, [ next states ],\
+	 	item, [ next states ],\
+		 ...\
+	 	end item (or nil), nil\
+	 ]\
+ \
+ \
+ next states: nil  is terminal\
+ \
+ \
+ 
+\f2\fs18 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "help-sinegrain"\cf0 , \
+	\{ \cf2 arg\cf0  out=0, freq=440, dur=0.05;\
+		\cf2 var\cf0  env;\
+		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.01, dur, 0.2), doneAction:2);\
+		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env))\
+	\}).send(s);\
+)\
+\
+\
+(\
+a = \cf2 Pfsm\cf0 ([\
+		#[0,1],\
+		67, #[0, 0, 3],\
+		72, #[2],\
+		73, #[0, 2],\
+		\cf2 Pseq\cf0 ([74, 75, 76, 77]), #[2, 3, 3],\
+		\cf2 nil, nil\cf0 \
+		], \cf2 inf\cf0 ).asStream;\
+\cf2 Routine\cf0 (\{\
+	loop(\{\
+	\cf2 Synth\cf0 (\cf3 "help-sinegrain"\cf0 , [\cf4 \\freq\cf0 , a.next.midicps]);\
+	0.1.wait;\
+	\})\
+\}).play;\
+)\
+\
+\cf5 (\
+\cf6 Pfsm\cf5 ([\
+\'ca\'ca\'ca\'ca\'ca#[5, 6, 7], \cf7 // entry states\cf5 \
+\'ca\'ca\'ca\'ca\'ca\
+\'ca\'ca\'ca\'ca\cf7 //e1 (== state 0)\cf5 \
+\'ca\'ca\'ca\'ca\cf6 Pbind\cf5 ( \cf8 \\dur\cf5 , \cf6 Pseq\cf5 ([ 1/8, 3/8 ]), \cf8 \\midinote\cf5 , \cf6 Pseq\cf5 ([ 86, 75 ]) ),\
+\'ca\'ca\'ca\'ca\'ca\cf7 //#[1],\'ca // as given in CMJ\cf5 \
+\'ca\'ca\'ca\'ca\'ca\cf7 // my de-boredom-ated version..\cf5 \
+\'ca\'ca\'ca\'ca\'ca#[1, 1, 1, 1, 1, 1, 1, 8],\
+\'ca\'ca\'ca\'ca\cf7 //e2 (== state 1)\cf5 \
+\'ca\'ca\'ca\'ca\cf6 Pbind\cf5 ( \cf8 \\dur\cf5 , 1/2, \cf8 \\midinote\cf5 , \cf6 Pseq\cf5 ([ 69 ]) ),\
+\'ca\'ca\'ca\'ca\'ca#[0, 1],\
+\'ca\'ca\'ca\'ca\cf7 //e3 (== state 2)\cf5 \
+\'ca\'ca\'ca\'ca\cf6 Pbind\cf5 ( \cf8 \\dur\cf5 , 1/3, \cf8 \\midinote\cf5 , \cf6 Pseq\cf5 ([ 55, 60, 66 ]) ),\
+\'ca\'ca\'ca\'ca\'ca#[0, 1, 2, 2, 2, 2, 3, 3, 3, 3],\
+\'ca\'ca\'ca\'ca\cf7 //e4 (== state 3)\cf5 \
+\'ca\'ca\'ca\'ca\cf6 Pbind\cf5 ( \cf8 \\dur\cf5 , 1/4, \cf8 \\midinote\cf5 , \cf6 Pseq\cf5 ([ 81, 80, 77, 76 ]) ),\
+\'ca\'ca\'ca\'ca\'ca#[1, 4, 4, 4, 4],\
+\'ca\'ca\'ca\'ca\cf7 //e5 (== state 4)\cf5 \
+\'ca\'ca\'ca\'ca\cf6 Pbind\cf5 ( \cf8 \\dur\cf5 , \cf6 Pseq\cf5 ([1, 2/3, 2/3, 2/3, 1]), \cf8 \\midinote\cf5 , \cf6 Pseq\cf5 ([ \\, 70, 70, 70, \\ ]) ),\
+\'ca\'ca\'ca\'ca\'ca#[2, 3],\
+\'ca\'ca\'ca\'ca\cf7 //e6 (== state 5)\cf5 \
+\'ca\'ca\'ca\'ca\cf6 Pbind\cf5 ( \cf8 \\dur\cf5 , 1/4, \cf8 \\midinote\cf5 , \cf6 Pseq\cf5 ([ 59, 61 ]) ),\
+\'ca\'ca\'ca\'ca\'ca#[0, 2, 4, 5, 5, 5, 5, 5, 5, 5],\
+\'ca\'ca\'ca\'ca\cf7 //e7 (== state 6)\cf5 \
+\'ca\'ca\'ca\'ca\cf6 Pbind\cf5 ( \cf8 \\dur\cf5 , 1/4, \cf8 \\midinote\cf5 , \cf6 Pseq\cf5 ([ 87, 88 ], 2) ),\
+\'ca\'ca\'ca\'ca\'ca#[4, 4, 4, 4, 6, 6, 6, 7, 7, 7],\
+\'ca\'ca\'ca\'ca\cf7 //e8 (== state 7)\cf5 \
+\'ca\'ca\'ca\'ca\cf6 Pbind\cf5 ( \cf8 \\dur\cf5 , 1, \cf8 \\midinote\cf5 , \cf6 Pseq\cf5 ([ 56 ]) ),\
+\'ca\'ca\'ca\'ca\'ca#[1, 3, 6, 6, 6],\
+\'ca\'ca\'ca\'ca\cf7 // terminal state\cf5 \
+\'ca\'ca\'ca\'ca\cf6 nil\cf5 , \cf6 nil\cf5 \
+\'ca\'ca\'ca]).play;\
+)\
+}

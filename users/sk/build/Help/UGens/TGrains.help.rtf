@@ -1,0 +1,206 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
+\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 TGrains		buffer granulator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Triggers generate grains from a buffer. Each grain has a Hanning envelope (sin^2(x) for x from 0 to pi) and is panned between two channels of multiple outputs.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 TGrains.ar(numChannels, trigger, bufnum, rate, centerPos, dur, pan, amp, interp)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+	
+\f0\b numChannels
+\f2\b0  - number of output channels.\
+	
+\f0\b trigger
+\f2\b0  - at each trigger, the following arguments are sampled and used \
+		as the arguments of a new grain. \
+		A trigger occurs when a signal changes from <= 0 to > 0.\
+		If the trigger is audio rate then the grains will start with sample accuracy.\
+	
+\f0\b bufnum
+\f2\b0  - the index of the buffer to use. It must be a one channel (mono) buffer.\
+	
+\f0\b rate
+\f2\b0    -  1.0 is normal, 2.0 is one octave up, 0.5 is one octave down\
+			-1.0 is backwards normal rate ... etc.\
+		Unlike PlayBuf, the rate is multiplied by BufRate, so you needn't do that yourself.\
+	
+\f0\b centerPos
+\f2\b0  - the position in the buffer in seconds at which the grain envelope will reach \
+			maximum amplitude.\
+	
+\f0\b dur
+\f2\b0     -   duration of the grain in seconds.\
+	
+\f0\b pan
+\f2\b0     -   a value from -1 to 1. Determines where to pan the output in the same manner as PanAz.\
+	
+\f0\b amp
+\f2\b0    - amplitude of the grain.\
+	
+\f0\b interp
+\f2\b0  - 1,2,or 4. Determines whether the grain uses (1) no interpolation, (2) linear interpolation, \
+			or (4) cubic interpolation.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+(\
+s = \cf2 Server\cf0 .internal;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Server\cf0 .default = s;\
+s.boot;\
+)\
+\
+\
+s.sendMsg(\cf3 \\b_allocRead\cf0 , 10, \cf4 "sounds/a11wlk01.wav"\cf0 );\
+\
+\
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur, rate;\
+	trate = \cf2 MouseY\cf0 .kr(2,200,1);\
+	dur = 4 / trate;\
+	rate = Dseq([10, 1, 1, 0.5, 0.5, 0.2, 0.1], inf);\
+	\cf2 TGrains\cf0 .ar(2, \cf2 Impulse\cf0 .ar(trate), b, \cf2 rate\cf0 , \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b)), dur, Dseq([-1, 1], inf), 0.1, 2);\
+\}.scope(zoom: 4);\
+)\
+\
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur, clk, pos, pan;\
+	trate = \cf2 MouseY\cf0 .kr(8,120,1);\
+	dur = 12 / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b)) + \cf2 TRand\cf0 .kr(0, 0.01, clk);\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b, \cf2 1\cf0 , pos, dur, pan, 0.1);\
+\}.scope(zoom: 4);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // 4 channels\cf0 \
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur, clk, pos, pan;\
+	trate = \cf2 MouseY\cf0 .kr(8,120,1);\
+	dur = 12 / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b)) + \cf2 TRand\cf0 .kr(0, 0.01, clk);\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(4, clk, b, \cf2 1\cf0 , pos, dur, pan, 0.1);\
+\}.scope(4, zoom: 4);\
+)\
+\
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur, clk, pos, pan;\
+	trate = \cf2 MouseY\cf0 .kr(8,120,1);\
+	dur = 4 / trate;\
+	clk = \cf2 Dust\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b)) + \cf2 TRand\cf0 .kr(0, 0.01, clk);\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b, \cf2 1\cf0 , pos, dur, pan, 0.1);\
+\}.scope(zoom: 4);\
+)\
+\
+\
+\
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur, clk, pos, pan;\
+	trate = \cf2 LinExp\cf0 .kr(\cf2 LFTri\cf0 .kr(\cf2 MouseY\cf0 .kr(0.1,2,1)),-1,1,8,120);\
+	dur = 12 / trate;\
+	clk = \cf2 Impulse\cf0 .ar(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b));\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b, \cf2 1\cf0 , pos, dur, pan, 0.1);\
+\}.scope(zoom: 4);\
+)\
+\
+\
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur, clk, pos, pan;\
+	trate = 12;\
+	dur = \cf2 MouseY\cf0 .kr(0.2,24,1) / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b)) + \cf2 TRand\cf0 .kr(0, 0.01, clk);\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b, \cf2 1\cf0 , pos, dur, pan, 0.1);\
+\}.scope(zoom: 4);\
+)\
+\
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur, clk, pos, pan;\
+	trate = 100;\
+	dur = 8 / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 Integrator\cf0 .kr(\cf2 BrownNoise\cf0 .kr(0.001));\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b, \cf2 1\cf0 , pos, dur, pan, 0.1);\
+\}.scope(zoom: 4);\
+)\
+\
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur, clk, pos, pan;\
+	trate = \cf2 MouseY\cf0 .kr(1,400,1);\
+	dur = 8 / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b));\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.8);\
+	\cf2 TGrains\cf0 .ar(2, clk, b, 2 ** \cf2 WhiteNoise\cf0 .kr(2), pos, dur, pan, 0.1);\
+\}.scope(zoom: 4);\
+)\
+\
+\
+\
+\
+(\
+\{\
+	\cf2 var\cf0  b = 10, trate, dur;\
+	trate = \cf2 MouseY\cf0 .kr(2,120,1);\
+	dur = 1.2 / trate;\
+	\cf2 TGrains\cf0 .ar(2, \cf2 Impulse\cf0 .ar(trate), b, (1.2 ** \cf2 WhiteNoise\cf0 .kr(3).round(1)), \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b)), dur, \cf2 WhiteNoise\cf0 .kr(0.6), 0.1);\
+\}.scope(zoom: 4);\
+)\
+\
+\
+\
+\
+\cf5 // demand ugens as inputs\cf0 \
+(\cf6 \
+\{\
+	\cf7 var\cf6  trate, dur, z, d;\
+	trate = \cf7 MouseX\cf6 .kr(1, 100, 1);\
+	d = \{ \cf7 Dwhite\cf6 (0.1, 0.2, 1) \};\
+	z = \{ \
+		\cf7 Drand\cf6 ([\cf7 Dgeom\cf6 (0.1, 1 + d.value, \cf7 Diwhite\cf6 (20, 40)), \cf7 Dgeom\cf6 (1, 1 - \cf0 d.value\cf6 , \cf7 Diwhite\cf6 (20, 40))]) \
+	\};\
+	\cf7 TGrains\cf6 .ar(2, \
+		\cf7 Impulse\cf6 .ar(trate),\
+		bufnum: 10, \
+		rate: \cf7 Dseq\cf6 ([1, 1, z.value, 0.5, 0.5, 0.2, 0.1, 0.1, 0.1, 0.1], \cf7 inf\cf6 ) * 2 + 1, \
+		centerPos: \cf7 Dseq\cf6 (z.dup(8), \cf7 inf\cf6 ),\
+		dur: \cf7 Dseq\cf6 ([1, d.value, 1, z.value, 0.5, 0.5, 0.1, z.value] * 2, \cf7 inf\cf6 ) / trate,\
+		pan: \cf7 Dseq\cf6 ([1, 1, 1, 0.5, 0.2, 0.1, 0, 0, 0], \cf7 inf\cf6 ) * 2 - 1,\
+		amp: \cf7 Dseq\cf6 ([1, 0, z.value, 0, 2, 1.0, 1, 0.1, 0.1], \cf7 inf\cf6 )\
+	);\
+\}.scope(zoom: 4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 )\
+}

@@ -1,0 +1,33 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 TDelay			trigger delay\
+
+\fs24 \
+TDelay.ar(trigger, delayTime)\
+
+\f1\b0 \
+Delays a trigger by a given time. Any triggers which arrive in the time between\
+an input trigger and its delayed output, are ignored.\
+
+\f0\b trigger
+\f1\b0  - input trigger signal.\
+
+\f0\b delayTime
+\f1\b0  - delay time in seconds.\
+
+\fs18 \
+\
+
+\f2 \cf2 (\
+\{\
+	z = \cf3 Impulse\cf2 .ar(2);\
+	[z * 0.1, \cf3 ToggleFF\cf2 .ar(\cf3 TDelay\cf2 .ar(z, 0.5)) * \cf3 SinOsc\cf2 .ar(mul: 0.1)]\
+\}.scope)
+\fs24 \cf0 \
+\
+\
+}

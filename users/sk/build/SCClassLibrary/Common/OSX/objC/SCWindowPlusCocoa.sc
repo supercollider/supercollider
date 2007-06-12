@@ -1,0 +1,6 @@
++ SCWindow{
+
+	dataptr{
+		^dataptr
+	}
+}
