@@ -1,8 +1,9 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf420
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica-Bold;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red96\green96\blue96;\red0\green0\blue191;
 }
+\vieww18400\viewh10940\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\fs36 \cf0 Unit Generator Plug-In Example\
@@ -124,26 +125,22 @@ void load(\cf4 InterfaceTable\cf0  *inTable)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b\fs36 \cf0 Adding a Target to ProjectBuilder\
+\f2\b\fs36 \cf0 Adding a Target to XCode\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b0\fs20 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 Each group of plugins shares a target in ProjectBuilder.  They create a combined file: eg. TargetName.scx which is then copied into the plugins folder via a little shell script.\
+\fs24 \cf0 Each group of plugins shares a target in XCode and each target creates a combined file: eg. TargetName.scx.\
 \
-Create a new target, select type 'Library'\
-Go to expert view and set Library_Style == BUNDLE.  \
-Set the product name to be YourGroup.scx.\
-Add a build phase (control or right click on build phases): a shell script build phase.  \
-copy the one line script from one of the other targets, changing the filename to match yours.  \
-Uncheck "run only when installing".\
-Open the "disclosure triangle" for the All Plugins target and drag your target into that list.\
-\
-Your target will be built along with the others when the aggregate target is selected.\
-\
-\
-\
-\
-}
+1- Duplicate an existing target. For example, click on "ChaosUGens" and use Edit->Duplicate.\
+2- Double click on the new target to open it's inspector.\
+3- In the "General" tab, change the name of the target to correspond with your UGen's name.\
+4- In the "Build" tab, change the "Product Name" setting to correspond with your UGen.\
+5- Close the target inspector.\
+6- Open the disclosure triangle for your target, then open the disclosure triangle for "Compile Sources".\
+7- Delete the existing source code (i.e ChaosUGens.cpp), by clicking on it and pressing the delete key.\
+8- Use the "Project->Add to Project..." menu item to add your source code to the new target. In the sheet that pops up, be sure to check only your target in the "Add To Targets" table.\
+9- Open the disclosure triangle for the "All" target and drag your new target into that list.\
+10- Build the project. Your plugin will be compiled into the "build/plugins" directory.}
