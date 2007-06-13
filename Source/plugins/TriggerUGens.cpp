@@ -50,6 +50,7 @@ struct Poll : public Unit
 	float m_trig;
 	float m_lastPoll, m_id;
 	char *m_id_string; 
+	bool m_mayprint;
 };
 
 
@@ -565,6 +566,8 @@ void Poll_Ctor(Poll* unit)
 		unit->m_id_string[i] = (char)IN0(4+i);
 		};
 	unit->m_id_string[(int)unit->m_id] = '\0';
+	
+	unit->m_mayprint = unit->mWorld->mVerbosity >= 0;
 
 	Poll_next_kk(unit, 1);
 
@@ -581,7 +584,9 @@ void Poll_next_aa(Poll *unit, int inNumSamples){
 	float lasttrig = unit->m_trig;
 	for(int i = 0; i < inNumSamples; i++){
 		if((lasttrig <= 0.0) && (trig[i] > 0.0)){
-			Print("%s: %g\n", unit->m_id_string, in[i]);
+			if(unit->m_mayprint){
+				Print("%s: %g\n", unit->m_id_string, in[i]);
+			}
 			if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in[i]);
 			}
 		lasttrig = trig[i];
@@ -593,7 +598,9 @@ void Poll_next_kk(Poll *unit, int inNumSamples){
 	float in = IN0(1);
 	float trig = IN0(0);
 	if((unit->m_trig <= 0.0) && (trig > 0.0)){
-		Print("%s: %g\n", unit->m_id_string, in);
+		if(unit->m_mayprint){
+			Print("%s: %g\n", unit->m_id_string, in);
+		}
 		if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in);
 		}
 	unit->m_trig = trig;
@@ -606,7 +613,9 @@ void Poll_next_ak(Poll *unit, int inNumSamples){
 	float lasttrig = unit->m_trig;
 	for(int i = 0; i < inNumSamples; i++){
 		if((lasttrig <= 0.0) && (trig[i] > 0.0)){
-			Print("%s: %g\n", unit->m_id_string, in);
+			if(unit->m_mayprint){
+				Print("%s: %g\n", unit->m_id_string, in);
+			}
 			if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in);
 			}
 		lasttrig = trig[i];

@@ -28,7 +28,9 @@ ServerOptions
 	var <>device = nil;
 	
 	var <>blockAllocClass;
-
+	
+	var <>verbosity = 0;
+	
 	*initClass {
 		default = this.new.blockAllocClass_(PowerOfTwoAllocator);
 	}
@@ -104,6 +106,9 @@ ServerOptions
 		});
 		if (device.notNil, {
 			o = o ++ " -H \"" ++ device ++ "\"" ;
+		});
+		if (verbosity != 0, {
+			o = o ++ " -v " ++ verbosity;
 		});
 		^o
 	}

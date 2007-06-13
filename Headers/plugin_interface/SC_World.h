@@ -86,7 +86,8 @@ struct World
 	SC_Lock* mDriverLock;
 	
 	float mSubsampleOffset; // subsample accurate offset in the buffer of current event time.
-
+	
+	int mVerbosity;
 };
 
 extern "C" {

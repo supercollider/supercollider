@@ -82,6 +82,10 @@ void Usage()
         "   -M <server-mach-port-name> <reply-mach-port-name>\n"
 #endif 
         "   -H <hardware-device-name>\n"
+        "   -v <verbosity>\n"
+        "          0 is normal behaviour\n"
+        "          -1 suppresses informational messages\n"
+        "          -2 suppresses informational and many error messages\n"
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
 		kDefaultWorldOptions.mNumControlBusChannels,
 		kDefaultWorldOptions.mNumAudioBusChannels, 
@@ -137,7 +141,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 	
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMH", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHv", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -246,6 +250,10 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mDeviceName = argv[j+1];
 				break;
+			case 'v' :
+				checkNumArgs(2);
+				options.mVerbosity = atoi(argv[j+1]);
+				break;
 			default: Usage();
 		}
 	}
@@ -279,7 +287,9 @@ int main(int argc, char* argv[])
     //World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
 #endif
 	
-	scprintf("SuperCollider 3 server ready..\n");
+	if(options.mVerbosity >=0){
+		scprintf("SuperCollider 3 server ready..\n");
+	}
 	fflush(stdout);
 	
 	World_WaitForQuit(world);

@@ -71,6 +71,8 @@ struct WorldOptions
     CFStringRef mReplyPortName;
 #endif
 	const char *mDeviceName;
+	
+	int mVerbosity;
 };
 
 const WorldOptions kDefaultWorldOptions = 
@@ -79,6 +81,7 @@ const WorldOptions kDefaultWorldOptions =
 #ifdef SC_DARWIN
 	,0,0,CFSTR("com.audiosynth.scsynth"),NULL
 #endif
+	,0
 	,0
 };
 

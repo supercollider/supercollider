@@ -299,6 +299,8 @@ World* World_New(WorldOptions *inOptions)
 		world->mNumInputs = inOptions->mNumInputBusChannels;
 		world->mNumOutputs = inOptions->mNumOutputBusChannels;
 		
+		world->mVerbosity = inOptions->mVerbosity;
+		
 		world->mNumSharedControls = inOptions->mNumSharedControls;
 		world->mSharedControls = inOptions->mSharedControls;
 
@@ -348,7 +350,9 @@ World* World_New(WorldOptions *inOptions)
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;
 
-		scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
+		if(inOptions->mVerbosity >= 0) {
+			scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
+		}
 		sc_SetDenormalFlags();
 
 		if (world->mRealTime) {
@@ -538,7 +542,9 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	double oscToSamples = inOptions->mPreferredSampleRate * oscToSeconds;
 	int64 oscInc = (int64)((double)bufLength / oscToSamples);
 
+	if(inOptions->mVerbosity >= 0) {
         printf("start time %g\n", schedTime * oscToSeconds);
+	}
 	
 	bool run = true;
 	int inBufStep = numInputChannels * bufLength;
@@ -591,7 +597,9 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	
 				PerformOSCBundle(world, &packet);
 				if (nextOSCPacket(cmdFile, &packet, schedTime)) { run = false; break; }
+	if(inOptions->mVerbosity >= 0) {
         printf("nextOSCPacket %g\n", schedTime * oscToSeconds);
+	}
 				if (schedTime < prevTime) {
 					scprintf("ERROR: Packet time stamps out-of-order.\n");
 					run = false;
