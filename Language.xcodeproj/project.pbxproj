@@ -235,21 +235,21 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 94F5FAD10C1E6B95005CDF9F /* libscsynth.a */;
+			remoteGlobalIDString = 94F5FAD10C1E6B95005CDF9F;
 			remoteInfo = libscsynth2;
 		};
 		94F5FC380C1E6E70005CDF9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
+			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F;
 			remoteInfo = libscsynth;
 		};
 		94F5FC3A0C1E6E7A005CDF9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
+			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F;
 			remoteInfo = libscsynth;
 		};
 /* End PBXContainerItemProxy section */
