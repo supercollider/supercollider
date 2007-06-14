@@ -10,31 +10,29 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 21.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #a71e12}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0019b7}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #a71e12; min-height: 16.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #ab1809}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0019b9}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #ab1809; min-height: 16.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Monaco}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Monaco; min-height: 19.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 19.0px Monaco; min-height: 26.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 8.0px Helvetica}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 8.0px Helvetica; min-height: 10.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Courier}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #606060}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 21.0px Helvetica; min-height: 25.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; min-height: 14.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #606060}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 21.0px Helvetica; min-height: 25.0px}
 span.s1 {color: #000000}
-span.s2 {color: #0019b7}
-span.s3 {font: 12.0px Monaco; color: #0019b7}
+span.s2 {color: #0019b9}
+span.s3 {font: 12.0px Monaco; color: #0019b9}
 span.s4 {font: 14.0px Monaco}
 span.s5 {font: 14.0px Courier}
 span.s6 {font: 12.0px Helvetica}
 span.s7 {color: #606060}
-span.s8 {color: #326f17}
+span.s8 {color: #326f13}
 span.s9 {font: 12.0px Monaco}
-span.s10 {color: #a71e12}
+span.s10 {color: #ab1809}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -97,60 +95,57 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Adding a Target to Xcode</p>
 <p class="p12"><br></p>
 <p class="p3">You will need to have the Developer Tools installed to do this.</p>
-<p class="p3">Each group of plugins shares a target in Xcode.<span class="Apple-converted-space">  </span>They create a file: eg. MyUGens.scx which is then copied into the plugins folder via a shell script.</p>
+<p class="p3">Each group of plugins shares a target in Xcode, which outputs a single plugin, e.g MyUGens.scx.</p>
 <p class="p2"><br></p>
-<p class="p3">Create a new target, select type 'Legacy''Library'.</p>
-<p class="p3">(In the future using 'Legacy' may not be necessary, but currently Xcode doesn't build BUNDLE library style correctly with non-legacy targets.)</p>
-<p class="p2"><br></p>
-<p class="p13"><span class="Apple-converted-space">                       </span><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic.png"></span></p>
+<p class="p3">We will use an existing target as a template for our target. In this tutorial we will use ChaosUGens as a template, although you could use any target.<span class="Apple-converted-space"> </span></p>
+<p class="p3">The frist step is to make a duplicate of ChaosUGens. To do this control-click on the ChaosUGens target and select "Duplicate".</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3">Go to the Target Inspector. <span class="Apple-converted-space"> </span></p>
-<p class="p3">Set the product name to be MyUGens.scx.</p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 1.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 1.png"></span></p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 1.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 1.png"></span></p>
-<p class="p15"><br></p>
+<p class="p3">Now we need to change the name of the target and it's output file. Double click on the "ChaosUGens copy" to open it's inspector.</p>
 <p class="p2"><br></p>
-<p class="p15"><span class="Apple-converted-space">                       </span></p>
-<p class="p3">Click on "GCC CompilerSettings".<span class="Apple-converted-space"> </span></p>
-<p class="p3">Set "Other C Flags" to -DSC_DARWIN</p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 2.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 2.png"></span></p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 9.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 9.png"></span></p>
+<p class="p3">In the "Build" tab , search for the "Product Name" setting and change the value to "MyUGens".</p>
 <p class="p2"><br></p>
-<p class="p3">Click on "Expert View" and change LIBRARY_STYLE to BUNDLE</p>
-<p class="p14"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 6.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 6.png"></span></p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 5.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 5.png"></span></p>
+<p class="p14"><br></p>
+<p class="p3">Now switch to the "General" tab and change the target name to "MyUGens".</p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p3">Add a build phase (control or right click on build phases): a shell script build phase.<span class="Apple-converted-space"> </span></p>
-<p class="p3">Type this script (with the name of your build product in place of MyUGens.scx) :</p>
-<p class="p2"><br></p>
-<p class="p16">cp build/MyUGens.scx build/plugins<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p14"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 4.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 4.png"></span></p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic.png"></span></p>
+<p class="p14"><br></p>
+<p class="p14"><br></p>
+<p class="p3">Close the ChaosUGens inspector, expand the target's disclosure triangle, and then expand the "Compile Sources" disclosure triangle.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3">Open the inspector for the All Plugins target and click on the plus button <span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 3.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 3.png"></span>.</p>
-<p class="p3">A list of targets will open. Add your target.</p>
-<p class="p14"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 5.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 5.png"></span></p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 10.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 10.png"></span></p>
+<p class="p14"><br></p>
+<p class="p14"><br></p>
+<p class="p3">Delete the existing "ChaosUGens.cpp" source file by clicking on it and pressing the delete key. Confirm the deletion in the dialog that is presented.</p>
 <p class="p2"><br></p>
-<p class="p3">Your target will be built along with the others when the aggregate target "All Plugins" is selected.</p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 11.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 11.png"></span></p>
+<p class="p14"><br></p>
 <p class="p2"><br></p>
-<p class="p3">Create a new .cpp file and add it to the project.</p>
-<p class="p14"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 7.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 7.png"></span></p>
-<p class="p3">Set the name to MyUGens.cpp</p>
-<p class="p3">Uncheck "Also create 'MyUGens.h' "</p>
-<p class="p3">Location should be in SuperCollider3/source/plugins .</p>
-<p class="p3">Check your target's name in the targets list.</p>
-<p class="p3">Click Finish.</p>
-<p class="p8"><br></p>
-<p class="p13"><span class="Apple-converted-space">                        </span><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 8.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 8.png"></span></p>
-<p class="p15"><span class="Apple-converted-space">                        </span></p>
-<p class="p15"><br></p>
+<p class="p3">Use the "File-&gt;New File..." menu option to create a new source file.</p>
 <p class="p2"><br></p>
-<p class="p3">Copy this code into the MyUGens.cpp file.</p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 13.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 13.png"></span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">Under the BSD section, select "C++ File", and click "Next".</p>
+<p class="p2"><br></p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 14.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 14.png"></span></p>
+<p class="p14"><br></p>
+<p class="p2"><br></p>
+<p class="p3">Change the filename field to "MyUGens.cpp", uncheck the "Also create MyUGens.h" option, and check "MyUGens" as the only target. When all these options have been set, click "Finish".</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 15.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 15.png"></span></p>
+<p class="p2"><br></p>
+<p class="p3">Erase the default code, and copy the following into the MyUGens.cpp file:</p>
 <p class="p3">____________________________________________________________________</p>
 <p class="p8"><br></p>
-<p class="p17"><span class="s1">#include </span>"SC_PlugIn.h"</p>
+<p class="p15"><span class="s1">#include </span>"SC_PlugIn.h"</p>
 <p class="p8"><br></p>
 <p class="p4">// InterfaceTable contains pointers to functions in the host (server).</p>
 <p class="p5"><span class="s1">static </span>InterfaceTable<span class="s1"> *ft;</span></p>
@@ -296,9 +291,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">}</p>
 <p class="p8"><br></p>
 <p class="p4">////////////////////////////////////////////////////////////////////</p>
+<p class="p6"><br></p>
 <p class="p3">____________________________________________________________________</p>
 <p class="p6"><br></p>
-<p class="p4">// In the MyUGens.sc file:</p>
+<p class="p3">Drag the MyUGens target into the "All" aggregate target, and build the project using the "Build-&gt;Build" menu option.</p>
+<p class="p6"><br></p>
+<p class="p13"><span class="s6"><img src="attachments/Writing_Unit_Generators/Pasted Graphic 16.png" alt="attachments/Writing_Unit_Generators/Pasted Graphic 16.png"></span></p>
+<p class="p14"><br></p>
+<p class="p3">Now launch SuperCollider.app and create a file named MyUGens.sc in the class library. Add the following to this file:</p>
+<p class="p3">____________________________________________________________________</p>
 <p class="p8"><br></p>
 <p class="p5">MySaw<span class="s1"> : </span>UGen<span class="s1"> {</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>*ar { <span class="s2">arg</span> freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;</p>
@@ -308,6 +309,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s2">this</span>.multiNew(<span class="s8">'control'</span>, freq, iphase).madd(mul, add)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}</p>
 <p class="p7">}</p>
+<p class="p3">____________________________________________________________________</p>
 <p class="p8"><br></p>
 <p class="p3">The SuperCollider class for your UGen allows the SuperCollider application to be able to write a SynthDef file.</p>
 <p class="p2"><br></p>
@@ -434,11 +436,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">____________________________________________________________________</p>
 <p class="p2"><br></p>
 <p class="p1">A Unit Generator that needs a Dtor</p>
-<p class="p18"><br></p>
+<p class="p16"><br></p>
 <p class="p3">This is code for a simple fixed delay line.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p17"><span class="s1">#include </span>"SC_PlugIn.h"</p>
+<p class="p15"><span class="s1">#include </span>"SC_PlugIn.h"</p>
 <p class="p8"><br></p>
 <p class="p4">// InterfaceTable contains pointers to functions in the host (server).</p>
 <p class="p5"><span class="s1">static </span>InterfaceTable<span class="s1"> *ft;</span></p>
