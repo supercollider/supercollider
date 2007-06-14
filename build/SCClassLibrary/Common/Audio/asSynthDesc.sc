@@ -52,7 +52,7 @@
 		desc.outputs = [];
 		children.do({ |ugen|
 			ugen.class.isInputUGen.if({
-				bus = ugen.inputs[0].source;
+				bus = ugen.inputs !? { ugen.inputs[0].source };
 				if (bus.class.isControlUGen) {
 					control = desc.controls.detect {|item| item.index == bus.specialIndex };
 					if (control.notNil) { bus = control.name };
@@ -60,7 +60,7 @@
 				desc.inputs = desc.inputs.add( IODesc(ugen.rate, ugen.channels.size, bus))
 			}, {
 			ugen.class.isOutputUGen.if({
-				bus = ugen.inputs[0].source;
+				bus = ugen.inputs !? { ugen.inputs[0].source };
 				if (bus.class.isControlUGen) {
 					control = desc.controls.detect {|item| item.index == bus.specialIndex };
 					if (control.notNil) { bus = control.name };
