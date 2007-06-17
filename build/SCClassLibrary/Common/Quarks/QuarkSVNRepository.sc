@@ -13,7 +13,7 @@ QuarkSVNRepository
 
 	*new { | url |
 		if(File.exists(QuarkSVNRepository.svnpath).not,{
-			Error("Path to SVN executable is not correct.  Set QuarkSVNRepository.svnpath = /full/path/to/svn in your startup").throw;
+			Error("Path to SVN executable is not correct.  Set QuarkSVNRepository.svnpath = \"/full/path/to/svn in your startup\"").throw;
 		});
 		^this.newCopyArgs(url ? "https://svn.sourceforge.net/svnroot/quarks")
 	}
