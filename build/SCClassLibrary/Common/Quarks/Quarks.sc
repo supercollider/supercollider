@@ -132,10 +132,10 @@ Quarks
 	}
 	installed {
 		// of quarks in local, select those also present in userExtensionDir
-		var pathMatches,q;
+		var pathMatches;
 		pathMatches = (local.path ++ "/DIRECTORY/*.quark").pathMatch;
 		^pathMatches.collect({ |p|  
-			q = Quark.fromFile(p);
+			Quark.fromFile(p);
 		}).select({ |q|
 			(Platform.userExtensionDir.escapeChar($ ) 
 				++ "/" ++ local.name 
