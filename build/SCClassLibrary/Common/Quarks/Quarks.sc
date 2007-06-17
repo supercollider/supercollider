@@ -160,7 +160,7 @@ Quarks
 		this.checkDir;
 		
 		// install via symlink to Extensions/<quarks-dir>
-		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name ++ "/" ++ q.path).systemCmd;
+		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name ++ "/" ++ q.path.basename).systemCmd;
 		(q.name + "installed").inform;
 	}
 	listInstalled {
