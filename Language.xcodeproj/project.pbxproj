@@ -204,6 +204,8 @@
 		94B6AEFE0AF45DA800E478BB /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
 		94B6AF000AF45DA800E478BB /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
+		94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D9ED1C0C2773CF00223DF8 /* WebKit.framework */; };
+		94D9EFB10C2779A800223DF8 /* NSAttributedStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 94D9EFB00C2779A800223DF8 /* NSAttributedStringAdditions.m */; };
 		94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
 		94F5FC7F0C1E6F7F005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
 		94F5FC810C1E6F92005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
@@ -499,6 +501,9 @@
 		949318170C192C120018AB50 /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
 		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94B8F16C0B463EC000097F2D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
+		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
+		94D9EFB00C2779A800223DF8 /* NSAttributedStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = NSAttributedStringAdditions.m; sourceTree = "<group>"; };
+		94D9EFB20C2779B400223DF8 /* NSAttributedStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = NSAttributedStringAdditions.h; sourceTree = "<group>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -551,6 +556,7 @@
 				94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */,
 				94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */,
 				949313CC0C19234D0018AB50 /* IOBluetooth.framework in Frameworks */,
+				94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -620,6 +626,7 @@
 				949310BB0C1921F90018AB50 /* TabletEvents.m */,
 				949310BC0C1921F90018AB50 /* TextFinder.m */,
 				949310BD0C1921F90018AB50 /* UserPanel.M */,
+				94D9EFB00C2779A800223DF8 /* NSAttributedStringAdditions.m */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -754,6 +761,7 @@
 		9493126E0C19222B0018AB50 /* app */ = {
 			isa = PBXGroup;
 			children = (
+				94D9EFB20C2779B400223DF8 /* NSAttributedStringAdditions.h */,
 				9493126F0C19222B0018AB50 /* ChangeCounter.h */,
 				949312700C19222B0018AB50 /* ControlSpec.h */,
 				949312710C19222B0018AB50 /* DrawBackground.h */,
@@ -936,6 +944,7 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				94D9ED1C0C2773CF00223DF8 /* WebKit.framework */,
 				94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */,
 				942C390C0C1B40EF00360A35 /* libsndfile.a */,
 				949313CB0C19234D0018AB50 /* IOBluetooth.framework */,
@@ -1214,6 +1223,7 @@
 				9456F6B70C19E79F00634E4D /* HID_Name_Lookup.c in Sources */,
 				9456F6B90C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */,
 				9456F6BB0C19E79F00634E4D /* HID_Utilities.c in Sources */,
+				94D9EFB10C2779A800223DF8 /* NSAttributedStringAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

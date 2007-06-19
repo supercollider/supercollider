@@ -19,6 +19,7 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import "NSAttributedStringAdditions.h"
 #import "MyDocument.h"
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
@@ -49,13 +50,7 @@ extern NSTextView *gPostView;
 extern pthread_mutex_t gLangMutex;
 extern bool compiledOK;
 
-
 bool docCreatedFromLang = false; //if this is true addDocument is not called
-
-// these were in MyDocument, but that made it impossible to call them if a GUI window was in front 
-// so that there was no current document.
-
-
 
 @implementation MyDocument
 
@@ -1106,45 +1101,43 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (BOOL)readFromFile:(NSString *)path ofType:(NSString *)aType
 {
-
-    //NSFileManager *fmgr = [NSFileManager defaultManager];
-    //NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
-    //OSType creatorval = [attr2 fileHFSCreatorCode];
-	
-    //printf("r creator is %d   SCjm %d\n", creatorval, 'SCjm');
-
-    NSMutableDictionary *options = [NSMutableDictionary dictionary];
-    NSDictionary *docAttrs;
+	NSMutableDictionary *options = [NSMutableDictionary dictionary];
+	NSDictionary *docAttrs;
 	NSURL *url = [NSURL fileURLWithPath: path];
-	//NSString *docType;
-	//id val, viewSizeVal, paperSizeVal;
-    BOOL success;
-    
-    if (!initTextView) initTextView = [self makeTextView];
-    NSTextStorage* text = [initTextView textStorage];
-    
-    [options setObject:url forKey:@"BaseURL"];
-    //[options setObject:[NSNumber numberWithUnsignedInt:NoStringEncoding] forKey:@"CharacterEncoding"];
-    
-    // Insert code here to read your document from the given data.  You can also choose to override -loadFileWrapperRepresentation:ofType: or -readFromFile:ofType: instead.
-    [text beginEditing];	// Bracket with begin/end editing for efficiency
-    [[text mutableString] setString:@""];	// Empty the document
-    success = [text readFromURL:url options:options documentAttributes: &docAttrs];	// Read!
-	
+	BOOL success = NO;
+
+	if (!initTextView) initTextView = [self makeTextView];
+	NSTextStorage* text = [initTextView textStorage];
+
+	[options setObject:[NSNumber numberWithUnsignedInt:NSUTF8StringEncoding] forKey:NSCharacterEncodingDocumentOption];
+
+	[text beginEditing];	// Bracket with begin/end editing for efficiency
+	[[text mutableString] setString:@""];	// Empty the document
+
 	NSString* extension = [path pathExtension];
+
 	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
-		[initTextView setDefaultTabsTo: 28.0f];
+		NSAttributedString *htmlAttributedString = [NSAttributedString attributedStringWithURL:url];
+
+		if(!htmlAttributedString) success = NO;
+		else {
+			[text setAttributedString:htmlAttributedString];
+			[initTextView setDefaultTabsTo: 28.0f];
+			success = YES;
+		}
 	}
-    
- 	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
+	else
+		success = [text readFromData:[NSData dataWithContentsOfURL:url] options:options documentAttributes:&docAttrs];	// Read!
+
+	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
 		[initTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
 		SyntaxColorize(initTextView);
-		//[textView didChangeText];
 	}
 	[text endEditing];
+
 	// in case of html with images, etc.
-	[self setpathToSaveAttachments: [[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent: @"attachments"] stringByAppendingPathComponent: [[path lastPathComponent] stringByDeletingPathExtension]]];
-    return success;
+	[self setpathToSaveAttachments:[[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent: @"attachments"] stringByAppendingPathComponent: [[path lastPathComponent] stringByDeletingPathExtension]]];
+	return success;
 }
 
 - (BOOL) shouldRunSavePanelWithAccessoryView
@@ -1480,8 +1473,9 @@ void showHelpFor(NSString* selection)
     
     MyDocument *doc = (MyDocument*)[docctl documentForFileName: helpFilePath];
     if (!doc) {
-        doc = [docctl openDocumentWithContentsOfFile: helpFilePath display: true];
-        if (!doc) {
+        doc = [docctl openDocumentWithContentsOfURL:[NSURL fileURLWithPath:helpFilePath] display:true error:nil];
+		  
+		  if (!doc) {
             post("Can't open Help File Document '%s'\n", [helpFilePath cString]);
             return;
         }
