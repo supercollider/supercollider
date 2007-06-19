@@ -1101,15 +1101,11 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (BOOL)readFromFile:(NSString *)path ofType:(NSString *)aType
 {
-	NSMutableDictionary *options = [NSMutableDictionary dictionary];
-	NSDictionary *docAttrs;
 	NSURL *url = [NSURL fileURLWithPath: path];
 	BOOL success = NO;
 
 	if (!initTextView) initTextView = [self makeTextView];
 	NSTextStorage* text = [initTextView textStorage];
-
-	[options setObject:[NSNumber numberWithUnsignedInt:NSUTF8StringEncoding] forKey:NSCharacterEncodingDocumentOption];
 
 	[text beginEditing];	// Bracket with begin/end editing for efficiency
 	[[text mutableString] setString:@""];	// Empty the document
@@ -1126,8 +1122,11 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			success = YES;
 		}
 	}
-	else
-		success = [text readFromData:[NSData dataWithContentsOfURL:url] options:options documentAttributes:&docAttrs];	// Read!
+	else {
+		NSError *error;
+		success = [text readFromURL:url options:nil documentAttributes:nil error:&error];
+		if(!success) NSLog(@"Error opening file: %@", error);
+	}
 
 	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
 		[initTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
