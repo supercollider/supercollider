@@ -377,8 +377,8 @@ SimpleNumber : Number {
 	// a clock format
 	asTimeString { arg precision=0.1;
 		var hours,mins,secs;
-		mins = (this/60).trunc(1);
-		if(mins >= 60,{ hours = (mins/60).trunc(1).asString ++ ":"; 
+		mins = this.div(60);
+		if(mins >= 60,{ hours = mins.div(60).asString ++ ":"; 
 			mins = mins%60;
 			if(mins < 10 ,{ mins = "0"++ mins.asString; },{ mins = mins.asString; });
 		},{
