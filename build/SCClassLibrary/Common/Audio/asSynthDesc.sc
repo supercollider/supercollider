@@ -52,7 +52,8 @@
 					desc.controls = desc.controls.add(control);
 				}, {
 					cn.defaultValue.do({ |value, i|
-						control = control.copy.defaultValue_(value.tryPerform(\asFloat) ? 0.0);
+						control = control.copy.index_(cn.index + i)
+							.defaultValue_(value.tryPerform(\asFloat) ? 0.0);
 						(i > 0).if({ control.name_("?") });
 						desc.controls = desc.controls.add(control);
 					});
