@@ -40,14 +40,25 @@
 		desc.def = this;
 		desc.name = name;
 			// .select is for InstrSynthDef, which may have Patch controls not in the Synth itself
-		desc.controls = allControlNames.select({ |cn| cn.rate != \noncontrol })
-			.collect({ |cn|
-				cn.copy.name_(cn.name.asString)
-						// InstrSynthDefs may have non-numeric values as control defaults
-						// replace with 0.0 (must be a float or makeMsgFunc breaks)
-					.defaultValue_(cn.defaultValue.tryPerform(\asFloat) ? 0.0)
+		desc.controls = Array.new;
+		allControlNames.select({ |cn| cn.rate != \noncontrol })
+			.do({ |cn|
+					// InstrSynthDefs may have non-numeric values as control defaults
+					// replace with 0.0 (must be a float or makeMsgFunc breaks)
+				control = cn.copy.name_(cn.name.asString)
+					.defaultValue_(cn.defaultValue.tryPerform(\asFloat) ? 0.0);
+				// if the default value is a single value (not array)
+				(cn.defaultValue.size == 0).if({
+					desc.controls = desc.controls.add(control);
+				}, {
+					cn.defaultValue.do({ |value, i|
+						control = control.copy.defaultValue_(value.tryPerform(\asFloat) ? 0.0);
+						(i > 0).if({ control.name_("?") });
+						desc.controls = desc.controls.add(control);
+					});
+				});
 			});
-		desc.controlNames = desc.controls.collect(_.name);
+		desc.controlNames = desc.controls.collect(_.name).reject(_ == "?");
 		desc.inputs = [];
 		desc.outputs = [];
 		children.do({ |ugen|
