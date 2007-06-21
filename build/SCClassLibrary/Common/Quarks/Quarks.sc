@@ -144,7 +144,7 @@ Quarks
 		})
 	}
 	install { | name |
-		var q, deps, installed;
+		var q, deps, installed, dirname;
 
 		if(this.isInstalled(name),{
 			(name + "already installed").inform;
@@ -159,8 +159,14 @@ Quarks
 		// do we have to create /quarks/ directory ? If so, do it.
 		this.checkDir;
 		
+		// Ensure the correct folder-hierarchy exists first
+		dirname = (Platform.userExtensionDir ++ "/" ++ local.name ++ "/" ++ q.path).dirname;
+		if(File.exists(dirname).not, {
+			("mkdir -p " + dirname.escapeChar($ )).systemCmd;
+		});
+		
 		// install via symlink to Extensions/<quarks-dir>
-		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name ++ "/" ++ q.path.basename).systemCmd;
+		("ln -s " +  local.path ++ "/" ++ q.path +  Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name ++ "/" ++ q.path).systemCmd;
 		(q.name + "installed").inform;
 	}
 	listInstalled {
