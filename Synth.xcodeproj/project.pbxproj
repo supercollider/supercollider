@@ -25,7 +25,6 @@
 		942C379B0C1B3F9F00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C37990C1B3F9F00360A35 /* libsndfile.a */; };
 		942F96F10B03380700E00399 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
 		942F96F20B03380700E00399 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
-		94930B030C190FB10018AB50 /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CA0C190FB10018AB50 /* dlopen.c */; };
 		94930B040C190FB10018AB50 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CB0C190FB10018AB50 /* dtoa.c */; };
 		94930B050C190FB10018AB50 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CC0C190FB10018AB50 /* g_fmt.c */; };
 		94930B060C190FB10018AB50 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */; };
@@ -112,7 +111,6 @@
 		94F5FB0C0C1E6BFB005CDF9F /* SC_WorldOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BEB0C190FB80018AB50 /* SC_WorldOptions.h */; };
 		94F5FB0D0C1E6BFB005CDF9F /* Unroll.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BEC0C190FB80018AB50 /* Unroll.h */; };
 		94F5FB0E0C1E6BFB005CDF9F /* dfftlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930B8E0C190FB80018AB50 /* dfftlib.h */; };
-		94F5FB0F0C1E6BFB005CDF9F /* dlfcn.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930B8F0C190FB80018AB50 /* dlfcn.h */; };
 		94F5FB100C1E6BFB005CDF9F /* fftlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930B900C190FB80018AB50 /* fftlib.h */; };
 		94F5FB110C1E6BFB005CDF9F /* SC_AllocPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930B910C190FB80018AB50 /* SC_AllocPool.h */; };
 		94F5FB120C1E6BFB005CDF9F /* SC_Altivec.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930B920C190FB80018AB50 /* SC_Altivec.h */; };
@@ -151,7 +149,6 @@
 		94F5FB330C1E6C07005CDF9F /* SC_UnitDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A520C190FB10018AB50 /* SC_UnitDef.cpp */; };
 		94F5FB340C1E6C07005CDF9F /* SC_World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A530C190FB10018AB50 /* SC_World.cpp */; };
 		94F5FB350C1E6C07005CDF9F /* scsynth_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A540C190FB10018AB50 /* scsynth_main.cpp */; };
-		94F5FB360C1E6C07005CDF9F /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CA0C190FB10018AB50 /* dlopen.c */; };
 		94F5FB370C1E6C07005CDF9F /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CB0C190FB10018AB50 /* dtoa.c */; };
 		94F5FB380C1E6C07005CDF9F /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CC0C190FB10018AB50 /* g_fmt.c */; };
 		94F5FB390C1E6C07005CDF9F /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */; };
@@ -188,7 +185,6 @@
 		942C37990C1B3F9F00360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
 		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
-		949309CA0C190FB10018AB50 /* dlopen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dlopen.c; sourceTree = "<group>"; };
 		949309CB0C190FB10018AB50 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
 		949309CC0C190FB10018AB50 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
@@ -224,7 +220,6 @@
 		94930A530C190FB10018AB50 /* SC_World.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_World.cpp; sourceTree = "<group>"; };
 		94930A540C190FB10018AB50 /* scsynth_main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = scsynth_main.cpp; sourceTree = "<group>"; };
 		94930B8E0C190FB80018AB50 /* dfftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
-		94930B8F0C190FB80018AB50 /* dlfcn.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = dlfcn.h; sourceTree = "<group>"; };
 		94930B900C190FB80018AB50 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
 		94930B910C190FB80018AB50 /* SC_AllocPool.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
 		94930B920C190FB80018AB50 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Altivec.h; sourceTree = "<group>"; };
@@ -338,7 +333,6 @@
 		949309C90C190FB10018AB50 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				949309CA0C190FB10018AB50 /* dlopen.c */,
 				949309CB0C190FB10018AB50 /* dtoa.c */,
 				949309CC0C190FB10018AB50 /* g_fmt.c */,
 				949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */,
@@ -399,7 +393,6 @@
 			isa = PBXGroup;
 			children = (
 				94930B8E0C190FB80018AB50 /* dfftlib.h */,
-				94930B8F0C190FB80018AB50 /* dlfcn.h */,
 				94930B900C190FB80018AB50 /* fftlib.h */,
 				94930B910C190FB80018AB50 /* SC_AllocPool.h */,
 				94930B920C190FB80018AB50 /* SC_Altivec.h */,
@@ -572,7 +565,6 @@
 				94F5FB0C0C1E6BFB005CDF9F /* SC_WorldOptions.h in Headers */,
 				94F5FB0D0C1E6BFB005CDF9F /* Unroll.h in Headers */,
 				94F5FB0E0C1E6BFB005CDF9F /* dfftlib.h in Headers */,
-				94F5FB0F0C1E6BFB005CDF9F /* dlfcn.h in Headers */,
 				94F5FB100C1E6BFB005CDF9F /* fftlib.h in Headers */,
 				94F5FB110C1E6BFB005CDF9F /* SC_AllocPool.h in Headers */,
 				94F5FB120C1E6BFB005CDF9F /* SC_Altivec.h in Headers */,
@@ -649,7 +641,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94930B030C190FB10018AB50 /* dlopen.c in Sources */,
 				94930B040C190FB10018AB50 /* dtoa.c in Sources */,
 				94930B050C190FB10018AB50 /* g_fmt.c in Sources */,
 				94930B060C190FB10018AB50 /* SC_AllocPool.cpp in Sources */,
@@ -715,7 +706,6 @@
 				94F5FB330C1E6C07005CDF9F /* SC_UnitDef.cpp in Sources */,
 				94F5FB340C1E6C07005CDF9F /* SC_World.cpp in Sources */,
 				94F5FB350C1E6C07005CDF9F /* scsynth_main.cpp in Sources */,
-				94F5FB360C1E6C07005CDF9F /* dlopen.c in Sources */,
 				94F5FB370C1E6C07005CDF9F /* dtoa.c in Sources */,
 				94F5FB380C1E6C07005CDF9F /* g_fmt.c in Sources */,
 				94F5FB390C1E6C07005CDF9F /* SC_AllocPool.cpp in Sources */,

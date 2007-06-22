@@ -571,7 +571,6 @@ Source/common/scsynthsend.cpp
 ''')
 if PLATFORM == 'darwin':
     commonSources += [
-	'Source/common/dlopen.c',
 	'Source/common/SC_StandAloneInfo_Darwin.cpp'
 	]
 commonEnv.Library('build/common', commonSources)

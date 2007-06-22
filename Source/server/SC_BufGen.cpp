@@ -29,7 +29,6 @@
 #include <dirent.h>
 #endif //_MSC_VER
 #include <string.h>
-#include "dlfcn.h"
 #include "SC_Prototypes.h"
 #include "SC_Str4.h"
 

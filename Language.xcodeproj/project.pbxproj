@@ -61,7 +61,6 @@
 		9493115D0C1921F90018AB50 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310BB0C1921F90018AB50 /* TabletEvents.m */; };
 		9493115E0C1921F90018AB50 /* TextFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310BC0C1921F90018AB50 /* TextFinder.m */; };
 		9493115F0C1921F90018AB50 /* UserPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310BD0C1921F90018AB50 /* UserPanel.M */; };
-		949311600C1921F90018AB50 /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310BF0C1921F90018AB50 /* dlopen.c */; };
 		949311610C1921F90018AB50 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C00C1921F90018AB50 /* dtoa.c */; };
 		949311620C1921F90018AB50 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C10C1921F90018AB50 /* g_fmt.c */; };
 		949311630C1921F90018AB50 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C20C1921F90018AB50 /* SC_AllocPool.cpp */; };
@@ -117,7 +116,6 @@
 		949311A30C1921F90018AB50 /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311100C1921F90018AB50 /* VMGlobals.cpp */; };
 		949313CC0C19234D0018AB50 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 949313CB0C19234D0018AB50 /* IOBluetooth.framework */; };
 		9493143A0C1925B90018AB50 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 949314390C1925B90018AB50 /* fftlib.c */; };
-		949315010C192A6E0018AB50 /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310BF0C1921F90018AB50 /* dlopen.c */; };
 		949315020C192A6E0018AB50 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C00C1921F90018AB50 /* dtoa.c */; };
 		949315030C192A6E0018AB50 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C10C1921F90018AB50 /* g_fmt.c */; };
 		949315040C192A6E0018AB50 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C20C1921F90018AB50 /* SC_AllocPool.cpp */; };
@@ -303,7 +301,6 @@
 		949310BB0C1921F90018AB50 /* TabletEvents.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = TabletEvents.m; sourceTree = "<group>"; };
 		949310BC0C1921F90018AB50 /* TextFinder.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = TextFinder.m; sourceTree = "<group>"; };
 		949310BD0C1921F90018AB50 /* UserPanel.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = UserPanel.M; sourceTree = "<group>"; };
-		949310BF0C1921F90018AB50 /* dlopen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dlopen.c; sourceTree = "<group>"; };
 		949310C00C1921F90018AB50 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
 		949310C10C1921F90018AB50 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		949310C20C1921F90018AB50 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
@@ -388,7 +385,6 @@
 		949312810C19222B0018AB50 /* TextFinder.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TextFinder.h; sourceTree = "<group>"; };
 		949312820C19222B0018AB50 /* UserPanel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = UserPanel.h; sourceTree = "<group>"; };
 		949312840C19222B0018AB50 /* dfftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
-		949312850C19222B0018AB50 /* dlfcn.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = dlfcn.h; sourceTree = "<group>"; };
 		949312860C19222B0018AB50 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
 		949312870C19222B0018AB50 /* SC_AllocPool.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
 		949312880C19222B0018AB50 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Altivec.h; sourceTree = "<group>"; };
@@ -635,7 +631,6 @@
 			isa = PBXGroup;
 			children = (
 				949314390C1925B90018AB50 /* fftlib.c */,
-				949310BF0C1921F90018AB50 /* dlopen.c */,
 				949310C00C1921F90018AB50 /* dtoa.c */,
 				949310C10C1921F90018AB50 /* g_fmt.c */,
 				949310C20C1921F90018AB50 /* SC_AllocPool.cpp */,
@@ -790,7 +785,6 @@
 			isa = PBXGroup;
 			children = (
 				949312840C19222B0018AB50 /* dfftlib.h */,
-				949312850C19222B0018AB50 /* dlfcn.h */,
 				949312860C19222B0018AB50 /* fftlib.h */,
 				949312870C19222B0018AB50 /* SC_AllocPool.h */,
 				949312880C19222B0018AB50 /* SC_Altivec.h */,
@@ -1072,7 +1066,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				949315010C192A6E0018AB50 /* dlopen.c in Sources */,
 				949315020C192A6E0018AB50 /* dtoa.c in Sources */,
 				949315030C192A6E0018AB50 /* g_fmt.c in Sources */,
 				949315040C192A6E0018AB50 /* SC_AllocPool.cpp in Sources */,
@@ -1163,7 +1156,6 @@
 				9493115D0C1921F90018AB50 /* TabletEvents.m in Sources */,
 				9493115E0C1921F90018AB50 /* TextFinder.m in Sources */,
 				9493115F0C1921F90018AB50 /* UserPanel.M in Sources */,
-				949311600C1921F90018AB50 /* dlopen.c in Sources */,
 				949311610C1921F90018AB50 /* dtoa.c in Sources */,
 				949311620C1921F90018AB50 /* g_fmt.c in Sources */,
 				949311630C1921F90018AB50 /* SC_AllocPool.cpp in Sources */,

@@ -34,11 +34,7 @@
 #include <dirent.h>
 #endif //_MSC_VER
 
-#ifdef SC_DARWIN
-# include "dlfcn.h"
-#else
-# include <dlfcn.h>
-#endif
+#include <dlfcn.h>
 
 // Plugin directory in resource directory
 #if defined(SC_WIN32) && defined(_DEBUG)
@@ -54,7 +50,13 @@
 
 // Symbol of initialization routine when loading plugins
 #ifndef SC_PLUGIN_LOAD_SYM
-# define SC_PLUGIN_LOAD_SYM "_load"
+
+# ifdef SC_DARWIN
+#  define SC_PLUGIN_LOAD_SYM "load"
+# else
+#  define SC_PLUGIN_LOAD_SYM "_load"
+# endif
+
 #endif
 
 #ifndef SC_WIN32
@@ -152,11 +154,7 @@ bool PlugIn_Load(const char *filename)
 
 #else
 
-#ifdef SC_DARWIN
-	void* handle = dlopen(filename, RTLD_NOW | RTLD_UNSHARED);
-#else
 	void* handle = dlopen(filename, RTLD_NOW);
-#endif
 	
 	if (!handle) {
 		scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename, dlerror());
