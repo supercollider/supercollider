@@ -6,14 +6,16 @@ Main : Process {
 	startup {
 		super.startup;
 		
-		Document.startup;
-		
 		// set the 's' interpreter variable to the internal server.
 		// You should use the internal server for standalone applications--
 		// otherwise, if your application has a problem, the user will
 		// be stuck with a process, possibly making sound, that he won't know 
-		// how to kill.
+		// how to kill
 		interpreter.s = Server.internal;
+//		GUI.fromID( this.platform.defaultGUIScheme );
+//		GeneralHID.fromID( this.platform.defaultHIDScheme );
+//		this.platform.startup;
+		StartUp.run;
 		
 		// server windows turned off for stand-alone application
 //		Server.internal.makeWindow;
