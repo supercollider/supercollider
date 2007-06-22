@@ -10,17 +10,19 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0020e4}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Trebuchet MS; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #932919}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
+span.s2 {color: #0022f5}
 span.s3 {color: #000000}
-span.s4 {color: #0019b7}
-span.s5 {color: #326f17}
-span.s6 {color: #a71e12}
+span.s4 {text-decoration: underline}
+span.s5 {color: #0024b0}
+span.s6 {color: #446c21}
+span.s7 {color: #932919}
+span.s8 {color: #0000ff}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -31,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Unit generators are the basic building blocks of synths on the server, and are used to generate or process audio or control signals. The many subclasses of UGen are the client-side representations of unit generators, and are used to specify their parameters when constructing synth definitions (see <a href="../ServerArchitecture/SynthDef.html"><span class="s2">SynthDef</span></a>).<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3">See also <a href="UGens.html">UGens</a>, <a href="Tour_of_UGens.html">Tour_of_UGens</a>, and <a href="../Tutorials/UGens-and-Synths.html">UGens-and-Synths</a>.</span></p>
+<p class="p4"><span class="s3">See also <a href="UGens.html"><span class="s4">UGens</span></a>, <a href="Tour_of_UGens.html"><span class="s4">Tour_of_UGens</span></a>, and <a href="../Tutorials/UGens-and-Synths.html"><span class="s4">UGens-and-Synths</span></a>.</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Convenience Methods</b></p>
@@ -40,24 +42,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Displays the output of this UGen in an individual <a href="../GUI/Stethoscope.html"><span class="s2">Stethoscope</span></a><b> </b>window. <b>name</b> is the name of the window.</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s4">Server</span>.default = s = <span class="s4">Server</span>.internal.boot;</p>
-<p class="p6">{ <span class="s4">Ringz</span>.ar(<span class="s4">PinkNoise</span>.ar([0.1, 0.2]).scope(<span class="s5">\pink</span>), 2000, 1, 0.25) }.play; <span class="s6">// multichannel works</span></p>
+<p class="p6"><span class="s5">Server</span>.default = s = <span class="s5">Server</span>.internal.boot;</p>
+<p class="p6">{ <span class="s5">Ringz</span>.ar(<span class="s5">PinkNoise</span>.ar([0.1, 0.2]).scope(<span class="s6">\pink</span>), 2000, 1, 0.25) }.play; <span class="s7">// multichannel works</span></p>
 <p class="p7"><span class="s3">s.scope; </span>// can still separately scope the output of the server</p>
 <p class="p2"><br></p>
 <p class="p3"><b>poll(trig, label, trigid)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Polls the output of this UGen every <b>interval</b> seconds, and posts the result. The default <b>trig </b>is 10, which converts to 10 triggers per second (or every 0.1 seconds). See <a href="Triggers/Poll.html"><span class="s2">Poll</span></a> for more info on polling.</p>
 <p class="p2"><br></p>
-<p class="p6">{ <span class="s4">SinOsc</span>.ar(<span class="s4">LFNoise0</span>.ar(2).range(420, 460).poll(label: <span class="s5">\LFNoise</span>), 0, 0.2) }.play;</p>
+<p class="p6">{ <span class="s5">SinOsc</span>.ar(<span class="s5">LFNoise0</span>.ar(2).range(420, 460).poll(label: <span class="s6">\LFNoise</span>), 0, 0.2) }.play;</p>
 <p class="p8"><br></p>
 <p class="p7">// Multichannel is supported</p>
-<p class="p6">{ <span class="s4">SinOsc</span>.ar(<span class="s4">SinOsc</span>.ar([0.2, 0.3]).range(420, 460).poll(label: <span class="s5">\SinOscs</span>), 0, 0.2) }.play;</p>
+<p class="p6">{ <span class="s5">SinOsc</span>.ar(<span class="s5">SinOsc</span>.ar([0.2, 0.3]).range(420, 460).poll(label: <span class="s6">\SinOscs</span>), 0, 0.2) }.play;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>range(lo, hi)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Scales the output of this UGen to be within the range of <b>lo</b> and <b>hi</b>. <b>N.B.</b> 'range' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
 <p class="p2"><br></p>
-<p class="p6">{ <span class="s4">SinOsc</span>.ar(<span class="s4">SinOsc</span>.ar(0.3).range(440, 660), 0, 0.5) * 0.1 }.play;</p>
+<p class="p6">{ <span class="s5">SinOsc</span>.ar(<span class="s5">SinOsc</span>.ar(0.3).range(440, 660), 0, 0.5) * 0.1 }.play;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>exprange(lo, hi)</b></p>
 <p class="p2"><br></p>
@@ -95,14 +97,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Wraps the receiver in a <a href="../BinaryOps/min.html"><span class="s2">min</span></a><b> </b>UGen, such that the lesser of the receiver's output and the Nyquist frequency is output. This can be useful to prevent aliasing.</p>
 <p class="p2"><br></p>
+<p class="p3"><b>checkBadValues(id, post)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Wraps the receiver in a <a href="InfoUGens/CheckBadValues.html"><span class="s8">CheckBadValues</span></a> UGen with the corresponding id and post flag.</p>
+<p class="p2"><br></p>
 <p class="p3"><b>if(trueUGen, falseUGen)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Outputs <b>trueUGen</b> when the receiver outputs 1, <b>falseUGen</b> when the receiver outputs 0. If the receiver outputs a value between 0 and 1, a mixture of both will be played. (This is implemented as: ^(this * (trueUGen - falseUGen)) + falseUGen) Note that both <b>trueUGen</b> and <b>falseUGen</b> will be calculated regardless of whether they are output, so this may not be the most efficient approach.</p>
 <p class="p2"><br></p>
 <p class="p7">// note different syntax in these two examples</p>
-<p class="p6">{ if( <span class="s4">LFNoise1</span>.kr(1.0, 0.5, 0.5) , <span class="s4">SinOsc</span>.ar, <span class="s4">Saw</span>.ar ) * 0.1 }.play;</p>
+<p class="p6">{ if( <span class="s5">LFNoise1</span>.kr(1.0, 0.5, 0.5) , <span class="s5">SinOsc</span>.ar, <span class="s5">Saw</span>.ar ) * 0.1 }.play;</p>
 <p class="p8"><br></p>
-<p class="p6">{ <span class="s4">Trig1</span>.ar(<span class="s4">Dust</span>.ar(3), 0.2).lag(0.1).if(<span class="s4">FSinOsc</span>.ar(440), <span class="s4">FSinOsc</span>.ar(880)) * 0.1 }.play;</p>
+<p class="p6">{ <span class="s5">Trig1</span>.ar(<span class="s5">Dust</span>.ar(3), 0.2).lag(0.1).if(<span class="s5">FSinOsc</span>.ar(440), <span class="s5">FSinOsc</span>.ar(880)) * 0.1 }.play;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>@ y</b></p>
 <p class="p2"><br></p>
@@ -135,7 +141,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>signalRange</b></p>
 <p class="p2"><br></p>
-<p class="p3">Returns a symbol indicating the signal range of the receiver. Either <span class="s5">\bipolar</span> or <span class="s5">\unipolar</span>.</p>
+<p class="p3">Returns a symbol indicating the signal range of the receiver. Either <span class="s6">\bipolar</span> or <span class="s6">\unipolar</span>.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>numChannels</b> </p>
 <p class="p2"><br></p>
@@ -169,10 +175,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Returns the receiver. Thus UGen-dup effectively returns a reference to the original and is a convenient way to copy a mono signal to multiple channels.</p>
 <p class="p2"><br></p>
-<p class="p6">{ <span class="s4">SinOsc</span>.ar(<span class="s4">Rand</span>(200, 4000), 0, 0.2).dup }.plot <span class="s6">// this is the same UGen</span></p>
+<p class="p6">{ <span class="s5">SinOsc</span>.ar(<span class="s5">Rand</span>(200, 4000), 0, 0.2).dup }.plot <span class="s7">// this is the same UGen</span></p>
 <p class="p3">    </p>
 <p class="p3">Function-dup evaluates that function multiple times, thus potentially returning distinct UGens.</p>
 <p class="p2"><br></p>
-<p class="p6">{ {<span class="s4">SinOsc</span>.ar(<span class="s4">Rand</span>(200, 4000), 0, 0.2)}.dup }.plot <span class="s6">// these are different UGens</span></p>
+<p class="p6">{ {<span class="s5">SinOsc</span>.ar(<span class="s5">Rand</span>(200, 4000), 0, 0.2)}.dup }.plot <span class="s7">// these are different UGens</span></p>
 </body>
 </html>

@@ -248,10 +248,10 @@ UGen : AbstractFunction {
           ^Poll.perform(trig.methodSelectorForRate, trig, this, label, trigid)
 	}
 	
-	checkBadValues { arg id = 0;
+	checkBadValues { arg id = 0, post = 1;
 		^switch(this.rate, 
-			\audio, {CheckBadValues.ar(this, id); this},
-			\control, {CheckBadValues.kr(this, id); this}
+			\audio, {CheckBadValues.ar(this, id, post); this},
+			\control, {CheckBadValues.kr(this, id, post); this}
 		);
 	}
 	
