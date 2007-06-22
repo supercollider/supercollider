@@ -179,7 +179,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
+			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F;
 			remoteInfo = libscsynth;
 		};
 /* End PBXContainerItemProxy section */

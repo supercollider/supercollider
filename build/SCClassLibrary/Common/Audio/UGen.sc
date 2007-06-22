@@ -248,6 +248,13 @@ UGen : AbstractFunction {
           ^Poll.perform(trig.methodSelectorForRate, trig, this, label, trigid)
 	}
 	
+	checkBadValues { arg id = 0;
+		^switch(this.rate, 
+			\audio, {CheckBadValues.ar(this, id); this},
+			\control, {CheckBadValues.kr(this, id); this}
+		);
+	}
+	
 	// PRIVATE
 	// function composition
 	composeUnaryOp { arg aSelector;
