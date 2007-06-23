@@ -1,19 +1,15 @@
 ------------------------------------------------------------------------
-intro
+Introduction
 ------------------------------------------------------------------------
 
-this is the OS X version of james mccartney's supercollider synthesis engine
-(scsynth) and programming language (sclang). 
-supercollider's main homepage is at
+This is the Mac OS X version of James McCartney's SuperCollider 
+synthesis engine (scsynth) and programming language (sclang). 
+Supercollider's main homepage is at:
 
    http://supercollider.sourceforge.net/
 
-the source code can be obtained via CVS from
-
-   http://supercollider.sourceforge.net
-
-to get further information on supercollider usage or development, you
-should subscribe to the mailing lists
+To get further information on SuperCollider usage or development, you
+should subscribe to the mailing lists:
 
    http://www.create.ucsb.edu/mailman/listinfo/sc-users
    http://www.create.ucsb.edu/mailman/listinfo/sc-devel
@@ -22,9 +18,39 @@ should subscribe to the mailing lists
 System Requirements
 ------------------------------------------------------------------------
 
-	OS X 10.4
-	XCode Tools
+Mac OS X 10.4.9 or greater
+Xcode Tools 2.4.1 or greater
 
+------------------------------------------------------------------------
+Building
+------------------------------------------------------------------------
+
+The easy way:
+	./clean-compile.sh
+	./package.sh
+
+Your build will be placed in a directory named "SuperCollider".
+	
+If you run into problems building the most likely cause is that you are
+not running the correct version of the Xcode tools. You must be running
+2.4.1 or above!
+
+Building within Xcode:
+	There are three projects that should be BUILT IN THIS ORDER:
+
+	Synth
+	 - the synthesis server application
+
+	Plugins
+	 - the UGens and plugins
+
+	Language
+	 - the OS X application with text editor, language interpreter, 
+	   event scheduling etc.
+
+The package.sh script does several maintenance tasks (fixing creator 
+codes, exporting from svn, etc) and creates a ready-to-distribute zip of
+SuperCollider.
 
 ------------------------------------------------------------------------
 On libsndfile
@@ -39,26 +65,10 @@ Because of this, libsndfile is included with the source as a precompiled
 universal binary.
 
 ------------------------------------------------------------------------
-Building
+Outro
 ------------------------------------------------------------------------
 
-	There are three projects that should be BUILT IN THIS ORDER :
-
-	Synth
-	 - the synthesis server application
-	Plugins
-	 - the UGens and plugins
-	Language
-	 - the OS X application with text editor, language interpreter, event scheduling etc.
-
-	Or you can use the script:
-	   compile.sh
-
-------------------------------------------------------------------------
-outro
-------------------------------------------------------------------------
-
-thanks to james mccartney, for making this great piece of audio
+Thanks to James McCartney, for making this great piece of audio
 software publicly and freely available.
 
 ------------------------------------------------------------------------
