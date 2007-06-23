@@ -62,7 +62,7 @@ struct TDuty : public Unit
 
 struct Dseries : public Unit
 {
-	int32 m_repeats;
+	float m_repeats;
 	int32 m_repeatCount;
 	double m_value;
 	double m_step;
@@ -70,7 +70,7 @@ struct Dseries : public Unit
 
 struct Dgeom : public Unit
 {
-	int32 m_repeats;
+	float m_repeats;
 	int32 m_repeatCount;
 	double m_value;
 	double m_grow;
@@ -78,7 +78,7 @@ struct Dgeom : public Unit
 
 struct Dwhite : public Unit
 {
-	int32 m_repeats;
+	float m_repeats;
 	int32 m_repeatCount;
 	float m_lo;
 	float m_range;
@@ -86,7 +86,7 @@ struct Dwhite : public Unit
 
 struct Dbrown : public Unit
 {
-	int32 m_repeats;
+	float m_repeats;
 	int32 m_repeatCount;
 	float m_lo;
 	float m_hi;
@@ -96,7 +96,7 @@ struct Dbrown : public Unit
 
 struct Diwhite : public Unit
 {
-	int32 m_repeats;
+	float m_repeats;
 	int32 m_repeatCount;
 	int32 m_lo;
 	int32 m_range;
@@ -104,7 +104,7 @@ struct Diwhite : public Unit
 
 struct Dibrown : public Unit
 {
-	int32 m_repeats;
+	float m_repeats;
 	int32 m_repeatCount;
 	int32 m_lo;
 	int32 m_hi;
@@ -114,7 +114,7 @@ struct Dibrown : public Unit
 
 struct Dseq : public Unit
 {
-	int32 m_repeats;
+	float m_repeats;
 	int32 m_repeatCount;
 	int32 m_index;
 	bool m_needToResetChild;
@@ -1268,9 +1268,9 @@ void TDuty_Ctor(TDuty *unit)
 void Dseries_next(Dseries *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 			unit->m_value = DEMANDINPUT(1);
 			unit->m_step = DEMANDINPUT(2);
 		}
@@ -1282,7 +1282,7 @@ void Dseries_next(Dseries *unit, int inNumSamples)
 		unit->m_value += unit->m_step;
 		unit->m_repeatCount++;
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 	}
 }
@@ -1298,9 +1298,9 @@ void Dseries_Ctor(Dseries *unit)
 void Dgeom_next(Dgeom *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 			unit->m_value = DEMANDINPUT(1);
 			unit->m_grow = DEMANDINPUT(2);
 		}
@@ -1312,7 +1312,7 @@ void Dgeom_next(Dgeom *unit, int inNumSamples)
 		unit->m_value *= unit->m_grow;
 		unit->m_repeatCount++;
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 	}
 }
@@ -1328,9 +1328,9 @@ void Dgeom_Ctor(Dgeom *unit)
 void Dwhite_next(Dwhite *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 			unit->m_lo = DEMANDINPUT(1);
 			float hi = DEMANDINPUT(2);
 			unit->m_range = hi - unit->m_lo;
@@ -1343,7 +1343,7 @@ void Dwhite_next(Dwhite *unit, int inNumSamples)
 		float x = unit->mParent->mRGen->frand() * unit->m_range + unit->m_lo;
 		OUT0(0) = x;
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 	}
 }
@@ -1359,9 +1359,9 @@ void Dwhite_Ctor(Dwhite *unit)
 void Diwhite_next(Diwhite *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 			unit->m_lo = (int32)floor(DEMANDINPUT(1) + 0.5f);
 			int32 hi = (int32)floor(DEMANDINPUT(2) + 0.5f);
 			unit->m_range = hi - unit->m_lo + 1;
@@ -1374,7 +1374,7 @@ void Diwhite_next(Diwhite *unit, int inNumSamples)
 		float x = unit->mParent->mRGen->irand(unit->m_range) + unit->m_lo;
 		OUT0(0) = x;
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 	}
 }
@@ -1390,9 +1390,9 @@ void Diwhite_Ctor(Diwhite *unit)
 void Dbrown_next(Dbrown *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 			unit->m_lo = DEMANDINPUT(1);
 			unit->m_hi = DEMANDINPUT(2);
 			unit->m_step = DEMANDINPUT(3);
@@ -1407,7 +1407,7 @@ void Dbrown_next(Dbrown *unit, int inNumSamples)
 		float x = unit->m_val + unit->mParent->mRGen->frand2() * unit->m_step;
 		unit->m_val = sc_fold(x, unit->m_lo, unit->m_hi);
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 	}
 }
@@ -1423,9 +1423,9 @@ void Dbrown_Ctor(Dbrown *unit)
 void Dibrown_next(Dibrown *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 			unit->m_lo = (int32)floor(DEMANDINPUT(1) + 0.5f);
 			unit->m_hi = (int32)floor(DEMANDINPUT(2) + 0.5f);
 			unit->m_step = (int32)floor(DEMANDINPUT(3) + 0.5f);
@@ -1439,7 +1439,7 @@ void Dibrown_next(Dibrown *unit, int inNumSamples)
 		int32 z = unit->m_val + unit->mParent->mRGen->irand2(unit->m_step);
 		unit->m_val = sc_fold(z, unit->m_lo, unit->m_hi);
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 	}
 }
@@ -1458,9 +1458,9 @@ void Dseq_next(Dseq *unit, int inNumSamples)
 	//Print("->Dseq_next %d\n", inNumSamples);
 	if (inNumSamples) {
 		//Print("   unit->m_repeats %d\n", unit->m_repeats);
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
 			//Print("   unit->m_index %d   unit->m_repeatCount %d\n", unit->m_index, unit->m_repeatCount);
@@ -1496,7 +1496,7 @@ void Dseq_next(Dseq *unit, int inNumSamples)
 			}
 		}
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 		unit->m_needToResetChild = true;
 		unit->m_index = 1;
@@ -1515,9 +1515,9 @@ void Dseq_Ctor(Dseq *unit)
 void Dser_next(Dser *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
 			if (unit->m_index >= unit->mNumInputs) {
@@ -1550,7 +1550,7 @@ void Dser_next(Dser *unit, int inNumSamples)
 			}
 		}
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 		unit->m_needToResetChild = true;
 		unit->m_index = 1;
@@ -1570,9 +1570,9 @@ void Drand_next(Drand *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
 			if (unit->m_repeatCount >= unit->m_repeats) {
@@ -1602,7 +1602,7 @@ void Drand_next(Drand *unit, int inNumSamples)
 			}
 		}
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 		unit->m_needToResetChild = true;
 		unit->m_index = unit->mParent->mRGen->irand(unit->mNumInputs - 1) + 1;
@@ -1621,9 +1621,9 @@ void Drand_Ctor(Drand *unit)
 void Dxrand_next(Dxrand *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		if (unit->m_repeats < 0) {
+		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT(0);
-			unit->m_repeats = sc_isnan(x) ? 0 : (int32)floor(x + 0.5f);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
 			if (unit->m_index >= unit->mNumInputs) {
@@ -1658,7 +1658,7 @@ void Dxrand_next(Dxrand *unit, int inNumSamples)
 			}
 		}
 	} else {
-		unit->m_repeats = -1;
+		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0;
 		unit->m_needToResetChild = true;
 		int newindex = unit->mParent->mRGen->irand(unit->mNumInputs - 2) + 1;
