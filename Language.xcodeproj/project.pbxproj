@@ -1255,7 +1255,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -Rf \"$BUILT_PRODUCTS_DIR/SCClassLibrary\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\ncp -Rf \"$BUILT_PRODUCTS_DIR/plugins\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\ncp -Rf \"Standalone Resources\"/* \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nfind \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\" -name \".svn\" -delete -exec rm -rf {} \\;";
+			shellScript = "cp -Rf \"$BUILT_PRODUCTS_DIR/SCClassLibrary\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\ncp -Rf \"$BUILT_PRODUCTS_DIR/plugins\" \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\n\nif [ -d \"$TARGET_NAME Resources\" ]; then\n\tcp -Rf \"$TARGET_NAME Resources\"/* \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nelse\n\tcp -Rf \"Standalone Resources\"/* \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nfi\n\nfind \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\" -name \".svn\" -delete -exec rm -rf {} \\;";
 		};
 /* End PBXShellScriptBuildPhase section */
 
