@@ -1104,9 +1104,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		94442C500C2C8AE40050BF9F /* Standalone Template */ = {
+		94442C500C2C8AE40050BF9F /* My Great App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 94442CC50C2C8AE40050BF9F /* Build configuration list for PBXNativeTarget "Standalone Template" */;
+			buildConfigurationList = 94442CC50C2C8AE40050BF9F /* Build configuration list for PBXNativeTarget "My Great App" */;
 			buildPhases = (
 				94442C530C2C8AE40050BF9F /* Resources */,
 				94442C610C2C8AE40050BF9F /* Sources */,
@@ -1118,7 +1118,7 @@
 			dependencies = (
 				94442C510C2C8AE40050BF9F /* PBXTargetDependency */,
 			);
-			name = "Standalone Template";
+			name = "My Great App";
 			productName = test2;
 			productReference = 94442CC80C2C8AE40050BF9F /* Standalone Template.app */;
 			productType = "com.apple.product-type.application";
@@ -1178,7 +1178,7 @@
 				F5B7410802E9534D01CA2799 /* All */,
 				94B6ABBF0AF45D2900E478BB /* SuperCollider */,
 				949314DC0C192A550018AB50 /* sclang */,
-				94442C500C2C8AE40050BF9F /* Standalone Template */,
+				94442C500C2C8AE40050BF9F /* My Great App */,
 			);
 		};
 /* End PBXProject section */
@@ -1905,7 +1905,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
 		};
-		94442CC50C2C8AE40050BF9F /* Build configuration list for PBXNativeTarget "Standalone Template" */ = {
+		94442CC50C2C8AE40050BF9F /* Build configuration list for PBXNativeTarget "My Great App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				94442CC60C2C8AE40050BF9F /* Development */,
