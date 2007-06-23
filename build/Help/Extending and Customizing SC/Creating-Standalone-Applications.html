@@ -7,19 +7,19 @@
 <meta name="Generator" content="Cocoa HTML Writer">
 <meta name="CocoaVersion" content="824.42">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Lucida Grande; color: #000000; min-height: 18.0px}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Lucida Grande; color: #000000}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #000000; min-height: 15.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Lucida Grande; color: #000000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #000000}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Lucida Grande; min-height: 18.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Lucida Grande}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; min-height: 15.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Lucida Grande}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 span.s1 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b></b><br></p>
+<p class="p1"><br></p>
 <p class="p2"><b>Creating Standalone Applications</b></p>
 <p class="p3"><br></p>
 <p class="p4"><b>Introduction</b></p>
@@ -33,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">2- Rename the "Standalone Template" target by control-cliking it and choosing "Rename". This target name is used for both the .app name and for the name presented in the menu bar.</p>
 <p class="p3"><br></p>
 <p class="p6"><span class="s1"><img src="attachments/Creating-Standalone-Applications/Pasted Graphic 1.png" alt="attachments/Creating-Standalone-Applications/Pasted Graphic 1.png"></span></p>
-<p class="p7"><b></b><br></p>
+<p class="p7"><br></p>
 <p class="p5">3- Customize the "Standalone Resources" directory, which is located at the root of the SuperCollider source directory. Any files you put in this directory will overide the files placed in the standalone application. For example if you wanted to create your own version of Array.sc you would need to create the following path (creating folders where necessary):<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>Standalone Resources/SCClassLibrary/Common/Collections/Array.sc</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
@@ -45,7 +45,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p4"><b>Adding your own behavior</b></p>
 <p class="p3"><br></p>
-<p class="p5">Using either of the above methods, you've created an application that behaves exactly like SuperCollider. To run your own code on launch and simulate an ordinary application, you'll need to modify Main-startup. Here's an example (the same code used by the SC_StandAlone target):</p>
+<p class="p5">You've now created an application that behaves exactly like SuperCollider. To run your own code on launch and simulate an ordinary application, you'll need to modify Main-startup. Here's an example (the same code used by the SC_StandAlone target):</p>
 <p class="p3"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>startup {</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>super.startup;</p>
@@ -93,7 +93,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p5">However, any sizable application will benefit from encapsulation in classes.</p>
 <p class="p3"><br></p>
-<p class="p5">Note that the example uses the internal server. This is part and parcel of keeping the application stand-alone; it shouldn't call extraneous processes behind the user's back that will persist if the application fails. If you need to use the local server for some reason, make sure scsynth is in the application's bundle.</p>
+<p class="p5">Note that the example uses the internal server. This is part and parcel of keeping the application stand-alone; it shouldn't call extraneous processes behind the user's back that will persist if the application fails. If you need to use the local server for some reason, make sure scsynth is in your resources folder.</p>
 <p class="p3"><br></p>
 <p class="p4"><b>Managing multiple standalone applications</b></p>
 <p class="p3"><br></p>
