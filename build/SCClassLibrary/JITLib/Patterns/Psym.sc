@@ -18,52 +18,105 @@ Psym : FilterPattern {
 			outval.notNil
 		} {
 			
-			pat = if(outval.isSequenceableCollection) {
-				this.parallelise(
-					outval.collect {|key|
-						this.lookUp(key.asSymbol)
-					}
-				);
-			} {
-				this.lookUp(outval.asSymbol)
-			};
-			
+			pat = this.getPattern(outval);
 			inval = pat.embedInStream(inval);
-		}
+		};
+		nil.yield;
+		^inval
 	
 	}
-	parallelise { arg pat; ^Ppar(pat) }
+	
+	getPattern { arg key;
+		^if(key.isSequenceableCollection) {
+			this.lookupClass.parallelise(
+				key.collect {|each|
+					this.lookUp(each.asSymbol)
+				}
+			);
+		} {
+			this.lookUp(key.asSymbol)
+		};
+	}
+	
+	
 	
 }
 
 Pnsym : Psym {
 	lookupClass { ^Pdefn }
-	parallelise { arg pat; ^Ptuple(pat) }
-
 }
 
 
-Pinbox : PatternProxy {
+Ptsym : Psym {
+	var <>quant, <>dur, <>tolerance;
+	
+	*new { arg pattern, dict, quant, dur, tolerance = 0.001;
+		^super.newCopyArgs(pattern, dict, quant, dur, tolerance)
+	}
+	
+	embedInStream { arg inval;
+		var str, outval, pat, quantVal, quantStr, durVal, durStr;
+		str = pattern.asStream;
+		quantStr = quant.asStream;
+		durStr = dur.asStream;
+		
+		while {
+			outval = str.next(inval);
+			quantVal = quantStr.next(inval) ? quantVal;
+			durVal = durStr.next(inval) ? durVal;
+			outval.notNil
+		} {
+			pat = Psync(this.getPattern(outval), quantVal, durVal, tolerance);
+			inval = pat.embedInStream(inval);
+		};
+		nil.yield;
+		^inval
+	
+	}
+}
+
+
+Pinbox : EventPatternProxy {
 	var <>name;
-	*new { arg name, source, condition; // could also be: name, quant, condition
-		^super.new.source_(source).name_(name).condition_(condition)
+	
+	*new { arg name, quant, condition = true, source;
+		^super.new.source_(source).name_(name).condition_(condition).quant_(quant)
 	}
 	
 	receiveEvent { arg inval;
-		var news;
-		if(inval.notNil) {	// maybe some other class: multiple keys, or even a pattern matching.
-				news = inval.at(\news);
-				if(news.notNil) {
-					this.source = news.at(name) ? pattern
+		var incoming, news = inval.eventAt(\news);
+		if(news.isNil) { ^this };
+		this.source = 
+		if(name.isSequenceableCollection) {
+			this.class.parallelise(
+				name.collect { |each|
+					news.at(each) ? pattern
 				}
-		};
+			);
+		} {
+			news.at(name) ? pattern;
+		}
+		
 	}
+	
+	embedInStream { arg inval;
+		if(name.isKindOf(Pattern)) {
+			name.do { arg each;
+				inval = Pinbox(each, quant, condition, source).embedInStream(inval)
+			};
+		} {
+			inval = super.embedInStream(inval);
+		};
+		if(inval.isNil) { nil.yield };
+		^inval;
+	}
+
 	
 }
 
-Poutbox : PatternProxy {
+Poutbox : EventPatternProxy {
 	*new {
-		^super.basicNew.init
+		^super.new.init
 	}
 	init {
 		this.envir = this.class.event;
@@ -97,5 +150,3 @@ Pmail : Poutbox {
 	}
 
 }
-
-

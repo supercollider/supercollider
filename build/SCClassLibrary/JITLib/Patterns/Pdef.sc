@@ -9,8 +9,7 @@ PatternProxy : Pattern {
 				
 	classvar <>defaultQuant, defaultEnvir;
 	
-	// basicNew should be used for instantiation: *new is used in Pdef/Tdef/Pdefn
-	*basicNew { arg source;
+	*new { arg source;
 		^super.new.init(source)
 	}
 		
@@ -25,7 +24,7 @@ PatternProxy : Pattern {
 	
 	constrainStream { ^pattern.asStream }
 	
-	source_ { arg obj; 
+	source_ { arg obj;
 		var pat = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 		if (obj.isNil) { pat = this.class.default }; 
 		if(quant.isNil) { pattern = pat } { this.sched { pattern = pat } };
@@ -44,6 +43,7 @@ PatternProxy : Pattern {
 				func.value( inval ).embedInStream(inval)
 			};
 	}
+	*parallelise { arg list; ^Ptuple(list) }
 	
 	pattern_ { arg pat; this.source_(pat) }
 	offset_ { arg val; quant = quant.instill(1, val) }
@@ -143,19 +143,13 @@ PatternProxy : Pattern {
 	
 	/////////////////////////
 	// these following methods are factored out for the benefit of subclasses
-	// they only work for Pdef/Tdef/Pdefn. *new works, but is less efficient than *basicNew here
+	// they only work for Pdef/Tdef/Pdefn.
 	
-	*new { arg key, item;
-		var res;
-		res = this.at(key);
-		if(res.isNil) {
-				res = this.basicNew(item).key_(key);
-				this.put(key, res);
-		} {
-				if(item.notNil) { res.source = item }
-		}
+	
+	*newAdd { arg key, item;
+		var res = super.new.init(item).key_(key);
+		this.put(key, res);
 		^res
-	
 	}
 	
 	*removeAll { 
@@ -177,6 +171,13 @@ PatternProxy : Pattern {
 		this.class.all.removeAt(this.key);
 		this.clear;
 	}
+	
+	// backward compatibility
+	*basicNew { arg source;
+		^super.new.init(source)
+	}
+	
+	// global storage
 		
 	repositoryArgs { ^[this.key, this.source] }
 	
@@ -233,6 +234,16 @@ Pdefn : PatternProxy {
 	
 	*initClass { 
 		all = IdentityDictionary.new;
+	}
+	*new { arg key, item;
+		var res = this.at(key);
+		if(res.isNil) {
+				res = this.newAdd(key, item)
+		} {
+				if(item.notNil) { res.source = item }
+		}
+		^res
+	
 	}
 	*at { arg key;
 		^all.at(key);
@@ -348,6 +359,16 @@ Tdef : TaskProxy {
 	*initClass { 
 		all = IdentityDictionary.new;
 	}
+	*new { arg key, item;
+		var res = this.at(key);
+		if(res.isNil) {
+				res = this.newAdd(key, item)
+		} {
+				if(item.notNil) { res.source = item }
+		}
+		^res
+	
+	}
 	*at { arg key;
 		^all.at(key);
 	}
@@ -425,6 +446,8 @@ EventPatternProxy : TaskProxy {
 		} { pattern }.asStream
 	}
 	
+	*parallelise { arg list; ^Ppar(list) }
+	
 	outset_ { arg val; quant = quant.instill(2, val) }
 	outset { arg val; ^quant.obtain(2) }
 	
@@ -476,6 +499,16 @@ Pdef : EventPatternProxy {
 				
 	storeArgs { ^[key] }
 	
+	*new { arg key, item;
+		var res = this.at(key);
+		if(res.isNil) {
+				res = this.newAdd(key, item)
+		} {
+				if(item.notNil) { res.source = item }
+		}
+		^res
+	
+	}
 	*at { arg key;
 		^all.at(key);
 	}
@@ -556,9 +589,9 @@ PbindProxy : Pattern {
 	}
 	init {
 		forBy(0, pairs.size-1, 2) { arg i;
-			pairs[i+1] = PatternProxy.basicNew(pairs[i+1])
+			pairs[i+1] = PatternProxy(pairs[i+1])
 		};
-		source = EventPatternProxy.basicNew(Pbind(*pairs));
+		source = EventPatternProxy(Pbind(*pairs));
 	}
 	embedInStream { arg inval;
 		^source.embedInStream(inval)
@@ -593,7 +626,7 @@ PbindProxy : Pattern {
 					pairs[i+1].source = val
 				};
 			}{ 
-				pairs = pairs ++ [key, PatternProxy.basicNew(val).quant_(quant)];
+				pairs = pairs ++ [key, PatternProxy(val).quant_(quant)];
 				changedPairs = true;
 			};
 		
