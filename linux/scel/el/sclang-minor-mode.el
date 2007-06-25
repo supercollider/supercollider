@@ -18,6 +18,7 @@ sclang code with the normal command C-c C-c and C-c C-x."
  ;; The minor mode bindings.
  '(("\C-c\C-c" . sclang-eval-region-or-line)
    ("\C-c\C-x" . sclang-eval-region)
+   ("\C-\M-x" . sclang-eval-defun)	
    ("\C-c\C-h" . sclang-find-help)
    ("\C-\M-h"  . sclang-goto-help-browser)
    ("\C-c\C-s" . sclang-main-stop)
@@ -40,6 +41,7 @@ sclang code with the normal command C-c C-c and C-c C-x."
  ;; The minor mode bindings.
  '(("\C-c\C-c" . sclang-eval-region-or-line)
    ("\C-c\C-x" . sclang-eval-region)
+   ("\C-\M-x" . sclang-eval-defun)
    ("\C-c\C-h" . sclang-find-help)
    ("\C-c\C-s" . sclang-main-stop)
    ("\C-c\C-v" . sclang-edit-html-help-file)

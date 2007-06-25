@@ -37,6 +37,10 @@
 	}
 	*listener { ^allDocuments.detectMsg(\isListener) }
 
+	*current {
+		^EmacsDocument.current.sceld;
+	}
+
 	// PRIVATE
 	*prBasicNew { ^super.new }
 	*numberOfOpen { ^allDocuments.size }
