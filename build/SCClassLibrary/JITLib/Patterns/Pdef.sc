@@ -107,15 +107,16 @@ PatternProxy : Pattern {
 			var stream = pattern.asStream;
 			default = default ?? { this.class.defaultValue };
 			loop {
-					if(
-						(reset !== resetTest) 
-						or: { pat !== pattern and: { test.value(outval, count) } }
-					) {
-							pat = pattern;
-							test = condition;
-							resetTest = reset;
-							count = 0;
-							stream = this.constrainStream(stream);
+				this.receiveEvent(inval);
+				if(
+					(reset !== resetTest) 
+					or: { pat !== pattern and: { test.value(outval, count) } }
+				) {
+						pat = pattern;
+						test = condition;
+						resetTest = reset;
+						count = 0;
+						stream = this.constrainStream(stream);
 				};
 				outval = stream.next(inval);
 				count = count + 1;
