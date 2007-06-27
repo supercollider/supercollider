@@ -194,6 +194,9 @@ WrapIndex : Index {
 IndexInBetween : Index {
 }
 
+DetectIndex : Index {
+}
+
 Shaper : Index {
 }
 

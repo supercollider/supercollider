@@ -73,6 +73,12 @@ struct IndexInBetween : public BufUnit
 {
 };
 
+struct DetectIndex : public BufUnit
+{
+	float mPrev;
+	float mPrevIn;
+};
+
 struct Shaper : public BufUnit
 {
 	float mOffset;
@@ -278,6 +284,11 @@ void Shaper_next_1(Shaper *unit, int inNumSamples);
 void Shaper_next_k(Shaper *unit, int inNumSamples);
 void Shaper_next_a(Shaper *unit, int inNumSamples);
 
+
+void DetectIndex_Ctor(DetectIndex *unit);
+void DetectIndex_next_1(DetectIndex *unit, int inNumSamples);
+void DetectIndex_next_k(DetectIndex *unit, int inNumSamples);
+void DetectIndex_next_a(DetectIndex *unit, int inNumSamples);
 
 void IndexInBetween_Ctor(IndexInBetween *unit);
 void IndexInBetween_next_1(IndexInBetween *unit, int inNumSamples);
@@ -946,6 +957,110 @@ void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples)
 	LOOP(inNumSamples,
 		ZXP(out) = IndexInBetween_FindIndex(table, ZXP(in), maxindex);
 	);
+
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+
+int32 DetectIndex_FindIndex(float* table, float in, int32 maxindex, int clumpsize)
+{
+	int32 index;
+	for(index = 0; index <= maxindex; index+=1) {
+		if(table[index] == in) {
+			return index;
+		}
+	}
+	return -1;
+}
+
+void DetectIndex_Ctor(DetectIndex *unit)
+{
+	unit->m_fbufnum = -1e9f;
+	if (BUFLENGTH == 1) {
+		SETCALC(DetectIndex_next_1);
+	} else if (INRATE(0) == calc_FullRate) {
+		SETCALC(DetectIndex_next_a);
+	} else {
+		SETCALC(DetectIndex_next_k);
+	}
+	unit->mPrev = -1.f;
+	DetectIndex_next_1(unit, 1);
+}
+
+void DetectIndex_next_1(DetectIndex *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+		float *table = bufData;
+		int32 maxindex = tableSize - 1;
+	
+	float in = ZIN0(1);
+	int clumpsize = (int)ZIN0(2);
+	int32 index;
+	if(in == unit->mPrevIn) {
+		index = unit->mPrev;
+	} else {
+		index = DetectIndex_FindIndex(table, in, maxindex, clumpsize);
+		unit->mPrev = index;
+		unit->mPrevIn = in;
+	}
+	ZOUT0(0) = (float)index;
+
+}
+
+void DetectIndex_next_k(DetectIndex *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+		float *table = bufData;
+		int32 maxindex = tableSize - 1;
+
+	float *out = ZOUT(0);
+	float in = ZIN0(1);
+	int32 index;
+	float val;
+	int clumpsize = (int)ZIN0(2);
+	if(in == unit->mPrevIn) {
+		index = unit->mPrev;
+	} else {
+		index = DetectIndex_FindIndex(table, in, maxindex, clumpsize);
+		unit->mPrev = index;
+		unit->mPrevIn = in;
+	};
+	val = (float)index;
+	LOOP(inNumSamples,
+		ZXP(out) = val;
+	);
+
+}
+
+
+void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+		float *table = bufData;
+		int32 maxindex = tableSize - 1;
+
+	float *out = ZOUT(0);
+	float *in = ZIN(1);
+	int clumpsize = (int)ZIN0(2);
+	float prev = unit->mPrevIn;
+	int32 prevIndex = unit->mPrev;
+	float inval;
+	
+	LOOP(inNumSamples,
+		inval = ZXP(in);
+		if(inval != prev) {
+			prevIndex = DetectIndex_FindIndex(table, inval, maxindex, clumpsize);
+		}
+		prev = inval;
+		ZXP(out) = (float)prevIndex;
+	);
+	
+	unit->mPrev = prevIndex;
+	unit->mPrevIn = inval;
 
 }
 
@@ -4276,6 +4391,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(FoldIndex);
 	DefineSimpleUnit(WrapIndex);
 	DefineSimpleUnit(IndexInBetween);
+	DefineSimpleUnit(DetectIndex);
 	DefineSimpleUnit(Shaper);
 	DefineSimpleUnit(SigOsc);
 	DefineSimpleUnit(FSinOsc);
