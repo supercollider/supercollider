@@ -14,8 +14,10 @@ Color {
 	*white { ^Color.new(1.0, 1.0, 1.0) }
 	*red { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), max(val-1,0), max(val-1,0), alpha) }
 	*green { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), min(1,val), max(val-1,0), alpha) }
-	*yellow { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), min(1,val), max(val-1,0), alpha) }
 	*blue { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), max(val-1,0), min(1,val), alpha) }
+	*cyan { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), min(1,val), min(1,val), alpha) }
+	*magenta { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), max(val-1,0), min(1,val), alpha) }
+	*yellow { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), min(1,val), max(val-1,0), alpha) }
 	*clear { ^Color.new(0.0, 0.0, 0.0, 0.0) }
 	*grey { arg grey = 0.5, alpha = 1.0;
 		^Color.new(grey, grey, grey, alpha);
