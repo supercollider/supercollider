@@ -963,7 +963,7 @@ void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-int32 DetectIndex_FindIndex(float* table, float in, int32 maxindex, int clumpsize)
+int32 DetectIndex_FindIndex(float* table, float in, int32 maxindex)
 {
 	int32 index;
 	for(index = 0; index <= maxindex; index+=1) {
@@ -996,12 +996,11 @@ void DetectIndex_next_1(DetectIndex *unit, int inNumSamples)
 		int32 maxindex = tableSize - 1;
 	
 	float in = ZIN0(1);
-	int clumpsize = (int)ZIN0(2);
 	int32 index;
 	if(in == unit->mPrevIn) {
 		index = unit->mPrev;
 	} else {
-		index = DetectIndex_FindIndex(table, in, maxindex, clumpsize);
+		index = DetectIndex_FindIndex(table, in, maxindex);
 		unit->mPrev = index;
 		unit->mPrevIn = in;
 	}
@@ -1020,11 +1019,10 @@ void DetectIndex_next_k(DetectIndex *unit, int inNumSamples)
 	float in = ZIN0(1);
 	int32 index;
 	float val;
-	int clumpsize = (int)ZIN0(2);
 	if(in == unit->mPrevIn) {
 		index = unit->mPrev;
 	} else {
-		index = DetectIndex_FindIndex(table, in, maxindex, clumpsize);
+		index = DetectIndex_FindIndex(table, in, maxindex);
 		unit->mPrev = index;
 		unit->mPrevIn = in;
 	};
@@ -1045,7 +1043,6 @@ void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
-	int clumpsize = (int)ZIN0(2);
 	float prev = unit->mPrevIn;
 	int32 prevIndex = unit->mPrev;
 	float inval;
@@ -1053,7 +1050,7 @@ void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
 	LOOP(inNumSamples,
 		inval = ZXP(in);
 		if(inval != prev) {
-			prevIndex = DetectIndex_FindIndex(table, inval, maxindex, clumpsize);
+			prevIndex = DetectIndex_FindIndex(table, inval, maxindex);
 		}
 		prev = inval;
 		ZXP(out) = (float)prevIndex;
