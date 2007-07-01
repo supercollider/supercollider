@@ -20,7 +20,7 @@ SkipJack {
 	init {
 		task = Task ({
 			if( verbose )	{ ("SkipJack" + name + "starts.").postln }; 
-				while { dt.wait; stopTest.value.not } { updateFunc.value };
+				while { dt.wait; stopTest.value.not } { updateFunc.value(this) };
 				this.stop;
 			}, clock ? defaultClock);
 	}
