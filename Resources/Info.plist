@@ -110,8 +110,8 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>htm</string>
 				<string>html</string>
+				<string>htm</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>html</string>
@@ -141,6 +141,22 @@
 			<string>txt</string>
 			<key>CFBundleTypeName</key>
 			<string>scel document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>quark</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>quark</string>
+			<key>CFBundleTypeName</key>
+			<string>quark file</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
