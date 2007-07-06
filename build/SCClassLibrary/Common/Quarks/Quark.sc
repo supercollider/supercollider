@@ -2,7 +2,7 @@
 /**
   *
   * Subversion based package repository and package manager
-  * a work in progress.  sk & cx
+  * a work in progress.  sk, cx, LFSaw
   *
   */
 
@@ -12,6 +12,13 @@ QuarkDependency
 	var <name, <version;
 	*new { | name, version |
 		^this.newCopyArgs(name, version)
+	}
+	== { arg that; 
+		^that respondsTo: #[name, version] 
+			and: {(that.isKindOf(QuarkDependency))
+			and: {this.name  == that.name}
+			and: {this.version  == that.version}
+		}
 	}
 }
 
@@ -52,7 +59,7 @@ Quark
 		info = blob;
 		tags = ();
 	}
-
+	
 	getName { | obj |
 		var name = obj.asString;
 		if (name.isEmpty) {
@@ -113,5 +120,46 @@ Quark
 		string = string ++ "\n";
 		string.postln;
 	}
+	== { arg that; 
+		^that respondsTo: #[name, summary, version, author, dependencies, tags, path] 
+			and: {(this.name  == that.name)
+			and: {this.summary == that.summary}
+			and: {this.version  == that.version}
+			and: {this.author  == that.author}
+			and: {this.dependencies  == that.dependencies}
+			and: {this.tags  == that.tags}
+			and: {this.path  == that.path}
+		}
+	}
 }
 
+QuarkView {
+	var <view, <quark, <isInstalled, <changeState;
+	*new{|parent, extent, quark|
+		super.new.init(parent, extent, quark)
+	}
+	init {|parent, extent, aQuark|
+		var installBounds, descrBounds, infoBounds, pad = 5;
+		
+		installBounds = Rect(0,0, extent.y, extent.y);
+		infoBounds = Rect(0,0, 60, extent.y);
+		descrBounds = Rect(
+			0,0, 
+			extent.x - (infoBounds.width - infoBounds.width - (2*pad)), extent.y
+		);
+		
+		quark = aQuark;
+		
+		// the install / remove Button
+		GUI.button.new(parent, installBounds).states_([
+				["-", Color.black, Color.clear],		// never installed
+				["+", Color.black, Color.red],		// selected to install
+				["-", Color.black, Color.red(0.5, 0.5)], // selected to deinstall
+				["y", Color.black, Color.green],		// already installed
+			]);
+		// the name with author
+		GUI.staticText.new(parent, descrBounds).string_("% by %".format(quark.name, quark.author));
+		// the name
+		GUI.button.new(parent, infoBounds).states_([["info"]]);
+	}
+}

@@ -9,13 +9,13 @@
 QuarkSVNRepository
 {
 	classvar <>svnpath="/usr/local/bin/svn";
-	var <url;
+	var <url, <local;
 
-	*new { | url |
+	*new { | url, local |
 		if(File.exists(svnpath).not,{
 			Error("Path to SVN executable is not correct.  Set \n\tQuarkSVNRepository.svnpath = \"/full/path/to/svn\"\n in your startup ").throw;
 		});
-		^this.newCopyArgs(url ? "https://svn.sourceforge.net/svnroot/quarks")
+		^this.newCopyArgs(url ? "https://svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
 	}
 	// easiest to just check out all
 	checkoutAll { |localRoot|
@@ -28,30 +28,28 @@ QuarkSVNRepository
 	// check if the quarks directory is checked out yet
 	checkDir {
 		var dir;
-		dir = Quarks.local.path.select{|c| (c != $\\)};
+		dir = local.path.select{|c| (c != $\\)};
 		if(File.exists(dir).not, {
 			//"Quarks dir is not yet checked out.  Execute:".debug;
-			this.svn("co","-N",this.url,Quarks.local.path);
-			this.svn("co",this.url++"/DIRECTORY",Quarks.local.path);
+			this.svn("co","-N",this.url, local.path);
+			this.svn("co",this.url++"/DIRECTORY", local.path);
 			^false;
 		});
 		^true;
 	}
 	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not
-	updateDirectory {|lQuark|
-		lQuark = lQuark ? Quarks.local;
-		this.svn("update",lQuark.path ++ "/DIRECTORY/");
+	updateDirectory {
+		this.svn("update",local.path ++ "/DIRECTORY/");
 	}
-	update {|lQuark|
+	update {
 		//"To update your local quarks working copies:".debug;
-		lQuark = lQuark ? Quarks.local;
-		this.svn("update",lQuark.path);
+		this.svn("update",local.path);
 	}
 	// load all specification quark objects from DIRECTORY
 	// they may or may not be locally checked out
 	quarks {
 		var paths;
-		paths = (Platform.userAppSupportDir ++ "/quarks/DIRECTORY/*.quark").pathMatch;
+		paths = (local.path ++ "/DIRECTORY/*.quark").pathMatch;
 		^paths.collect({ |p| Quark.fromFile(p) });
 	}
 	// search DIRECTORY quark objects to see if quark is in repository

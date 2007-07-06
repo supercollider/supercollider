@@ -2,7 +2,7 @@
 /**
   *
   * Subversion based package repository and package manager
-  * a work in progress.  sk & cx
+  * a work in progress.  sk, cx, lfsaw
   *
   */
 
@@ -12,6 +12,7 @@
 LocalQuarks
 {
 	var <path;
+	var all; // contains nil, or all local quarks
 
 	*new { | path |
 		^super.newCopyArgs((path ?? { Platform.userAppSupportDir ++ "/quarks"}).escapeChar($ ))
@@ -21,13 +22,16 @@ LocalQuarks
 		^PathName(path).fileName;
 	}
 	quarks {
-		// check through each quark in repos/directory
 		var paths,quarks;
-		paths = (path ++ "/DIRECTORY/*.quark").pathMatch;
-		quarks = paths.collect({ |p| Quark.fromFile(p) });
-
-		// check paths that do exist locally
-		^quarks.select({ |q| (path ++ "/" ++ q.path).pathMatch.notEmpty })
+		all.isNil.if{
+			// check through each quark in repos/directory
+			paths = (path ++ "/DIRECTORY/*.quark").pathMatch;
+			quarks = paths.collect({ |p| Quark.fromFile(p) });
+	
+			// check paths that do exist locally
+			all = quarks.select({ |q| (path ++ "/" ++ q.path).pathMatch.notEmpty })
+		};
+		^all
 	}
 	findQuark { arg name, version;
 		var matches;
@@ -50,6 +54,12 @@ LocalQuarks
 		} {
 			unixCmd("open" + this.findPath(name, version))
 		}
+	}
+	
+	/// reread local quarks directory
+	reread {
+		all = nil;
+		this.quarks;
 	}
 }
 
