@@ -233,7 +233,6 @@ Quarks
 	
 	*local { ^this.global.local }
 	*repos { ^this.global.repos }
-	*name  { ^this.global.name  }
 	*help  {|name| ^this.global.help(name) }
 
 	
