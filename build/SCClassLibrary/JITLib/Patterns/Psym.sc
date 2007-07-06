@@ -77,31 +77,32 @@ Ptsym : Psym {
 
 
 Pinbox : EventPatternProxy {
-	var <>name;
+	var <>channel;
 	
-	*new { arg name, quant, condition = true, source;
-		^super.new.source_(source).name_(name).condition_(condition).quant_(quant)
+	*new { arg channel, quant, condition = true, source;
+		^super.new.source_(source).channel_(channel).condition_(condition).quant_(quant)
 	}
 	
 	receiveEvent { arg inval;
 		var incoming, news = inval.eventAt(\news);
 		if(news.isNil) { ^this };
 		this.source = 
-		if(name.isSequenceableCollection) {
+		if(channel.isSequenceableCollection) {
 			this.class.parallelise(
-				name.collect { |each|
-					news.at(each) ? pattern
+				channel.collect { |each|
+					news.at(each) ?? { this.class.default }
 				}
 			);
 		} {
-			news.at(name) ? pattern;
+			news.at(channel) ?? { this.class.default } 
+			// prev pattern could also be used. don't know.
 		}
 		
 	}
 	
 	embedInStream { arg inval;
-		if(name.isKindOf(Pattern)) {
-			name.do { arg each;
+		if(channel.isKindOf(Pattern)) {
+			channel.do { arg each;
 				inval = Pinbox(each, quant, condition, source).embedInStream(inval)
 			};
 		} {
@@ -135,6 +136,7 @@ Poutbox : EventPatternProxy {
 	}
 }
 
+// Pmail(\key, \channel, val, \channel, val...)
 
 Pmail : Poutbox {
 	classvar <>all;
@@ -150,3 +152,30 @@ Pmail : Poutbox {
 	}
 
 }
+
+// Precv(\key, \channel, ... args)
+
+// maybe we don't need such a thing for global access.
+/*
+
+Precv : Pinbox {
+	classvar <>all;
+	var <>key;
+	
+	*initClass { 
+		all = IdentityDictionary.new;
+	}
+	*new { arg key, channel, quant, condition, source;
+		var res = all.at(key);
+		if(res.isNil) { res = super.new; all.put(key, res) };
+		if(channel.notNil) { res.channel = channel };
+		if(source.notNil) { res.source = source };
+		if(condition.notNil) { res.condition = condition };
+		if(quant.notNil) { 
+			res.quant = if(quant < 0) { nil } { quant } // -1 overrides value.
+		};
+		^res
+	}
+}
+
+*/
