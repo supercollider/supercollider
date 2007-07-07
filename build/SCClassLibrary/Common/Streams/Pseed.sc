@@ -16,7 +16,7 @@ Pseed : FilterPattern {
 		seedStream = randSeed.iter;
 
 		while {
-			seed = seedStream.next;
+			seed = seedStream.next(inval);
 			seed.notNil
 		}{
 			thread = pattern.asStream;
@@ -48,7 +48,7 @@ Pavaroh : FilterPattern {
 		var mestream = pattern.asStream;
 
 		while {
-			(me = mestream.next).notNil
+			(me = mestream.next(inval)).notNil
 		} {
 			scale = if(me >= melast) { aroh } { avaroh };
 			melast = me;

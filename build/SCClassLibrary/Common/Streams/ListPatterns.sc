@@ -179,7 +179,7 @@ Pdfsm : ListPattern {
 			sigStream = list[0].asStream;
 			
 			while({
-				sig = sigStream.next;
+				sig = sigStream.next(inval);
 				state = list[currState + 1];
 				if( sig.isNil, { false }, {
 					if( state.includesKey(sig), {
@@ -207,7 +207,7 @@ Pswitch : Pattern {
 		
 		var indexStream = which.asStream;
 		while ({
-			(index = indexStream.next).notNil;
+			(index = indexStream.next(inval)).notNil;
 		},{
 			inval = list.wrapAt(index.asInteger).embedInStream(inval);
 		});
@@ -223,7 +223,7 @@ Pswitch1 : Pswitch {
 		var streamList = list.collect({ arg pattern; pattern.asStream; });
 		var indexStream = which.asStream;
 		loop {
-			if ((index = indexStream.next).isNil) { ^inval };
+			if ((index = indexStream.next(inval)).isNil) { ^inval };
 			outval = streamList.wrapAt(index.asInteger).next(inval);
 			if (outval.isNil) { ^inval };
 			inval = outval.yield;
@@ -322,7 +322,7 @@ Ppatlace : Pseq {
 			}, {
 				item = streamList.wrapAt(offsetValue + index);
 			});
-			(item = item.next).notNil.if({
+			(item = item.next(inval)).notNil.if({
 				consecutiveNils = 0;
 				inval = item.embedInStream(inval);
 			}, {
@@ -408,14 +408,14 @@ Pwalk : ListPattern {
 		var stepStream = stepPattern.asStream;
 		var directionStream = directionPattern.asStream;
 		// 1 = use steps as is; -1 = reverse direction
-		var direction = directionStream.next ? 1;	// start with first value
+		var direction = directionStream.next(inval) ? 1;	// start with first value
 
-		{ (step = stepStream.next).notNil }.while({  // get step, stop when nil
+		{ (step = stepStream.next(inval)).notNil }.while({  // get step, stop when nil
 			inval = list[index].embedInStream(inval);  // pop value/stream out
 			step = step * direction;	// apply direction
 				// if next thing will be out of bounds
 			(((index + step) < 0) or: ((index + step) >= list.size)).if({
-				direction = directionStream.next ? 1;  // next direction, or 1
+				direction = directionStream.next(inval) ? 1;  // next direction, or 1
 				step = step.abs * direction.sign;  // apply to this step
 			});
 			index = (index + step) % list.size;

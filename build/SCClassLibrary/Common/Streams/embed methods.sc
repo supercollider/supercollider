@@ -6,7 +6,7 @@
 		var stream, outval;
 		stream = a.asStream;
 		loop { 
-			outval = stream.next;
+			outval = stream.next(inval);
 			if (outval.isNil) { ^inval };
 			inval = yield(outval.perform(operator));
 		}
@@ -21,26 +21,26 @@
 		streamB = b.asStream;
 		if (adverb.isNil) {
 			loop {
-				vala = streamA.next;
+				vala = streamA.next(inval);
 				if (vala.isNil) { ^inval };
-				valb = streamB.next;
+				valb = streamB.next(inval);
 				if (valb.isNil) { ^inval };
 				inval = yield(vala.perform(operator, valb));
 			};
 		};
 		if (adverb == 'x') {
 			if (vala.isNil) { 
-				vala = a.next;
+				vala = a.next(inval);
 				if (vala.isNil) { ^inval };
-				valb = b.next;
+				valb = b.next(inval);
 				if (valb.isNil, { ^inval });
 			}{
-				valb = b.next;
+				valb = b.next(inval);
 				if (valb.isNil) { 
-					vala = a.next;
+					vala = a.next(inval);
 					if (vala.isNil) { ^inval };
 					b.reset;
-					valb = b.next;
+					valb = b.next(inval);
 					if (valb.isNil) { ^inval };
 				};
 			};
@@ -69,7 +69,7 @@
 				vala = streamA.next(inval);
 				if (vala.isNil) { ^inval };
 				values = streamlist.collect({ arg item;
-					var result = item.next;
+					var result = item.next(inval);
 					if (result.isNil) { ^inval };
 					result
 				});

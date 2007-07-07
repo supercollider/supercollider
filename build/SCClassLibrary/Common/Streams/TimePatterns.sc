@@ -18,7 +18,7 @@ Pstep : Pattern {
 		thisThread.endBeat = thisThread.endBeat min: thisThread.beats;		
 		
 		loop {
-			#val, dur = stream.next ?? {^inval};
+			#val, dur = stream.next(inval) ?? {^inval};
 			thisThread.endBeat = thisThread.endBeat + dur;
 			while(
 				{ thisThread.endBeat > thisThread.beats },
@@ -50,7 +50,7 @@ Pseg : Pstep {
 		} {
 			stream = levelpattern.asStream
 		};
-		#val, dur, curve = stream.next ?? {^inval};
+		#val, dur, curve = stream.next(inval) ?? {^inval};
 		thisThread.endBeat = thisThread.endBeat ? thisThread.beats; 
 		thisThread.endBeat = thisThread.endBeat min: thisThread.beats;
 		loop {
@@ -63,7 +63,7 @@ Pseg : Pstep {
 				evalArray[6] = Env.shapeNames[curve];
 				evalArray[7] = 0
 			};
-			#val, dur, curve = stream.next ?? {^inval};
+			#val, dur, curve = stream.next(inval) ?? {^inval};
 			evalArray[4] = val;
 			
 			startTime = thisThread.endBeat;

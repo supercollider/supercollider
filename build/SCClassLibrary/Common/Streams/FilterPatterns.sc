@@ -81,7 +81,7 @@ Psetpre : FilterPattern {
 		var evtStream = pattern.asStream;
 		
 		loop {
-			val = valStream.next;
+			val = valStream.next(event);
 //			if (val.isNil or: event.isNil) { ^event };
 //			event = this.filterEvent(event, val);
 			if (val.isNil or: event.isNil) { 
@@ -127,7 +127,7 @@ Pset : FilterPattern {
 		loop {
 			inEvent = evtStream.next(event);
 			if (inEvent.isNil) { nil.yield; ^event };
-			val = valStream.next;
+			val = valStream.next(inEvent);
 			if (val.isNil) { ^event };
 			
 			this.filterEvent(inEvent, val);
@@ -157,7 +157,7 @@ Psetp : Pset {
 		var valStream = value.iter;
 		
 		while {
-			val = valStream.next;
+			val = valStream.next(event);
 			val.notNil
 		}{
 			evtStream = pattern.asStream;
@@ -202,7 +202,7 @@ Pstretch : FilterPattern {
 		loop {
 			inevent = evtStream.next(event);
 			if (inevent.isNil) { ^event };
-			val = valStream.next;
+			val = valStream.next(inevent);
 			if (val.isNil) { ^event };
 			
 			delta = event[\delta];
@@ -223,7 +223,7 @@ Pstretchp : Pstretch {
 		var evtStream, val, inevent, delta;
 		var valStream = value.asStream;
 		while {
-			val = valStream.next;
+			val = valStream.next(event);
 			val.notNil
 		} {
 			evtStream = pattern.asStream;
@@ -556,7 +556,7 @@ Pwrap : FilterPattern {
 		var next;
 		var stream = pattern.asStream;
 		while({
-			(next = stream.next).notNil
+			(next = stream.next(event)).notNil
 		},{
 			event = next.wrap(lo,hi).yield
 		});
@@ -586,7 +586,7 @@ Pclump : FilterPattern {
 		var nstream = n.asStream;
 		loop {
 			list = [];
-			nval = nstream.next;
+			nval = nstream.next(event);
 			if (nval.isNil) { ^event };
 			nval.do {
 				next = stream.next(event);
