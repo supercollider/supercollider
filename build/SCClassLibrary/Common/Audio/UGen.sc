@@ -222,25 +222,6 @@ UGen : AbstractFunction {
 	
 	outputIndex { ^0 }
 	
-	// polling support
-	/*
-	poll { arg interval = 0.1, label = "UGen:";
-		^SynthDef.wrap({
-			var id, responder;
-			id = this.hash & 0x7FFFFF;
-			if(this.rate === \audio) {
-				SendTrig.ar(Impulse.ar(interval.reciprocal), id, this)
-			} {
-				SendTrig.kr(Impulse.kr(interval.reciprocal), id, this)
-			};
-			responder = OSCresponderNode(nil,'/tr',{ arg time, rder, msg;
-				if(msg[2] == id, { (label.asString + msg[3]).postln;});
-			}).add;
-			CmdPeriod.doOnce({ responder.remove });
-			this;
-		})
-	}
-	*/
 	poll { arg trig, label, trigid = -1;
 		trig = trig.isNumber.if({Impulse.perform
 			(this.methodSelectorForRate, trig)}, {trig})
@@ -254,6 +235,21 @@ UGen : AbstractFunction {
 			\control, {CheckBadValues.kr(this, id, post); this}
 		);
 	}
+	
+	*methodSelectorForRate { arg rate;
+		if(rate == \audio,{ ^\ar });
+		if(rate == \control, { ^\kr });
+		if(rate == \scalar, { 
+			if(this.class.class.respondsTo(\ir),{
+				^\ir
+			},{
+				^\new
+			});
+		});
+		if(rate == \demand, { ^\new });
+		^nil
+	}
+
 	
 	// PRIVATE
 	// function composition
