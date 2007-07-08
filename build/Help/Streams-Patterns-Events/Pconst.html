@@ -13,12 +13,12 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001ebb}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326e10}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0019b7}
+span.s2 {color: #001ebb}
 span.s3 {color: #000000}
-span.s4 {color: #326f17}
+span.s4 {color: #326e10}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -29,12 +29,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Pconst(sum, pattern, tolerance)</b></p>
 <p class="p2"><br></p>
-<p class="p1">embeds elements of the <b>pattern</b> into the stream until the sum comes close enough to <b>sum</b>.</p>
 <p class="p1">similar to <b>Pfindur</b>, but works with the value directly.</p>
+<p class="p2"><br></p>
+<p class="p1">embeds elements of the <b>pattern</b> into the stream until the sum comes close enough to <b>sum</b>. At that point, the difference between the specified sum and the actual running sum is embedded.</p>
+<p class="p2"><br></p>
+<p class="p1">Be careful if this is used, directly or indirectly, for a note-length parameter! The difference may be very small and this could result in zombie nodes.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">(</p>
-<p class="p3"><span class="s2">var</span> a, b;</p>
+<p class="p3"><span class="s2">var</span> a, x;</p>
 <p class="p3">a = <span class="s2">Pconst</span>(5, <span class="s2">Prand</span>([1, 2, 0.5, 0.1], <span class="s2">inf</span>));</p>
 <p class="p3">x = a.asStream;</p>
 <p class="p3">9.do({ x.next(<span class="s2">Event</span>.default).postln; });</p>
