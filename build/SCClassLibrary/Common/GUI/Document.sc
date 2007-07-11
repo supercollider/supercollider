@@ -310,8 +310,15 @@ Document {
 				selectedText = selectedText[1 .. selectedText.size-2];
 				directory = Document.current.path.dirname ++ "/";
 		} {
+			// support absolute paths 
+			if(selectedText.first == $/) {
+					directory = selectedText.dirname ++ "/";
+					selectedText = selectedText.basename;
+			}{
 				directory = wikiDir;
+			}
 		};
+		
 		
 		case { selectedText[0] == $* }
 		{ 

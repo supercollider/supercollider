@@ -15,7 +15,7 @@ QuarkSVNRepository
 		if(File.exists(svnpath).not,{
 			Error("Path to SVN executable is not correct.  Set \n\tQuarkSVNRepository.svnpath = \"/full/path/to/svn\"\n in your startup ").throw;
 		});
-		^this.newCopyArgs(url ? "https://svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
+		^this.newCopyArgs(url ? "https://quarks.svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
 	}
 	// easiest to just check out all
 	checkoutAll { |localRoot|
