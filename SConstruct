@@ -337,7 +337,7 @@ libraries = { }
 features = { }
 
 # sndfile
-success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.0')
+success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.17')
 if not success: Exit(1)
 
 # audio api
