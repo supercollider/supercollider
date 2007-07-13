@@ -17,9 +17,10 @@ FuncProxy : Ref {
 // maybe we want to call "value" "reduce" and only use one class.
 
 Maybe : FuncProxy {
-	classvar <callers, <>callFunc;
+	classvar <callers, <current, <>callFunc;
 	classvar <>defaultValue;
 	classvar <>protected = false, <>verbose = false;
+	
 	
 	value { arg ... args;
 		^this.reduceFuncProxy(args)
@@ -28,6 +29,7 @@ Maybe : FuncProxy {
 			^this.reduceFuncProxy(args)
 	}
 	reduceFuncProxy { arg args, protect=true;
+		this.postln;
 		^if(protect.not) { 
 			value.reduceFuncProxy(args) 
 		} {
@@ -48,6 +50,7 @@ Maybe : FuncProxy {
 		^o (this, that)
 	}
 	
+	
 	// used by AbstractFunction:reduceFuncProxy 
 	// to prevent reduction of enclosed functions
 	valueFuncProxy { arg args;
@@ -64,9 +67,12 @@ Maybe : FuncProxy {
 	}
 	
 	catchRecursion { arg func;
-		var val;
+		var val, previous;
 		try {
 			protect {
+				previous = current;
+				current = this;
+				
 				if(this.includedInCallers) {
 					if(verbose) {
 						(Char.bullet ++ " ! Couldn't solve a recursive definition in %\n")
@@ -80,6 +86,7 @@ Maybe : FuncProxy {
 				callFunc.value(this, callers, val);
 			} {
 				callers.pop;
+				current = previous;
 			};
 		}
 		^val
@@ -134,6 +141,51 @@ Maybe : FuncProxy {
 	}
 	storeOn { arg stream; stream << this.class.name << "(" <<< value << ")" }
 	
+}
+
+// dependency scheme
+
+Perhaps : Maybe {
+
+	var <>connected, <>action;
+	
+	// find better name.
+	glue {
+		"current: %\n".postf(current);
+		current !? {
+			this.addDependant(current);
+			current.addConnection(this);
+		}
+	}
+	
+	releaseGlued {
+		connected !? { 
+			connected.do { |x|
+				x.removeDependant(this);
+			};
+			connected.makeEmpty;
+		}
+	}
+	
+	addConnection { arg obj;
+		if(connected.isNil) { connected = IdentitySet.new };
+		connected.add(obj);
+	}
+	
+	value_ { arg obj;
+		this.releaseGlued;
+		value = obj;
+		this.update(nil, obj); // recursion?
+		this.changed(obj);
+	}
+	
+	update { arg who, what;
+		if(who !== this) {
+			"updated % %\n".postf(who, what);
+			action.value(what); // we may need to catch circularity somewhere here.
+							// maybe with a catchRecursion.
+		};	
+	}
 }
 
 
