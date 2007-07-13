@@ -61,7 +61,7 @@
 
 + ProxySpace {
 	
-	storeOn { arg stream, keys;
+	storeOn { arg stream, keys, includeSettings = true;
 		var proxies, hasGlobalClock;
 		hasGlobalClock = clock.isKindOf(TempoBusClock);
 		if(hasGlobalClock) { stream << "p.makeTempoClock(" << clock.tempo << ");\n\n"; };
@@ -100,21 +100,23 @@
 			};
 			stream.nl;
 		// add settings to compile string
-			proxy.nodeMap.storeOn(stream, "~" ++ key, true, envir);
-			stream.nl;
+			if(includeSettings) {
+				proxy.nodeMap.storeOn(stream, "~" ++ key, true, envir);
+				stream.nl;
+			};
 		}
 	}
 	documentOutput {
 		^this.document(nil, true)
 	}
-	document { arg keys, onlyOutput=false; // if true only audible content is documented.
+	document { arg keys, onlyAudibleOutput=false, includeSettings=true; 
 		var str;
-		if(onlyOutput) {
+		if(onlyAudibleOutput) {
 			keys = this.monitors.collect { arg item; item.key(envir) };
 		};
 		str = String.streamContents({ arg stream; 
 			stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
-			this.storeOn(stream, keys);
+			this.storeOn(stream, keys, includeSettings);
 			this.do { arg px; if(px.monitorGroup.isPlaying) { 
 				stream << "~" << px.key << ".play; \n"
 				}
