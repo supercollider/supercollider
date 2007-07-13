@@ -84,7 +84,7 @@ Quarks
 		var d;
 		d = Platform.userExtensionDir.escapeChar($ ) ++ "/" ++ local.name;
 		if(d.pathMatch.isEmpty,{
-			("mkdir" + d).systemCmd;
+			("mkdir -p" + d).systemCmd;
 			("creating: " + d).inform;
 		});
 	}
