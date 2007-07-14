@@ -2,7 +2,7 @@
 /**
   *
   * Subversion based package repository and package manager
-  * a work in progress.  sk & cx
+  * a work in progress.  sk, cx, danstowell
   *
   */
 
@@ -13,20 +13,31 @@
 
 Quarks
 {
-	classvar global;
+	classvar global, <allInstances;
 	var <repos, <local;
 
 	*global { ^(global ?? { global = this.new; }) }
 
 	*new { | reposPath, localPath |
-		^super.new.initQuarks(
+		var newQ;
+		newQ = super.new.initQuarks(
 			reposPath,
 			localPath
-		)
+		);
+		allInstances.add(newQ);
+		^newQ;
 	}
 	initQuarks{|reposPath, localPath| 
 		local = LocalQuarks(localPath);
 		repos = QuarkSVNRepository(reposPath, local);
+	}
+	
+	*initClass {
+		allInstances = List(1);
+	}
+	*forUrl { |url|
+		this.global; // ensure the global one is constructed
+		^allInstances.detect({|q| q.repos.url == url})
 	}
 
 	update { |name|
@@ -109,8 +120,8 @@ Quarks
 			).pathMatch.notEmpty
 		}
 	}
-	install { | name |
-		var q, deps, installed, dirname;
+	install { | name , incdeps=true |
+		var q, deps, installed, dirname, quarksForDep;
 
 		if(this.isInstalled(name),{
 			(name + "already installed").inform;
@@ -121,9 +132,29 @@ Quarks
 		if(q.isNil,{
 			Error(name.asString + "not found in local quarks.  Not yet downloaded from the repository ?").throw;
 		});
-				
+		
 		// do we have to create /quarks/ directory ? If so, do it.
 		this.checkDir;
+		
+		// Now ensure that the dependencies are installed (if available given the current active reposses)
+		if(incdeps, {	
+			q.dependencies.do({ |dep|
+				quarksForDep = if(dep.repos.isNil, {this}, {Quarks.forUrl(dep.repos)});
+				if(quarksForDep.isNil, {
+					("Quarks:install - unable to find repository for dependency '" ++ dep.name 
+						++ "' - you may need to satisfy this dependency manually. No repository detected locally with URL "++dep.repos).warn;
+				}, {
+					if(quarksForDep.isInstalled(dep.name).not, {
+						try({
+							quarksForDep.install(dep.name)
+						}, {
+							("Unable to satisfy dependency of '"++name++"' on '"++dep.name
+								++"' - you may need to install '"++dep.name++"' manually.").warn;
+						});
+					});
+				});
+			});
+		});
 		
 		// Ensure the correct folder-hierarchy exists first
 		dirname = (Platform.userExtensionDir ++ "/" ++ local.name ++ "/" ++ q.path).dirname;

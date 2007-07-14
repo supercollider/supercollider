@@ -2,16 +2,17 @@
 /**
   *
   * Subversion based package repository and package manager
-  * a work in progress.  sk, cx, LFSaw
+  * a work in progress.  sk, cx, LFSaw, danstowell
   *
   */
 
 // quarks are much worse than opiates, you should have been more careful
 QuarkDependency
 {
-	var <name, <version;
-	*new { | name, version |
-		^this.newCopyArgs(name, version)
+	// Note: "repos" should be nil if dependency is in same repos; otherwise the base URL of the repos.
+	var <name, <version, <repos;
+	*new { | name, version, repos |
+		^this.newCopyArgs(name, version, repos)
 	}
 	== { arg that; 
 		^that respondsTo: #[name, version] 
@@ -91,10 +92,18 @@ Quark
 			if (spec.isString) {
 				QuarkDependency(spec, nil)
 			} {
-				if (spec.isKindOf(Association)) {
-					QuarkDependency(
-						spec.key.asString,
-						this.getVersion(spec.value));
+				if (spec.isKindOf(ArrayedCollection)) {
+						QuarkDependency(
+							spec[0].asString,
+							this.getVersion(spec[1]),
+							spec[2].asString
+							);
+				} {
+					if (spec.isKindOf(Association)) {
+						QuarkDependency(
+							spec.key.asString,
+							this.getVersion(spec.value));
+					}
 				}
 			}
 		}, Array)
