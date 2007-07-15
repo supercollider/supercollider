@@ -102,8 +102,8 @@
 		// add settings to compile string
 			if(includeSettings) {
 				proxy.nodeMap.storeOn(stream, "~" ++ key, true, envir);
-				stream.nl;
 			};
+			stream.nl;
 		}
 	}
 	documentOutput {
