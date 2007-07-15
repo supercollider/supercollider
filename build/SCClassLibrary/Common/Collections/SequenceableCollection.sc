@@ -976,9 +976,9 @@ SequenceableCollection : Collection {
 		this.doAdjacentPairs {|a, b|
 			if (once) {
 				once = false;
-				result = a.perform(operator, b);
+				result = operator.applyTo(a, b);
 			}{
-				result = result.perform(operator, b)
+				result =  operator.applyTo(result, b);
 			};
 		};
 		^result

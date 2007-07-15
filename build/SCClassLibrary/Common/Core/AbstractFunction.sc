@@ -176,6 +176,9 @@ AbstractFunction {
 	degreeToKey { arg scale, stepsPerOctave=12; 
 		^this.composeNAryOp('degreeToKey', [scale, stepsPerOctave])
 	}
+	applyTo { arg ... args;
+		^this.valueArray(args)
+	}
 	
 	// function composition
 	<> { arg that;

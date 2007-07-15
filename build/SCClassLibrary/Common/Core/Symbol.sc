@@ -83,6 +83,10 @@ Symbol {
 		res = this.asString;
 		^if(res[0].isAlphaNum) { res ++ ":" } { res }
 	}
+	
+	applyTo { arg firstArg ... args;
+		^firstArg.performList(this, args)
+	}
 
 	// support for math on symbols
 	
