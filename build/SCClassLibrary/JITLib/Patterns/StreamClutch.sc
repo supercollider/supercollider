@@ -7,7 +7,7 @@ StreamClutch : Stream {
 	
 	next { arg inval;
 		if(reset, { reset = false; value = stream.next(inval) });
-		if(connected.value, {
+		if(connected.value(inval), {
 			value = stream.next(inval);
 		});
 		^value
