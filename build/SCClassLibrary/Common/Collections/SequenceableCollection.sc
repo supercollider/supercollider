@@ -245,8 +245,8 @@ SequenceableCollection : Collection {
 	}
 	
 	// accessing
-	lastIndex { ^this.size - 1 }
-	middleIndex { ^(this.size - 1) div: 2 }
+	lastIndex { ^if(this.size > 0) { this.size - 1 } { nil } }
+	middleIndex { ^if(this.size > 0) { (this.size - 1) div: 2 } { nil } }
 
 	first { if (this.size > 0, { ^this.at(0) }, { ^nil }) }
 	last { if (this.size > 0, { ^this.at(this.size - 1) }, { ^nil }) }
