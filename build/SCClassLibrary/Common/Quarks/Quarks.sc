@@ -265,6 +265,77 @@ Quarks
 	*local { ^this.global.local }
 	*repos { ^this.global.repos }
 	*help  {|name| ^this.global.help(name) }
+	*gui {
+		^this.global.gui
+	}
 
+	// a gui for Quarks. 2007 by LFSaw.de
+	gui {
+		var window, caption, explanation, views, resetButton, saveButton, warning;
+		
+		window = GUI.window.new(
+			this.name, Rect(300,60,550, this.local.quarks.size * 25 + 120)).front;
+		window.view.decorator =  FlowLayout( window.view.bounds );
+		
+		caption = GUI.staticText.new(window, Rect(20,15,400,30));
+		caption.font_(GUI.font.new("Helvetica", 24));
+		caption.string = this.name;
+		window.view.decorator.nextLine;
+		
+		views = this.local.quarks.collect{|quark|
+			var qView = QuarkView.new(window, 400@20, quark, this.installed.detect{|it| it == quark}.notNil);
+			window.view.decorator.nextLine;
+			qView;
+		};
+		
+		resetButton = GUI.button.new(window, Rect(15,15,150,20));
+		//	button.font_(GUI.font.new("Helvetica", 14));
+		resetButton.states = [
+			["reset", Color.black, Color.gray(0.5)]
+		];
+		resetButton.action = { arg butt;
+			views.do(_.reset);
+		};
+		
+		saveButton = GUI.button.new(window, Rect(15,15,150,20));
+		//	button.font_(GUI.font.new("Helvetica", 14));
+		saveButton.states = [
+			["save", Color.black, Color.blue(1, 0.5)]
+		];
+		saveButton.action = { arg butt;
+			views.do{|qView|
+				qView.toBeInstalled.if({
+					this.install(qView.quark.name);
+					qView.flush
+				});
+				qView.toBeDeinstalled.if({
+					this.uninstall(qView.quark.name);
+					qView.flush;
+				})
+			};
+			warning.string = "You should now recompile sclang"
+		};
+		
+		// add open directory button (open is only implemented in OS X)
+		thisProcess.platform.isKindOf(OSXPlatform).if{
+			GUI.button.new(window, Rect(15,15,150,20)).states_([["open quark directory", Color.black, Color.gray(0.5)]]).action_{ arg butt;
+				"open %".format(this.local.path).unixCmd;
+			};
+		};
+		
+		window.view.decorator.nextLine;
+		explanation = GUI.staticText.new(window, Rect(20,15,550,20));
+		explanation.string = "\"+\" -> installed, \"-\" -> not installed, \"*\" -> marked to install, \"x\" -> marked to uninstall";
+		window.view.decorator.nextLine;
+
+		warning = GUI.staticText.new(window, Rect(20,15,400,50));
+		warning.font_(GUI.font.new("Helvetica", 24));
+		warning.string = "";
+
+		^window
+	}
 	
 }
+
+
+

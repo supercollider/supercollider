@@ -113,7 +113,7 @@ Quark
 		if(version.notNil,{ stream << " [" << version << "]"; });
 	}
 	
-	postDesc {
+	longDesc {
 		var string;
 		string = name;
 		if(version.notNil,{ string = string + "[" ++ version ++ "]"; });
@@ -127,7 +127,10 @@ Quark
 			};
 		};
 		string = string ++ "\n";
-		string.postln;
+		^string;
+	}
+	postDesc {
+		this.longDesc.postln;
 	}
 	== { arg that; 
 		^that respondsTo: #[name, summary, version, author, dependencies, tags, path] 
@@ -143,32 +146,65 @@ Quark
 }
 
 QuarkView {
-	var <view, <quark, <isInstalled, <changeState;
-	*new{|parent, extent, quark|
-		super.new.init(parent, extent, quark)
+	var <quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton;
+	*new{|parent, extent, quark, isInstalled|
+		^super.new.init(parent, extent, quark, isInstalled)
 	}
-	init {|parent, extent, aQuark|
+	init {|parent, extent, aQuark, argIsInstalled|
 		var installBounds, descrBounds, infoBounds, pad = 5;
 		
 		installBounds = Rect(0,0, extent.y, extent.y);
-		infoBounds = Rect(0,0, 60, extent.y);
+		infoBounds = Rect(0,0, 40, extent.y);
 		descrBounds = Rect(
 			0,0, 
 			extent.x - (infoBounds.width - infoBounds.width - (2*pad)), extent.y
 		);
-		
 		quark = aQuark;
+		isInstalled = argIsInstalled;
 		
-		// the install / remove Button
-		GUI.button.new(parent, installBounds).states_([
-				["-", Color.black, Color.clear],		// never installed
-				["+", Color.black, Color.red],		// selected to install
-				["-", Color.black, Color.red(0.5, 0.5)], // selected to deinstall
-				["y", Color.black, Color.green],		// already installed
-			]);
+		installButton = GUI.button.new(parent, Rect(15,15,17,17));
+		this.updateButtonStates;
+
 		// the name with author
 		GUI.staticText.new(parent, descrBounds).string_("% by %".format(quark.name, quark.author));
 		// the name
-		GUI.button.new(parent, infoBounds).states_([["info"]]);
+		GUI.button.new(parent, infoBounds).states_([["info"]]).action_{this.fullDescription};
+	}
+	updateButtonStates {
+		isInstalled.if({
+			// Quark is currently installed
+			installButton.states = [
+				["+", Color.black, Color.green],		// installed
+				["x", Color.black, Color.red],		// selected to deinstall
+			];
+			installButton.action = { arg butt;
+				toBeDeinstalled = butt.value>0;
+			};
+		
+		},{
+			// Quark is currently not installed
+			installButton.states = [
+				["-", Color.black, Color.clear],		// never installed
+				["*", Color.black, Color.blue(alpha: 0.5)],		// selected to install
+			];
+			installButton.action = { arg butt;
+				toBeInstalled = butt.value>0;
+			};
+		});
+		this.reset;
+	}
+	reset {
+		installButton.valueAction = 0;
+	}
+	flush {
+		toBeInstalled.if  {isInstalled = true;  toBeInstalled   = false};
+		toBeDeinstalled.if{isInstalled = false; toBeDeinstalled = false};
+		this.updateButtonStates;
+	}
+	fullDescription {
+		var window;
+		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
+		window.view.decorator = FlowLayout(window.view.bounds);
+		GUI.staticText.new(window, window.view.bounds).string_(quark.longDesc);
 	}
 }
