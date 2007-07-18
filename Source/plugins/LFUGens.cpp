@@ -2379,35 +2379,40 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 
 }
 
-#define CHECK_GATE \
-	gate = ZXP(gatein); \
-	if (prevGate <= 0.f && gate > 0.f) { \
-		unit->m_stage = -1; \
-		unit->m_released = false; \
-		unit->mDone = false; \
-		counter = 0; \
-		nsmps = i; \
-		break; \
-	} else if (gate <= -1.f && unit->m_prevGate > -1.f) { \
-		int numstages = (int)ZIN0(kEnvGen_numStages); \
-		float dur = -gate - 1.f; \
-		counter  = (int32)(dur * SAMPLERATE); \
-		counter  = sc_max(1, counter); \
-		unit->m_stage = numstages; \
-		unit->m_shape = shape_Linear; \
-		unit->m_grow = -level / counter; \
-		unit->m_endLevel = 0.; \
-		nsmps = i; \
-		break; \
-	} else if (prevGate > 0.f && gate <= 0.f \
-			&& unit->m_releaseNode >= 0 && !unit->m_released) { \
-		counter = 0; \
-		unit->m_stage = unit->m_releaseNode - 1; \
-		unit->m_released = true; \
-		nsmps = i; \
-		break; \
-	} \
 	
+#define CHECK_GATE \
+        prevGate = gate; \
+        gate = ZXP(gatein); \
+        if (prevGate <= 0.f && gate > 0.f) { \
+                gatein--; \
+                unit->m_stage = -1; \
+                unit->m_released = false; \
+                unit->mDone = false; \
+                counter = i; \
+                nsmps = i; \
+                break; \
+        } else if (gate <= -1.f && unit->m_prevGate > -1.f) { \
+                int numstages = (int)ZIN0(kEnvGen_numStages); \
+                float dur = -gate - 1.f; \
+                gatein--; \
+                counter  = (int32)(dur * SAMPLERATE); \
+                counter  = sc_max(1, counter) + i; \
+                unit->m_stage = numstages; \
+                unit->m_shape = shape_Linear; \
+                unit->m_grow = -level / counter; \
+                unit->m_endLevel = 0.; \
+                nsmps = i; \
+                break; \
+        } else if (prevGate > 0.f && gate <= 0.f \
+                        && unit->m_releaseNode >= 0 && !unit->m_released) { \
+                gatein--; \
+                counter = i; \
+                unit->m_stage = unit->m_releaseNode - 1; \
+                unit->m_released = true; \
+                nsmps = i; \
+                break; \
+        } \
+
 
 void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 {
@@ -2463,7 +2468,6 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 						
 				counter  = (int32)(dur * SAMPLERATE);
 				counter  = sc_max(1, counter);
-
 				if (counter == 1) unit->m_shape = 1; // shape_Linear
 				switch (unit->m_shape) {
 					case shape_Step : {
@@ -2526,6 +2530,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 		}
 
 		int nsmps = sc_min(remain, counter);
+
 		switch (unit->m_shape) {
 			case shape_Step : {
 				for (int i=0; i<nsmps; ++i) {
