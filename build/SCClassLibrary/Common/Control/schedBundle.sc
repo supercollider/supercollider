@@ -3,14 +3,14 @@
 // see the atTime help file
 
 + Nil { // now
-	schedCXBundle { arg bundle,server,timeOfRequest;
+	schedBundle { arg bundle,server,timeOfRequest;
 		bundle.send(server,nil); //0.0
 	}
 }
 
 
 + Float { // relative seconds
-	schedCXBundle {  arg bundle,server,timeOfRequest;
+	schedBundle {  arg bundle,server,timeOfRequest;
 		var now;
 		if(timeOfRequest.notNil,{
 			now = Main.elapsedTime;
@@ -32,7 +32,7 @@
   * 16 : 16th note
   */
 + Integer { // at the next N beat
-	schedCXBundle { arg bundle,server,timeOfRequest;
+	schedBundle { arg bundle,server,timeOfRequest;
 		var now,nowRound,tdelta,latencyBeats;
 		latencyBeats = Tempo.secs2beats(server.latency);
 		now = TempoClock.default.elapsedBeats;
@@ -57,7 +57,7 @@
 + Date {
 	// Date raw seconds has to be set correctly !
 	// *new won't do this for you
-	schedCXBundle { arg bundle,server,timeOfRequest;
+	schedBundle { arg bundle,server,timeOfRequest;
 		var delta;
 		delta = rawSeconds - this.class.localtime.rawSeconds;
 		if(delta >= 0.0,{

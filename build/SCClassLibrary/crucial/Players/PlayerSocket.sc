@@ -58,9 +58,9 @@ PlayerSocket : AbstractPlayerProxy {
 		if(status == \isPlaying,{
 			if((player !== lastPlayer) or: (socketStatus == \isSleeping),{ 
 				//socketStatus = \isWaking;
-				bundle = CXBundle.new;
+				bundle = AbstractPlayer.bundleClass.new;
 				this.setSourceToBundle(player,bundle,releaseTime);
-				sched.xschedCXBundle(beatDelta,this.server,bundle);
+				sched.xschedBundle(beatDelta,this.server,bundle);
 			}/*,{
 				[player === lastPlayer, socketStatus].debug(this);
 			}*/)
@@ -84,7 +84,7 @@ PlayerSocket : AbstractPlayerProxy {
 		});
 		if(socketStatus != \isSleeping,{
 			if(envdSource.notNil,{
-				bundle = CXBundle.new;
+				bundle = AbstractPlayer.bundleClass.new;
 				envdSource.releaseToBundle(releaseTime,bundle);
 				bundle.addFunction({ socketStatus = \isSleeping; });
 				bundle.clumpedSendNow(this.server);
@@ -161,7 +161,7 @@ PlayerSocket : AbstractPlayerProxy {
 	setSource { arg s,atTime,releaseTime;
 		var bundle;
 		if(this.server.notNil,{ // else not even playing, or not loaded
-			bundle = CXBundle.new;
+			bundle = AbstractPlayer.bundleClass.new;
 			this.setSourceToBundle(s,bundle,releaseTime);
 			bundle.sendAtTime(this.server,atTime);
 		},{

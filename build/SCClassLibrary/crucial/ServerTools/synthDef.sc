@@ -15,7 +15,7 @@
 	}
 	prepareForPlay { arg group,private,bus;
 		var bundle;
-		bundle = MixedBundle.new;
+		bundle = AbstractPlayer.bundleClass.new;
 		group = group.asGroup;
 		this.prepareToBundle(group,bundle);
 		bundle.send(group.server)

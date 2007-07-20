@@ -5,6 +5,7 @@ AbstractPlayer : AbstractFunction  {
 	
 	var <synth,<group,<server,<patchOut,<>readyForPlay = false,<>playIsStarting = false,
 		 <status, defName;
+	classvar <>bundleClass;
 
 	play { arg group,atTime,bus;
 		var timeOfRequest;
@@ -60,7 +61,7 @@ AbstractPlayer : AbstractFunction  {
 	
 	prPlay { arg atTime,bus,timeOfRequest;
 		var bundle;
-		bundle = MixedBundle.new;
+		bundle = AbstractPlayer.bundleClass.new;
 		if(status !== \readyForPlay,{ this.prepareToBundle(group, bundle, false, bus) });
 		this.makePatchOut(group,false,bus,bundle);
 		this.spawnToBundle(bundle);
@@ -69,11 +70,11 @@ AbstractPlayer : AbstractFunction  {
 	
 	prepareForPlay { arg agroup,private = false,bus;
 		var bundle;
-		bundle = MixedBundle.new;
+		bundle = AbstractPlayer.bundleClass.new;
 		this.prepareToBundle(agroup,bundle,private,bus);
 	
-		//^bundle.clumpedSendNow(group.server)
-		^bundle.send(group.server)
+		^bundle.clumpedSendNow(group.server)
+		//^bundle.send(group.server)
 	}
 
 	prepareToBundle { arg agroup,bundle,private = false, bus, defWasLoaded = false;
@@ -232,13 +233,13 @@ AbstractPlayer : AbstractFunction  {
 
 	spawn { arg atTime,timeOfRequest;
 		var bundle;
-		bundle = MixedBundle.new;
+		bundle = AbstractPlayer.bundleClass.new;
 		this.spawnToBundle(bundle);
 		bundle.sendAtTime(this.server,atTime,timeOfRequest);
 	}
 	spawnOn { arg group,bus, atTime,timeOfRequest;
 		var bundle;
-		bundle = MixedBundle.new;
+		bundle = AbstractPlayer.bundleClass.new;
 		this.spawnOnToBundle(group,bus,bundle);
 		bundle.sendAtTime(this.server,atTime,timeOfRequest);
 	}
@@ -273,7 +274,7 @@ AbstractPlayer : AbstractFunction  {
 	cmdPeriod {
 		var b;
 		CmdPeriod.remove(this);
-		b = MixedBundle.new;
+		b = AbstractPlayer.bundleClass.new;
 		this.stopToBundle(b);
 		b.doFunctions;
 		// sending the OSC is irrelevant
@@ -282,7 +283,7 @@ AbstractPlayer : AbstractFunction  {
 	stop { arg atTime,stopSynth = true;
 		var b;
 		if(server.notNil,{		
-			b = MixedBundle.new;
+			b = AbstractPlayer.bundleClass.new;
 			this.stopToBundle(b,stopSynth);
 			b.sendAtTime(server,atTime);
 		});
@@ -316,7 +317,7 @@ AbstractPlayer : AbstractFunction  {
 	run { arg flag=true,atTime;
 		var msg,b;
 		if(synth.notNil,{
-			b = MixedBundle.new;
+			b = AbstractPlayer.bundleClass.new;
 			b.add( synth.runMsg(flag) );
 			b.sendAtTime(server,atTime);
 		});
@@ -326,7 +327,7 @@ AbstractPlayer : AbstractFunction  {
 	}
 	release { arg releaseTime,atTime;
 		var rb;
-		rb = MixedBundle.new;
+		rb = AbstractPlayer.bundleClass.new;
 		this.releaseToBundle(releaseTime,rb);
 		rb.sendAtTime(server,atTime);
 	}
@@ -348,7 +349,7 @@ AbstractPlayer : AbstractFunction  {
 
 	free { arg atTime;
 		var bundle;
-		bundle = MixedBundle.new;
+		bundle = AbstractPlayer.bundleClass.new;
 		this.freeToBundle(bundle);
 		bundle.sendAtTime(server,atTime);
 	}
@@ -668,7 +669,9 @@ AbstractPlayer : AbstractFunction  {
 			item.performList(\update, this, what, moreArgs);
 		});
 	}
-
+	*initClass {
+		bundleClass = MixedBundle;
+	}
 	guiClass { ^AbstractPlayerGui }
 
 }
@@ -733,7 +736,7 @@ MultiTrackPlayer : MultiplePlayers { // abstract
 AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 
 	var <>source,
-		<isPlaying = false, <isSleeping = true, // to be deprec in favor of the higher level state tracking
+		//isPlaying = false, //<isSleeping = true, // to be deprec in favor of the higher level state tracking
 		sharedBus;
 	var <socketStatus=\isSleeping;
 
@@ -752,9 +755,10 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 		this.source.spawnToBundle(bundle);
 		bundle.addMessage(this,\didSpawn);
 	}
+	isPlaying { ^status == \isPlaying }
 	didSpawn {
 		super.didSpawn;
-		isPlaying = true;
+		status = \isPlaying;
 		if(this.source.notNil, { 
 			socketStatus = \isPlaying;
 		});
@@ -771,8 +775,8 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 		this.source.connectToPatchIn(patchIn,needsValueSetNow);
 	}
 	didStop {
-		isPlaying = false;
-		isSleeping = true;
+		//isPlaying = false;
+		//isSleeping = true;
 		status = \isStopped;
 	}
 	children { 

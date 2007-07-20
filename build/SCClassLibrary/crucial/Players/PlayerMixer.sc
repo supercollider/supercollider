@@ -63,7 +63,7 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 		var bundle;
 		players = players.add(player);
 		if(this.isPlaying,{
-			bundle = CXBundle.new;
+			bundle = AbstractPlayer.bundleClass.new;
 			//start player
 			player.makePatchOut(this.group,true,nil,bundle);
 			
@@ -87,7 +87,7 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 		var bundle,player;
 		player = players.removeAt(pli);
 		if(player.notNil and: {this.isPlaying},{
-			bundle = CXBundle.new;
+			bundle = AbstractPlayer.bundleClass.new;
 			//stop player
 			player.releaseToBundle(0.1,bundle);
 			this.respawnMixerToBundle(bundle);

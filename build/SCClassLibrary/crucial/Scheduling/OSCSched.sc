@@ -292,8 +292,8 @@ OSCSched : BeatSched {
 		this.tschedAbs(tempo.beats2secs(beat),server,bundle,onArrival)
 	}
 
-	xschedCXBundle { arg beatDelta,server,cxbundle;
-		this.xsched(beatDelta,server,cxbundle.messages,{cxbundle.doFunctions});
+	xschedBundle { arg beatDelta,server,bundle;
+		this.xsched(beatDelta,server,bundle.messages,{bundle.doFunctions});
 	}
 
 

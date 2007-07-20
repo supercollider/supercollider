@@ -38,7 +38,7 @@ BufferProxy { // blank space for delays, loopers etc.
 	}
 	free {
 		var b;
-		b = MixedBundle.new;
+		b = AbstractPlayer.bundleClass.new;
 		this.freeToBundle(b);
 		b.sendAtTime(this.server,nil);
 	}
@@ -456,7 +456,7 @@ ArrayBuffer : BufferProxy {
 	}
 /*	fill { arg value,bundle;
 		array = Array.fill(array.size, value);
-		if(bundle.isNil,{ bundle = MixedBundle.new; });
+		if(bundle.isNil,{ bundle = AbstractPlayer.bundleClass.new; });
 
 
 
