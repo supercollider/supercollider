@@ -80,6 +80,11 @@ AbstractSFP  : AbstractPlayer {
 	freeResourcesToBundle { arg bundle;
 		segmentBuffers.do({ |b|
 			bundle.add( b.freeMsg )
+		});
+		bundle.addFunction({
+			if(file.isOpen,{
+				file.close
+			})
 		})
 	}
 			
