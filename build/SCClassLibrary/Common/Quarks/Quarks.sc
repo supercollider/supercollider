@@ -1,4 +1,3 @@
-
 /**
   *
   * Subversion based package repository and package manager
@@ -13,13 +12,17 @@
 
 Quarks
 {
-	classvar global, <allInstances;
+	classvar global, <allInstances, <known;
 	var <repos, <local;
 
 	*global { ^(global ?? { global = this.new; }) }
 
 	*new { | reposPath, localPath |
 		var newQ;
+		if((this.known[reposPath].isNil.not) and: (this.known[reposPath] != localPath), {
+			("The repository is in the list of known repositories, but with a different local path. You are recommended to use this local path:"
+					 + this.known[reposPath]).warn;
+		});
 		newQ = super.new.initQuarks(
 			reposPath,
 			localPath
@@ -34,10 +37,19 @@ Quarks
 	
 	*initClass {
 		allInstances = List(1);
+		known = Dictionary[
+			"https://quarks.svn.sourceforge.net/svnroot/quarks" -> (Platform.userAppSupportDir ++ "/quarks"),
+			"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir" -> (Platform.userAppSupportDir ++ "/quarks-sonenvir")
+			];
 	}
 	*forUrl { |url|
+		var q;
 		this.global; // ensure the global one is constructed
-		^allInstances.detect({|q| q.repos.url == url})
+		q = allInstances.detect({|q| q.repos.url == url});
+		if(q.isNil && this.known[url].isNil.not, {
+			q = Quarks.new(url, this.known[url]);
+		});
+		^q;
 	}
 
 	update { |name|
