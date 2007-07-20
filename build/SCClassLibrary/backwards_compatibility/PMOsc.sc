@@ -1,4 +1,7 @@
 
+// these pseudo ugens replicate some SC2 ugens
+// still useful as shorthands
+
 PMOsc  {
 	
 	*ar { arg carfreq,modfreq,pmindex=0.0,modphase=0.0,mul=1.0,add=0.0; 
