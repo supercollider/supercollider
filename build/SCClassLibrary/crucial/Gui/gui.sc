@@ -126,6 +126,17 @@
 	remove {}
 }
 
++ Point {
+	asPageLayout {
+		^MultiPageLayout("",this.asRect ).front
+	}
+}
++ Rect {
+	asPageLayout {
+		^MultiPageLayout("",this ).front
+	}
+}	
+
 + SCWindow {
 	asPageLayout { arg title,bounds;
 		^MultiPageLayout.on(this.asView,bounds)

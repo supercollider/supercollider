@@ -33,6 +33,9 @@ SynthConsole : AbstractConsole  {
 	play {	
 		ActionButton(layout,">",{this.doPlay }).background_(Color.green);
 	}
+	prepare {
+		ActionButton(layout,"pre",{this.doPrepare}).background_(Color.green(1.0,0.2))
+	}
 	scope {arg duration=0.5;
 		//ActionButton(layout,"scope",{this.doScope(duration)})
 		//	.background_(Color.green);
@@ -83,6 +86,9 @@ SynthConsole : AbstractConsole  {
 	// pr
 	doPlay { 
 		this.ugenFunc.play;
+	}
+	doPrepare {
+		this.ugenFunc.prepareForPlay
 	}
 	
 	doScope { arg duration=0.5;

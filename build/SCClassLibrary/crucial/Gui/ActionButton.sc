@@ -39,6 +39,7 @@ SCViewHolder {
 	focus { arg flag=true; view.focus(flag) }
 	visible_ { arg boo; view.visible = boo }
 
+	isClosed { ^(view.isNil or: {view.isClosed}) }
 	// should move lower
 	font_ { arg f;
 		view.font = f;
