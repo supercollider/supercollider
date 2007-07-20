@@ -4,15 +4,15 @@
 	 you can just add an extension method guiBody here */
 	guiClass { ^ModelImplementsGuiBody }
 	guiBody {}
-	
-	gui { arg  ... args; 
+
+	gui { arg  ... args;
 		^this.guiClass.new(this).performList(\gui,args);
 	}
-	
-	topGui { arg ... args; 
+
+	topGui { arg ... args;
 		^this.guiClass.new(this).performList(\topGui,args);
 	}
-	
+
 	smallGui { arg  ... args;
 		if(this.guiClass.findMethod(\smallGui).notNil,{
 			^this.guiClass.new(this).performList(\smallGui,args);
@@ -40,7 +40,7 @@
 		"\n\nFATAL ERROR:\n".postln;
 		culprits.do({ arg c; if(c.isString,{c.postln},{c.dump}) });
 		this.dump;
-		Error("FATAL ERROR").throw; 
+		Error("FATAL ERROR").throw;
 	}
 	isStartRow { ^false }		// see StartRow
 }
@@ -54,7 +54,7 @@
 				Post << caller << ": " << this << Char.nl;
 			},{
 				Post << caller << ": " <<* this << Char.nl;
-			});				
+			});
 		},{
 			Post <<* this << Char.nl;
 		});
@@ -82,7 +82,7 @@
 }
 
 + Dictionary {
-	//guiClass { ^DictionaryGui }		
+	//guiClass { ^DictionaryGui }
 	guiBody { arg layout;
 		this.keysValuesDo({ arg k,v,i;
 			CXLabel(layout.startRow,k,minWidth: 100);
@@ -135,7 +135,7 @@
 	asPageLayout {
 		^MultiPageLayout("",this ).front
 	}
-}	
+}
 
 + SCWindow {
 	asPageLayout { arg title,bounds;
@@ -144,7 +144,7 @@
 	asFlowView { arg bounds;
 		^FlowView(this,bounds)
 	}
-}	
+}
 + SCContainerView {
 	asPageLayout { arg title,bounds;
 		// though it won't go multi page
@@ -156,7 +156,7 @@
 	asPageLayout { arg title,bounds;
 		^MultiPageLayout.on(this,bounds)
 	}
-}	
+}
 + SCCompositeView {
 	asFlowView { arg bounds;
 		^FlowView(this,bounds ?? {this.bounds})
@@ -178,7 +178,7 @@
 		},{
 			this.view
 		})
-		
+
 		//bounds = bounds ?? {this.view.bounds};
 		//^FlowView(this.view,this.layRight(bounds.width - 10,bounds.height - 10))
 	}
