@@ -114,20 +114,6 @@ MixedBundle : OSCBundle {
 		sendFunctions.do({ arg item; item.value });
 	}
 
-	// clump messages in groups of 10 to avoid overwhelming the server
-	clumpedSendNow { arg server;
-		if(messages.notNil,{
-			messages.clump(10).do({ arg bundle,i;
-				server.listSendBundle(i * 0.001,bundle);
-			});
-			SystemClock.sched(messages.size * 0.001,{ this.doFunctions; nil });
-			^messages.size
-		},{
-			this.doFunctions;
-			^0
-		})
-	}
-
 	// private //
 
 	prSend { arg server, latency;

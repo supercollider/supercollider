@@ -73,8 +73,8 @@ AbstractPlayer : AbstractFunction  {
 		bundle = AbstractPlayer.bundleClass.new;
 		this.prepareToBundle(agroup,bundle,private,bus);
 	
-		^bundle.clumpedSendNow(group.server)
-		//^bundle.send(group.server)
+		//^bundle.clumpedSendNow(group.server)
+		^bundle.send(group.server)
 	}
 
 	prepareToBundle { arg agroup,bundle,private = false, bus, defWasLoaded = false;
