@@ -211,6 +211,13 @@ String[char] : RawArray {
 		_String_StandardizePath
 		^this.primitiveFailed
 	}
+	withTrailingSlash {
+		if(this.last != $/,{
+			^this ++ $/
+		},{
+			^this
+		})
+	}
 	absolutePath{
 		var first;
 		first = this[0];

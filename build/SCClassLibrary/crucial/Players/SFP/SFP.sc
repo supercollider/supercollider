@@ -26,7 +26,7 @@ AbstractSFP  : AbstractPlayer {
 		})
 	}
 	*dir_ { arg path;
-		dir = path.standardizePath ++ "/";
+		dir = path.standardizePath.withTrailingSlash;
 	}
 	// each subclass should implement timeDuration
 	numFrames { ^file.numFrames }

@@ -143,7 +143,7 @@ AbstractSample : BufferProxy {
 	}
 	
 	*dir_ { arg p;
-		dir = p.standardizePath ++ "/";
+		dir = p.standardizePath.withTrailingSlash;
 	}
 	*standardizePath { arg path;
 		var pathName;

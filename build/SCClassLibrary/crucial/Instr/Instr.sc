@@ -73,7 +73,7 @@ Instr  {
 	
 	// set the directory where your library of Instr is to be found
 	*dir_ { arg p;
-		dir = p.standardizePath ++ "/";
+		dir = p.standardizePath.withTrailingSlash;
 	}
 
 	rate {  
