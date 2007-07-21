@@ -9,7 +9,7 @@ TestOSCBundle : UnitTest {
 		sd = Array.fill(100,{ |i|
 				var d;
 				d = SynthDef( "TestOSCBundle" ++ i,{
-					SinOsc.ar(400 + i)
+					SinOsc.ar(400 + i,mul: 0.0001)
 				});
 				
 				b.addPrepare( ["/d_recv", d.asBytes] )
@@ -20,10 +20,8 @@ TestOSCBundle : UnitTest {
 		
 		b.doPrepare(Server.default,{ completed = true});
 		
-		this.asynchAssert( {completed}, {
-			this.assert( completed, "should be completed")
-		},"waiting for prepare to send all");
-
+		this.wait( {completed},"waiting for prepare to send all");
+		
 	}
 
 }
