@@ -438,6 +438,9 @@ Server : Model {
 			statusWatcher = nil;
 		});
 	}
+	aliveThreadIsRunning {
+		^aliveThread.notNil and: {aliveThread.isPlaying}
+	}
 	*resumeThreads {
 		set.do({ arg server;
 			server.stopAliveThread;
