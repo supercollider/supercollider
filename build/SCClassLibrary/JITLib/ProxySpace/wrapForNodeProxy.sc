@@ -58,6 +58,10 @@
 	defaultArgs { ^def.prototypeFrame }
 }
 
++AbstractFunction {
+	prepareForProxySynthDef { ^{ this.value } }
+}
+
 +SimpleNumber {
 	
 	prepareForProxySynthDef { arg proxy;
