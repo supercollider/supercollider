@@ -22,6 +22,9 @@ Rect {
 	*fromRect { arg rect;
 		^this.new(rect.left, rect.top, rect.width, rect.height)
 	}
+	*fromArray {|array|
+		^this.new(*array)
+	}
 	*aboutPoint { arg point, dx, dy;
 		^this.new(point.x-dx, point.y-dy, 2*dx, 2*dy)
 	}
