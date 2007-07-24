@@ -1,149 +1,219 @@
-History { 		// adc 2006, Birmingham. 
+History { 		// adc 2006, Birmingham; rewrite 2007.
 
-	classvar <>forwardFunc, <date, <startTimeStamp, <time0, function;
-	classvar <lines, <lineShorts, <>displayTime = 0.1;
-	classvar <>title = "History repeats";
-	classvar <w, <bounds, <doc, pop, startbut;
-	classvar <docFlag = \sameDoc, <hasMovedOn = true;
+	classvar <>forwardFunc, <date, <startTimeStamp, <time0, listenFunc;
 	classvar <>verbose = false, <>recordLocally = true, <started=false;
-	classvar <>saveFolder = "~/Desktop/";
-	classvar <player;
+
+	classvar <>saveFolder = "~/Desktop/", <logFolder, <logFile, <logPath, <keepsLog = false;
+	classvar <>current, <>maxShortLength=65;
+		
+	var <lines, <lineShorts, <keys, <player, <hasMovedOn;
 	
 	*initClass { 
-		Class.initClassTree(TaskProxy);
-		bounds = Rect(0, 0, 300, 200); 
+		Class.initClassTree(TaskProxy); 
+		this.makeLogFolder;
+		current = this.new;		
 		
-		player = TaskProxy.new.source_({ |e| 
-			var lineIndices; 
-			var lastTimePlayed;
-			
-			lineIndices = (e.endLine, e.endLine - 1 .. e.startLine); 
-			
-			lineIndices.do { |index| 
-				var time, id, code, waittime;
-				#time, id, code = lines[index];
-				waittime = time - (lastTimePlayed ? time);
-			//	[\waittime, waittime].postln;
-				lastTimePlayed = time;
-				waittime.wait; 
-				if (e.verbose) { code.postln };
-				code.compile.value;	// so it does not change cmdLine.
-			};
-			0.5.wait;
-			"history is over.".postln;
-		});
-		
-		player.set(\startLine, 0, \endLine, 0);
-		
-		this.clear;
+		listenFunc = { |str, val, func| 
+			if ( func.notNil 
+					and: { str.notEmpty } 
+					and: { str != "\n" } 
+					and: { str.keep(7) != "History" }) 
+				{ 
+					if (this.verbose, { [str, val, func].postcs });
+					if (this.recordLocally, { 
+						this.enter(thisProcess.interpreter.cmdLine) 
+					});
+					this.forwardFunc.value(str, val, func);
+				}
+		};
 	}
-	*clear { 
-		lines = List(1024);
-		lineShorts = List(1024); 
-		hasMovedOn = true;
-	}
-			// replace (\n ..." with (... ))!!!
+	
+		// top level interface : 
+	
 	*start { 
 		var interp = thisProcess.interpreter;
 		if(started.not) {
-			function = { |str, val, func| 
-				if ( func.notNil 
-						and: { str.notEmpty } 
-						and: { str != "\n" } 
-						and: { str.keep(7) != "History" }) 
-					{ 
-						if (History.verbose, { [str, val, func].postcs });
-						if (History.recordLocally, { 
-							History.enter(thisProcess.interpreter.cmdLine) 
-						});
-						History.forwardFunc.value(str, val, func);
-					}
-			};
-			interp.codeDump = interp.codeDump.addFunc(function);
-			hasMovedOn = true;
+			interp.codeDump = interp.codeDump.addFunc(listenFunc);
+			this.hasMovedOn_(true);
 			started = true;
+			this.startLog;
 		} {
 			"History has started already.".postln;
 		}
 	}
-	*stop {
-		thisProcess.interpreter.codeDump = thisProcess.interpreter.codeDump.removeFunc(function); 
-		hasMovedOn = true;
+
+	*end {
+		thisProcess.interpreter.codeDump = thisProcess.interpreter.codeDump.removeFunc(listenFunc); 
+		this.endLog;
+		this.hasMovedOn_(true);
 		started = false;
 	}
+	
+	*hasMovedOn_ { |flag=true| current.hasMovedOn_(flag) }
+	*hasMovedOn  { ^current.hasMovedOn }
+	
+	*play { |start=0, end, verbose=true| ^current.play(start, end, verbose) } 
+	*stop { ^current.stop } 
 
+	*enter { |lineStr, id=\me|
+		var dateNow, now; 
+		lineStr = this.prettyString(lineStr); 
+		
+		if (lineStr.isEmpty) { ^this };	// nothing worth remembering
+		
+		if (current.lines.isEmpty) { 	// get startTime if first entry
+			dateNow = Date.getDate;
+			startTimeStamp = dateNow.stamp;
+			date = dateNow.asString;
+			time0 = Main.elapsedTime;
+			
+		}; 
+		
+		this.hasMovedOn_(true);
+		now = (Main.elapsedTime - time0);
+		
+		if (keepsLog) { this.addToLog([now, id, lineStr]) };
+		current.addLine(now, id, lineStr); 
+	}
+
+		// forward to current for backwards compat...
+	*lines { ^current.lines }
+	*lineShorts { ^current.lineShorts } 
+		// editing 
+	*removeAt {|index| current.removeAt(index) }
+	*removeLast { current.removeLast }
+	*keep {|num| current.keep(num) }
+	*drop {|num| current.drop(num) }
+	
+		// instance methods:
+	*new { |lines| 
+		^super.new.init(lines);
+	}
+	
+	hasMovedOn_ { |flag=true| hasMovedOn = flag; } 
+	
+	lines_ { |inLines| 
+		lines.array_(inLines); 
+		lineShorts.array_(lines.collect { |line| this.class.shorten(line) });
+		keys.clear; 
+		keys.addAll(lines.collect(_[1]));
+	}
+
+	clear { 
+		lines = List[];
+		lineShorts = List[];
+		hasMovedOn = true;
+	} 
+	*clear { current.clear }
+	
+	init { |inLines| 
+		keys = IdentitySet.new;
+		this.clear.lines_(inLines);
+		 
+		player = TaskProxy.new.source_({ |e| 
+			var linesSize, lineIndices, lastTimePlayed;
+			linesSize = lines.size;
+		
+			if (linesSize > 0) {	// reverse indexing
+				lineIndices = (e.endLine.min(linesSize) .. e.startLine.min(linesSize));
+				
+				lineIndices.do { |index| 
+					var time, id, code, waittime;
+					#time, id, code = lines[index];
+					
+					waittime = time - (lastTimePlayed ? time);
+					lastTimePlayed = time;
+					waittime.wait; 
+					if (e.verbose) { code.postln };
+					code.compile.value;	// so it does not change cmdLine.
+				};
+			};
+			0.5.wait;
+			"history is over.".postln;
+		}).set(\startLine, 0, \endLine, 0); 	
+	}
+	
+	makeCurrent { History.current = this; hasMovedOn = true }
+	isCurrent { ^this === History.current }
+	
+	play { |start=0, end, verbose=true|	// line numbers; 
+									// starting from past 0 may not work.
+		start = start.clip(0, lines.lastIndex); 
+		end = (end ? lines.lastIndex).clip(0, lines.lastIndex); 
+		
+		player.set(\startLine, start, \endLine, end, \verbose, verbose); 
+		player.play;
+	}
+	
+	stop { player.stop; } 
+	
+	addLine { |now, authID, lineStr| 
+		var line = [ now, authID, lineStr ];
+		if (lines.isEmpty) { 
+			lines.add(line);
+			lineShorts.add(this.class.shorten(line));
+		};
+		lines.addFirst(line);
+		lineShorts.addFirst(this.class.shorten(line));
+		keys.add(authID);
+	} 
+		// simple editing
+	removeAt { |index| 
+		if (index.isKindOf(Collection)) { index.sort.reverseDo (this.removeAt(_)); ^this };
+		
+		if (index < lines.size) { 	// ignore out of range indices, keep lists synced.
+			[lines, lineShorts].do(_.removeAt(index));		};
+		hasMovedOn = true;
+	}
+	removeLast { this.removeAt(lines.size - 1) }
+	keep { |num| 
+		lines = lines.keep(num); 
+		lineShorts = lineShorts.keep(num); 
+		hasMovedOn = true;
+	}
+	drop { |num| 
+		lines = lines.drop(num); 
+		lineShorts = lineShorts.drop(num); 
+		hasMovedOn = true;
+	}
+		// loading from and saving to files 
+	*saveCS { |path, forward=false| current.saveCS(path, forward) }
+	saveCS { |path, forward=false| 
+		var file, lines2write; 
+	
+		lines2write = if (forward) { lines.reverse } { lines };
+		path = path ?? { saveFolder ++ "history_" ++ Date.getDate.stamp ++ ".scd" };
+		file = File(path.standardizePath, "w");
+		file.write(lines2write.asCompileString);
+		inform("History written to:" + path);
+		file.close;
+	}
+	
+	*loadCS { |path, forward=false| current.loadCS(path, forward) }
+	
+	loadCS { |path, forward| 
+		var file, ll;
+		protect {
+			file = File(path.standardizePath, "r");
+			ll = file.readAllString;
+		} {
+			file.close;
+		};
+		ll !? { 
+			ll = ll.compile.value; 
+			if (forward) { ll = ll.reverse };
+			this.lines_(ll) 
+		};
+	}	
+	
+			// network setups support
+	*network { }
 	*localOn { recordLocally = true }
 	*localOff { recordLocally = false }
 	
-	*network { }
-	
-	*makeWin { 
-		var sys = GUI.scheme;						////
-		var closebut, v, f, font;
-		
-		font = sys.font.new("Osaka", 9);				////
-		w = sys.window.new("History", bounds).front;	////
-	//	w.view.decorator = FlowLayout(w, w.bounds.moveTo(0,0), 0@0, 0@0);
-		
-		startbut = sys.button.new(w, Rect(0, 0, 80, 20)) ////
-			.states_([ ["start"], ["stop"]])
-			.action_({ |btn|
-				switch(btn.value, 
-					0, { this.stop }, 
-					1, { this.start }
-				);
-			});
-
-		pop = sys.popUpMenu.new(w, Rect(84,0,80,20))	////
-			.items_([\sameDoc, \newDoc])
-			.value_([\sameDoc, \newDoc].indexOf(docFlag))
-			.action_({ |pop| docFlag = [\sameDoc, \newDoc][pop.value] });
-		
-		closebut = sys.button.new(w, Rect(168, 0, 80, 20)) ////
-			.states_([["closeAll"]]).action_({ 
-				Document.allDocuments.do { |doc| if (doc.title == title) { doc.close } };
-			});
-		
-	//	w.view.decorator.nextLine; 
-		v = sys.listView.new(w,bounds.moveTo(0, 20))	////
-			.font_(font)
-			.items_([])
-			.resize_(5)							////
-			.background_(Color.grey(0.62))
-			.action_({ |entry| 
-				var val = entry.value; 
-				this.postDoc(val, docFlag) 
-			})
-			.enterKeyAction_({ History.doc.front });
-		hasMovedOn = true;
-		
-		SkipJack({ 
-			if (hasMovedOn) { 
-				v.items_(lineShorts.array).value_(0);
-			//	if (this.hasMovedOn, { v.value_(0) });
-				startbut.value_(this.started.binaryValue).refresh;
-				hasMovedOn = false;
-			};
-		}, 1, { w.isClosed }, "histwin");
-		
-		^w;
-	}
-		
-	*postDoc { |index, str| 
-		var line = lines[index]; 
-		if (line.isNil) { "no history yet!".inform; ^this };
-		this.findDoc; 
-		doc.string_(line[2]).front;
-		w.front;
-	}
-	*findDoc {
-		if (doc.isNil or: { Document.allDocuments.includes(doc).not } or: { pop.value == 1 }) { 
-			doc = Document(title).bounds_(Rect(300, 500, 300, 100));
-		};	
-	} 
-	
-	*storyString {
-		var alone = lines.flop[1].as(IdentitySet).size == 1;
+			// string formatting utils
+	storyString { 
+		var alone = lines.collectAs({ |line| line[1] }, IdentitySet).size == 1;
 		var str, d, date = Date.getDate;
 		
 		str = "///////////////////////////////////////////////////\n";
@@ -155,7 +225,7 @@ History { 		// adc 2006, Birmingham.
 			#now, id, cmdLine = x;
 				str = str ++ 
 				format("// - % - % \n", 
-					this.formatTime(now), 
+					this.class.formatTime(now), 
 					if(alone) { "" } { "(" ++ id ++ ")" }
 				);
 			if(cmdLine.find("\n").notNil and: { cmdLine[0] != $( }) {
@@ -165,16 +235,12 @@ History { 		// adc 2006, Birmingham.
 		};
 		^str;
 	}
+
+	*saveStory { |path| current.saveStory(path) }
 	
-	*document { arg title="";
-		var docTitle = title ++ Date.getDate.format("%Y-%d-%e-%Hh%m-History");
-		Document.new(docTitle, this.storyString)
-			.path_(docTitle); // don't lose title.
-	}
-	
-	*saveStory { |path| 
+	saveStory { |path| 
 		var file;
-		path = path ?? { saveFolder ++ "History_" ++ Date.getDate.stamp ++ ".sc" };
+		path = path ?? { saveFolder ++ "History_" ++ Date.getDate.stamp ++ ".scd" };
 		
 		file = File(path.standardizePath, "w");
 		file.write(this.storyString);
@@ -190,6 +256,35 @@ History { 		// adc 2006, Birmingham.
 			s = val;
 			^"%:%:%".format(h, m, s.round(0.01))
 	}
+	*unformatTime { arg str;
+			var h, m, s; 
+			#h, m, s = str.split($:).collect(_.interpret);
+			^h * 60 + m * 60 + s
+	}
+
+	*prettyString { |str| 
+		// remove returns at beginning or end of the string
+		var startIndex = str.detectIndex({ |ch| ch != $\n });
+		var endChar = str.last; 
+		var lastCharIndex = str.lastIndex; 
+		while { endChar == $\n } { 
+			lastCharIndex = lastCharIndex - 1; 
+			endChar = str[lastCharIndex];
+		};
+		// [startIndex, lastCharIndex].postln;
+		^str.copyRange(startIndex, lastCharIndex);
+	}
+
+		// convert to shortline for gui
+	*shorten { |line, maxLength| 
+		var  time, id, lineStr, head, length; 
+		#time, id, lineStr = line;
+		head = (this.formatTime(time) + "-" + id + "- "); 
+		maxLength = maxLength ? maxShortLength;
+		^head ++ lineStr.keep(maxLength  - head.size);
+	}
+
+		// not used yet
 	*getTimeFromString { arg str;
 		var ts, i;
 		if(str.beginsWith("// - ").not) { ^nil };
@@ -198,11 +293,13 @@ History { 		// adc 2006, Birmingham.
 		ts = str[5..i+2].postln.split($:).collect(_.asFloat);
 		^ts[0] * (60 * 60) + (ts[1] * 60) + ts[2]
 	}
+		// not used yet
 	*asLines { arg str;
 		var indices;
 		indices = str.findAll("// -");
 		^str.clumps(indices.differentiate)
 	}
+	
 	/*
 	// problem: interpreter cancels backslashes etc.
 	*stream { arg str, func;
@@ -238,86 +335,157 @@ History { 		// adc 2006, Birmingham.
 	
 	}
 	*/	
-	*prettyString { |str| 
-		// remove returns at beginning or end of the string
-		var startIndex = str.detectIndex({ |ch| ch != $\n });
-		var endChar = str.last; 
-		var lastCharIndex = str.lastIndex; 
-		while { endChar == $\n } { 
-			lastCharIndex = lastCharIndex - 1; 
-			endChar = str[lastCharIndex];
-		};
-		// [startIndex, lastCharIndex].postln;
-		^str.copyRange(startIndex, lastCharIndex);
-	}
-	
-	*enter { |lineStr, id=\me|
-		var dateNow, now; 
-		lineStr = this.prettyString(lineStr); 
 		
-		if (lineStr.isEmpty) { ^this };	// nothing worth remembering
-		
-		if (lines.isEmpty) { 			// get startTime if first entry
-			dateNow = Date.getDate;
-			startTimeStamp = dateNow.stamp;
-			date = dateNow.asString;
-			time0 = Main.elapsedTime;
-		}; 
-		hasMovedOn = true;
-		now = (Main.elapsedTime - time0);
-		
-		lines.addFirst([ now, id, lineStr ]);
-		lineShorts.addFirst( "" + now.round(displayTime) + "-" + id + "-" + lineStr.keep(50) );
-	}
-	
-	*removeAt { |index| 
-		if (index.isKindOf(Collection)) { index.do (this.removeAt(_)); ^this };
-		
-		if (index < lines.size) { 		// ignore out of range indices, keep lists synced.
-			[lines, lineShorts].do(_.removeAt(index));		};
-		hasMovedOn = true;
-	}
-	*keep { |num| 
-		lines = lines.keep(num); 
-		lineShorts = lineShorts.keep(num); 
-		hasMovedOn = true;
-	}
-	*drop { |num| 
-		lines = lines.drop(num); 
-		lineShorts = lineShorts.drop(num); 
-		hasMovedOn = true;
-	}
-	*removeLast { this.removeAt(lines.size - 1) }
-	
-	*saveCS { |path, forward=false| 
-		var file, lines2write; 
-	
-		lines2write = if (forward) { lines.reverse } { lines };
-		path = path ?? { saveFolder ++ "history_" ++ this.startTimeStamp ++ ".sc" };
-		file = File(path.standardizePath,"w");
-		file.write(lines2write.asCompileString);
-		file.close;
-	}
-	
-	*loadCS { |path| 
-		var file, ll;
-		protect {
-			file = File(path.standardizePath, "r");
-			ll = file.readAllString;
-		} {
-			file.close;
-		};
-		ll !? { lines = ll.compile.value };	
-	}
-	
-	*play { |start=0, end, verbose=true|	// line numbers; 
-									// starting from past 0 may not work.
-		start = start.clip(0, lines.lastIndex); 
-		end = (end ? lines.lastIndex).clip(0, lines.lastIndex); 
-		
-		player.set(\startLine, start, \endLine, end, \verbose, verbose); 
-		player.play;
-	}
-	
 	*cmdPeriod { this.enter("// thisProcess.cmdPeriod"); }
+
+				// log file support - global only
+	*makeLogFolder { 
+		var supportDir = thisProcess.platform.userAppSupportDir; 
+		var specialFolder = supportDir ++ "/HistoryLogs";
+		
+		if (pathMatch(supportDir).isEmpty) { logFolder = ""; ^this };
+		
+		if (pathMatch(specialFolder).isEmpty) { 
+			unixCmd("mkdir \"" ++ specialFolder ++ "\""); 
+			if (pathMatch(specialFolder).isEmpty) { 
+				logFolder = supportDir; // if not there, put it in flat
+			}
+		} { 
+			logFolder = specialFolder;
+		}; 
+		
+		("// History.logFolder:" +  logFolder).postln;
+	}
+	
+	*showLogFolder { unixCmd("open \"" ++ logFolder ++ "\"") }
+	
+	*checkLogStarted { 
+		var isOpen = logFile.isOpen; 
+		^if (isOpen.not) { this.startLog; ^logFile.isOpen } { true }; 
+	}
+	
+	*startLog { 
+		// open file with current date
+		logPath = logFolder ++ "/log_History_" ++ Date.getDate.stamp ++ ".scd";
+		logFile = File(logPath, "w"); 
+		if (logFile.isOpen) { 
+			logFile.write(format("// History, as it was on %.\n\n", date) ++ "[\n" /*]*/ );
+			"// History.logFile opened.".inform;
+		} { 
+			"// History: could not open logFile!".warn;
+		};
+	}
+	
+	*addToLog { |line| 
+		// add a single line
+		if (this.checkLogStarted) { 
+			if (logFile.write(line.asCompileString ++ ",\n").not) { 
+				"// History: could not write to logFile!".warn;
+			}
+		} { 	
+			"// History: logFile not open!".warn 
+		};
+	}
+	
+	*endLog {
+		// close file
+		try { logFile.write( /*[*/ "];") };
+		try { logFile.close; "// History.logFile closed.".inform; };
+	}
+	
+	*showLogFile { Document.open(this.logPath) }
+	
+	matchKeys { |key| 
+		var indices = []; 
+		if (key == \all) { ^(0..lines.size - 1) }; 
+		if (key.isNil) { ^nil }; 
+		
+			// list of keys: 
+		if (key.isArray) { 
+			lines.do { |line, i| if (key.includes(line[1])) { indices = indices.add(i) } } 
+		} {
+			lines.do { |line, i| if (line[1] == key) { indices = indices.add(i) } }
+		}; 
+		^indices
+	} 
+
+	matchString { |str, ignoreCase=true| 
+		var indices = []; 
+		if (str.notNil and: (str != "")) { 
+			lines.do { |line, i| if (line[2].find(str, ignoreCase).notNil) { indices = indices.add(i) } };
+			^indices
+		} { ^nil }
+	}
+	
+	indicesFor { |keys, string=""| 
+		var indicesK, indicesS, indicesFound; 
+		indicesK = this.matchKeys(keys); 
+		indicesS = this.matchString(string); 	
+	//	[\indicesK, indicesK, \indicesS, indicesS].postln; 
+		
+		indicesFound = if (indicesK.notNil) { 	
+			if (indicesS.notNil) { indicesK.sect(indicesS) } { indicesK } 
+		} { 
+			if (indicesS.notNil) { indicesS } { (0.. lines.size - 1) }
+		};
+		^indicesFound
+	}
+		
+	*makeWin { |where| ^current.makeWin(where) }
+	
+	makeWin { |where| ^HistoryGui(this, where) }
+	
+	*document { current.document } 
+	
+	document { arg title="";	// platform dependent ...
+		var docTitle = title ++ Date.getDate.format("%Y-%d-%e-%Hh%m-History");
+		Document.new(docTitle, this.storyString)
+			.path_(docTitle); // don't lose title.
+	} 
+	*readFromDoc { |path| 
+		var file, line, count = 0, lineStrings = [], comLineIndices = [], splitPoints; 
+		file = File(path.standardizePath, "r"); 
+		
+		if (file.isOpen.not) { 
+			("History: file" + path + "not found!").warn; 
+			^false 
+		};
+			// read all lines, keep indices of commentlines
+		while { line = file.getLine; line.notNil } { 
+			lineStrings = lineStrings.add(line);
+			if (line.beginsWith("// - ")) { 
+				splitPoints = line.findAll(" - ");
+				comLineIndices = comLineIndices.add([count] ++ splitPoints); 
+			};
+			count = count + 1;
+		};
+		
+		^comLineIndices.collect { |list, i| 
+			var lineIndex, sep1, sep2, nextComIndex; 
+			var comLine, timeStr, time, key, codeStr;
+			#lineIndex, sep1, sep2 = list;
+			
+			comLine = lineStrings[lineIndex];
+			timeStr = comLine.copyRange(sep1 + 3, sep2 - 1);
+			time = History.unformatTime(timeStr);
+			
+			key = comLine.copyToEnd(sep2 + 3).select(_.isAlphaNum).asSymbol;
+			nextComIndex = (comLineIndices[i + 1] ? [lineStrings.size]).first;
+			
+			codeStr = lineStrings.copyRange(lineIndex + 1, nextComIndex - 2).join;
+			
+			[time, key, codeStr];
+		};
+	}
+		// load file saved with saveStory
+	*loadStory { |path| current.loadStory(path) }
+	
+	loadStory { |path| 
+		var lines = this.class.readFromDoc(path); 
+		if (lines == false) { 
+			warn("History: no lines, so could not be loaded.") 
+		} {
+			this.lines_(lines.reverse) 
+		}
+	}
 }
