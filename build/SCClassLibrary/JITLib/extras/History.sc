@@ -3,7 +3,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	classvar <>forwardFunc, <date, <startTimeStamp, <time0, listenFunc;
 	classvar <>verbose = false, <>recordLocally = true, <started=false;
 
-	classvar <>saveFolder = "~/Desktop/", <logFolder, <logFile, <logPath, <keepsLog = false;
+	classvar <>saveFolder = "~/Desktop/", <logFolder, <logFile, <logPath, <>keepsLog = true;
 	classvar <>current, <>maxShortLength=65;
 		
 	var <lines, <lineShorts, <keys, <player, <hasMovedOn;
@@ -71,6 +71,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		
 		this.hasMovedOn_(true);
 		now = (Main.elapsedTime - time0);
+		if (now < 1e-04) { now = 0 }; // on start 
 		
 		if (keepsLog) { this.addToLog([now, id, lineStr]) };
 		current.addLine(now, id, lineStr); 
@@ -152,9 +153,10 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (lines.isEmpty) { 
 			lines.add(line);
 			lineShorts.add(this.class.shorten(line));
+		} { 
+			lines.addFirst(line);
+			lineShorts.addFirst(this.class.shorten(line));
 		};
-		lines.addFirst(line);
-		lineShorts.addFirst(this.class.shorten(line));
 		keys.add(authID);
 	} 
 		// simple editing
@@ -191,7 +193,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	
 	*loadCS { |path, forward=false| current.loadCS(path, forward) }
 	
-	loadCS { |path, forward| 
+	loadCS { |path, forward=false| 
 		var file, ll;
 		protect {
 			file = File(path.standardizePath, "r");
@@ -360,16 +362,22 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*showLogFolder { unixCmd("open \"" ++ logFolder ++ "\"") }
 	
 	*checkLogStarted { 
-		var isOpen = logFile.isOpen; 
+		
+		var isOpen; 
+		if (logFile.isNil) { this.startLog };
+		
+		isOpen = logFile.isOpen; 
 		^if (isOpen.not) { this.startLog; ^logFile.isOpen } { true }; 
 	}
 	
 	*startLog { 
+		var logdate = Date.getDate;
 		// open file with current date
-		logPath = logFolder ++ "/log_History_" ++ Date.getDate.stamp ++ ".scd";
+		logPath = logFolder ++ "/log_History_" ++ logdate.stamp ++ ".scd";
 		logFile = File(logPath, "w"); 
 		if (logFile.isOpen) { 
-			logFile.write(format("// History, as it was on %.\n\n", date) ++ "[\n" /*]*/ );
+			logFile.write(format("// History, as it was on %.\n\n", 
+				logdate.asString) ++ "[\n" /*]*/ );
 			"// History.logFile opened.".inform;
 		} { 
 			"// History: could not open logFile!".warn;
@@ -379,11 +387,13 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*addToLog { |line| 
 		// add a single line
 		if (this.checkLogStarted) { 
-			if (logFile.write(line.asCompileString ++ ",\n").not) { 
+			try { 
+				logFile.write(line.asCompileString ++ ",\n") 
+			} { 
 				"// History: could not write to logFile!".warn;
-			}
-		} { 	
-			"// History: logFile not open!".warn 
+			} 
+		} {
+			warn("// History: logFile is not open!"); 
 		};
 	}
 	
@@ -438,7 +448,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*document { current.document } 
 	
 	document { arg title="";	// platform dependent ...
-		var docTitle = title ++ Date.getDate.format("%Y-%d-%e-%Hh%m-History");
+		var docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
 		Document.new(docTitle, this.storyString)
 			.path_(docTitle); // don't lose title.
 	} 
@@ -477,15 +487,27 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			[time, key, codeStr];
 		};
 	}
+	*checkPath { |path| 
+		var ext = path.splitext[1];
+		if ([\sc, \scd, \txt, \nil].includes(ext.asSymbol)) {
+			^true
+		} { 
+			warn("History: file format" + ext + "for story files likely not supported!				Please use .txt, .scd, or other text format.");
+			^false
+		};
+	}
 		// load file saved with saveStory
 	*loadStory { |path| current.loadStory(path) }
 	
 	loadStory { |path| 
-		var lines = this.class.readFromDoc(path); 
-		if (lines == false) { 
-			warn("History: no lines, so could not be loaded.") 
-		} {
-			this.lines_(lines.reverse) 
-		}
+		var lines; 
+		if (this.class.checkPath(path)) {
+			lines = this.class.readFromDoc(path); 
+			if (lines == false) { 
+				warn("History: no lines, so could not be loaded.") 
+			} {
+				this.lines_(lines.reverse) 
+			}
+		};
 	}
 }
