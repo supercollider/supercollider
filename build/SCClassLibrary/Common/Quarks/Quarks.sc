@@ -39,7 +39,7 @@ Quarks
 		allInstances = List(1);
 		known = Dictionary[
 			"https://quarks.svn.sourceforge.net/svnroot/quarks" -> (Platform.userAppSupportDir ++ "/quarks"),
-			"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir" -> (Platform.userAppSupportDir ++ "/quarks-sonenvir")
+			"https://svn.sonenvir.at/svnroot/SonEnvir/trunk/src/quarks-sonenvir" -> (Platform.userAppSupportDir ++ "/quarks-sonenvir")
 			];
 	}
 	*forUrl { |url|
