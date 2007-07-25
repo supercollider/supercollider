@@ -89,6 +89,7 @@ HistoryDispatch : EnvirDispatch {
 		};
 		^nil
 	}
+	
 	findTimeIndex { arg key, time;
 		var hist = histories[key];
 		if(hist.isNil or: { hist.isEmpty }) { ^nil };
@@ -110,6 +111,27 @@ HistoryDispatch : EnvirDispatch {
 			if(hist[i] == time) { ^i };
 		};
 		^nil
+	}
+	
+	getPairsForTime { arg time;
+		var res;
+		histories.keys.do { |key|
+			if(key.notNil) {
+				res = res.add([key, this.getObjectForTime(key, time)])
+			}
+		};
+		^res
+	}
+	
+	getObjectForTime { arg key, time;
+		var index, timeIndex;
+		var hist = histories[key];
+		
+		if(hist.isNil) { ^false };
+		index = this.findObjectTimeIndex(key, envir.envir.at(key).source);
+		timeIndex = this.findTimeIndex(key, time);
+		// [index, timeIndex, hist[timeIndex + 1]].postln;
+		^if(timeIndex == -1) { nil } { hist[timeIndex + 1] }
 	}
 	
 	// printing and saving.
@@ -172,23 +194,20 @@ HistoryDispatch : EnvirDispatch {
 		Document.new(docTitle, this.storyString)
 			.path_(docTitle); // don't lose title.
 	}
+	
+	
 		
 	// returns whether a change happened
+	
 	prGotoTime { arg key, time;
-		var index, timeIndex;
-		var hist = histories[key];
-		
-		if(hist.isNil) { ^false };
-		index = this.findObjectTimeIndex(key, envir.envir.at(key).source);
-		timeIndex = this.findTimeIndex(key, time);
-		// [index, timeIndex, hist[timeIndex + 1]].postln;
-		
-		if(timeIndex == -1) { envir.localPut(key, nil); ^false };
-		if(timeIndex != index) {
-			envir.localPut(key, hist[timeIndex + 1]);
-			^true;
+		var obj;
+		obj = this.getObjectForTime(key, time);
+		if(obj !== envir.envir.at(key).source) {
+			envir.localPut(key, obj);
+			^obj !== nil
+		} {
+			^false
 		};
-		^false
 	}
 
 }
