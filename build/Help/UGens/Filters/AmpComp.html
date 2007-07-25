@@ -5,24 +5,24 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0025b2}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
 span.s3 {font: 12.0px Helvetica}
-span.s4 {color: #0000ff}
-span.s5 {color: #0019b7}
+span.s4 {color: #0024f8}
+span.s5 {color: #0025b2}
 span.s6 {color: #000000}
 span.s7 {color: #606060}
-span.s8 {color: #326f17}
+span.s8 {color: #416d1f}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -36,6 +36,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>Higher frequencies are normally perceived as louder, which AmpComp compensates.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>see also <a href="AmpCompA.html"><span class="s4">AmpCompA</span></a></p>
 <p class="p2"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>*ar(freq, root, exp)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>*kr(freq, root, exp)</b></p>
@@ -47,8 +48,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><b>exp</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exponent: how steep the curve decreases for increasing freq (see plots below)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>default value 0.3333</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>Note that for frequencies <b>very much smaller than root </b>the amplitudes can become very high.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>In this case limit the freq with <b>freq.max(minval)</b>, or use AmpCompA.</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p1">see also <a href="AmpCompA.html"><span class="s4">AmpCompA</span></a></p>
+<p class="p2"><br></p>
 <p class="p4"><br></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
