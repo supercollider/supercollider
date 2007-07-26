@@ -5,23 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #92251d}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #86281f}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-span.s1 {color: #0024ae}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+span.s1 {color: #002ca9}
 span.s2 {color: #606060}
 span.s3 {color: #000000}
-span.s4 {color: #456c23}
-span.s5 {color: #92251d}
-span.s6 {color: #0000bf}
-span.s7 {color: #007300}
+span.s4 {color: #4e6a29}
+span.s5 {color: #86281f}
+span.s6 {color: #001bb9}
+span.s7 {color: #2c7014}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -53,8 +53,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">(</p>
 <p class="p4">s = Server.local;</p>
 <p class="p4"><span class="s1">SynthDef</span>(<span class="s2">"help-Control"</span>, { <span class="s1">arg</span> out=0,i_freq;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> klank, n, harm, amp, ring;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>n = 9;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> klank, harm, amp, ring;</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// harmonics</p>
 <p class="p4"><span class="Apple-tab-span">	</span>harm = <span class="s1">Control</span>.names([<span class="s4">\harm</span>]).ir(<span class="s1">Array</span>.series(4,1,1).postln);</p>
@@ -145,8 +144,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p4">(</p>
 <p class="p7"><span class="s6">SynthDef</span><span class="s3">(</span>"help-Control-DynKlank"<span class="s3">, { </span><span class="s6">arg</span><span class="s3"> out=0, freq;</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s6">var</span> klank, n, harm, amp, ring;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>n = 9;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s6">var</span> klank, harm, amp, ring;</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// harmonics</p>
 <p class="p4"><span class="Apple-tab-span">	</span>harm = <span class="s6">Control</span>.names(<span class="s7">\harm</span>).kr(<span class="s6">Array</span>.series(4,1,1));</p>
 <p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// amplitudes</p>
