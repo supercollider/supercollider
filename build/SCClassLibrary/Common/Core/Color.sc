@@ -63,11 +63,11 @@ Color {
 	}
 	divide { arg aColor, opacity=1.0;
 		var vals = aColor.asArray, d=0.0001 ! 3;
-		^Color.fromArray(blend(vals, (vals / (this.asArray + d)).min(1.0), opacity) ++ alpha)
+		^Color.fromArray(blend(vals, ((this.asArray + d) / vals).min(1.0), opacity) ++ alpha)
 	}
 	subtract { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, (vals - this.asArray).max(0.0), opacity) ++ alpha)
+		^Color.fromArray(blend(vals, (this.asArray - vals).max(0.0), opacity) ++ alpha)
 	}
 	add { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
