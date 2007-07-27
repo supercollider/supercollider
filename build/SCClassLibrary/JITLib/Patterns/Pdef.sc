@@ -690,7 +690,7 @@ Pdict : Pattern {
 		var keyStream, key;
 		keyStream = which.asStream;
 		repeats.value.do({
-			key = keyStream.next;
+			key = keyStream.next(inval);
 			if(key.isNil) { ^inval };
 			inval = (dict.at(key) ? default).embedInStream(inval);
 		});
