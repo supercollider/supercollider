@@ -16,12 +16,18 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 6.0px Monaco; min-height: 9.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 span.s1 {text-decoration: underline}
-span.s2 {color: #0019b7}
+span.s2 {color: #001ebb}
 span.s3 {font: 12.0px Helvetica}
-span.s4 {color: #a71e12}
-span.s5 {color: #0000ff}
+span.s4 {color: #ab1e05}
+span.s5 {color: #0016ff}
+span.s6 {text-decoration: underline ; color: #000000}
+span.s7 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -273,7 +279,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">[1, 0, 0, 0].convertDigits(2);</p>
 <p class="p5">[1, 0, 0, 0].convertDigits(3);</p>
 <p class="p7"><br></p>
+<p class="p10"><b>hammingDistance(that)</b></p>
+<p class="p11"><br></p>
+<p class="p10">Returns the count of array elements that are not equal in identical positions. <span class="s6">http://en.wikipedia.org/wiki/Hamming_distance</span></p>
+<p class="p2"><br></p>
+<p class="p3">The collections are not wrapped - if one array is shorter than the other, the difference in size should be included in the count.</p>
 <p class="p7"><br></p>
+<p class="p12">[0, 0, 0, 1, 1, 1, 0, 1, 0, 0].hammingDistance([0, 0, 1, 1, 0, 0, 0, 0, 1, 1])</p>
+<p class="p13">"SuperMan"<span class="s7">.hammingDistance(</span>"SuperCollider"<span class="s7">);</span></p>
 <p class="p7"><br></p>
 <p class="p4"><b><span class="s1">Math Support</span></b></p>
 <p class="p2"><br></p>
@@ -298,7 +311,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">[1, 2, 3, 4].reciprocal;</p>
 <p class="p2"><br></p>
 <p class="p4"><b><span class="s1">Binary Messages:</span></b></p>
-<p class="p10"><br></p>
+<p class="p14"><br></p>
 <p class="p3">All of the following messages send the message performBinaryOp to the receiver with the</p>
 <p class="p3">binary message selector and the second operand as arguments.</p>
 <p class="p2"><br></p>

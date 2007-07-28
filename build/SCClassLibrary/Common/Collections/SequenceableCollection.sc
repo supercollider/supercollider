@@ -435,7 +435,16 @@ SequenceableCollection : Collection {
 			if(x >= base) { Error("digit too large for base").throw };
 			base ** (lastIndex - i) * x 
 		}.asInteger
-			
+	}
+
+	hammingDistance { |that|
+			// if this is shorter than that, size difference should be included
+			// (if this is longer, the do loop will take care of it)
+		var	count = (that.size - this.size).max(0);
+		this.do({ |elem, i|
+			if(elem != that[i]) { count = count + 1 };
+		});
+		^count
 	}
 		
 	// pitch operations
@@ -593,7 +602,7 @@ SequenceableCollection : Collection {
 	bitAnd { arg aNumber, adverb; ^this.performBinaryOp('bitAnd', aNumber, adverb) }
 	bitOr { arg aNumber, adverb; ^this.performBinaryOp('bitOr', aNumber, adverb) }
 	bitXor { arg aNumber, adverb; ^this.performBinaryOp('bitXor', aNumber, adverb) }
-	hammingDistance { arg aNumber, adverb;
+	bitHammingDistance { arg aNumber, adverb;
 		^this.performBinaryOp('hammingDistance', aNumber, adverb)
 	}
 	

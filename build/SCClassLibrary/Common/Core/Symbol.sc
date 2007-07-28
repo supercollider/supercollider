@@ -153,7 +153,8 @@ Symbol {
 	bitAnd { ^this }
 	bitOr { ^this }
 	bitXor { ^this }	
-	hammingDistance { ^this }
+	bitHammingDistance { ^this }
+	hammingDistance { |that| ^this.asString.hammingDistance(that.asString) }
 	lcm { ^this }
 	gcd { ^this }
 	round { ^this }
