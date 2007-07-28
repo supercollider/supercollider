@@ -153,6 +153,7 @@ Symbol {
 	bitAnd { ^this }
 	bitOr { ^this }
 	bitXor { ^this }	
+	hammingDistance { ^this }
 	lcm { ^this }
 	gcd { ^this }
 	round { ^this }

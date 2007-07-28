@@ -110,7 +110,8 @@ AbstractFunction {
 	
 	bitAnd { arg function, adverb; ^this.composeBinaryOp('bitAnd', function, adverb) }
 	bitOr { arg function, adverb; ^this.composeBinaryOp('bitOr', function, adverb) }
-	bitXor { arg function, adverb; ^this.composeBinaryOp('bitXor', function, adverb) }	
+	bitXor { arg function, adverb; ^this.composeBinaryOp('bitXor', function, adverb) }	hammingDistance { arg function, adverb; ^this.composeBinaryOp('hammingDistance', function, adverb) }
+	
 	lcm { arg function, adverb; ^this.composeBinaryOp('lcm', function, adverb) }
 	gcd { arg function, adverb; ^this.composeBinaryOp('gcd', function, adverb) }
 	round { arg function=1, adverb; ^this.composeBinaryOp('round', function, adverb) }

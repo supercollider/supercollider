@@ -592,7 +592,11 @@ SequenceableCollection : Collection {
 
 	bitAnd { arg aNumber, adverb; ^this.performBinaryOp('bitAnd', aNumber, adverb) }
 	bitOr { arg aNumber, adverb; ^this.performBinaryOp('bitOr', aNumber, adverb) }
-	bitXor { arg aNumber, adverb; ^this.performBinaryOp('bitXor', aNumber, adverb) }	
+	bitXor { arg aNumber, adverb; ^this.performBinaryOp('bitXor', aNumber, adverb) }
+	hammingDistance { arg aNumber, adverb;
+		^this.performBinaryOp('hammingDistance', aNumber, adverb)
+	}
+	
 	lcm { arg aNumber, adverb; ^this.performBinaryOp('lcm', aNumber, adverb) }
 	gcd { arg aNumber, adverb; ^this.performBinaryOp('gcd', aNumber, adverb) }
 	round { arg aNumber=1, adverb; ^this.performBinaryOp('round', aNumber, adverb) }

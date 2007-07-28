@@ -109,6 +109,27 @@ int prSetBit(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prHammingDistance(VMGlobals *g, int numArgsPushed);
+int prHammingDistance(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	
+	int	aInt, bInt, count = 0, i, mask = 1;
+	int err = slotIntVal(b, &bInt);
+	if(err) return err;
+	err = slotIntVal(a, &aInt);
+	if(err) return err;
+	
+	for(i = 0; i < 32; i++) {
+		if((aInt & mask) != (bInt & mask)) count = count + 1;
+		mask = mask << 1;
+	}
+	a->ui = count;
+
+	return errNone;
+}
+
 void initBitPrimitives();
 void initBitPrimitives()
 {
@@ -124,6 +145,7 @@ void initBitPrimitives()
 	definePrimitive(base, index++, "_Log2Ceil", prLog2Ceil, 1, 0);
 	definePrimitive(base, index++, "_SetBit", prSetBit, 3, 0);
 	definePrimitive(base, index++, "_BinaryGrayCode", prBinaryGrayCode, 1, 0);
+	definePrimitive(base, index++, "_HammingDistance", prHammingDistance, 2, 0);
 
 }
 
