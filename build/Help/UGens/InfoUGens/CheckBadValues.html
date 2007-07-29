@@ -12,14 +12,13 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #c40000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #0000bf}
-span.s4 {color: #bf0000}
-span.s5 {color: #007300}
+span.s3 {color: #0010c4}
+span.s4 {color: #c40000}
+span.s5 {color: #007200}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -32,27 +31,32 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">This UGen tests for infinity, NaN (not a number), and denormals. If one of these is found, it posts a warning. Its output is as follows: 0 = a normal float, 1 = NaN, 2 = infinity, and 3 = a denormal.</p>
 <p class="p3"><b>in</b> - the UGen whose output is to be tested</p>
 <p class="p3"><b>id</b> - an id number to identify this UGen. The default is 0.</p>
-<p class="p3"><b>post</b> - if non-zero, post a warning when the input is not normal, if zero, don't post.</p>
+<p class="p3"><b>post</b> - One of three post modes:</p>
+<p class="p3"><span class="Apple-tab-span">	</span>0 = no posting;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>1 = post a line for every bad value;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>2 = post a line only when the floating-point classification changes (e.g., normal -&gt; NaN and vice versa)</p>
+<p class="p4"><br></p>
+<p class="p3">The default post mode is 2. Post mode 1 is retained for backward compatibility; be aware that it generates a large amount of output.</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p6"><span class="s2">{ </span><span class="s3">CheckBadValues</span><span class="s2">.kr(</span><span class="s3">SinOsc</span><span class="s2">.ar); 0}.play </span>// nothing wrong here</p>
-<p class="p7"><br></p>
-<p class="p8">{ <span class="s3">CheckBadValues</span>.kr(1 / 0, 1).poll; 0 }.play <span class="s4">// check infinity</span></p>
-<p class="p7"><br></p>
-<p class="p8">x = { <span class="s3">arg</span> test = -1; <span class="s3">CheckBadValues</span>.kr(test); 0 }.play <span class="s4">// check NaN</span></p>
-<p class="p8">x.set(<span class="s5">\test</span>, -1.sqrt);</p>
-<p class="p7"><br></p>
+<p class="p5"><br></p>
+<p class="p7">{ <span class="s3">CheckBadValues</span>.kr(1 / 0, 1).poll; 0 }.play <span class="s4">// check infinity</span></p>
+<p class="p5"><br></p>
+<p class="p7">x = { <span class="s3">arg</span> test = -1; <span class="s3">CheckBadValues</span>.kr(test); 0 }.play <span class="s4">// check NaN</span></p>
+<p class="p7">x.set(<span class="s5">\test</span>, -1.sqrt);</p>
+<p class="p5"><br></p>
 <p class="p6">// don't post, but do something with the output</p>
-<p class="p8">(</p>
-<p class="p8">x = { <span class="s3">arg</span> freq = 440;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s3">var</span> good;<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>good = <span class="s3">BinaryOpUGen</span>(<span class="s5">'=='</span>, <span class="s3">CheckBadValues</span>.kr(freq, 0, 0), 0);</p>
+<p class="p7">(</p>
+<p class="p7">x = { <span class="s3">arg</span> freq = 440;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> good;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>good = <span class="s3">BinaryOpUGen</span>(<span class="s5">'=='</span>, <span class="s3">CheckBadValues</span>.kr(freq, 0, 0), 0);</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s3">SinOsc</span><span class="s2">.ar(freq, 0, 0.1) * good </span>// silence the output if freq is bad</p>
-<p class="p8">}.play;</p>
-<p class="p8">)</p>
-<p class="p8">x.set(<span class="s5">\freq</span>, -1.sqrt);</p>
-<p class="p7"><br></p>
+<p class="p7">}.play;</p>
+<p class="p7">)</p>
+<p class="p7">x.set(<span class="s5">\freq</span>, -1.sqrt);</p>
+<p class="p5"><br></p>
 <p class="p6">// the UGen method checkBadValues passes through the input for quick testing</p>
-<p class="p8">{ <span class="s3">SinOsc</span>.ar(440, 0, 0.1).checkBadValues }.play</p>
+<p class="p7">{ <span class="s3">SinOsc</span>.ar(440, 0, 0.1).checkBadValues }.play</p>
 </body>
 </html>

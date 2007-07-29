@@ -3,7 +3,8 @@
  *  Plugins
  *
  *  Created by Scott Wilson on 22/06/2007.
- * 
+ *  Modified by James Harkins on 28/07/2007.
+ *
  *
  */
 
@@ -54,7 +55,10 @@ int fpclassify(float x) {
 static InterfaceTable *ft;
 
 
-struct CheckBadValues : public Unit {};
+struct CheckBadValues : public Unit {
+	long	sameCount;
+	int		prevclass;
+};
 
 // declare unit generator functions 
 extern "C"
@@ -63,13 +67,15 @@ extern "C"
 	
 	void CheckBadValues_Ctor(CheckBadValues* unit);
 	void CheckBadValues_next(CheckBadValues* unit, int inNumSamples);
-	
+	char *CheckBadValues_fpclassString(int fpclass);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void CheckBadValues_Ctor(CheckBadValues* unit)
-{	
+{
+	unit->prevclass = FP_NORMAL;
+	unit->sameCount = 0;
 	SETCALC(CheckBadValues_next);
 }
 
@@ -81,34 +87,100 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 	float *in = ZIN(0);
 	float *out = ZOUT(0);
 	float id = ZIN0(1);
-	float post = ZIN0(2);
+	int post = (int) ZIN0(2);
 	
-	float samp, output;
+	float samp;
 	int classification;
 	
-	LOOP(inNumSamples,
-		 samp = ZXP(in);
-		 classification = fpclassify(samp);
-		 switch (classification) 
-		 { 
-			 case FP_INFINITE: 
-				 if(post) printf("Infinite number found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
-				 output = 2;
-				 break; 
-			 case FP_NAN: 
-				 if(post) printf("NaN found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
-				 output = 1;
-				 break; 
-			 case FP_SUBNORMAL:
-				 if(post) printf("Denormal found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
-				 output = 3;
-				 break;
-			 default: 
-				 output = 0;
-		 };
-		 
-		 ZXP(out) = output;
-		 );
+	switch(post) {
+		case 1:		// post a line on every bad value
+			LOOP(inNumSamples,
+				 samp = ZXP(in);
+				 classification = fpclassify(samp);
+				 switch (classification) 
+				 { 
+					 case FP_INFINITE: 
+						 printf("Infinite number found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
+						 ZXP(out) = 2;
+						 break; 
+					 case FP_NAN: 
+						 printf("NaN found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
+						 ZXP(out) = 1;
+						 break; 
+					 case FP_SUBNORMAL:
+						 printf("Denormal found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
+						 ZXP(out) = 3;
+						 break;
+					 default: 
+						 ZXP(out) = 0;
+				 };
+			 );
+			 break;
+		case 2:
+			LOOP(inNumSamples,
+				samp = ZXP(in);
+				classification = fpclassify(samp);
+				if(classification != unit->prevclass) {
+					if(unit->sameCount == 0) {
+						printf("CheckBadValues: %s found in Synth %d, ID %d\n",
+							CheckBadValues_fpclassString(classification), unit->mParent->mNode.mID, (int)id);
+					} else {
+						printf("CheckBadValues: %s found in Synth %d, ID %d (previous %d values were %s)\n",
+							CheckBadValues_fpclassString(classification), unit->mParent->mNode.mID, (int)id,
+							unit->sameCount, CheckBadValues_fpclassString(unit->prevclass)
+						);
+					};
+					unit->sameCount = 0;
+				};
+				switch (classification) 
+				{ 
+					case FP_INFINITE: 
+						ZXP(out) = 2;
+						break; 
+					case FP_NAN: 
+						ZXP(out) = 1;
+						break; 
+					case FP_SUBNORMAL:
+						ZXP(out) = 3;
+						break;
+					default: 
+						ZXP(out) = 0;
+				};
+				unit->sameCount++;
+				unit->prevclass = classification;
+			);
+			break;
+		default:		// no post
+			LOOP(inNumSamples,
+				 samp = ZXP(in);
+				 classification = fpclassify(samp);
+				 switch (classification) 
+				 { 
+					 case FP_INFINITE: 
+						 ZXP(out) = 2;
+						 break; 
+					 case FP_NAN: 
+						 ZXP(out) = 1;
+						 break; 
+					 case FP_SUBNORMAL:
+						 ZXP(out) = 3;
+						 break;
+					 default: 
+						 ZXP(out) = 0;
+				 };
+			 );
+			 break;
+	}
+}
+
+char *CheckBadValues_fpclassString(int fpclass)
+{
+	switch(fpclass) {
+		case FP_INFINITE: return "infinity";
+		case FP_NAN: return "NaN";
+		case FP_SUBNORMAL: return "denormal";
+		default: return "normal";
+	}
 }
 
 

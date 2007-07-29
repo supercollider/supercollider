@@ -229,11 +229,9 @@ UGen : AbstractFunction {
           ^Poll.perform(trig.methodSelectorForRate, trig, this, label, trigid)
 	}
 	
-	checkBadValues { arg id = 0, post = 1;
-		^switch(this.rate, 
-			\audio, {CheckBadValues.ar(this, id, post); this},
-			\control, {CheckBadValues.kr(this, id, post); this}
-		);
+	checkBadValues { arg id = 0, post = 2;
+			// add the UGen to the tree but keep "this" as the output
+		CheckBadValues.perform(this.methodSelectorForRate, this, id, post);
 	}
 	
 	*methodSelectorForRate { arg rate;

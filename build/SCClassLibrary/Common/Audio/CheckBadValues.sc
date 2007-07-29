@@ -1,11 +1,14 @@
 CheckBadValues : UGen {
 
-	*ar {arg in = 0.0, id = 0, post = 1;
+	*ar {arg in = 0.0, id = 0, post = 2;
 		^this.multiNew('audio', in, id, post);
 	}
 	
-	*kr {arg in = 0.0, id = 0, post = 1;
+	*kr {arg in = 0.0, id = 0, post = 2;
 		^this.multiNew('control', in, id, post);
 	}
 
+	checkInputs {
+		^this.checkSameRateAsFirstInput
+	}
 }
