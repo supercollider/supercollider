@@ -548,5 +548,8 @@ Buffer {
 	}
 
 	duration { ^numFrames / sampleRate }
+
+	asUGenInput { ^this.bufnum }
 }
+
 

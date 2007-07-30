@@ -158,6 +158,14 @@ Bus {
 			^{ this.ar }.play(target, outbus, fadeTime, addAction);
 		});
 	}
-	
+	asUGenInput { ^this.index }
+	asMap {
+		if(rate == \control) {
+			^("c" ++ index).asSymbol
+		} {
+			MethodError("Cannot map a synth control to a% %-rate bus."
+				.format(if(rate.asString[0].isVowel, "n", ""), rate), this).throw;
+		}
+	}
 }
 
