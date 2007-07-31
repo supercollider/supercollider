@@ -95,7 +95,7 @@ BusPlug : AbstractFunction {
 	wakeUpToBundle {}
 	wakeUp {}
 	asBus { ^if(this.isNeutral) { nil } { bus } }
-	
+	asNodeArg { ^if(this.isNeutral) { nil } { this.busArg } }
 		
 	
 	////////////  playing and access  /////////////////////////////////////////////
