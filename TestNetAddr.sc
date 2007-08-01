@@ -21,11 +21,13 @@ TestNetAddr : UnitTest {
 
 		this.bootServer;
 		
+		("Sending bundle with "+f.size+"messages"+" bundleSize:"+bundleSize).debug;
+		
 		addr.sendBundle(Server.default.latency,f);
 		this.assert(true,"NetAddr sent Bundle with "+f.size+"messages"+" bundleSize:"+bundleSize);
 	}
 
-	test_sendBundle5 {
+	/*test_sendBundle5 {
 		this.sendBundle(5);
 	}
 	test_sendBundle10 {
@@ -33,13 +35,13 @@ TestNetAddr : UnitTest {
 	}
 	test_sendBundle30 {
 		this.sendBundle(30);
-	}
-	// hangs on 50
+	}*/
 	test_sendBundle50 {
 		this.sendBundle(50);
 	}
+	/*
 	test_sendBundleAll {
 		this.sendBundle;
-	}
+	}*/
 }
 
