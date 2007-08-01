@@ -58,6 +58,8 @@ NetAddr {
 		_NetAddr_SendMsg
 		^this.primitiveFailed;
 	}
+	// warning: this primitive will fail to send if the bundle size is too large
+	// but it will not throw an error.  this needs to be fixed
 	sendBundle { arg time ... args;
 		_NetAddr_SendBundle
 		^this.primitiveFailed;
@@ -84,7 +86,9 @@ NetAddr {
 			this.sendBundle(latency, ["/sync", id]);
 			condition.wait;
 		} {
-			if(bundles.bundleSize > 65515) { // 65515 = 65535 - 16 - 4 (sync msg size)
+			// not sure what the exact size is, but its about 20000
+			// this relates to what _NetAddr_SendBundle can send
+ 			if(bundles.bundleSize > 20000/*65515*/) { // 65515 = 65535 - 16 - 4 (sync msg size)
 				bundles.clumpBundles.do { |item|
 					id = this.makeSyncResponder(condition);
 					this.sendBundle(latency, *(item ++ [["/sync", id]]));
