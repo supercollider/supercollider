@@ -5,18 +5,23 @@ TempoGui : ObjectGui {
 	
 	writeName {}
 	guiBody { arg layout;
-		var gn;
+		var gn,gnomeInstr;
 		tempoG = NumberEditor(model.bpm,[1.0,666.0])
 			.action_({arg t; model.bpm_(t)});
 			
 		tempoG.gui(layout,nil,true);
 		
-		gnome = Patch({ arg beat,freq,amp;
-			Decay2.ar( 
-				K2A.ar(beat), 0.01,0.11, 
-				SinOsc.ar( freq, 0, amp )
-			)
-		},[
+		gnomeInstr = Instr("TempoGui.gnomeInstr");
+		if(gnomeInstr.isNil,{
+			Instr("TempoGui.gnomeInstr",
+				{ arg beat,freq,amp;
+					Decay2.ar( 
+						K2A.ar(beat), 0.01,0.11, 
+						SinOsc.ar( freq, 0, amp )
+					)
+				});
+		});
+		gnome = Patch("TempoGui.gnomeInstr",[
 			BeatClockPlayer.new(4.0),
 			StreamKrDur(
 				Pseq([ 750, 500, 300, 500, 750, 500, 400, 500, 750, 500, 400, 500, 750, 500, 400, 500 ],inf), 
