@@ -87,7 +87,7 @@ AbstractPlayerGui : ObjectGui {
 //		Server.local.gui(layout);
 		s = //SynthConsole(model,layout).play.registerPlayKey.record.pauseableRecord.write({ 
 			// model.timeDuration }).scope.stop.formats.tempo;
-		SynthConsole(model,layout).play.prepare.record.stop.free.tempo;
+		SynthConsole(model,layout).play.record.stop.free.tempo;
 
 		ServerErrorGui(server).gui(layout);
 
