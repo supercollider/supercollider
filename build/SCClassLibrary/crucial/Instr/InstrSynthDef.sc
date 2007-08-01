@@ -126,7 +126,7 @@ InstrSynthDef : SynthDef {
 		objects.do({ arg obj,argi; obj.initForSynthDef(this,argi) });
 		defargs = (argNames = instr.argNames).collect({ arg name,defargi;
 			var defarg;
-			defarg = (objects.at(defargi) ?? {instr.defArgAt(defargi)});
+			defarg = (objects.at(defargi) ?? {instr.initAt(defargi)});
 			defarg.addToSynthDef(this,name);
 			defarg
 		});
