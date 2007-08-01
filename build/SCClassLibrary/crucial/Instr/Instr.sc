@@ -22,7 +22,7 @@ Instr  {
 		^super.newCopyArgs(name,func).init(specs,outSpec)
 	}
 	*put { arg instr;
-		^Library.putList([Instr,this.symbolizeName(instr.name),instr].flatten )
+		^Library.putList([this,this.symbolizeName(instr.name),instr].flatten )
 	}
 	*remove { arg instr;
 		^Library.global.removeAt([this,this.symbolizeName(instr.name)].flatten )
@@ -30,7 +30,7 @@ Instr  {
 	// bulk insert an orchestra of instr
 	*orc { arg name, pairs, outSpec = \audio;
 		forBy(0,pairs.size-1,2,	{ arg i;
-			Instr( [name,pairs@i ],pairs@(i+1),nil,outSpec)
+			this.class( [name,pairs@i ],pairs@(i+1),nil,outSpec)
 		})
 	}
 	
@@ -91,7 +91,7 @@ Instr  {
 			1
 		});
 	}
-	path { ^path ?? {dir ++ name.first.asString ++ ".rtf"} }
+	path { ^path /*?? {dir ++ name.first.asString ++ ".rtf"}*/ }
 
 	maxArgs { ^this.argsSize }
 	argsSize { ^func.def.argNames.size }
@@ -274,7 +274,7 @@ Instr  {
 		});
 	}
 	*clearAll {
-		Library.global.removeAt(this.name)
+		Library.global.removeAt(this)
 	}
 
 	asString { ^"Instr(" ++ this.defName.asCompileString ++ ")" }
