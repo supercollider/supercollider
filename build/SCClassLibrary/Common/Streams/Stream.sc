@@ -55,9 +55,9 @@ Stream : AbstractFunction {
 	collect { arg argCollectFunc;
 		// modify a stream
 		var nextFunc = { arg inval;
-			inval = this.next(inval);
-			if ( inval.notNil, {
-				argCollectFunc.value(inval) 
+			var	nextval = this.next(inval);
+			if ( nextval.notNil, {
+				argCollectFunc.value(nextval, inval) 
 			})
 		};
 		var resetFunc = { this.reset };
@@ -66,13 +66,13 @@ Stream : AbstractFunction {
 	reject { arg function;
 		// reject elements from a stream
 		var nextFunc = { arg inval;
-			inval = this.next(inval);
+			var	nextval = this.next(inval);
 			while { 
-				inval.notNil and: { function.value(inval) }
+				nextval.notNil and: { function.value(nextval, inval) }
 			}{
-				inval = this.next(inval);
+				nextval = this.next(inval);
 			};
-			inval
+			nextval
 		};
 		var resetFunc = { this.reset };
 		^FuncStream.new(nextFunc, resetFunc);
@@ -80,13 +80,13 @@ Stream : AbstractFunction {
 	select { arg function;
 		// select elements from a stream
 		var nextFunc = { arg inval;
-			inval = this.next(inval);
+			var	nextval = this.next(inval);
 			while { 
-				inval.notNil and: { function.value(inval).not }
+				nextval.notNil and: { function.value(nextval, inval).not }
 			}{
-				inval = this.next(inval);
+				nextval = this.next(inval);
 			};
-			inval
+			nextval
 		};
 		var resetFunc = { this.reset };
 		^FuncStream.new(nextFunc, resetFunc);
@@ -99,7 +99,7 @@ Stream : AbstractFunction {
 				var x = this.next(inval);
 				var y = stream.next(inval);
 				if ( x.notNil and: { y.notNil }, {
-					function.value(x, y)
+					function.value(x, y, inval)
 				});
 			},
 			{ this.reset; stream.reset; }
@@ -110,14 +110,14 @@ Stream : AbstractFunction {
 		// interlace with another stream
 		var nextx = this.next;
 		var nexty = stream.next;
-		^FuncStream.new({
+		^FuncStream.new({ |inval|
 			var val;
 			if ( nextx.isNil ) {
-				if ( nexty.isNil) {nil}{ val = nexty; nexty = stream.next; val };
+				if ( nexty.isNil) {nil}{ val = nexty; nexty = stream.next(inval); val };
 			}{
-				if ( nexty.isNil or: { function.value(nextx,nexty) }, 
-					{ val = nextx; nextx = this.next; val },
-					{ val = nexty; nexty = stream.next; val }
+				if ( nexty.isNil or: { function.value(nextx, nexty, inval) }, 
+					{ val = nextx; nextx = this.next(inval); val },
+					{ val = nexty; nexty = stream.next(inval); val }
 				);					
 			};
 		},
@@ -260,15 +260,16 @@ EmbedOnce : Stream  {
 
 FuncStream : Stream {
 	var <>nextFunc; // Func is evaluated for each next state
-	var <>resetFunc; // Func is evaluated for each next state
-	*new { arg nextFunc, resetFunc;	
-		^super.new.nextFunc_(nextFunc).resetFunc_(resetFunc)
+	var <>resetFunc; // Func is evaluated on reset
+	var	<>envir;
+	*new { |nextFunc, resetFunc|
+		^super.new.nextFunc_(nextFunc).resetFunc_(resetFunc).envir_(currentEnvironment)
 	}
 	next { arg inval;
-		^nextFunc.value(inval) 
+		^envir.use({ nextFunc.value(inval) })
 	}
 	reset { 
-		^resetFunc.value
+		^envir.use({ resetFunc.value })
 	}
 	storeArgs { ^[nextFunc, resetFunc] }
 }
