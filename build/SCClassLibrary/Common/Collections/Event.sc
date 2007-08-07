@@ -292,7 +292,7 @@ Event : Environment {
 							}{
 								hasGate = ~hasGate ? true;
 							};
-							bndl = msgFunc.valueEnvir.flop;
+							bndl = msgFunc.valueEnvir.asNodeArg.flop;
 							bndl.do {|msgArgs, i|
 								var id, latency;
 								
@@ -339,7 +339,7 @@ Event : Environment {
 								hasGate = ~hasGate ? true;
 							};
 						//	~hasGate = hasGate;
-							bndl = msgFunc.valueEnvir.flop;
+							bndl = msgFunc.valueEnvir.asNodeArg.flop;
 							bndl.do {|msgArgs, i|
 								var id, latency;
 								
@@ -387,7 +387,7 @@ Event : Environment {
 									~defaultMsgFunc;
 								};
 							};
-							bndl = ([\s_new, instrumentName, ~id, addAction, group] ++ msgFunc.valueEnvir).flop;
+							bndl = ([\s_new, instrumentName, ~id, addAction, group] ++ msgFunc.valueEnvir.asNodeArg).flop;
 							bndl.do {|msgArgs, i|
 								var latency;
 								
@@ -408,7 +408,7 @@ Event : Environment {
 							~sustain = ~sustain.value;
 							strum = ~strum;
 				
-							bndl = ([\n_set, ~id] ++ ~args.envirPairs).flop;
+							bndl = ([\n_set, ~id] ++ ~args.envirPairs.asNodeArg).flop;
 							bndl.do {|msgArgs, i|
 								var latency;
 								
@@ -515,7 +515,7 @@ Event : Environment {
 							midicmd = ~midicmd;
 							bndl = ~midiEventFunctions[midicmd].valueEnvir.asCollection;
 							
-							bndl = bndl.flop;
+							bndl = bndl.asNodeArg.flop;
 							
 							bndl.do {|msgArgs, i|
 									var latency;
