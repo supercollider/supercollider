@@ -194,6 +194,9 @@ extern "C"
 	void PV_MagMul_Ctor(PV_Unit *unit);
 	void PV_MagMul_next(PV_Unit *unit, int inNumSamples);
 
+	void PV_MagDiv_Ctor(PV_Unit *unit);
+	void PV_MagDiv_next(PV_Unit *unit, int inNumSamples);
+
 	void PV_Copy_Ctor(PV_Unit *unit);
 	void PV_Copy_next(PV_Unit *unit, int inNumSamples);
 
@@ -976,6 +979,28 @@ void PV_MagMul_Ctor(PV_Unit *unit)
 	ZOUT0(0) = ZIN0(0);
 }
 
+void PV_MagDiv_next(PV_Unit *unit, int inNumSamples)
+{
+	PV_GET_BUF2
+	
+	SCPolarBuf *p = ToPolarApx(buf1);
+	SCPolarBuf *q = ToPolarApx(buf2);
+	
+	float zeroed = ZIN0(2);
+	
+	p->dc /= sc_max(q->dc, zeroed);
+	p->nyq /= sc_max(q->nyq, zeroed);
+	for (int i=0; i<numbins; ++i) {
+		p->bin[i].mag /= sc_max(q->bin[i].mag, zeroed);
+	}
+}
+
+void PV_MagDiv_Ctor(PV_Unit *unit)
+{
+	SETCALC(PV_MagDiv_next);
+	ZOUT0(0) = ZIN0(0);
+}
+
 void PV_Copy_next(PV_Unit *unit, int inNumSamples)
 {
 	
@@ -1576,6 +1601,7 @@ void load(InterfaceTable *inTable)
 	DefinePVUnit(PV_MagBelow);
 	DefinePVUnit(PV_MagClip);
 	DefinePVUnit(PV_MagMul);
+	DefinePVUnit(PV_MagDiv);
 	DefinePVUnit(PV_MagSquared);
 	DefinePVUnit(PV_MagNoise);
 	DefinePVUnit(PV_Copy);

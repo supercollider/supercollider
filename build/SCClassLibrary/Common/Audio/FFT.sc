@@ -88,6 +88,13 @@ PV_Min : PV_MagMul {}
 PV_Mul : PV_MagMul {}
 PV_Add : PV_MagMul {}
 
+PV_MagDiv : UGen
+{
+	*new { arg bufferA, bufferB, zeroed = 0.0001;
+		^this.multiNew('control', bufferA, bufferB, zeroed)
+	}
+}
+
 PV_RandComb : UGen 
 {
 	*new { arg buffer, wipe = 0.0, trig = 0.0;
