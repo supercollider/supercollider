@@ -76,7 +76,7 @@ SimpleNumber : Number {
 	bitOr { arg aNumber, adverb; _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this, adverb) }
 	bitXor { arg aNumber, adverb; _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this, adverb) }	
 	bitHammingDistance { arg aNumber, adverb; _HammingDistance  ^aNumber.performBinaryOpOnSimpleNumber('hammingDistance', this, adverb) }
-	bitTest{ |bit|	^(this.bitAnd( 2**bit ) == 2**bit) }
+	bitTest { arg bit; ^( (this & 1.leftShift(bit)) != 0) }
 	lcm { arg aNumber, adverb; _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this, adverb) }
 	gcd { arg aNumber, adverb; _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
 	round { arg aNumber=1.0, adverb; _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
