@@ -77,7 +77,6 @@ BasicNodeWatcher : AbstractNodeWatcher {
 	n_go { arg nodeID;
 		nodes.add(nodeID);
 	}
-
 }
 
 
@@ -135,6 +134,7 @@ NodeWatcher : BasicNodeWatcher {
 		nodes.do({ arg node; 
 			node.isPlaying = false;
 			node.isRunning = false;
+			node.changed(\n_end);
 		});
 		nodes = IdentityDictionary.new 
 	}
