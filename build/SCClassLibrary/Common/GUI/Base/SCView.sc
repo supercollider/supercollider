@@ -678,9 +678,9 @@ SCPopUpMenu : SCControlView {
 		if (char == $\r, { this.valueAction = this.value + 1; ^this });
 		if (char == $\n, { this.valueAction = this.value + 1; ^this });
 		if (char == 3.asAscii, { this.valueAction = this.value + 1; ^this });
-		if (unicode == 16rF700, { this.valueAction = this.value + 1; ^this });
+		if (unicode == 16rF700, { this.valueAction = this.value - 1; ^this });
 		if (unicode == 16rF703, { this.valueAction = this.value + 1; ^this });
-		if (unicode == 16rF701, { this.valueAction = this.value - 1; ^this });
+		if (unicode == 16rF701, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF702, { this.valueAction = this.value - 1; ^this });
 		^nil		// bubble if it's an invalid key
 	}
