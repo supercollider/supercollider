@@ -773,7 +773,7 @@ SCNumberBox : SCStaticTextBase {
 		typingColor = Color.red;
 		normalColor = Color.black;
 		parent = argParent.asView; // actual view
-		this.prInit(parent, argBounds.asRect,this.class.viewClass);
+		this.prInit(parent.asView, argBounds.asRect,this.class.viewClass);
 		argParent.add(this);//maybe window or viewadapter
 	}
 
