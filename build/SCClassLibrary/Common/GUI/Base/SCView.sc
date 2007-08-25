@@ -324,6 +324,36 @@ SCTopView : SCCompositeView {
 	}
 }
 
+SCScrollTopView : SCTopView {
+	var 	<autohidesScrollers = true, <hasHorizontalScroller = true, <hasVerticalScroller = true;
+	
+	autohidesScrollers_{|bool|
+		autohidesScrollers = bool;
+		this.setProperty(\setAutohidesScrollers, bool);
+	}
+	hasHorizontalScroller_{|bool|
+		hasHorizontalScroller = bool;
+		this.setProperty(\setHasHorizontalScroller, bool);
+	}
+	hasVerticalScroller_{|bool|
+		hasVerticalScroller = bool;
+		this.setProperty(\setHasVerticalScroller, bool);
+	}
+	
+	visibleOrigin_ { arg point;  this.setProperty( \clipViewOrigin, point );}
+	
+	visibleOrigin { ^this.getProperty( \clipViewOrigin, Point.new );}
+
+}
+
+SCScrollView : SCScrollTopView {
+	var <hasBorder = false;
+
+	hasBorder_ { arg bool = true;
+		this.setProperty(\border, bool);
+	}
+}
+
 SCLayoutView : SCContainerView {
 	properties { ^super.properties ++ #[\spacing] }
 	

@@ -30,8 +30,11 @@
 
 @interface SCNSWindow : NSWindow {
 	BOOL mHasBorders;
+	NSView *mSCGraphView;
 }
-- (BOOL)  canBecomeKeyWindow ;
-- (BOOL)  hasBorders;
-- (void)  setHasBorders: (BOOL) flag;
+- (BOOL) canBecomeKeyWindow ;
+- (BOOL) hasBorders;
+- (void) setHasBorders: (BOOL) flag;
+- (void) setSCGraphView: (NSView*) view;
+- (NSView*) getSCGraphView;
 @end

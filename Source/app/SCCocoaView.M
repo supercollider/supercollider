@@ -239,8 +239,8 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	char *name = symbol->name;
 
 	if (strcmp(name, "visible")==0) {
-		//only 10.3
-		if(IsTrue(slot)) 
+		bool visible = IsTrue(slot);
+		if(visible) 
 		{
 			[mScrollView setHidden:NO];
 			[mTextView setHidden:NO];
@@ -250,8 +250,9 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		{
 			[mScrollView setHidden:YES];
 			[mTextView setHidden:YES];
+			mTop->resetFocus(); 
 		}
-	
+		mVisible = visible;
 		return errNone;
 	}
 	
@@ -516,6 +517,21 @@ int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	return SCView::getProperty(symbol, slot);
 }
 
+void SCCocoaTextView::setVisibleFromParent(bool show)
+{
+	if(show && mVisible) {
+		[mScrollView setHidden:NO];
+		[mTextView setHidden:NO];
+		return;
+	}
+	
+	if(!show) {
+		[mScrollView setHidden:YES];
+		[mTextView setHidden:YES];
+	}
+	
+}
+
 ////////////////////
 SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
@@ -553,7 +569,28 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
 	int err;
 	char *name = symbol->name;
-
+	
+	if (strcmp(name, "visible")==0) {
+		bool visible = IsTrue(slot);
+		if(visible) 
+		{
+			[mMovieView setHidden:NO];
+		}
+		else
+		{
+			[mMovieView setHidden:YES];
+			mTop->resetFocus(); 
+		}
+		[mMovieView setNeedsDisplay:YES];
+		NSRect frame = [mMovieView frame];
+		[mMovieView setFrame: NSInsetRect(frame,1,1)];
+		[mMovieView setFrame: frame];
+		
+		refresh();
+		mVisible = visible;
+		return errNone;
+	}
+	
 	if (strcmp(name, "stop")==0) {
 		[mMovieView stop: nil];
 		return errNone;
@@ -724,6 +761,18 @@ int SCMovieView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	return SCView::getProperty(symbol, slot);
 }
 
+void SCMovieView::setVisibleFromParent(bool show)
+{
+	if(show && mVisible) {
+		[mMovieView setHidden:NO];
+		return;
+	}
+	
+	if(!show) {
+		[mMovieView setHidden:YES];
+	}	
+}
+
 extern PyrSymbol *s_proto, *s_parent;
 extern int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto, ivxIdentDict_know;
 int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *value);
@@ -765,6 +814,21 @@ void SCQuartzComposerView::setBounds(SCRect screct)
 int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
 	char *name = symbol->name;
+	
+	if (strcmp(name, "visible")==0) {
+		bool visible = IsTrue(slot);
+		if(visible) 
+		{
+			[mQCView setHidden:NO];
+		}
+		else
+		{
+			[mQCView setHidden:YES];
+			mTop->resetFocus(); 
+		}
+		mVisible = visible; 
+		return errNone;
+	}
 	
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
@@ -1113,4 +1177,16 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 	return errWrongType; // it's something else	
 
 		
+}
+
+void SCQuartzComposerView::setVisibleFromParent(bool show)
+{
+	if(show && mVisible) {
+		[mQCView setHidden:NO];
+		return;
+	}
+	
+	if(!show) {
+		[mQCView setHidden:YES];
+	}	
 }

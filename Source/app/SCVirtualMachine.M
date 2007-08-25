@@ -22,6 +22,7 @@
 #import "SCVirtualMachine.h"
 #import "MyDocument.h"
 #import "SCGraphView.h"
+#import "SCNSWindow.h"
 #include "ChangeCounter.h"
 
 // CR ADDED
@@ -185,7 +186,7 @@ static id sharedSCVM = nil;
 /* i am the delegate for each SCGraphView window */
 -(BOOL)windowShouldClose:(id)sender
 {
-    return [[(NSWindow*)sender contentView] windowShouldClose];
+	 return [(SCGraphView*)([(SCNSWindow*)sender getSCGraphView]) windowShouldClose];
 }
 
 extern NSTextView *gPostView;
@@ -378,11 +379,11 @@ bool gIsFullScreen = false;
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-    NSWindow* window = [aNotification object];
+    SCNSWindow* window = [aNotification object];
     [self endFullScreen: window];
     [guiWindows removeObject: window];
     
-    [[window contentView] willClose];
+    [(SCGraphView*)[window getSCGraphView] willClose];
 }
 
 -(IBAction)showHelp:(id)sender {

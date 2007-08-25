@@ -31,6 +31,7 @@
 #include "SC_BoundsMacros.h"
 #include "SC_InlineBinaryOp.h"
 #include "SCGraphView.h"
+#import "SCVirtualMachine.h"
 
 
 #include "SCView.h"
@@ -53,6 +54,7 @@ PyrSymbol* s_range;
 PyrSymbol* s_scview;
 PyrSymbol* s_sccontview;
 PyrSymbol* s_sctopview;
+PyrSymbol* s_scscrollview;
 PyrSymbol* s_beginDrag;
 PyrSymbol* s_receiveDrag;
 PyrSymbol* s_canReceiveDrag;
@@ -592,6 +594,17 @@ bool SCContainerView::canFocus()
     return flag;
 }
 
+SCRect NStoSCRect(NSRect nsrect)
+{
+	SCRect screct;
+    screct.x = nsrect.origin.x;
+    screct.y = nsrect.origin.y;
+    screct.width = nsrect.size.width;
+    screct.height = nsrect.size.height;
+    return screct;
+}
+NSRect SCtoNSRect(SCRect screct);
+
 void SCView::setBounds(SCRect inBounds)
 {
     mBounds = inBounds;
@@ -599,7 +612,7 @@ void SCView::setBounds(SCRect inBounds)
 
 SCRect SCView::getBounds()
 {
-    return mBounds;
+	return mBounds;
 }
 
 Layout SCView::getLayout()
@@ -690,6 +703,9 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
                 if (err) return err;
                 refreshFocus();
                 mBounds = screct;
+				if(mTop->isScroller()) {
+					[(SCGraphView*)mTop->GetNSView() setFrameSizeToMinimum];
+				}
                 refreshFocus();
 		return errNone;
 	}
@@ -772,7 +788,6 @@ int SCView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
             if (!(isKindOfSlot(slot, s_rect->u.classobj))) {
                 return errWrongType;
             }
-        
             PyrSlot *slots = slot->uo->slots;
             SetFloat(slots+0, mBounds.x);
             SetFloat(slots+1, mBounds.y);
@@ -846,6 +861,30 @@ SCContainerView::~SCContainerView()
         child = next;
     }
 }
+
+int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+    int err;
+	char *name = symbol->name;
+
+	if (strcmp(name, "visible")==0) {
+		bool visible = IsTrue(slot);
+		if (mVisible != visible) {
+			mVisible = visible;
+			SCView *child = mChildren;
+			while (child) {
+				SCView *next = child->mNext;
+				child->setVisibleFromParent(visible); // needed for Cocoa views
+				child = next;
+			}
+			if (!mVisible) mTop->resetFocus(); //
+			refresh();
+		}
+		return errNone;
+	}
+	
+	return SCView::setProperty(symbol, slot);
+}	
 
 void SCContainerView::add(SCView *inChild)
 {
@@ -979,7 +1018,7 @@ void SCCompositeView::setBounds(SCRect inBounds)
                                     layout.mMinWidth ,
                                     sc_min(layout.mMaxWidth,right - bounds.x)
                                 );*/
-                bounds.width = (inBounds.width) - (bounds.x + offset);
+                bounds.width = (inBounds.width) - ((bounds.x - mBounds.x) + offset);
         }
         switch (layout.mVResize) {
             case layout_FixedTop : 
@@ -995,9 +1034,10 @@ void SCCompositeView::setBounds(SCRect inBounds)
                                     layout.mMinHeight ,
                                     sc_min(layout.mMaxHeight,bottom - bounds.y)
                                 );*/
-                bounds.height = (inBounds.height) - (bounds.y + offset);
+                bounds.height = (inBounds.height) - ((bounds.y - mBounds.y) + offset);
         }
-        child->setBounds(bounds);
+
+        child->setBounds(bounds); 
         //bounds = child->getBounds();
         child = child->next();
     }
@@ -1348,6 +1388,270 @@ bool SCTopView::canReceiveDrag()
 void SCTopView::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
+}
+
+void SCTopView::setInternalBounds(SCRect internalBounds)
+{
+	setBounds(internalBounds);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+SCView* NewSCScrollTopView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCScrollTopView(inObj, inBounds);
+}
+
+SCScrollTopView::SCScrollTopView(PyrObject* inObj, SCRect inBounds)
+: SCTopView(inObj, inBounds)
+{
+
+}
+
+NSSize SCScrollTopView::checkMinimumSize()
+{	
+	// size of SCGraphView must be at least large enough to hold any contained view for correct scrolling
+	// so test against the NSClipView
+    SCView *child = mChildren;
+	
+	SCRect candidate = SCMakeRect(0.f, 0.f, 0.f, 0.f);
+	
+	// iterate through all the views and see if we need to be bigger
+	while (child) {
+        SCRect bounds = child->getBounds();
+		candidate = SCRectUnion(bounds, candidate);
+		child = child->next();
+	}
+	
+	return SCtoNSRect(candidate).size;
+}
+	
+void SCScrollTopView::setInternalBounds(SCRect inBounds)
+{
+	// elasticity doesn't work with a scrolltopview
+	mBounds = inBounds;
+}
+
+int slotGetPoint(PyrSlot* a, NSPoint *p);
+
+int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+	char *name = symbol->name;
+	if (strcmp(name, "setHasHorizontalScroller")==0) {
+		bool hasScroller = IsTrue(slot);
+		[mNSScrollView setHasHorizontalScroller:hasScroller];
+		[(SCGraphView*)mNSView setFrameSizeToMinimum];
+		refresh();
+		return errNone;
+	}
+	
+	if (strcmp(name, "setHasVerticalScroller")==0) {
+		bool hasScroller = IsTrue(slot);
+		[mNSScrollView setHasVerticalScroller:hasScroller];
+		[(SCGraphView*)mNSView setFrameSizeToMinimum];
+		refresh();
+		return errNone;
+	}
+	
+	if (strcmp(name, "setAutohidesScrollers")==0) {
+		bool autoHides = IsTrue(slot);
+		[mNSScrollView setAutohidesScrollers:autoHides];
+		[(SCGraphView*)mNSView setFrameSizeToMinimum];
+		[mNSScrollView setNeedsDisplay: YES];
+		
+		// trick scrollview into redrawing
+		NSRect frame = [mNSScrollView frame];
+		[mNSScrollView setFrame: NSInsetRect(frame,1,1)];
+		[mNSScrollView setFrame: frame];
+		refresh();
+		return errNone;
+	}
+	
+	if (strcmp(name, "clipViewOrigin")==0) {
+		NSPoint origin;
+		err = slotGetPoint(slot, &origin);
+		if (err) return err;
+		NSClipView *clipView = [mNSScrollView contentView];
+		[clipView scrollToPoint: [clipView constrainScrollPoint:origin]];
+		[mNSScrollView reflectScrolledClipView:clipView];
+		refresh();
+		return errNone;
+	}
+	
+	return SCCompositeView::setProperty(symbol, slot);
+}
+
+int SCScrollTopView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	char *name = symbol->name;
+	if (strcmp(name, "bounds")==0) {
+		if (!(isKindOfSlot(slot, s_rect->u.classobj))) {
+			return errWrongType;
+		}
+		SCRect bounds = NStoSCRect([mNSScrollView frame]);
+		PyrSlot *slots = slot->uo->slots;
+		SetFloat(slots+0, bounds.x);
+		SetFloat(slots+1, bounds.y);
+		SetFloat(slots+2, bounds.width);
+		SetFloat(slots+3, bounds.height);
+		return errNone;
+	}
+	
+	if (strcmp(name, "clipViewOrigin")==0) {
+		if (!(isKindOfSlot(slot, s_point->u.classobj))) {
+			return errWrongType;
+		}
+		NSPoint origin = [mNSScrollView documentVisibleRect].origin;
+		PyrSlot *slots = slot->uo->slots;
+		SetFloat(slots+0, origin.x);
+		SetFloat(slots+1, origin.y);
+		return errNone;
+	}
+	
+	return SCCompositeView::getProperty(symbol, slot);
+}
+
+void SCScrollTopView::add(SCView *inChild)
+{
+	SCContainerView::add(inChild);
+	[(SCGraphView*)GetNSView() setFrameSizeToMinimum];
+}
+
+void SCScrollTopView::remove(SCView *inChild)
+{
+	SCContainerView::remove(inChild);
+	[(SCGraphView*)GetNSView() setFrameSizeToMinimum];
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+SCView* NewSCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCScrollView(inParent, inObj, inBounds);
+}
+
+SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+: SCScrollTopView(inObj, inBounds)
+{
+	if (inParent) {
+		inParent->add(this);
+	}
+	NSRect bounds = SCtoNSRect(mBounds);
+
+	NSView *topGraphview = mTop->GetNSView();
+	SCGraphView* view = [[SCGraphView alloc] initWithFrame: bounds];
+	[view setSCObject: [(SCGraphView*)topGraphview getSCObject]];
+	
+	[view setSCTopView: this];
+	NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame: bounds];
+	[scrollView setHasVerticalScroller:YES];
+	[scrollView setHasHorizontalScroller:YES];
+	[scrollView setAutohidesScrollers:YES];
+	[[scrollView horizontalScroller] setControlSize:NSSmallControlSize];
+	[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
+	[[scrollView horizontalScroller] setControlTint:NSGraphiteControlTint];
+	[[scrollView verticalScroller] setControlTint:NSGraphiteControlTint];
+	
+	[scrollView setBackgroundColor:[NSColor clearColor]];
+	[scrollView setDrawsBackground:NO];
+	// configure the scroller to have no visible border
+	[scrollView setBorderType:NSNoBorder];
+	[scrollView setAutoresizingMask:NSViewNotSizable];
+	[scrollView setDocumentView:view];
+	
+	[scrollView setPostsFrameChangedNotifications: YES]; // we need this to resize the SCGraphView if the scroll view exceeds its bounds
+	[[NSNotificationCenter defaultCenter] addObserver:view
+											 selector:@selector(scrollViewResized:)
+												 name:@"NSViewFrameDidChangeNotification" 
+											   object:scrollView];
+	
+	SetNSScrollView(scrollView);
+	[topGraphview addSubview: scrollView];
+	[view setFrameSizeToMinimum];
+}
+
+void SCScrollView::add(SCView *inChild)
+{
+	inChild->mNext = mChildren;
+	mChildren = inChild;
+	mNumChildren++;
+	inChild->mParent = this;
+	inChild->mTop = this;
+	inChild->refresh();
+	[(SCGraphView*)GetNSView() setFrameSizeToMinimum];
+}
+
+void SCScrollView::drawIfNecessary(SCRect inDamage)
+{
+	// only draw when our own SCGraphView wants it
+	// not for the top level SCGraphView
+	// so this returns nothing
+}
+
+void SCScrollView::drawSubViewIfNecessary(SCRect inDamage)
+{
+    if (SCRectsDoIntersect(inDamage, mBounds) && mVisible) {
+		draw(inDamage);
+		SCView *child = mChildren;
+		while (child) {
+			child->drawIfNecessary(inDamage);
+			child = child->mNext;
+		}
+		drawDisabled(inDamage);
+		drawDragHilite(inDamage);
+		drawFocus(inDamage);
+    }
+}
+
+void SCScrollView::setBounds(SCRect inBounds)
+{
+	NSRect oldFrame = [mNSScrollView frame];
+	
+	[mNSScrollView setFrame: SCtoNSRect(inBounds)];
+
+}
+
+SCRect SCScrollView::getBounds()
+{
+	return NStoSCRect([mNSScrollView frame]);
+}
+
+int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+	char *name = symbol->name;
+	if (strcmp(name, "bounds")==0) {
+		SCRect screct;
+		err = slotGetSCRect(slot, &screct);
+		if (err) return err;
+		refreshFocus();
+		setBounds(screct);
+		refreshFocus();
+		return errNone;
+	}
+	
+	if (strcmp(name, "border")==0) {
+		bool hasBorder = IsTrue(slot);
+		if(hasBorder) {
+			[mNSScrollView setBorderType:NSLineBorder];
+		} else {
+			[mNSScrollView setBorderType:NSNoBorder];
+		}
+		[(SCGraphView*)mNSView setFrameSizeToMinimum];
+		refresh();
+		return errNone;
+	}
+
+	return SCScrollTopView::setProperty(symbol, slot);
+}
+
+SCScrollView::~SCScrollView()
+{
+	[mNSScrollView removeFromSuperview];
+	[mNSScrollView release];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -5025,6 +5329,8 @@ void registerSCViewClasses()
     new SCViewMaker("SCTextView", NewSCCocoaTextView);
     new SCViewMaker("SCMovieView", NewSCMovieView);
 	new SCViewMaker("SCQuartzComposerView", NewSCQuartzComposerView);
+	new SCViewMaker("SCScrollTopView", NewSCScrollTopView);
+	new SCViewMaker("SCScrollView", NewSCScrollView);
 }
 
 
@@ -5038,7 +5344,7 @@ int prSCView_New(struct VMGlobals *g, int numArgsPushed)
         // view, parent, bounds, viewclass
         PyrSlot parentSlot;
         SCContainerView *parent;
-        if (isKindOfSlot(args, s_sctopview->u.classobj)) {
+        if (isKindOfSlot(args, s_sctopview->u.classobj) && !isKindOfSlot(args, s_scscrollview->u.classobj)) {
             parent = 0;
         } else {
             if (!isKindOfSlot(args+1, s_sccontview->u.classobj)) return errWrongType;
@@ -5189,6 +5495,7 @@ void initSCViewPrimitives()
         s_scview = getsym("SCView");
         s_sccontview = getsym("SCContainerView");
         s_sctopview = getsym("SCTopView");
+		s_scscrollview = getsym("SCScrollView");
         s_beginDrag = getsym("beginDrag");
         s_receiveDrag = getsym("receiveDrag");
         s_canReceiveDrag = getsym("canReceiveDrag");

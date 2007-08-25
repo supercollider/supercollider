@@ -1152,19 +1152,19 @@ int slotGetPoint(PyrSlot* a, NSPoint *p)
 int prSCWindow_New(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 {
-        if (!g->canCallOS) return errCantCallOS;
+	if (!g->canCallOS) return errCantCallOS;
 	
-        PyrSlot *args = g->sp - 5;
+	PyrSlot *args = g->sp - 5;
 	PyrSlot *a = args + 0;
 	PyrSlot *b = args + 1;
 	PyrSlot *c = args + 2;
 	PyrSlot *d = args + 3;
 	PyrSlot *e = args + 4;
-	PyrSlot *f = args + 5;
-
+	PyrSlot *f = args + 6;
+	PyrSlot *h = args + 5;
 	if (!(isKindOfSlot(b, class_string))) return errWrongType;
 	if (!(isKindOfSlot(c, s_rect->u.classobj))) return errWrongType;
-
+	
         unsigned int mask = IsTrue(d) && IsTrue(e) ? NSResizableWindowMask : 0;
         mask |= IsTrue(e) ? 
             NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask 
@@ -1176,25 +1176,59 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
               
 	PyrString *string = b->uos;
-        NSString *title = [NSString stringWithCString: string->s length: string->size];
+	NSString *title = [NSString stringWithCString: string->s length: string->size];
 
-        NSWindow *window = [[SCNSWindow alloc] 
-            initWithContentRect: bounds
-            styleMask: mask
-            backing: NSBackingStoreBuffered
-            defer: NO];
-        [window setTitle: title];
-		[window setHasBorders: YES];
-        
-		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
-        SCGraphView* view = [[SCGraphView alloc] initWithFrame: bounds];
-        [view setSCObject: a->uo];
-        [view setSCTopView: (SCTopView*)(f->uo->slots[0].ui)];
-        SetPtr(a->uo->slots + 0, view);
-        
-        [window setDelegate: scvm];
-        [window setContentView: view];
-        [view autorelease];
+	SCNSWindow *window = [[SCNSWindow alloc] 
+		initWithContentRect: bounds
+		styleMask: mask
+		backing: NSBackingStoreBuffered
+		defer: NO];
+	[window setTitle: title];
+	[window setHasBorders: YES];
+	
+	SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+	SCGraphView* view = [[SCGraphView alloc] initWithFrame: bounds];
+	[view setSCObject: a->uo];
+	SetPtr(a->uo->slots + 0, view);
+	[window setDelegate: scvm];
+	[window setSCGraphView: view];
+	
+	if(IsTrue(h)) {
+		SCScrollTopView* scrollTopView = (SCScrollTopView*)(f->uo->slots[0].ui);
+		[view setSCTopView: scrollTopView];
+		
+		NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame: bounds];
+		[scrollView setHasVerticalScroller:YES];
+		[scrollView setHasHorizontalScroller:YES];
+		[scrollView setAutohidesScrollers:YES];
+		[[scrollView horizontalScroller] setControlSize:NSSmallControlSize];
+		[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
+		[[scrollView horizontalScroller] setControlTint:NSGraphiteControlTint];
+		[[scrollView verticalScroller] setControlTint:NSGraphiteControlTint];
+		
+		[scrollView setBackgroundColor:[NSColor clearColor]];
+		[scrollView setDrawsBackground:NO];
+		// configure the scroller to have no visible border
+		[scrollView setBorderType:NSNoBorder];
+		[scrollView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+		[scrollView setDocumentView:view];
+		
+		[scrollView setPostsFrameChangedNotifications: YES]; // we need this to resize the SCGraphView if the scroll view exceeds its bounds
+		[[NSNotificationCenter defaultCenter] addObserver:view
+												 selector:@selector(scrollViewResized:)
+													 name:@"NSViewFrameDidChangeNotification" 
+												   object:scrollView];
+		scrollTopView->SetNSScrollView(scrollView);
+		[view autorelease];
+		
+		[window setContentView: scrollView];
+		[scrollView autorelease];
+		
+	} else {
+		[view setSCTopView: (SCTopView*)(f->uo->slots[0].ui)];
+		[window setContentView: view];
+		[view autorelease];
+	}
 /*
         NSRect matrect = NSMakeRect(40,40,400,400);
         NSSize cellsize = NSMakeSize(200,100);
@@ -1208,9 +1242,9 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
         [view addSubview: mx];
 
 */
-        [window makeFirstResponder: view];
-        [window setFrameOrigin: bounds.origin];
-        [scvm addWindow: window];
+	[window makeFirstResponder: view];
+	[window setFrameOrigin: bounds.origin];
+	[scvm addWindow: window];
 
 /*    
     id sender = nil;
@@ -1504,7 +1538,7 @@ int prSCWindow_GetBounds(struct VMGlobals *g, int numArgsPushed)
 
     SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
     if (!view) return errNone;
-
+	
 	NSWindow *window = [view window];
     NSRect bounds = [window frame];
 	bounds = [NSWindow contentRectForFrameRect: bounds styleMask: [window styleMask]];

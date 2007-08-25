@@ -55,5 +55,7 @@
 - (void)startMenuTracking: (SCView*) inView;
 
 - (IBAction) toggleUIEditMode: (id) sender;
+- (void)scrollViewResized:(NSNotification *)notification;
+- (void)setFrameSizeToMinimum;
 
 @end

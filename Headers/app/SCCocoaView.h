@@ -69,6 +69,7 @@ public:
 	SCTextView* getTextView(){return mTextView;};
 	void tabPrevFocus();
 	void tabNextFocus();
+	virtual void setVisibleFromParent(bool show);
 
 protected:
 	SCTextView *mTextView;
@@ -84,6 +85,7 @@ public:
 	virtual void setBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual void setVisibleFromParent(bool show);
 
 protected:
 	NSMovieView *mMovieView;
@@ -105,6 +107,7 @@ public:
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr);
 	virtual int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type);
+	virtual void setVisibleFromParent(bool show);
 	
 protected:
 	QCView *mQCView;

@@ -13,15 +13,19 @@ SCWindow {
 		UI.registerForShutdown({ this.closeAll });
 	}
 
-	*new { arg name = "panel", bounds, resizable = true, border = true;
-		^super.new.initSCWindow(name, bounds, resizable, border)
+	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;
+		^super.new.initSCWindow(name, bounds, resizable, border, scroll)
 	}
-	initSCWindow { arg argName, argBounds, resizable, border;
+	initSCWindow { arg argName, argBounds, resizable, border, scroll;
 		name = argName.asString;
 		argBounds = argBounds ?? {Rect(128, 64, 400, 400)};
 		allWindows = allWindows.add(this);
-		view = SCTopView(nil, argBounds.moveTo(0,0));
-		this.prInit(name, argBounds, resizable, border, view);
+		scroll.if({
+			view = SCScrollTopView(nil, argBounds.moveTo(0,0));
+		},{
+			view = SCTopView(nil, argBounds.moveTo(0,0));
+		});
+		this.prInit(name, argBounds, resizable, border, scroll, view);
 	}
 
 	asView { ^view }
@@ -67,9 +71,9 @@ SCWindow {
 		^this.primitiveFailed
 	}
 	
-	alwaysOnTop_{|boolean=true|
-		alwaysOnTop = boolean;
-		this.prSetAlwaysOnTop(boolean);	
+	alwaysOnTop_{|bool=true|
+		alwaysOnTop = bool;
+		this.prSetAlwaysOnTop(bool);	
 	}
 	
 	prSetAlwaysOnTop{|boolean=true|
@@ -133,7 +137,7 @@ SCWindow {
 			
 	// PRIVATE
 	// primitives
-	prInit { arg argName, argBounds, resizable, border;
+	prInit { arg argName, argBounds, resizable, border, scroll;
 		_SCWindow_New
 		^this.primitiveFailed
 	}

@@ -319,6 +319,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, void* inData)
 {    
 	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: self];
 	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: [self window]];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
     pthread_mutex_lock (&gLangMutex);
     if (mWindowObj) {
@@ -597,15 +598,16 @@ const int circDiam = 20;
 
 - (void)drawRect: (NSRect)drawBounds
 {
-    if (mTopView) {
-        NSRect bounds = [self bounds];
+	if (mTopView) {
+        
         SCRect screct;
         
-        screct.x = bounds.origin.x;
-        screct.y = bounds.origin.y;
-        screct.width = bounds.size.width;
-        screct.height = bounds.size.height;
-        mTopView->setBounds(screct);
+		NSRect bounds = [self bounds];
+		screct.x = bounds.origin.x;
+		screct.y = bounds.origin.y;
+		screct.width = bounds.size.width;
+		screct.height = bounds.size.height;
+		mTopView->setInternalBounds(screct);
         
         screct.x = drawBounds.origin.x;
         screct.y = drawBounds.origin.y;
@@ -621,9 +623,12 @@ const int circDiam = 20;
         SetRect(&qdrect, (int)screct.x, (int)screct.y, 
             (int)(screct.x + screct.width), (int)(screct.y + screct.height));
         ClipRect(&qdrect);
-
-        mTopView->drawIfNecessary(screct);
-
+		
+		if(mTopView->isSubViewScroller()) {
+			((SCScrollView*)mTopView)->drawSubViewIfNecessary(screct);
+		} else {
+			mTopView->drawIfNecessary(screct);
+		}
         //CGContextRestoreGState(cgc);
     }
     pthread_mutex_lock (&gLangMutex);
@@ -839,6 +844,44 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
 	if (!mTopView) return;
 	mTopView->SetConstructionMode(!mTopView->ConstructionMode());
 	[self setNeedsDisplay: YES];
+}
+
+- (void)scrollViewResized:(NSNotification *)notification
+{
+	[self setFrameSizeToMinimum];
+	
+	// this seems to be needed for correct resize behaivour
+	SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+	SEL sel = @selector(display);
+    NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
+    
+    NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+    [anInvocation setTarget: [[self window] contentView]];
+    [anInvocation setSelector: sel];     
+    [scvm defer: anInvocation];
+}
+
+- (void)setFrameSizeToMinimum
+{
+	NSScrollView* sv;
+	if (sv = [self enclosingScrollView]){
+		
+		NSSize visRect = [[sv contentView] visibleRect].size;
+		
+		NSSize candidate = ((SCScrollTopView*)mTopView)->checkMinimumSize();
+		
+		if((candidate.width > visRect.width) || (candidate.height > visRect.height)){
+			[self setFrameSize: candidate]; // set then check visible rect again to account for scroll bars that may have appeared or vanished
+			visRect = [sv documentVisibleRect].size;
+			[self setFrameSize: NSMakeSize(sc_max(candidate.width, visRect.width), sc_max(candidate.height, visRect.height))];
+		} else {
+			[self setFrameSize: visRect]; // always at least this big
+		}
+			
+		[self setNeedsDisplay: YES];
+		[sv setNeedsDisplay: YES];
+	}
+
 }
 
 @end

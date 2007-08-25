@@ -32,4 +32,6 @@
 - (BOOL) canBecomeKeyWindow { if(mHasBorders) return YES; else return [super canBecomeKeyWindow]; }
 - (BOOL) hasBorders {return mHasBorders;}
 - (void) setHasBorders: (BOOL) flag {mHasBorders = flag;}
+- (void) setSCGraphView: (NSView*)view {mSCGraphView = view;}
+- (NSView*) getSCGraphView {return mSCGraphView;}
 @end

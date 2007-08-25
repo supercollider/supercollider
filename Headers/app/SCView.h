@@ -116,6 +116,8 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
+	virtual void setVisibleFromParent(bool show) { } // does nothing, needed for Cocoa views
+	
 	virtual bool isDragSource() const;
 	virtual SCView* findView(SCPoint where);
 	virtual SCView* findViewByID(int32 inID);
@@ -146,6 +148,7 @@ public:
 	
 protected:
 	friend class SCContainerView;
+	friend class SCScrollView;
 
 	SCView *mNext;
 	SCView *mNextAnimatedView;
@@ -181,6 +184,9 @@ public:
 	virtual SCView* nextFocus(bool *foundFocus, bool canFocus);
 	virtual SCView* prevFocus(SCView **prevView, bool canFocus);
 	virtual bool canFocus();
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual bool isScroller() { return false; }
+	virtual bool isSubViewScroller() { return false; }
 	
 protected:
 	SCView *mChildren;
@@ -269,6 +275,7 @@ public:
 	virtual void drawFocus(SCRect inDamage);
 	virtual bool canReceiveDrag();	
 	virtual void receiveDrag();
+	virtual void setInternalBounds(SCRect internalBounds);
 protected:
 	friend class SCView;
 	void focusIs(SCView *inView) { mFocusView = inView; }
@@ -278,9 +285,50 @@ protected:
 	void *mHostData;
 	SCView *mFocusView;
 	SCView *mDragView;
-		NSView *mNSView;
-		
-		bool mConstructionMode;
+	NSView *mNSView;
+	
+	bool mConstructionMode;
+};
+
+class SCScrollTopView : public SCTopView
+{
+public:
+	SCScrollTopView(PyrObject* inObj, SCRect inBounds);
+	
+	NSScrollView* GetScrollView() { return mNSScrollView; }
+	void SetNSScrollView(NSScrollView* inView) { mNSScrollView = inView; }
+	
+	virtual bool isScroller() { return true; }
+	
+	virtual void setInternalBounds(SCRect inBounds);
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	NSSize checkMinimumSize();
+	virtual void add(SCView *inChild);
+	virtual void remove(SCView *inChild);
+	
+protected:
+	NSScrollView *mNSScrollView;
+};
+
+class SCScrollView : public SCScrollTopView
+{
+public:
+	SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+	virtual ~SCScrollView();
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	//virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	
+	virtual void setBounds(SCRect inBounds);
+	virtual SCRect getBounds();
+	virtual void add(SCView *inChild);
+//	virtual void remove(SCView *inChild);
+	
+	virtual bool isSubViewScroller() { return true; }
+	
+	virtual void drawIfNecessary(SCRect inDamage);
+	virtual void drawSubViewIfNecessary(SCRect inDamage);
+
 };
 
 inline bool SCView::isFocus() const { return mTop->focusView() == this; }
