@@ -936,9 +936,11 @@ SCView* SCContainerView::findView(SCPoint where)
         if (mEnabled && mVisible) {
             SCView *child = mChildren;
             while (child) {
+				if(!(child->isScroller())) {
                     SCView *found = child->findView(where);
                     if (found) return found;
-                    child = child->mNext;
+				}
+				child = child->mNext;
             }
         }
 	return 0;

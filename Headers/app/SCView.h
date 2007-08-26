@@ -146,6 +146,9 @@ public:
 	void stopAnimation();
 	virtual void animate() { refresh(); }
 	
+	virtual bool isScroller() { return false; }
+	virtual bool isSubViewScroller() { return false; }
+	
 protected:
 	friend class SCContainerView;
 	friend class SCScrollView;
@@ -185,8 +188,6 @@ public:
 	virtual SCView* prevFocus(SCView **prevView, bool canFocus);
 	virtual bool canFocus();
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
-	virtual bool isScroller() { return false; }
-	virtual bool isSubViewScroller() { return false; }
 	
 protected:
 	SCView *mChildren;
