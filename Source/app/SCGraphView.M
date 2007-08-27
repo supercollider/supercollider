@@ -866,16 +866,15 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
 	NSScrollView* sv;
 	if (sv = [self enclosingScrollView]){
 		
-		NSSize visRect = [[sv contentView] visibleRect].size;
+		NSSize visSize = [[sv contentView] documentVisibleRect].size;
 		
-		NSSize candidate = ((SCScrollTopView*)mTopView)->checkMinimumSize();
-		
-		if((candidate.width > visRect.width) || (candidate.height > visRect.height)){
+		NSSize candidate = SCtoNSRect(((SCScrollTopView*)mTopView)->checkMinimumSize()).size;
+		if((candidate.width > visSize.width) || (candidate.height > visSize.height)){
 			[self setFrameSize: candidate]; // set then check visible rect again to account for scroll bars that may have appeared or vanished
-			visRect = [sv documentVisibleRect].size;
-			[self setFrameSize: NSMakeSize(sc_max(candidate.width, visRect.width), sc_max(candidate.height, visRect.height))];
+			visSize = [[sv contentView] visibleRect].size;
+			[self setFrameSize: NSMakeSize(sc_max(candidate.width, visSize.width), sc_max(candidate.height, visSize.height))];
 		} else {
-			[self setFrameSize: visRect]; // always at least this big
+			[self setFrameSize: visSize]; // always at least this big
 		}
 			
 		[self setNeedsDisplay: YES];

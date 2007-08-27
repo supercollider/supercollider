@@ -982,6 +982,18 @@ SCView* SCContainerView::prevFocus(SCView **prevView, bool canFocus)
     return 0;
 }
 
+SCRect SCContainerView::checkMinimumSize() {
+	SCView *child = mChildren;
+	SCRect candidate = mBounds;
+	// iterate through all the views and see if we need to be bigger (children may exceed the parent's bounds)
+	while (child) {
+        SCRect bounds = child->checkMinimumSize();
+		candidate = SCRectUnion(bounds, candidate);
+		child = child->next();
+	}
+	return candidate;
+}
+
 
 SCView* NewSCCompositeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
@@ -1411,22 +1423,22 @@ SCScrollTopView::SCScrollTopView(PyrObject* inObj, SCRect inBounds)
 
 }
 
-NSSize SCScrollTopView::checkMinimumSize()
+SCRect SCScrollTopView::checkMinimumSize()
 {	
 	// size of SCGraphView must be at least large enough to hold any contained view for correct scrolling
 	// so test against the NSClipView
     SCView *child = mChildren;
 	
-	SCRect candidate = SCMakeRect(0.f, 0.f, 0.f, 0.f);
+	SCRect candidate = SCMakeRect(0.f, 0.f, 1.f, 1.f); // smallest measureable at rect at origin
 	
 	// iterate through all the views and see if we need to be bigger
 	while (child) {
-        SCRect bounds = child->getBounds();
+        SCRect bounds = child->checkMinimumSize();
 		candidate = SCRectUnion(bounds, candidate);
 		child = child->next();
 	}
 	
-	return SCtoNSRect(candidate).size;
+	return candidate;
 }
 	
 void SCScrollTopView::setInternalBounds(SCRect inBounds)

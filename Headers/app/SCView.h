@@ -148,6 +148,7 @@ public:
 	
 	virtual bool isScroller() { return false; }
 	virtual bool isSubViewScroller() { return false; }
+	virtual SCRect checkMinimumSize() { return mBounds; }
 	
 protected:
 	friend class SCContainerView;
@@ -188,6 +189,7 @@ public:
 	virtual SCView* prevFocus(SCView **prevView, bool canFocus);
 	virtual bool canFocus();
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual SCRect checkMinimumSize();
 	
 protected:
 	SCView *mChildren;
@@ -250,7 +252,13 @@ class SCTopView : public SCCompositeView
 public:
 	SCTopView(PyrObject* inObj, SCRect inBounds);
 	
-	SCView *focusView() { return mFocusView; }
+	SCView *focusView() { 
+		if(isSubViewScroller()) {
+			return mTop->focusView();
+		} else {
+			return mFocusView; 
+		}
+	}
 
 	void forgetView(SCView *view);
 
@@ -279,7 +287,13 @@ public:
 	virtual void setInternalBounds(SCRect internalBounds);
 protected:
 	friend class SCView;
-	void focusIs(SCView *inView) { mFocusView = inView; }
+	void focusIs(SCView *inView) { 
+		if(isSubViewScroller()) {
+			mTop->focusIs(inView);
+		} else {
+			mFocusView = inView; 
+		}
+	}
 
 	DamageCallback mDamageCallback;
 	DragCallback mDragCallback;
@@ -304,7 +318,7 @@ public:
 	virtual void setInternalBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-	NSSize checkMinimumSize();
+	virtual SCRect checkMinimumSize();
 	virtual void add(SCView *inChild);
 	virtual void remove(SCView *inChild);
 	
