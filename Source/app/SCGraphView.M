@@ -315,6 +315,13 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, void* inData)
 	[[self window] close];
 }
 
+- (void)removeFromSuperview
+{
+	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super removeFromSuperview];
+}
+
 - (void)willClose
 {    
 	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: self];
@@ -859,6 +866,16 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
     [anInvocation setTarget: [[self window] contentView]];
     [anInvocation setSelector: sel];     
     [scvm defer: anInvocation];
+}
+
+extern PyrSymbol* s_doaction;
+
+- (void)userScrolled:(NSNotification *)notification
+{
+	// if this happens from a visibleOrigin method we can't use sendMessage, so the action gets called from the lang
+	if(!((SCScrollTopView*)mTopView)->isInSetClipViewOrigin()) {
+		mTopView->sendMessage(s_doaction, 0, 0, 0); // this must be a scroll view
+	}
 }
 
 - (void)setFrameSizeToMinimum

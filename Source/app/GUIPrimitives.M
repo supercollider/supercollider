@@ -1218,6 +1218,14 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 												 selector:@selector(scrollViewResized:)
 													 name:@"NSViewFrameDidChangeNotification" 
 												   object:scrollView];
+		
+		NSClipView *contentView = [scrollView contentView];
+		[contentView setPostsBoundsChangedNotifications:YES];
+		[[NSNotificationCenter defaultCenter] addObserver:view
+												 selector:@selector(userScrolled:)
+													 name:@"NSViewBoundsDidChangeNotification" 
+												   object:contentView];
+		
 		scrollTopView->SetNSScrollView(scrollView);
 		[view autorelease];
 		

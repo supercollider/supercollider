@@ -340,7 +340,10 @@ SCScrollTopView : SCTopView {
 		this.setProperty(\setHasVerticalScroller, bool);
 	}
 	
-	visibleOrigin_ { arg point;  this.setProperty( \clipViewOrigin, point );}
+	visibleOrigin_ { arg point;  
+		this.setProperty( \clipViewOrigin, point );
+		this.doAction;
+	}
 	
 	visibleOrigin { ^this.getProperty( \clipViewOrigin, Point.new );}
 

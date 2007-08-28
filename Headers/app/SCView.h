@@ -321,9 +321,12 @@ public:
 	virtual SCRect checkMinimumSize();
 	virtual void add(SCView *inChild);
 	virtual void remove(SCView *inChild);
+	bool isInSetClipViewOrigin() { return mInSetClipViewOrigin; }
+	void setInSetClipViewOrigin(bool flag) { mInSetClipViewOrigin = flag; }
 	
 protected:
 	NSScrollView *mNSScrollView;
+	bool mInSetClipViewOrigin;
 };
 
 class SCScrollView : public SCScrollTopView

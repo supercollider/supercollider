@@ -16,16 +16,17 @@ p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d2b18}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d2b18; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
-span.s3 {color: #0018f7}
-span.s4 {text-decoration: underline ; color: #0016e6}
-span.s5 {color: #0000bf}
+span.s2 {color: #0522ef}
+span.s3 {text-decoration: underline ; color: #0c26d7}
+span.s4 {color: #0d29e7}
+span.s5 {color: #041ab3}
 span.s6 {color: #000000}
-span.s7 {color: #bf0000}
+span.s7 {color: #8d2b18}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -34,19 +35,27 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a><b> : SCContainerView : </b><a href="SCCompositeView.html"><span class="s2"><b>SCCompositeView</b></span></a><b> : SCTopView : </b><a href="SCScrollTopView.html"><span class="s2"><b>SCScrollTopView</b></span></a><b><span class="Apple-converted-space"> </span></b></p>
 <p class="p3"><br></p>
-<p class="p1">A container view which allows the user to scroll across content which exceeds the view's visible bounds. The size of the contained 'canvas' is determined by the bounds of the views which it encloses. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s3">SCCompositeView</span></a> or other container view. Resize settings are ignored for contained views.</p>
+<p class="p1">A container view which allows the user to scroll across content which exceeds the view's visible bounds.</p>
 <p class="p2"><br></p>
-<p class="p1"><b>See also:</b> <a href="SCWindow.html"><span class="s4">SCWindow</span></a> <a href="GUI.html"><span class="s4">GUI</span></a></p>
+<p class="p1"><b>See also:</b> <a href="SCWindow.html"><span class="s3">SCWindow</span></a> <a href="GUI.html"><span class="s3">GUI</span></a></p>
 <p class="p2"><br></p>
-<p class="p1"><b>N.B.</b> SCScrollView inherits most of it's important methods from it's superclass, <a href="SCScrollTopView.html"><span class="s3">SCScrollTopView</span></a>. Please see its helpfile for more information.</p>
+<p class="p1"><b>N.B.</b> SCScrollView inherits most of it's important methods from it's superclass, <a href="SCScrollTopView.html"><span class="s4">SCScrollTopView</span></a>. Please see its helpfile for more information.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Setting the Internal Bounds</b></p>
+<p class="p2"><br></p>
+<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s4">SCCompositeView</span></a> or other container view. One should not use a decorator such as FlowLayout directly on a NSScrollView, only on a container within it.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4"><b>Action Functions with Scrolling SCViews</b></p>
+<p class="p2"><br></p>
+<p class="p1">A SCScrollTopView or SCScrollView's action function is evaluated when a user scrolls the view or sets the visibleOrigin. See the example below.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation</b></p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*new(parent, bounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a new SCScrollView. (Inheritted from <a href="SCView.html"><span class="s3">SCView</span></a>).</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- A <a href="SCWindow.html"><span class="s3">SCWindow</span></a>, or a container view such as <a href="SCCompositeView.html"><span class="s3">SCCompositeView</span></a>.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds<span class="Apple-converted-space"> </span></b> - A <a href="../Geometry/Rect.html"><span class="s3">Rect</span></a>, which specifies the position of this view in its <b>parent</b>.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a new SCScrollView. (Inheritted from <a href="SCView.html"><span class="s4">SCView</span></a>).</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- A <a href="SCWindow.html"><span class="s4">SCWindow</span></a>, or a container view such as <a href="SCCompositeView.html"><span class="s4">SCCompositeView</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds<span class="Apple-converted-space"> </span></b> - A <a href="../Geometry/Rect.html"><span class="s4">Rect</span></a>, which specifies the position of this view in its <b>parent</b>.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><br></p>
 <p class="p7"><br></p>
 <p class="p9"><b>Instance Methods</b></p>
@@ -54,62 +63,114 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>hasBorder_(bool)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>hasBorder</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These methods get and set a <a href="../Core/Boolean.html"><span class="s3">Boolean</span></a> indicating whether or not a black border is drawn around the view. This border is drawn within the bounds of the SCScrollView. Thus the bounds do not change when a border is added, but the visible area is slightly reduced.<span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These methods get and set a <a href="../Core/Boolean.html"><span class="s4">Boolean</span></a> indicating whether or not a black border is drawn around the view. This border is drawn within the bounds of the SCScrollView. Thus the bounds do not change when a border is added, but the visible area is slightly reduced.<span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p9"><b>Examples</b></p>
 <p class="p3"><br></p>
 <p class="p10">(</p>
 <p class="p10">a = <span class="s5">SCWindow</span>.new;</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">b = <span class="s5">SCScrollView</span>(a, <span class="s5">Rect</span>(0,0,150,100));</p>
 <p class="p10">c = <span class="s5">SC2DSlider</span>(b, <span class="s5">Rect</span>(0,0,100,100));<span class="Apple-tab-span">	</span></p>
 <p class="p10">d = <span class="s5">SC2DSlider</span>(b, <span class="s5">Rect</span>(100,0,100,100));</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">a.front;</p>
 <p class="p10">)</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">a.view.background = <span class="s5">Color</span>.white;</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">b.background = <span class="s5">Color</span>.grey;</p>
-<p class="p11"><br></p>
-<p class="p12"><span class="s6">d.bounds = </span><span class="s5">Rect</span><span class="s6">(100,0,1000,100); </span>// the 'canvas' grows to accomodate it</p>
-<p class="p11"><br></p>
-<p class="p12"><span class="s6">b.resize = 5; </span>// the ScrollView resizes, but not its contents</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
+<p class="p11"><span class="s6">d.bounds = </span><span class="s5">Rect</span><span class="s6">(100,0,1000,100); </span>// the 'canvas' grows to accomodate it</p>
+<p class="p3"><br></p>
+<p class="p11"><span class="s6">b.resize = 5; </span>// the ScrollView resizes, but not its contents</p>
+<p class="p3"><br></p>
 <p class="p10">b.hasBorder_(<span class="s5">true</span>);</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">b.hasBorder_(<span class="s5">false</span>);</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">b.visibleOrigin;</p>
-<p class="p11"><br></p>
-<p class="p12"><span class="s6">b.visibleOrigin = </span><span class="s5">Point</span><span class="s6">(2000, 0); </span>// clips to the bounds of its contents</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
+<p class="p11"><span class="s6">b.visibleOrigin = </span><span class="s5">Point</span><span class="s6">(2000, 0); </span>// clips to the bounds of its contents</p>
+<p class="p3"><br></p>
 <p class="p10">b.hasHorizontalScroller_(<span class="s5">false</span>);</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">b.hasVerticalScroller_(<span class="s5">true</span>);</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">b.autohidesScrollers_(<span class="s5">false</span>);</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">a.close;</p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
-<p class="p12">/////////////////////////</p>
-<p class="p12">// force a 'canvas' size</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
+<p class="p12">/////////////////</p>
+<p class="p13"><br></p>
+<p class="p11">// force a 'canvas' size</p>
+<p class="p3"><br></p>
 <p class="p10">(</p>
 <p class="p10">a = <span class="s5">SCWindow</span>.new;</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">b = <span class="s5">SCScrollView</span>(a, <span class="s5">Rect</span>(0, 0, 300, 300)).hasBorder_(<span class="s5">true</span>);</p>
 <p class="p10">c = <span class="s5">SCCompositeView</span>(b, <span class="s5">Rect</span>(0, 0, 500, 500)); <span class="s7">// 'canvas' is this big</span></p>
-<p class="p12"><span class="s6">c.decorator = </span><span class="s5">FlowLayout</span><span class="s6">(c.bounds); </span>// now we can use a decorator</p>
-<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s6">c.decorator = </span><span class="s5">FlowLayout</span><span class="s6">(c.bounds); </span>// now we can use a decorator</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s5">SC2DSlider</span>(c, <span class="s5">Rect</span>(0, 0, 240, 240));</p>
 <p class="p10"><span class="s5">SC2DSlider</span>(c, <span class="s5">Rect</span>(0, 0, 240, 240));</p>
 <p class="p10"><span class="s5">SC2DSlider</span>(c, <span class="s5">Rect</span>(0, 0, 240, 240));</p>
-<p class="p11"><br></p>
+<p class="p3"><br></p>
 <p class="p10">c.decorator.nextLine;</p>
 <p class="p10">a.front;</p>
+<p class="p10">)</p>
+<p class="p3"><br></p>
+<p class="p12">/////////////////</p>
+<p class="p13"><br></p>
+<p class="p11">// "rulers", using an action function</p>
+<p class="p3"><br></p>
+<p class="p10">(</p>
+<p class="p10">var drawFunc;</p>
+<p class="p10">w = <span class="s5">SCWindow</span>.new;</p>
+<p class="p3"><br></p>
+<p class="p10">a = <span class="s5">SCScrollView</span>(w, <span class="s5">Rect</span>(40, 40, 300, 300));</p>
+<p class="p10">b = <span class="s5">SCScrollView</span>(w, <span class="s5">Rect</span>(0, 40, 40, 300)).hasHorizontalScroller_(<span class="s5">false</span>).hasVerticalScroller_(<span class="s5">false</span>);</p>
+<p class="p10">c = <span class="s5">SCScrollView</span>(w, <span class="s5">Rect</span>(40, 0, 300, 40)).hasHorizontalScroller_(<span class="s5">false</span>).hasVerticalScroller_(<span class="s5">false</span>);</p>
+<p class="p10">b.background = Color.grey;</p>
+<p class="p10">c.background = Color.grey;</p>
+<p class="p3"><br></p>
+<p class="p10">d = SCUserView(a, <span class="s5">Rect</span>(0, 0, 610, 610));</p>
+<p class="p10">e = SCUserView(b, <span class="s5">Rect</span>(0, 0, 40, 620));</p>
+<p class="p10">f = SCUserView(c, <span class="s5">Rect</span>(0, 0, 620, 40));</p>
+<p class="p3"><br></p>
+<p class="p10">a.action = { var origin;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>origin = a.visibleOrigin.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>b.visibleOrigin = 0@(origin.y);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>c.visibleOrigin = (origin.x)@0;</p>
+<p class="p10">};</p>
+<p class="p3"><br></p>
+<p class="p10">drawFunc = {</p>
+<p class="p10"><span class="Apple-tab-span">	</span>30.do({arg i;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(i+1).asString.drawAtPoint((i+1 * 20)@0, Font("Courier", 9), Color.black);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>});</p>
+<p class="p10">};</p>
+<p class="p3"><br></p>
+<p class="p10">d.drawFunc = {<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>Pen.use({</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Pen.translate(0, 5);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>drawFunc.value;<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>});<span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>Pen.translate(15, 0).rotate(0.5pi);<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>drawFunc.value;</p>
+<p class="p10">};</p>
+<p class="p3"><br></p>
+<p class="p10">e.drawFunc = {<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>Pen.translate(40, 0).rotate(0.5pi);<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>drawFunc.value;</p>
+<p class="p10">};</p>
+<p class="p3"><br></p>
+<p class="p10">f.drawFunc = {<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>Pen.translate(0, 25);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>drawFunc.value;<span class="Apple-converted-space"> </span></p>
+<p class="p10">};</p>
+<p class="p3"><br></p>
+<p class="p10">w.front;</p>
 <p class="p10">)</p>
 </body>
 </html>

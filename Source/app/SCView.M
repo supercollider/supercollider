@@ -1418,7 +1418,7 @@ SCView* NewSCScrollTopView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 }
 
 SCScrollTopView::SCScrollTopView(PyrObject* inObj, SCRect inBounds)
-: SCTopView(inObj, inBounds)
+: SCTopView(inObj, inBounds), mInSetClipViewOrigin(false)
 {
 
 }
@@ -1487,9 +1487,10 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		NSPoint origin;
 		err = slotGetPoint(slot, &origin);
 		if (err) return err;
+		setInSetClipViewOrigin(true);
 		NSClipView *clipView = [mNSScrollView contentView];
 		[clipView scrollToPoint: [clipView constrainScrollPoint:origin]];
-		[mNSScrollView reflectScrolledClipView:clipView];
+		setInSetClipViewOrigin(false);
 		refresh();
 		return errNone;
 	}
@@ -1556,7 +1557,7 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 	NSRect bounds = SCtoNSRect(mBounds);
 
 	NSView *topGraphview = mTop->GetNSView();
-	SCGraphView* view = [[SCGraphView alloc] initWithFrame: bounds];
+	SCGraphView* view = [[SCGraphView alloc] initWithFrame: NSMakeRect(0, 0, bounds.size.width, bounds.size.height)];
 	[view setSCObject: [(SCGraphView*)topGraphview getSCObject]];
 	
 	[view setSCTopView: this];
@@ -1581,6 +1582,13 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 											 selector:@selector(scrollViewResized:)
 												 name:@"NSViewFrameDidChangeNotification" 
 											   object:scrollView];
+
+	NSClipView *contentView = [scrollView contentView];
+	[contentView setPostsBoundsChangedNotifications:YES];
+	[[NSNotificationCenter defaultCenter] addObserver:view
+											 selector:@selector(userScrolled:)
+												 name:@"NSViewBoundsDidChangeNotification" 
+											   object:contentView];
 	
 	SetNSScrollView(scrollView);
 	[topGraphview addSubview: scrollView];

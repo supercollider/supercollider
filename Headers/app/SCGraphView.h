@@ -56,6 +56,7 @@
 
 - (IBAction) toggleUIEditMode: (id) sender;
 - (void)scrollViewResized:(NSNotification *)notification;
+- (void)userScrolled:(NSNotification *)notification;
 - (void)setFrameSizeToMinimum;
 
 @end
