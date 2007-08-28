@@ -10,23 +10,24 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #1b34d9}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #1b34d9; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2138d2}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2138d2; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #623924}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #593b26}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #1b34d9}
+span.s2 {color: #2138d2}
 span.s3 {color: #000000}
-span.s4 {text-decoration: underline ; color: #192fc9}
-span.s5 {color: #2138d2}
-span.s6 {color: #142fe0}
-span.s7 {color: #0522ef}
-span.s8 {color: #1427a2}
-span.s9 {color: #623924}
+span.s4 {text-decoration: underline ; color: #1e33c3}
+span.s5 {color: #263bcc}
+span.s6 {color: #1b34d9}
+span.s7 {color: #0d29e7}
+span.s8 {color: #0000ff}
+span.s9 {color: #192a9d}
+span.s10 {color: #593b26}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -73,7 +74,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><b>innerBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns a Rect corresponding to the size of the enclosed canvas. Note that you cannot set this directly. The size of the innerBounds will be either the visible bounds or the smallest Rect which contains all enclosed subviews, whichever is larger. See discussion above.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns a <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> corresponding to the size of the enclosed canvas. Note that you cannot set this directly. The size of the innerBounds will be either the visible bounds or the smallest Rect which contains all enclosed subviews, whichever is larger. See discussion above.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>visibleOrigin_(point)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>visibleOrigin</b></p>
@@ -84,18 +85,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b>Examples</b></p>
 <p class="p3"><br></p>
 <p class="p10">(</p>
-<p class="p11"><span class="s3">w = </span><span class="s8">SCWindow</span><span class="s3">(scroll: </span><span class="s8">true</span><span class="s3">); </span>// you must set this when the window is created</p>
-<p class="p10">c = <span class="s8">SCSlider</span>(w, <span class="s8">Rect</span>(0,0,100,30));</p>
+<p class="p11"><span class="s3">w = </span><span class="s9">SCWindow</span><span class="s3">(scroll: </span><span class="s9">true</span><span class="s3">); </span>// you must set this when the window is created</p>
+<p class="p10">c = <span class="s9">SCSlider</span>(w, <span class="s9">Rect</span>(0,0,100,30));</p>
 <p class="p10">w.front;</p>
 <p class="p10">)</p>
 <p class="p3"><br></p>
 <p class="p11"><span class="s3">c.resize = 2; </span>// resize settings are ignored if scrolling is enabled.</p>
 <p class="p3"><br></p>
-<p class="p11"><span class="s3">d = </span><span class="s8">SCSlider</span><span class="s3">(w, </span><span class="s8">Rect</span><span class="s3">(1500, 40, 100, 30)); </span>// a horizontal scroller appears</p>
+<p class="p11"><span class="s3">d = </span><span class="s9">SCSlider</span><span class="s3">(w, </span><span class="s9">Rect</span><span class="s3">(1500, 40, 100, 30)); </span>// a horizontal scroller appears</p>
 <p class="p3"><br></p>
-<p class="p11"><span class="s3">w.view.autohidesScrollers_(</span><span class="s8">false</span><span class="s3">); </span>// autohide is enabled by default, but we can turn it off</p>
+<p class="p11"><span class="s3">w.view.autohidesScrollers_(</span><span class="s9">false</span><span class="s3">); </span>// autohide is enabled by default, but we can turn it off</p>
 <p class="p3"><br></p>
-<p class="p10">w.view.hasHorizontalScroller_(<span class="s8">false</span>); <span class="s9">// hide the horizontal scroller</span></p>
+<p class="p10">w.view.hasHorizontalScroller_(<span class="s9">false</span>); <span class="s10">// hide the horizontal scroller</span></p>
 <p class="p3"><br></p>
 <p class="p11"><span class="s3">w.view.visibleOrigin = 1500@0; </span>// but we can still scroll using the visibleOrigin method</p>
 <p class="p3"><br></p>

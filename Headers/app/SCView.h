@@ -335,6 +335,7 @@ public:
 	SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 	virtual ~SCScrollView();
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual void setVisibleFromParent(bool show);
 	//virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
 	virtual void setBounds(SCRect inBounds);

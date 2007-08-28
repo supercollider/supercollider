@@ -1501,6 +1501,21 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	
+	if (strcmp(name, "visible")==0) {
+		bool visible = IsTrue(slot);
+		if(visible) 
+		{
+			[mNSScrollView setHidden:NO];
+		}
+		else
+		{
+			[mNSScrollView setHidden:YES];
+			mTop->resetFocus(); 
+		}
+		mVisible = visible;
+		return errNone;
+	}
+	
 	return SCCompositeView::setProperty(symbol, slot);
 }
 
@@ -1687,6 +1702,19 @@ int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 
 	return SCScrollTopView::setProperty(symbol, slot);
+}
+
+void SCScrollView::setVisibleFromParent(bool show)
+{
+	if(show && mVisible) {
+		[mNSScrollView setHidden:NO];
+		return;
+	}
+	
+	if(!show) {
+		[mNSScrollView setHidden:YES];
+	}
+	
 }
 
 SCScrollView::~SCScrollView()
