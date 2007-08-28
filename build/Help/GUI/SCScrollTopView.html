@@ -10,23 +10,23 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #142fe0}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #142fe0; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #1b34d9}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #1b34d9; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6d3621}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #623924}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #142fe0}
+span.s2 {color: #1b34d9}
 span.s3 {color: #000000}
-span.s4 {text-decoration: underline ; color: #132bd0}
-span.s5 {color: #1b34d9}
-span.s6 {color: #0d29e7}
-span.s7 {color: #0018f7}
-span.s8 {color: #0f23a7}
-span.s9 {color: #6d3621}
+span.s4 {text-decoration: underline ; color: #192fc9}
+span.s5 {color: #2138d2}
+span.s6 {color: #142fe0}
+span.s7 {color: #0522ef}
+span.s8 {color: #1427a2}
+span.s9 {color: #623924}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -41,7 +41,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b>Setting the Internal Bounds</b></p>
 <p class="p2"><br></p>
-<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s6">SCCompositeView</span></a> or other container view. One should not use a decorator such as FlowLayout directly on a NSScrollTopView, only on a container within it.<span class="Apple-converted-space"> </span></p>
+<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s6">SCCompositeView</span></a> or other container view, but there is no direct setter. One should not use a decorator such as FlowLayout directly on a NSScrollTopView, only on a container view within it.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p6"><b>Action Functions with Scrolling SCViews</b></p>
 <p class="p2"><br></p>
@@ -56,6 +56,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> value indicating whether this view only shows its scrollers when the bounds of the enclosed content exceed the the bounds of this view. Autohiding is done independently for each axis. The default is true.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><b>autoScrolls_(bool)</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>autoScrolls</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> value indicating whether this view scrolls automatically when you drag on a contained control view past the edge of visible bounds. The default is true.<span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>hasHorizontalScroller_(bool)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>hasHorizontalScroller</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
@@ -65,6 +70,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><b><span class="Apple-tab-span">	</span>hasVerticalScroller</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> value indicating whether this view has a vertical scroller. The default is true.</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><b>innerBounds</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns a Rect corresponding to the size of the enclosed canvas. Note that you cannot set this directly. The size of the innerBounds will be either the visible bounds or the smallest Rect which contains all enclosed subviews, whichever is larger. See discussion above.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>visibleOrigin_(point)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>visibleOrigin</b></p>

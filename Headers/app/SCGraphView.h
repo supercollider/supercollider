@@ -29,6 +29,7 @@
     SCView* mMenuView;
     bool windowShouldClose;
 	bool acceptsClickThrough;
+	bool autoScrolls;
 }
 
 - (void)drawRect: (NSRect)bounds;
@@ -49,6 +50,7 @@
 - (void)setWindowShouldClose:(BOOL)boo;
 - (BOOL)windowShouldClose;
 - (void)setAcceptsClickThrough:(BOOL)boo;
+- (void)setAutoScrolls:(BOOL)boo;
 - (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string;
 
 - (NSMenu*) menuForEvent:(NSEvent*)event;

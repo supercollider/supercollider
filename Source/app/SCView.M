@@ -1495,6 +1495,12 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	
+	if (strcmp(name, "setAutoScrolls")==0) {
+		bool autoScrolls = IsTrue(slot);
+		[(SCGraphView*)mNSView setAutoScrolls:autoScrolls];
+		return errNone;
+	}
+	
 	return SCCompositeView::setProperty(symbol, slot);
 }
 
@@ -1522,6 +1528,19 @@ int SCScrollTopView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		PyrSlot *slots = slot->uo->slots;
 		SetFloat(slots+0, origin.x);
 		SetFloat(slots+1, origin.y);
+		return errNone;
+	}
+	
+	if (strcmp(name, "innerBounds")==0) {
+		if (!(isKindOfSlot(slot, s_rect->u.classobj))) {
+			return errWrongType;
+		}
+		SCRect bounds = NStoSCRect([mNSView frame]);
+		PyrSlot *slots = slot->uo->slots;
+		SetFloat(slots+0, bounds.x);
+		SetFloat(slots+1, bounds.y);
+		SetFloat(slots+2, bounds.width);
+		SetFloat(slots+3, bounds.height);
 		return errNone;
 	}
 	

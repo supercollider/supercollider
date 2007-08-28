@@ -40,6 +40,11 @@ extern PyrSymbol *s_callDrawHook;
 	acceptsClickThrough = boo;
 }
 
+- (void)setAutoScrolls:(BOOL)boo;
+{
+	autoScrolls = boo;
+}
+
 - (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
 {
 	return acceptsClickThrough;
@@ -146,6 +151,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 	mTopView = 0;
     windowShouldClose = YES;
 	acceptsClickThrough = YES;
+	autoScrolls = YES;
     return self;
 }
 
@@ -207,6 +213,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 //						post("down \n");
 						break;
                 case NSLeftMouseDragged:
+					if(autoScrolls) [self autoscroll:theEvent];
                 case NSRightMouseDragged:
                 case NSOtherMouseDragged:
 						if(constructionmode)

@@ -17,16 +17,16 @@ p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d2b18}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d2b18; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6d3621}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7b321d}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6d3621; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0522ef}
-span.s3 {text-decoration: underline ; color: #0c26d7}
-span.s4 {color: #0d29e7}
-span.s5 {color: #041ab3}
+span.s2 {color: #142fe0}
+span.s3 {text-decoration: underline ; color: #192fc9}
+span.s4 {color: #1b34d9}
+span.s5 {color: #0f23a7}
 span.s6 {color: #000000}
-span.s7 {color: #8d2b18}
+span.s7 {color: #6d3621}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -43,7 +43,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Setting the Internal Bounds</b></p>
 <p class="p2"><br></p>
-<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s4">SCCompositeView</span></a> or other container view. One should not use a decorator such as FlowLayout directly on a NSScrollView, only on a container within it.<span class="Apple-converted-space"> </span></p>
+<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s4">SCCompositeView</span></a> or other container view, but there is no direct setter. One should not use a decorator such as FlowLayout directly on a NSScrollView, only on a container view within it.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Action Functions with Scrolling SCViews</b></p>
 <p class="p2"><br></p>
@@ -130,17 +130,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10">w = <span class="s5">SCWindow</span>.new;</p>
 <p class="p3"><br></p>
 <p class="p10">a = <span class="s5">SCScrollView</span>(w, <span class="s5">Rect</span>(40, 40, 300, 300));</p>
-<p class="p10">b = <span class="s5">SCScrollView</span>(w, <span class="s5">Rect</span>(0, 40, 40, 300)).hasHorizontalScroller_(<span class="s5">false</span>).hasVerticalScroller_(<span class="s5">false</span>);</p>
-<p class="p10">c = <span class="s5">SCScrollView</span>(w, <span class="s5">Rect</span>(40, 0, 300, 40)).hasHorizontalScroller_(<span class="s5">false</span>).hasVerticalScroller_(<span class="s5">false</span>);</p>
+<p class="p10">b = <span class="s5">SCScrollView</span>(w, <span class="s5">Rect</span>(0, 40, 40, 300)).hasHorizontalScroller_(<span class="s5">false</span>).hasVerticalScroller_(<span class="s5">false</span>)</p>
+<p class="p10"><span class="Apple-tab-span">	</span>.autoScrolls_(false);</p>
+<p class="p10">c = <span class="s5">SCScrollView</span>(w, <span class="s5">Rect</span>(40, 0, 300, 40)).hasHorizontalScroller_(<span class="s5">false</span>).hasVerticalScroller_(<span class="s5">false</span>)</p>
+<p class="p10"><span class="Apple-tab-span">	</span>.autoScrolls_(false);</p>
 <p class="p10">b.background = Color.grey;</p>
 <p class="p10">c.background = Color.grey;</p>
 <p class="p3"><br></p>
-<p class="p10">d = SCUserView(a, <span class="s5">Rect</span>(0, 0, 610, 610));</p>
-<p class="p10">e = SCUserView(b, <span class="s5">Rect</span>(0, 0, 40, 620));</p>
-<p class="p10">f = SCUserView(c, <span class="s5">Rect</span>(0, 0, 620, 40));</p>
+<p class="p10">d = SCUserView(a, <span class="s5">Rect</span>(0, 0, 620, 620));</p>
+<p class="p10">e = SCUserView(b, <span class="s5">Rect</span>(0, 0, 40, 630));</p>
+<p class="p10">f = SCUserView(c, <span class="s5">Rect</span>(0, 0, 630, 40));</p>
 <p class="p3"><br></p>
 <p class="p10">a.action = { var origin;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>origin = a.visibleOrigin.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>origin = a.visibleOrigin;</p>
 <p class="p10"><span class="Apple-tab-span">	</span>b.visibleOrigin = 0@(origin.y);</p>
 <p class="p10"><span class="Apple-tab-span">	</span>c.visibleOrigin = (origin.x)@0;</p>
 <p class="p10">};</p>
