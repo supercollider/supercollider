@@ -903,7 +903,6 @@ void SCContainerView::add(SCView *inChild)
 	mNumChildren++;
 	inChild->mParent = this;
 	inChild->mTop = mTop;
-	inChild->setVisibleFromParent(mVisible);
 	inChild->refresh();
 }
 
@@ -1638,6 +1637,7 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 	SetNSScrollView(scrollView);
 	[topGraphview addSubview: scrollView];
 	[view setFrameSizeToMinimum];
+	setVisibleFromParent(mParent->isVisible());
 }
 
 void SCScrollView::add(SCView *inChild)

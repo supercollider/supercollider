@@ -191,6 +191,7 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual SCRect checkMinimumSize();
 	virtual void setVisibleFromParent(bool show);
+	virtual bool isVisible() {return mVisible && mParent->isVisible(); }
 	
 protected:
 	SCView *mChildren;
@@ -286,6 +287,7 @@ public:
 	virtual bool canReceiveDrag();	
 	virtual void receiveDrag();
 	virtual void setInternalBounds(SCRect internalBounds);
+	virtual bool isVisible() {return mVisible; }
 protected:
 	friend class SCView;
 	void focusIs(SCView *inView) { 

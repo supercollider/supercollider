@@ -175,6 +175,8 @@ SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SC
 	[mCocoaToLangAction setEnterExecutesSelection:YES];	
 //	[mTextView autorelease];
 //	[mScrollView autorelease];
+	
+	setVisibleFromParent(mParent->isVisible());
 }
 
 SCCocoaTextView::~SCCocoaTextView()
@@ -548,6 +550,7 @@ SCMovieView::SCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 		
 		//need to call EnterMovies for other qt c calls
 		EnterMovies();
+		setVisibleFromParent(mParent->isVisible());
 }
 
 SCMovieView::~SCMovieView()
@@ -792,7 +795,7 @@ SCQuartzComposerView::SCQuartzComposerView(SCContainerView *inParent, PyrObject*
 	[mQCView setEventForwardingMask: NSAnyEventMask];
 	NSView *view = mTop->GetNSView();	
 	[view addSubview: mQCView];
-	
+	setVisibleFromParent(mParent->isVisible());
 }
 
 SCQuartzComposerView::~SCQuartzComposerView()
