@@ -886,6 +886,16 @@ int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	return SCView::setProperty(symbol, slot);
 }	
 
+void SCContainerView::setVisibleFromParent(bool show)
+{
+	SCView *child = mChildren;
+	while (child) {
+		SCView *next = child->mNext;
+		child->setVisibleFromParent(show); // needed for Cocoa views
+		child = next;
+	}
+}
+
 void SCContainerView::add(SCView *inChild)
 {
 	inChild->mNext = mChildren;

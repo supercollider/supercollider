@@ -190,6 +190,7 @@ public:
 	virtual bool canFocus();
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual SCRect checkMinimumSize();
+	virtual void setVisibleFromParent(bool show);
 	
 protected:
 	SCView *mChildren;
