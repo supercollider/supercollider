@@ -95,7 +95,12 @@ protected:
 	Movie mMovie;	
 };
 
-
+//////////////////////////////////////
+/*
+ SCQuartzComposerView by Scott Wilson
+ Copyright (c) 2007 Scott Wilson. All rights reserved.
+ Development funded in part by the Arts and Humanites Research Council http://www.ahrc.ac.uk/
+ */
 
 class SCQuartzComposerView : public SCView
 {

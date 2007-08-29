@@ -308,6 +308,11 @@ protected:
 	bool mConstructionMode;
 };
 
+/*
+ SCScrollTopView and SCScrollView by Scott Wilson
+ Development funded in part by the Arts and Humanites Research Council http://www.ahrc.ac.uk/
+ */
+
 class SCScrollTopView : public SCTopView
 {
 public:

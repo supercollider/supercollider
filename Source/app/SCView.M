@@ -874,7 +874,7 @@ int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			SCView *child = mChildren;
 			while (child) {
 				SCView *next = child->mNext;
-				child->setVisibleFromParent(visible); // needed for Cocoa views
+				child->setVisibleFromParent(visible && mParent->isVisible()); // needed for Cocoa views
 				child = next;
 			}
 			if (!mVisible) mTop->resetFocus(); //
@@ -891,7 +891,7 @@ void SCContainerView::setVisibleFromParent(bool show)
 	SCView *child = mChildren;
 	while (child) {
 		SCView *next = child->mNext;
-		child->setVisibleFromParent(show); // needed for Cocoa views
+		child->setVisibleFromParent(show && mVisible); // needed for Cocoa views
 		child = next;
 	}
 }
@@ -1709,6 +1709,21 @@ int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		[(SCGraphView*)mNSView setFrameSizeToMinimum];
 		refresh();
+		return errNone;
+	}
+	
+	if (strcmp(name, "visible")==0) {
+		bool visible = IsTrue(slot);
+		if(visible && mParent->isVisible()) 
+		{
+			[mNSScrollView setHidden:NO];
+		}
+		else
+		{
+			[mNSScrollView setHidden:YES];
+			mTop->resetFocus(); 
+		}
+		mVisible = visible;
 		return errNone;
 	}
 

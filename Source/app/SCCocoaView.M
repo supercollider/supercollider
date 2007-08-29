@@ -1,10 +1,9 @@
 /*
     SCCocoaView.M
 
-
     Created by falkenst on Tue Feb 08 2005.
     Copyright (c) 2005 jan truetzschler. All rights reserved.
-
+ 
 	SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
@@ -242,7 +241,7 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-		if(visible) 
+		if(visible && mParent->isVisible()) 
 		{
 			[mScrollView setHidden:NO];
 			[mTextView setHidden:NO];
@@ -575,7 +574,7 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-		if(visible) 
+		if(visible  && mParent->isVisible()) 
 		{
 			[mMovieView setHidden:NO];
 		}
@@ -782,6 +781,12 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 extern PyrClass *class_identdict;
 
 ///////////
+/*
+SCQuartzComposerView by Scott Wilson
+Copyright (c) 2007 Scott Wilson. All rights reserved.
+Development funded in part by the Arts and Humanites Research Council http://www.ahrc.ac.uk/
+*/
+
 SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
 	return new SCQuartzComposerView(inParent, inObj, inBounds);
@@ -820,7 +825,7 @@ int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-		if(visible) 
+		if(visible  && mParent->isVisible()) 
 		{
 			[mQCView setHidden:NO];
 		}
