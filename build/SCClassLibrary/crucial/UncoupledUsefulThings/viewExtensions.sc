@@ -38,6 +38,16 @@
 	}		
 }
 
++ SCScrollView {
+	flow { |func, bounds|
+		var f,comp;
+		f = FlowView(this,(bounds ?? { this.bounds.moveTo(0, 0) });
+		func.value(f);
+		f.resizeToFit;
+		^f
+	}
+}
+
 + FlowView {
 
 	flow { arg func,bounds;
