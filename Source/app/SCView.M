@@ -900,10 +900,11 @@ void SCContainerView::add(SCView *inChild)
 {
 	inChild->mNext = mChildren;
 	mChildren = inChild;
-        mNumChildren++;
+	mNumChildren++;
 	inChild->mParent = this;
 	inChild->mTop = mTop;
-        inChild->refresh();
+	inChild->setVisibleFromParent(mVisible);
+	inChild->refresh();
 }
 
 void SCContainerView::remove(SCView *inChild)
