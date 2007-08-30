@@ -116,7 +116,7 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
-	virtual void setVisibleFromParent(bool show) { } // does nothing, needed for Cocoa views
+	virtual void setVisibleFromParent() { } // does nothing, needed for Cocoa views
 	
 	virtual bool isDragSource() const;
 	virtual SCView* findView(SCPoint where);
@@ -190,7 +190,7 @@ public:
 	virtual bool canFocus();
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual SCRect checkMinimumSize();
-	virtual void setVisibleFromParent(bool show);
+	virtual void setVisibleFromParent();
 	virtual bool isVisible() {return mVisible && mParent->isVisible(); }
 	
 protected:
@@ -343,7 +343,7 @@ public:
 	SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 	virtual ~SCScrollView();
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
-	virtual void setVisibleFromParent(bool show);
+	virtual void setVisibleFromParent();
 	//virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
 	virtual void setBounds(SCRect inBounds);

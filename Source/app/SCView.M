@@ -871,12 +871,13 @@ int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		bool visible = IsTrue(slot);
 		if (mVisible != visible) {
 			mVisible = visible;
-			SCView *child = mChildren;
-			while (child) {
-				SCView *next = child->mNext;
-				child->setVisibleFromParent(visible && mParent->isVisible()); // needed for Cocoa views
-				child = next;
-			}
+//			SCView *child = mChildren;
+//			while (child) {
+//				SCView *next = child->mNext;
+//				child->setVisibleFromParent(visible && mParent->isVisible()); // needed for Cocoa views
+//				child = next;
+//			}
+			setVisibleFromParent();
 			if (!mVisible) mTop->resetFocus(); //
 			refresh();
 		}
@@ -886,12 +887,12 @@ int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	return SCView::setProperty(symbol, slot);
 }	
 
-void SCContainerView::setVisibleFromParent(bool show)
+void SCContainerView::setVisibleFromParent()
 {
 	SCView *child = mChildren;
 	while (child) {
 		SCView *next = child->mNext;
-		child->setVisibleFromParent(show && mVisible); // needed for Cocoa views
+		child->setVisibleFromParent(); // needed for Cocoa views
 		child = next;
 	}
 }
@@ -1520,9 +1521,10 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		else
 		{
 			[mNSScrollView setHidden:YES];
-			mTop->resetFocus(); 
 		}
 		mVisible = visible;
+		setVisibleFromParent(); //SCContainerView
+		resetFocus();
 		return errNone;
 	}
 	
@@ -1637,7 +1639,7 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 	SetNSScrollView(scrollView);
 	[topGraphview addSubview: scrollView];
 	[view setFrameSizeToMinimum];
-	setVisibleFromParent(mParent->isVisible());
+	setVisibleFromParent();
 }
 
 void SCScrollView::add(SCView *inChild)
@@ -1714,33 +1716,23 @@ int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-		if(visible && mParent->isVisible()) 
-		{
-			[mNSScrollView setHidden:NO];
-		}
-		else
-		{
-			[mNSScrollView setHidden:YES];
-			mTop->resetFocus(); 
-		}
 		mVisible = visible;
+		setVisibleFromParent();
 		return errNone;
 	}
 
 	return SCScrollTopView::setProperty(symbol, slot);
 }
 
-void SCScrollView::setVisibleFromParent(bool show)
+void SCScrollView::setVisibleFromParent()
 {
-	if(show && mVisible) {
+	if(mVisible && mParent->isVisible()) {
 		[mNSScrollView setHidden:NO];
-		return;
-	}
-	
-	if(!show) {
+	} else {
 		[mNSScrollView setHidden:YES];
 	}
-	
+	SCContainerView::setVisibleFromParent();
+	mTop->resetFocus();
 }
 
 SCScrollView::~SCScrollView()

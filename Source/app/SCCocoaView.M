@@ -175,7 +175,7 @@ SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SC
 //	[mTextView autorelease];
 //	[mScrollView autorelease];
 	
-	setVisibleFromParent(mParent->isVisible());
+	setVisibleFromParent();
 }
 
 SCCocoaTextView::~SCCocoaTextView()
@@ -241,19 +241,8 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-		if(visible && mParent->isVisible()) 
-		{
-			[mScrollView setHidden:NO];
-			[mTextView setHidden:NO];
-
-		}
-		else
-		{
-			[mScrollView setHidden:YES];
-			[mTextView setHidden:YES];
-			mTop->resetFocus(); 
-		}
 		mVisible = visible;
+		setVisibleFromParent();
 		return errNone;
 	}
 	
@@ -518,15 +507,13 @@ int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	return SCView::getProperty(symbol, slot);
 }
 
-void SCCocoaTextView::setVisibleFromParent(bool show)
+void SCCocoaTextView::setVisibleFromParent()
 {
-	if(show && mVisible) {
+	if(mVisible && mParent->isVisible()) {
 		[mScrollView setHidden:NO];
 		[mTextView setHidden:NO];
 		return;
-	}
-	
-	if(!show) {
+	} else {
 		[mScrollView setHidden:YES];
 		[mTextView setHidden:YES];
 	}
@@ -549,7 +536,7 @@ SCMovieView::SCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 		
 		//need to call EnterMovies for other qt c calls
 		EnterMovies();
-		setVisibleFromParent(mParent->isVisible());
+		setVisibleFromParent();
 }
 
 SCMovieView::~SCMovieView()
@@ -574,22 +561,8 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-		if(visible  && mParent->isVisible()) 
-		{
-			[mMovieView setHidden:NO];
-		}
-		else
-		{
-			[mMovieView setHidden:YES];
-			mTop->resetFocus(); 
-		}
-		[mMovieView setNeedsDisplay:YES];
-		NSRect frame = [mMovieView frame];
-		[mMovieView setFrame: NSInsetRect(frame,1,1)];
-		[mMovieView setFrame: frame];
-		
-		refresh();
 		mVisible = visible;
+		setVisibleFromParent();
 		return errNone;
 	}
 	
@@ -763,16 +736,19 @@ int SCMovieView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	return SCView::getProperty(symbol, slot);
 }
 
-void SCMovieView::setVisibleFromParent(bool show)
+void SCMovieView::setVisibleFromParent()
 {
-	if(show && mVisible) {
+	if(mVisible && mParent->isVisible()) {
 		[mMovieView setHidden:NO];
-		return;
-	}
-	
-	if(!show) {
+	} else {
 		[mMovieView setHidden:YES];
 	}	
+	[mMovieView setNeedsDisplay:YES];
+	NSRect frame = [mMovieView frame];
+	[mMovieView setFrame: NSInsetRect(frame,1,1)];
+	[mMovieView setFrame: frame];
+	mTop->resetFocus();
+	refresh();
 }
 
 extern PyrSymbol *s_proto, *s_parent;
@@ -800,7 +776,7 @@ SCQuartzComposerView::SCQuartzComposerView(SCContainerView *inParent, PyrObject*
 	[mQCView setEventForwardingMask: NSAnyEventMask];
 	NSView *view = mTop->GetNSView();	
 	[view addSubview: mQCView];
-	setVisibleFromParent(mParent->isVisible());
+	setVisibleFromParent();
 }
 
 SCQuartzComposerView::~SCQuartzComposerView()
@@ -825,16 +801,17 @@ int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-		if(visible  && mParent->isVisible()) 
-		{
-			[mQCView setHidden:NO];
-		}
-		else
-		{
-			[mQCView setHidden:YES];
-			mTop->resetFocus(); 
-		}
+//		if(visible  && mParent->isVisible()) 
+//		{
+//			[mQCView setHidden:NO];
+//		}
+//		else
+//		{
+//			[mQCView setHidden:YES];
+//			mTop->resetFocus(); 
+//		}
 		mVisible = visible; 
+		setVisibleFromParent();
 		return errNone;
 	}
 	
@@ -1187,14 +1164,13 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 		
 }
 
-void SCQuartzComposerView::setVisibleFromParent(bool show)
+void SCQuartzComposerView::setVisibleFromParent()
 {
-	if(show && mVisible) {
+	if(mVisible && mParent->isVisible()) {
 		[mQCView setHidden:NO];
 		return;
-	}
-	
-	if(!show) {
+	} else {
 		[mQCView setHidden:YES];
 	}	
+	mTop->resetFocus();
 }
