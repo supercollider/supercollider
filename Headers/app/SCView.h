@@ -355,7 +355,7 @@ public:
 	
 	virtual void drawIfNecessary(SCRect inDamage);
 	virtual void drawSubViewIfNecessary(SCRect inDamage);
-
+	virtual bool isVisible() {return mVisible && mParent->isVisible(); }
 };
 
 inline bool SCView::isFocus() const { return mTop->focusView() == this; }
