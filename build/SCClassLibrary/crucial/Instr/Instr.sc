@@ -199,7 +199,7 @@ Instr  {
 	}	
 
 	*objectAt { arg name;
-		var symbolized,search,path,pathParts,rootPath;
+		var symbolized,search,path,pathParts,rootPath,instr;
 		symbolized = Instr.symbolizeName(name);
 		search = Library.atList(([this] ++ symbolized));
 		if(search.notNil,{ ^search });
@@ -208,7 +208,8 @@ Instr  {
 		if((path = this.findPath(symbolized)).isNil,{
 			^nil
 		});
-		path.loadPath(false);
+		instr = path.loadPath(false);
+		if(instr.notNil,{ instr.path = path });
 		
 		// now see if its there
 		^Library.atList([this] ++ symbolized);
