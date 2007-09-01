@@ -314,6 +314,23 @@ Pfin : FilterPattern {
 }	
 
 
+// it is not correct to call stream.next(nil) on a value stream
+// but there is no good way to distinguish in Pfin so we need a subclass
+
+Pfinval : Pfin {
+	embedInStream { arg event;
+		var inevent;
+		var stream = pattern.asStream;
+		
+		count.value.do({
+			inevent = stream.next(event);
+			if (inevent.isNil, { ^event });
+			event = inevent.yield;
+		});
+		^event
+	}
+}
+
 Pfindur : FilterPattern {
 	var <>dur, <>tolerance;
 	*new { arg dur, pattern, tolerance = 0.001;
