@@ -25,26 +25,26 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>Pfin</b><span class="s1"><span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><b>Pfinval</b><span class="s1"><span class="Apple-converted-space"> </span></span></p>
 <p class="p2"><br></p>
-<p class="p3"><b>superclass: FilterPattern</b></p>
+<p class="p3"><b>superclass: Pfin</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Pfin(count, pattern)</b></p>
+<p class="p3"><b>Pfinval(count, pattern)</b></p>
 <p class="p2"><br></p>
 <p class="p3">embeds count elements of the pattern into the stream</p>
 <p class="p2"><br></p>
-<p class="p3"><b>Note:</b> Pfin is intended for event patterns. After the count elements are embedded, the stream is called with a nil input value so that Pmono, Pfx and others can release resources. Ordinary value patterns should not be called in this case, so for value patterns, you should use <b>[</b><b><span class="s2">Pfinval</span></b><b>]</b> instead.</p>
+<p class="p3">Note: Pfinval is not appropriate for wrapping Pmono, Pfx etc. For these types of event patterns, you should use <b>[</b><b><span class="s2">Pfin</span></b><b>]</b>.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
 <p class="p4"><span class="s3">var</span> a, b;</p>
-<p class="p4">a = <span class="s3">Pfin</span>(5, Pseq(#[1, 2, 3],inf));</p>
+<p class="p4">a = <span class="s3">Pfinval</span>(5, Pseq(#[1, 2, 3],inf));</p>
 <p class="p4">x = a.asStream;</p>
 <p class="p4">9.do({ x.next.postln; });</p>
 <p class="p4">)</p>
 <p class="p2"><br></p>
 <p class="p5"><br></p>
-<p class="p3">Pfin used as a sequence of pitches</p>
+<p class="p3">Pfinval used as a sequence of pitches</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p4">(</p>
@@ -57,7 +57,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">)</p>
 <p class="p7"><br></p>
 <p class="p4">(</p>
-<p class="p4">c = Pn(<span class="s3">Pfin</span>({ rrand(3, 5)}, Pseq([1, 2, 3, 4, 5, 6],inf)*4+65),inf);</p>
+<p class="p4">c = Pn(<span class="s3">Pfinval</span>({ rrand(3, 5)}, Pseq([1, 2, 3, 4, 5, 6],inf)*4+65),inf);</p>
 <p class="p4">x = c.asStream;</p>
 <p class="p8">Routine<span class="s4">({</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>loop({</p>
