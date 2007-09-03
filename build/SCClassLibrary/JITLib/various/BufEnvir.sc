@@ -20,6 +20,7 @@ BufEnvir : EnvironmentRedirect {
 	put { arg key, obj;
 		var buf, bufnum;
 		if(server.serverRunning.not) { Error("server not running").throw };
+		if(key.isNil) { Error("BufEnvir:put() key is nil").throw };
 		if(key.isSequenceableCollection) { ^this.putAll(key, obj.asArray) };
 		server.makeBundle(nil, {
 			buf = this.at(key);
@@ -32,6 +33,7 @@ BufEnvir : EnvironmentRedirect {
 	
 	at { arg key;
 		var res;
+		if(key.isNil) { Error("BufEnvir:at() key is nil").throw };
 		if(key.isSequenceableCollection) { ^this.getAll(key) };
 		res = envir.at(key);
 		if(server.serverRunning.not) { Error("server not running").throw };
