@@ -142,6 +142,11 @@ struct Dswitch1 : public Unit
 {
 };
 
+struct Dswitch : public Unit
+{
+	int m_index;
+};
+
 struct Donce : public Unit
 {
 	int m_bufcounter; 
@@ -201,6 +206,9 @@ void Dxrand_next(Dxrand *unit, int inNumSamples);
 
 void Dswitch1_Ctor(Dswitch1 *unit);
 void Dswitch1_next(Dswitch1 *unit, int inNumSamples);
+
+void Dswitch_Ctor(Dswitch *unit);
+void Dswitch_next(Dswitch *unit, int inNumSamples);
 
 void Donce_Ctor(Donce *unit);
 void Donce_next(Donce *unit, int inNumSamples);
@@ -412,8 +420,13 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 			}
 			float x = DEMANDINPUT(duty_level);
 			//printf("in  %d %g\n", k, x);
-			if (sc_isnan(x)) x = prevout;
-			else prevout = x;
+			if(sc_isnan(x)) {
+				x = prevout;
+				int doneAction = (int)ZIN0(duty_doneAction);
+				DoneAction(doneAction, unit);
+			} else {
+				prevout = x;
+			}
 			out[i] = x;
 			
 		} else {
@@ -456,8 +469,14 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 		
 			float x = DEMANDINPUT(duty_level);
 			//printf("in  %d %g\n", k, x);
-			if (sc_isnan(x)) x = prevout;
-			else prevout = x;
+			if(sc_isnan(x)) {
+				x = prevout;
+				int doneAction = (int)ZIN0(duty_doneAction);
+				DoneAction(doneAction, unit);
+			} else {
+				prevout = x;
+			}
+
 			out[i] = x;
 			
 		} else {
@@ -500,8 +519,13 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 			}
 			float x = DEMANDINPUT(duty_level);
 			//printf("in  %d %g\n", k, x);
-			if (sc_isnan(x)) x = prevout;
-			else prevout = x;
+			if(sc_isnan(x)) {
+				x = prevout;
+				int doneAction = (int)ZIN0(duty_doneAction);
+				DoneAction(doneAction, unit);
+			} else {
+				prevout = x;
+			}
 			out[i] = x;
 		} else {
 			count--;
@@ -1699,6 +1723,55 @@ void Dswitch1_Ctor(Dswitch1 *unit)
 	OUT0(0) = 0.f;
 }
 
+/////////////////////////////
+
+void Dswitch_next(Dswitch *unit, int inNumSamples)
+{
+	int index; 
+	float ival;
+	if (inNumSamples) {
+		float val = DEMANDINPUT(unit->m_index);
+		printf("index: %i\n", (int) val);
+		if(sc_isnan(val)) {
+			ival = DEMANDINPUT(0);
+		
+			if(sc_isnan(ival)) { 
+				OUT0(0) = ival; 
+				return; 
+			}
+			
+			index = (int32)floor(ival + 0.5f);
+			index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
+			val = DEMANDINPUT(index);
+			
+			RESETINPUT(unit->m_index);
+			printf("resetting index: %i\n", unit->m_index);
+			unit->m_index = index;
+		}
+		OUT0(0) = val;
+		
+	} else {
+		printf("...\n");
+		for (int i=0; i<unit->mNumInputs; ++i) {
+			RESETINPUT(i);
+		}
+		index = (int32)floor(DEMANDINPUT(0) + 0.5f);
+		index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
+		unit->m_index = index;
+	}
+}
+
+void Dswitch_Ctor(Dswitch *unit)
+{
+	SETCALC(Dswitch_next);
+	int index = (int32)floor(DEMANDINPUT(0) + 0.5f);
+	index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
+	unit->m_index = index;
+	OUT0(0) = 0.f;
+}
+
+//////////////////////////////
+
 
 
 void Donce_next(Donce *unit, int inNumSamples)
@@ -1815,6 +1888,7 @@ void Dbufrd_Ctor(Dbufrd *unit)
   OUT0(0) = 0.f;    
 }
 
+//////////////////////////////////////////////////////
 
 
 
@@ -1838,5 +1912,6 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Drand);
 	DefineSimpleUnit(Dxrand);
 	DefineSimpleUnit(Dswitch1);
+	DefineSimpleUnit(Dswitch);
 	DefineSimpleUnit(Donce);
 }
