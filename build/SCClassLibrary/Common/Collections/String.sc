@@ -187,6 +187,10 @@ String[char] : RawArray {
 		^this.as(Array).scramble.as(String)
 	}
 	
+	rotate { |n|
+		^this.as(Array).rotate(n).as(String)
+	}
+	
 	compile { ^thisProcess.interpreter.compile(this); }
 	interpret { ^thisProcess.interpreter.interpret(this); } 
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
