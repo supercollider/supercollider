@@ -65,11 +65,10 @@ Dgeom : UGen {
 }
 
 Dbufrd : UGen {
-	*new { arg bufnum=0, phase=0.0 , loop=1.0;
+	*new { arg bufnum=0, phase=0.0, loop=1.0;
 		^this.multiNew('demand', bufnum, phase, loop)	
 	}
 }
-
 
 ListDUGen : UGen {
 	*new { arg list, repeats=1;
@@ -88,6 +87,7 @@ Dswitch1 : UGen {
 	}
 }
 
+Dswitch : Dswitch1 {}
 
 Dwhite : UGen {
 	*new { arg lo, hi, length=inf;
