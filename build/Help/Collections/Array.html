@@ -5,23 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a62820}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a62820; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001aa9}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {color: #0019b7}
+span.s1 {color: #001aa9}
 span.s2 {color: #000000}
-span.s3 {color: #0000ff}
-span.s4 {color: #326f17}
+span.s3 {color: #000ceb}
+span.s4 {color: #366d29}
 span.s5 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -33,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Arrays are ArrayedCollections whose slots may contain any object. Arrays have a fixed maximum size beyond which they cannot grow. For expandable arrays, use the List class.</p>
 <p class="p2"><br></p>
-<p class="p3">An array can be created with a fixed maxiumum capacity:</p>
+<p class="p3">An array can be created with a fixed maximum capacity:</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>z = <span class="s1">Array</span>.new(size);</p>
 <p class="p2"><br></p>
@@ -214,7 +214,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">[1, 2, 3, 4].containsSeqColl.postln</p>
 <p class="p8"><br></p>
 <p class="p4">[1, 2, [3], 4].containsSeqColl.postln</p>
+<p class="p8"><br></p>
+<p class="p3"><b>powerset</b></p>
 <p class="p2"><br></p>
+<p class="p3">Returns all possible combinations of the array's elements.</p>
+<p class="p8"><br></p>
+<p class="p4">[1, 2, 3].powerset.postln</p>
+<p class="p8"><br></p>
+<p class="p4">[1, 2, 3].powerset.sort({ |a, b| a.size &gt; b.size }); // sort by size, big first</p>
+<p class="p8"><br></p>
+<p class="p4">[1, 2, 3].powerset.sort({ |a, b| a.size &gt; b.size }).reverse; // by size, small first</p>
+<p class="p8"><br></p>
+<p class="p3">powerset is also supported in Collection:</p>
+<p class="p2"><br></p>
+<p class="p4">Set[1, 2, 3].powerset;</p>
+<p class="p8"><br></p>
+<p class="p4">List[1, 2, 3].powerset</p>
+<p class="p8"><br></p>
+<p class="p4">(a: 1, b: 2, c: 3).powerset;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>multiChannelExpand</b></p>
 <p class="p2"><br></p>

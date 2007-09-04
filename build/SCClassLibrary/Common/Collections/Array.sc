@@ -179,6 +179,22 @@ Array[slot] : ArrayedCollection {
 		^if (n<0) { remain ++ fill } { fill ++ remain }
 	}
 	
+	powerset { 
+		var arrSize = this.size; 
+		var powersize = (2 ** arrSize).asInteger;
+		var powersOf2 = ({ |i| 2 ** i }).dup(arrSize);
+			
+		^Array.fill(powersize, { |i| 
+			var elemArr = Array.new;
+			powersOf2.do { |mod, j| 
+				if (i div: mod % 2 != 0) { 
+					elemArr = elemArr.add(this[j]) 
+				};
+			};
+			elemArr;
+		}); 
+	}
+	
 	// UGen support:
 	source {
 		// returns the source UGen from an Array of OutputProxy(s)

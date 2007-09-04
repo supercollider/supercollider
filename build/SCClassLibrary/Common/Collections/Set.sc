@@ -62,10 +62,9 @@ Set : Collection {
 			^nil
 		});
 	}
-	powerset {
-		var class = this.species; 
-		^this.asArray.dup(this.size).allTuples.collect(_.as(class)).as(Set).as(class);
-	}
+//	powerset {
+//		^this.asArray.sort.powerset
+//	}
 	unify {
 		var result = this.species.new;
 		this.do {|x| result.addAll(x) }

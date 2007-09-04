@@ -371,6 +371,9 @@ Collection {
 	asSet { ^Set.new(this.size).addAll(this); }
 	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this); }
 	
+	powerset { ^this.asArray.sort.powerset }
+
+	
 	printAll { this.do { | item | item.postln; }; } // convenience method
 	printcsAll { this.do { | item | item.postcs; }; } // convenience method
 	dumpAll { this.do { | item | item.dump; }; } // convenience method
