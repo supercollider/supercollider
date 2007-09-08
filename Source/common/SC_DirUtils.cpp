@@ -229,7 +229,9 @@ void sc_GetUserHomeDirectory(char *str, int size)
 {
 #ifndef SC_WIN32
 	char *home = getenv("HOME");
-	strncpy(str, home, size);
+	if(home!=NULL){
+		strncpy(str, home, size);
+	}
 #else
 	win32_GetHomeFolder(str,size);
 #endif
