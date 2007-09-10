@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.42">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #000000}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {color: #0000bf}
+</style>
+</head>
+<body>
+<p class="p1"><b>RelativeToParent</b></p>
+<p class="p2"><br></p>
+<p class="p3">A decorator for use with SCCompositeView</p>
+<p class="p3">it causes the coordinate system of children placed</p>
+<p class="p2"><br></p>
+<p class="p4">Normally the coordinate system is the same of that as the parent,</p>
+<p class="p4">not relative to the parent.<span class="Apple-converted-space">  </span>ie. 0,0 is not the top left corner inside of the parent)</p>
+<p class="p4">as you might expect.</p>
+<p class="p5">(</p>
+<p class="p6">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p7"><br></p>
+<p class="p6">c = <span class="s1">SCCompositeView</span>(w,<span class="s1">Rect</span>(50,0,300,300));</p>
+<p class="p7"><br></p>
+<p class="p6">a = <span class="s1">SC2DSlider</span>(c,<span class="s1">Rect</span>(0,0,100,100));<span class="Apple-converted-space">   </span></p>
+<p class="p6">b = <span class="s1">SC2DSlider</span>(c,<span class="s1">Rect</span>(100,100,100,100));</p>
+<p class="p7"><br></p>
+<p class="p6">c.background = <span class="s1">Gradient</span>(<span class="s1">Color</span>.rand,<span class="s1">Color</span>.rand);</p>
+<p class="p7"><br></p>
+<p class="p6">w.front;</p>
+<p class="p7"><br></p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p5">the decorator fixes that for you</p>
+<p class="p5">(</p>
+<p class="p6">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p7"><br></p>
+<p class="p6">c = <span class="s1">SCCompositeView</span>(w,<span class="s1">Rect</span>(50,0,300,300));</p>
+<p class="p6">c.decorator = <span class="s1">RelativeToParent</span>( c.bounds );</p>
+<p class="p7"><br></p>
+<p class="p6">a = <span class="s1">SC2DSlider</span>(c,<span class="s1">Rect</span>(0,0,100,100));<span class="Apple-converted-space">   </span></p>
+<p class="p6">b = <span class="s1">SC2DSlider</span>(c,<span class="s1">Rect</span>(100,100,100,100));</p>
+<p class="p7"><br></p>
+<p class="p6">c.background = <span class="s1">Gradient</span>(<span class="s1">Color</span>.rand,<span class="s1">Color</span>.rand);</p>
+<p class="p7"><br></p>
+<p class="p6">w.front;</p>
+<p class="p7"><br></p>
+<p class="p3">)</p>
+<p class="p8"><br></p>
+<p class="p9">// this doesn't work yet though</p>
+<p class="p6">c.bounds = c.bounds.moveBy(50,50);</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p3">development note:</p>
+<p class="p8"><br></p>
+<p class="p3">what is needed is to inform the decorator that the parentBoundsDidChange</p>
+<p class="p3">and replace all children.</p>
+<p class="p3">the same thing needs to happen when a child is removed (if the decorator was a flow layout).</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+</body>
+</html>
