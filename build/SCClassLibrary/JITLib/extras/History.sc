@@ -441,9 +441,9 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		^indicesFound
 	}
 		
-	*makeWin { |where| ^current.makeWin(where) }
+	*makeWin { |where, textHeight=12| ^current.makeWin(where, textHeight) }
 	
-	makeWin { |where| ^HistoryGui(this, where) }
+	makeWin { |where, textHeight=12| ^HistoryGui(this, where, textHeight) }
 	
 	*document { current.document } 
 	
@@ -489,7 +489,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 	*checkPath { |path| 
 		var ext = path.splitext[1];
-		if ([\sc, \scd, \txt, \nil].includes(ext.asSymbol)) {
+		if ([\sc, \scd, \txt, \nil, \rtf].includes(ext.asSymbol)) {
 			^true
 		} { 
 			warn("History: file format" + ext + "for story files likely not supported!				Please use .txt, .scd, or other text format.");
