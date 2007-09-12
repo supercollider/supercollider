@@ -3,7 +3,7 @@ BroadcastServer {
 	var	<>homeServer, <>addresses, >addr;
 	var	broadcast = true;
 	
-	*new { |name, addr, options, clientID|
+	*new { arg name, addr, options, clientID;
 		^super.new.init(name, addr, options, clientID)
 	}
 	
@@ -12,7 +12,7 @@ BroadcastServer {
 		addr = argAddr;
 	}
 	
-	*for { arg homeServer, addresses; //local server is a router
+	*for { arg homeServer, addresses; // local server is a router
 		^super.new.homeServer_(homeServer)
 			.addr_(homeServer.addr)
 			.addresses_(addresses)

@@ -29,7 +29,7 @@ Maybe : FuncProxy {
 			^this.reduceFuncProxy(args)
 	}
 	reduceFuncProxy { arg args, protect=true;
-		this.postln;
+		//this.postln;
 		^if(protect.not) { 
 			value.reduceFuncProxy(args) 
 		} {
@@ -126,6 +126,10 @@ Maybe : FuncProxy {
 		this.source.do(function) // problem: on the fly change is not picked up.
 	}
 	
+	doesNotUnderstand { arg selector ... args;
+		^this.composeNAryOp(selector, args)
+	}
+	
 	// math
 	composeUnaryOp { arg aSelector;
 		^UnaryOpFunctionProxy.new(aSelector, this)
@@ -148,10 +152,9 @@ Maybe : FuncProxy {
 Perhaps : Maybe {
 
 	var <>connected, <>action;
-	
+		
 	// find better name.
-	glue {
-		"current: %\n".postf(current);
+	glue { 
 		current !? {
 			this.addDependant(current);
 			current.addConnection(this);
@@ -182,9 +185,14 @@ Perhaps : Maybe {
 	update { arg who, what;
 		if(who !== this) {
 			"updated % %\n".postf(who, what);
-			action.value(what); // we may need to catch circularity somewhere here.
-							// maybe with a catchRecursion.
+			this.doAction(who, what)
 		};	
+	}
+	
+	doAction { arg who, what;
+		this.action.value(this, what); 
+		// we may need to catch circularity somewhere here.
+		// maybe with a catchRecursion.
 	}
 }
 
@@ -209,36 +217,3 @@ Fdef : FuncProxy {
 	}
 
 }
-
-/*
-MaybeDef : Maybe {
-	classvar <>all;
-	
-	*initClass { 
-		all = IdentityDictionary.new 
-	}
-	
-	*new { arg key, val;
-		var res;
-		res = all[key];
-		if(res.isNil) {
-			res = super.new.source_(val);
-			all[key] = res
-		} {
-			if(val.notNil) { res.source = val };
-		}
-		^res
-	}
-
-}
-
-MaybeApply : MaybeDef {
-	*new { arg key ... args;
-		^all[key].valueArray(args)
-	}
-}
-*/
-
-
-
-

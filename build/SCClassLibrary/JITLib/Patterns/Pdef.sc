@@ -290,7 +290,7 @@ TaskProxy : PatternProxy {
 	constrainStream { arg str;
 		^if(quant.notNil and: { str.notNil }) {
 			Pseq([
-				EmbedOnce(Pconst(clock.timeToNextBeat(quant), str, 0.001)),
+				EmbedOnce(Pconst(thisThread.clock.timeToNextBeat(quant), str, 0.001)),
 				pattern
 			])
 		} { pattern }.asStream
@@ -420,16 +420,17 @@ EventPatternProxy : TaskProxy {
 				quantVal = quant;
 			};
 			
-			delta = clock.timeToNextBeat(quant);
+			delta = thisThread.clock.timeToNextBeat(quant);
 			tolerance = quantVal % delta % 0.125;
 			if(catchUp.notNil) {
-				deltaTillCatchUp = clock.timeToNextBeat(catchUp);
+				deltaTillCatchUp = thisThread.clock.timeToNextBeat(catchUp);
 				new = pattern.asStream;
 				forwardTime = quantVal - delta + deltaTillCatchUp;
 				delta = new.fastForward(forwardTime, tolerance) + deltaTillCatchUp;
 			} {
 				new = pattern
 			};
+			"embedding new stream.. delta = %\n".postf(delta);
 			if(fadeTime.isNil) {
 				if(delta == 0) {
 					str.next(nil); // finish
@@ -475,7 +476,7 @@ EventPatternProxy : TaskProxy {
 		playQuant = quant ? this.quant;
 		if(player.isNil) { 
 			player = EventStreamPlayer(this.asProtected.asStream, protoEvent);
-			player.play(argClock, doReset, quant ? this.quant);
+			player.play(argClock, doReset, playQuant);
 		} {
 				// resets  when stream has ended or after pause/cmd-period:
 			if (player.streamHasEnded or: {player.wasStopped}) { doReset = true };
@@ -483,7 +484,7 @@ EventPatternProxy : TaskProxy {
 				player.event = protoEvent
 			};
 			if(player.isPlaying.not) {
-				player.play(argClock, doReset, quant ? this.quant);
+				player.play(argClock, doReset, playQuant);
 			} { 
 				if (doReset) { player.reset };
 			}
