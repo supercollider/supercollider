@@ -59,16 +59,19 @@ HistoryGui {
 		
 		filTextV = sys.textView.new(w, Rect(106,22,100,20)).string_("")
 			.enterInterpretsSelection_(false)
+			.resize_(2)
 			.keyDownAction_({ |txvw, char, mod, uni, keycode| 
 				this.setStrFilter(txvw.string);
 				if (this.filtering) { this.filterLines; }
 			});
 		topBut = sys.button.new(w, Rect(190, 22, 32, 20))
 			.states_([["top"], ["keep"]]).value_(0)
+			.resize_(3)
 			.action_({ |but| this.stickMode_(but.value) });
 		
 		sys.button.new(w, Rect(42, 22, 32, 20)) ////
 			.states_([["rip"]])
+			.resize_(3)
 			.action_({ |btn| this.findDoc; doc.string_(textV.string); });		
 		listV = sys.listView.new(w,bounds.moveTo(2, 44).resizeBy(-4, -48))
 			.font_(font)
@@ -137,7 +140,7 @@ HistoryGui {
 				newIndex = if (selectedLine.isNil) { 0 }
 					{ linesToShow.indexOf(selectedLine) };
 				listV.value_(newIndex ? 0);
-
+				if(stickMode == 0) { listV.action.value(listV) };
 				history.hasMovedOn = false;
 			};
 		}, 1, { w.isClosed }, "histwin");
