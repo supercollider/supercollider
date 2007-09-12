@@ -46,7 +46,7 @@ Klank : UGen {
 			^this.multiNewList(['audio',  input, freqscale, 
 						freqoffset, decayscale, specificationsArrayRef] )
 	}
-	*new1 { arg rate ,  input,freqscale,freqoffset,decayscale,arrayRef;
+	*new1 { arg rate, input, freqscale, freqoffset, decayscale, arrayRef;
 		var specs, freqs, amps, times;
 		# freqs, amps, times = arrayRef.dereference;
 		specs = [freqs, 
