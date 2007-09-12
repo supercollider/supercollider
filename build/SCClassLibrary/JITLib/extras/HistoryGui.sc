@@ -33,7 +33,8 @@ HistoryGui {
 					"gets here?".postln;
 					this.findDoc; doc.string_(textV.string);
 				};
-			});
+			})
+			.resize_(2);
 
 			// to do: disable if history is not current!
 		startBut = sys.button.new(w, Rect(0, 0, 50, 20)) ////
