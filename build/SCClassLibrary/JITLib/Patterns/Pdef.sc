@@ -3,7 +3,7 @@
 
 PatternProxy : Pattern {
 	var <source, <pattern, <>envir;
-	var <>clock, <>quant, <>condition=true, reset;
+	var <>clock, quant, <>condition=true, reset;
 				// quant new pattern insertion. can be [quant, offset]
 				// in EventPatternProxy it can be [quant, offset, onset]
 				
@@ -18,9 +18,11 @@ PatternProxy : Pattern {
 	
 	init { arg src;
 		clock = TempoClock.default; 
-		quant = this.class.defaultQuant;
 		this.source = src;
 	}
+	
+	quant { ^quant ??  { this.class.defaultQuant } }
+	quant_ { arg val; quant = val }
 	
 	constrainStream { ^pattern.asStream }
 	
@@ -288,9 +290,9 @@ TaskProxy : PatternProxy {
 	*default { ^Pn(this.defaultValue,1) }
 	
 	constrainStream { arg str;
-		^if(quant.notNil and: { str.notNil }) {
+		^if(this.quant.notNil and: { str.notNil }) {
 			Pseq([
-				EmbedOnce(Pconst(thisThread.clock.timeToNextBeat(quant), str, 0.001)),
+				EmbedOnce(Pconst(thisThread.clock.timeToNextBeat(this.quant), str, 0.001)),
 				pattern
 			])
 		} { pattern }.asStream
@@ -410,7 +412,7 @@ EventPatternProxy : TaskProxy {
 	*defaultValue { ^Event.silent }
 
 	constrainStream { arg str;
-		var delta, tolerance, new, quantVal, catchUp, deltaTillCatchUp, forwardTime;
+		var delta, tolerance, new, quantVal, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
 		^if(quant.notNil) {
 			
 			if(quant.isSequenceableCollection) {
@@ -430,7 +432,7 @@ EventPatternProxy : TaskProxy {
 			} {
 				new = pattern
 			};
-			"embedding new stream.. delta = %\n".postf(delta);
+
 			if(fadeTime.isNil) {
 				if(delta == 0) {
 					str.next(nil); // finish
@@ -451,7 +453,7 @@ EventPatternProxy : TaskProxy {
 	*parallelise { arg list; ^Ppar(list) }
 	
 	outset_ { arg val; quant = quant.instill(2, val) }
-	outset { arg val; ^quant.obtain(2) }
+	outset { arg val; ^this.quant.obtain(2) }
 	
 		
 	// branching from another thread
@@ -480,9 +482,7 @@ EventPatternProxy : TaskProxy {
 		} {
 				// resets  when stream has ended or after pause/cmd-period:
 			if (player.streamHasEnded or: {player.wasStopped}) { doReset = true };
-			if(protoEvent.notNil and: {Êplayer.event !== protoEvent }) {
-				player.event = protoEvent
-			};
+			protoEvent !? { player.event = protoEvent };
 			if(player.isPlaying.not) {
 				player.play(argClock, doReset, playQuant);
 			} { 
