@@ -20,7 +20,7 @@ SkipJack {
 	init {
 		task = Task ({
 			if( verbose )	{ ("SkipJack" + name + "starts.").postln }; 
-				while { dt.wait; stopTest.value.not } { updateFunc.value(this) };
+				while { dt.value.wait; stopTest.value.not } { updateFunc.value(this) };
 				this.stop;
 			}, clock ? defaultClock);
 	}
@@ -36,6 +36,8 @@ SkipJack {
 		CmdPeriod.add(this);
 	}
 	
+	play { this.start }
+	
 	stop { 
 		task.stop;
 		all.remove(this);
@@ -44,7 +46,7 @@ SkipJack {
 	}
 }
 
-Watcher : SkipJack { 
+Watcher : SkipJack {
 	*new { arg name = "anon", updateFunc, dt=0.2, stopTest = false;
 		"Watcher is only for backward compatibility, use SkipJack!".postln;
 		^super.newCopyArgs(updateFunc, dt, stopTest, name).init.start;
