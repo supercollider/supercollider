@@ -5,14 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.42">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-span.s1 {color: #0025b2}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+span.s1 {color: #0000bf}
+span.s2 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -21,24 +27,60 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>superclass: PauseStream<span class="Apple-converted-space"> </span></b></p>
 <p class="p4"><br></p>
-<p class="p3">Task is a pauseable process. It is implemented by wrapping a PauseStream around a Routine. Most of it's methods (start, stop, reset) are inherited from PauseStream.</p>
+<p class="p3">Task is a pauseable process. It is implemented by wrapping a PauseStream around a Routine. Most of its methods (start, stop, reset) are inherited from PauseStream.</p>
+<p class="p4"><br></p>
+<p class="p3">Tasks are not 100% interchangeable with Routines.</p>
+<p class="p4"><br></p>
+<p class="p3">- Condition does not work properly inside of a Task.</p>
+<p class="p3">- Stopping a task and restarting it quickly may yield surprising results (see example below), but this is necessary to prevent tasks from becoming unstable if they are started and/or stopped in rapid succession.</p>
+<p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3"><b>Task.new(func, clock)</b></p>
 <p class="p3"><b>func </b>- A <b>Function</b> to be evaluated.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><b>clock </b>- A Clock in which to play the <b>Routine</b>. If you do not provide a Clock the default is an instance of TempoClock. Remember that methods which call Cocoa primitives (i.e. GUI functions) must be played in AppClock.</p>
-<p class="p4"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><br></p>
+<p class="p7">t = <span class="s1">Task</span>({<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>50.do({ <span class="s1">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.squared.postln;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5.wait<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>});</p>
+<p class="p6"><br></p>
+<p class="p7">t.start;</p>
+<p class="p7">t.pause;</p>
+<p class="p7">t.resume;</p>
+<p class="p7">t.reset;</p>
+<p class="p7">t.stop;</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p8">// unexpected behavior here</p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p7">t = <span class="s1">Task</span>({</p>
+<p class="p7"><span class="Apple-tab-span">	</span>[<span class="s2">"go"</span>, <span class="s1">thisThread</span>.clock.beats].postln;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">inf</span>.do({ <span class="s1">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ <span class="s2">"wake up"</span>, i ].postln<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>})</p>
+<p class="p7">});</p>
+<p class="p6"><br></p>
+<p class="p7">fork {</p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.start;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.stop;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.start;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>6.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.stop;</p>
+<p class="p7">};</p>
+<p class="p7">)</p>
 <p class="p2"><br></p>
-<p class="p5">t = <span class="s1">Task</span>({<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>50.do({ <span class="s1">arg</span> i;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.squared.postln;<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5.wait<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p9">[ go, 1702.114411906 ]</p>
+<p class="p9">[ go, 1704.114411906 ]</p>
 <p class="p2"><br></p>
-<p class="p5">t.start;</p>
-<p class="p5">t.pause;</p>
-<p class="p5">t.resume;</p>
-<p class="p5">t.reset;</p>
-<p class="p5">t.stop;</p>
+<p class="p10">Based on the forked thread, you would expect the second "go" line of output to occurs 0.2 seconds after the first, but in fact it happens two seconds later (the same amount of time the task waits between iterations). This is because the task must not schedule itself on the clock more than once. When the task is stopped, it remains scheduled until it wakes up again (based on its wait time). If, during this interval, the task were restarted, there would be two references to the task in the scheduler queue -- a situation that is irrecoverable short of stopping everything with command-period.</p>
+<p class="p5"><br></p>
+<p class="p10">As a result, Task should be used for processes that need to start and stop relatively infrequently, but for which maximum stability is required. If you need fine-grained control over when and how the process stops and resumes (as is the case, for instance, with condition), Routine is preferred.</p>
 </body>
 </html>
