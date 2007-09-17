@@ -81,10 +81,10 @@ InterplEnv {
 	plot {arg size = 400;
 		this.asEnv.plot(size);
 		}
-	
+
 	prAsArray {
 		var contents, curvesArray;
-		contents = [levels.at(0), times.size, times.sum];
+		contents = [offset, levels.at(0), times.size, times.sum];
 		curvesArray = curves.asArray;
 		times.size.do({ arg i;
 			contents = contents ++ [
@@ -96,6 +96,7 @@ InterplEnv {
 		});	
 		^contents
 	}
+
 }
 
 // InterplXYC([0, 0, \lin], [1, 2, \sin], [2, 0])
