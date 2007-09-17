@@ -7,7 +7,7 @@ IEnvGen : UGen { // envelope index generator
 			}, {
 			ienvelope;
 			});
-		^this.multiNewList(['audio', index, Ref(ienvelope).postln]).madd(mul, add);
+		^this.multiNewList(['audio', index, `ienvelope]).madd(mul, add);
 	} 
 	
 	*kr { arg ienvelope, index, mul = 1, add = 0;
@@ -22,7 +22,7 @@ IEnvGen : UGen { // envelope index generator
 	
 	*new1 { arg rate, index, ienvelope, mul = 1, add = 0;
 		^super.new.rate_(rate).addToSynth.init([index] 
-			++ ienvelope.dereference.asArray.postln).madd(mul, add); 
+			++ ienvelope.dereference.asArray).madd(mul, add); 
 	}
 	
  	init { arg theInputs;
