@@ -110,6 +110,7 @@ GeneralHIDSlot{
 	var <type, <id, <device, <devSlot;
 	classvar <typeMap;
 	var <action;
+	var <bus, busAction;
 
 	*initClass{
 		// typeMap is modeled after Linux input system.
@@ -135,6 +136,7 @@ GeneralHIDSlot{
 	}
 
 	init{
+		busAction = {};
 		this.action_( {} );
 	}
 
@@ -156,7 +158,18 @@ GeneralHIDSlot{
 	
 	action_{ |actionFunc|
 		action = actionFunc;
-		devSlot.action = actionFunc;
+		devSlot.action = { |v| action.value(v); busAction.value(v); };
+	}
+
+	createBus{ |s|
+		bus = Bus.control( s, 1 );
+		busAction = { |v| bus.set( v.value ); };
+		devSlot.action = { |v| action.value(v); busAction.value(v); };
+	}
+
+	freeBus{ 
+		busAction = {};
+		bus.free;
 	}
 
 	printOn { | stream |
