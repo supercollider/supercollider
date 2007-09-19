@@ -49,4 +49,14 @@
 	*prGetIndexOfListener { ^this.shouldNotImplement(thisMethod) }
 }
 
++ String{
+	findHelpFile {
+		Emacs.evalLispExpression(['sclang-find-help', this].asLispString);
+	}
+
+	openHelpFile {
+		this.findHelpFile;
+	}
+}
+
 // EOF
