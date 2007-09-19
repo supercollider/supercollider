@@ -81,7 +81,7 @@
 (make-variable-buffer-local 'sclang-help-file)
 
 (defconst sclang-help-file-regexp
-  "\\(\\(\\(\\.help\\)?\\.\\(rtf\\|scd\\|html\\)\\)\\|\\(\\.help\\.sc\\.html\\)\\|\\.rtfd/TXT\\.rtf\\.html\\)$"
+  "\\(\\(\\(\\.help\\)?\\.\\(rtf\\|scd\\|html\\|htm\\)\\)\\|\\(\\.help\\.sc\\.html\\.htm\\)\\|\\.rtfd/TXT\\.rtf\\.html\\.htm\\)$"
   "Regular expression matching help files.")
 
 ;; =====================================================================
@@ -107,6 +107,11 @@
 (defun sclang-html-file-p (file-name)
    (let ((case-fold-search t))
      (string-match ".*\\.html$" file)))
+
+;; not quite working yet: would be better to combine with sclang-html-file-p
+;(defun sclang-htm-file-p (file-name)
+;   (let ((case-fold-search t))
+;     (string-match ".*\\.htm$" file)))
 
 (defun sclang-sc-file-p (file-name)
   (let ((case-fold-search t))
@@ -466,8 +471,8 @@ Switches w3m to edit mode (actually HTML mode)."
 Switches to text mode with sclang-minor-mode."
   (interactive)
   (w3m-copy-buffer)
-  (text-mode)
-  (sclang-minor-mode)
+;;  (text-mode)
+  (sclang-mode)
   (toggle-read-only)
   (rename-buffer "*SC_Help:CodeEdit*")
   )
