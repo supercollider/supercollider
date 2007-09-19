@@ -1,93 +1,198 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="Content-Style-Type" content="text/css">
-<title></title>
-<meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
-<style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-span.s1 {color: #0000bf}
-span.s2 {color: #000000}
-span.Apple-tab-span {white-space:pre}
-</style>
 </head>
 <body>
-<p class="p1">/// testing state!!!</p>
-<p class="p1">/// still to do:</p>
-<p class="p2"><br></p>
-<p class="p1">Get deviceSpecs working</p>
-<p class="p1">Fix identical numbers between Linux and Mac (this may mean that the slot structure will change!)</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">GeneralHID</span> is a cross platform wrapper for accessing <span class="s1">HID</span> devices.</p>
-<p class="p4"><span class="s1">Currently</span> the <span class="s1">MacOSX</span> and <span class="s1">Linux</span> <span class="s1">HID</span> support has been wrapped.</p>
-<p class="p4"><span class="s1">Some</span> of the code is inspired by the <span class="s1">GUI</span> wrapper.</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Get</span> the current scheme:</p>
-<p class="p5"><span class="Apple-tab-span">	</span>GeneralHID<span class="s2">.scheme</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>GeneralHID<span class="s2">.scheme.id</span></p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Build</span> a device list:</p>
-<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.buildDeviceList;</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Get</span> the device list:</p>
-<p class="p4"><span class="Apple-tab-span">	</span>d = <span class="s1">GeneralHID</span>.deviceList;</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">this</span> works also:</p>
-<p class="p4"><span class="Apple-tab-span">	</span>d = <span class="s1">GeneralHID</span>.buildDeviceList;</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Post</span> the devices found:</p>
-<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.postDevices;</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Post</span> the devices and their capabilities:</p>
-<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.postDevicesAndProperties;</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Start</span> the event loop with rate (default is 0.005):</p>
-<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.startEventLoop( 0.002 );</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Stop</span> the event loop:</p>
-<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.stopEventLoop;</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Check</span> status of eventloop:</p>
-<p class="p4"><span class="s1"><span class="Apple-tab-span">	</span>GeneralHID</span>.eventLoopIsRunning;</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Open</span> a device:</p>
-<p class="p4"><span class="Apple-tab-span">	</span>a = <span class="s1">GeneralHID</span>.open( d[2] );</p>
-<p class="p4">You need to take a device that shows up in the DeviceTable. You can do any kind of automatic detection to always get the device you want (e.g. on vendor and product id's)</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Get</span> the device info:</p>
-<p class="p4"><span class="Apple-tab-span">	</span>a.info;</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Check</span> whether device is open:</p>
-<p class="p4"><span class="Apple-tab-span">	</span>a.isOpen;</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">A</span> dictionary with all slots:</p>
-<p class="p4"><span class="Apple-tab-span">	</span>a.slots;</p>
-<p class="p3"><br></p>
-<p class="p4">The devices capabilities in a more readable form:</p>
-<p class="p6"><span class="Apple-tab-span">	</span>a.caps;</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">See</span> if data is coming in:</p>
-<p class="p4"><span class="Apple-tab-span">	</span>a.debug_( <span class="s1">true</span> );</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s1">Turn</span> it off again:</p>
-<p class="p4"><span class="Apple-tab-span">	</span>a.debug_( <span class="s1">false</span> );</p>
-<p class="p3"><br></p>
-<p class="p4">(debugging can be turned on for each slot individually, if necessary)</p>
-<p class="p3"><br></p>
-<p class="p4">Actions can be mapped to each slot individually.</p>
-<p class="p3"><br></p>
-<p class="p1">// close the device:</p>
-<p class="p4">a.close;</p>
-<p class="p3"><br></p>
+<h1>GeneralHID</h1>
+
+<p>GeneralHID is a cross platform wrapper for accessing HID devices. Currently the MacOSX and Linux HID support has been wrapped. Some of the code is inspired by the GUI wrapper.</p>
+
+<p>Get the current scheme:<br>
+GeneralHID.scheme<br>
+GeneralHID.scheme.id
+</p>
+
+<p>Build a device list:<br>
+GeneralHID.buildDeviceList;
+</p>
+<p>Get the device list:<br>
+d = GeneralHID.deviceList;
+</p>
+
+<p>this works also:<br>
+d = GeneralHID.buildDeviceList;
+</p>
+
+<p>Post the devices found:<br>
+GeneralHID.postDevices;
+</p>
+
+<p>Post the devices and their capabilities:<br>
+GeneralHID.postDevicesAndProperties;
+</p>
+
+<p>Start the event loop with rate (default is 0.005):<br>
+GeneralHID.startEventLoop( 0.002 );
+</p>
+<p>Stop the event loop:<br>
+GeneralHID.stopEventLoop;
+</p>
+<p>Check status of eventloop:<br>
+GeneralHID.eventLoopIsRunning;
+</p>
+<p>(NOTE: the eventloop only needs to be started for MacOSX, nevertheless, in code that needs to function cross platform, include the eventloop commands: they will do no harm on Linux).
+</p>
+
+<p>Open a device:<br>
+a = GeneralHID.open( d[5] );
+</p>
+
+<p>You need to take a device that shows up in the DeviceTable. You can do any kind of automatic detection to always get the device you want (e.g. on vendor and product id's)</p>
+
+<p>Get the device info:<br>
+a.info;
+</p>
+
+<p>Check whether device is open:<br>
+a.isOpen;
+</p>
+
+<p>A dictionary with all slots:<br>
+a.slots;
+</p>
+<p>The devices capabilities in a more readable form:<br>
+a.caps;
+</p>
+<p>(on MacOSX not all elements may be detected as usable input; this is to be fixed)
+</p>
+<p>See if data is coming in:<br>
+a.debug_( true );
+</p>
+<p>Turn it off again:<br>
+a.debug_( false );
+</p>
+<p>Debugging can be turned on for each slot individually, if necessary:<br>
+(IBM trackpoint)<br>
+a.slots[1].at( 272 ).debug_( true );<br>
+<br>
+(external mouse on macbook pro)<br>
+a.slots[3][1].debug_(true);<br>
+<br>
+(external mouse on ibm thinkpad)<br>
+a.slots[2][1].debug_(true);<br>
+</p>
+
+<p>Turn it off again:<br>
+
+(IBM trackpoint)<br>
+a.slots[1].at( 272 ).debug_( false );<br>
+<br>
+(external mouse on macbook pro)<br>
+a.slots[3][48].debug_(false);<br>
+<br>
+(external mouse on ibm thinkpad)<br>
+a.slots[3][1].debug_(false);
+</p>
+
+<p>The current value of a slot can be checked:<br>
+
+a.slots[1].at( 272 ).value;<br>
+a.slots[2].at( 1 ).value;<br>
+a.slots[3][1].value<br>
+</p>
+
+<p>
+If the slot is an LED, you can set the value:
+<pre>
+a.slots[11][0].value = 1;
+a.slots[11][0].value = 0;
+</pre></p>
+
+<p>Actions can be mapped to each slot individually.<br>
+
+a.slots[1].at( 272 ).action_( { "hello".postln; } );<br>
+a.slots[1].at( 273 ).action_( { "hi".postln; } );<br>
+
+a.slots[3].at( 1 ).action_( { "hi".postln; } );
+</p>
+<p>with an input to the function<br>
+a.slots[3].at( 1 ).action_( { |v| "hi, my value is ".post; v.value.postln; } );<br>
+
+a.slots[1].at( 272 ).action_( { |v| "hi, my value is ".post; v.value.postln; } );
+</p>
+
+<p>To stop the action, assign it to an empty function.<br>
+
+a.slots[1].at( 272 ).action_( {} );<br>
+a.slots[1].at( 273 ).action_( {} );<br>
+
+a.slots[3].at( 1 ).action_( {} );
+</p>
+
+<p>If the server is running you can create a control bus for the HID data to go to, so that a synth can immediately read the data:<br>
+
+s = Server.local.boot;
+</p>
+<p>To create the bus:
+<pre>
+a.slots[1].at( 272 ).createBus( s );
+a.slots[2].at( 8 ).createBus( s );
+</pre>
+</p>
+
+<p><pre>(
+SynthDef( \hidbus_help, { |out=0,amp=0|
+	Out.ar( out, SinOsc.ar( 300, 0, 0.01*amp.abs ) );
+}).load( s );
+)
+</pre>
+</p>
+
+<p>
+<pre>x = Synth.new( \hidbus_help );
+x.map( \amp, a.slots[2].at( 8 ).bus );
+x.free;
+</pre></p>
+<p><pre>
+( // a nicer version:
+SynthDef( \hidbus_help, { |out=0,amp=0,amp2=0|
+	Out.ar( out, SinOsc.ar( 300, 0, 0.01*amp.abs.lag( 0.1 ) * amp2.lag(0.01,0.99) ) );
+}).load( s );
+)
+</pre></p>
+<p>
+<pre>x = Synth.new( \hidbus_help );
+x.map( \amp, a.slots[2].at( 8 ).bus );
+x.map( \amp2, a.slots[1].at( 272 ).bus );
+x.free;
+</pre>
+</p><p>
+<pre>( // a nicer version:
+SynthDef( \hidbus_help, { |out=0,freqadd=0,amp=0|
+	Out.ar( out, SinOsc.ar( 300 + (freqadd.lag(0.2,1)*40), 0, 0.2*amp.lag(0.01,0.99) ) );
+}).load( s );
+)
+</pre>
+</p>
+<p>
+x = Synth.new( \hidbus_help );<br>
+x.map( \freqadd, a.slots[2].at( 8 ).bus );<br>
+x.map( \amp, a.slots[1].at( 272 ).bus );<br>
+x.free;<br>
+</p>
+<p>
+To free the bus:<br>
+a.slots[1].at( 272 ).freeBus;<br>
+a.slots[2].at( 8 ).freeBus;
+</p>
+<p>
+close the device:<br>
+a.close;
+</p>
+<p>
+<h2>TODO list</h2>
+<ul>
+<li>Get deviceSpecs working</li>
+<li>Fix identical numbers between Linux and Mac (this may mean that the slot structure will change!)</li>
+</ul>
+</p>
 </body>
-</html>
