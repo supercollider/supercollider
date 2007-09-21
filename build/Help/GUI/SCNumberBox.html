@@ -11,8 +11,12 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-span.s1 {color: #0019b7}
-span.s2 {color: #326f17}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {color: #0000bf}
+span.s2 {color: #606060}
+span.s3 {color: #436c1d}
+span.s4 {color: #001fb3}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -22,18 +26,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">superclass: SCStaticTextBase</p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
-<p class="p4">w = SCWindow("SCNumberBox Example", <span class="s1">Rect</span>(100, 500, 400, 60));</p>
-<p class="p4">//w.view.decorator = <span class="s1">FlowLayout</span>(w.view.bounds);</p>
-<p class="p4">b = <span class="Apple-tab-span">	</span><span class="s1">SCNumberBox</span>(w, Rect(150, 10, 100, 20));</p>
-<p class="p4">b.value = rrand(1,15);</p>
-<p class="p4">b.action = {<span class="s1">arg</span> numb; numb.value.postln; };</p>
-<p class="p4">w.front</p>
+<p class="p5">w = <span class="s1">SCWindow</span>(<span class="s2">"SCNumberBox Example"</span>, <span class="s1">Rect</span>(100, 500, 400, 60));</p>
+<p class="p6">//w.view.decorator = FlowLayout(w.view.bounds);</p>
+<p class="p5">b = <span class="Apple-tab-span">	</span><span class="s1">SCNumberBox</span>(w, <span class="s1">Rect</span>(150, 10, 100, 20));</p>
+<p class="p5">b.value = rrand(1,15);</p>
+<p class="p5">b.action = {<span class="s1">arg</span> numb; numb.value.postln; };</p>
+<p class="p5">w.front</p>
 <p class="p4">)</p>
 <p class="p2"><br></p>
 <p class="p4">b.value = rrand(1,15);</p>
 <p class="p2"><br></p>
-<p class="p4">b.setProperty(<span class="s2">\boxColor</span>,<span class="s1">Color</span>.grey);</p>
-<p class="p4">b.setProperty(<span class="s2">\stringColor</span>,<span class="s1">Color</span>.white);</p>
-<p class="p4">b.setProperty(<span class="s2">\align</span>,<span class="s2">\center</span>);</p>
+<p class="p4">b.setProperty(<span class="s3">\boxColor</span>,<span class="s4">Color</span>.grey);</p>
+<p class="p4">b.setProperty(<span class="s3">\stringColor</span>,<span class="s4">Color</span>.white);</p>
+<p class="p4">b.setProperty(<span class="s3">\align</span>,<span class="s3">\center</span>);</p>
 </body>
 </html>
