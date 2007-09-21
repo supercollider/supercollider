@@ -14,15 +14,15 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #792e1e}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6d3320}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Courier}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0435a6}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1337a3}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana; min-height: 13.0px}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {text-decoration: underline ; color: #0441ce}
-span.s2 {color: #0435a6}
+span.s1 {text-decoration: underline ; color: #1743ca}
+span.s2 {color: #1337a3}
 span.s3 {color: #606060}
 span.s4 {font: 9.0px Monaco}
 span.s5 {color: #000000}
@@ -97,7 +97,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5"><b>Install</b></p>
 <p class="p2"><br></p>
-<p class="p3">This makes a symlink in your Extensions directory pointing to the quark's sourcecode that sits in your local repository, so that the quark becomes part of your class library.</p>
+<p class="p3">This symlinks the quark's sourcecode folder into your Extensions directory.<span class="Apple-converted-space">  </span>The source code itself stays in the quarks folder, but the symlink is in your Extensions directory, so when you recompile the class library, the quark will be included.</p>
 <p class="p6"><br></p>
 <p class="p7"><span class="s2">Quarks</span>.install( <span class="s3">"testquark"</span> )</p>
 <p class="p6"><br></p>
@@ -110,7 +110,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">// list those installed</p>
 <p class="p7"><span class="s2">Quarks</span>.installed</p>
 <p class="p2"><br></p>
-<p class="p3">Note: this will also attempt to install other quarks that the desired quark depends upon, if not already installed. You can prevent this if neccessary by passing <span class="s4">false</span> as the second argument to Quarks.install.</p>
+<p class="p3">Note: Quarks may specify other quarks that they are dependent on.<span class="Apple-converted-space">  </span>Quarks.install will also attempt to install those other quarks that the desired quark depends upon, if not already installed. You can prevent this if neccessary by passing <span class="s4">false</span> as the second argument to Quarks.install.</p>
+<p class="p2"><br></p>
+<p class="p7">Quarks.install( "somequark", includeDependencies: false )</p>
 <p class="p2"><br></p>
 <p class="p3">Alternatively, you can use the GUI to browse available quarks, and install/uninstall them:</p>
 <p class="p6"><br></p>
@@ -141,7 +143,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s2">Quarks</span>.status( "testquark" )</p>
 <p class="p8"><span class="s2">Quarks</span><span class="s5">.status </span>// status of all</p>
 <p class="p6"><br></p>
-<p class="p3">You may also use standard SVN tools which is probably easier especially for add and commit.</p>
+<p class="p3">You may also use any standard SVN tools which is probably easier especially for add and commit.</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p2"><br></p>
@@ -163,7 +165,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13"><br></p>
 <p class="p4">svn add DIRECTORY/quarkname.quark</p>
 <p class="p2"><br></p>
-<p class="p4">svn commit -m "I'm adding a quark y'all"</p>
+<p class="p4">svn commit -m "adding quarkname"</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>

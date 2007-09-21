@@ -14,13 +14,13 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7b2d1e}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6f3220}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #872d1a}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
-span.s1 {color: #0000ff}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #872d1a; min-height: 12.0px}
+span.s1 {color: #001af9}
 span.s2 {color: #000000}
-span.s3 {color: #416d1f}
+span.s3 {color: #4c6a24}
 span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -28,7 +28,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>Quark</b></p>
 <p class="p2"><br></p>
-<p class="p3">see <a href="Quarks.html"><span class="s1">Quarks</span></a> first</p>
+<p class="p3">see <a href="../../../../../../SuperCollider/Help/Extending and Customizing SC/Quarks/Quarks.html"><span class="s1">Quarks</span></a> first</p>
 <p class="p4"><br></p>
 <p class="p3">A Quark is a package of SC classes, helpfiles, C++ source for UGens and other SC code.</p>
 <p class="p4"><br></p>
@@ -44,7 +44,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">tags</p>
 <p class="p6">path</p>
 <p class="p2"><br></p>
-<p class="p3">Of particular importance for the Quarks interface class is the PATH.</p>
+<p class="p3">Of particular importance for the Quarks interface class is the PATH.<span class="Apple-converted-space">  </span>This path is relative to the quark directory and usually is simply the name of the folder, which should by convention be the same as the name of the quark.<span class="Apple-converted-space">  </span>However, you may put quarks inside a top-level folder for clarity. <span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">It may even be possible to nest quarks inside of quarks (a kind of aggregate package), though a better way to do that would be to define a basically empty quark (the aggregate) and specify the other sub quarks as dependencies.</p>
 <p class="p2"><br></p>
 <p class="p3">These Quark objects are mostly used just by the Quarks class, and you usually don't need to deal with them at all.</p>
 <p class="p4"><br></p>
