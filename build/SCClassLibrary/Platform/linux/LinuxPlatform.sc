@@ -8,6 +8,8 @@ LinuxPlatform : UnixPlatform
 			Document.startup;
 		};
 		
+		helpDir = this.systemAppSupportDir++"/Help";
+
 		// Server setup
 		Server.program = "scsynth";
 

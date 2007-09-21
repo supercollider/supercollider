@@ -59,4 +59,19 @@
 	}
 }
 
++ Class{
+	openHelpFile {
+		this.asString.findHelpFile;
+	}
+}
+
++ Method{
+
+	openHelpFile {
+		this.asString.findHelpFile;
+	}
+}
+ 
+
+
 // EOF
