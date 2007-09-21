@@ -1,12 +1,13 @@
 Platform
 {
-	var <classLibraryDir, features;
+	var <classLibraryDir, <helpDir, features;
 
 	*new {
 		^super.new.initPlatform
 	}
 	initPlatform {
 		classLibraryDir = thisMethod.filenameSymbol.asString.dirname.dirname;
+		helpDir = thisMethod.filenameSymbol.asString.dirname.dirname.dirname ++ "/Help";
 		features = IdentityDictionary.new;
 	}
 
@@ -68,6 +69,7 @@ Platform
 	*userAppSupportDir { ^thisProcess.platform.userAppSupportDir }
 	*systemExtensionDir { ^thisProcess.platform.systemExtensionDir }
 	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
+	*helpDir { ^thisProcess.platform.helpDir }
 
 		// swing is compatible with all platforms; so declare it as global default
 	defaultGUIScheme { ^\swing }
