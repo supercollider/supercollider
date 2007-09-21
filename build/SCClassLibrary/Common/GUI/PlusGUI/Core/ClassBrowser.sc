@@ -134,7 +134,7 @@ ClassBrowser {
 			svnAddr = "http://supercollider.svn.sourceforge.net/viewvc/supercollider/trunk/build/";
 			filename = currentClass.filenameSymbol.asString;
 			svnAddr = svnAddr ++ filename.drop(filename.find("SCClassLibrary"));
-			systemCmd("open \"" ++ svnAddr ++ "\"");
+			this.openSVN( svnAddr );
 		};
 		
 		
@@ -195,6 +195,10 @@ ClassBrowser {
 	close {
 		w.close
 	}
+
+	//openSVN{
+		// rely on extension in platform dependent extension
+	//}
 	
 	normalMethodEnterKey {
 		^{ currentMethod.openCodeFile; }
