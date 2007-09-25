@@ -29,7 +29,7 @@ QuarkSVNRepository
 		var dir;
 		dir = (local.path.select{|c| (c != $\\)}) ++ "/DIRECTORY" ;
 		if(File.exists(dir).not, {
-			this.svn("co", this.url++"/DIRECTORY", local.path);
+			this.svn("co", this.url++"/DIRECTORY", local.path ++ "/DIRECTORY");
 			^false
 		});
 		^true
