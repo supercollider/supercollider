@@ -25,6 +25,15 @@ QuarkSVNRepository
 	checkout { | q, localRoot |
 		this.svn("co", this.url ++ "/" ++ q.path, localRoot ++ "/" ++  q.path)
 	}
+	checkoutDirectory {
+		var dir;
+		dir = (local.path.select{|c| (c != $\\)}) ++ "/DIRECTORY" ;
+		if(File.exists(dir).not, {
+			this.svn("co", this.url++"/DIRECTORY", local.path);
+			^false
+		});
+		^true
+	}
 	// check if the quarks directory is checked out yet
 	checkDir {
 		var dir;

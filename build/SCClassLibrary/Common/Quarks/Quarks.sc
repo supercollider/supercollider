@@ -82,6 +82,11 @@ Quarks
 		});
 		repos.svn("commit","-m",message,"-F",local.path++"/"++q.path);
 	}
+	checkoutDirectory {
+		(repos.checkoutDirectory).if({
+			"Directory was previously checked out, please perform updateDirectory.".postln
+		}, { "Please wait for directory to be checked out.".postln });
+	}
 	updateDirectory {
 		repos.updateDirectory
 	}
@@ -247,6 +252,9 @@ Quarks
 	  and not the quarks themselves */
 	*updateDirectory { 
 		^this.global.repos.updateDirectory 
+	}
+	*checkoutDirectory {
+		^this.global.checkoutDirectory
 	}
 
 	/* 
