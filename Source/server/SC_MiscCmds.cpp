@@ -1471,6 +1471,36 @@ SCErr meth_notify(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 	return kSCErr_None;
 }
 
+SCErr meth_error(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_error(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+{		
+	sc_msg_iter msg(inSize, inData);
+	int mode = msg.geti();
+
+	inWorld->mLocalErrorNotification = mode;
+
+	// -1 = major off, -2 = major on, 0 = minor off, 1 = minor on
+	// not supported because there is no distinction between major and minor errors anywhere else
+//	switch(mode & 0x03) {
+//		case -1:	inWorld->mLocalErrorNotification &= ~0x01;
+//					break;
+//		case -2:	inWorld->mLocalErrorNotification |=  0x01;
+//					break;
+//		case 0:		inWorld->mLocalErrorNotification &= ~0x02;
+//					break;
+//		case 1:		inWorld->mLocalErrorNotification |=  0x02;
+//	};
+//		// set "permanent" flag
+//	if(mode & 0x04) {
+//		inWorld->mLocalErrorNotification |= 0x04;
+//	};
+//		
+//	if(mode==-1) inWorld->mLocalErrorNotification &= ~0x01;
+//	if(mode==-2) inWorld->mLocalErrorNotification |=  0x01;
+//	if(mode== 0) inWorld->mLocalErrorNotification &= ~0x02;
+//	if(mode== 1) inWorld->mLocalErrorNotification |=  0x02;
+	return kSCErr_None;
+}
 
 #define NEW_COMMAND(name) NewCommand(#name, cmd_##name, meth_##name)
 
@@ -1553,6 +1583,8 @@ void initMiscCommands()
 	NEW_COMMAND(sync);
 	NEW_COMMAND(g_dumpTree);
 	NEW_COMMAND(g_queryTree);
+
+	NEW_COMMAND(error);
 }
 
 

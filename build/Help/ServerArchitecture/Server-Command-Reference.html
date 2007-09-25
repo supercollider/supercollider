@@ -14,16 +14,16 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #ae4029}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #9a4432}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #760f50}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #65194d}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 span.s1 {font: 12.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #0000ff}
+span.s3 {color: #0022ed}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -100,6 +100,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>/clearSched<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>clear all scheduled bundles.</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Removes all bundles from the scheduling queue.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>/error<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>enable/disable error message posting</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>int - mode</p>
+<p class="p2"><br></p>
+<p class="p3">Turn on or off error messages sent to the SuperCollider post window. Useful when sending a message, such as /n_free, whose failure does not necessarily indicate anything wrong.</p>
+<p class="p3">The values for mode are as follows:</p>
+<p class="p3">0 - turn error posting off; remains in effect for the duration of the enclosing bundle. Error posting returns to its previous status at the end of the bundle.</p>
+<p class="p3">1 - turn error posting on; remains in effect until the next /error message.</p>
+<p class="p3">-1 - turn error posting off; remains in effect until the next /error message.</p>
+<p class="p2"><br></p>
+<p class="p3">Mode -1 should be used only if you know what you are doing. If you turn off error posting permanently and forget to turn it back on, you will stop receiving diagnostic error messages. The intent of this command is to use ['/error', 0] within a bundle to stop error posting for the rest of the commands in that bundle only.</p>
+<p class="p2"><br></p>
+<p class="p3">Mode -1 may be useful in nonrealtime synthesis to suppress all warnings.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p6"><b>Synth Definition Commands</b></p>

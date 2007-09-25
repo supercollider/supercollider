@@ -226,6 +226,7 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 	//scprintf("->PerformOSCBundle %d\n", inPacket->mSize);
 	char *data = inPacket->mData + 16;
 	char* dataEnd = inPacket->mData + inPacket->mSize;
+	
 	while (data < dataEnd) {
 		int32 msgSize = ntohl(*(int32*)data);
 		data += sizeof(int32);
@@ -233,6 +234,18 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 		PerformOSCMessage(inWorld, msgSize, data, &inPacket->mReplyAddr);
 		data += msgSize;
 	}
+	
+		// is there an error notification change?
+	if(inWorld->mErrorNotification != inWorld->mLocalErrorNotification) {
+			// 0 is a temporary change; +1 or -1 == change the permanent global flag
+		if(inWorld->mLocalErrorNotification != 0) {
+			inWorld->mErrorNotification = inWorld->mLocalErrorNotification > 0;
+			inWorld->mLocalErrorNotification = inWorld->mErrorNotification;
+		} else {
+			inWorld->mLocalErrorNotification = inWorld->mErrorNotification;
+		};
+	};
+	
 	//scprintf("<-PerformOSCBundle %d\n", inPacket->mSize);
 }
 
@@ -248,6 +261,14 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 	
 	if (!packet->mIsBundle) {
 		PerformOSCMessage(world, packet->mSize, packet->mData, &packet->mReplyAddr);
+		if(world->mErrorNotification != world->mLocalErrorNotification) {
+			if(world->mLocalErrorNotification != 0) {
+				world->mErrorNotification = world->mLocalErrorNotification > 0;
+				world->mLocalErrorNotification = world->mErrorNotification;
+			} else {
+				world->mLocalErrorNotification = world->mErrorNotification;
+			};
+		};
 	} else {
 	
 		// in real time engine, schedule the packet

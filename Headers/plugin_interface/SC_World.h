@@ -88,6 +88,8 @@ struct World
 	float mSubsampleOffset; // subsample accurate offset in the buffer of current event time.
 	
 	int mVerbosity;
+	int mErrorNotification;
+	int mLocalErrorNotification;
 };
 
 extern "C" {
