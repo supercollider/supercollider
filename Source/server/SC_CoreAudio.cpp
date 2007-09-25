@@ -235,15 +235,9 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 		data += msgSize;
 	}
 	
-		// is there an error notification change?
-	if(inWorld->mErrorNotification != inWorld->mLocalErrorNotification) {
-			// 0 is a temporary change; +1 or -1 == change the permanent global flag
-		if(inWorld->mLocalErrorNotification != 0) {
-			inWorld->mErrorNotification = inWorld->mLocalErrorNotification > 0;
-			inWorld->mLocalErrorNotification = inWorld->mErrorNotification;
-		} else {
-			inWorld->mLocalErrorNotification = inWorld->mErrorNotification;
-		};
+		// 0 is a temporary change, so reset the local error flag
+	if(!inWorld->mLocalErrorNotification) {
+		inWorld->mLocalErrorNotification = inWorld->mErrorNotification;
 	};
 	
 	//scprintf("<-PerformOSCBundle %d\n", inPacket->mSize);
@@ -261,13 +255,8 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 	
 	if (!packet->mIsBundle) {
 		PerformOSCMessage(world, packet->mSize, packet->mData, &packet->mReplyAddr);
-		if(world->mErrorNotification != world->mLocalErrorNotification) {
-			if(world->mLocalErrorNotification != 0) {
-				world->mErrorNotification = world->mLocalErrorNotification > 0;
-				world->mLocalErrorNotification = world->mErrorNotification;
-			} else {
-				world->mLocalErrorNotification = world->mErrorNotification;
-			};
+		if(!world->mLocalErrorNotification) {
+			world->mLocalErrorNotification = world->mErrorNotification;
 		};
 	} else {
 	

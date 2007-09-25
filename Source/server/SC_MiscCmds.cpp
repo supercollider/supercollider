@@ -1478,6 +1478,8 @@ SCErr meth_error(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	int mode = msg.geti();
 
 	inWorld->mLocalErrorNotification = mode;
+		// if non-zero, new state should be saved permanently
+	if(mode) { inWorld->mErrorNotification = mode; };
 
 	// -1 = major off, -2 = major on, 0 = minor off, 1 = minor on
 	// not supported because there is no distinction between major and minor errors anywhere else
