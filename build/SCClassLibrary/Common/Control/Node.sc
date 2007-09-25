@@ -134,6 +134,9 @@ Node {
 		}).add.removeWhenDone;
 		server.sendMsg(46, nodeID)  //"/n_query"
 	}
+	register { arg assumePlaying=false;
+		NodeWatcher.register(this, assumePlaying)
+	}
 	
 	moveBefore { arg aNode;
 		group = aNode.group; 
