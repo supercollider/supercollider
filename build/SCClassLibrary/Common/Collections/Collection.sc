@@ -371,7 +371,13 @@ Collection {
 	asSet { ^Set.new(this.size).addAll(this); }
 	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this); }
 	
-	powerset { ^this.asArray.sort.powerset }
+	powerset {
+		var species = this.species;
+		var result = this.asArray.powerset;
+		^if(species == Array) { result } { 
+			result.collectAs({ | item | item.as(species) }, species) 
+		}
+	}
 
 	
 	printAll { this.do { | item | item.postln; }; } // convenience method
@@ -391,16 +397,18 @@ Collection {
 		stream << " ]" ;
 	}
 	storeItemsOn { | stream |
-		this.do { | item, i |
+		var addComma = false;
+		this.do { | item |
 			if (stream.atLimit) { ^this };
-			if (i != 0) { stream.comma.space; };
+			if (addComma) { stream.comma.space; } { addComma = true };
 			item.storeOn(stream);
 		};
 	}
 	printItemsOn { | stream |
-		this.do { | item, i |
+		var addComma = false;
+		this.do { | item |
 			if (stream.atLimit) { ^this };
-			if (i != 0) { stream.comma.space; };
+			if (addComma) { stream.comma.space; } { addComma = true };
 			item.printOn(stream);
 		};
 	}
