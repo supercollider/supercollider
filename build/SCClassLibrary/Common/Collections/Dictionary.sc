@@ -210,6 +210,14 @@ Dictionary : Set {
 		};
 		^assoc.sort(func).collect(_.key)
 	}
+	powerset {
+		var keys = this.keys.asArray.powerset;
+		^keys.collect { | list | 
+			var dict = this.class.new;
+			list.do { |key| dict.put(key, this[key]) };
+			dict
+		}
+	}
 
 	
 	// Pattern support
