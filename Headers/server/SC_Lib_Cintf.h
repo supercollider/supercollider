@@ -121,8 +121,10 @@ enum {
 	
 	cmd_g_dumpTree = 56,
 	cmd_g_queryTree = 57,
+	
+	cmd_error = 58,
 
-	NUMBER_OF_COMMANDS = 58
+	NUMBER_OF_COMMANDS = 59
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
