@@ -402,6 +402,7 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 	float prevout = unit->m_prevout;
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
+	float sr = (float) SAMPLERATE;
 	
 	for (int i=0; i<inNumSamples; ++i) {
 		
@@ -413,7 +414,7 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
+			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
@@ -451,6 +452,7 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 	float prevout = unit->m_prevout;
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
+	float sr = (float) SAMPLERATE;
 	
 	for (int i=0; i<inNumSamples; ++i) {
 		
@@ -461,7 +463,7 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
+			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
@@ -500,6 +502,7 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 	float prevout = unit->m_prevout;
 	float count = unit->m_count;
 	float reset = unit->m_prevreset;
+	float sr = (float) SAMPLERATE;
 	
 	for (int i=0; i<inNumSamples; ++i) {
 		
@@ -507,12 +510,12 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
-			reset = DEMANDINPUT(duty_reset) * SAMPLERATE + .5f + reset;
+			reset = DEMANDINPUT(duty_reset) * sr + .5f + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
+			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
@@ -1150,6 +1153,7 @@ void TDuty_next_da(TDuty *unit, int inNumSamples)
 
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
+	float sr = (float) SAMPLERATE;
 	
 	for (int i=0; i<inNumSamples; ++i) {
 		
@@ -1161,7 +1165,7 @@ void TDuty_next_da(TDuty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
+			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
@@ -1191,6 +1195,7 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 	float *out = OUT(0);
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
+	float sr = (float) SAMPLERATE;
 	
 	for (int i=0; i<inNumSamples; ++i) {
 		
@@ -1201,7 +1206,7 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
+			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
@@ -1229,6 +1234,7 @@ void TDuty_next_dd(TDuty *unit, int inNumSamples)
 	float *out = OUT(0);
 	float count = unit->m_count;
 	float reset = unit->m_prevreset;
+	float sr = (float) SAMPLERATE;
 	
 	for (int i=0; i<inNumSamples; ++i) {
 		
@@ -1236,12 +1242,12 @@ void TDuty_next_dd(TDuty *unit, int inNumSamples)
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
-			reset = DEMANDINPUT(duty_reset) * SAMPLERATE + .5f + reset;
+			reset = DEMANDINPUT(duty_reset) * sr + .5f + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
+			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
