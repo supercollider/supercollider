@@ -181,7 +181,8 @@ Public : EnvirDispatch {
 		var str;
 		if(basicSafety.not or: { obj.isKindOf(Symbol).not }) { ^true };
 		str = obj.asString;
-		^str.find("unixCmd").isNil 
+		^str.find("unixCmd").isNil
+			and: { str.find("systemCmd").isNil } 
 			and: { str.find("File").isNil } 
 			and: { str.find("Pipe").isNil }
 			and: { str.find("Public").isNil }
