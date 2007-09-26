@@ -11,22 +11,24 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
 span.s3 {font: 12.0px Helvetica}
 span.s4 {color: #000000}
-span.s5 {color: #0025b2}
+span.s5 {color: #0000bf}
 span.s6 {color: #606060}
-span.s7 {color: #416d1f}
+span.s7 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>NetAddr</b></span><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>network address</b></p>
 <p class="p2"><br></p>
-<p class="p1">superclass: Objects</p>
+<p class="p1">superclass: Object</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -61,39 +63,39 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p5">// example</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
 <p class="p5"><span class="s4">n = </span><span class="s5">NetAddr</span><span class="s4">(</span><span class="s6">"127.0.0.1"</span><span class="s4">, 57120); </span>// 57120 is sclang default port</p>
-<p class="p3">r = <span class="s5">OSCresponder</span>(n, <span class="s7">'/good/news'</span>, { <span class="s5">arg</span> time, resp, msg; [time, msg].postln }).add;</p>
-<p class="p4"><br></p>
-<p class="p6"><span class="s4">n.sendMsg(</span>"/good/news"<span class="s4">, </span>"you"<span class="s4">, </span>"not you"<span class="s4">);</span></p>
-<p class="p3">n.sendMsg(<span class="s6">"/good/news"</span>, 1, 1.3, 77);</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p3">n.sendBundle(0.2, [<span class="s6">"/good/news"</span>, 1, 1.3, 77]);</p>
-<p class="p4"><br></p>
-<p class="p3">r.remove;</p>
-<p class="p3">n.disconnect;</p>
-<p class="p4"><br></p>
+<p class="p7">r = <span class="s5">OSCresponder</span>(n, <span class="s7">'/good/news'</span>, { <span class="s5">arg</span> time, resp, msg; [time, msg].postln }).add;</p>
+<p class="p6"><br></p>
+<p class="p8"><span class="s4">n.sendMsg(</span>"/good/news"<span class="s4">, </span>"you"<span class="s4">, </span>"not you"<span class="s4">);</span></p>
+<p class="p7">n.sendMsg(<span class="s6">"/good/news"</span>, 1, 1.3, 77);</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p7">n.sendBundle(0.2, [<span class="s6">"/good/news"</span>, 1, 1.3, 77]);</p>
+<p class="p6"><br></p>
+<p class="p7">r.remove;</p>
+<p class="p7">n.disconnect;</p>
+<p class="p6"><br></p>
 <p class="p5">// note that different NetAddr objects with the same port and ip are independent.</p>
-<p class="p4"><br></p>
-<p class="p3">r = <span class="s5">OSCresponder</span>(<span class="s5">nil</span>, <span class="s7">'/x'</span>, { <span class="s6">"message arrived"</span>.postln }).add;</p>
-<p class="p4"><br></p>
-<p class="p3">n = <span class="s5">NetAddr</span>(<span class="s6">"127.0.0.1"</span>, 57120);</p>
-<p class="p3">n.sendMsg(<span class="s6">"/x"</span>)</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p3">u = <span class="s5">NetAddr</span>(<span class="s6">"127.0.0.1"</span>, 57120);</p>
-<p class="p3">u.sendMsg(<span class="s6">"/x"</span>);</p>
-<p class="p4"><br></p>
-<p class="p3">n.disconnect</p>
-<p class="p4"><br></p>
-<p class="p3">u.sendMsg(<span class="s6">"/x"</span>);</p>
-<p class="p4"><br></p>
-<p class="p3">r.remove;</p>
-<p class="p3">u.disconnect;</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
+<p class="p6"><br></p>
+<p class="p7">r = <span class="s5">OSCresponder</span>(<span class="s5">nil</span>, <span class="s7">'/x'</span>, { <span class="s6">"message arrived"</span>.postln }).add;</p>
+<p class="p6"><br></p>
+<p class="p7">n = <span class="s5">NetAddr</span>(<span class="s6">"127.0.0.1"</span>, 57120);</p>
+<p class="p7">n.sendMsg(<span class="s6">"/x"</span>)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p7">u = <span class="s5">NetAddr</span>(<span class="s6">"127.0.0.1"</span>, 57120);</p>
+<p class="p7">u.sendMsg(<span class="s6">"/x"</span>);</p>
+<p class="p6"><br></p>
+<p class="p7">n.disconnect</p>
+<p class="p6"><br></p>
+<p class="p7">u.sendMsg(<span class="s6">"/x"</span>);</p>
+<p class="p6"><br></p>
+<p class="p7">r.remove;</p>
+<p class="p7">u.disconnect;</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
 </body>
 </html>
