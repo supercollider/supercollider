@@ -235,10 +235,13 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 		data += msgSize;
 	}
 	
-		// 0 is a temporary change, so reset the local error flag
-	if(!inWorld->mLocalErrorNotification) {
-		inWorld->mLocalErrorNotification = inWorld->mErrorNotification;
-	};
+		// reset so next command uses permanent error notification status
+	inWorld->mLocalErrorNotification = 0;
+	
+//		// 0 is a temporary change, so reset the local error flag
+//	if(!inWorld->mLocalErrorNotification) {
+//		inWorld->mLocalErrorNotification = inWorld->mErrorNotification;
+//	};
 	
 	//scprintf("<-PerformOSCBundle %d\n", inPacket->mSize);
 }
@@ -255,9 +258,10 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 	
 	if (!packet->mIsBundle) {
 		PerformOSCMessage(world, packet->mSize, packet->mData, &packet->mReplyAddr);
-		if(!world->mLocalErrorNotification) {
-			world->mLocalErrorNotification = world->mErrorNotification;
-		};
+		world->mLocalErrorNotification = 0;
+//		if(!world->mLocalErrorNotification) {
+//			world->mLocalErrorNotification = world->mErrorNotification;
+//		};
 	} else {
 	
 		// in real time engine, schedule the packet

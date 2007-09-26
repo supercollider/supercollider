@@ -301,7 +301,7 @@ World* World_New(WorldOptions *inOptions)
 		
 		world->mVerbosity = inOptions->mVerbosity;
 		world->mErrorNotification = 1;  // i.e., 0x01 | 0x02
-		world->mLocalErrorNotification = 1;
+		world->mLocalErrorNotification = 0;
 		
 		world->mNumSharedControls = inOptions->mNumSharedControls;
 		world->mSharedControls = inOptions->mSharedControls;
