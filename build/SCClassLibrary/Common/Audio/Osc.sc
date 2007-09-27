@@ -258,3 +258,25 @@ Vibrato : UGen {
 	}
 }
 
+
+TChoose {
+	*ar { arg trig, array;
+		^Select.ar(TIRand.kr(0, array.lastIndex, trig), array)
+	
+	}
+	*kr { arg trig, array;
+		^Select.kr(TIRand.kr(0, array.lastIndex, trig), array)
+	
+	}
+}
+
+
+TWChoose : UGen {
+	*ar { arg trig, array, weights, normalize=0;
+		^Select.ar(TWindex.ar(trig, weights, normalize), array)
+	}
+	*kr { arg trig, array, weights, normalize=0;
+		^Select.kr(TWindex.kr(trig, weights, normalize), array)
+	}
+
+}
