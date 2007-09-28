@@ -7,6 +7,10 @@
 		var doc;
 		doc = Document.open(PathName(this).asAbsolutePath , selectionStart, selectionLength);
 	}
+	openHTMLFile{ arg selectionStart=0, selectionLength=0;
+		// On Linux this will be overridden to ensure it opens rendered HTML
+		this.openTextFile(selectionStart, selectionLength)
+	}
 	
 	hackOpenWinTextFile { arg path, rangeStart, rangeSize; 
 		_OpenWinTextFile ;//doc = Document.open(PathName(this).asAbsolutePath , selectionStart, selectionLength);
