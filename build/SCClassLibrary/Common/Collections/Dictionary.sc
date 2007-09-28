@@ -387,12 +387,18 @@ IdentityDictionary : Dictionary {
 	doesNotUnderstand { arg selector ... args;
 		var func;
 		if (know) {
+						
 			func = this[selector];
 			if (func.notNil) {
 				^func.functionPerformList(\value, this, args);
 			};
+			
 			if (selector.isSetter) {
 				selector = selector.asGetter;
+				if(this.respondsTo(selector)) {
+					warn(selector.asCompileString
+						+ "exists a method name, so you can't use it as pseudo-method.")
+				};
 				^this[selector] = args[0];
 			};
 			func = this[\forward];
