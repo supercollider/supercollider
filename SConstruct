@@ -707,7 +707,7 @@ UnaryOpUGens
 fftSources = Split('Source/common/fftlib.c Source/plugins/SCComplex.cpp')
 plugins.append(
     pluginEnv.SharedLibrary(
-    make_plugin_target('FFT_UGens'), ['Source/plugins/FFT_UGens.cpp'] + fftSources))
+    make_plugin_target('FFT_UGens'), ['Source/plugins/FFTInterfaceTable.cpp', 'Source/plugins/FFT_UGens.cpp', 'Source/plugins/PV_UGens.cpp'] + fftSources))
     
 plugins.append(
     pluginEnv.SharedLibrary(
