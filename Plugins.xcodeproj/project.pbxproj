@@ -41,6 +41,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		379E00FC0CACF09E00D633C7 /* PV_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */; };
+		379E010C0CACF29700D633C7 /* FFTInterfaceTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */; };
 		9451F55B0C1CA7A00037197F /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C38430C1B407900360A35 /* libsndfile.a */; };
 		949318980C192F0E0018AB50 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 9493187D0C192E160018AB50 /* fftlib.c */; };
 		949318990C192F1C0018AB50 /* FFT_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05D802E69B6B01CA2799 /* FFT_UGens.cpp */; };
@@ -238,12 +240,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = FE2582C40C2C096A00307453 /* TestUGens */;
+			remoteGlobalIDString = FE2582C40C2C096A00307453;
 			remoteInfo = TestUGens;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PV_UGens.cpp; path = Source/plugins/PV_UGens.cpp; sourceTree = "<group>"; };
+		379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FFTInterfaceTable.cpp; path = Source/plugins/FFTInterfaceTable.cpp; sourceTree = "<group>"; };
 		46781BC805C8505F002B7D2B /* FFT_UGens.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FFT_UGens.h; sourceTree = "<group>"; };
 		46781BD005C854B9002B7D2B /* PV_ThirdParty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PV_ThirdParty.cpp; sourceTree = "<group>"; };
 		46781BD205C85772002B7D2B /* FFT2InterfaceTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT2InterfaceTable.cpp; sourceTree = "<group>"; };
@@ -515,6 +519,8 @@
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
+				379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */,
+				379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */,
 				FE25830C0C2C13E400307453 /* TestUGens.cpp */,
 				F50D04FB02E69B6B01CA2799 /* Headers */,
 				F50D057E02E69B6B01CA2799 /* Source */,
@@ -1068,9 +1074,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9493189A0C192F2B0018AB50 /* SCComplex.cpp in Sources */,
-				949318990C192F1C0018AB50 /* FFT_UGens.cpp in Sources */,
 				949318980C192F0E0018AB50 /* fftlib.c in Sources */,
+				949318990C192F1C0018AB50 /* FFT_UGens.cpp in Sources */,
+				379E00FC0CACF09E00D633C7 /* PV_UGens.cpp in Sources */,
+				379E010C0CACF29700D633C7 /* FFTInterfaceTable.cpp in Sources */,
+				9493189A0C192F2B0018AB50 /* SCComplex.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
