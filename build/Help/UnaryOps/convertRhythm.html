@@ -9,11 +9,12 @@
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #812d1b; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #772f1e; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
+span.s2 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -24,6 +25,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p1">supports a variation of Mikael Laurson's rhythm list RTM-notation.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1">see Laurson and Kuuskankare's 2003, "From RTM-notation to ENP-score-notation"</p>
+<p class="p1"><span class="s2">http://jim2003.agglo-montbeliard.fr/articles/laurson.pdf</span><span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1">The method converts a collection of the form <b>[beat-count, [rtm-list], repeats]</b> to a List of Floats. A negative integer within the rtm-list equates to a value tied over to the duration following. The method is recursive in that any subdivision within the rtm-list can itself be a nested convertRhythm collection (see Example below). The repeats integer has a default value of 1.</p>
 <p class="p3"><br></p>
