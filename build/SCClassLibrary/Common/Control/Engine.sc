@@ -1,29 +1,39 @@
 
 NodeIDAllocator
 {
-	var <user, temp, perm, mask;
+	var <user, initTemp, temp, perm, mask, permFreed;
 	// support 32 users
 	
-	*new { arg user=0;
+	*new { arg user=0, initTemp = 1000;
 		if (user > 31) { "NodeIDAllocator user id > 31".error; ^nil };
-		^super.newCopyArgs(user).reset
+		^super.newCopyArgs(user, initTemp).reset
 	}
 	reset {
 		mask = user << 26;
-		temp = 1000;
+		temp = initTemp;
 		perm = 2;
+		permFreed = IdentitySet.new;
 	}
 	alloc {
 		var x;
 		x = temp;
-		temp = (x + 1).wrap(1000, 0x03FFFFFF);
+		temp = (x + 1).wrap(initTemp, 0x03FFFFFF);
 		^x | mask
 	}
 	allocPerm {
 		var x;
-		x = perm;
-		perm = (x + 1).min(999);
+		if(permFreed.size > 0) {
+			x = permFreed.choose;
+			permFreed.remove(x);
+		} {
+			x = perm;
+			perm = (x + 1).min(initTemp - 1);
+		}
 		^x | mask
+	}
+	freePerm { |id|
+			// should not add a temp node id to the freed-permanent collection
+		if(id < initTemp) { permFreed.add(id) }
 	}
 }
 
@@ -198,13 +208,13 @@ ContiguousBlockAllocator {
 		}, { ^nil });
 	}
 	
-	reserve { |address, size = 1|
+	reserve { |address, size = 1, warn = true|
 		var	block, new;
 		((block = array[address] ?? { this.findNext(address) }).notNil and:
 				{ block.used and:
 				{ address + size > block.start } }).if({
-			"The block at (%, %) is already in use and cannot be reserved."
-				.format(address, size).warn;
+			warn.if({ "The block at (%, %) is already in use and cannot be reserved."
+				.format(address, size).warn; });
 		}, {
 			(block.start == address).if({
 				new = this.prReserve(address, size, block);
@@ -213,8 +223,8 @@ ContiguousBlockAllocator {
 				((block = this.findPrevious(address)).notNil and:
 						{ block.used and:
 						{ block.start + block.size > address } }).if({
-					"The block at (%, %) is already in use and cannot be reserved."
-						.format(address, size).warn;
+					warn.if({ "The block at (%, %) is already in use and cannot be reserved."
+						.format(address, size).warn; });
 				}, {
 					new = this.prReserve(address, size, nil, block);
 					^new;

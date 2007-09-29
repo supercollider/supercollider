@@ -31,6 +31,8 @@ ServerOptions
 	
 	var <>verbosity = 0;
 	
+	var <>initialNodeID = 1000;
+	
 	*initClass {
 		default = this.new.blockAllocClass_(PowerOfTwoAllocator);
 	}
@@ -168,12 +170,12 @@ Server : Model {
 		Server.changed(\serverAdded, this);
 	}
 	initTree {
-		nodeAllocator = NodeIDAllocator(clientID);	
+		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
 		this.sendMsg("/g_new", 1);
 		tree.value(this);
 	}
 	newAllocators {
-		nodeAllocator = NodeIDAllocator(clientID);
+		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
 		controlBusAllocator = options.blockAllocClass.new(options.numControlBusChannels);
 		audioBusAllocator = options.blockAllocClass.new(options.numAudioBusChannels, 
 			options.firstPrivateBus);
@@ -181,6 +183,12 @@ Server : Model {
 	}
 	nextNodeID {
 		^nodeAllocator.alloc
+	}
+	nextPermNodeID {
+		^nodeAllocator.allocPerm
+	}
+	freePermNodeID { |id|
+		^nodeAllocator.freePerm(id)
 	}
 	
 	*initClass {
