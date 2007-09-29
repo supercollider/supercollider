@@ -240,7 +240,6 @@ PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long p
 
 	mCanSweep = false;
 	mPartialScanObj = NULL;
-	mPartialScanSet = NULL;
 	mPartialScanSlot = 0;
 	
 	mGrey.classptr = NULL;

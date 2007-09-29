@@ -45,7 +45,7 @@ void doubleToTimespec(double secs, struct timespec *spec);
 
 bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task);
 bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task) ;
-bool getheap(PyrObject *heap, double *schedtime, PyrSlot *task) ;
+bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task) ;
 void offsetheap(VMGlobals *g, PyrObject *heap, double offset) ;
 void dumpheap(PyrObject *heap);
 

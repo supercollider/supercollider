@@ -168,6 +168,9 @@ public:
 	void BecomePermanent(PyrObject *inObject);
 	void BecomeImmutable(PyrObject *inObject);
 	
+	bool IsPartialScanObject(PyrObject* inObject) const { return inObject == mPartialScanObj; }
+	int32 GetPartialScanIndex() const { return mPartialScanSlot; }
+	
 private:
 	void ScanSlots(PyrSlot *inSlots, long inNumToScan);
 	void SweepBigObjects();
@@ -196,7 +199,6 @@ private:
 	PyrObject *mPartialScanObj;
 	PyrObjectHdr mGrey;
 
-	GCSet *mPartialScanSet;
 	int32 mPartialScanSlot;
 	int32 mNumToScan;
 	int32 mNumGrey;

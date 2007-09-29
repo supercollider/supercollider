@@ -575,15 +575,15 @@ int prPriorityQueueAdd(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-void PriorityQueuePop(PyrObject *queueobj, PyrSlot *result);
-void PriorityQueuePop(PyrObject *queueobj, PyrSlot *result)
+void PriorityQueuePop(VMGlobals *g, PyrObject *queueobj, PyrSlot *result);
+void PriorityQueuePop(VMGlobals *g, PyrObject *queueobj, PyrSlot *result)
 {
 	PyrSlot *schedqSlot = queueobj->slots;
 	
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = schedqSlot->uo;
 		double time;
-		if (!getheap(schedq, &time, result)) {
+		if (!getheap(g, schedq, &time, result)) {
 			SetNil(result);
 		}
 	} else {
@@ -638,7 +638,7 @@ int prPriorityQueuePop(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* a = g->sp;	// priority queue
 	
-	PriorityQueuePop(a->uo, a);
+	PriorityQueuePop(g, a->uo, a);
 	return errNone;
 }
 

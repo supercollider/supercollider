@@ -85,12 +85,14 @@ bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 }
 
 
-bool getheap(PyrObject *heap, double *schedtime, PyrSlot *task) 
+bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task) 
 {
 	PyrSlot *pmom, *pme, *pend;
 	short mom,me,size;	/* parent and sibling in the heap, not in the task hierarchy */
 	double tasktemp;
 	double timetemp;
+	PyrGC* gc = g->gc;
+	bool isPartialScanObj = gc->IsPartialScanObject(heap);
 
 	//dumpheap(heap);
 	//post("->getheap\n");
@@ -114,6 +116,9 @@ bool getheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 			if (timetemp > pme[0].uf) {
 				pmom[0].ucopy = pme[0].ucopy;
 				pmom[1].ucopy = pme[1].ucopy;
+				if (isPartialScanObj) {
+					gc->GCWriteBlack(pmom+1);
+				}
 				pmom = pme;
 				me = ((mom = me) << 1) + 2;
 				pme = heap->slots + me;
@@ -121,6 +126,9 @@ bool getheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 		}
 		pmom[0].uf = timetemp;
 		pmom[1].uf = tasktemp;
+		if (isPartialScanObj) {
+			gc->GCWriteBlack(pmom+1);
+		}
 		
 		//dumpheap(heap);
 	//dumpheap(heap);
@@ -425,7 +433,7 @@ void* schedRunFunc(void* arg)
 			
 			//postfl("while %.6f >= %.6f\n", elapsed, inQueue->slots->uf);
 						
-			getheap(inQueue, &schedtime, &task);
+			getheap(g, inQueue, &schedtime, &task);
 
 			if (isKindOfSlot(&task, class_thread)) {
 				SetNil(&task.uot->nextBeat);
@@ -853,7 +861,7 @@ void* TempoClock::Run()
 			
 			//printf("while %.6f >= %.6f\n", elapsedBeats, mQueue->slots->uf);
 						
-			getheap(mQueue, &mBeats, &task);
+			getheap(g, mQueue, &mBeats, &task);
 
 			if (isKindOfSlot(&task, class_thread)) {
 				SetNil(&task.uot->nextBeat);
@@ -888,7 +896,7 @@ void TempoClock::Flush()
 		
 		//printf("while %.6f >= %.6f\n", elapsedBeats, mQueue->slots->uf);
 					
-		getheap(mQueue, &mBeats, &task);
+		getheap(g, mQueue, &mBeats, &task);
 
 		(++g->sp)->ucopy = task.ucopy;
 		(++g->sp)->uf = mBeats;
