@@ -27,6 +27,9 @@
 #include "SC_Str4.h"
 #include <stdlib.h>
 
+int gTouchUGenFuns = 0;
+int gNumUnits = 0;
+
 bool UnitDef_Create(char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
 {
 	if (strlen(inName) >= kSCNameByteLen) return false;
@@ -40,6 +43,14 @@ bool UnitDef_Create(char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitD
 	unitDef->mAllocSize = inAllocSize;
 	unitDef->mUnitCtorFunc = inCtor;
 	unitDef->mUnitDtorFunc = inDtor;
+	
+	if (inCtor) {
+		gTouchUGenFuns += *(char*)inCtor;
+	}
+	if (inDtor) {
+		gTouchUGenFuns += *(char*)inDtor;
+	}
+	
 	unitDef->mCmds = 0;
 	unitDef->mFlags = inFlags;
 	
