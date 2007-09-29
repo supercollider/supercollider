@@ -103,7 +103,7 @@ AutoCompMethodBrowser {
 			((string = textField.string).size > 0 and: { finished.not }).if({
 					// does the string start with the selector?
 					// size var is size of selector
-				(string.left(size) == selector).if({
+				(string[0..size-1] == selector).if({
 						// if so, drop it so the rest can go in the document
 					string = string[size..];
 				}, {
