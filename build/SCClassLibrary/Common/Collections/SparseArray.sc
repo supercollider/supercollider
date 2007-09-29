@@ -3,7 +3,7 @@ Order : SequenceableCollection {
 	
 	var <>array, <>indices;
 	
-	*new { arg size; 
+	*new { arg size = 8; 
 		^super.new.clear(size)
 	}
 	
@@ -11,8 +11,7 @@ Order : SequenceableCollection {
 		^super.newCopyArgs(array, indices)
 	}
 	
-	
-	clear { arg size = (8);
+	clear { arg size;
 		array = Array.new(size);
 		indices = Array.new(size);
 	}
@@ -23,23 +22,26 @@ Order : SequenceableCollection {
 		 ^this.class.newCopyArgs(array.copy, indices.copy)
 	}
 	
+	asArray { ^array.copy }
+	
 	do { arg function;
 		indices.do { |index, i|
 			function.value(array.at(i), index, i)
 		};
 	}
 	
-	doFrom { arg function, index = 0;
-		if(index <= indices.last) {
-			for(this.slotFor(index), indices.size-1, { arg i;
-				function.value(array.at(i), indices.at(i))
-			})
+	doRange { arg function, from = 0, to;
+		if(from <= indices.last) {
+			if(to.isNil) { to = indices.size - 1 } { to = min(to, this.lastIndex) };
+			for(this.slotFor(from), to) { |i|
+				function.value(array.at(i), indices.at(i), i)
+			}
 		}
 	}
 	
 	keysValuesDo { arg function;
-		indices.do { arg index, i;
-			function.value(index, array[i], i)
+		indices.do { |index, i|
+			function.value(index, array.at(i), i)
 		}
 	}
 	
@@ -155,7 +157,7 @@ Order : SequenceableCollection {
 	slotFor { arg index;
 		^max(0, this.nextSlotFor(index) - 1)
 	}
-
+	
 	prPutSlot { arg nextSlot, index, obj;
 		var slot = max(0, nextSlot - 1);
 		if(indices.at(slot) == index) {
@@ -172,8 +174,11 @@ Order : SequenceableCollection {
 
 SparseArray : Order {
 
-	var <>default, <>defaultSize, <>defaultIndex = 0;
+	var <>default, <>defaultSize;
 	
+	*newClear { arg size, default;
+		^super.new(size).defaultSize_(size).default_(default)
+	}
 	
 	*reduceArray { arg array, default;
 		var res = this.new.default_(default);
@@ -185,15 +190,12 @@ SparseArray : Order {
 	putIfNotDefault { arg i, item;
 		if(item != default) { this.put(i, item) }
 	}
-		
-	clear { arg size;
-		super.clear(size);
-		defaultSize = size;
-	}
 
 	copy {
 		 ^this.class.newCopyArgs(array.copy, indices.copy, default, defaultSize)
 	}
+	
+	asArray { ^this[_] ! this.size }
 
 	at { arg index;
 		^super.at(index) ? default
@@ -204,13 +206,6 @@ SparseArray : Order {
 		this.size.do { |i|
 			function.value(this.at(i), i)
 		}
-	}
-	
-	// should maybe be doRange
-	doFrom { arg function, index = 0;
-		for(index, this.size - 1, { |i|
-			function.value(this.at(i), i)
-		})
 	}
 	
 	size {
@@ -231,23 +226,29 @@ SparseArray : Order {
 		}	
 	}
 	
+	// current write position
+	pos {
+		var index = super.lastIndex;
+		^if(index.isNil) { 0 } { index + 1 }
+	}
+	
 	collect { arg function;
 		^this.class.reduceArray(
 			this.asArray.collect(function), 
-			default !? { function.value(default, defaultIndex) }		)
+			default !? { function.value(default, 0) }		)
 	}
 	
 	select { arg function;
 		^this.class.reduceArray(
 			this.asArray.select(function), 
-			if(default.notNil and: { function.value(default, defaultIndex) }) { default }
+			if(default.notNil and: { function.value(default, 0) }) { default }
 		)
 	}
 	
 	reject { arg function;
 		^this.class.reduceArray(
 			this.asArray.reject(function), 
-			if(default.notNil and: { function.value(default, defaultIndex).not }) { default }
+			if(default.notNil and: { function.value(default, 0).not }) { default }
 		)
 	}
 
@@ -261,13 +262,13 @@ SparseArray : Order {
 	
 	sparseSelect { arg function;
 		var res = super.select(function);
-		if(default.notNil and: { function.value(default, defaultIndex) }) { res.default = default }
+		if(default.notNil and: { function.value(default, 0) }) { res.default = default }
 		^res
 	}
 	
 	sparseReject { arg function;
 		var res = super.reject(function);
-		if(default.notNil and: { function.value(default, defaultIndex).not }) 
+		if(default.notNil and: { function.value(default, 0).not }) 
 			{ res.default = default }
 		^res
 	}
@@ -276,17 +277,71 @@ SparseArray : Order {
 		^super.removeAt(index)
 	}
 	
-	// removeAt acts still not as one would expect from a normal array.
+	sparseRemove { arg item;
+		var index = super.indexOf(item);
+		^if(index.notNil) { super.removeAt(index) } { nil }
+	}
+	
+	removeAt { arg index;
+		^this.notYetImplemented(thisMethod)
+		/*var slot = this.slotFor(index), res, size = indices.size;
+		if(index >= this.size) { ^nil };
 		
+		if(indices[slot] == index) {
+			res = this.removeAtSlot(slot);
+		} {			
+			if(size > 0) { res = default };
+		};
+		"slot: % old indices: %\n".postf(slot, indices);
+		(size - slot).do { |i| indices[i + slot] = indices[i + slot] - 1 };
+		"new indices: %\n".postf(indices);
+		
+		if(defaultSize.notNil and: { defaultSize > 0 }) {
+				defaultSize = defaultSize - 1;
+		};
+		^res*/
+		
+	}
+	
+	firstGap { arg from = 0, to;
+		to = to ?? { indices.size };
+		(from..to).do { |i|
+			if(indices[i] != i) { ^i };
+		};
+		^nil
+	}
+	
+	indexOf { arg item;
+		var slot = array.indexOf(item), res;
+		if(item == default) { 
+				res = this.firstGap(0, slot);
+				if(res.notNil) { ^res };
+		};
+		^if(slot.isNil) { nil } { indices[slot] }
+	}
+	
 	compress {
-		var ind, list;
+		var ind, list, size = defaultSize ?? { this.size };
 		array.do { |item, i|
 			if(item != default) { 
 				list = list.add(item); 
 				ind = ind.add(indices.at(i)) 
 			};
 		};
-		^this.newFromIndices(list, ind)
+		^this.class.newFromIndices(list, ind).default_(default).defaultSize_(size)
+	}
+	
+	++ { arg coll;
+		var res = this.copy.sparseAddAll(coll);
+		if(defaultSize.notNil) { res.defaultSize_(this.size + coll.size) };
+		^res
+	}
+	
+	sparseAddAll { arg coll;
+		var slot = this.size;
+		coll.do { |item, i|
+			if(item != default) { this.put(slot + i, item) }
+		};
 	}
 	
 	putSeries { arg first, second, last, value; 
