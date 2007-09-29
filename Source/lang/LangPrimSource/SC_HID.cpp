@@ -165,14 +165,14 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 
 	int usagePage, usage, err;
 	if(IsNil(b)) 
-		usagePage = NULL;
+		usagePage = 0;
 	else
 	{	
 		err = slotIntVal(b, &usagePage);
 		if (err) return err;
 	}
 	if(IsNil(c)) 
-		usage = NULL;
+		usage = 0;
 	else
 	{
 		err = slotIntVal(c, &usage);
@@ -325,7 +325,7 @@ int prHIDSetValue(VMGlobals *g, int numArgsPushed)
 			kIOHIDElementTypeOutput, 
 			pCurrentHIDElement->cookie,
 			value,
-			NULL,
+			{0},
 			sizeof(int),
 			NULL
 		};
