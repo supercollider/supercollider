@@ -745,7 +745,6 @@ NodeProxy : BusPlug {
 		var obj, dt, playing;
 		playing = this.isPlaying;
 		obj = objects.removeAt(index);
-		[obj, objects].postln;
 		
 		if(obj.notNil) { 
 				dt = this.fadeTime;
