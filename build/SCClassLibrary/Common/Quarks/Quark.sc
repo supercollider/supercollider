@@ -21,6 +21,10 @@ QuarkDependency
 			and: {this.version  == that.version}
 		}
 	}
+	asQuark { |defaultRepos|
+		defaultRepos = defaultRepos ? Quarks.global;
+		^if(repos.isNil, {defaultRepos}, {Quarks.forUrl(repos)}).repos.findQuark(name, version);
+	}
 }
 
 
