@@ -33,6 +33,12 @@ Integer : SimpleNumber {
 	// override 'do'
 	generate { arg function; function.value(this) }
 
+	collect { | function, class |
+		var res = (class ? Array).new(this);
+		this.do {|i| res.add(function.value(i)) }
+		^res;
+	}
+
 	reverseDo { arg function;
 		// iterates function from 0 to this-1 
 		// special byte codes inserted by compiler for this method
