@@ -1714,7 +1714,7 @@ void Dswitch1_next(Dswitch1 *unit, int inNumSamples)
 			return;
 		}
 		int index = (int32)floor(x + 0.5f);
-		index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
+		index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
 		OUT0(0) = DEMANDINPUT(index);
 	} else {
 		for (int i=0; i<unit->mNumInputs; ++i) {
@@ -1747,7 +1747,7 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 			}
 			
 			index = (int32)floor(ival + 0.5f);
-			index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
+			index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
 			val = DEMANDINPUT(index);
 			
 			RESETINPUT(unit->m_index);
