@@ -168,14 +168,14 @@ int matchRegexp(char *string, char *pattern)
 	int    status;
 	regex_t    re;
 	if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0) {
-		return(0);      /* Report error. */
+		return(2);      /* Report error. */
 	}
 	status = regexec(&re, string, (size_t) 0, NULL, 0);
 	regfree(&re);
-		if (status != 0) {
-			return(0);      /* Report error. */
+		if (status) {
+			return(1);      /* Report error. */
 		}
-	return(1);
+	return(0);
 }
 
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
@@ -192,7 +192,7 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 	start = c->ui;
 	
 	if(d->utag == tagNil) { 
-		end = b->uo->size; 
+		end = b->uo->size - 1; // last char index instead of size
 	} else {
 		end = d->ui;
 	}
@@ -202,16 +202,21 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 		return errNone; 
 	}
 	
-	char *string = (char*)malloc(end - start + 1);
-	memcpy(string, (char*)(b->uos->s) + start, end - start + 1);
+	int stringlen = end - start + 1;
+	char *string = (char*)malloc(stringlen + 1);
+	memcpy(string, (char*)(b->uos->s) + start, stringlen);
+	string[stringlen] = 0;
 
 	char *pattern = (char*)malloc(a->uo->size + 1);
 	err = slotStrVal(a, pattern, a->uo->size + 1);
 	if (err) return err;
 	
 	int res = matchRegexp(string, pattern);
-	if (res) { SetTrue(a); }
-	else { SetFalse(a); }
+	switch (res) {
+		 case 0 : SetTrue(a); break;
+		 case 1 : SetFalse(a); break;
+		 default : return errFailed;
+	}
 
 	return errNone;
 }
