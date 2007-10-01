@@ -12,4 +12,4 @@ user-visible changes since 22.09.2007, in preparation for SuperCollider v3.1 rel
 * 29.09.2007 takekos bug fixed (obscure issue with garbage collection in arrays) - jm
 * 01.10.2007 FFT and IFFT rewrite - now using more efficient libs, also allows user to vary the overlap and the window type - ds
 * 01.10.2007 Integer:collect method added - ds
-
+* 01.10.2007 fixed off by one bug in Dswitch and Dswitch1 that caused a server crash
