@@ -1,4 +1,3 @@
-
 /**
   *
   * Subversion based package repository and package manager
@@ -22,8 +21,11 @@ QuarkSVNRepository
 		this.svn("co", this.url ++ "/", localRoot ++  "/")
 	}
 	// checkout a specific quark
-	checkout { | q, localRoot |
-		this.svn("co", this.url ++ "/" ++ q.path, localRoot ++ "/" ++  q.path)
+	checkout { | q, localRoot, sync = false |
+		var args = [this.url ++ "/" ++ q.path, localRoot ++ "/" ++  q.path];
+		if(sync)
+			{this.svnSync("co", *args)}
+			{this.svn(    "co", *args)};
 	}
 	checkoutDirectory {
 		var dir;
@@ -76,6 +78,14 @@ QuarkSVNRepository
 		cmd.debug;
 		"".debug;
 		cmd.unixCmd;
+	}
+	// Allows to wait for command to complete
+	svnSync { | cmd ... args |
+		cmd = ("export LANG='' ; " + svnpath + cmd + args.join(" ") + "2>&1");
+		"".debug;
+		cmd.debug;
+		"".debug;
+		cmd.systemCmd;
 	}
 	// just post
 	svnp { |cmd ... args|

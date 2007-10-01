@@ -95,7 +95,7 @@ Quarks
 		this.checkedOut.do { |q| q.postDesc };
 	}
 	checkoutAll { repos.checkoutAll(local.path) }
-	checkout { |name, version|
+	checkout { |name, version, sync=false|
 		var q;
 		if(local.findQuark(name,version).notNil,{
 			inform("Quark "++name++" already checked out");
@@ -106,7 +106,7 @@ Quarks
 		if(q.isNil,{
 			Error("Quark not found in repository.").throw;
 		});
-		repos.checkout(q,local.path);
+		repos.checkout(q,local.path, sync);
 	}
 	checkDir {
 		var d;
@@ -137,7 +137,7 @@ Quarks
 			).pathMatch.notEmpty
 		}
 	}
-	install { | name , incdeps=true |
+	install { | name , incdeps=true, allowCheckout=true |
 		var q, deps, installed, dirname, quarksForDep;
 
 		if(this.isInstalled(name),{
@@ -147,7 +147,17 @@ Quarks
 
 		q = local.findQuark(name);
 		if(q.isNil,{
-			Error(name.asString + "not found in local quarks.  Not yet downloaded from the repository ?").throw;
+			if(allowCheckout) {
+				("Automatically checking out quark" + name).postln;
+				this.checkout(name, sync: true);
+				q = local.reread.findQuark(name);
+				if(q.isNil, {
+					Error("Quark" + name.asString + "install: automatic checkout failed.").throw;
+				});
+			}
+			{
+				Error(name.asString + "not found in local quarks.  Not yet downloaded from the repository ?").throw;
+			};
 		});
 		
 		// do we have to create /quarks/ directory ? If so, do it.
@@ -163,7 +173,7 @@ Quarks
 				}, {
 					if(quarksForDep.isInstalled(dep.name).not, {
 						try({
-							quarksForDep.install(dep.name)
+							quarksForDep.install(dep.name, true, allowCheckout)
 						}, {
 							("Unable to satisfy dependency of '"++name++"' on '"++dep.name
 								++"' - you may need to install '"++dep.name++"' manually.").warn;
@@ -261,7 +271,8 @@ Quarks
 	  this symlinks from {App Support}/SuperCollider/Quarks to 
 	  {App Support}/SuperCollider/Extensions
 	  it is then in the SC compile path */
-	*install { |name| this.global.install(name) }
+	*install { |name, incdeps=true, allowCheckout=false| 
+		this.global.install(name, incdeps, allowCheckout) }
 	
 	/* 
 	  return Quark objects for each installed */
