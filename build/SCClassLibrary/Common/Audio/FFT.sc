@@ -1,20 +1,20 @@
 
-// fft uses a local buffer for holding the buffered audio
+// fft uses a local buffer for holding the buffered audio.
+// wintypes are defined in the C++ source. 0 is default, Welch; 1 is Hann; -1 is rect.
 
 FFT : UGen 
 {
-	*new { arg buffer, in = 0.0;
-		^this.multiNew('control', buffer, in)
+	*new { | buffer, in = 0.0 , hop = 0.5, wintype = 0 , active = 1|
+		^this.multiNew('control', buffer, in, hop, wintype, active)
 	}
 }	
 
 IFFT : UGen 
 {
-	*new { arg buffer;
-		^this.multiNew('audio', buffer)
+	*new { | buffer, wintype = 0|
+		^this.multiNew('audio', buffer, wintype)
 	}
 }	
-
 PV_MagAbove : UGen
 {
 	*new { arg buffer, threshold = 0.0;

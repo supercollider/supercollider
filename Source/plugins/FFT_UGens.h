@@ -27,20 +27,7 @@
 #undef __VEC__
 #define __VEC__ 0
 
-
-#if __VEC__
-	#include <vecLib/vecLib.h>
-	extern FFTSetup fftsetup[32];
-#else
-extern "C" {
-	#include "fftlib.h"
-	extern float *cosTable[32];
-}
-#endif
-
 #include <string.h>
-
-extern float *fftWindow[32];
 
 const int kNUMOVERLAPS = 2;
 

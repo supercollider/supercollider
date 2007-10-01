@@ -31,6 +31,7 @@
 //	FFTSetup fftsetup[32];
 //#else
 extern "C" {
+#include "fftlib.h"
 	float *cosTable[32];
 }
 //#endif

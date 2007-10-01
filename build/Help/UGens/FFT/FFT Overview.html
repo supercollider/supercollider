@@ -14,19 +14,19 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-span.s1 {color: #0000ff}
-span.s2 {font: 6.7px Helvetica}
-span.s3 {color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9e2615}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0011ed}
+span.s1 {color: #0022fc}
+span.s2 {font: 3.9px Helvetica}
+span.s3 {color: #0023b4}
 span.s4 {color: #000000}
-span.s5 {color: #a71e12}
-span.s6 {color: #326f17}
-span.s7 {color: #0024b0}
+span.s5 {color: #9e2615}
+span.s6 {color: #3f6c1d}
+span.s7 {color: #002bad}
 span.s8 {color: #606060}
 span.s9 {font: 12.0px Helvetica}
 span.s10 {font: 12.0px Helvetica; color: #000000}
-span.s11 {font: 9.0px Monaco; color: #0019b7}
+span.s11 {font: 9.0px Monaco; color: #0023b4}
 span.s12 {font: 9.0px Monaco}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -43,7 +43,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">FFT stores spectral data in a local buffer (see <a href="../../ServerArchitecture/Buffer.html"><span class="s1">Buffer</span></a>) in the following order: DC, nyquist, real 1f, imag 1f, real 2f, imag 2f, ... real (N-1)f, imag (N-1)f, where f is the frequency corresponding to the window size, and N is the window size / 2.</p>
 <p class="p2"><br></p>
-<p class="p4">The buffer's size must correspond to a power of 2. The window size is equivalent to the buffer size, and the window overlap is fixed at 2. Both FFT and IFFT use a Welch window, the combination of which (i.e. Welch<span class="s2"><sup>2</sup></span>) is a Hanning window.</p>
+<p class="p4">The buffer's size must correspond to a power of 2, and must also be a multiple of SC's block size. The window size is equivalent to the buffer size, and the window overlap defaults to 2. Both FFT and IFFT use a Welch window by default, the combination of which (i.e. Welch<span class="s2"><sup>2</sup></span>) is a Hanning window.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Phase Vocoder UGens and Spectral Processing</b></p>
 <p class="p2"><br></p>
@@ -100,7 +100,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>x.free;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>// IFFTed frames contain the same windowed output data</p>
-<p class="p5"><span class="Apple-tab-span">	</span>b.plot(<span class="s6">\b</span>, <span class="s3">Rect</span>(200, 430, 700, 300)); c.plot(<span class="s6">\c</span>, <span class="s3">Rect</span>(200, 100, 700, 300));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b.plot(<span class="s6">\b</span>, <span class="s3">Rect</span>(200, 430, 700, 300), nil, nil); c.plot(<span class="s6">\c</span>, <span class="s3">Rect</span>(200, 100, 700, 300), nil, nil);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>[b, c].do(_.free);</p>
 <p class="p2"><br></p>
 <p class="p4">Note that PV UGens convert as needed between cartesian (complex) and polar representations, therefore when using multiple PV UGens it may be impossible to know in which form the values will be at any given time. FFT produces complex output (see above), so while the following produces a reliable magnitude plot:</p>
@@ -135,10 +135,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">(</p>
 <p class="p5"><span class="s3">SynthDef</span>(<span class="s8">"help-multichannel FFT"</span>, { <span class="s3">arg</span> out=0, bufnum= #[0, 1]; <span class="s5">// bufnum is an array</span></p>
 <p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span>in = [<span class="s3">SinOsc</span>.ar(0.2), <span class="s3">WhiteNoise</span>.ar(0.2)];</p>
+<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span>in = [<span class="s3">SinOsc</span>.ar(200, 0, 0.2), <span class="s3">WhiteNoise</span>.ar(0.2)];</p>
 <p class="p8"><span class="s10"><span class="Apple-tab-span">	</span></span><span class="s4">chain = </span><span class="s3">FFT</span><span class="s4">(bufnum, in); </span>// each FFT has a different buffer</p>
 <p class="p8"><span class="s4"><span class="Apple-tab-span">	</span></span>// now we can multichannel expand as normal</p>
-<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span>chain = <span class="s3">PV_BrickWall</span>(chain, <span class="s3">SinOsc</span>.kr(0.1));</p>
+<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span>chain = <span class="s3">PV_BrickWall</span>(chain, <span class="s3">SinOsc</span>.kr(-0.1));</p>
 <p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><span class="s3">Out</span>.ar(out, <span class="s3">IFFT</span>(chain));</p>
 <p class="p5">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b.collect(<span class="s3">_</span>.bufnum)]);</p>
 <p class="p5">)</p>
