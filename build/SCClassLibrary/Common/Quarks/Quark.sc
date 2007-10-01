@@ -34,7 +34,7 @@ QuarkDependency
 
 Quark
 {
-	var <name, <summary, <version, <author, <dependencies, <tags,<>path;
+	var <name, <summary, <version, <author, dependencies, <tags,<>path;
 	var <info;
 	
 	*fromFile { | path |
@@ -146,6 +146,20 @@ Quark
 			and: {this.tags  == that.tags}
 			and: {this.path  == that.path}
 		}
+	}
+	dependencies { |recursive = false, knownList|
+		var deps, quark, selfasdep;
+		deps = dependencies;
+		if(recursive, {
+			if(knownList.isNil.not, {
+				deps = dependencies.select({|d| knownList.indexOfEqual(d).isNil}); // To avoid infinite recursion traps
+			});
+			deps.do({|dep|
+				quark = dep.asQuark;
+				deps = deps ++ quark.dependencies(recursive: true, knownList: ([QuarkDependency(name, version)] ++ knownList));
+			});
+		});
+		^deps
 	}
 }
 
