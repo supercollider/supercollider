@@ -24,9 +24,13 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>Using the Startup File</b></p>
 <p class="p2"><br></p>
-<p class="p3">Once the class library is finished compiling the interpreter looks for a file at the path "~/scwork/startup.rtf" and if such a file exists, executes any code within it. (This happens within Main-startup.) By creating a file in this location you can make user specific customizations. A common example would be to alter the options of the local and internal Servers:</p>
+<p class="p3">Once the class library is finished compiling the interpreter looks for a file at a operating system dependent path and if such a file exists, executes any code within it. (This happens within Main-startup.) By creating a file in this location you can make user specific customizations. A common example would be to alter the options of the local and internal Servers:</p>
 <p class="p4"><br></p>
-<p class="p5">// placing the following code in "~/scwork/startup.rtf" will cause these modifications to be made</p>
+<p class="p3">
+On OSX: the path is "~/scwork/startup.rtf"<br>
+On Linux the path is "~/.sclang.sc"
+</p>
+<p class="p5">// placing the following code in the file will cause these modifications to be made</p>
 <p class="p5">// at startup</p>
 <p class="p6"><br></p>
 <p class="p5"><span class="s1">Server</span><span class="s2">.local.options.numOutputBusChannels = 4;<span class="Apple-tab-span">	</span></span>// change number of input and output channels</p>
