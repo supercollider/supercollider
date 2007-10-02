@@ -57,6 +57,11 @@
 	openHelpFile {
 		this.findHelpFile;
 	}
+
+	openHTMLFile {
+		//		this.findHelpFile;
+		Emacs.evalLispExpression(['w3m-browse-url', this].asLispString);
+	}
 }
 
 + Class{
