@@ -34,6 +34,7 @@
 				94931A0E0C1934230018AB50 /* PBXTargetDependency */,
 				94931A0C0C1934230018AB50 /* PBXTargetDependency */,
 				FE2582F30C2C133200307453 /* PBXTargetDependency */,
+				DCD2C6F90CB26D0500297AE3 /* PBXTargetDependency */,
 			);
 			name = All;
 			productName = "SC_Synth PlugIns";
@@ -92,6 +93,8 @@
 		94931A070C1933E90018AB50 /* DynNoiseUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B969DA0C0691887B0096E93F /* DynNoiseUGens.cpp */; };
 		94931A080C1933F10018AB50 /* ChaosUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92962B0707853BDA0049266B /* ChaosUGens.cpp */; };
 		94931B1C0C1949FD0018AB50 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92CCC51F045B4BDE00CA2167 /* Carbon.framework */; };
+		DC43F0940CB26B450020E8B7 /* UnpackFFTUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */; };
+		DC43F0AE0CB26BC80020E8B7 /* SCComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E202E69B6B01CA2799 /* SCComplex.cpp */; };
 		FE25830D0C2C13E400307453 /* TestUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE25830C0C2C13E400307453 /* TestUGens.cpp */; };
 /* End PBXBuildFile section */
 
@@ -236,6 +239,13 @@
 			remoteGlobalIDString = 949318BA0C1931070018AB50;
 			remoteInfo = BinaryOpUGens;
 		};
+		DCD2C6F80CB26D0500297AE3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC43F0880CB26A670020E8B7;
+			remoteInfo = UnpackFFTUGens;
+		};
 		FE2582F20C2C133200307453 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
@@ -287,6 +297,8 @@
 		949318870C192E350018AB50 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fftlib.h; path = Headers/common/fftlib.h; sourceTree = SOURCE_ROOT; };
 		AAE924420481416E00A8010B /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Endian.h; path = common/SC_Endian.h; sourceTree = "<group>"; };
 		B969DA0C0691887B0096E93F /* DynNoiseUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DynNoiseUGens.cpp; sourceTree = "<group>"; };
+		DC43F08F0CB26A670020E8B7 /* UnpackFFTUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = UnpackFFTUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = UnpackFFTUGens.cpp; path = Source/plugins/UnpackFFTUGens.cpp; sourceTree = SOURCE_ROOT; };
 		F50D054602E69B6B01CA2799 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
 		F50D054702E69B6B01CA2799 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
 		F50D054802E69B6B01CA2799 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
@@ -497,6 +509,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DC43F08B0CB26A670020E8B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FE2582C70C2C096A00307453 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -610,6 +629,7 @@
 				F50D05E302E69B6B01CA2799 /* SCComplex.h */,
 				F50D05E402E69B6B01CA2799 /* TriggerUGens.cpp */,
 				F50D05E502E69B6B01CA2799 /* UnaryOpUGens.cpp */,
+				DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */,
 				92CCC51E045B451100CA2167 /* MacUGens.cpp */,
 				92F246630628AB3E0063D98D /* DemandUGens.cpp */,
 				92962B0707853BDA0049266B /* ChaosUGens.cpp */,
@@ -641,6 +661,7 @@
 				9451F5F40C1CAC250037197F /* TriggerUGens.scx */,
 				9451F5F50C1CAC250037197F /* DynNoiseUGens.scx */,
 				FE2582CB0C2C096A00307453 /* TestUGens.scx */,
+				DC43F08F0CB26A670020E8B7 /* UnpackFFTUGens.scx */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1016,6 +1037,22 @@
 			productReference = 9451F5EB0C1CAC250037197F /* ChaosUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
+		DC43F0880CB26A670020E8B7 /* UnpackFFTUGens */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC43F08C0CB26A670020E8B7 /* Build configuration list for PBXNativeTarget "UnpackFFTUGens" */;
+			buildPhases = (
+				DC43F0890CB26A670020E8B7 /* Sources */,
+				DC43F08B0CB26A670020E8B7 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UnpackFFTUGens;
+			productName = FFT_UGens;
+			productReference = DC43F08F0CB26A670020E8B7 /* UnpackFFTUGens.scx */;
+			productType = "com.apple.product-type.objfile";
+		};
 		FE2582C40C2C096A00307453 /* TestUGens */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FE2582C80C2C096A00307453 /* Build configuration list for PBXNativeTarget "TestUGens" */;
@@ -1065,6 +1102,7 @@
 				949319A00C1931A70018AB50 /* DynNoiseUGens */,
 				949319AB0C1931A80018AB50 /* ChaosUGens */,
 				FE2582C40C2C096A00307453 /* TestUGens */,
+				DC43F0880CB26A670020E8B7 /* UnpackFFTUGens */,
 			);
 		};
 /* End PBXProject section */
@@ -1240,6 +1278,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DC43F0890CB26A670020E8B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC43F0AE0CB26BC80020E8B7 /* SCComplex.cpp in Sources */,
+				DC43F0940CB26B450020E8B7 /* UnpackFFTUGens.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FE2582C50C2C096A00307453 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1350,6 +1397,11 @@
 			isa = PBXTargetDependency;
 			target = 949318BA0C1931070018AB50 /* BinaryOpUGens */;
 			targetProxy = 94931A310C1934230018AB50 /* PBXContainerItemProxy */;
+		};
+		DCD2C6F90CB26D0500297AE3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC43F0880CB26A670020E8B7 /* UnpackFFTUGens */;
+			targetProxy = DCD2C6F80CB26D0500297AE3 /* PBXContainerItemProxy */;
 		};
 		FE2582F30C2C133200307453 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1740,6 +1792,20 @@
 			};
 			name = Deployment;
 		};
+		DC43F08D0CB26A670020E8B7 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = UnpackFFTUGens;
+			};
+			name = Development;
+		};
+		DC43F08E0CB26A670020E8B7 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = UnpackFFTUGens;
+			};
+			name = Deployment;
+		};
 		FE2582C90C2C096A00307453 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1951,6 +2017,15 @@
 			buildConfigurations = (
 				949319B30C1931A80018AB50 /* Development */,
 				949319B40C1931A80018AB50 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		DC43F08C0CB26A670020E8B7 /* Build configuration list for PBXNativeTarget "UnpackFFTUGens" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC43F08D0CB26A670020E8B7 /* Development */,
+				DC43F08E0CB26A670020E8B7 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;

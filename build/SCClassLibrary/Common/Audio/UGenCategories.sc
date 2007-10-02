@@ -102,6 +102,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + NRand           { *categories { ^ #["UGens>Generators>Stochastic", "UGens>Generators>Single-value"]} }
 + Osc             { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + OscN            { *categories { ^ #["UGens>Generators>Deterministic"] } }
++ PackFFT		    { *categories { ^ #["UGens>FFT"] } }
 + Panner          { *categories { ^ #["UGens>Multichannel"] } }
 + Pause           { *categories { ^ #["UGens>Synth control"] } }
 + PauseSelf       { *categories { ^ #["UGens>Synth control"] } }
@@ -169,6 +170,8 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Trig1           { *categories { ^ #["UGens>Trigger"] } }
 + TWindex         { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + UGen            { *categories { ^ #["UGens>Unclassified"] } }
++ UnpackFFT	    { *categories { ^ #["UGens>FFT"] } }
++ Unpack1FFT	    { *categories { ^ #["UGens>FFT"] } }
 + VarSaw          { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Vibrato         { }
 + VOsc            { *categories { ^ #["UGens>Generators>Deterministic"] } }
