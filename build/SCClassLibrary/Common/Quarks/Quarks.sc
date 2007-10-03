@@ -165,7 +165,7 @@ Quarks
 		
 		// Now ensure that the dependencies are installed (if available given the current active reposses)
 		if(incdeps, {	
-			q.dependencies.do({ |dep|
+			q.dependencies(true).do({ |dep|
 				quarksForDep = if(dep.repos.isNil, {this}, {Quarks.forUrl(dep.repos)});
 				if(quarksForDep.isNil, {
 					("Quarks:install - unable to find repository for dependency '" ++ dep.name 
@@ -173,7 +173,7 @@ Quarks
 				}, {
 					if(quarksForDep.isInstalled(dep.name).not, {
 						try({
-							quarksForDep.install(dep.name, true, allowCheckout)
+							quarksForDep.install(dep.name, false, allowCheckout)
 						}, {
 							("Unable to satisfy dependency of '"++name++"' on '"++dep.name
 								++"' - you may need to install '"++dep.name++"' manually.").warn;
