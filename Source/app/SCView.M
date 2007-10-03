@@ -1466,22 +1466,27 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	char *name = symbol->name;
 	if (strcmp(name, "setHasHorizontalScroller")==0) {
 		bool hasScroller = IsTrue(slot);
+		setInSetClipViewOrigin(true);
 		[mNSScrollView setHasHorizontalScroller:hasScroller];
 		[(SCGraphView*)mNSView setFrameSizeToMinimum];
+		setInSetClipViewOrigin(false);
 		refresh();
 		return errNone;
 	}
 	
 	if (strcmp(name, "setHasVerticalScroller")==0) {
 		bool hasScroller = IsTrue(slot);
+		setInSetClipViewOrigin(true);
 		[mNSScrollView setHasVerticalScroller:hasScroller];
 		[(SCGraphView*)mNSView setFrameSizeToMinimum];
+		setInSetClipViewOrigin(false);
 		refresh();
 		return errNone;
 	}
 	
 	if (strcmp(name, "setAutohidesScrollers")==0) {
 		bool autoHides = IsTrue(slot);
+		setInSetClipViewOrigin(true);
 		[mNSScrollView setAutohidesScrollers:autoHides];
 		[(SCGraphView*)mNSView setFrameSizeToMinimum];
 		[mNSScrollView setNeedsDisplay: YES];
@@ -1490,6 +1495,7 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		NSRect frame = [mNSScrollView frame];
 		[mNSScrollView setFrame: NSInsetRect(frame,1,1)];
 		[mNSScrollView setFrame: frame];
+		setInSetClipViewOrigin(false);
 		refresh();
 		return errNone;
 	}
@@ -4615,6 +4621,7 @@ void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theE
 {
 	//mPrevPoint = where;
 	mouseTrack(where, modifiers,theEvent);
+	NSLog(@"foo");
 }
 
 void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
