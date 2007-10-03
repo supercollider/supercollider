@@ -164,7 +164,8 @@ Quark
 }
 
 QuarkView {
-	var <quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton;
+	var	<quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton,
+		nameView, infoButton;
 	*new{|parent, extent, quark, isInstalled|
 		^super.new.init(parent, extent, quark, isInstalled)
 	}
@@ -184,9 +185,9 @@ QuarkView {
 		this.updateButtonStates;
 
 		// the name with author
-		GUI.staticText.new(parent, descrBounds).string_("% by %".format(quark.name, quark.author));
+		nameView = GUI.staticText.new(parent, descrBounds).string_("% by %".format(quark.name, quark.author));
 		// the name
-		GUI.button.new(parent, infoBounds).states_([["info"]]).action_{this.fullDescription};
+		infoButton = GUI.button.new(parent, infoBounds).states_([["info"]]).action_{this.fullDescription};
 	}
 	updateButtonStates {
 		isInstalled.if({
@@ -224,5 +225,8 @@ QuarkView {
 		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
 		window.view.decorator = FlowLayout(window.view.bounds);
 		GUI.staticText.new(window, window.view.bounds).string_(quark.longDesc);
+	}
+	remove {
+		[installButton, nameView, infoButton].do(_.remove);
 	}
 }

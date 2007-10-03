@@ -302,10 +302,29 @@ Quarks
 
 	// a gui for Quarks. 2007 by LFSaw.de
 	gui {
-		var window, caption, explanation, views, resetButton, saveButton, warning;
+		var	window, caption, explanation, views, resetButton, saveButton, warning,
+			quarksflow, height, maxPerPage, nextButton, prevButton;
+		var pageStart = 0, fillPage = { |start|
+			views.notNil.if({
+				views.do({ |view| view.remove });
+				window.refresh;
+			});
+			quarksflow.decorator.reset;
+			views = this.local.quarks[pageStart .. pageStart + maxPerPage - 1].collect{|quark|
+				var qView = QuarkView.new(quarksflow, 400@20, quark, this.installed.detect{|it| it == quark}.notNil);
+				quarksflow.startRow;
+//				window.view.decorator.nextLine;
+				qView;
+			};
+			prevButton.visible = pageStart >= maxPerPage;
+			nextButton.visible = pageStart < (this.local.quarks.size - maxPerPage);
+			views
+		};
 		
-		window = GUI.window.new(
-			this.name, Rect(300,60,550, this.local.quarks.size * 25 + 120)).front;
+		height = min(this.local.quarks.size * 25 + 120, GUI.window.screenBounds.height - 60);
+		maxPerPage = (height - 120) div: 25;
+		
+		window = GUI.window.new(this.name, Rect(300,60,550, height)).front;
 		window.view.decorator =  FlowLayout( window.view.bounds );
 		
 		caption = GUI.staticText.new(window, Rect(20,15,400,30));
@@ -313,11 +332,28 @@ Quarks
 		caption.string = this.name;
 		window.view.decorator.nextLine;
 		
-		views = this.local.quarks.collect{|quark|
-			var qView = QuarkView.new(window, 400@20, quark, this.installed.detect{|it| it == quark}.notNil);
-			window.view.decorator.nextLine;
-			qView;
-		};
+		quarksflow = FlowView(window, 500@(height - 120));
+
+		prevButton = GUI.button.new(window, Rect(15, 15, 100, 20))
+			.states_([["prev page"]])
+			.action_({
+				pageStart = (pageStart - maxPerPage).max(0);
+				fillPage.(pageStart);
+			});
+		nextButton = GUI.button.new(window, Rect(15, 15, 100, 20))
+			.states_([["next page"]])
+			.action_({
+				pageStart = pageStart + maxPerPage;
+				(pageStart >= this.local.quarks.size).if({
+					pageStart = pageStart - maxPerPage;
+				}, {
+					fillPage.(pageStart);
+				});
+			});
+		
+		fillPage.(pageStart);
+		
+		window.view.decorator.nextLine;
 		
 		resetButton = GUI.button.new(window, Rect(15,15,150,20));
 		//	button.font_(GUI.font.new("Helvetica", 14));
