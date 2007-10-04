@@ -56,10 +56,10 @@ Pfset : FuncFilterPattern {
 		loop { 
 			event = event.copy;
 			event.putAll(envir);
-			inevent =stream.next(event);
+			inevent = stream.next(event);
 			if (inevent.isNil) { ^event };
 			event = yield(inevent);
-			if(event.isNil) { nil.yield; ^inevent }
+			if(event.isNil) { stream.next(nil); nil.yield; ^inevent }
 		};
 	}
 }
@@ -126,12 +126,14 @@ Pset : FilterPattern {
 		
 		loop {
 			inEvent = evtStream.next(event);
-			if (inEvent.isNil) { nil.yield; ^event };
+			if (event.isNil) { ^nil.yield };
+			if (inEvent.isNil) { ^event };
 			val = valStream.next(inEvent);
 			if (val.isNil) { ^event };
 			
 			this.filterEvent(inEvent, val);
 			event = inEvent.yield;
+			
 			
 		}
 	}
@@ -515,15 +517,15 @@ Pstutter : FilterPattern {
 		var stream = pattern.asStream;
 		var nstream = n.asStream;
 
-		while ({
+		while {
 			(inevent = stream.next(event)).notNil
-		},{
-			(nn = nstream.next(event)).notNil.if({
-				nn.abs.do({
+		} {
+			if((nn = nstream.next(event)).notNil) {
+				nn.abs.do {
 					event = inevent.copy.yield;
-				});
-			}, { ^event });
-		});
+				};
+			} { ^event };
+		};
 		^event;
 	}
 }
@@ -564,18 +566,26 @@ Pwhile : FuncFilterPattern {
 }
 
 Pwrap : FilterPattern {
-	var <>lo,<>hi;
+	var <>lo, <>hi;
 	*new { arg pattern,lo,hi;
 		^super.new(pattern).lo_(lo).hi_(hi)
 	}
+	
 	storeArgs { ^[pattern,lo,hi] }
+	
 	embedInStream { arg event;
 		var next;
 		var stream = pattern.asStream;
+		var loStr = lo.asStream;
+		var hiStr = hi.asStream;
+		var loVal, hiVal;
 		while({
-			(next = stream.next(event)).notNil
+			loVal = loStr.next(event);
+			hiVal = hiStr.next(event);
+			next = stream.next(event);
+			next.notNil and: { loVal.notNil } and: { hiVal.notNil }
 		},{
-			event = next.wrap(lo,hi).yield
+			event = next.wrap(loVal, hiVal).yield
 		});
 		^event;
 	}
@@ -624,14 +634,16 @@ Pflatten : FilterPattern {
 		^super.newCopyArgs(pattern, n) 
 	}
 	embedInStream { arg event;
-		var next;
+		var next, nval;
 		var stream = pattern.asStream;
+		var nstream = n.asStream;
 		while {
 			next = stream.next(event);
-			next.notNil;
+			nval = nstream.next(event);
+			next.notNil and: { nval.notNil };
 		}{
 			if (next.isKindOf(Collection)) {
-				next = next.flatten(n);
+				next = next.flatten(nval);
 				next.do {|item| event = item.yield };
 			}{
 				event = next.yield;
@@ -688,6 +700,35 @@ Prorate : FilterPattern {
 			}
 		}
 	}
+}
+
+Pavaroh : FilterPattern {
+	
+	var <>aroh, <>avaroh, <>stepsPerOctave;
+	*new { arg pattern, aroh, avaroh, stepsPerOctave=12;
+		^super.newCopyArgs(pattern, aroh, avaroh, stepsPerOctave)
+	
+	}
+	storeArgs { ^[pattern, aroh, avaroh, stepsPerOctave ] }
+	
+	embedInStream { arg inval;
+		var me, melast = 0, scale;
+		var mestream = pattern.asStream;
+		var stepsStr = stepsPerOctave.asStream, stepVal;
+
+		while {
+			stepVal = stepsStr.next(inval);
+			me = mestream.next(inval);
+			me.notNil and: { stepVal.notNil }
+		} {
+			scale = if(me >= melast) { aroh } { avaroh };
+			melast = me;
+			inval = me.degreeToKey(scale, stepVal).yield
+		};
+		^inval
+
+	}
+	
 }
 
 

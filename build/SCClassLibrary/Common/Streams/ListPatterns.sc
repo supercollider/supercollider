@@ -136,9 +136,12 @@ Pwrand : ListPattern {
 		^super.new(list, repeats).weights_(weights)
 	}
 	embedInStream {  arg inval;
-		var item;
+		var item, wVal;
+		var wStr = weights.asStream;
 		repeats.value.do({ arg i;
-			item = list.at(weights.windex);
+			wVal = wStr.next(inval);
+			if(wVal.isNil) { ^inval };
+			item = list.at(wVal.windex);
 			inval = item.embedInStream(inval);
 		});
 		^inval
@@ -173,7 +176,7 @@ Pdfsm : ListPattern {
 		var currState, sigStream;
 		var sig, state, stream;
 		var numStates = list.size - 1;
-		repeats.do({
+		repeats.value.do({
 			
 			currState = startState;
 			sigStream = list[0].asStream;
@@ -353,27 +356,33 @@ Pslide : ListPattern {
     embedInStream { arg inval;
 	    	var item;
 	    	var pos = start;
-	    	if(wrapAtEnd) {
-		    	repeats.do({
-		    		len.do({ arg j;
-		    			item = list.wrapAt(pos + j);
-		    			inval = item.embedInStream(inval);
-		    		});
-		    		pos = pos + step;
-		    	});
-		} {
-			repeats.do({
-				len.do({ |j|
-					item = list[pos + j];
-					if(item.notNil) {
+	    	var stepStr = step.asStream, stepVal;
+	    	var lenghtStr = len.asStream, lengthVal;
+	    	
+	   	repeats.value.do {
+				lengthVal = lenghtStr.next(inval);
+		    		if(lengthVal.isNil) { ^inval };
+				if(wrapAtEnd) {
+					lengthVal.do { |j|
+						item = list.wrapAt(pos + j);
 						inval = item.embedInStream(inval);
-					} {
-						^inval
-					};
-				});
-		    		pos = pos + step;
-			});
+					}
+				
+				} {
+					lengthVal.do { |j|
+						item = list.at(pos + j);
+						if(item.notNil) {
+							inval = item.embedInStream(inval);
+						} {
+							^inval
+						};
+					}
+				};
+		    		stepVal = stepStr.next(inval);
+		    		if(stepVal.isNil) { ^inval };
+		    		pos = pos + stepVal;
 		};
+	
 	     ^inval;  		
     }
 }
@@ -408,13 +417,16 @@ Pwalk : ListPattern {
 		var stepStream = stepPattern.asStream;
 		var directionStream = directionPattern.asStream;
 		// 1 = use steps as is; -1 = reverse direction
-		var direction = directionStream.next(inval) ? 1;	// start with first value
+		var direction = directionStream.next(inval) ? 1;		// start with first value
 
-		{ (step = stepStream.next(inval)).notNil }.while({  // get step, stop when nil
-			inval = list[index].embedInStream(inval);  // pop value/stream out
+		while({ 
+			// get step, stop when nil
+			(step = stepStream.next(inval)).notNil 
+		},{  
+			inval = list[index].embedInStream(inval);  // get value/stream out
 			step = step * direction;	// apply direction
 				// if next thing will be out of bounds
-			(((index + step) < 0) or: ((index + step) >= list.size)).if({
+			if(((index + step) < 0) or: { (index + step) >= list.size }, {
 				direction = directionStream.next(inval) ? 1;  // next direction, or 1
 				step = step.abs * direction.sign;  // apply to this step
 			});

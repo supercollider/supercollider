@@ -52,8 +52,6 @@ Pattern : AbstractFunction {
 	composeNAryOp { arg selector, argList;
 		^Pnaryop.new(selector, this, argList);
 	}
-	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
-	differentiate { ^Pdiff(this) } 
 	
 	//////////////////////
 	
@@ -80,6 +78,8 @@ Pattern : AbstractFunction {
 	finDur { arg dur, tolerance = 0.001; ^Pfindur(dur, this, tolerance) }
 	fin { arg n; ^Pfin(n, this) }
 	
+	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
+	differentiate { ^Pdiff(this) }
 }
 
 Pfunc : Pattern {
@@ -374,12 +374,15 @@ Pseries : Pattern {	// arithmetic series
 	embedInStream { arg inval;
 		var outval, counter = 0;
 		var cur = start;
-		while ({counter < length}, {
+		var stepStr = step.asStream, stepVal;
+		while { counter < length } {
+			stepVal = stepStr.next(inval);
+			if(stepVal.isNil) { ^inval };
 			outval = cur;
-			cur = cur + step;
+			cur = cur + stepVal;
 			counter = counter + 1;
 			inval = outval.yield;
-		});
+		};
 		^inval;
 	}
 }
@@ -393,12 +396,16 @@ Pgeom : Pattern {	// geometric series
 	embedInStream { arg inval;
 		var outval, counter = 0;
 		var cur = start;
-		while ({counter < length}, {
+		var growStr = grow.asStream, growVal;
+		
+		while { counter < length } {
+			growVal = growStr.next(inval);
+			if(growVal.isNil) { ^inval };
 			outval = cur;
-			cur = cur * grow;
+			cur = cur * growVal;
 			counter = counter + 1;
 			inval = outval.yield;
-		});
+		};
 		^inval;
 	}
 }
@@ -406,16 +413,34 @@ Pgeom : Pattern {	// geometric series
 
 Pbrown : Pattern {
 	var <>lo, <>hi, <>step, <>length;
+	
 	*new { arg lo=0.0, hi=1.0, step=0.125, length=inf;
 		^super.newCopyArgs(lo, hi, step, length)
 	}
+	
 	storeArgs { ^[lo,hi,step,length] }
+	
 	embedInStream { arg inval;
-		var cur = lo rrand: hi;
-		length.do({
-			cur = (cur + step.xrand2).fold(lo,hi);
+		var cur;
+		var loStr = lo.asStream, loVal;
+		var hiStr = hi.asStream, hiVal;
+		var stepStr = step.asStream, stepVal;
+		
+		loVal = loStr.next(inval);
+		hiVal = hiStr.next(inval);
+		stepVal = stepStr.next(inval);
+		cur = rrand(loVal, hiVal);
+		if(loVal.isNil or: { hiVal.isNil } or: { stepVal.isNil }) { ^inval };
+		
+		length.value.do {
+			loVal = loStr.next(inval);
+			hiVal = hiStr.next(inval);
+			stepVal = stepStr.next(inval);
+			if(loVal.isNil or: { hiVal.isNil } or: { stepVal.isNil }) { ^inval };
+			cur = (cur + stepVal.xrand2).fold(loVal, hiVal);
 			inval = cur.yield;				
-		});
+		};
+		
 		^inval;
 	}
 }
@@ -427,8 +452,14 @@ Pwhite : Pattern {
 	}
 	storeArgs { ^[lo,hi,length] }
 	embedInStream { arg inval;
-		length.do({
-			inval = rrand(lo,hi).yield;				
+		var loStr = lo.asStream;
+		var hiStr = hi.asStream;
+		var hiVal, loVal;
+		length.value.do({
+			hiVal = hiStr.next(inval);
+			loVal = loStr.next(inval);
+			if(hiVal.isNil or: { loVal.isNil }) { ^inval };
+			inval = rrand(loVal, hiVal).yield;
 		});
 		^inval;
 	}
@@ -450,8 +481,16 @@ Pprob : Pattern {
 		this.distribution_(distribution);
 	}
 	embedInStream { arg inval;
+		var loStr = lo.asStream;
+		var hiStr = hi.asStream;
+		var hiVal, loVal;
+		
 		length.value.do {
-			inval = ((table.tableRand * (hi - lo)) + lo).yield;		};
+			loVal = loStr.next(inval);
+			hiVal = hiStr.next(inval);
+			if(hiVal.isNil or: { loVal.isNil }) { ^inval };
+			inval = ((table.tableRand * (hiVal - loVal)) + loVal).yield;		};
+	
 		^inval;
 	}
 }
@@ -559,7 +598,7 @@ Ptime : Pattern {
 	}
 	embedInStream { arg inval;
 		var start = thisThread.beats;
-		repeats.do { inval = (thisThread.beats - start).yield };
+		repeats.value.do { inval = (thisThread.beats - start).yield };
 		^inval
 	}
 }
