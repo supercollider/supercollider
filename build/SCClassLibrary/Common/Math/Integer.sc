@@ -33,10 +33,14 @@ Integer : SimpleNumber {
 	// override 'do'
 	generate { arg function; function.value(this) }
 
-	collect { | function, class |
+	collectAs { arg function, class;
 		var res = (class ? Array).new(this);
 		this.do {|i| res.add(function.value(i)) }
 		^res;
+	}
+	
+	collect { arg function;
+		^this.collectAs(function, Array)
 	}
 
 	reverseDo { arg function;
