@@ -90,7 +90,7 @@ Dswitch1 : UGen {
 Dswitch : Dswitch1 {}
 
 Dwhite : UGen {
-	*new { arg lo, hi, length=inf;
+	*new { arg lo = 0.0, hi = 1.0, length=inf;
 		^this.multiNew('demand', length, lo, hi)
 	}
 }
@@ -98,7 +98,7 @@ Dwhite : UGen {
 Diwhite : Dwhite {}
 
 Dbrown : UGen {
-	*new { arg lo, hi, step, length=inf;
+	*new { arg lo = 0.0, hi = 1.0, step = 0.01, length=inf;
 		^this.multiNew('demand', length, lo, hi, step)
 	}
 }
