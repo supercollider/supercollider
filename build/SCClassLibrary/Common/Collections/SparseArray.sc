@@ -368,6 +368,8 @@ SparseArray : Order {
 		}
 	}
 	
+	// private implementation
+	
 	prPutSlot { arg nextSlot, index, obj;
 		var slot = max(0, nextSlot - 1);
 		index = index.asInteger; // SparseArray supports only integer indices
