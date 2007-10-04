@@ -70,7 +70,7 @@ PatternProxy : Pattern {
 	
 	isEventPattern { ^false }
 	
-	receiveEvent {}
+	receiveEvent { ^nil }
 	
 	embedInStream { arg inval;
 		var pat, stream, outval, test, resetTest, count=0;
@@ -79,7 +79,8 @@ PatternProxy : Pattern {
 		resetTest = reset;
 		stream = pattern.asStream;
 		while {
-			this.receiveEvent(inval);
+			this.receiveEvent(inval);	
+			
 			if(
 				(reset !== resetTest) 
 				or: { pat !== pattern and: { test.value(outval, count) } }
@@ -95,7 +96,7 @@ PatternProxy : Pattern {
 			outval.notNil
 		}{
 			inval = outval.yield;
-			if(this.isEventPattern and: inval.isNil) { ^nil.yield }
+			if(this.isEventPattern and: inval.isNil) { ^nil.alwaysYield }
 		};
 		^inval
 	}
@@ -124,7 +125,7 @@ PatternProxy : Pattern {
 				count = count + 1;
 				outval = outval ? default;
 				inval = outval.yield;
-				if(this.isEventPattern and: inval.isNil) { ^nil.yield }
+				if(this.isEventPattern and: inval.isNil) { ^nil.alwaysYield }
 			}
 		}
 	}
@@ -150,7 +151,7 @@ PatternProxy : Pattern {
 	
 	
 	*newAdd { arg key, item;
-		var res = super.new.init(item).key_(key);
+		var res = super.new(item).key_(key);
 		this.put(key, res);
 		^res
 	}
