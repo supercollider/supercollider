@@ -583,3 +583,48 @@ Pprotect : FilterPattern {
 
 
 
+// access a key from the input event
+Pkey : Pattern {
+	var	<>key, <>repeats;
+	*new { |key|
+		^super.newCopyArgs(key)
+	}
+	storeArgs { ^[key] }
+		// avoid creating a routine
+	asStream {
+		var	keystream = key.asStream;
+		^FuncStream({ |inevent|
+			inevent !? { inevent[keystream.next(inevent)] }
+		});
+	}
+}
+
+Pif : Pattern {
+	var	<>condition, <>iftrue, <>iffalse, <>default;
+	*new { |condition, iftrue, iffalse, default|
+		^super.newCopyArgs(condition, iftrue, iffalse, default)
+	}
+	storeArgs { ^[condition, iftrue, iffalse] }
+	asStream {
+		var	condStream = condition.asStream,
+			trueStream = iftrue.asStream,
+			falseStream = iffalse.asStream;
+		
+		^FuncStream({ |inval|
+			var test;
+			(test = condStream.next(inval)).isNil.if({
+				nil
+			}, {
+				test.if({
+					trueStream.next(inval) ? default
+				}, {
+					falseStream.next(inval) ? default
+				});
+			});
+		}, {		// reset func
+			condStream.reset;
+			trueStream.reset;
+			falseStream.reset;
+		})
+	}
+}
