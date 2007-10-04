@@ -1,9 +1,9 @@
 
 //////////// change log /////////////
 
-user-visible changes since 22.09.2007, in preparation for SuperCollider v3.1 release:
+// user-visible changes since 22.09.2007, in preparation for SuperCollider v3.1 release:
 
-HEADLINES:
+// HEADLINES:
 
 * 27.09.2007 SparseArray class added - jr
 * 28.09.2007 Help.gui added - ds
@@ -14,7 +14,7 @@ HEADLINES:
 
 
 
-OTHER ADDITIONS / IMPROVEMENTS:
+// OTHER ADDITIONS / IMPROVEMENTS:
 
 * 22.09.2007 change log added, much rejoicing
 * 25.09.2007 added packagesource.sh script to produce source code bundles - ds
@@ -24,7 +24,7 @@ OTHER ADDITIONS / IMPROVEMENTS:
 * 05.10.2007 Dwhite:new and Dbrown:new have default values for lo and hi - jr
 
 
-BUGFIXES:
+// BUGFIXES:
 
 * 29.09.2007 takekos bug fixed (obscure issue with garbage collection in arrays) - jm
 * 01.10.2007 fixed off by one bug in Dswitch and Dswitch1 that caused a server crash - jr
