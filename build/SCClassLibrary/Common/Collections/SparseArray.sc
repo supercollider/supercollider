@@ -146,6 +146,8 @@ Order : SequenceableCollection {
 		}
 	}
 	
+	// private implementation
+	
 	resetIndices { arg step = 1, offset = 0;
 		indices = (offset, step .. indices.size - 1);
 	}
@@ -283,28 +285,29 @@ SparseArray : Order {
 	}
 	
 	removeAt { arg index;
-		^this.notYetImplemented(thisMethod)
-		/*var slot = this.slotFor(index), res, size = indices.size;
+		//^this.notYetImplemented(thisMethod)
+		var res, slot = this.slotFor(index), size = indices.size;
 		if(index >= this.size) { ^nil };
 		
 		if(indices[slot] == index) {
 			res = this.removeAtSlot(slot);
+			slot =  slot - 1;
 		} {			
 			if(size > 0) { res = default };
+			if(indices.first > index) { slot = -1 };
 		};
-		"slot: % old indices: %\n".postf(slot, indices);
-		(size - slot).do { |i| indices[i + slot] = indices[i + slot] - 1 };
-		"new indices: %\n".postf(indices);
+		indices = indices[..slot] ++ (indices[slot+1..] - 1);
 		
-		if(defaultSize.notNil and: { defaultSize > 0 }) {
+		if(defaultSize.notNil and: { defaultSize > 0 } and: { index < defaultSize }) {
 				defaultSize = defaultSize - 1;
 		};
-		^res*/
+		^res
 		
 	}
 	
 	firstGap { arg from = 0, to;
 		to = to ?? { indices.size };
+		from = max(from, 1); // index 0 is no gap
 		(from..to).do { |i|
 			if(indices[i] != i) { ^i };
 		};
@@ -331,6 +334,16 @@ SparseArray : Order {
 		^this.class.newFromIndices(list, ind).default_(default).defaultSize_(size)
 	}
 	
+	pop {
+		^if(defaultSize.notNil and: { defaultSize > indices.last }) {
+			defaultSize = defaultSize - 1;
+			default
+		} {
+			super.pop
+		}
+	}
+
+	
 	++ { arg coll;
 		var res = this.copy.sparseAddAll(coll);
 		if(defaultSize.notNil) { res.defaultSize_(this.size + coll.size) };
@@ -349,7 +362,7 @@ SparseArray : Order {
 			this.put(index, value)
 		}
 	}
-	atSeries { arg first, second, last, value; 
+	atSeries { arg first, second, last; 
 		^(first, second..last).collect { |index|
 			this.at(index)
 		}
