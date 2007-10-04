@@ -26,6 +26,12 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 	composeNAryOp { arg aSelector, anArgList;
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
+	
+	// behave like a pattern
+	embedInStream { arg inval;
+		^this.value.embedInStream(inval)
+	}
+
 
 
 }
@@ -58,6 +64,11 @@ BinaryOpFunctionProxy : BinaryOpFunction {
 	composeNAryOp { arg aSelector, anArgList;
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
+	
+	// behave like a pattern
+	embedInStream { arg inval;
+		^this.value.embedInStream(inval)
+	}
 
 }
 NAryOpFunctionProxy : NAryOpFunction {
@@ -88,6 +99,11 @@ NAryOpFunctionProxy : NAryOpFunction {
 	composeNAryOp { arg aSelector, anArgList;
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
+	
+	// behave like a pattern
+	embedInStream { arg inval;
+		^this.value.embedInStream(inval)
+	}
 
 }
 
@@ -100,7 +116,7 @@ NAryValueProxy : NAryOpFunctionProxy {
 		^a.reduceFuncProxy(arglist.collect(_.reduceFuncProxy(args)))
 	}
 	storeOn { arg stream;
-		stream << "o(" <<< a << "," <<<* arglist << ")" // is ist always so?
+		stream << "o(" <<< a << "," <<<* arglist << ")" // is it always so?
 	}
 }
 
