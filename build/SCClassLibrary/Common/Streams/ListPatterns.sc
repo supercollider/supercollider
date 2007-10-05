@@ -405,11 +405,7 @@ Pwalk : ListPattern {
 	}
 	
 	storeArgs { ^[list, stepPattern, directionPattern, startPos] }
-	
-	copy {
-		^super.copy.list_(list.copy).stepPattern_(stepPattern)
-			.directionPattern_(directionPattern);
-	}
+
 	
 	embedInStream { arg inval;
 		var	step;	
