@@ -306,8 +306,8 @@ SparseArray : Order {
 	}
 	
 	firstGap { arg from = 0, to;
+		if(indices.first == 0) { ^nil };
 		to = to ?? { indices.size };
-		from = max(from, 1); // index 0 is no gap
 		(from..to).do { |i|
 			if(indices[i] != i) { ^i };
 		};
