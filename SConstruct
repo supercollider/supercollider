@@ -340,6 +340,10 @@ features = { }
 success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
 if not success: Exit(1)
 
+# FFTW 
+success, libraries['fftwf'] = conf.CheckPKG('fftw3f')
+if not success: Exit(1)
+
 # audio api
 if env['AUDIOAPI'] == 'jack':
     features['audioapi'] = 'Jack'
@@ -704,13 +708,15 @@ UnaryOpUGens
         make_plugin_target(name), os.path.join('Source', 'plugins', name + '.cpp')))
 
 # fft ugens
+fftEnv = pluginEnv.Copy()
 fftSources = Split('Source/common/fftlib.c Source/plugins/SCComplex.cpp')
+merge_lib_info(fftEnv, libraries['fftwf'])
 plugins.append(
-    pluginEnv.SharedLibrary(
+    fftEnv.SharedLibrary(
     make_plugin_target('FFT_UGens'), ['Source/plugins/FFTInterfaceTable.cpp', 'Source/plugins/FFT_UGens.cpp', 'Source/plugins/PV_UGens.cpp'] + fftSources))
     
 plugins.append(
-    pluginEnv.SharedLibrary(
+    fftEnv.SharedLibrary(
     make_plugin_target('PV_ThirdParty'),
     ['Source/plugins/Convolution.cpp',
      'Source/plugins/FFT2InterfaceTable.cpp',

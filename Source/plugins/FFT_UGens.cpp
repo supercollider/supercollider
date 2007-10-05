@@ -184,7 +184,7 @@ void FFT_Ctor(FFT *unit)
 	FFTBase_Ctor(unit);
 	int size = unit->m_bufsize * sizeof(float);
 	
-	int hopsize = sc_max(sc_min(ZIN0(2), 1.f), 0.f) * unit->m_bufsize;
+	int hopsize = (int)(sc_max(sc_min(ZIN0(2), 1.f), 0.f) * unit->m_bufsize);
 	if (((int)(hopsize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength 
 				!= hopsize) {
 		Print("FFT_Ctor: hopsize (%i) not an exact multiple of SC's block size (%i) - automatically corrected.\n", hopsize, unit->mWorld->mFullRate.mBufLength);
