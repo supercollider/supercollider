@@ -239,19 +239,30 @@ static void World_LoadGraphDefs(World* world);
 void World_LoadGraphDefs(World* world)
 {
 	GraphDef *list = 0;
-	char resourceDir[MAXPATHLEN];
-	sc_GetResourceDirectory(resourceDir, MAXPATHLEN);
-	sc_AppendToPath(resourceDir, "synthdefs");
-	list = GraphDef_LoadDir(world, resourceDir, list);
-	GraphDef_Define(world, list);
-		
-	SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), ':');
-	while (!sp.AtEnd()) {
-		GraphDef *list = 0;
-		char *path = const_cast<char *>(sp.NextToken());
-		list = GraphDef_LoadDir(world, path, list);
+	
+	if(getenv("SC_SYNTHDEF_PATH")){
+		if(world->mVerbosity > 0)
+			printf("Loading synthdefs from path: %s\n", getenv("SC_SYNTHDEF_PATH"));
+		SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), ':');
+		while (!sp.AtEnd()) {
+			GraphDef *list = 0;
+			char *path = const_cast<char *>(sp.NextToken());
+			list = GraphDef_LoadDir(world, path, list);
+			GraphDef_Define(world, list);
+		}
+	}else{
+		char resourceDir[MAXPATHLEN];
+		if(sc_IsStandAlone())
+			sc_GetResourceDirectory(resourceDir, MAXPATHLEN);
+		else
+			sc_GetUserAppSupportDirectory(resourceDir, MAXPATHLEN);
+		sc_AppendToPath(resourceDir, "synthdefs");
+		if(world->mVerbosity > 0)
+			printf("Loading synthdefs from default path: %s\n", resourceDir);
+		list = GraphDef_LoadDir(world, resourceDir, list);
 		GraphDef_Define(world, list);
 	}
+	
 }
 
 World* World_New(WorldOptions *inOptions)

@@ -22,7 +22,8 @@ SynthDef {
 	}
 	
 	*initClass {
-		synthDefDir = String.scDir ++ "/synthdefs/";
+		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
+		("mkdir -p"+synthDefDir.quote).systemCmd; // Ensure exists
 	}
 	
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants;
