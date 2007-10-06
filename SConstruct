@@ -723,6 +723,11 @@ plugins.append(
      'Source/plugins/FeatureDetection.cpp',
      'Source/plugins/PV_ThirdParty.cpp'] + fftSources))
 
+# fft 'unpacking' ugens
+plugins.append(
+    pluginEnv.SharedLibrary(
+    make_plugin_target('UnpackFFTUGens'), ['Source/plugins/SCComplex.cpp', 'Source/plugins/UnpackFFTUGens.cpp']))
+
 # diskio ugens
 diskIOEnv = pluginEnv.Copy(
     LIBS = ['common', 'm'],
