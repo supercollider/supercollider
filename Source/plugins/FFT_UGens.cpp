@@ -27,6 +27,18 @@
 #include "vecLib/vDSP.h"
 #endif
 
+
+// These specify the min & max FFT sizes expected (used when creating windows, also allocating some other arrays).
+#define SC_FFT_MINSIZE 8
+#define SC_FFT_LOG2_MINSIZE 3
+#define SC_FFT_MAXSIZE 8192
+#define SC_FFT_LOG2_MAXSIZE 13
+// Note that things like *fftWindow actually allow for other sizes, to be created on user request.
+#define SC_FFT_ABSOLUTE_MAXSIZE 2147483648
+#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE 31
+#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1 32
+
+
 // Decisions here about which FFT library to use - vDSP only exists on Mac BTW.
 // We include the relevant libs but also ensure that one, and only one, of them is active...
 #if !(SC_FFT_FFTW || SC_FFT_GREEN) && SC_DARWIN
@@ -42,7 +54,7 @@
 #define SC_FFT_GREEN 1
 extern "C" {
 	#include "fftlib.h"
-	static float *cosTable[32];
+	static float *cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 }
 
 #else
@@ -55,18 +67,17 @@ extern "C" {
 
 #endif
 
-
-
 extern InterfaceTable *ft;
 
+// These values are referred to from SC lang as well as in the following code - do not rearrange!
 const int WINDOW_RECT = -1;
 const int WINDOW_WELCH = 0;
 const int WINDOW_HANN = 1;
 
-static float *fftWindow[2][32];
+static float *fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 
 #if SC_FFT_VDSP
-static FFTSetup fftSetup[32]; // vDSP setups, one per FFT size
+static FFTSetup fftSetup[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1]; // vDSP setups, one per FFT size
 static COMPLEX_SPLIT splitBuf; // Temp buf for holding rearranged data
 #endif
 
@@ -105,6 +116,7 @@ struct IFFT : public FFTBase
 extern "C"
 {
 	void FFT_Ctor(FFT* unit);
+	void FFT_ClearUnitOutputs(FFT *unit, int wrongNumSamples);
 	void FFT_next(FFT *unit, int inNumSamples);
 	void FFT_Dtor(FFT* unit);
 
@@ -116,6 +128,7 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+int ensure_fftwindow(FFTBase *unit);
 
 void DoWindowing(FFTBase *unit, float* data);
 void DoWindowing(FFTBase *unit, float* data)
@@ -142,8 +155,8 @@ void DoWindowing(FFTBase *unit, float* data)
 #endif
 }
 
-void FFTBase_Ctor(FFTBase *unit);
-void FFTBase_Ctor(FFTBase *unit)
+int FFTBase_Ctor(FFTBase *unit);
+int FFTBase_Ctor(FFTBase *unit)
 {
 	World *world = unit->mWorld;
 
@@ -156,32 +169,46 @@ void FFTBase_Ctor(FFTBase *unit)
 	unit->m_fftbufnum = bufnum;
 	unit->m_bufsize = buf->samples;
 
+	unit->m_log2n = LOG2CEIL(unit->m_bufsize);
 
 	// Although FFTW allows non-power-of-two buffers (vDSP doesn't), this would complicate the windowing, so we don't allow it.
 	if (!ISPOWEROFTWO(unit->m_bufsize)) {
 		Print("FFTBase_Ctor error: buffer size (%i) not a power of two.\n", unit->m_bufsize);
-		SETCALC(*ClearUnitOutputs);
-		return;
+		return 0;
 	}
 	else if (unit->m_bufsize < 8 || 
 			(((int)(unit->m_bufsize / unit->mWorld->mFullRate.mBufLength)) 
 					* unit->mWorld->mFullRate.mBufLength != unit->m_bufsize)) {
 		Print("FFTBase_Ctor error: buffer size (%i) not a multiple of the block size (%i).\n", unit->m_bufsize, unit->mWorld->mFullRate.mBufLength);
-		SETCALC(*ClearUnitOutputs);
-		return;
+		return 0;
+	}
+	else if (unit->m_bufsize > SC_FFT_MAXSIZE){
+#if 0
+		if(unit->mWorld->mVerbosity > -2)
+			Print("FFTBase_Ctor error: buffer size (%i) larger than hard-coded upper limit for FFT UGen (%i).\n", unit->m_bufsize, SC_FFT_MAXSIZE);
+		return 0;
+#else
+		// Buffer is larger than the range of sizes we provide for at startup; we can get ready just-in-time though
+		ensure_fftwindow(unit);
+#endif
 	}
 	
-	unit->m_log2n = LOG2CEIL(unit->m_bufsize);
 	unit->m_pos = 0;
 	
 	ZOUT0(0) = ZIN0(0);
+	
+	return 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void FFT_Ctor(FFT *unit)
 {
-	FFTBase_Ctor(unit);
+	unit->m_wintype = (int)ZIN0(3); // wintype may be used by the base ctor
+	if(!FFTBase_Ctor(unit)){
+		SETCALC(FFT_ClearUnitOutputs);
+		return;
+	}
 	int size = unit->m_bufsize * sizeof(float);
 	
 	int hopsize = (int)(sc_max(sc_min(ZIN0(2), 1.f), 0.f) * unit->m_bufsize);
@@ -192,8 +219,6 @@ void FFT_Ctor(FFT *unit)
 	}
 	unit->m_hopsize = hopsize;
 	unit->m_shuntsize = unit->m_bufsize - hopsize;
-	
-	unit->m_wintype = (int)ZIN0(3);
 	
 	unit->m_inbuf = (float*)RTAlloc(unit->mWorld, size);
 	
@@ -234,6 +259,11 @@ void FFT_Dtor(FFT *unit)
 	
 	RTFree(unit->mWorld, unit->m_inbuf);
 	RTFree(unit->mWorld, unit->m_transformbuf);
+}
+
+// Ordinary ClearUnitOutputs outputs zero, potentially telling the IFFT (+ PV UGens) to act on buffer zero, so let's skip that:
+void FFT_ClearUnitOutputs(FFT *unit, int wrongNumSamples){
+	ZOUT0(0) = -1;
 }
 
 void FFT_next(FFT *unit, int wrongNumSamples)
@@ -299,13 +329,16 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 void IFFT_Ctor(IFFT* unit){
-	FFTBase_Ctor(unit);
+	unit->m_wintype = (int)ZIN0(1); // wintype may be used by the base ctor
+	if(!FFTBase_Ctor(unit)){
+		SETCALC(*ClearUnitOutputs);
+		return;
+	}
 	
 	// This will hold the transformed and progressively overlap-added data ready for outputting.
 	unit->m_olabuf = (float*)RTAlloc(unit->mWorld, unit->m_bufsize * sizeof(float));
 	memset(unit->m_olabuf, 0, unit->m_bufsize * sizeof(float));
 	
-	unit->m_wintype = (int)ZIN0(1);
 	
 #if SC_FFT_FFTW
 	// Transform buf is two floats "too big" because of FFTWF's output ordering
@@ -468,28 +501,66 @@ float* create_fftwindow(int wintype, int log2n)
 	
 }
 
+// Called by FFT_Base_Ctor - will automatically expand the available range of FFT sizes if neccessary.
+// Note that the expansion, if triggered, will cause a performance hit as things are malloc'ed, realloc'ed, etc.
+static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
+int ensure_fftwindow(FFTBase *unit){
+	
+	int log2n = unit->m_log2n;
+	
+	// Ensure we have enough space to do our calcs
+	if(log2n > largest_log2n){
+		largest_log2n = log2n;
+#if SC_FFT_VDSP
+		size_t newsize = (1 << largest_log2n) * sizeof(float) / 2;
+		splitBuf.realp = (float*) realloc (splitBuf.realp, newsize);
+		splitBuf.imagp = (float*) realloc (splitBuf.imagp, newsize);
+#endif
+	}
+	
+	// Ensure our window has been created
+	if((unit->m_wintype != -1) && (fftWindow[unit->m_wintype][log2n] == 0)){
+		if(unit->mWorld->mVerbosity > 0)
+			Print("ensure_fftwindow(): creating and mallocing window of size %i, type %i, in real-time thread.\n", unit->m_bufsize, unit->m_wintype);
+		fftWindow[unit->m_wintype][log2n] = create_fftwindow(unit->m_wintype, log2n);
+	}
+	
+	// Ensure our FFT twiddle factors (or whatever) have been created
+#if SC_FFT_VDSP
+	if(fftSetup[log2n] == 0)
+		fftSetup[log2n] = vDSP_create_fftsetup (log2n, FFT_RADIX2);
+#elif SC_FFT_GREEN
+	if(cosTable[log2n] == 0)
+		cosTable[log2n] = create_cosTable(log2n);
+#else
+		// Nothing needed here for FFTW
+#endif
+	
+	return 1;
+}
+
 void init_ffts();
 void init_ffts()
 {
 	for (int wintype=0; wintype<2; ++wintype) {
-		for (int i=0; i<32; ++i) {
+		for (int i=0; i< SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
 			fftWindow[wintype][i] = 0;
 		}
-		for (int i=3; i<13; ++i) {
+		for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
 			fftWindow[wintype][i] = create_fftwindow(wintype, i);
 		}
 	}
 #if SC_FFT_GREEN
-	for (int i=0; i<32; ++i) {
+	for (int i=0; i< SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
 		cosTable[i] = 0;
 	}
-	for (int i=3; i<13; ++i) {
+	for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
 		cosTable[i] = create_cosTable(i);
 	}
 	//Print("FFT init: cosTable initialised.\n");
 #elif SC_FFT_VDSP
 	// vDSP inits its twiddle factors
-	for (int i=3; i<13; ++i) {
+	for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
 		fftSetup[i] = vDSP_create_fftsetup (i, FFT_RADIX2);
 		if(fftSetup[i] == NULL){
 			Print("FFT ERROR: Mac vDSP library could not allocate FFT setup for size %i\n", 1<<i);
@@ -498,8 +569,8 @@ void init_ffts()
 	// vDSP prepares its memory-aligned buffer for rearranging input data.
 	// Note max size here - meaning max input buffer size is these two sizes added together.
 	// vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
-	splitBuf.realp = (float*) malloc ( 4096 * sizeof(float) );
-    splitBuf.imagp = (float*) malloc ( 4096 * sizeof(float) );
+	splitBuf.realp = (float*) malloc ( SC_FFT_MAXSIZE * sizeof(float) / 2);
+	splitBuf.imagp = (float*) malloc ( SC_FFT_MAXSIZE * sizeof(float) / 2);
 	//Print("FFT init: vDSP initialised.\n");
 #else
 	//Print("FFT init: FFTW, no init needed.\n");
