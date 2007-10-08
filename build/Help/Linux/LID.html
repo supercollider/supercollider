@@ -26,9 +26,12 @@ span.Apple-tab-span {white-space:pre}
 =====================================================================<br>
 LID -- Linux Input Device<br>
 =====================================================================</p>
+<p class="p1">
 This class provides a way to access devices in the linux input<br>
 layer, which supports many input devices (mouse, keyboard,<br>
 joystick, gamepad, tablet) and busses (serial, PS/2, USB).</p>
+<p class="p2"><br></p>
+<p class="p3">It is advised to use <a href="GeneralHID.html"><span class="s2">GeneralHID</span></a> instead, which wraps the HIDDeviceService functionality, and produces crossplatform compatible code.</p>
 <p class="p1">
 =====================================================================<br>
 Opening a device<br>
@@ -65,6 +68,7 @@ You can query another name than "/event" by passing an argument. (the search wil
 <p class="p4"><span class="s2">LID</span>.buildDeviceList( <span class="s3">"mouse"</span> );</p>
 <p class="p1">Note: this is likely to give the info that the devices could not be opened, as "mouse"  uses another interface (you can of course access mice via the "event" interface)
 </p>
+<p class="p1">Note: if you cannot open the devices at all, please look in the helpfile for: Linux_udev_setup
 <p class="p1">
 =====================================================================<br>
 Querying device information<br>
