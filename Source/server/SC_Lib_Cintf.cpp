@@ -63,6 +63,12 @@
 # include <sys/param.h>
 #endif
 
+#ifdef SC_DARWIN
+#include <mach-o/dyld.h>
+#include <mach-o/getsect.h>
+char gTempVal;
+#endif
+
 Malloc gMalloc;
 HashTable<SC_LibCmd, Malloc> *gCmdLib;
 HashTable<struct UnitDef, Malloc> *gUnitDefLib = 0;
@@ -73,6 +79,23 @@ SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
 bool PlugIn_LoadDir(char *dirname, bool reportError);
+
+#ifdef SC_DARWIN
+void read_section(const struct mach_header *mhp, unsigned long slide, const char *segname, const char *sectname)
+{
+	u_int32_t size;	
+	char *sect = getsectdatafromheader(mhp, segname, sectname, &size);
+	if(!sect) return;
+
+	char *start = sect + slide;
+	char *end = start + size;
+
+	while(start != end) {
+		gTempVal += *(char *)start;
+		start++;
+	}
+}
+#endif
 
 void initialize_library()
 {	
@@ -115,6 +138,44 @@ void initialize_library()
 	while (!sp.AtEnd()) {
 		PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
 	}
+
+#ifdef SC_DARWIN
+	/* on darwin plugins are lazily loaded (dlopen uses mmap internally), which can produce audible
+		glitches when UGens have to be paged-in. to work around this we preload all the plugins by
+		iterating through their memory space. */
+
+	unsigned long images = _dyld_image_count();
+	for(unsigned long i = 0; i < images; i++) {
+		const mach_header	*hdr = _dyld_get_image_header(i);
+		unsigned long slide = _dyld_get_image_vmaddr_slide(i);
+		const char *name = _dyld_get_image_name(i);
+		uint32_t	size;
+		char *sect;
+
+		if(!strcmp(name + (strlen(name) - 4), ".scx")) {
+			read_section(hdr, slide, "__TEXT", "__text");
+			read_section(hdr, slide, "__TEXT", "__const");
+			read_section(hdr, slide, "__TEXT", "__cstring");
+			read_section(hdr, slide, "__TEXT", "__picsymbol_stub");
+			read_section(hdr, slide, "__TEXT", "__symbol_stub");
+			read_section(hdr, slide, "__TEXT", "__const");
+			read_section(hdr, slide, "__TEXT", "__literal4");
+			read_section(hdr, slide, "__TEXT", "__literal8");
+
+			read_section(hdr, slide, "__DATA", "__data");
+			read_section(hdr, slide, "__DATA", "__la_symbol_ptr");
+			read_section(hdr, slide, "__DATA", "__nl_symbol_ptr");
+			read_section(hdr, slide, "__DATA", "__dyld");
+			read_section(hdr, slide, "__DATA", "__const");
+			read_section(hdr, slide, "__DATA", "__mod_init_func");															
+			read_section(hdr, slide, "__DATA", "__bss");
+			read_section(hdr, slide, "__DATA", "__common");
+
+			read_section(hdr, slide, "__IMPORT", "__jump_table");
+			read_section(hdr, slide, "__IMPORT", "__pointers");			
+		}
+	}
+#endif
 }
 
 bool PlugIn_Load(const char *filename);
