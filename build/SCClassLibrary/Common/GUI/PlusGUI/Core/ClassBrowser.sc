@@ -196,9 +196,11 @@ ClassBrowser {
 		w.close
 	}
 
-	//openSVN{
+	openSVN{ |svnAddr|
 		// rely on extension in platform dependent extension
-	//}
+		"WARNING: not implemented for this platform".postln;
+		("open the url:"+svnAddr+"in your browser").postln;
+	}
 	
 	normalMethodEnterKey {
 		^{ currentMethod.openCodeFile; }
