@@ -299,6 +299,7 @@
 		B969DA0C0691887B0096E93F /* DynNoiseUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DynNoiseUGens.cpp; sourceTree = "<group>"; };
 		DC43F08F0CB26A670020E8B7 /* UnpackFFTUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = UnpackFFTUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = UnpackFFTUGens.cpp; path = Source/plugins/UnpackFFTUGens.cpp; sourceTree = SOURCE_ROOT; };
+		DCF5E2450CBB813200411E96 /* ChangeLog.scd */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ChangeLog.scd; path = build/ChangeLog.scd; sourceTree = "<group>"; };
 		F50D054602E69B6B01CA2799 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
 		F50D054702E69B6B01CA2799 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
 		F50D054802E69B6B01CA2799 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
@@ -538,6 +539,7 @@
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
+				DCF5E2450CBB813200411E96 /* ChangeLog.scd */,
 				379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */,
 				379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */,
 				FE25830C0C2C13E400307453 /* TestUGens.cpp */,

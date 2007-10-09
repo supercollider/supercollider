@@ -286,6 +286,7 @@
 		94930C080C190FB80018AB50 /* SC_WireSpec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_WireSpec.h; sourceTree = "<group>"; };
 		94B6B0C30AF5390900E478BB /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
 		94F5FAD10C1E6B95005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libscsynth.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCF5E2320CBB806B00411E96 /* ChangeLog.scd */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ChangeLog.scd; path = build/ChangeLog.scd; sourceTree = "<group>"; };
 		F53F78F503B2842D011C068F /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		F5EB7BE503184B8C01CA2799 /* libscsynth_exp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = libscsynth_exp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -478,6 +479,7 @@
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
+				DCF5E2320CBB806B00411E96 /* ChangeLog.scd */,
 				F5EB7BE503184B8C01CA2799 /* libscsynth_exp */,
 				9456F7F60C1A1FBC00634E4D /* Resources */,
 				94930B770C190FB80018AB50 /* Headers */,
