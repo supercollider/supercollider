@@ -25,6 +25,8 @@
 		94070C5E0C19DEF6002304F7 /* html.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5B0C19DEF6002304F7 /* html.icns */; };
 		94070C5F0C19DEF6002304F7 /* rtf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5C0C19DEF6002304F7 /* rtf.icns */; };
 		94070C600C19DEF6002304F7 /* sc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5D0C19DEF6002304F7 /* sc.icns */; };
+		940739EB0CBB6EBE00EAA155 /* HTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 940739A50CBB6E9C00EAA155 /* HTMLRenderer.m */; };
+		940739EC0CBB6ED800EAA155 /* HTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 940739A50CBB6E9C00EAA155 /* HTMLRenderer.m */; };
 		9415B1780B2B5D1F00C87737 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
 		942C390D0C1B40EF00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
 		942C390E0C1B40EF00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
@@ -123,7 +125,6 @@
 		94442CB10C2C8AE40050BF9F /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
 		94442CB20C2C8AE40050BF9F /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
 		94442CB30C2C8AE40050BF9F /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6B10C19E79F00634E4D /* HID_Utilities.c */; };
-		94442CB40C2C8AE40050BF9F /* NSAttributedStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 94D9EFB00C2779A800223DF8 /* NSAttributedStringAdditions.m */; };
 		94442CB60C2C8AE40050BF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
 		94442CB70C2C8AE40050BF9F /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
 		94442CB80C2C8AE40050BF9F /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069702E6A1C601CA2799 /* Carbon.framework */; };
@@ -314,7 +315,6 @@
 		94B6AF000AF45DA800E478BB /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D9ED1C0C2773CF00223DF8 /* WebKit.framework */; };
-		94D9EFB10C2779A800223DF8 /* NSAttributedStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 94D9EFB00C2779A800223DF8 /* NSAttributedStringAdditions.m */; };
 		94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
 		94F5FC7F0C1E6F7F005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
 		94F5FC810C1E6F92005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
@@ -378,6 +378,8 @@
 		94070C5B0C19DEF6002304F7 /* html.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = html.icns; sourceTree = "<group>"; };
 		94070C5C0C19DEF6002304F7 /* rtf.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rtf.icns; sourceTree = "<group>"; };
 		94070C5D0C19DEF6002304F7 /* sc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = sc.icns; sourceTree = "<group>"; };
+		940739A40CBB6E8E00EAA155 /* HTMLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HTMLRenderer.h; sourceTree = "<group>"; };
+		940739A50CBB6E9C00EAA155 /* HTMLRenderer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = HTMLRenderer.m; sourceTree = "<group>"; };
 		9415B1730B2B5CD700C87737 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
 		942C390C0C1B40EF00360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
 		942C390F0C1B40F700360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
@@ -617,8 +619,6 @@
 		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94B8F16C0B463EC000097F2D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
-		94D9EFB00C2779A800223DF8 /* NSAttributedStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = NSAttributedStringAdditions.m; sourceTree = "<group>"; };
-		94D9EFB20C2779B400223DF8 /* NSAttributedStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = NSAttributedStringAdditions.h; sourceTree = "<group>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -739,6 +739,7 @@
 		949310A50C1921F90018AB50 /* app */ = {
 			isa = PBXGroup;
 			children = (
+				940739A50CBB6E9C00EAA155 /* HTMLRenderer.m */,
 				949310A60C1921F90018AB50 /* CocoaBridgePrimitives.M */,
 				949310A70C1921F90018AB50 /* CocoaFilePrimitives.M */,
 				949310A80C1921F90018AB50 /* DrawBackground.M */,
@@ -763,7 +764,6 @@
 				949310BB0C1921F90018AB50 /* TabletEvents.m */,
 				949310BC0C1921F90018AB50 /* TextFinder.m */,
 				949310BD0C1921F90018AB50 /* UserPanel.M */,
-				94D9EFB00C2779A800223DF8 /* NSAttributedStringAdditions.m */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -897,7 +897,7 @@
 		9493126E0C19222B0018AB50 /* app */ = {
 			isa = PBXGroup;
 			children = (
-				94D9EFB20C2779B400223DF8 /* NSAttributedStringAdditions.h */,
+				940739A40CBB6E8E00EAA155 /* HTMLRenderer.h */,
 				9493126F0C19222B0018AB50 /* ChangeCounter.h */,
 				949312700C19222B0018AB50 /* ControlSpec.h */,
 				949312710C19222B0018AB50 /* DrawBackground.h */,
@@ -1264,6 +1264,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				940739EC0CBB6ED800EAA155 /* HTMLRenderer.m in Sources */,
 				94442C620C2C8AE40050BF9F /* CocoaBridgePrimitives.M in Sources */,
 				94442C630C2C8AE40050BF9F /* CocoaFilePrimitives.M in Sources */,
 				94442C640C2C8AE40050BF9F /* DrawBackground.M in Sources */,
@@ -1346,7 +1347,6 @@
 				94442CB10C2C8AE40050BF9F /* HID_Name_Lookup.c in Sources */,
 				94442CB20C2C8AE40050BF9F /* HID_Queue_Utilities.c in Sources */,
 				94442CB30C2C8AE40050BF9F /* HID_Utilities.c in Sources */,
-				94442CB40C2C8AE40050BF9F /* NSAttributedStringAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1421,6 +1421,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				940739EB0CBB6EBE00EAA155 /* HTMLRenderer.m in Sources */,
 				949311490C1921F90018AB50 /* CocoaBridgePrimitives.M in Sources */,
 				9493114A0C1921F90018AB50 /* CocoaFilePrimitives.M in Sources */,
 				9493114B0C1921F90018AB50 /* DrawBackground.M in Sources */,
@@ -1503,7 +1504,6 @@
 				9456F6B70C19E79F00634E4D /* HID_Name_Lookup.c in Sources */,
 				9456F6B90C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */,
 				9456F6BB0C19E79F00634E4D /* HID_Utilities.c in Sources */,
-				94D9EFB10C2779A800223DF8 /* NSAttributedStringAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

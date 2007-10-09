@@ -19,7 +19,7 @@
 */
 
 #import <Cocoa/Cocoa.h>
-#import "NSAttributedStringAdditions.h"
+#import "HTMLRenderer.h"
 #import "MyDocument.h"
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
@@ -1113,7 +1113,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	NSString* extension = [path pathExtension];
 
 	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
-		NSAttributedString *htmlAttributedString = [NSAttributedString attributedStringWithURL:url];
+		NSAttributedString *htmlAttributedString = [HTMLRenderer attributedStringWithURL:url];
 
 		if(!htmlAttributedString) success = NO;
 		else {
