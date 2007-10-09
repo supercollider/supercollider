@@ -177,7 +177,7 @@ static unsigned indexOfServiceBeingResolved = 0;		// which service am I currentl
 
 	// resolve it!
 	[serviceBeingResolved->netService setDelegate: self];
-	[serviceBeingResolved->netService resolve];
+	[serviceBeingResolved->netService resolveWithTimeout:5]; // Deprecated; deprecator auto uses use resolveWithTimeout 5, should probably shorten
 }
 
 // Rendezvous implementation methods
