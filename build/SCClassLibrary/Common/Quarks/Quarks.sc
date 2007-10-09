@@ -318,6 +318,7 @@ Quarks
 			};
 			prevButton.visible = pageStart >= maxPerPage;
 			nextButton.visible = pageStart < (this.local.quarks.size - maxPerPage);
+			{ window.refresh }.defer(0.5);
 			views
 		};
 		
@@ -398,6 +399,8 @@ Quarks
 		warning = GUI.staticText.new(window, Rect(20,15,400,50));
 		warning.font_(GUI.font.new("Helvetica", 24));
 		warning.string = "";
+
+		{ window.refresh }.defer(1.0);
 
 		^window
 	}
