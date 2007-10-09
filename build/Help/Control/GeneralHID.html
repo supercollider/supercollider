@@ -102,9 +102,11 @@ A uniform class to access HID devices
 <p class="p3"><br></p>
 <p class="p13">// General structure to access a device</p>
 <p class="p13">// Look for the devices that are attached:</p>
-<p class="p14">d = <span class="s8">GeneralHID</span>.buildDeviceList;</p>
+<p class="p14"><span class="s8">GeneralHID</span>.buildDeviceList;</p>
+<p class="p13">// Get the list of devices:</p>
+<p class="p14">d = <span class="s8">GeneralHID</span>.deviceList;</p>
 <p class="p13">// Check which devices have been found:</p>
-<p class="p14">d.postDevices;</p>
+<p class="p14"><span class="s8">GeneralHID</span>.postDevices;</p>
 <p class="p13">// Pick the 6th device and open it and create an instance of it:</p>
 <p class="p14">a = <span class="s8">GeneralHID</span>.open( d[5] )</p>
 <p class="p13">// Get info on the device:</p>
