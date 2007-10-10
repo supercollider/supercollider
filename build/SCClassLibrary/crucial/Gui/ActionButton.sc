@@ -90,10 +90,6 @@ StartRow : SCViewHolder {
 	bounds { ^Rect(0,0,0,0) }
 	bounds_ {}
 	prClose {}
-		// flowview needs to know which object is a StartRow
-		// it used to say view.isKindOf(StartRow) but that doesn't work with JStartRow in SwingOSC
-		// so...
-	isStartRow { ^true }
 }
 
 /**
@@ -136,7 +132,7 @@ FlowView : SCViewHolder {
 	reflowAll {
 		view.decorator/*.bounds_(this.bounds)*/.reset;
 		view.children.do({ |widget|
-			if(widget.isStartRow,{
+			if(widget.isKindOf( StartRow ),{
 				view.decorator.nextLine
 			},{
 				view.decorator.place(widget);
@@ -187,7 +183,7 @@ FlowView : SCViewHolder {
 		^Rect(0,0,x,y)
 	}
 	startRow {
-		view.add(GUI.startRow.new); //won't really put a view in there yet
+		view.add(StartRow.new); //won't really put a view in there yet
 		view.decorator.nextLine
 	}
 	removeOnClose { arg updater;

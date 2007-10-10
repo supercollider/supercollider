@@ -3,7 +3,7 @@
  *	for Mac OS X. It can be accessed from the GUI
  *	class using GUI.cocoa, GUI.fromID( \cocoa ) or GUI.get( \cocoa ).
  *
- *	@version	0.12, 25-Apr-07
+ *	@version	0.13, 09-Oct-07
  */
 CocoaGUI {
 	classvar extraClasses;
@@ -81,5 +81,5 @@ CocoaGUI {
 //	tabbedPane: SCTabbedPane
 
 	///////////////// crucial /////////////////
-	*startRow { ^StartRow }
+//	*startRow { ^StartRow }
 }

@@ -224,7 +224,15 @@ QuarkView {
 		var window;
 		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
 		window.view.decorator = FlowLayout(window.view.bounds);
-		GUI.staticText.new(window, window.view.bounds).string_(quark.longDesc);
+//		GUI.staticText.new(window, window.view.bounds).string_(quark.longDesc);
+		GUI.textView.new( window, window.view.bounds.insetBy( 4, 4 ))
+			.font_( GUI.font.new( GUI.font.defaultSansFace, 12 ))
+			.background_( Color.grey( 0.9 ))	// Color.clear background doesn't work
+			.resize_( 5 )
+			.autohidesScrollers_( true )
+			.hasVerticalScroller_( true )
+			.string_( quark.longDesc )
+			.editable_( false );
 	}
 	remove {
 		[installButton, nameView, infoButton].do(_.remove);

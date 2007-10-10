@@ -305,9 +305,9 @@ Quarks
 		var	window, caption, explanation, views, resetButton, saveButton, warning,
 			quarksflow, height, maxPerPage, nextButton, prevButton;
 		var pageStart = 0, fillPage = { |start|
+			quarksflow.visible = false;
 			views.notNil.if({
 				views.do({ |view| view.remove });
-				window.refresh;
 			});
 			quarksflow.decorator.reset;
 			views = this.local.quarks[pageStart .. pageStart + maxPerPage - 1].collect{|quark|
@@ -318,14 +318,14 @@ Quarks
 			};
 			prevButton.visible = pageStart >= maxPerPage;
 			nextButton.visible = pageStart < (this.local.quarks.size - maxPerPage);
-			{ window.refresh }.defer(0.5);
+			quarksflow.visible = true;
 			views
 		};
 		
 		height = min(this.local.quarks.size * 25 + 120, GUI.window.screenBounds.height - 60);
 		maxPerPage = (height - 120) div: 25;
 		
-		window = GUI.window.new(this.name, Rect(300,60,550, height)).front;
+		window = GUI.window.new(this.name, Rect(300,60,550, height));
 		window.view.decorator =  FlowLayout( window.view.bounds );
 		
 		caption = GUI.staticText.new(window, Rect(20,15,400,30));
@@ -400,9 +400,7 @@ Quarks
 		warning.font_(GUI.font.new("Helvetica", 24));
 		warning.string = "";
 
-		{ window.refresh }.defer(1.0);
-
-		^window
+		^window.front;
 	}
 	
 }

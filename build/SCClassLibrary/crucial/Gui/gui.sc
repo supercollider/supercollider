@@ -42,7 +42,7 @@
 		this.dump;
 		Error("FATAL ERROR").throw;
 	}
-	isStartRow { ^false }		// see StartRow
+//	isStartRow { ^false }		// see StartRow
 }
 
 + Collection {
