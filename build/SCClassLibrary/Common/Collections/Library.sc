@@ -387,7 +387,7 @@ Archive : LibraryBase
 	
 	*initClass {
 		global = this.new;
-		archiveDir = String.scDir;
+		archiveDir = Platform.userAppSupportDir;
 	}
 
 	*read { arg filename;
