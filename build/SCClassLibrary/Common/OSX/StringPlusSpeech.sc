@@ -1,9 +1,6 @@
 + String {
-	speak { arg voice=0;
+	speak { arg voice=0, force=false;
 		if(Speech.initialized.not,{Speech.init});
-		this.prSpeak(voice);
-	}
-	prSpeak { arg voice=0;
-		_SpeakText
+		Speech.channels[0].speak(this, force)
 	}
 }
