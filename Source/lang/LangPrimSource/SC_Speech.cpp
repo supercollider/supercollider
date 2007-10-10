@@ -43,11 +43,12 @@
 
 
 /////////////////////
-const int kMaxSpeechChannels = 128;
+const int kMaxSpeechChannels = 32;
 PyrSymbol * s_speech;
 PyrSymbol * s_speechwordAction;
 PyrSymbol * s_speechdoneAction;
 SpeechChannel fCurSpeechChannel[kMaxSpeechChannels];
+char *speechStrings[kMaxSpeechChannels];
 
 pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon );
 pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon )
@@ -57,11 +58,14 @@ pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRe
     pthread_mutex_lock (&gLangMutex); 
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
-	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class MIDIIn
+	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class 
         //set arguments: 
 	++g->sp;SetInt(g->sp, (int) inRefCon); //src
 	runInterpreter(g, s_speechdoneAction, 2);
-
+	if(speechStrings[(int) inRefCon] != NULL){
+		free(speechStrings[(int) inRefCon]);
+		speechStrings[(int) inRefCon] = NULL;
+	}
     g->canCallOS = false;
 	pthread_mutex_unlock (&gLangMutex); 
 }
@@ -107,18 +111,31 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed);
 int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 
 	OSErr theErr = noErr;
+	PyrSlot *obj = g->sp-2;
 	PyrSlot *a = g->sp-1;
-	PyrSlot *b = g->sp;
+	PyrSlot *str = g->sp;
+
 	int chan;
-	char *theTextToSpeak = (char*)pyr_pool_compile->Alloc((a->uo->size + 1)* sizeof(char));
-	MEMFAIL(theTextToSpeak);
 
-	slotStrVal(a, theTextToSpeak, a->uo->size+1);
-	slotIntVal(b, &chan);
 
+	slotIntVal(a, &chan);
+	chan = sc_clip(chan, 0, kMaxSpeechChannels);
+	if(speechStrings[chan] != NULL) {
+		post("voice %i already speaking\n", chan);
+		return errNone;
+	} else {
+//	speechStrings[chan] = (char*)pyr_pool_compile->Alloc((a->uo->size + 1)* sizeof(char));
+	speechStrings[chan] = (char*) malloc((str->uo->size + 1)* sizeof(char));
+
+	MEMFAIL(speechStrings[chan]);
+	slotStrVal(str, speechStrings[chan], str->uo->size+1);
+	
 	//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
-	theErr = SpeakText( fCurSpeechChannel[chan], theTextToSpeak, strlen(theTextToSpeak));
-	pyr_pool_compile->Free(theTextToSpeak);
+	theErr = SpeakText( fCurSpeechChannel[chan], speechStrings[chan], strlen(speechStrings[chan]));
+	//should be freed only after the text was spoken!
+//	todo move this bit to the callback!
+//	pyr_pool_compile->Free(theTextToSpeak);
+	}
 	return errNone;
 }
 
@@ -212,6 +229,27 @@ int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed){
 	return errNone;
 }
 
+int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed);
+int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed){
+
+	OSErr theErr = noErr;
+	//PyrSlot *a = g->sp-2;
+	PyrSlot *b = g->sp-1;
+	PyrSlot *c = g->sp;
+	int  selector [3] = {kImmediate, kEndOfWord, kEndOfWord};
+	int val;
+	int chan;
+	slotIntVal(b, &chan);
+	slotIntVal(c, &val);
+	StopSpeechAt(fCurSpeechChannel[chan], selector[val]);
+	if(speechStrings[chan] != NULL) {	
+		free(speechStrings[chan]);
+		speechStrings[chan] = NULL;
+	}
+
+	return errNone;
+}
+
 int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
 
@@ -231,6 +269,18 @@ int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
 	return errNone;
 }
 
+int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed);
+int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed){
+	PyrSlot *out = g->sp-1;
+	PyrSlot *b = g->sp;
+    int chan;
+    slotIntVal(b, &chan);
+	if(speechStrings[chan] != NULL) SetTrue(out);
+	else SetFalse(out);
+	return errNone;
+	
+}
+
 void initSpeechPrimitives ()
 {
 	int base, index;
@@ -242,7 +292,7 @@ void initSpeechPrimitives ()
 	s_speechdoneAction = getsym("doSpeechDoneAction");
 	s_speech = getsym("Speech");
 	
-	definePrimitive(base, index++, "_SpeakText", prSpeakText, 2, 0);
+	definePrimitive(base, index++, "_SpeakText", prSpeakText, 3, 0);
 	definePrimitive(base, index++, "_InitSpeech", prInitSpeech, 2, 0);
 	definePrimitive(base, index++, "_SetSpeechRate", prSetSpeechRate, 3, 0);
 	definePrimitive(base, index++, "_SetSpeechPitch", prSetSpeechPitch, 3, 0);
@@ -250,6 +300,11 @@ void initSpeechPrimitives ()
 	definePrimitive(base, index++, "_SetSpeechVoice", prSetSpeechVoice, 3, 0);
 	definePrimitive(base, index++, "_SetSpeechVolume", prSetSpeechVolume, 3, 0);
 	definePrimitive(base, index++, "_SetSpeechPause", prSetSpeechPause, 3, 0); //0 pause, 1 continue
+	definePrimitive(base, index++, "_SetSpeechStopAt", prSetSpeechStop, 3, 0); //0 kImmediate, 1 kEndOfWord, 2 kEndOfSentence
+	definePrimitive(base, index++, "_SpeechVoiceIsSpeaking", prSpeechVoiceIsSpeaking, 2, 0); 	
+	for(int i=0; i<kMaxSpeechChannels; ++i){
+		speechStrings[i] = NULL;
+	}
 }
 
 
