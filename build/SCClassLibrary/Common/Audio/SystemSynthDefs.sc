@@ -10,7 +10,7 @@ SystemSynthDefs {
 		// clean up any written synthdefs starting with "temp__"
 		StartUp.add {
 			var path = SynthDef.synthDefDir ++ tempNamePrefix ++ "*";
-			if(pathMatch(path).notEmpty) { unixCmd("rm" + path) };
+			if(pathMatch(path).notEmpty) { unixCmd("rm -f" + path.quote) };
 		};
 		
 		(1..numChannels).do { arg i;
