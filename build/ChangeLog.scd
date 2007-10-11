@@ -14,6 +14,7 @@
 * 08.10.2007 Change to UGen plugin loading fixes the audio dropout issue that various users have experienced - rb
 * 08.10.2007 GeneralHID crossplatform HID wrapper - mb
 
+
 // OTHER ADDITIONS / IMPROVEMENTS:
 
 * 22.09.2007 change log added, much rejoicing
@@ -22,10 +23,11 @@
 * 28.09.2007 String:openHTMLFile added - ds
 * 01.10.2007 Integer:collect method added - ds
 * 05.10.2007 Dwhite:new and Dbrown:new have default values for lo and hi - jr
+* 10.10.2007 SC no longer automatically writes data (synthdefs, archive.scxtar) to the application folder - instead writes to "app support". This fixes problems with running SC using an unprivileged user account - ds
 
 
 // BUGFIXES:
 
 * 29.09.2007 takekos bug fixed (obscure issue with garbage collection in arrays) - jm
 * 01.10.2007 fixed off by one bug in Dswitch and Dswitch1 that caused a server crash - jr
-
+* 11.10.2007 fixed inaccurate automatic determination of whether SC is running as standalone - ds

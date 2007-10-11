@@ -28,36 +28,44 @@ void SC_StandAloneInfo::SC_StandAloneInfoInit() {
 		);
 		if ( enablerURL )
 		{
-			// You'd think we could get an absolute path to the Resources directory. But
-			// we can't, we can only get a relative path, or an absolute path to a
-			// specific resource. Since we don't know the application name, we get the
-			// latter, and then hack off the resource name.
-			
-			sIsStandAlone = true;
-			CFStringRef rawPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
+			CFStringRef string2ToFind = CFSTR(".app/");
+			CFRange findResult = CFStringFind(CFURLGetString(enablerURL), string2ToFind, kCFCompareCaseInsensitive);
+			if(findResult.length != 0)
+			{
+				// You'd think we could get an absolute path to the Resources directory. But
+				// we can't, we can only get a relative path, or an absolute path to a
+				// specific resource. Since we don't know the application name, we get the
+				// latter, and then hack off the resource name.
+				
+				sIsStandAlone = true;
+				CFStringRef rawPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
 
-			CFRange discardRange = CFStringFind (
-			   CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle),
-			   stringToFind,
-			   0
-			);
-			
-			CFRange validRange;
-			validRange.location = 0;
-			validRange.length = discardRange.location - 1;
-			
-			CFStringRef dirPathCFString = CFStringCreateWithSubstring (
-				kCFAllocatorDefault,
-				rawPath,
-				validRange
-			);
-			
-			CFStringGetCString (
-				dirPathCFString,
-				dirPath,
-				PATH_MAX,
-				encoding
-			);
+				CFRange discardRange = CFStringFind (
+				   CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle),
+				   stringToFind,
+				   0
+				);
+				
+				CFRange validRange;
+				validRange.location = 0;
+				validRange.length = discardRange.location - 1;
+				
+				CFStringRef dirPathCFString = CFStringCreateWithSubstring (
+					kCFAllocatorDefault,
+					rawPath,
+					validRange
+				);
+				
+				CFStringGetCString (
+					dirPathCFString,
+					dirPath,
+					PATH_MAX,
+					encoding
+				);
+			}else
+			{
+				getcwd(dirPath, PATH_MAX);
+			}
 		}
 		else
 		{
