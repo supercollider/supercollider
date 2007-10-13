@@ -7,9 +7,15 @@ Poll : UGen {
 		this.multiNewList(['control', trig, in, label, trigid]);
 		^in;
 	}
+	*new { arg trig, in, label, trigid = -1;
+		var rate = in.asArray.collect(_.rate).unbubble;
+		this.multiNewList([rate, trig, in, label, trigid]);
+		^in;
+	}
 	*new1 { arg rate, trig, in, label, trigid;
 		label = label ?? {  "UGen(%)".format(in.class) };
 		label = label.asString.collectAs(_.ascii, Array);
+		if(trig.isNumber) { trig = Impulse.multiNew(rate, trig, 0) };
 		^super.new.rate_(rate).addToSynth.init([trig, in, trigid, label.size] ++ label);
 	}
 		

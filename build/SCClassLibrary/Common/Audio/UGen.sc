@@ -222,11 +222,8 @@ UGen : AbstractFunction {
 	
 	outputIndex { ^0 }
 	
-	poll { arg trig, label, trigid = -1;
-		trig = trig.isNumber.if({Impulse.perform
-			(this.methodSelectorForRate, trig)}, {trig})
-              	?? { Impulse.perform(this.methodSelectorForRate, 10) };
-          ^Poll.perform(trig.methodSelectorForRate, trig, this, label, trigid)
+	poll { arg trig = 10, label, trigid = -1;
+          ^Poll(trig, this, label, trigid)
 	}
 	
 	checkBadValues { arg id = 0, post = 2;

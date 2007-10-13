@@ -210,29 +210,8 @@ Array[slot] : ArrayedCollection {
 	numChannels { ^this.size }
 	
 	// multichannel UGen-poll	
-	poll { arg trig, label = "UGen Array:", trigid = -1;
-		var rates, trigarray;
-		rates = Array.fill(this.size, {arg i; this[i].methodSelectorForRate});
-		trig = trig.isNumber.if({
-			Array.fill(this.size, {arg i; Impulse.perform(rates[i], trig)});
-			}, {
-			trig
-			}) ?? { 
-			Array.fill(this.size, {arg i; Impulse.perform(rates[i], 10)})
-			};
-		label = label.isKindOf(Array).if({
-			label
-			}, {
-			Array.fill(this.size, label)
-			});
-		label.postln;
-		trigid = trigid.isKindOf(Array).if({
-			trigid
-			}, {
-			Array.fill(this.size, trigid)
-			});
-          ^Array.fill(this.size, {arg i; 
-          	Poll.perform(rates[i], trig[i], this[i], label[i], trigid[i])})
+	poll { arg trig = 10, label = "UGen Array:", trigid = -1;
+		^Poll(trig, this, label, trigid)
 	}
 	
 	envAt { arg time;
