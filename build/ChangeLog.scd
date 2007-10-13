@@ -21,7 +21,7 @@
 * 25.09.2007 added packagesource.sh script to produce source code bundles - ds
 * 28.09.2007 IdentityDictionary:doesNotUnderstand now warns if adding a pseudo-method which overrides a real method - jr
 * 28.09.2007 String:openHTMLFile added - ds
-* 01.10.2007 Integer:collect method added - ds
+* 04.10.2007 Integer:collect and Integer:collectAs methods added - ds/jr
 * 05.10.2007 Dwhite:new and Dbrown:new have default values for lo and hi - jr
 * 10.10.2007 SC no longer automatically writes data (synthdefs, archive.scxtar) to the application folder - instead writes to "app support". This fixes problems with running SC using an unprivileged user account - ds
 
