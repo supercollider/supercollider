@@ -32,5 +32,5 @@
 * 01.10.2007 fixed off by one bug in Dswitch and Dswitch1 that caused a server crash - jr
 * 09.10.2007 fixed deadlock and other problems in NSAttributedStringAdditions.m - rb
 * 11.10.2007 fixed inaccurate automatic determination of whether SC is running as standalone - ds
-
+* 14.10.2007 .quark files now saved correctly as plain-text, not RTF - ds
 
