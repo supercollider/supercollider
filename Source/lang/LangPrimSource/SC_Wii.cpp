@@ -398,7 +398,7 @@ int SC_WIIManager::stop()
 
 int SC_WIIManager::add(SC_WII* dev)
 {
-	post("WII: SC_WIIManager::add\n");
+// 	post("WII: SC_WIIManager::add\n");
 
 	if (dev->m_next) return false;
 	if (m_devices == dev ) {
@@ -672,7 +672,7 @@ void SC_WII::connected()
 {
 	m_connected = true;
 	m_searching = 0;
-	post("WII: wiiremote connected\n");
+// 	post("WII: wiiremote connected\n");
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
@@ -946,9 +946,9 @@ void SC_WII::handleAccEvent( uint8_t acc[3] ){
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
 		++g->sp; SetObject(g->sp, m_obj);
-		++g->sp; SetFloat(g->sp, (float) acc[0]/CWIID_ACC_MAX );
-		++g->sp; SetFloat(g->sp, (float) acc[1]/CWIID_ACC_MAX );
-		++g->sp; SetFloat(g->sp, (float) acc[2]/CWIID_ACC_MAX );
+		++g->sp; SetFloat(g->sp, (float) acc[CWIID_X]/CWIID_ACC_MAX );
+		++g->sp; SetFloat(g->sp, (float) acc[CWIID_Y]/CWIID_ACC_MAX );
+		++g->sp; SetFloat(g->sp, (float) acc[CWIID_Z]/CWIID_ACC_MAX );
 		runInterpreter(g, s_handleAccEvent, 4);
 		g->canCallOS = false;
 		}
@@ -971,11 +971,11 @@ void SC_WII::handleNunchukEvent( struct cwiid_nunchuk_mesg nunchuk ){
 		outArray->size = 2;
 		++g->sp; SetObject(g->sp, outArray);
 // 		++g->sp; SetInt(g->sp, (int) nunchuk.buttons);
-		++g->sp; SetFloat(g->sp, (float) nunchuk.stick[0]/256);
-		++g->sp; SetFloat(g->sp, (float) nunchuk.stick[1]/256);
-		++g->sp; SetFloat(g->sp, (float) nunchuk.acc[0]/CWIID_ACC_MAX );
-		++g->sp; SetFloat(g->sp, (float) nunchuk.acc[1]/CWIID_ACC_MAX );
-		++g->sp; SetFloat(g->sp, (float) nunchuk.acc[2]/CWIID_ACC_MAX );
+		++g->sp; SetFloat(g->sp, (float) nunchuk.stick[CWIID_X]/256);
+		++g->sp; SetFloat(g->sp, (float) nunchuk.stick[CWIID_Y]/256);
+		++g->sp; SetFloat(g->sp, (float) nunchuk.acc[CWIID_X]/CWIID_ACC_MAX );
+		++g->sp; SetFloat(g->sp, (float) nunchuk.acc[CWIID_Y]/CWIID_ACC_MAX );
+		++g->sp; SetFloat(g->sp, (float) nunchuk.acc[CWIID_Z]/CWIID_ACC_MAX );
 		runInterpreter(g, s_handleNunchukEvent, 7);
 		g->canCallOS = false;
 		}
@@ -1014,10 +1014,10 @@ void SC_WII::handleClassicEvent( struct cwiid_classic_mesg classic ){
 		++g->sp; SetObject(g->sp, outArray);
 
 // 		++g->sp; SetInt(g->sp, (int) classic.buttons);
-		++g->sp; SetFloat(g->sp, (float) classic.l_stick[0]/CWIID_CLASSIC_L_STICK_MAX );
-		++g->sp; SetFloat(g->sp, (float) classic.l_stick[1]/CWIID_CLASSIC_L_STICK_MAX );
-		++g->sp; SetFloat(g->sp, (float) classic.r_stick[0]/CWIID_CLASSIC_R_STICK_MAX );
-		++g->sp; SetFloat(g->sp, (float) classic.r_stick[1]/CWIID_CLASSIC_R_STICK_MAX );
+		++g->sp; SetFloat(g->sp, (float) classic.l_stick[CWIID_X]/CWIID_CLASSIC_L_STICK_MAX );
+		++g->sp; SetFloat(g->sp, (float) classic.l_stick[CWIID_Y]/CWIID_CLASSIC_L_STICK_MAX );
+		++g->sp; SetFloat(g->sp, (float) classic.r_stick[CWIID_X]/CWIID_CLASSIC_R_STICK_MAX );
+		++g->sp; SetFloat(g->sp, (float) classic.r_stick[CWIID_Y]/CWIID_CLASSIC_R_STICK_MAX );
 		++g->sp; SetFloat(g->sp, (float) classic.l/CWIID_CLASSIC_LR_MAX );
 		++g->sp; SetFloat(g->sp, (float) classic.r/CWIID_CLASSIC_LR_MAX );
 		runInterpreter(g, s_handleClassicEvent, 8);
@@ -1036,8 +1036,8 @@ void SC_WII::handleIREvent( int id, cwiid_ir_src ir ){
 		++g->sp; SetObject(g->sp, m_obj);
 		++g->sp; SetInt(g->sp, id);
 		++g->sp; SetInt(g->sp, ir.valid);
-		++g->sp; SetFloat(g->sp, (float) ir.pos[0]/CWIID_IR_X_MAX);
-		++g->sp; SetFloat(g->sp, (float) ir.pos[1]/CWIID_IR_Y_MAX);
+		++g->sp; SetFloat(g->sp, (float) ir.pos[CWIID_X]/CWIID_IR_X_MAX);
+		++g->sp; SetFloat(g->sp, (float) ir.pos[CWIID_Y]/CWIID_IR_Y_MAX);
 		++g->sp; SetFloat(g->sp, (float) ir.size/256);
 		runInterpreter(g, s_handleIREvent, 6);
 		g->canCallOS = false;
@@ -1107,26 +1107,26 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 	WiiMoteRef thiswii;
 #endif
 
-	post( "checked args %i\n", curid );
-	fflush( stdout );
+// 	post( "checked args %i\n", curid );
+// 	fflush( stdout );
 
 	thiswii = SC_WIIManager::instance().discover();
 	if ( thiswii == NULL ){
 		SetInt(g->sp-1, curid-1);
-		post( "no device found; return errNone\n" );
-		fflush( stdout );
+// 		post( "no device found; return errNone\n" );
+// 		fflush( stdout );
 		return errNone;
 	}
 
-	post( "did discovery\n" );
-	fflush( stdout );
+// 	post( "did discovery\n" );
+// 	fflush( stdout );
 
 	if ( !isKindOfSlot(slotsArray+curid, s_wii->u.classobj ) )
 		return errWrongType;
 	PyrObject* obj = SC_WII::getObject(slotsArray+curid);
 	SC_WII* dev = SC_WII::getDevice(obj);
 
-	post( "dev %p", dev );
+// 	post( "dev %p", dev );
 
 // 	if (!dev) return errFailed;
 // 	free( dev->m_wiiremote );

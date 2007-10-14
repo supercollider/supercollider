@@ -301,6 +301,7 @@ WiiMote {
 		var newid, newwii;
 		newid = all.size;
 		newwii = WiiMote.new;
+		"To discover the Wii, please press buttons 1 and 2 on the device and wait till the LEDs stop blinking".postln;
 		//		"discovering WIIs: this may take some time".postln;
 		//		all = Array.fill( maxdevices, {|i| WiiMote.new(i) } );
 		//		Routine({ 
@@ -365,7 +366,7 @@ WiiMote {
 	*prDiscover { |newid,alldevices|
 		//eventLoopIsRunning = true;
 		_Wii_Discover;
-		("newid "++newid).postln;
+		//		("newid "++newid).postln;
 		all = alldevices.keep( newid+1 );
 		//		all = alldevices;
 		^this.primitiveFailed
