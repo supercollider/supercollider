@@ -122,17 +122,23 @@ SoundFile {
 		// normalizer utility
 
 	*normalize { |path, outPath, newHeaderFormat, newSampleFormat,
-		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304|
+		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304,
+		threaded = false|
 		
-		var	file, outFile;
+		var	file, outFile,
+			action = {
+				protect {
+					outFile = file.normalize(outPath, newHeaderFormat, newSampleFormat,
+						startFrame, numFrames, maxAmp, linkChannels, chunkSize, threaded);
+				} { file.close };
+				file.close;
+			};
 		
 		(file = SoundFile.openRead(path.standardizePath)).notNil.if({
 				// need to clean up in case of error
-			protect {
-				outFile = file.normalize(outPath, newHeaderFormat, newSampleFormat,
-					startFrame, numFrames, maxAmp, linkChannels, chunkSize);
-			} { file.close };
-			file.close;
+			if(threaded, {
+				Routine(action).play(AppClock)
+			}, action);
 			^outFile	
 		}, {
 			MethodError("Unable to read soundfile at: " ++ path, this).throw;
@@ -140,7 +146,8 @@ SoundFile {
 	}
 	
 	normalize { |outPath, newHeaderFormat, newSampleFormat,
-		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304|
+		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304,
+		threaded = false|
 		
 		var	peak, outFile;
 		
@@ -153,7 +160,7 @@ SoundFile {
 		outFile.openWrite(outPath.standardizePath).if({
 			protect {
 				"Calculating maximum levels...".postln;
-				peak = this.channelPeaks(startFrame, numFrames, chunkSize);
+				peak = this.channelPeaks(startFrame, numFrames, chunkSize, threaded);
 				Post << "Peak values per channel are: " << peak << "\n";
 				peak.includes(0.0).if({
 					MethodError("At least one of the soundfile channels is zero. Aborting.",
@@ -164,7 +171,8 @@ SoundFile {
 					// otherwise, retain the array of peaks
 				linkChannels.if({ peak = peak.maxItem });
 				"Writing normalized file...".postln;
-				this.scaleAndWrite(outFile, maxAmp / peak, startFrame, numFrames, chunkSize);
+				this.scaleAndWrite(outFile, maxAmp / peak, startFrame, numFrames, chunkSize,
+					threaded);
 				"Done.".postln;
 			} { outFile.close };
 			outFile.close;
@@ -174,15 +182,20 @@ SoundFile {
 		});
 	}
 	
-	channelPeaks { |startFrame = 0, numFrames, chunkSize = 1048576|
-		var rawData, peak;
+	channelPeaks { |startFrame = 0, numFrames, chunkSize = 1048576, threaded = false|
+		var rawData, peak, numChunks, chunksDone, test;
 
 		peak = 0 ! numChannels;
-		numFrames.notNil.if({ numFrames = numFrames * numChannels; },
-			{ numFrames = inf });
-		
+		numFrames.isNil.if({ numFrames = this.numFrames });
+		numFrames = numFrames * numChannels;
+
 			// chunkSize must be a multiple of numChannels
 		chunkSize = (chunkSize/numChannels).floor * numChannels;
+
+		if(threaded) {
+			numChunks = (numFrames / chunkSize).roundUp(1);
+			chunksDone = 0;
+		};
 
 		this.seek(startFrame, 0);
 		
@@ -198,19 +211,34 @@ SoundFile {
 				});
 			});
 			numFrames = numFrames - chunkSize;
+			if(threaded) {
+				chunksDone = chunksDone + 1;
+				test = chunksDone / numChunks;
+				(((chunksDone-1) / numChunks) < test.round(0.02) and: { test >= test.round(0.02) }).if({
+					$..post;
+				});
+				0.0001.wait;
+			};
 		});
+		if(threaded) { $\n.postln };
 		^peak
 	}
 	
-	scaleAndWrite { |outFile, scale, startFrame, numFrames, chunkSize|
-		var	rawData;
+	scaleAndWrite { |outFile, scale, startFrame, numFrames, chunkSize, threaded = false|
+		var	rawData, numChunks, chunksDone, test;
 		
-		numFrames.notNil.if({ numFrames = numFrames * numChannels; },
-			{ numFrames = inf });
-		(scale.size == 0).if({ scale = [scale] });
+		numFrames.isNil.if({ numFrames = this.numFrames });
+		numFrames = numFrames * numChannels;
+		scale = scale.asArray;
+//		(scale.size == 0).if({ scale = [scale] });
 
 			// chunkSize must be a multiple of numChannels
 		chunkSize = (chunkSize/numChannels).floor * numChannels;
+
+		if(threaded) {
+			numChunks = (numFrames / chunkSize).roundUp(1);
+			chunksDone = 0;
+		};
 
 		this.seek(startFrame, 0);
 		
@@ -230,7 +258,16 @@ SoundFile {
 			});
 
 			numFrames = numFrames - chunkSize;
+			if(threaded) {
+				chunksDone = chunksDone + 1;
+				test = chunksDone / numChunks;
+				(((chunksDone-1) / numChunks) < test.round(0.02) and: { test >= test.round(0.02) }).if({
+					$..post;
+				});
+				0.0001.wait;
+			};
 		});
+		if(threaded) { $\n.postln };
 		^outFile
 	}
 
