@@ -14,12 +14,12 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0024ab}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #90261e}
 p.p10 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #90261e; min-height: 12.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
-span.s1 {color: #0019b7}
+span.s1 {color: #0024ab}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
 span.s4 {color: #606060}
@@ -166,9 +166,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p7"><b><span class="s3">Normalizing</span></b></p>
 <p class="p4"><br></p>
-<p class="p3"><b>*normalize(path, outPath, newHeaderFormat, newSampleFormat, startFrame, numFrames, maxAmp, linkChannels, chunkSize)</b></p>
+<p class="p3"><b>*normalize(path, outPath, newHeaderFormat, newSampleFormat, startFrame, numFrames, maxAmp, linkChannels, chunkSize, threaded)</b></p>
 <p class="p4"><br></p>
-<p class="p3"><b>normalize(outPath, newHeaderFormat, newSampleFormat, startFrame, numFrames, maxAmp, linkChannels, chunkSize)</b></p>
+<p class="p3"><b>normalize(outPath, newHeaderFormat, newSampleFormat, startFrame, numFrames, maxAmp, linkChannels, chunkSize, threaded)</b></p>
 <p class="p4"><br></p>
 <p class="p3">Normalizes a soundfile to a level set by the user. The normalized audio will be written into a second file.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
@@ -185,6 +185,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><b>maxAmp:</b> the desired maximum amplitude. Provide a floating point number or, if desired, an array to specify a different level for each channel. The default is 1.0.</p>
 <p class="p10"><b>linkChannels:</b> a Boolean specifying whether all channels should be scaled by the same amount. The default is <b>true</b>, meaning that the peak calculation will be based on the largest sample in any channel. If false, each channel's peak will be calculated independently and all channels will be scaled to maxAmp (this would alter the relative loudness of each channel).</p>
 <p class="p10"><b>chunkSize:</b> how many samples to read at once (default is 4194304, or 16 MB)<span class="Apple-converted-space"> </span></p>
+<p class="p10"><b>threaded:</b> if true, the normalization runs in a routine so that SC can respond (intermittently) while processing. Prevents OSX beachballing. Default is false.</p>
 <p class="p4"><br></p>
 <p class="p3">Using the class method (SoundFile.normalize) will automatically open the source file for you. You may also openRead the SoundFile yourself and call normalize on it. In that case, the source path is omitted because the file is already open.</p>
 <p class="p4"><br></p>
@@ -214,7 +215,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><br></p>
 <p class="p3"><b>&lt;&gt;sampleFormat</b></p>
 <p class="p4"><br></p>
-<p class="p3">A String indicating the format of the sample data which was read by openRead and will be written by openWrite. Not all header formats support all sample formats. The possible header formats are:</p>
+<p class="p3">A String indicating the format of the sample data which was read by openRead and will be written by openWrite. libsndfile determines which header formats support which sample formats. This information is detailed at <span class="s3">http://www.mega-nerd.com/libsndfile</span>. The possible header formats are:</p>
 <p class="p12"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample formats:</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"int8", "int16", "int24", "int32"</p>
