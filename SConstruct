@@ -266,6 +266,8 @@ opts.AddOptions(
                'Build the language application', 1),
     BoolOption('LID',
                'Build with Linux Input Device support [linux]', PLATFORM == 'linux'),
+    BoolOption('WII',
+               'Build with Linux WII support [linux]', PLATFORM == 'linux'),
     PathOption('PREFIX',
                'Installation prefix', DEFAULT_PREFIX),
     BoolOption('RENDEZVOUS',
@@ -417,6 +419,12 @@ else:
 # lid
 features['lid'] = env['LID'] and conf.CheckCHeader('linux/input.h')
 
+# wii on linux
+if PLATFORM == 'linux':
+	features['wii'] = env['WII'] and conf.CheckCHeader('cwiid.h')
+else:
+	features['wii'] = env['WII']
+
 # only _one_ Configure context can be alive at a time
 env = conf.Finish()
 
@@ -534,6 +542,7 @@ print ' DEBUG:                   %s' % yesorno(env['DEBUG'])
 print ' DEVELOPMENT:             %s' % yesorno(env['DEVELOPMENT'])
 print ' LANG:                    %s' % yesorno(env['LANG'])
 print ' LID:                     %s' % yesorno(features['lid'])
+print ' WII:                     %s' % yesorno(features['wii'])
 print ' PREFIX:                  %s' % env['PREFIX']
 print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
@@ -874,6 +883,11 @@ Source/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
 Source/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 ''')
 else:
+    if features['wii']:
+	langEnv.Append(CPPDEFINES = 'HAVE_WII')
+	langEnv.Append(LINKFLAGS = '-lcwiid')
+	#langEnv.Append(LINKFLAGS = '-lbluetooth')
+	#langEnv.Append(CPPPATH = '-I/usr/local/include/libcwiimote-0.4.0/libcwiimote/' ) #FIXME: to proper include directory
     if features['lid']:
 	langEnv.Append(CPPDEFINES = 'HAVE_LID')
     libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
