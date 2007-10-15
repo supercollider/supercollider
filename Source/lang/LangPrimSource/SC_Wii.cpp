@@ -46,7 +46,7 @@
 #include "GC.h"
 
 #ifdef SC_DARWIN
-	#define HAVE_WII
+// 	#define HAVE_WII
 	#include <Carbon/Carbon.h>
 	#include <mach/mach.h>
 	#include <mach/mach_error.h>
