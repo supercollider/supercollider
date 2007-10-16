@@ -775,7 +775,9 @@ SequenceableCollection : Collection {
 		}
 	}
 	median { arg function;
-		^this.sort(function).sortedMedian
+		//^this.sort(function).sortedMedian
+		// Note the copy, to prevent changing the input.
+		^this.copy.hoareMedian(function)
 	}
 	
 	quickSort { arg function; 
@@ -931,6 +933,76 @@ SequenceableCollection : Collection {
 	}
 
 	
+	// Finds the median efficiently, by rearranging the array IN-PLACE.
+	hoareMedian { |function|
+		^if(this.size.even, {
+			[this.hoareFind(this.size/ 2 - 1, function),
+			 this.hoareFind(this.size/ 2,     function)].mean;
+		}, {
+			this.hoareFind(this.size - 1 / 2, function);
+		});
+	}
+	
+	// Finds the kth element in the array, according to a given sorting function.
+	// This is typically fast (order is O(n) rather than O(n log n)) because it
+	// doesn't attempt to completely sort the array. Method is due to C. A. F. Hoare.
+	// Note: this rearranges array elements IN PLACE.
+	hoareFind { |k, function, left, right|
+		var i,j,p,r,l;
+		
+		if (function.isNil) { function = { | a, b | a < b } };
+		
+		i = left  ?  0;
+		j = right ?? {this.size-1};
+		
+		while{ i < j }{
+			p = this[k];
+			# l, r = this.hoarePartition(i,j,p, function);
+			if(r < k, {
+				// kth smallest is in right split
+				i = l;
+			});
+			if(k < l, {
+				// kth smallest is in left split
+				j = r;
+			});
+		};
+		// The desired element is in desired position
+		^this[k];
+	}
+	
+	// In-place partitioning method used by hoareFind.
+	// Note: for efficiency this doesn't check that function is defined, so you 
+	// must supply a function! See hoareFind for example
+	hoarePartition { |l0, r0, p, function|
+		var l, r, tmp;
+		
+		l = l0;
+		r = r0;
+		
+		while({ l <= r }, {
+			// left_scan
+			while{(l < this.size) && function.value(this[l], p)}{
+				l = l + 1;
+			};
+			// right_scan
+			while{(r >= 0) && function.value(p, this[r])}{
+				r = r - 1;
+			};
+			// check and exchange
+			if(l <= r){
+				tmp = this[l];
+				this[l] = this[r];
+				this[r] = tmp;
+				// then
+				l = l + 1;
+				r = r - 1;
+			};
+		});
+		
+		^[l,r];
+	}
+
 
 	// streaming
 	*streamContents { arg function;
