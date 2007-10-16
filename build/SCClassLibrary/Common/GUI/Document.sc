@@ -375,14 +375,14 @@ Document {
 		};		
 	}
 	
-	keyDown {arg character, modifiers, keycode;
+	keyDown {arg character, modifiers, unicode, keycode;
 		this.class.globalKeyDownAction.value(this,character, modifiers, keycode);
-		keyDownAction.value(this,character, modifiers, keycode);
+		keyDownAction.value(this,character, modifiers, unicode, keycode);
 	}
 
-	keyUp {arg character, modifiers, keycode;
+	keyUp {arg character, modifiers, unicode, keycode;
 		this.class.globalKeyUpAction.value(this,character, modifiers, keycode);
-		keyUpAction.value(this,character, modifiers, keycode);
+		keyUpAction.value(this,character, modifiers, unicode, keycode);
 	}
 		
 	== { arg doc;
