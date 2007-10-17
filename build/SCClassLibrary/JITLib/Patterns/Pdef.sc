@@ -149,21 +149,11 @@ PatternProxy : Pattern {
 	// these following methods are factored out for the benefit of subclasses
 	// they only work for Pdef/Tdef/Pdefn.
 	
-	
-	*newAdd { arg key, item;
-		var res = super.new(item).key_(key);
-		this.put(key, res);
-		^res
-	}
-	
+		
 	*removeAll { 
 		this.all.do { arg pat; pat.stop }; 
 		this.all.makeEmpty; 
 	}
-	
-	*at { ^nil }
-	*put {}
-	key_ {}
 	
 	clear { 
 		this.stop;
@@ -182,7 +172,11 @@ PatternProxy : Pattern {
 	}
 	
 	// global storage
-		
+	
+	*at { arg key;
+		^this.all.at(key)
+	}
+	
 	repositoryArgs { ^[this.key, this.source] }
 	
 	*postRepository { arg keys, stream;
@@ -233,7 +227,7 @@ PatternProxy : Pattern {
 }
 
 Pdefn : PatternProxy {
-	var <>key;
+	var <key;
 	classvar <>all;
 	
 	*initClass { 
@@ -242,24 +236,25 @@ Pdefn : PatternProxy {
 	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
-				res = this.newAdd(key, item)
+				res = super.new(item).prAdd(key);
 		} {
 				if(item.notNil) { res.source = item }
 		}
 		^res
 	
 	}
-	*at { arg key;
-		^all.at(key);
-	}
-	*put { arg key, pattern;
-		all.put(key, pattern);
-	}
+	
 	map { arg ... args;
 		if(envir.isNil) { this.envir = () };
 		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
 	}
+	
 	storeArgs { ^[key] } // assume it was created globally
+	
+	prAdd { arg argKey;
+		key = argKey;
+		all.put(argKey, this);
+	}
 }
 
 
@@ -356,31 +351,31 @@ TaskProxy : PatternProxy {
 }
 
 Tdef : TaskProxy {
-	var <>key;
+	var <key;
 	classvar <>all;
 	
 	
 	*initClass { 
 		all = IdentityDictionary.new;
 	}
+	
 	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
-				res = this.newAdd(key, item)
+				res = super.new(item).prAdd(key);
 		} {
 				if(item.notNil) { res.source = item }
 		}
 		^res
 	
 	}
-	*at { arg key;
-		^all.at(key);
-	}
-	*put { arg key, pattern;
-		all.put(key, pattern);
-	}
 
 	storeArgs { ^[key] }
+	
+	prAdd { arg argKey;
+		key = argKey;
+		all.put(argKey, this);
+	}
 
 }
 
@@ -496,7 +491,7 @@ EventPatternProxy : TaskProxy {
 }
 
 Pdef : EventPatternProxy {
-	var <>key;
+	var <key;
 	
 	classvar <>all;	
 				
@@ -505,23 +500,25 @@ Pdef : EventPatternProxy {
 	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
-				res = this.newAdd(key, item)
+				res = super.new(item).prAdd(key);
 		} {
 				if(item.notNil) { res.source = item }
 		}
 		^res
 	
 	}
-	*at { arg key;
-		^all.at(key);
-	}
-	*put { arg key, pattern;
-		all.put(key, pattern);
-	}
+	
+	
 	map { arg ... args;
 		if(envir.isNil) { this.envir = () };
 		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
 	}
+	
+	prAdd { arg argKey;
+		key = argKey;
+		all.put(argKey, this);
+	}
+	
 	*initClass {
 		var phraseEventFunc;
 		
