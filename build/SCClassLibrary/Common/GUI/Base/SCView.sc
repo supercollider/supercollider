@@ -5,7 +5,7 @@ SCView {  // abstract class
 
 	var dataptr, <parent, <>action, <background;
 	var <>mouseDownAction, <>mouseUpAction, <>mouseOverAction, <>mouseMoveAction;
-	var <>keyDownAction, <>keyUpAction, <>keyTyped;
+	var <>keyDownAction, <>keyUpAction, <>keyTyped, <> keyModifiersChangedAction;
 	var <>beginDragAction,<>canReceiveDragHandler,<>receiveDragHandler;
 	var <>onClose;
 	
@@ -140,6 +140,26 @@ SCView {  // abstract class
 		globalKeyDownAction.value(this, char, modifiers, unicode, keycode); 
 		this.handleKeyDownBubbling(this, char, modifiers, unicode, keycode);
 	}
+	
+	keyModifiersChanged{arg modifiers;	
+		this.handleKeyModifiersChangedBubbling(this,modifiers)
+	}
+	
+	handleKeyModifiersChangedBubbling { arg view, modifiers;
+		var result;
+		// nil from keyDownAction --> pass it on
+		if (keyModifiersChangedAction.isNil) {
+//			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
+			result = nil;
+		}{
+			result = keyModifiersChangedAction.value(view, modifiers);
+		};
+		if(result.isNil) {  
+			// call keydown action of parent view
+			parent.handleKeyModifiersChangedBubbling(view, modifiers);
+		};
+	}
+	
 	defaultKeyDownAction { ^nil }
 	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
 		var result;
@@ -293,6 +313,9 @@ SCCompositeView : SCContainerView {
 
 SCTopView : SCCompositeView {
 	// created by SCWindow
+	handleKeyModifiersChangedBubbling { arg view, modifiers;
+		keyModifiersChangedAction.value(view, modifiers);
+	}
 	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
 		keyDownAction.value(view, char, modifiers, unicode, keycode);
 	}
