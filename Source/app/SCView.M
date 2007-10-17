@@ -352,6 +352,22 @@ void SCView::keyUp(int character, int modifiers, unsigned short keycode)
     pthread_mutex_unlock (&gLangMutex);
 }
 
+void SCView::keyModifiersChanged(int modifiers)
+{
+    pthread_mutex_lock (&gLangMutex);
+    PyrSymbol *method = getsym("keyModifiersChanged");
+    if (mObj) {
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, mObj); 
+        ++g->sp;  SetInt(g->sp, modifiers); 
+        runInterpreter(g, method, 2);
+        g->canCallOS = false;
+    }
+    pthread_mutex_unlock (&gLangMutex);
+
+}
+
 void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     pthread_mutex_lock (&gLangMutex);
