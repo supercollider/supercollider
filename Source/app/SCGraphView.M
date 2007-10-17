@@ -60,6 +60,34 @@ extern PyrSymbol *s_callDrawHook;
 	return NO;
 }
 
+//eat all key Events might add this
+//- (BOOL)performKeyEquivalent:(NSEvent *)event
+//{
+//   NSString *characters = [event characters];
+//    unsigned int modifiers = [event modifierFlags];
+//    unichar character = 0;
+//    if([characters length] > 0) {
+//        character = [characters characterAtIndex: 0];
+//    }
+//    //control tab/escape doesn't get passed here at all ?
+//    NSLog(@"in performKeyEquivalent: unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
+//		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
+//	return YES;
+//}
+
+- (void)flagsChanged:(NSEvent *)event
+{
+    unsigned int modifiers = [event modifierFlags];
+//    NSLog(@" modifiers %d %08X",modifiers, modifiers);
+    if (mTopView) {
+	     SCView *view = mTopView->focusView();
+        if (view) {
+            view->keyModifiersChanged(modifiers);
+        } else {
+            mTopView->keyModifiersChanged(modifiers);
+        }
+	}
+}
 - (void) keyDown: (NSEvent*) event
 {
     NSString *characters = [event characters];
@@ -69,8 +97,8 @@ extern PyrSymbol *s_callDrawHook;
         character = [characters characterAtIndex: 0];
     }
     //control tab/escape doesn't get passed here at all ?
-    //NSLog(@"unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
-	//	character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
+ //   NSLog(@"unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
+//		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
     
     if (mTopView) {
 		// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
@@ -109,7 +137,8 @@ extern PyrSymbol *s_callDrawHook;
     if([characters length] > 0) {
         character = [characters characterAtIndex: 0];
     }
-
+//   NSLog(@"keyUp: unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
+//		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
     if (mTopView) {
 
 		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
