@@ -24,7 +24,6 @@ Main : Process {
 	
 	stop { // called by command-.
 
-
 		SystemClock.clear;
 		AppClock.clear;
 		TempoClock.default.clear;
@@ -63,6 +62,10 @@ Main : Process {
 	argv {
 		^argv ?? { argv = this.prArgv }
 	}
+
+	showHelpBrowser {
+		Help.gui
+	}	
 
 	// PRIVATE
 	prArgv {

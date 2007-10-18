@@ -71,6 +71,8 @@
                 newSCWindow = id; 
                 postWindowToFront = id; 
                 runMain = id; 
+                showHelp = id; 
+                showHelpBrowser = id; 
                 stopMain = id; 
             }; 
             CLASS = SCVirtualMachine; 
