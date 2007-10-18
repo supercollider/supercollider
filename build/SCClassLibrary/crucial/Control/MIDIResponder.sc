@@ -8,6 +8,8 @@ MIDIResponder {
 		<>matchEvent;		// for matching ports, channels, and parameters
 	init { arg install;
 		if(this.class.initialized.not,{ this.class.init });
+			// this must be done only after MIDIClient is initialized
+		matchEvent.port = this.class.fixSrc(matchEvent.port);
 		if(install,{this.class.add(this);});
 	}
 	remove {
@@ -19,7 +21,8 @@ MIDIResponder {
 		(src.size > 0).if({
 			^src.collect(this.fixSrc(_))
 		});
-		(src.isNumber and: { src < MIDIClient.sources.size }).if({			^MIDIClient.sources[src].uid
+		(src.isNumber and: { (src < MIDIClient.sources.size) }).if({
+			^MIDIClient.sources[src].uid
 		});
 		^src
 	}
@@ -47,7 +50,7 @@ NoteOnResponder : MIDIResponder {
 
 	*new { arg function, src, chan, num, veloc, install=true;
 		^super.new.function_(function)
-			.matchEvent_(MIDIEvent(nil, this.fixSrc(src), chan, num, veloc))
+			.matchEvent_(MIDIEvent(nil, src, chan, num, veloc))
 			.init(install)
 	}
 	*initialized { ^norinit }
@@ -104,7 +107,7 @@ CCResponder : MIDIResponder {
 
 	*new { arg function, src, chan, num, value, install=true;
 		^super.new.function_(function)
-			.matchEvent_(MIDIEvent(nil, this.fixSrc(src), chan, num, value))
+			.matchEvent_(MIDIEvent(nil, src, chan, num, value))
 			.init(install)
 	}
 	*initialized { ^ccinit }
@@ -153,7 +156,7 @@ TouchResponder : MIDIResponder {
 
 	*new { arg function, src, chan, value, install=true;
 		^super.new.function_(function)
-			.matchEvent_(MIDIEvent(nil, this.fixSrc(src), chan, nil, value))
+			.matchEvent_(MIDIEvent(nil, src, chan, nil, value))
 			.init(install)
 	}
 	*init {
