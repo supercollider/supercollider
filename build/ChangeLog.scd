@@ -10,10 +10,10 @@
 * 01.10.2007 FFT and IFFT rewrite - now using more efficient libs, also allows user to vary the overlap and the window type, also large-sized FFTs are possible - ds
 * 02.10.2007 UnpackFFT and PackFFT added - these allow for flexible frequency-domain manipulations inside synths - ds
 * 04.10.2007 Pkey and Pif added - hjh
-* 05.10.2007 Reformed Patterns - all patterns accept patterns as arguments - jr
-* 08.10.2007 Change to UGen plugin loading fixes the audio dropout issue that various users have experienced - rb
+* 05.10.2007 reformed Patterns - all patterns accept patterns as arguments - jr
+* 08.10.2007 change to UGen plugin loading fixes the audio dropout issue that various users have experienced - rb
 * 08.10.2007 GeneralHID crossplatform HID wrapper - mb
-
+* --.--.2007 many improvements to Quarks package-management system. gui improvements, dependency-handling improvements, etc - various
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 

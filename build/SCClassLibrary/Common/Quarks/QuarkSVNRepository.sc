@@ -1,7 +1,7 @@
 /**
   *
   * Subversion based package repository and package manager
-  * a work in progress.  sk & cx
+  * a work in progress.  sk & cx & ds
   *
   */
 
@@ -9,9 +9,15 @@ QuarkSVNRepository
 {
 	classvar <>svnpath="/usr/local/bin/svn";
 	var <url, <local;
-
+	
+	*initClass {
+		svnpath = [svnpath, "/usr/local/bin/svn", "/usr/bin/svn", "/opt/local/bin/svn", "/sw/bin/svn"].detect({ |path|
+			File.exists(path);
+		});
+	}
+	
 	*new { | url, local |
-		if(File.exists(svnpath).not,{
+		if(svnpath.isNil || File.exists(svnpath).not,{
 			Error("Path to SVN executable is not correct.  Set \n\tQuarkSVNRepository.svnpath = \"/full/path/to/svn\"\n in your startup ").throw;
 		});
 		^this.newCopyArgs(url ? "https://quarks.svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
