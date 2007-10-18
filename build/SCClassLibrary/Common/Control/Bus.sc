@@ -2,6 +2,7 @@
 Bus {
 
 	var <rate,<index,<numChannels,<server;
+	var mapSymbol;
 	
 	*control { arg server,numChannels=1;
 		var alloc;
@@ -87,6 +88,7 @@ Bus {
 		});
 		index = nil;
 		numChannels = nil;
+		mapSymbol = nil;
 	}
 	
 	// allow reallocation
@@ -97,6 +99,7 @@ Bus {
 		}, {
 			index = server.controlBusAllocator.alloc(numChannels);
 		});
+		mapSymbol = nil;
 	}
 	
 	realloc {
@@ -160,11 +163,14 @@ Bus {
 	}
 	asUGenInput { ^this.index }
 	asMap {
-		if(rate == \control) {
-			^("c" ++ index).asSymbol
-		} {
-			MethodError("Cannot map a synth control to a% %-rate bus."
+		^mapSymbol ?? {
+			if(rate == \control) {
+				if(index.isNil) { MethodError("bus not allocated.", this).throw };
+				mapSymbol = ("c" ++ index).asSymbol
+			} {
+				MethodError("Cannot map a synth control to a% %-rate bus."
 				.format(if(rate.asString[0].isVowel, "n", ""), rate), this).throw;
+			}
 		}
 	}
 }
