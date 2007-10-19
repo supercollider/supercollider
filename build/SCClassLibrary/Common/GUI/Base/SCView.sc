@@ -382,6 +382,50 @@ SCScrollTopView : SCTopView {
 		^this.getProperty(\innerBounds, Rect.new)
 	}
 
+	handleKeyModifiersChangedBubbling { arg view, modifiers;
+		var result;
+		// nil from keyDownAction --> pass it on
+		if (keyModifiersChangedAction.isNil) {
+			result = nil;
+		}{
+			result = keyModifiersChangedAction.value(view, modifiers);
+		};
+		if(result.isNil) {  
+			// call keydown action of parent view
+			parent.handleKeyModifiersChangedBubbling(view, modifiers);
+		};
+	}
+	
+	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
+		var result;
+		// nil from keyDownAction --> pass it on
+		if (keyDownAction.isNil) {
+			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
+			result = nil;
+		}{
+			result = keyDownAction.value(view, char, modifiers, unicode, keycode);
+		};
+		if(result.isNil) {  
+			// call keydown action of parent view
+			parent.handleKeyDownBubbling(view, char, modifiers, unicode, keycode);
+		};
+	}
+
+	handleKeyUpBubbling { arg view, char, modifiers,unicode,keycode;
+		var result;
+		// nil from keyDownAction --> pass it on
+		if (keyUpAction.isNil) {
+			this.defaultKeyUpAction(char,modifiers,unicode,keycode);
+			result = nil;
+		}{
+			result = keyUpAction.value(view, char, modifiers, unicode, keycode);
+		};
+		if(result.isNil) {  
+			// call keydown action of parent view
+			parent.handleKeyUpBubbling(view, char, modifiers, unicode, keycode);
+		};
+	}	
+
 }
 
 SCScrollView : SCScrollTopView {
