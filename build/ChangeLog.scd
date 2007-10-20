@@ -14,6 +14,7 @@
 * 08.10.2007 change to UGen plugin loading fixes the audio dropout issue that various users have experienced - rb
 * 08.10.2007 GeneralHID crossplatform HID wrapper - mb
 * --.--.2007 many improvements to Quarks package-management system. gui improvements, dependency-handling improvements, etc - various
+* 20.10.2007 added a Glossary file - sw
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 
