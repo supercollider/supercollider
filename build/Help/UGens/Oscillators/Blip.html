@@ -10,12 +10,12 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000bf}
+span.s2 {color: #0012b9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -33,8 +33,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">(Synth-O-Matic (1990) had an impulse generator called blip, hence that name here rather than 'buzz').</p>
 <p class="p3"><br></p>
-<p class="p1"><b>freq</b> - frequency in Hertz</p>
-<p class="p1"><b>numharm</b> - number of harmonics. This may be lowered internally if it would cause aliasing.</p>
+<p class="p1"><b>freq</b> - Frequency in Hertz (control rate)</p>
+<p class="p1"><b>numharm</b> - Number of harmonics. This may be lowered internally if it would cause aliasing.</p>
 <p class="p3"><br></p>
 <p class="p4">// modulate frequency</p>
 <p class="p5">{ <span class="s2">Blip</span>.ar(<span class="s2">XLine</span>.kr(20000,200,6),100,0.2) }.play;</p>
