@@ -8,32 +8,32 @@
 <meta name="CocoaVersion" content="824.42">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000bf}
+span.s2 {color: #0000ff}
+span.s3 {color: #0012b9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>Saw<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>band limited sawtooth</b></p>
-<p class="p2"><b></b><br></p>
-<p class="p1"><b>Saw.ar(kfreq, mul, add)</b></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p1"><span class="s1"><b>Saw<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>band limited sawtooth</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Saw.ar(freq, mul, add)</b></p>
+<p class="p2"><br></p>
 <p class="p1">Band limited sawtooth wave generator.</p>
-<p class="p1"><b>kfreq</b> - frequency in Hertz</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p4">// modulating the frequency</p>
-<p class="p5"><br></p>
-<p class="p6">{ <span class="s2">Saw</span>.ar(<span class="s2">XLine</span>.kr(40,4000,6),0.2) }.play;</p>
-<p class="p5"><br></p>
-<p class="p4">// two band limited sawtooth waves through a resonant low pass filter</p>
-<p class="p5"><br></p>
-<p class="p6">{ <span class="s2">RLPF</span>.ar(<span class="s2">Saw</span>.ar([100,250],0.1), <span class="s2">XLine</span>.kr(8000,400,5), 0.05) }.play;</p>
+<p class="p1"><b>freq</b> - frequency in Hertz</p>
+<p class="p2"><br></p>
+<p class="p1"><b>See also:</b> <a href="LFSaw.html"><span class="s2">LFSaw</span></a></p>
+<p class="p2"><br></p>
+<p class="p3">// modulating the frequency</p>
+<p class="p4"><br></p>
+<p class="p5">{ <span class="s3">Saw</span>.ar(<span class="s3">XLine</span>.kr(40,4000,6),0.2) }.play;</p>
+<p class="p4"><br></p>
+<p class="p3">// two band limited sawtooth waves through a resonant low pass filter</p>
+<p class="p4"><br></p>
+<p class="p5">{ <span class="s3">RLPF</span>.ar(<span class="s3">Saw</span>.ar([100,250],0.1), <span class="s3">XLine</span>.kr(8000,400,5), 0.05) }.play;</p>
 </body>
 </html>
