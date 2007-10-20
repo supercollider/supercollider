@@ -378,6 +378,18 @@ Collection {
 			result.collectAs({ | item | item.as(species) }, species) 
 		}
 	}
+	
+	flopDict { | unbubble=true |
+		var res, first = true;
+		this.do { | dict |
+			if(first) { res = dict.class.new; first = false };
+			dict.keysValuesDo { | key, val |
+				res[key] = res[key].add(val)
+			}
+		};
+		if(unbubble) { res = res.collect(_.unbubble) };
+		^res
+	}
 
 	
 	printAll { this.do { | item | item.postln; }; } // convenience method
