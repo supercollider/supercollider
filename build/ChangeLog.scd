@@ -25,6 +25,7 @@
 * 05.10.2007 Dwhite:new and Dbrown:new have default values for lo and hi - jr
 * 10.10.2007 SC no longer automatically writes data (synthdefs, archive.scxtar) to the application folder - instead writes to "app support". This fixes problems with running SC using an unprivileged user account - ds
 * 16.10.2007 SequenceableCollection:median speed improvement, approx ten times faster in many cases - ds
+* 20.10.2007 Object:deprecated and DeprecatedError added to allow for method deprecation - sw
 
 
 // BUGFIXES:

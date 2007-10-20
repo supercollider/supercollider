@@ -230,7 +230,11 @@ Object  {
 	} 
 	immutableError { arg value;
 		ImmutableError(this, value).throw;
-	} 
+	}
+	
+	deprecated { arg method, alternateMethod;
+		DeprecatedError(this, method, alternateMethod, this.class).throw;
+	}
 	
 	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
 	notYetImplemented { NotYetImplementedError(nil, this).throw; }

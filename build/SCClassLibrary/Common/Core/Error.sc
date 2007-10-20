@@ -130,4 +130,32 @@ BinaryOpFailureError : DoesNotUnderstandError {
 	}
 }
 
+DeprecatedError : Error {
+	var <>receiver;
+	var <>method, <>class, <>alternateMethod;
+	
+	*new { arg receiver, method, alternateMethod, class;
+		^super.new(nil, receiver).method_(method).alternateMethod_(alternateMethod).class_(class)
+	}
+	errorString {
+		^"ERROR: Method '" ++ method.name ++ "' of class " ++ class.name ++ " is deprecated and will be removed. Use '" ++ alternateMethod.ownerClass ++ ":" ++ alternateMethod.name ++ "' instead."
+	}
+	
+	reportError {
+		this.errorString.postln;
+	}
+	
+	throw {
+		Error.handling = true;
+		this.reportError;
+		if (Error.debug) {
+			this.dumpBackTrace;
+			Error.handling = false;
+			this.halt;
+		} {
+			Error.handling = false;
+		};
+		
+	}
+}
 
