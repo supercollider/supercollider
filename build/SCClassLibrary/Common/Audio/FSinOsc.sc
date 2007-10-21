@@ -92,8 +92,8 @@ DynKlang : UGen {
 		var spec = specificationsArrayRef.value;
 		^SinOsc.ar(
 				spec[0] ? #[440.0] * freqscale + freqoffset, 
-				spec[2] ? #[1.0],
-				spec[1] ? #[0.0]
+				spec[2] ? #[0.0],
+				spec[1] ? #[1.0]
 		).sum
 	}
 }

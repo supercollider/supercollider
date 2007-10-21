@@ -14,7 +14,8 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-span.s1 {color: #001bb9}
+span.s1 {color: #0000ff}
+span.s2 {color: #0026b4}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -25,6 +26,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Klang is a bank of fixed frequency sine oscillators. Klang is more efficient than creating individual oscillators but offers less flexibility.</p>
 <p class="p2"><br></p>
+<p class="p3">The parameters in <b>specificationsArrayRef</b> can't be changed after it has been started.<span class="Apple-converted-space"> </span></p>
+<p class="p3">For a modulatable but less efficient version, see <a href="DynKlang.html"><span class="s1">DynKlang</span></a>.</p>
+<p class="p2"><br></p>
 <p class="p3"><b>specificationsArrayRef</b> - a Ref to an Array of three Arrays :</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>frequencies</b> - an Array of filter frequencies.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>amplitudes</b> - an Array of filter amplitudes, or nil. If nil, then amplitudes default to 1.0</p>
@@ -33,11 +37,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>freqoffset</b> - an offset added to all frequencies at initialization time.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p4">play({ <span class="s1">Klang</span>.ar(`[ [800, 1000, 1200],[0.3, 0.3, 0.3],[pi,pi,pi]], 1, 0) * 0.4});</p>
+<p class="p4">play({ <span class="s2">Klang</span>.ar(`[ [800, 1000, 1200],[0.3, 0.3, 0.3],[pi,pi,pi]], 1, 0) * 0.4});</p>
 <p class="p5"><br></p>
-<p class="p4">play({ <span class="s1">Klang</span>.ar(`[ [800, 1000, 1200], <span class="s1">nil</span>, <span class="s1">nil</span>], 1, 0) * 0.25});</p>
+<p class="p4">play({ <span class="s2">Klang</span>.ar(`[ [800, 1000, 1200], <span class="s2">nil</span>, <span class="s2">nil</span>], 1, 0) * 0.25});</p>
 <p class="p6"><br></p>
-<p class="p4">play({ <span class="s1">Klang</span>.ar(`[ <span class="s1">Array</span>.rand(12, 600.0, 1000.0), <span class="s1">nil</span>, <span class="s1">nil</span> ], 1, 0) * 0.05 });</p>
+<p class="p4">play({ <span class="s2">Klang</span>.ar(`[ <span class="s2">Array</span>.rand(12, 600.0, 1000.0), <span class="s2">nil</span>, <span class="s2">nil</span> ], 1, 0) * 0.05 });</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
@@ -45,8 +49,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">{</p>
 <p class="p4">loop({</p>
 <p class="p4"><span class="Apple-tab-span">	</span>play({</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pan2</span>.ar(<span class="s1">Klang</span>.ar(`[ <span class="s1">Array</span>.rand(12, 200.0, 2000.0), <span class="s1">nil</span>, <span class="s1">nil</span> ], 1, 0), 1.0.rand)<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.sine(4), 1, 0.02, doneAction: 2);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pan2</span>.ar(<span class="s2">Klang</span>.ar(`[ <span class="s2">Array</span>.rand(12, 200.0, 2000.0), <span class="s2">nil</span>, <span class="s2">nil</span> ], 1, 0), 1.0.rand)<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.sine(4), 1, 0.02, doneAction: 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>});</p>
 <p class="p4"><span class="Apple-tab-span">	</span>2.wait;</p>
 <p class="p4">})</p>
