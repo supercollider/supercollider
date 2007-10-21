@@ -264,7 +264,7 @@ struct Limiter : public Unit
 
 struct Amplitude : public Unit
 {
-	float m_previn, m_clampcoef, m_relaxcoef;
+	float m_previn, m_clampcoef, m_relaxcoef, m_clamp_in, m_relax_in;
 };
 
 struct DetectSilence : public Unit
@@ -4062,6 +4062,7 @@ void Amplitude_Ctor(Amplitude* unit)
 	//printf("Amplitude_Reset\n");
 	if(INRATE(1) != calc_ScalarRate || INRATE(2) != calc_ScalarRate) {
 		SETCALC(Amplitude_next_kk);
+		
 	} else {
 		SETCALC(Amplitude_next);
 	}
@@ -4129,9 +4130,22 @@ void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
+	float relaxcoef, clampcoef;
 	
-	float relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
-	float clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
+	if(ZIN0(1) != unit->m_clamp_in) {
+		clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
+		unit->m_clamp_in = clampcoef;
+	} else {
+		clampcoef = unit->m_clamp_in;
+	}
+	
+	if(ZIN0(2) != unit->m_relax_in) {
+		relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
+		unit->m_relax_in = relaxcoef;
+	} else {
+		relaxcoef = unit->m_relax_in;
+	}
+	
 	float previn = unit->m_previn;
 	
 	float val;
@@ -4155,8 +4169,19 @@ void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	
-	float relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
-	float clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
+	float relaxcoef, clampcoef;
+	
+	if(ZIN0(1) != unit->m_clamp_in) {
+		clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
+	} else {
+		clampcoef = unit->m_clamp_in;
+	}
+	
+	if(ZIN0(2) != unit->m_relax_in) {
+		relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
+	} else {
+		relaxcoef = unit->m_relax_in;
+	}
 	
 	float maxval = 0.f;
 	LOOP(inNumSamples,
