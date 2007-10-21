@@ -66,8 +66,7 @@ Klank : UGen {
 DynKlank : UGen {
 
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
-		var inputs;
-		inputs = [specificationsArrayRef, input, freqscale, freqoffset, decayscale].flop;
+		var inputs = [specificationsArrayRef, input, freqscale, freqoffset, decayscale].flop;
 		^inputs.collect { arg item; this.ar1(*item) }.unbubble
 	}
 	
@@ -78,6 +77,23 @@ DynKlank : UGen {
 				spec[0] ? #[440.0] * freqscale + freqoffset, 
 				spec[2] ? #[1.0] * decayscale,
 				spec[1] ? #[1.0]
+		).sum
+	}
+}
+
+DynKlang : UGen {
+	
+	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
+		var inputs = [specificationsArrayRef, freqscale, freqoffset].flop;
+		^inputs.collect { arg item; this.ar1(*item) }.unbubble
+	}
+
+	*ar1 { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
+		var spec = specificationsArrayRef.value;
+		^SinOsc.ar(
+				spec[0] ? #[440.0] * freqscale + freqoffset, 
+				spec[2] ? #[1.0],
+				spec[1] ? #[0.0]
 		).sum
 	}
 }
