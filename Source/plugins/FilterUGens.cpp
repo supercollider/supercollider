@@ -437,6 +437,7 @@ extern "C"
 	void Compander_Ctor(Compander* unit);
 
 	void Amplitude_next(Amplitude *unit, int inNumSamples);
+	void Amplitude_next_kk(Amplitude *unit, int inNumSamples);
 	void Amplitude_Ctor(Amplitude* unit);
 
 	void DetectSilence_next(DetectSilence *unit, int inNumSamples);
@@ -4059,7 +4060,11 @@ void Limiter_next(Limiter* unit, int inNumSamples)
 void Amplitude_Ctor(Amplitude* unit)
 {
 	//printf("Amplitude_Reset\n");
-	SETCALC(Amplitude_next);
+	if(INRATE(1) != calc_ScalarRate || INRATE(2) != calc_ScalarRate) {
+		SETCALC(Amplitude_next_kk);
+	} else {
+		SETCALC(Amplitude_next);
+	}
 		
 	float clamp = ZIN0(1);
 	unit->m_clampcoef  = clamp == 0.0 ? 0.0 : exp(log1/(clamp * SAMPLERATE));
@@ -4110,6 +4115,57 @@ void Amplitude_next(Amplitude* unit, int inNumSamples)
 	
 	float previn = unit->m_previn;
 	float coef = maxval < previn ? unit->m_relaxcoef : unit->m_clampcoef ;
+
+	LOOP(inNumSamples, ZXP(out) = previn = maxval + (previn - maxval) * coef; );
+	
+	unit->m_previn = previn;
+}
+
+#endif
+
+#if 1
+
+void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	
+	float relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
+	float clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
+	float previn = unit->m_previn;
+	
+	float val;
+	LOOP(inNumSamples,
+		val = fabs(ZXP(in)); 
+		if (val < previn) {
+			val = val + (previn - val) * relaxcoef;
+		} else {
+			val = val + (previn - val) * clampcoef;
+		}
+		ZXP(out) = previn = val;
+	);
+	
+	unit->m_previn = previn;
+}
+
+#else 
+
+void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	
+	float relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
+	float clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
+	
+	float maxval = 0.f;
+	LOOP(inNumSamples,
+		float val = fabs(ZXP(in)); 
+		if (val > maxval) maxval = val;
+	);
+	
+	float previn = unit->m_previn;
+	float coef = maxval < previn ? relaxcoef : clampcoef ;
 
 	LOOP(inNumSamples, ZXP(out) = previn = maxval + (previn - maxval) * coef; );
 	
