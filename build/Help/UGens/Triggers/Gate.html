@@ -5,14 +5,14 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-span.s1 {color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+span.s1 {color: #001bb9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -24,7 +24,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Allows input signal value to pass when gate is positive, otherwise holds last value.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>in</b> - input signal.</p>
-<p class="p3"><b>gate</b> - trigger. Trigger can be any signal. A trigger happens when the signal changes from non-positive to positive.</p>
+<p class="p3"><b>gate</b> - gate. The gate can be any signal. It will be treated as "on" when its value is greater than zero.</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s1">Server</span>.internal.boot;</p>
 <p class="p5">// Control rate so as not to whack your speakers with DC</p>

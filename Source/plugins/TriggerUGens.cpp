@@ -75,7 +75,6 @@ struct Latch : public Unit
 struct Gate : public Unit
 {
 	float mLevel;
-	float m_prevtrig;
 };
 
 struct Schmidt : public Unit
@@ -783,7 +782,6 @@ void Gate_Ctor(Gate *unit)
 		SETCALC(Gate_next_ak);
 	}
 
-	unit->m_prevtrig = 0.f;
 	unit->mLevel = 0.f;
 	
 	ZOUT0(0) = 0.f;
@@ -810,7 +808,6 @@ void Gate_next_ak(Gate *unit, int inNumSamples)
 			ZXP(out) = level;
 		);
 	}
-	unit->m_prevtrig = curtrig;
 }
 
 
@@ -820,7 +817,6 @@ void Gate_next_aa(Gate *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	float *trig = ZIN(1);
-	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
 	
 	LOOP(inNumSamples, 
@@ -830,7 +826,6 @@ void Gate_next_aa(Gate *unit, int inNumSamples)
 		ZXP(out) = level;
 	);
 	unit->mLevel = level;
-	unit->m_prevtrig = prevtrig;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
