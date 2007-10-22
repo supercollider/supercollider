@@ -1058,4 +1058,6 @@ SequenceableCollection : Collection {
 	nextTimeOnGrid { arg clock;
 		^clock.nextTimeOnGrid(*this);
 	}
+
+	asUGenInput { ^this.asArray.asUGenInput }
 }

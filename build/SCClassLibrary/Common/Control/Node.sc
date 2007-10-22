@@ -13,7 +13,9 @@ Node {
 			addAfter: 3, 
 			addReplace: 4,
 			h: 0,
-			t: 1
+			t: 1,
+				// valid action numbers should stay the same
+			0: 0, 1: 1, 2: 2, 3: 3, 4: 4
 		);
 	}
 

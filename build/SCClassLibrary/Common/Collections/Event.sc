@@ -272,8 +272,8 @@ Event : Environment {
 						score = ~score;
 						if (freqs.isKindOf(Symbol).not) {
 							~amp = ~amp.value;
-							addAction = ~addAction;
-							group = ~group;
+							addAction = Node.actionNumberFor(~addAction);
+							group = ~group.asUGenInput;
 							lag = ~lag;
 							strum = ~strum;
 							sustain = ~sustain = ~sustain.value;
@@ -318,8 +318,8 @@ Event : Environment {
 										
 						if (freqs.isKindOf(Symbol).not) {
 							~amp = ~amp.value;
-							addAction = ~addAction;
-							group = ~group;
+							addAction = Node.actionNumberFor(~addAction);
+							group = ~group.asUGenInput;
 							lag = ~lag + (server.latency ? 0); 
 							strum = ~strum;
 							sustain = ~sustain = ~sustain.value;
@@ -371,9 +371,9 @@ Event : Environment {
 										
 						if (freqs.isKindOf(Symbol).not) {
 							~amp = ~amp.value;
-							addAction = ~addAction;
-							group = ~group;
-							lag = ~lag + server.latency;
+							addAction = Node.actionNumberFor(~addAction);
+							group = ~group.asUGenInput;
+							lag = ~lag + (server.latency ? 0);
 							strum = ~strum;
 							~sustain = ~sustain.value;
 							synthLib = ~synthLib.value;
@@ -408,7 +408,7 @@ Event : Environment {
 							~sustain = ~sustain.value;
 							strum = ~strum;
 				
-							bndl = ([\n_set, ~id] ++ ~args.envirPairs.asNodeArg).flop;
+							bndl = ([\n_set, ~id.asUGenInput] ++ ~args.envirPairs.asNodeArg).flop;
 							bndl.do {|msgArgs, i|
 								var latency;
 								
@@ -428,15 +428,16 @@ Event : Environment {
 						~id.asArray.do {|id, i|
 							var latency = i * strum + lag;
 							if(hasGate) {
-								server.sendBundle(latency, [\n_set, id, \gate, gate]); 
+								server.sendBundle(latency, [\n_set, id.asUGenInput, \gate, gate]); 
 							} {
-								server.sendBundle(latency, [\n_free, id]);
+								server.sendBundle(latency, [\n_free, id.asUGenInput]);
 							}
 						};
 					},
 					
 					group: #{|server|
-						var group = ~group, addAction = ~addAction;
+						var	group = ~group.asUGenInput,
+							addAction = Node.actionNumberFor(~addAction);
 						var lag = ~lag + server.latency;
 						server.listSendBundle(lag,
 							~id.asArray.collect {|id, i|
@@ -457,7 +458,7 @@ Event : Environment {
 							
 							latency = i * strum + lag;
 							
-							server.sendBundle(latency, [\n_free, id]); 
+							server.sendBundle(latency, [\n_free, id.asUGenInput]); 
 						};
 					},
 	
@@ -465,37 +466,39 @@ Event : Environment {
 						var lag, array;
 						lag = ~lag + server.latency;
 						array = ~array.asArray;
-						server.sendBundle(lag, [\c_setn, ~out, array.size] ++ array);
+						server.sendBundle(lag, [\c_setn, ~out.asUGenInput, array.size] ++ array);
 					},
 					
 					gen: #{|server|
 						var lag, genarray;
 						lag = ~lag + server.latency;
 						genarray = ~genarray;
-						server.sendBundle(lag, [\b_gen, ~bufnum, ~gencmd, ~genflags]
+						server.sendBundle(lag, [\b_gen, ~bufnum.asUGenInput, ~gencmd, ~genflags]
 							 ++ genarray);
 					},
 					load: #{|server|
 						var lag;
 						lag = ~lag + server.latency;
 						server.sendBundle(lag, 
-							[\b_allocRead, ~bufnum, ~filename, ~frame, ~numframes]);
+							[\b_allocRead, ~bufnum.asUGenInput, ~filename, ~frame, ~numframes]);
 					},
 					read: #{|server|
 						var lag;
 						lag = ~lag + server.latency;
 						server.sendBundle(lag, 
-						[\b_read, ~bufnum, ~filename, ~frame, ~numframes, ~bufpos, ~leaveOpen]);
+						[\b_read, ~bufnum.asUGenInput, ~filename, ~frame, ~numframes,
+							~bufpos, ~leaveOpen]);
 					},
 					alloc: #{|server|
 						var lag;
 						lag = ~lag + server.latency;
-						server.sendBundle(lag, [\b_alloc, ~bufnum, ~numframes, ~numchannels]);
+						server.sendBundle(lag, [\b_alloc, ~bufnum.asUGenInput,
+							~numframes, ~numchannels]);
 					},
 					free: #{|server|
 						var lag;
 						lag = ~lag + server.latency;
-						server.sendBundle(lag, [\b_free, ~bufnum]);
+						server.sendBundle(lag, [\b_free, ~bufnum.asUGenInput]);
 					},
 					
 					midi: #{|server|
@@ -552,9 +555,9 @@ Event : Environment {
 						var lag = ~lag + server.latency;
 			
 						if(~hasGate == false) {
-							server.sendBundle(lag, [\n_free] ++ ~id);
+							server.sendBundle(lag, [\n_free] ++ ~id.asUGenInput);
 						} {
-							server.sendBundle(lag, *[\n_set, ~id, \gate, 0].flop); 
+							server.sendBundle(lag, *[\n_set, ~id.asUGenInput, \gate, 0].flop); 
 						};
 						
 					},
@@ -569,7 +572,7 @@ Event : Environment {
 							lag = ~lag + server.latency;
 							~sustain = ~sustain.value;
 				
-							bndl = ([\n_set, ~id] ++ ~msgFunc.valueEnvir).flop;
+							bndl = ([\n_set, ~id.asUGenInput] ++ ~msgFunc.valueEnvir).flop;
 							server.sendBundle(server.latency, *bndl);
 						};
 					},
@@ -600,8 +603,8 @@ Event : Environment {
 						var instrumentName, desc, msgFunc;
 						var bndl, synthLib, addAction, group, latency, ids, id, groupControls;
 						~server = server;
-						group = ~group;
-						addAction = ~addAction;
+						addAction = Node.actionNumberFor(~addAction);
+						group = ~group.asUGenInput;
 						~freq = ~freq.value + ~detune;
 						~amp = ~amp.value;
 						ids = ~id;					
@@ -636,8 +639,8 @@ Event : Environment {
 					Group: #{|server|
 						var ids, group, addAction, bundle;
 						ids = ~id = (~id ?? { server.nextNodeID }).asArray;
-						group = ~group;
-						addAction = ~addAction;
+						addAction = Node.actionNumberFor(~addAction);
+						group = ~group.asUGenInput;
 						~server = server;
 						if ((addAction == 0) || (addAction == 3) ) {
 							ids = ids.reverse;
@@ -653,7 +656,9 @@ Event : Environment {
 					tree: #{ |server|
 						var doTree = { |tree, currentNode, addAction=1|
 							if(tree.isKindOf(Association)) {
-								~bundle = ~bundle.add(["/g_new", tree.key, addAction, currentNode]);
+								~bundle = ~bundle.add(["/g_new",
+									tree.key.asUGenInput, Node.actionNumberFor(addAction),
+									currentNode.asUGenInput]);
 								currentNode = tree.key;
 								tree = tree.value;
 							};
@@ -663,7 +668,9 @@ Event : Environment {
 									doTree.(x, currentNode)
 								};
 							} {
-								~bundle = ~bundle.add(["/g_new", tree, addAction, currentNode]);
+								~bundle = ~bundle.add(["/g_new",
+									tree.key.asUGenInput, Node.actionNumberFor(addAction),
+									currentNode.asUGenInput]);
 							};
 							
 						};
@@ -678,8 +685,6 @@ Event : Environment {
 						};
 						~bundle = nil;
 					}
-
-					
 				)
 			)
 		);
@@ -698,8 +703,8 @@ Event : Environment {
 				play: #{
 					var server, group, addAction, ids, bundle;
 					ids = Event.checkIDs(~id);
-					group = ~group;
-					addAction = ~addAction;
+					addAction = Node.actionNumberFor(~addAction);
+					group = ~group.asUGenInput;
 					~server = server= ~server ?? {Server.default};
 					if ((addAction == 0) || (addAction == 3) ) {
 						ids = ids.reverse;
@@ -719,8 +724,8 @@ Event : Environment {
 					var instrumentName, synthLib, desc, msgFunc;
 					var bndl, ids, id;
 					~server = server = ~server ?? { Server.default };
-					group = ~group;
-					addAction = ~addAction;
+					addAction = Node.actionNumberFor(~addAction);
+					group = ~group.asUGenInput;
 					synthLib = ~synthLib ?? { SynthDescLib.global };
 					instrumentName = ~instrument.asSymbol;
 					desc = synthLib.synthDescs[instrumentName];					if (desc.notNil) { 
@@ -754,8 +759,6 @@ Event : Environment {
 				defaultMsgFunc: #{|freq = 440, amp = 0.1, pan = 0, out = 0| 
 					[\freq, freq, \amp, amp, \pan, pan, \out, out] }
 			).putAll(partialEvents.nodeEvent)
-			
-
 		);
 		
 		defaultParentEvent = parentEvents.default;
