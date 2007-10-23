@@ -90,7 +90,7 @@
 			});
 		});
 		
-		^window.front;
+		^window.tryPerform(\front) ?? { window }
 		
 	}
 }
