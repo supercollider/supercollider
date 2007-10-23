@@ -491,15 +491,15 @@ Interpreter {
 		res.postln;
 	}
 	
-	interpret { arg string;
+	interpret { arg string ... args;
 		// compile, evaluate
 		cmdLine = string;
-		^this.compile(string).value;
+		^this.compile(string).valueArray(args);
 	}
-	interpretPrint { arg string;
+	interpretPrint { arg string ... args;
 		// compile, evaluate, print
 		cmdLine = string;
-		^this.compile(string).value.postln;
+		^this.compile(string).valueArray(args).postln;
 	}
 	compile { arg string;
 		_CompileExpression
@@ -515,9 +515,13 @@ Interpreter {
 		n = o = p = q = r = s = t = u = v = w = x = y = z = nil;
 	}
 	
-	executeFile { arg pathName;
-		if (File.exists(pathName).not) { ["file \"",pathName,"\" does not exist."].join.postln; ^nil }
-		^this.compileFile(pathName).value;
+	executeFile { arg pathName ... args;
+		var	result;
+		if (File.exists(pathName).not) { ["file \"",pathName,"\" does not exist."].join.postln; ^nil };
+		thisProcess.nowExecutingPath = pathName;
+		protect { result = this.compileFile(pathName).valueArray(args) }
+			{ thisProcess.nowExecutingPath = nil };
+		^result
 	}
 	
 	compileFile { arg pathName;

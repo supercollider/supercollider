@@ -1,6 +1,10 @@
 Main : Process {
 	var platform, argv;
 	var <>recvOSCfunc;
+	
+		// proof-of-concept: the interpreter can set this variable when executing code in a file
+		// should be nil most of the time
+	var	<>nowExecutingPath;
 
 	startup {
 		super.startup;
@@ -65,8 +69,8 @@ Main : Process {
 
 	showHelpBrowser {
 		Help.gui
-	}	
-
+	}
+	
 	// PRIVATE
 	prArgv {
 		_Argv

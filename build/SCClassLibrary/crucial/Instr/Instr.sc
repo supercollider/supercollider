@@ -286,6 +286,7 @@ Instr  {
 		if(dir.isNil,{ dir = Document.dir ++ "Instr/"; });
 	}
 	init { arg specs,outsp;
+		path = thisProcess.nowExecutingPath; //  ?? { Document.current.path };
 		this.makeSpecs(specs ? #[]);
 		if(outsp.isNil,{
 			outSpec = nil;
@@ -343,12 +344,11 @@ Instr  {
 		});
 
 		layout.startRow;
-		if(File.exists(this.path),{
+		if(path.notNil and: { File.exists(this.path) },{
 			ActionButton(layout,"edit File",{ this.path.openTextFile });
 		});
 		ActionButton(layout,"make Patch",{ Patch(this.name).topGui });
 	}
-
 }
 
 
