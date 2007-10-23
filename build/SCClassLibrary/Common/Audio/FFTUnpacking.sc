@@ -13,7 +13,7 @@ UnpackFFT : MultiOutUGen {
 	}
 }
 
-Unpack1FFT : UGen {
+Unpack1FFT : PV_ChainUGen {
 	*new { | chain, bufsize, binindex, whichmeasure=0 |
 		//("bufsize:"+bufsize).postln;
 		^this.multiNew('demand', chain, bufsize, binindex, whichmeasure);
@@ -21,7 +21,7 @@ Unpack1FFT : UGen {
 }
 
 // This does the demanding, to push the data back into an FFT buffer.
-PackFFT : UGen {
+PackFFT : PV_ChainUGen {
 
 	*new { | chain, bufsize, magsphases, frombin=0, tobin, zeroothers=0 |
 		tobin = tobin ?? {bufsize/2};
@@ -31,7 +31,7 @@ PackFFT : UGen {
 }
 
 // Conveniences to apply calculations to an FFT chain
-+ UGen {
+PV_ChainUGen : UGen {
 	
 	// Give it a func to apply to whole set of vals: func(mags, phases)
 	pvcalc { |numframes, func, frombin=0, tobin, zeroothers=0|

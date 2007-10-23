@@ -1,7 +1,7 @@
 //third party FFT UGens
 
 //sick lincoln remembers complex analysis courses
-PV_ConformalMap : UGen 
+PV_ConformalMap : PV_ChainUGen 
 {
 
 	*new { arg buffer, areal = 0.0, aimag = 0.0;
@@ -10,7 +10,7 @@ PV_ConformalMap : UGen
 }
 
 //in and kernel are both audio rate changing signals
-Convolution : UGen
+Convolution : PV_ChainUGen
 {
 	*ar { arg in, kernel, framesize=512,mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, kernel, framesize).madd(mul, add);
@@ -18,7 +18,7 @@ Convolution : UGen
 }
 
 //fixed kernel convolver with fix by nescivi to update the kernel on receipt of a trigger message 
-Convolution2 : UGen
+Convolution2 : PV_ChainUGen
 {
  *ar { arg in, bufnum, trigger, framesize=0,mul = 1.0, add = 0.0;
   ^this.multiNew('audio', in, bufnum, trigger, framesize).madd(mul, add);
@@ -26,7 +26,7 @@ Convolution2 : UGen
 }
 
 //fixed kernel convolver with linear crossfade
-Convolution2L : UGen
+Convolution2L : PV_ChainUGen
 {
  *ar { arg in, bufnum, trigger, framesize=0, crossfade=1, mul = 1.0, add = 0.0;
   ^this.multiNew('audio', in, bufnum, trigger, framesize, crossfade).madd(mul, add);
@@ -34,7 +34,7 @@ Convolution2L : UGen
 }
 
 //time based convolution by nescivi
-Convolution3 : UGen
+Convolution3 : PV_ChainUGen
 {
  *ar { arg in, kernel, trigger=0, framesize=0, mul = 1.0, add = 0.0;
   ^this.multiNew('audio', in, kernel, trigger, framesize).madd(mul, add);
@@ -46,7 +46,7 @@ Convolution3 : UGen
 
 
 //jensen andersen inspired FFT feature detector
-PV_JensenAndersen : UGen
+PV_JensenAndersen : PV_ChainUGen
 {
 	*ar { arg buffer, propsc=0.25, prophfe=0.25, prophfc=0.25, propsf=0.25, threshold=1.0, waittime=0.04;
 		^this.multiNew('audio', buffer, propsc, prophfe, prophfc, propsf,  threshold, waittime);
@@ -54,7 +54,7 @@ PV_JensenAndersen : UGen
 }
 
 
-PV_HainsworthFoote : UGen
+PV_HainsworthFoote : PV_ChainUGen
 {
 	*ar { arg buffer, proph=0.0, propf=0.0, threshold=1.0, waittime=0.04;
 		^this.multiNew('audio', buffer, proph, propf, threshold, waittime);

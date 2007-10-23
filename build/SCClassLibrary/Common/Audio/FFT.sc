@@ -2,7 +2,7 @@
 // fft uses a local buffer for holding the buffered audio.
 // wintypes are defined in the C++ source. 0 is default, Welch; 1 is Hann; -1 is rect.
 
-FFT : UGen 
+FFT : PV_ChainUGen 
 {
 	*new { | buffer, in = 0.0 , hop = 0.5, wintype = 0 , active = 1|
 		^this.multiNew('control', buffer, in, hop, wintype, active)
@@ -15,7 +15,7 @@ IFFT : UGen
 		^this.multiNew('audio', buffer, wintype)
 	}
 }	
-PV_MagAbove : UGen
+PV_MagAbove : PV_ChainUGen
 {
 	*new { arg buffer, threshold = 0.0;
 		^this.multiNew('control', buffer, threshold)
@@ -26,14 +26,14 @@ PV_MagBelow : PV_MagAbove {}
 PV_MagClip : PV_MagAbove {}
 PV_LocalMax : PV_MagAbove {}
 
-PV_MagSmear : UGen
+PV_MagSmear : PV_ChainUGen
 {
 	*new { arg buffer, bins = 0.0;
 		^this.multiNew('control', buffer, bins)
 	}
 }
 
-PV_BinShift : UGen 
+PV_BinShift : PV_ChainUGen 
 {
 
 	*new { arg buffer, stretch = 1.0, shift = 0.0;
@@ -42,7 +42,7 @@ PV_BinShift : UGen
 }
 PV_MagShift : PV_BinShift {}
 
-PV_MagSquared : UGen 
+PV_MagSquared : PV_ChainUGen 
 {
 	*new { arg buffer;
 		^this.multiNew('control', buffer)
@@ -53,28 +53,28 @@ PV_MagNoise : PV_MagSquared {}
 PV_PhaseShift90 : PV_MagSquared {}
 PV_PhaseShift270 : PV_MagSquared {}
 
-PV_PhaseShift : UGen 
+PV_PhaseShift : PV_ChainUGen 
 {
 	*new { arg buffer, shift;
 		^this.multiNew('control', buffer, shift)
 	}
 }	
 
-PV_BrickWall : UGen
+PV_BrickWall : PV_ChainUGen
 {
 	*new { arg buffer, wipe = 0.0;
 		^this.multiNew('control', buffer, wipe)
 	}
 }
 
-PV_BinWipe : UGen 
+PV_BinWipe : PV_ChainUGen 
 {
 	*new { arg bufferA, bufferB, wipe = 0.0;
 		^this.multiNew('control', bufferA, bufferB, wipe)
 	}
 }
 
-PV_MagMul : UGen
+PV_MagMul : PV_ChainUGen
 {
 	*new { arg bufferA, bufferB;
 		^this.multiNew('control', bufferA, bufferB)
@@ -88,21 +88,21 @@ PV_Min : PV_MagMul {}
 PV_Mul : PV_MagMul {}
 PV_Add : PV_MagMul {}
 
-PV_MagDiv : UGen
+PV_MagDiv : PV_ChainUGen
 {
 	*new { arg bufferA, bufferB, zeroed = 0.0001;
 		^this.multiNew('control', bufferA, bufferB, zeroed)
 	}
 }
 
-PV_RandComb : UGen 
+PV_RandComb : PV_ChainUGen 
 {
 	*new { arg buffer, wipe = 0.0, trig = 0.0;
 		^this.multiNew('control', buffer, wipe, trig)
 	}
 }
 
-PV_RectComb : UGen 
+PV_RectComb : PV_ChainUGen 
 {
 	*new { arg buffer, numTeeth = 0.0, phase = 0.0, width = 0.5;
 		^this.multiNew('control', buffer, numTeeth, phase, width)
@@ -110,35 +110,35 @@ PV_RectComb : UGen
 }
 
 
-PV_RectComb2 : UGen 
+PV_RectComb2 : PV_ChainUGen 
 {
 	*new { arg bufferA, bufferB, numTeeth = 0.0, phase = 0.0, width = 0.5;
 		^this.multiNew('control', bufferA, bufferB, numTeeth, phase, width)
 	}
 }
 
-PV_RandWipe : UGen 
+PV_RandWipe : PV_ChainUGen 
 {
 	*new { arg bufferA, bufferB, wipe = 0.0, trig = 0.0;
 		^this.multiNew('control', bufferA, bufferB, wipe, trig)
 	}
 }
 
-PV_Diffuser : UGen
+PV_Diffuser : PV_ChainUGen
 {
 	*new { arg buffer, trig = 0.0;
 		^this.multiNew('control', buffer, trig)
 	}
 }
 
-PV_MagFreeze : UGen
+PV_MagFreeze : PV_ChainUGen
 {
 	*new { arg buffer, freeze = 0.0;
 		^this.multiNew('control', buffer, freeze)
 	}
 }
 
-PV_BinScramble : UGen
+PV_BinScramble : PV_ChainUGen
 {
 	*new { arg buffer, wipe = 0.0, width = 0.2, trig = 0.0;
 		^this.multiNew('control', buffer, wipe, width, trig)
@@ -150,14 +150,14 @@ PV_BinScramble : UGen
 
 ////////////////////////////////////////////////////
 /*
-PV_OscBank : UGen 
+PV_OscBank : PV_ChainUGen 
 {
 	*new { arg buffer, scale;
 		^this.multiNew('control', buffer)
 	}
 }	
 
-PV_Scope : UGen {}
+PV_Scope : PV_ChainUGen {}
 
 PV_TimeAverageScope : PV_Scope {}
 
@@ -167,14 +167,14 @@ PV_MagAllTimeAverage : PV_MagSquared {}
 
 
 
-PV_MagOnePole : UGen
+PV_MagOnePole : PV_ChainUGen
 {
 	*new { arg buffer, feedback = 0.0;
 		^this.multiNew('control', buffer, feedback)
 	}
 }
 
-PV_MagPeakDecay : UGen
+PV_MagPeakDecay : PV_ChainUGen
 {
 	*new { arg buffer, decay = 0.0;
 		^this.multiNew('control', buffer, decay)
@@ -183,7 +183,7 @@ PV_MagPeakDecay : UGen
 
 PV_TimeSmear : PV_MagSmear {}
 
-PV_LoBitEncoder : UGen
+PV_LoBitEncoder : PV_ChainUGen
 {
 	*new { arg buffer, levels = 4.0;
 		^this.multiNew('control', buffer, levels)
