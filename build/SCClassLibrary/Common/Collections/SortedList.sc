@@ -25,6 +25,11 @@ SortedList : List {
 		});
 	}
 	
+	copyRange { arg start, end; ^this.class.newUsing(array.copyRange(start, end)).function_(function) }
+	copySeries { arg first, second, last; 
+		^this.class.newUsing(array.copySeries(first, second, last)).function_(function)
+	}
+	
 	// PRIVATE
 	indexForInserting { arg newObject;
 		var index;
