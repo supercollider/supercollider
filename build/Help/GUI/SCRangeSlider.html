@@ -5,30 +5,84 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0000bf}
+span.s4 {color: #007300}
+span.s5 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>SCRangeSlider</b></p>
+<p class="p1"><span class="s1"><b>SCRangeSlider<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b> two-ended gui slider</b></p>
+<p class="p2"><br></p>
+<p class="p1">superclass: SCSliderBase</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p1"><span class="s2"><span class="Apple-tab-span">	</span></span><b>*new(parent, bounds)<span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>action_<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>specify a function to be called upon slider movement</p>
+<p class="p3"><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>step_<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the step size of the slider</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>lo_<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the lower end value of the slider</p>
+<p class="p3"><b></b><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>hi_<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the higher end value of the slider</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>range_<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the initial range of the slider</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span></b>see also<b> SCSlider, EZSlider<span class="Apple-converted-space"> </span></b></p>
+<p class="p3"><br></p>
+<p class="p2"><br></p>
+<p class="p4">// examples</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5">w = <span class="s3">SCWindow</span>.new.front;</p>
+<p class="p5">a = <span class="s3">SCRangeSlider</span>(w, <span class="s3">Rect</span>(20, 80, 120, 30))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.range_(0.4)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({ <span class="s3">|slider|</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s4">\sliderLOW</span>, slider.lo, <span class="s4">\sliderHI</span>, slider.hi].postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p5">)</p>
 <p class="p2"><br></p>
-<p class="p3">modifier keys:</p>
+<p class="p5">(</p>
+<p class="p5">w = <span class="s3">SCWindow</span>.new.front;</p>
+<p class="p5">a = <span class="s3">SCRangeSlider</span>(w, <span class="s3">Rect</span>(20, 80, 120, 30))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.hi_(0.8)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({ <span class="s3">|slider|</span></p>
+<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.activeLo_(slider.lo); </span>// this will trigger the action of b (and set it's value)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.hi_(slider.hi);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p5">b = <span class="s3">SCRangeSlider</span>(w, <span class="s3">Rect</span>(220, 80, 20, 130))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.hi_(0.8)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.knobColor_(<span class="s3">HiliteGradient</span>(<span class="s3">Color</span>.red, <span class="s3">Color</span>.white, <span class="s3">Color</span>.red))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({ <span class="s3">|slider|</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s4">\sliderLOW</span>, slider.lo, <span class="s4">\sliderHI</span>, slider.hi].postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
 <p class="p2"><br></p>
-<p class="p3">command</p>
-<p class="p3"><span class="Apple-tab-span">	</span>begin drag</p>
-<p class="p3">control</p>
-<p class="p3"><span class="Apple-tab-span">	</span>move whole range</p>
-<p class="p3">shift</p>
-<p class="p3"><span class="Apple-tab-span">	</span>move lo point</p>
-<p class="p3">alt</p>
-<p class="p3"><span class="Apple-tab-span">	</span>move hi point</p>
-<p class="p3">normal</p>
-<p class="p3"><span class="Apple-tab-span">	</span>set value</p>
+<p class="p5">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p1"><b>modifier keys:</b></p>
+<p class="p3"><br></p>
+<p class="p1"><b>command</b><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>begin drag</p>
+<p class="p1"><b>control</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>move whole range</p>
+<p class="p1"><b>shift</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>move lo point</p>
+<p class="p1"><b>alt</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>move hi point</p>
+<p class="p1"><b>normal</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set value</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
 </body>
 </html>
