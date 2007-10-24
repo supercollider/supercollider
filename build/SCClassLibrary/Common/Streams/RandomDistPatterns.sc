@@ -42,7 +42,7 @@ Pbeta : Pattern {
 			rprob2 = prob2Str.next(inval);
 			if(rprob1.isNil or: { rprob2.isNil }) { ^inval };
 			rprob1 = rprob1.reciprocal;
-			rprob2 = rprob1.reciprocal;
+			rprob2 = rprob2.reciprocal;
 			loVal = loStr.next(inval);
 			hiVal = hiStr.next(inval);
 			if(loVal.isNil or: { hiVal.isNil }) { ^inval };
@@ -51,7 +51,7 @@ Pbeta : Pattern {
 				temp = 1.0.rand ** rprob1;
 				sum = temp + (1.0.rand ** rprob2);					sum > 1;	
 				});
-			inval = ((temp/sum) * (hiVal - loVal) + loVal).yield;
+			inval = (((temp/sum) * (hiVal - loVal)) + loVal).yield;
 			
 		});
 		^inval;
