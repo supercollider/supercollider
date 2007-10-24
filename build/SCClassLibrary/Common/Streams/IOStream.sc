@@ -197,7 +197,7 @@ LimitedWriteStream : CollStream {
 
 
 Post {
-	*flush { this.flushPostBuf }
+	//*flush { this.flushPostBuf }
 	* << { arg item;
 		item.printOn(this); 
 	}

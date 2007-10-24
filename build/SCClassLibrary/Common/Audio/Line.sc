@@ -81,10 +81,10 @@ T2K : A2K { // audio rate to control rate trigger converter.
 }
 
 DC : MultiOutUGen {
-	*ar { arg in;
+	*ar { arg in=0.0;
 		^this.multiNewList(['audio'] ++ in)
 	}
-	*kr { arg in;
+	*kr { arg in=0.0;
 		^this.multiNewList(['control'] ++ in)
 	}
 	init { arg ... argInputs;
