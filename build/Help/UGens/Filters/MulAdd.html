@@ -10,15 +10,13 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000bf}
+span.s2 {color: #001bb9}
 span.s3 {color: #000000}
-span.s4 {color: #0000ff}
+span.s4 {color: #0024f8}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -33,24 +31,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Examples</b></p>
-<p class="p4"><br></p>
-<p class="p5">s.boot;</p>
-<p class="p6"><br></p>
-<p class="p7">// The mul and add arguments of SinOsc themselves use MulAdd!</p>
-<p class="p7">// These two examples will create precisely the same synth graph:</p>
-<p class="p5">x = { <span class="s2">SinOsc</span>.ar(440, 0, 0.1, 0.2) }.play(s);</p>
-<p class="p7"><span class="s3">x.trace; </span>// You should see a "MulAdd" in the trace</p>
-<p class="p5">x.free;</p>
-<p class="p6"><br></p>
-<p class="p5">x = { <span class="s2">MulAdd</span>(<span class="s2">SinOsc</span>.ar(440, 0), 0.1, 0.2) }.play(s);</p>
-<p class="p5">x.trace;</p>
-<p class="p5">x.free;</p>
-<p class="p6"><br></p>
-<p class="p7">// In fact this will produce the same graph too - the separate multiply and add are optimised into one MulAdd</p>
-<p class="p5">x = { <span class="s2">SinOsc</span>.ar(440, 0) * 0.1 + 0.2 }.play(s);</p>
-<p class="p5">x.trace;</p>
-<p class="p5">x.free;</p>
-<p class="p4"><br></p>
-<p class="p8">(Note: the "trace" message is described in the helpfile for <a href="../../ServerArchitecture/Node.html"><span class="s4">Node</span></a>.)</p>
+<p class="p2"><br></p>
+<p class="p4">s.boot;</p>
+<p class="p5"><br></p>
+<p class="p6">// The mul and add arguments of SinOsc themselves use MulAdd!</p>
+<p class="p6">// These two examples will create precisely the same synth graph:</p>
+<p class="p4">x = { <span class="s2">SinOsc</span>.ar(440, 0, 0.1, 0.05) }.play(s);</p>
+<p class="p6"><span class="s3">x.trace; </span>// You should see a "MulAdd" in the trace</p>
+<p class="p4">x.free;</p>
+<p class="p5"><br></p>
+<p class="p4">x = { <span class="s2">MulAdd</span>(<span class="s2">SinOsc</span>.ar(440, 0), 0.1, 0.05) }.play(s);</p>
+<p class="p4">x.trace;</p>
+<p class="p4">x.free;</p>
+<p class="p5"><br></p>
+<p class="p6">// In fact this will produce the same graph too - the separate multiply and add are optimised into one MulAdd</p>
+<p class="p4">x = { <span class="s2">SinOsc</span>.ar(440, 0) * 0.1 + 0.05 }.play(s);</p>
+<p class="p4">x.trace;</p>
+<p class="p4">x.free;</p>
+<p class="p2"><br></p>
+<p class="p3">(Note: the "trace" message is described in the helpfile for <a href="../../ServerArchitecture/Node.html"><span class="s4">Node</span></a>.)</p>
 </body>
 </html>
