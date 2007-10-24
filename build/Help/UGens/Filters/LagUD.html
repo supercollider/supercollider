@@ -19,21 +19,29 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>Lag3<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exponential lag</b></p>
+<p class="p1"><b>LagUD<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exponential lag</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Lag3.ar(in, lagTime, mul, add)</b></p>
-<p class="p3"><b>Lag3.kr(in, lagTime, mul, add)</b></p>
+<p class="p3"><b>LagUD.ar(in, lagTime, mul, add)</b></p>
+<p class="p3"><b>LagUD.kr(in, lagTime, mul, add)</b></p>
 <p class="p2"><br></p>
-<p class="p3">Lag3 is equivalent to Lag.kr(Lag.kr(Lag.kr(in, time), time), time), thus resulting in a smoother transition. This saves on CPU as you only have to calculate the decay factor once instead of three times. See <b>Lag</b> for more details.</p>
-<p class="p2"><br>See also <a href="Lag3UD.html">Lag3UD<br><br></a></p>
+<p class="p3">This is essentially the same as <b>Lag</b> except that you can supply a different 60 dB time for when the signal goes up, from when the signal goes down. This is useful for smoothing out control signals, where "fade in" should be different from "fade out".
+    </p>
+<p class="p2"><br>See also <a href="Lag.html">Lag<br><br></a></p>
+<p class="p2"><br></p>
 <p class="p3"><b>in</b> - input signal</p>
-<p class="p3"><b>lagTime</b> - 60 dB lag time in seconds.</p>
+<p class="p3"><b>lagTimeU</b> - 60 dB lag time in seconds for the upgoing signal.</p>
+<p class="p3"><b>lagTimeD</b> - 60 dB lag time in seconds for the downgoing signal.</p>
+      <br>
+      <br>
+      See also <a href="Lag.html">Lag</a>
+      <br>
+    </p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p6">// used to lag pitch</p>
 <p class="p5">{</p>
 <p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">SinOsc</span><span class="s1">.ar(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// sine wave</p>
-<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Lag3</span><span class="s1">.kr(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// lag the modulator</p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Lag</span><span class="s1">.kr(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// lag the modulator</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">LFPulse</span>.kr(4, 0, 0.5, 50, 400),<span class="Apple-tab-span">	</span><span class="s3">// frequency modulator</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Line</span>.kr(0, 1, 15)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">// modulate lag time</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>),<span class="Apple-converted-space"> </span></p>

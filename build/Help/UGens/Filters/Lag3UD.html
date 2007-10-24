@@ -19,15 +19,16 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>Lag3<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exponential lag</b></p>
+<p class="p1"><b>Lag3UD<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exponential lag</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Lag3.ar(in, lagTime, mul, add)</b></p>
-<p class="p3"><b>Lag3.kr(in, lagTime, mul, add)</b></p>
+<p class="p3"><b>Lag3UD.ar(in, lagTime, mul, add)</b></p>
+<p class="p3"><b>Lag3UD.kr(in, lagTime, mul, add)</b></p>
 <p class="p2"><br></p>
-<p class="p3">Lag3 is equivalent to Lag.kr(Lag.kr(Lag.kr(in, time), time), time), thus resulting in a smoother transition. This saves on CPU as you only have to calculate the decay factor once instead of three times. See <b>Lag</b> for more details.</p>
-<p class="p2"><br>See also <a href="Lag3UD.html">Lag3UD<br><br></a></p>
+<p class="p3">Lag3UD is equivalent to LagUD.kr(LagUD.kr(LagUD.kr(in, timeU, timeD), timeU, timeD), timeU, timeD), thus resulting in a smoother transition. This saves on CPU as you only have to calculate the decay factor once instead of three times. See <b>LagUD</b> for more details.</p>
+<p class="p2"><br>See also <a href="Lag3.html">Lag3<br><br></a></p>
 <p class="p3"><b>in</b> - input signal</p>
-<p class="p3"><b>lagTime</b> - 60 dB lag time in seconds.</p>
+<p class="p3"><b>lagTimeU</b> - 60 dB lag time in seconds for the upgoing signal.</p>
+<p class="p3"><b>lagTimeD</b> - 60 dB lag time in seconds for the downgoing signal.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p6">// used to lag pitch</p>
