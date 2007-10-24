@@ -164,18 +164,18 @@ SyncSaw : UGen {
 	}
 }
 
-
-TPulse : UGen {//exception in GrafDef_Load: UGen 'TPulse' not installed.
-	*ar {
-		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', trig, freq, width).madd(mul, add)
-	}
-	*kr {
-		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
-		^this.multiNew('control', trig, freq, width).madd(mul, add)
-	}
-	signalRange { ^\unipolar }
-}
+//
+//TPulse : UGen {//exception in GrafDef_Load: UGen 'TPulse' not installed.
+//	*ar {
+//		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
+//		^this.multiNew('audio', trig, freq, width).madd(mul, add)
+//	}
+//	*kr {
+//		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
+//		^this.multiNew('control', trig, freq, width).madd(mul, add)
+//	}
+//	signalRange { ^\unipolar }
+//}
 
 Index : UGen {
 	*ar {
