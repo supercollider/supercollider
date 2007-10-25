@@ -13,14 +13,12 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-span.s1 {color: #0000ff}
-span.s2 {color: #0000bf}
-span.s3 {color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+span.s1 {color: #0024f8}
+span.s2 {color: #001bb9}
+span.s3 {color: #ad140d}
 </style>
 </head>
 <body>
@@ -30,8 +28,8 @@ span.s3 {color: #bf0000}
 <p class="p2"><br></p>
 <p class="p3">Collections are groups of objects. Collection is an abstract class. You do not create direct instances of Collection. There are many types of Collections including List, Array, Dictionary, Bag, Set, SortedList, etc. See the <a href="Collections.html"><span class="s1"><b>Collections</b></span></a> overview for a complete listing of all subclasses.</p>
 <p class="p2"><br></p>
-<p class="p4"><b></b><br></p>
-<p class="p4"><b></b><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p5"><b>Class Methods:</b></p>
 <p class="p4"><br></p>
 <p class="p3"><b>*with(collection)</b></p>
@@ -51,8 +49,8 @@ span.s3 {color: #bf0000}
 <p class="p2"><br></p>
 <p class="p3">Creates a Collection of the given size, the elements of which are determined by evaluation the given function. The function is passed the index as an argument.</p>
 <p class="p4"><br></p>
-<p class="p7"><span class="s2">Array</span>.fill(4, { <span class="s2">arg</span> i; i * 2 });</p>
-<p class="p8"><br></p>
+<p class="p6"><span class="s2">Array</span>.fill(4, { <span class="s2">arg</span> i; i * 2 });</p>
+<p class="p7"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p5"><b>Accessing:</b></p>
@@ -61,16 +59,16 @@ span.s3 {color: #bf0000}
 <p class="p2"><br></p>
 <p class="p3">Answers the number of objects contained in the Collection.</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s2">List</span>[1, 2, 3, 4].size;</p>
+<p class="p6"><span class="s2">List</span>[1, 2, 3, 4].size;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>isEmpty</b></p>
 <p class="p2"><br></p>
 <p class="p3">Answer whether the receiver contains no objects.</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s2">List</span>[].isEmpty;</p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p10"><br></p>
+<p class="p6"><span class="s2">List</span>[].isEmpty;</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p8"><br></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Adding and Removing:</b></p>
 <p class="p2"><br></p>
@@ -78,7 +76,7 @@ span.s3 {color: #bf0000}
 <p class="p2"><br></p>
 <p class="p3">Add anObject to the receiver.</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s2">List</span>[1, 2].add(3);</p>
+<p class="p6"><span class="s2">List</span>[1, 2].add(3);</p>
 <p class="p2"><br></p>
 <p class="p3"><b>addAll(aCollection)</b></p>
 <p class="p2"><br></p>
@@ -182,16 +180,16 @@ span.s3 {color: #bf0000}
 <p class="p3">In functional programming, the operation known as a fold.</p>
 <p class="p3">inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection. The function takes two arguments and returns the new value. The accumulated value is initialzed to initialValue.</p>
 <p class="p2"><br></p>
-<p class="p7">[1,2,3,4,5].inject(0, <span class="s2">_</span>+<span class="s2">_</span>); <span class="s3">// 15</span></p>
-<p class="p9"><br></p>
-<p class="p7">[1,2,3,4,5].inject(1, <span class="s2">_</span>*<span class="s2">_</span>); <span class="s3">// 120</span></p>
-<p class="p9"><br></p>
-<p class="p11">// same as .collect(_.squared)</p>
-<p class="p7">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ b.squared }); <span class="s3">// [ 1, 4, 9, 16, 25 ]</span></p>
-<p class="p7">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> [b] ++ a ++ [b]}); <span class="s3">// [ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]</span></p>
-<p class="p7">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ b ++ a});</p>
-<p class="p7">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ a ++ b});</p>
-<p class="p8"><br></p>
+<p class="p6">[1,2,3,4,5].inject(0, <span class="s2">_</span>+<span class="s2">_</span>); <span class="s3">// 15</span></p>
+<p class="p7"><br></p>
+<p class="p6">[1,2,3,4,5].inject(1, <span class="s2">_</span>*<span class="s2">_</span>); <span class="s3">// 120</span></p>
+<p class="p7"><br></p>
+<p class="p9">// same as .collect(_.squared)</p>
+<p class="p6">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ b.squared }); <span class="s3">// [ 1, 4, 9, 16, 25 ]</span></p>
+<p class="p6">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> [b] ++ a ++ [b]}); <span class="s3">// [ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]</span></p>
+<p class="p6">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ b ++ a});</p>
+<p class="p6">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ a ++ b});</p>
+<p class="p7"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>any(function)</b></p>
 <p class="p2"><br></p>
@@ -226,7 +224,7 @@ span.s3 {color: #bf0000}
 <p class="p3">The function is passed two arguments, the item and an integer index.</p>
 <p class="p2"><br></p>
 <p class="p6">List[1, 2, 3, 4].sum;</p>
-<p class="p8"><br></p>
+<p class="p7"><br></p>
 <p class="p6">(0..8).sum { |i| 1 / (2 ** i) };</p>
 <p class="p2"><br></p>
 <p class="p3"><b>maxItem(function)</b></p>
@@ -250,14 +248,14 @@ span.s3 {color: #bf0000}
 <p class="p2"><br></p>
 <p class="p3">returns a <a href="../Core/Kernel/Routine.html"><span class="s1">Routine</span></a> that returns the elements one by one.</p>
 <p class="p2"><br></p>
-<p class="p7">r = <span class="s2">Set</span>[10, 2, -3, -4].iter;</p>
-<p class="p7">r.next;</p>
-<p class="p7">r.next;</p>
-<p class="p7">r.next;</p>
-<p class="p7">r.next; <span class="s3">// nil.</span></p>
-<p class="p8"><br></p>
-<p class="p4"><b></b><br></p>
-<p class="p4"><b></b><br></p>
+<p class="p6">r = <span class="s2">Set</span>[10, 2, -3, -4].iter;</p>
+<p class="p6">r.next;</p>
+<p class="p6">r.next;</p>
+<p class="p6">r.next;</p>
+<p class="p6">r.next; <span class="s3">// nil.</span></p>
+<p class="p7"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p5"><b>Conversion:</b></p>
 <p class="p2"><br></p>
 <p class="p3"><b>asBag</b></p>
@@ -288,18 +286,25 @@ span.s3 {color: #bf0000}
 <p class="p3"><b>powerset</b></p>
 <p class="p2"><br></p>
 <p class="p3">Returns all possible combinations of the collection's elements.</p>
-<p class="p8"><br></p>
+<p class="p7"><br></p>
 <p class="p6">Set[1, 2, 3].powerset;</p>
-<p class="p8"><br></p>
-<p class="p2"><b></b><br></p>
+<p class="p7"><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>flopDict(unbubble)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Takes a collection of dictionaries and returns a single dictionary with arrays of all dictionaries' elements.</p>
 <p class="p3">If unbubble is true (default), and if one element is singular, the array is replaced by this element.</p>
-<p class="p8"><br></p>
+<p class="p7"><br></p>
 <p class="p6">[(degree: 7, x: 4), (degree: 8, x: 5), (degree: -2, dur: 2.5)].flopDict;</p>
 <p class="p6">[(degree: 7, x: 4), (degree: 8, x: 5), (degree: -2, dur: 2.5)].flopDict(false);</p>
 <p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>histo(steps, min, max)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns a histogram of the collection by counting the number of values that fall into each slot of <b>size (default: 100)</b> subdivisions between <b>min</b> and <b>max</b>. If there are any values outside this range, it posts a note. If min or max is not given, the smallest (or largest value respectively) is used.</p>
+<p class="p7"><br></p>
+<p class="p6">{ 1.0.linrand }.dup(10000).histo(1000).plot;</p>
+<p class="p6">{ 8.rand }.dup(10000).histo(8).plot(discrete: true);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
