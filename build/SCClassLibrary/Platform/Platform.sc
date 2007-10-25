@@ -12,21 +12,32 @@ Platform
 	}
 
 	name { ^this.subclassResponsibility }
-	switch { | ... cases |
-		^this.name.switch(*cases)
-	}
-	*switch { | ... cases |
-		^thisProcess.platform.switch(*cases)
+	*case { | ... cases |
+		^thisProcess.platform.name.switch(*cases)
 	}
 
 	// directories
-	systemAppSupportDir { _Platform_systemAppSupportDir }
-	userAppSupportDir { _Platform_userAppSupportDir }
-	systemExtensionDir { _Platform_systemExtensionDir }
-	userExtensionDir { _Platform_userExtensionDir }
-	platformDir { ^this.name.asString }
-	pathSeparator { ^this.subclassResponsibility }
+	*classLibraryDir { ^thisProcess.platform.classLibraryDir }
+	*helpDir { ^thisProcess.platform.helpDir }
 
+	systemAppSupportDir { _Platform_systemAppSupportDir }
+	*systemAppSupportDir { ^thisProcess.platform.systemAppSupportDir }
+
+	userAppSupportDir { _Platform_userAppSupportDir }
+	*userAppSupportDir { ^thisProcess.platform.userAppSupportDir }
+
+	systemExtensionDir { _Platform_systemExtensionDir }
+	*systemExtensionDir { ^thisProcess.platform.systemExtensionDir }
+
+	userExtensionDir { _Platform_userExtensionDir }
+	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
+
+	platformDir { ^this.name.asString }
+	*platformDir { ^thisProcess.platform.platformDir }
+	
+	pathSeparator { ^this.subclassResponsibility }
+	*pathSeparator { ^thisProcess.platform.pathSeparator }
+	
 	// startup/shutdown hooks
 	startup { }
 	shutdown { }
@@ -63,15 +74,7 @@ Platform
 		^thisProcess.platform.when(features, ifFunction, elseFunction)
 	}
 
-	// convenience accessors
-	*classLibraryDir { ^thisProcess.platform.classLibraryDir }
-	*systemAppSupportDir { ^thisProcess.platform.systemAppSupportDir }
-	*userAppSupportDir { ^thisProcess.platform.userAppSupportDir }
-	*systemExtensionDir { ^thisProcess.platform.systemExtensionDir }
-	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
-	*helpDir { ^thisProcess.platform.helpDir }
-
-		// swing is compatible with all platforms; so declare it as global default
+	// swing is compatible with all platforms; so declare it as global default
 	defaultGUIScheme { ^\swing }
 	defaultHIDScheme { ^\none }
 }
