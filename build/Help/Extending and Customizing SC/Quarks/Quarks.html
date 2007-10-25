@@ -10,15 +10,15 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 19.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Courier}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Courier}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana; min-height: 13.0px}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {text-decoration: underline ; color: #2751b5}
@@ -36,236 +36,238 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>Quarks</b></p>
 <p class="p2"><br></p>
 <p class="p3">A Quark is a package of SC classes, helpfiles, C++ source for UGens and/or other SC code.</p>
-<p class="p3">The packages are stored in a Subversion (SVN) repository, principally the public repos hosted at:</p>
+<p class="p3">The packages are stored in a Subversion (SVN) repository and downloaded/updated automatically.</p>
 <p class="p2"><br></p>
-<p class="p4">https://quarks.svn.sourceforge.net/svnroot/quarks</p>
-<p class="p2"><br></p>
-<p class="p3">You will need the subversion client software installed ( <span class="s1">subversion.tigris.org</span> )</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p6"><b>Recommended typical usage</b></p>
-<p class="p5"><br></p>
+<p class="p3">You will need the <b>subversion</b> client software installed ( <span class="s1">subversion.tigris.org</span> ). To check whether you already have it, type "svn help" in a terminal window.</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><b>Recommended typical usage</b></p>
+<p class="p4"><br></p>
 <p class="p3">First make sure your Quarks directory is up-to-date:</p>
-<p class="p5"><br></p>
-<p class="p7"><span class="s2">Quarks</span><span class="s3">.checkoutDirectory </span>// Do this if it's your first time</p>
-<p class="p7"><span class="s2">Quarks</span><span class="s3">.updateDirectory <span class="Apple-converted-space">  </span></span>// Otherwise do this</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">Quarks</span><span class="s3">.checkoutDirectory </span>// Do this if it's your first time</p>
+<p class="p6"><span class="s2">Quarks</span><span class="s3">.updateDirectory <span class="Apple-converted-space">  </span></span>// Otherwise do this</p>
+<p class="p4"><br></p>
 <p class="p3">Then either launch the GUI to manage which Quarks you want to install...</p>
-<p class="p5"><br></p>
-<p class="p8">Quarks<span class="s3">.gui</span></p>
-<p class="p5"><br></p>
-<p class="p3">...or use the command directly:</p>
-<p class="p5"><br></p>
-<p class="p7"><span class="s2">Quarks</span><span class="s3">.install(</span><span class="s4">"testquark"</span><span class="s3">); </span>// This will DOWNLOAD and install as needed, inc dependencies</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p7">Quarks<span class="s3">.gui</span></p>
+<p class="p4"><br></p>
+<p class="p3">...or use the "install" command directly:</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">Quarks</span><span class="s3">.install(</span><span class="s4">"testquark"</span><span class="s3">); </span>// This will DOWNLOAD and install as needed, inc dependencies</p>
+<p class="p4"><br></p>
 <p class="p3">After a quark is installed you must <b>recompile the language</b> so that it's aware of the new extensions. Then you can use it:</p>
-<p class="p5"><br></p>
-<p class="p9"><span class="s2">TestQuark</span>.sayHello</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p8"><span class="s2">TestQuark</span>.sayHello</p>
+<p class="p4"><br></p>
 <p class="p3">You can of course uninstall quarks if you decide you don't need them:</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s2">Quarks</span>.uninstall(<span class="s4">"testquark"</span>);</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p6"><b>Annoyances</b></p>
+<p class="p8"><span class="s2">Quarks</span>.uninstall(<span class="s4">"testquark"</span>);</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><b>Annoyances</b></p>
 <p class="p2"><br></p>
 <p class="p3">Quarks executes various SVN shell commands to download files.<span class="Apple-converted-space">  </span>If you get this error appearing:</p>
 <p class="p2"><br></p>
-<p class="p10">Error validating server certificate for 'https://supercollider.svn.sourceforge.net:443':</p>
-<p class="p10">- The certificate is not issued by a trusted authority. Use the</p>
-<p class="p10"><span class="Apple-converted-space">  </span>fingerprint to validate the certificate manually!</p>
-<p class="p10">Certificate information:</p>
-<p class="p10">- Hostname: *.sourceforge.net</p>
-<p class="p10">- Valid: from Jan 17 18:17:01 2007 GMT until Mar 18 18:17:01 2008 GMT</p>
-<p class="p10">- Issuer: Equifax Secure Certificate Authority, Equifax, US</p>
-<p class="p10">- Fingerprint: a1:3a:51:83:60:5e:81:07:be:6c:06:d1:db:34:9b:d8:b9:40:b5:d0</p>
-<p class="p10">(R)eject, accept (t)emporarily or accept (p)ermanently? svn: PROPFIND request failed on '/svnroot/quarks'</p>
-<p class="p10">svn: PROPFIND of '/svnroot/quarks': Server certificate verification failed: issuer is not trusted (https://supercollider.svn.sourceforge.net)</p>
-<p class="p10">RESULT = 256</p>
-<p class="p11"><br></p>
+<p class="p9">Error validating server certificate for 'https://supercollider.svn.sourceforge.net:443':</p>
+<p class="p9">- The certificate is not issued by a trusted authority. Use the</p>
+<p class="p9"><span class="Apple-converted-space">  </span>fingerprint to validate the certificate manually!</p>
+<p class="p9">Certificate information:</p>
+<p class="p9">- Hostname: *.sourceforge.net</p>
+<p class="p9">- Valid: from Jan 17 18:17:01 2007 GMT until Mar 18 18:17:01 2008 GMT</p>
+<p class="p9">- Issuer: Equifax Secure Certificate Authority, Equifax, US</p>
+<p class="p9">- Fingerprint: a1:3a:51:83:60:5e:81:07:be:6c:06:d1:db:34:9b:d8:b9:40:b5:d0</p>
+<p class="p9">(R)eject, accept (t)emporarily or accept (p)ermanently? svn: PROPFIND request failed on '/svnroot/quarks'</p>
+<p class="p9">svn: PROPFIND of '/svnroot/quarks': Server certificate verification failed: issuer is not trusted (https://supercollider.svn.sourceforge.net)</p>
+<p class="p9">RESULT = 256</p>
+<p class="p10"><br></p>
 <p class="p3">you want to accept (p)ermanently, but since you didn't do it through a shell you can't hit "p". <span class="Apple-converted-space"> </span></p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3"><b>Solution: </b>Copy and paste the shell command that was posted</p>
-<p class="p9">eg.</p>
-<p class="p9">export LANG='' ;<span class="Apple-converted-space">  </span>/usr/local/bin/svn update /Users/cruxxial/Library/Application\ Support/SuperCollider/quarks/DIRECTORY/ 2&gt;&amp;1</p>
+<p class="p8">eg.</p>
+<p class="p8">export LANG='' ;<span class="Apple-converted-space">  </span>/usr/local/bin/svn update /Users/cruxxial/Library/Application\ Support/SuperCollider/quarks/DIRECTORY/ 2&gt;&amp;1</p>
 <p class="p2"><br></p>
 <p class="p3">into your shell and run it there.<span class="Apple-converted-space">  </span>Hit the "p".<span class="Apple-converted-space">  </span>After that it won't bother you again.</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p12"><b>Check out all available Quarks</b></p>
-<p class="p5"><span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="s2">Quarks</span>.checkoutAll</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p11"><b>Check out all available Quarks</b></p>
+<p class="p4"><span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s2">Quarks</span>.checkoutAll</p>
 <p class="p2"><br></p>
 <p class="p3">This downloads them into {Application Support Directory}/quarks but does not yet install them into your class library.</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3">It can be particularly helpful because you won't in future need to have an internet connection to install the quarks: they are already downloaded even if not installed.</p>
 <p class="p2"><br></p>
-<p class="p7">// post those checked out</p>
-<p class="p9"><span class="s2">Quarks</span>.checkedOut</p>
+<p class="p6">// post those checked out</p>
+<p class="p8"><span class="s2">Quarks</span>.checkedOut</p>
 <p class="p2"><br></p>
-<p class="p7">// post those checked out with a description</p>
-<p class="p9"><span class="s2">Quarks</span>.listCheckedOut</p>
+<p class="p6">// post those checked out with a description</p>
+<p class="p8"><span class="s2">Quarks</span>.listCheckedOut</p>
 <p class="p2"><br></p>
-<p class="p12"><b>Checking out a single Quark</b></p>
+<p class="p11"><b>Checking out a single Quark</b></p>
 <p class="p2"><br></p>
 <p class="p3">If you have never checked out any part of the Quarks repository, you must first check out the directory.</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s2">Quarks</span>.checkoutDirectory</p>
+<p class="p8"><span class="s2">Quarks</span>.checkoutDirectory</p>
 <p class="p2"><br></p>
 <p class="p3">Otherwise, you may simply update the existing directory to check for new or changed Quarks.</p>
 <p class="p2"><br></p>
-<p class="p7">// this updates {Application Support}/quarks/DIRECTORY</p>
-<p class="p9"><span class="s2">Quarks</span>.updateDirectory</p>
+<p class="p6">// this updates {Application Support}/quarks/DIRECTORY</p>
+<p class="p8"><span class="s2">Quarks</span>.updateDirectory</p>
 <p class="p2"><br></p>
 <p class="p3">That folder contains simple quark files with information like name, path, summary, author etc. for each quark in the repos.</p>
 <p class="p3">Those files are also human-readable.</p>
 <p class="p2"><br></p>
-<p class="p7">// list all quarks in the repository</p>
-<p class="p9"><span class="s2">Quarks</span>.repos.quarks</p>
+<p class="p6">// list all quarks in the repository</p>
+<p class="p8"><span class="s2">Quarks</span>.repos.quarks</p>
 <p class="p2"><br></p>
-<p class="p7">// checkout the specific one that you want</p>
-<p class="p9"><span class="s2">Quarks</span>.checkout( <span class="s4">"testquark"</span> )</p>
+<p class="p6">// checkout the specific one that you want</p>
+<p class="p8"><span class="s2">Quarks</span>.checkout( <span class="s4">"testquark"</span> )</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p12"><b>Install</b></p>
+<p class="p11"><b>Install</b></p>
 <p class="p2"><br></p>
 <p class="p3">This symlinks the quark's sourcecode folder into your Extensions directory.<span class="Apple-converted-space">  </span>The source code itself stays in the quarks folder, but the symlink is in your Extensions directory, so when you recompile the class library, the quark will be included.</p>
-<p class="p5"><br></p>
-<p class="p9"><span class="s2">Quarks</span>.install( <span class="s4">"testquark"</span> )</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p8"><span class="s2">Quarks</span>.install( <span class="s4">"testquark"</span> )</p>
+<p class="p4"><br></p>
 <p class="p3">Recompile your SC library...</p>
 <p class="p2"><br></p>
-<p class="p7">// test it</p>
-<p class="p9"><span class="s2">TestQuark</span>.sayHello</p>
+<p class="p6">// test it</p>
+<p class="p8"><span class="s2">TestQuark</span>.sayHello</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">// list those installed</p>
-<p class="p9"><span class="s2">Quarks</span>.installed</p>
+<p class="p6">// list those installed</p>
+<p class="p8"><span class="s2">Quarks</span>.installed</p>
 <p class="p2"><br></p>
 <p class="p3">Note: Quarks may specify other quarks that they are dependent on.<span class="Apple-converted-space">  </span>Quarks.install will also attempt to install those other quarks that the desired quark depends upon, if not already installed. You can prevent this if neccessary by passing <span class="s5">false</span> as the second argument to Quarks.install.</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s2">Quarks</span>.install( <span class="s4">"somequark"</span>, incdeps: <span class="s2">false</span> )</p>
+<p class="p8"><span class="s2">Quarks</span>.install( <span class="s4">"somequark"</span>, incdeps: <span class="s2">false</span> )</p>
 <p class="p2"><br></p>
 <p class="p3">Similarly the install command will attempt to <b>download</b> quarks if you don't already have them locally. You can prevent this using the allowCheckout argument:</p>
-<p class="p5"><br></p>
-<p class="p9"><span class="s2">Quarks</span>.install( <span class="s4">"somequark"</span>, allowCheckout: <span class="s2">false</span> )</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p12"><b>Uninstall</b></p>
+<p class="p4"><br></p>
+<p class="p8"><span class="s2">Quarks</span>.install( <span class="s4">"somequark"</span>, allowCheckout: <span class="s2">false</span> )</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p11"><b>Uninstall</b></p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s2">Quarks</span>.uninstall( <span class="s4">"testquark"</span> )</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p7">// list those installed</p>
-<p class="p9"><span class="s2">Quarks</span>.installed</p>
-<p class="p2"><br></p>
-<p class="p7">// list those in the repository that you could checkout</p>
-<p class="p9"><span class="s2">Quarks</span>.repos.quarks</p>
-<p class="p2"><br></p>
-<p class="p7">// list those that you have checked out and could now install</p>
-<p class="p9"><span class="s2">Quarks</span>.local.quarks</p>
+<p class="p8"><span class="s2">Quarks</span>.uninstall( <span class="s4">"testquark"</span> )</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// list those installed</p>
+<p class="p8"><span class="s2">Quarks</span>.installed</p>
+<p class="p2"><br></p>
+<p class="p6">// list those in the repository that you could checkout</p>
+<p class="p8"><span class="s2">Quarks</span>.repos.quarks</p>
+<p class="p2"><br></p>
+<p class="p6">// list those that you have checked out and could now install</p>
+<p class="p8"><span class="s2">Quarks</span>.local.quarks</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p11"><b>Other</b></p>
 <p class="p2"><br></p>
 <p class="p3">The Quarks class interface mirrors the familar svn commands while substituting in the correct paths.</p>
-<p class="p5"><br></p>
-<p class="p9"><span class="s2">Quarks</span>.update( <span class="s4">"testquark"</span> )</p>
-<p class="p7"><span class="s2">Quarks</span><span class="s3">.update </span>// updates all</p>
+<p class="p4"><br></p>
+<p class="p8"><span class="s2">Quarks</span>.update( <span class="s4">"testquark"</span> )</p>
+<p class="p6"><span class="s2">Quarks</span><span class="s3">.update </span>// updates all</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s2">Quarks</span>.status( <span class="s4">"testquark"</span> )</p>
-<p class="p7"><span class="s2">Quarks</span><span class="s3">.status </span>// status of all</p>
-<p class="p5"><br></p>
+<p class="p8"><span class="s2">Quarks</span>.status( <span class="s4">"testquark"</span> )</p>
+<p class="p6"><span class="s2">Quarks</span><span class="s3">.status </span>// status of all</p>
+<p class="p4"><br></p>
 <p class="p3">You may also use any standard SVN tools which is probably easier especially for add and commit.</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p3">The principal repository is located at:</p>
+<p class="p4"><br></p>
+<p class="p12">https://quarks.svn.sourceforge.net/svnroot/quarks</p>
+<p class="p4"><br></p>
 <p class="p2"><br></p>
-<p class="p12"><b>Creating a Quark for others to use</b></p>
+<p class="p11"><b>Creating a Quark for others to use</b></p>
 <p class="p2"><br></p>
 <p class="p3">You will need a (free) SourceForge account to publish a quark to the subversion repository. (You also need the account to be added to the "quarks" project - contact one of the admins listed at <span class="s6">http://sourceforge.net/projects/quarks</span> to do that.) Once you're authorised, here's what to do:</p>
-<p class="p5"><br></p>
-<p class="p4"><span class="s7">Create your folder in </span>{Application Support}/quarks/<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p12"><span class="s7">Create your folder in </span>{Application Support}/quarks/<span class="Apple-converted-space"> </span></p>
 <p class="p3">(we'll assume it's called <i>quarkname</i>)</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3">In a shell go to <span class="s8">{Application Support}/quarks/<span class="Apple-converted-space"> </span></span> and<span class="Apple-converted-space">  </span>execute :</p>
-<p class="p5"><br></p>
-<p class="p4">svn add quarkname</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p12">svn add quarkname</p>
+<p class="p4"><br></p>
 <p class="p3">Place a quark file called <i>quarkname</i>.quark into <span class="s8">{Application Support}/quarks/DIRECTORY</span></p>
 <p class="p3">(see [<b>Quark</b>] for the format)</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3">Then to publish:</p>
 <p class="p13"><br></p>
-<p class="p4">svn add DIRECTORY/quarkname.quark</p>
+<p class="p12">svn add DIRECTORY/quarkname.quark</p>
 <p class="p2"><br></p>
-<p class="p4">svn commit -m "adding quarkname"</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+<p class="p12">svn commit -m "adding quarkname"</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6"><b><span class="s6">Local Repository Example</span></b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><b><span class="s6">Local Repository Example</span></b></p>
 <p class="p2"><br></p>
 <p class="p3">Besides the public repos at sourceforge you can use any other subversion host including a repository running on your local machine.<span class="Apple-converted-space">  </span>This is useful in that you get version control and an easy way to manage package installation.</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3">For obvious reasons you need to have a running subversion system somewhere in order to use this feature.</p>
 <p class="p3">Nevertheless it is possible to use alreadily existing subversion quarks directories (as the SonEnvir one).</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3">1.<span class="Apple-tab-span">	</span>Create a directory in svn-repos (e.g. quarks-&lt;yourname/id/institution&gt;).</p>
 <p class="p3"><i><span class="Apple-tab-span">	</span>!This name has to be unique to all Quark repositories you will ever check out!</i></p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>Create a dir within it called <span class="s5">"DIRECTORY"</span> containing quark files.</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3">2.<span class="Apple-tab-span">	</span>Fill repos with your work<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p3">3.<span class="Apple-tab-span">	</span>Now use Quarks to make it accessible in SC (shown at hand of the existing and<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>publicly available SonEnvir quarks):</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir = <span class="s2">Quarks</span>(</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir = <span class="s2">Quarks</span>(</p>
 <p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>localPath: <span class="s2">Platform</span>.userAppSupportDir ++ <span class="s4">"/quarks-sonenvir"</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>localPath: <span class="s2">Platform</span>.userAppSupportDir ++ <span class="s4">"/quarks-sonenvir"</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>);</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.checkoutAll;</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// or, if alreadily checked out at the appropriate place:</p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.update;</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.checkoutAll;</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// or, if alreadily checked out at the appropriate place:</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.update;</p>
 <p class="p2"><br></p>
 <p class="p3">4.<span class="Apple-tab-span">	</span>now install your quarks:</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.listCheckedOut;</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.listCheckedOut;</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.install(<span class="s4">"sonenvir-testquark"</span>);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.isInstalled(<span class="s4">"sonenvir-testquark"</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.install(<span class="s4">"sonenvir-testquark"</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.isInstalled(<span class="s4">"sonenvir-testquark"</span>);</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.listInstalled</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.listInstalled</p>
 <p class="p2"><br></p>
 <p class="p3">5.<span class="Apple-tab-span">	</span>recompile</p>
 <p class="p3">6.<span class="Apple-tab-span">	</span>test</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>SonEnvirTestQuark<span class="s3">.sayHello</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>SonEnvirTestQuark<span class="s3">.sayHello</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir = <span class="s2">Quarks</span>(</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir = <span class="s2">Quarks</span>(</p>
 <p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>localPath: <span class="s2">Platform</span>.userAppSupportDir ++ <span class="s4">"/quarks-sonenvir"</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>localPath: <span class="s2">Platform</span>.userAppSupportDir ++ <span class="s4">"/quarks-sonenvir"</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>);</p>
 <p class="p2"><br></p>
-<p class="p9">[...]</p>
+<p class="p8">[...]</p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
 <p class="p3">N.<span class="Apple-tab-span">	</span>remove what you're don't need</p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.uninstall(<span class="s4">"sonenvir-testquark"</span>)</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.uninstall(<span class="s4">"sonenvir-testquark"</span>)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// recompile</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>SonEnvirTestQuark<span class="s3">.sayHello</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// -&gt; error</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// recompile</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>SonEnvirTestQuark<span class="s3">.sayHello</span></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// -&gt; error</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">M.<span class="Apple-tab-span">	</span>update</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.updateDirectory</p>
-<p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir.update</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.updateDirectory</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir.update</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
