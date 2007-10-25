@@ -149,10 +149,10 @@ struct InRect : public Unit
 	// nothing
 };
 
-struct Trapezoid : public Unit
-{
-	float m_leftScale, m_rightScale, m_a, m_b, m_c, m_d;
-};
+//struct Trapezoid : public Unit
+//{
+//	float m_leftScale, m_rightScale, m_a, m_b, m_c, m_d;
+//};
 
 struct K2A : public Unit
 {
