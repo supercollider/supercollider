@@ -64,8 +64,10 @@
 #endif
 
 #ifdef SC_DARWIN
+extern "C" {
 #include <mach-o/dyld.h>
 #include <mach-o/getsect.h>
+}
 char gTempVal;
 #endif
 
