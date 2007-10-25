@@ -271,7 +271,7 @@ Quarks
 	  this symlinks from {App Support}/SuperCollider/Quarks to 
 	  {App Support}/SuperCollider/Extensions
 	  it is then in the SC compile path */
-	*install { |name, incdeps=true, allowCheckout=false| 
+	*install { |name, incdeps=true, allowCheckout=true| 
 		this.global.install(name, incdeps, allowCheckout) }
 	
 	/* 
