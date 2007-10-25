@@ -27,7 +27,9 @@
 * 10.10.2007 SC no longer automatically writes data (synthdefs, archive.scxtar) to the application folder - instead writes to "app support". This fixes problems with running SC using an unprivileged user account - ds
 * 16.10.2007 SequenceableCollection:median speed improvement, approx ten times faster in many cases - ds
 * 20.10.2007 Object:deprecated and DeprecatedError added to allow for method deprecation - sw
-
+* 21.10.2007 Amplitude : attackTime and releaseTime can be modulated now - jr
+* 25.10.2007 Collection : histo method improved and moved from mathLib to common - jr
+ 
 
 // BUGFIXES:
 
@@ -36,4 +38,4 @@
 * 09.10.2007 fixed deadlock and other problems in NSAttributedStringAdditions.m - rb
 * 11.10.2007 fixed inaccurate automatic determination of whether SC is running as standalone - ds
 * 14.10.2007 .quark files now saved correctly as plain-text, not RTF - ds
-
+* 24.10.2007 fixed a bug in Pbeta - jp
