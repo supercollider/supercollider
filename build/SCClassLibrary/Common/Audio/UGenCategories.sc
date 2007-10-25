@@ -164,7 +164,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Timer           { *categories { ^ #["UGens>Trigger"] } }
 + TIRand          { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + ToggleFF        { *categories { ^ #["UGens>Trigger"] } }
-+ TPulse          { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + TRand           { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Trapezoid       { *categories { ^ #["UGens>Maths"] } }
 + Trig1           { *categories { ^ #["UGens>Trigger"] } }
