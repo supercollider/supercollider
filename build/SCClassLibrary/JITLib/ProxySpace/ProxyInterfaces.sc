@@ -218,9 +218,11 @@ SynthControl : AbstractPlayControl {
 	stopToBundle { arg bundle; // todo: find right behavior for synth defs that are passed in.
 		if(nodeID.notNil) {
 			if(canReleaseSynth) {
-					bundle.add([15, nodeID, \gate, 0.0]); //to be sure.
+					bundle.addAll([['/error', -1], [15, nodeID, \gate, 0.0], ['/error', -2]]);
 			} {
-					if(canFreeSynth.not) { bundle.add([11, nodeID]) }; //"/n_free"
+					if(canFreeSynth.not) { //"/n_free"
+						bundle.addAll([['/error', -1], [11, nodeID], ['/error', -2]]);
+					}; 
 					// otherwise it is self freeing by some inner mechanism.
 			};
 			nodeID = nil;
