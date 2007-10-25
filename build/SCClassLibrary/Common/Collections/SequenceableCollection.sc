@@ -1059,5 +1059,5 @@ SequenceableCollection : Collection {
 		^clock.nextTimeOnGrid(*this);
 	}
 
-	asUGenInput { ^this.asArray.asUGenInput }
+//	asUGenInput { ^this.asArray.asUGenInput }
 }
