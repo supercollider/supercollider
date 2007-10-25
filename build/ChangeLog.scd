@@ -15,6 +15,7 @@
 * 08.10.2007 GeneralHID crossplatform HID wrapper - mb
 * --.--.2007 many improvements to Quarks package-management system. gui improvements, dependency-handling improvements, etc - various
 * 20.10.2007 added a Glossary file - sw
+* --.10.2007 various new help files added, and many help files improved - various
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 
