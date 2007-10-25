@@ -191,15 +191,16 @@ InRect : UGen
 	}
 }
 
-Trapezoid : UGen
-{
-	*ar { arg in = 0.0, a = 0.2, b = 0.4, c = 0.6, d = 0.8;
-		^this.multiNew('audio', in, a, b, c, d)
-	}
-	*kr { arg in = 0.0, a = 0.2, b = 0.4, c = 0.6, d = 0.8;
-		^this.multiNew('control', in, a, b, c, d)
-	}
-}
+
+//Trapezoid : UGen
+//{
+//	*ar { arg in = 0.0, a = 0.2, b = 0.4, c = 0.6, d = 0.8;
+//		^this.multiNew('audio', in, a, b, c, d)
+//	}
+//	*kr { arg in = 0.0, a = 0.2, b = 0.4, c = 0.6, d = 0.8;
+//		^this.multiNew('control', in, a, b, c, d)
+//	}
+//}
 
 Fold : InRange {}
 Clip : InRange {}

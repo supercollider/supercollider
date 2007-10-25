@@ -168,8 +168,8 @@ GrayNoise : WhiteNoise {
 }
 
 
-NoahNoise : WhiteNoise {
-}
+//NoahNoise : WhiteNoise {
+//}
 
 Crackle : UGen {
 	
@@ -290,14 +290,14 @@ LinCong : UGen {
  	}
 }
 */
-
-Latoocarfian : UGen {
-	
-	*ar { arg a, b, c, d, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', a, b, c, d).madd(mul, add)
-	}
-	*kr { arg a, b, c, d, mul = 1.0, add = 0.0;
-		^this.multiNew('control', a, b, c, d).madd(mul, add)
-	}
-}
+//
+//Latoocarfian : UGen {
+//	
+//	*ar { arg a, b, c, d, mul = 1.0, add = 0.0;
+//		^this.multiNew('audio', a, b, c, d).madd(mul, add)
+//	}
+//	*kr { arg a, b, c, d, mul = 1.0, add = 0.0;
+//		^this.multiNew('control', a, b, c, d).madd(mul, add)
+//	}
+//}
 
