@@ -5,16 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42"><style type="text/css">
+<meta name="CocoaVersion" content="824.41">
+<style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-span.s1 {color: #000000}
-span.s2 {color: #0019b7}
-span.s3 {color: #a71e12}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Times; color: #000000; min-height: 19.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; min-height: 16.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Lucida Grande; color: #000000}
+span.s1 {text-decoration: underline ; color: #0021e7}
+span.s2 {color: #0021e7}
+span.s3 {color: #000000}
+span.s4 {color: #0000bf}
+span.s5 {font: 9.0px Lucida Grande}
+span.s6 {font: 9.0px Lucida Grande; color: #000000}
+span.s7 {font: 9.0px Monaco}
+span.s8 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -24,41 +33,35 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>LagUD.ar(in, lagTime, mul, add)</b></p>
 <p class="p3"><b>LagUD.kr(in, lagTime, mul, add)</b></p>
 <p class="p2"><br></p>
-<p class="p3">This is essentially the same as <b>Lag</b> except that you can supply a different 60 dB time for when the signal goes up, from when the signal goes down. This is useful for smoothing out control signals, where "fade in" should be different from "fade out".
-    </p>
-<p class="p2"><br>See also <a href="Lag.html">Lag<br><br></a></p>
+<p class="p3">This is essentially the same as <b>Lag</b> except that you can supply a different 60 dB time for when the signal goes up, from when the signal goes down. This is useful for smoothing out control signals, where "fade in" should be different from "fade out".</p>
+<p class="p3"><br>
+See also <a href="Lag.html"><span class="s1">Lag</span><span class="s2"><br>
+</span></a></p>
 <p class="p2"><br></p>
 <p class="p3"><b>in</b> - input signal</p>
 <p class="p3"><b>lagTimeU</b> - 60 dB lag time in seconds for the upgoing signal.</p>
 <p class="p3"><b>lagTimeD</b> - 60 dB lag time in seconds for the downgoing signal.</p>
-      <br>
-      <br>
-      See also <a href="Lag.html">Lag</a>
-      <br>
-    </p>
 <p class="p4"><br></p>
-<p class="p5">(
-// used to lag pitch<br>
-SynthDef( \lagud_help,<br>
-	{ arg freq=300,lagup=1, lagdown=5;<br>
-		Out.ar( 0,<br>
-			SinOsc.ar( // sine wave<br>
-				LagUD.kr( // lag the frequency<br>
-					freq,<br>
-					lagup,<br>
-					lagdown<br>
-				),<br>
-				0, // phase<br>
-				0.2 // sine amplitude<br>
-			)<br>
-		);<br>
-	}).send(s);<br>
-)<br>
-
-x = Synth.new( \lagud_help ); // create the synth<br>
-x.set( \freq, 500 ); // set the frequency to a higher value (takes 1 second)<br>
-x.set( \freq, 100 ); // set the frequency to a lower value (takes 5 seconds)<br>
-x.free;
-</p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s3">( </span>// used to lag pitch</p>
+<p class="p7"><span class="s4">SynthDef</span><span class="s3">( </span>\lagud_help<span class="s3">,</span></p>
+<p class="p8">{<span class="Apple-tab-span">	</span> <span class="s4">arg</span> freq=300,lagup=1, lagdown=5;</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="s4">Out</span>.ar( 0,</p>
+<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">SinOsc</span><span class="s3">.ar( </span>// sine wave</p>
+<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">LagUD</span><span class="s3">.kr( </span>// lag the frequency</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>freq,</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>lagup,</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>lagdown</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">),</span></p>
+<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">0, </span>// phase</p>
+<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">0.2 </span>// sine amplitude</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">)</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>);</p>
+<p class="p8">}).send(s);</p>
+<p class="p8">)</p>
+<p class="p6"><span class="s3">x = </span><span class="s4">Synth</span><span class="s3">.new( </span><span class="s8">\lagud_help</span><span class="s3"> ); </span>// create the synth</p>
+<p class="p6"><span class="s3">x.set( </span><span class="s8">\freq</span><span class="s3">, 500 ); </span>// set the frequency to a higher value (takes 1 second)</p>
+<p class="p6"><span class="s3">x.set( </span><span class="s8">\freq</span><span class="s3">, 100 ); </span>// set the frequency to a lower value (takes 5 seconds)</p>
+<p class="p8">x.free;</p>
 </body>
 </html>
