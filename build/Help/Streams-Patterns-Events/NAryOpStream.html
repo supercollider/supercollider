@@ -17,19 +17,19 @@ span.s1 {color: #0025b2}
 </style>
 </head>
 <body>
-<p class="p1"><b>UnaryOpStream</b></p>
+<p class="p1"><b>NAryOpStream</b></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Superclass: Stream</b></p>
 <p class="p2"><br></p>
-<p class="p3">A UnaryOpStream is created as a result of a unary math operation on a Stream.<span class="Apple-converted-space"> </span></p>
+<p class="p3">A NAryOpStream is created as a result of a n-ary math operation on a Stream.<span class="Apple-converted-space"> </span></p>
 <p class="p3">It is defined to respond to <b>next</b> by returning the result of the math operation</p>
 <p class="p3">on the <b>next</b> value from the stream. It responds to <b>reset</b> by resetting the Stream.</p>
 <p class="p2"><br></p>
 <p class="p4"><br></p>
-<p class="p5"><span class="s1">Routine</span> { 6.do { <span class="s1">arg</span> i; i.yield; } }.squared.dump</p>
+<p class="p5"><span class="s1">Routine</span> { 6.do { <span class="s1">arg</span> i; i.yield; } }.wrap(0, 3).dump</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5">x = <span class="s1">Routine</span> { 6.do { <span class="s1">arg</span> i; i.yield; } }.squared;</p>
+<p class="p5">x = <span class="s1">Routine</span> { 6.do { <span class="s1">arg</span> i; i.yield; } }.wrap(0, 3);</p>
 <p class="p5">x.next.postln;</p>
 <p class="p5">x.next.postln;</p>
 <p class="p5">x.next.postln;</p>

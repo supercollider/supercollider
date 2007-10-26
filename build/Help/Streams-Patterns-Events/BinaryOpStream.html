@@ -5,14 +5,15 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-span.s1 {color: #0019b7}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+span.s1 {color: #0025b2}
 </style>
 </head>
 <body>
@@ -24,16 +25,31 @@ span.s1 {color: #0019b7}
 <p class="p3">of Streams. It is defined to respond to <b>next</b> by returning the result of the math operation</p>
 <p class="p3">on the <b>next</b> value from both streams. It responds to <b>reset</b> by resetting both Streams.</p>
 <p class="p2"><br></p>
-<p class="p4">(<span class="s1">FuncStream</span>.new({ 9.rand }) + 100).dump</p>
-<p class="p2"><br></p>
-<p class="p3">(</p>
-<p class="p4">x = (<span class="s1">FuncStream</span>.new({ 9.rand }) + 100);</p>
+<p class="p4"><span class="s1">(Routine</span> { 6.do { <span class="s1">arg</span> i; i.yield; } } + 64).dump</p>
+<p class="p5"><br></p>
+<p class="p4">(</p>
+<p class="p4">x = <span class="s1">Routine</span> { 6.do { <span class="s1">arg</span> i; i.yield; } } + 64;</p>
+<p class="p4">x.next.postln;</p>
+<p class="p4">x.next.postln;</p>
 <p class="p4">x.next.postln;</p>
 <p class="p4">x.next.postln;</p>
 <p class="p4">x.next.postln;</p>
 <p class="p4">x.next.postln;</p>
 <p class="p4">x.next.postln;</p>
 <p class="p4">)</p>
-<p class="p5"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">(</p>
+<p class="p4">x = <span class="s1">Routine</span> { 6.do { <span class="s1">arg</span> i; i.yield; } } + <span class="s1">Routine</span> { (1..7).do { <span class="s1">arg</span> i; (1 / i).yield; } };</p>
+<p class="p4">x.next.postln;</p>
+<p class="p4">x.next.postln;</p>
+<p class="p4">x.next.postln;</p>
+<p class="p4">x.next.postln;</p>
+<p class="p4">x.next.postln;</p>
+<p class="p4">x.next.postln;</p>
+<p class="p4">x.next.postln;</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
 </body>
 </html>
