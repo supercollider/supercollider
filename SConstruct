@@ -599,7 +599,8 @@ serverEnv.Append(
                '#Headers/server'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
     LIBS = ['common', 'pthread', 'dl'],
-    LIBPATH = 'build')
+    LIBPATH = 'build',
+    LINKFLAGS = '-Wl,-rpath,' + FINAL_PREFIX + '/lib')
 libscsynthEnv = serverEnv.Copy(
     PKGCONFIG_NAME = 'libscsynth',
     PKGCONFIG_DESC = 'SuperCollider synthesis server library',
@@ -797,7 +798,8 @@ if PLATFORM == 'darwin':
 	LINKFLAGS = '-framework CoreServices')
 elif PLATFORM == 'linux':
     langEnv.Append(
-	LINKFLAGS = '-Wl,-rpath,build')
+    LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
+
 
 merge_lib_info(langEnv, libraries['audioapi'])
 
