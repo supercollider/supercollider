@@ -1,109 +1,167 @@
-{
-    IBClasses = (
-        {
-            ACTIONS = {
-                balanceParens = id; 
-                becomePostWindow = id; 
-                commentCode = id; 
-                compileLibrary = id; 
-                createLink = id; 
-                executeSelection = id; 
-                methodReferences = id; 
-                methodTemplates = id; 
-                openCode = id; 
-                postWindowToFront = id; 
-                runMain = id; 
-                selectLineWindow = id; 
-                shiftLeft = id; 
-                shiftRight = id; 
-                stopMain = id; 
-                syntaxColorize = id; 
-                toggleRich = id; 
-                toggleUIEditMode = id; 
-                uncommentCode = id; 
-                wrapComments = id; 
-                wrapCurlyBrackets = id; 
-                wrapParens = id; 
-                wrapSquareBrackets = id; 
-            }; 
-            CLASS = FirstResponder; 
-            LANGUAGE = ObjC; 
-            SUPERCLASS = NSObject; 
-        }, 
-        {
-            ACTIONS = {cancel = id; ok = id; }; 
-            CLASS = GetStringFromUser; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {cancelButton = id; okButton = id; promptField = id; textField = id; }; 
-            SUPERCLASS = NSObject; 
-        }, 
-        {
-            ACTIONS = {
-                balanceParens = id; 
-                becomePostWindow = id; 
-                commentCode = id; 
-                createLink = id; 
-                executeSelection = id; 
-                methodReferences = id; 
-                methodTemplates = id; 
-                openCode = id; 
-                selectLineWindow = id; 
-                shiftLeft = id; 
-                shiftRight = id; 
-                showHelp = id; 
-                syntaxColorize = id; 
-                toggleRich = id; 
-                uncommentCode = id; 
-                wrapComments = id; 
-                wrapCurlyBrackets = id; 
-                wrapParens = id; 
-                wrapSquareBrackets = id; 
-            }; 
-            CLASS = MyDocument; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {initTextView = NSTextView; scrollView = NSScrollView; textView = NSTextView; }; 
-            SUPERCLASS = NSDocument; 
-        }, 
-        {
-            ACTIONS = {
-                clearPostWindow = id; 
-                compileLibrary = id; 
-                newSCWindow = id; 
-                postWindowToFront = id; 
-                runMain = id; 
-                showHelp = id; 
-                showHelpBrowser = id; 
-                stopMain = id; 
-            }; 
-            CLASS = SCVirtualMachine; 
-            LANGUAGE = ObjC; 
-            SUPERCLASS = NSObject; 
-        }, 
-        {
-            ACTIONS = {
-                findNext = id; 
-                findNextAndOrderFindPanelOut = id; 
-                findPrevious = id; 
-                jumpToSelection = id; 
-                orderFrontFindPanel = id; 
-                replace = id; 
-                replaceAll = id; 
-                replaceAndFind = id; 
-                takeFindStringFromSelection = id; 
-                takeReplaceStringFromSelection = id; 
-            }; 
-            CLASS = TextFinder; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                findNextButton = id; 
-                findTextField = id; 
-                ignoreCaseButton = id; 
-                replaceAllScopeMatrix = id; 
-                replaceTextField = id; 
-                statusField = id; 
-            }; 
-            SUPERCLASS = NSObject; 
-        }
-    ); 
-    IBVersion = 1; 
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>cancel</key>
+				<string>id</string>
+				<key>ok</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>GetStringFromUser</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>cancelButton</key>
+				<string>id</string>
+				<key>okButton</key>
+				<string>id</string>
+				<key>promptField</key>
+				<string>id</string>
+				<key>textField</key>
+				<string>id</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>clearPostWindow</key>
+				<string>id</string>
+				<key>compileLibrary</key>
+				<string>id</string>
+				<key>newSCWindow</key>
+				<string>id</string>
+				<key>postWindowToFront</key>
+				<string>id</string>
+				<key>runMain</key>
+				<string>id</string>
+				<key>showHelp</key>
+				<string>id</string>
+				<key>showHelpBrowser</key>
+				<string>id</string>
+				<key>stopMain</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>SCVirtualMachine</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>findNext</key>
+				<string>id</string>
+				<key>findNextAndOrderFindPanelOut</key>
+				<string>id</string>
+				<key>findPrevious</key>
+				<string>id</string>
+				<key>jumpToSelection</key>
+				<string>id</string>
+				<key>orderFrontFindPanel</key>
+				<string>id</string>
+				<key>replace</key>
+				<string>id</string>
+				<key>replaceAll</key>
+				<string>id</string>
+				<key>replaceAndFind</key>
+				<string>id</string>
+				<key>takeFindStringFromSelection</key>
+				<string>id</string>
+				<key>takeReplaceStringFromSelection</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>TextFinder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>findNextButton</key>
+				<string>id</string>
+				<key>findTextField</key>
+				<string>id</string>
+				<key>ignoreCaseButton</key>
+				<string>id</string>
+				<key>replaceAllScopeMatrix</key>
+				<string>id</string>
+				<key>replaceTextField</key>
+				<string>id</string>
+				<key>statusField</key>
+				<string>id</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>balanceParens</key>
+				<string>id</string>
+				<key>becomePostWindow</key>
+				<string>id</string>
+				<key>commentCode</key>
+				<string>id</string>
+				<key>compileLibrary</key>
+				<string>id</string>
+				<key>createLink</key>
+				<string>id</string>
+				<key>executeSelection</key>
+				<string>id</string>
+				<key>methodReferences</key>
+				<string>id</string>
+				<key>methodTemplates</key>
+				<string>id</string>
+				<key>openCode</key>
+				<string>id</string>
+				<key>postWindowToFront</key>
+				<string>id</string>
+				<key>runMain</key>
+				<string>id</string>
+				<key>selectLineWindow</key>
+				<string>id</string>
+				<key>shiftLeft</key>
+				<string>id</string>
+				<key>shiftRight</key>
+				<string>id</string>
+				<key>stopMain</key>
+				<string>id</string>
+				<key>syntaxColorize</key>
+				<string>id</string>
+				<key>toggleRich</key>
+				<string>id</string>
+				<key>toggleUIEditMode</key>
+				<string>id</string>
+				<key>uncommentCode</key>
+				<string>id</string>
+				<key>wrapComments</key>
+				<string>id</string>
+				<key>wrapCurlyBrackets</key>
+				<string>id</string>
+				<key>wrapParens</key>
+				<string>id</string>
+				<key>wrapSquareBrackets</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

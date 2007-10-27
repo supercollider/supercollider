@@ -16,6 +16,7 @@
 * --.--.2007 many improvements to Quarks package-management system. gui improvements, dependency-handling improvements, etc - various
 * 20.10.2007 added a Glossary file - sw
 * --.10.2007 various new help files added, and many help files improved - various
+* 26.10.2007 Changed Cmd-? to Cmd-I in lieu of the default help menu shortcut in Leopard. - rb 
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 
