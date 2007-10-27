@@ -5,47 +5,49 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {color: #0019b7}
-span.s2 {color: #000000}
-span.s3 {color: #a71e12}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+span.s1 {font: 12.0px Helvetica}
+span.s2 {color: #0025b2}
+span.s3 {color: #000000}
+span.s4 {color: #0000bf}
+span.s5 {color: #982316}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>SCListView</b></p>
+<p class="p1"><b>SCListView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><span class="s1"><b>a list view</b></span></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Inherits from: Object : SCView: SCControlView</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3">(</p>
+<p class="p4">(</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span>w = <span class="s1">SCWindow</span>.new.front;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>l = [</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative",</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative",</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative",</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative",</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative",</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative",</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative",</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative",</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"absolute"<span class="s2">,</span>"relative"</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>];</p>
-<p class="p3"><span class="Apple-tab-span">	</span>v = <span class="s1">SCListView</span>(w,<span class="s1">Rect</span>(10,10,180,50));</p>
-<p class="p3"><span class="Apple-tab-span">	</span>v.items = l;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>v.background_(<span class="s1">Color</span>.white);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>v.action = { <span class="s1">arg</span> sbs;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[sbs.value, l.at(sbs.value)].postln;<span class="Apple-tab-span">	</span><span class="s3">// .value returns the integer</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span>};</p>
+<p class="p4"><span class="Apple-tab-span">	</span>w = <span class="s2">SCWindow</span>.new.front;</p>
 <p class="p2"><br></p>
-<p class="p3">)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>v = <span class="s2">SCListView</span>(w,<span class="s2">Rect</span>(10,10,120,70))</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.items_([ </span>"SinOsc"<span class="s3">, </span>"Saw", "LFSaw"<span class="s3">, </span>"WhiteNoise", "PinkNoise"<span class="s3">, </span>"BrownNoise", "Osc" <span class="s3">])</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.clear)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.hiliteColor_(<span class="s4">Color</span>.green(alpha:0.6))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s2">arg</span> sbs;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[sbs.value, v.items[sbs.value]].postln;<span class="Apple-tab-span">	</span><span class="s5">// .value returns the integer</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p2"><br></p>
-<p class="p3">v.value = 16.rand</p>
+<p class="p4">)</p>
 <p class="p2"><br></p>
+<p class="p3">You can set the value of the list view</p>
+<p class="p2"><br></p>
+<p class="p4">v.value = 7.rand;</p>
+<p class="p2"><br></p>
+<p class="p3">but if you want to set the value AND perform the actiion, you use valueAction:</p>
+<p class="p6"><br></p>
+<p class="p4">v.valueAction = 7.rand;</p>
 </body>
 </html>

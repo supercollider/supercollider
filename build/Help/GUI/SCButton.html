@@ -5,86 +5,84 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0839a4; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-span.s1 {color: #0019b7}
-span.s2 {color: #606060}
-span.s3 {color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #752c1e}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0839a4}
+span.s4 {color: #606060}
+span.s5 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>SCButton</b></p>
+<p class="p1"><span class="s1"><b>SCButton<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b><span class="Apple-tab-span">	</span>a multi-state button</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Inherits from: Object : SCView: SCControlView</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3">each state:</p>
-<p class="p3"><span class="Apple-tab-span">	</span>[ name, text color, background color ]</p>
+<p class="p1"><span class="s2"><span class="Apple-tab-span">	</span></span><b>*new(parent, bounds)<span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>states_<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>[ label, text color, background color ]</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>action_<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>specify a function to be called upon button-up</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
 <p class="p5"><br></p>
-<p class="p4">w = <span class="s1">SCWindow</span>.new;</p>
-<p class="p4">w.front;</p>
+<p class="p4">w = <span class="s3">SCWindow</span>.new;</p>
 <p class="p5"><br></p>
-<p class="p4">b = <span class="s1">SCButton</span>(w,<span class="s1">Rect</span>(20,20,340,30));</p>
-<p class="p4">b.states = [</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s2">"suffering"</span>,<span class="s1">Color</span>.black,<span class="s1">Color</span>.red],</p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"origins of suffering"<span class="s3">,</span><span class="s1">Color</span><span class="s3">.white,</span><span class="s1">Color</span><span class="s3">.black],</span></p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"cessation of creating suffering"<span class="s3">,</span><span class="s1">Color</span><span class="s3">.red,</span><span class="s1">Color</span><span class="s3">.white],</span></p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"the path to cessation of creating suffering"<span class="s3">,</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Color</span>.blue,<span class="s1">Color</span>.clear]</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>];</p>
-<p class="p4">b.action = { arg butt;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>butt.value.postln;<span class="Apple-tab-span">	</span></p>
-<p class="p4">};</p>
+<p class="p4">b = <span class="s3">SCButton</span>(w, <span class="s3">Rect</span>(20,20,340,30))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.states_([</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s4">"there is suffering"</span>, <span class="s3">Color</span>.black, <span class="s3">Color</span>.red],</p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"the origin of suffering"<span class="s5">, </span><span class="s3">Color</span><span class="s5">.white, </span><span class="s3">Color</span><span class="s5">.black],</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"the cessation of suffering"<span class="s5">, </span><span class="s3">Color</span><span class="s5">.red, </span><span class="s3">Color</span><span class="s5">.white],</span></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"there is a path to cessation of suffering"<span class="s5">,</span> <span class="s3">Color</span><span class="s5">.blue, </span><span class="s3">Color</span><span class="s5">.clear]</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>])</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ arg butt;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>butt.value.postln;<span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p4">w.front;</p>
 <p class="p4">)</p>
 <p class="p5"><br></p>
-<p class="p7">Failure to set any states at all results in an invisible button.</p>
-<p class="p8"><br></p>
+<p class="p1">Failure to set any states at all results in an invisible button.</p>
 <p class="p5"><br></p>
-<p class="p9">// does not do action</p>
+<p class="p7">// does not do action</p>
 <p class="p4">b.value = 2;</p>
 <p class="p5"><br></p>
-<p class="p9">// does action if it results in a change of value</p>
+<p class="p7">// does action if it results in a change of value</p>
 <p class="p4">b.valueAction =<span class="Apple-converted-space">  </span>3;</p>
 <p class="p5"><br></p>
-<p class="p9">// clips to size of states</p>
+<p class="p7">// clips to size of states</p>
 <p class="p4">b.valueAction =<span class="Apple-converted-space">  </span>-1;</p>
 <p class="p5"><br></p>
-<p class="p9">// floats no problem</p>
+<p class="p7">// floats no problem</p>
 <p class="p4">b.valueAction =<span class="Apple-converted-space">  </span>3.3;</p>
 <p class="p5"><br></p>
-<p class="p8"><br></p>
-<p class="p5"><br></p>
+<p class="p3"><br></p>
+<p class="p1">In a musical context, a button-down press is more meaningful than a button-up (release) as it's more<span class="Apple-converted-space"> </span></p>
+<p class="p1">intuitive to press a button on the beat. For that you can use SCView's mouseDownAction</p>
+<p class="p1">(a superclass of SCButton)</p>
+<p class="p3"><br></p>
 <p class="p4">(</p>
-<p class="p5"><br></p>
-<p class="p4">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p4">w = <span class="s3">SCWindow</span>.new;</p>
+<p class="p4">b = <span class="s3">SCButton</span>(w, <span class="s3">Rect</span>(20,20,80,26))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.states_([[<span class="s4">"play"</span>,<span class="s4"> </span><span class="s3">Color</span>.black, <span class="s3">Color</span>.clear]])</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.mouseDownAction_({</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="Apple-tab-span">	</span>{EnvGen.ar(Env.adsr)*SinOsc.ar(440)}.play;<span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ arg butt;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.free;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p4">w.front;</p>
-<p class="p5"><br></p>
-<p class="p4">b = <span class="s1">SCButton</span>(w,<span class="s1">Rect</span>(20,20,340,30));</p>
-<p class="p4">b.states = [</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s2">"suffering"</span>,<span class="s1">Color</span>.black,<span class="s1">Color</span>.red]</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>];</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p9">// new state doesn't take effect until ...</p>
-<p class="p4">b.states = [</p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"cessation of suffering"<span class="s3">,</span><span class="s1">Color</span><span class="s3">.red,</span><span class="s1">Color</span><span class="s3">.black]</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>];</p>
-<p class="p9">//window is refreshed</p>
-<p class="p4">w.refresh;</p>
-<p class="p5"><br></p>
-<p class="p9">//or the view itself is refreshed</p>
-<p class="p4">b.refresh;</p>
-<p class="p5"><br></p>
 <p class="p4">)</p>
+<p class="p5"><br></p>
 </body>
 </html>
