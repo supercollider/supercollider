@@ -175,7 +175,7 @@ KeyCodeResponder {
 
 	/** the actual responder **/
 	value { arg view,char,modifier,unicode,keycode;
-		^this.at(keycode).value(char,modifier,unicode,keycode)
+		^this.at(keycode).value(char,modifier,unicode,keycode);
 	}
 	*value { arg view,keycode,modifier,unicode;
 		^this.at(unicode).value(unicode,modifier)
@@ -258,9 +258,11 @@ KeyCodeResponderStack {
 	}	
 	reset { stack = [] }
 	value { arg char,modifier,unicode,keycode;
+		var result;
 		stack.do({ arg responder;
-			responder.value(char,modifier,unicode,keycode)
-		})
+			result = responder.value(char,modifier,unicode,keycode);
+		});
+		^result
 	}
 	++ { arg that;
 		var new;
@@ -324,8 +326,8 @@ KDRMaskTester : SimpleKDRUnit {
 			and: 
 		{  (denyMask & modifier) == 0 } // no denied bits present
 		,{
-			function.value(char,modifier,unicode,keycode);
-		})
+			^function.value(char,modifier,unicode,keycode);
+		},{^nil})
 	}
 	== { arg aResponder;
 		^(this.class === aResponder.class) and: {
