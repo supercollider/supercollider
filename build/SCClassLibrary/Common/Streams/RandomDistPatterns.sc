@@ -137,6 +137,10 @@ Ppoisson : Pattern {
 }
 	
 Pexprand : Pwhite {
+	*new { arg lo=0.0001, hi=1.0, length=inf;
+		^super.newCopyArgs(lo, hi, length)
+	}
+	
 	embedInStream { arg inval;
 		var loStr = lo.asStream;
 		var hiStr = hi.asStream;
