@@ -80,7 +80,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Klank           { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + LastValue       { *categories { ^ #["UGens>Trigger"] } }
 + Latch           { *categories { ^ #["UGens>Trigger"] } }
-+ Latoocarfian    { *categories { ^ #["UGens>Generators>Chaotic"] } }
 + LFNoise0        { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + LFPulse         { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + LFSaw           { *categories { ^ #["UGens>Generators>Deterministic"] } }
@@ -108,7 +107,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + PauseSelf       { *categories { ^ #["UGens>Synth control"] } }
 + PauseSelfWhenDone {  *categories { ^ #["UGens>Synth control"] } }
 + PeakFollower    { *categories { ^ #["UGens>Analysis>Amplitude"] } }
-+ Peep            {}
 + Phasor          { *categories { ^ #["UGens>Trigger", "UGens>Buffer"] } }
 + Pitch           { *categories { ^ #["UGens>Analysis>Pitch"] } }
 + PitchShift      { *categories { ^ #["UGens>Filters>Pitch"] } }
@@ -165,7 +163,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + TIRand          { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + ToggleFF        { *categories { ^ #["UGens>Trigger"] } }
 + TRand           { *categories { ^ #["UGens>Generators>Stochastic"] } }
-+ Trapezoid       { *categories { ^ #["UGens>Maths"] } }
 + Trig1           { *categories { ^ #["UGens>Trigger"] } }
 + TWindex         { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + UGen            { *categories { ^ #["UGens>Unclassified"] } }
