@@ -272,6 +272,7 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
         mCanFocus(true), mDragHilite(false),
 		mConstructionMode(-1)
 {
+	mFocusColor = SCMakeColor(0.0,0.0,0.0, 0.0); 
 	if (inParent) inParent->add(this);
 	// store myself into sc object.
 	if (mObj) SetPtr(mObj->slots+0, this);
@@ -546,11 +547,15 @@ void SCView::drawFocus(SCRect inDamage)
         CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
         CGContextSaveGState(cgc);
         CGContextSetLineWidth(cgc, 2);
-        CGContextSetRGBStrokeColor(cgc, 0., 0., 0., 0.5);
+//        CGContextSetRGBStrokeColor(cgc, 0., 0., 0., 0.5);
+		CGContextSetRGBStrokeColor(cgc, mFocusColor.red, mFocusColor.green, mFocusColor.blue, mFocusColor.alpha);
+
         CGContextStrokeRect(cgc, rect);
         CGContextRestoreGState(cgc);
     }
+	
 }
+
 
 void SCView::drawDragHilite(SCRect inDamage)
 {
@@ -794,6 +799,12 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             refresh();
             return errNone;
 	}
+	if (strcmp(name, "focusColor")==0) {
+			err = slotColorVal(slot, &mFocusColor);
+            if (err) return err;
+            refresh();
+		return errNone;
+	}	
 	return errPropertyNotFound;
 }
 
@@ -835,6 +846,10 @@ int SCView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	/*if (strcmp(name, "backColor")==0) {
             return setSlotColor(slot, &mBackColor);
 	}*/
+	
+	if (strcmp(name, "focusColor")==0) {
+		return setSlotColor(slot, &mFocusColor);;
+	}
 	return errPropertyNotFound;
 }
 
