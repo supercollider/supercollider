@@ -61,6 +61,15 @@ SCView {  // abstract class
 		_SCView_HasFocus
 		^this.primitiveFailed
 	}
+	
+	focusColor_{|color|
+		this.setProperty(\focusColor, color);
+	}
+	
+	focusColor{
+		^this.getProperty(\focusColor);
+	}
+		
 	id {
 		^this.getProperty(\id)
 	}
@@ -249,7 +258,7 @@ SCView {  // abstract class
 		});
 	}
 	
-	// private
+	// private	
 	prInit { arg argParent, argBounds,argViewClass;
 		_SCView_New
 		^this.primitiveFailed
@@ -804,6 +813,11 @@ SCPopUpMenu : SCControlView {
 		items = array;
 		this.setProperty(\items, items);
 	}
+	
+	item {
+		^items[this.value]
+	}
+		
 	stringColor {
 		^this.getProperty(\stringColor, Color.new)
 	}
