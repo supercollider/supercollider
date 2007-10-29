@@ -299,8 +299,10 @@ void SyntaxColorize(NSTextView* textView)
 			c = input0(); 
 		} while (c != '|' && c != 0);
 		endrun = textpos;
-		range = NSMakeRange(startrun, endrun - startrun);
-		[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+		if(c != 0){ 
+			range = NSMakeRange(startrun, endrun - startrun);
+			[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+		}
 		continue;
 	comment1:	/* comment -- to end of line */
 		startrun = textpos-2;
