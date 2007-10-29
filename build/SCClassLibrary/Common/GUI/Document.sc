@@ -376,12 +376,12 @@ Document {
 	}
 	
 	keyDown {arg character, modifiers, unicode, keycode;
-		this.class.globalKeyDownAction.value(this,character, modifiers, keycode);
+		this.class.globalKeyDownAction.value(this,character, modifiers, unicode, keycode);
 		keyDownAction.value(this,character, modifiers, unicode, keycode);
 	}
 
 	keyUp {arg character, modifiers, unicode, keycode;
-		this.class.globalKeyUpAction.value(this,character, modifiers, keycode);
+		this.class.globalKeyUpAction.value(this,character, modifiers, unicode, keycode);
 		keyUpAction.value(this,character, modifiers, unicode, keycode);
 	}
 		
