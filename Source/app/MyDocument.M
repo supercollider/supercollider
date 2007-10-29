@@ -384,8 +384,13 @@ void SyntaxColorize(NSTextView* textView);
     
     if ([textView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
-		NSRange newSelectedRange = selectedRange;
-		newSelectedRange.length += [begStr length] + [endStr length];
+		NSRange newSelectedRange = selectedRange;		
+		if(selectedRange.length > 0) newSelectedRange.length += [begStr length] + [endStr length];
+		else 
+		{
+			newSelectedRange.length = 0;
+			newSelectedRange.location = newSelectedRange.location + [begStr length];
+		}	
         [textView setSelectedRange: newSelectedRange];
 		SyntaxColorize(textView);
         [textView didChangeText];
