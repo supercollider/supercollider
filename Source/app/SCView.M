@@ -272,7 +272,7 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
         mCanFocus(true), mDragHilite(false),
 		mConstructionMode(-1)
 {
-	mFocusColor = SCMakeColor(0.0,0.0,0.0, 0.0); 
+	mFocusColor = SCMakeColor(0.0,0.0,0.0, 0.5); 
 	if (inParent) inParent->add(this);
 	// store myself into sc object.
 	if (mObj) SetPtr(mObj->slots+0, this);
