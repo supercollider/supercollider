@@ -170,6 +170,8 @@ protected:
 	bool mDragHilite;
 	int32 mID;
 	int mConstructionMode;
+	SCColor mFocusColor;
+
 };
 
 
