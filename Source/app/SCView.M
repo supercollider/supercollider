@@ -3737,10 +3737,24 @@ SCView* NewSCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBoun
 SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds)
 {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	CGSize size;
+	size.width = inBounds.width;
+	size.height = inBounds.height;
+
+	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
+#endif
+}
+
+SCUserView::~SCUserView()
+{
+ CGLayerRelease(mCGLayer);
 }
 
 void SCUserView::draw(SCRect inDamage)
 {
+
     sendMessage(s_draw, 0, 0, 0);
 }
 
@@ -3794,6 +3808,35 @@ void SCUserView::receiveDrag()
 	sendMessage(s_receiveDrag, 0, 0, 0);
 }
 
+int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	char *name = symbol->name;
+
+    if (strcmp(name, "setCGLayerToCurrent")==0) {
+	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
+	
+		mGCtx = [NSGraphicsContext currentContext];
+		CGContextRef cglayerc = CGLayerGetContext(mCGLayer);
+		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:cglayerc flipped:NO];
+		[NSGraphicsContext setCurrentContext: gclayer];
+		CGContextBeginTransparencyLayer(cglayerc, NULL);
+	#endif
+        return errNone;
+    }
+
+    if (strcmp(name, "restoreCurrentCGContext")==0) {
+	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
+
+		CGContextEndTransparencyLayer(CGLayerGetContext(mCGLayer));
+		CGContextRef cgc = (CGContextRef)[mGCtx graphicsPort];
+	
+		CGContextDrawLayerInRect(cgc, SCtoCGRect(mBounds), mCGLayer);
+		[NSGraphicsContext setCurrentContext: mGCtx];
+	#endif
+        return errNone;
+    }	
+    return SCView::setProperty(symbol, slot);
+}
 
 ////////////////////////////////////////////////
 
