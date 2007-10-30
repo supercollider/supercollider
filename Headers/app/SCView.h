@@ -750,6 +750,7 @@ class SCUserView : public SCView
 {
 public:	
 	SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+	virtual ~SCUserView();
 
 	virtual void draw(SCRect inDamage);
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
@@ -759,8 +760,15 @@ public:
 	virtual void keyUp(int character, int modifiers);
  	virtual bool canReceiveDrag();
  	virtual void receiveDrag();	
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
 protected:
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
+	CGLayerRef mCGLayer;
+	NSGraphicsContext *mGCtx;	
+#endif
+	
 	void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);
 };
 SCView* NewSCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
