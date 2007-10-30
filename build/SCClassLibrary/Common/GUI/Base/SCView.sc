@@ -69,6 +69,10 @@ SCView {  // abstract class
 	focusColor{
 		^this.getProperty(\focusColor);
 	}
+	
+	onFocus{
+		\hi.postln;
+	}
 		
 	id {
 		^this.getProperty(\id)
@@ -1093,7 +1097,12 @@ SCUserView : SCView {
 	var <>keyDownFunc, <>drawFunc;
 	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
 	
-	draw { drawFunc.value(this) }
+	draw { 
+		this.setProperty(\setCGLayerToCurrent);
+		drawFunc.value(this) ;
+		this.setProperty(\restoreCurrentCGContext);
+	
+	}
 	mouseBeginTrack { arg x, y, modifiers; 
 		mouseBeginTrackFunc.value(this, x, y, modifiers); 
 	}
