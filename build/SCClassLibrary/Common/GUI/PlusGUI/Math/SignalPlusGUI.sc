@@ -2,7 +2,7 @@
 
 + ArrayedCollection {
 	
-	plot { arg name, bounds, discrete=false, numChannels = 1, minval, maxval, parent;	
+	plot { arg name, bounds, discrete=false, numChannels = 1, minval, maxval, parent, labels=true;	
 		var plotter, txt, chanArray, unlaced, val, window, thumbsize, zoom, width, 
 			layout, write=false, msresize, gui;
 			
@@ -62,13 +62,15 @@
 		}, {
 			Rect(4, 4, bounds.width - 10, bounds.height - 10); 
 		})).resize_(5);
-
-		txt = gui.staticText.new(layout, Rect( 8, 0, width, 18))
-				.string_("index: 0, value: " ++ this[0].asString);
+		
+		if(labels){
+			txt = gui.staticText.new(layout, Rect( 8, 0, width, 18))
+					.string_("index: 0, value: " ++ this[0].asString);
+		};
 
 		numChannels.do({ |i|
 			plotter = gui.multiSliderView.new(layout, Rect(0, 0, 
-					layout.bounds.width, layout.bounds.height - 26)) // compensate for the text
+					layout.bounds.width, layout.bounds.height - if(labels, {26}, {0}))) // compensate for the text
 				.readOnly_(true)
 				.drawLines_(discrete.not)
 				.drawRects_(discrete)
@@ -80,8 +82,10 @@
 					var curval;
 					curval = v.currentvalue.linlin(0.0, 1.0, minval[i], maxval[i]);
 					
-					txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++ 
-					", value: " ++ curval);
+					if(labels){
+						txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++ 
+						", value: " ++ curval);
+					};
 					if(write) { this[(v.index / zoom).asInteger * numChannels + i ]  = curval };
 				})
 				.keyDownAction_({ |v, char|
@@ -110,19 +114,19 @@
 */
 
 + Wavetable {
-	plot { arg name, bounds, minval, maxval, parent;
-		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, parent: parent);
+	plot { arg name, bounds, minval, maxval, parent, labels=true;
+		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, parent: parent, labels: labels);
 	}
 }
 
 + Buffer {
-	plot { arg name, bounds, minval = -1.0, maxval = 1.0, parent;
+	plot { arg name, bounds, minval = -1.0, maxval = 1.0, parent, labels=true;
 		var gui;
 		gui = GUI.current;
 		this.loadToFloatArray(action: { |array, buf| 
 			{
 				GUI.use( gui, {
-					array.plot(name, bounds, numChannels: buf.numChannels, minval: minval, maxval: maxval, parent: parent);
+					array.plot(name, bounds, numChannels: buf.numChannels, minval: minval, maxval: maxval, parent: parent, labels: labels);
 				});
 			}.defer;
 		});
@@ -162,7 +166,7 @@
 		});
 	}
 	
-	plot { arg duration  = 0.01, server, bounds, minval = -1.0, maxval = 1.0, parent;
+	plot { arg duration  = 0.01, server, bounds, minval = -1.0, maxval = 1.0, parent, labels=true;
 		var gui;
 		gui = GUI.current;
 		this.loadToFloatArray(duration, server, { |array, buf|
@@ -171,7 +175,7 @@
 			{
 				GUI.use( gui, {
 					array.plot(bounds: bounds, numChannels: numChan, minval: minval, maxval: maxval,
-						parent: parent) 
+						parent: parent, labels: labels) 
 				});
 			}.defer;
 		})
