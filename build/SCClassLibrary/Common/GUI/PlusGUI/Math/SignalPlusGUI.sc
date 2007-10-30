@@ -9,7 +9,11 @@
 		gui = GUI.current;
 			
 		bounds = bounds ?? { parent.notNil.if({
-				parent.view.bounds
+				if(parent.respondsTo(\view)){
+					parent.view.bounds
+				}{
+					parent.bounds
+				}
 			}, {
 				Rect(200 ,140, 705, 410);
  			});
