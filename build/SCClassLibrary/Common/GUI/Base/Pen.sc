@@ -1,12 +1,63 @@
 Pen {
+classvar font, fillColor, strokeColor;
+	*font_ { arg font;
+		font = font;
+	}
+
+	*string { arg str;
+		^str.drawAtPoint( Point( 0, 0 ), font ? Font.default, fillColor ? Color.black );
+	}
+	
+	*stringAtPoint { arg str, point;
+		^str.drawAtPoint( point, font ? Font.default, fillColor ? Color.black );
+	}
+	
+	*stringInRect { arg str, rect;
+		^str.drawInRect( rect, font ? Font.default, fillColor ? Color.black );
+	}
+	
+	*stringCenteredIn { arg str, inRect;
+		^str.drawCenteredIn( inRect, font ? Font.default, fillColor ? Color.black );
+	}
+	
+	*stringLeftJustIn { arg str, inRect;
+		^str.drawLeftJustIn( inRect, font ? Font.default, fillColor ? Color.black );
+	}
+	
+	*stringRightJustIn { arg str, inRect;
+		^str.drawRightJustIn( inRect, font ? Font.default, fillColor ? Color.black );
+	}
+
+	*strokeColor_ { arg color;
+		strokeColor	= color;
+		color.setStroke;
+	}
+
+	*fillColor_ { arg color;
+		fillColor 	= color;
+		color.setFill;
+	}
+	
+	*color_ { arg color;
+		color = color ? Color.black;
+		fillColor	= color;
+		strokeColor	= color;
+		color.set;
+	}
+
 	*use { arg function;
 		var res;
 		this.push;
+//		this.prReset;
 		res = function.value;
 		this.pop;
 		^res
 	}
-
+	
+	*prReset{
+		this.color_(nil)
+	}
+	
 	*translate { arg x=0, y=0;
 		_Pen_Translate	
 		^this.primitiveFailed
