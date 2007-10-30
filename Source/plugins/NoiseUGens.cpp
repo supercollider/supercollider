@@ -502,7 +502,7 @@ void Crackle_Ctor(Crackle* unit)
 void Logistic_next_1(Logistic *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
-	double paramf = ZIN0(1);
+	double paramf = ZIN0(0);
 	double y1 = unit->m_y1;
 
 	LOOP(inNumSamples, 
@@ -539,13 +539,14 @@ void Logistic_next_k(Logistic *unit, int inNumSamples)
 
 void Logistic_Ctor(Logistic* unit)
 {
-	if (INRATE(0) == calc_ScalarRate && ZIN0(0) >= unit->mRate->mSampleRate) {
+	if (INRATE(0) == calc_ScalarRate && ZIN0(1) >= unit->mRate->mSampleRate) {
 		SETCALC(Logistic_next_1);
 	} else {
 		SETCALC(Logistic_next_k);
 	}
 	
 	unit->m_y1 = ZIN0(2);
+	unit->mCounter = 0;
 	
 	Logistic_next_1(unit, 1);
 }

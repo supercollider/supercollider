@@ -183,11 +183,11 @@ Crackle : UGen {
 
 Logistic : UGen {
 	
-	*ar { arg chaosParam=3.0, freq = 1000.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', chaosParam, freq).madd(mul, add)
+	*ar { arg chaosParam=3.0, freq = 1000.0, init= 0.5, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', chaosParam, freq, init).madd(mul, add)
 	}
-	*kr { arg chaosParam=3.0, freq = 1000.0, mul = 1.0, add = 0.0;
-		^this.multiNew('control', chaosParam, freq).madd(mul, add)
+	*kr { arg chaosParam=3.0, freq = 1000.0, init=0.5, mul = 1.0, add = 0.0;
+		^this.multiNew('control', chaosParam, freq, init).madd(mul, add)
 	}
 }
 /* not installed
