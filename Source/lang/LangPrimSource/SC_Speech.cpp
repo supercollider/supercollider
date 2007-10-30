@@ -96,6 +96,7 @@ int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
 	if (chan < 0 || chan >= kMaxSpeechChannels) return errIndexOutOfRange;
 	
 	for (int i=0; i<chan; ++i) {
+		if(fCurSpeechChannel[i]) DisposeSpeechChannel(fCurSpeechChannel[i]);
         NewSpeechChannel( NULL, fCurSpeechChannel+i );
         theErr = SetSpeechInfo (fCurSpeechChannel[i], soSpeechDoneCallBack, (const void*)OurSpeechDoneCallBackProc);
         theErr = SetSpeechInfo (fCurSpeechChannel[i], soWordCallBack, (const void*)OurWordCallBackProc);
@@ -304,6 +305,8 @@ void initSpeechPrimitives ()
 	definePrimitive(base, index++, "_SpeechVoiceIsSpeaking", prSpeechVoiceIsSpeaking, 2, 0); 	
 	for(int i=0; i<kMaxSpeechChannels; ++i){
 		speechStrings[i] = NULL;
+		if(fCurSpeechChannel[i]) DisposeSpeechChannel(fCurSpeechChannel[i]);
+		fCurSpeechChannel[i] = NULL;
 	}
 }
 
