@@ -10,16 +10,16 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bb0e03}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bb0e03; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {text-decoration: underline ; color: #0000ff}
-span.s2 {color: #0000ff}
+span.s1 {text-decoration: underline ; color: #0013fe}
+span.s2 {color: #0013fe}
 span.s3 {color: #606060}
-span.s4 {color: #0000bf}
-span.s5 {color: #bf0000}
+span.s4 {color: #000ebe}
+span.s5 {color: #bb0e03}
 span.s6 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -38,6 +38,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>minval</b> - minimum value(s) for the display range. For a Buffer this defaults to -1 but can be changed.</p>
 <p class="p3"><b>maxval</b> - maximum value(s) for the display range. For a Buffer this defaults to +1 but can be changed.</p>
 <p class="p3"><b>parent</b> - by default the plot is placed in a new GUI window. This argument can be used to specify an existing GUI container to send the plot to.</p>
+<p class="p3"><b>labels</b> - by default labels appear at the top left of the plot giving a data readout based on mouse position. Set this argument to false to prevent them appearing.</p>
 <p class="p2"><br></p>
 <p class="p3">If <b>minval</b> and/or <b>maxval</b> are set to nil (this is default, except for Buffers), they will be automatically calculated from the dataset minimum and/or maximum. For multi-channel data, <b>minval</b> and <b>maxval</b> may be arrays, specifying the range independently for each channel (including use of nil, in which case the min/max will be calculated for the specific channel rather than for the overall dataset).</p>
 <p class="p2"><br></p>
