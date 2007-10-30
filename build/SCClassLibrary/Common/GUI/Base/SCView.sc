@@ -579,6 +579,16 @@ SCRangeSlider : SCSliderBase {
 		this.setPropertyWithAction(\range, val);
 	}	
 
+	setSpan { arg lo, hi;
+		this.lo = lo;
+		this.hi = hi;
+	}
+	
+	setSpanActive { arg lo, hi;
+		this.setSpan( lo, hi );
+		this.doAction;
+	}
+
 	properties {
 		^super.properties ++ #[\lo, \hi]
 	}
@@ -655,7 +665,18 @@ SC2DSlider : SCSliderBase {
 	}	
 	activey_ { arg val;
 		this.setPropertyWithAction(\y, val);
-	}	
+	}
+
+	setXY { arg x, y;
+		this.x = x;
+		this.y = y;
+	}
+	
+	setXYActive { arg x, y;
+		this.setXY( x, y );
+		this.doAction;
+	}
+
 	properties {
 		^super.properties ++ #[\x, \y]
 	}
@@ -1195,7 +1216,9 @@ SCMultiSliderView : SCView {
 		gap = inx;
 		this.setProperty(\xOffset, inx)
 	}
-	
+
+	startIndex_ { arg val; this.setProperty( \startIndex, val )}
+
 	selectionSize { 
 		^this.getProperty(\selectionSize)
 	}
