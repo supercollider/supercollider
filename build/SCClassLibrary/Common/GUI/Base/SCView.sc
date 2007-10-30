@@ -69,10 +69,6 @@ SCView {  // abstract class
 	focusColor{
 		^this.getProperty(\focusColor);
 	}
-	
-	onFocus{
-		\hi.postln;
-	}
 		
 	id {
 		^this.getProperty(\id)
