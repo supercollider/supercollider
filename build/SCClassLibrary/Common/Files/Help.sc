@@ -129,7 +129,7 @@ Help {
 	
 	// SCListView
 	listviews = (0..numcols-1).collect({|index|
-		GUI.listView.new(win, Rect(10 + (index * 200), 5, 180, 450)).action_({ |lv|
+		GUI.listView.new(win, Rect(10 + (index * 200), 5, 180, 480)).action_({ |lv|
 			var selectedstr = lv.items[lv.value];
 			if(selectedstr != "", {
 				if(selectedstr[0..1]=="->", {
@@ -215,9 +215,11 @@ Help {
 	// Add keyboard navigation between columns
 	listviews.do({ |lv, index| // SCView
 		lv.keyDownAction_({|view,char,modifiers,unicode,keycode|
-			switch(keycode, 
-			123, { if(index != 0,                  { listviews[index-1].focus }) }, 
-			124, { if(index != (listviews.size-1), { listviews[index+1].value_(-1).valueAction_(0).focus }) },
+			switch(unicode, 
+			63234, { if(index != 0,
+							{ listviews[index-1].focus }) }, 
+			63235, { if(index != (listviews.size-1) and:{listviews[index+1].items.notNil}, 
+							{ listviews[index+1].value_(-1).valueAction_(0).focus }) },
 			//default:
 			{ 
 				// Returning nil is supposed to be sufficient to trigger the default action,
