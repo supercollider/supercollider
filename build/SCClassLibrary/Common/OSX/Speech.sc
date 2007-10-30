@@ -1,5 +1,5 @@
 SpeechChannel{
-	var < channel, <pitch, <volume, <pitchMod, <voice;
+	var < channel, <pitch, <volume, <pitchMod, <voice, <rate;
 	var < wordDoneAction, < doneAction;
 	var < paused = false, isActive;
 	
@@ -29,6 +29,11 @@ SpeechChannel{
 	pitchMod_{|mod|
 		pitchMod = mod;
 		Speech.setSpeechPitchMod(channel, pitchMod);	
+	}
+	
+	rate_{|ratein|
+		rate = ratein;
+		Speech.setSpeechRate(channel, rate);
 	}
 	
 	voice_{|num|
