@@ -32,7 +32,6 @@ Help {
 			// Help file paths - will be used for categorising, if categories is nil or if not a class's helpfile.
 			// Otherwise they'll be stored for quick access to helpfile.
 			fileslist = IdentityDictionary.new;
-			//PathName.new("Help/").filesDo({|pathname|
 			PathName.new(Platform.helpDir).filesDo({|pathname|
 				if(pathname.fileName.endsWith(".html") 
 						&& pathname.fullPath.contains("3vs2").not
@@ -77,10 +76,6 @@ Help {
 		tree = nil;
 	}
 	
-	/*
-	try it:
-	Help.dumpTree;""
-	*/
 	*dumpTree { |node, prefix=""|
 		node = node ?? {this.tree};
 		node.keysValuesDo({ |key, val|
@@ -141,7 +136,6 @@ Help {
 					// We've clicked on one of the options for a class/file
 					
 					// This is the symbol (e.g. class name, or helpfile name) we're after
-					//node = selecteds[index-1].asSymbol;
 					node = selecteditem.asSymbol;
 					
 					switch(lv.items[lv.value][2..], 
@@ -161,7 +155,6 @@ Help {
 								
 							}, {
 								// We know the helpfile path
-				//RM:"Happy. But linux users may not get the right format... FIX".postln;
 								selectednodes[index-1].openHTMLFile;
 							});
 							
@@ -178,7 +171,7 @@ Help {
 					
 					if(lv.items.size != 0, { 
 						
-						/*** selecteds[index] = ****/ selecteditem = lists[index][lv.value];
+						selecteditem = lists[index][lv.value];
 						if(listviews[index+1].isNil.not, {
 							// Clear the GUI for the subsequent panels
 							listviews[index+1..].do(_.items=#[]);
@@ -203,15 +196,13 @@ Help {
 							}, {
 								// We have a category on our hands
 								lists[index+1] = node.keys(Array).collect(_.asString).sort({|a,b| 
-									a[0]==$[ || (b[0]!=$[ && (a <= b)) 
+									a[0]==$[ || (b[0]!=$[ && (a <= b))
 									});
 								listviews[index+1].items = lists[index+1];
 							});
 							listviews[index+1].valueAction_(0);
 							
 							selectednodes[index+2 ..] = nil; // Clear out the now-unselected
-							//"Help.gui - selectednodes:".postln;
-							//selectednodes.do({|i, index| (""++index++":"+ i).postln});
 						});
 					});
 				});
@@ -224,8 +215,6 @@ Help {
 	// Add keyboard navigation between columns
 	listviews.do({ |lv, index| // SCView
 		lv.keyDownAction_({|view,char,modifiers,unicode,keycode|
-			//char.postln;
-			//keycode.postln;
 			switch(keycode, 
 			123, { if(index != 0,                  { listviews[index-1].focus }) }, 
 			124, { if(index != (listviews.size-1), { listviews[index+1].value_(-1).valueAction_(0).focus }) },
