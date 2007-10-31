@@ -1113,7 +1113,7 @@ SCDragBoth : SCDragSink {
 SCUserView : SCView {
 	var <>keyDownFunc, <>drawFunc;
 	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
-	var < clearOnRefresh = true;
+	var < clearOnRefresh = true, < relativeOrigin = false;
 	
 	draw { 
 		drawFunc.value(this) ;	
@@ -1134,6 +1134,10 @@ SCUserView : SCView {
 	clearOnRefresh_{|bool|
 		clearOnRefresh = bool;
 		this.setProperty(\clearOnRefresh, bool);			}
+	
+	relativeOrigin_{|bool|
+		relativeOrigin = bool;
+		this.setProperty(\relativeOrigin, bool);			}	
 	
 }
 //
