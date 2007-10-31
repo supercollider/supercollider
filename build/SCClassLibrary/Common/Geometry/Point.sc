@@ -105,17 +105,17 @@ PointArray : Point
 	}
 }
 
-Lines : PointArray
-{
-	*new { arg n;
-		^super.new(2*n)
-	}
-}
-
-Polygon : PointArray
-{
-}
-
-ZigZag : PointArray
-{
-}
+//Lines : PointArray
+//{
+//	*new { arg n;
+//		^super.new(2*n)
+//	}
+//}
+//
+//Polygon : PointArray
+//{
+//}
+//
+//ZigZag : PointArray
+//{
+//}
