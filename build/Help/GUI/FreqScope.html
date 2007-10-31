@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.41">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+span.s1 {color: #0000bf}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>FreqScope<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>frequency analyzer</b></p>
+<p class="p2"><b></b><br></p>
+<p class="p3"><b>FreqScope.new(width, height, busNum, scopeColor, bgColor)</b></p>
+<p class="p4"><br></p>
+<p class="p3">FreqScope shows the frequency spectrum of the specified audio bus.<span class="Apple-converted-space">  </span>The scope will</p>
+<p class="p3">remain active after a command-period.<span class="Apple-converted-space">  </span>To turn it off you must either click off the 'Power'</p>
+<p class="p3">button or close the window.</p>
+<p class="p4"><br></p>
+<p class="p3">Panel commands:</p>
+<p class="p3">Power - <span class="Apple-tab-span">	</span>Turns the scope on and off.<span class="Apple-converted-space">  </span>This is useful for freezing the signal on the display<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or for saving CPU.</p>
+<p class="p3">BusIn -<span class="Apple-tab-span">	</span>The audio bus to be analyzed.</p>
+<p class="p3">FrqScl -<span class="Apple-tab-span">	</span>Determines the mapping of frequencies on the x-axis.<span class="Apple-converted-space">  </span>Can be linear (lin) or</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>logarithmic (log).<span class="Apple-converted-space">  </span>Logarithmic is equal spacing per musical octave.</p>
+<p class="p3">dbCut -<span class="Apple-tab-span">	</span>Determines the lowest decibel shown on the y-axis.</p>
+<p class="p4"><br></p>
+<p class="p5">// must use internal server</p>
+<p class="p6">s = <span class="s1">Server</span>.internal.boot;</p>
+<p class="p7"><br></p>
+<p class="p5">// create a new analyzer</p>
+<p class="p6"><span class="s1">FreqScope</span>.new(400, 200, 0);</p>
+<p class="p7"><br></p>
+<p class="p5">// basic sine</p>
+<p class="p6">{ <span class="s1">SinOsc</span>.ar(2000, 0, 0.25) }.play(s);</p>
+<p class="p7"><br></p>
+<p class="p5">// random saw</p>
+<p class="p6">{ <span class="s1">RLPF</span>.ar(<span class="s1">Saw</span>.ar(110, 0.2), <span class="s1">LFNoise2</span>.kr(1,1e4,1e4), <span class="s1">LFNoise2</span>.kr(1, 0.2, 0.22)) }.play(s);</p>
+<p class="p7"><br></p>
+<p class="p5">// modulate phase</p>
+<p class="p6">{ <span class="s1">SinOsc</span>.ar(800, <span class="s1">SinOsc</span>.ar(<span class="s1">XLine</span>.kr(20,8000,10),0,2pi), 0.25) }.play(s);<span class="Apple-converted-space"> </span></p>
+<p class="p7"><br></p>
+<p class="p5">// all harmonics</p>
+<p class="p6">{ <span class="s1">Blip</span>.ar(200,<span class="s1">Line</span>.kr(1,100,10),0.2) }.play(s);</p>
+<p class="p7"><br></p>
+<p class="p8"><br></p>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.41">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+span.s1 {color: #0000bf}
+span.s2 {color: #606060}
+span.s3 {color: #bf0000}
+span.s4 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCFreqScope<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>frequency analysis view</b></p>
+<p class="p2"><b></b><br></p>
+<p class="p3"><b>SCFreqScope.new(parent, bounds)</b></p>
+<p class="p4"><br></p>
+<p class="p3">SCFreqScope shows the frequency spectrum of a specified audio bus.<span class="Apple-converted-space">  </span>The scope will</p>
+<p class="p3">remain active after a command-period.<span class="Apple-converted-space">  </span>To turn it off you must use the 'active' method.</p>
+<p class="p4"><br></p>
+<p class="p3">Public methods:</p>
+<p class="p4"><br></p>
+<p class="p3"><b>kill()</b></p>
+<p class="p3"><b>Very important.</b><span class="Apple-converted-space">  </span>This must be run when the parent window is closed to avoid problems.</p>
+<p class="p3">It also frees the buffers that the scope allocated and stops the FFT analysis synth.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>active_(Boolean)</b></p>
+<p class="p3">Turns the scope on if true or off if false.<span class="Apple-converted-space">  </span>When the scope is turned on for the first time,</p>
+<p class="p3">it will send SynthDefs to the internal server, allocate the FFT and scope buffers, and</p>
+<p class="p3">start the FFT analysis synth.<span class="Apple-converted-space">  </span>After that, only the FFT synth will be turned on and off.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>dbRange_(Integer)</b></p>
+<p class="p3">Determines the amplitude range.<span class="Apple-converted-space">  </span>This sets the lowest negative decibel reading.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>freqMode_(Integer)</b></p>
+<p class="p3">Can be either 0 or 1.<span class="Apple-converted-space">  </span>0 displays frequencies on a linear scale and 1 displays frequencies</p>
+<p class="p3">on a logarithmic or equally spaced octave scale.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>inBus_(Integer)</b></p>
+<p class="p3">Change the bus number to analyze.</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">// Start internal server</p>
+<p class="p6">s = <span class="s1">Server</span>.internal.boot;</p>
+<p class="p7"><br></p>
+<p class="p5">// Create analyzer in a window</p>
+<p class="p6">(</p>
+<p class="p6">w = <span class="s1">SCWindow</span>(<span class="s2">"My Analyzer"</span>, <span class="s1">Rect</span>(0, 0, 511, 300)); <span class="s3">// width should be 511</span></p>
+<p class="p6">f = <span class="s1">SCFreqScope</span>(w, w.view.bounds);</p>
+<p class="p5"><span class="s4">f.active_(</span><span class="s1">true</span><span class="s4">); <span class="Apple-tab-span">	</span></span>// turn it on the first time;</p>
+<p class="p7"><br></p>
+<p class="p6">w.onClose_({ f.kill });<span class="Apple-converted-space">  </span><span class="s3">// you must have this</span></p>
+<p class="p6">w.front;</p>
+<p class="p6">)</p>
+<p class="p7"><br></p>
+<p class="p6">{ <span class="s1">SinOsc</span>.ar([500, 1000], 0, 0.25) }.play(s);<span class="Apple-converted-space">  </span><span class="s3">// start two sine waves</span></p>
+<p class="p7"><br></p>
+<p class="p5"><span class="s4">f.freqMode_(1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// change to log scale so we can see them</p>
+<p class="p5"><span class="s4">f.inBus_(1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// look at bus 1</p>
+<p class="p5"><span class="s4">f.dbRange_(200);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// expand amplitude range</p>
+<p class="p5"><span class="s4">f.active_(</span><span class="s1">false</span><span class="s4">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// turn scope off (watch CPU)</p>
+<p class="p5"><span class="s4">f.active_(</span><span class="s1">true</span><span class="s4">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// turn it back on<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p8"><br></p>
+<p class="p9">Now press command-period.<span class="Apple-converted-space">  </span>The scope is still running.</p>
+<p class="p8"><br></p>
+<p class="p6">{ <span class="s1">SinOsc</span>.ar([500, 1000], 0, 0.25) }.play(s);<span class="Apple-converted-space">  </span><span class="s3">// start sines again</span></p>
+<p class="p8"><br></p>
+<p class="p9">Close window and scope is killed.</p>
+</body>
+</html>
