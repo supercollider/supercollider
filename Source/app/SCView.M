@@ -3737,6 +3737,7 @@ SCView* NewSCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBoun
 SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds)
 {
+	mClearOnRefresh = true;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	CGSize size;
 	size.width = inBounds.width;
@@ -3744,6 +3745,7 @@ SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 
 	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
+	mCGContext = CGLayerGetContext(mCGLayer);
 #endif
 }
 
@@ -3814,12 +3816,18 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 
     if (strcmp(name, "setCGLayerToCurrent")==0) {
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
-	
+		CGRect cgrect = CGRectMake(0,0, mBounds.width, mBounds.height);
 		mGCtx = [NSGraphicsContext currentContext];
-		CGContextRef cglayerc = CGLayerGetContext(mCGLayer);
-		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:cglayerc flipped:YES];
+
+		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:mCGContext flipped:YES];		
 		[NSGraphicsContext setCurrentContext: gclayer];
-		CGContextBeginTransparencyLayer(cglayerc, NULL);
+		if(mClearOnRefresh){
+			CGContextClearRect(mCGContext,  cgrect);
+			CGContextSetRGBFillColor (mCGContext, 1, 1, 1, 0);
+			CGContextFillRect (mCGContext,  cgrect);
+		}
+		CGContextBeginTransparencyLayer(mCGContext, NULL);
+		
 	#endif
         return errNone;
     }
@@ -3835,6 +3843,12 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	#endif
         return errNone;
     }	
+	
+    if (strcmp(name, "clearOnRefresh")==0) {
+		mClearOnRefresh = IsTrue(slot);
+		return errNone;
+    }		
+	
     return SCView::setProperty(symbol, slot);
 }
 
