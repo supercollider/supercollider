@@ -35,6 +35,7 @@
 * 21.10.2007 Amplitude : attackTime and releaseTime can be modulated now - jr
 * 25.10.2007 Collection : histo method improved and moved from mathLib to common - jr
 * 30.10.2007 improvements to cocoa Gui, including SCUserView improved to support layering and own draw hook - jt, sciss
+* 31.10.2007 refactored Pbrown, added Pgbrown - jr
  
 
 // BUGFIXES:
