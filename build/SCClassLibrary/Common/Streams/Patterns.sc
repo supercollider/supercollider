@@ -437,11 +437,21 @@ Pbrown : Pattern {
 			hiVal = hiStr.next(inval);
 			stepVal = stepStr.next(inval);
 			if(loVal.isNil or: { hiVal.isNil } or: { stepVal.isNil }) { ^inval };
-			cur = (cur + stepVal.xrand2).fold(loVal, hiVal);
+			cur = this.calcNext(cur, stepVal).fold(loVal, hiVal);
 			inval = cur.yield;				
 		};
 		
 		^inval;
+	}
+	
+	calcNext { arg cur, step;
+		^cur + step.xrand2
+	}
+}
+
+Pgbrown : Pbrown {
+	calcNext { arg cur, step;
+		^cur * (1 + step.xrand2)
 	}
 }
 
