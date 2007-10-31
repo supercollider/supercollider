@@ -13,11 +13,11 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7b321d}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #79331d}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {color: #000000}
-span.s2 {color: #0a1fad}
-span.s3 {color: #0d29e7}
+span.s2 {color: #0022ac}
+span.s3 {color: #002de6}
 span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -33,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>5. the application including the two programs and providing mentioned functionalities</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><img src="attachments/ClientVsServer/structureEn.pdf" alt="structureEn.pdf"></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><img src="attachments/ClientVsServer/structureEn.png" alt="attachments/ClientVsServer/structureEn.png"></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>Figure 1. Structure of the SuperCollider application</b></p>
 <p class="p2"><br></p>
@@ -43,11 +43,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p3">The SuperCollider application makes use of client/server architecture which separates two functions, respectively one providing and the other requesting services. The client and the server communicate through a network.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><img src="attachments/ClientVsServer/s8kfFC-clientServerEn.pdf" alt="s8kfFC-clientServerEn.pdf"></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Figure 1. Client/Server architecture</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><img src="attachments/ClientVsServer/s8kfFC-clientServerEn.png" alt="attachments/ClientVsServer/s8kfFC-clientServerEn.png"></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Figure 2. Client/Server architecture</b></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
-<p class="p3">In Figure 1 a generic network architecture is depicted: A number of clients communicating with a server by exchanging messages through a network. In SuperCollider the client and the server make use of a specific subset of CNMAT's Open Sound Control (OSC) protocol in order to communicate (over TCP or UDP). As a consequence, you will see many references to "OSC messages" in the help files.</p>
+<p class="p3">In Figure 2 a generic network architecture is depicted: A number of clients communicating with a server by exchanging messages through a network. In SuperCollider the client and the server make use of a specific subset of CNMAT's Open Sound Control (OSC) protocol in order to communicate (over TCP or UDP). As a consequence, you will see many references to "OSC messages" in the help files.</p>
 <p class="p2"><br></p>
 <p class="p3">To avoid any possible confusion: The network is defined at an abstract level. This means that the client(s) and the server(s) can be in execution on the same physical machine. This is what normally happens when you use the SuperCollider application: two programs will run on your machine, scsynth and sclang.</p>
 <p class="p2"><br></p>
@@ -78,11 +78,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p3">Working this way you have gained certain functionality. It provides a node ID for you automatically, it allows you to control the Synth in syntactically elegant and efficient ways (see the <a href="../ServerArchitecture/Synth.html"><span class="s3">Synth</span></a> and <a href="../ServerArchitecture/Node.html"><span class="s3">Node</span></a> helpfiles), and to access all the advantages of object oriented programming while doing so.<span class="Apple-converted-space">  </span>Encapsulating the complexities and bookeeping greatly reduces the chance of bugs in your own code.</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><img src="attachments/ClientVsServer/scEn.pdf" alt="scEn.pdf"></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>Figure 2. Sclang as a high-level client.</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><img src="attachments/ClientVsServer/scEn.png" alt="attachments/ClientVsServer/scEn.png"></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>Figure 3. Sclang as a high-level client.</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
-<p class="p3">Language wrapping allows the user to access complex behaviours from very little code. Figure 2 (ignore for the moment that sclang is represented as a client among other possible ones, see later) schematically represents what happens when you evaluate an audio function like this:</p>
+<p class="p3">Language wrapping allows the user to access complex behaviours from very little code. Figure 3 (ignore for the moment that sclang is represented as a client among other possible ones, see later) schematically represents what happens when you evaluate an audio function like this:</p>
 <p class="p2"><br></p>
 <p class="p7">// assuming the server is already booted</p>
 <p class="p8">{<span class="s2">SinOsc</span>.ar}.play ;</p>
