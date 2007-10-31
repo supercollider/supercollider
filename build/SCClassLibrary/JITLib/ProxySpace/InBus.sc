@@ -37,8 +37,6 @@ InBus {
 
 }
 
-// crossfde In by AdC and JRh
-
 XIn { 
 	*ar { arg which, n;
 		^XFade2.ar( // use equal power crossfading for audio rate
@@ -98,9 +96,10 @@ SelectXFocus { 	// does not wrap (yet).
 	}
 }
 
+
+
 // listens on a fixed index (or several)
 // plays out to various other indices.
-
 
 Monitor {
 	var <ins, <outs, <amps = #[1.0], <vol=1;
@@ -298,21 +297,7 @@ Monitor {
 		};
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
-	
-	// shorter, but far less efficient
-	//playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
-//			inGroup, multi, volume, fadeTime;
-//			var numChannels = max(fromNumChannels, toNumChannels);
-//			var chanRange = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
-//			var n = numChannels div: chanRange;
-//			var outputChannels = Array.fill(n, {|i| toIndex + (i * chanRange % toNumChannels) });
-//			var inputChannels = Array.fill(n, {|i| fromIndex + (i * chanRange % fromNumChannels) });
-//			//[bundle, outputChannels, nil, inputChannels, 
-//			//	volume, fadeTime, inGroup, "system_link_audio_" ++ chanRange].postln;
-//			this.playNToBundle(bundle, outputChannels, nil, inputChannels, 
-//				volume, fadeTime, inGroup, "system_link_audio_" ++ chanRange);
-//				
-//	}
+
 	
 	playNBusToBundle { arg bundle, outs, amps, ins, bus, vol, fadeTime, group;
 		var size;
@@ -325,7 +310,6 @@ Monitor {
 			 	+ bus.index;
 
 		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?
-	//	this.playNToBundle(bundle, outs, amps, ins, vol, group, fadeTime)
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group)
 	}
 	
@@ -350,26 +334,3 @@ Monitor {
 		^(outs.size < 1) or: { ^outs.differentiate.drop(1).every(_ == 1) };
 	} 
 }
-
-
-
-
-// todo: 
-// analysis of contiguous channels for efficiency
-// maybe: merging of playN and play
-// recording function.
-
-
-/*
-	record { arg argAmps=(amps), argIns=(ins), vol, fadeTime;
-		var numChannels = ins.size;
-		if(numChannels > SystemSynthDefs.numChannels) { 
-				"too few channels defined in SystemSynthDefs".error ^this 
-		};
-		
-		if(this.isPlaying.not) { 
-			this.newGroupToBundle(bundle, inGroup)
-		};	 
-	}
-	*/
-
