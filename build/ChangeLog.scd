@@ -1,7 +1,10 @@
 
 //////////// change log /////////////
 
-// user-visible changes since 22.09.2007, in preparation for SuperCollider v3.1 release:
+
+///////////////////////////// SuperCollider v3.1, released 31-10-2007 /////////////////////////////
+
+// user-visible changes since 22.09.2007 (for first point release):
 
 // HEADLINES:
 
@@ -31,6 +34,7 @@
 * 20.10.2007 Object:deprecated and DeprecatedError added to allow for method deprecation - sw
 * 21.10.2007 Amplitude : attackTime and releaseTime can be modulated now - jr
 * 25.10.2007 Collection : histo method improved and moved from mathLib to common - jr
+* 30.10.2007 improvements to cocoa Gui, including SCUserView improved to support layering and own draw hook - jt, sciss
  
 
 // BUGFIXES:
