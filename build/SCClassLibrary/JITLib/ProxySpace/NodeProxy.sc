@@ -201,7 +201,7 @@ BusPlug : AbstractFunction {
 	monitorIndex { ^if(monitor.isNil) { nil }{ monitor.out } }
 	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }
 	
-	stop { arg fadeTime=0.1; monitor.stop(fadeTime) }
+	stop { arg fadeTime=0.1, reset=false; monitor.stop(fadeTime); if(reset) { monitor = nil }; }
 	
 	scope { arg bufsize = 4096, zoom; if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } }
 	
@@ -284,17 +284,17 @@ NodeProxy : BusPlug {
 	clear { arg fadeTime=0;
 		this.free(fadeTime, true); 	// free group and objects
 		this.removeAll; 			// take out all objects
-		this.stop(fadeTime);		// stop any monitor
+		this.stop(fadeTime, true);		// stop any monitor
 		monitor = nil;
 		this.freeBus;	 // free the bus from the server allocator 
 		this.init;	// reset the environment
 		
 	}
 	
-	end { arg fadeTime;
+	end { arg fadeTime, reset=false;
 		var dt;
 		dt = fadeTime ? this.fadeTime;
-		Routine { this.free(dt, true); (dt + server.latency).wait; this.stop(0);  } .play;
+		Routine { this.free(dt, true); (dt + server.latency).wait; this.stop(0, reset);  } .play;
 	}
 	
 	pause {
