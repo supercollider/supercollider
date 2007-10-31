@@ -1116,10 +1116,7 @@ SCUserView : SCView {
 	var < clearOnRefresh = true;
 	
 	draw { 
-		this.setProperty(\setCGLayerToCurrent);
-		drawFunc.value(this) ;
-		this.setProperty(\restoreCurrentCGContext);
-	
+		drawFunc.value(this) ;	
 	}
 	mouseBeginTrack { arg x, y, modifiers; 
 		mouseBeginTrackFunc.value(this, x, y, modifiers); 
