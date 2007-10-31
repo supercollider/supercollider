@@ -1119,12 +1119,33 @@ SCUserView : SCView {
 		drawFunc.value(this) ;	
 	}
 	mouseBeginTrack { arg x, y, modifiers; 
+		var bounds;
+		if(relativeOrigin){
+			bounds = this.bounds;
+			x = (x - bounds.left).clip(0, bounds.width);
+			y = (y - bounds.top).clip(0, bounds.height);
+
+		};	
 		mouseBeginTrackFunc.value(this, x, y, modifiers); 
 	}
 	mouseTrack { arg x, y, modifiers; 
+		var bounds;
+		if(relativeOrigin){
+			bounds = this.bounds;
+			x = (x - bounds.left).clip(0, bounds.width);
+			y = (y - bounds.top).clip(0, bounds.height);
+
+		};
 		mouseTrackFunc.value(this, x, y, modifiers); 
 	}
 	mouseEndTrack { arg x, y, modifiers; 
+		var bounds;
+		if(relativeOrigin){
+			bounds = this.bounds;
+			x = (x - bounds.left).clip(0, bounds.width);
+			y = (y - bounds.top).clip(0, bounds.height);
+
+		};
 		mouseEndTrackFunc.value(this, x, y, modifiers); 
 	}
 	keyDown { arg key, modifiers, unicode; 
