@@ -9,9 +9,6 @@ installation (requirements)
 ---------------------------
 
 For the HTML help system, you will need emacs-w3m support.
-Building scel will fail if you do not have the package.
-If you insist on not installing the package, remove the line
-(require 'w3m) from el/sclang-help.el
 
 installation (default)
 -----------------------
@@ -48,6 +45,10 @@ following to ~/.sclang.cfg:
 
 +~/SuperCollider/Emacs
 
+(note normally this is not needed as they are put into sclang's library
+path during installation with scons).
+
+
 usage
 ------
 
@@ -69,7 +70,7 @@ a window with key bindings in sclang-mode will pop up.
 
 C-x C-h lets you search for a help file
 
-C-M-h opens the Help browser (if no Help file has been opened, the default Help file will be opened)
+C-M-h opens or switches to the Help browser (if no Help file has been opened, the default Help file will be opened)
 
 E copies the buffer, puts it in text mode and sclang-minor-mode, to enable you to edit the code parts to try out variations of the provided code in the help file. With C-M-h you can then return to the Help browser and browse further from the Help file.
 

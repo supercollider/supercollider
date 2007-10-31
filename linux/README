@@ -26,6 +26,7 @@ might consider subscribing to the mailing lists
 
 ------------------------------------------------------------------------
 build requirements
+(most of these will be available in your linux distribution as packages )
 ------------------------------------------------------------------------
 
  * gcc >= 3.0
@@ -61,6 +62,7 @@ build requirements
 
 ------------------------------------------------------------------------
 build requirements (optional features)
+(most of these will be available in your linux distribution as packages )
 ------------------------------------------------------------------------
 
  o alsa
@@ -173,16 +175,18 @@ initialization. this file can contain statements you don't want to put
 in a custom Main class, like setting default variables. an example can
 be found in `examples/sclang.sc'.
 
-you _have_ to have a `synthdefs' subdirectory in sclang's working
-directory, because some default synthdefs are written on startup;
-otherwise the language will signal a runtime error. the runtime
-directory is either the current working directory or the path
-specified with the `-d' option.
+you _have_ to have a directory '~/share/SuperCollider/'. This is where
+automatically a synthdefs directory is created. It is also the place
+to put Extensions to the class library, in a folder called Extensions.
+
+the runtime directory is either the current working directory or the
+path specified with the `-d' option.
 
 for advanced setups, sclang's compilation search path can be
 customized with a library configuration file. an example is provided
 in `examples/sclang.cfg'; install it as `/etc/sclang.cfg' or
-`~/.sclang.cfg'.
+`~/.sclang.cfg'. This config file is only needed when you want to
+_exclude_ directories from the class library. Otherwise it is not needed.
 
 ------------------------------------------------------------------------
 environment
