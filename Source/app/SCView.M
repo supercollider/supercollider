@@ -3739,25 +3739,47 @@ SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 {
 	mClearOnRefresh = true;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
-	CGSize size;
-	size.width = inBounds.width;
-	size.height = inBounds.height;
-
-	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
-	mCGContext = CGLayerGetContext(mCGLayer);
+	mCGLayer =  NULL;
 #endif
 }
 
 SCUserView::~SCUserView()
 {
- CGLayerRelease(mCGLayer);
+	if(mCGLayer) CGLayerRelease(mCGLayer);
 }
 
 void SCUserView::draw(SCRect inDamage)
 {
+	if(mBounds.width == 0) return;
+	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
+	CGSize size;
+	size.width = mBounds.width;
+	size.height = mBounds.height;
+	
+	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	if(!mCGLayer)mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
 
+	CGRect cgrect = CGRectMake(0,0, mBounds.width, mBounds.height);
+	NSGraphicsContext* lGCtx = [NSGraphicsContext currentContext];
+	CGContextRef lCGContext = CGLayerGetContext(mCGLayer);
+
+	NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];		
+	[NSGraphicsContext setCurrentContext: gclayer];
+	if(mClearOnRefresh){
+		CGContextClearRect(lCGContext,  cgrect);
+		CGContextSetRGBFillColor (lCGContext, 1, 1, 1, 0);
+		CGContextFillRect (lCGContext,  cgrect);
+	}
+	CGContextBeginTransparencyLayer(lCGContext, NULL);
+		
+	#endif
     sendMessage(s_draw, 0, 0, 0);
+	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
+
+	CGContextEndTransparencyLayer(lCGContext);	
+	CGContextDrawLayerInRect(cgc, SCtoCGRect(mBounds), mCGLayer);
+	[NSGraphicsContext setCurrentContext: lGCtx];
+	#endif	
 }
 
 
@@ -3813,36 +3835,6 @@ void SCUserView::receiveDrag()
 int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
 	char *name = symbol->name;
-
-    if (strcmp(name, "setCGLayerToCurrent")==0) {
-	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
-		CGRect cgrect = CGRectMake(0,0, mBounds.width, mBounds.height);
-		mGCtx = [NSGraphicsContext currentContext];
-
-		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:mCGContext flipped:YES];		
-		[NSGraphicsContext setCurrentContext: gclayer];
-		if(mClearOnRefresh){
-			CGContextClearRect(mCGContext,  cgrect);
-			CGContextSetRGBFillColor (mCGContext, 1, 1, 1, 0);
-			CGContextFillRect (mCGContext,  cgrect);
-		}
-		CGContextBeginTransparencyLayer(mCGContext, NULL);
-		
-	#endif
-        return errNone;
-    }
-
-    if (strcmp(name, "restoreCurrentCGContext")==0) {
-	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
-
-		CGContextEndTransparencyLayer(CGLayerGetContext(mCGLayer));
-		CGContextRef cgc = (CGContextRef)[mGCtx graphicsPort];
-	
-		CGContextDrawLayerInRect(cgc, SCtoCGRect(mBounds), mCGLayer);
-		[NSGraphicsContext setCurrentContext: mGCtx];
-	#endif
-        return errNone;
-    }	
 	
     if (strcmp(name, "clearOnRefresh")==0) {
 		mClearOnRefresh = IsTrue(slot);
@@ -4709,7 +4701,7 @@ void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theE
 {
 	//mPrevPoint = where;
 	mouseTrack(where, modifiers,theEvent);
-	NSLog(@"foo");
+//	NSLog(@"foo");
 }
 
 void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
