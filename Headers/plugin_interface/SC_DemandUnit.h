@@ -40,6 +40,14 @@ inline float DemandInput(Unit* unit, int index)
 	return IN0(index);
 }
 
+inline float DemandInput(Unit* unit, int index, int offset)
+{
+	Unit* fromUnit = unit->mInput[index]->mFromUnit;
+	if (fromUnit && fromUnit->mCalcRate == calc_DemandRate)
+		(fromUnit->mCalcFunc)(fromUnit, 1);
+	return IN(index)[offset];
+}
+
 inline void ResetInput(Unit* unit, int index)
 {
 	Unit* fromUnit = unit->mInput[index]->mFromUnit;
@@ -49,6 +57,7 @@ inline void ResetInput(Unit* unit, int index)
 
 #define ISDEMANDINPUT(index) IsDemandInput(unit, (index))
 #define DEMANDINPUT(index) DemandInput(unit, (index))
+#define DEMANDINPUT2(index, offset) DemandInput(unit, (index), (offset))
 #define RESETINPUT(index) ResetInput(unit, (index))
 
 #endif
