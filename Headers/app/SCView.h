@@ -766,8 +766,6 @@ protected:
 	bool mClearOnRefresh;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
 	CGLayerRef mCGLayer;
-	CGContextRef mCGContext;
-	NSGraphicsContext *mGCtx;	
 #endif
 	
 	void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);
