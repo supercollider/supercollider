@@ -1,3 +1,10 @@
+/// NOTE: this code is still in an experimental state and only works on Linux, if compiled with Wii support.
+/// Therefor, it also has no helpfile yet
+/// This code may change without notice; do not use this code, unless you really want to and don't mind
+/// having to change your code in the future.
+/// Expect this code to be fully functional by version 3.2
+/// - october 2007 - nescivi
+
 WiiCalibrationInfo {
 	var <accX_zero, <accY_zero, <accZ_zero, <accX_lg, <accY_lg, <accZ_lg;
 	var <nAccX_zero, <nAccY_zero, <nAccZ_zero, <nAccX_lg, <nAccY_lg, <nAccZ_lg;
