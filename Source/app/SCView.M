@@ -3738,6 +3738,7 @@ SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 	: SCView(inParent, inObj, inBounds)
 {
 	mClearOnRefresh = true;
+	mRelativeOrigin = false;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	mCGLayer =  NULL;
 #endif
@@ -3750,35 +3751,36 @@ SCUserView::~SCUserView()
 
 void SCUserView::draw(SCRect inDamage)
 {
-	if(mBounds.width == 0) return;
+	if(mBounds.width == 0 || mBounds.height == 0) return;
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
-	CGSize size;
-	size.width = mBounds.width;
-	size.height = mBounds.height;
-	
-	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	if(!mCGLayer)mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
+	CGContextRef lCGContext;
+	CGContextRef cgc;
+	NSGraphicsContext* lGCtx;
+	if(mRelativeOrigin){
+		CGSize size = CGSizeMake(mBounds.width, mBounds.height);
+		cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+		if(!mCGLayer) mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
+		CGRect cgrect = CGRectMake(0,0, mBounds.width, mBounds.height);
+		lGCtx = [NSGraphicsContext currentContext];
+		lCGContext = CGLayerGetContext(mCGLayer);
 
-	CGRect cgrect = CGRectMake(0,0, mBounds.width, mBounds.height);
-	NSGraphicsContext* lGCtx = [NSGraphicsContext currentContext];
-	CGContextRef lCGContext = CGLayerGetContext(mCGLayer);
-
-	NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];		
-	[NSGraphicsContext setCurrentContext: gclayer];
-	if(mClearOnRefresh){
-		CGContextClearRect(lCGContext,  cgrect);
-		CGContextSetRGBFillColor (lCGContext, 1, 1, 1, 0);
-		CGContextFillRect (lCGContext,  cgrect);
+		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];		
+		[NSGraphicsContext setCurrentContext: gclayer];
+		if(mClearOnRefresh){
+			CGContextClearRect(lCGContext,  cgrect);
+			CGContextSetRGBFillColor (lCGContext, 1, 1, 1, 0);
+			CGContextFillRect (lCGContext,  cgrect);
+		}
+		CGContextBeginTransparencyLayer(lCGContext, NULL);
 	}
-	CGContextBeginTransparencyLayer(lCGContext, NULL);
-		
 	#endif
     sendMessage(s_draw, 0, 0, 0);
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
-
-	CGContextEndTransparencyLayer(lCGContext);	
-	CGContextDrawLayerInRect(cgc, SCtoCGRect(mBounds), mCGLayer);
-	[NSGraphicsContext setCurrentContext: lGCtx];
+	if(mRelativeOrigin){
+		CGContextEndTransparencyLayer(lCGContext);	
+		CGContextDrawLayerInRect(cgc, SCtoCGRect(mBounds), mCGLayer);
+		[NSGraphicsContext setCurrentContext: lGCtx];
+	}
 	#endif	
 }
 
@@ -3838,6 +3840,10 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	
     if (strcmp(name, "clearOnRefresh")==0) {
 		mClearOnRefresh = IsTrue(slot);
+		return errNone;
+    }
+	if (strcmp(name, "relativeOrigin")==0) {
+		mRelativeOrigin = IsTrue(slot);
 		return errNone;
     }		
 	
