@@ -763,9 +763,10 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
 protected:
-
+	bool mClearOnRefresh;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
 	CGLayerRef mCGLayer;
+	CGContextRef mCGContext;
 	NSGraphicsContext *mGCtx;	
 #endif
 	
