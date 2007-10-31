@@ -25,7 +25,10 @@ s.boot;
 
 To execute a line in OS X, put the cursor on a line and press the Enter key; this is distinct from the Return key! 
 
-And be careful you're not using TextEdit or a web browser instead of the SuperCollider Lang when you execute code; SC shares the text editor interface with TextEdit. 
+And be careful you're not using TextEdit or a web browser instead of
+the SuperCollider application when you try to execute code; SC's text
+editor interface is a lot like TextEdit, but only the SC editor can
+run code when you hit Enter.
 
    
 [Windows] The windows version of SuperCollider is called PsyCollider. Key commands differ from the Mac, but almost all code should work the same. The SwingOSC Java based GUI library is used here, however, for GUIs. You must use JMouseX/JMouseY in particular; PsyCollider does not support MouseX/MouseY UGens.  
