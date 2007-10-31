@@ -3817,7 +3817,7 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	
 		mGCtx = [NSGraphicsContext currentContext];
 		CGContextRef cglayerc = CGLayerGetContext(mCGLayer);
-		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:cglayerc flipped:NO];
+		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:cglayerc flipped:YES];
 		[NSGraphicsContext setCurrentContext: gclayer];
 		CGContextBeginTransparencyLayer(cglayerc, NULL);
 	#endif
