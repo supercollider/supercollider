@@ -1042,6 +1042,15 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 											   range: NSMakeRange(0, [html length])
 						];
 					success = success && [pngData writeToFile: [pathToSaveAttachments stringByAppendingPathComponent: [pngURL lastPathComponent]] atomically:YES];
+				} else if([[thisFileName pathExtension] isEqualToString:@"pdf"]) {
+					// it's a pdf
+					NSString *correctURL = [[NSString stringWithFormat:@"attachments/%@/", [[path lastPathComponent] stringByDeletingPathExtension]] stringByAppendingString: thisFileName];
+					[html replaceOccurrencesOfString: [NSString stringWithFormat:@"<img src=\"%@\"", thisFileName] 
+										  withString: [NSString stringWithFormat:@"<img src=\"%@\"", correctURL]
+											 options: NSCaseInsensitiveSearch
+											   range: NSMakeRange(0, [html length])
+						];
+					success = success && [thisFile writeToFile: thisPath atomically:YES updateFilenames: YES];
 				} else {
 					// not an image
 					NSString *correctURL = [[NSString stringWithFormat:@"attachments/%@/", [[path lastPathComponent] stringByDeletingPathExtension]] stringByAppendingString: thisFileName];
