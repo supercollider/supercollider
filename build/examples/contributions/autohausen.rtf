@@ -1,0 +1,212 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 // Autohausen \cf0 \
+\cf2 // (Nick Collins) (CC 2007)\cf0 \
+\cf2 \
+\pard\pardeftab560\ql\qnatural
+\cf2 \
+//first send the SynthDefs; make sure the Server is on\cf0 \
+(\
+\cf3 var\cf0  numChannels=2;\cf2 //4  //replace 2 by 4 if you want to try a quadrophonic setup\cf0 \
+\
+\cf3 SynthDef\cf0 (\cf4 \\impulsetrain1\cf0 , \{\cf3 arg\cf0  freq=440, amp=0.1,attack=0.01, sustain=0.1, decay=0.01,pan=0.0, bandwidth=100;\
+\cf3 var\cf0  source, filter, env;\
+\
+env= \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 ([0,1,1,0],[attack, sustain, decay]), doneAction:2);\
+\
+source= \cf3 Impulse\cf0 .ar(freq);\
+\
+filter= \cf3 BPF\cf0 .ar(source*env*amp*10,freq,bandwidth/freq);\
+\
+\cf3 Out\cf0 .ar(0,\cf3 PanAz\cf0 .ar(numChannels,filter,pan))\
+\}).send(s);\
+\
+\
+\cf3 SynthDef\cf0 (\cf4 \\sinarpegg1\cf0 , \{\cf3 arg\cf0  freq=440, amp=0.1,attack=0.01, sustain=0.1, decay=0.01,pan=0.0;\
+\cf3 var\cf0  source, filter, env;\
+\
+source= \cf3 SinOsc\cf0 .ar(\cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 ([1,2,3,4,5,6]*freq,(0.2*attack).dup(5))));\
+\
+filter= \cf3 CombN\cf0 .ar(source*\cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 ([1,1,0],[attack,0.01])),0.025,0.025,5);\
+\
+env= \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 ([0,0,1,1,0],[attack, 0.01,sustain, decay]), doneAction:2);\
+\
+\cf3 Out\cf0 .ar(0,\cf3 PanAz\cf0 .ar(numChannels,filter*env*0.5*amp,pan))\
+\}).send(s);\
+\
+\
+\cf3 SynthDef\cf0 (\cf4 \\pitchednoise\cf0 , \{\cf3 arg\cf0  freq=440, amp=0.1,attack=0.01, sustain=0.1, decay=0.01,pan=0.0, bandwidth=100;\
+\cf3 var\cf0  source, filter, env;\
+\
+env= \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 ([0,1,1,0],[attack, sustain, decay]), doneAction:2);\
+\
+source= \cf3 WhiteNoise\cf0 .ar;\
+\
+filter= \cf3 BPF\cf0 .ar(source*env*2*amp,freq,bandwidth/freq);\
+\
+\cf3 Out\cf0 .ar(0,\cf3 PanAz\cf0 .ar(numChannels,filter,pan))\
+\}).send(s);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf2 //preferred version if you have the FreeVerb UGen, commented out by default\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf2 //SynthDef(\\stockyfx, \{arg shift=0.0, rate=1.0;\cf0 \
+\cf2 //var input, fx;\cf0 \
+\cf2 //var shifted;\cf0 \
+\cf2 //\cf0 \
+\cf2 //input=In.ar(0,2);\cf0 \
+\cf2 //\cf0 \
+\cf2 ////simulate slow down\cf0 \
+\cf2 //shifted= PitchShift.ar(input, 0.01,rate);\cf0 \
+\cf2 //\cf0 \
+\cf2 //ReplaceOut.ar(0,FreeVerb.ar(((shift*shifted)+((1.0-shift)*input)),0.33,1.5))\cf0 \
+\cf2 //\cf0 \
+\cf2 //\}).send(s);\cf0 \
+\pard\pardeftab560\ql\qnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf3 SynthDef\cf0 (\cf4 \\stockyfx\cf0 , \{\cf3 arg\cf0  shift=0.0, rate=1.0;\
+\cf3 var\cf0  input, fx;\
+\cf3 var\cf0  shifted;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  a,c,z,y,in;\
+c = 2; \cf2 // number of comb delays\cf0 \
+a = 3; \cf2 // number of allpass delays\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf0 \
+input=\cf3 In\cf0 .ar(0,2);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf2 //simulate slow down\cf0 \
+shifted= \cf3 PitchShift\cf0 .ar(input, 0.01,rate);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf0 input= (shift*shifted)+((1.0-shift)*input);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // reverb predelay time :\cf0 \
+z = \cf3 DelayN\cf0 .ar(input, 0.048,0.048);\
+\
+\cf2 //for delaytime if want modulation-	//LFNoise1.kr(0.1.rand, 0.04, 0.05)\cf0 \
+y=\cf3 Mix\cf0 .arFill(c,\{\cf3 CombL\cf0 .ar(z,0.1,rrand(0.01, 0.1),5)\});\
+	\
+\cf2 // chain of 4 allpass delays on each of two channels (8 total) :\cf0 \
+a.do(\{ y = \cf3 AllpassN\cf0 .ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)], 1) \});\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf3 ReplaceOut\cf0 .ar(0,(0.33*y) + input);\
+\
+\}).send(s);\
+\pard\pardeftab560\ql\qnatural
+\cf0 \
+)\
+\
+\
+\
+\pard\pardeftab560\ql\qnatural
+\cf2 //tests\cf0 \
+\cf3 Synth\cf0 (\cf4 \\pitchednoise\cf0 ,[\cf4 \\freq\cf0 , 100, \cf4 \\bandwidth\cf0 , 200])\
+\cf3 Synth\cf0 (\cf4 \\impulsetrain1\cf0 ,[\cf4 \\freq\cf0 , 440])\
+\cf3 Synth\cf0 (\cf4 \\sinarpegg1\cf0 ,[\cf4 \\freq\cf0 , 440])\
+\
+\
+\
+\
+\
+\cf2 //now run the piece\cf0 \
+(\
+\cf3 var\cf0  series,seriesseries,series2,seriesseries2, tmp; \
+\cf3 var\cf0  ioiseries, durseries, dynamicseries, bandwidthseries, instrseries;\
+\cf3 var\cf0  attackseries, sustainseries, decayseries, freqseries, panseries, temposeries;\
+\cf3 var\cf0  numatonce; \
+\cf3 var\cf0  fxsynth;\
+\cf3 var\cf0  t=\cf3 TempoClock\cf0 (1);\
+\cf3 var\cf0  basefreq=110;\
+\cf3 var\cf0  sourceseries, moments; \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf0 fxsynth= \cf3 Synth\cf0 (\cf4 \\stockyfx\cf0 );\
+\pard\pardeftab560\ql\qnatural
+\cf0 \
+sourceseries= \cf3 Array\cf0 .fill(rrand(1,12),\{[(0..5).scramble,(0..11).scramble]\});\
+\
+moments= \cf3 Array\cf0 .fill(exprand(13,137).asInteger,\{[sourceseries.choose[0], sourceseries.choose[1], exprand(12,143).asInteger]\});\
+\
+\{\
+\
+moments.do\{\cf3 |val,i|\cf0 \
+\
+(\cf5 "Struktur"\cf0 +(i+1)).postln;\
+\
+series=val[0];\
+series2=val[1];\
+\
+tmp=series.copy;\
+\
+seriesseries= \cf3 Array\cf0 .fill(5,\{tmp= (tmp-1).max(0)\});\
+\
+tmp=series2.copy;\
+\
+seriesseries2= \cf3 Array\cf0 .fill(12,\{tmp= (tmp-1).max(0)\});\
+\
+\pard\pardeftab560\ql\qnatural
+\cf2 //series of six except for pitches\cf0 \
+ioiseries= \cf3 Pseq\cf0 (0.025+(6**((seriesseries2.copy.flatten.at((0..143)).rotate(144.rand)+1)/12)-1),\cf3 inf\cf0 ).asStream;\
+dynamicseries= \cf3 Pseq\cf0 (((seriesseries2.copy.flatten.at((0..142)).rotate(144.rand))*2).neg.dbamp,\cf3 inf\cf0 ).asStream;\
+bandwidthseries= \cf3 Pseq\cf0 ((seriesseries2.copy.flatten.at((0..127)).rotate(144.rand)+1)*25,\cf3 inf\cf0 ).asStream;\
+instrseries= \cf3 Pseq\cf0 ([\cf4 \\pitchednoise\cf0 ,\cf4 \\impulsetrain1\cf0 ,\cf4 \\sinarpegg1\cf0 ].dup(6).flatten.scramble,\cf3 inf\cf0 ).asStream;\
+attackseries= \cf3 Pseq\cf0 ((seriesseries.copy.flatten.at((0..26)).rotate(36.rand)+1)*0.01,\cf3 inf\cf0 ).asStream;\
+sustainseries=\cf3 Pseq\cf0 ((seriesseries2.copy.flatten.at((0..125)).rotate(144.rand)+1)*0.1,\cf3 inf\cf0 ).asStream;\
+decayseries=\cf3 Pseq\cf0 ((seriesseries.copy.flatten.at((0..24)).rotate(36.rand)+1)*0.1,\cf3 inf\cf0 ).asStream;\
+freqseries=\cf3 Pseq\cf0 (24**((0..216).scramble/216),\cf3 inf\cf0 ).asStream;\
+panseries=\cf3 Pseq\cf0 ((seriesseries.copy.flatten.at((0..23)).rotate(36.rand)+1)*(2/5)-1.0,\cf3 inf\cf0 ).asStream;\
+numatonce=\cf3 Pseq\cf0 ((seriesseries.copy.flatten.at((0..28)).rotate(36.rand)+1),\cf3 inf\cf0 ).asStream;\
+temposeries=\cf3 Pseq\cf0 (((30,35..120)/60).scramble,\cf3 inf\cf0 ).asStream;\
+\
+fxsynth.set(\cf4 \\shift\cf0 ,[0.0,1.0,rrand(0.25,0.75)].choose,\cf4 \\rate\cf0 ,[1,0.5,0.25,0.125,4].choose);\
+basefreq=[27.5,55,110,220,330,660].choose;\
+\
+val[2].do \{\
+\
+if(0.1.coin,\{\
+t.tempo_(temposeries.next)\}); \
+\
+if(0.02.coin,\{\cf2 \
+\pard\pardeftab560\ql\qnatural
+\cf0 basefreq=[27.5,55,110,220,330,660].choose\
+\}); \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf0 s.makeBundle(s.latency, \{\
+\cf3 var\cf0  instrtype;\
+\
+instrtype=instrseries.next;\
+	\
+\pard\pardeftab560\ql\qnatural
+\cf0 numatonce.next.do\{\
+\pard\pardeftab560\ql\qnatural
+\cf3 Synth\cf0 .before(fxsynth,instrtype ,[\cf4 \\freq\cf0 , basefreq*freqseries.next, \cf4 \\amp\cf0 , (dynamicseries.next)*0.25, \cf4 \\pan\cf0 , panseries.next, \cf4 \\attack\cf0 , attackseries.next,  \cf4 \\decay\cf0 , decayseries.next,  \cf4 \\sustain\cf0 ,  sustainseries.next, \cf4 \\bandwidth\cf0 , bandwidthseries.next ]);\
+\};\
+\});\
+\
+ioiseries.next.wait;\
+\};\
+\
+\}\
+\
+\}.fork(t)\
+)\
+\
+\
+\
+\cf2 //future: add ringmod and glissandi, plus distortion for old magnetic tape? differentiate moments more...\cf0 \
+}

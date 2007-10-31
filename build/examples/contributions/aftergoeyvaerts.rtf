@@ -1,0 +1,128 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 //after goeyvaerts\cf3 \
+\cf2 // (Nick Collins) (CC 2007)\cf3 \
+\
+\
+\pard\pardeftab560\ql\qnatural
+\cf2 //first send the SynthDefs; make sure the Server is on\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 (\
+\cf4 SynthDef\cf3 (\cf5 \\goeysynth\cf3 , \{\
+\cf4 arg\cf3  freq=440,amp=0.1, sustain=0.1, pan=0.0; \
+\cf4 var\cf3  source, env;\
+\
+source= \cf4 LPF\cf3 .ar(\cf4 Mix\cf3 (\cf4 LFPar\cf3 .ar(freq*[0.999,1.001],0,amp)).distort,\cf4 EnvGen\cf3 .kr(\cf4 Env\cf3 ([10000,2000,4000,1000],[0.005,\cf4 Rand\cf3 (0.009,0.05),0.005])));\
+\
+env= \cf4 EnvGen\cf3 .kr(\cf4 Env\cf3 ([0,1,0.4,0.7,0],[\cf4 Rand\cf3 (0.001,0.005),0.005,0.005,sustain]), doneAction:2);\
+\
+\cf4 Out\cf3 .ar(0,\cf4 Pan2\cf3 .ar(source*env,pan))\
+\
+\}).send(s);\
+\
+\cf2 //preferred version if you have the FreeVerb UGen, commented out by default\cf3 \
+\cf2 //SynthDef(\\goeyfx, \{\cf3 \
+\cf2 //ReplaceOut.ar(0,FreeVerb.ar(In.ar(0,2),0.33,1.5))\cf3 \
+\cf2 //\}).send(s);\cf3 \
+\
+\cf2 //adapted from JmC reverb\cf3 \
+\cf4 SynthDef\cf3 (\cf5 \\goeyfx\cf3 , \{\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 var\cf3  a,c,z,y,in;\
+c = 2; \cf2 // number of comb delays\cf3 \
+a = 3; \cf2 // number of allpass delays\cf3 \
+\
+in=\cf4 In\cf3 .ar(0,2);\
+\cf2 // reverb predelay time :\cf3 \
+z = \cf4 DelayN\cf3 .ar(in, 0.048,0.048);\
+\
+\cf2 //for delaytime if want modulation-	//LFNoise1.kr(0.1.rand, 0.04, 0.05)\cf3 \
+y=\cf4 Mix\cf3 .arFill(c,\{\cf4 CombL\cf3 .ar(z,0.1,rrand(0.01, 0.1),5)\});\
+	\
+\cf2 // chain of 4 allpass delays on each of two channels (8 total) :\cf3 \
+a.do(\{ y = \cf4 AllpassN\cf3 .ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)], 1) \});\
+	\
+\cf2 // add original sound to reverb and play it :\cf3 \
+\cf4 Out\cf3 .ar(0,(0.2*y));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 \
+\}).send(s);\
+\
+)\
+\
+\
+\
+\cf4 Synth\cf3 (\cf5 \\goeysynth\cf3 ,[\cf5 \\freq\cf3 ,440]); \cf2 //test\cf3 \
+\
+\
+\
+\cf2 //now run the piece\cf3 \
+(\
+\cf4 var\cf3  n, octaves, basenote, selections, probs;\
+\cf4 var\cf3  ioirow, ioimult, noterow, amprow, susrow, panrow;\
+\cf4 var\cf3  fxsynth;\
+\
+n=12; \cf2 //notes per octave\cf3 \
+\
+fxsynth= \cf4 Synth\cf3 (\cf5 \\goeyfx\cf3 );\
+\
+noterow=(0..(n-1)).scramble; \cf2 //[4,0,5,14,13,15,21,19,20,11,6,10]%12; \cf3 \
+amprow= \cf4 Pseq\cf3 ((1,3..36).neg.dbamp.scramble,\cf4 inf\cf3 ).asStream;\
+susrow= \cf4 Pseq\cf3 ((((1..37)/37).exp/exp(1)).scramble,\cf4 inf\cf3 ).asStream;\
+panrow= \cf4 Pseq\cf3 ((((0..31)/31)*2-1).scramble,\cf4 inf\cf3 ).asStream;\
+\
+ioimult=0.1;\
+\
+ioirow= n**(((1..n).scramble)/n); \cf2 //exponential spacing 1 to n\cf3 \
+ioirow= \cf4 Pseq\cf3 (ioirow,\cf4 inf\cf3 ).asStream;\
+\
+basenote=36;\
+octaves=4;\
+selections= \cf4 Array\cf3 .fill(n,\{0\});\
+probs=\cf4 Array\cf3 .fill(n,\{1.0\});\
+\
+\{\
+\
+\cf4 inf\cf3 .do\
+\{	\
+	\cf4 var\cf3  notenow;\
+	\
+	if(ioimult.coin,\{ioimult=[0.01,0.025,0.05,0.1,0.2].choose;\});\
+	\
+	if(0.03.coin,\{selections= \cf4 Array\cf3 .fill(n,\{0\});\});\
+	if(0.02.coin,\{octaves= rrand(2,5);\});\
+	if(0.01.coin,\{basenote=rrand(35,47);\});\
+	\
+	\cf2 //recovery rate\cf3 \
+	probs.do\{\cf4 |val,i|\cf3  if(val<0.9999,\{probs[i]=probs[i]+0.1\})\};\
+		\
+	s.makeBundle(s.latency, \{	\
+		[1,2,3,4,5].wchoose([0.5,0.35,0.1,0.025,0.025]).do\{	\
+			notenow= noterow.wchoose(probs.normalizeSum);\
+\
+			probs[notenow]=0.1;\
+			\
+			selections[notenow]=selections[notenow]+1;\
+	\
+			\cf4 Synth\cf3 .before(fxsynth, \cf5 \\goeysynth\cf3 ,[\cf5 \\freq\cf3 , ((((selections[notenow]%octaves)*12)+ basenote) + ((notenow/n)*12)).midicps,\cf5 \\amp\cf3 ,(amprow.next)*0.2, \cf5 \\sustain\cf3 , susrow.next, \cf5 \\pan\cf3 , panrow.next]);\
+			\
+		\};\
+		\
+	\});\
+	\
+	((ioirow.next)*ioimult).wait;\
+\};\
+\
+\}.fork;\
+\
+)\
+\
+\
+\cf2 //future possibilities:\cf3 \
+\cf2 //add different rhythmic sections, and also, use fold or wrap on array data\cf3 \
+\cf2 //up to four notes at once in selection; optional slight spread? really need independent voices too\cf3 \
+}
