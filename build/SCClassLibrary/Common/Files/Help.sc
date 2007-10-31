@@ -130,80 +130,42 @@ Help {
 	// SCListView
 	listviews = (0..numcols-1).collect({|index|
 		GUI.listView.new(win, Rect(10 + (index * 200), 5, 180, 480)).action_({ |lv|
-			var selectedstr = lv.items[lv.value];
-			if(selectedstr != "", {
-				if(selectedstr[0..1]=="->", {
-					// We've clicked on one of the options for a class/file
-					
-					// This is the symbol (e.g. class name, or helpfile name) we're after
-					node = selecteditem.asSymbol;
-					
-					switch(lv.items[lv.value][2..], 
-						"Help",   { 
-					
-							if(selectednodes[index-1]=="", {
-								// We don't know the helpfile path already.
-								// This implies it is definitely a class, since only classes can reach the tree without known help path.
-								node = node.asClass;
-								AppClock.sched(0, { 
-									if(node.hasHelpFile, {
-										node.openHelpFile
-									}, {
-										lv.items = #["", "No helpfile found", "->Source"];
-									});
-								}); 
-								
-							}, {
-								// We know the helpfile path
-								selectednodes[index-1].openHTMLFile;
-							});
-							
-					
-						}, 
-						"Source", {
-							 AppClock.sched(0, { node.asClass.openCodeFile  }); 
-						}
-					); // end switch
-					
-					
-				}, {
-					// We've clicked on a category or on a class
-					
-					if(lv.items.size != 0, { 
+			var selectedstr = lv.items[lv.value];		
+
+			if(selectedstr[0..1]!="->", {
+				// We've clicked on a category or on a class
+				if(lv.items.size != 0, { 
+					selecteditem = lists[index][lv.value];
+					if(listviews[index+1].isNil.not, {
+						// Clear the GUI for the subsequent panels
+						listviews[index+1..].do(_.items=#[]);
 						
-						selecteditem = lists[index][lv.value];
-						if(listviews[index+1].isNil.not, {
-							// Clear the GUI for the subsequent panels
-							listviews[index+1..].do(_.items=#[]);
+						// Get the current node, from the parent node
+						node = if(index==0, tree, {selectednodes[index-1]})[selecteditem];
+						curkey = selecteditem;
+						selectednodes[index] = node;
+						
+						if(node.isNil, {
+							// We have a "leaf" (class or helpdoc), since no keys found
 							
-							// Get the current node, from the parent node
-							node = if(index==0, tree, {selectednodes[index-1]})[selecteditem];
-							curkey = selecteditem;
-							selectednodes[index] = node;
-							
-							if(node.isNil, {
-								// We have a "leaf" (class or helpdoc), since no keys found
-								
-								lists[index+1] = #[];
-								listviews[index+1].items = 
-									#["", "->Help"] ++ 
-										if(curkey.asSymbol.asClass.isNil, nil, #["->Source"]);
-										
-								// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
-								selectednodes[index] = if(index==0, {tree}, {selectednodes[index-1]})
-											[curkey.asSymbol.asClass ? curkey.asSymbol];
-										
-							}, {
-								// We have a category on our hands
-								lists[index+1] = node.keys(Array).collect(_.asString).sort({|a,b| 
-									a[0]==$[ || (b[0]!=$[ && (a <= b))
-									});
-								listviews[index+1].items = lists[index+1];
-							});
-							listviews[index+1].valueAction_(0);
-							
-							selectednodes[index+2 ..] = nil; // Clear out the now-unselected
+							lists[index+1] = #[];
+							listviews[index+1].items = 
+								#["->Help"] ++ if(curkey.asSymbol.asClass.isNil, nil, #["->Source"]);
+									
+							// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
+							selectednodes[index] = if(index==0, {tree}, {selectednodes[index-1]})
+										[curkey.asSymbol.asClass ? curkey.asSymbol];
+									
+						}, {
+							// We have a category on our hands
+							lists[index+1] = node.keys(Array).collect(_.asString).sort({|a,b| 
+								a[0]==$[ || (b[0]!=$[ && (a <= b))
+								});
+							listviews[index+1].items = lists[index+1];
 						});
+						listviews[index+1].valueAction_(0);
+						
+						selectednodes[index+2 ..] = nil; // Clear out the now-unselected
 					});
 				});
 			});
@@ -216,16 +178,31 @@ Help {
 	listviews.do({ |lv, index| // SCView
 		lv.keyDownAction_({|view,char,modifiers,unicode,keycode|
 			switch(unicode, 
-			63234, { if(index != 0,
-							{ listviews[index-1].focus }) }, 
+			63234, { if(index != 0, { listviews[index-1].focus }) }, 
 			63235, { if(index != (listviews.size-1) and:{listviews[index+1].items.notNil}, 
-							{ listviews[index+1].value_(-1).valueAction_(0).focus }) },
+							{ try{ listviews[index+1].value_(-1).valueAction_(0).focus } }) },
+			13, { // Hit RETURN to open source or helpfile
+				// The class name, or helpfile name we're after
+				node = selecteditem;
+				switch(lv.items[lv.value][2..], 
+					"Help",   { { node.openHelpFile }.defer; }, 
+					"Source", { { node.asSymbol.asClass.openCodeFile }.defer; }
+				);
+			},
 			//default:
 			{ 
 				// Returning nil is supposed to be sufficient to trigger the default action,
 				// but on my SC this doesn't happen.
 				view.defaultKeyDownAction(char,modifiers,unicode);
 			});
+		})
+		.mouseDownAction_({
+				// The class name, or helpfile name we're after
+				node = selecteditem;
+				switch(lv.items[lv.value][2..], 
+					"Help",   { { node.openHelpFile }.defer; }, 
+					"Source", { { node.asSymbol.asClass.openCodeFile }.defer; }
+				);
 		});
 	});
 	

@@ -11,16 +11,19 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7f2a1c}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #752c1e}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {font: 12.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #0034a8}
+span.s3 {color: #0839a4}
 span.s4 {color: #000000}
-span.s5 {color: #606060}
+span.s5 {color: #0000bf}
+span.s6 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -46,53 +49,54 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Examples</b></p>
-<p class="p2"><br></p>
-<p class="p5">// map a Spec to the value of the slider, post in a SCNumberBox</p>
-<p class="p2"><br></p>
-<p class="p6">(</p>
-<p class="p6">w = <span class="s3">SCWindow</span>.new.front;</p>
-<p class="p6">b = [10, 80].asSpec;</p>
-<p class="p6">c = <span class="s3">SCNumberBox</span>(w, <span class="s3">Rect</span>(20, 20, 60, 40));</p>
-<p class="p6">a = <span class="s3">SCSlider</span>(w, <span class="s3">Rect</span>(20, 80, 100, 40))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.action_({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.value_(b.map(a.value).round(0.01))</p>
-<p class="p5">// round the float so it will fit in the SCNumberBox</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p6">)</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p7"><br></p>
-<p class="p8">// change the stepsize of the slider, selected via a SCPopUpMenu</p>
-<p class="p6">(</p>
-<p class="p6">w = <span class="s3">SCWindow</span>.new.front;</p>
-<p class="p9"><span class="s4">a = [</span>"0"<span class="s4">, </span>"0.0625"<span class="s4">, </span>"0.125"<span class="s4">, </span>"0.25"<span class="s4">, </span>"0.5"<span class="s4">, </span>"1"<span class="s4">];</span></p>
-<p class="p6">b = <span class="s3">SCSlider</span>(w, <span class="s3">Rect</span>(20, 80, 100, 20))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.action_({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value.postln;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>});</p>
-<p class="p6">c = <span class="s3">SCPopUpMenu</span>(w, <span class="s3">Rect</span>(20, 40, 100, 20))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.items_(a)</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.action_({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.step_((a.at(c.value)).asFloat);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p6">// map a Spec to the value of the slider, post in a SCNumberBox</p>
+<p class="p5"><br></p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s3">SCWindow</span>.new.front;</p>
+<p class="p7">b = [10, 80].asSpec;</p>
+<p class="p7">c = <span class="s3">SCNumberBox</span>(w, <span class="s3">Rect</span>(20, 20, 60, 40));</p>
+<p class="p7">a = <span class="s3">SCSlider</span>(w, <span class="s3">Rect</span>(20, 80, 100, 40))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.focusColor_(Color.red(alpha:0.2))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.value_(b.map(a.value).round(0.01))</p>
+<p class="p8">// round the float so it will fit in the SCNumberBox</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p7">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5">// change the background color of SCWIndow by moving the sliders</p>
-<p class="p6">(</p>
-<p class="p6">w = <span class="s3">SCWindow</span>(<span class="s5">"RGB fader"</span>, <span class="s3">Rect</span>(100, 500, 400, 400))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.front;</p>
-<p class="p6">f = { w.view.background_(<span class="s3">Color</span>.new(r.value, g.value, b.value, 1)) };</p>
-<p class="p6">r = <span class="s3">SCSlider</span>(w, <span class="s3">Rect</span>(150, 140, 100, 20))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
-<p class="p6">g = <span class="s3">SCSlider</span>(w, <span class="s3">Rect</span>(150, 170, 100, 20))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
-<p class="p6">b = <span class="s3">SCSlider</span>(w, <span class="s3">Rect</span>(150, 200, 100, 20))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
-<p class="p6"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
-<p class="p6">f.value;</p>
-<p class="p6">);</p>
+<p class="p2"><br></p>
+<p class="p9">// change the stepsize of the slider, selected via a SCPopUpMenu</p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s3">SCWindow</span>.new.front;</p>
+<p class="p10"><span class="s4">a = [</span>"0"<span class="s4">, </span>"0.0625"<span class="s4">, </span>"0.125"<span class="s4">, </span>"0.25"<span class="s4">, </span>"0.5"<span class="s4">, </span>"1"<span class="s4">];</span></p>
+<p class="p7">b = <span class="s3">SCSlider</span>(w, <span class="s3">Rect</span>(20, 80, 100, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value.postln;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>});</p>
+<p class="p7">c = <span class="s3">SCPopUpMenu</span>(w, <span class="s3">Rect</span>(20, 40, 100, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.items_(a)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.step_((a.at(c.value)).asFloat);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p7">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">// change the background color of SCWIndow by moving the sliders</p>
+<p class="p11">(</p>
+<p class="p11">w = <span class="s5">SCWindow</span>(<span class="s6">"RGB fader"</span>, <span class="s5">Rect</span>(100, 500, 400, 400))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.front;</p>
+<p class="p11">f = { w.view.background_(<span class="s5">Color</span>.new(r.value, g.value, b.value, 1)) };</p>
+<p class="p11">r = <span class="s5">SCSlider</span>(w, <span class="s5">Rect</span>(150, 140, 100, 20))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
+<p class="p11">g = <span class="s5">SCSlider</span>(w, <span class="s5">Rect</span>(150, 170, 100, 20))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
+<p class="p11">b = <span class="s5">SCSlider</span>(w, <span class="s5">Rect</span>(150, 200, 100, 20))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
+<p class="p11">f.value;</p>
+<p class="p11">);</p>
 </body>
 </html>
