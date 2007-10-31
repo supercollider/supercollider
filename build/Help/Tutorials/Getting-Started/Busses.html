@@ -5,30 +5,32 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a3220e}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #a71e12}
+p.p13 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #a3220e}
 p.p14 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-span.s1 {color: #0000ff}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0027ee}
+span.s1 {color: #002aff}
 span.s2 {color: #000000}
-span.s3 {color: #0019b7}
+span.s3 {color: #0028b7}
 span.s4 {color: #606060}
-span.s5 {color: #326f17}
-span.s6 {font: 12.0px Helvetica}
-span.s7 {font: 12.0px Helvetica; color: #000000}
+span.s5 {color: #3a6c19}
+span.s6 {color: #0000ff}
+span.s7 {font: 12.0px Helvetica}
+span.s8 {font: 12.0px Helvetica; color: #000000}
+span.s9 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -150,7 +152,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Both y and z read from the same bus, the latter just modifies the frequency control signal by adding a constant value of 200 to it. This is more efficient than having two separate control oscillators to control frequency. This sort of strategy of connecting together synths, each of which does different things in a larger process, can be very effective in SC.</p>
 <p class="p2"><br></p>
-<p class="p3">Now an example with an audio bus. This is the most complicated example we've seen so far, but should give you some idea of how to start putting all the things we've learned together. The code below will use two Synths as sources, one creating pulses of PinkNoise (a kind of Noise which has less energy at high frequencies than at low), and another creating pulses of Sine Waves. The pulses are created using the UGens <a href="../../UGens/Oscillators/Impulse.html"><span class="s1">Impulse</span></a><b> </b>and <a href="../../UGens/Control/Envelopes/Decay2.html"><span class="s1">Decay2</span></a>. These are then reverberated using a chain of <a href="../../UGens/Delays/AllpassC.html"><span class="s1">AllpassC</span></a>, which is a kind of delay.</p>
+<p class="p3">Now an example with an audio bus. This is the most complicated example we've seen so far, but should give you some idea of how to start putting all the things we've learned together. The code below will use two Synths as sources, one creating pulses of PinkNoise (a kind of Noise which has less energy at high frequencies than at low), and another creating pulses of Sine Waves. The pulses are created using the UGens <a href="../../UGens/Oscillators/Impulse.html"><span class="s1">Impulse</span></a><b> </b>and <a href="../../UGens/Synth control/Envelopes/Decay2.html"><span class="s6">Decay2</span></a>. These are then reverberated using a chain of <a href="../../UGens/Delays/AllpassC.html"><span class="s1">AllpassC</span></a>, which is a kind of delay.</p>
 <p class="p2"><br></p>
 <p class="p3">Note the construction 16.do({ ... }), below. This makes the chain by evaluating the function 16 times. This is a very powerful and flexible technique, as by simply changing the number, I can change the number of evaluations. See <a href="../../Math/Integer.html"><span class="s1">Integer</span></a><b> </b>for more info on Integer-do.</p>
 <p class="p2"><br></p>
@@ -275,7 +277,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Synth-new has two arguments which allow you to specify where in the order a synth is added. The first is a <i>target</i>, and the second is an <i>addAction</i>. The latter specifies the new synth's position in relation to the target.</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span></span>x = <span class="s3">Synth</span>(<span class="s4">"default"</span>, [<span class="s5">\freq</span>, 300]);</p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>x = <span class="s3">Synth</span>(<span class="s4">"default"</span>, [<span class="s5">\freq</span>, 300]);</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// add a second synth immediately after x</p>
 <p class="p7"><span class="Apple-tab-span">	</span>y = <span class="s3">Synth</span>(<span class="s4">"default"</span>, [<span class="s5">\freq</span>, 450], x, <span class="s5">\addAfter</span>);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>x.free; y.free;</p>
@@ -284,13 +286,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Methods like Synth-after are simply convenient ways of doing the same thing, the difference being that they take a target as their first argument.</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s7"><span class="Apple-tab-span">	</span></span>// These two lines of code are equivalent</p>
+<p class="p6"><span class="s8"><span class="Apple-tab-span">	</span></span>// These two lines of code are equivalent</p>
 <p class="p7"><span class="Apple-tab-span">	</span>y = <span class="s3">Synth</span>.new(<span class="s4">"default"</span>, [<span class="s5">\freq</span>, 450], x, <span class="s5">\addAfter</span>);</p>
-<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span></span>y = <span class="s3">Synth</span>.after(x, <span class="s4">"default"</span>, [<span class="s5">\freq</span>, 450]);</p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>y = <span class="s3">Synth</span>.after(x, <span class="s4">"default"</span>, [<span class="s5">\freq</span>, 450]);</p>
 <p class="p2"><br></p>
 <p class="p3">For more information see:<b><span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
-<p class="p15"><a href="../../ServerArchitecture/Bus.html">Bus</a><span class="s2"><b> </b><a href="../../UGens/InOut/In.html"><span class="s6">In</span></a><b> </b><a href="../../UGens/Multichannel/OutputProxy.html"><span class="s6">OutputProxy</span></a><b> </b><a href="../../ServerArchitecture/Order-of-execution.html"><span class="s6">Order-of-execution</span></a><b> </b><a href="../../ServerArchitecture/Synth.html"><span class="s6">Synth</span></a></span></p>
+<p class="p15"><span class="s9"><a href="../../ServerArchitecture/Bus.html">Bus</a></span><span class="s2"><b> </b><a href="../../UGens/InOut/In.html"><span class="s7">In</span></a><b> </b><a href="../../UGens/Multichannel/OutputProxy.html"><span class="s7">OutputProxy</span></a><b> </b><a href="../../ServerArchitecture/Order-of-execution.html"><span class="s7">Order-of-execution</span></a><b> </b><a href="../../ServerArchitecture/Synth.html"><span class="s7">Synth</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Suggested Exercise:</b></p>
 <p class="p10"><br></p>
