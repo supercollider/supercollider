@@ -13,11 +13,11 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d2b18}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7b321d}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {color: #000000}
-span.s2 {color: #041ab3}
-span.s3 {color: #0522ef}
+span.s2 {color: #0a1fad}
+span.s3 {color: #0d29e7}
 span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -25,7 +25,19 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>Client versus Server Architecture and Operations</b></p>
 <p class="p2"><br></p>
-<p class="p3">The SuperCollider application is in reality made up of two distinct, autonomous, components, a <i>server</i> and a <i>client</i>. The first is named <i>scsynth</i> (SC-synthesizer), the second <i>sclang</i> (SC-language).</p>
+<p class="p3">The name "SuperCollider" is in fact used to indicate five different things (Figure 1):</p>
+<p class="p3"><span class="Apple-tab-span">	</span>1. an audio server<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>2. an audio programming language</p>
+<p class="p3"><span class="Apple-tab-span">	</span>3. an interpreter for the language, i.e. a program able to interpret it</p>
+<p class="p3"><span class="Apple-tab-span">	</span>4. the interpreter program as a client for the server</p>
+<p class="p3"><span class="Apple-tab-span">	</span>5. the application including the two programs and providing mentioned functionalities</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><img src="attachments/ClientVsServer/structureEn.pdf" alt="structureEn.pdf"></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>Figure 1. Structure of the SuperCollider application</b></p>
+<p class="p2"><br></p>
+<p class="p3">The SuperCollider application is thus made up of two distinct, autonomous, components, a <i>server</i> and a <i>client</i>. The first is named <i>scsynth</i> (SC-synthesizer), the second <i>sclang</i> (SC-language).</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Description</b></p>
 <p class="p5"><br></p>
