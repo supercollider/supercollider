@@ -1113,6 +1113,7 @@ SCDragBoth : SCDragSink {
 SCUserView : SCView {
 	var <>keyDownFunc, <>drawFunc;
 	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
+	var < clearOnRefresh = true;
 	
 	draw { 
 		this.setProperty(\setCGLayerToCurrent);
@@ -1132,6 +1133,11 @@ SCUserView : SCView {
 	keyDown { arg key, modifiers, unicode; 
 		keyDownFunc.value(this, key, modifiers, unicode) 
 	}
+	
+	clearOnRefresh_{|bool|
+		clearOnRefresh = bool;
+		this.setProperty(\clearOnRefresh, bool);			}
+	
 }
 //
 //SCFuncUserView : SCUserView {
