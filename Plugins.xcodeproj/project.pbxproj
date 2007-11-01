@@ -1077,10 +1077,12 @@
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88332412090ABD1F00A4A7E4 /* Build configuration list for PBXProject "Plugins" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				940E424D0B45B6D0002DADC8 /* All */,
 				949318BA0C1931070018AB50 /* BinaryOpUGens */,
@@ -1446,7 +1448,7 @@
 				EXECUTABLE_EXTENSION = scx;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_MODEL_TUNING = G5;
+				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
 				KEEP_PRIVATE_EXTERNS = NO;
