@@ -196,7 +196,7 @@ Help {
 				view.defaultKeyDownAction(char,modifiers,unicode);
 			});
 		})
-		.mouseDownAction_({
+		.mouseUpAction_({
 				// The class name, or helpfile name we're after
 				node = selecteditem;
 				switch(lv.items[lv.value][2..], 
