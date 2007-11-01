@@ -11,4 +11,4 @@ svn export --force build SuperCollider
 cp -R build/SuperCollider.app build/scsynth build/sclang SuperCollider
 cp build/plugins/* SuperCollider/plugins/
 find SuperCollider/help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
-zip -r -9 "SuperCollider_$DATE.zip" SuperCollider 
+ditto -ck --sequesterRsrc --keepParent SuperCollider "SuperCollider_$DATE.zip"

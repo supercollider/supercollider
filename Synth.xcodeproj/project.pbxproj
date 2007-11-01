@@ -185,6 +185,7 @@
 		942C37990C1B3F9F00360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
 		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
+		945D14870CD9A72A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = build/ChangeLog; sourceTree = "<group>"; };
 		949309CB0C190FB10018AB50 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
 		949309CC0C190FB10018AB50 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
@@ -286,7 +287,6 @@
 		94930C080C190FB80018AB50 /* SC_WireSpec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_WireSpec.h; sourceTree = "<group>"; };
 		94B6B0C30AF5390900E478BB /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
 		94F5FAD10C1E6B95005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libscsynth.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		DCF5E2320CBB806B00411E96 /* ChangeLog.scd */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ChangeLog.scd; path = build/ChangeLog.scd; sourceTree = "<group>"; };
 		F53F78F503B2842D011C068F /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		F5EB7BE503184B8C01CA2799 /* libscsynth_exp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = libscsynth_exp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -479,7 +479,7 @@
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
-				DCF5E2320CBB806B00411E96 /* ChangeLog.scd */,
+				945D14870CD9A72A00464EBF /* ChangeLog */,
 				F5EB7BE503184B8C01CA2799 /* libscsynth_exp */,
 				9456F7F60C1A1FBC00634E4D /* Resources */,
 				94930B770C190FB80018AB50 /* Headers */,

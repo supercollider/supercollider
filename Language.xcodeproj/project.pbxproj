@@ -398,6 +398,7 @@
 		9456F6B20C19E79F00634E4D /* HID_Utilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities.h; sourceTree = "<group>"; };
 		9456F6B30C19E79F00634E4D /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_External.h; sourceTree = "<group>"; };
 		9456F6B40C19E79F00634E4D /* HID_Utilities_Internal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_Internal.h; sourceTree = "<group>"; };
+		945D14AF0CD9A73A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = build/ChangeLog; sourceTree = "<group>"; };
 		949310A60C1921F90018AB50 /* CocoaBridgePrimitives.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaBridgePrimitives.M; sourceTree = "<group>"; };
 		949310A70C1921F90018AB50 /* CocoaFilePrimitives.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaFilePrimitives.M; sourceTree = "<group>"; };
 		949310A80C1921F90018AB50 /* DrawBackground.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = DrawBackground.M; sourceTree = "<group>"; };
@@ -621,7 +622,6 @@
 		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
-		DCF5E2420CBB812100411E96 /* ChangeLog.scd */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ChangeLog.scd; path = build/ChangeLog.scd; sourceTree = "<group>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		F50D069602E6A1C601CA2799 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		F50D069702E6A1C601CA2799 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -1059,7 +1059,7 @@
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
-				DCF5E2420CBB812100411E96 /* ChangeLog.scd */,
+				945D14AF0CD9A73A00464EBF /* ChangeLog */,
 				9456F5BC0C19E25900634E4D /* Synth.xcodeproj */,
 				9493126D0C19222B0018AB50 /* Headers */,
 				949310A40C1921F90018AB50 /* Source */,
