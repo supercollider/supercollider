@@ -129,7 +129,9 @@ Help {
 	
 	// SCListView
 	listviews = (0..numcols-1).collect({|index|
-		GUI.listView.new(win, Rect(10 + (index * 200), 5, 180, 480)).action_({ |lv|
+		GUI.listView.new(win, Rect(10 + (index * 200), 5, 180, 480))
+		.resize_(4)
+		.action_({ |lv|
 			var selectedstr = lv.items[lv.value];		
 
 			if(selectedstr[0..1]!="->", {
