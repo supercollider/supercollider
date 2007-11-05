@@ -15,7 +15,7 @@ OSCBundle {
 	schedSend { arg server, clock, quant;
 		server = server ?? { Server.default };
 		this.doPrepare(server, {
-			if(clock.isNil) {
+			if(quant.isNil or: { clock.isNil }) {
 				this.prSend(server, server.latency)
 			} {
 				clock.schedAbs(quant.nextTimeOnGrid(clock),  {
