@@ -39,7 +39,7 @@ Event : Environment {
 		this.use {
 			this[\play].value;	
 		};
-		^this.delta
+//		^this.delta
 	}
 	
 	printOn { arg stream, itemsPerLine = 5;
