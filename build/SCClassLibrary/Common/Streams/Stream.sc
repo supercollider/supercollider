@@ -402,7 +402,8 @@ EventStreamPlayer : PauseStream {
 			^nil
 		}{
 			if (muteCount > 0) { outEvent.put(\freq, \rest) };
-			if ((nextTime = outEvent.play).isNil) { stream = nil };
+			outEvent.play;
+			if ((nextTime = outEvent.delta).isNil) { stream = nil };
 			nextBeat = inTime + nextTime;	// inval is current logical beat
 			^nextTime
 		};
