@@ -192,7 +192,8 @@ SCFreqScope : SCScope {
 			CmdPeriod.remove(this);
 			active = false;
 			node = server.nextNodeID;
-			this.active_(true);
+			// needs to be deferred to build up synth again properly
+			{ this.active_(true) }.defer( 0.5 );
 		});
 	}
 	
