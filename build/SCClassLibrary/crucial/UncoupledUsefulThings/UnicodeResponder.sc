@@ -9,7 +9,7 @@ UnicodeResponder {
 	// use this as your view's keyDownAction in place of a function
 	// view.keyDownAction = unicodeResponder
 	value { arg view,char,modifier,unicode,keycode;
-		^this.at(unicode).value(unicode,modifier)
+		^this.at(unicode).value(view, unicode,modifier)
 	}
 
 	// ur.normal( unicode -> { } [, unicode -> { } ... ]  )
@@ -186,7 +186,7 @@ UnicodeResponder {
 		this.at(unicode.asUnicode).reset
 	}
 	*value { arg view,char,modifiers,unicode,keycode;
-		^this.at(unicode).value(char,modifiers,unicode,keycode)
+		^this.at(unicode).value(view, char,modifiers,unicode,keycode)
 	}
 	*global { 
 		^global ?? {
