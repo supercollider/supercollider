@@ -34,7 +34,8 @@ ServerOptions
 	var <>initialNodeID = 1000;
 	
 	*initClass {
-		default = this.new.blockAllocClass_(PowerOfTwoAllocator);
+		default = this.new.blockAllocClass_(ContiguousBlockAllocator);
+//		default = this.new.blockAllocClass_(PowerOfTwoAllocator);
 	}
 	
 	*new {
