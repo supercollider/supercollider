@@ -75,10 +75,14 @@ PowerOfTwoAllocator
 	}
 	free { arg address;
 		var node, sizeClass,next;
+
 		if((node = array.at(address)).notNil,{
+		
 			sizeClass = node.size.log2Ceil;
 			node.next = freeLists.at(sizeClass);
 			freeLists.put(sizeClass, node);
+			array.put(address, nil);
+
 		});
 	}
 	blocks {
