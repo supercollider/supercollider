@@ -669,7 +669,7 @@ Event : Environment {
 								};
 							} {
 								~bundle = ~bundle.add(["/g_new",
-									tree.key.asUGenInput, Node.actionNumberFor(addAction),
+									tree.asUGenInput, Node.actionNumberFor(addAction),
 									currentNode.asUGenInput]);
 							};
 							
