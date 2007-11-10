@@ -46,6 +46,13 @@ NotificationCenter {
 		lastDict = Library.at(this,object,message);
 		if(lastDict.notNil,{
 			lastDict.removeAt(listener);
+				// proper garbage collection, added by hjh
+			(lastDict.size == 0).if({
+				Library.global.removeAt(this,object,message);
+				(Library.at(this, object).size == 0).if({
+					Library.global.removeAt(this,object);
+				});
+			});
 		});
 	}
 	*registerOneShot {  arg object,message,listener,action;
