@@ -146,7 +146,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5">When an Event<span class="Apple-converted-space">  </span>(or any other Environment) receives a <span class="s2">use(function)</span> message, it sets itself to be<span class="Apple-converted-space"> </span></p>
 <p class="p5">currentEnvironment, evaluates the function, and restores the original value of currentEnvironment. <span class="Apple-converted-space"> </span></p>
-<p class="p5">This allows the<span class="Apple-converted-space">  </span>function to access and alter the contentts of the event using the following shortcuts:</p>
+<p class="p5">This allows the<span class="Apple-converted-space">  </span>function to access and alter the contents of the event using the following shortcuts:</p>
 <p class="p2"><br></p>
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>~keyName<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">which is equivalent to<span class="Apple-tab-span">	</span></span>currentEnvironment.at(keyName)</p>
 <p class="p5">and</p>
@@ -169,7 +169,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">Events also specify timing within a Pattern.<span class="Apple-converted-space">  </span>Event's <span class="s2">delta </span>method returns the<span class="Apple-converted-space">  </span>value of <span class="s2">~delta </span>or,<span class="Apple-converted-space"> </span></p>
 <p class="p9"><span class="s6">if that is nil,<span class="Apple-converted-space">  </span></span>~dur * ~stretch.<span class="Apple-converted-space"> </span></p>
 <p class="p8"><br></p>
-<p class="p5">Patterns and played by TempoClocks, which have their own tempo controls.<span class="Apple-converted-space">  </span>This tempo which can be<span class="Apple-converted-space"> </span></p>
+<p class="p5">Patterns are played by<b> TempoClock' s</b>, which have their own tempo controls.<span class="Apple-converted-space">  </span>This tempo which can be<span class="Apple-converted-space"> </span></p>
 <p class="p13"><span class="s7">controlled through </span><span class="s2">~tempo </span>in the event. Changes to the tempo affect everything else scheduled by the</p>
 <p class="p13">TempoClock, so <span class="s2">tempo </span>provides a global tempo control while <span class="s2">stretch </span>provides a control limited to the</p>
 <p class="p13">one pattern.</p>
@@ -187,15 +187,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><b><span class="Apple-tab-span">	</span>bufferEvent<span class="Apple-tab-span">	</span></b>buffers on the server</p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>midiEvent<span class="Apple-tab-span">	</span></b>midi</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5">Whenever the defaultParentEvent is linked to an Event through its parent instance variable, all of this functionality<span class="Apple-converted-space"> </span></p>
-<p class="p5">is available.<span class="Apple-converted-space">  </span>The defaultParentEvent describes a variety of different event types. The type of a specific event is</p>
-<p class="p5">determined by the value <span class="s2">~type,</span> which is a key that selects one of the entries from<span class="Apple-converted-space">  </span><span class="s2">~eventTypes</span>, a dictionary<span class="Apple-converted-space"> </span></p>
-<p class="p5">maintained by the default parent event.<span class="s2"> </span>There are many other types, such as <span class="s2">\note, \group, \bus, </span>and<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="s2">\midi. </span>The default event type is<span class="s2"> \note</span>.</p>
-<p class="p6"><br></p>
 <p class="p3"><b>Useful keys for notes</b></p>
 <p class="p2"><br></p>
-<p class="p5">Using Events is largely a matter of overwriting keys.<span class="Apple-converted-space">  </span>Here is a list of keys useful for defining notes with their default values, grouped by the partialEvent within which they are defined.</p>
+<p class="p5">Using Events is largely a matter of overwriting keys.<span class="Apple-converted-space">  </span>Here is a list of keys useful for defining notes with their default values,</p>
+<p class="p5"><span class="Apple-converted-space"> </span>grouped by the partialEvent within which they are defined.</p>
 <p class="p2"><br></p>
 <p class="p5">The keys in serverEvent provide the values needed to identify the server to be used and where in the tree</p>
 <p class="p5">of nodes to place the group. <span class="Apple-converted-space"> </span></p>
@@ -271,8 +266,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>Event types</b></p>
 <p class="p2"><br></p>
-<p class="p5">An Event responds to a play message by evaluating ~play in the event</p>
-<p class="p5">Here is a slightly simplified version of the default definition of<span class="Apple-converted-space">  </span><span class="s2">~play:</span></p>
+<p class="p5">An Event responds to a play message by evaluating ~play in the event Here is a slightly simplified version of the default definition of<span class="Apple-converted-space">  </span><span class="s2">~play:</span></p>
 <p class="p2"><br></p>
 <p class="p9"><span class="Apple-tab-span">	</span>{ <span class="Apple-tab-span">	</span>~eventTypes[~type].value(server); },</p>
 <p class="p6"><br></p>
@@ -285,7 +279,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span>(type: \note, freq: 500, group: 2).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// play a synth in that group</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5"><b>Event Types</b></p>
+<p class="p5">Here is a listing of currently existing event types:</p>
 <p class="p19"><span class="Apple-converted-space"> </span></p>
 <p class="p20"><span class="Apple-converted-space"> </span>group<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>creates group, id must be specified</p>
 <p class="p20"><span class="Apple-converted-space"> </span>note<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument specifies synthdef</p>
