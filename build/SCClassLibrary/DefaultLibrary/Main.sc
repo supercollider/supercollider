@@ -14,6 +14,11 @@ Main : Process {
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
 		this.platform.startup;
 		StartUp.run;
+		(
+			osx: "Welcome to SuperCollider, type cmd-d for help",
+			linux: "Welcome to SuperCollider, type ctrl-c ctl-h for help from Emacs",
+		 	windows: "Welcome to SuperCollider, press F1 for help"
+		 ).at(platform.name).postln;
 	}
 	
 	shutdown { // at recompile, quit
