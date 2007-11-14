@@ -2,6 +2,13 @@
 //////////// change log /////////////
 
 
+// user-visible changes in preparing SC v3.1.1, bugfix release of v3.1:
+
+// BUGFIXES:
+
+* 2007-11-14 fix for .asStringPrec, to avoid crashes on intel systems for large precision values - jt
+
+
 ///////////////////////////// SuperCollider v3.1, released 31-10-2007 /////////////////////////////
 
 // user-visible changes since 22.09.2007 (for first point release):
