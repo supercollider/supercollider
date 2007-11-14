@@ -11,7 +11,7 @@ from distutils.core import setup
 import py2exe
 
 setup(
-    version = "0.1",
+    version = "3.1",
     description = "Psycollider, the SuperCollider3 implementation on Windows",
     name = "Psycollider",
     zipfile=None,
@@ -23,12 +23,12 @@ setup(
         } 
     ], 
     # options for py2exe
-    options = {"py2exe": {"compressed": 0,
+    options = {"py2exe": {
+    		       "compressed": 0,
                        "optimize": 2,
-                       #"packages": ["PySCLang"],
-		       "bundle_files": 2,
-                       "excludes": ["PySCLang"],
-                       #"dll_excludes": [""]
+		       "bundle_files": 3,
+		       #"excludes": ["PySCLang"],
+                       #"dll_excludes": ["libsndfile.dll"]
                        }
     }
     )                                                                                                                                       

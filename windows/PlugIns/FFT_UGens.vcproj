@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="FFT_UGens"
 	ProjectGUID="{7427914C-3567-4ABE-9C08-0C1C32979A66}"
 	Keyword="Win32Proj"
@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\..\libsndfile\src&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\common&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\SuperCollider3\fftw3&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\libsndfile&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\common&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
 				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;FFT_UGENS_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -138,6 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="..\..\fftw3\libfftw3-3.lib ..\..\fftw3\libfftw3l-3.lib ..\..\fftw3\libfftw3f-3.lib"
 				OutputFile="$(OutDir)/FFT_UGens.scx"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -182,15 +183,15 @@
 			UniqueIdentifier="{618C700F-1332-4856-8954-58C0B8E61F4F}"
 			>
 			<File
-				RelativePath=".\ExportHelper.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\SuperCollider3\source\plugins\FFT_UGens.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\SuperCollider3\source\plugins\fftlib.c"
+				RelativePath="..\..\Source\plugins\FFTInterfaceTable.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Source\plugins\PV_UGens.cpp"
 				>
 			</File>
 			<File

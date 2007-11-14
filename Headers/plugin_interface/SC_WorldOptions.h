@@ -85,11 +85,11 @@ const WorldOptions kDefaultWorldOptions =
 	,0
 };
 
-#ifdef SC_WIN32
-#include "../../headers/server/SC_Reply.h"
-#else //SC_WIN32
+//#ifdef SC_WIN32
+//#include "../../Headers/server/SC_Reply.h"
+//#else //SC_WIN32
 #include "SC_Reply.h"
-#endif //SC_WIN32
+//#endif //SC_WIN32
 
 #ifdef SC_WIN32
 # define SC_DLLEXPORT __declspec(dllexport)

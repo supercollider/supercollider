@@ -34,7 +34,9 @@
 #include <dirent.h>
 #endif //_MSC_VER
 
+#ifndef SC_WIN32
 #include <dlfcn.h>
+#endif
 
 // Plugin directory in resource directory
 #if defined(SC_WIN32) && defined(_DEBUG)

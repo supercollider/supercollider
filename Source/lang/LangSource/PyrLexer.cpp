@@ -70,7 +70,7 @@
 #ifdef SC_WIN32
 # include <stdio.h>
 # define MAXPATHLEN _MAX_PATH
-# include "erase-compiler/lang11d_tab.h"
+# include "Bison/lang11d_tab.h"
 #endif
 
 int yyparse();

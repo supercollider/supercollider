@@ -131,7 +131,8 @@ void Group_DumpNodeTreeAndControls(Group *inGroup)
 			if(numControls > 0) {
 				scprintf("\n ");
 				for(i = 0; i < tabCount; i ++) scprintf("   ");
-				char *names[numControls];
+				char **names;
+				names = new char*[numControls];
 				
 				for(i = 0; i < numControls; i++){
 					names[i] = NULL;
@@ -303,7 +304,8 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 			packet->addtag('i');
 			packet->addi(numControls);
 			
-			char *names[numControls];
+			char **names;
+			names = new char*[numControls];
 			int i;
 			for(i = 0; i < numControls; i++){
 				names[i] = NULL;

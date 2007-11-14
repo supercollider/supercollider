@@ -30,7 +30,7 @@
 
 #ifdef SC_WIN32
 # include "getopt.h"
-# include "win32_utils.h"
+# include "SC_Win32Utils.h"
 # include <io.h>
 #else
 # include <sys/param.h>

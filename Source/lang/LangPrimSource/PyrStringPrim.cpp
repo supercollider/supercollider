@@ -163,6 +163,9 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 };
 
+// no regular expressions for windows yet
+// include pcer at one point...
+#ifndef SC_WIN32
 int matchRegexp(char *string, char *pattern)
 {
 	int    status;
@@ -220,7 +223,7 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 
 	return errNone;
 }
-
+#endif
 
 int memcmpi(char *a, char *b, int len)
 {
@@ -626,7 +629,9 @@ void initStringPrimitives()
     definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
 	definePrimitive(base, index++, "_String_FindBackwards", prString_FindBackwards, 4, 0);
     definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
+#ifndef SC_WIN32
 	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 4, 0);
+#endif
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);	

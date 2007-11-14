@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="FFT2_UGens"
 	ProjectGUID="{7B3E3D51-E344-4F2C-982A-547B4460E652}"
 	Keyword="Win32Proj"
@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\..\libsndfile\src&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\common&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\libsndfile&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\common&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
 				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;DELAYUGENS_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -138,6 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="..\..\fftw3\libfftw3-3.lib ..\..\fftw3\libfftw3l-3.lib ..\..\fftw3\libfftw3f-3.lib"
 				OutputFile="$(OutDir)/FFT2_UGens.scx"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -186,10 +187,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ExportHelper.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\source\plugins\FeatureDetection.cpp"
 				>
 			</File>
@@ -198,7 +195,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\source\plugins\fftlib.c"
+				RelativePath="..\..\Source\common\fftlib.c"
 				>
 			</File>
 			<File
