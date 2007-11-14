@@ -1451,6 +1451,7 @@ void initClasses()
 			addIntrinsicVar(class_interpreter, name, &o_nil);
 		}
 		addIntrinsicVar(class_interpreter, "codeDump", &o_nil);
+		addIntrinsicVar(class_interpreter, "preProcessor", &o_nil);
 
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0); 
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0); 
