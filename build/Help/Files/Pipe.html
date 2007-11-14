@@ -5,20 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a42113}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #962617}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-span.s1 {color: #0000ff}
+span.s1 {color: #0024f8}
 span.s2 {text-decoration: underline}
-span.s3 {color: #001db6}
+span.s3 {color: #0027b1}
 span.s4 {color: #000000}
 span.s5 {color: #606060}
-span.s6 {color: #a42113}
+span.s6 {color: #962617}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -30,9 +30,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Pipe stdin to, or stdout from, a unix shell command. Pipe treats the shell command as if it were a <b>UnixFILE</b>, and returns nil when done. See <a href="UnixFILE.html"><span class="s1"><b>UnixFILE</b></span></a><b> </b>for details of the access methods. Pipe must be explicitly closed. Do not rely on the garbage collector to do this for you!</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Note: </b>due to a bug in the current os x (10.3) , unix commands like pipe do not work when the server is booted.</p>
-<p class="p3">for now one has to quit the server, otherwise sc crashes.</p>
-<p class="p2"><br></p>
+<p class="p3"><b>Note: </b>For anyone still using OS X 10.3, unix commands like pipe do not work when the server is booted; quit the server, otherwise sc crashes. More recent OS X is not affected.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>*new(commandLine, mode)</b></p>
