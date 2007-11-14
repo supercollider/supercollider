@@ -372,7 +372,7 @@ int prFloat_AsStringPrec(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(b, &precision);
 	if (err) return err;
 	
-	char fmt[8], str[32];
+	char fmt[8], str[256];
 	sprintf(fmt, "%%.%dg", precision);
 	sprintf(str, fmt, a->uf);
 	
