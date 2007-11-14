@@ -475,19 +475,21 @@ Interpreter {
 	var <>k, <>l, <>m, <>n, <>o, <>p, <>q, <>r, <>s, <>t;
 	var <>u, <>v, <>w, <>x, <>y, <>z;
 
-	var <>codeDump;
+	var <>codeDump, <>preProcessor;
 	
 	*new { ^this.shouldNotImplement(thisMethod) }
 	
 	interpretCmdLine {
 		^this.compile(cmdLine).value;
 	}
+	
 	interpretPrintCmdLine {
-		var res, func;
+		var res, func, code = cmdLine;
 		"\n".post;
+		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
 		func = this.compile(cmdLine);
 		res = func.value;
-		codeDump.value(cmdLine, res, func);
+		codeDump.value(code, res, func, this);
 		res.postln;
 	}
 	

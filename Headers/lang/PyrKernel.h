@@ -199,7 +199,7 @@ struct PyrInterpreter : public PyrObjectHdr
 	PyrSlot a, b, c, d, e, f, g, h, i, j; 
 	PyrSlot k, l, m, n, o, p, q, r, s, t;
 	PyrSlot u, v, w, x, y, z;
-	PyrSlot codeDump;
+	PyrSlot codeDump, preProcessor;
 };
 
 /* special values */
