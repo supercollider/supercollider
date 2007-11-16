@@ -8,5 +8,5 @@ if [ -d SuperCollider_Source ]; then
 fi
 
 mkdir SuperCollider_Source
-svn export --force -r COMMITTED ./ SuperCollider_Source
+svn export --force ./ SuperCollider_Source
 zip -r -9 "SuperCollider_Source_$DATE.zip" SuperCollider_Source
