@@ -70,6 +70,8 @@ static void cleanUpMIDI();
 static int listMIDIEndpoints(struct VMGlobals *g, PyrSlot *a);
 static int connectMIDIIn(int inputIndex, int uid);
 static int disconnectMIDIIn(int inputIndex, int uid);
+static int connectMIDIOut(int outputIndex, int uid);
+static int disconnectMIDIOut(int outputIndex, int uid);
 
 static int sendMIDI(int port, int destId, int length, int hiStatus, int loStatus, int aval, int bval, float late);
 static int sendMIDISysex(int port, int destId, int length, uint8* data);
@@ -115,6 +117,7 @@ struct SC_AlsaMidiClient
 	void processEvent(snd_seq_event_t* evt);
 
 	int connectInput(int inputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName);
+	int connectOutput(int outputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName);
 	int sendEvent(int outputIndex, int uid, snd_seq_event_t* evt, float late=0.f);
 };
 
@@ -345,6 +348,42 @@ int SC_AlsaMidiClient::connectInput(int inputIndex, int uid, int (*action)(snd_s
 	src.port = pid;
 
 	//post("MIDI (ALSA): connect ndx %d uid %u dst %d:%d src %d:%d\n", inputIndex, uid, dst.client, dst.port, src.client, src.port);
+
+	snd_seq_port_subscribe_alloca(&subs);	
+	snd_seq_port_subscribe_set_sender(subs, &src);
+	snd_seq_port_subscribe_set_dest(subs, &dst);
+
+	if ((*action)(seq, subs) < 0) {
+		post("MIDI (ALSA): %s failed (%s)\n", actionName, snd_strerror(errno));
+		return errFailed;
+	}
+
+	return errNone;
+}
+
+int SC_AlsaMidiClient::connectOutput(int outputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName)
+{
+	snd_seq_t* seq = mHandle;
+	snd_seq_client_info_t* cinfo;
+	snd_seq_port_subscribe_t* subs;
+	snd_seq_addr_t src, dst;
+	int cid, pid;
+
+	if ((outputIndex < 0) || (outputIndex >= mNumOutPorts)) return errIndexOutOfRange;
+
+	snd_seq_client_info_alloca(&cinfo);
+	if (snd_seq_get_client_info(seq, cinfo) < 0) {
+		post("MIDI (ALSA): could not get client info: %s\n", snd_strerror(errno));
+		return errFailed;
+	}
+
+	src.client = snd_seq_client_info_get_client(cinfo);
+	src.port = mOutPorts[outputIndex];
+	SC_AlsaParseUID(uid, cid, pid);
+	dst.client = cid;
+	dst.port = pid;
+
+// 	post("MIDI (ALSA): connect ndx %d uid %u dst %d:%d src %d:%d\n", outputIndex, uid, dst.client, dst.port, src.client, src.port);
 
 	snd_seq_port_subscribe_alloca(&subs);	
 	snd_seq_port_subscribe_set_sender(subs, &src);
@@ -665,6 +704,18 @@ int disconnectMIDIIn(int inputIndex, int uid)
 	return gMIDIClient.connectInput(inputIndex, uid, &snd_seq_unsubscribe_port, "disconnect");
 }
 
+int connectMIDIOut(int outputIndex, int uid)
+{
+	if (!gMIDIClient.mHandle) return errFailed;
+	return gMIDIClient.connectOutput(outputIndex, uid, &snd_seq_subscribe_port, "connect");
+}
+
+int disconnectMIDIOut(int outputIndex, int uid)
+{
+	if (!gMIDIClient.mHandle) return errFailed;
+	return gMIDIClient.connectOutput(outputIndex, uid, &snd_seq_unsubscribe_port, "disconnect");
+}
+
 int sendMIDI(int port, int uid, int length, int hiStatus, int loStatus, int aval, int bval, float late)
 {
 	if (!gMIDIClient.mHandle) return errFailed;
@@ -735,6 +786,16 @@ int connectMIDIIn(int inputIndex, int uid)
 }
 
 int disconnectMIDIIn(int inputIndex, int uid)
+{
+	return errNone;
+}
+
+int connectMIDIOut(int inputIndex, int uid)
+{
+	return errNone;
+}
+
+int disconnectMIDIOut(int inputIndex, int uid)
 {
 	return errNone;
 }
@@ -820,6 +881,39 @@ int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	return disconnectMIDIIn(inputIndex, uid);
+}
+
+int prConnectMIDIOut(struct VMGlobals *g, int numArgsPushed);
+int prConnectMIDIOut(struct VMGlobals *g, int numArgsPushed)
+{
+	//PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+        
+	int err, inputIndex, uid;
+	err = slotIntVal(b, &inputIndex);
+	if (err) return err;
+	
+	err = slotIntVal(c, &uid);
+	if (err) return err;
+
+	return connectMIDIOut(inputIndex, uid);
+}
+
+int prDisconnectMIDIOut(struct VMGlobals *g, int numArgsPushed);
+int prDisconnectMIDIOut(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+        
+	int err, inputIndex, uid;
+	err = slotIntVal(b, &inputIndex);
+	if (err) return err;
+
+	err = slotIntVal(c, &uid);
+	if (err) return err;
+
+	return disconnectMIDIOut(inputIndex, uid);
 }
 
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed);
@@ -918,6 +1012,8 @@ void initMIDIPrimitives()
 	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
+	definePrimitive(base, index++, "_ConnectMIDIOut", prConnectMIDIOut, 3, 0);
+	definePrimitive(base, index++, "_DisconnectMIDIOut", prDisconnectMIDIOut, 3, 0);
 
     definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
 	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0); // MIDIOut.sysex patch 2007-01-16

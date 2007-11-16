@@ -200,16 +200,25 @@ MIDIIn {
 	
 	*connect { arg inport=0, device=0;
 		var uid,source;
+		if(MIDIClient.initialized.not,{ MIDIClient.init });
 		if(device.isNumber, {
 			if(device >= 0, {
-				if(MIDIClient.initialized.not,{ MIDIClient.init });
-				source = MIDIClient.sources.at(device);
-				if(source.isNil,{ 
-					"MIDIClient failed to init".warn;
+				if ( device > MIDIClient.sources.size,{ // on linux the uid's are very large numbers
+					source = MIDIClient.sources.select{ |it| it.uid == device }.first;
+					if(source.isNil,{ 
+						("MIDI device with uid"+device+ "not found").warn;
+					},{
+						uid = source.uid;
+					})
 				},{
-					uid = MIDIClient.sources.at(device).uid;
-				})
-			},{
+					source = MIDIClient.sources.at(device);
+					if(source.isNil,{ 
+						"MIDIClient failed to init".warn;
+					},{
+						uid = MIDIClient.sources.at(device).uid;
+					});
+				});
+			},{ // elsewhere they tend to be negative
 				uid = device;
 			});
 		},{
@@ -218,11 +227,27 @@ MIDIIn {
 		this.connectByUID(inport,uid);
 	}
 	*disconnect { arg inport=0, device=0;
-		var uid;
+		var uid, source;
 		if(device.isKindOf(MIDIEndPoint), {uid = device.uid});
 		if(device.isNumber, {
 			if(device.isPositive, { 
-				uid = MIDIClient.sources.at(device).uid
+				if ( device > MIDIClient.sources.size,
+					{ 
+						source = MIDIClient.sources.select{ |it| it.uid == device }.first;
+						if(source.isNil,{ 
+							("MIDI device with uid"+device+ "not found").warn;
+						},{
+							uid = source.uid;
+						})
+					},
+					{ 
+						source = MIDIClient.sources.at(device);
+						if(source.isNil,{ 
+							"MIDIClient failed to init".warn;
+						},{
+							uid = MIDIClient.sources.at(device).uid;
+						});
+					});
 			},{
 				uid = device;
 			});
@@ -261,7 +286,7 @@ MIDIIn {
 MIDIOut {
 	var <>port, <> uid, <>latency=0.1;
 	
-	*new { arg port, uid;
+	*new { arg port, uid=0;
 		^super.newCopyArgs(port, uid);
 	}
 		
@@ -325,12 +350,16 @@ MIDIOut {
 	reset {
 		this.write(1, 16rF0, 16r0F);
 	}
+
+	sysex { arg packet;
+		this.prSysex( uid, packet );
+	}
 	
 	send { arg outport, uid, len, hiStatus, loStatus, a=0, b=0, late;
 		_SendMIDIOut		
 	}
 	
-	sysex { arg uid, packet;
+	prSysex { arg uid, packet;
 		_SendSysex
 	}
 }
