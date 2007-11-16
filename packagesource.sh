@@ -9,4 +9,4 @@ fi
 
 mkdir SuperCollider_Source
 svn export --force ./ SuperCollider_Source
-zip -r -9 "SuperCollider_Source_$DATE.zip" SuperCollider_Source
+ditto -ck --sequesterRsrc --keepParent SuperCollider_Source "SuperCollider_Source_$DATE.zip"
