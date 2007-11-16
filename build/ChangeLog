@@ -1,55 +1,57 @@
-
 //////////// change log /////////////
-
 
 // user-visible changes in preparing SC v3.1.1, bugfix release of v3.1:
 
 // BUGFIXES:
 
+* 2007-11-09 re-organized the main help file - rb
 * 2007-11-14 fix for .asStringPrec, to avoid crashes on intel systems for large precision values - jt
-
-
-///////////////////////////// SuperCollider v3.1, released 31-10-2007 /////////////////////////////
-
-// user-visible changes since 22.09.2007 (for first point release):
-
-// HEADLINES:
-
-* 27.09.2007 SparseArray class added - jr
-* 28.09.2007 Help.gui added - ds
-* 01.10.2007 FFT and IFFT rewrite - now using more efficient libs, also allows user to vary the overlap and the window type, also large-sized FFTs are possible - ds
-* 02.10.2007 UnpackFFT and PackFFT added - these allow for flexible frequency-domain manipulations inside synths - ds
-* 04.10.2007 Pkey and Pif added - hjh
-* 05.10.2007 reformed Patterns - all patterns accept patterns as arguments - jr
-* 08.10.2007 change to UGen plugin loading fixes the audio dropout issue that various users have experienced - rb
-* 08.10.2007 GeneralHID crossplatform HID wrapper - mb
-* --.--.2007 many improvements to Quarks package-management system. gui improvements, dependency-handling improvements, etc - various
-* 20.10.2007 added a Glossary file - sw
-* --.10.2007 various new help files added, and many help files improved - various
-* 26.10.2007 Changed Cmd-? to Cmd-D in lieu of the default help menu shortcut in Leopard. Also changed Cmd-Shift-K (clear post window) to Cmd-Shift-C to avoid accidental recompiles. - rb 
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 
-* 22.09.2007 change log added, much rejoicing
-* 25.09.2007 added packagesource.sh script to produce source code bundles - ds
-* 28.09.2007 IdentityDictionary:doesNotUnderstand now warns if adding a pseudo-method which overrides a real method - jr
-* 28.09.2007 String:openHTMLFile added - ds
-* 04.10.2007 Integer:collect and Integer:collectAs methods added - ds/jr
-* 05.10.2007 Dwhite:new and Dbrown:new have default values for lo and hi - jr
-* 10.10.2007 SC no longer automatically writes data (synthdefs, archive.scxtar) to the application folder - instead writes to "app support". This fixes problems with running SC using an unprivileged user account - ds
-* 16.10.2007 SequenceableCollection:median speed improvement, approx ten times faster in many cases - ds
-* 20.10.2007 Object:deprecated and DeprecatedError added to allow for method deprecation - sw
-* 21.10.2007 Amplitude : attackTime and releaseTime can be modulated now - jr
-* 25.10.2007 Collection : histo method improved and moved from mathLib to common - jr
-* 30.10.2007 improvements to cocoa Gui, including SCUserView improved to support layering and own draw hook - jt, sciss
-* 31.10.2007 refactored Pbrown, added Pgbrown - jr
- 
+* 2007-11-14 added a preprocessor to the interpreter - jr
+* 2007-11-14 added a startup message specifying how to get help - rk
 
+///////////////////////////// SuperCollider v3.1, released 2007-10-31 /////////////////////////////
+
+// user-visible changes since 2007-09-22 (for first point release):
+
+// HEADLINES:
+
+* 2007-09-27 SparseArray class added - jr
+* 2007-09-28 Help.gui added - ds
+* 2007-10-01 FFT and IFFT rewrite - now using more efficient libs, also allows user to vary the overlap and the window type, also large-sized FFTs are possible - ds
+* 2007-10-02 UnpackFFT and PackFFT added - these allow for flexible frequency-domain manipulations inside synths - ds
+* 2007-10-04 Pkey and Pif added - hjh
+* 2007-10-05 reformed Patterns - all patterns accept patterns as arguments - jr
+* 2007-10-08 change to UGen plugin loading fixes the audio dropout issue that various users have experienced - rb
+* 2007-10-08 GeneralHID crossplatform HID wrapper - mb
+* 2007-xx-xx many improvements to Quarks package-management system. gui improvements, dependency-handling improvements, etc - various
+* 2007-10-20 added a Glossary file - sw
+* 2007-10-xx various new help files added, and many help files improved - various
+* 2007-10-26 changed Cmd-? to Cmd-D in lieu of the default help menu shortcut in Leopard. Also changed Cmd-Shift-K (clear post window) to Cmd-Shift-C to avoid accidental recompiles. - rb 
+
+// OTHER ADDITIONS / IMPROVEMENTS:
+
+* 2007-09-22 change log added, much rejoicing
+* 2007-09-25 added packagesource.sh script to produce source code bundles - ds
+* 2007-09-28 IdentityDictionary:doesNotUnderstand now warns if adding a pseudo-method which overrides a real method - jr
+* 2007-09-28 String:openHTMLFile added - ds
+* 2007-10-04 Integer:collect and Integer:collectAs methods added - ds/jr
+* 2007-10-05 Dwhite:new and Dbrown:new have default values for lo and hi - jr
+* 2007-10-10 SC no longer automatically writes data (synthdefs, archive.scxtar) to the application folder - instead writes to "app support". This fixes problems with running SC using an unprivileged user account - ds
+* 2007-10-16 SequenceableCollection:median speed improvement, approx ten times faster in many cases - ds
+* 2007-10-20 Object:deprecated and DeprecatedError added to allow for method deprecation - sw
+* 2007-10-21 Amplitude : attackTime and releaseTime can be modulated now - jr
+* 2007-10-25 Collection : histo method improved and moved from mathLib to common - jr
+* 2007-10-30 improvements to cocoa Gui, including SCUserView improved to support layering and own draw hook - jt, sciss
+* 2007-10-31 refactored Pbrown, added Pgbrown - jr
+ 
 // BUGFIXES:
 
-* 29.09.2007 takekos bug fixed (obscure issue with garbage collection in arrays) - jm
-* 01.10.2007 fixed off by one bug in Dswitch and Dswitch1 that caused a server crash - jr
-* 09.10.2007 fixed deadlock and other problems in NSAttributedStringAdditions.m - rb
-* 11.10.2007 fixed inaccurate automatic determination of whether SC is running as standalone - ds
-* 14.10.2007 .quark files now saved correctly as plain-text, not RTF - ds
-* 24.10.2007 fixed a bug in Pbeta - jp
+* 2007-09-29 takekos bug fixed (obscure issue with garbage collection in arrays) - jm
+* 2007-10-01 fixed off by one bug in Dswitch and Dswitch1 that caused a server crash - jr
+* 2007-10-09 fixed deadlock and other problems in NSAttributedStringAdditions.m - rb
+* 2007-10-11 fixed inaccurate automatic determination of whether SC is running as standalone - ds
+* 2007-10-14 .quark files now saved correctly as plain-text, not RTF - ds
+* 2007-10-24 fixed a bug in Pbeta - jp
