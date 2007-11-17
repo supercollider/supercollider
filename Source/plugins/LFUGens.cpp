@@ -169,9 +169,14 @@ struct T2K : public Unit
 
 };
 
+struct T2A : public Unit
+{
+	float mLevel;
+};
+
 struct DC : public Unit
 {
-float m_val;
+	float m_val;
 };
 
 struct Silent : public Unit
@@ -260,6 +265,9 @@ extern "C"
 	
 	void T2K_next(T2K *unit, int inNumSamples);
 	void T2K_Ctor(T2K* unit);
+	
+	void T2A_next(T2A *unit, int inNumSamples);
+	void T2A_Ctor(T2A* unit);
 	
 	void DC_next(DC *unit, int inNumSamples);
 	void DC_Ctor(DC* unit);
@@ -1178,6 +1186,38 @@ void T2K_Ctor(T2K* unit)
 	SETCALC(T2K_next);
 	T2K_next(unit, 1);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void T2A_next(T2A *unit, int inNumSamples)
+{
+	float level = IN0(0);
+	int offset = (int) IN0(1);
+	float *out = OUT(0);
+	
+	
+	if((unit->mLevel <= 0.f && level > 0.f)) {
+		for(int i = 0; i < inNumSamples; i++) {
+			if(i == offset) { 
+				ZXP(out) = level; 
+			} else { 
+				ZXP(out) = 0.f; 
+			}
+		}
+	} else {
+		LOOP(inNumSamples, ZXP(out) = 0.f;)
+	}
+	
+	unit->mLevel = level;
+	
+}
+
+void T2A_Ctor(T2A* unit)
+{
+	SETCALC(T2A_next);
+	T2A_next(unit, 1);
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4014,6 +4054,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(K2A);
 	DefineSimpleUnit(A2K);
 	DefineSimpleUnit(T2K);
+	DefineSimpleUnit(T2A);
 	DefineSimpleUnit(DC);
 	DefineSimpleUnit(Silent);
 	DefineSimpleUnit(Line);
