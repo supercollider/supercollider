@@ -82,20 +82,6 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-// macros to put rgen state in registers
-#define RGET \
-	RGen& rgen = *unit->mParent->mRGen; \
-	uint32 s1 = rgen.s1; \
-	uint32 s2 = rgen.s2; \
-	uint32 s3 = rgen.s3; 
-
-#define RPUT \
-	rgen.s1 = s1; \
-	rgen.s2 = s2; \
-	rgen.s3 = s3;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 void LFDNoise0_next(LFDNoise0 *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
