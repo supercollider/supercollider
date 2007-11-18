@@ -118,20 +118,6 @@ void* disk_io_thread_func(void* arg)
 
 #define MAXCHANNELS 32
 
-#define GET_BUF \
-	float fbufnum  = ZIN0(0); \
-	if (fbufnum != unit->m_fbufnum) { \
-		uint32 bufnum = (int)fbufnum; \
-		World *world = unit->mWorld; \
-		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
-		unit->m_fbufnum = fbufnum; \
-		unit->m_buf = world->mSndBufs + bufnum; \
-	} \
-	SndBuf *buf = unit->m_buf; \
-	uint32 bufChannels = buf->channels; \
-	uint32 bufFrames = buf->frames; \
-	float *bufData = buf->data;
-
 #define SETUP_OUT(offset) \
 	if (unit->mNumOutputs != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
