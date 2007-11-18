@@ -428,18 +428,6 @@ void NumRunningSynths_Ctor(Unit *unit, int inNumSamples)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define SIMPLE_GET_BUF \
-	float fbufnum  = ZIN0(0); \
-	if (fbufnum != unit->m_fbufnum) { \
-		uint32 bufnum = (int)fbufnum; \
-		World *world = unit->mWorld; \
-		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
-		unit->m_fbufnum = fbufnum; \
-		unit->m_buf = world->mSndBufs + bufnum; \
-	} \
-	SndBuf *buf = unit->m_buf; \
-
-
 void BufSampleRate_next(BufInfoUnit *unit, int inNumSamples)
 {
 	SIMPLE_GET_BUF
@@ -583,23 +571,6 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	
 	return in - hi * floor(in/hi); 
 }
-
-#define GET_BUF \
-	float fbufnum  = ZIN0(0); \
-	if (fbufnum != unit->m_fbufnum) { \
-		uint32 bufnum = (int)fbufnum; \
-		World *world = unit->mWorld; \
-		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
-		unit->m_fbufnum = fbufnum; \
-		unit->m_buf = world->mSndBufs + bufnum; \
-	} \
-	SndBuf *buf = unit->m_buf; \
-	float *bufData __attribute__((__unused__)) = buf->data; \
-	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
-	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
-	uint32 bufFrames = buf->frames; \
-	int mask __attribute__((__unused__)) = buf->mask; \
-	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
 
 #define CHECK_BUF \
 	if (!bufData) { \
@@ -1419,7 +1390,7 @@ void Pitch_Ctor(Pitch *unit)
 	unit->m_downsamp = sc_clip(downsamp, 1, unit->mWorld->mFullRate.mBufLength);
 
 
-    unit->m_srate = unit->mWorld->mFullRate.mSampleRate / (float)unit->m_downsamp;
+    unit->m_srate = FULLRATE / (float)unit->m_downsamp;
     
     unit->m_minperiod = (long)(unit->m_srate / unit->m_maxfreq);
     unit->m_maxperiod = (long)(unit->m_srate / unit->m_minfreq);
@@ -5014,19 +4985,6 @@ void ScopeOut_Ctor(ScopeOut *unit)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-// macros to put rgen state in registers
-#define RGET \
-	RGen& rgen = *unit->mParent->mRGen; \
-	uint32 s1 = rgen.s1; \
-	uint32 s2 = rgen.s2; \
-	uint32 s3 = rgen.s3; 
-
-#define RPUT \
-	rgen.s1 = s1; \
-	rgen.s2 = s2; \
-	rgen.s3 = s3;
 
 struct PitchShift : public Unit
 {

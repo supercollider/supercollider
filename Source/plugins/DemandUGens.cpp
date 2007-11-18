@@ -1824,23 +1824,6 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	return in - hi * floor(in/hi); 
 }
 
-#define GET_BUF \
-	float fbufnum  = ZIN0(0); \
-	if (fbufnum != unit->m_fbufnum) { \
-		uint32 bufnum = (int)fbufnum; \
-		World *world = unit->mWorld; \
-		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
-		unit->m_fbufnum = fbufnum; \
-		unit->m_buf = world->mSndBufs + bufnum; \
-	} \
-	SndBuf *buf = unit->m_buf; \
-	float *bufData __attribute__((__unused__)) = buf->data; \
-	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
-	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
-	uint32 bufFrames = buf->frames; \
-	int mask __attribute__((__unused__)) = buf->mask; \
-	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
-
 #define CHECK_BUF \
 	if (!bufData) { \
                 unit->mDone = true; \
