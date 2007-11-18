@@ -166,14 +166,14 @@ Function : AbstractFunction {
 		if (result.isException) { ^handler.value(result); } { ^result }
 	}
 	prTry {
-		var result;
-		var next = thisThread.exceptionHandler;
-		thisThread.exceptionHandler = {|error| 
-			thisThread.exceptionHandler = next; // pop
+		var result, thread = thisThread;
+		var next = thread.exceptionHandler;
+		thread.exceptionHandler = {|error| 
+			thread.exceptionHandler = next; // pop
 			^error 
 		};
 		result = this.value;
-		thisThread.exceptionHandler = next; // pop
+		thread.exceptionHandler = next; // pop
 		^result
 	}
 	
