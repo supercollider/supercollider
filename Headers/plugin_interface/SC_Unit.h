@@ -94,6 +94,18 @@ enum {
 #define BUFLENGTH (unit->mBufLength)
 #define BUFRATE (unit->mRate->mBufRate)
 #define BUFDUR (unit->mRate->mBufDuration)
+#define FULLRATE (unit->mWorld->mFullRate.mSampleRate)
+
+// macros to get pseudo-random number generator, and put its state in registers
+#define RGET \
+	RGen& rgen = *unit->mParent->mRGen; \
+	uint32 s1 = rgen.s1; \
+	uint32 s2 = rgen.s2; \
+	uint32 s3 = rgen.s3;
+#define RPUT \
+	rgen.s1 = s1; \
+	rgen.s2 = s2; \
+	rgen.s3 = s3;
 
 typedef void (*UnitCmdFunc)(struct Unit *unit, struct sc_msg_iter *args);
 typedef void (*PlugInCmdFunc)(World *inWorld, void* inUserData, struct sc_msg_iter *args, void *replyAddr);
