@@ -20,6 +20,8 @@
 	//	// Delegates to EmacsDocument.
 	// Delegates to ScelDocument
 
+	*implementationClass { ^ScelDocument }
+
 	*initClass {
 		//		allDocuments = Array.new;
 		//		allDocuments.dump;
