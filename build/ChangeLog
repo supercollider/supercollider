@@ -4,11 +4,12 @@
 
 // BUGFIXES:
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
-* 18.11.2007 fixed a bug in prTry / protect - jr
+* 2007-11-18 fixed a bug in prTry / protect - jr
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 * 2007-11-16 MIDIOut.connect and disconnect - mb
-* 18.11.2007 added T2A UGen
+* 2007-11-18 added T2A UGen
+* 2007-11-18 Refactoring of Document class, including new CocoaDocument class to handle the Cocoa-specific (SuperCollider.app) document management - ds
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
 
