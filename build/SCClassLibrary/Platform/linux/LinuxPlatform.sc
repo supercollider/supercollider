@@ -5,7 +5,7 @@ LinuxPlatform : UnixPlatform
 	startup {
 		// Document setup
 		if (\EmacsDocument.asClass.notNil) {
-			Document.startup;
+			Document.implementationClass.startup;
 		};
 		
 		helpDir = this.systemAppSupportDir++"/Help";

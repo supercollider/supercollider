@@ -1,3 +1,6 @@
+// Since SC v3.2 dev, Document is an ABSTRACT class. Can't be instantiated directly. 
+// Subclasses provide the editor-specific implementation, e.g. CocoaDocument for the standard Mac interface.
+// Subclasses also (in their SC code files) add a "implementationClass" method to Document to tell it to use them.
 Document {
 
 	classvar <dir="", <wikiDir="", <allDocuments, <>current;
@@ -23,11 +26,14 @@ Document {
 		});
 	}
 	*open { arg path, selectionStart=0, selectionLength=0;
-		^super.new.initFromPath(path, selectionStart, selectionLength)
+		^Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength)
 	}
 	
 	*new { arg title="Untitled", string="", makeListener=false;
-		^super.new.initByString(title, string.asString, makeListener);
+		^Document.implementationClass.new(title, string, makeListener);
+	}
+	*prBasicNew {
+		^super.new
 	}
 	
 //class:
@@ -156,23 +162,23 @@ Document {
 	}
 	
 	front {
-		_TextWindow_ToFront
+		^this.subclassResponsibility
 	}
 	
 	unfocusedFront {
-		_TextWindow_UnfocusedFront
+		^this.subclassResponsibility
 	}
 	
 	alwaysOnTop_{|boolean=true|
-		_TextWindow_AlwaysOnTop
+		^this.subclassResponsibility
 	}
 	
 	alwaysOnTop{
-		_TextWindow_IsAlwaysOnTop
+		^this.subclassResponsibility
 	}
 		
 	syntaxColorize {
-		_TextWindow_SyntaxColorize
+		^this.subclassResponsibility
 	}
 	
 	selectLine {arg line;
@@ -180,7 +186,7 @@ Document {
 	}
 	
 	selectRange {arg start=0, length=0;
-		_TextWindow_SelectRange
+		^this.subclassResponsibility
 	}
 	
 	editable_{arg abool=true;
@@ -188,24 +194,24 @@ Document {
 		this.prIsEditable_(abool);
 	}
 	removeUndo{
-		_TextWindow_RemoveUndo
+		^this.subclassResponsibility
 	}
 	
 	promptToSave_{|bool|
-		_TextWindow_SetPromptToSave
+		^this.subclassResponsibility
 	}
 	
 	promptToSave{
-		_TextWindow_PromptToSave
+		^this.subclassResponsibility
 	}	
 	
 	underlineSelection{
-		_TextWindow_UnderlineSelection
+		^this.subclassResponsibility
 	}
 	
 // state info
 	isEdited {
-		_TextWindow_IsEdited
+		^this.subclassResponsibility
 	}
 	isFront {
 		^Document.current === this
@@ -393,65 +399,57 @@ Document {
 	
 //private-----------------------------------
 	prIsEditable_{arg editable=true;
-		_TextWindow_SetEditable
+		^this.subclassResponsibility
 	}
 	prSetTitle { arg argName;
-		_TextWindow_SetName
-		^this.primitiveFailed
+		^this.subclassResponsibility
 	}
 	prGetTitle {
-		_TextWindow_GetName
+		^this.subclassResponsibility
 	}	
 	prGetFileName {
-		_TextWindow_GetFileName
-		^this.primitiveFailed
+		^this.subclassResponsibility
 	}
 	prSetFileName {|apath|
-		_TextWindow_SetFileName
+		^this.subclassResponsibility
 	}
 	prGetBounds { arg argBounds;
-		_TextWindow_GetBounds
-		^this.primitiveFailed
+		^this.subclassResponsibility
 	}
 
 	prSetBounds { arg argBounds;
-		_TextWindow_SetBounds
-		^this.primitiveFailed
+		^this.subclassResponsibility
 	}
 
 	//if range is -1 apply to whole doc
 	setFont {arg font, rangeStart= -1, rangeSize=100;
-		_TextWindow_SetFont
-		^this.primitiveFailed
-
+		^this.subclassResponsibility
 	}
 	
 	setTextColor { arg color,  rangeStart = -1, rangeSize = 0;
-		_TextWindow_SetTextColor
+		^this.subclassResponsibility
 	}
 	
 	text {
-		_TextWindow_Text
+		^this.subclassResponsibility
 	}
 	selectedText {
-		_TextWindow_SelectedText
+		^this.subclassResponsibility
 	}
 	selectUnderlinedText { arg clickPos;
-		_TextWindow_SelectUnderlinedText
-		^false
+		^this.subclassResponsibility
 	}
 	
 	linkAtClickPos { arg clickPos;
-		_TextWindow_LinkAtClickPos
-		^false
+		^this.subclassResponsibility
 	}
 	
 	rangeText { arg rangestart=0, rangesize=1; 
-		_TextWindow_TextWithRange
+		^this.subclassResponsibility
 	}
 	
 	prclose {
-		_TextWindow_Close
+		^this.subclassResponsibility
 	}
 
 	closed {
@@ -461,11 +459,10 @@ Document {
 	}
 	
 	prinsertText { arg dataPtr, txt;
-	 	_TextWindow_InsertText
+		^this.subclassResponsibility
 	}
 	insertTextRange { arg string, rangestart, rangesize;
-		_TextWindow_InsertTextInRange
-		^this.primitiveFailed
+		^this.subclassResponsibility
 	}
 
 	prAdd {
@@ -484,7 +481,7 @@ Document {
 	
 	//this is called after recompiling the lib
 	*prnumberOfOpen {
-		_NumberOfOpenTextWindows
+		^this.subclassResponsibility
 	}
 	*numberOfOpen {
 		thisProcess.platform.when(\_NumberOfOpenTextWindows) {
@@ -504,12 +501,12 @@ Document {
 		this.prAdd;
 	}
 	prinitByIndex { arg idx;
-		_TextWindow_GetByIndex
+		^this.subclassResponsibility
 	}
 	
 	//this is called from the menu: open, new
 	*prGetLast {
-		^super.new.initLast
+		^Document.implementationClass.prBasicNew.initLast
 	}
 	
 	initLast {
@@ -520,7 +517,7 @@ Document {
 	}
 	
 	prGetLastIndex {
-		_TextWindow_GetLastIndex
+		^this.subclassResponsibility
 	}
 	//private open
 	initFromPath { arg path, selectionStart, selectionLength;
@@ -540,7 +537,7 @@ Document {
 		^this.prAdd;
 	}
 	propen { arg path, selectionStart=0, selectionLength=0;
-		_OpenTextFile
+		^this.subclassResponsibility
 	}
 	//private newTextWindow
 	initByString{arg argTitle, str, makeListener;
@@ -553,31 +550,30 @@ Document {
 	
 	}
 	prinitByString { arg title, str, makeListener;
-		_NewTextWindow
+		^this.subclassResponsibility
 	}
 
 	//other private
 	//if -1 whole doc
 	prSetBackgroundColor { arg color;
-		_TextWindow_SetBackgroundColor
+		^this.subclassResponsibility
 	}
 	prGetBackgroundColor { arg color;
-		_TextWindow_GetBackgroundColor
+		^this.subclassResponsibility
 	}	
 	selectedRangeLocation {
-		_TextWindow_GetSelectedRangeLocation
+		^this.subclassResponsibility
 	}
 	selectedRangeSize {
-		_TextWindow_GetSelectedRangeLength
+		^this.subclassResponsibility
 	}
 	
 	prSelectLine { arg line;
-		_TextWindow_SelectLine;
-		^this.primitiveFailed
+		^this.subclassResponsibility
 	}
 	
 	*prGetIndexOfListener {
-		_TextWindow_GetIndexOfListener
+		^this.subclassResponsibility
 	}
 	//---not yet implemented
 	// ~/Documents
