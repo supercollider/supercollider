@@ -113,7 +113,7 @@ Document {
 	}
 	
 	*listener {
-		^allDocuments[this.prGetIndexOfListener];
+		^allDocuments[this.implementationClass.prGetIndexOfListener];
 	}
 	isListener {
 		^allDocuments.indexOf(this) == this.class.prGetIndexOfListener
