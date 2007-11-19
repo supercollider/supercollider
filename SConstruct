@@ -712,9 +712,6 @@ PanUGens
 PhysicalModelingUGens
 TriggerUGens
 UnaryOpUGens
-ML
-Loudness
-BeatTrack
 '''):
     plugins.append(
         pluginEnv.SharedLibrary(
@@ -740,6 +737,16 @@ plugins.append(
 plugins.append(
     pluginEnv.SharedLibrary(
     make_plugin_target('UnpackFFTUGens'), ['Source/plugins/SCComplex.cpp', 'Source/plugins/UnpackFFTUGens.cpp']))
+
+# machine listening ugens
+# fft ugens
+mlEnv = pluginEnv.Copy()
+mlSources = Split('Source/plugins/ML.cpp Source/plugins/Loudness Source/plugins/BeatTrack')
+plugins.append(
+    mlEnv.SharedLibrary(
+    make_plugin_target('ML_UGens'), mlSources))
+
+
 
 # diskio ugens
 diskIOEnv = pluginEnv.Copy(
