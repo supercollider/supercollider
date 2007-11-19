@@ -100,6 +100,7 @@ public:
 	SerialPort(PyrObject* obj, const char* serialport, const Options& options);
 	~SerialPort();
 
+	bool isRunning() const { return m_running; }
 	int fd() const { return m_fd; }
 	const Options& options() const { return m_options; }
 
@@ -370,11 +371,12 @@ void SerialPort::threadLoop()
 						}
 					}
 					nr += n;
-				} else if (n == -1) {
-					if (errno == EAGAIN) break;
-					else goto done;
+				} else if ((n == 0) || ((n == -1) && (errno == EAGAIN))) {
+					break;
 				} else {
-// 						printf("SerialPort HUP\n");
+#ifndef NDEBUG
+					printf("SerialPort HUP\n");
+#endif
 					goto done;
 				}
 			}
@@ -398,7 +400,10 @@ done:
 	tcflush(fd, TCIOFLUSH);
 	tcsetattr(fd, TCSANOW, &m_oldtermio);
 	close(fd);
-// 	printf("SerialPort closed\n");
+	m_running = false;
+#ifndef NDEBUG
+	printf("SerialPort closed\n");
+#endif
 }
 
 // =====================================================================
