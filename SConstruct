@@ -712,6 +712,9 @@ PanUGens
 PhysicalModelingUGens
 TriggerUGens
 UnaryOpUGens
+ML
+Loudness
+BeatTrack
 '''):
     plugins.append(
         pluginEnv.SharedLibrary(
