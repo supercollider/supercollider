@@ -82,4 +82,12 @@ Platform
 UnixPlatform : Platform
 {
 	pathSeparator { ^$/ }
+	
+	arch {
+		var pipe, arch;
+		pipe = Pipe("arch", "r");
+		arch = pipe.getLine;
+		pipe.close;
+		^arch.asSymbol;
+		}
 }
