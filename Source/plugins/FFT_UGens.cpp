@@ -111,6 +111,11 @@ struct IFFT : public FFTBase
 	float m_scalefactor; // Different FFT algorithms introduce different scaling through ->FFT->IFFT->
 };
 
+struct FFTTrigger : public FFTBase
+{
+	int m_numPeriods, m_periodsRemain, m_polar;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 extern "C"
@@ -123,7 +128,9 @@ extern "C"
 	void IFFT_Ctor(IFFT* unit);
 	void IFFT_next(IFFT *unit, int inNumSamples);
 	void IFFT_Dtor(IFFT* unit);
-
+	
+	void FFTTrigger_Ctor(FFTTrigger* unit);
+	void FFTTrigger_next(FFTTrigger* unit, int inNumSamples);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -577,6 +584,43 @@ void init_ffts()
 #endif
 }
 
+void FFTTrigger_Ctor(FFTTrigger *unit)
+{
+	World *world = unit->mWorld;
+
+	uint32 bufnum = (uint32)IN0(0);
+	//Print("FFTBase_Ctor: bufnum is %i\n", bufnum);
+	if (bufnum >= world->mNumSndBufs) bufnum = 0;
+	SndBuf *buf = world->mSndBufs + bufnum; 
+	
+	unit->m_fftsndbuf = buf;
+	unit->m_fftbufnum = bufnum;
+	unit->m_bufsize = buf->samples;
+
+	int numSamples = unit->mWorld->mFullRate.mBufLength;
+	float dataHopSize = IN0(1);
+	int initPolar = unit->m_polar = (int)IN0(2);
+	unit->m_numPeriods = unit->m_periodsRemain = (int)(((float)unit->m_bufsize * dataHopSize) / numSamples) - 1; 
+		
+	buf->coord = (IN0(2) == 1.f) ? coord_Polar : coord_Complex;
+	    
+	OUT0(0) = IN0(0);
+	SETCALC(FFTTrigger_next);
+}
+
+void FFTTrigger_next(FFTTrigger *unit, int inNumSamples)
+{	
+	if (unit->m_periodsRemain > 0) {
+		ZOUT0(0) = -1.f;
+		unit->m_periodsRemain--;
+	} else {
+		ZOUT0(0) = unit->m_fftbufnum;
+		unit->m_pos = 0;
+		unit->m_periodsRemain = unit->m_numPeriods;		
+	}
+		
+}
+
 void init_SCComplex(InterfaceTable *inTable);
 
 void initFFT(InterfaceTable *inTable)
@@ -587,5 +631,6 @@ void initFFT(InterfaceTable *inTable)
 
 	DefineDtorUnit(FFT);
 	DefineDtorUnit(IFFT);
+	DefineSimpleUnit(FFTTrigger);
 }
 
