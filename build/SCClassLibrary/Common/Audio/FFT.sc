@@ -145,7 +145,12 @@ PV_BinScramble : PV_ChainUGen
 	}
 }
 
-
+FFTTrigger : PV_ChainUGen 
+{
+	*new { | buffer, hop = 0.5, polar = 0.0|
+		^this.multiNew('control', buffer, hop, polar)
+	}
+}	
 
 
 ////////////////////////////////////////////////////
