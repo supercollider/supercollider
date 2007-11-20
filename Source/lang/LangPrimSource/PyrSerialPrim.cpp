@@ -194,6 +194,9 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 		case 115200:
 			brate = B115200;
 			break;
+		case 230400:
+			brate = B230400;
+			break;
 		default:
 			brate = B9600;
 			m_options.baudrate=9600;
