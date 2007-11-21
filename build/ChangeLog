@@ -10,6 +10,7 @@
 * 2007-11-16 MIDIOut.connect and disconnect - mb
 * 2007-11-18 added T2A UGen
 * 2007-11-18 Refactoring of Document class, including new CocoaDocument class to handle the Cocoa-specific (SuperCollider.app) document management - ds
+* 2007-11-21 StartUp protects its added functions from each other - if one fails this no longer prevents others from running - ds
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
 
