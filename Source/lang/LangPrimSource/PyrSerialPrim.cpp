@@ -222,6 +222,7 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 			break;
 #endif // !_POSIX_C_SOURCE
 		default:
+			close(m_fd);
 			throw Error("unsupported baudrate");
 	}
 
