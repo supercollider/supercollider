@@ -45,7 +45,14 @@ StartUp {
 	
 	*run {
 		done = true;
-		functions.do(_.value);
+		functions.do{|func|
+			func.try{|error|
+				"StartUp: an error has occurred.".postln;
+				error.reportError;
+				"Thrown during function:".postln;
+				func.postcs;
+			}
+		};
 		"StartUp done.".postln;
 	}
 	
