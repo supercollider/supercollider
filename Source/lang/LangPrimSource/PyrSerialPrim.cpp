@@ -35,6 +35,7 @@
 #include <unistd.h>
 
 #include <stdexcept>
+#include <sstream>
 
 #include "GC.h"
 #include "PyrKernel.h"
@@ -176,6 +177,15 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 	// baudrate
 	speed_t brate;
 	switch (m_options.baudrate) {
+		case 1200:
+			brate = B1200;
+			break;
+		case 1800:
+			brate = B1800;
+			break;
+		case 2400:
+			brate = B2400;
+			break;
 		case 4800:
 			brate = B4800;
 			break;
@@ -188,8 +198,21 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 		case 38400:
 			brate = B38400;
 			break;
+#ifndef _POSIX_C_SOURCE
+		case 7200:
+			brate = B7200;
+			break;
+		case 14400:
+			brate = B14400;
+			break;
+		case 28800:
+			brate = B28800;
+			break;
 		case 57600:
 			brate = B57600;
+			break;
+		case 76800:
+			brate = B76800;
 			break;
 		case 115200:
 			brate = B115200;
@@ -197,10 +220,9 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 		case 230400:
 			brate = B230400;
 			break;
+#endif // !_POSIX_C_SOURCE
 		default:
-			brate = B9600;
-			m_options.baudrate=9600;
-			break;
+			throw Error("unsupported baudrate");
 	}
 
 	cfsetispeed(&toptions, brate);
@@ -459,6 +481,9 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	try {
 		port = new SerialPort(self->uo, portName, options);
 	} catch (SerialPort::Error& e) {
+		std::ostringstream os;
+		os << "SerialPort Error: " << e.what();
+		post(os.str().c_str());
 		return errFailed;
 	}
 
