@@ -78,7 +78,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
     [aTextView setSmartInsertDeleteEnabled: NO];
     [aTextView setImportsGraphics: YES];
     [aTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
-	[aTextView setLangClassToCall:@"Document" 
+	[aTextView setLangClassToCall:@"CocoaDocument" 
 			withKeyDownActionIndex:4 withKeyUpActionIndex:5];
 	[aTextView setObjectKeyDownActionIndex:2 setObjectKeyUpActionIndex:1];
 	[aTextView setAcceptsFirstResponder:YES];
