@@ -339,7 +339,9 @@ int basicWrapAt(struct VMGlobals *g, int numArgsPushed)
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-		
+	
+	if(obj->size==0) {SetNil(a); return errNone; }
+	
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
@@ -375,7 +377,9 @@ int basicFoldAt(struct VMGlobals *g, int numArgsPushed)
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-		
+	
+	if(obj->size==0) {SetNil(a); return errNone; }
+	
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
@@ -412,6 +416,8 @@ int basicClipAt(struct VMGlobals *g, int numArgsPushed)
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
 		
+	if(obj->size==0) {SetNil(a); return errNone; }
+	
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
