@@ -1,6 +1,6 @@
 //////////// change log /////////////
 
-// user-visible changes in preparing SC v3.2, SuperCollide book release:
+// user-visible changes in preparing SC v3.2, SuperCollider book release:
 
 // BUGFIXES:
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
