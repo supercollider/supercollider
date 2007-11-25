@@ -313,7 +313,7 @@ Pfin : FilterPattern {
 		stream.next(nil);
 		^event
 	}
-}	
+}
 
 
 // it is not correct to call stream.next(nil) on a value stream
@@ -554,6 +554,35 @@ PdurStutter : Pstutter { // float streams
 		})		
 		^event;
 	}		
+}
+
+Pclutch : FilterPattern {
+	var <>connected;
+	*new { arg pattern, connected = true;
+		^super.new(pattern).connected_(connected)
+	}
+	
+	embedInStream { arg inval;
+		var clutchStream = connected.asStream;
+		var stream = pattern.asStream;
+		var outval, clutch;
+		while {
+			clutch = clutchStream.next(inval);
+			clutch.notNil
+		} {
+			
+			if(clutch === true or: { clutch == 1 }) {
+				outval = stream.next(inval);
+				if(outval.isNil) { ^inval };
+				inval = outval.yield;
+			} {
+				outval ?? { outval = stream.next(inval) };
+				inval = outval.copy.yield;	
+			};
+			
+			
+		}
+	}
 }
 
 Pwhile : FuncFilterPattern {
