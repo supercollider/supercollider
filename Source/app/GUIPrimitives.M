@@ -2797,7 +2797,7 @@ void dim_color(RGBColor *rgb)
 	rgb->green = (32768L + rgb->green) >> 1;
 	rgb->blue  = (32768L + rgb->blue ) >> 1;
 }
-
+/*
 void bevelRect(Rect *r0, int width,
 	RGBColor *color1, RGBColor *color2, RGBColor *color3, bool fill);
 void bevelRect(Rect *r0, int width,
@@ -2881,7 +2881,7 @@ int drawBevelRect(Rect r, int width, int inout, RGBColor color, int drawop)
 	return errNone;
 }
 
-
+*/
 inline Point origin(Rect a)
 {
 	Point p;
