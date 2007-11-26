@@ -30,8 +30,7 @@
 - (void) setAcceptsFirstResponder: (BOOL) flag;
 - (void) keyDown: (NSEvent*) event;
 - (void) mouseDown: (NSEvent*) event;
--(void)rightMouseDown:(NSEvent*)theEvent;
--(void)otherMouseDown:(NSEvent*)theEvent;
+- (void) mouseUpAction: (NSEvent*) theEvent index: (int) index;
 
 - (void) autoIndent: (NSEvent*) event;
 - (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
