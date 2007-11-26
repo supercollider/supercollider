@@ -95,6 +95,7 @@ enum {
 #define BUFRATE (unit->mRate->mBufRate)
 #define BUFDUR (unit->mRate->mBufDuration)
 #define FULLRATE (unit->mWorld->mFullRate.mSampleRate)
+#define FULLBUFLENGTH (unit->mWorld->mFullRate.mBufLength)
 
 // macros to grab a Buffer reference from the buffer indicated by the UGen's FIRST input
 #define GET_BUF \
