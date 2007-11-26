@@ -223,8 +223,9 @@ SCView {  // abstract class
 		^if(canReceiveDragHandler.notNil,{ canReceiveDragHandler.value(this) },{ this.defaultCanReceiveDrag })
 	}
 	defaultCanReceiveDrag { ^false }
-	receiveDrag {
-		if(receiveDragHandler.notNil,{ receiveDragHandler.value(this) },{ this.defaultReceiveDrag });
+	receiveDrag {|x,y|
+		this.debug(x,y);
+		if(receiveDragHandler.notNil,{ receiveDragHandler.value(this, x, y) },{ this.defaultReceiveDrag(x,y) });
 		currentDrag = currentDragString = nil;
 	}
 
@@ -291,6 +292,7 @@ SCView {  // abstract class
 		currentDragString = currentDrag;
 		currentDrag = currentDrag.interpret;
 	}
+	
 }
 
 SCContainerView : SCView { // abstract class
@@ -344,10 +346,33 @@ SCTopView : SCCompositeView {
 		}
 	}
 	
-	defaultReceiveDrag{
+	/* construction mode */
+	
+	constructionGrid_{ arg point;  
+		this.setProperty( \constructionGrid, point );
+	}
+	
+	constructionGrid {
+		^this.getProperty( \constructionGrid, Point.new );
+	}
+	
+	enableConstructionGrid_{arg flag;
+		this.setProperty( \enableConstructionGrid, flag );	
+	}
+
+	enableConstructionGrid{
+		^this.getProperty( \enableConstructionGrid );	
+	}
+		
+	//private called from lang
+	setConstructionMode {|flag|
+		this.setProperty( \setConstructionMode, flag )
+	}	
+	
+	defaultReceiveDrag{|x,y|
 		var win, view;
 		win = this.findWindow;
-		view = currentDrag.paletteExample(win, Rect(10,10,140,24));
+		view = currentDrag.paletteExample(win, Rect(x,y,140,24)).enabled_(false);
 		view.keyDownAction_({|view, char, modifiers, unicode, keycode|
 			if(keycode == 51){
 				view.remove;
@@ -1156,9 +1181,14 @@ SCDragBoth : SCDragSink {
 
 
 SCUserView : SCView {
-	var <>keyDownFunc, <>drawFunc;
+	var <>drawFunc;
 	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
 	var < clearOnRefresh = true, < relativeOrigin = false;
+	
+	keyDownFunc_{|action|
+		"SCUserView:keyDownFunc deprecated, use SCUserView:keyDownAction".warn;
+		keyDownAction = action;
+	}
 	
 	draw { 
 		drawFunc.value(this) ;	
@@ -1193,9 +1223,9 @@ SCUserView : SCView {
 		};
 		mouseEndTrackFunc.value(this, x, y, modifiers); 
 	}
-	keyDown { arg key, modifiers, unicode; 
-		keyDownFunc.value(this, key, modifiers, unicode) 
-	}
+//	keyDown { arg key, modifiers, unicode; 
+//		keyDownFunc.value(this, key, modifiers, unicode) 
+//	}
 	
 	clearOnRefresh_{|bool|
 		clearOnRefresh = bool;
