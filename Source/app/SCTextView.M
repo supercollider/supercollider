@@ -199,9 +199,9 @@ extern bool compiledOK;
 }
 
 bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
--(void)rightMouseDown:(NSEvent*)theEvent { [[self delegate] mouseDown:theEvent]; [super rightMouseDown: theEvent]; }
--(void)otherMouseDown:(NSEvent*)theEvent {[[self delegate] mouseDown:theEvent]; [super otherMouseDown: theEvent];  }
--(void) mouseDragged:(NSEvent*)theEvent {[[self delegate] mouseDown:theEvent]; [super mouseDragged: theEvent]; }
+//-(void)rightMouseDown:(NSEvent*)theEvent { [[self delegate] mouseDown:theEvent]; [super rightMouseDown: theEvent]; }
+//-(void)otherMouseDown:(NSEvent*)theEvent {[[self delegate] mouseDown:theEvent]; [super otherMouseDown: theEvent];  }
+//-(void) mouseDragged:(NSEvent*)theEvent {[[self delegate] mouseDown:theEvent]; [super mouseDragged: theEvent]; }
 -(BOOL) dragSelectionWithEvent:(NSEvent *)event offset:(NSSize)mouseOffset slideBack:(BOOL)slideBack
 {
 [[self delegate] mouseDown:event];
