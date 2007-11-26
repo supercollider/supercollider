@@ -3,10 +3,8 @@ SCTextView : SCView{
 	var 	<autohidesScrollers, <hasHorizontalScroller, <hasVerticalScroller, <textBounds;
 	var <usesTabToFocusNextView=true, <enterInterpretsSelection=true;
 	
-	mouseDown{arg x, y, modifiers, buttonNumber, clickCount;
-		parent.mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount);
-		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount);	
-	}	
+	mouseUp {arg x, y, modifiers, buttonNumber, clickCount, clickPos;
+		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount, clickPos);	}
 	
 	string{
 		^this.getProperty(\string);
