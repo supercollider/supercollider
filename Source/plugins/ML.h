@@ -36,6 +36,7 @@ extern double phons[11];
 
 #include "BeatTrack.h"
 #include "Loudness.h"
+#include "Onsets.h"
 
 //#include "Kitch.h"
 //#include "TD_Features.h"
