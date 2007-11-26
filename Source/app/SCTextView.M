@@ -240,12 +240,41 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
 below:
 
         [super mouseDown: event];
-//        [self mouseDownAction: index];
-		[[self delegate] mouseDown: event];
+        [self mouseUpAction: event index: index];
+//		[[self delegate] mouseDown: event];
 
     }
 }
 
+extern PyrSymbol * s_mouseUp;
+- (void) mouseUpAction: (NSEvent*) theEvent index: (int) index
+{
+	if(!compiledOK) {
+		return;
+	}	
+	NSPoint mouseLoc;	
+	unsigned int modifiers = [theEvent modifierFlags];
+	mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	//	SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
+	int clickCount = [theEvent clickCount];
+	int buttonNum = [theEvent buttonNumber];	
+	pthread_mutex_lock (&gLangMutex);
+	PyrObject * pobj = [[self delegate] getSCObject];
+	if (pobj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, pobj); 
+		++g->sp;  SetInt(g->sp, mouseLoc.x); 
+		++g->sp;  SetInt(g->sp, mouseLoc.y); 
+		++g->sp;  SetInt(g->sp, modifiers); 
+		++g->sp;  SetInt(g->sp,buttonNum);
+		++g->sp;  SetInt(g->sp,clickCount);
+		++g->sp;  SetInt(g->sp,index);
+		runInterpreter(g, s_mouseUp, 7);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
+}
 - (void)setDefaultTabsTo:(float)value {
 	NSTextStorage *text = [self textStorage];
 	int length = [text length], i = 0;
