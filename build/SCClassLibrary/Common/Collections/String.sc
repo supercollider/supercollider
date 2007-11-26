@@ -126,6 +126,24 @@ String[char] : RawArray {
 	containsi { arg string, offset = 0;
 		^this.find(string, true, offset).notNil
 	}
+	
+	findRegexp { arg regexp, offset = 0;
+       _String_FindRegexp
+       ^this.primitiveFailed
+	}
+	
+	findAllRegexp { arg string, offset = 0;
+		var indices = [], i=[];
+		while { 
+			i = this.findRegexp(string, offset); 
+			i.notNil
+		}{
+			indices = indices.add(i);
+			offset = i[0][0] + 1;
+		}
+		^indices
+	}
+		
 	find { arg string, ignoreCase = false, offset = 0;
 		_String_Find
 		^this.primitiveFailed
