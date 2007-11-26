@@ -10,7 +10,7 @@ Document {
 	classvar <>wikiBrowse = true;
 
 	//don't change the order of these vars:
-	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction, <>onClose;
+	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseUpAction, <>toFrontAction, <>endFrontAction, <>onClose, <>mouseDownAction;
 	
 	var <stringColor;
 // 	var >path, visible; 
@@ -127,6 +127,14 @@ Document {
 		this.prSetFileName(apath);
 	}
 	dir { var path = this.path; ^path !? { path.dirname } }	
+	name{
+		^this.title
+	}
+	
+	name_{|aname|
+		this.title_(aname)
+	}
+		
 	title {
 		^this.prGetTitle
 	}
@@ -373,9 +381,8 @@ Document {
 		};
 	}
 		
-	mouseDown { arg clickPos;	
-		mouseDownAction.value(this, clickPos);
-		if (wikiBrowse and: { this.linkAtClickPos(clickPos).not } 
+	mouseUp{arg x, y, modifiers, buttonNumber, clickCount, clickPos;
+		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount);		if (wikiBrowse and: { this.linkAtClickPos(clickPos).not } 
 			and: { this.selectUnderlinedText(clickPos) } ) {
 			^this.openWikiPage
 		};		
