@@ -374,7 +374,7 @@ Document {
 	}
 		
 	mouseDown { arg clickPos;	
-		mouseDownAction.value(this);
+		mouseDownAction.value(this, clickPos);
 		if (wikiBrowse and: { this.linkAtClickPos(clickPos).not } 
 			and: { this.selectUnderlinedText(clickPos) } ) {
 			^this.openWikiPage
