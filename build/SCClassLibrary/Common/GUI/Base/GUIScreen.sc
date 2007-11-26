@@ -8,6 +8,8 @@ SCWindow {
 	var <acceptsMouseOver=false;
 	var <isClosed = false;
 	var <acceptsClickThrough = true;
+	var <> toFrontAction, <> endFrontAction;
+	var <editable=false, <>constructionView;
 	
 	*initClass {
 		UI.registerForShutdown({ this.closeAll });
@@ -169,23 +171,80 @@ SCWindow {
 		drawHook.value(this);
 	}
 	
+	didBecomeKey {
+		toFrontAction.value(this);
+	}
+
+	didResignKey {
+		endFrontAction.value(this);
+	}
 	
-	*viewPalette {
+	toggleEditMode{
+		var panel;
+		editable = editable.not;
+		if(editable){
+			GD_ToolboxWindow.front.addWindow(this);
+			this.refresh;
+		}{
+			GD_ToolboxWindow.front.removeWindow(this);
+			
+		}	
+	}
+	
+	*viewPalette {|win|
 		var w, v, f, c;
-		w = SCWindow("View Palette", Rect(532, 64, 300, 320)).front;
+		w = SCWindow("View Palette", Rect(532, 64, 300, 320),  scroll: true).front;
 		w.view.decorator = f = FlowLayout(w.view.bounds);
-		
-		c = [SCSlider, SCRangeSlider, SC2DSlider, SCPopUpMenu, SCButton, 
-			SCNumberBox, SCMultiSliderView,
-			SCStaticText, SCDragSource, SCDragSink, SCDragBoth,
-		];
-		
+		SCButton(w, 300@20).states_([ ["-> CODE"]])
+			.canFocus_(false).action_{
+				Document("window construction code", win.asConstructionCompileString);
+				};
+		w.view.decorator.nextLine;
+//		c = [SCSlider, SCRangeSlider, SC2DSlider, SCPopUpMenu, SCButton, 
+//			SCNumberBox, SCMultiSliderView,
+//			SCStaticText, SCDragSource, SCDragSink, SCDragBoth,
+//		];
+		c = SCView.allSubclasses.reject{|it| 
+			(it.superclasses.indexOf(SCContainerView).notNil 
+			or: (it.name === 'SCContainerView') 
+			or: (it.name ==='SCStaticTextBase') 
+			or: (it.name === 'SCSliderBase') 
+			or: (it.name === 'SCControlView'))
+		};	
+				
 		c.do({ arg item;
 			var n;
 			n = SCDragSource(w, Rect(0, 0, 140, 24));
 			n.object = item;
-		
-			item.paletteExample(w, Rect(0,0,140,24));
+			
+			try{
+				item.paletteExample(w, Rect(0,0,140,24));
+			}{
+				"no paletteExample found".warn;
+			};
+			w.view.decorator.nextLine;
+	
 		});
+		win.onClose_{
+			Document("window construction code", win.asConstructionCompileString); 
+			w.close
+			};
+		^w
+	}
+	
+
+	
+//	storeOn{|stream|
+//		if (stream.atLimit) { ^this };
+//		stream << this.class.name << "(\"\", " << this.bounds << ")";
+//		stream << ".front;\n";
+//		view.children.do{|it|
+//			it.storeOn(stream)
+//		}
+//
+//	}
+	storeArgs{^[name, this.bounds]}
+	storeModifiersOn{|stream| 
+		stream << ".front;";
 	}
 }
