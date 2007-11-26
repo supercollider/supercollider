@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.42">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
@@ -16,21 +16,21 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #872d1a; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #872d1a}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #982316}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0018e8}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #872d1a}
 span.s1 {color: #606060}
 span.s2 {color: #000000}
-span.s3 {color: #982316}
-span.s4 {color: #0025b2}
-span.s5 {color: #416d1f}
+span.s3 {color: #872d1a}
+span.s4 {color: #0929ae}
+span.s5 {color: #4c6a24}
 span.s6 {font: 12.0px Helvetica}
-span.s7 {color: #0024f8}
+span.s7 {color: #002cf2}
 span.s8 {font: 9.0px Helvetica; color: #606060}
 span.s9 {font: 9.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
@@ -122,6 +122,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s1">"(a|u)nd"</span>.matchRegexp(<span class="s1">"and"</span>); <span class="s3">// true</span></p>
 <p class="p5"><span class="s1">"[a-c]nd"</span>.matchRegexp(<span class="s1">"ind"</span>); <span class="s3">// false</span></p>
 <p class="p5"><span class="s1">"[a-c]nd"</span>.matchRegexp(<span class="s1">"bnd"</span>); <span class="s3">// true</span></p>
+<p class="p10"><br></p>
+<p class="p3"><b>findRegexp(string)</b></p>
+<p class="p10"><br></p>
+<p class="p3">POSIX regular expression search.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><br></p>
+<p class="p5">"foobar".findRegexp("o*bar");</p>
+<p class="p9"><br></p>
+<p class="p5">"32424 334 /**aaaaaa*/".findRegexp("/\\*\\*a*\\*/");</p>
+<p class="p9"><br></p>
+<p class="p5">"foobar".findRegexp("(o*)(bar)");</p>
+<p class="p9"><br></p>
+<p class="p5">"aaaabaaa".findAllRegexp("a+");</p>
 <p class="p10"><br></p>
 <p class="p4"><br></p>
 <p class="p3"><b>error</b></p>
