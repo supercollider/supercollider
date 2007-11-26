@@ -34,11 +34,11 @@ extern int eqlbandsizes[42];
 extern float contours[42][11];
 extern double phons[11];
 
+#include "KeyTrack.h"
 #include "BeatTrack.h"
 #include "Loudness.h"
 #include "Onsets.h"
 
-//#include "Kitch.h"
 //#include "TD_Features.h"
 //#include "MFCC.h"
 //#include "Tartini.h"
