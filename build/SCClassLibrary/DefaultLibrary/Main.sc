@@ -57,9 +57,12 @@ Main : Process {
 	}
 	
 	newSCWindow {
-		SCWindow.viewPalette;
-		SCWindow.new.front;
+		var win, palette;
+		win = SCWindow("construction");
+		win.front;
+		win.toggleEditMode;
 	}
+
 
 	platformClass {
 		// override in platform specific extension
