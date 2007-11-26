@@ -183,14 +183,13 @@ SCWindow {
 		var panel;
 		editable = editable.not;
 		if(editable){
-			GD_ToolboxWindow.front.addWindow(this);
+			SCIBToolboxWindow.front.addWindow(this);
 			this.refresh;
 		}{
-			GD_ToolboxWindow.front.removeWindow(this);
-			
+			SCIBToolboxWindow.front.removeWindow(this);
 		}	
 	}
-	
+	/*
 	*viewPalette {|win|
 		var w, v, f, c;
 		w = SCWindow("View Palette", Rect(532, 64, 300, 320),  scroll: true).front;
@@ -231,18 +230,8 @@ SCWindow {
 			};
 		^w
 	}
-	
+	*/
 
-	
-//	storeOn{|stream|
-//		if (stream.atLimit) { ^this };
-//		stream << this.class.name << "(\"\", " << this.bounds << ")";
-//		stream << ".front;\n";
-//		view.children.do{|it|
-//			it.storeOn(stream)
-//		}
-//
-//	}
 	storeArgs{^[name, this.bounds]}
 	storeModifiersOn{|stream| 
 		stream << ".front;";
