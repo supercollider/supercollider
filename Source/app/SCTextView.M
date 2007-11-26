@@ -154,6 +154,7 @@ extern bool compiledOK;
 - (void) keyDown: (NSEvent*) event
 {
     NSString *characters = [event characters];
+	BOOL ignoreControlKeys = YES;
 	if(compiledOK){
 		unsigned int modifiers = [event modifierFlags];
 		unichar character = 0;
@@ -192,12 +193,20 @@ extern bool compiledOK;
     } else {
         //call lang
 		[[self delegate] keyDown: event];
+		if(ignoreControlKeys && ([event modifierFlags] & NSCommandKeyMask)) return;
 		[super keyDown: event];
     }
 }
 
 bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
-
+-(void)rightMouseDown:(NSEvent*)theEvent { [[self delegate] mouseDown:theEvent]; [super rightMouseDown: theEvent]; }
+-(void)otherMouseDown:(NSEvent*)theEvent {[[self delegate] mouseDown:theEvent]; [super otherMouseDown: theEvent];  }
+-(void) mouseDragged:(NSEvent*)theEvent {[[self delegate] mouseDown:theEvent]; [super mouseDragged: theEvent]; }
+-(BOOL) dragSelectionWithEvent:(NSEvent *)event offset:(NSSize)mouseOffset slideBack:(BOOL)slideBack
+{
+[[self delegate] mouseDown:event];
+	[super dragSelectionWithEvent:event offset:mouseOffset slideBack:slideBack];
+}
 - (void) mouseDown: (NSEvent*) event
 {
 	NSWindow *window = [self window];
@@ -231,27 +240,10 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
 below:
 
         [super mouseDown: event];
-        [self mouseDownAction: index];
+//        [self mouseDownAction: index];
 		[[self delegate] mouseDown: event];
 
     }
-}
-
-extern PyrSymbol * s_mouseDown;
-- (void) mouseDownAction: (int) index
-{
-		MyDocument * doc = [self delegate];
-		pthread_mutex_lock (&gLangMutex);
-		PyrObject * pobj = [doc getSCObject];
-		if (pobj) {
-			VMGlobals *g = gMainVMGlobals;
-			g->canCallOS = true;
-			++g->sp;  SetObject(g->sp, pobj); 
-			++g->sp;  SetInt(g->sp, index); 
-			runInterpreter(g, s_mouseDown, 2);
-			g->canCallOS = false;
-		}
-		pthread_mutex_unlock (&gLangMutex);
 }
 
 - (void)setDefaultTabsTo:(float)value {
