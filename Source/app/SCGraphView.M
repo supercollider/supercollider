@@ -884,9 +884,15 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
 
 - (IBAction) toggleUIEditMode: (id) sender;
 {
-	if (!mTopView) return;
-	mTopView->SetConstructionMode(!mTopView->ConstructionMode());
-	[self setNeedsDisplay: YES];
+//	if (!mTopView) return;
+//	mTopView->SetConstructionMode(!mTopView->GetConstructionMode());
+//	[self setNeedsDisplay: YES];
+
+    VMGlobals *g = gMainVMGlobals;
+	g->canCallOS = true;
+	++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
+	runInterpreter(g, s_toggleEditMode, 1);
+	g->canCallOS = false;
 }
 
 - (void)scrollViewResized:(NSNotification *)notification
