@@ -23,3 +23,15 @@ Loudness : UGen {
 }
 
 
+Onsets : UGen {
+	*kr { |chain, threshold=0.5, odftype=\rcomplex, relaxtime=1, 
+				floor=0.1, mingap=10, medianspan=11, whtype=1|
+		if(odftype.class == Symbol){
+			odftype = #[\power, \magsum, \complex, \rcomplex, \phase, \wphase,\mkl]
+				.indexOf(odftype)
+		};
+		// mingap of 10 frames, @ 44100 & 512 & 50%, is about 0.058 seconds
+		^this.multiNew('control', chain, threshold, odftype, relaxtime, 
+				floor, mingap, medianspan, whtype)
+	}
+}

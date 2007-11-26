@@ -43,6 +43,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		372EFD210CFAFB3A00265BE0 /* Onsets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 372EFD1E0CFAFB3A00265BE0 /* Onsets.cpp */; };
+		372EFD220CFAFB3A00265BE0 /* onsetsds.c in Sources */ = {isa = PBXBuildFile; fileRef = 372EFD1F0CFAFB3A00265BE0 /* onsetsds.c */; };
 		379E00FC0CACF09E00D633C7 /* PV_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */; };
 		379E010C0CACF29700D633C7 /* FFTInterfaceTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */; };
 		468DABDF0CF1FE1800FA8C88 /* SCComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E202E69B6B01CA2799 /* SCComplex.cpp */; };
@@ -108,7 +110,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 468DABDD0CF1FE1800FA8C88 /* MachineListening */;
+			remoteGlobalIDString = 468DABDD0CF1FE1800FA8C88;
 			remoteInfo = MachineListening;
 		};
 		94931A0B0C1934230018AB50 /* PBXContainerItemProxy */ = {
@@ -268,6 +270,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		372EFD1E0CFAFB3A00265BE0 /* Onsets.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Onsets.cpp; path = ../../Source/plugins/Onsets.cpp; sourceTree = "<group>"; };
+		372EFD1F0CFAFB3A00265BE0 /* onsetsds.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = onsetsds.c; path = ../../Source/plugins/onsetsds.c; sourceTree = "<group>"; };
+		372EFD200CFAFB3A00265BE0 /* onsetsds.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = onsetsds.h; path = ../../Source/plugins/onsetsds.h; sourceTree = "<group>"; };
 		379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PV_UGens.cpp; path = Source/plugins/PV_UGens.cpp; sourceTree = "<group>"; };
 		379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FFTInterfaceTable.cpp; path = Source/plugins/FFTInterfaceTable.cpp; sourceTree = "<group>"; };
 		46781BC805C8505F002B7D2B /* FFT_UGens.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FFT_UGens.h; sourceTree = "<group>"; };
@@ -633,6 +638,9 @@
 		F50D05D302E69B6B01CA2799 /* plugins */ = {
 			isa = PBXGroup;
 			children = (
+				372EFD1E0CFAFB3A00265BE0 /* Onsets.cpp */,
+				372EFD1F0CFAFB3A00265BE0 /* onsetsds.c */,
+				372EFD200CFAFB3A00265BE0 /* onsetsds.h */,
 				468DAC1F0CF2132700FA8C88 /* BeatTrack.h */,
 				468DAC200CF2132700FA8C88 /* Loudness.h */,
 				468DAC210CF2132700FA8C88 /* ML.h */,
@@ -1168,6 +1176,8 @@
 				468DABEF0CF2080700FA8C88 /* BeatTrack.cpp in Sources */,
 				468DABF00CF2080700FA8C88 /* Loudness.cpp in Sources */,
 				468DABF10CF2080700FA8C88 /* ML.cpp in Sources */,
+				372EFD210CFAFB3A00265BE0 /* Onsets.cpp in Sources */,
+				372EFD220CFAFB3A00265BE0 /* onsetsds.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

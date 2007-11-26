@@ -24,9 +24,13 @@
 
 InterfaceTable *ft; 
 
+void init_SCComplex(InterfaceTable *inTable);
+
 extern "C" void load(InterfaceTable *inTable) {
 	
 	ft = inTable;
+	
+	init_SCComplex(inTable);
 	
 	//DefineDtorUnit(ML_Tartini);
 	DefineDtorCantAliasUnit(BeatTrack);
@@ -37,6 +41,8 @@ extern "C" void load(InterfaceTable *inTable) {
 	//DefineDtorUnit(MFCC); 
 	//adding once re-optimise- want an as fast as possible onset detector 
 	//DefineDtorUnit(Onset);
+	
+	DefineDtorUnit(Onsets);
 	
 	//printf("Machine Listening UGens by Nick Collins for SuperCollider 3 \n");
 	//printf("Tartini adapted from Phil McLeod's Tartini project\n");
