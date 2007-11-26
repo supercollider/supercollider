@@ -35,3 +35,13 @@ Onsets : UGen {
 				floor, mingap, medianspan, whtype)
 	}
 }
+
+
+//transient input not currently used but reserved for future use in downweighting frames which have high transient content
+KeyTrack : UGen {
+
+	*kr { arg fft,keydecay=2.0,chromaleak= 0.5; //transient=0.0; 
+
+		^this.multiNew('control',fft,keydecay,chromaleak); //transient;
+	}
+}
