@@ -32,6 +32,7 @@ extern PyrSymbol *s_draw;
 extern PyrSymbol *s_scview;
 extern PyrSymbol *s_closed;
 extern PyrSymbol *s_callDrawHook;
+extern PyrSymbol *s_toggleEditMode;
 
 @implementation SCGraphView
 
