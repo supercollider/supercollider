@@ -1792,7 +1792,7 @@ SCSlider::SCSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	setValue(0.0, false);
 }
 
-int drawBevelRect(Rect r, int width, int inout, RGBColor color, int drawop);
+//int drawBevelRect(Rect r, int width, int inout, RGBColor color, int drawop);
 
 void SCSlider::draw(SCRect inDamage)
 {
@@ -1959,7 +1959,7 @@ SCRangeSlider::SCRangeSlider(SCContainerView *inParent, PyrObject* inObj, SCRect
 	setValue(0.0, 0.0, false);
 }
 
-int drawBevelRect(Rect r, int width, int inout, RGBColor color, int drawop);
+//int drawBevelRect(Rect r, int width, int inout, RGBColor color, int drawop);
 
 void SCRangeSlider::draw(SCRect inDamage)
 {
@@ -2224,7 +2224,7 @@ SC2DSlider::SC2DSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 	setValue(0.0, 0.0, false);
 }
 
-int drawBevelRect(Rect r, int width, int inout, RGBColor color, int drawop);
+//int drawBevelRect(Rect r, int width, int inout, RGBColor color, int drawop);
 
 void SC2DSlider::draw(SCRect inDamage)
 {
