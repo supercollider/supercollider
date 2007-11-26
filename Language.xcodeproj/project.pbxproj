@@ -22,6 +22,14 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		6A1C635E0CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */; };
+		6A1C635F0CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */; };
+		6A1C63600CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */; };
+		6A1C636A0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
+		6A1C636B0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
+		6A1C636C0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
+		6A1C63810CFB6D27004ED3DA /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
+		6A1C63820CFB6D27004ED3DA /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
 		94070C5E0C19DEF6002304F7 /* html.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5B0C19DEF6002304F7 /* html.icns */; };
 		94070C5F0C19DEF6002304F7 /* rtf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5C0C19DEF6002304F7 /* rtf.icns */; };
 		94070C600C19DEF6002304F7 /* sc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5D0C19DEF6002304F7 /* sc.icns */; };
@@ -373,6 +381,25 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrUStringPrim.cpp; sourceTree = "<group>"; };
+		6A1C63690CFB6C50004ED3DA /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
+		6A1C636F0CFB6D27004ED3DA /* LICENSE.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = LICENSE.html; sourceTree = "<group>"; };
+		6A1C63710CFB6D27004ED3DA /* parseerr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = parseerr.h; sourceTree = "<group>"; };
+		6A1C63720CFB6D27004ED3DA /* platform.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		6A1C63730CFB6D27004ED3DA /* putil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = putil.h; sourceTree = "<group>"; };
+		6A1C63740CFB6D27004ED3DA /* uconfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uconfig.h; sourceTree = "<group>"; };
+		6A1C63750CFB6D27004ED3DA /* udraft.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = udraft.h; sourceTree = "<group>"; };
+		6A1C63760CFB6D27004ED3DA /* uiter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uiter.h; sourceTree = "<group>"; };
+		6A1C63770CFB6D27004ED3DA /* umachine.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = umachine.h; sourceTree = "<group>"; };
+		6A1C63780CFB6D27004ED3DA /* uregex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uregex.h; sourceTree = "<group>"; };
+		6A1C63790CFB6D27004ED3DA /* urename.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = urename.h; sourceTree = "<group>"; };
+		6A1C637A0CFB6D27004ED3DA /* ustring.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ustring.h; sourceTree = "<group>"; };
+		6A1C637B0CFB6D27004ED3DA /* utf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utf.h; sourceTree = "<group>"; };
+		6A1C637C0CFB6D27004ED3DA /* utf16.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utf16.h; sourceTree = "<group>"; };
+		6A1C637D0CFB6D27004ED3DA /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		6A1C637E0CFB6D27004ED3DA /* utf_old.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utf_old.h; sourceTree = "<group>"; };
+		6A1C637F0CFB6D27004ED3DA /* utypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utypes.h; sourceTree = "<group>"; };
+		6A1C63800CFB6D27004ED3DA /* uversion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uversion.h; sourceTree = "<group>"; };
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		94070C5B0C19DEF6002304F7 /* html.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = html.icns; sourceTree = "<group>"; };
@@ -652,6 +679,7 @@
 				94442CC20C2C8AE40050BF9F /* QuartzCore.framework in Frameworks */,
 				94442CC30C2C8AE40050BF9F /* IOBluetooth.framework in Frameworks */,
 				94442CC40C2C8AE40050BF9F /* WebKit.framework in Frameworks */,
+				6A1C636C0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -673,6 +701,7 @@
 				949317B80C192A7A0018AB50 /* QTKit.framework in Frameworks */,
 				949317B90C192A7A0018AB50 /* QuartzCore.framework in Frameworks */,
 				949317BA0C192A7A0018AB50 /* IOBluetooth.framework in Frameworks */,
+				6A1C636B0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -695,12 +724,45 @@
 				94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */,
 				949313CC0C19234D0018AB50 /* IOBluetooth.framework in Frameworks */,
 				94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */,
+				6A1C636A0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6A1C636E0CFB6D27004ED3DA /* icu */ = {
+			isa = PBXGroup;
+			children = (
+				6A1C636F0CFB6D27004ED3DA /* LICENSE.html */,
+				6A1C63700CFB6D27004ED3DA /* unicode */,
+			);
+			path = icu;
+			sourceTree = "<group>";
+		};
+		6A1C63700CFB6D27004ED3DA /* unicode */ = {
+			isa = PBXGroup;
+			children = (
+				6A1C63710CFB6D27004ED3DA /* parseerr.h */,
+				6A1C63720CFB6D27004ED3DA /* platform.h */,
+				6A1C63730CFB6D27004ED3DA /* putil.h */,
+				6A1C63740CFB6D27004ED3DA /* uconfig.h */,
+				6A1C63750CFB6D27004ED3DA /* udraft.h */,
+				6A1C63760CFB6D27004ED3DA /* uiter.h */,
+				6A1C63770CFB6D27004ED3DA /* umachine.h */,
+				6A1C63780CFB6D27004ED3DA /* uregex.h */,
+				6A1C63790CFB6D27004ED3DA /* urename.h */,
+				6A1C637A0CFB6D27004ED3DA /* ustring.h */,
+				6A1C637B0CFB6D27004ED3DA /* utf.h */,
+				6A1C637C0CFB6D27004ED3DA /* utf16.h */,
+				6A1C637D0CFB6D27004ED3DA /* utf8.h */,
+				6A1C637E0CFB6D27004ED3DA /* utf_old.h */,
+				6A1C637F0CFB6D27004ED3DA /* utypes.h */,
+				6A1C63800CFB6D27004ED3DA /* uversion.h */,
+			);
+			path = unicode;
+			sourceTree = "<group>";
+		};
 		9456F5BD0C19E25900634E4D /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -818,6 +880,7 @@
 				949310D90C1921F90018AB50 /* PyrStringPrim.cpp */,
 				949310DA0C1921F90018AB50 /* PyrSymbolPrim.cpp */,
 				949310DB0C1921F90018AB50 /* PyrUnixPrim.cpp */,
+				6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */,
 				949310DC0C1921F90018AB50 /* SC_CoreMIDI.cpp */,
 				949310DD0C1921F90018AB50 /* SC_HID.cpp */,
 				949310DE0C1921F90018AB50 /* SC_LID.cpp */,
@@ -887,6 +950,7 @@
 			isa = PBXGroup;
 			children = (
 				942C390F0C1B40F700360A35 /* sndfile.h */,
+				6A1C636E0CFB6D27004ED3DA /* icu */,
 				9493126E0C19222B0018AB50 /* app */,
 				949312830C19222B0018AB50 /* common */,
 				949312930C19222B0018AB50 /* lang */,
@@ -1082,6 +1146,7 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6A1C63690CFB6C50004ED3DA /* libicucore.dylib */,
 				94D9ED1C0C2773CF00223DF8 /* WebKit.framework */,
 				94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */,
 				942C390C0C1B40EF00360A35 /* libsndfile.a */,
@@ -1166,7 +1231,6 @@
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "Language" */;
-			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
@@ -1222,6 +1286,7 @@
 				94442C5E0C2C8AE40050BF9F /* html.icns in Resources */,
 				94442C5F0C2C8AE40050BF9F /* rtf.icns in Resources */,
 				94442C600C2C8AE40050BF9F /* sc.icns in Resources */,
+				6A1C63820CFB6D27004ED3DA /* LICENSE.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1242,6 +1307,7 @@
 				94070C5E0C19DEF6002304F7 /* html.icns in Resources */,
 				94070C5F0C19DEF6002304F7 /* rtf.icns in Resources */,
 				94070C600C19DEF6002304F7 /* sc.icns in Resources */,
+				6A1C63810CFB6D27004ED3DA /* LICENSE.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1351,6 +1417,7 @@
 				94442CB10C2C8AE40050BF9F /* HID_Name_Lookup.c in Sources */,
 				94442CB20C2C8AE40050BF9F /* HID_Queue_Utilities.c in Sources */,
 				94442CB30C2C8AE40050BF9F /* HID_Utilities.c in Sources */,
+				6A1C63600CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1418,6 +1485,7 @@
 				9456F6C00C19E79F00634E4D /* HID_Name_Lookup.c in Sources */,
 				9456F6C10C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */,
 				9456F6C20C19E79F00634E4D /* HID_Utilities.c in Sources */,
+				6A1C635F0CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1508,6 +1576,7 @@
 				9456F6B70C19E79F00634E4D /* HID_Name_Lookup.c in Sources */,
 				9456F6B90C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */,
 				9456F6BB0C19E79F00634E4D /* HID_Utilities.c in Sources */,
+				6A1C635E0CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
