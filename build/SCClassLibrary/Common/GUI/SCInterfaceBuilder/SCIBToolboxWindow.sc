@@ -38,6 +38,7 @@ SCIBPanelWindow
 	
 	gridStep_ { |step|
 		gridStep = step;
+		this.debug(gridStep);
 		if(gridOn, { window.refresh })
 	}
 	
@@ -59,9 +60,9 @@ SCIBPanelWindow
 			})
 		};
 		
-		userview.keyDownFunc = { |v,c,m,u| this.panelSelect.keyDown(c,u) };
-		userview.mouseBeginTrackFunc = { |v,x,y| this.panelSelect.mouseDown(x,y) };
-		userview.mouseEndTrackFunc = { |v,x,y| this.panelSelect.mouseUp };
+		userview.keyDownAction = { |v,c,m,u| this.panelSelect.keyDown(c,u) };
+		userview.mouseDownAction = { |v,x,y| this.panelSelect.mouseDown(x,y) };
+		userview.mouseUpAction = { |v,x,y| this.panelSelect.mouseUp };
 		
 		userview.mouseOverAction = { |v,x,y| dropX = x; dropY = y };
 		
@@ -300,7 +301,7 @@ SCIBPanelWindow
 SCIBToolboxWindow
 {
 	classvar shared; 
-	var <window,viewPallatte,panels,selectedPanel, gridSize=20, gridOn=false;
+	var <window,viewPallatte,panels,selectedPanel, <gridStep=20, gridOn=false;
 	
 	*front{
 		if(shared.isNil){
@@ -314,13 +315,13 @@ SCIBToolboxWindow
 	*new { ^super.new.init }
 	
 	addWindow{|win|
-		var panel = SCIBPanelWindow.new(win).parent_(this);
+		var panel;
+		panel = SCIBPanelWindow.new(win).parent_(this);
 		win.bounds = win.bounds.moveTo(window.bounds.left+window.bounds.width,window.bounds.height);
 //		win.view.children.do{|it| it.enabled_(false)};
 		panels = panels.add(panel);
-		if(gridOn){
-			 panel.gridOn_(gridOn).gridStep_(gridSize);
-		}
+		this.debug(this.gridStep);
+		panel.gridOn_(gridOn).gridStep_(this.gridStep);
 	}
 	
 	removeWindow{|win|
@@ -344,9 +345,9 @@ SCIBToolboxWindow
 	
 	enableGridWithSize{|flag, gridsize|
 		gridOn = flag;
-		gridSize = gridsize;
+		gridStep = gridsize;
 		panels.do({ |panel|
-			panel.gridOn_(gridOn).gridStep_(gridSize);
+			panel.gridOn_(gridOn).gridStep_(gridStep);
 		})
 	}
 	
