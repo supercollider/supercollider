@@ -5,34 +5,37 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.42">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41919}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001ab2}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #36701f}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p17 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helvetica}
 p.p18 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p19 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p22 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 span.s1 {text-decoration: underline}
-span.s2 {color: #0000bf}
-span.s3 {color: #bf0000}
+span.s2 {color: #001ab2}
+span.s3 {color: #a41919}
 span.s4 {color: #000000}
 span.s5 {color: #606060}
-span.s6 {color: #007300}
-span.s7 {font: 9.0px Monaco; color: #007300}
+span.s6 {color: #36701f}
+span.s7 {font: 9.0px Monaco; color: #36701f}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -112,8 +115,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">t = <span class="s2">Task</span>({ { <span class="s5">"I'm loopy"</span>.postln; 1.wait;}.loop });</p>
 <p class="p4">t.start;</p>
 <p class="p4">t.stop;</p>
-<p class="p2"><b></b><br></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>defer(delta)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Delay the evaluation of this Function by <b>delta</b> in seconds. Uses <b>AppClock</b>.</p>
@@ -145,14 +148,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>bench(print)</b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3">Returns the amount of time this function takes to evaluate. <b>print</b> is a boolean indicating whether the result is posted. The default is true.</p>
 <p class="p2"><br></p>
 <p class="p4">{ 1000000.do({ 1.0.rand }); }.bench;</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p3"><b>fork(clock, quant, stackSize)</b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3">Returns a Routine using the receiver as it's function, and plays it in a <b>TempoClock</b>.</p>
 <p class="p2"><br></p>
 <p class="p4">{ 4.do({ <span class="s5">"Threadin..."</span>.postln; 1.wait;}) }.fork;</p>
@@ -199,7 +202,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>case(cases)</b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3">Function implements a <b>case </b>method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Unlike Object-switch, this is inlined and is therefore just as efficient as nested if statements.</p>
 <p class="p12"><br></p>
 <p class="p4">(</p>
@@ -294,14 +297,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>a[2].postln;</p>
 <p class="p4">} {<span class="s2">|error|</span> <span class="s6">\caught</span>.postln; error.dump }</p>
 <p class="p4">)</p>
-<p class="p14"><b><span class="s1"></span></b><br></p>
-<p class="p14"><b><span class="s1"></span></b><br></p>
+<p class="p14"><br></p>
+<p class="p14"><br></p>
 <p class="p7"><b>Audio</b></p>
 <p class="p9"><br></p>
 <p class="p15"><b>play(target, outbus, fadetime, addAction)</b></p>
 <p class="p16"><br></p>
 <p class="p17"><span class="Apple-tab-span">	</span>This is probably the simplest way to get audio in SC3. It wraps the Function in a <b>SynthDef</b> (adding an <b>Out</b> ugen if needed), creates and starts a new <b>Synth</b> with it, and returns the Synth object. A <b>Linen</b> is also added to avoid clicks, which is configured to allow the resulting Synth to have its <span class="s7">\gate </span>argument set, or to respond to a release message. Args in the function become args in the resulting def.</p>
-<p class="p16"><b></b><br></p>
+<p class="p16"><br></p>
 <p class="p15"><b><span class="Apple-tab-span">	</span>target </b>- a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.</p>
 <p class="p15"><b><span class="Apple-tab-span">	</span>outbus </b>- the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.</p>
 <p class="p15"><b><span class="Apple-tab-span">	</span>fadeTime</b> - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.</p>
@@ -336,7 +339,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>plot(duration, server, bounds, minval, maxval, parent)</b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p17"><span class="Apple-tab-span">	</span>Calculates <b>duration</b> in seconds worth of the output of this function, and plots it in a GUI window. Unlike <b>play</b> and <b>scope</b> it will not work with explicit Out Ugens, so your function should return a UGen or an <b>Array</b> of them. The plot will be calculated in realtime.</p>
 <p class="p2"><br></p>
 <p class="p15"><b><span class="Apple-tab-span">	</span>duration</b> - The duration of the function to plot in seconds. The default is 0.01.</p>
@@ -353,19 +356,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p7"><b>Conversion</b></p>
-<p class="p2"><b></b><br></p>
-<p class="p2"><b></b><br></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>asSynthDef(rates, prependArgs, outClass, fadetime)</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>Returns a SynthDef based on this Function, adding a <b>Linen </b>and an <b>Out</b> ugen if needed.</p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p15"><b><span class="Apple-tab-span">	</span>rates </b>- An Array of rates and lagtimes for the function's arguments (see <b>SynthDef</b> for more details).</p>
 <p class="p15"><span class="Apple-tab-span">	</span><b>outClass</b> - The class of the output ugen as a symbol. The default is <span class="s6">\Out</span>.</p>
 <p class="p15"><span class="Apple-tab-span">	</span><b>fadeTime</b> - a fadein time. The default is 0.</p>
-<p class="p2"><b></b><br></p>
-<p class="p2"><b></b><br></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>asDefName</b></p>
 <p class="p2"><br></p>
 <p class="p3">Performs asSynthDef (see above), sends the resulting def to the local server and returns the SynthDefs name. This is asynchronous.</p>
@@ -375,12 +378,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><br></p>
 <p class="p12"><br></p>
 <p class="p3"><b>asRoutine</b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3">Returns a <b>Routine</b> using this as its func argument.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p3"><b>inEnvir(envir)</b></p>
 <p class="p2"><br></p>
+<p class="p3">Converts a function into an "environment-safe" function. See <b>[</b><b><span class="s1">Environment</span></b><b>]</b> for more details.</p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
+<p class="p20">// prints nil because ~a is read from topEnvironment, not e</p>
+<p class="p21">e = (a: <span class="s5">"got it"</span>, f: { { ~a.postln }.defer(0.5) });</p>
+<p class="p21">e.use { e.f };</p>
+<p class="p22"><br></p>
+<p class="p20">// prints "got it" because { ~a.postln } is now bound to the e environment</p>
+<p class="p21">e = (a: <span class="s5">"got it"</span>, f: { { ~a.postln }.inEnvir.defer(0.5) });</p>
+<p class="p21">e.use { e.f };</p>
 </body>
 </html>

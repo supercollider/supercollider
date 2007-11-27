@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.42">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,15 +14,21 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8b2719}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002dad}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #792b21}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0a33a2}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {font: 12.0px Helvetica}
-span.s2 {color: #496825}
-span.s3 {color: #002dad}
+span.s2 {color: #526630}
+span.s3 {color: #0a33a2}
 span.s4 {color: #000000}
-span.s5 {color: #8b2719}
-span.s6 {color: #4b6b25}
+span.s5 {color: #792b21}
+span.s6 {color: #556930}
+span.s7 {color: #0000bf}
+span.s8 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -168,5 +174,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6">)</p>
 <p class="p7"><br></p>
+<p class="p11"><br></p>
+<p class="p12"><b>Environments and asynchronous functions</b></p>
+<p class="p11"><br></p>
+<p class="p13">Local variables declared in functions, and class and instance variables, use lexical scope. That is, the context in which they are understood depends on where the declaration is read during compilation. Asynchronous functions -- any function that will execute outside (later than) the current execution flow -- carry their lexically scoped variables with them.</p>
+<p class="p11"><br></p>
+<p class="p14">f = { <span class="s7">var</span> a = <span class="s8">"got it"</span>; { a.postln }.defer(0.5) };</p>
+<p class="p14">f.value;</p>
+<p class="p11"><br></p>
+<p class="p13">Asynchronous functions include any scheduled function, responder function associated with OSCresponder, MIDIResponder, HID or GUI action functions, or actions used in server messaging (such as Buffer.read, Buffer or Bus .get, and so on).</p>
+<p class="p11"><br></p>
+<p class="p13">Environment variables have dynamic scope; they are read from whichever environment is current, whether or not it was the current environment when the function was declared. For instance, the following fails because e is no longer the current environment when the deferred function wakes up.</p>
+<p class="p11"><br></p>
+<p class="p14">e = (a: <span class="s8">"got it"</span>, f: { { ~a.postln }.defer(0.5) });</p>
+<p class="p14">e.use { e.f };</p>
+<p class="p11"><br></p>
+<p class="p13">Function's inEnvir method attaches a function to a specific environment. If no environment is given, the current environment at the time of executing inEnvir is the default.</p>
+<p class="p11"><br></p>
+<p class="p14">e = (a: <span class="s8">"got it"</span>, f: { { ~a.postln }.inEnvir.defer(0.5) });</p>
+<p class="p14">e.use { e.f };</p>
 </body>
 </html>
