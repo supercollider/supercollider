@@ -866,6 +866,7 @@ Source/lang/LangPrimSource/PyrListPrim.cpp
 Source/lang/LangPrimSource/PyrPlatformPrim.cpp
 Source/lang/LangPrimSource/PyrSerialPrim.cpp
 Source/lang/LangPrimSource/PyrStringPrim.cpp
+Source/lang/LangPrimSource/PyrUStringPrim.cpp
 Source/lang/LangPrimSource/PyrSymbolPrim.cpp
 Source/lang/LangPrimSource/PyrUnixPrim.cpp
 ''') + [libsclangEnv.SharedObject('Source/lang/LangSource/fftlib', 'Source/common/fftlib.c')]
