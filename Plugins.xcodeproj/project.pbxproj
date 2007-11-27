@@ -1505,7 +1505,7 @@
 		468DABE40CF1FE1800FA8C88 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = UnpackFFTUGens;
+				PRODUCT_NAME = MachineListening;
 			};
 			name = Deployment;
 		};
