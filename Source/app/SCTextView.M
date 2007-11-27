@@ -154,7 +154,7 @@ extern bool compiledOK;
 - (void) keyDown: (NSEvent*) event
 {
     NSString *characters = [event characters];
-	BOOL ignoreControlKeys = YES;
+	BOOL ignoreControlKeys = NO;
 	if(compiledOK){
 		unsigned int modifiers = [event modifierFlags];
 		unichar character = 0;
