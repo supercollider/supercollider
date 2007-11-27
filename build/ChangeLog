@@ -2,6 +2,9 @@
 
 // user-visible changes in preparing SC v3.2, SuperCollider book release:
 
+// HEADLINES:
+* 2007-11-xx new suite of machine listening ugens - Loudness, BeatTrack, Onsets, KeyTrack - nc, ds
+
 // BUGFIXES:
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
 * 2007-11-18 fixed a bug in prTry / protect - jr
@@ -11,10 +14,10 @@
 * 2007-11-18 added T2A UGen
 * 2007-11-18 Refactoring of Document class, including new CocoaDocument class to handle the Cocoa-specific (SuperCollider.app) document management - ds
 * 2007-11-18 More macros available in the plugin API for UGen programmers: GET_BUF, SIMPLE_GET_BUF, FULLRATE, RGET, RPUT - ds
-* 2007-11-19 machine listening ugens - Loudness, BeatTrack - nc
 * 2007-11-20 UnixPlatform:arch method - jp
 * 2007-11-20 FFTTrigger UGen - a ugen to create "fake" (empty) FFT chains - jp
 * 2007-11-21 StartUp protects its added functions from each other - if one fails this no longer prevents others from running - ds
+
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
 
