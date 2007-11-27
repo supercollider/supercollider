@@ -38,6 +38,9 @@ typedef struct URegularExpression URegularExpression;
 #include "PyrKernel.h"
 #include "GC.h"
 
+#define MAXREGEXFIND 100;
+
+
 struct SCRegExRegion {
     int start, end, group, matched;
 };
@@ -53,7 +56,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;     // offset
 		
 	if (!isKindOfSlot(b, class_string) || (c->utag != tagInt)) return errWrongType;
-
+	int maxfind = MAXREGEXFIND;
 	int offset = c->ui;
 	int stringsize = a->uo->size + 1;
 	int patternsize =  b->uo->size + 1;
@@ -80,15 +83,14 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	SCRegExRegion * what;
 	int indx = 0;
 	int size = 0;
-	int MAXREGEXFIND = 100;
 		
 	URegularExpression *expression = uregex_open(regexStr, -1, flags, &uerr, &status);
 	if(U_FAILURE(status)) goto nilout;
 	
 	 if(!U_FAILURE(status)) {
 		uregex_setText(expression, ustring, -1, &status);
-		what =  (SCRegExRegion*)malloc((MAXREGEXFIND)*sizeof(SCRegExRegion));
-		for(int i=0; i< MAXREGEXFIND; i++)
+		what =  (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
+		for(int i=0; i< maxfind; i++)
 		{
 			SCRegExRegion range;
 			range.matched = false;
@@ -97,9 +99,8 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 		int32_t groups = uregex_groupCount(expression, &status) + 1;
 		if(U_FAILURE(status)) goto nilout;
-		
 //		post("groups: %i\n", groups);
-		while (uregex_findNext(expression, &status))
+		while (uregex_findNext(expression, &status) && size<maxfind)
 		{
 			if(U_FAILURE(status)) return errNone;
 
@@ -177,7 +178,8 @@ void initUStringPrimitives()
 }
 
 #else // !SC_DARWIN
-void initHIDPrimitives()
+void initUStringPrimitives();
+void initUStringPrimitives()
 {
 	//other platforms? - icu should be running on linux too
 }
