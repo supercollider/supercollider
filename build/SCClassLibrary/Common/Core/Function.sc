@@ -163,14 +163,15 @@ Function : AbstractFunction {
 	
 	try { arg handler;
 		var result = this.prTry;
-		if (result.isException) { ^handler.value(result); } { ^result }
+		if (result.isException) { ^handler.value(result); }
+			{ ^result }
 	}
 	prTry {
 		var result, thread = thisThread;
 		var next = thread.exceptionHandler;
 		thread.exceptionHandler = {|error| 
 			thread.exceptionHandler = next; // pop
-			^error 
+			^error
 		};
 		result = this.value;
 		thread.exceptionHandler = next; // pop
@@ -194,7 +195,7 @@ Function : AbstractFunction {
 	matchItem { arg item;
 		^this.value(item)
 	}
-	
+
 	// multichannel expand function return values
 	
 	flop {
@@ -218,7 +219,12 @@ Function : AbstractFunction {
 				++ "[ " ++ def.argumentString(false) ++ " ].flop };"
 				)
 	}
-	
+
+		// attach the function to a specific environment	
+	inEnvir { |envir|
+		envir ?? { envir = currentEnvironment };
+		^{ |... args| envir.use({ this.valueArray(args) }) }
+	}
 }
 
 Thunk : AbstractFunction {
