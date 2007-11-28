@@ -52,7 +52,7 @@ Nil {
 	}
 	play {}
 	
-	nextTimeOnGrid { arg clock; ^clock.nextTimeOnGrid }
+	nextTimeOnGrid { arg clock; ^clock !? { clock.nextTimeOnGrid } }
 
 	swapThisGroup {}
 	
