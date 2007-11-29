@@ -93,6 +93,14 @@ Rect {
 		^inRect.origin - this.origin + spacing;
 	}
 
+	contains{ arg anObject;
+		if ( anObject.isKindOf( Point ),
+			{ ^this.containsPoint( anObject ) });
+		if ( anObject.isKindOf( Rect ),
+			{ ^this.containsRect( anObject ) });
+		^false;
+	}
+
 	containsPoint { arg aPoint;
 		^(aPoint.x.inclusivelyBetween(left, left + width) 
 			and: { aPoint.y.inclusivelyBetween(top, top + height) })

@@ -58,13 +58,13 @@ Bus {
 	}	
 	getn { arg count, action;
 		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg; 
-			action.value(msg.copyToEnd(3)); r.remove } ).add; 
-		server.listSendMsg(["/c_getn",index, count]);
+			action.value(msg.copyToEnd(3)); r.remove } ).add;
+		server.listSendMsg(this.getnMsg(count));
 	}
 	getMsg {
 		^["/c_get",index];
 	}
-	getnMsg { arg count, action;
+	getnMsg { arg count;
 		^["/c_getn",index, count ? numChannels];
 	}
 
