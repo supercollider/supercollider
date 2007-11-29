@@ -22,6 +22,8 @@
 
 #include <cstdio>
 #include <cstring>
+#include <sys/timeb.h>
+#include <time.h>
 
 #include "SC_Win32Utils.h"
 
@@ -50,11 +52,10 @@ void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars
 
 void win32_gettimeofday(timeval* tv, void*)
 {
-	int secBetween1601and1970 = 11644473600;
-	FILETIME fileTime;
-	GetSystemTimeAsFileTime(&fileTime);
-	tv->tv_sec = (* (unsigned __int64 *) &fileTime / 10000000) - secBetween1601and1970;
-	tv->tv_usec = ((* (unsigned __int64 *) &fileTime / 10) % 1000000) - secBetween1601and1970*1000000; 
+	struct _timeb timebuffer;
+	_ftime_s(&timebuffer);
+	tv->tv_sec = timebuffer.time; 
+	tv->tv_usec = timebuffer.millitm * 1000;
 }
 
 void win32_GetHomeFolder(char* homeFolder, int bufLen)
