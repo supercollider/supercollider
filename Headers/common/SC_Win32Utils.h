@@ -18,6 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef _SC_WIN32UTILS_H
+#define _SC_WIN32UTILS_H
 
 #ifdef SC_WIN32
 #include <stdio.h>
@@ -40,3 +42,4 @@ int win32_nanosleep (const struct timespec *requested_time, struct timespec *rem
 
 
 #endif //SC_WIN32
+#endif // SC_WIN32UTILS_H
