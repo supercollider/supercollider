@@ -28,6 +28,7 @@ The following libraries are needed for compiling
 * portaudio
 * portmidi
 * pthread-Win32
+* fftw3
 * python
 
 You need Visual C++ 2005 (8.0) or the Express edition to build it. 
@@ -43,6 +44,9 @@ NOTE: get the Windows installer and make sure its the Unicode version and NOT th
 
 2) go to "http://wxpython.org" and download and install the corresponding wxPython binary (tested 2.8.6.1)
 NOTE: again you need the Unicode version.
+
+NOTE: make sure you have an environment variable set called PYTHONPATH pointong to the base directory of you installation
+(Should be done by python installer)
 
 
 portaudio + asio

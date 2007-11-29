@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ProjectDir)..\..\SuperCollider3\build"
+			OutputDirectory="$(ProjectDir)..\build"
 			IntermediateDirectory="scsynth_Debug_Intermediate"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -97,7 +97,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ProjectDir)..\..\SuperCollider3\build"
+			OutputDirectory="$(ProjectDir)..\build"
 			IntermediateDirectory="scsynth_Release_Intermediate"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
