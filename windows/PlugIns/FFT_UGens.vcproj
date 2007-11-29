@@ -120,7 +120,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\SuperCollider3\fftw3&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\libsndfile&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\common&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
-				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;FFT_UGENS_EXPORTS"
+				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;FFT_UGENS_EXPORTS;SC_FFT_GREEN"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -191,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Source\common\fftlib.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Source\plugins\PV_UGens.cpp"
 				>
 			</File>
@@ -204,10 +208,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{9038799D-30AE-4F7F-BC5B-2D5703FA0141}"
 			>
-			<File
-				RelativePath="..\..\..\SuperCollider3\source\plugins\fftlib.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

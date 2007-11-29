@@ -120,7 +120,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\libsndfile&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\common&quot;;&quot;$(ProjectDir)..\..\..\SuperCollider3\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
-				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;DELAYUGENS_EXPORTS"
+				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;DELAYUGENS_EXPORTS;SC_FFT_GREEN"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
