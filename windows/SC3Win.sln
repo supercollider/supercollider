@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual C++ Express 2005
+# Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BinaryOpUGens", "PlugIns\BinaryOpUGens.vcproj", "{A25458C1-2618-4FB0-89BC-E41769B5AE4B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DelayUGens", "PlugIns\DelayUGens.vcproj", "{4E998729-F079-485C-B30C-B0B99BD69B19}"

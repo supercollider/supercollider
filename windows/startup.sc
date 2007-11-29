@@ -14,12 +14,15 @@
 Server.program = "scsynth.exe";
 {s.boot}.defer(1);
 
+PathName.tmp_("temp\\");
+
 SwingOSC.program = "java -jar SwingOSC\\build\\SwingOSC.jar";
 
 g=SwingOSC.default;
+g.options.protocol_(\udp);
 
 {g.boot;}.defer(1);
 
-"\n\nThis is Psycollider, build 16 August 2006".postln;
+"\n\nThis is Psycollider, build November 2007".postln;
 "Have fun! \n\n\n\n".postln;
 
