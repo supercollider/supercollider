@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PsyColliderInstaller", "PsyColliderInstaller.vdproj", "{7A5B3310-B3D8-410E-9F07-E9E81D12AE45}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		Release|Default = Release|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A5B3310-B3D8-410E-9F07-E9E81D12AE45}.Debug|Default.ActiveCfg = Debug
+		{7A5B3310-B3D8-410E-9F07-E9E81D12AE45}.Debug|Default.Build.0 = Debug
+		{7A5B3310-B3D8-410E-9F07-E9E81D12AE45}.Release|Default.ActiveCfg = Release
+		{7A5B3310-B3D8-410E-9F07-E9E81D12AE45}.Release|Default.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
