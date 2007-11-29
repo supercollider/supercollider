@@ -26,9 +26,9 @@ setup(
     options = {"py2exe": {
     		       "compressed": 0,
                        "optimize": 2,
-		       "bundle_files": 3,
+		       "bundle_files": 1,
 		       #"excludes": ["PySCLang"],
-                       #"dll_excludes": ["libsndfile.dll"]
+                       "dll_excludes": ["MSVCP80.dll", "MSVCR80.dll", "libsndfile.dll"]
                        }
     }
-    )                                                                                                                                       
+)
