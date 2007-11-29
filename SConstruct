@@ -304,6 +304,8 @@ env = Environment(options = opts,
                   URL = 'http://supercollider.sourceforge.net',
                   TARBALL = PACKAGE + VERSION + '.tbz2')
 
+env['ENV']['PATH'] = ['/usr/local/bin', '/usr/bin', '/bin']
+
 # ======================================================================
 # installation directories
 # ======================================================================
@@ -741,7 +743,7 @@ plugins.append(
 # machine listening ugens
 # fft ugens
 mlEnv = pluginEnv.Copy()
-mlSources = Split('Source/plugins/ML.cpp Source/plugins/Loudness.cpp Source/plugins/BeatTrack.cpp')
+mlSources = Split('Source/plugins/ML.cpp Source/plugins/Loudness.cpp Source/plugins/BeatTrack.cpp Source/plugins/Onsets.cpp Source/plugins/onsetsds.c Source/plugins/SCComplex.cpp')
 plugins.append(
     mlEnv.SharedLibrary(
     make_plugin_target('ML_UGens'), mlSources))
