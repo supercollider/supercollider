@@ -903,9 +903,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
         if foundFilePath != "":
           break
     if foundFilePath == "":     
-      foundFilePath = os.path.join(gHelpFolder,"Help.help.html")
-      # for scdoc2html: also open the toc_root - as we cant handle frames...
-      self.OpenFile(os.path.join(gHelpFolder,"toc_root.html"))
+      foundFilePath = os.path.join(gHelpFolder,"Help.html")
     self.OpenFile(foundFilePath)
     
 
