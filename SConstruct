@@ -304,7 +304,8 @@ env = Environment(options = opts,
                   URL = 'http://supercollider.sourceforge.net',
                   TARBALL = PACKAGE + VERSION + '.tbz2')
 
-env['ENV']['PATH'] = ['/usr/local/bin', '/usr/bin', '/bin']
+###uncomment this when there are problems with ccache:
+#env['ENV']['PATH'] = ['/usr/local/bin', '/usr/bin', '/bin']
 
 # ======================================================================
 # installation directories
