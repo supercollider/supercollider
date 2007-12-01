@@ -11,22 +11,22 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3d6d1d}
 span.s1 {color: #000000}
-span.s2 {color: #001bb9}
-span.s3 {color: #2c7014}
+span.s2 {color: #0026b4}
+span.s3 {color: #3d6d1d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>BeatTrack<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>autocorrelation beat tracker</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>#quarternotetick, eighthnotetick, sixteenthnotetick, tempo = BeatTrack.kr(fft, lock=0)</b></p>
+<p class="p3"><b>#quarternotetick, eighthnotetick, sixteenthnotetick, tempo = BeatTrack.kr(chain, lock=0)</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>fft [fft]- </b>Audio input to track, already passed through an FFT UGen; the expected size of FFT is 1024 for 44100 and 48000 sampling rate, and 2048 for double those. No other sampling rates are supported.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><b>chain [fft]- </b>Audio input to track, already passed through an FFT UGen; the expected size of FFT is 1024 for 44100 and 48000 sampling rate, and 2048 for double those. No other sampling rates are supported.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3"><b>lock [ik]- </b>If this argument is greater than 0.5, the tracker will lock at its current periodicity and continue from the current phase. Whilst it updates the model's phase and period, this is not reflected in the output until lock goes back below 0.5. <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>

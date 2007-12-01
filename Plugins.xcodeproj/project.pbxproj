@@ -52,6 +52,7 @@
 		468DABF00CF2080700FA8C88 /* Loudness.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468DABEB0CF2080700FA8C88 /* Loudness.cpp */; };
 		468DABF10CF2080700FA8C88 /* ML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468DABED0CF2080700FA8C88 /* ML.cpp */; };
 		468DB1520CFB5F4600FA8C88 /* KeyTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468DB1500CFB5F4600FA8C88 /* KeyTrack.cpp */; };
+		468DB2B10D01D0C300FA8C88 /* MFCC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468DB2AF0D01D0C300FA8C88 /* MFCC.cpp */; };
 		9451F55B0C1CA7A00037197F /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C38430C1B407900360A35 /* libsndfile.a */; };
 		949318980C192F0E0018AB50 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 9493187D0C192E160018AB50 /* fftlib.c */; };
 		949318990C192F1C0018AB50 /* FFT_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05D802E69B6B01CA2799 /* FFT_UGens.cpp */; };
@@ -286,10 +287,9 @@
 		468DABEB0CF2080700FA8C88 /* Loudness.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Loudness.cpp; path = ../../Source/plugins/Loudness.cpp; sourceTree = "<group>"; };
 		468DABED0CF2080700FA8C88 /* ML.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ML.cpp; path = ../../Source/plugins/ML.cpp; sourceTree = "<group>"; };
 		468DAC1F0CF2132700FA8C88 /* BeatTrack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = BeatTrack.h; path = ../../Source/plugins/BeatTrack.h; sourceTree = "<group>"; };
-		468DAC200CF2132700FA8C88 /* Loudness.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Loudness.h; path = ../../Source/plugins/Loudness.h; sourceTree = "<group>"; };
 		468DAC210CF2132700FA8C88 /* ML.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ML.h; path = ../../Source/plugins/ML.h; sourceTree = "<group>"; };
 		468DB1500CFB5F4600FA8C88 /* KeyTrack.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = KeyTrack.cpp; path = ../../Source/plugins/KeyTrack.cpp; sourceTree = "<group>"; };
-		468DB1510CFB5F4600FA8C88 /* KeyTrack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = KeyTrack.h; path = ../../Source/plugins/KeyTrack.h; sourceTree = "<group>"; };
+		468DB2AF0D01D0C300FA8C88 /* MFCC.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MFCC.cpp; path = ../../Source/plugins/MFCC.cpp; sourceTree = "<group>"; };
 		46964EF505B9408A00AB268B /* GendynUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GendynUGens.cpp; sourceTree = "<group>"; };
 		920DAED20425A5D200A80067 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Altivec.h; path = common/SC_Altivec.h; sourceTree = "<group>"; };
 		92962B0707853BDA0049266B /* ChaosUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ChaosUGens.cpp; sourceTree = "<group>"; };
@@ -641,13 +641,12 @@
 		F50D05D302E69B6B01CA2799 /* plugins */ = {
 			isa = PBXGroup;
 			children = (
+				468DB2AF0D01D0C300FA8C88 /* MFCC.cpp */,
 				468DB1500CFB5F4600FA8C88 /* KeyTrack.cpp */,
-				468DB1510CFB5F4600FA8C88 /* KeyTrack.h */,
 				372EFD1E0CFAFB3A00265BE0 /* Onsets.cpp */,
 				372EFD1F0CFAFB3A00265BE0 /* onsetsds.c */,
 				372EFD200CFAFB3A00265BE0 /* onsetsds.h */,
 				468DAC1F0CF2132700FA8C88 /* BeatTrack.h */,
-				468DAC200CF2132700FA8C88 /* Loudness.h */,
 				468DAC210CF2132700FA8C88 /* ML.h */,
 				468DABE90CF2080700FA8C88 /* BeatTrack.cpp */,
 				468DABEB0CF2080700FA8C88 /* Loudness.cpp */,
@@ -1184,6 +1183,7 @@
 				372EFD210CFAFB3A00265BE0 /* Onsets.cpp in Sources */,
 				372EFD220CFAFB3A00265BE0 /* onsetsds.c in Sources */,
 				468DB1520CFB5F4600FA8C88 /* KeyTrack.cpp in Sources */,
+				468DB2B10D01D0C300FA8C88 /* MFCC.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
