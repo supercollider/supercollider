@@ -62,22 +62,14 @@ extern "C" void load(InterfaceTable *inTable) {
 	
 	init_SCComplex(inTable);
 	
-	//DefineDtorUnit(ML_Tartini);
 	DefineDtorCantAliasUnit(BeatTrack);
 	DefineDtorUnit(Loudness); 
 	DefineDtorUnit(KeyTrack);
 	
-	//DefineDtorUnit(TD_Features); 
-	//DefineDtorUnit(MFCC); 
-	//adding once re-optimise- want an as fast as possible onset detector 
-	//DefineDtorUnit(Onset);
+	DefineDtorUnit(MFCC); 
 	
 	DefineDtorUnit(Onsets);
-	
-	//printf("Machine Listening UGens by Nick Collins for SuperCollider 3 \n");
-	//printf("Tartini adapted from Phil McLeod's Tartini project\n");
-	//printf("AutoTrack adapted from Matthew Davies' autocorrelation beat tracker\n");
-	//printf("Qitch based on algorithms published by Judith Brown and Miller Puckette\n");
+
 	
 }
 
