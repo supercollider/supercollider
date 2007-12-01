@@ -1537,8 +1537,7 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotGetPoint(slot, &origin);
 		if (err) return err;
 		setInSetClipViewOrigin(true);
-		NSClipView *clipView = [mNSScrollView contentView];
-		[clipView scrollToPoint: [clipView constrainScrollPoint:origin]];
+		[[mNSScrollView documentView] scrollPoint:origin];
 		setInSetClipViewOrigin(false);
 		refresh();
 		return errNone;
