@@ -2,9 +2,9 @@
 //4 outs 
 BeatTrack : MultiOutUGen {
 
-	*kr { arg fft, lock=0;
+	*kr { arg chain, lock=0;
 	
-		^this.multiNew('control',fft, lock);
+		^this.multiNew('control',chain, lock);
 	}
 	
 	init { arg ... theInputs;
@@ -16,9 +16,9 @@ BeatTrack : MultiOutUGen {
 //loudness output in sones
 Loudness : UGen {
 
-	*kr { arg fft, smask=0.25, tmask=1; 
+	*kr { arg chain, smask=0.25, tmask=1; 
 
-		^this.multiNew('control',fft, smask, tmask);
+		^this.multiNew('control',chain, smask, tmask);
 	}
 }
 
@@ -40,8 +40,23 @@ Onsets : UGen {
 //transient input not currently used but reserved for future use in downweighting frames which have high transient content
 KeyTrack : UGen {
 
-	*kr { arg fft,keydecay=2.0,chromaleak= 0.5; //transient=0.0; 
+	*kr { arg chain,keydecay=2.0,chromaleak= 0.5; //transient=0.0; 
 
-		^this.multiNew('control',fft,keydecay,chromaleak); //transient;
+		^this.multiNew('control',chain,keydecay,chromaleak); //transient;
 	}
 }
+
+
+//a bufnum could be added as third argument for passing arbitrary band spacing data
+MFCC : MultiOutUGen {	
+	*kr { arg chain, numcoeff=13;  
+		^this.multiNew('control', chain, numcoeff);
+	}
+	
+	init { arg ... theInputs;
+		inputs = theInputs;
+		
+		^this.initOutputs(theInputs[1], rate);
+	}
+}
+
