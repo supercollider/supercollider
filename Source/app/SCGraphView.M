@@ -916,6 +916,7 @@ extern PyrSymbol* s_doaction;
 - (void)userScrolled:(NSNotification *)notification
 {
 	// if this happens from a visibleOrigin method we can't use sendMessage, so the action gets called from the lang
+	// similarly, this blocks the action from being fired due to scrolling because of incidental resize (i.e. remove a child)
 	if(!((SCScrollTopView*)mTopView)->isInSetClipViewOrigin()) {
 		mTopView->sendMessage(s_doaction, 0, 0, 0); // this must be a scroll view
 	}
