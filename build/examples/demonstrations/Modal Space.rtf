@@ -1,0 +1,44 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // modal space\cf0 \
+\cf2 // mouse x controls discrete pitch in dorian mode\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  scale, buffer;\
+scale = \cf3 FloatArray\cf0 [0, 2, 3.2, 5, 7, 9, 10]; \cf2 // dorian scale\cf0 \
+buffer = \cf3 Buffer\cf0 .alloc(s, scale.size,1, \{\cf3 |b|\cf0  b.setnMsg(0, scale) \});\
+\{\
+	\cf3 var\cf0  mix;\
+	mix = \
+	\cf2 // lead tone\cf0 \
+	\cf3 SinOsc\cf0 .ar(\
+		(\
+			\cf3 DegreeToKey\cf0 .kr(\
+				buffer.bufnum,\
+				\cf3 MouseX\cf0 .kr(0,15),		\cf2 // mouse indexes into scale\cf0 \
+				12,					\cf2 // 12 notes per octave\cf0 \
+				1,					\cf2 // mul = 1\cf0 \
+				72					\cf2 // offset by 72 notes\cf0 \
+			) \
+			+ \cf3 LFNoise1\cf0 .kr([3,3], 0.04)	\cf2 // add some low freq stereo detuning\cf0 \
+		).midicps,						\cf2 // convert midi notes to hertz\cf0 \
+		0,\
+		0.1)\
+		\
+	\cf2 // drone 5ths\cf0 \
+	+ \cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar([48,55].midicps, 0.15),\
+		\cf3 SinOsc\cf0 .kr(0.1, 0, 10, 72).midicps, 0.1, 0.1);\
+		\
+	\cf2 // add some 70's euro-space-rock echo\cf0 \
+	\cf3 CombN\cf0 .ar(mix, 0.31, 0.31, 2, 1, mix)\
+\}.play\
+)\
+}
