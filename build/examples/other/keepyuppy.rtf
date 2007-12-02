@@ -1,0 +1,146 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 /*\
+* KEEPY-UPPY\
+*\
+* An AUDIO-ONLY game written in SuperCollider by Dan Stowell (C) 2005\
+*\
+* This game is inspired by the work of "One Switch"\
+* http://www.oneswitch.org.uk/ - developing games and controllers\
+* to accommodate various types of disability, including...\
+* audio-only games.\
+*\
+* RULES:\
+*  You are kicking a football into the air. You can hear it fly \
+*  up into the air and down again, and when it comes down you \
+*  must press SPACE to kick it up again.\
+*\
+*  The ball may move slightly towards the left or right so you\
+*  may need to move left or right using the cursor keys to \
+*  keep within range of the ball (wear headphones for best \
+*  control!)\
+*\
+*  The aim is to kick it up as many times as you can.\
+*\
+*\
+*/\cf0 \
+\
+\
+s.boot; \cf2 // First make sure the server is on\cf0 \
+\
+\cf2 // Then send it the SynthDefs we need\cf0 \
+(\
+\cf3 SynthDef\cf0 (\cf4 \\kuball\cf0 , \{ \cf3 |amp=0.5, pan=0, freq=100|\cf0 \
+  \cf3 Out\cf0 .ar(0, \cf3 Pan2\cf0 .ar(amp * 2 * (\cf3 BPF\cf0 .ar(\cf3 WhiteNoise\cf0 .ar, freq, 0.1)*10).clip2 * \cf3 SinOsc\cf0 .ar(4.5), pan))\
+\}).send(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 \\gameover\cf0 , \{ \cf3 Out\cf0 .ar(0, \cf3 SinOsc\cf0 .ar(\
+				\cf3 Line\cf0 .kr(200, 100, 1.0, doneAction:0),\
+				0,\
+				\cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 ([0.3, 0.2, 0.2, 0], [0.1, 0.8, 0.1]), 1, doneAction:2)\
+				).dup(2))\}).send(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 \\whackit\cf0 , \{\cf3 Out\cf0 .ar(0, \cf3 SinOsc\cf0 .ar(74, 0.5pi, \
+		\cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0, 0.05), doneAction:2)).dup(2))\}).send(s);\
+\
+);\
+\
+\cf2 // Now define the game (won't run until we run the last line in this file)\cf0 \
+(\
+~game = \{\
+\
+\cf3 var\cf0  whacks, xpos, ypos, xvel, yvel, whack, dogravity, framedur, doc, whackdisabled, whackspacing;\
+\
+\
+whacks = 0;\
+xpos   = 0;\
+ypos   = 0;\
+xvel   = 0;\
+yvel   = 10;\
+framedur = 0.1; \cf2 // The amount of time between two "frames" of calculation\cf0 \
+whackdisabled = \cf3 false\cf0 ;\
+whackspacing = 0.3; \cf2 // The amount of time you must wait between whacks \cf0 \
+\
+whack = \{\
+  if(ypos < 20,\
+  \{\
+    if(xpos.abs < 1,\
+    \{\
+      if((yvel < 0) && (whackdisabled==\cf3 false\cf0 ),\
+      \{\
+        yvel = rrand(6.0, 14.0);\
+        ypos = max(0.1, ypos);\
+        xvel = 0.1.bilinrand;\
+        \cf3 Synth\cf0 (\cf4 \\whackit\cf0 );\
+        whackdisabled = \cf3 true\cf0 ;\
+        \cf3 Task\cf0 (\{whackspacing.wait; whackdisabled = \cf3 false\cf0 \}).play;\
+        whacks = whacks + 1;\
+      \});\
+    \});\
+  \});\
+\}; \cf2 // End of whack function\cf0 \
+\
+dogravity = \{\
+  yvel = yvel - 1.0;\
+  ypos = ypos + yvel;\
+  xpos = xpos + xvel;\
+\};\
+\
+\cf3 Task\cf0 (\{\
+  \cf3 var\cf0  kuball;\
+  \
+  kuball = \cf3 Synth\cf0 (\cf4 \\kuball\cf0 );\
+  \
+  \cf2 // Set up keyboard handlers\cf0 \
+  \{\
+  	doc = \cf3 GUI\cf0 .window.new(\cf5 "Use LEFT and RIGHT arrows and SPACEBAR"\cf0 );\
+  	doc.front;\
+  \}.defer;\
+  \
+  0.1.wait;\
+  doc.view.keyDownAction_(\{\cf3 arg\cf0  ...args;\
+    switch(args[3],\
+      32   , \{whack.value\}, \cf2 // space\cf0 \
+      63234, \{xpos = xpos + 0.1\}, \cf2 // left arrow\cf0 \
+      63235, \{xpos = xpos - 0.1\} \cf2 // right arrow\cf0 \
+    );\
+  \});\
+\
+  \cf2 // This is the loop which runs the game\cf0 \
+  while(\{ypos >= 0\},\
+  \{\
+    dogravity.value;\
+    kuball.set(\cf4 \\amp\cf0 , 0.5 * (1.0/max(1.0, ypos)), \
+               \cf4 \\pan\cf0 , max(-1.0, min(1.0, xpos)), \
+               \cf4 \\freq\cf0 , 200 + max(0, ypos * 10));\
+    framedur.wait;\
+  \});\
+  \
+  \cf2 // Destroy keyboard handlers\cf0 \
+  doc.view.keyDownAction_(\cf3 nil\cf0 );\
+  kuball.free;\
+  \
+  \cf2 // Run the end-of-game feedback etc\cf0 \
+  \cf3 Synth\cf0 (\cf4 \\gameover\cf0 );\
+  1.5.wait;\
+  \cf3 AppClock\cf0 .sched(0.0, \{doc.close;\});\
+  switch(whacks,\
+     0, \{(\cf5 "You didn't hit the ball - sorry"\cf0 ).speak;\}, \
+     1, \{(\cf5 "You hit the ball once"\cf0 ).speak;\},\
+     2, \{(\cf5 "You hit the ball twice"\cf0 ).speak;\},\
+     3, \{(\cf5 "You hit the ball 3 times"\cf0 ).speak;\},\
+     4, \{(\cf5 "You hit the ball 4 times - well done"\cf0 ).speak;\},\
+     5, \{(\cf5 "You hit the ball 5 times - well done"\cf0 ).speak;\},\
+      \{(\cf5 "You hit the ball "\cf0 +whacks+\cf5 " times - well done indeed!"\cf0 ).speak;\}\
+  );\
+\
+\}).play;\
+ \
+ \
+\}\
+)\
+~game.value; \cf2 // Press Enter to play!}
