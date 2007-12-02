@@ -1,0 +1,30 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 \
+\cf3 // (thor magnusson) (2006)\cf2 \
+\
+\cf3 // An instrumentalist inside a synthdef.\cf2 \
+\
+(\
+\cf4 SynthDef\cf2 (\cf5 \\drummer\cf2 , \{ \cf4 arg\cf2  out=0, tempo=4;\
+	\cf4 var\cf2  snare, base, hihat;\
+	tempo = \cf4 Impulse\cf2 .ar(tempo); \cf3 // for a drunk drummer replace Impulse with Dust !!!\cf2 \
+\
+	snare = 	\cf4 WhiteNoise\cf2 .ar(\cf4 Decay2\cf2 .ar(\cf4 PulseDivider\cf2 .ar(tempo, 4, 2), 0.005, 0.5));\
+	base = 	\cf4 SinOsc\cf2 .ar(\cf4 Line\cf2 .ar(120,60, 1), 0, \cf4 Decay2\cf2 .ar(\cf4 PulseDivider\cf2 .ar(tempo, 4, 0), 0.005, 0.5));\
+	hihat = 	\cf4 HPF\cf2 .ar(\cf4 WhiteNoise\cf2 .ar(1), 10000) * \cf4 Decay2\cf2 .ar(tempo, 0.005, 0.5);\
+	\
+	\cf4 Out\cf2 .ar(out,(snare + base + hihat) * 0.4 ! 2)\
+\}).load(s);\
+)\
+\
+a = \cf4 Synth\cf2 (\cf5 \\drummer\cf2 );\
+a.set(\cf5 \\tempo\cf2 , 6);\
+a.set(\cf5 \\tempo\cf2 , 18);\
+a.set(\cf5 \\tempo\cf2 , 180); \cf3 // check the CPU! no increase.\cf2 \
+\
+}

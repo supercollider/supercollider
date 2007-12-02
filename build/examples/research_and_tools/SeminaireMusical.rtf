@@ -1,0 +1,413 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // S\'8eminaire Musical Final 2007\
+// julian rohrhuber\
+// renate wieser\cf0 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  dec, v_spiel, v_klang, v_neu, v_play, v_guess, v_display, v_sargam;\
+\cf3 var\cf0  f_setButtons, f_neu, f_play, f_guess, f_playSargam, f_freeSargam;\
+\cf3 var\cf0  spiel=\cf4 "sm_sine"\cf0 , freqs, index;\
+\cf3 var\cf0  intervalle, freq0, note0, rates, nameList, amp=0.5, sargamSynth;\
+\
+\cf3 var\cf0  mode=\cf5 \\european\cf0 , allowBase=\cf3 true\cf0 ;\
+\cf3 var\cf0  eurNotes, indNotes, chords, chordKeys;\
+\
+eurNotes = #[\cf4 "C"\cf0 , \cf4 "C#"\cf0 , \cf4 "D"\cf0 , \cf4 "D#"\cf0 , \cf4 "E"\cf0 , \cf4 "F"\cf0 , \cf4 "F#"\cf0 , \cf4 "G"\cf0 , \cf4 "G#"\cf0 , \cf4 "A"\cf0 , \cf4 "Bb"\cf0 , \cf4 "B"\cf0 , \cf4 "C'"\cf0 ];\
+indNotes = #[\cf4 "Sa"\cf0 , \cf4 "re"\cf0 , \cf4 "Re"\cf0 , \cf4 "ga"\cf0 , \cf4 "Ga"\cf0 , \cf4 "Ma"\cf0 , \cf4 "ma"\cf0 , \cf4 "Pa"\cf0 , \cf4 "dha"\cf0 , \cf4 "Dha"\cf0 , \cf4 "ni"\cf0 , \cf4 "Ni"\cf0 , \cf4 "Sa'"\cf0 ];\
+\
+\
+chords = \cf3 IdentityDictionary\cf0 [\
+	\cf5 'major'\cf0  -> #[0, 2, 4],\
+	\cf5 'minor'\cf0  -> #[0, 2b, 4],\
+	\cf5 '7th'\cf0  -> #[0, 2, 4, 6b],\
+	\cf5 'minor7'\cf0  -> #[0, 2b, 4, 6b],\
+	\cf5 'sixth'\cf0  -> #[0, 2, 4, 5],\
+	\cf5 'minor6'\cf0  -> #[0, 2b, 4, 5],\
+	\cf5 'aug'\cf0  -> #[0, 2, 4s],\
+	\cf5 'aug7'\cf0  -> #[0, 2, 4s, 6b],\
+	\cf5 'dim'\cf0  -> #[0, 2b, 4b],\
+	\cf5 'dim7'\cf0  -> #[0, 2b, 4b, 6bb],\
+	\cf5 '7th 5b'\cf0  -> #[0, 2, 4b, 6b],\
+	\cf5 'min7 5b'\cf0  -> #[0, 2b, 4, 6b],\
+	\cf5 'ninth'\cf0  -> #[0, 2, 4, 6b, 8],\
+	\cf5 'minor9'\cf0  -> #[0, 2b, 4, 6b, 8],\
+	\cf5 'major9'\cf0  -> #[0, 2, 4, 6, 8], \
+	\cf5 '11th'\cf0  -> #[0, 2, 4, 6b, 8, 10],\
+	\cf5 'dim9'\cf0  -> #[0, 2, 5, 8],\
+	\cf5 'added9'\cf0  -> #[0, 2, 4, 8],\
+	\cf5 'added4'\cf0  -> #[0, 2, 4, 10],\
+	\cf5 'sus'\cf0  -> #[0, 3, 4],\
+	\cf5 'sus9'\cf0  -> #[0, 1, 4],\
+	\cf5 '7 sus4'\cf0  -> #[0, 3, 4, 6b],\
+	\cf5 '7 sus9'\cf0  -> #[0, 1, 4, 6b],\
+	\cf5 'fifth'\cf0  -> #[0, 4]\
+];\
+chordKeys = chords.keys.asArray;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // GUI\cf0 \
+\
+w = \cf3 GUI\cf0 .window.new(\cf4 "seminaire_musical"\cf0 , \cf3 Rect\cf0 (10, 250, 750, 250));\
+\
+w.view.decorator = dec = \cf3 FlowLayout\cf0 (w.view.bounds);\
+dec.shift(20, 20);\
+v_spiel = \cf3 GUI\cf0 .listView.new(w, \cf3 Rect\cf0 (0,0, 100, 130))\
+	.items_(\
+		[\cf4 "noten"\cf0 , \cf4 "frequenzen"\cf0 , \cf4 "noten + oktave"\cf0 ,\cf4 "intervalle"\cf0 ,\cf4 "times"\cf0 ,\cf4 "beatings"\cf0 , \cf4 "akkorde"\cf0 ]\
+	);\
+dec.shift(5);\
+v_klang = \cf3 GUI\cf0 .listView.new(w, \cf3 Rect\cf0 (0,0, 100, 120)).items_([\cf4 "sinus"\cf0 , \cf4 "noise"\cf0 , \cf4 "pulse"\cf0 , \cf4 "bell"\cf0 , \cf4 "piano"\cf0 , \cf4 "timbre"\cf0 ]);\
+dec.shift(20);\
+v_neu = \cf3 GUI\cf0 .button.new(w, \cf3 Rect\cf0 (0,0, 50, 35)).states_([[\cf4 "neu"\cf0 , \cf3 Color\cf0 .black, \cf3 Color\cf0 .clear]]);\
+v_play = \cf3 GUI\cf0 .button.new(w, \cf3 Rect\cf0 (0,0, 50, 35)).states_([[\cf4 ">"\cf0 , \cf3 Color\cf0 .black, \cf3 Color\cf0 .clear]]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SCSlider\cf0 (w, \cf3 Rect\cf0 (0,0, 200, 35)).value_(0.5).action_(\{ \cf3 |v|\cf0  amp = v.value \});\
+\cf3 GUI\cf0 .button.new(w, \cf3 Rect\cf0 (0,0, 50, 18))\
+	.states_([[\cf4 "boot"\cf0 , \cf3 Color\cf0 .black, \cf3 Color\cf0 .clear]]).action_(\{ \cf3 Server\cf0 .default.boot \});\
+\
+dec.shift(-300, 80);\
+v_display = \cf3 GUI\cf0 .staticText.new(w, \cf3 Rect\cf0 (0,0,80,20)); \cf2 //.font_(Font("Helvetica", 18));\cf0 \
+dec.shift(300, -80);\
+\
+dec.nextLine;\
+dec.shift(20);\
+\cf3 GUI\cf0 .button.new(w, \cf3 Rect\cf0 (0,0, 60,20))\
+	.states_([[\cf4 "europe"\cf0 ,\cf4 "india"\cf0 ,\cf4 "numerica"\cf0 ], \cf3 Color\cf0 .black, \cf3 Color\cf0 .clear].flop)\
+	.action_(\{ \cf3 |v|\cf0  mode = [\cf5 \\european\cf0 , \cf5 \\indian\cf0 , \cf5 \\numerical\cf0 ][v.value.asInteger]; f_neu.value; \});\
+\
+v_sargam = \cf3 GUI\cf0 .button.new(w, \cf3 Rect\cf0 (0,0, 50, 20))\
+	.states_([[\cf4 "sargam"\cf0 , \cf3 Color\cf0 .black, \cf3 Color\cf0 .clear], [\cf4 "sargam"\cf0 , \cf3 Color\cf0 .red, \cf3 Color\cf0 .clear]]);\
+ \
+\cf3 GUI\cf0 .button.new(w, \cf3 Rect\cf0 (0,0, 50, 20))\
+	.states_([[\cf4 "base"\cf0 , \cf3 Color\cf0 .black, \cf3 Color\cf0 .clear],[\cf4 "no base"\cf0 , \cf3 Color\cf0 .black, \cf3 Color\cf0 .clear]])\
+	.action_(\{ \cf3 |v|\cf0 \
+		allowBase = v.value < 1;\
+	\});\
+dec.nextLine;	\
+dec.shift(20, 10);\
+v_guess = \cf3 Array\cf0 .fill(13, \{\
+	\cf3 GUI\cf0 .button.new(w, \cf3 Rect\cf0 (0,0, 50, 35)).font_(\cf3 Font\cf0 (\cf4 "Monaco"\cf0 , 9));\
+\
+\});\
+\
+w.front;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // funktionen\cf0 \
+\
+f_setButtons = \{ \cf3 arg\cf0  werte;\
+	v_guess.do \{ \cf3 |but, i|\cf0 \
+		but.states_([[werte[i].asString, \cf3 Color\cf0 .black, \cf3 Color\cf0 .clear]]);\
+		but.refresh;\
+	\};\
+	\
+\
+\};\
+f_setButtons.(\cf4 ""\cf0  ! 13);\
+f_neu = \{\
+	\cf3 var\cf0  sargamIsPlaying, minFreq, octaves;\
+	sargamIsPlaying = v_sargam.value > 0;\
+	if(allowBase) \{ \
+		minFreq = 60;\
+		octaves = #[0.5, 1, 2, 4];\
+	\} \{ \
+		minFreq = 200;\
+		octaves = #[1, 2, 4];\
+	\};\
+	\
+	index = 13.rand;\
+	switch(v_spiel.value,\
+	0, \{\
+		if(mode == \cf5 \\indian\cf0 ) \{\
+			\
+			freqs = #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];\
+			\cf2 // see: http://www.soundofindia.com/showarticle.asp?in_article_id=-446619640\cf0 \
+			nameList = indNotes; \
+		\} \{\
+			freqs = ((0..12) + 60).midicps; \
+			if(mode == \cf5 \\numerical\cf0 ) \{ nameList = (0..12) \} \{\'canameList = eurNotes \};\
+		\};\
+		freq0 = freqs[0];\
+		\
+	\},\
+	1, \{\
+		nameList = \{\'caexprand(minFreq, 15000).round(1) \} ! 13;\
+		freqs = nameList;\
+		freq0 = 440;\
+	\},\
+	2, \{\
+		if(mode == \cf5 \\indian\cf0 ) \{\
+			freqs = #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];\
+			nameList = indNotes;\
+		\} \{ \
+			freqs = ((0..12) + 60).midicps; \
+			if(mode == \cf5 \\numerical\cf0 ) \{ nameList = (0..12) \} \{ nameList = eurNotes \};\
+		\};\
+		freq0 = freqs[0];\
+		freqs = freqs * (\{ octaves.choose \} ! 12);\
+		\
+		\
+	\},\
+	3, \{\
+		if(mode == \cf5 \\european\cf0 ) \{\
+			freq0 = ((0..12).choose + 60).midicps * octaves.choose;\
+			intervalle = (1..12).midiratio.insert(9, 7/4); \cf2 // insert 7/4\cf0 \
+			freqs = freq0 * intervalle;\
+			nameList = \
+		#[\cf4 "-sekund"\cf0 , \cf4 "+sekund"\cf0 , \cf4 "-terz"\cf0 , \cf4 "+terz"\cf0 , \cf4 "quart"\cf0 , \cf4 "tritone"\cf0 , \cf4 "quint"\cf0 , \
+			\cf4 "-sext"\cf0 , \cf4 "+sext"\cf0 , \cf4 "7/4"\cf0 , \cf4 "-sept"\cf0 , \cf4 "sept"\cf0 , \cf4 "oktav"\cf0 \
+		];\
+		\} \{\
+			freq0 =  #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450].choose;\
+			freq0 = freq0 * octaves.choose;\
+			intervalle = [16/15, 9/8, 6/5, 5/4, 4/3, 17/12, 3/2, 8/5, 5/3, 7/4, 16/9, 15/8, 2/1];\
+			freqs = freq0 * intervalle;\
+			nameList = \
+		#[\cf4 "16/15"\cf0 , \cf4 "9/8"\cf0 , \cf4 "6/5"\cf0 , \cf4 "5/4"\cf0 , \cf4 "4/3"\cf0 , \cf4 "17/12"\cf0 , \cf4 "3/2"\cf0 , \cf4 "8/5"\cf0 , \cf4 "5/3"\cf0 , \cf4 "7/4"\cf0 ,\
+			\cf4 "16/9"\cf0 , \cf4 "15/8"\cf0 , \cf4 "2/1"\cf0 ];\
+		\};\
+	\},\
+	4, \{\
+		freq0 = rrand(1600, 8000);\
+		freqs = freq0 ! 13;\
+		rates = \{ exprand(0.9, 19) \} ! 13;\
+		nameList = rates.round(0.01);\
+		\
+	\},\
+	5, \{\
+		freq0 = ((0..11).choose + 60).midicps * octaves.choose;\
+		freqs = freq0 ! 13;\
+		rates = \{ exprand(0.9, 40) \} ! 13;\
+		nameList = rates.round(0.01);\
+		\
+	\},\
+	6, \{\
+		note0 = (0..11).choose + #[-12, 0].choose;\
+		freq0 = (note0 + 60).midicps;\
+		freqs = freq0 ! 13;\
+		nameList = chordKeys[ (0..chordKeys.size-1).scramble.keep(13)].sort;\
+	\
+	\});\
+	f_setButtons.(nameList);\
+	f_freeSargam.value;\
+	if(sargamIsPlaying) \{ f_playSargam.value \};\
+\};\
+\
+f_neu.value; \cf2 // init\cf0 \
+\
+f_play = \{ \cf3 |i|\cf0 \
+	switch(v_spiel.value,\
+	3, \{ \cf2 // intervall\cf0 \
+			fork \{\
+				\cf3 Synth\cf0 (spiel, [\cf5 \\freq\cf0 , freq0, \cf5 \\amp\cf0 , amp]);\
+				0.4.wait;\
+				\cf3 Synth\cf0 (spiel, [\cf5 \\freq\cf0 , freq0 * intervalle[i], \cf5 \\amp\cf0 , amp]);\
+			\}\
+		\},\
+	4, \{ \cf2 // rates\cf0 \
+			\cf3 Synth\cf0 (\cf4 "sm_click"\cf0 , [\cf5 \\freq\cf0 , freq0, \cf5 \\rate\cf0 , rates[i], \cf5 \\amp\cf0 , amp])\
+		\},\
+	5, \{ \cf2 // beatings\cf0 \
+			if(spiel.postln == \cf4 "sm_string"\cf0 ) \{\
+				\cf3 Synth\cf0 (\cf4 "sm_string"\cf0 , [\cf5 \\freq\cf0 , freq0,  \cf5 \\amp\cf0 , amp]);\
+				\cf3 Synth\cf0 (\cf4 "sm_string"\cf0 , [\cf5 \\freq\cf0 , freq0 + rates[i], \cf5 \\amp\cf0 , amp])\
+			\} \{\
+				\cf3 Synth\cf0 (\cf4 "sm_beatings"\cf0 , [\cf5 \\freq\cf0 , freq0, \cf5 \\rate\cf0 , rates[i], \cf5 \\amp\cf0 , amp])\
+			\}\
+		\},\
+	6, \{ \cf2 // akkorde\cf0 \
+		fork \{\
+			\cf3 var\cf0  strum = [0, 0.04].choose.rand;\
+			\cf3 var\cf0  notes = chords[nameList[i]].degreeToKey(#[0, 2, 4, 5, 7, 9, 11]) + note0;\
+			notes.do \{ \cf3 |val|\cf0 \
+				\cf3 Synth\cf0 (spiel, [\cf5 \\freq\cf0 , (val + 60).midicps, \cf5 \\amp\cf0 , amp * 0.5]);\
+				strum.wait;\
+			\}\
+		\}\
+	\
+	\},\
+		\{\
+			\cf3 Synth\cf0 (spiel, [\cf5 \\freq\cf0 , freqs[i], \cf5 \\amp\cf0 , amp])\
+		\}\
+	)\
+	\
+\
+\};\
+f_playSargam = \{\'cav_sargam.valueAction = 1 \};\
+f_freeSargam = \{\'cav_sargam.valueAction = 0 \};\
+\
+\cf2 // funktionen zu buttons\cf0 \
+v_neu.action = f_neu;\
+v_play.action = \{ f_play.value(index) \};\
+v_spiel.action = f_neu;\
+v_guess.do \{\cf3 |but, i|\cf0 \
+	but.action = \{ \
+		if(index == i) \{\
+			but.states = [[but.states[0][0], \cf3 Color\cf0 .red, \cf3 Color\cf0 .yellow]];\
+		\};\
+		f_play.value(i);\
+		v_display.string = \cf4 "note:"\cf0  + (freqs[i].cpsmidi - 60).round(0.1);\
+	\};\
+\};\
+v_klang.action = \{\cf3 |view|\cf0  \
+	spiel = \
+[\cf4 "sm_sine"\cf0 , \cf4 "sm_noise"\cf0 , \cf4 "sm_pulse"\cf0 , \cf4 "sm_bell"\cf0 , \cf4 "sm_string"\cf0 , \cf4 "sm_timbremix"\cf0 ][view.value.asInteger]\
+\};\
+v_sargam.action = \{ \cf3 |view|\cf0  \
+	if(view.value == 0) \
+		\{ sargamSynth.release \} \{ sargamSynth = \cf3 Synth\cf0 (\cf5 \\sm_sargam\cf0 , [\cf5 \\freq\cf0 , freq0, \cf5 \\amp\cf0 , amp]) \
+	\};\
+\};\
+\
+w.view.keyDownAction = \{ \cf3 arg\cf0  view, char;\
+	f_play.value(char.ascii - 48 % 13);\
+\};\
+\
+w.onClose = \{ f_freeSargam.value \};\
+\
+\cf2 // synthdefs\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "sm_sine"\cf0 , \{ \cf3 arg\cf0  freq=440, amp=0.5;\
+	amp = \cf3 AmpComp\cf0 .kr(freq) * amp;\
+	\cf3 Out\cf0 .ar(0,\
+		\cf3 Pan2\cf0 .ar(\
+			\cf3 SinOsc\cf0 .ar(freq) * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.03, \cf3 Rand\cf0 (0.3, 2), amp), doneAction:2),\
+			\cf3 Rand\cf0 (-0.5, 0.5)\
+		)\
+	)\
+\
+\}).store;\
+\
+\cf3 SynthDef\cf0 (\cf4 "sm_noise"\cf0 , \{ \cf3 arg\cf0  freq=440, amp=0.5;\
+	\cf3 var\cf0  u;\
+	amp = \cf3 AmpComp\cf0 .kr(freq) * amp;\
+	u = \cf3 BPF\cf0 .ar(\cf3 PinkNoise\cf0 .ar(20), freq, \cf3 Rand\cf0 (0.1, 0.005));\
+	\cf3 Out\cf0 .ar(0,\
+		\cf3 Pan2\cf0 .ar(\
+			u * \cf3 EnvGen\cf0 .kr(\
+				\cf3 Env\cf0 .linen(\cf3 Rand\cf0 (0.03, 0.2), \cf3 Rand\cf0 (0.3, 2), \cf3 Rand\cf0 (0.3, 0.8), amp), \
+				doneAction:2\
+			),\
+			\cf3 Rand\cf0 (-0.5, 0.5)\
+		)\
+	)\
+\
+\}).store;\
+\
+\cf3 SynthDef\cf0 (\cf4 "sm_pulse"\cf0 , \{ \cf3 arg\cf0  freq=440, amp=0.5;\
+	\cf3 var\cf0  u;\
+	amp = \cf3 AmpComp\cf0 .kr(freq) * amp;\
+	u = \cf3 Pulse\cf0 .ar(freq, \cf3 Rand\cf0 (0.3, 0.5), 0.3);\
+	\cf3 Out\cf0 .ar(0,\
+		\cf3 Pan2\cf0 .ar(\
+			u * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.03, \cf3 Rand\cf0 (0.3, 2), amp), doneAction:2),\
+			\cf3 Rand\cf0 (-0.5, 0.5)\
+		)\
+	)\
+\
+\}).store;\
+\
+\cf3 SynthDef\cf0 (\cf4 "sm_bell"\cf0 , \{ \cf3 arg\cf0  freq=440, amp=0.5;\
+	n = 5;\
+	amp = \cf3 AmpComp\cf0 .kr(freq) * amp;\
+	\cf3 Out\cf0 .ar(0,\
+		\cf3 Pan2\cf0 .ar(\
+			\cf3 Klang\cf0 .ar(`[\
+				[1] ++ (\{ rrand(1.2, 5.8) \} ! (n-1)), \
+				[1] ++ (\{ rrand(0.1, 0.3) \} ! (n-1)).sort.reverse,\
+			\{ pi.rand \} ! n\
+			], freq)\
+			 * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.03, \cf3 Rand\cf0 (0.3, 2), amp * 0.5), doneAction:2),\
+		\cf3 Rand\cf0 (-0.5, 0.5)\
+		)\
+	)\
+\
+\}).store;\
+\
+(\
+\cf3 SynthDef\cf0 (\cf4 "sm_string"\cf0 , \{ \cf3 arg\cf0  freq=440, amp=0.5;\
+	\cf3 var\cf0  u, exc, sustain;\
+	amp = \cf3 AmpComp\cf0 .kr(freq) * amp;\
+	exc = \cf3 LFNoise2\cf0 .ar(3000, \cf3 Decay2\cf0 .ar(\cf3 Impulse\cf0 .ar(0.0001, 0, 0.5), 0.006, 0.02));\
+	sustain = \cf3 Rand\cf0 (1, 1.5);\
+	u = \cf3 LPF\cf0 .ar(\
+		\cf3 CombN\cf0 .ar(exc, 0.04, (freq * (1+[0, 0.001])).reciprocal, sustain).sum,\
+		min(20000, freq * \cf3 Rand\cf0 (3, 2.3) ! 2)\
+	).sum;\
+	\
+	\cf2 //DetectSilence.ar(u, doneAction:2);\cf0 \
+	amp = amp * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .linen(0, sustain, 0.1), doneAction:2);\
+	\cf3 Out\cf0 .ar(0,\
+		\cf3 Pan2\cf0 .ar(u * amp, freq.cpsmidi % 12 / 6 - 1)\
+	);\
+\
+\}).store;\
+);\
+\
+\cf3 SynthDef\cf0 (\cf4 "sm_click"\cf0 , \{ \cf3 arg\cf0  freq=440, rate=1, amp=0.5;\
+	\cf3 var\cf0  u;\
+	amp = \cf3 AmpComp\cf0 .kr(freq) * amp;\
+	u = \cf3 SinOsc\cf0 .ar(freq) * \cf3 Decay\cf0 .kr(\cf3 Impulse\cf0 .kr(rate, 0, 40), 0.002, 0.04);\
+	\cf3 Out\cf0 .ar(0,\
+		\cf3 Pan2\cf0 .ar(\
+			u * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .linen(0, min(2, \cf3 IRand\cf0 (4, 8) / rate), 0.1, amp), doneAction:2),\
+			\cf3 Rand\cf0 (-0.5, 0.5)\
+		)\
+	)\
+\
+\}).store;\
+\
+\cf3 SynthDef\cf0 (\cf4 "sm_beatings"\cf0 , \{ \cf3 arg\cf0  freq=440, rate=1, amp=0.5;\
+	\cf3 var\cf0  u;\
+	amp = \cf3 AmpComp\cf0 .kr(freq) * amp;\
+	u = \cf3 SinOsc\cf0 .ar([0, rate] + freq).sum * 0.3;\
+	\cf3 Out\cf0 .ar(0,\
+		\cf3 Pan2\cf0 .ar(\
+			u * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .linen(0.01, max(\cf3 Rand\cf0 (0.3, 2),  3 / rate), 0.5, amp), doneAction:2),\
+			\cf3 Rand\cf0 (-0.5, 0.5)\
+		)\
+	)\
+\
+\}).store;\
+\
+\cf3 SynthDef\cf0 (\cf4 "sm_sargam"\cf0 , \{ \cf3 arg\cf0  freq=440, amp=0.5, gate=1.0;\
+	\cf3 var\cf0  u;\
+	amp = \cf3 AmpComp\cf0 .kr(freq) * amp * 0.5;\
+	u = \cf3 Pulse\cf0 .ar(freq * [0.5, 1] +.t [\cf3 Rand\cf0 (0.2, 0.5), \cf3 Rand\cf0 (0.2, 0.5).neg], \
+		\cf3 LFNoise1\cf0 .kr(0.11, 0.05, 0.4), 0.15).sum;\
+	u = \cf3 RLPF\cf0 .ar(u, \cf3 LFNoise2\cf0 .kr(0.3, 0.2, 1) * 5000, 0.5);\
+	\cf3 Out\cf0 .ar(0,\
+			u * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(1.0, amp, 1.0), gate, doneAction:2)\
+	)\
+\
+\}).store;\
+\
+\cf3 SynthDef\cf0 (\cf4 "sm_timbremix"\cf0 , \{ \cf3 arg\cf0  freq=440, amp=0.5;\
+	\cf3 var\cf0  n = 10, u;\
+	freq = freq * ([1.0] ++ \{ \cf3 ExpRand\cf0 (1.0, 3.0) \}.dup(18));\
+	amp = amp * 0.4 * (\cf3 AmpComp\cf0 .ir(freq) * ([1.0] ++ (1..n).reciprocal));\
+	\cf3 Out\cf0 .ar(0,\
+		\cf3 Pan2\cf0 .ar(\
+			u = sum(\
+				\cf3 SinOsc\cf0 .ar(freq, 0, amp)\
+			) * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.03, \cf3 Rand\cf0 (0.3, 2))),\
+			\
+			\cf3 Rand\cf0 (-0.5, 0.5)\
+		)\
+	);\
+	\cf3 DetectSilence\cf0 .ar(u, doneAction:2);\
+\
+\}).store;\
+\
+);\
+\
+}

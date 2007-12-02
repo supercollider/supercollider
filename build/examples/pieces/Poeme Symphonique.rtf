@@ -1,0 +1,52 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 \
+\cf3 // (thor magnusson) (c 2007)\cf2 \
+\
+\cf3 // A reinterpretation of the Po\'8fme symphonique was composed by Gy\'9argy Ligeti (in 1962)\cf2 \
+\cf3 // http://www.youtube.com/watch?v=QCp7bL-AWvw\cf2 \
+\
+(\
+\cf4 SynthDef\cf2 (\cf5 \\ligetignome\cf2 , \{\cf4 arg\cf2  tempo=1, filterfreq=1000, rq=1.0;\
+\cf4 var\cf2  env, signal;\
+	\cf4 var\cf2  rho, theta, b1, b2;\
+	b1 = 2 * 0.996839 * cos(0.0931624);\
+	b2 = 0.996839.squared.neg;\
+	signal = \cf4 SOS\cf2 .ar(\cf4 Impulse\cf2 .ar(tempo), 1.0, 0.0, 0.0, b1, b2);\
+	signal = \cf4 RHPF\cf2 .ar(signal, filterfreq, rq);\
+	\cf4 Out\cf2 .ar(0, \cf4 Pan2\cf2 .ar(signal, 0));\
+\}).load(s)\
+)\
+\
+\cf3 // and we create 10 different metronomes running in different tempi\cf2 \
+\cf3 // (try with 3 metros or 30 metros)\cf2 \
+(\
+13.do(\{\
+	\cf4 Synth\cf2 (\cf5 \\ligetignome\cf2 ).set(\
+		\cf5 \\tempo\cf2 , (rrand(0.5,1.5)).reciprocal, \
+		\cf5 \\filterfreq\cf2 , rrand(2000,4000), \
+		\cf5 \\rq\cf2 , rrand(0.3,0.9) )\
+\});\
+)\
+\
+\cf3 // -----------\cf2 \
+\
+\cf3 // and something totally else... ligeti's brother:\cf2 \
+\
+(\
+\cf4 var\cf2  trig;\
+\cf4 var\cf2  wait = 4;\
+\cf4 Task\cf2 (\{\
+	20.do(\{\
+		trig = [1, 1.5].wchoose([0.7, 0.3]);\
+		\{\cf4 Resonz\cf2 .ar(\cf4 Impulse\cf2 .ar(trig, 0, 50*rrand(5,10)), \cf4 Rand\cf2 (200,2000), 0.003) ! 2\}.play;\
+		(wait + rrand(0.1,1)).wait;\
+		wait = wait - rrand(0.01, 0.2);\
+	\});\
+	\cf6 "thank you! you can now stop this program at any point!"\cf2 .postln;\
+\}).play\
+)}
