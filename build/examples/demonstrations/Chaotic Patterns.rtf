@@ -1,0 +1,161 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green112\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 // From SC2 distro\
+\
+// Chaotic Patterns, version 0.1\
+// Some short examples showing how to create music (?) from \
+// chaotic iterated maps and (integrated) ODE's. Most of this \
+// is probably old news, but there are some new maps like Tinkerbell\
+// and Ikeda that are interesting. Most interesting is the ease of doing \
+// this in SC2 ! Try them several times\
+// Staffan Liljegren, 991002, staffan@medialab.ericsson.se\
+\cf0 \
+\
+\cf2 // ======================= Discrete Maps ===================================\
+// Logistics map with fixed r = 3.9 \
+\cf0 (\
+p = \cf3 Prout\cf0 (\{ \
+	\cf3 var\cf0  x;\
+	x=0.5.rand;\
+	loop(\{\
+		\cf2 // xnew = r * xold * (1.0 - xold)\
+\cf0 		x = 3.9 * x * (1.0 - x); \
+		x.yield;\}); \});\
+\cf2 // p returns points in 0<x<1 and in b we scale it to degrees from 0 - 7. You\
+// can try freq values instead, by using \\freq instead of \\degree \
+\cf0 b = \cf3 Pbind\cf0 (\cf4 \\dur\cf0 , 0.1,\cf4 \\degree\cf0 , p*7);\
+\
+b.play;\
+\
+)\
+\
+\cf2 // Logistics map with r = 3.687 and independent streams scaled to two octave \
+// frygian scale, amp, legato and pan values)\
+\cf0 (\
+\
+p = \cf3 Prout\cf0 (\{ \
+	\cf3 var\cf0  x;\
+	x=1.0.rand;\
+	60.do(\{\
+		x = 3.687 * x * (1.0 - x); x.yield;\}); \});\
+b = \cf3 Pbind\cf0 (\cf4 \\scale\cf0 , [0,1,3,5,7,8,10],\cf4 \\amp\cf0 ,p/4,\cf4 \\legato\cf0 , p/2, \cf4 \\pan\cf0 , p*2-1,\cf4 \\dur\cf0 , 0.125, \cf4 \\degree\cf0 , p*14);\
+\
+\cf3 Paddp\cf0 (\cf4 \\mtranspose\cf0 , \cf3 Pseq\cf0 ([0,-2, 2],1),\cf3 Ppar\cf0 ([\cf3 Pbindf\cf0 (\cf4 \\stretch\cf0 , 2.0, \cf4 \\octave\cf0 , 3,b),b++b])).play;\
+\
+)\
+\
+\cf2 // Logistics map with changing r values \
+// (3.4<r<4.0, with "chaos" entering at 3.57)\
+\cf0 (\
+\
+p = \cf3 Prout\cf0 (\{ \cf3 var\cf0  r, x;\
+		\cf2 // Initial value\
+\cf0 		x=0.5.rand;\
+		 \cf2 //     32-cycle, chaos?, ghost of 3-cycle in chaos,  chaos!\
+\cf0 		 \cf2 //r = [3.569,    3.687,  3.8282,                     3.9].choose;\
+\cf0 		 r = rrand(3.4,4.0);\
+\
+		 \cf2 // Uncomment this if you want to see the current r value\
+\cf0 		 \cf2 //("// "++ r).postln;\
+\cf0 		 60.do(\{x = r * x * (1.0 - x); x.yield;\}); \});\
+\cf2 // scale p to a pentatonic scale\
+\cf0 b = \cf3 Pbind\cf0 (\cf4 \\scale\cf0 , [0,3,5,7,9], \cf4 \\legato\cf0 , p/2,\cf4 \\dur\cf0 , \cf3 Pseq\cf0 ([\cf3 Pshuf\cf0 ([0.1,0.2,0.1],4)],5), \cf4 \\degree\cf0 , p*12);\
+\
+\cf3 Pseq\cf0 ([\cf3 Ppar\cf0 ([\cf3 Pset\cf0 (\cf4 \\octave\cf0 ,3,b),\cf3 Pset\cf0 (\cf4 \\octave\cf0 ,4,b)])], \cf3 inf\cf0 ).play;\
+\
+)\
+\
+\
+\
+\cf2 // Tinkerbell map / attractor scaled to 3 octave lydian\
+// Good for Glass/Reich/Nyman stuff...or ?\
+\cf0 (\
+\cf2 // I don't know any good initial conditions, but 0<x0,y0<0.3 seems to work, but\
+// it escapes to infinity on some occasions. I'll try to fix this\
+\cf0 \
+\cf2 // p plays 40 notes with one randomly chosen c1 value 			 \
+\cf0 p = \cf3 Prout\cf0 (\{ \
+		\cf3 var\cf0  x0, y0, c1, c2= -0.6013, c3=2.0, c4=0.4, x, y;\
+		\cf2 //vary -0.7<c1<0.9. c1=0.3 is a limit cycle, c1=0.485 is a 7-period, c1=0.9 is chaotic\
+\cf0 		c1 = rrand(-0.7,0.9);\
+		x0=0.2.rand; y0=0.2.rand; \
+		\cf2 // Uncomment this if you want to see the current c1 value\
+\cf0 		\cf2 //("// "++ c1).postln;\
+\cf0 		40.do(\{\
+			x = x0.squared - y0.squared + (c1*x0) + (c2*y0); \
+			y = (2*x0*y0) + (c3*x0) + (c4*y0);\
+			x0=x; y0=y;\
+			\cf2 // I only use the y value, but feel free to experiment with (tiny) x values\
+\cf0 			(y*21).yield;\}); \});\
+b = \cf3 Pbind\cf0 (\cf4 \\scale\cf0 , [0,2,4,6,7,9,11], \cf4 \\legato\cf0 , 0.2,\cf4 \\dur\cf0 ,0.1,\cf4 \\degree\cf0 , p );\
+\
+\cf3 Paddp\cf0 (\cf4 \\mtranspose\cf0 , \cf3 Pshuf\cf0 ([0,-3,-1, 3],2),\cf3 Pseq\cf0 ([\cf3 Ppar\cf0 ([b,b])], 2)).play;\
+\
+)\
+\
+\cf2 // Ikeda map / attractor scaled to 2 octave aeolian\
+\cf0 (\
+\
+\cf2 // p plays 40 notes with one randomly chosen c2 value 			 \
+\cf0 p = \cf3 Prout\cf0 (\{ \cf3 var\cf0  c2; \
+		\cf3 var\cf0  x0, y0, c1=0.4, c3=6.0, rho=1.0, tao, x, y;\
+		\cf2 //vary 0.0<c2<1.0. c2=0.726 is a 3-period, c2=0.780 is "crisis" c2=0.9 is chaotic\
+\cf0 		c2 = rrand(0.3,0.9);\
+		x0=0.2.rand; y0=0.2.rand;\
+		\cf2 // Uncomment this if you want to see the current c2 value\
+\cf0 		\cf2 //("// "++ c2).postln;\
+\cf0 		40.do(\{\
+			tao = c1 - (c3/(1 + x0.squared + y0.squared));\
+			x = (c2 * ( (x0*cos(tao)) - (y0*sin(tao)) )) + rho;\
+			y = (c2 * ( (x0*sin(tao)) + (y0*cos(tao)) ));\
+			x0=x; y0=y;\
+			[x.abs/5+0.1,y*14].yield;\}); \});\
+b = \cf3 Pbind\cf0 (\cf4 \\scale\cf0 , [0,2,3,5,7,8,10],\cf4 \\dur\cf0 ,0.1,[\cf4 \\legato\cf0 ,\cf4 \\degree\cf0 ], p );\
+\
+\cf3 Pseq\cf0 ([b],\cf3 inf\cf0 ).play;\
+)\
+\
+\cf2 // Henon map / attractor (returns points in -1.5<x<1.5, -0.4<y<0.4, which are then\
+// used for pan (x values) and degrees from 2 octave dorian (y values)\
+\cf0 (\
+p = \cf3 Prout\cf0 (\{ \
+	\cf3 var\cf0  x0, y0, x, y;\
+	x0=0; y0=0;\
+	loop(\{\
+		x = y0 + 1 - (1.4*x0*x0); \
+		y = 0.3*x0; \
+		x0=x;y0=y;\
+		[x, y*14].yield;\}); \});\
+b = \cf3 Pbind\cf0 (\cf4 \\scale\cf0 , [0,2,3,5,7,9,10], \cf4 \\dur\cf0 ,0.125,[\cf4 \\pan\cf0 , \cf4 \\degree\cf0 ], p );\
+\
+\cf3 Ptpar\cf0 ([0.0,\cf3 Pbindf\cf0 (\cf4 \\octave\cf0 , 4,\cf4 \\stretch\cf0 , 3.0,b), 4.0,b]).play;\
+\
+)\
+\
+\cf2 // ==================== Continous Flows in next version =================================\
+\cf0 \
+\cf2 // Non-working Lorentz attractor (Euler approximated)\
+\cf0 (\
+p = \cf3 Prout\cf0 (\{ \
+	\cf3 var\cf0  x0,y0,z0,t,x,y,z;\
+	t=0.01;\
+	x0=2.0; y0=3.0; z0=5.0;\
+	loop(\{ \
+		x = x0 + (t*10*(y0-x0)); \
+		y = y0 + (t*((x0*(28-z0))-y0)); \
+		z = z0 + (t*((x0*y0)-(8*z0/3))); \
+		x0=x; y0=y;z0=z;\
+		[x,y/10,z].postln.yield;\}); \});\
+b = \cf3 Pbind\cf0 ([\cf4 \\pan\cf0 ,\cf4 \\dur\cf0 ,\cf4 \\degree\cf0 ], p);\
+\
+b.play;\
+)\
+\
+\cf2 // To Come:\
+// Roessler attractor. See Rossler.ar for a chaotic noise implementation. \
+// Duffing Oscillator\
+}

@@ -1,0 +1,25 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fmodern\fcharset77 Courier;\f1\fswiss\fcharset77 ArialMT;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs26\fsmilli13333 \cf0 \
+\
+\cf2 /*
+\f1\fs26 \'ca\
+A babbling brook example, by James McCartney 2007. See\
+\pard\pardeftab720\ql\qnatural
+{\field{\*\fldinst{HYPERLINK "http://www.create.ucsb.edu/pipermail/sc-users/2007-April/033231.html"}}{\fldrslt \cf2 http://www.create.ucsb.edu/pipermail/sc-users/2007-April/033231.html}}
+\f0\fs26\fsmilli13333 \
+*/\cf0 \
+\
+(\
+\{\
+(\{\cf3 RHPF\cf0 .ar(\cf3 OnePole\cf0 .ar(\cf3 BrownNoise\cf0 .ar, 0.99), \cf3 LPF\cf0 .ar(\cf3 BrownNoise\cf0 .ar, 14)\
+* 400 + 500, 0.03, 0.003)\}!2)\
++ (\{\cf3 RHPF\cf0 .ar(\cf3 OnePole\cf0 .ar(\cf3 BrownNoise\cf0 .ar, 0.99), \cf3 LPF\cf0 .ar(\cf3 BrownNoise\cf0 .ar, 20)\
+* 800 + 1000, 0.03, 0.005)\}!2)\
+* 4\
+\}.play\
+)}
