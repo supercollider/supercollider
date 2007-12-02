@@ -1613,14 +1613,18 @@ int SCScrollTopView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 
 void SCScrollTopView::add(SCView *inChild)
 {
+	setInSetClipViewOrigin(true);
 	SCContainerView::add(inChild);
 	[(SCGraphView*)GetNSView() setFrameSizeToMinimum];
+	setInSetClipViewOrigin(false);
 }
 
 void SCScrollTopView::remove(SCView *inChild)
 {
+	setInSetClipViewOrigin(true);
 	SCContainerView::remove(inChild);
 	[(SCGraphView*)GetNSView() setFrameSizeToMinimum];
+	setInSetClipViewOrigin(false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
