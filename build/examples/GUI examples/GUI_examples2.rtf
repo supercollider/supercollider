@@ -1,0 +1,354 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 Creating a window.
+\f1\b0\fs26 \
+\
+w = \cf2 SCWindow\cf0 (\cf3 "a control panel"\cf0 , \cf2 Rect\cf0 (20, 400, 440, 360));\
+w.front; \cf4 // make window visible and front window.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs10 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 Views are controlled by setting properties.\
+
+\f1\b0\fs26 \
+w.view.background = \cf2 Color\cf0 .rand;\
+w.view.background = \cf2 Color\cf0 .rand;\
+w.view.background = \cf2 Color\cf0 .rand;\
+w.view.background = \cf2 Gradient\cf0 (\cf2 Color\cf0 .blue,\cf2 Color\cf0 .green,\cf5 \\v\cf0 );\
+w.view.background = \cf2 Gradient\cf0 (\cf2 Color\cf0 .black,\cf2 Color\cf0 .red,\cf5 \\h\cf0 );\
+w.view.background = \cf2 Gradient\cf0 (\cf2 Color\cf0 .black,\cf2 Color\cf0 .red,\cf5 \\h, 16\cf0 );\
+w.view.background = \cf2 Gradient\cf0 (\cf2 Color\cf0 .black,\cf2 Color\cf0 .red,\cf5 \\h, 128\cf0 );\
+w.view.background = \cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .blue,\cf2 Color\cf0 .yellow,\cf5 \\v\cf0 );\
+w.view.background = \cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .blue,\cf2 Color\cf0 .yellow,\cf5 \\v\cf0 , 16);\
+w.view.background = \cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .blue,\cf2 Color\cf0 .yellow,\cf5 \\v\cf0 , 256);\
+w.view.background = \cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .red(0.6),\cf2 Color\cf0 .green,\cf5 \\h\cf0 , 16);\
+w.view.background = \cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .red(0.6),\cf2 Color\cf0 .green,\cf5 \\h\cf0 , 256);\
+\
+(\
+\cf2 Routine\cf0 (\{\
+	30.do \{\
+		w.view.background = \
+			\cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .rand(0.0,1.0),\cf2 Color\cf0 .rand(0.0,1.0),\
+					[\cf5 \\h\cf0 ,\cf5 \\v\cf0 ].choose, 100, rrand(0.1,0.9));\
+		0.5.wait;\
+	\};\
+\}).play(\cf2 AppClock\cf0 );\
+)\
+\
+\
+
+\f0\b\fs40 The FlowLayout decorator places views one after another.\
+
+\f1\b0\fs26 \
+w.view.decorator = \cf2 FlowLayout\cf0 (w.view.bounds);\
+\
+
+\f0\b\fs40 A button that adds another one like itself.\
+
+\f1\b0\fs26 \
+(\
+f = \{\
+	\cf4 // the arguments for creating a view are the window it is in,\cf0 \
+	\cf4 // and the bounds of the view\cf0 \
+	b = \cf2 SCButton\cf0 (w, 75 @ 24);\
+	\cf4 // states defines the colors and label for the button in different states.\cf0 \
+	b.states = [[\cf3 "Add"\cf0 , \cf2 Color\cf0 .black, \cf2 Color\cf0 .rand]];\
+	b.action = f;\
+\};\
+f.value;\
+)\
+\
+
+\f0\b\fs40 A button that changes the background.\
+
+\f1\b0\fs26 \
+(\
+b = \cf2 SCButton\cf0 (w, 75 @ 24);\
+b.states = [[\cf3 "Backgnd"\cf0 , \cf2 Color\cf0 .white, \cf2 Color\cf0 .rand]];\
+b.action = \{\
+		w.view.background = \
+			\cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .rand(0.0,1.0),\cf2 Color\cf0 .rand(0.0,1.0),\
+					[\cf5 \\h\cf0 ,\cf5 \\v\cf0 ].choose, 100, rrand(0.1,0.9));\
+\};\
+)\
+\
+
+\f0\b\fs40 A multi-state button.\
+
+\f1\b0\fs26 \
+(\
+b = \cf2 SCButton\cf0 (w, 75 @ 24);\
+b.states = [\
+	[\cf3 "Red"\cf0 , \cf2 Color\cf0 .white, \cf2 Color\cf0 .red],\
+	[\cf3 "Green"\cf0 , \cf2 Color\cf0 .black, \cf2 Color\cf0 .green],\
+	[\cf3 "Blue"\cf0 , \cf2 Color\cf0 .white, \cf2 Color\cf0 .blue],\
+	[\cf3 "Yellow"\cf0 , \cf2 Color\cf0 .black, \cf2 Color\cf0 .yellow]\
+];\
+b.action = \{\cf2 | view |\cf0 \
+	if (view.value == 0) \{ w.view.background = \cf2 Color\cf0 .yellow \};\
+	if (view.value == 1) \{ w.view.background = \cf2 Color\cf0 .red \};\
+	if (view.value == 2) \{ w.view.background = \cf2 Color\cf0 .green \};\
+	if (view.value == 3) \{ w.view.background = \cf2 Color\cf0 .blue \};\
+\};\
+)\
+\
+
+\f0\b\fs40 A slider that controls window transparency.\
+
+\f1\b0\fs26 \
+(\
+w.view.decorator.nextLine;\
+v = \cf2 SCSlider\cf0 (w, 130 @ 24);\
+v.action = \{\cf2 | view |\cf0  \
+	\cf4 // Sliders output values from zero to one.\cf0 \
+	w.alpha = view.value; \
+\};\
+v.value = 1;\
+)\
+\
+w.alpha = 1;\
+w.front;\
+\
+
+\f0\b\fs40 A slider that controls window width.\
+
+\f1\b0\fs26 \
+(\
+w.view.decorator.nextLine;\
+v = \cf2 SCSlider\cf0 (w, 130 @ 24);\
+v.action = \{\cf2 | view |\cf0  \
+	var bounds;\
+	bounds = w.bounds;\
+	bounds.width = 400 + (400 * view.value);\
+	w.bounds = bounds;\
+\};\
+)\
+\
+w.close;\
+w = nil;\
+\
+
+\f0\b\fs40 A more useful window.\
+
+\f1\b0\fs26 \
+(\
+\cf4 // start server\cf0 \
+s = \cf2 Server\cf0 .internal;\
+\cf2 Server\cf0 .default = s;\
+s.boot;\
+)\
+\
+(\
+\cf4 // define a synth\cf0 \
+\cf2 SynthDef\cf0 (\cf3 "window-test"\cf0 , \{ \cf2 arg\cf0  note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1;\
+		\cf2 var\cf0  x;\
+		x = \cf2 Mix\cf0 .fill(4, \{ \
+			\cf2 LFSaw\cf0 .ar((note + \{0.1.rand2\}.dup).midicps, 0, 0.02) \
+		\});\
+		x = \cf2 RLPF\cf0 .ar(x, fc, rq).softclip;\
+		x = \cf2 RLPF\cf0 .ar(x, fc, rq, amp).softclip;\
+		x = \cf2 Balance2\cf0 .ar(x[0], x[1], bal);\
+		x = x * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .cutoff, gate, doneAction: 2);\
+		\cf2 Out\cf0 .ar(0, x);\
+	\}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]\
+).load(s);\
+)\
+\
+(\
+\cf4 // make the window\cf0 \
+w = \cf2 SCWindow\cf0 (\cf3 "another control panel"\cf0 , \cf2 Rect\cf0 (20, 400, 440, 360));\
+w.front; \cf4 // make window visible and front window.\cf0 \
+w.view.decorator = \cf2 FlowLayout\cf0 (w.view.bounds);\
+w.view.background = \cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .rand(0.0,1.0),\cf2 Color\cf0 .rand(0.0,1.0),\
+					[\cf5 \\h\cf0 ,\cf5 \\v\cf0 ].choose, 100, rrand(0.1,0.9));\
+)\
+\
+(\
+\cf4 // add a button to start and stop the sound.\cf0 \
+b = \cf2 SCButton\cf0 (w, 75 @ 24);\
+b.states = [[\cf3 "Start"\cf0 , \cf2 Color\cf0 .black, \cf2 Color\cf0 .green],[\cf3 "Stop"\cf0 , \cf2 Color\cf0 .white, \cf2 Color\cf0 .red]];\
+b.action = \{\cf2 |view|\cf0 \
+		if (view.value == 1) \{\
+			s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "window-test"\cf0 , 9999, 0, 0);\
+		\};\
+		if (view.value == 0) \{\
+			s.sendMsg(\cf3 "/n_set"\cf0 , 9999, \cf3 "gate"\cf0 , 0);\
+		\};\
+\};\
+)\
+\
+(\
+\cf4 // add a label\cf0 \
+w.view.decorator.nextLine;\
+v = \cf2 SCStaticText\cf0 (w, 80 @ 24);\
+v.string = \cf3 "Note"\cf0 ;\
+v.stringColor = \cf2 Color\cf0 .white;\
+v.align = \cf5 \\right\cf0 ;\
+)\
+\
+v.align = \cf5 \\left\cf0 ;\
+v.align = \cf5 \\center\cf0 ;\
+v.align = \cf5 \\right\cf0 ;\
+\
+(\
+\cf4 // create a ControlSpec for mapping values to correct range.\cf0 \
+~noteSpec = \cf2 ControlSpec\cf0 (24, 60, \cf5 \\lin\cf0 , 1);\
+\cf4 // create slider and number views.\cf0 \
+~noteSlider = \cf2 SCSlider\cf0 (w, 200 @ 24);\
+~noteNumBox = \cf2 SCNumberBox\cf0 (w, 64 @ 24);\
+\
+~noteSlider.step = 1/(60-24);\
+~noteSlider.action = \{\cf2 |view|\cf0 \
+	\cf2 var\cf0  note;\
+	note = ~noteSpec.map(view.value);\
+	~noteNumBox.value = note;\
+	s.sendMsg(\cf3 "/n_set"\cf0 , 9999, \cf3 "note"\cf0 , note);\
+\};\
+\
+~noteNumBox.action = \{\cf2 |view|\cf0 \
+	\cf2 var\cf0  note;\
+	note = view.value;\
+	s.sendMsg(\cf3 "/n_set"\cf0 , 9999, \cf3 "note"\cf0 , note);\
+	~noteSlider.value = ~noteSpec.unmap(note);\
+\};\
+~noteNumBox.align = \cf5 \\center\cf0 ;\
+)\
+\
+\
+\
+\
+\
+\
+
+\f0\b\fs40 That is a lot of work for something simple, so I made a wrapper class. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 EZSlider takes care of the details for you.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
+
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs26 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs40 \cf0 EZSlider is a wrapper for a SCStaticText, an SCSlider, and an SCNumberBox along with the logic to manage them.
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs26 \cf0 \
+(\
+\cf4 // create controls.\cf0 \
+w.view.decorator.nextLine;\
+v = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Note"\cf0 , \cf2 ControlSpec\cf0 (24, 60, \cf5 \\lin\cf0 , 1), \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , 9999, \cf3 "note"\cf0 , ez.value); \});\
+	\
+w.view.decorator.nextLine;\
+v = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Cutoff"\cf0 , \cf2 ControlSpec\cf0 (200, 5000, \cf5 \\exp\cf0 ), \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , 9999, \cf3 "fc"\cf0 , ez.value); \});\
+	\
+w.view.decorator.nextLine;\
+v = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Resonance"\cf0 , \cf2 ControlSpec\cf0 (0.1, 0.7), \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , 9999, \cf3 "rq"\cf0 , ez.value); \});\
+	\
+w.view.decorator.nextLine;\
+v = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Balance"\cf0 , \cf5 \\bipolar\cf0 , \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , 9999, \cf3 "bal"\cf0 , ez.value); \});\
+	\
+w.view.decorator.nextLine;\
+v = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Amp"\cf0 , \cf5 \\db\cf0 , \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , 9999, \cf3 "amp"\cf0 , ez.value.dbamp); \});\
+)\
+\
+\
+\
+
+\f0\b\fs40 There are still some problems:\
+	\'a5 Restarting the sound doesn't remember the slider settings.\
+	\'a5 cmd-period doesn't change the button.\
+	\'a5 Closing window doesn't stop the sound.\
+Need a more comprehensive approach.\
+\
+\
+
+\f1\b0\fs26 \
+(\
+\cf2 var\cf0  w, startButton, noteControl, cutoffControl, resonControl;\
+\cf2 var\cf0  balanceControl, ampControl;\
+\cf2 var\cf0  id, cmdPeriodFunc;\
+\
+id = s.nextNodeID; \cf4 // generate a note id.\cf0 \
+\
+\cf4 // make the window\cf0 \
+w = \cf2 SCWindow\cf0 (\cf3 "another control panel"\cf0 , \cf2 Rect\cf0 (20, 400, 440, 180));\
+w.front; \cf4 // make window visible and front window.\cf0 \
+w.view.decorator = \cf2 FlowLayout\cf0 (w.view.bounds);\
+\
+w.view.background = \cf2 HiliteGradient\cf0 (\cf2 Color\cf0 .rand(0.0,1.0),\cf2 Color\cf0 .rand(0.0,1.0),\
+					[\cf5 \\h\cf0 ,\cf5 \\v\cf0 ].choose, 100, rrand(0.1,0.9));\
+\
+\cf4 // add a button to start and stop the sound.\cf0 \
+startButton = \cf2 SCButton\cf0 (w, 75 @ 24);\
+startButton.states = [\
+	[\cf3 "Start"\cf0 , \cf2 Color\cf0 .black, \cf2 Color\cf0 .green],\
+	[\cf3 "Stop"\cf0 , \cf2 Color\cf0 .white, \cf2 Color\cf0 .red]\
+];\
+startButton.action = \{\cf2 |view|\cf0 \
+		if (view.value == 1) \{\
+			\cf4 // start sound\cf0 \
+			s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "window-test"\cf0 , id, 0, 0, \
+				\cf3 "note"\cf0 , noteControl.value,\
+				\cf3 "fc"\cf0 , cutoffControl.value,\
+				\cf3 "rq"\cf0 , resonControl.value,\
+				\cf3 "bal"\cf0 , balanceControl.value,\
+				\cf3 "amp"\cf0 , ampControl.value.dbamp);\
+		\};\
+		if (view.value == 0) \{\
+			\cf4 // set gate to zero to cause envelope to release\cf0 \
+			s.sendMsg(\cf3 "/n_set"\cf0 , id, \cf3 "gate"\cf0 , 0);\
+		\};\
+\};\
+\
+\cf4 // create controls for all parameters\cf0 \
+w.view.decorator.nextLine;\
+noteControl = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Note"\cf0 , \cf2 ControlSpec\cf0 (24, 60, \cf5 \\lin\cf0 , 1), \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , id, \cf3 "note"\cf0 , ez.value); \}, 36);\
+	\
+w.view.decorator.nextLine;\
+cutoffControl = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Cutoff"\cf0 , \cf2 ControlSpec\cf0 (200, 5000, \cf5 \\exp\cf0 ), \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , id, \cf3 "fc"\cf0 , ez.value); \}, 1000);\
+	\
+w.view.decorator.nextLine;\
+resonControl = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Resonance"\cf0 , \cf2 ControlSpec\cf0 (0.1, 0.7), \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , id, \cf3 "rq"\cf0 , ez.value); \}, 0.2);\
+	\
+w.view.decorator.nextLine;\
+balanceControl = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Balance"\cf0 , \cf5 \\bipolar\cf0 , \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , id, \cf3 "bal"\cf0 , ez.value); \}, 0);\
+	\
+w.view.decorator.nextLine;\
+ampControl = \cf2 EZSlider\cf0 (w, 400 @ 24, \cf3 "Amp"\cf0 , \cf5 \\db\cf0 , \
+	\{\cf2 |ez|\cf0  s.sendMsg(\cf3 "/n_set"\cf0 , id, \cf3 "amp"\cf0 , ez.value.dbamp); \}, -6);\
+	\
+\
+\cf4 // set start button to zero upon a cmd-period\cf0 \
+cmdPeriodFunc = \{ startButton.value = 0; \};\
+\cf2 CmdPeriod\cf0 .add(cmdPeriodFunc);\
+\
+\cf4 // stop the sound when window closes and remove cmdPeriodFunc.\cf0 \
+w.onClose = \{\
+	s.sendMsg(\cf3 "/n_free"\cf0 , id);\
+	\cf2 CmdPeriod\cf0 .remove(cmdPeriodFunc);\
+\};\
+\
+)\
+\
+}
