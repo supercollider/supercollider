@@ -982,11 +982,11 @@ SequenceableCollection : Collection {
 		
 		while({ l <= r }, {
 			// left_scan
-			while{(l < this.size) && function.value(this[l], p)}{
+			while { (l < this.size) and: { function.value(this[l], p) } }{
 				l = l + 1;
 			};
 			// right_scan
-			while{(r >= 0) && function.value(p, this[r])}{
+			while { (r >= 0) and: { function.value(p, this[r]) } }{
 				r = r - 1;
 			};
 			// check and exchange
