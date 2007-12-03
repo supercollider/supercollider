@@ -128,19 +128,22 @@ Help {
 	selectednodes = Array.newClear(numcols);
 	
 	// SCListView
-	listviews = (0..numcols-1).collect({|index|
-		GUI.listView.new(win, Rect(10 + (index * 200), 5, 180, 480))
+	listviews = (0..numcols-1).collect({ arg index; var view;
+		view = GUI.listView.new( win, Rect( 10 + (index * 200), 5, 180, 480 ));
+		if( view.respondsTo( \allowsDeselection ), {
+			view.allowsDeselection_( true ).value_( nil );
+		});
+		view
 		.resize_(4)
 		.action_({ |lv|
-			var selectedstr = lv.items[lv.value];		
-
-			if(selectedstr[0..1]!="->", {
+			if( lv.value.notNil and: { lv.items[lv.value][ 0..1 ] != "->" }, {
 				// We've clicked on a category or on a class
 				if(lv.items.size != 0, { 
 					selecteditem = lists[index][lv.value];
 					if(listviews[index+1].isNil.not, {
 						// Clear the GUI for the subsequent panels
-						listviews[index+1..].do(_.items=#[]);
+						listviews[index+1..].do({ arg lv; lv.items=#[];
+							if( lv.respondsTo( \allowsDeselection ), { lv.value = nil })});
 						
 						// Get the current node, from the parent node
 						node = if(index==0, tree, {selectednodes[index-1]})[selecteditem];
@@ -165,6 +168,7 @@ Help {
 								});
 							listviews[index+1].items = lists[index+1];
 						});
+						
 						listviews[index+1].valueAction_(0);
 						
 						selectednodes[index+2 ..] = nil; // Clear out the now-unselected
@@ -186,10 +190,12 @@ Help {
 			13, { // Hit RETURN to open source or helpfile
 				// The class name, or helpfile name we're after
 				node = selecteditem;
-				switch(lv.items[lv.value][2..], 
-					"Help",   { { node.openHelpFile }.defer; }, 
-					"Source", { { node.asSymbol.asClass.openCodeFile }.defer; }
-				);
+				if( lv.value.notNil, {
+					switch(lv.items[lv.value][2..], 
+						"Help",   { { node.openHelpFile }.defer; }, 
+						"Source", { { node.asSymbol.asClass.openCodeFile }.defer; }
+					);
+				});
 			},
 			//default:
 			{ 
@@ -201,10 +207,12 @@ Help {
 		.mouseUpAction_({
 				// The class name, or helpfile name we're after
 				node = selecteditem;
-				switch(lv.items[lv.value][2..], 
-					"Help",   { { node.openHelpFile }.defer; }, 
-					"Source", { { node.asSymbol.asClass.openCodeFile }.defer; }
-				);
+				if( lv.value.notNil, {
+					switch(lv.items[lv.value][2..], 
+						"Help",   { { node.openHelpFile }.defer; }, 
+						"Source", { { node.asSymbol.asClass.openCodeFile }.defer; }
+					);
+				});
 		});
 	});
 	
