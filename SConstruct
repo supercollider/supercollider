@@ -28,7 +28,7 @@ import tarfile
 # ======================================================================
 
 PACKAGE = 'SuperCollider'
-VERSION = '3'
+VERSION = '3.1.1'
 
 def short_cpu_name(cpu):
     if cpu == 'Power Macintosh':
@@ -687,7 +687,14 @@ pluginEnv = env.Copy(
 pluginEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
-               '#Headers/server']
+               '#Headers/server'],
+    PKGCONFIG_NAME = 'libscplugin',
+    PKGCONFIG_DESC = 'SuperCollider synthesis plugin headers',
+    PKGCONFIG_PREFIX = FINAL_PREFIX,
+    #PKGCONFIG_REQUIRES = make_pkgconfig_requires(libraries['scsynth']),
+    #PKGCONFIG_LIBS = [],
+#     PKGCONFIG_LIBS_PRIVATE = ['-lm', '-lpthread', '-ldl'],
+    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server']
     )
 if PLATFORM == 'darwin':
     pluginEnv['SHLINKFLAGS'] = '$LINKFLAGS -bundle -flat_namespace -undefined suppress'
@@ -979,9 +986,10 @@ if env['DEVELOPMENT']:
         header_dirs += 'app'
     for d in header_dirs:
         env.Alias('install-dev', install_dir(
-            env, os.path.join('headers', d),
+            env, os.path.join('Headers', d),
             pkg_include_dir(INSTALL_PREFIX),
-            re.compile('.*\.h(h|pp)?'), 1))
+            re.compile('.*\.h(h|pp)?'), 1)
+            )
     # other useful headers
     env.Alias('install-dev',
               env.Install(pkg_include_dir(INSTALL_PREFIX, 'plugin_interface'), 'Source/plugins/FFT_UGens.h'))
@@ -989,6 +997,8 @@ if env['DEVELOPMENT']:
         libscsynthEnv.Command('linux/libscsynth.pc', 'SConstruct',
                               build_pkgconfig_file),
         libsclangEnv.Command('linux/libsclang.pc', 'SConstruct',
+                             build_pkgconfig_file),
+        pluginEnv.Command('linux/libscplugin.pc', 'SConstruct',
                              build_pkgconfig_file)]
     pkgconfig_dir = os.path.join(lib_dir(INSTALL_PREFIX), 'pkgconfig')
     env.Alias('install-dev', env.Install(pkgconfig_dir, pkgconfig_files))
@@ -1030,7 +1040,7 @@ scsynthlib_exp
 
 DIST_SPECS = [
     ('build', HELP_FILE_RE),
-    ('headers', SRC_FILE_RE),
+    ('Headers', SRC_FILE_RE),
     ('linux/scel/sc', SC_FILE_RE),
     ('linux/scel/el', re.compile('.*\.el$')),
     ('Source', SRC_FILE_RE)
@@ -1067,6 +1077,13 @@ def build_tar(env, target, source):
 if 'dist' in COMMAND_LINE_TARGETS:
     env.Alias('dist', env['TARBALL'])
     env.Command(env['TARBALL'], 'SConstruct', build_tar)
+
+#======================================================================
+# debian distribution
+#======================================================================
+if 'debian' in COMMAND_LINE_TARGETS:
+    Export('env')
+    SConscript("debian/SConstruct")
 
 # ======================================================================
 # cleanup
