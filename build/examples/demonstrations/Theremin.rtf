@@ -7,7 +7,7 @@
 \f0\fs18 \cf2 \
 \cf3 ////////  the theremin ////////\cf2 \
 \
-\cf3 // SC 2 style\cf2 \
+\cf3 // playing only one instance:\cf2 \
 (\
 play(\
 	\{\
@@ -22,16 +22,20 @@ play(\
 )\
 \
 \
-\cf3 // SC 3 style\cf2 \
+\cf3 // building a synthdef and spawning separate synths\cf2 \
 \
 (\
-\cf4 SynthDef\cf2 (\cf5 \\theremin\cf2 , \{ \cf4 arg\cf2  mod=7;\
-	f = \cf4 MouseY\cf2 .kr(4000, 200, \cf5 'exponential'\cf2 , 0.8);\
-	a = \cf4 SinOsc\cf2 .ar(f+(f*\cf4 SinOsc\cf2 .ar(mod,0,0.02)),mul: \cf4 MouseX\cf2 .kr(0, 0.9));\
+\cf4 SynthDef\cf2 (\cf5 \\theremin\cf2 , \{ \cf4 arg\cf2  mod = 7, detune = 0;\
+	\cf4 var\cf2  f, a, z;\
+	f = \cf4 MouseY\cf2 .kr(4000, 200, \cf5 'exponential'\cf2 , 0.8) + detune;\
+	a = \cf4 SinOsc\cf2 .ar(f + (f * \cf4 SinOsc\cf2 .ar(mod,0,0.02)), mul: \cf4 MouseX\cf2 .kr(0, 0.9));\
 	z = \cf4 Mix\cf2 .ar(a);\
 	\cf4 Out\cf2 .ar(0, z) + \cf4 Out\cf2 .ar(1, z)\
 \}).load(s)\
 )\
 \
-a= \cf4 Synth\cf2 (\cf5 \\theremin\cf2 );\
-a.set(\cf5 \\mod\cf2 , 12);}
+a = \cf4 Synth\cf2 (\cf5 \\theremin\cf2 );\
+a.set(\cf5 \\mod\cf2 , 12);\
+\
+b = \cf4 Synth\cf2 (\cf5 \\theremin\cf2 );\
+b.set(\cf5 \\mod\cf2 , 5, \cf5 \\detune\cf2 , 200); }
