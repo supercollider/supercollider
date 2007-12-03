@@ -158,7 +158,6 @@ Buffer {
 			sndfile.sampleRate = server.sampleRate;
 			sndfile.numChannels = numChannels;
 			path = PathName.tmp ++ sndfile.hash.asString;
-			path.postln;
 			if(sndfile.openWrite(path),
 				{
 					sndfile.writeData(data);
