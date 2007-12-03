@@ -722,6 +722,8 @@ PanUGens
 PhysicalModelingUGens
 TriggerUGens
 UnaryOpUGens
+GrainUGens
+ReverbUGens
 '''):
     plugins.append(
         pluginEnv.SharedLibrary(
