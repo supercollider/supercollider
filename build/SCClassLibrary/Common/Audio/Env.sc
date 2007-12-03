@@ -247,5 +247,9 @@ Env {
 		});	
 		^contents
 	}
+	
+	discretize {arg n = 1024;
+		^this.asSignal(n);
+	}	
 }
 
