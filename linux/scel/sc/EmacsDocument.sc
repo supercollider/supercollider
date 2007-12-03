@@ -135,9 +135,17 @@ EmacsDocument
 		Emacs.sendToLisp(\_documentRemoveUndo, this);
 	}
 
-	/*	string {arg rangestart, rangesize = 1;
-		^""
-		}*/
+	string{ arg rangestart, returnFunc, rangesize = 1;
+		var rangeend, resultString;
+		if ( rangestart.isNil,{
+			rangestart = '(point-min)';
+			rangeend = '(point-max)';
+		},{
+			rangeend = rangestart + rangesize;
+		});
+		Emacs.evalLispExpression(['with-current-buffer', title, [ 'buffer-substring-no-properties', rangestart, rangeend ]].asLispString;, { |result| returnFunc.value( result ); } );
+		^nil;
+	}
 
 	string_{|string|
 		Emacs.sendToLisp(\_documentPutString, [this, string]);

@@ -21,6 +21,7 @@ ScelDocument : Document{
 	var checkCurrent;
 	var <envir;
 	var title_p, path_p;
+	var <>currentString;
 
 	*new{ | title = "Untitled", string = "", makeListener = false, toFront=true |
 		//		"ScelDocument.new".postln;
@@ -225,14 +226,24 @@ ScelDocument : Document{
 		});			
 	}
 
+	string {arg rangestart, rangesize = 1;
+		currentString = nil;
+		thisdoc.string( rangestart, { |v| currentString = v }, rangesize );
+		while ( { currentString.isNil }, {"wait for string".postln;} );
+		^currentString;
+	}
+	text {
+		^this.string;
+	}
+	rangeText { arg rangestart=0, rangesize=1; 
+		^this.string( rangestart, rangesize );
+	}
+
 	// not implemented:
 	selectRange { arg start=0, length=0; }
 	background_ {arg color, rangestart= -1, rangesize = 0;
 	}	
 	stringColor_ {arg color, rangeStart = -1, rangeSize = 0;
-	}
-	string {arg rangestart, rangesize = 1;
-		^""
 	}
 	currentLine {
 		^""
@@ -242,13 +253,7 @@ ScelDocument : Document{
 	prSetBounds { }
 	setFont { }
 	setTextColor { }
-	text {
-		^""
-	}
 	selectedText {
-		^""
-	}
-	rangeText { arg rangestart=0, rangesize=1; 
 		^""
 	}
 	prinsertText { arg dataptr, txt;
