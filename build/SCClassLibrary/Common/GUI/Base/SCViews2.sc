@@ -39,6 +39,15 @@ SCTextField : SCNumberBox {
 	}
 	string_ { arg s; super.string = s.as(String); }
 
+	defaultGetDrag { 
+		^this.string
+	}
+	defaultCanReceiveDrag { 
+		^currentDrag.isString 
+	}
+	defaultReceiveDrag {
+		this.valueAction = currentDrag;
+	}
 }
 
 
@@ -162,6 +171,14 @@ EZSlider
 		};
 		if (controlSpec.step != 0) {
 			sliderView.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
+		};
+
+		sliderView.receiveDragHandler = { arg slider;
+			slider.valueAction = controlSpec.unmap(SCView.currentDrag);
+		};
+		
+		sliderView.beginDragAction = { arg slider;
+			controlSpec.map(slider.value)
 		};
 
 		numberView = SCNumberBox(window, numberWidth @ dimensions.y);
