@@ -669,7 +669,7 @@ are considered."
 (defcustom sclang-source-directory nil
   "Toplevel SuperCollider source directory.
 
-This variable is used by `sclang-find-primitve' to locate the cscope
+This variable is used by `sclang-find-primitive' to locate the cscope
 database."
   :group 'sclang-interface
   :version "21.4.1"
