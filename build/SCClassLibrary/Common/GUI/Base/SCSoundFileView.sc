@@ -27,7 +27,7 @@ SCSoundFileView : SCScope{
 		frames = frames ? soundfile.numFrames; 
 		
 		if (frames == -1) { frames = soundfile.numFrames };
-		numFrames = frames.clip(0, soundfile.numFrames).postln;
+		numFrames = frames.clip(0, soundfile.numFrames);
 		
 		this.readFile(soundfile, startframe, frames, block);
 		if(closeFile){soundfile.close};
