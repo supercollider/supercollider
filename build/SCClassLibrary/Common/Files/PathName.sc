@@ -214,6 +214,17 @@ PathName {
 	folders {
 		^this.entries.select({ arg item; item.isFolder })
 	}
+	
+	parentPath {
+		var ci = this.colonIndices;
+	
+		^if((fullPath.last == $/) && (ci.size > 1), {
+			fullPath.copyRange(0, ci[ci.size - 2]);
+		}, {
+			fullPath.copyRange(0, this.lastColonIndex)
+		});
+	}
+
 	foldersWithoutCVS { arg path;
 		^this.folders(path).reject({ arg item; item.isCVS })
 	}

@@ -244,7 +244,7 @@ AppClock : Clock {
 
 
 Scheduler {
-	var clock, drift, beats = 0.0, seconds = 0.0, queue;
+	var clock, drift, beats = 0.0, <seconds = 0.0, queue;
 	
 	*new { arg clock, drift = false;
 		^super.newCopyArgs(clock, drift).init;
