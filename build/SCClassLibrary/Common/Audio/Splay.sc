@@ -32,9 +32,9 @@ SplayZ {
 		).sum * level;
 	}
 
-	*arFill { arg nChans=4, n, function, spread=1, level=1, width = 2, center=0.0, 
+	*arFill { arg numChans=4, n, function, spread=1, level=1, width = 2, center=0.0, 
 		orientation = 0.5, levelComp=true;
-		^this.ar(nChans, function ! n, spread, level, width, center, 
+		^this.ar(numChans, function ! n, spread, level, width, center, 
 		orientation, levelComp)
 	}
 }
