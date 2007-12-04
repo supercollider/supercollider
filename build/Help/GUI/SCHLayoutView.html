@@ -11,9 +11,10 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17; min-height: 12.0px}
 span.s1 {color: #001fb3}
 span.s2 {color: #942b17}
 span.s3 {color: #436c1d}
@@ -41,6 +42,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><b>elastic</b></p>
+<p class="p5"><br></p>
 <p class="p3">(</p>
 <p class="p3">q = 10;</p>
 <p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
@@ -50,16 +52,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">h.resize = 5; <span class="s2">// <span class="Apple-converted-space">  </span>elastic</span></p>
 <p class="p3"><span class="s1">Array</span>.fill(q,{<span class="Apple-converted-space">  </span>arg i;</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> s;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>s = <span class="s1">SCSlider</span>(h,<span class="s1">Rect</span>(0,0,20,75))</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(5)</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.value_(i / q);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s = <span class="s1">SCSlider</span>(h,<span class="s1">Rect</span>(0,0,20,75));</p>
+<p class="p3"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>s</p>
 <p class="p3">});</p>
 <p class="p2"><br></p>
 <p class="p3">w.front</p>
 <p class="p3">)</p>
 <p class="p2"><br></p>
-<p class="p3">Contents are elastic</p>
+<p class="p4"><b>Contents are elastic</b></p>
+<p class="p2"><br></p>
 <p class="p3">(</p>
 <p class="p3">q = 10;</p>
 <p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
@@ -77,7 +79,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">w.front</p>
 <p class="p3">)</p>
 <p class="p2"><br></p>
-<p class="p3">set minWidth on contents</p>
+<p class="p4"><b>set minWidth on contents</b></p>
+<p class="p2"><br></p>
 <p class="p3">(</p>
 <p class="p3">q = 5;</p>
 <p class="p3">w = <span class="s1">SCWindow</span>.new;</p>
@@ -94,7 +97,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s2">// some elastic</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.setProperty(<span class="s3">\minWidth</span>,20);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>},{</p>
-<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 1; </span>// some not elastic</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 1; </span>// some not elastic</p>
 <p class="p3"><span class="Apple-tab-span">	</span>});</p>
 <p class="p3"><span class="Apple-tab-span">	</span>s</p>
 <p class="p3">});</p>
@@ -123,7 +126,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">w.front</p>
 <p class="p3">)</p>
 <p class="p2"><br></p>
-<p class="p6"><b>Text flows</b></p>
+<p class="p7"><b>Text flows</b></p>
 <p class="p3">(</p>
 <p class="p3">q = 5;</p>
 <p class="p3">w = SCWindow.new;</p>
@@ -149,7 +152,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">w.front</p>
 <p class="p3">)</p>
-<p class="p7"><br></p>
+<p class="p8"><br></p>
 <p class="p4"><b>spacing</b></p>
 <p class="p3">(</p>
 <p class="p3">q = 10;</p>
@@ -163,7 +166,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">});</p>
 <p class="p2"><br></p>
 <p class="p3">w.front</p>
-<p class="p5">)</p>
-<p class="p7"><br></p>
+<p class="p6">)</p>
+<p class="p8"><br></p>
 </body>
 </html>
