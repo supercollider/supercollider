@@ -41,7 +41,7 @@ WiiMoteIRObject{
 }
 
 WiiMote {
-	var dataPtr, <spec, <>action, <actionSpec; // <slots
+	var dataPtr, <spec, <actionSpec; // <slots
 	var <>id;
 	var <battery;
 	var <ext_type;
@@ -53,52 +53,11 @@ WiiMote {
 	var <>dumpEvents = false;
 	classvar all;
 	classvar < eventLoopIsRunning = false;
-	classvar < updateDataTask, <updateTask;
+//	classvar < updateDataTask, <updateTask;
 	
 	*initClass {
 		all = [];
 	}
-
-	/*	*startUpdate{ |updtime = 0.005|
-		updateTask = Task{ loop{ all.do{ |it| it.update }; updtime.wait; } };
-		updateDataTask = Task{
-			var err, ext_type, ext_button, ext_ana;
-			loop{
-				all.do{ |it|
-					ext_button = Array.fill( 15, 0 );
-					ext_ana = Array.fill( 6, 0 );
-					it.prUpdateData( err, it.remote_led, it.remote_buttons, it.remote_motion, it.remote_ir, ext_type, ext_button, ext_ana );
-					if ( err == 1, 
-						{ it.close },
-						{ // no error
-							if ( ext_type == 0, 
-								{ // nunchuk
-									it.nunchuk_buttons = ext_button.copyRange( 0, 1 );
-									it.nunchuk_stick = ext_ana.copyRange( 0, 1 );
-									it.nunchuk_motion = ext_ana.copyRange( 3,5 );
-
-								});
-							if ( ext_type == 1, 
-								{ // classic
-									it.classic_buttons = ext_button;
-									it.classic_stick1 = ext_ana.copyRange( 0, 1 );
-									it.classic_stick2 = ext_ana.copyRange( 2, 3 );
-									it.classic_analog = ext_ana.copyRange( 4,5 );
-								});
-						});
-				};
-				(updtime*10).wait;
-			}
-		};
-		updateTask.play;
-		updateDataTask.play;
-	}
-
-	*stopUpdate{
-		updateTask.stop;
-		updateDataTask.stop;
-	}
-	*/
 
 	deviceSpec {
 		^(
@@ -119,10 +78,11 @@ WiiMote {
 			bLeft: { remote_buttons[9] },
 			bRight: { remote_buttons[10] },
 
-			px: { remote_ir[0] },
+/*			px: { remote_ir[0] },
 			py: { remote_ir[1] },
 			angle: { remote_ir[2] },
 			tracking: { remote_ir[3] },
+*/
 
 			nax: { nunchuk_motion[0] },
 			nay: { nunchuk_motion[1] },
@@ -174,8 +134,15 @@ WiiMote {
 	isOpen {
 		^dataPtr.notNil
 	}
+	reconnect{
+		this.disconnect;
+		this.connect;
+	}
 	connect{
 		^this.prConnect;
+	}
+	disconnect{
+		^this.prDisconnect;
 	}
 	address{
 		^this.prAddress;
@@ -183,9 +150,6 @@ WiiMote {
 	/*
 	setAddress{ |address|
 		^this.prSetAddress( address );
-		}*/
-	/*	update{
-		^this.prUpdate;
 		}*/
 	close {
 		if (this.isOpen) {
@@ -263,49 +227,19 @@ WiiMote {
 		this.prInitSpeaker( format );
 		//		this.update;
 		}*/
-	/*
-	motion{
-		this.prWiiGetMotion( remote_motion );
-		^remote_motion;
-	}
 
-	buttons{
-		this.prWiiGetButtons( remote_buttons );
-		^remote_buttons;
-	}
-
-	ir{
-		this.prWiiGetIR( remote_ir );
-		^remote_ir;
-	}
-
-
-	nunchukMotion{
-		this.prWiiGetNunchukMotion( nunchuk_motion );
-		^nunchuk_motion;
-	}
-
-	nunchukButtons{
-		this.prWiiGetNunchukButtons( nunchuk_buttons );
-		^nunchuk_buttons;
-	}
-
-	nunchukJoy{
-		this.prWiiGetNunchukJoy( nunchuk_stick );
-		^nunchuk_stick;
-	}
-	*/
-
-	*start{ |updtime=0.05|
+	*start{ |updtime=50|
 		UI.registerForShutdown({
 			this.closeAll;
 			this.prStop;
 		});
 		this.prStart( updtime );
+		eventLoopIsRunning = true;
 	}
 
 	*discover{ 
 		var newid, newwii;
+		if ( eventLoopIsRunning.not, { this.start; } );
 		newid = all.size;
 		newwii = WiiMote.new;
 		"To discover the Wii, please press buttons 1 and 2 on the device and wait till the LEDs stop blinking".postln;
@@ -322,6 +256,7 @@ WiiMote {
 
 	*stop{
 		this.prStop;
+		eventLoopIsRunning = false;	
 	}
 
 	// PRIVATE
@@ -337,6 +272,7 @@ WiiMote {
 		classic_stick1 = Array.fill( 2, 0 );
 		classic_stick2 = Array.fill( 2, 0 );
 		classic_analog = Array.fill( 2, 0 );
+		battery = 0;
 
 		this.prOpen;
 
@@ -352,21 +288,10 @@ WiiMote {
 		actionSpec = IdentityDictionary.new;
 	}
 	*prStart { |updtime=0.05|
-		//eventLoopIsRunning = true;
 		_Wii_Start;
 		^this.primitiveFailed
 	}
-	/*
-	prUpdate{
-		_Wii_Update;
-		^this.primitiveFailed
-		}*/
-	/*	prUpdateData{ |readError,r_led,r_but,r_acc,e_but,e_ana|
-		_Wii_UpdateData;
-		^this.primitiveFailed
-		}*/
 	*prStop {
-		//eventLoopIsRunning = false;
 		_Wii_Stop;
 		^this.primitiveFailed
 	}
@@ -457,32 +382,6 @@ WiiMote {
 		^this.primitiveFailed
 	}
 	*/
-	/*
-	prWiiGetMotion{ | motion |
-		_Wii_GetMotion;
-		^this.primitiveFailed;
-	}
-	prWiiGetButtons{ | motion |
-		_Wii_GetButtons;
-		^this.primitiveFailed;
-	}
-	prWiiGetIr{ | motion |
-		_Wii_GetIR;
-		^this.primitiveFailed;
-	}
-	prWiiGetNunchukMotion{ | motion |
-		_Wii_GetNunchukMotion;
-		^this.primitiveFailed;
-	}
-	prWiiGetNunchukJoy{ | motion |
-		_Wii_GetNunchukJoy;
-		^this.primitiveFailed;
-	}
-	prWiiGetNunchukButtons{ | motion |
-		_Wii_GetNunchukButtons;
-		^this.primitiveFailed;
-	}
-	*/
 	/*	prWiiGetLED { | states |
 		_Wii_GetLED;
 		^this.primitiveFailed
@@ -554,20 +453,20 @@ WiiMote {
 	}
 
 	prHandleEvent { 
-		| buttonData, posX, posY, angle, tracking, accX, accY, accZ, orientation, extType, eButtonData, eData1, eData2, eData3, eData4, eData5, eData6 |
-		//		| buttonData, posX, posY, angle, tracking, accX, accY, accZ, orientation, cButtonData, cStickX1, cStickY1, cStickX2, cStickY2, cAnalogL, cAnalogR, nButtonData, nStickX, nStickY, nAccX, nAccY, nAccZ, nOrientation |
-		//		"WII: handling event\n".postln;
-		
-		//		remote_buttons.do{ |it,i| remote_buttons[i] = buttonData.bitTest( i ).asInteger };
-		remote_motion = [ accX, accY, accZ, orientation ];
+		| buttonData, posX, posY, angle, tracking, accX, accY, accZ, orientation, extType, eButtonData, eData1, eData2, eData3, eData4, eData5, eData6, batteryLevel |
+		battery = batteryLevel;
+		remote_buttons = buttonData;
+		remote_motion = [ accX, accY, accZ, orientation/3 ];
 		remote_ir = [ posX, posY, angle, tracking ];
-		if ( extType == 0, {
-			//			nunchuk_buttons.do{ |it,i| nunchuk_buttons[i] = eButtonData.bitTest( i ).asInteger };
-			nunchuk_motion = [ eData3, eData4, eData5, eData6 ];
+		ext_type = extType;
+		if ( extType == 1, {
+			nunchuk_buttons = eButtonData;
+			nunchuk_motion = [ eData3, eData4, eData5, eData6/3 ];
 			nunchuk_stick = [ eData1, eData2 ];
 		});
-		if ( extType == 1, {
+		if ( extType == 2, {
 			//			classic_buttons.do{ |it,i| classic_buttons[i] = eButtonData.bitTest( i ).asInteger };
+			classic_buttons = eButtonData;
 			classic_stick1 = [eData1, eData2];
 			classic_stick2 = [eData3, eData4];
 			classic_analog = [eData5, eData6];
