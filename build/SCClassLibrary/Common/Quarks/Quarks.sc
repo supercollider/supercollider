@@ -1,7 +1,7 @@
 /**
   *
   * Subversion based package repository and package manager
-  * a work in progress.  sk, cx, danstowell
+  * a work in progress.  sk, cx, danstowell, LFSaw
   *
   */
 
@@ -31,7 +31,7 @@ Quarks
 		^newQ;
 	}
 	initQuarks{|reposPath, localPath| 
-		local = LocalQuarks(localPath);
+		local = LocalQuarks(localPath, this);
 		repos = QuarkSVNRepository(reposPath, local);
 	}
 	
