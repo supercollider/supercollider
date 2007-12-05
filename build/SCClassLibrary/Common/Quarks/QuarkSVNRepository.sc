@@ -1,7 +1,7 @@
 /**
   *
   * Subversion based package repository and package manager
-  * a work in progress.  sk & cx & ds
+  * a work in progress.  sk & cx & ds & LFSaw
   *
   */
 
@@ -67,7 +67,7 @@ QuarkSVNRepository
 	quarks {
 		var paths;
 		paths = (local.path ++ "/DIRECTORY/*.quark").pathMatch;
-		^paths.collect({ |p| Quark.fromFile(p) });
+		^paths.collect({ |p| Quark.fromFile(p, this.local.parent)});
 	}
 	// search DIRECTORY quark objects to see if quark is in repository
 	findQuark { arg name, version;

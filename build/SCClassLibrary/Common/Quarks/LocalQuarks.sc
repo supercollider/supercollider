@@ -12,10 +12,11 @@
 LocalQuarks
 {
 	var <path;
+	var <parent; // the Quarks
 	var all; // contains nil, or all local quarks
 
-	*new { | path |
-		^super.newCopyArgs((path ?? { Platform.userAppSupportDir ++ "/quarks"}).escapeChar($ ))
+	*new { | path, parent |
+		^super.newCopyArgs((path ?? { Platform.userAppSupportDir ++ "/quarks"}).escapeChar($ ), parent)
 	}
 
 	name {
@@ -26,7 +27,7 @@ LocalQuarks
 		all.isNil.if{
 			// check through each quark in repos/directory
 			paths = (path ++ "/DIRECTORY/*.quark").pathMatch;
-			quarks = paths.collect({ |p| Quark.fromFile(p) });
+			quarks = paths.collect({ |p| Quark.fromFile(p, parent) });
 	
 			// check paths that do exist locally
 			all = quarks.select({ |q| (path ++ "/" ++ q.path).pathMatch.notEmpty })

@@ -21,9 +21,9 @@ QuarkDependency
 			and: {this.version  == that.version}
 		}
 	}
-	asQuark { |defaultRepos|
-		defaultRepos = defaultRepos ? Quarks.global;
-		^if(repos.isNil, {defaultRepos}, {Quarks.forUrl(repos)}).repos.findQuark(name, version);
+	asQuark { |parentQuarks|
+		parentQuarks = parentQuarks ? Quarks.global;
+		^if(repos.isNil, {parentQuarks}, {Quarks.forUrl(repos)}).repos.findQuark(name, version);
 	}
 }
 
@@ -34,27 +34,30 @@ QuarkDependency
 
 Quark
 {
-	var <name, <summary, <version, <author, dependencies, <tags,<>path;
+	var <name, <summary, <version, <author, dependencies, <tags, <>path; 
+	var <parent; // the Quarks, if available 
 	var <info;
 	
-	*fromFile { | path |
+	*fromFile { | path, parent |
 		var string = { File.use(path, "r", _.readAllString) }.try;
 		if (string.isNil) {
 			Error(path + "is an invalid quark file").throw;
 		};
-		^this.fromString(string)
+		^this.fromString(string, parent)
 	}
-	*fromString { | string |
+	*fromString { | string , parent|
 		var blob = { string.interpret }.try;
 		if (blob.isNil or: { blob.isKindOf(IdentityDictionary).not }) {
 			Error("invalid quark").throw;
 		};
-		^this.new(blob)
+		^this.new(blob, parent)
 	}
-	*new { | blob |
-		^super.new.init(blob)
+	*new { | blob, parent |
+		^super.new.init(blob, parent)
 	}
-	init { | blob |
+	init { | blob , argParent |
+		parent = argParent;
+
 		name = this.getName(blob[\name]);
 		path = this.getString(blob[\path]);
 		summary = this.getString(blob[\summary]);
@@ -100,7 +103,7 @@ Quark
 						QuarkDependency(
 							spec[0].asString,
 							this.getVersion(spec[1]),
-							spec[2].asString
+							spec[2] !? {spec[2].asString}
 							);
 				} {
 					if (spec.isKindOf(Association)) {
@@ -155,7 +158,7 @@ Quark
 				deps = dependencies.select({|d| knownList.indexOfEqual(d).isNil}); // To avoid infinite recursion traps
 			});
 			deps.do({|dep|
-				quark = dep.asQuark;
+				quark = dep.asQuark(parent);
 				deps = deps ++ quark.dependencies(recursive: true, knownList: ([QuarkDependency(name, version)] ++ knownList));
 			});
 		});
