@@ -57,7 +57,9 @@ WiiMoteGUI {
 	updateVals { 
 		{ 
 			rm.updateVals;
-			nc.updateVals;
+			if ( wiimote.ext_type == 1, {
+				nc.updateVals;
+				});
 			//			cl.updateVals;
 		}.defer;
 	}
@@ -147,6 +149,7 @@ WiiRemoteGUI{
 		led.do{ |it,i| it.value = wiimote.remote_led[i] };
 		//rumble.value = wiimote.rumble;
 		wiimote.remote_motion.do{ |it,i| sliders[i].value = it };
+		//sliders[3].value = wiimote.remote_motion[3]/3;
 		sliders[4].value = wiimote.battery;
 		wiimote.remote_buttons.do{ |it,i| 
 			if ( it == 1 ,

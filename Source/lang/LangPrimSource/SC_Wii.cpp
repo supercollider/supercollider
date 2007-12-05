@@ -46,7 +46,7 @@
 #include "GC.h"
 
 #ifdef SC_DARWIN
-// 	#define HAVE_WII
+ 	#define HAVE_WII
 	#include <Carbon/Carbon.h>
 	#include <mach/mach.h>
 	#include <mach/mach_error.h>
@@ -205,7 +205,7 @@ private:
 	void loop();
 
 	bool		m_running;
-	int			m_updatetime;
+	float		m_updatetime;
 };
 
 
@@ -259,6 +259,7 @@ void set_rpt_mode(cwiid_wiimote_t *wiimotet, unsigned char rpt_mode)
 #endif
 
 #ifdef SC_DARWIN
+void GetWii_Events();
 static pascal void IdleTimerWii (EventLoopTimerRef inTimer, void* userData);
 static EventLoopTimerUPP GetTimerUPPWii (void);
 
@@ -336,15 +337,15 @@ int SC_WIIManager::start( float updtime )
 /// nothing to do for Linux
 
 #ifdef SC_DARWIN
-	m_updatetime = (int) (updtime * 1000); // convert to useconds
-	post( "WII: eventloop updatetime %i", m_updatetime );
-	double eventtime = (double) updtime;
+	m_updatetime = (updtime / 1000); // convert to seconds
+	post( "WII: eventloop updatetime %f\n", m_updatetime );
+	//double eventtime = (double) updtime;
 	if(gWiiTimer)
 	{
         RemoveEventLoopTimer(gWiiTimer);
 		gWiiTimer = NULL;
 	}
-	InstallEventLoopTimer (GetCurrentEventLoop(), 0, (EventTimerInterval) updtime, GetTimerUPPWii (), 0, &gWiiTimer);
+	InstallEventLoopTimer (GetCurrentEventLoop(), 0, (EventTimerInterval) m_updatetime, GetTimerUPPWii (), 0, &gWiiTimer);
 #endif
 
 	return errNone;
@@ -378,7 +379,20 @@ cwiid_wiimote_t * SC_WIIManager::discover()
 #ifdef SC_DARWIN
 WiiRemoteRef SC_WIIManager::discover()
 {
+/*	WiiRemoteRef newwii;
+	char address[32];
+	newwii = (WiiRemoteRef)malloc(sizeof(WiiRemoteRec));
+	if (newwii != NULL)
+		{
+		wiiremote_init(newwii);
+		bool	result;
+		result = wiiremote_search( newwii, address);	// start searching the device
+//		m_searching++;
+		post("WII: searching wiimote %i\n",result);
 
+		}
+	return( newwii );
+	*/
 }
 #endif
 
@@ -421,6 +435,10 @@ int SC_WIIManager::add(SC_WII* dev)
 	set_rpt_mode( dev->m_wiiremote, dev->rpt_mode );
 	set_led_state( dev->m_wiiremote, dev->led_state );
 #endif
+
+//#ifdef SC_DARWIN
+//	dev->wii_connect();
+//#endif
 
 	return true;
 
@@ -508,20 +526,20 @@ void GetWii_Events (){
 	int debugcnt = 0;
 	while (dev) {
 		bool	connection;
-		post( "WII: device %i, t %p, w %p, n %p\n", debugcnt, dev, dev->m_wiiremote, dev->m_next);
+//		post( "WII: device %i, t %p, w %p, n %p\n", debugcnt, dev, dev->m_wiiremote, dev->m_next);
 		debugcnt++;
 		if ( dev->m_wiiremote != NULL )
 			{
 			connection = wiiremote_isconnected(dev->m_wiiremote);
 			if ( dev->m_connected == false && connection == true)	// if the device is connected, but wasn't before
 				{
-				post( "WII: wiimote got connected\n");
+	//			post( "WII: wiimote got connected\n");
 				wiiremote_getstatus(dev->m_wiiremote);
 				dev->connected();
 				}
 			else if (dev->m_connected == true && connection == false) // if device was disconnected
 				{
-				post( "WII: wiimote got disconnected\n");
+	//			post( "WII: wiimote got disconnected\n");
 				dev->disconnected();
 				}
 			else if ( dev->m_searching > 0 )
@@ -529,16 +547,17 @@ void GetWii_Events (){
 				dev->wii_connect();
 				}
 			if ( dev->m_connected ) {
-				post( "WII: wiimote is connected\n");
+	//			post( "WII: wiimote is connected\n");
+				wiiremote_getstatus(dev->m_wiiremote);
 				dev->handleEvent();
 				}
 			else {
-				post("WII: wiimote not connected\n");
+	//			post("WII: wiimote not connected\n");
 				}
 			}
 		else
 			{
-			post("WII: read error\n");
+	//		post("WII: read error\n");
 			dev->readError();
 			}
 		dev = dev->m_next;
@@ -565,12 +584,6 @@ SC_WII::SC_WII(PyrObject* obj)
 SC_WII::~SC_WII()
 {
 	close();
-#ifdef SC_DARWIN
-	if (m_connected ) wii_disconnect();
-#endif
-// #ifdef SC_LINUX
-// 	if (m_connected ) wiimote_disconnect(m_wiiremote);
-// #endif
 }
 
 bool SC_WII::open()
@@ -670,8 +683,12 @@ bool SC_WII::wii_connect()
 
 void SC_WII::connected()
 {
+	bool result;
 	m_connected = true;
 	m_searching = 0;
+	result = wiiremote_led( m_wiiremote, 0, 0, 0, 0);
+//	if ( !result )
+//		wii_disconnect();
 // 	post("WII: wiiremote connected\n");
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
@@ -789,7 +806,25 @@ void SC_WII::handleEvent()
 		g->canCallOS = false;
 		++g->sp; SetObject(g->sp, m_obj);
 		// buttons
-		++g->sp; SetInt(g->sp, m_wiiremote->buttonData);
+//		post( "buttondata %i\n", m_wiiremote->buttonData);
+//		++g->sp; SetInt(g->sp, m_wiiremote->buttonData);
+		PyrObject *butArray = newPyrArray(g->gc, 11 * sizeof(int), 0, true);
+		PyrSlot *butArraySlots = butArray->slots;
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0008 & m_wiiremote->buttonData) > 0) ); //A
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0004 & m_wiiremote->buttonData) > 0) ); //B
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0002 & m_wiiremote->buttonData) > 0) ); //1
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0001 & m_wiiremote->buttonData) > 0) ); //2
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0010 & m_wiiremote->buttonData) > 0) ); //minus
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0080 & m_wiiremote->buttonData) > 0) ); //home
+		SetInt(butArray->slots+butArray->size++, (int) ((0x1000 & m_wiiremote->buttonData) > 0) ); // plus
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0800 & m_wiiremote->buttonData) > 0) ); // up
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0400 & m_wiiremote->buttonData) > 0) ); // down
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0100 & m_wiiremote->buttonData) > 0) ); // left
+		SetInt(butArray->slots+butArray->size++, (int) ((0x0200 & m_wiiremote->buttonData) > 0) ); // right
+		butArray->size = 11;
+		++g->sp; SetObject(g->sp, butArray);
+
+		
 		if (m_wiiremote->isIRSensorEnabled)
 			{// IR sensor
 			++g->sp; SetFloat(g->sp, m_wiiremote->posX);
@@ -804,57 +839,86 @@ void SC_WII::handleEvent()
 		}
 		if (m_wiiremote->isMotionSensorEnabled)
 			{ // motion sensor
-			++g->sp; SetInt(g->sp, m_wiiremote->accX);
-			++g->sp; SetInt(g->sp, m_wiiremote->accY);
-			++g->sp; SetInt(g->sp, m_wiiremote->accZ);
+			++g->sp; SetFloat(g->sp, (float) m_wiiremote->accX / 256);
+			++g->sp; SetFloat(g->sp, (float) m_wiiremote->accY / 256);
+			++g->sp; SetFloat(g->sp, (float) m_wiiremote->accZ / 256);
 			++g->sp; SetInt(g->sp, m_wiiremote->orientation);
 		} else {
-			++g->sp; SetInt(g->sp, 0);
-			++g->sp; SetInt(g->sp, 0);
-			++g->sp; SetInt(g->sp, 0);
+			++g->sp; SetFloat(g->sp, 0);
+			++g->sp; SetFloat(g->sp, 0);
+			++g->sp; SetFloat(g->sp, 0);
 			++g->sp; SetInt(g->sp, 0);
 		}
 		if (m_wiiremote->isExpansionPortAttached && m_wiiremote->isExpansionPortEnabled)
 			{
+			++g->sp; SetInt(g->sp, m_wiiremote->expType);
 			// Classic Controller
 			if (m_wiiremote->expType == WiiClassicController)
 				{
 				// buttons
-				++g->sp; SetInt(g->sp, m_wiiremote->cButtonData);
-	
+				//++g->sp; SetInt(g->sp, m_wiiremote->cButtonData);
+				PyrObject *outArray = newPyrArray(g->gc, 15 * sizeof(char), 0, true);
+				PyrSlot *outArraySlots = outArray->slots;
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0008 & m_wiiremote->cButtonData) > 0) ); //X
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0020 & m_wiiremote->cButtonData) > 0) ); //Y
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0010 & m_wiiremote->cButtonData) > 0) ); //A
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0040 & m_wiiremote->cButtonData) > 0) ); //B
+				SetInt(outArray->slots+outArray->size++, (int) ((0x2000 & m_wiiremote->cButtonData) > 0) ); //L
+				
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0200 & m_wiiremote->cButtonData) > 0) ); //R
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0080 & m_wiiremote->cButtonData) > 0) ); //ZL
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0004 & m_wiiremote->cButtonData) > 0) ); //ZR
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0001 & m_wiiremote->cButtonData) > 0) ); //Up
+				SetInt(outArray->slots+outArray->size++, (int) ((0x4000 & m_wiiremote->cButtonData) > 0) ); //Down
+				
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0002 & m_wiiremote->cButtonData) > 0) ); //Left
+				SetInt(outArray->slots+outArray->size++, (int) ((0x8000 & m_wiiremote->cButtonData) > 0) );//Right
+				SetInt(outArray->slots+outArray->size++, (int) ((0x1000 & m_wiiremote->cButtonData) > 0) );//Minus
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0800 & m_wiiremote->cButtonData) > 0) );//Home
+				SetInt(outArray->slots+outArray->size++, (int) ((0x0400 & m_wiiremote->cButtonData) > 0) );//Plus
+				
+				outArray->size = 15;
+				++g->sp; SetObject(g->sp, outArray);
+				
 				// Joystick 1
-				++g->sp; SetInt(g->sp, m_wiiremote->cStickX1);
-				++g->sp; SetInt(g->sp, m_wiiremote->cStickY1);
+				++g->sp; SetFloat(g->sp, (float) m_wiiremote->cStickX1 / 0x3F);
+				++g->sp; SetFloat(g->sp, (float) m_wiiremote->cStickY1 / 0x3F);
 	
 				// Joystick 2
-				++g->sp; SetInt(g->sp, m_wiiremote->cStickX2);
-				++g->sp; SetInt(g->sp, m_wiiremote->cStickY2);
+				++g->sp; SetFloat(g->sp, (float) m_wiiremote->cStickX2 / 0x1F);
+				++g->sp; SetFloat(g->sp, (float) m_wiiremote->cStickY2 / 0x1F);
 	
 				// Analog
-				++g->sp; SetInt(g->sp, m_wiiremote->cAnalogL);
-				++g->sp; SetInt(g->sp, m_wiiremote->cAnalogR);
+				++g->sp; SetFloat(g->sp, (float) m_wiiremote->cAnalogL / 0x1F);
+				++g->sp; SetFloat(g->sp, (float) m_wiiremote->cAnalogR / 0x1F);
 			}
 			// Nunchuk
 			if (m_wiiremote->expType == WiiNunchuk)
 			{	
 				// Buttons
-				++g->sp; SetInt(g->sp, m_wiiremote->nButtonData);
+				//++g->sp; SetInt(g->sp, m_wiiremote->nButtonData);
+				PyrObject *butArrayN = newPyrArray(g->gc, 2 * sizeof(int), 0, true);
+				PyrSlot *butArraySlotsN = butArrayN->slots;
+				SetInt(butArrayN->slots+butArrayN->size++, (int) ((0x01 & m_wiiremote->nButtonData) < 1) );
+				SetInt(butArrayN->slots+butArrayN->size++, (int) ((0x02 & m_wiiremote->nButtonData) < 1) );
+				butArrayN->size = 2;
+				++g->sp; SetObject(g->sp, butArrayN);
 				
 				// Joystick
-				++g->sp; SetInt(g->sp, m_wiiremote->nStickX);
-				++g->sp; SetInt(g->sp, m_wiiremote->nStickY);
+				++g->sp; SetFloat(g->sp, (float) m_wiiremote->nStickX / 256);
+				++g->sp; SetFloat(g->sp, (float) m_wiiremote->nStickY / 256);
 				
 				// Motion Sensor
 				if (m_wiiremote->isMotionSensorEnabled)
 				{
-					++g->sp; SetInt(g->sp, m_wiiremote->nAccX);
-					++g->sp; SetInt(g->sp, m_wiiremote->nAccY);
-					++g->sp; SetInt(g->sp, m_wiiremote->nAccZ);
+					++g->sp; SetFloat(g->sp, (float) m_wiiremote->nAccX / 256);
+					++g->sp; SetFloat(g->sp, (float) m_wiiremote->nAccY / 256);
+					++g->sp; SetFloat(g->sp, (float) m_wiiremote->nAccZ / 256);
 					++g->sp; SetInt(g->sp, m_wiiremote->nOrientation);
 				} else {
-					++g->sp; SetInt(g->sp, 0);
-					++g->sp; SetInt(g->sp, 0);
-					++g->sp; SetInt(g->sp, 0);
+					++g->sp; SetFloat(g->sp, 0);
+					++g->sp; SetFloat(g->sp, 0);
+					++g->sp; SetFloat(g->sp, 0);
 					++g->sp; SetInt(g->sp, 0);
 				}
 			}
@@ -866,8 +930,10 @@ void SC_WII::handleEvent()
 			++g->sp; SetInt(g->sp, 0);
 			++g->sp; SetInt(g->sp, 0);
 			++g->sp; SetInt(g->sp, 0);
+			++g->sp; SetInt(g->sp, 0);
 		}
-	runInterpreter(g, s_handleEvent, 18);
+	++g->sp; SetFloat(g->sp, m_wiiremote->batteryLevel);
+	runInterpreter(g, s_handleEvent, 19);
 	g->canCallOS = false;
 	}
 	pthread_mutex_unlock(&gLangMutex);
@@ -1073,6 +1139,8 @@ int prWii_Start(VMGlobals* g, int numArgsPushed)
 
  	err = slotFloatVal(args+1, &updtime);
  	if (err) return err;
+	
+	post( "update time %f", updtime );
 
 //  	if (!g->canCallOS) return errCantCallOS;
 // 	return SC_WIIManager::instance().start();
@@ -1100,37 +1168,36 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 	PyrObject* allDevsArray = args[1].uo;
 	PyrSlot* slotsArray = allDevsArray->slots;
 
-#ifdef SC_LINUX
-	cwiid_wiimote_t * thiswii;
-#endif
-#ifdef SC_DARWIN
-	WiiMoteRef thiswii;
-#endif
-
 // 	post( "checked args %i\n", curid );
 // 	fflush( stdout );
+
+#ifdef SC_LINUX
+	cwiid_wiimote_t * thiswii;
 
 	thiswii = SC_WIIManager::instance().discover();
 	if ( thiswii == NULL ){
 		SetInt(g->sp-1, curid-1);
-// 		post( "no device found; return errNone\n" );
-// 		fflush( stdout );
+//		post( "no device found; return errNone\n" );
 		return errNone;
 	}
-
-// 	post( "did discovery\n" );
-// 	fflush( stdout );
+#endif
 
 	if ( !isKindOfSlot(slotsArray+curid, s_wii->u.classobj ) )
 		return errWrongType;
 	PyrObject* obj = SC_WII::getObject(slotsArray+curid);
 	SC_WII* dev = SC_WII::getDevice(obj);
 
-// 	post( "dev %p", dev );
+#ifdef SC_DARWIN
+	dev->wii_connect();
+#endif
+
+ //	post( "dev %p, wii %p\n", dev, dev->m_wiiremote );
 
 // 	if (!dev) return errFailed;
 // 	free( dev->m_wiiremote );
+#ifdef SC_LINUX
 	dev->m_wiiremote = thiswii;
+#endif		
 	if ( SC_WIIManager::instance().add( dev ) )
 		post( "device added\n" );
  	else
@@ -1156,197 +1223,6 @@ int prWii_Open(VMGlobals *g, int numArgsPushed)
 
 	return errNone;
 }
-
-// int prWii_UpdateData(VMGlobals *g, int numArgsPushed)
-// {
-// 	PyrSlot* args = g->sp-8;
-// 	int err;
-// 
-// 	PyrObject* obj = SC_WII::getObject(args+0);
-// 	if (!obj) return errWrongType;
-// 
-// 	SC_WII* dev = SC_WII::getDevice(obj);
-// 	if (!dev) return errFailed;
-// 
-// // 	if (wiimote_pending(dev->m_wiiremote) == 0) {
-// // 		post( "WII: no data pending\n" );
-// // 		return errNone; // no data is pending
-// // 	}
-// 
-// // 	if (wiimote_pending(dev->m_wiiremote) > 0) {
-// // 		post( "WII: device pending\n" );
-// //   		return errNone;
-// //  	}
-// 
-// 	if ( dev->update() )
-// 		{ SetInt( args+1, 1 ); }
-// 	else { SetInt( args+1, 0 );
-// 		post( "WII: read error\n" );
-// 		return errNone;
-// 	 }
-// 	
-// 
-// 	post( "WII: updating device\n" );
-// 
-// 	if (!isKindOfSlot(args+2, class_array))
-// 		return errWrongType;
-// 	PyrObject* leds = args[2].uo;
-// 
-// 	if (!isKindOfSlot(args+3, class_array))
-// 		return errWrongType;
-// 	PyrObject* buts = args[3].uo;
-// 
-// 	if (!isKindOfSlot(args+4, class_array))
-// 		return errWrongType;
-// 	PyrObject* mot = args[4].uo;
-// 
-// 	if (!isKindOfSlot(args+5, class_array))
-// 		return errWrongType;
-// 	PyrObject* ir = args[5].uo;
-// 
-// 	if ( dev->m_wiiremote->mode.ext == 1 )
-// 		SetInt( args+6, dev->m_wiiremote->ext.id );
-// 	else
-// 		SetInt( args+6, -1 );
-// 
-// 	if (!isKindOfSlot(args+7, class_array))
-// 		return errWrongType;
-// 	PyrObject* ebuts = args[7].uo;
-// 
-// 	if (!isKindOfSlot(args+8, class_array))
-// 		return errWrongType;
-// 	PyrObject* eana = args[8].uo;
-// 
-// // LED
-// 	PyrSlot* bslots = leds->slots;
-// 
-// 	if (dev->m_wiiremote == NULL)
-// 	{
-// 		return errFailed;
-// 	}
-// 	else
-// 	{
-// #ifdef SC_DARWIN
-// 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
-// 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
-// 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
-// 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
-// #endif
-// #ifdef SC_LINUX
-// 		SetInt(bslots+0, dev->m_wiiremote->led.one);
-// 		SetInt(bslots+1, dev->m_wiiremote->led.two);
-// 		SetInt(bslots+2, dev->m_wiiremote->led.three);
-// 		SetInt(bslots+3, dev->m_wiiremote->led.four);
-// #endif
-// 	}
-// 
-// 	bslots = buts->slots;
-// 
-// // #ifdef SC_DARWIN
-// // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
-// // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
-// // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
-// // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
-// // #endif
-// // #ifdef SC_LINUX
-// // 		SetInt(bslots+0, dev->m_wiiremote->keys.a);
-// // 		SetInt(bslots+1, dev->m_wiiremote->keys.b);
-// // 		SetInt(bslots+2, dev->m_wiiremote->keys.one);
-// // 		SetInt(bslots+3, dev->m_wiiremote->keys.two);
-// // 		SetInt(bslots+4, dev->m_wiiremote->keys.minus);
-// // 		SetInt(bslots+5, dev->m_wiiremote->keys.home);
-// // 		SetInt(bslots+6, dev->m_wiiremote->keys.plus);
-// // 		SetInt(bslots+7, dev->m_wiiremote->keys.up);
-// // 		SetInt(bslots+8, dev->m_wiiremote->keys.down);
-// // 		SetInt(bslots+9, dev->m_wiiremote->keys.left);
-// // 		SetInt(bslots+10, dev->m_wiiremote->keys.right);
-// // #endif
-// 
-// 	bslots = mot->slots;
-// 
-// // #ifdef SC_DARWIN
-// // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
-// // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
-// // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
-// // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
-// // #endif
-// // #ifdef SC_LINUX
-// // 		SetFloat(bslots+0, ( (float) dev->m_wiiremote->axis.x) / 256 );
-// // 		SetFloat(bslots+1, ( (float) dev->m_wiiremote->axis.y) / 256);
-// // 		SetFloat(bslots+2, ( (float) dev->m_wiiremote->axis.z) / 256);
-// // #endif
-// 
-// 	bslots = ir->slots;
-// 
-// // #ifdef SC_DARWIN
-// // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
-// // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
-// // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
-// // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
-// // #endif
-// // #ifdef SC_LINUX
-// // 		SetFloat(bslots+0, ( (float) dev->m_wiiremote->ir1.x) / 256 );
-// // 		SetFloat(bslots+1, ( (float) dev->m_wiiremote->ir1.y) / 256 );
-// // 		SetFloat(bslots+2, ( (float) dev->m_wiiremote->ir1.size) / 256 );
-// // #endif
-// 
-// 	if ( dev->m_wiiremote->mode.ext == 1 )
-// 		{
-// 		if ( dev->m_wiiremote->ext.id == 0 )
-// 			{
-// 			bslots = ebuts->slots;
-// // #ifdef SC_DARWIN
-// // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
-// // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
-// // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
-// // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
-// // #endif
-// // #ifdef SC_LINUX
-// // 		SetInt(bslots+0, dev->m_wiiremote->ext.nunchuk.keys.z);
-// // 		SetInt(bslots+1, dev->m_wiiremote->ext.nunchuk.keys.c);
-// // #endif
-// 
-// 			bslots = eana->slots;
-// 
-// // #ifdef SC_DARWIN
-// // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
-// // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
-// // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
-// // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
-// // #endif
-// /*#ifdef SC_LINUX
-// 		SetFloat(bslots+0, ( (float) dev->m_wiiremote->ext.nunchuk.joyx) / 256 );
-// 		SetFloat(bslots+1, ( (float) dev->m_wiiremote->ext.nunchuk.joyy) / 256 );
-// 		SetFloat(bslots+2, ( (float) dev->m_wiiremote->ext.nunchuk.axis.x) / 256 );
-// 		SetFloat(bslots+3, ( (float) dev->m_wiiremote->ext.nunchuk.axis.y) / 256 );
-// 		SetFloat(bslots+4, ( (float) dev->m_wiiremote->ext.nunchuk.axis.z) / 256 );
-// #endif*/
-// 			}
-// 	// TODO:
-// // 		else if ( dev->m_wiiremote->ext.id == 1 )
-// 			
-// 	}
-// 
-// // 	dev->handleEvent();
-// 
-// 	return errNone;
-// }
-
-// int prWii_Update(VMGlobals *g, int numArgsPushed)
-// {
-// 	PyrSlot* args = g->sp;
-// 	int err;
-// 
-// 	PyrObject* obj = SC_WII::getObject(args+0);
-// 	if (!obj) return errWrongType;
-// 
-// 	SC_WII* dev = SC_WII::getDevice(obj);
-// 	if (!dev) return errFailed;
-// 
-// 	dev->update();
-// 
-// 	return errNone;
-// }
 
 int prWii_Close(VMGlobals *g, int numArgsPushed)
 {
@@ -1915,6 +1791,8 @@ int prWiiSetLED(VMGlobals *g, int numArgsPushed)
 	{
 #ifdef SC_DARWIN
 		result = wiiremote_led( dev->m_wiiremote, enable1, enable2, enable3, enable4);
+//		if ( !result )
+//			dev->wii_disconnect();
 #endif
 #ifdef SC_LINUX
 	if ( enable1 )
@@ -1966,6 +1844,9 @@ int prWiiSetVibration(VMGlobals *g, int numArgsPushed)
 	{
 #ifdef SC_DARWIN
 		result = wiiremote_vibration( dev->m_wiiremote, enable1 );
+//		if ( !result )
+//			dev->wii_disconnect();
+// 	post( "WII: rumble %i %i", enable1, result );
 #endif
 #ifdef SC_LINUX
 		if (cwiid_set_rumble(dev->m_wiiremote, (unsigned char) enable1)) {
@@ -2001,6 +1882,8 @@ int prWiiSetExpansion(VMGlobals *g, int numArgsPushed)
 	{
 #ifdef SC_DARWIN
 		result = wiiremote_expansion( dev->m_wiiremote, enable1 );
+//		if ( !result )
+//			dev->wii_disconnect();
 #endif
 #ifdef SC_LINUX
 		if ( enable1 )
@@ -2039,6 +1922,9 @@ int prWiiSetIRSensor(VMGlobals *g, int numArgsPushed)
 	{
 #ifdef SC_DARWIN
 		result = wiiremote_irsensor( dev->m_wiiremote, enable1 );
+//		if ( !result )
+//			dev->wii_disconnect();
+		
 #endif
 #ifdef SC_LINUX
 		if ( enable1 )
@@ -2077,6 +1963,8 @@ int prWiiSetMotionSensor(VMGlobals *g, int numArgsPushed)
 	{
 #ifdef SC_DARWIN
 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
+//		if ( !result )
+//			dev->wii_disconnect();
 #endif
 #ifdef SC_LINUX
 		if ( enable1 )
@@ -2113,6 +2001,7 @@ int prWiiSetButtons(VMGlobals *g, int numArgsPushed)
 	else
 	{
 #ifdef SC_DARWIN
+// buttons are always enabled
 // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 #endif
 #ifdef SC_LINUX
@@ -2150,6 +2039,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 	else
 	{
 #ifdef SC_DARWIN
+// is always enabled
 // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 #endif
 #ifdef SC_LINUX
@@ -2334,7 +2224,7 @@ void initWiiPrimitives()
 
 	s_wii = getsym("WiiMote");
 	s_wiiCalibrationInfoClass = getsym("WiiCalibrationInfo");	// has calibration date for all axes
-	s_wiiLEDStateClass = getsym("WiiLEDState");			// has the four LED states
+//	s_wiiLEDStateClass = getsym("WiiLEDState");			// has the four LED states
 
 // 	s_wiiRemoteClass = getsym("WiiRemote");			// Remote
 // 	s_wiiNunChuckClass = getsym("WiiNunChuck");		// NunChuck
@@ -2359,7 +2249,7 @@ void initWiiPrimitives()
 
 	base = nextPrimitiveIndex();
 	index = 0;
-	definePrimitive(base, index++, "_Wii_Start", prWii_Start, 1, 0); // starts the eventloop
+	definePrimitive(base, index++, "_Wii_Start", prWii_Start, 2, 0); // starts the eventloop
 	definePrimitive(base, index++, "_Wii_Discover", prWii_Discover, 3, 0); // discovers a new device
 	definePrimitive(base, index++, "_Wii_Stop", prWii_Stop, 1, 0); // stops the eventloop
 
