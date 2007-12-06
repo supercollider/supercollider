@@ -686,9 +686,11 @@ void SC_WII::connected()
 	bool result;
 	m_connected = true;
 	m_searching = 0;
+#ifdef SC_DARWIN
 	result = wiiremote_led( m_wiiremote, 0, 0, 0, 0);
 //	if ( !result )
 //		wii_disconnect();
+#endif
 // 	post("WII: wiiremote connected\n");
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
