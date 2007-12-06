@@ -5,21 +5,19 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-span.s1 {font: 12.0px Monaco}
-span.s2 {font: 9.0px Monaco}
-span.s3 {color: #0019b7}
-span.s4 {color: #000000}
-span.s5 {color: #a71e12}
-span.s6 {color: #326f17}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1}
+span.s1 {color: #091fb1}
+span.s2 {color: #000000}
+span.s3 {color: #902a19}
+span.s4 {color: #456c20}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -32,11 +30,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3"><b>numChans</b> - number of output channels</p>
 <p class="p3"><b>in</b> - input signal</p>
-<p class="p3"><b>pos</b> - pan position. Channels are evenly spaced over a cyclic</p>
-<p class="p3">period of 2.0 in pos with 0.0 equal to channel zero and <span class="s1">2.0/numChans</span> equal to channel 1,</p>
-<p class="p3"><span class="s2">4.0/numChans</span> equal to channel 2, etc.</p>
-<p class="p3">Thus all channels will be cyclically panned through if a sawtooth wave from -1 to +1 is used to</p>
-<p class="p3">modulate the pos.</p>
+<p class="p3"><b>pos</b> - pan position. Channels are evenly spaced over a cyclic period of 2.0 with 0.0 equal to the position directly in front, 2.0/numChans a clockwise shift 1/numChans of the way around the ring, 4.0/numChans equal to a shift of 2/numChans, etc. Thus all channels will be cyclically panned through if a sawtooth wave from -1 to +1 is used to modulate the pos. <b>N.B.</b> Front may or may not correspond to a speaker depending on the setting of the <b>orientation</b> arg, see below.</p>
 <p class="p3"><b>level</b> - a control rate level input.</p>
 <p class="p3"><b>width</b> - The width of the panning envelope. Nominally this is 2.0 which pans between pairs</p>
 <p class="p3">of adjacent speakers. Width values greater than two will spread the pan over greater numbers</p>
@@ -45,18 +39,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5">// five channel circular panning</p>
-<p class="p6"><span class="s3">Server</span>.internal.boot;</p>
+<p class="p6"><span class="s1">Server</span>.internal.boot;</p>
 <p class="p6">(</p>
 <p class="p6">{</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">PanAz</span>.ar(</p>
-<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>5, <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// numChans</p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>ClipNoise<span class="s4">.ar, <span class="Apple-tab-span">	</span></span><span class="s5">// in</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">LFSaw</span>.kr(<span class="s3">MouseX</span>.kr(0.2, 8, <span class="s6">'exponential'</span>)), <span class="s5">// pos</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">// level</span></p>
-<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// width</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">PanAz</span>.ar(</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>5, <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// numChans</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>ClipNoise<span class="s2">.ar, <span class="Apple-tab-span">	</span></span><span class="s3">// in</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">LFSaw</span>.kr(<span class="s1">MouseX</span>.kr(0.2, 8, <span class="s4">'exponential'</span>)), <span class="s3">// pos</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">// level</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// width</p>
 <p class="p6"><span class="Apple-tab-span">	</span>);</p>
-<p class="p6">}.play(<span class="s3">Server</span>.internal);</p>
-<p class="p6"><span class="s3">Server</span>.internal.scope;</p>
+<p class="p6">}.play(<span class="s1">Server</span>.internal);</p>
+<p class="p6"><span class="s1">Server</span>.internal.scope;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
 </body>
