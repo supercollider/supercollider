@@ -87,9 +87,8 @@ Dictionary : Set {
 		this.do({ arg item2; if (item1 == item2, {^true}) });
 		^false
 	}
-	includesKey { arg item1; 
-		this.keysDo({ arg item2; if (item1 == item2, {^true}) });
-		^false
+	includesKey { arg key;
+		^this.at( key ).notNil;
 	}
 	
 	// removing
@@ -333,7 +332,7 @@ IdentityDictionary : Dictionary {
 		^super.new(n).proto_(proto).parent_(parent).know_(know)
 	}
 	
-	at { arg key, value;
+	at { arg key;
 		_IdentDict_At
 		^this.primitiveFailed
 		/*^array.at(this.scanFor(key) + 1)*/
@@ -370,10 +369,10 @@ IdentityDictionary : Dictionary {
 		*/
 	}
 	
-	includesKey { arg item1; 
-		this.keysDo({ arg item2; if (item1 === item2, {^true}) });
-		^false
+	includesKey { arg key;
+		^this.at( key ).notNil;
 	}
+
 	findKeyForValue { arg argValue;
 		this.keysValuesArrayDo(array, { arg key, val, i;
 			if (argValue === val, { ^key })
