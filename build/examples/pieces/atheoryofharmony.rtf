@@ -7,7 +7,8 @@
 \f0\fs18 \cf2 // a theory of harmony\cf0 \
 \cf2 // (Nick Collins) (CC 2007)\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //plaintive chords patch demonstrating scheduling attacks ahead of the beat and applying reverb\cf0 \
+\cf2 \
+//plaintive chords patch demonstrating scheduling attacks ahead of the beat and applying reverb\cf0 \
 \cf2 //the chord transitions are adapted from an idea by John Eacott\cf0 \
 \
 \
@@ -16,6 +17,7 @@
 \cf2 //first send the SynthDefs; make sure the Server is on\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 \\slowatk\cf0 ,\{\cf3 arg\cf0  note=60,atk=0.2,pan=0.0,det=0.1,detrate=9,wrate=16, wspan=0.4;\
 \cf3 var\cf0  slip,detune;\
 \
@@ -40,6 +42,7 @@ c = 7; \cf2 // number of comb delays\cf0 \
 a = 4; \cf2 // number of allpass delays\cf0 \
 \
 in=\cf3 In\cf0 .ar(0,2);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // reverb predelay time :\cf0 \
 z = \cf3 DelayN\cf0 .ar(in, 0.048,0.048);\
 \
@@ -50,13 +53,16 @@ y=\cf3 Mix\cf0 .arFill(c,\{\cf3 CombL\cf0 .ar(z,0.1,rrand(0.01, 0.1),5)\});\
 a.do(\{ y = \cf3 AllpassN\cf0 .ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)], 1) \});\
 	\
 \cf2 // add original sound to reverb and play it :\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 ReplaceOut\cf0 .ar(0,in+(0.2*y));\
 \}).send(s)\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //now run the piece\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  sched;\
 \cf3 var\cf0  chordtype,diatonic,transitions, current, strength, type;\
 \cf3 var\cf0  revunit;\
@@ -72,6 +78,7 @@ revunit= \cf3 Synth\cf0 (\cf4 \\reverb\cf0 );\
 \
 chordbias= 1.0; \cf2 //0.7; //default 0.7\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //a quick list of chord types, ignoring any theory of extensions\cf0 \
 chordtype= [\
 [0,4,7],		\cf2 //maj\cf0 \
@@ -92,6 +99,7 @@ transitions=[-3,-2,3,1,2,-1,0];\
 current=0;	\cf2 //start on tonic\cf0 \
 strength=0;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SystemClock\cf0 .sched(0.0,\{	\
 	\cf3 var\cf0  chord,root, adjust, whichroot, pans;\
 	\cf3 var\cf0  chord3;\
