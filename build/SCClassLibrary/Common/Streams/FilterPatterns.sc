@@ -297,20 +297,37 @@ Pfin : FilterPattern {
 		^super.new(pattern).count_(count)
 	}
 	storeArgs { ^[count,pattern] }
+//	embedInStream { arg event;
+//		var inevent, isEventStream = event.isKindOf(Event); // check for usage in the beginning
+//		var stream = pattern.asStream;
+//		
+//		count.value.do({
+//			inevent = stream.next(event);
+//			if (inevent.isNil, { ^event });
+//			event = inevent.yield;
+//			if (isEventStream and: { event.isNil } ) {
+//				stream.next(nil);
+//				^nil.yield
+//			}
+//		});
+//		stream.next(nil);
+//		^event
+//	}
 	embedInStream { arg event;
-		var inevent, isEventStream = event.isKindOf(Event); // check for usage in the beginning
+		var inevent;
 		var stream = pattern.asStream;
+		var cleanup = Set.new;
 		
 		count.value.do({
 			inevent = stream.next(event);
 			if (inevent.isNil, { ^event });
+			inevent[\addToCleanup].do { | f | cleanup.add(f) };
+			inevent[\removeFromCleanup].do { | f | cleanup.remove(f) };
+			
 			event = inevent.yield;
-			if (isEventStream and: { event.isNil } ) {
-				stream.next(nil);
-				^nil.yield
-			}
 		});
-		stream.next(nil);
+		cleanup.do { | f | f.value(event) };
+		event[\removeFromCleanup] = cleanup.union(event[\removeFromCleanup]); 
 		^event
 	}
 }
@@ -339,25 +356,51 @@ Pfindur : FilterPattern {
 		^super.new(pattern).dur_(dur).tolerance_(tolerance)
 	}
 	storeArgs { ^[dur,pattern,tolerance] }
+//	embedInStream { arg event;
+//		var item, delta, elapsed = 0.0, nextElapsed, inevent;
+//	
+//		var stream = pattern.asStream;
+//		
+//		loop {
+//			if(event.isNil) {
+//				stream.next(nil); 
+//				^nil.yield 
+//			};
+//			inevent = stream.next(event);
+//			if(inevent.isNil) { ^event };
+//			delta = inevent.delta;
+//			nextElapsed = elapsed + delta;
+//			if (nextElapsed.roundUp(tolerance) >= dur) {
+//				// must always copy an event before altering it.
+//				// fix delta time and yield to play the event.
+//				stream.next(nil);
+//				inevent = inevent.copy.put(\delta, dur - elapsed).yield;
+//				^inevent;		// this terminates the Pfindur. Event will not be played here.
+//			};
+//
+//			elapsed = nextElapsed;
+//			event = inevent.yield;
+//			
+//		}
+//	}
+
 	embedInStream { arg event;
-		var item, delta, elapsed = 0.0, nextElapsed, inevent;
+		var item, delta, elapsed = 0.0, nextElapsed, inevent, cleanup = Set.new;
 	
 		var stream = pattern.asStream;
-		
 		loop {
-			if(event.isNil) {
-				stream.next(nil); 
-				^nil.yield 
-			};
 			inevent = stream.next(event);
 			if(inevent.isNil) { ^event };
+			inevent[\addToCleanup].do { | f | cleanup.add(f) };
+			inevent[\removeFromCleanup].do { | f | cleanup.remove(f) };
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
 			if (nextElapsed.roundUp(tolerance) >= dur) {
 				// must always copy an event before altering it.
 				// fix delta time and yield to play the event.
-				stream.next(nil);
 				inevent = inevent.copy.put(\delta, dur - elapsed).yield;
+				cleanup.do { | f | f.value(event) };
+				inevent[\removeFromCleanup] = cleanup.union(inevent[\removeFromCleanup]); 
 				^inevent;		// this terminates the Pfindur. Event will not be played here.
 			};
 
@@ -366,6 +409,7 @@ Pfindur : FilterPattern {
 			
 		}
 	}
+
 }
 
 Psync : FilterPattern {
@@ -374,8 +418,41 @@ Psync : FilterPattern {
 		^super.new(pattern).quant_(quant).maxdur_(maxdur).tolerance_(tolerance)
 	}
 	storeArgs { ^[pattern,quant,maxdur,tolerance] }
+//	embedInStream { arg event;
+//		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
+//	
+//		stream = pattern.asStream;
+//
+//		loop {
+//			inevent = stream.next(event);
+//			if(inevent.isNil) {
+//				if(quant.notNil) { 
+//					event = Event.silent(elapsed.roundUp(quant) - elapsed).yield 
+//					^event
+//				};
+//			};
+//			delta = inevent.delta;
+//			nextElapsed = elapsed + delta;
+//			
+//			if (maxdur.notNil and: { nextElapsed.round(tolerance) >= maxdur })
+//			{
+//				inevent = inevent.copy; 
+//				inevent.put(\delta, maxdur - elapsed);
+//				stream.next(nil);
+//				event = inevent.yield;
+//				^event
+//				
+//			}
+//			{
+//				elapsed = nextElapsed;
+//				event = inevent.yield;
+//			};
+//		};
+//	}
+
 	embedInStream { arg event;
 		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
+		var cleanup = Set.new;
 	
 		stream = pattern.asStream;
 
@@ -387,6 +464,9 @@ Psync : FilterPattern {
 					^event
 				};
 			};
+			inevent[\addToCleanup].do { | f | cleanup.add(f) };
+			inevent[\removeFromCleanup].do { | f | cleanup.remove(f) };
+
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
 			
@@ -394,8 +474,9 @@ Psync : FilterPattern {
 			{
 				inevent = inevent.copy; 
 				inevent.put(\delta, maxdur - elapsed);
-				stream.next(nil);
 				event = inevent.yield;
+				cleanup.do { | f | f.value(event) };
+				event[\removeFromCleanup] = cleanup.union(event[\removeFromCleanup]); 
 				^event
 				
 			}
@@ -405,6 +486,7 @@ Psync : FilterPattern {
 			};
 		};
 	}
+
 }
 
 
