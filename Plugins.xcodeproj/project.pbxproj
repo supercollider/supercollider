@@ -2014,7 +2014,7 @@
 		F3F479160D03BCB0001A470F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = DelayUGens;
+				PRODUCT_NAME = GrainUGens;
 			};
 			name = Development;
 		};
@@ -2028,7 +2028,7 @@
 		F3F479210D03BCDB001A470F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = DelayUGens;
+				PRODUCT_NAME = ReverbUGens;
 			};
 			name = Development;
 		};

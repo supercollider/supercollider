@@ -1084,7 +1084,7 @@ void Shaper_next_1(Shaper *unit, int inNumSamples)
 	GET_TABLE
 		float *table0 = bufData;
 		float *table1 = table0 + 1;
-		float fmaxindex = (float)(tableSize>>1) - 0.0001;
+		float fmaxindex = (float)(tableSize>>1) - 0.001;
 		float offset = tableSize * 0.25;
 	
 	float val;
@@ -1108,7 +1108,7 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 	GET_TABLE
 		float *table0 = bufData;
 		float *table1 = table0 + 1;
-		float fmaxindex = (float)(tableSize>>1) - 0.0001;
+		float fmaxindex = (float)(tableSize>>1) - 0.001;
 		float offset = tableSize * 0.25;
 
 	float *out = ZOUT(0);
@@ -1140,7 +1140,7 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 	GET_TABLE
 		float *table0 = bufData;
 		float *table1 = table0 + 1;
-		float fmaxindex = (float)(tableSize>>1) - 0.0001;
+		float fmaxindex = (float)(tableSize>>1) - 0.001;
 		float offset = tableSize * 0.25;
 
 	float *out = ZOUT(0);
