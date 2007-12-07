@@ -288,53 +288,123 @@ Pmono : Pattern {
 		^super.newCopyArgs(name, pairs)
 	}
 	
+//	embedInStream { | inevent |
+//		var id, server;
+//		var event;
+//		var streamout, name;
+//		var patMadeSynth;
+//		var streampairs = patternpairs.copy;
+//		var endval = patternpairs.size - 1;
+//		var synthLib, desc, msgFunc, hasGate;
+//		forBy (1, endval, 2) { | i | streampairs[i] = patternpairs[i].asStream };
+//
+//		inevent ?? { ^nil.yield };
+//
+//		event = inevent.copy;
+//		synthLib = event[\synthLib] ?? { SynthDescLib.global };
+//		desc = synthLib.synthDescs[synthName.asSymbol];			if (desc.notNil) { 
+//			msgFunc = desc.msgFunc;
+//			hasGate = desc.hasGate;
+//		}{
+//			msgFunc = event[\defaultMsgFunc];
+//			hasGate = true;
+//		};
+//		
+//		if (event[\id].notNil) {
+//			event[\type] = \monoSet;	
+//			patMadeSynth = false;
+//		} {
+//			event[\type] = \monoNote; 
+//			event[\instrument] = synthName;
+//			event[\updatePmono] = { | argID, argServer | 
+//				 id = argID;
+//				 server = argServer;
+//				 patMadeSynth = true; 
+//			};
+//		}; 
+//		loop {
+//			event[\msgFunc] = msgFunc;
+//			forBy (0, endval, 2) { | i |
+//				name = streampairs[i];
+//				streamout = streampairs[i+1].next(event);
+//				streamout ?? { 					// exit on nil field
+//					if (patMadeSynth) { 			// end synth if made by Pmono
+//						event[\type] = \monoOff;
+//						event[\hasGate] = hasGate;
+//						event.play; 
+//					};
+//					^inevent
+//				 };
+//				if (name.isSequenceableCollection) {
+//					name.do { | n, i | event[n] = streamout[i] };
+//				}{
+//					event[name] = streamout;
+//				};			
+//			};
+//			inevent = event.yield;			
+//			if (inevent.isNil) {					// pattern is ending early
+//				if ( patMadeSynth) {				// from pfin, pfindur, PatternConductor
+//					event.use {
+//						~finish.value;
+//						~eventTypes[\off].value(~server ?? { Server.default });
+//					};
+//					^nil.yield
+//				} {
+//					^nil.yield
+//				}
+//			};			
+//			event = inevent.copy;
+//			if (patMadeSynth) {
+//				event[\server] = server;
+//				event[\id] = id;
+//			};
+//			event[\type] = \monoSet;
+//		}
+//	}	
+
+
 	embedInStream { | inevent |
-		var id, server;
+		var id, server, cleanupFunction;
 		var event;
 		var streamout, name;
-		var patMadeSynth;
 		var streampairs = patternpairs.copy;
 		var endval = patternpairs.size - 1;
-		var synthLib, desc, msgFunc, hasGate;
+		var msgFunc, hasGate, synthLib, desc;
 		forBy (1, endval, 2) { | i | streampairs[i] = patternpairs[i].asStream };
 
 		inevent ?? { ^nil.yield };
 
 		event = inevent.copy;
-		synthLib = event[\synthLib] ?? { SynthDescLib.global };
-		desc = synthLib.synthDescs[synthName.asSymbol];			if (desc.notNil) { 
+		event.use { 
+			synthLib = ~synthLib ?? { SynthDescLib.global };
+			desc = synthLib.synthDescs[synthName.asSymbol]; 			if (desc.notNil) { 
 			msgFunc = desc.msgFunc;
 			hasGate = desc.hasGate;
-		}{
-			msgFunc = event[\defaultMsgFunc];
-			hasGate = true;
-		};
-		
-		if (event[\id].notNil) {
-			event[\type] = \monoSet;	
-			patMadeSynth = false;
-		} {
-			event[\type] = \monoNote; 
-			event[\instrument] = synthName;
-			event[\updatePmono] = { | argID, argServer | 
-				 id = argID;
-				 server = argServer;
-				 patMadeSynth = true; 
+			}{
+				msgFunc = event[\defaultMsgFunc];
+				hasGate = true;
 			};
-		}; 
+			~msgFunc = msgFunc;
+			if (~id.notNil) {	
+				~type = \monoSet;	
+			} {
+				~type = \monoNote; 
+				~instrument = synthName;
+				~updatePmono = { | argID, argServer | 
+					 id = argID;
+					 server = argServer;
+				};
+				cleanupFunction = {
+					(id: id, server: server, type: \off).play;
+				}; 
+				~addToCleanup = ~addToCleanup.add(cleanupFunction);
+			}
+		};
 		loop {
-			event[\msgFunc] = msgFunc;
 			forBy (0, endval, 2) { | i |
 				name = streampairs[i];
 				streamout = streampairs[i+1].next(event);
-				streamout ?? { 					// exit on nil field
-					if (patMadeSynth) { 			// end synth if made by Pmono
-						event[\type] = \monoOff;
-						event[\hasGate] = hasGate;
-						event.play; 
-					};
-					^inevent
-				 };
+				streamout ?? { ^cleanupFunction.value(event) };
 				if (name.isSequenceableCollection) {
 					name.do { | n, i | event[n] = streamout[i] };
 				}{
@@ -342,23 +412,13 @@ Pmono : Pattern {
 				};			
 			};
 			inevent = event.yield;			
-			if (inevent.isNil) {					// pattern is ending early
-				if ( patMadeSynth) {				// from pfin, pfindur, PatternConductor
-					event.use {
-						~finish.value;
-						~eventTypes[\off].value(~server ?? { Server.default });
-					};
-					^nil.yield
-				} {
-					^nil.yield
-				}
-			};			
 			event = inevent.copy;
-			if (patMadeSynth) {
-				event[\server] = server;
-				event[\id] = id;
+			event.use{
+				~server = server;
+				~id = id; 
+				~type = \monoSet;
+				~msgFunc= msgFunc;
 			};
-			event[\type] = \monoSet;
 		}
 	}	
 }
