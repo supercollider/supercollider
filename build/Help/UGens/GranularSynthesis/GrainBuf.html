@@ -12,24 +12,22 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #961e1e}
-span.s1 {color: #0000bf}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a91616}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #862323}
+span.s1 {color: #0014bc}
 span.s2 {color: #000000}
-span.s3 {color: #0014bc}
-span.s4 {color: #007300}
-span.s5 {color: #001db9}
-span.s6 {color: #426f0e}
+span.s3 {color: #001db9}
+span.s4 {color: #307109}
+span.s5 {color: #0023b6}
+span.s6 {color: #4d6d13}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>GrainFM<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Granular synthesis with sine tones</b></p>
+<p class="p1"><b>GrainBuf<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Granular synthesis with sound stored in a buffer</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>GrainIn.ar(numChannels, trigger, dur, sndbuf, rate, pos, pan, envbufnum, mul, add)</b></p>
+<p class="p3"><b>GrainBuf.ar(numChannels, trigger, dur, sndbuf, rate, pos, pan, envbufnum, mul, add)</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>numChannels</b> - the number of channels to output. If 1, mono is returned and pan is ignored.</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>trigger </b>- a kr or ar trigger to start a new grain. If ar, grains after the start of the synth are sample accurate.</p>
@@ -50,36 +48,36 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">s.boot;</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p6"><span class="s1">var</span> winenv;</p>
+<p class="p5"><span class="s1">var</span> winenv;</p>
 <p class="p4"><br></p>
-<p class="p7"><span class="s2">b = </span><span class="s3">Buffer</span><span class="s2">.read(s, </span>"sounds/a11wlk01-44_1.aiff"<span class="s2">);</span></p>
-<p class="p8">// a custom envelope<span class="Apple-converted-space"> </span></p>
-<p class="p6">winenv = <span class="s1">Env</span>([0, 1, 0], [0.5, 0.5], [8, -8]);</p>
-<p class="p6">z = <span class="s1">Buffer</span>.sendCollection(s, winenv.discretize, 1);</p>
-<p class="p9"><br></p>
-<p class="p6"><span class="s1">SynthDef</span>(<span class="s4">\buf_grain_test</span>, {<span class="s1">arg</span> gate = 1, amp = 1, sndbuf, envbuf;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> pan, env, freqdev;</p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>// use mouse x to control panning</p>
-<p class="p6"><span class="Apple-tab-span">	</span>pan = <span class="s1">MouseX</span>.kr(-1, 1);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>env = <span class="s1">EnvGen</span>.kr(</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>([0, 1, 0], [1, 1], <span class="s4">\sin</span>, 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gate,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>levelScale: amp,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>doneAction: 2);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">GrainBuf</span>.ar(2, <span class="s1">Impulse</span>.kr(10), 0.1, sndbuf, <span class="s1">LFNoise1</span>.kr.range(0.5, 2),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>LFNoise2.kr(0.1).range(0, 1), 2, pan, envbuf) * env)</p>
-<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p9"><br></p>
+<p class="p6"><span class="s2">b = </span><span class="s3">Buffer</span><span class="s2">.read(s, </span>"sounds/a11wlk01-44_1.aiff"<span class="s2">);</span></p>
+<p class="p7">// a custom envelope<span class="Apple-converted-space"> </span></p>
+<p class="p5">winenv = <span class="s1">Env</span>([0, 1, 0], [0.5, 0.5], [8, -8]);</p>
+<p class="p5">z = <span class="s1">Buffer</span>.sendCollection(s, winenv.discretize, 1);</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s1">SynthDef</span>(<span class="s4">\buf_grain_test</span>, {<span class="s1">arg</span> gate = 1, amp = 1, sndbuf, envbuf;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> pan, env, freqdev;</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>// use mouse x to control panning</p>
+<p class="p5"><span class="Apple-tab-span">	</span>pan = <span class="s1">MouseX</span>.kr(-1, 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>env = <span class="s1">EnvGen</span>.kr(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>([0, 1, 0], [1, 1], <span class="s4">\sin</span>, 1),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gate,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>levelScale: amp,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>doneAction: 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">GrainBuf</span>.ar(2, <span class="s1">Impulse</span>.kr(10), 0.1, sndbuf, <span class="s1">LFNoise1</span>.kr.range(0.5, 2),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>LFNoise2.kr(0.1).range(0, 1), 2, pan, envbuf) * env)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p4"><br></p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
-<p class="p10">// use built-in env</p>
+<p class="p8">// use built-in env</p>
 <p class="p5">x = <span class="s5">Synth</span>(<span class="s6">\buf_grain_test</span>, [\sndbuf, b, <span class="s6">\envbuf</span>, -1])</p>
 <p class="p4"><br></p>
-<p class="p10">// switch to the custom env</p>
+<p class="p8">// switch to the custom env</p>
 <p class="p5">x.set([<span class="s6">\envbuf</span>, z])</p>
 <p class="p5">x.set([<span class="s6">\envbuf</span>, -1]);</p>
 <p class="p4"><br></p>
-<p class="p6">x.set([<span class="s4">\gate</span>, 0]);</p>
+<p class="p5">x.set([<span class="s4">\gate</span>, 0]);</p>
 </body>
 </html>
