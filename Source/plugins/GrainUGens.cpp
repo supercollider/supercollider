@@ -1388,7 +1388,7 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 			double counter = IN_AT(unit, 1, i) * SAMPLERATE;
 			counter = sc_max(4., counter);
 			grain->counter = (int)counter;
-			grain->winType = IN_AT(unit, 4, i);
+			grain->winType = IN_AT(unit, 7, i);
 			
 			GET_GRAIN_INIT_AMP
 
