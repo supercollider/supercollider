@@ -11,24 +11,23 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #a71e12}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; min-height: 12.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Helvetica}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; color: #a71e12}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Helvetica; min-height: 13.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Helvetica; min-height: 13.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #84331b}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #84331b}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 21.0px Helvetica}
 span.s2 {text-decoration: underline}
 span.s3 {font: 13.0px Helvetica}
-span.s4 {color: #0019b7}
+span.s4 {color: #0424af}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -56,7 +55,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a specific Bus to play on, otherwise will default to the main audio outs</p>
 <p class="p4"><br></p>
 <p class="p3"><b>spawn(atTime)</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b>assumes the player has been prepared</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b>assumes the player has been prepared.<span class="Apple-converted-space">  </span>see prepareForPlay</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>stop(atTime)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>stops playing but does not deallocate any resources (buffers etc.)</p>
@@ -69,39 +68,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>then calls stop on the player, so even if the synthDef does not have a \gate</p>
 <p class="p3"><span class="Apple-tab-span">	</span>input, it will function the same as stop after a short delay.</p>
 <p class="p4"><br></p>
-<p class="p3"><b>prepareForPlay(group,private,bus)</b></p>
+<p class="p3"><b>prepareForPlay(group,isPrivate,bus)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>group -<span class="Apple-tab-span">	</span>a Server, a Group or Nil</p>
-<p class="p3"><span class="Apple-tab-span">	</span>private - if true, allocates a private bus (not the main audio outs)</p>
-<p class="p3"><span class="Apple-tab-span">	</span>bus -<span class="Apple-converted-space">    </span>a specific Bus to play on.<span class="Apple-converted-space">  </span>this will cause private to be ignored</p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>isPrivate: a public bus is one of the main audio outputs of your soundcard.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a private bus is one that will be patched and mixed further down the line.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>When makePatchOut is called on the top player (the one that actually was sent .play)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>it plays to a public (main audio output), and any internal children are told to<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>allocate and play onto a private bus.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>bus -<span class="Apple-converted-space">    </span>a specific Bus to play on.<span class="Apple-converted-space">  </span>this will cause isPrivate to be ignored</p>
+<p class="p4"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>this loads the synthDef to the server for the player and all of its children,</p>
 <p class="p3"><span class="Apple-tab-span">	</span>and allocates any resources such as buffers, loading sound files etc.</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><b>Patching</b></p>
-<p class="p5"><br></p>
-<p class="p6">temporarily disabled.<span class="Apple-converted-space">  </span>players now patch using .ir outputs,</p>
-<p class="p6">since its more appropriate to modulate the input than to modulate</p>
-<p class="p6">the output.</p>
-<p class="p6">if people really want this, let me know.</p>
-<p class="p5"><br></p>
-<p class="p7">/*</p>
-<p class="p7">p = Patch({<span class="Apple-converted-space">  </span>SinOsc.ar(mul: 0.3) });</p>
-<p class="p7">p.play;</p>
-<p class="p8"><br></p>
-<p class="p7">// reassign the bus while playing</p>
-<p class="p7">p.bus = 5;</p>
-<p class="p8"><br></p>
-<p class="p7">p.bus = 0;</p>
-<p class="p8"><br></p>
-<p class="p7">p.bus = Bus(\audio,3);<span class="Apple-converted-space"> </span></p>
-<p class="p8"><br></p>
-<p class="p9">if using an Integer, it will create a Bus on the same server.</p>
-<p class="p8"><br></p>
-<p class="p9">*/</p>
+<p class="p3">see also [<b>playerServerSupport</b>]</p>
 <p class="p4"><br></p>
-<p class="p4"><br></p>
+<p class="p5"><br></p>
 <p class="p1"><b>Common players</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>Patch</b><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- specifies a function ( Instr ) and the arguments<span class="Apple-converted-space"> </span></p>
@@ -112,8 +93,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- renders a number stream to a .kr signal</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>InstrSpawner InstrGateSpawner</b></p>
 <p class="p4"><br></p>
-<p class="p10"><br></p>
-<p class="p11"><b>Gui</b></p>
+<p class="p6"><br></p>
+<p class="p7"><b>Gui</b></p>
 <p class="p3">AbstractPlayer also comes with a powerful gui class framework.<span class="Apple-converted-space">  </span>Because of this, many people make the mistake of assuming that AbstractPlayer is primarily a way to get pretty windows.<span class="Apple-converted-space">  </span>It has nothing to do with that.</p>
 <p class="p4"><br></p>
 <p class="p3">But it is very nice<span class="Apple-converted-space">  </span>to:</p>
@@ -128,9 +109,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">path -<span class="Apple-converted-space">  </span>if loaded or saved, the player knows its path</p>
 <p class="p3">name - if loaded or saved, the filename, else the name of the class (eg. "a Patch")</p>
-<p class="p12"><br></p>
-<p class="p12"><br></p>
-<p class="p12"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>children</b> - for players that hold other players or objects, return those children</p>
 <p class="p3"><span class="Apple-tab-span">	</span>player classes should implement where appropriate.</p>
@@ -141,101 +122,41 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>the Player class with extra methods.</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>allChildren</b> - and all your children's children, and their children...<span class="Apple-tab-span">	</span></p>
-<p class="p13"><b>deepDo(function)</b> - do to allChildren</p>
-<p class="p12"><br></p>
-<p class="p12"><br></p>
-<p class="p12"><br></p>
-<p class="p4"><br></p>
-<p class="p3"><b><span class="s2">playing in patterns:</span></b></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3">Players can be put inside of standard patterns:</p>
-<p class="p4"><br></p>
-<p class="p9">/*</p>
-<p class="p9">(</p>
+<p class="p9"><b>deepDo(function)</b> - do to allChildren</p>
 <p class="p8"><br></p>
-<p class="p7">p = CropPlayer(</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Patch.new({ arg freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>PMOsc.ar(freq,freq2,pmindex,phasemod,amp)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},[</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>150.06,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>27.7707,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>15.1163,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),0,4);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
-<p class="p7">y = CropPlayer(</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Patch.new({ arg freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>PMOsc.ar(freq,freq2,pmindex,phasemod,amp)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},[</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>200,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>97.7707,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>15.1163,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>0,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>0.616317</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ]),0,4);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
 <p class="p8"><br></p>
-<p class="p7"><span class="Apple-tab-span">	</span>Pseq([ p,y,p,y ],2).play</p>
 <p class="p8"><br></p>
-<p class="p7">)</p>
-<p class="p14">*/</p>
-<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p15"><b>Subclassing AbstractPlayer</b></p>
+<p class="p10"><b>Subclassing AbstractPlayer</b></p>
 <p class="p4"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span>see [<b>playerServerSupport</b>] for a basic rundown of the complexities involved</p>
-<p class="p16"><br></p>
-<p class="p17"><span class="Apple-tab-span">	</span>After that you would usually write a gui class for it.</p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p17"><span class="Apple-tab-span">	</span>Then implement the <b>storeParamsOn</b> method which enables you<span class="Apple-converted-space"> </span></p>
-<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>to load and save your object.</p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><br></p>
-<p class="p1"><b>Players to come</b></p>
-<p class="p4"><br></p>
-<p class="p3">possible futures:</p>
-<p class="p3"><span class="Apple-tab-span">	</span>Stream2Midi - renders a number stream to midi ( controllers etc.)</p>
-<p class="p3"><span class="Apple-tab-span">	</span>EventStream2Midi - renders note/freq,amp/velocity, duration to midi note events</p>
-<p class="p18"><br></p>
-<p class="p18"><br></p>
-<p class="p18"><br></p>
-<p class="p4"><br></p>
-<p class="p3"><b>TimelineEventPlayer</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b>timecode based events.<span class="Apple-converted-space">  </span>(rather than delta based event streams where each event</p>
-<p class="p3"><span class="Apple-tab-span">	</span>is responsible for determing when the one succeeding it will happen).</p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p3">Recording of events</p>
-<p class="p3"><span class="Apple-tab-span">	</span>from midi, wacom, gui etc.</p>
-<p class="p4"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p3">any Player could be triggered to play from midi or wacom.<span class="Apple-converted-space">  </span>it can also go through</p>
-<p class="p3">SchedPlayer to quantise the start time of its play.</p>
-<p class="p4"><br></p>
-<p class="p3">All of that can be recorded.<span class="Apple-converted-space">  </span>those event-recordings can in turn then be further played with.</p>
-<p class="p4"><br></p>
-<p class="p3">SFP is the one player type that can be sub-located (asked to start play somewhere in the middle). Timeline based event recording would be another one. <span class="Apple-converted-space">  </span>the transport system would work very nicely.</p>
-<p class="p4"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>see [<b>playerServerSupport</b>] for a rundown of the complexities involved</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span>After that you would usually write a gui class for it.</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>Then implement the <b>storeParamsOn</b> method which enables you<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>to load and save your object.</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><br></p>
 <p class="p1"><b>AbstractPlayer<span class="Apple-converted-space">  </span>is a subclass of AbstractFunction</b><span class="s3"><span class="Apple-converted-space"> </span></span></p>
 <p class="p3">therefore you can do math with them:</p>
-<p class="p18"><br></p>
-<p class="p7">//right now this works, but only with simple ugenGraphs, no Samples,Envs etc.</p>
-<p class="p6">(<span class="s4">Patch</span>({ <span class="s4">Saw</span>.ar(400) }).wrap2( 0.5) ).gui</p>
+<p class="p13"><br></p>
+<p class="p14">//right now this works, but only with simple ugenGraphs, no Samples,Envs etc.</p>
+<p class="p15">(<span class="s4">Patch</span>({ <span class="s4">Saw</span>.ar(400) }).wrap2( 0.5) ).gui</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p9">// not yet</p>
-<p class="p7">//(Patch({ Saw.ar(400) }).wrap2( KrNumberEditor(0.5,[0.0,1.0]) ) ).gui</p>
+<p class="p16">// not yet</p>
+<p class="p14">(Patch({ Saw.ar(400) }).wrap2( KrNumberEditor(0.5,[0.0,1.0]) ) ).gui</p>
 <p class="p4"><br></p>
-<p class="p7">//(somePatch * EnvPlayer.new(Env.newClear(10)) ).topGui</p>
-<p class="p5"><br></p>
+<p class="p14">//(somePatch * EnvPlayer.new(Env.newClear(10)) ).topGui</p>
+<p class="p17"><br></p>
 <p class="p4"><br></p>
 </body>
 </html>
