@@ -7,8 +7,8 @@
 <meta name="Generator" content="Cocoa HTML Writer">
 <meta name="CocoaVersion" content="824.42">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -16,47 +16,42 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><br></p>
 <p class="p1"><br></p>
 <p class="p1"><br></p>
-<p class="p2">play</p>
-<p class="p2"><span class="Apple-tab-span">	</span>prepareToBundle(group,bundle)</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loadDefFileToBundle(bundle,server)</p>
+<p class="p2"><b>play</b></p>
+<p class="p2"><span class="Apple-tab-span">	</span>what happens when you call .play :</p>
+<p class="p1"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span>prepareToBundle(group,bundle)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loadDefFileToBundle(bundle,server)</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>children loadDefFileToBundle(bundle,server)</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>asSynthDef<span class="Apple-tab-span">	</span></p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>//children prepareToBundle</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>makeResourcesToBundle</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>makePatchOut</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>children makePatchOut</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p2"><span class="Apple-tab-span">	</span>makePatchOut(group,public)</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>numChannels</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rate</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p2"><span class="Apple-tab-span">	</span>childrenMakePatchOut(group,public)</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>children makePatchOut</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p2"><span class="Apple-tab-span">	</span>spawnAtTime(atTime)</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>spawnToBundle(bundle)</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>children spawnToBundle(bundle)</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>defName</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>synthDefArgs</p>
+<p class="p1"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>makeResourcesToBundle(bundle)</b> - create Bus and Group if needed</p>
+<p class="p1"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>prepareChildrenToBundle(bundle)</b></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>each of the children prepares into the bundle (and they prepare their children)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>didSpawn</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>loadBuffersToBundle(bundle)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>samples, buffers needed for efx, sequencing etc.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>makePatchOut(group,isPrivate,bus,bundle)</b></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>create a PatchOut object</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>isPrivate: a public bus is one of the main audio outputs of your soundcard.</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a private bus is one that will be patched and mixed further down the line.</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>When makePatchOut is called on the top player (the one that actually was sent .play)</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>it plays to a public (main audio output), and any internal children are told to<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>allocate and play onto a private bus.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>spawnAtTime(atTime)</b></p>
+<p class="p1"><b></b><br></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>spawnToBundle(bundle)</b></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>each child: spawnToBundle</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>didSpawn</b></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>called after the player has spawned on the server</p>
+<p class="p1"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="Apple-tab-span">	</span></p>
-<p class="p2">as a child of something else</p>
-<p class="p1"><br></p>
-<p class="p2">loadDefFileToBundle(bundle,server)</p>
-<p class="p2"><span class="Apple-tab-span">	</span>children loadDefFileToBundle(bundle,server)</p>
-<p class="p2"><span class="Apple-tab-span">	</span>asSynthDef<span class="Apple-tab-span">	</span></p>
-<p class="p1"><br></p>
-<p class="p2">spawnToBundle(bundle)</p>
-<p class="p2"><span class="Apple-tab-span">	</span>children spawnToBundle(bundle)</p>
-<p class="p2"><span class="Apple-tab-span">	</span>defName</p>
-<p class="p2"><span class="Apple-tab-span">	</span>synthDefArgs</p>
-<p class="p1"><br></p>
-<p class="p2">makePatchOut(group,public)</p>
-<p class="p2"><span class="Apple-tab-span">	</span>numChannels</p>
-<p class="p2"><span class="Apple-tab-span">	</span>rate</p>
 <p class="p1"><span class="Apple-tab-span">	</span></p>
 </body>
 </html>

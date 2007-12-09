@@ -120,6 +120,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p6">// the Instr stores itself when created</p>
 <p class="p4">(</p>
+<p class="p4"><span class="Apple-tab-span">	</span>// this can be kept in a separate file</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Instr</span>(<span class="s2">\bubbles</span>, { <span class="s1">arg</span> amp=1.0;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">var</span> f, zout;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f = <span class="s1">LFSaw</span>.kr(0.4, 0, 24, <span class="s1">LFSaw</span>.kr([8,7.23], 0, 3, 80)).midicps;</p>
@@ -131,9 +132,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s1">Patch</span>(<span class="s2">\bubbles</span>,[0.4] );</p>
 <p class="p4"><span class="Apple-tab-span">	</span>p.gui</p>
 <p class="p4">)</p>
+<p class="p3">or an Instr<span class="Apple-tab-span">	</span></p>
+<p class="p4">(</p>
+<p class="p4"><span class="Apple-tab-span">	</span>i = <span class="s1">Instr</span>(<span class="s4">"help-Patch"</span>,{ <span class="s1">arg</span> freq=100,amp=1.0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar([freq,freq + 30],0,amp)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s1">Patch</span>(i,[ 500,<span class="Apple-tab-span">	</span>0.3 ]);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p.gui</p>
+<p class="p4">)</p>
 <p class="p2"><br></p>
 <p class="p7"><br></p>
-<p class="p3">Patch can be easily saved to disk, and can make use of a large library of Instr functions.<span class="Apple-converted-space">  </span>An Instr can produce many different possible SynthDefs, expanding the number of output channels or , varying in output rate or number of channels or internal structure.</p>
+<p class="p3">Patch can be easily saved to disk, and can make use of a large library of Instr functions. <span class="Apple-converted-space"> </span></p>
+<p class="p7"><br></p>
+<p class="p3">An Instr can produce many different possible SynthDefs, expanding the number of output channels or , varying in output rate or number of channels or internal structure.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
