@@ -60,3 +60,19 @@ MFCC : MultiOutUGen {
 	}
 }
 
+
+
+//6 outs 
+BeatTrack2 : MultiOutUGen {
+
+	*kr { arg busindex, numfeatures, windowsize=2.0, phaseaccuracy=0.02, lock=0, weightingscheme;
+	
+		^this.multiNew('control',busindex, numfeatures,windowsize, phaseaccuracy, lock, weightingscheme ? (-2.1));
+	}
+	
+	init { arg ... theInputs;
+		inputs = theInputs;
+		^this.initOutputs(6, rate);
+	}
+}
+
