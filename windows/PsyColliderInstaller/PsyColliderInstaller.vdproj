@@ -2253,6 +2253,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_366912CD3D674782A94D0FD2A03CD177"
+        "OwnerKey" = "8:_D91E5BC1B62A4FEC83AB6029DFB4786A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_369BEC3F3541475B94D4FF94CF5CDCF0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -8007,12 +8013,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CC74CBADE9FA4BE09A5074BB5B2A2327"
-        "OwnerKey" = "8:_D91E5BC1B62A4FEC83AB6029DFB4786A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_CC85883B3D0E43908FC6CC6FAEAF8502"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -8740,12 +8740,6 @@
         "Entry"
         {
         "MsmKey" = "8:_DE666E5A4DA5489785BF60A00492B152"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DE8700BB251F4833A971B96178D645BA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -39128,26 +39122,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DE8700BB251F4833A971B96178D645BA"
-            {
-            "SourcePath" = "8:..\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extSwingOSC.sc"
-            "TargetName" = "8:extSwingOSC.sc"
-            "Tag" = "8:"
-            "Folder" = "8:_3BD6173944C641F4B8B3E383C3FD3E05"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DE9B73B376DD47598BB958128C1A304D"
             {
             "SourcePath" = "8:..\\..\\..\\SwingOSC\\SuperCollider\\examples\\swing.css"
@@ -45894,7 +45868,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_CC74CBADE9FA4BE09A5074BB5B2A2327"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_366912CD3D674782A94D0FD2A03CD177"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
