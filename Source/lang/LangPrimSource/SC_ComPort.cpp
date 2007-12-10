@@ -28,6 +28,8 @@
 
 #ifndef SC_WIN32
 # include <unistd.h>
+#else
+#include "SC_Win32Utils.h"
 #endif
 
 #ifdef SC_LINUX
@@ -472,9 +474,6 @@ SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, vo
 	  mClientNotifyFunc(notifyFunc),
 	  mClientData(clientData)
 {
-#ifdef SC_WIN32
-  throw 0;
-#endif
 	mSocket = inSocket;
 	socklen_t sockAddrLen = sizeof(mReplySockAddr);
 
@@ -490,12 +489,11 @@ SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, vo
 	setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &sockopt, sizeof(sockopt));
 #endif // HAVE_SO_NOSIGPIPE
 
-#ifndef SC_WIN32
 	if (pipe(mCmdFifo) == -1) {
 		mCmdFifo[0] = mCmdFifo[1] = -1;
 	}
-#endif
-    Start();
+
+	Start();
 }
 
 SC_TcpClientPort::~SC_TcpClientPort()
@@ -531,7 +529,7 @@ void* SC_TcpClientPort::Run()
 		FD_SET(cmdfd, &rfds);
 		FD_SET(sockfd, &rfds);
 
-		if ((select(nfds, &rfds, 0, 0, 0) == -1) || (cmdClose = FD_ISSET(cmdfd, &rfds)))
+		if ((select(nfds, &rfds, 0, 0, 0) == -1) || (cmdClose = FD_ISSET(cmdfd, &rfds))) 
 			goto leave;
 
 		if (!FD_ISSET(sockfd, &rfds))
@@ -539,6 +537,7 @@ void* SC_TcpClientPort::Run()
 
 		packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		if (!packet) goto leave;
+
 		packet->mData = 0;
 
 		size = recvall(sockfd, &msglen, sizeof(int32));
@@ -549,7 +548,7 @@ void* SC_TcpClientPort::Run()
 		
 		packet->mData = (char*)malloc(msglen);
 		if (!packet->mData) goto leave;
-
+		
 		size = recvall(sockfd, packet->mData, msglen);
 		if (size < msglen) goto leave;
 		
@@ -580,7 +579,7 @@ void SC_TcpClientPort::Close()
 {
 	char cmd = 0;
 #ifdef SC_WIN32
-  throw 0;
+	win32_pipewrite(mCmdFifo[1], &cmd, sizeof(cmd));
 #else
 	write(mCmdFifo[1], &cmd, sizeof(cmd));
 #endif
