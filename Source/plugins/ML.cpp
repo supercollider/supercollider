@@ -70,6 +70,7 @@ extern "C" void load(InterfaceTable *inTable) {
 	
 	DefineDtorUnit(Onsets);
 
+	DefineDtorCantAliasUnit(BeatTrack2);
 	
 }
 
