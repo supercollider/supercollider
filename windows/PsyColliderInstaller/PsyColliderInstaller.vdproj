@@ -3867,12 +3867,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_61B906329DDF415488741C6698F66F6D"
-        "OwnerKey" = "8:_D91E5BC1B62A4FEC83AB6029DFB4786A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_61C7E3FBD3B142E4B20D934F728B29E5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -6489,6 +6483,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A3F9811B9859420B9FD86A8B4AAAF228"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A403E900350347669E22719EF5367A21"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -8007,6 +8007,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CC74CBADE9FA4BE09A5074BB5B2A2327"
+        "OwnerKey" = "8:_D91E5BC1B62A4FEC83AB6029DFB4786A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_CC85883B3D0E43908FC6CC6FAEAF8502"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -8121,6 +8127,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CF18A29F422346A7BAB3E9B1CDB88B41"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_CF6AE2E6D2FA45C593651615D768A510"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -8158,6 +8170,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D049B13164D94C0887E70485D8C3BBF1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D05AD419D3A949E6AFE01B3F5E7E74A3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -9991,6 +10009,17 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                }
+            }
         }
         "Release"
         {
@@ -10007,6 +10036,17 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                }
+            }
         }
     }
     "Deployable"
@@ -21310,7 +21350,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_565E38D0B60D4C6F85E34B74D4BC2201"
             {
-            "SourcePath" = "8:..\\..\\windows\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extScore.sc"
+            "SourcePath" = "8:..\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extScore.sc"
             "TargetName" = "8:extScore.sc"
             "Tag" = "8:"
             "Folder" = "8:_3BD6173944C641F4B8B3E383C3FD3E05"
@@ -27030,7 +27070,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7FBE232FF73A4C559417CF5DDF00AC79"
             {
-            "SourcePath" = "8:..\\..\\windows\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extMain.sc"
+            "SourcePath" = "8:..\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extMain.sc"
             "TargetName" = "8:extMain.sc"
             "Tag" = "8:"
             "Folder" = "8:_3BD6173944C641F4B8B3E383C3FD3E05"
@@ -31588,6 +31628,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A3F9811B9859420B9FD86A8B4AAAF228"
+            {
+            "SourcePath" = "8:..\\..\\..\\fftw3\\libfftw3f-3.dll"
+            "TargetName" = "8:libfftw3f-3.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_92D4AE0A047D47D3B4B454E40BCAA03E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A403E900350347669E22719EF5367A21"
             {
             "SourcePath" = "8:..\\..\\..\\SuperCollider3-Clean\\build\\Help\\Tutorials\\Getting-Started\\Buffers.html"
@@ -34070,7 +34130,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B7F60637C3434891AD1C33CA0D7CD8F2"
             {
-            "SourcePath" = "8:..\\..\\windows\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extString.sc"
+            "SourcePath" = "8:..\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extString.sc"
             "TargetName" = "8:extString.sc"
             "Tag" = "8:"
             "Folder" = "8:_3BD6173944C641F4B8B3E383C3FD3E05"
@@ -35170,7 +35230,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C0FB3413F90C411B8CA8A4CDE094FB27"
             {
-            "SourcePath" = "8:..\\..\\windows\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extServerOptions.sc"
+            "SourcePath" = "8:..\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extServerOptions.sc"
             "TargetName" = "8:extServerOptions.sc"
             "Tag" = "8:"
             "Folder" = "8:_3BD6173944C641F4B8B3E383C3FD3E05"
@@ -37028,6 +37088,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CF18A29F422346A7BAB3E9B1CDB88B41"
+            {
+            "SourcePath" = "8:..\\..\\..\\fftw3\\libfftw3l-3.dll"
+            "TargetName" = "8:libfftw3l-3.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_92D4AE0A047D47D3B4B454E40BCAA03E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CF6AE2E6D2FA45C593651615D768A510"
             {
             "SourcePath" = "8:..\\..\\..\\SuperCollider3-Clean\\build\\Help\\Files\\UnixFILE.html"
@@ -37168,6 +37248,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D05AD419D3A949E6AFE01B3F5E7E74A3"
+            {
+            "SourcePath" = "8:..\\..\\..\\fftw3\\libfftw3-3.dll"
+            "TargetName" = "8:libfftw3-3.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_92D4AE0A047D47D3B4B454E40BCAA03E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D083E715C05F4BC7AEBB809F6DD9C9D8"
             {
             "SourcePath" = "8:..\\..\\..\\SwingOSC\\SuperCollider\\SCClassLibrary\\SwingOSC\\JStartRow.sc"
@@ -37270,7 +37370,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D14ABD622C4D4732A72FD8E13180BA1F"
             {
-            "SourcePath" = "8:..\\..\\windows\\Win32Tests.sc"
+            "SourcePath" = "8:..\\Win32Tests.sc"
             "TargetName" = "8:Win32Tests.sc"
             "Tag" = "8:"
             "Folder" = "8:_92D4AE0A047D47D3B4B454E40BCAA03E"
@@ -39030,7 +39130,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DE8700BB251F4833A971B96178D645BA"
             {
-            "SourcePath" = "8:..\\..\\windows\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extSwingOSC.sc"
+            "SourcePath" = "8:..\\SCClassLibrary\\aaa_WinFixesFirst\\windows\\extSwingOSC.sc"
             "TargetName" = "8:extSwingOSC.sc"
             "Tag" = "8:"
             "Folder" = "8:_3BD6173944C641F4B8B3E383C3FD3E05"
@@ -41690,7 +41790,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F3915D445DFF43B3AD2550328A1D5EC7"
             {
-            "SourcePath" = "8:..\\..\\windows\\startup.sc"
+            "SourcePath" = "8:..\\startup.sc"
             "TargetName" = "8:startup.sc"
             "Tag" = "8:"
             "Folder" = "8:_92D4AE0A047D47D3B4B454E40BCAA03E"
@@ -45794,7 +45894,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_61B906329DDF415488741C6698F66F6D"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_CC74CBADE9FA4BE09A5074BB5B2A2327"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
