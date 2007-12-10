@@ -130,7 +130,8 @@ void Onsets_next_rawodf(Onsets *unit, int inNumSamples)
 	// Now to process
 	onsetsds_process(ods, (float*) p);
 	// But we want the ODF, not the triggers, for this special mode...
-	unit->outval = ods->odfvalpost;
+	//unit->outval = ods->odfvalpost;
+	unit->outval = ods->odfvals[0];
 		
 	ZOUT0(0) = unit->outval;
 }
