@@ -41,6 +41,7 @@ extern "C"
 
 	void Onsets_Ctor(Onsets *unit);
 	void Onsets_next(Onsets *unit, int inNumSamples);
+	void Onsets_next_rawodf(Onsets *unit, int inNumSamples);
 	void Onsets_Dtor(Onsets *unit);
 
 }
