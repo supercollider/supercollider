@@ -121,7 +121,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
-				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;DELAYUGENS_EXPORTS;SC_FFT_GREEN"
+				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;DELAYUGENS_EXPORTS;SC_FFT_FFTW"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -185,6 +185,10 @@
 			>
 			<File
 				RelativePath="..\..\source\plugins\Convolution.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ExportHelper.cpp"
 				>
 			</File>
 			<File
