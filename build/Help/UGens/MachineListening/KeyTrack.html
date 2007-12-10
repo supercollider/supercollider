@@ -10,18 +10,18 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8f2116}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6e2a1e}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #662b20}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
 span.s1 {color: #000000}
-span.s2 {color: #0026b4}
-span.s3 {color: #103fa2}
-span.s4 {color: #093aa6}
-span.s5 {color: #001bb9}
-span.s6 {color: #9d1c12}
+span.s2 {color: #002eaf}
+span.s3 {color: #16439e}
+span.s4 {color: #103fa2}
+span.s5 {color: #0026b4}
+span.s6 {color: #8f2116}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -36,8 +36,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s1">b = </span><span class="s2">Buffer</span><span class="s1">.alloc(s,4096,1); </span>//for sampling rates 44100 and 48000</p>
 <p class="p4">//b = Buffer.alloc(s,8192,1); //for sampling rates 88200 and 96000</p>
 <p class="p2"><br></p>
-<p class="p3"><b>keydecay- [ik] </b>Number of seconds for the influence of a window on the final key decision to decay by 40dB (to 0.01 its original value)</p>
-<p class="p3"><b>chromaleak- [ik] </b>Each frame, the chroma values are set to the previous value multiplied by the chromadecay. 0.0 will start each frame afresh with no memory.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><b>keydecay- [sk] </b>Number of seconds for the influence of a window on the final key decision to decay by 40dB (to 0.01 its original value)</p>
+<p class="p3"><b>chromaleak- [sk] </b>Each frame, the chroma values are set to the previous value multiplied by the chromadecay. 0.0 will start each frame afresh with no memory.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">A (12TET major/minor) key tracker based on a pitch class profile of energy across FFT bins and matching this to templates for major and minor scales in all transpositions. It assumes a 440 Hz concert A reference. Output is 0-11<span class="Apple-converted-space">  </span>C major to B major, 12-23 C minor to B minor</p>
