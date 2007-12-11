@@ -18,15 +18,10 @@ Score {
 	}
 	
 	init { arg list;
-		score = list.copy;
-		this.initTree;
-	}
-	
-	initTree {
-		this.add([0.0, ["/g_new", 1]]);
+		score = [[0.0, ["/g_new", 1]]] ++ list;
 		this.sort;
 	}
-	
+		
 	add { arg bundle;
 		score = score.add(bundle)
 	}
@@ -41,7 +36,7 @@ Score {
 		^this.new(list).play(server);
 	}	
 	sort {
-		score = score.sort({ arg a, b; a[0] < b[0] });
+		score = score.sort({ arg a, b; b[0] >= a[0] });
 	}
 	play { arg server, clock, quant=0.0;
 		var size, osccmd, timekeep, inserver, rout;
