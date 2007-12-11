@@ -8,17 +8,17 @@
 <meta name="CocoaVersion" content="824.42">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0424af; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-span.s1 {color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #84331b}
+span.s1 {color: #0424af}
 span.s2 {color: #000000}
-span.s3 {color: #a71e12}
+span.s3 {color: #84331b}
 span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -44,7 +44,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">w.front;</p>
 <p class="p6">)</p>
 <p class="p4"><br></p>
-<p class="p5">Coordinates are the same as that for the window, not relative to the origin of the composite view (as in other gui frameworks).</p>
+<p class="p5">Coordinates are relative to the origin of the composite view.</p>
 <p class="p6">(</p>
 <p class="p6">w = <span class="s1">SCWindow</span>.new;</p>
 <p class="p7"><br></p>
@@ -57,7 +57,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p6">w.front;</p>
 <p class="p6">)</p>
+<p class="p7"><br></p>
+<p class="p6">c.bounds_(Rect(100,0,100,200));</p>
+<p class="p5">c.resize_(5);</p>
 <p class="p4"><br></p>
+<p class="p5"><b>relativeOrigin_</b></p>
+<p class="p5">If this flag is set to false, the former method of adding views is used.</p>
+<p class="p4"><br></p>
+<p class="p6">(</p>
+<p class="p6">w = <span class="s1">SCWindow</span>.new;</p>
+<p class="p7"><br></p>
+<p class="p6">c = <span class="s1">SCCompositeView</span>(w,<span class="s1">Rect</span>(50,0,300,300));</p>
+<p class="p6">c.relativeOrigin_(false);</p>
+<p class="p6">a = <span class="s1">SC2DSlider</span>(c,<span class="s1">Rect</span>(0,0,100,100));<span class="Apple-tab-span">	</span></p>
+<p class="p6">b = <span class="s1">SC2DSlider</span>(c,<span class="s1">Rect</span>(100,100,100,100));</p>
+<p class="p7"><br></p>
+<p class="p6">c.background = <span class="s1">Gradient(Color</span>.rand,Color.rand);</p>
+<p class="p7"><br></p>
+<p class="p6">w.front;</p>
+<p class="p6">)</p>
 <p class="p4"><br></p>
 <p class="p5"><b>keydown bubbling</b></p>
 <p class="p4"><br></p>
@@ -104,13 +122,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><b>hiding / swapping</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p6">(</p>
+<p class="p6">var colors = [Color.blue,Color.red, Color.green];</p>
 <p class="p6">a = <span class="s1">SCWindow</span>.new;</p>
 <p class="p6">q = 3;</p>
 <p class="p7"><br></p>
 <p class="p6">e = <span class="s1">SCButton</span>(a,<span class="s1">Rect</span>(0,0,160,20));</p>
 <p class="p7"><br></p>
 <p class="p6">e.states = <span class="s1">Array</span>.fill(q,{ <span class="s1">arg</span> i;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>[i.asString,<span class="s1">Color</span>.black,<span class="s1">Color</span>.white]</p>
+<p class="p6"><span class="Apple-tab-span">	</span>[i.asString,<span class="s1">Color</span>.white,colors.wrapAt(i)]</p>
 <p class="p6">});</p>
 <p class="p7"><br></p>
 <p class="p6">e.action = { <span class="s1">arg</span> butt;</p>
@@ -122,9 +141,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">c = <span class="s1">Array</span>.fill(q,{ <span class="s1">arg</span> i;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>b = <span class="s1">SCCompositeView</span>(a,<span class="s1">Rect</span>(0,25,300,300));</p>
 <p class="p6"><span class="Apple-tab-span">	</span>b.decorator = <span class="s1">FlowLayout</span>(b.bounds);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>c = <span class="s1">SC2DSlider</span>(b,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="Apple-tab-span">	</span>c = <span class="s1">SC2DSlider</span>(b,<span class="s1">Rect</span>(0,0,100,100))</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(colors.wrapAt(i));</p>
 <p class="p6"><span class="Apple-tab-span">	</span>c.x = 1.0.rand;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>d = <span class="s1">SC2DSlider</span>(b,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="Apple-tab-span">	</span>d = <span class="s1">SC2DSlider</span>(b,<span class="s1">Rect</span>(0,0,100,100))</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(colors.wrapAt(i));</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>d.y = 1.0.rand;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>b.visible = <span class="s1">false</span>;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>b</p>
