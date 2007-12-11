@@ -296,7 +296,7 @@ SCView {  // abstract class
 }
 
 SCContainerView : SCView { // abstract class
-	var <children, <>decorator;
+	var <children, <>decorator, < relativeOrigin = true;
 			
 	add { arg child;
 		children = children.add(child);
@@ -307,6 +307,10 @@ SCContainerView : SCView { // abstract class
 		children.copy.do {|child| child.remove };
 	}
 	
+	relativeOrigin_{|bool|
+		relativeOrigin = bool;
+		this.setProperty(\relativeOrigin, bool);			}	
+			
 	prRemoveChild { arg child;
 		children.remove(child);
 		// ... decorator should re-place all
@@ -1182,51 +1186,17 @@ SCDragBoth : SCDragSink {
 
 SCUserView : SCView {
 	var <>drawFunc;
-	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
+//	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
 	var < clearOnRefresh = true, < relativeOrigin = false;
-	
-	keyDownFunc_{|action|
-		"SCUserView:keyDownFunc deprecated, use SCUserView:keyDownAction".warn;
-		keyDownAction = action;
-	}
 	
 	draw { 
 		drawFunc.value(this) ;	
 	}
-	mouseBeginTrack { arg x, y, modifiers; 
-		var bounds;
-		if(relativeOrigin){
-			bounds = this.bounds;
-			x = (x - bounds.left).clip(0, bounds.width);
-			y = (y - bounds.top).clip(0, bounds.height);
-
-		};	
-		mouseBeginTrackFunc.value(this, x, y, modifiers); 
-	}
-	mouseTrack { arg x, y, modifiers; 
-		var bounds;
-		if(relativeOrigin){
-			bounds = this.bounds;
-			x = (x - bounds.left).clip(0, bounds.width);
-			y = (y - bounds.top).clip(0, bounds.height);
-
-		};
-		mouseTrackFunc.value(this, x, y, modifiers); 
-	}
-	mouseEndTrack { arg x, y, modifiers; 
-		var bounds;
-		if(relativeOrigin){
-			bounds = this.bounds;
-			x = (x - bounds.left).clip(0, bounds.width);
-			y = (y - bounds.top).clip(0, bounds.height);
-
-		};
-		mouseEndTrackFunc.value(this, x, y, modifiers); 
-	}
-//	keyDown { arg key, modifiers, unicode; 
-//		keyDownFunc.value(this, key, modifiers, unicode) 
-//	}
 	
+	mousePosition{
+		^this.getProperty(\mousePosition, Point.new)
+	}
+		
 	clearOnRefresh_{|bool|
 		clearOnRefresh = bool;
 		this.setProperty(\clearOnRefresh, bool);			}
@@ -1234,6 +1204,45 @@ SCUserView : SCView {
 	relativeOrigin_{|bool|
 		relativeOrigin = bool;
 		this.setProperty(\relativeOrigin, bool);			}	
+	
+	/* backwards compatibility */
+	keyDownFunc_{|action|
+		"SCUserView:keyDownFunc deprecated, use SCUserView:keyDownAction".warn;
+		keyDownAction = action;
+	}
+	
+	keyDownFunc{
+		"SCUserView:keyDownFunc deprecated, use SCUserView:keyDownAction".warn;
+		^keyDownAction	
+	}
+	
+	mouseBeginTrackFunc_{|action|
+		"SCUserView:mouseBeginTrackFunc deprecated, use SCUserView:mouseDownAction".warn;
+		mouseDownAction = action;	
+	}
+	mouseBeginTrackFunc{
+		"SCUserView:mouseBeginTrackFunc deprecated, use SCUserView:mouseDownAction".warn;
+		^mouseDownAction;	
+	}	
+
+	mouseTrackFunc_{|action|
+		"SCUserView:mouseTrackFunc deprecated, use SCUserView:mouseMoveAction".warn;
+		mouseMoveAction = action;	
+	}
+	mouseTrackFunc{
+		"SCUserView:mouseTrackFunc deprecated, use SCUserView:mouseMoveAction".warn;
+		^mouseMoveAction;	
+	}	
+
+	mouseEndTrackFunc_{|action|
+		"SCUserView:mouseEndTrackFunc deprecated, use SCUserView:mouseUpAction".warn;
+		mouseUpAction = action;	
+	}
+	
+	mouseEndTrackFunc{
+		"SCUserView:mouseEndTrackFunc deprecated, use SCUserView:mouseUpAction".warn;
+		^mouseUpAction;	
+	}			
 	
 }
 //
@@ -1276,6 +1285,8 @@ SCMultiSliderView : SCView {
 		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled, \step, \elasticResizeMode]
 	}	
 	
+
+	
 	elasticMode_{arg mode;
 		elasticMode =mode;
 		this.setProperty(\elasticResizeMode, mode);
@@ -1296,6 +1307,12 @@ SCMultiSliderView : SCView {
 		this.size = val.size;
 		this.setProperty(\value, val)
 	}
+	
+	valueAction_ { arg val;
+		this.size = val.size;	
+		this.setPropertyWithAction(\value, val);
+	}
+	
 	reference { //returns array
 		^this.getProperty(\referenceValues, Array.newClear(this.size))
 	}
