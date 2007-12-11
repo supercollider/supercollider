@@ -132,6 +132,7 @@ public:
 	virtual void setBounds(SCRect inBounds);
 	virtual SCRect getBounds();
 	virtual Layout getLayout();
+	virtual void setToCoordinateSystem(SCRect inBounds);
 	
 	SCView* next() { return mNext; }
 	SCContainerView* parent() { return mParent; }
@@ -199,6 +200,7 @@ public:
 protected:
 	SCView *mChildren;
 	int mNumChildren;
+	bool mRelativeOrigin;	
 };
 
 class SCCompositeView : public SCContainerView
@@ -208,7 +210,6 @@ public:
 	virtual ~SCCompositeView();
 
 	virtual void setBounds(SCRect inBounds);
-	
 protected:
 };
 
@@ -761,10 +762,12 @@ public:
  	virtual bool canReceiveDrag();
  	virtual void receiveDrag();	
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
 protected:
 	bool mClearOnRefresh;
 	bool mRelativeOrigin;
+	SCPoint mRealtiveMousePoint;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
 	CGLayerRef mCGLayer;
 #endif
