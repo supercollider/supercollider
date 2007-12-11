@@ -10,28 +10,29 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001fe8}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0018e8}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #614026}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4f432c}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #703c21; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #564329; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7a3720}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #703c21}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1432a3}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #594129}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #564329}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #263a97}
 p.p13 {margin: 0.0px 0.0px 0.0px 10.0px; font: 9.0px Monaco}
 p.p14 {margin: 0.0px 0.0px 0.0px 10.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 10.0px; font: 9.0px Monaco; color: #263a97}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #1432a3}
+span.s2 {color: #263a97}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
 span.s5 {color: #606060}
-span.s6 {color: #082bab}
-span.s7 {color: #5f6430}
-span.s8 {color: #0019ba}
-span.s9 {color: #0000bf}
-span.s10 {color: #007300}
-span.s11 {color: #0025b2}
+span.s6 {color: #1e359d}
+span.s7 {color: #62613a}
+span.s8 {color: #0f2caa}
+span.s9 {color: #0626af}
+span.s10 {color: #556824}
+span.s11 {color: #1832a2}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -44,7 +45,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><span class="s3">Se</span><span class="s2">e</span><span class="s3"> also: <a href="SCWindow.html"><span class="s4">SCWindow</span></a>, <a href="Pen.html"><span class="s4">Pen</span></a><b>, </b><a href="Color.html"><span class="s4">Color</span></a>, and <a href="../Collections/String.html"><span class="s4">String</span></a></span></p>
 <p class="p2"><br></p>
-<p class="p3"><b>keyDownFunc_</b></p>
+<p class="p3"><b>keyDownAction_</b></p>
 <p class="p2"><br></p>
 <p class="p3">Set the function which should be evaluated if the view is in focus and a key is pressed. This function will be passed four arguments: the View, the key pressed as a Char, modifier keys (shift, alt, etc.), and the unicode value. Se<span class="s2">e</span> <a href="SCView.html"><span class="s2">SCView</span></a> for more details.</p>
 <p class="p2"><br></p>
@@ -52,7 +53,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// select the window, type something and watch the post window</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = </span><span class="s2">SCWindow</span><span class="s3">.new(</span>"select this window and type something"<span class="s3">);</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c = <span class="s2">SCUserView</span>(w,w.view.bounds);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.keyDownFunc = { <span class="s2">arg</span> view,char,modifiers,unicode;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.keyDownAction = { <span class="s2">arg</span> view,char,modifiers,unicode;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[char, modifiers, unicode].postln;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.drawFunc = {|me|</p>
 <p class="p8"><br></p>
@@ -139,15 +140,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>w.refresh;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><b>mouseBeginTrackFunc_</b></p>
+<p class="p3"><b>mousePosition</b></p>
+<p class="p2"><b></b><br></p>
+<p class="p3">Get the relative position of the mouse cursor.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>mouseDownAction_</b></p>
 <p class="p2"><br></p>
 <p class="p3">Set the function which should be evaluated if the mouse is at the beginning of tracking (mouse-down). This function will be passed four arguments: theView, x coordinate, y coordinate, and keyboard modifiers.</p>
 <p class="p2"><br></p>
-<p class="p3"><b>mouseTrackFunc_</b></p>
+<p class="p3"><b>mouseMoveAction_</b></p>
 <p class="p2"><br></p>
 <p class="p3">Set the function which should be evaluated if the mouse is tracked. This function will be passed four arguments: theView, x coordinate, y coordinate, and keyboard modifiers.</p>
 <p class="p2"><br></p>
-<p class="p3"><b>mouseEndTrackFunc_</b></p>
+<p class="p3"><b>mouseUpAction_</b></p>
 <p class="p2"><br></p>
 <p class="p3">Set the function which should be evaluated if the mouse is at the end of tracking (mouse-up). This function will be passed four arguments: theView, x coordinate, y coordinate, and keyboard modifiers.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -165,13 +170,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>};</p>
 <p class="p5"><span class="Apple-tab-span">	</span>beginTrackFunc = {<span class="s2">|me, x, y, mod|</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>absX = x;</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(</span>"begin path: x=%\n"<span class="s3">,absX);</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(<span class="s5">"begin path: x=% realtive </span>mousePosition<span class="s5">:%\n"</span>,absX, me.mousePosition);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>};</p>
 <p class="p5"><span class="Apple-tab-span">	</span>endTrackFunc = {<span class="s2">|me, x, y, mod|</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(</span>"end path: (absX-x)=%\n"<span class="s3">, (absX-x))</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(<span class="s5">"end path: (absX-x)==% realtive </span>mousePosition<span class="s5">:%\n"</span>,(absX-x), me.mousePosition);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>};</p>
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span>trackFunc = {</span>|me, x, y, mod|</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sat = ((absX-x)/100);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>((me.mousePosition)/(me.bounds.width@me.bounds.height)).postln;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>me.refresh;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>};</p>
 <p class="p9"><br></p>
@@ -181,9 +188,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v = <span class="s2">SCUserView</span>(w, <span class="s2">Rect</span>(20+(i*120), 100, 100, 100));</p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//v.background_(Color.white); // not affecting anything...</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.drawFunc = drawFunc;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseBeginTrackFunc = beginTrackFunc;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseEndTrackFunc = endTrackFunc;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseTrackFunc = trackFunc;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseDownAction = beginTrackFunc;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseUpAction = endTrackFunc;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseMoveAction = trackFunc;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.relativeOrigin = true;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>};</p>
 <p class="p5"><span class="Apple-tab-span">	</span>w.refresh;</p>
@@ -197,12 +204,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span>w = <span class="s2">SCWindow</span>(<span class="s5">"draw on me"</span>, <span class="s2">Rect</span>(128, 64, 340, 360));</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>v = <span class="s2">SCUserView</span>(w,<span class="s2">Rect</span>(0, 0, 340, 360))</p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.mouseTrackFunc_({<span class="s2">|v,x,y|</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tmppoints = tmppoints.add(x@y);</p>
+<p class="p15"><span class="s3"><span class="Apple-tab-span">	</span>v = </span>SCUserView<span class="s3">(w,</span>w.view.bounds<span class="s3">)</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.mouseMoveAction_({<span class="s2">|v,x,y|</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[x,y].postln;</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tmppoints = tmppoints.add(v.mousePosition);</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.refresh;</p>
 <p class="p13"><span class="Apple-tab-span">	</span>})</p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.mouseEndTrackFunc_({<span class="s2">|v,x,y|</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.mouseUpAction_({<span class="s2">|v,x,y|</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>all = all.add(tmppoints.copy);</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tmppoints = [];</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.refresh;</p>
