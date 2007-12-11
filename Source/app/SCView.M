@@ -317,6 +317,13 @@ bool SCView::hit(SCPoint where) const
 {
 	return SCPointInRect(where, mBounds);
 }
+ 
+void SCView::setToCoordinateSystem(SCRect inBounds)
+{
+	mBounds.x = mBounds.x + inBounds.x;
+	mBounds.y = mBounds.y + inBounds.y;
+
+}
 
 void SCView::keyDown(int character, int modifiers, unsigned short keycode)
 {
@@ -879,8 +886,8 @@ void SCView::beginDrag(SCPoint where)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 SCContainerView::SCContainerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mChildren(0), mNumChildren(0)
-{
+	: SCView(inParent, inObj, inBounds), mChildren(0), mNumChildren(0), mRelativeOrigin(true)
+{ 
 }
 
 SCContainerView::~SCContainerView()
@@ -916,6 +923,11 @@ int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	
+	if (strcmp(name, "relativeOrigin")==0) {
+		mRelativeOrigin = IsTrue(slot);
+		return errNone;
+    }		
+	
 	return SCView::setProperty(symbol, slot);
 }	
 
@@ -936,7 +948,13 @@ void SCContainerView::add(SCView *inChild)
 	mNumChildren++;
 	inChild->mParent = this;
 	inChild->mTop = mTop;
+	if(mRelativeOrigin){
+		inChild->setToCoordinateSystem(mBounds);
+	}
+//	bounds = child->getBounds();
+
 	inChild->refresh();
+
 }
 
 void SCContainerView::remove(SCView *inChild)
@@ -964,10 +982,17 @@ void SCContainerView::drawIfNecessary(SCRect inDamage)
     if (SCRectsDoIntersect(inDamage, mBounds) && mVisible) {
             draw(inDamage);
             SCView *child = mChildren;
+			SCView *children[mNumChildren];
+			int k = mNumChildren;
             while (child) {
-                child->drawIfNecessary(inDamage);
-                child = child->mNext;
+//              child->drawIfNecessary(inDamage);
+				children[--k] = child;
+				child = child->next();
             }
+			for(int i=0; i < mNumChildren; i++ ) {
+				child = children[i];
+				child->drawIfNecessary(inDamage);
+			};
             drawDisabled(inDamage);
             drawDragHilite(inDamage);
             drawFocus(inDamage);
@@ -1057,9 +1082,11 @@ void SCCompositeView::setBounds(SCRect inBounds)
     SCView *child = mChildren;
 //    float right = mBounds.x + mBounds.width;
 //    float bottom = mBounds.y + mBounds.height;
+
     while (child) {
         SCRect bounds = child->getBounds();
         Layout layout = child->getLayout();
+		
         float offset;
         switch (layout.mHResize) {
             case layout_FixedLeft : 
@@ -1093,15 +1120,13 @@ void SCCompositeView::setBounds(SCRect inBounds)
                                 );*/
                 bounds.height = (inBounds.height) - ((bounds.y - mBounds.y) + offset);
         }
-
+		
         child->setBounds(bounds); 
-        //bounds = child->getBounds();
         child = child->next();
     }
     // should be limited by the limitations of the contents
     mBounds = inBounds;
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -1706,10 +1731,18 @@ void SCScrollView::drawSubViewIfNecessary(SCRect inDamage)
     if (SCRectsDoIntersect(inDamage, mBounds) && mVisible) {
 		draw(inDamage);
 		SCView *child = mChildren;
+		SCView *children[mNumChildren];
+		int k = mNumChildren;
 		while (child) {
-			child->drawIfNecessary(inDamage);
-			child = child->mNext;
+//              child->drawIfNecessary(inDamage);
+			children[--k] = child;
+			child = child->next();
 		}
+		for(int i=0; i < mNumChildren; i++ ) {
+			child = children[i];
+			child->drawIfNecessary(inDamage);
+		};
+
 		drawDisabled(inDamage);
 		drawDragHilite(inDamage);
 		drawFocus(inDamage);
@@ -1807,9 +1840,10 @@ void SCSlider::draw(SCRect inDamage)
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
     if (mBackground) mBackground->draw(cgc, rect);
-	
+#if 1	
     QDDrawBevelRect(cgc, rect, 1, true);
-	
+#endif	    
+
     CGRect cgThumbRect = SCtoCGRect(mThumbRect);
     if (mKnob) mKnob->draw(cgc, cgThumbRect);
     QDDrawBevelRect(cgc, cgThumbRect, 2, false);
@@ -3791,31 +3825,39 @@ void SCUserView::draw(SCRect inDamage)
 
 void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
 {
-    PyrSlot args[3];
-    SetFloat(args+0, where.x); 
-    SetFloat(args+1, where.y); 
-    SetInt(args+2, modifiers); 
-    sendMessage(method, 3, args, 0);
+	mRealtiveMousePoint.x = where.x - mBounds.x;
+	mRealtiveMousePoint.y = where.y - mBounds.y;
+
+//    PyrSlot args[3];
+//    SetFloat(args+0, where.x); 
+//    SetFloat(args+1, where.y); 
+//    SetInt(args+2, modifiers); 
+//    sendMessage(method, 3, args, 0);
 }
 
 void SCUserView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-    mouseAction(getsym("mouseBeginTrack"), where, modifiers);
+	mRealtiveMousePoint.x = where.x - mBounds.x;
+	mRealtiveMousePoint.y = where.y - mBounds.y;
+//    mouseAction(getsym("mouseBeginTrack"), where, modifiers);
 }
 
   void SCUserView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
   {
 	if (modifiers & NSCommandKeyMask) {
 		beginDrag(where);
-	} else {
-	mouseAction(getsym("mouseTrack"), where, modifiers);
-	}
+	} 
+		mRealtiveMousePoint.x = where.x - mBounds.x;
+	mRealtiveMousePoint.y = where.y - mBounds.y;
+//	else {
+//	mouseAction(getsym("mouseTrack"), where, modifiers);
+//	}
   }
 
 
 void SCUserView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-    mouseAction(getsym("mouseEndTrack"), where, modifiers);
+//    mouseAction(getsym("mouseEndTrack"), where, modifiers);
 }
 
 void SCUserView::keyDown(int character, int modifiers)
@@ -3852,6 +3894,24 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     }		
 	
     return SCView::setProperty(symbol, slot);
+}
+
+int SCUserView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	char *name = symbol->name;
+	
+    if (strcmp(name, "mousePosition")==0) {
+		if(isKindOfSlot(slot, s_point->u.classobj)){
+		
+			PyrSlot *slots = slot->uo->slots;
+			SetFloat(slots+0, mRealtiveMousePoint.x);
+			SetFloat(slots+1, mRealtiveMousePoint.y);
+		}
+		return errNone;
+    }
+	
+	
+    return SCView::getProperty(symbol, slot);
 }
 
 ////////////////////////////////////////////////
