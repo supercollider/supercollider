@@ -241,7 +241,7 @@ below:
 
         [super mouseDown: event];
         [self mouseUpAction: event index: index];
-//		[[self delegate] mouseDown: event];
+		[[self delegate] mouseDown: event];
 
     }
 }
