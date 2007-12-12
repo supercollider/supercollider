@@ -9,15 +9,16 @@
 
 +Stream {
 	
-	fastForward { arg by, tolerance=0;
+	fastForward { arg by, tolerance=0, inevent;
 		var t=0, delta=0, event, scrub;
 		if(by <= 0) { ^0.0 };
+		inevent = inevent ?? { Event.default };
 		while { t.roundUp(tolerance) < by } 
 		{ 
-			event = this.next(Event.default);
+			event = this.next(inevent.copy);
 			if(event.isNil) { ("end of stream. Time left:" + (by - t)).inform; ^t - by };
-			event = event.copy.put(\freq, \rest);
-			delta = event.play;
+			delta = event.delta;
+			event.put(\freq, \rest).play;
 			if(delta.isNil) { ("end of stream. Time left:" + (by - t)).inform; ^t - by };
 			t = t + delta;
 
