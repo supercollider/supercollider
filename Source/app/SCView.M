@@ -886,7 +886,7 @@ void SCView::beginDrag(SCPoint where)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 SCContainerView::SCContainerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mChildren(0), mNumChildren(0), mRelativeOrigin(true)
+	: SCView(inParent, inObj, inBounds), mChildren(0), mNumChildren(0), mRelativeOrigin(false)
 { 
 }
 
