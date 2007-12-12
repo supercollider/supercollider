@@ -371,6 +371,19 @@ SequenceableCollection : Collection {
 		});
 		^list
 	}
+	
+	flatIf { arg func;
+		var list;	
+		list = this.species.new;
+		this.do({ arg item, i;
+			if (item.respondsTo('flat') and: { func.value(item, i) }, {
+				list = list.addAll(item.flat);
+			},{
+				list = list.add(item);
+			});
+		});
+		^list
+	}
 
 	flop {
 		var list, size, maxsize;
