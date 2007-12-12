@@ -90,9 +90,9 @@ Node {
 		var nargs;
 		args = args.asUGenInput; 
 		nargs = List.new;
-		args.pairsDo({ arg control, moreVals; 
-			nargs.addAll([control.asSymbol, moreVals.size, moreVals].flat)}
-		);
+		args.pairsDo { arg control, moreVals; 
+			nargs.addAll([control, moreVals.size, moreVals].flatIf { |x| x.isString.not })
+		};
 		^[16, nodeID] ++ nargs; 
 			// "n_setn"
 	}
