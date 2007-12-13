@@ -1549,14 +1549,6 @@ static int SC_PortAudioStreamCallback( const void *input, void *output,
     return driver->PortAudioCallback( input, output, frameCount, timeInfo, statusFlags );
 }
 
-int64 SC_PortAudioDriver::PortAudioTimeToHostTime(PaTime time) 
-{
-	int s = (uint64)time;
-	int f = (uint64)((time - s)/1.0e-6 * kMicrosToOSCunits);
-
-	return gOSCoffset + ((s << 32) + f);
-};
-
 int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
             unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
             PaStreamCallbackFlags statusFlags )
@@ -1566,7 +1558,9 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
     (void) frameCount, timeInfo, statusFlags; // suppress unused parameter warnings
     
 	try {
-        int64 oscTime = PortAudioTimeToHostTime(timeInfo->outputBufferDacTime );
+		int64 oscTime = GetCurrentOSCTime();
+		int64 temptime = oscTime;
+		
 		mOSCbuftime = oscTime;
 		
 		mFromEngine.Free();
@@ -1612,23 +1606,11 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 
 
 			// run engine
-/*
+
 			int64 schedTime;
 			int64 nextTime = oscTime + oscInc;
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
 				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
-				SC_ScheduledEvent event = mScheduler.Remove();
-				event.Perform();
-				world->mSampleOffset = 0;
-			}
-*/
-
-            // hack for now, schedule events as soon as they arrive
-            
-            int64 schedTime;
-            int64 nextTime = oscTime + oscInc;
-            while ((schedTime = mScheduler.NextTime()) != kMaxInt64) {
-                world->mSampleOffset = 0;
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
 				world->mSampleOffset = 0;

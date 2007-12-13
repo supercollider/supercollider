@@ -234,7 +234,6 @@ public:
             unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
             PaStreamCallbackFlags statusFlags );
 private:
-	int64 PortAudioTimeToHostTime(PaTime time);
 	void GetPaDeviceFromName(const char* device, int* mInOut);
 };
 
