@@ -28,7 +28,11 @@ NumInputBuses : InfoUGenBase {}
 NumAudioBuses : InfoUGenBase {}
 NumControlBuses : InfoUGenBase {}
 NumBuffers : InfoUGenBase {}
-NumRunningSynths : InfoUGenBase {}
+NumRunningSynths : InfoUGenBase {
+	*kr {
+		^this.multiNew('control')
+	}
+}
 
 BufSampleRate : BufInfoUGenBase {}
 BufRateScale : BufInfoUGenBase {}

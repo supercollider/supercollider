@@ -236,6 +236,7 @@ extern "C"
 	void NumControlBuses_Ctor(Unit *unit, int inNumSamples);
 	void NumBuffers_Ctor(Unit *unit, int inNumSamples);
 	void NumRunningSynths_Ctor(Unit *unit, int inNumSamples);
+	void NumRunningSynths_next(Unit *unit, int inNumSamples);
 
 	void BufSampleRate_next(BufInfoUnit *unit, int inNumSamples);
 	void BufSampleRate_Ctor(BufInfoUnit *unit, int inNumSamples);
@@ -436,10 +437,19 @@ void NumBuffers_Ctor(Unit *unit, int inNumSamples)
 	ZOUT0(0) = unit->mWorld->mNumSndBufs;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 void NumRunningSynths_Ctor(Unit *unit, int inNumSamples)
+{
+	if(INRATE(0) != calc_ScalarRate) { SETCALC(NumRunningSynths_next); }
+	ZOUT0(0) = unit->mWorld->mNumGraphs;
+}
+
+void NumRunningSynths_next(Unit *unit, int inNumSamples)
 {
 	ZOUT0(0) = unit->mWorld->mNumGraphs;
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
