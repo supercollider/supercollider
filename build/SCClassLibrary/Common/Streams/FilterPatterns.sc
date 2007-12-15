@@ -347,6 +347,7 @@ Pfindur : FilterPattern {
 		cleanup = cleanup ? EventStreamCleanup.new;
 		loop {
 			inevent = stream.next(event) ?? { ^event };
+			cleanup.update(inevent);
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
 			if (nextElapsed.roundUp(tolerance) >= dur) {
