@@ -410,47 +410,18 @@ Task : PauseStream {
 
 ////////////////////////////////////////////////////////////////////////
 
-//EventStreamPlayer : PauseStream {
-//	var <>event, <>muteCount = 0;
-//	
-//	*new { arg stream, event;
-//		^super.new(stream).event_(event ? Event.default);
-//	}
-//	
-//	stop { stream.next(nil); stream = nextBeat = nil; isWaiting = false;  }
-//	mute { muteCount = muteCount + 1; }
-//	unmute { muteCount = muteCount - 1; }
-//	
-//	next { arg inTime;
-//		var nextTime;
-//		var outEvent = stream.next(event);
-//		if (outEvent.isNil) {
-//			streamHasEnded = stream.notNil;
-//			stream = nextBeat = nil;
-//			^nil
-//		}{
-//			if (muteCount > 0) { outEvent.put(\freq, \rest) };
-//			outEvent.play;
-//			if ((nextTime = outEvent.delta).isNil) { stream = nil };
-//			nextBeat = inTime + nextTime;	// inval is current logical beat
-//			^nextTime
-//		};
-//	}
-//	
-//	asEventStreamPlayer { ^this }
-//}
 
 EventStreamPlayer : PauseStream {
 	var <>event, <>muteCount = 0, <>cleanup;
 	
 	*new { arg stream, event;
-		^super.new(stream).event_(event ? Event.default).cleanup_(Set.new);
+		^super.new(stream).event_(event ? Event.default).cleanup_(EventStreamCleanup.new);
 	}
 	
 	stop { stream = nextBeat = nil; isWaiting = false; 
-		cleanup.do { | c | c.value(event) }; 
-		cleanup.clear;
+		cleanup.terminate
 	 }
+	
 	mute { muteCount = muteCount + 1; }
 	unmute { muteCount = muteCount - 1; }
 	
@@ -459,11 +430,11 @@ EventStreamPlayer : PauseStream {
 		var outEvent = stream.next(event);
 		if (outEvent.isNil) {
 			streamHasEnded = stream.notNil;
+			cleanup.clear;
 			this.stop;
 			^nil
 		}{
-			outEvent[\addToCleanup].do { | f | cleanup.add(f) };
-			outEvent[\removeFromCleanup].do { | f | cleanup.remove(f) };
+			outEvent = cleanup.update(outEvent);
 			
 			if (muteCount > 0) { outEvent.put(\freq, \rest) };
 			outEvent.play;
