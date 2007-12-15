@@ -31,30 +31,31 @@ PfadeIn : FilterPattern {
 }
 
 PfadeOut : PfadeIn {
-	embedInStream { arg inval;
-			var outval, elapsed=0, stream, c;
-			stream = pattern.asStream;
-			loop {
-				outval = stream.next(inval);
-				if(outval.isNil) { ^inval };
-				
-				elapsed = elapsed + outval.delta;
-				if(elapsed.round(tolerance) <= holdTime) {
-					inval = outval.yield;
-				} {
-					c = elapsed - holdTime / fadeTime;
-					if(c >= 1.0) {
-						stream.next(nil);
-						^nil.yield
-					} {
-						outval = outval.copy;
-						outval[\amp] = (1.0 - c.max(0)) * outval[\amp];
-						//outval[\amp] = (1.0 - (c.max(0) * pi * 0.25).sin) * outval[\amp];
+	asStream { | cleanup| ^Routine({ arg inval; this.embedInStream(inval, cleanup) }) }
 
-						inval = outval.yield;
-					}
+	embedInStream { arg inval, cleanup;
+		var outval, elapsed=0, stream, c;
+		stream = pattern.asStream;
+		cleanup = cleanup ? EventStreamCleanup.new;
+		loop {
+			inval = stream.next(inval) ?? { ^cleanup.exit(inval) };
+			cleanup.update(inval);
+			
+			elapsed = elapsed + inval.delta;
+			if(elapsed.round(tolerance) <= holdTime) {
+				inval = inval.yield;
+			} {
+				c = elapsed - holdTime / fadeTime;
+				if(c >= 1.0) {
+					inval = cleanup.cleanup(inval);
+					^inval.yield;
+				} {
+					inval[\amp] = (1.0 - c.max(0)) * inval[\amp];
+
+					inval = inval.yield;
 				}
 			}
+		}
 	}
 }
 
