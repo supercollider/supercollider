@@ -407,7 +407,42 @@ EventPatternProxy : TaskProxy {
 	
 	*defaultValue { ^Event.silent }
 
-	constrainStream { arg str;
+	embedInStream { arg inval, cleanup;
+		var pat, stream, outval, test, resetTest, count=0;
+		cleanup = cleanup ? EventStreamCleanup.new;
+		pat = pattern;
+		test = condition;
+		resetTest = reset;
+		stream = pattern.asStream;
+		while {
+			this.receiveEvent(inval);	
+			if(
+				(reset !== resetTest) 
+				or: { pat !== pattern and: { test.value(outval, count) } }
+			) {
+						pat = pattern;
+						test = condition;
+						resetTest = reset;
+						count = 0;
+						// inval is the next event that will be yielded
+						// constrainStream may add some values to it
+						// so IT MUST BE YIELDED
+						stream = this.constrainStream(stream, inval = inval.copy, cleanup);
+						cleanup = EventStreamCleanup.new;
+			};
+			outval = stream.next(inval);
+			count = count + 1;
+			outval.notNil
+		}{
+			outval = cleanup.update(outval);
+			inval = outval.yield;
+			if(inval.isNil) { ^nil.alwaysYield } 		
+		};
+		^inval
+		
+	}
+
+	constrainStream { arg str, inval, cleanup;
 		var delta, tolerance, new, quantVal, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
 		^if(quant.notNil) {
 			
@@ -431,21 +466,21 @@ EventPatternProxy : TaskProxy {
 
 			if(fadeTime.isNil) {
 				if(delta == 0) {
-					str.next(nil); // finish
+					cleanup.cleanup(inval);
 					new 
 				} {
-					Pseq([EmbedOnce(Pfindur(delta, str, tolerance)), new])
+					Pseq([EmbedOnce(Pfindur(delta, str, tolerance).asStream(cleanup)), new])
 				}
 			}{
 				
 				Ppar([
-					EmbedOnce(PfadeOut(str, fadeTime, delta, tolerance)),
+					EmbedOnce(PfadeOut(str, fadeTime, delta, tolerance).asStream(cleanup)),
 					PfadeIn(new, fadeTime, delta, tolerance)
 				])
 			}
-		} { pattern }.asStream
+		} { cleanup.cleanup(inval); pattern }.asStream
 	}
-	
+
 	*parallelise { arg list; ^Ppar(list) }
 	
 	outset_ { arg val; quant = quant.instill(2, val) }
