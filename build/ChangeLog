@@ -9,6 +9,7 @@
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
 * 2007-11-18 fixed a bug in prTry / protect - jr
 * 2007-11-27 lock avoided in nextTimeOnGrid
+* 2007-12-12 Node-setn fixed when using integers as control indices - jr
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 * 2007-11-16 MIDIOut.connect and disconnect - mb
@@ -20,6 +21,9 @@
 * 2007-11-21 StartUp protects its added functions from each other - if one fails this no longer prevents others from running - ds
 * 2007-11-25 added Pclutch and moved StreamClutch to common - jr
 * 2007-11-27 Function:inEnvir added - jh
+* 2007-12-12 added Collection.flatIf - jr
+* 2007-12-15 added control rate functionality to NumRunningSynths - jr
+
 
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
