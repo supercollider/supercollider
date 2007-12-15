@@ -4147,17 +4147,17 @@ void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
 	float relaxcoef, clampcoef;
 	
 	if(ZIN0(1) != unit->m_clamp_in) {
-		clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
-		unit->m_clamp_in = clampcoef;
+		clampcoef = unit->m_clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
+		unit->m_clamp_in = ZIN0(1);
 	} else {
-		clampcoef = unit->m_clamp_in;
+		clampcoef = unit->m_clampcoef;
 	}
 	
 	if(ZIN0(2) != unit->m_relax_in) {
-		relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
-		unit->m_relax_in = relaxcoef;
+		relaxcoef = unit->m_relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
+		unit->m_relax_in = ZIN0(2);
 	} else {
-		relaxcoef = unit->m_relax_in;
+		relaxcoef = unit->m_relaxcoef;
 	}
 	
 	float previn = unit->m_previn;
