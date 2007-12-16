@@ -21,8 +21,6 @@ EventStreamCleanup {
 	}
 	
 	cleanup { | event |
-		"cleaning".postln;
-		allFunctions.postln;
 		allFunctions.do(_.value);
 		event[\removeFromCleanup] = event[\removeFromCleanup].addAll(allFunctions);
 		this.clear;
