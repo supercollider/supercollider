@@ -4090,8 +4090,6 @@ void Amplitude_Ctor(Amplitude* unit)
 	ZOUT0(0) = unit->m_previn = ZIN0(0);
 }
 
-#if 1
-
 void Amplitude_next(Amplitude* unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -4114,31 +4112,6 @@ void Amplitude_next(Amplitude* unit, int inNumSamples)
 	
 	unit->m_previn = previn;
 }
-
-#else 
-
-void Amplitude_next(Amplitude* unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *in = ZIN(0);
-	
-	float maxval = 0.f;
-	LOOP(inNumSamples,
-		float val = fabs(ZXP(in)); 
-		if (val > maxval) maxval = val;
-	);
-	
-	float previn = unit->m_previn;
-	float coef = maxval < previn ? unit->m_relaxcoef : unit->m_clampcoef ;
-
-	LOOP(inNumSamples, ZXP(out) = previn = maxval + (previn - maxval) * coef; );
-	
-	unit->m_previn = previn;
-}
-
-#endif
-
-#if 1
 
 void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
 {
@@ -4175,44 +4148,6 @@ void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
 	
 	unit->m_previn = previn;
 }
-
-#else 
-
-void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *in = ZIN(0);
-	
-	float relaxcoef, clampcoef;
-	
-	if(ZIN0(1) != unit->m_clamp_in) {
-		clampcoef = exp(log1/(ZIN0(1) * SAMPLERATE));
-	} else {
-		clampcoef = unit->m_clamp_in;
-	}
-	
-	if(ZIN0(2) != unit->m_relax_in) {
-		relaxcoef = exp(log1/(ZIN0(2) * SAMPLERATE));
-	} else {
-		relaxcoef = unit->m_relax_in;
-	}
-	
-	float maxval = 0.f;
-	LOOP(inNumSamples,
-		float val = fabs(ZXP(in)); 
-		if (val > maxval) maxval = val;
-	);
-	
-	float previn = unit->m_previn;
-	float coef = maxval < previn ? relaxcoef : clampcoef ;
-
-	LOOP(inNumSamples, ZXP(out) = previn = maxval + (previn - maxval) * coef; );
-	
-	unit->m_previn = previn;
-}
-
-#endif
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
