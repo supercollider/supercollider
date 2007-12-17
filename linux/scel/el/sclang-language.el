@@ -325,7 +325,7 @@ Return value is nil or (beg end) of defun."
   (save-excursion
     (let ((orig (point))
 	  beg end)
-      (and (beginning-of-defun-raw 1)
+      (and (progn (beginning-of-defun-raw 1) t)
 	   (setq beg (point))
 	   (condition-case nil (forward-list 1) (error nil))
 	   (setq end (point))
