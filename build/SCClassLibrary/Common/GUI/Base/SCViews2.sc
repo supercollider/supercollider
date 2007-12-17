@@ -43,7 +43,7 @@ SCTextField : SCNumberBox {
 		^this.string
 	}
 	defaultCanReceiveDrag { 
-		^currentDrag.isString 
+		^currentDrag.respondsTo(\asString)
 	}
 	defaultReceiveDrag {
 		this.valueAction = currentDrag;
