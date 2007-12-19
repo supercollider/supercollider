@@ -12,7 +12,7 @@ Instr  {
 		var previous;
 		if(func.isNil,{ ^this.at(name) });
 		name = this.symbolizeName(name);
-		previous = Library.atList(name.copy.addFirst(Instr));
+		previous = Library.atList(name.copy.addFirst(this));
 		if(previous.notNil,{
 			previous.func = func;
 			previous.init(specs,outSpec);
@@ -113,7 +113,7 @@ Instr  {
 		^(this.defArgAt(i) ?? {this.specs.at(i).tryPerform(\default)})
 	}
 	
-	defName { ^Instr.symbolizeName(name).collect(_.asString).join($.) }
+	defName { ^this.symbolizeName(name).collect(_.asString).join($.) }
 	asSynthDef { arg args,outClass=\Out;
 		var synthDef;
 		synthDef = InstrSynthDef.new;
@@ -200,7 +200,7 @@ Instr  {
 
 	*objectAt { arg name;
 		var symbolized,search,path,pathParts,rootPath,instr;
-		symbolized = Instr.symbolizeName(name);
+		symbolized = this.symbolizeName(name);
 		search = Library.atList(([this] ++ symbolized));
 		if(search.notNil,{ ^search });
 
@@ -217,7 +217,7 @@ Instr  {
 	}
 	*findPath { arg symbolized;
 		var quarkInstr,found;
-		found = this.findPathIn(symbolized,Instr.dir);
+		found = this.findPathIn(symbolized,this.dir);
 		if(found.notNil,{ ^found });
 		
 		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr").pathMatch;
@@ -278,7 +278,7 @@ Instr  {
 		Library.global.removeAt(this)
 	}
 
-	asString { ^"Instr(" ++ this.defName.asCompileString ++ ")" }
+	asString { ^"%(%)".format(this.class.name, this.defName.asCompileString) }
 		
 	*initClass {
 		Class.initClassTree(Document);
