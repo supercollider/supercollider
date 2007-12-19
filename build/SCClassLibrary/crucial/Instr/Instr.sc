@@ -113,7 +113,7 @@ Instr  {
 		^(this.defArgAt(i) ?? {this.specs.at(i).tryPerform(\default)})
 	}
 	
-	defName { ^this.symbolizeName(name).collect(_.asString).join($.) }
+	defName { ^this.class.symbolizeName(name).collect(_.asString).join($.) }
 	asSynthDef { arg args,outClass=\Out;
 		var synthDef;
 		synthDef = InstrSynthDef.new;
