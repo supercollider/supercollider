@@ -47,6 +47,7 @@
 /* Begin PBXBuildFile section */
 		372EFD210CFAFB3A00265BE0 /* Onsets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 372EFD1E0CFAFB3A00265BE0 /* Onsets.cpp */; };
 		372EFD220CFAFB3A00265BE0 /* onsetsds.c in Sources */ = {isa = PBXBuildFile; fileRef = 372EFD1F0CFAFB3A00265BE0 /* onsetsds.c */; };
+		376B688C0D1ACFE90027D452 /* ML_SpecStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 376B688B0D1ACFE90027D452 /* ML_SpecStats.cpp */; };
 		379E00FC0CACF09E00D633C7 /* PV_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */; };
 		379E010C0CACF29700D633C7 /* FFTInterfaceTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */; };
 		467CF7260D0CB8BA003D0C4C /* BeatTrack2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 467CF7240D0CB8BA003D0C4C /* BeatTrack2.cpp */; };
@@ -296,6 +297,7 @@
 		372EFD1E0CFAFB3A00265BE0 /* Onsets.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Onsets.cpp; path = ../../Source/plugins/Onsets.cpp; sourceTree = "<group>"; };
 		372EFD1F0CFAFB3A00265BE0 /* onsetsds.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = onsetsds.c; path = ../../Source/plugins/onsetsds.c; sourceTree = "<group>"; };
 		372EFD200CFAFB3A00265BE0 /* onsetsds.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = onsetsds.h; path = ../../Source/plugins/onsetsds.h; sourceTree = "<group>"; };
+		376B688B0D1ACFE90027D452 /* ML_SpecStats.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ML_SpecStats.cpp; path = Source/plugins/ML_SpecStats.cpp; sourceTree = "<group>"; };
 		379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PV_UGens.cpp; path = Source/plugins/PV_UGens.cpp; sourceTree = "<group>"; };
 		379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FFTInterfaceTable.cpp; path = Source/plugins/FFTInterfaceTable.cpp; sourceTree = "<group>"; };
 		46781BC805C8505F002B7D2B /* FFT_UGens.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FFT_UGens.h; sourceTree = "<group>"; };
@@ -616,6 +618,7 @@
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
+				376B688B0D1ACFE90027D452 /* ML_SpecStats.cpp */,
 				945D14B80CD9A74B00464EBF /* ChangeLog */,
 				379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */,
 				379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */,
@@ -1223,7 +1226,6 @@
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
 			projectDirPath = "";
-			projectRoot = "";
 			targets = (
 				940E424D0B45B6D0002DADC8 /* All */,
 				949318BA0C1931070018AB50 /* BinaryOpUGens */,
@@ -1269,6 +1271,7 @@
 				468DB1520CFB5F4600FA8C88 /* KeyTrack.cpp in Sources */,
 				468DB2B10D01D0C300FA8C88 /* MFCC.cpp in Sources */,
 				467CF7260D0CB8BA003D0C4C /* BeatTrack2.cpp in Sources */,
+				376B688C0D1ACFE90027D452 /* ML_SpecStats.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

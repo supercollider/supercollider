@@ -101,6 +101,35 @@ struct MFCC : Unit {
 	
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct FFTAnalyser_Unit : Unit
+{
+	float outval;
+	
+	// Not always used: multipliers which convert from bin indices to freq vals, and vice versa.
+	// See also the macros for deriving these.
+	float m_bintofreq /* , m_freqtobin */;
+};
+
+struct FFTAnalyser_OutOfPlace : FFTAnalyser_Unit
+{
+	int m_numbins;
+	float *m_tempbuf;
+};
+
+struct SpecFlatness : FFTAnalyser_Unit
+{
+};
+
+struct SpecPcile : FFTAnalyser_OutOfPlace 
+{
+	bool m_interpolate;
+};
+
+struct SpecCentroid : FFTAnalyser_Unit
+{
+};
 
 
 
@@ -118,5 +147,15 @@ extern "C"
 	void MFCC_next(MFCC *unit, int wrongNumSamples);
 	void MFCC_Ctor(MFCC *unit);
 	void MFCC_Dtor(MFCC *unit);
+
+	void SpecFlatness_Ctor(SpecFlatness *unit);
+	void SpecFlatness_next(SpecFlatness *unit, int inNumSamples);
+	//
+	void SpecPcile_Ctor(SpecPcile *unit);
+	void SpecPcile_next(SpecPcile *unit, int inNumSamples);
+	void SpecPcile_Dtor(SpecPcile *unit);
+	//
+	void SpecCentroid_Ctor(SpecCentroid *unit);
+	void SpecCentroid_next(SpecCentroid *unit, int inNumSamples);
 }
 

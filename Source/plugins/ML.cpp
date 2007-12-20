@@ -72,5 +72,8 @@ extern "C" void load(InterfaceTable *inTable) {
 
 	DefineDtorCantAliasUnit(BeatTrack2);
 	
+	DefineSimpleUnit(SpecFlatness);
+	DefineDtorUnit(SpecPcile);
+	DefineSimpleUnit(SpecCentroid);
 }
 
