@@ -3,7 +3,7 @@
 // user-visible changes in preparing SC v3.2, SuperCollider book release:
 
 // HEADLINES:
-* 2007-11-xx new suite of machine listening ugens - Loudness, BeatTrack, Onsets, KeyTrack - nc, ds
+* 2007-11-xx new suite of machine listening ugens - Loudness, BeatTrack, Onsets, KeyTrack, SpecCentroid, SpecPcile, SpecFlatness - nc, ds
 
 // BUGFIXES:
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
