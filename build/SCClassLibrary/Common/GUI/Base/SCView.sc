@@ -224,7 +224,6 @@ SCView {  // abstract class
 	}
 	defaultCanReceiveDrag { ^false }
 	receiveDrag {|x,y|
-		this.debug(x,y);
 		if(receiveDragHandler.notNil,{ receiveDragHandler.value(this, x, y) },{ this.defaultReceiveDrag(x,y) });
 		currentDrag = currentDragString = nil;
 	}
