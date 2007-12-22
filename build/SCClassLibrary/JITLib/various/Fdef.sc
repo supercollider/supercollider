@@ -113,12 +113,14 @@ Maybe : FuncProxy {
 				callers = callers.add(this);
 				// evaluate function
 				val = func.value;
-				// remove again
+				
 				callFunc.value(this, callers, val);
+				
 			} { |exception|
 				if(verbose and: { exception.isKindOf(Exception)} ) {
 					("Error or incomplete specification" + exception.errorString).postln;
 				};
+				// remove again
 				callers.pop;
 				current = previous;
 			};
