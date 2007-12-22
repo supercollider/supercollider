@@ -443,7 +443,9 @@ EventPatternProxy : TaskProxy {
 	}
 
 	constrainStream { arg str, inval, cleanup;
-		var delta, tolerance, new, quantVal, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
+		var delta, tolerance, new;
+		var quantVal, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
+		
 		^if(quant.notNil) {
 			
 			if(quant.isSequenceableCollection) {
@@ -573,8 +575,21 @@ Pdef : EventPatternProxy {
 				{
 					pat = pat.pattern; // optimization. outer pattern takes care for replacement
 					// preserve information from outer pattern, but not delta.
-					outerEvent = currentEnvironment.copy;
+					
 					recursionLevel = ~recursionLevel;
+					if(~transparency.isNil or: 
+						{ ~transparency > (recursionLevel ? 0) }
+					) {
+						outerEvent = currentEnvironment.copy
+					} {
+						"default event used".postln;
+						outerEvent = Event.default;
+						outerEvent.use {
+							~type = \phrase;
+							~recursionLevel = recursionLevel;
+						}
+					};
+					
 					if(recursionLevel.notNil) {
 						if(recursionLevel > 0) {
 							// in recursion, some inner values have to be overridden
@@ -609,7 +624,7 @@ Pdef : EventPatternProxy {
 		
 		};
 		
-		Event.parentEvents.default.eventTypes.put(\phrase, phraseEventFunc);
+		Event.addEventType(\phrase, phraseEventFunc);
 	}
 	
 }
