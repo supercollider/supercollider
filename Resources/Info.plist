@@ -18,7 +18,7 @@
 				<string>text/rtf</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>NSRTFPboardType</string>
+			<string>RTF</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>RTF </string>
@@ -38,7 +38,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>rtf</string>
 			<key>CFBundleTypeName</key>
-			<string>NSRTFDPboardType</string>
+			<string>RTFD (with attachments)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
@@ -61,7 +61,7 @@
 				<string>text/plain</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>NSStringPboardType</string>
+			<string>Plain Text</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>****</string>
@@ -99,7 +99,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>sc</string>
 			<key>CFBundleTypeName</key>
-			<string>SuperCollider document</string>
+			<string>SC class file</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
