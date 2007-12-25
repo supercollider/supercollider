@@ -81,5 +81,5 @@ CocoaGUI {
 //	tabbedPane: SCTabbedPane
 
 	///////////////// crucial /////////////////
-//	*startRow { ^StartRow }
+	*startRow { ^StartRow }
 }
