@@ -132,7 +132,7 @@ FlowView : SCViewHolder {
 	reflowAll {
 		view.decorator/*.bounds_(this.bounds)*/.reset;
 		view.children.do({ |widget|
-			if(widget.isKindOf( StartRow ),{
+			if(widget.isKindOf( GUI.startRow ),{
 				view.decorator.nextLine
 			},{
 				view.decorator.place(widget);
@@ -183,7 +183,7 @@ FlowView : SCViewHolder {
 		^Rect(0,0,x,y)
 	}
 	startRow {
-		view.add(StartRow.new); //won't really put a view in there yet
+		view.add(GUI.startRow.new(this)); //won't really put a view in there yet
 		view.decorator.nextLine
 	}
 	removeOnClose { arg updater;
