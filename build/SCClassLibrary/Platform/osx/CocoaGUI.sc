@@ -81,5 +81,7 @@ CocoaGUI {
 //	tabbedPane: SCTabbedPane
 
 	///////////////// crucial /////////////////
-	*startRow { ^StartRow }
+	// no longer needed b/c SwingOSC can add the StartRow class directly
+	// as of at least 0.56
+//	*startRow { ^StartRow }
 }
