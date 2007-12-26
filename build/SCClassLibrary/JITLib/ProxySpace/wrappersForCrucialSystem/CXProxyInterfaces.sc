@@ -10,9 +10,9 @@ CXPlayerControl : AbstractPlayControl {
 		proxy = argProxy;
 		
 		if(proxy.isNeutral) {
-			player.prepareForPlay; // first initialization for lazy rate detection
-			ok = proxy.initBus(player.rate ? 'audio', player.numChannels ? 2);
-			player.free;
+			source.prepareForPlay; // first initialization for lazy rate detection
+			ok = proxy.initBus(source.rate ? 'audio', source.numChannels ? 2);
+			source.free;
 		};
 		
 		bus = proxy.asBus.as(SharedBus);
