@@ -5,17 +5,18 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-span.s1 {color: #0019b7}
-span.s2 {color: #a71e12}
-span.s3 {color: #326f17}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
+span.s1 {color: #0025b2}
+span.s2 {color: #982316}
+span.s3 {color: #416d1f}
 span.s4 {color: #000000}
 </style>
 </head>
@@ -35,6 +36,7 @@ span.s4 {color: #000000}
 <p class="p3">as soon as the first time the source is set, it derives its bus arguments from that input</p>
 <p class="p4"><br></p>
 <p class="p5">~x = { <span class="s1">Array</span>.fill(14, { <span class="s1">SinOsc</span>.kr(1.0.rand, 0, 100) }) }; <span class="s2">//~x is now 14 channels control rate</span></p>
+<p class="p5">~x;</p>
 <p class="p4"><br></p>
 <p class="p3">in order to reset these properties, clear is used:</p>
 <p class="p4"><br></p>
@@ -54,16 +56,20 @@ span.s4 {color: #000000}
 <p class="p4"><br></p>
 <p class="p3">if no number of channels is passed in, the default value is used:</p>
 <p class="p2"><br></p>
-<p class="p5">~test.ar; <span class="s2">//2</span></p>
-<p class="p5">~krtest.kr; <span class="s2">//1</span></p>
+<p class="p5">~test.ar; <span class="s2">// 2</span></p>
+<p class="p5">~krtest.kr; <span class="s2">// 1</span></p>
 <p class="p4"><br></p>
 <p class="p3">the default can be set in the class NodeProxy:</p>
 <p class="p4"><br></p>
 <p class="p5"><span class="s1">NodeProxy</span>.defaultNumAudio = 3;</p>
 <p class="p5"><span class="s1">NodeProxy</span>.defaultNumControl = 13;</p>
 <p class="p4"><br></p>
-<p class="p5">~test3.ar; <span class="s2">//3</span></p>
+<p class="p5">~test3.ar; <span class="s2">// 3</span></p>
 <p class="p5">~krtest3.kr; <span class="s2">// 13</span></p>
+<p class="p7"><br></p>
+<p class="p6">// set them back:</p>
+<p class="p5"><span class="s1">NodeProxy</span>.defaultNumAudio = 2;</p>
+<p class="p5"><span class="s1">NodeProxy</span>.defaultNumControl = 1;</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3">also if a proxy is used as a map source, control rate is assumed:</p>
@@ -82,12 +88,13 @@ span.s4 {color: #000000}
 <p class="p5">~x.clear; ~e.clear; ~f.clear;</p>
 <p class="p5">~e.defineBus(<span class="s3">\audio</span>, 1);</p>
 <p class="p5">~x = ~e + ~f.squared + ~r;</p>
+<p class="p5">~x;</p>
 <p class="p4"><br></p>
 <p class="p5">~x.clear; ~e.clear; ~f.clear;</p>
 <p class="p5">~e.defineBus(<span class="s3">\audio</span>, 3);</p>
 <p class="p5">~x = ~e;</p>
 <p class="p2"><br></p>
-<p class="p3">if a rate1 proxy is used as rate2 input, the rate is converted</p>
+<p class="p3">if a rate-1 proxy is used as rate-2 input, the rate is converted</p>
 <p class="p3">and the channels are expanded in the ususal multichannel expansion pattern:</p>
 <p class="p4"><br></p>
 <p class="p5">~f.defineBus(<span class="s3">\control</span>);</p>
