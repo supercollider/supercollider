@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -16,17 +16,26 @@ p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
-p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ad140d}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {color: #0000bf}
-span.s4 {font: 12.0px Helvetica; color: #000000}
-span.s5 {color: #007300}
-span.s6 {color: #bf0000}
+span.s4 {color: #bf0000}
+span.s5 {font: 12.0px Helvetica; color: #000000}
+span.s6 {color: #007300}
+span.s7 {text-decoration: underline ; color: #0021e7}
+span.s8 {color: #606060}
+span.s9 {color: #001bb9}
+span.s10 {color: #2c7014}
+span.s11 {color: #ad140d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -49,9 +58,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// example:</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s3">Maybe</span>.new;</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s3">Maybe</span>(a + 6);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value; <span class="s4">// =&gt; nil</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.value = 1;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value; <span class="s4">// =&gt; 7</span></p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>source</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -79,184 +88,185 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><b>doesNotUnderstand(selector, ... args) </b>(called by any message that Maybe doesn't understand)</p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>returns a composition function that, when evaluated, returns the value.</p>
-<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// example:</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s3">Maybe</span>.new;</p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// example:</p>
+<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = <span class="s3">Maybe</span>.new;</p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.respondsTo(</span><span class="s6">\flop</span><span class="s2">) </span>// false: Maybe constructs a placeholder instead</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s3">Maybe</span>(a.flop);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value; <span class="s4">// =&gt; nil</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.value = [1, 2, [2, 3]];</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value;<span class="Apple-tab-span">	</span></span>// =&gt; [ [ 1, 2, 2 ], [ 1, 2, 3 ] ]<span class="Apple-tab-span">	</span></p>
 <p class="p7"><br></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p9">// the following examples use a <a href="LazyEnvir.html">LazyEnvir</a> with a Maybe as a proxy class.</p>
-<p class="p9">// instead of writing a = Maybe.new; a.value = something;<span class="Apple-converted-space"> </span></p>
-<p class="p9">// one can simply write ~a = something.</p>
-<p class="p9">// the Maybe is implictly created for you.</p>
+<p class="p11">// the following examples use a <a href="LazyEnvir.html"><span class="s7">LazyEnvir</span></a> with a Maybe as a proxy class.</p>
+<p class="p11">// instead of writing a = Maybe.new; a.value = something;<span class="Apple-converted-space"> </span></p>
+<p class="p11">// one can simply write ~a = something.</p>
+<p class="p11">// the Maybe is implictly created for you.</p>
 <p class="p5"><br></p>
-<p class="p12">(</p>
-<p class="p12"><span class="Apple-tab-span">	</span>p.pop.clear;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>p = <span class="s3">LazyEnvir</span>.new.linkDoc;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>p.proxyClass = <span class="s3">Maybe</span>;</p>
-<p class="p12">);</p>
+<p class="p13">(</p>
+<p class="p14"><span class="Apple-tab-span">	</span>p.pop.clear;</p>
+<p class="p14"><span class="Apple-tab-span">	</span>p = <span class="s3">LazyEnvir</span>.new;</p>
+<p class="p14"><span class="Apple-tab-span">	</span>p.proxyClass = <span class="s3">Maybe</span>;</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span>p.linkDoc; </span>// here: connect to current doc only.</p>
+<p class="p13">);</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p13">// sets</p>
-<p class="p12">~a = <span class="s3">Set</span>[0, 4, 5, 7];</p>
-<p class="p12">~b = <span class="s3">Set</span>[4, 5];</p>
-<p class="p12">~c = ~a | ~b;</p>
-<p class="p12">~c.value;</p>
-<p class="p12">~b = <span class="s3">Set</span>[4, 5, 13, 0];</p>
-<p class="p12">~c.value;</p>
-<p class="p12">~b = Set[4, ~w, 5];</p>
-<p class="p12">~c.value;</p>
-<p class="p12">~w = Set[2, 3];</p>
-<p class="p12">~c.value;</p>
-<p class="p12">~a = Set[4, 5, Set[2, 4]];</p>
-<p class="p12">~c.value;</p>
-<p class="p12">~a = Set[4, 5, ~w];</p>
-<p class="p12">~c.value;</p>
+<p class="p15">// sets</p>
+<p class="p14">~a = <span class="s3">Set</span>[0, 4, 5, 7];</p>
+<p class="p14">~b = <span class="s3">Set</span>[4, 5];</p>
+<p class="p15"><span class="s2">~c = ~a union: ~b; </span>// union of the two sets (note that the shortcut | does not work here.).<span class="Apple-converted-space"> </span></p>
+<p class="p15"><span class="s2">~d = ~a sect: ~b; </span>// intersection of a and b</p>
+<p class="p15"><span class="s2">~c.postcs;</span><span class="s8">""</span><span class="s2">; </span>// post the whole construction</p>
+<p class="p14">~d.postcs;<span class="s8">""</span>;</p>
+<p class="p15"><span class="s2">~c.value; </span>// Set[ 4, 0, 5, 7 ]</p>
+<p class="p15"><span class="s2">~d.value; </span>// Set[ 4, 5 ]</p>
+<p class="p13">~b = <span class="s9">Set</span>[4, 5, 13, 0];</p>
+<p class="p13">~c.value;</p>
+<p class="p15"><span class="s2">~d.value; </span>// Set[ 4, 0, 5 ]</p>
+<p class="p15"><span class="s2">~b.source.add(~w); </span>// add another placeholder</p>
+<p class="p15"><span class="s2">~c.value; </span>// it is part of the union.</p>
+<p class="p15"><span class="s2">~d.value; </span>// but not part of the intersection</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p13">// envirs</p>
-<p class="p12">~a = (note: [1, 2]);</p>
-<p class="p12">~b = (dur: 1);</p>
-<p class="p12">~c = ~a.putAll(~b)</p>
-<p class="p12">~c.value;</p>
-<p class="p12">~a = (note: [1, 2, 4]);</p>
-<p class="p12">~c.value;</p>
-<p class="p12">~d = ~a.at(<span class="s5">\note</span>);</p>
-<p class="p12">~d.value;</p>
-<p class="p12">~a = (note: [7.5]);</p>
-<p class="p12">~d.value; <span class="s6">// [7.5]</span></p>
+<p class="p16">// envirs</p>
+<p class="p13">~a = (note: [1, 2]);</p>
+<p class="p13">~b = (dur: 1);</p>
+<p class="p15"><span class="s2">~c = ~a.putAll(~b) </span>// provisionally put everything into the placholder<span class="Apple-converted-space"> </span></p>
+<p class="p13">~c.value;</p>
+<p class="p13">~a = (note: [1, 2, 4]);</p>
+<p class="p13">~c.value;</p>
+<p class="p13">~d = ~a.at(<span class="s10">\note</span>);</p>
+<p class="p13">~d.value;</p>
+<p class="p13">~a = (note: [7.5]);</p>
+<p class="p13">~d.value; <span class="s11">// [7.5]</span></p>
 <p class="p3"><br></p>
-<p class="p13">// patterns</p>
-<p class="p12">~a = <span class="s3">Pseq</span>([1, 2, 3]);</p>
-<p class="p12">~b = <span class="s3">Pseq</span>([5, ~a, ~a + 10], <span class="s3">inf</span>);</p>
-<p class="p12">~x = ~b.asStream</p>
-<p class="p3"><br></p>
-<p class="p12">~x.nextN(10)</p>
-<p class="p3"><br></p>
-<p class="p12">~a = <span class="s3">Prand</span>([100, 200]);</p>
-<p class="p12">~x.nextN(10);</p>
-<p class="p3"><br></p>
-<p class="p14"><br></p>
-<p class="p13">// to do : flop!</p>
-<p class="p3"><br></p>
-<p class="p13">//////////////// deep recursion</p>
-<p class="p3"><br></p>
-<p class="p13">// with normal functions:</p>
-<p class="p12">f = { <span class="s3">|x|</span> if(x &lt;= 1) { 1 } { x * f.(x - 1) } };</p>
-<p class="p12">f.(11)</p>
+<p class="p16">// patterns</p>
+<p class="p13">~a = <span class="s9">Pseq</span>([1, 2, 3]);</p>
+<p class="p13">~b = <span class="s9">Pseq</span>([5, ~a, ~a + 10], <span class="s9">inf</span>);</p>
+<p class="p13">~b.value.asStream.nextN(10);</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p12">~faculty = { <span class="s3">|x|</span> if(x == 1) { 1 } { x * ~faculty.(x - 1) } };</p>
-<p class="p13"><span class="s2">~faculty.(12) </span>// doesn't work. here we do want recursion ...</p>
+<p class="p13">~a = <span class="s9">Prand</span>([100, 200]);</p>
+<p class="p13">~b.value.asStream.nextN(10);</p>
 <p class="p3"><br></p>
-<p class="p13">// for explicit recursion use "apply"</p>
-<p class="p12">~faculty = { <span class="s3">|x|</span> if(x == 1) { 1 } { x * ~faculty.apply(x - 1) } };</p>
-<p class="p12">~faculty.(12)</p>
+<p class="p17"><br></p>
+<p class="p16">// to do : flop!</p>
 <p class="p3"><br></p>
-<p class="p13">// safety:</p>
-<p class="p13"><span class="s3">Maybe</span><span class="s2">.maxDepth = 1e2; </span>// higher depth is risky..</p>
-<p class="p12">~faculty = { <span class="s3">|x|</span><span class="Apple-converted-space">  </span>x * ~faculty.apply(x - 1)<span class="Apple-converted-space">  </span>}; <span class="s6">// infinite recursion</span></p>
-<p class="p12">~faculty.(12)</p>
+<p class="p16">//////////////// deep recursion</p>
 <p class="p3"><br></p>
-<p class="p13"><span class="s3">Maybe</span><span class="s2">.maxDepth = </span><span class="s3">nil</span><span class="s2">; </span>// unsafe again.</p>
+<p class="p16">// with normal functions:</p>
+<p class="p13">f = { <span class="s9">|x|</span> if(x &lt;= 1) { 1 } { x * f.(x - 1) } };</p>
+<p class="p13">f.(12)</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p13">//////////////// recursion prevention tests</p>
+<p class="p13">~faculty = { <span class="s9">|x|</span> if(x == 1) { 1 } { x * ~faculty.(x - 1) } };</p>
+<p class="p16"><span class="s2">~faculty.(12) </span>// doesn't work (=&gt; nil). here we _do_ want recursion ...</p>
 <p class="p3"><br></p>
-<p class="p12">~b = ~a;</p>
-<p class="p12">~a = ~b;</p>
-<p class="p12">~a.value;</p>
+<p class="p16">// for explicit recursion use "apply"</p>
+<p class="p13">~faculty = { <span class="s9">|x|</span> if(x == 1) { 1 } { x * ~faculty.apply(x - 1) } };</p>
+<p class="p13">~faculty.(12)</p>
 <p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p12">~a = ~b;</p>
-<p class="p12">~b = ~c;</p>
-<p class="p12">~c = ~a;</p>
-<p class="p12">~a.value;</p>
-<p class="p3"><br></p>
-<p class="p12">~a = ~b + ~c;</p>
-<p class="p12">~c = ~a;</p>
-<p class="p12">~a.value;</p>
+<p class="p15">/*// safety (not yet implemented)</p>
+<p class="p15">Maybe.maxDepth = 1e2; // higher depth is risky..</p>
+<p class="p15">~faculty = { |x|<span class="Apple-converted-space">  </span>x * ~faculty.apply(x - 1)<span class="Apple-converted-space">  </span>}; // infinite recursion</p>
+<p class="p15">~faculty.(12)</p>
+<p class="p18"><br></p>
+<p class="p15">Maybe.maxDepth = nil; // unsafe again.*/</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p12">~a = ~b;</p>
-<p class="p12">~b = 19;</p>
-<p class="p12">~a.value;</p>
-<p class="p12">~b.value;</p>
+<p class="p16">//////////////// recursion prevention tests</p>
 <p class="p3"><br></p>
-<p class="p13">// function evaluation and argument passing</p>
-<p class="p3"><br></p>
-<p class="p12">~a = { <span class="s3">|x|</span> x + 2 };</p>
-<p class="p12">~a.value;</p>
-<p class="p3"><br></p>
-<p class="p12">~a.value(~c);</p>
-<p class="p12">~b = 2000;</p>
-<p class="p12">~a.value(~b);</p>
-<p class="p12">~x = [600, 1000];</p>
-<p class="p3"><br></p>
-<p class="p12">(~a + 1).value(~b); <span class="s6">// 2003</span></p>
-<p class="p12">(~a + 1).value(~x); <span class="s6">// [ 603, 1003 ]</span></p>
-<p class="p12">(~a + 1).value({ 8 }); <span class="s6">// binary op func.</span></p>
-<p class="p12">(~a + 1).value({ 5 + 3 }).value <span class="s6">// 11</span></p>
-<p class="p3"><br></p>
-<p class="p12">~a = { <span class="s3">|x|</span> x + 2 + ~b };</p>
-<p class="p12">~a.value(8);</p>
-<p class="p3"><br></p>
-<p class="p12">~c = <span class="s3">nil</span>;</p>
-<p class="p12">~a = { <span class="s3">|x|</span><span class="Apple-converted-space">  </span>x + 2 + ~c }; <span class="s6">// ~c is undefined.</span></p>
-<p class="p12">~a.value(8);</p>
-<p class="p3"><br></p>
-<p class="p13"><span class="s2">~c = 100; </span>// define ~c</p>
-<p class="p3"><br></p>
-<p class="p13"><span class="s2">~a.value(8); </span>// now returns a value.</p>
-<p class="p3"><br></p>
-<p class="p13"><span class="s2">~c = ~b; </span>// now recursion?</p>
-<p class="p12">~b = ~a;</p>
-<p class="p13"><span class="s2">~a.value(8); </span>// caught recursion</p>
-<p class="p3"><br></p>
-<p class="p12">~c = { 100.rand }; <span class="s6">// ~c is a function</span></p>
-<p class="p3"><br></p>
-<p class="p12">~a.value(8);</p>
-<p class="p12">~a.value(8);</p>
-<p class="p3"><br></p>
-<p class="p12">~c = { ~a + ~b };</p>
-<p class="p13"><span class="s2">~a.value(8);<span class="Apple-tab-span">	</span></span>// ~c is a recursion with ~a</p>
+<p class="p14">~b = ~a;</p>
+<p class="p14">~a = ~b;</p>
+<p class="p14">~a.value; <span class="s4">// =&gt; nil</span></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p13">// function composition</p>
-<p class="p12">~a = {<span class="s3">|x|</span> x + 1 };</p>
-<p class="p13"><span class="s2">~v = ~a &lt;&gt; ~a &lt;&gt; ~a; </span>// same as: { ~a.(~a.(~a)) }</p>
-<p class="p12">~v.value(0);</p>
+<p class="p13">~a = ~b;</p>
+<p class="p13">~b = ~c;</p>
+<p class="p13">~c = ~a;</p>
+<p class="p13">~a.value; <span class="s4">// =&gt; nil</span></p>
 <p class="p3"><br></p>
-<p class="p12">~a = {<span class="s3">|x|</span> x + 2 };</p>
-<p class="p13"><span class="s2">~v.value(0); </span>// transparent.</p>
+<p class="p13">~a = ~b + ~c;</p>
+<p class="p13">~c = ~a;</p>
+<p class="p13">~a.value; <span class="s4">// =&gt; nil</span></p>
 <p class="p3"><br></p>
-<p class="p13">// {|x| x }.valueEnvir // doesn't work with current implementation of Function:valueEnvir</p>
+<p class="p3"><br></p>
+<p class="p13">~a = ~b;</p>
+<p class="p13">~b = 19;</p>
+<p class="p13">~a.value; <span class="s4">// =&gt; 19</span></p>
+<p class="p13">~b.value; <span class="s4">// =&gt; 19</span></p>
+<p class="p3"><br></p>
+<p class="p16">// function evaluation and argument passing</p>
+<p class="p3"><br></p>
+<p class="p13">~a = { <span class="s9">|x|</span> x + 2 };</p>
+<p class="p13">~a.value;<span class="Apple-converted-space">  </span><span class="s4">// =&gt; nil</span></p>
+<p class="p3"><br></p>
+<p class="p13">~a.value(~c);<span class="Apple-converted-space">  </span><span class="s4">// =&gt; nil</span></p>
+<p class="p13">~b = 2000;</p>
+<p class="p13">~a.value(~b); <span class="s4">// =&gt; 2002</span></p>
+<p class="p13">~x = [600, 1000];</p>
+<p class="p3"><br></p>
+<p class="p13">(~a + 1).value(~b); <span class="s11">// 2003</span></p>
+<p class="p13">(~a + 1).value(~x); <span class="s11">// [ 603, 1003 ]</span></p>
+<p class="p13">(~a + 1).value({ 8 }); <span class="s11">// binary op func.</span></p>
+<p class="p13">(~a + 1).value({ 5 + 3 }).value <span class="s11">// 11</span></p>
+<p class="p3"><br></p>
+<p class="p13">~a = { <span class="s9">|x|</span> x + 2 + ~b };</p>
+<p class="p13">~a.value(8); <span class="s4">// 2010</span></p>
+<p class="p3"><br></p>
+<p class="p13">~c = <span class="s9">nil</span>;</p>
+<p class="p13">~a = { <span class="s9">|x|</span><span class="Apple-converted-space">  </span>x + 2 + ~c }; <span class="s11">// ~c is undefined.</span></p>
+<p class="p13">~a.value(8); <span class="s4">// =&gt; nil</span></p>
+<p class="p3"><br></p>
+<p class="p16"><span class="s2">~c = 100; </span>// define ~c</p>
+<p class="p3"><br></p>
+<p class="p16"><span class="s2">~a.value(8); </span>// now returns a value.</p>
+<p class="p3"><br></p>
+<p class="p16"><span class="s2">~c = ~b; </span>// now recursion?</p>
+<p class="p13">~b = ~a;</p>
+<p class="p16"><span class="s2">~a.value(8); </span>// caught recursion<span class="s2"><span class="Apple-converted-space"> </span></span><span class="s4"> =&gt; nil</span></p>
+<p class="p3"><br></p>
+<p class="p13">~c = { 100.rand }; <span class="s11">// ~c is a function</span></p>
+<p class="p3"><br></p>
+<p class="p13">~a.value(8);</p>
+<p class="p13">~a.value(8);</p>
+<p class="p3"><br></p>
+<p class="p13">~c = { ~a + ~b };</p>
+<p class="p16"><span class="s2">~a.value(8);<span class="Apple-tab-span">	</span></span>// ~c is a recursion with ~a<span class="Apple-converted-space"> </span><span class="s2"> </span><span class="s4">=&gt; nil</span></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p13">// calculations with functions:</p>
-<p class="p12">~c = 0;</p>
-<p class="p12">~a = { <span class="s3">|ff|</span> { ff = ff + 1; ~c + ff + 2 + ~c } };</p>
-<p class="p12">~x = ~a.value(8);</p>
-<p class="p13"><span class="s2">~x.value; </span>// return 11, 12, 13...</p>
-<p class="p12">~x.value;</p>
-<p class="p12">~x.value;<span class="Apple-converted-space"> </span></p>
-<p class="p12">~c = 100;</p>
-<p class="p13"><span class="s2">~x.value; </span>// return 214, 215 ...</p>
-<p class="p12">~x.value;</p>
+<p class="p16">// function composition</p>
+<p class="p13">~a = {<span class="s9">|x|</span> x + 1 };</p>
+<p class="p16"><span class="s2">~v = ~a &lt;&gt; ~a &lt;&gt; ~a; </span>// same as: { ~a.(~a.(~a)) }</p>
+<p class="p13">~v.value(0); <span class="s4">// =&gt; 3</span></p>
 <p class="p3"><br></p>
-<p class="p13">// binary op functions:</p>
-<p class="p12">~c = 0;</p>
-<p class="p12">~a = { <span class="s3">|ff|</span> { [600, 800] } + { ff + 2 + ~c } };</p>
+<p class="p13">~a = {<span class="s9">|x|</span> x + 2 };</p>
+<p class="p16"><span class="s2">~v.value(0); </span>// transparent.<span class="Apple-converted-space"> </span><span class="s4"> =&gt; 6</span></p>
 <p class="p3"><br></p>
-<p class="p12">~x = ~a.value(8);</p>
-<p class="p13"><span class="s2">~x.value; </span>// return [ 610, 810 ]</p>
+<p class="p16">// {|x| x }.valueEnvir // doesn't work with current implementation of Function:valueEnvir</p>
 <p class="p3"><br></p>
-<p class="p12">~c = { [10, -10].rand };</p>
-<p class="p13"><span class="s2">~x.value; </span>// return random between [ 610..620, 800..810 ]</p>
+<p class="p3"><br></p>
+<p class="p16">// calculations with functions:</p>
+<p class="p13">~c = 0;</p>
+<p class="p13">~a = { <span class="s9">|ff|</span> { ff = ff + 1; ~c + ff + 2 + ~c } };</p>
+<p class="p13">~x = ~a.value(8);</p>
+<p class="p16"><span class="s2">~x.value; </span>// return 11, 12, 13...</p>
+<p class="p13">~x.value;</p>
+<p class="p13">~x.value;<span class="Apple-converted-space"> </span></p>
+<p class="p13">~c = 100;</p>
+<p class="p16"><span class="s2">~x.value; </span>// return 214, 215 ...</p>
+<p class="p13">~x.value;</p>
+<p class="p3"><br></p>
+<p class="p16">// binary op functions:</p>
+<p class="p13">~c = 0;</p>
+<p class="p13">~a = { <span class="s9">|ff|</span> { [600, 800] } + { ff + 2 + ~c } };</p>
+<p class="p3"><br></p>
+<p class="p13">~x = ~a.value(8);</p>
+<p class="p16"><span class="s2">~x.value; </span>// return [ 610, 810 ]</p>
+<p class="p3"><br></p>
+<p class="p13">~c = { [10, -10].rand };</p>
+<p class="p16"><span class="s2">~x.value; </span>// return random between [ 610..620, 800..810 ]</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
