@@ -357,9 +357,10 @@ PauseStream : Stream
 	stop {
 		stream = nil;
 		isWaiting = false;
+		this.changed(\stopped);
 	}
 	removedFromScheduler { nextBeat = nil; this.stop }
-	streamError { stream = nextBeat = nil;  streamHasEnded = true; isWaiting = false; }
+	streamError { this.removedFromScheduler; streamHasEnded = true;  }
 	
 	wasStopped { 
 		^streamHasEnded.not and: { stream.isNil } // stopped by clock or stop-message
@@ -387,8 +388,12 @@ PauseStream : Stream
 
 	next { arg inval; 
 		var nextTime = stream.next(inval);
-		if (nextTime.isNil) { streamHasEnded = stream.notNil; stream = nextBeat = nil }
-			{ nextBeat = inval + nextTime };	// inval is current logical beat
+		if (nextTime.isNil) { 
+			streamHasEnded = stream.notNil; 
+			this.removedFromScheduler;
+		} { 
+			nextBeat = inval + nextTime 
+		};	// inval is current logical beat
 		^nextTime
 	}
 	awake { arg beats, seconds, inClock;
@@ -473,4 +478,4 @@ EventStreamPlayer : PauseStream {
 	}
 
 }
-////////////////////////////////////////////////////////////////////////
+
