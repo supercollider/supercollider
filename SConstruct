@@ -753,7 +753,7 @@ plugins.append(
 # machine listening ugens
 # fft ugens
 mlEnv = pluginEnv.Copy()
-mlSources = Split('Source/plugins/ML.cpp Source/plugins/Loudness.cpp Source/plugins/BeatTrack.cpp Source/plugins/Onsets.cpp Source/plugins/onsetsds.c Source/plugins/KeyTrack.cpp Source/plugins/MFCC.cpp Source/plugins/SCComplex.cpp Source/plugins/BeatTrack2.cpp')
+mlSources = Split('Source/plugins/ML.cpp Source/plugins/Loudness.cpp Source/plugins/BeatTrack.cpp Source/plugins/Onsets.cpp Source/plugins/onsetsds.c Source/plugins/KeyTrack.cpp Source/plugins/MFCC.cpp Source/plugins/SCComplex.cpp Source/plugins/BeatTrack2.cpp Source/plugins/ML_SpecStats.cpp')
 plugins.append(
     mlEnv.SharedLibrary(
     make_plugin_target('ML_UGens'), mlSources))
