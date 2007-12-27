@@ -72,21 +72,22 @@ fork {
 	var pat, trig, rate, which, mfv, numbers, both, dial, sig, n = 8;
 	mfv = [[697, 770, 852, 941], [1209, 1336, 1477, 1633]];
 	numbers = [[3, 1]] ++ {:[a,b], a<-(0..2), b<-(0..2)}.all;
+	n = Dwhite(7, 12, inf);
 	rate = Dseq([ Dwhite(2, 7, 1), Dbrown(0.1, 0.2, 0.01, n) ], inf);
 	
-	trig = Trig.kr(TDuty.kr(rate, 0, Dseq((1..n+1), inf)), 0.09);
+	trig = Trig.kr(TDuty.kr(rate, 0, Dseq((1..10), inf)), 0.09);
 	pat = Latch.kr(trig, trig);
 	which = Hasher.kr(pat * MouseX.kr).range(0, numbers.size).trunc.poll(trig, "");
 	both = Select.kr(which, numbers);
 	dial = Select.kr(both, mfv.flop);
 	sig = SinOsc.ar(dial) * 0.05 * trig;
-	
+	[0, 
 	DelayC.ar(
 		sig,
 		0.2,
 		LFDNoise3.kr(0.5).range(0, 0.01)
 	) 
-	+ GrayNoise.ar(0.08.dup)
+	+ GrayNoise.ar(0.01) + HPF.ar(GrayNoise.ar(0.02), 3000)]
 }.play
 )
 
@@ -110,9 +111,40 @@ axiom = "0";
 		var trig = TDuty.ar(dt, 0, 
 			Dseq(str.collectAs(_.digit, Array))
 		);
-		var freq = ExpRand(200, i + 1 * 10100);
+		var freq = ExpRand(200, i + 1 / 7 * 10100);
 		Ringz.ar(trig, freq * [1, 1.2, 1.5], ExpRand(2 ** i.neg * 0.1, 1.101) ).sum.distort
 	}.dup(7), 0.5) * 0.3
+}.play;
+)
+
+
+
+// sturmian sequencer II
+(
+var rules, axiom;
+"MathLib".include; // needs MathLib
+
+rules = [
+	"0" -> "01",
+	"1" -> "0"
+];
+
+axiom = "0";
+
+{
+	var n = 7, trig = 0;
+	
+	Splay.ar({ |i|
+		var str = axiom.rewriteString(rules, i + 6);
+		var dt = 2 ** (n - i).neg * 20;
+		var trig = TDuty.ar(dt, 0, 
+			Dseq(str.collectAs(_.digit, Array), inf)
+		);
+		var freq = TExpRand.kr(200, (n - i) / n * 10100, trig);
+		trig = BPF.ar(trig, LFNoise2.kr(0.1, 0.02, 1) * freq, 0.2);
+		Ringz.ar(trig, freq * [1, 1.1, 1.2], ExpRand(2 ** i.neg * 0.1, 0.5)).sum.distort;
+		
+	}.dup(n), 0.5) * 0.3
 }.play;
 )
 
@@ -160,7 +192,7 @@ var f, g;
 f = { | saw |
 	var freq, u, amp, rate;
 	
-	rate = ExpRand(0.05, 2);
+	rate = ExpRand(0.1, 2);
 	freq = if(0.6.coin) { 
 		LFNoise1.kr(rate.dup).exprange(0.01, 10) 
 	} { 
