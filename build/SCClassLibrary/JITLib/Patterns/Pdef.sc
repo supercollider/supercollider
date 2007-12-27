@@ -3,23 +3,20 @@
 
 PatternProxy : Pattern {
 	var <source, <pattern, <>envir;
-	var <>clock, quant, <>condition=true, reset;
+	var >clock, quant, <>condition=true, reset;
 				// quant new pattern insertion. can be [quant, offset]
 				// in EventPatternProxy it can be [quant, offset, onset]
 				
 	classvar <>defaultQuant, defaultEnvir;
 	
 	*new { arg source;
-		^super.new.init(source)
+		^super.new.source_(source)
 	}
 		
 	*default { ^1 } // safe for duration patterns
 	*defaultValue { ^1 }
 	
-	init { arg src;
-		clock = TempoClock.default; 
-		this.source = src;
-	}
+	clock { ^clock ? TempoClock.default }
 	
 	quant { ^quant ??  { this.class.defaultQuant } }
 	quant_ { arg val; quant = val }
@@ -79,7 +76,7 @@ PatternProxy : Pattern {
 		resetTest = reset;
 		stream = pattern.asStream;
 		while {
-			this.receiveEvent(inval);	
+			this.receiveEvent(inval); // used in subclass
 			
 			if(
 				(reset !== resetTest) 
@@ -96,6 +93,7 @@ PatternProxy : Pattern {
 			outval.notNil
 		}{
 			inval = outval.yield;
+			// maybe this is not needed anymore?
 			if(this.isEventPattern and: inval.isNil) { ^nil.alwaysYield }
 		};
 		^inval
@@ -110,7 +108,7 @@ PatternProxy : Pattern {
 			var stream = pattern.asStream;
 			default = default ?? { this.class.defaultValue };
 			loop {
-				this.receiveEvent(inval);
+				this.receiveEvent(inval); // used in subclass
 				if(
 					(reset !== resetTest) 
 					or: { pat !== pattern and: { test.value(outval, count) } }
@@ -125,6 +123,7 @@ PatternProxy : Pattern {
 				count = count + 1;
 				outval = outval ? default;
 				inval = outval.yield;
+				// same here...
 				if(this.isEventPattern and: inval.isNil) { ^nil.alwaysYield }
 			}
 		}
@@ -139,7 +138,7 @@ PatternProxy : Pattern {
 	sched { arg func;
 		if(quant.isNil) 
 			{ func.value } 
-			{ clock.schedAbs(quant.nextTimeOnGrid(clock), { func.value; nil }) }
+			{ this.clock.schedAbs(quant.nextTimeOnGrid(this.clock), { func.value; nil }) }
 	}
 	
 	storeArgs { ^[pattern] }
@@ -302,7 +301,7 @@ TaskProxy : PatternProxy {
 	////////// playing interface //////////
 	
 	playOnce { arg argClock, doReset = (false), quant;
-		clock = argClock ? clock;
+		var clock = argClock ? this.clock;
 		^PauseStream.new(this.asProtected.asStream).play(clock, doReset, quant ? this.quant)
 	}
 	
@@ -499,7 +498,7 @@ EventPatternProxy : TaskProxy {
 	// playing one instance //
 	
 	playOnce { arg argClock, protoEvent, quant;
-		^this.fork(argClock ? clock, quant ? this.quant, protoEvent)
+		^this.fork(argClock ? this.clock, quant ? this.quant, protoEvent)
 	}
 	
 	
@@ -533,7 +532,7 @@ Pdef : EventPatternProxy {
 	classvar <>all;	
 				
 	storeArgs { ^[key] }
-	
+		
 	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
@@ -544,7 +543,6 @@ Pdef : EventPatternProxy {
 		^res
 	
 	}
-	
 	
 	map { arg ... args;
 		if(envir.isNil) { this.envir = () };
@@ -569,7 +567,7 @@ Pdef : EventPatternProxy {
 				freq = ~freq.value;
 				rest = freq.isKindOf(Symbol); // check for outer rests
 				if(rest) { ~freq = freq };
-				pat = all.at(~instrument);
+				pat = (~repository ? all).at(~instrument);
 				
 				if(pat.notNil and: { embeddingLevel < 8 })
 				{
@@ -582,7 +580,6 @@ Pdef : EventPatternProxy {
 					) {
 						outerEvent = currentEnvironment.copy
 					} {
-						"default event used".postln;
 						outerEvent = Event.default;
 						outerEvent.use {
 							~type = \phrase;
