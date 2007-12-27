@@ -5,32 +5,33 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a3220e}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #a3220e}
-p.p14 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0027ee}
-span.s1 {color: #002aff}
+p.p12 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #bf0000}
+p.p14 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016e6}
+span.s1 {color: #1031f7}
 span.s2 {color: #000000}
-span.s3 {color: #0028b7}
+span.s3 {color: #0000bf}
 span.s4 {color: #606060}
-span.s5 {color: #3a6c19}
-span.s6 {color: #0000ff}
+span.s5 {color: #007300}
+span.s6 {color: #0018f7}
 span.s7 {font: 12.0px Helvetica}
 span.s8 {font: 12.0px Helvetica; color: #000000}
 span.s9 {text-decoration: underline}
+span.s10 {font: 12.0px Helvetica; color: #0016e6}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -64,10 +65,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// This throws an error. Can't write a control rate signal to an audio rate bus</p>
 <p class="p7"><span class="Apple-tab-span">	</span>{<span class="s3">Out</span>.ar(0, <span class="s3">SinOsc</span>.kr)}.play;</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// This will work as the audio rate signal is downsampled to control rate</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Server</span>.internal.boot;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>{<span class="s3">Out</span>.kr(0, <span class="s3">SinOsc</span>.ar)}.scope;<span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>{<span class="s3">Out</span>.kr(0, <span class="s3">SinOsc</span>.ar)}.scope;<span class="s2"><span class="Apple-tab-span">	</span></span></p>
 <p class="p2"><br></p>
 <p class="p3">(This limitation is not universal amongst audio rate UGens however, and most will accept control rate signals for some or all of their arguments. Some will even convert control rate inputs to audio rate if needed, filling in the extra values through a process called interpolation.)</p>
 <p class="p2"><br></p>
@@ -79,8 +80,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// both write to bus 1, and their output is mixed</p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>x = </span><span class="s3">Synth</span><span class="s2">(</span>"tutorial-args"<span class="s2">, [</span>"out"<span class="s2">, 1, </span>"freq"<span class="s2">, 660]);</span></p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>y = </span><span class="s3">Synth</span><span class="s2">(</span>"tutorial-args"<span class="s2">, [</span>"out"<span class="s2">, 1, </span>"freq"<span class="s2">, 770]);</span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span>x = </span><span class="s3">Synth</span><span class="s2">(</span>"tutorial-args"<span class="s2">, [</span>"out"<span class="s2">, 1, </span>"freq"<span class="s2">, 660]);</span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span>y = </span><span class="s3">Synth</span><span class="s2">(</span>"tutorial-args"<span class="s2">, [</span>"out"<span class="s2">, 1, </span>"freq"<span class="s2">, 770]);</span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creating a Bus Object</b></p>
 <p class="p2"><br></p>
@@ -89,12 +90,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Just as many UGens have ar and kr methods, Bus has two commonly used creation methods: Bus-audio and Bus-control. These each take two arguments: a Server object, and the number of channels.</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b = </span><span class="s3">Bus</span><span class="s2">.control(s, 2); </span>// Get a two channel control Bus</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">c = </span><span class="s3">Bus</span><span class="s2">.audio(s); <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Get a one channel private audio Bus (one is the default)</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>c = </span><span class="s3">Bus</span><span class="s2">.audio(s); <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Get a one channel private audio Bus (one is the default)</p>
 <p class="p2"><br></p>
 <p class="p3">You may be wondering what a 'two channel' bus is, since we haven't mentioned these before. You should recall that when Out has an Array as its second argument it will write the channels of the Array to consecutive busses. Recall this example from <a href="SynthDefs and Synths.html"><span class="s1">SynthDefs and Synths</span></a>:</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>(</p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s3">SynthDef</span><span class="s2">.new(</span>"tutorial-SinOsc-stereo"<span class="s2">, { </span><span class="s3">var</span><span class="s2"> outArray;</span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s3">SynthDef</span><span class="s2">.new(</span>"tutorial-SinOsc-stereo"<span class="s2">, { </span><span class="s3">var</span><span class="s2"> outArray;</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>outArray = [<span class="s3">SinOsc</span>.ar(440, 0, 0.2), <span class="s3">SinOsc</span>.ar(442, 0, 0.2)];</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">Out</span><span class="s2">.ar(0, outArray); </span>// writes to busses 0 and 1<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).play;</p>
@@ -102,10 +103,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p3">The truth is that there aren't multichannel busses per se, but Bus objects are able to represent a series of busses with consecutive indices. The <i>encapsulate</i> several adjacent sever-side busses into a single Bus object, allowing you to treat them as a group. This turns out to be rather handy.</p>
 <p class="p2"><br></p>
-<p class="p3">When you're working with so-called 'private' busses (i.e. anything besides the input and output channels; all control busses are private) you generally want to make sure that that bus is only used for exactly what you want. The point after all is to keep things separate. You could do this by carefully considering which indices to use, but Bus allows for this to be done automatically. Each Server object has a bus allocator, and when you make a Bus object, it reserves those private indices, and will not give them out again until freed. You can find out the index of a Bus by using its 'index' method.</p>
+<p class="p3">When you're working with so-called 'private' busses (i.e. anything besides the input and output channels; all control busses are 'private') you generally want to make sure that that bus is only used for exactly what you want. The point after all is to keep things separate. You could do this by carefully considering which indices to use, but Bus allows for this to be done automatically. Each Server object has a bus allocator, and when you make a Bus object, it reserves those private indices, and will not give them out again until freed. You can find out the index of a Bus by using its 'index' method. Normally however, you will not need to store this value, as instances of Bus can be passed directly as UGen inputs or Synth args.</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>s.reboot; </span>// this will restart the server app and thus reset the bus allocators</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b = </span><span class="s3">Bus</span><span class="s2">.control(s, 2);<span class="Apple-tab-span">	</span></span>// a 2 channel control Bus</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b.index; <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// this should be zero</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b.numChannels <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Bus also has a numChannels method</p>
@@ -118,7 +119,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">You can free up the indices used by a Bus by calling its 'free' method. This allows them to be reallocated.</p>
 <p class="p2"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span>b = <span class="s3">Bus</span>.control(s, 2);</p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b.free; </span>// free the indices. You can't use this Bus object after that<span class="s2"><span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b.free; </span>// free the indices. You can't use this Bus object after that<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Note that this doesn't actually make the bus on the server go away, it's still there. 'free' just lets the allocator know that you're done using this bus for the moment, and it can freely reallocate its index.</p>
 <p class="p2"><br></p>
@@ -135,18 +136,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// this will add freqOffset to whatever is read in from the bus</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, <span class="s3">SinOsc</span>.ar(<span class="s3">In</span>.kr(bus) + freqOffset, 0, 0.5));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">SynthDef</span>(<span class="s4">"tutorial-Outfreq"</span>, { <span class="s3">arg</span> freq = 400, bus;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.kr(bus, <span class="s3">SinOsc</span>.kr(1, 0, freq/40, freq));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>b = <span class="s3">Bus</span>.control(s,1);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>(</p>
-<p class="p7"><span class="Apple-tab-span">	</span>x = <span class="s3">Synth</span>.new(<span class="s4">"tutorial-Outfreq"</span>, [<span class="s5">\bus</span>, b.index]);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>y = <span class="s3">Synth</span>.after(x, <span class="s4">"tutorial-Infreq"</span>, [<span class="s5">\bus</span>, b.index]);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>z = <span class="s3">Synth</span>.after(x, <span class="s4">"tutorial-Infreq"</span>, [<span class="s5">\bus</span>, b.index, \freqOffset, 200]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>x = <span class="s3">Synth</span>.new(<span class="s4">"tutorial-Outfreq"</span>, [<span class="s5">\bus</span>, b]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>y = <span class="s3">Synth</span>.after(x, <span class="s4">"tutorial-Infreq"</span>, [<span class="s5">\bus</span>, b]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>z = <span class="s3">Synth</span>.after(x, <span class="s4">"tutorial-Infreq"</span>, [<span class="s5">\bus</span>, b, <span class="s5">\freqOffset</span>, 200]);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>x.free; y.free; z.free; b.free;</p>
 <p class="p2"><br></p>
@@ -167,7 +168,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// this will be our effects output</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(effectBus, source * (1 - direct));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">SynthDef</span>(<span class="s4">"tutorial-DecaySin"</span>, { <span class="s3">arg</span> outBus = 0, effectBus, direct = 0.5;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> source;</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Decaying pulses of a modulating Sine wave. We'll add reverb later.</p>
@@ -177,30 +178,30 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// this will be our effects output</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(effectBus, source * (1 - direct));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">SynthDef</span>(<span class="s4">"tutorial-Reverb"</span>, { <span class="s3">arg</span> outBus = 0, inBus;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> input;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>input = <span class="s3">In</span>.ar(inBus, 1);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a low rent reverb</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// aNumber.do will evaluate it's function argument a corresponding number of times</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// {}.dup(n) will evaluate the function n times, and return an Array of the results</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// The default for n is 2, so this makes a stereo reverb</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>16.do({ input = <span class="s3">AllpassC</span>.ar(input, 0.04, { <span class="s3">Rand</span>(0.001,0.04) }.dup, 3)});</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(outBus, input);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b = </span><span class="s3">Bus</span><span class="s2">.audio(s,1); </span>// this will be our effects bus</p>
 <p class="p7"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>(</p>
-<p class="p7"><span class="Apple-tab-span">	</span>x = <span class="s3">Synth</span>.new(<span class="s4">"tutorial-Reverb"</span>, [<span class="s5">\inBus</span>, b.index]);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>y = <span class="s3">Synth</span>.before(x, <span class="s4">"tutorial-DecayPink"</span>, [<span class="s5">\effectBus</span>, b.index]);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>z = <span class="s3">Synth</span>.before(x, <span class="s4">"tutorial-DecaySin"</span>, [<span class="s5">\effectBus</span>, b.index, <span class="s5">\outBus</span>, 1]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>x = <span class="s3">Synth</span>.new(<span class="s4">"tutorial-Reverb"</span>, [<span class="s5">\inBus</span>, b]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>y = <span class="s3">Synth</span>.before(x, <span class="s4">"tutorial-DecayPink"</span>, [<span class="s5">\effectBus</span>, b]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>z = <span class="s3">Synth</span>.before(x, <span class="s4">"tutorial-DecaySin"</span>, [<span class="s5">\effectBus</span>, b, <span class="s5">\outBus</span>, 1]);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>)</p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>// Change the balance of wet to dry</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// Change the balance of wet to dry</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>y.set(</span><span class="s5">\direct</span><span class="s2">, 1); </span>// only direct PinkNoise</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>z.set(</span><span class="s5">\direct</span><span class="s2">, 1); </span>// only direct Sine wave</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>y.set(</span><span class="s5">\direct</span><span class="s2">, 0); </span>// only reverberated PinkNoise</p>
@@ -223,10 +224,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span>}).play(s);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>)</p>
 <p class="p13"><span class="s2"><span class="Apple-tab-span">	</span></span>// Now map freq1 and freq2 to read from the two busses</p>
-<p class="p12"><span class="Apple-tab-span">	</span>x.map(<span class="s5">\freq1</span>, b.index, <span class="s5">\freq2</span>, c.index);</p>
+<p class="p12"><span class="Apple-tab-span">	</span>x.map(<span class="s5">\freq1</span>, b, <span class="s5">\freq2</span>, c);</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="s2"><span class="Apple-tab-span">	</span></span>// Now make a Synth to write to the one of the busses</p>
-<p class="p12"><span class="Apple-tab-span">	</span>y = {<span class="s3">Out</span>.kr(b.index, <span class="s3">SinOsc</span>.kr(1, 0, 50, 880))}.play(addAction: <span class="s5">\addToHead</span>);</p>
+<p class="p12"><span class="Apple-tab-span">	</span>y = {<span class="s3">Out</span>.kr(b, <span class="s3">SinOsc</span>.kr(1, 0, 50, 880))}.play(addAction: <span class="s5">\addToHead</span>);</p>
 <p class="p14"><br></p>
 <p class="p13"><span class="s2"><span class="Apple-tab-span">	</span></span>// free y, and b holds its last value</p>
 <p class="p12"><span class="Apple-tab-span">	</span>y.free;</p>
@@ -292,7 +293,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">For more information see:<b><span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
-<p class="p15"><span class="s9"><a href="../../ServerArchitecture/Bus.html">Bus</a></span><span class="s2"><b> </b><a href="../../UGens/InOut/In.html"><span class="s7">In</span></a><b> </b><a href="../../UGens/Multichannel/OutputProxy.html"><span class="s7">OutputProxy</span></a><b> </b><a href="../../ServerArchitecture/Order-of-execution.html"><span class="s7">Order-of-execution</span></a><b> </b><a href="../../ServerArchitecture/Synth.html"><span class="s7">Synth</span></a></span></p>
+<p class="p15"><span class="s9"><a href="../../ServerArchitecture/Bus.html">Bus</a></span><span class="s2"><b> </b><a href="../../UGens/InOut/In.html"><span class="s10">In</span></a><b> </b><a href="../../UGens/Multichannel/OutputProxy.html"><span class="s10">OutputProxy</span></a><b> </b><a href="../../ServerArchitecture/Order-of-execution.html"><span class="s10">Order-of-execution</span></a><b> </b><a href="../../ServerArchitecture/Synth.html"><span class="s10">Synth</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Suggested Exercise:</b></p>
 <p class="p10"><br></p>

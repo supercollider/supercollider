@@ -5,13 +5,13 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; min-height: 19.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; color: #0027ee}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #b51800}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; color: #0016e6}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #9c2811}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px}
@@ -19,17 +19,16 @@ p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 4.0px Monaco; min-height: 5.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 3.0px Monaco; min-height: 4.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #606060}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 3.0px Monaco; color: #002dbf; min-height: 4.0px}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; color: #0000ff}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #002dbf}
-span.s1 {color: #002dbf}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 3.0px Monaco; color: #1330b9; min-height: 4.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #1330b9}
+span.s1 {color: #1330b9}
 span.s2 {text-decoration: underline}
 span.s3 {color: #000000}
-span.s4 {color: #b51800}
-span.s5 {text-decoration: underline ; color: #0027ee}
-span.s6 {color: #2a6d0c}
-span.s7 {color: #002aff}
-span.s8 {text-decoration: underline ; color: #0000ff}
+span.s4 {color: #9c2811}
+span.s5 {text-decoration: underline ; color: #0016e6}
+span.s6 {color: #406a18}
+span.s7 {color: #1031f7}
+span.s8 {text-decoration: underline ; color: #0018f7}
 span.s9 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -621,10 +620,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// read sound</p>
 <p class="p12"><span class="s3">b = </span><span class="s1">Buffer</span><span class="s3">.read(s, </span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
 <p class="p2"><br></p>
-<p class="p3">{ SinOsc.ar(800 + (700 * <span class="s1">PlayBuf</span>.ar(1,b.bufnum, <span class="s1">BufRateScale</span>.kr(b.bufnum),<span class="Apple-converted-space">  </span>loop:1)),0,0.3) }.scope(1);</p>
+<p class="p3">{ SinOsc.ar(800 + (700 * <span class="s1">PlayBuf</span>.ar(1,b, <span class="s1">BufRateScale</span>.kr(b),<span class="Apple-converted-space">  </span>loop:1)),0,0.3) }.scope(1);</p>
 <p class="p2"><br></p>
 <p class="p5">// loop is true</p>
-<p class="p3">{ <span class="s1">PlayBuf</span>.ar(1,b.bufnum, <span class="s1">BufRateScale</span>.kr(b.bufnum), loop:1) }.scope(1);</p>
+<p class="p3">{ <span class="s1">PlayBuf</span>.ar(1,b, <span class="s1">BufRateScale</span>.kr(b), loop:1) }.scope(1);</p>
 <p class="p13"><br></p>
 <p class="p6"><br></p>
 <p class="p5">// trigger one shot on each pulse</p>
@@ -632,7 +631,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> trig;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>trig = <span class="s1">Impulse</span>.kr(2.0);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b.bufnum,<span class="s1">BufRateScale</span>.kr(b.bufnum),trig,0,0);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b,<span class="s1">BufRateScale</span>.kr(b),trig,0,0);</p>
 <p class="p3">}.scope(1);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -641,7 +640,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> trig;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>trig = <span class="s1">Impulse</span>.kr(<span class="s1">XLine</span>.kr(0.1,100,30));</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b.bufnum,<span class="s1">BufRateScale</span>.kr(b.bufnum),trig,5000,0);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b,<span class="s1">BufRateScale</span>.kr(b),trig,5000,0);</p>
 <p class="p3">}.scope(1);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -650,7 +649,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> trig;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>trig = <span class="s1">Impulse</span>.kr(<span class="s1">MouseY</span>.kr(0.5,200,1));</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b.bufnum,<span class="s1">BufRateScale</span>.kr(b.bufnum),trig,<span class="s1">MouseX</span>.kr(0,<span class="s1">BufFrames</span>.kr(b.bufnum)),1)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b,<span class="s1">BufRateScale</span>.kr(b),trig,<span class="s1">MouseX</span>.kr(0,<span class="s1">BufFrames</span>.kr(b)),1)</p>
 <p class="p3">}.scope(1);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -659,7 +658,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> rate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>rate = <span class="s1">XLine</span>.kr(0.1,100,60);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1, b.bufnum, rate, 1.0,0.0, 1.0)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1, b, rate, 1.0,0.0, 1.0)</p>
 <p class="p3">}.scope(1);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -668,7 +667,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> rate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>rate = <span class="s1">FSinOsc</span>.kr(<span class="s1">XLine</span>.kr(0.2,8,30), 0, 3, 0.6);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b.bufnum,<span class="s1">BufRateScale</span>.kr(b.bufnum)*rate,1,0,1)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b,<span class="s1">BufRateScale</span>.kr(b)*rate,1,0,1)</p>
 <p class="p3">}.scope(1);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -677,7 +676,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> rate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>rate = <span class="s1">LFNoise2</span>.kr(<span class="s1">XLine</span>.kr(1,20,60), 2);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b.bufnum,<span class="s1">BufRateScale</span>.kr(b.bufnum) * rate,1,0,1)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">PlayBuf</span>.ar(1,b,<span class="s1">BufRateScale</span>.kr(b) * rate,1,0,1)</p>
 <p class="p3">}.scope(1);</p>
 <p class="p3">)</p>
 <p class="p11"><br></p>
@@ -698,7 +697,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> trate, dur;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>trate = <span class="s1">MouseY</span>.kr(2,200,1);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>dur = 4 / trate;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, <span class="s1">Impulse</span>.ar(trate), b.bufnum, 1, <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b.bufnum)), dur, 0, 0.1, 2);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, <span class="s1">Impulse</span>.ar(trate), b, 1, <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b)), dur, 0, 0.1, 2);</p>
 <p class="p3">}.scope(2, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -708,9 +707,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>trate = <span class="s1">MouseY</span>.kr(8,120,1);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>dur = 12 / trate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>clk = <span class="s1">Impulse</span>.kr(trate);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b.bufnum)) + <span class="s1">TRand</span>.kr(0, 0.01, clk);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b)) + <span class="s1">TRand</span>.kr(0, 0.01, clk);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>pan = <span class="s1">WhiteNoise</span>.kr(0.6);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b, 1, pos, dur, pan, 0.1);</p>
 <p class="p3">}.scope(2, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -721,9 +720,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>trate = <span class="s1">MouseY</span>.kr(8,120,1);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>dur = 12 / trate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>clk = <span class="s1">Impulse</span>.kr(trate);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b.bufnum)) + <span class="s1">TRand</span>.kr(0, 0.01, clk);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b)) + <span class="s1">TRand</span>.kr(0, 0.01, clk);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>pan = <span class="s1">WhiteNoise</span>.kr(0.6);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(4, clk, b.bufnum, 1, pos, dur, pan, 0.1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(4, clk, b, 1, pos, dur, pan, 0.1);</p>
 <p class="p3">}.scope(4, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -733,9 +732,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>trate = <span class="s1">MouseY</span>.kr(8,120,1);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>dur = 4 / trate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>clk = <span class="s1">Dust</span>.kr(trate);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b.bufnum)) + <span class="s1">TRand</span>.kr(0, 0.01, clk);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b)) + <span class="s1">TRand</span>.kr(0, 0.01, clk);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>pan = <span class="s1">WhiteNoise</span>.kr(0.6);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b, 1, pos, dur, pan, 0.1);</p>
 <p class="p3">}.scope(2, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -747,9 +746,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>trate = <span class="s1">LinExp</span>.kr(<span class="s1">LFTri</span>.kr(<span class="s1">MouseY</span>.kr(0.1,2,1)),-1,1,8,120);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>dur = 12 / trate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>clk = <span class="s1">Impulse</span>.ar(trate);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b.bufnum));</p>
+<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b));</p>
 <p class="p3"><span class="Apple-tab-span">	</span>pan = <span class="s1">WhiteNoise</span>.kr(0.6);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b, 1, pos, dur, pan, 0.1);</p>
 <p class="p3">}.scope(2, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -760,9 +759,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>trate = 12;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>dur = <span class="s1">MouseY</span>.kr(0.2,24,1) / trate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>clk = <span class="s1">Impulse</span>.kr(trate);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b.bufnum)) + <span class="s1">TRand</span>.kr(0, 0.01, clk);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b)) + <span class="s1">TRand</span>.kr(0, 0.01, clk);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>pan = <span class="s1">WhiteNoise</span>.kr(0.6);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b, 1, pos, dur, pan, 0.1);</p>
 <p class="p3">}.scope(2, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -774,7 +773,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>clk = <span class="s1">Impulse</span>.kr(trate);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">Integrator</span>.kr(<span class="s1">BrownNoise</span>.kr(0.001));</p>
 <p class="p3"><span class="Apple-tab-span">	</span>pan = <span class="s1">WhiteNoise</span>.kr(0.6);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b, 1, pos, dur, pan, 0.1);</p>
 <p class="p3">}.scope(2, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -784,9 +783,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>trate = <span class="s1">MouseY</span>.kr(1,400,1);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>dur = 8 / trate;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>clk = <span class="s1">Impulse</span>.kr(trate);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b.bufnum));</p>
+<p class="p3"><span class="Apple-tab-span">	</span>pos = <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b));</p>
 <p class="p3"><span class="Apple-tab-span">	</span>pan = <span class="s1">WhiteNoise</span>.kr(0.8);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b.bufnum, 2 ** <span class="s1">WhiteNoise</span>.kr(2), pos, dur, pan, 0.1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, clk, b, 2 ** <span class="s1">WhiteNoise</span>.kr(2), pos, dur, pan, 0.1);</p>
 <p class="p3">}.scope(2, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -798,7 +797,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> trate, dur;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>trate = <span class="s1">MouseY</span>.kr(2,120,1);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>dur = 1.2 / trate;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, <span class="s1">Impulse</span>.ar(trate), b.bufnum, (1.2 ** <span class="s1">WhiteNoise</span>.kr(3).round(1)), <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b.bufnum)), dur, <span class="s1">WhiteNoise</span>.kr(0.6), 0.1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">TGrains</span>.ar(2, <span class="s1">Impulse</span>.ar(trate), b, (1.2 ** <span class="s1">WhiteNoise</span>.kr(3).round(1)), <span class="s1">MouseX</span>.kr(0,<span class="s1">BufDur</span>.kr(b)), dur, <span class="s1">WhiteNoise</span>.kr(0.6), 0.1);</p>
 <p class="p3">}.scope(2, zoom: 4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
@@ -811,7 +810,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">Filters for Controls</p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s2"><a href="Synth control/Envelopes/Decay.html">Decay<span class="s8"></span></a></span></p>
+<p class="p4"><span class="s2"><a href="Synth control/Envelopes/Decay.html">Decay</a></span></p>
 <p class="p1">triggered exponential decay</p>
 <p class="p1">arguments: in, decay time, mul, add</p>
 <p class="p2"><br></p>
@@ -819,7 +818,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">{ <span class="s1">WhiteNoise</span>.ar * <span class="s1">Decay</span>.ar(<span class="s1">Dust</span>.ar(3), 0.9, 0.2) }.scope(1, zoom:4);</p>
 <p class="p3">{ <span class="s1">SinOsc</span>.ar(<span class="s1">Decay</span>.ar(<span class="s1">Dust</span>.ar(4), 0.5, 1000, 400), 0, 0.2) }.scope(1, zoom:4);</p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s2"><a href="Synth control/Envelopes/Decay2.html">Decay2<span class="s8"></span></a></span></p>
+<p class="p4"><span class="s2"><a href="Synth control/Envelopes/Decay2.html">Decay2</a></span></p>
 <p class="p1">triggered exponential attack and exponential decay<span class="Apple-converted-space"> </span></p>
 <p class="p1">arguments: trigger, attack time, decay time, mul, add</p>
 <p class="p2"><br></p>
@@ -831,7 +830,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">{ <span class="s1">SinOsc</span>.ar(<span class="s1">Lag</span>.ar(<span class="s1">LFPulse</span>.ar(2,0,0.5,800,400), <span class="s1">MouseX</span>.kr(0,0.5)), 0, 0.2) }.scope(1, zoom:4);</p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s2"><a href="Synth control/Integrator.html">Integrator<span class="s8"></span></a></span></p>
+<p class="p4"><span class="s2"><a href="Synth control/Integrator.html">Integrator</a></span></p>
 <p class="p1">leaky integrator</p>
 <p class="p2"><br></p>
 <p class="p3">{ <span class="s1">SinOsc</span>.ar(<span class="s1">Integrator</span>.ar(<span class="s1">Dust2</span>.ar(8), 0.99999, 200, 800), 0, 0.2) }.scope(1)</p>
@@ -861,7 +860,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">}.scope(2, zoom:4);</p>
 <p class="p3">)</p>
 <p class="p6"><br></p>
-<p class="p14"><span class="s2"><a href="Synth control/Latch.html">Latch<span class="s8"></span></a></span></p>
+<p class="p4"><span class="s2"><a href="Synth control/Latch.html">Latch</a></span></p>
 <p class="p1">sample and hold</p>
 <p class="p1">arguments: in, trigger</p>
 <p class="p6"><br></p>
@@ -881,7 +880,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p3">(</p>
 <p class="p3">{</p>
-<p class="p15">SinOsc<span class="s3">.ar(</span></p>
+<p class="p14">SinOsc<span class="s3">.ar(</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">PulseCount</span>.ar(<span class="s1">Impulse</span>.ar(10), <span class="s1">Impulse</span>.ar(0.4)) * 200,<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0, 0.05</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
@@ -891,7 +890,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s2"><a href="Triggers/PulseDivider.html">PulseDivider</a></span></p>
 <p class="p1">arguments: trigger, div, start</p>
 <p class="p6"><br></p>
-<p class="p15">(</p>
+<p class="p14">(</p>
 <p class="p3">{<span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> p, a, b;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>p = <span class="s1">Impulse</span>.ar(8);</p>
@@ -903,7 +902,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p14"><span class="s2"><a href="Synth control/Envelopes/EnvGen.html">EnvGen<span class="s8"></span></a></span></p>
+<p class="p4"><span class="s2"><a href="Synth control/Envelopes/EnvGen.html">EnvGen</a></span></p>
 <p class="p1">envelope generator</p>
 <p class="p1">envelope is specified using an instance of the Env class.</p>
 <p class="p6"><br></p>
@@ -949,8 +948,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// do nothing</p>
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> in, chain;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c.bufnum, <span class="s1">BufRateScale</span>.kr(c.bufnum), loop:1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b.bufnum, in);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c, <span class="s1">BufRateScale</span>.kr(c), loop:1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b, in);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>0.5 * <span class="s1">IFFT</span>(chain);</p>
 <p class="p3">}.scope(1);</p>
 <p class="p3">)</p>
@@ -959,8 +958,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// pass only magnitudes above a threshold</p>
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> in, chain;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c.bufnum, <span class="s1">BufRateScale</span>.kr(c.bufnum), loop:1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b.bufnum, in);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c, <span class="s1">BufRateScale</span>.kr(c), loop:1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b, in);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">PV_MagAbove</span>(chain, <span class="s1">MouseX</span>.kr(0.1,512,1));<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>0.5 * <span class="s1">IFFT</span>(chain);</p>
 <p class="p3">}.scope(1);</p>
@@ -970,8 +969,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// pass only magnitudes below a threshold</p>
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> in, chain;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c.bufnum, <span class="s1">BufRateScale</span>.kr(c.bufnum), loop:1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b.bufnum, in);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c, <span class="s1">BufRateScale</span>.kr(c), loop:1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b, in);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">PV_MagBelow</span>(chain, <span class="s1">MouseX</span>.kr(0.1,512,1));<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>0.5 * <span class="s1">IFFT</span>(chain);</p>
 <p class="p3">}.scope(1);</p>
@@ -981,8 +980,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// brick wall filter.</p>
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> in, chain;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c.bufnum, <span class="s1">BufRateScale</span>.kr(c.bufnum), loop:1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b.bufnum, in);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c, <span class="s1">BufRateScale</span>.kr(c), loop:1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b, in);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">PV_BrickWall</span>(chain, <span class="s1">MouseX</span>.kr(-1,1));<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>0.5 * <span class="s1">IFFT</span>(chain);</p>
 <p class="p3">}.scope(1);</p>
@@ -993,8 +992,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// trigger changes the frequencies periodically</p>
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> in, chain;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c.bufnum, <span class="s1">BufRateScale</span>.kr(c.bufnum), loop:1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b.bufnum, in);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c, <span class="s1">BufRateScale</span>.kr(c), loop:1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b, in);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">PV_RandComb</span>(chain, <span class="s1">MouseX</span>.kr(0,1), <span class="s1">Impulse</span>.kr(0.4));</p>
 <p class="p3"><span class="Apple-tab-span">	</span>0.5 * <span class="s1">IFFT</span>(chain);</p>
 <p class="p3">}.scope(1);</p>
@@ -1004,8 +1003,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// rectangular comb filter</p>
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> in, chain;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c.bufnum, <span class="s1">BufRateScale</span>.kr(c.bufnum), loop:1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b.bufnum, in);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c, <span class="s1">BufRateScale</span>.kr(c), loop:1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b, in);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">PV_RectComb</span>(chain, 8, <span class="s1">MouseY</span>.kr(0,1), <span class="s1">MouseX</span>.kr(0,1));</p>
 <p class="p3"><span class="Apple-tab-span">	</span>0.5 * <span class="s1">IFFT</span>(chain);</p>
 <p class="p3">}.scope(1);</p>
@@ -1015,8 +1014,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// freeze magnitudes</p>
 <p class="p3">{</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> in, chain;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c.bufnum, <span class="s1">BufRateScale</span>.kr(c.bufnum), loop:1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b.bufnum, in);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s1">PlayBuf</span>.ar(1,c, <span class="s1">BufRateScale</span>.kr(c), loop:1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">FFT</span>(b, in);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s1">PV_MagFreeze</span>(chain, <span class="s1">LFPulse</span>.kr(1, 0.75));</p>
 <p class="p3"><span class="Apple-tab-span">	</span>0.5 * <span class="s1">IFFT</span>(chain);</p>
 <p class="p3">}.scope(1);</p>

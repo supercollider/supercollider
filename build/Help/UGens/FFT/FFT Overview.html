@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,24 +14,22 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9b2816}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0011ed}
-span.s1 {color: #0028fb}
-span.s2 {font: 3.2px Helvetica}
-span.s3 {color: #0026b3}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #87301c}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016e6}
+span.s1 {color: #0f2ff3}
+span.s2 {font: 3.0px Helvetica}
+span.s3 {color: #102aad}
 span.s4 {color: #000000}
-span.s5 {color: #9b2816}
-span.s6 {color: #426b1e}
-span.s7 {color: #0000ff}
-span.s8 {color: #0000bf}
-span.s9 {color: #002dac}
+span.s5 {color: #87301c}
+span.s6 {color: #4e6925}
+span.s7 {color: #0018f7}
+span.s8 {color: #0012b9}
+span.s9 {color: #132fa7}
 span.s10 {color: #606060}
 span.s11 {font: 12.0px Helvetica}
 span.s12 {font: 12.0px Helvetica; color: #000000}
-span.s13 {font: 9.0px Monaco; color: #0026b3}
+span.s13 {font: 9.0px Monaco; color: #102aad}
 span.s14 {font: 9.0px Monaco}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -60,7 +58,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s3">var</span> in, chain;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>in = <span class="s3">WhiteNoise</span>.ar(0.8);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(b.bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(b, in);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_RandComb</span>(chain, 0.95, <span class="s3">Impulse</span>.kr(0.4));<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">IFFT</span>(chain);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>}.play(s);</p>
@@ -78,9 +76,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s3">var</span> inA, chainA, inB, chainB, chain;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>inA = <span class="s3">LFSaw</span>.ar([100, 150], 0, 0.2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>inB = <span class="s3">PlayBuf</span>.ar(1, d.bufnum, <span class="s3">BufRateScale</span>.kr(d.bufnum), loop: 1);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(b.bufnum, inA);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(c.bufnum, inB);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>inB = <span class="s3">PlayBuf</span>.ar(1, d, <span class="s3">BufRateScale</span>.kr(d), loop: 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(b, inA);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(c, inB);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_MagMul</span>(chainA, chainB); <span class="s5">// writes into bufferA</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1 * <span class="s3">IFFT</span>(chain);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>}.play(s);</p>
@@ -98,8 +96,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span>x = { <span class="s3">var</span> inA, chainA, inB, chainB, chain;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>inA = <span class="s3">LFClipNoise</span>.ar(100);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(b.bufnum, inA);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chainB = <span class="s3">PV_Copy</span>(chainA, c.bufnum); <span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(b, inA);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>chainB = <span class="s3">PV_Copy</span>(chainA, c); <span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">IFFT</span><span class="s4">(chainA) - </span><span class="s3">IFFT</span><span class="s4">(chainB); </span>// cancels to zero so silent!</p>
 <p class="p5"><span class="Apple-tab-span">	</span>}.play(s);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
@@ -111,7 +109,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">Note that PV UGens convert as needed between cartesian (complex) and polar representations, therefore when using multiple PV UGens it may be impossible to know in which form the values will be at any given time. FFT produces complex output (see above), so while the following produces a reliable magnitude plot:</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>b = <span class="s3">Buffer</span>.alloc(s,1024);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>a = { <span class="s3">FFT</span>(b.bufnum, <span class="s3">LFSaw</span>.ar(4000)); 0.0 }.play;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>a = { <span class="s3">FFT</span>(b, <span class="s3">LFSaw</span>.ar(4000)); 0.0 }.play;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span>b.getn(0, 1024, { <span class="s3">arg</span> buf;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> z, x;</p>
@@ -127,23 +125,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods <a href="pvcalc.html"><span class="s7">pvcalc</span></a>, <a href="pvcalc2.html"><span class="s7">pvcalc2</span></a>, <a href="pvcollect.html"><span class="s7">pvcollect</span></a>. Here's an example which uses the <a href="../../Collections/SequenceableCollection.html"><span class="s7">SequenceableCollection</span></a> methods <i>clump</i> and <i>flop</i> to rearrange the order of the spectral bins:</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>b = <span class="s8">Buffer</span>.alloc(s, 2048);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>b = <span class="s8">Buffer</span>.alloc(s, 2048);</p>
 <p class="p7"><span class="s4"><span class="Apple-tab-span">	</span>c = </span><span class="s8">Buffer</span><span class="s4">.read(s,</span>"sounds/a11wlk01.wav"<span class="s4">);</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>(</p>
-<p class="p9"><span class="Apple-tab-span">	</span>x = {</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span><span class="s8">var</span> in, chain, v;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>in = <span class="s8">PlayBuf</span>.ar(1, c, loop: 1);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>chain = <span class="s8">FFT</span>(b, in);</p>
-<p class="p10"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>chain = chain.pvcalc(b.numFrames, {<span class="s8">|mags, phases|</span></p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">      </span></span>/* Play with the mags and phases, then return them */</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">      </span>[mags, phases].flop.clump(2).flop.flatten</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>}, tobin: 250);</p>
-<p class="p10"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span><span class="s8">Out</span>.ar(0, 0.5 * <span class="s8">IFFT</span>(chain).dup);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}.play(s);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>)</p>
-<p class="p9"><span class="Apple-tab-span">	</span>x.free; b.free; c.free;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span>x = {</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span><span class="s8">var</span> in, chain, v;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>in = <span class="s8">PlayBuf</span>.ar(1, c, loop: 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>chain = <span class="s8">FFT</span>(b, in);</p>
+<p class="p6"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>chain = chain.pvcalc(b.numFrames, {<span class="s8">|mags, phases|</span></p>
+<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">      </span></span>/* Play with the mags and phases, then return them */</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">      </span>[mags, phases].flop.clump(2).flop.flatten</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>}, tobin: 250);</p>
+<p class="p6"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span><span class="s8">Out</span>.ar(0, 0.5 * <span class="s8">IFFT</span>(chain).dup);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}.play(s);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>x.free; b.free; c.free;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Multichannel Expansion with FFT UGens</b></p>
@@ -166,7 +164,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="s4"><span class="Apple-tab-span">	</span></span>// now we can multichannel expand as normal</p>
 <p class="p5"><span class="s11"><span class="Apple-tab-span">	</span></span>chain = <span class="s3">PV_BrickWall</span>(chain, <span class="s3">SinOsc</span>.kr(-0.1));</p>
 <p class="p5"><span class="s11"><span class="Apple-tab-span">	</span></span><span class="s3">Out</span>.ar(out, <span class="s3">IFFT</span>(chain));</p>
-<p class="p5">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b.collect(<span class="s3">_</span>.bufnum)]);</p>
+<p class="p5">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
 <p class="p5">)</p>
 <p class="p2"><br></p>
 <p class="p4">Note that dup on a UGen just makes a reference to that UGen, because UGen defines -copy to simply return the receiver. (See <a href="../UGen.html"><span class="s1">UGen</span></a> for more detail.)</p>
@@ -178,7 +176,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Code like <span class="s13">IFFT</span><span class="s14">(chain).dup</span> is found throughout the PV help files , and is just a convenient way to copy a mono signal to stereo, without further computation.</p>
 <p class="p2"><br></p>
-<p class="p12"><span class="s4">See also <a href="../../Other Topics/MultiChannel.html"><span class="s11">MultiChannel</span></a>.</span></p>
+<p class="p10"><span class="s4">See also <a href="../../Other Topics/MultiChannel.html"><span class="s11">MultiChannel</span></a>.</span></p>
 <p class="p2"><br></p>
 <p class="p3"><b>PV and FFT UGens in the Standard Library</b></p>
 <p class="p2"><br></p>
@@ -190,13 +188,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_BinScramble.html"><span class="s1">PV_BinScramble</span></a><span class="Apple-tab-span">	</span>scramble bins</p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_BinShift.html"><span class="s1">PV_BinShift</span></a><span class="Apple-tab-span">	</span>shift and stretch bin position</p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_BinWipe.html"><span class="s1">PV_BinWipe</span></a><span class="Apple-tab-span">	</span>combine low and high bins from two inputs</p>
-<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><a href="PV_BrickWall.html"><span class="s11">PV_BrickWall</span></a><span class="Apple-tab-span">	</span>zero bins</span></p>
+<p class="p10"><span class="s4"><span class="Apple-tab-span">	</span><a href="PV_BrickWall.html"><span class="s11">PV_BrickWall</span></a><span class="Apple-tab-span">	</span>zero bins</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_ConformalMap.html"><span class="s1">PV_ConformalMap</span></a><span class="Apple-tab-span">	</span>complex plane attack<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_Copy.html"><span class="s1">PV_Copy</span></a><span class="Apple-tab-span">	</span>copy an FFT buffer</p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_CopyPhase.html"><span class="s1">PV_CopyPhase</span></a><span class="Apple-tab-span">	</span>copy magnitudes and phases</p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_Diffuser.html"><span class="s1">PV_Diffuser</span></a><span class="Apple-tab-span">	</span>random phase shifting</p>
-<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><a href="PV_HainsworthFoote.html"><span class="s11">PV_HainsworthFoote</span></a></span></p>
-<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><a href="PV_JensenAndersen.html"><span class="s11">PV_JensenAndersen</span></a></span></p>
+<p class="p10"><span class="s4"><span class="Apple-tab-span">	</span><a href="PV_HainsworthFoote.html"><span class="s11">PV_HainsworthFoote</span></a></span></p>
+<p class="p10"><span class="s4"><span class="Apple-tab-span">	</span><a href="PV_JensenAndersen.html"><span class="s11">PV_JensenAndersen</span></a></span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_LocalMax.html"><span class="s1">PV_LocalMax</span></a><span class="Apple-tab-span">	</span>pass bins which are a local maximum</p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_MagAbove.html"><span class="s1">PV_MagAbove</span></a><span class="Apple-tab-span">	</span>pass bins above a threshold</p>
 <p class="p4"><span class="Apple-tab-span">	</span><a href="PV_MagBelow.html"><span class="s1">PV_MagBelow</span></a><span class="Apple-tab-span">	</span>pass bins below a threshold</p>

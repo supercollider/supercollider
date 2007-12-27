@@ -5,27 +5,27 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 14.0px; text-indent: -14.0px; font: 12.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; min-height: 19.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {text-decoration: underline}
-span.s3 {color: #0019b7}
-span.s4 {color: #606060}
-span.s5 {color: #000000}
-span.s6 {color: #326f17}
-span.s7 {color: #a71e12}
+span.s2 {color: #0000bf}
+span.s3 {color: #606060}
+span.s4 {color: #000000}
+span.s5 {color: #007300}
+span.s6 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -62,71 +62,71 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">See also <b>LocalIn</b> and <b>LocalOut</b>.</p>
 <p class="p2"><br></p>
 <p class="p6"><br></p>
-<p class="p7"><b><span class="s2">Examples</span></b></p>
+<p class="p7"><b>Examples</b></p>
 <p class="p4"><br></p>
 <p class="p3">audio feedback modulation:</p>
 <p class="p2"><br></p>
 <p class="p8"><span class="Apple-tab-span">	</span>(</p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span>SynthDef</span>(<span class="s4">"help-InFeedback"</span>, { <span class="s3">arg</span> out=0, in=0;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> input, sound;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>input = <span class="s3">InFeedback.ar(</span>in, 1);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sound = SinOsc.ar(input * 1300 + 300, 0, 0.4);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, sound);</p>
-<p class="p10"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}).play;</p>
-<p class="p9"><span class="Apple-tab-span">	</span>)</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s2">SynthDef</span>(<span class="s3">"help-InFeedback"</span>, { <span class="s2">arg</span> out=0, in=0;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> input, sound;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>input = <span class="s2">InFeedback</span>.ar(in, 1);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sound = <span class="s2">SinOsc</span>.ar(input * 1300 + 300, 0, 0.4);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, sound);</p>
+<p class="p9"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span>}).play;</p>
+<p class="p8"><span class="Apple-tab-span">	</span>)</p>
 <p class="p10"><br></p>
 <p class="p3">this shows how a node can read audio from a bus that is being written to by a synth following it:</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>(</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">SynthDef</span>(<span class="s4">"help-InFeedback"</span>, { <span class="s3">arg</span> out=0, in=0;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">InFeedback</span>.ar(in, 1)</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">SynthDef</span>(<span class="s4">"help-SinOsc"</span>, { <span class="s3">arg</span> out=0, freq=440;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">SinOsc</span>.ar(freq, 0, 0.1))</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>)</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>x = Bus.audio(s, 1);</p>
-<p class="p10"><br></p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>// read from bus n play to bus 0 (silent)</p>
-<p class="p9"><span class="Apple-tab-span">	</span>a = <span class="s3">Synth</span>(<span class="s4">"help-InFeedback"</span>,[<span class="s6">\in</span>, x.index, <span class="s6">\out</span>, 0]);</p>
-<p class="p10"><br></p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>// now play a synth after this one, playing to bus x</p>
-<p class="p9"><span class="Apple-tab-span">	</span>b = <span class="s3">Synth</span>.after(a, <span class="s4">"help-SinOsc"</span>, [<span class="s6">\out</span>, x.index]);</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>// add another synth before a which also writes to bus x</p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>// now you can't hear b, as its data is one cycle old, and is overwritten by c</p>
-<p class="p9"><span class="Apple-tab-span">	</span>c = <span class="s3">Synth</span>.before(a, <span class="s4">"help-SinOsc"</span>, [<span class="s6">\out</span>, x.index, <span class="s6">\freq</span>, 800]);</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>// free c and you can hear b again</p>
-<p class="p9"><span class="Apple-tab-span">	</span>c.free;</p>
-<p class="p9"><span class="Apple-tab-span">	</span>x.free;</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>a.free; b.free;</p>
+<p class="p8"><span class="Apple-tab-span">	</span>(</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s2">SynthDef</span>(<span class="s3">"help-InFeedback"</span>, { <span class="s2">arg</span> out=0, in=0;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">InFeedback</span>.ar(in, 1)</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s2">SynthDef</span>(<span class="s3">"help-SinOsc"</span>, { <span class="s2">arg</span> out=0, freq=440;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">SinOsc</span>.ar(freq, 0, 0.1))</p>
+<p class="p8"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>)</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>x = <span class="s2">Bus</span>.audio(s, 1);</p>
+<p class="p9"><br></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>// read from bus n play to bus 0 (silent)</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a = <span class="s2">Synth</span>(<span class="s3">"help-InFeedback"</span>,[<span class="s5">\in</span>, x, <span class="s5">\out</span>, 0]);</p>
+<p class="p9"><br></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>// now play a synth after this one, playing to bus x</p>
+<p class="p8"><span class="Apple-tab-span">	</span>b = <span class="s2">Synth</span>.after(a, <span class="s3">"help-SinOsc"</span>, [<span class="s5">\out</span>, x]);</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>// add another synth before a which also writes to bus x</p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>// now you can't hear b, as its data is one cycle old, and is overwritten by c</p>
+<p class="p8"><span class="Apple-tab-span">	</span>c = <span class="s2">Synth</span>.before(a, <span class="s3">"help-SinOsc"</span>, [<span class="s5">\out</span>, x, <span class="s5">\freq</span>, 800]);</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>// free c and you can hear b again</p>
+<p class="p8"><span class="Apple-tab-span">	</span>c.free;</p>
+<p class="p8"><span class="Apple-tab-span">	</span>x.free;</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.free; b.free;</p>
 <p class="p10"><br></p>
 <p class="p3">The example below implements a resonator. Note that you must subtract the blockSize in order for the tuning to be correct. See <b>LocalIn</b> for an equivalent example.</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>(</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">var</span> play, imp, initial;</p>
-<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="s3">SynthDef</span><span class="s5">(</span>"testRes"<span class="s5">, {</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span>play = </span><span class="s3">InFeedback</span><span class="s5">.ar(10, 1); </span>// 10 is feedback channel</p>
-<p class="p9"><span class="Apple-tab-span">	</span>imp = <span class="s3">Impulse</span>.ar(1);</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>// feedback</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">OffsetOut</span>.ar(10, <span class="s3">DelayC</span>.ar(imp + (play * 0.995), 1,<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>440.reciprocal - ControlRate.ir.reciprocal)); <span class="s7">// subtract block size</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">OffsetOut</span>.ar(0, play);</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}).play(s);</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>// Compare with this for tuning</p>
-<p class="p9"><span class="Apple-tab-span">	</span>{ <span class="s3">SinOsc</span>.ar(440, 0, 0.2) }.play(s, 1);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>)</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>(</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s2">var</span> play, imp, initial;</p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s2">SynthDef</span><span class="s4">(</span>"testRes"<span class="s4">, {</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span>play = </span><span class="s2">InFeedback</span><span class="s4">.ar(10, 1); </span>// 10 is feedback channel</p>
+<p class="p8"><span class="Apple-tab-span">	</span>imp = <span class="s2">Impulse</span>.ar(1);</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>// feedback</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s2">OffsetOut</span>.ar(10, <span class="s2">DelayC</span>.ar(imp + (play * 0.995), 1,<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>440.reciprocal - <span class="s2">ControlRate</span>.ir.reciprocal)); <span class="s6">// subtract block size</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s2">OffsetOut</span>.ar(0, play);</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>}).play(s);</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>// Compare with this for tuning</p>
+<p class="p8"><span class="Apple-tab-span">	</span>{ <span class="s2">SinOsc</span>.ar(440, 0, 0.2) }.play(s, 1);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>)</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 </body>
 </html>

@@ -5,19 +5,21 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000bf}
-span.s3 {color: #000000}
-span.s4 {color: #606060}
-span.s5 {color: #007300}
+span.s2 {color: #0000ff}
+span.s3 {color: #0000bf}
+span.s4 {color: #000000}
+span.s5 {color: #606060}
+span.s6 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -27,7 +29,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p4">Plays back a sample resident in memory.</p>
 <p class="p3"><br></p>
-<p class="p3"><b></b><br></p>
+<p class="p3"><br></p>
 <p class="p4"><b>PlayBuf.ar(numChannels,bufnum,rate,trigger,startPos,loop)</b></p>
 <p class="p3"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span><b>numChannels</b> - number of channels that the buffer will be.</p>
@@ -47,98 +49,100 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A trigger occurs when a signal changes from &lt;= 0 to &gt; 0.</p>
 <p class="p4"><span class="Apple-tab-span">	</span><b>startPos</b> - sample frame to start playback.</p>
 <p class="p4"><span class="Apple-tab-span">	</span><b>loop</b> <span class="Apple-converted-space">      </span>- 1 means true, 0 means false.<span class="Apple-converted-space">  </span>this is modulate-able.</p>
+<p class="p3"><br></p>
+<p class="p4"><b>See also:</b> <a href="DiskIn.html"><span class="s2">DiskIn</span></a>, <a href="../Oscillators/BufRd.html"><span class="s2">BufRd</span></a></p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p5">(</p>
-<p class="p6">// read a whole sound into memory</p>
-<p class="p5">s = <span class="s2">Server</span>.local;</p>
-<p class="p6">// note: not *that* columbia, the first one</p>
-<p class="p6"><span class="s3">b = </span><span class="s2">Buffer</span><span class="s3">.read(s,</span><span class="s4">"sounds/a11wlk01.wav"</span><span class="s3">); </span>// remember to free the buffer later.</p>
-<p class="p5">)</p>
-<p class="p2"><br></p>
-<p class="p5"><span class="s2">SynthDef</span>(<span class="s4">"help_PlayBuf"</span>, { <span class="s2">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1, bufnum, <span class="s2">BufRateScale</span>.kr(bufnum))</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b.bufnum]);</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p7">// read a whole sound into memory</p>
+<p class="p6">s = <span class="s3">Server</span>.local;</p>
+<p class="p7">// note: not *that* columbia, the first one</p>
+<p class="p7"><span class="s4">b = </span><span class="s3">Buffer</span><span class="s4">.read(s,</span><span class="s5">"sounds/a11wlk01.wav"</span><span class="s4">); </span>// remember to free the buffer later.</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"help_PlayBuf"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">PlayBuf</span>.ar(1, bufnum, <span class="s3">BufRateScale</span>.kr(bufnum))</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
 <p class="p2"><br></p>
 <p class="p4">Note again that the number of channels must be fixed for the SynthDef. It cannot vary depending on which buffer you use.</p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p6">// loop is true</p>
-<p class="p5"><span class="s2">SynthDef</span>(<span class="s4">"help_PlayBuf"</span>, { <span class="s2">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1, bufnum, <span class="s2">BufRateScale</span>.kr(bufnum), loop: 1.0)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b.bufnum]);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p6">// trigger one shot on each pulse</p>
-<p class="p5"><span class="s2">SynthDef</span>(<span class="s4">"help_PlayBuf"</span>, { <span class="s2">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> trig;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(2.0);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1, bufnum, <span class="s2">BufRateScale</span>.kr(bufnum), trig, 0, 0)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b.bufnum]);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p6">// trigger one shot on each pulse</p>
-<p class="p5"><span class="s2">SynthDef</span>(<span class="s4">"help_PlayBuf"</span>, { <span class="s2">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> trig;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(<span class="s2">XLine</span>.kr(0.1, 100, 30));</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1, bufnum, <span class="s2">BufRateScale</span>.kr(bufnum), trig, 5000, 0)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b.bufnum]);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p6">// mouse control of trigger rate and startpos</p>
-<p class="p5"><span class="s2">SynthDef</span>(<span class="s4">"help_PlayBuf"</span>, { <span class="s2">arg</span> out=0, bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> trig;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(MouseY.kr(0.5,200,1));</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1, bufnum, <span class="s2">BufRateScale</span>.kr(bufnum), trig, MouseX.kr(0, BufFrames.kr(bufnum)), 1)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b.bufnum]);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p6">// accelerating pitch</p>
-<p class="p5"><span class="s2">SynthDef</span>(<span class="s4">"help_PlayBuf"</span>, { <span class="s2">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> rate;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>rate = <span class="s2">XLine</span>.kr(0.1, 100, 60);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1, bufnum, <span class="s2">BufRateScale</span>.kr(bufnum)*rate, 1.0, 0.0, 1.0)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b.bufnum]);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p6">// sine wave control of playback rate. negative rate plays backwards</p>
-<p class="p5"><span class="s2">SynthDef</span>(<span class="s4">"help_PlayBuf"</span>, { <span class="s2">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> rate;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>rate = <span class="s2">FSinOsc</span>.kr(<span class="s2">XLine</span>.kr(0.2, 8, 30), 0, 3, 0.6);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1, bufnum, <span class="s2">BufRateScale</span>.kr(bufnum) * rate, 1, 0, 1)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b.bufnum]);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p6">// zig zag around sound<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="s2">SynthDef</span>(<span class="s4">"help_PlayBuf"</span>, { <span class="s2">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> rate;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>rate = <span class="s2">LFNoise2</span>.kr(<span class="s2">XLine</span>.kr(1, 20, 60), 2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1, bufnum, <span class="s2">BufRateScale</span>.kr(bufnum) * rate, 1, 0, 1)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b.bufnum]);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p5">b.free;</p>
+<p class="p5"><br></p>
+<p class="p7">// loop is true</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"help_PlayBuf"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">PlayBuf</span>.ar(1, bufnum, <span class="s3">BufRateScale</span>.kr(bufnum), loop: 1.0)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">// trigger one shot on each pulse</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"help_PlayBuf"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> trig;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>trig = <span class="s3">Impulse</span>.kr(2.0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">PlayBuf</span>.ar(1, bufnum, <span class="s3">BufRateScale</span>.kr(bufnum), trig, 0, 0)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">// trigger one shot on each pulse</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"help_PlayBuf"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> trig;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>trig = <span class="s3">Impulse</span>.kr(<span class="s3">XLine</span>.kr(0.1, 100, 30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">PlayBuf</span>.ar(1, bufnum, <span class="s3">BufRateScale</span>.kr(bufnum), trig, 5000, 0)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">// mouse control of trigger rate and startpos</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"help_PlayBuf"</span>, { <span class="s3">arg</span> out=0, bufnum=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> trig;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>trig = <span class="s3">Impulse</span>.kr(<span class="s3">MouseY</span>.kr(0.5,200,1));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">PlayBuf</span>.ar(1, bufnum, <span class="s3">BufRateScale</span>.kr(bufnum), trig, <span class="s3">MouseX</span>.kr(0, <span class="s3">BufFrames</span>.kr(bufnum)), 1)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">// accelerating pitch</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"help_PlayBuf"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> rate;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>rate = <span class="s3">XLine</span>.kr(0.1, 100, 60);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">PlayBuf</span>.ar(1, bufnum, <span class="s3">BufRateScale</span>.kr(bufnum)*rate, 1.0, 0.0, 1.0)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">// sine wave control of playback rate. negative rate plays backwards</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"help_PlayBuf"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> rate;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>rate = <span class="s3">FSinOsc</span>.kr(<span class="s3">XLine</span>.kr(0.2, 8, 30), 0, 3, 0.6);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">PlayBuf</span>.ar(1, bufnum, <span class="s3">BufRateScale</span>.kr(bufnum) * rate, 1, 0, 1)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7">// zig zag around sound<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"help_PlayBuf"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> rate;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>rate = <span class="s3">LFNoise2</span>.kr(<span class="s3">XLine</span>.kr(1, 20, 60), 2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">PlayBuf</span>.ar(1, bufnum, <span class="s3">BufRateScale</span>.kr(bufnum) * rate, 1, 0, 1)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">b.free;</p>
 </body>
 </html>

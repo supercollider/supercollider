@@ -5,21 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #356f15}
 span.s1 {color: #000000}
-span.s2 {color: #0000bf}
-span.s3 {color: #007300}
-span.s4 {color: #bf0000}
+span.s2 {color: #0012b9}
+span.s3 {color: #356f15}
+span.s4 {color: #a32011}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -63,11 +62,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s2">var</span> fft;<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="s2">var</span> feature1, feature2, feature3;<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p7">in= <span class="s2">PlayBuf</span>.ar(1,d.bufnum,<span class="s2">BufRateScale</span>.kr(d.bufnum),1,0,1);</p>
+<p class="p7">in= <span class="s2">PlayBuf</span>.ar(1,d,<span class="s2">BufRateScale</span>.kr(d),1,0,1);</p>
 <p class="p5">//in = AudioIn.ar(1);<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p5">//Create some features</p>
-<p class="p7">fft = <span class="s2">FFT</span>(b.bufnum, in);</p>
+<p class="p7">fft = <span class="s2">FFT</span>(b, in);</p>
 <p class="p4"><br></p>
 <p class="p7">feature1= <span class="s2">RunningSum</span>.rms(in,64);</p>
 <p class="p7">feature2= <span class="s2">MFCC</span>.kr(fft,2); <span class="s4">//two coefficients</span></p>
@@ -113,12 +112,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s2">var</span> source, kbus;</p>
 <p class="p7"><span class="s2">var</span> bsound,hsound,qsound;</p>
 <p class="p4"><br></p>
-<p class="p5"><span class="s1">source= </span><span class="s2">AudioIn</span><span class="s1">.ar(1); </span>//PlayBuf.ar(1,d.bufnum,BufRateScale.kr(d.bufnum),1,0,1);</p>
+<p class="p5"><span class="s1">source= </span><span class="s2">AudioIn</span><span class="s1">.ar(1); </span>//PlayBuf.ar(1,d,BufRateScale.kr(d),1,0,1);</p>
 <p class="p4"><br></p>
 <p class="p5">//downsampling automatic via kr from ar</p>
 <p class="p5"><span class="s1">kbus= </span><span class="s2">Out</span><span class="s1">.kr(0, </span><span class="s2">LPF</span><span class="s1">.ar(source,1000)); </span>//([feature1, feature3]++feature2);<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p7">#trackb,trackh,trackq,tempo=<span class="s2">BeatTrack2</span>.kr(0,1,weightingscheme:e.bufnum);</p>
+<p class="p7">#trackb,trackh,trackq,tempo=<span class="s2">BeatTrack2</span>.kr(0,1,weightingscheme:e);</p>
 <p class="p4"><br></p>
 <p class="p7">bsound= <span class="s2">Pan2</span>.ar(<span class="s2">LPF</span>.ar(<span class="s2">WhiteNoise</span>.ar*(<span class="s2">Decay</span>.kr(trackb,0.05)),1000),0.0);</p>
 <p class="p4"><br></p>
@@ -159,6 +158,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">//tempo weights</p>
 <p class="p7"><span class="Apple-converted-space"> </span><span class="s2">Post</span> &lt;&lt; (<span class="s2">Array</span>.fill(120,{<span class="s2">arg</span> i;<span class="Apple-converted-space">  </span>0.2*((1.0- ((abs(i-60))/60.0))**0.5) + 0.8; })) &lt;&lt; nl;<span class="Apple-converted-space"> </span></p>
-<p class="p9"><br></p>
+<p class="p4"><br></p>
 </body>
 </html>

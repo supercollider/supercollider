@@ -13,10 +13,10 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952415}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
-span.s1 {color: #0000ff}
-span.s2 {color: #001bb9}
+span.s1 {color: #0018f7}
+span.s2 {color: #0a20b3}
 span.s3 {color: #606060}
 span.s4 {font: 9.0px Monaco}
 span.s5 {color: #000000}
@@ -47,7 +47,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s2">var</span> in, chain, realcutoff, estcutoff;</p>
 <p class="p5">realcutoff = <span class="s2">MouseX</span>.kr(0.00001,22050);</p>
 <p class="p5">in = <span class="s2">LPF</span>.ar(<span class="s2">WhiteNoise</span>.ar, realcutoff);</p>
-<p class="p5">chain = <span class="s2">FFT</span>(b.bufnum, in);</p>
+<p class="p5">chain = <span class="s2">FFT</span>(b, in);</p>
 <p class="p5">estcutoff = <span class="s2">Lag</span>.kr(<span class="s2">SpecPcile</span>.kr(chain, 0.9), 1);</p>
 <p class="p5">realcutoff.poll(<span class="s2">Impulse</span>.kr(1), <span class="s3">"real cutoff"</span>);</p>
 <p class="p5">estcutoff.poll(<span class="s2">Impulse</span>.kr(1), <span class="s3">"estimated cutoff"</span>);</p>
@@ -62,7 +62,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">{</p>
 <p class="p5"><span class="s2">var</span> in, chain, perc;</p>
 <p class="p5">in = <span class="s2">AudioIn</span>.ar([1,2]).mean;</p>
-<p class="p5">chain = <span class="s2">FFT</span>(b.bufnum, in);</p>
+<p class="p5">chain = <span class="s2">FFT</span>(b, in);</p>
 <p class="p7">//Out.ar(0, in * 0.1);</p>
 <p class="p8"><span class="s4">perc = </span><span class="s2">SpecPcile</span>.kr(chain, 0.5);</p>
 <p class="p7"><span class="s2">Out</span><span class="s5">.ar(1, </span><span class="s2">LPF</span><span class="s5">.ar(</span><span class="s2">WhiteNoise</span><span class="s5">.ar, perc)); </span>//NB Outputting to right channel - handy on PowerBooks</p>

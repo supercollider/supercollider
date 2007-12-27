@@ -11,14 +11,13 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco; min-height: 15.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco; color: #000000; min-height: 15.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-span.s1 {color: #0024f8}
-span.s2 {color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+span.s1 {color: #0d2bf0}
+span.s2 {color: #0012b9}
 span.s3 {color: #000000}
-span.s4 {color: #bf0000}
+span.s4 {color: #a32011}
 span.s5 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -34,36 +33,36 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3"><b>Examples</b></p>
-<p class="p5"><br></p>
-<p class="p6">s = <span class="s2">Server</span>.internal.boot;</p>
-<p class="p6">b = <span class="s2">Buffer</span>.alloc(s,2048,1);</p>
-<p class="p7"><br></p>
-<p class="p6">(</p>
-<p class="p8"><span class="s3">{ </span>// Example - vary mixture of white noise and pure tone with the mouse</p>
-<p class="p6"><span class="s2">var</span> in, chain, flat, flatdb, flatdbsquish;</p>
-<p class="p6">in = <span class="s2">XFade2</span>.ar(<span class="s2">WhiteNoise</span>.ar, <span class="s2">SinOsc</span>.ar, <span class="s2">MouseX</span>.kr(-1,1));</p>
-<p class="p6">chain = <span class="s2">FFT</span>(b.bufnum, in);</p>
-<p class="p6"><span class="s2">Out</span>.ar(0, in * 0.1);</p>
-<p class="p7"><br></p>
-<p class="p6">flat = <span class="s2">SpecFlatness</span>.kr(chain);</p>
-<p class="p7"><br></p>
-<p class="p6">flatdb = 10 * flat.log; <span class="s4">// Convert to decibels</span></p>
-<p class="p6">flatdbsquish = <span class="s2">LinLin</span>.kr(flatdb, -45, -1.6, 0, 1).max(-10); <span class="s4">// Rescale db roughly to 0...1.</span></p>
-<p class="p7"><br></p>
-<p class="p6">flat.poll(10, <span class="s5">"flatness: "</span>);</p>
-<p class="p6">flatdb.poll(10, <span class="s5">"flatness (db): "</span>);</p>
-<p class="p7"><br></p>
-<p class="p6"><span class="s2">Out</span>.kr(0, [flat, flatdbsquish]);</p>
-<p class="p6">}.scope;</p>
-<p class="p6">)</p>
-<p class="p7"><br></p>
-<p class="p6">(</p>
-<p class="p8"><span class="s3">{ </span>// Now try with your own voice</p>
-<p class="p6"><span class="s2">var</span> in, chain;</p>
-<p class="p6">in = <span class="s2">AudioIn</span>.ar([1,2]).mean;</p>
-<p class="p6">chain = <span class="s2">FFT</span>(b.bufnum, in);</p>
-<p class="p6"><span class="s2">Out</span>.kr(0, [in, <span class="s2">SpecFlatness</span>.kr(chain).poll(1, <span class="s5">"flatness: "</span>)]);</p>
-<p class="p6">}.scope;</p>
-<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p5">s = <span class="s2">Server</span>.internal.boot;</p>
+<p class="p5">b = <span class="s2">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p7"><span class="s3">{ </span>// Example - vary mixture of white noise and pure tone with the mouse</p>
+<p class="p5"><span class="s2">var</span> in, chain, flat, flatdb, flatdbsquish;</p>
+<p class="p5">in = <span class="s2">XFade2</span>.ar(<span class="s2">WhiteNoise</span>.ar, <span class="s2">SinOsc</span>.ar, <span class="s2">MouseX</span>.kr(-1,1));</p>
+<p class="p5">chain = <span class="s2">FFT</span>(b, in);</p>
+<p class="p5"><span class="s2">Out</span>.ar(0, in * 0.1);</p>
+<p class="p6"><br></p>
+<p class="p5">flat = <span class="s2">SpecFlatness</span>.kr(chain);</p>
+<p class="p6"><br></p>
+<p class="p5">flatdb = 10 * flat.log; <span class="s4">// Convert to decibels</span></p>
+<p class="p5">flatdbsquish = <span class="s2">LinLin</span>.kr(flatdb, -45, -1.6, 0, 1).max(-10); <span class="s4">// Rescale db roughly to 0...1.</span></p>
+<p class="p6"><br></p>
+<p class="p5">flat.poll(10, <span class="s5">"flatness: "</span>);</p>
+<p class="p5">flatdb.poll(10, <span class="s5">"flatness (db): "</span>);</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s2">Out</span>.kr(0, [flat, flatdbsquish]);</p>
+<p class="p5">}.scope;</p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p7"><span class="s3">{ </span>// Now try with your own voice</p>
+<p class="p5"><span class="s2">var</span> in, chain;</p>
+<p class="p5">in = <span class="s2">AudioIn</span>.ar([1,2]).mean;</p>
+<p class="p5">chain = <span class="s2">FFT</span>(b, in);</p>
+<p class="p5"><span class="s2">Out</span>.kr(0, [in, <span class="s2">SpecFlatness</span>.kr(chain).poll(1, <span class="s5">"flatness: "</span>)]);</p>
+<p class="p5">}.scope;</p>
+<p class="p5">)</p>
 </body>
 </html>

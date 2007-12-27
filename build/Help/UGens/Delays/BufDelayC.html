@@ -5,18 +5,18 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-span.s1 {color: #0000ff}
-span.s2 {color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19; min-height: 12.0px}
+span.s1 {color: #0018f7}
+span.s2 {color: #091fb1}
 span.s3 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -44,7 +44,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">// decay envelope for the WhiteNoise input source</p>
 <p class="p7">{</p>
 <p class="p7">z = <span class="s2">Decay</span>.ar(<span class="s2">Dust</span>.ar(1,0.5), 0.3, <span class="s2">WhiteNoise</span>.ar);</p>
-<p class="p6"><span class="s2">BufDelayC</span><span class="s3">.ar(b.bufnum, z, 0.2, 1, z); </span>// input is mixed with delay via the add input</p>
+<p class="p6"><span class="s2">BufDelayC</span><span class="s3">.ar(b, z, 0.2, 1, z); </span>// input is mixed with delay via the add input</p>
 <p class="p7">}.play</p>
 <p class="p7">)</p>
 <p class="p5"><br></p>
