@@ -5,25 +5,26 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
-span.s1 {color: #0000ff}
-span.s2 {color: #000000}
-span.s3 {color: #0019b7}
-span.s4 {color: #606060}
-span.s5 {color: #a71e12}
-span.s6 {color: #326f17}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+span.s1 {color: #0018f7}
+span.s2 {color: #0000ff}
+span.s3 {color: #000000}
+span.s4 {color: #0000bf}
+span.s5 {color: #606060}
+span.s6 {color: #bf0000}
+span.s7 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -34,91 +35,92 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>DiskIn.ar(numChannels, bufnum)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Continuously play a longer soundfile from disk.<span class="Apple-converted-space">  </span>This requires a buffer to be preloaded with one buffer size of sound.</p>
-<p class="p3">See also <a href="PlayBuf.html"><span class="s1">PlayBuf</span></a> for playing a soundfile loaded into memory.</p>
 <p class="p4"><br></p>
-<p class="p5"><span class="s2">s.boot; </span>// start the server</p>
-<p class="p4"><br></p>
-<p class="p6">(</p>
-<p class="p6"><span class="s3">SynthDef</span>(<span class="s4">"help-Diskin"</span>, { <span class="s3">arg</span> bufnum = 0;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, <span class="s3">DiskIn</span>.ar(1, bufnum));</p>
-<p class="p6">}).send(s)</p>
-<p class="p6">)</p>
-<p class="p4"><br></p>
-<p class="p7"><b>OSC Messaging Style</b></p>
-<p class="p4"><br></p>
-<p class="p5">// allocate a disk i/o buffer</p>
-<p class="p6">s.sendMsg(<span class="s4">"/b_alloc"</span>, 0, 65536, 1);</p>
-<p class="p4"><br></p>
-<p class="p5">// open an input file for this buffer, leave it open</p>
-<p class="p8"><span class="s2">s.sendMsg(</span>"/b_read"<span class="s2">, 0, </span>"sounds/a11wlk01-44_1.aiff"<span class="s2">, 0, 65536, 0, 1);</span></p>
-<p class="p4"><br></p>
-<p class="p5">// create a diskin node</p>
-<p class="p6">s.sendMsg(<span class="s4">"/s_new"</span>, <span class="s4">"help-Diskin"</span>, x = s.nextNodeID, 1, 1);</p>
-<p class="p9"><br></p>
-<p class="p5"><span class="s2">s.sendMsg(</span><span class="s4">"/b_close"</span><span class="s2">, 0); </span>// close the file (very important!)</p>
-<p class="p9"><br></p>
-<p class="p4"><br></p>
-<p class="p5">// again<span class="Apple-converted-space"> </span></p>
-<p class="p5">// don't need to reallocate and Synth is still reading</p>
-<p class="p8"><span class="s2">s.sendMsg(</span>"/b_read"<span class="s2">, 0, </span>"sounds/a11wlk01-44_1.aiff"<span class="s2">, 0, 0, 0, 1);</span></p>
-<p class="p4"><br></p>
-<p class="p6">s.sendMsg(<span class="s4">"/n_free"</span>, x); <span class="s5">// stop reading</span></p>
-<p class="p9"><br></p>
-<p class="p5"><span class="s2">s.sendMsg(</span><span class="s4">"/b_close"</span><span class="s2">, 0); </span>// close the file.</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s2">s.sendMsg(</span><span class="s4">"/b_free"</span><span class="s2">, 0); </span>// frees the buffer</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p7"><b>Using Buffer (Object Style)</b></p>
-<p class="p4"><br></p>
-<p class="p6">b = <span class="s3">Buffer</span>.cueSoundFile(s, <span class="s4">"sounds/a11wlk01-44_1.aiff"</span>, 0, 1);</p>
-<p class="p4"><br></p>
-<p class="p6">x = { <span class="s3">DiskIn</span>.ar(1, b.bufnum) }.play;</p>
-<p class="p4"><br></p>
-<p class="p6">b.close;<span class="Apple-tab-span">	</span></p>
-<p class="p4"><br></p>
-<p class="p5">// again</p>
-<p class="p5">// note the like named instance method, but different arguments</p>
-<p class="p8"><span class="s2">b.cueSoundFile(</span>"sounds/a11wlk01-44_1.aiff"<span class="s2">, 0);<span class="Apple-tab-span">	</span></span></p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p6">x.free; b.close; b.free;<span class="Apple-tab-span">	</span></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p5">// loop it (for better looping use PlayBuf!)</p>
-<p class="p6">(</p>
-<p class="p8"><span class="s2">p = </span>"sounds/a11wlk01-44_1.aiff"<span class="s2">;</span></p>
-<p class="p6">a = <span class="s3">SoundFile</span>.new;</p>
-<p class="p6">a.openRead(p);</p>
-<p class="p6">d = a.numFrames/s.sampleRate; <span class="s5">// get the duration</span></p>
-<p class="p5"><span class="s2">a.close; </span>// don't forget</p>
-<p class="p6">b = <span class="s3">Buffer</span>.cueSoundFile(s, p, 0, 1);</p>
-<p class="p6">f = { <span class="s3">DiskIn</span>.ar(1, b.bufnum) };</p>
-<p class="p6">x = f.play;</p>
-<p class="p10"><span class="s2">r = </span>Routine<span class="s2">({</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>loop({ d.wait; x.free; x = f.play; b.close( b.cueSoundFileMsg(p, 0)) });</p>
-<p class="p6">}).play;</p>
-<p class="p6">)</p>
-<p class="p5"><span class="s2">r.stop; x.free; b.close; b.free; </span>// you need to do all these to properly cleanup</p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
-<p class="p4"><br></p>
-<p class="p5">// cue and play right away</p>
-<p class="p6">(</p>
-<p class="p6"><span class="s3">SynthDef</span>(<span class="s4">"help-Diskin"</span>, { <span class="s3">arg</span> bufnum = 0;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, <span class="s3">DiskIn</span>.ar(1, bufnum));</p>
-<p class="p6">}).send(s);</p>
-<p class="p6">)</p>
-<p class="p6">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6">x = <span class="s3">Synth</span>.basicNew(<span class="s4">"help-Diskin"</span>);</p>
-<p class="p6">m = { <span class="s3">arg</span> buf; x.addToHeadMsg(<span class="s3">nil</span>, [<span class="s6">\bufnum</span>,buf.bufnum])};</p>
-<p class="p4"><br></p>
-<p class="p6">b = <span class="s3">Buffer</span>.cueSoundFile(s,<span class="s4">"sounds/a11wlk01-44_1.aiff"</span>,0,1, completionMessage: m);</p>
-<p class="p6">)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><br></p>
-<p class="p6">x.free; b.close; b.free;<span class="Apple-tab-span">	</span><span class="s5">//clean up</span></p>
-<p class="p4"><br></p>
+<p class="p3"><b>See also:</b> <a href="PlayBuf.html"><span class="s1">PlayBuf</span></a>, <a href="../Oscillators/BufRd.html"><span class="s2">BufRd</span></a><span class="Apple-converted-space"> </span></p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s3">s.boot; </span>// start the server</p>
+<p class="p7"><br></p>
+<p class="p8">(</p>
+<p class="p8"><span class="s4">SynthDef</span>(<span class="s5">"help-Diskin"</span>, { <span class="s4">arg</span> bufnum = 0;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, <span class="s4">DiskIn</span>.ar(1, bufnum));</p>
+<p class="p8">}).send(s)</p>
+<p class="p8">)</p>
+<p class="p5"><br></p>
+<p class="p9"><b>OSC Messaging Style</b></p>
+<p class="p5"><br></p>
+<p class="p6">// allocate a disk i/o buffer</p>
+<p class="p8">s.sendMsg(<span class="s5">"/b_alloc"</span>, 0, 65536, 1);</p>
+<p class="p7"><br></p>
+<p class="p6">// open an input file for this buffer, leave it open</p>
+<p class="p10"><span class="s3">s.sendMsg(</span>"/b_read"<span class="s3">, 0, </span>"sounds/a11wlk01-44_1.aiff"<span class="s3">, 0, 65536, 0, 1);</span></p>
+<p class="p7"><br></p>
+<p class="p6">// create a diskin node</p>
+<p class="p8">s.sendMsg(<span class="s5">"/s_new"</span>, <span class="s5">"help-Diskin"</span>, x = s.nextNodeID, 1, 1);</p>
+<p class="p7"><br></p>
+<p class="p6"><span class="s3">s.sendMsg(</span><span class="s5">"/b_close"</span><span class="s3">, 0); </span>// close the file (very important!)</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p6">// again<span class="Apple-converted-space"> </span></p>
+<p class="p6">// don't need to reallocate and Synth is still reading</p>
+<p class="p10"><span class="s3">s.sendMsg(</span>"/b_read"<span class="s3">, 0, </span>"sounds/a11wlk01-44_1.aiff"<span class="s3">, 0, 0, 0, 1);</span></p>
+<p class="p7"><br></p>
+<p class="p8">s.sendMsg(<span class="s5">"/n_free"</span>, x); <span class="s6">// stop reading</span></p>
+<p class="p7"><br></p>
+<p class="p6"><span class="s3">s.sendMsg(</span><span class="s5">"/b_close"</span><span class="s3">, 0); </span>// close the file.</p>
+<p class="p7"><br></p>
+<p class="p6"><span class="s3">s.sendMsg(</span><span class="s5">"/b_free"</span><span class="s3">, 0); </span>// frees the buffer</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p9"><b>Using Buffer (Object Style)</b></p>
+<p class="p5"><br></p>
+<p class="p8">b = <span class="s4">Buffer</span>.cueSoundFile(s, <span class="s5">"sounds/a11wlk01-44_1.aiff"</span>, 0, 1);</p>
+<p class="p7"><br></p>
+<p class="p8">x = { <span class="s4">DiskIn</span>.ar(1, b) }.play;</p>
+<p class="p7"><br></p>
+<p class="p8">b.close;<span class="Apple-tab-span">	</span></p>
+<p class="p7"><br></p>
+<p class="p6">// again</p>
+<p class="p6">// note the like named instance method, but different arguments</p>
+<p class="p10"><span class="s3">b.cueSoundFile(</span>"sounds/a11wlk01-44_1.aiff"<span class="s3">, 0);<span class="Apple-tab-span">	</span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p8">x.free; b.close; b.free;<span class="Apple-tab-span">	</span></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p6">// loop it (for better looping use PlayBuf!)</p>
+<p class="p8">(</p>
+<p class="p10"><span class="s3">p = </span>"sounds/a11wlk01-44_1.aiff"<span class="s3">;</span></p>
+<p class="p8">a = <span class="s4">SoundFile</span>.new;</p>
+<p class="p8">a.openRead(p);</p>
+<p class="p8">d = a.numFrames/s.sampleRate; <span class="s6">// get the duration</span></p>
+<p class="p6"><span class="s3">a.close; </span>// don't forget</p>
+<p class="p8">b = <span class="s4">Buffer</span>.cueSoundFile(s, p, 0, 1);</p>
+<p class="p8">f = { <span class="s4">DiskIn</span>.ar(1, b) };</p>
+<p class="p8">x = f.play;</p>
+<p class="p11"><span class="s3">r = </span>Routine<span class="s3">({</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>loop({ d.wait; x.free; x = f.play; b.close( b.cueSoundFileMsg(p, 0)) });</p>
+<p class="p8">}).play;</p>
+<p class="p8">)</p>
+<p class="p6"><span class="s3">r.stop; x.free; b.close; b.free; </span>// you need to do all these to properly cleanup</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p6">// cue and play right away</p>
+<p class="p8">(</p>
+<p class="p8"><span class="s4">SynthDef</span>(<span class="s5">"help-Diskin"</span>, { <span class="s4">arg</span> bufnum = 0;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, <span class="s4">DiskIn</span>.ar(1, bufnum));</p>
+<p class="p8">}).send(s);</p>
+<p class="p8">)</p>
+<p class="p8">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8">x = <span class="s4">Synth</span>.basicNew(<span class="s5">"help-Diskin"</span>);</p>
+<p class="p8">m = { <span class="s4">arg</span> buf; x.addToHeadMsg(<span class="s4">nil</span>, [<span class="s7">\bufnum</span>, buf])};</p>
+<p class="p7"><br></p>
+<p class="p8">b = <span class="s4">Buffer</span>.cueSoundFile(s,<span class="s5">"sounds/a11wlk01-44_1.aiff"</span>,0,1, completionMessage: m);</p>
+<p class="p8">)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><br></p>
+<p class="p8">x.free; b.close; b.free;<span class="Apple-tab-span">	</span><span class="s6">//clean up</span></p>
+<p class="p5"><br></p>
 </body>
 </html>

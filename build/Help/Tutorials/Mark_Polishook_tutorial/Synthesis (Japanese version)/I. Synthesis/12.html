@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -13,19 +13,19 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Hiragino Kaku Gothic Pro}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Osaka}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Osaka; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Osaka; color: #902a19}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #456c20}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 span.s1 {font: 9.0px Monaco}
 span.s2 {color: #000000}
-span.s3 {color: #0019b7}
+span.s3 {color: #091fb1}
 span.s4 {color: #606060}
-span.s5 {color: #326f17}
+span.s5 {color: #456c20}
 span.s6 {font: 9.0px Monaco; color: #000000}
 span.s7 {font: 9.0px Osaka}
 span.Apple-tab-span {white-space:pre}
@@ -59,7 +59,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p6">(</p>
 <p class="p7"><span class="s1">// SynthDef</span>をテストする<span class="s1"> ... </span>動く？（はい、大丈夫。左チャンネルで再生する。）</p>
-<p class="p6"><span class="s3">Synth</span>(<span class="s4">"aMonoSamplePlayer"</span>, [<span class="s5">\bus</span>, 0, <span class="s5">\bufNum</span>, b.bufnum]);</p>
+<p class="p8"><span class="s3">Synth</span><span class="s2">(</span>"aMonoSamplePlayer"<span class="s2">, [</span><span class="s5">\bus</span><span class="s2">, 0, </span><span class="s5">\bufNum</span><span class="s2">, b]);</span></p>
 <p class="p6">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
@@ -68,8 +68,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s1">// </span>\busアーギュメントを使用して、同じSynthDefから作られたシンセを別のチャンネルにアサインする</p>
 <p class="p7"><span class="s1">// </span>この場合には、1チャンネルのサウンド・ファイルを2チャンネルで再生する</p>
 <p class="p7"><span class="s1">// </span>それぞれのチャンネルの再生レートを変えることで効果を明白にする</p>
-<p class="p6"><span class="s3">Synth</span>(<span class="s4">"aMonoSamplePlayer"</span>, [<span class="s5">\bus</span>, 0, <span class="s5">\bufNum</span>, b.bufnum, <span class="s5">\rateScale</span>, 0.99]);</p>
-<p class="p6"><span class="s3">Synth</span>(<span class="s4">"aMonoSamplePlayer"</span>, [<span class="s5">\bus</span>, 1, <span class="s5">\bufNum</span>, b.bufnum, <span class="s5">\rateScale</span>, 1.01])</p>
+<p class="p6"><span class="s3">Synth</span>(<span class="s4">"aMonoSamplePlayer"</span>, [<span class="s5">\bus</span>, 0, <span class="s5">\bufNum</span>, b, <span class="s5">\rateScale</span>, 0.99]);</p>
+<p class="p6"><span class="s3">Synth</span>(<span class="s4">"aMonoSamplePlayer"</span>, [<span class="s5">\bus</span>, 1, <span class="s5">\bufNum</span>, b, <span class="s5">\rateScale</span>, 1.01])</p>
 <p class="p6">)</p>
 <p class="p4"><br></p>
 <p class="p10">////////////////////////////////////////////////////////////////////////////////////////////////////</p>
@@ -148,7 +148,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s1">// </span>シンセを適切なグループの最後に追加しても同じ結果になる</p>
 <p class="p6">(</p>
 <p class="p8"><span class="s3">Synth</span><span class="s2">.head(~effect, </span>"soundFileFilter", [\out, 0, \freq, 500.rrand(1000), \rq, 0.04.rrand(0.1)]<span class="s2">);</span></p>
-<p class="p6"><span class="s3">Synth</span>.head(~source, <span class="s4">"aMonoSamplePlayer"</span>, [<span class="s5">\bus</span>, 0, <span class="s5">\bufNum</span>, b.bufnum]);</p>
+<p class="p6"><span class="s3">Synth</span>.head(~source, <span class="s4">"aMonoSamplePlayer"</span>, [<span class="s5">\bus</span>, 0, <span class="s5">\bufNum</span>, b]);</p>
 <p class="p6">)</p>
 <p class="p4"><br></p>
 <p class="p10">////////////////////////////////////////////////////////////////////////////////////////////////////</p>
@@ -220,7 +220,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s1">// </span>ソース・グループにサンプル・プレーヤーを追加する</p>
 <p class="p6"><span class="s3">Synth</span>.head(</p>
 <p class="p6"><span class="Apple-tab-span">	</span>~source,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">"aLoopingSamplePlayer"</span>, [<span class="s5">\outBus</span>, 3, <span class="s5">\bufNum</span>, b.bufnum, <span class="s5">\rateScale</span>, 1, <span class="s5">\mul</span>, 0.051]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">"aLoopingSamplePlayer"</span>, [<span class="s5">\outBus</span>, 3, <span class="s5">\bufNum</span>, b, <span class="s5">\rateScale</span>, 1, <span class="s5">\mul</span>, 0.051]);</p>
 <p class="p7"><span class="s1">// </span>エフェクト・グループの先頭に振幅変調シンセを追加する</p>
 <p class="p6"><span class="s3">Synth</span>.head(</p>
 <p class="p6"><span class="Apple-tab-span">	</span>~effect,</p>
@@ -254,7 +254,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9">(</p>
 <p class="p6"><span class="s3">Synth</span>.head(</p>
 <p class="p6"><span class="Apple-tab-span">	</span>~source,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">"aLoopingSamplePlayer"</span>, [<span class="s5">\</span>outBus, 3, <span class="s5">\bufNum</span>, b.bufnum, <span class="s5">\rateScale</span>, 1, <span class="s5">\mul</span>, 0.051]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">"aLoopingSamplePlayer"</span>, [<span class="s5">\</span>outBus, 3, <span class="s5">\bufNum</span>, b, <span class="s5">\rateScale</span>, 1, <span class="s5">\mul</span>, 0.051]);</p>
 <p class="p6"><span class="s3">Synth</span>.head(</p>
 <p class="p6"><span class="Apple-tab-span">	</span>~effect,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s4">"ampMod"</span>, [<span class="s5">\inBus</span>, 3, <span class="s5">\</span>outBus, 5, <span class="s5">\modFreq</span>, 1000]);</p>

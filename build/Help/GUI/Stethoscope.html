@@ -5,19 +5,21 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
 span.s3 {text-decoration: underline}
-span.s4 {color: #0019b7}
+span.s4 {color: #0000bf}
 span.s5 {color: #606060}
-span.s6 {color: #a71e12}
+span.s6 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -30,7 +32,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p1"><span class="s3">the scope window can be controlled by the following keys:</span></p>
+<p class="p1"><b>the scope window can be controlled by the following keys:</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b><span class="Apple-converted-space"> </span>J</b><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>one channel back</p>
@@ -52,13 +54,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>shift<span class="Apple-converted-space">  </span>A</b><span class="Apple-tab-span">	</span>allocate buffer size so it fills the screen (to next power of two) (this can be dangerous, might crash)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p1"><span class="s3">instance creation:</span></p>
+<p class="p3"><b>instance creation:</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>*new(server, numChannels, index, bufsize, zoom, rate, view)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns a new instance of Stethoscope.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="s3">by the message</span><b> .scope</b><span class="s3">:</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>by the message<b> .scope</b><span class="s3">:</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>aServer.scope(numChannels, index, bufsize, zoom, rate)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>opens a scope window for the server, stores it in the server instance var <b>scopeWindow</b></p>
@@ -69,9 +71,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><b>aFunction.scope(numChannels, outbus, fadeTime, bufsize, zoom)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>plays a function and shows output in scope, returns synth object, like <b>{ }.play</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
 <p class="p2"><br></p>
-<p class="p1"><span class="s3">instance methods:</span></p>
+<p class="p3"><b>instance methods:</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>allocBuffer(size)</b></p>
@@ -91,63 +93,63 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the window size (default: 222)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>zoom_</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set horizontal zoom</p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>setProperties( numChannels, index, bufsize, zoom, rate )</b></p>
 <p class="p1"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>any of these given will adjust the scope accordingly:</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>e.g. x.setProperties(zoom:8) will only zoom.</p>
-<p class="p3"><br></p>
-<p class="p4">// examples:</p>
-<p class="p3"><br></p>
-<p class="p5">(</p>
-<p class="p5"><span class="s4">Server</span>.default = <span class="s4">Server</span>.internal;</p>
-<p class="p5">s = <span class="s4">Server</span>.default;</p>
-<p class="p5">s.boot;</p>
-<p class="p5">)</p>
-<p class="p5">(</p>
-<p class="p5">{<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">SinOsc</span>.ar([225, 450, 900], 0, 0.2)<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>+ <span class="s4">LPF</span>.ar(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">LFPulse</span>.ar(226 * [1, 2, 5],[0,0.1,0.1],0.2, 0.2),<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">MouseX</span>.kr(20, 10000, 1)</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"> </span></p>
-<p class="p5">}.scope;</p>
-<p class="p5">)</p>
-<p class="p3"><br></p>
-<p class="p4">// server.scope only changes the properies explicitly given:</p>
-<p class="p3"><br></p>
-<p class="p5">s.scope(numChannels:5);</p>
-<p class="p5">s.scope(index:12);</p>
-<p class="p5">s.scope(zoom:4);</p>
-<p class="p5">s.scope(index:0);</p>
-<p class="p3"><br></p>
-<p class="p5">s.scopeWindow.size = 600;</p>
-<p class="p5">s.scopeWindow.size = 222;</p>
-<p class="p3"><br></p>
-<p class="p4">// scoping buses:</p>
-<p class="p3"><br></p>
-<p class="p5">a = <span class="s4">Bus</span>.audio(s, 4);</p>
-<p class="p5">{ <span class="s4">WhiteNoise</span>.ar(0.2.dup(4)) }.play(s, a.index);</p>
-<p class="p3"><br></p>
-<p class="p5">a.scope;</p>
-<p class="p3"><br></p>
-<p class="p5">c = <span class="s4">Bus</span>.control(s, 3);</p>
-<p class="p5">{ <span class="s4">WhiteNoise</span>.kr(1.dup(4) * MouseX.kr) }.play(s, c.index);</p>
-<p class="p3"><br></p>
-<p class="p5">c.scope;</p>
-<p class="p3"><br></p>
-<p class="p4">// note that scoping control rate buses shows block size interpolation (this is due to the</p>
-<p class="p4">// fact that ScopeOut.kr doesn't work yet.)</p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
+<p class="p5">// examples:</p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s4">Server</span>.default = <span class="s4">Server</span>.internal;</p>
+<p class="p7">s = <span class="s4">Server</span>.default;</p>
+<p class="p7">s.boot;</p>
+<p class="p7">)</p>
+<p class="p7">(</p>
+<p class="p7">{<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s4">SinOsc</span>.ar([225, 450, 900], 0, 0.2)<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>+ <span class="s4">LPF</span>.ar(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">LFPulse</span>.ar(226 * [1, 2, 5],[0,0.1,0.1],0.2, 0.2),<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">MouseX</span>.kr(20, 10000, 1)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"> </span></p>
+<p class="p7">}.scope;</p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p5">// server.scope only changes the properies explicitly given:</p>
+<p class="p6"><br></p>
+<p class="p7">s.scope(numChannels:5);</p>
+<p class="p7">s.scope(index:12);</p>
+<p class="p7">s.scope(zoom:4);</p>
+<p class="p7">s.scope(index:0);</p>
+<p class="p6"><br></p>
+<p class="p7">s.scopeWindow.size = 600;</p>
+<p class="p7">s.scopeWindow.size = 222;</p>
+<p class="p6"><br></p>
+<p class="p5">// scoping buses:</p>
+<p class="p6"><br></p>
+<p class="p7">a = <span class="s4">Bus</span>.audio(s, 4);</p>
+<p class="p7">{ <span class="s4">WhiteNoise</span>.ar(0.2.dup(4)) }.play(s, a);</p>
+<p class="p6"><br></p>
+<p class="p7">a.scope;</p>
+<p class="p6"><br></p>
+<p class="p7">c = <span class="s4">Bus</span>.control(s, 3);</p>
+<p class="p7">{ <span class="s4">WhiteNoise</span>.kr(1.dup(4) * <span class="s4">MouseX</span>.kr) }.play(s, c);</p>
+<p class="p6"><br></p>
+<p class="p7">c.scope;</p>
+<p class="p6"><br></p>
+<p class="p5">// note that scoping control rate buses shows block size interpolation (this is due to the</p>
+<p class="p5">// fact that ScopeOut.kr doesn't work yet.)</p>
+<p class="p4"><br></p>
 <p class="p2"><br></p>
-<p class="p1"><span class="s3">external use: you can pass your own view in to add a stethoscope to it;</span></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p5">w = <span class="s4">SCWindow</span>.new(<span class="s5">"my own scope"</span>, <span class="s4">Rect</span>(20, 20, 400, 500));</p>
-<p class="p5">w.view.decorator = <span class="s4">FlowLayout</span>(w.view.bounds);</p>
-<p class="p5">c = <span class="s4">Stethoscope</span>.new(s, view:w.view);</p>
-<p class="p5">w.onClose = { c.free }; <span class="s6">// don't forget this</span></p>
-<p class="p5">w.front;</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p1"><b>external use: you can pass your own view in to add a stethoscope to it;</b></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7">w = <span class="s4">SCWindow</span>.new(<span class="s5">"my own scope"</span>, <span class="s4">Rect</span>(20, 20, 400, 500));</p>
+<p class="p7">w.view.decorator = <span class="s4">FlowLayout</span>(w.view.bounds);</p>
+<p class="p7">c = <span class="s4">Stethoscope</span>.new(s, view:w.view);</p>
+<p class="p7">w.onClose = { c.free }; <span class="s6">// don't forget this</span></p>
+<p class="p7">w.front;</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 </body>
 </html>

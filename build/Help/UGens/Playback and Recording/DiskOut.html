@@ -5,24 +5,24 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #a71e12; min-height: 14.0px}
-span.s1 {color: #0000ff}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #902a19; min-height: 14.0px}
+span.s1 {color: #0018f7}
 span.s2 {color: #000000}
-span.s3 {color: #0019b7}
-span.s4 {color: #a71e12}
+span.s3 {color: #091fb1}
+span.s4 {color: #902a19}
 span.s5 {color: #606060}
-span.s6 {color: #326f17}
-span.s7 {font: 9.0px Monaco; color: #a71e12}
+span.s6 {color: #456c20}
+span.s7 {font: 9.0px Monaco; color: #902a19}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -68,7 +68,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// create an output file for this buffer, leave it open</p>
 <p class="p7"><span class="s2">b.write(</span>"recordings/diskouttest.aiff"<span class="s2">, </span>"aiff"<span class="s2">, </span>"int16"<span class="s2">, 0, 0, </span><span class="s3">true</span><span class="s2">);</span></p>
 <p class="p5">// create the diskout node; making sure it comes after the source</p>
-<p class="p6">d = <span class="s3">Synth</span>.tail(<span class="s3">nil</span>, <span class="s5">"help-Diskout"</span>, [<span class="s5">"bufnum"</span>, b.bufnum]);</p>
+<p class="p7"><span class="s2">d = </span><span class="s3">Synth</span><span class="s2">.tail(</span><span class="s3">nil</span><span class="s2">, </span>"help-Diskout"<span class="s2">, [</span>"bufnum"<span class="s2">, b]);</span></p>
 <p class="p5">// stop recording</p>
 <p class="p6">d.free;</p>
 <p class="p5">// stop the bubbles</p>
@@ -81,7 +81,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// play it back</p>
 <p class="p6">(</p>
 <p class="p7"><span class="s2">x = </span><span class="s3">Synth</span><span class="s2">.basicNew(</span>"help-Diskin-2chan"<span class="s2">);</span></p>
-<p class="p6">m = { <span class="s3">arg</span> buf; x.addToHeadMsg(nil, [<span class="s6">\bufnum</span>,buf.bufnum])};</p>
+<p class="p6">m = { <span class="s3">arg</span> buf; x.addToHeadMsg(nil, [<span class="s6">\bufnum</span>,buf])};</p>
 <p class="p2"><br></p>
 <p class="p6">b = <span class="s3">Buffer</span>.cueSoundFile(s,<span class="s5">"recordings/diskouttest.aiff"</span>, 0, 2, completionMessage: m);</p>
 <p class="p6">)</p>

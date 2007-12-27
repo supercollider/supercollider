@@ -5,20 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #832519}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #722c1d}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #872718}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {color: #000000}
-span.s2 {color: #0035aa}
-span.s3 {color: #0026b4}
-span.s4 {color: #9d1c12}
+span.s2 {color: #1737a5}
+span.s3 {color: #102aae}
+span.s4 {color: #872718}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -48,9 +48,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p8"><span class="s3">var</span> in, fft, loudness;</p>
 <p class="p4"><br></p>
-<p class="p8">in= <span class="s3">PlayBuf</span>.ar(1,d.bufnum,<span class="s3">BufRateScale</span>.kr(d.bufnum),1,0,1);</p>
+<p class="p8">in= <span class="s3">PlayBuf</span>.ar(1,d,<span class="s3">BufRateScale</span>.kr(d),1,0,1);</p>
 <p class="p4"><br></p>
-<p class="p8">fft = <span class="s3">FFT</span>(b.bufnum, in);</p>
+<p class="p8">fft = <span class="s3">FFT</span>(b, in);</p>
 <p class="p4"><br></p>
 <p class="p8">loudness=<span class="s3">Loudness</span>.kr(fft).poll(50);<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
@@ -86,9 +86,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">//in= SinOsc.ar(1000,0,Line.kr(0,1,2));</p>
 <p class="p7">//in= SinOsc.ar(1000,0,Line.kr(0,1,2)**2);</p>
 <p class="p7">//in= WhiteNoise.ar(Line.kr(0,1,2));</p>
-<p class="p7">//in= PlayBuf.ar(1,d.bufnum,BufRateScale.kr(d.bufnum),1,0,1);</p>
+<p class="p7">//in= PlayBuf.ar(1,d,BufRateScale.kr(d),1,0,1);</p>
 <p class="p4"><br></p>
-<p class="p8">fft = <span class="s3">FFT</span>(b.bufnum, in);</p>
+<p class="p8">fft = <span class="s3">FFT</span>(b, in);</p>
 <p class="p4"><br></p>
 <p class="p8">loudness=<span class="s3">Loudness</span>.kr(fft, 0.25,6).poll(50);<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>

@@ -18,7 +18,7 @@ s.waitForBoot(\{\
 		signal = [\cf3 LFSaw\cf0 .ar(freq, 0, amp/2)*\cf3 SinOsc\cf0 .ar(rate), \
 				\cf3 Pulse\cf0 .ar( freq, 0.51, amp)*\cf3 SinOsc\cf0 .ar(rate)];\
 		signal = \cf3 Balance2\cf0 .ar(signal[0], signal[1], pan);\
-		\cf3 ScopeOut\cf0 .ar( signal, b.bufnum);\
+		\cf3 ScopeOut\cf0 .ar( signal, b);\
 		\cf3 Out\cf0 .ar(0, signal);\
 	\}).play(s);\
 	\
@@ -34,7 +34,7 @@ s.waitForBoot(\{\
 		.indexIsHorizontal_(\cf3 false\cf0 )\
 		.isFilled_(\cf3 true\cf0 )\
 		.strokeColor_(\cf3 Color\cf0 .new255(10, 55, 10))\
-		.fillColor_(\cf3 Color\cf0 .new255(110, 155, 110))\
+		.fillColor_(\cf3 Color\cf0 .new255(110, 155, 110).alpha_(0.6))\
 		.indexThumbSize_(26)\
 		.gap_(4)\
 		.valueThumbSize_(1)\
@@ -53,7 +53,7 @@ s.waitForBoot(\{\
 		.action_(\{\cf3 |sl|\cf0  sc.xZoom_(sl.value*4)\});\
 \
 	sc= \cf3 SCScope\cf0 (w, \cf3 Rect\cf0 (120,10,260,260))\
-		.bufnum_(b.bufnum)\
+		.bufnum_(b)\
 		.background_(\cf3 Color\cf0 .white)\
 		.waveColors_([\cf3 Color\cf0 .black, \cf3 Color\cf0 .black]);\
 \});\

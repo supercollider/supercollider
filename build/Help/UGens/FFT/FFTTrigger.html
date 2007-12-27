@@ -5,14 +5,14 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a91616}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 15.0px Helvetica}
-span.s2 {color: #0014bc}
+span.s2 {color: #0000bf}
 span.s3 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -43,7 +43,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>mags = mags * {<span class="s2">LFPulse</span>.kr(2 ** <span class="s2">IRand</span>(-3, 5)).range(0, 1)}.dup(100);</p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span></span>// Let's ignore phase for now</p>
 <p class="p3"><span class="Apple-tab-span">	</span>phases = 0.dup(100);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s2">FFTTrigger</span>(b.bufnum, 0.5);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s2">FFTTrigger</span>(b, 0.5);</p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span></span>// Now we can do the packing</p>
 <p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s2">PackFFT</span>(chain, 512, [mags, phases].flop.flatten, 0, 99, 1);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>sig = <span class="s2">IFFT</span>(chain);</p>

@@ -5,16 +5,16 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-span.s1 {color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+span.s1 {color: #0012b9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -42,7 +42,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">{</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> index, in, out, f0, fdiff;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> bufnum = b.bufnum;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> bufnum = b;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>in = <span class="s1">Pulse</span>.ar(<span class="s1">MouseX</span>.kr(t.minItem, t.maxItem)) * 0.1;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>f0 = <span class="s1">Pitch</span>.kr(in).at(0);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>index = <span class="s1">IndexInBetween</span>.kr(bufnum, f0);</p>
@@ -68,7 +68,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">{</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> index, f0, f1, f3;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> bufnum = b.bufnum;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> bufnum = b;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>f0 = <span class="s1">MouseX</span>.kr(200, 900);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>index = <span class="s1">IndexInBetween</span>.kr(bufnum, f0);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>f1 = <span class="s1">IndexL</span>.kr(bufnum, index);</p>

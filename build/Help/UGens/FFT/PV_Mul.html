@@ -5,19 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016e6}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #0019b7}
-span.s4 {color: #606060}
-span.s5 {color: #326f17}
+span.s3 {text-decoration: underline}
+span.s4 {color: #091fb1}
+span.s5 {color: #606060}
+span.s6 {color: #456c20}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -30,37 +31,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>bufferA</b> - fft buffer A.</p>
 <p class="p3"><b>bufferB</b> - fft buffer B.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s2">See also <a href="FFT Overview.html">FFT Overview</a>.</span></p>
+<p class="p4"><span class="s2">See also <a href="FFT Overview.html"><span class="s3">FFT Overview</span></a>.</span></p>
 <p class="p2"><br></p>
-<p class="p5">s = <span class="s3">Server</span>.internal.boot;</p>
+<p class="p5">s = <span class="s4">Server</span>.internal.boot;</p>
 <p class="p5">(</p>
-<p class="p5">b = <span class="s3">Buffer</span>.alloc(s,2048,1);</p>
-<p class="p5">c = <span class="s3">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p5">b = <span class="s4">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p5">c = <span class="s4">Buffer</span>.alloc(s,2048,1);</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-mul"</span>, { <span class="s3">arg</span> out=0, bufnumA=0, bufnumB=1;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> inA, chainA, inB, chainB, chain ;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s3">SinOsc</span>.ar(500, 0, 0.5);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>inB =<span class="Apple-converted-space">  </span><span class="s3">SinOsc</span>.ar(<span class="s3">Line</span>.kr(100, 400, 5), 0, 0.5);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(bufnumA, inA);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(bufnumB, inB);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_Mul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.5 * <span class="s3">IFFT</span>(chain).dup);</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnumA</span>, b.bufnum, <span class="s5">\bufnumB</span>, c.bufnum]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-mul"</span>, { <span class="s4">arg</span> out=0, bufnumA=0, bufnumB=1;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> inA, chainA, inB, chainB, chain ;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s4">SinOsc</span>.ar(500, 0, 0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inB =<span class="Apple-converted-space">  </span><span class="s4">SinOsc</span>.ar(<span class="s4">Line</span>.kr(100, 400, 5), 0, 0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s4">FFT</span>(bufnumA, inA);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s4">FFT</span>(bufnumB, inB);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_Mul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.5 * <span class="s4">IFFT</span>(chain).dup);</p>
+<p class="p5">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnumA</span>, b, <span class="s6">\bufnumB</span>, c]);</p>
 <p class="p5">s.scope;</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-mul2"</span>, { <span class="s3">arg</span> out=0, bufnumA=0, bufnumB=1;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> inA, chainA, inB, chainB, chain ;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s3">SinOsc</span>.ar(500, 0, 0.5) * <span class="s3">Line</span>.kr;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>inB = <span class="s3">LFNoise1</span>.ar(20);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(bufnumA, inA);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(bufnumB, inB);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_Mul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.5 * <span class="s3">IFFT</span>(chain).dup);</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnumA</span>, b.bufnum, <span class="s5">\bufnumB</span>, c.bufnum]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-mul2"</span>, { <span class="s4">arg</span> out=0, bufnumA=0, bufnumB=1;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> inA, chainA, inB, chainB, chain ;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s4">SinOsc</span>.ar(500, 0, 0.5) * <span class="s4">Line</span>.kr;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inB = <span class="s4">LFNoise1</span>.ar(20);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s4">FFT</span>(bufnumA, inA);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s4">FFT</span>(bufnumB, inB);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_Mul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.5 * <span class="s4">IFFT</span>(chain).dup);</p>
+<p class="p5">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnumA</span>, b, <span class="s6">\bufnumB</span>, c]);</p>
 <p class="p5">s.scope;</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>

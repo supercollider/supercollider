@@ -11,16 +11,16 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952415}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 33.0px; font: 12.0px Arial}
-span.s1 {color: #1454d8}
-span.s2 {color: #001bb9}
+span.s1 {color: #2a55d2}
+span.s2 {color: #0a20b3}
 span.s3 {color: #000000}
-span.s4 {color: #2c7014}
-span.s5 {color: #3d6d1d}
-span.s6 {text-decoration: underline ; color: #465147}
+span.s4 {color: #426d1e}
+span.s5 {color: #4b6b24}
+span.s6 {text-decoration: underline ; color: #495047}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -61,7 +61,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>// A simple generative signal</p>
 <p class="p4"><span class="Apple-tab-span">	</span>sig = <span class="s2">LPF</span>.ar(<span class="s2">Pulse</span>.ar(<span class="s2">TIRand</span>.kr(63,75,<span class="s2">Impulse</span>.kr(2)).midicps), <span class="s2">LFNoise2</span>.kr(0.5).exprange(100, 10000)) * <span class="s2">Saw</span>.ar(2).range(0, 1);</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>// or, uncomment this line if you want to play the buffer in</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>//sig = PlayBuf.ar(1, d.bufnum, BufRateScale.kr(d.bufnum), loop: 1);</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>chain = <span class="s2">FFT</span>(b, sig);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
@@ -86,7 +86,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>// A simple generative signal</p>
 <p class="p4"><span class="Apple-tab-span">	</span>sig = <span class="s2">LPF</span>.ar(<span class="s2">Pulse</span>.ar(<span class="s2">TIRand</span>.kr(63,75,<span class="s2">Impulse</span>.kr(2)).midicps), <span class="s2">LFNoise2</span>.kr(0.5).exprange(100, 10000)) * <span class="s2">Saw</span>.ar(2).range(0, 1);</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>// or, uncomment this line if you want to play the buffer in</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>//sig = PlayBuf.ar(1, d.bufnum, BufRateScale.kr(d.bufnum), loop: 1);</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>chain = <span class="s2">FFT</span>(b, sig);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>

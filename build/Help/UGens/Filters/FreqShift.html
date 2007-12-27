@@ -5,21 +5,22 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-span.s1 {color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19; min-height: 12.0px}
+span.s1 {color: #091fb1}
 span.s2 {color: #000000}
 span.s3 {color: #606060}
-span.s4 {color: #a71e12}
+span.s4 {color: #902a19}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -49,7 +50,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// the ubiquitous houston example</p>
 <p class="p6">(</p>
 <p class="p8"><span class="s2">b = </span><span class="s1">Buffer</span><span class="s2">.read(s,</span>"sounds/a11wlk01.wav"<span class="s2">);</span></p>
-<p class="p6">{<span class="s1">FreqShift</span>.ar(<span class="s1">PlayBuf</span>.ar(1,b.bufnum,<span class="s1">BufRateScale</span>.kr(b.bufnum),loop:1),<span class="s1">LFNoise0</span>.kr(0.45,1000),0,[1,1])}.play(s);</p>
+<p class="p6">{<span class="s1">FreqShift</span>.ar(<span class="s1">PlayBuf</span>.ar(1,b,<span class="s1">BufRateScale</span>.kr(b),loop:1),<span class="s1">LFNoise0</span>.kr(0.45,1000),0,[1,1])}.play(s);</p>
 <p class="p6">)</p>
 <p class="p7"><br></p>
 <p class="p5">// shifting bandpassed noise</p>
@@ -104,10 +105,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">}).send(s);</p>
 <p class="p6">)</p>
 <p class="p7"><br></p>
+<p class="p5"><span class="s2">r.stop; </span>// stop old routine</p>
 <p class="p7"><br></p>
 <p class="p5"><span class="s2">(</span>// ssllooww columbia tuned shift detune</p>
-<p class="p5"><span class="s2">r.stop; </span>// stop old routine</p>
-<p class="p6"><span class="s1">Buffer</span>.read(s,<span class="s3">"sounds/a11wlk01.wav"</span>, bufnum:99);</p>
+<p class="p10"><br></p>
+<p class="p8"><span class="s1">b = Buffer</span><span class="s2">.read(s,</span>"sounds/a11wlk01.wav"<span class="s2">);</span></p>
 <p class="p7"><br></p>
 <p class="p6"><span class="s1">SynthDef</span>(<span class="s3">"frqShift1"</span>,{<span class="s1">arg</span> frq, bufnum;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> e1,snd,left,right;</p>
@@ -123,7 +125,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span>table = [0,2,4,5,7,9,11,12];</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">inf</span>.do{</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pitch = (48+(12*2.rand) + table.choose).midicps;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s3">"s_new"</span>,<span class="s3">"frqShift1"</span>,-1,1,1, <span class="s3">"frq"</span>, pitch, <span class="s3">"bufnum"</span>, 99);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s3">"s_new"</span>,<span class="s3">"frqShift1"</span>,-1,1,1, <span class="s3">"frq"</span>, pitch, <span class="s3">"bufnum"</span>, b);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3.wait;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p6"><span class="Apple-tab-span">	</span>};</p>

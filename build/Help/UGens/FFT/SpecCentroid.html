@@ -11,14 +11,12 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-span.s1 {color: #0024f8}
-span.s2 {color: #0000ff}
-span.s3 {color: #001bb9}
-span.s4 {color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+span.s1 {color: #0d2bf0}
+span.s2 {color: #0018f7}
+span.s3 {color: #0a20b3}
+span.s4 {color: #0012b9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -39,23 +37,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">s.boot;</p>
 <p class="p4">b = <span class="s3">Buffer</span>.alloc(s,2048,1);</p>
 <p class="p4">(</p>
-<p class="p5">x = {</p>
-<p class="p5"><span class="s4">var</span> in, chain, freq, rq, centroid;</p>
-<p class="p6"><br></p>
-<p class="p7">//freq = LFPar.kr(0.3).exprange(100, 1000);</p>
-<p class="p5">freq = <span class="s4">MouseY</span>.kr(1000, 100, 1);</p>
-<p class="p6"><br></p>
-<p class="p5">in = <span class="s4">Blip</span>.ar(freq, <span class="s4">MouseX</span>.kr(1, 100, 1));</p>
-<p class="p6"><br></p>
-<p class="p5">chain = <span class="s4">FFT</span>(b.bufnum, in);</p>
-<p class="p6"><br></p>
-<p class="p5">centroid = <span class="s4">SpecCentroid</span>.kr(chain);</p>
-<p class="p6"><br></p>
-<p class="p5"><span class="s4">Out</span>.ar(0, in.dup * 0.1);</p>
-<p class="p5">centroid.poll(10);</p>
-<p class="p5">}.play(s);</p>
+<p class="p4">x = {</p>
+<p class="p4"><span class="s4">var</span> in, chain, freq, rq, centroid;</p>
+<p class="p5"><br></p>
+<p class="p6">//freq = LFPar.kr(0.3).exprange(100, 1000);</p>
+<p class="p4">freq = <span class="s4">MouseY</span>.kr(1000, 100, 1);</p>
+<p class="p5"><br></p>
+<p class="p4">in = <span class="s4">Blip</span>.ar(freq, <span class="s4">MouseX</span>.kr(1, 100, 1));</p>
+<p class="p5"><br></p>
+<p class="p4">chain = <span class="s4">FFT</span>(b, in);</p>
+<p class="p5"><br></p>
+<p class="p4">centroid = <span class="s4">SpecCentroid</span>.kr(chain);</p>
+<p class="p5"><br></p>
+<p class="p4"><span class="s4">Out</span>.ar(0, in.dup * 0.1);</p>
+<p class="p4">centroid.poll(10);</p>
+<p class="p4">}.play(s);</p>
 <p class="p4">)</p>
-<p class="p8"><br></p>
+<p class="p5"><br></p>
 <p class="p4">x.free;</p>
 </body>
 </html>

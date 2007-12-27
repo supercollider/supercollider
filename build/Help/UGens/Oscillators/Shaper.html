@@ -5,24 +5,19 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-span.s1 {color: #001bb9}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {color: #0000bf}
 span.s2 {color: #000000}
-span.s3 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -35,86 +30,86 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Performs waveshaping on the input signal by indexing into the table.</p>
 <p class="p3"><b>bufnum</b> - the number of a buffer filled in wavetable format containing the transfer function.</p>
 <p class="p3"><b>in</b> - the input signal.</p>
+<p class="p1"><br></p>
+<p class="p3">Examples use the Internal Server to show the effect of waveshaping via a scope. Use .play instead if necessary. <span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p5">Examples use the Internal Server to show the effect of waveshaping via a scope. Use .play instead if necessary. <span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s1">Server</span>.default = s = <span class="s1">Server</span>.internal; s.boot;</p>
 <p class="p6"><br></p>
-<p class="p7"><span class="s1">Server</span>.default = s = <span class="s1">Server</span>.internal; s.boot;</p>
+<p class="p5">b = <span class="s1">Buffer</span>.alloc(s, 512, 1, {<span class="s1">arg</span> buf; buf.chebyMsg([1,0,1,1,0,1])});</p>
+<p class="p5">(</p>
+<p class="p5">{<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>Shaper<span class="s2">.ar(</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(300, 0, <span class="s1">Line</span>.kr(0,1,6)),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"> </span></p>
+<p class="p5">}.scope;</p>
+<p class="p5">)</p>
 <p class="p8"><br></p>
-<p class="p7">b = <span class="s1">Buffer</span>.alloc(s, 512, 1, {<span class="s1">arg</span> buf; buf.chebyMsg([1,0,1,1,0,1])});</p>
-<p class="p7">(</p>
-<p class="p7">{<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>Shaper<span class="s2">.ar(</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.bufnum,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(300, 0, <span class="s1">Line</span>.kr(0,1,6)),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5</p>
-<p class="p7"><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"> </span></p>
-<p class="p7">}.scope;</p>
-<p class="p7">)</p>
+<p class="p1"><br></p>
+<p class="p3">For those who's like to make their own wavetables for arbitrary shapers, your buffer must be in wavetable format to have a valid transfer function. Wavetable format is a special representation which includes an extra number between each sample containing the difference between two adjacent samples, to make linear interpolation faster.</p>
+<p class="p1"><br></p>
+<p class="p3">Signal: [a0, a1, a2...]</p>
+<p class="p3">Wavetable: [a0, a1-a0, a1, a2-a1, a2, a3-a2...]</p>
+<p class="p1"><br></p>
+<p class="p3">If your buffer doesn't have the deltas between adjacent samples, the calculations are wrong and you get distortion.</p>
+<p class="p1"><br></p>
+<p class="p3">There are two ways to get wavetables into a server buffer. The server can generate them (see the Buffer help file for the methods sine1, sine2, sine3 and cheby).</p>
 <p class="p8"><br></p>
-<p class="p4"><br></p>
-<p class="p5">For those who's like to make their own wavetables for arbitrary shapers, your buffer must be in wavetable format to have a valid transfer function. Wavetable format is a special representation which includes an extra number between each sample containing the difference between two adjacent samples, to make linear interpolation faster.</p>
-<p class="p4"><br></p>
-<p class="p5">Signal: [a0, a1, a2...]</p>
-<p class="p5">Wavetable: [a0, a1-a0, a1, a2-a1, a2, a3-a2...]</p>
-<p class="p4"><br></p>
-<p class="p5">If your buffer doesn't have the deltas between adjacent samples, the calculations are wrong and you get distortion.</p>
-<p class="p4"><br></p>
-<p class="p5">There are two ways to get wavetables into a server buffer. The server can generate them (see the Buffer help file for the methods sine1, sine2, sine3 and cheby).</p>
+<p class="p5">b = <span class="s1">Buffer</span>.alloc(s, 1024, 1);</p>
+<p class="p5">b.cheby([1, 0.5, 0.25, 0.125]);</p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p5">{ <span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>sig = <span class="s1">Shaper</span>.ar(b, <span class="s1">SinOsc</span>.ar(440, 0, 0.4));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sig ! 2</p>
+<p class="p5">}.scope;</p>
+<p class="p5">)</p>
 <p class="p8"><br></p>
-<p class="p10">b = <span class="s3">Buffer</span>.alloc(s, 1024, 1);</p>
-<p class="p10">b.cheby([1, 0.5, 0.25, 0.125]);</p>
-<p class="p11"><br></p>
-<p class="p10">(</p>
-<p class="p10">{ <span class="Apple-tab-span">	</span><span class="s3">var</span><span class="Apple-tab-span">	</span>sig = <span class="s3">Shaper</span>.ar(b.bufnum, <span class="s3">SinOsc</span>.ar(440, 0, 0.4));</p>
-<p class="p10"><span class="Apple-tab-span">	</span>sig ! 2</p>
-<p class="p10">}.scope;</p>
-<p class="p7">)</p>
+<p class="p3">Or, you can calculate the transfer function in a client-side array (Signal class) then convert it to a wavetable and send the data over.</p>
 <p class="p8"><br></p>
-<p class="p5">Or, you can calculate the transfer function in a client-side array (Signal class) then convert it to a wavetable and send the data over.</p>
-<p class="p11"><br></p>
-<p class="p12">// or, for an arbitrary transfer function, create the data at 1/2 buffer size</p>
-<p class="p10">t = <span class="s3">Signal</span>.fill(512, { <span class="s3">|i|</span> i.linlin(0.0, 511.0, -1.0, 1.0) });</p>
-<p class="p11"><br></p>
-<p class="p12">//linear function</p>
-<p class="p10">t.plot</p>
-<p class="p11"><br></p>
-<p class="p12">//t.asWavetable will convert it to the official Wavetable format at twice the size</p>
-<p class="p12"><span class="s2">b.sendCollection(t.asWavetable);<span class="Apple-converted-space">  </span></span>// may also use loadCollection here</p>
-<p class="p11"><br></p>
-<p class="p12">//shaper has no effect because of the linear transfer function</p>
-<p class="p10">(</p>
-<p class="p10">{ <span class="Apple-tab-span">	</span><span class="s3">var</span><span class="Apple-tab-span">	</span>sig = <span class="s3">Shaper</span>.ar(b.bufnum, <span class="s3">SinOsc</span>.ar(440, 0, 0.4));</p>
-<p class="p10"><span class="Apple-tab-span">	</span>sig ! 2</p>
-<p class="p10">}.scope;</p>
-<p class="p10">)</p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
-<p class="p12">// now for a twist</p>
-<p class="p10">a = <span class="s3">Signal</span>.fill(256, {<span class="s3">arg</span> i; <span class="s3">var</span> t= i/255.0;<span class="Apple-converted-space">  </span>t+(0.1*(t.max(0.1)-0.1)*sin(2pi*t*80+sin(2pi*25.6*t)))});</p>
-<p class="p11"><br></p>
-<p class="p10">a.plot</p>
-<p class="p11"><br></p>
-<p class="p10">d= (a.copy.reverse.neg) ++ a;</p>
-<p class="p11"><br></p>
-<p class="p10">d.plot</p>
-<p class="p11"><br></p>
-<p class="p10">(</p>
-<p class="p10">b = <span class="s3">Buffer</span>.alloc(s, 1024, 1);</p>
-<p class="p12"><span class="s2">b.sendCollection(d.asWavetable);<span class="Apple-converted-space">  </span></span>// may also use loadCollection here</p>
-<p class="p10">)</p>
-<p class="p11"><br></p>
-<p class="p12"><span class="s2">b.plot </span>//wavetable format!<span class="Apple-converted-space"> </span></p>
-<p class="p11"><br></p>
-<p class="p12">//test shaper</p>
-<p class="p10">(</p>
-<p class="p10">{<span class="Apple-converted-space"> </span></p>
-<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span></span>Shaper<span class="s2">.ar(</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.bufnum,<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">SinOsc</span>.ar(440, 0.5, <span class="s3">Line</span>.kr(0,0.9,6))</p>
-<p class="p10"><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"> </span></p>
-<p class="p10">}.scope</p>
-<p class="p10">)</p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
+<p class="p9">// or, for an arbitrary transfer function, create the data at 1/2 buffer size</p>
+<p class="p5">t = <span class="s1">Signal</span>.fill(512, { <span class="s1">|i|</span> i.linlin(0.0, 511.0, -1.0, 1.0) });</p>
+<p class="p6"><br></p>
+<p class="p9">//linear function</p>
+<p class="p5">t.plot</p>
+<p class="p6"><br></p>
+<p class="p9">//t.asWavetable will convert it to the official Wavetable format at twice the size</p>
+<p class="p9"><span class="s2">b.sendCollection(t.asWavetable);<span class="Apple-converted-space">  </span></span>// may also use loadCollection here</p>
+<p class="p6"><br></p>
+<p class="p9">//shaper has no effect because of the linear transfer function</p>
+<p class="p5">(</p>
+<p class="p5">{ <span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>sig = <span class="s1">Shaper</span>.ar(b, <span class="s1">SinOsc</span>.ar(440, 0, 0.4));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sig ! 2</p>
+<p class="p5">}.scope;</p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p9">// now for a twist</p>
+<p class="p5">a = <span class="s1">Signal</span>.fill(256, {<span class="s1">arg</span> i; <span class="s1">var</span> t= i/255.0;<span class="Apple-converted-space">  </span>t+(0.1*(t.max(0.1)-0.1)*sin(2pi*t*80+sin(2pi*25.6*t)))});</p>
+<p class="p6"><br></p>
+<p class="p5">a.plot</p>
+<p class="p6"><br></p>
+<p class="p5">d= (a.copy.reverse.neg) ++ a;</p>
+<p class="p6"><br></p>
+<p class="p5">d.plot</p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p5">b = <span class="s1">Buffer</span>.alloc(s, 1024, 1);</p>
+<p class="p9"><span class="s2">b.sendCollection(d.asWavetable);<span class="Apple-converted-space">  </span></span>// may also use loadCollection here</p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s2">b.plot </span>//wavetable format!<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p9">//test shaper</p>
+<p class="p5">(</p>
+<p class="p5">{<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>Shaper<span class="s2">.ar(</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(440, 0.5, <span class="s1">Line</span>.kr(0,0.9,6))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"> </span></p>
+<p class="p5">}.scope</p>
+<p class="p5">)</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -13,16 +13,17 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-span.s1 {color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016e6}
+span.s1 {color: #091fb1}
 span.s2 {color: #000000}
 span.s3 {color: #606060}
-span.s4 {color: #a71e12}
-span.s5 {color: #326f17}
-span.s6 {color: #0000ff}
-span.s7 {font: 12.0px Helvetica}
+span.s4 {color: #902a19}
+span.s5 {color: #456c20}
+span.s6 {color: #0018f7}
+span.s7 {text-decoration: underline}
+span.s8 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -69,9 +70,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>// now synths in the groups. The default addAction is \addToHead</p>
 <p class="p6"><span class="Apple-tab-span">	</span>(</p>
-<p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s1">Synth</span>(<span class="s3">"tutorial-Reverb2"</span>, [<span class="s5">\inBus</span>, b.index], ~effects);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>y = <span class="s1">Synth</span>(<span class="s3">"tutorial-DecaySin2"</span>, [<span class="s5">\effectBus</span>, b.index, <span class="s5">\outBus</span>, 0], ~sources);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>z = <span class="s1">Synth</span>(<span class="s3">"tutorial-DecaySin2"</span>, [<span class="s5">\effectBus</span>, b.index, <span class="s5">\outBus</span>, 0, <span class="s5">\freq</span>, 660], ~sources);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s1">Synth</span>(<span class="s3">"tutorial-Reverb2"</span>, [<span class="s5">\inBus</span>, b], ~effects);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>y = <span class="s1">Synth</span>(<span class="s3">"tutorial-DecaySin2"</span>, [<span class="s5">\effectBus</span>, b, <span class="s5">\outBus</span>, 0], ~sources);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>z = <span class="s1">Synth</span>(<span class="s3">"tutorial-DecaySin2"</span>, [<span class="s5">\effectBus</span>, b, <span class="s5">\outBus</span>, 0, <span class="s5">\freq</span>, 660], ~sources);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>)</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>// we could add other source and effects synths here</p>
@@ -178,7 +179,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">For more information see:<b><span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
-<p class="p9"><a href="../../ServerArchitecture/Group.html">Group</a><span class="s2"><b> </b><a href="../../ServerArchitecture/Node.html"><span class="s7">Node</span></a><b> </b><a href="../../ServerArchitecture/default_group.html"><span class="s7">default_group</span></a><b> </b><a href="../../ServerArchitecture/RootNode.html"><span class="s7">RootNode</span></a><b> </b><a href="../../Language/Intro-to-Objects.html"><span class="s7">Intro-to-Objects</span></a><b> </b><a href="../../ServerArchitecture/Order-of-execution.html"><span class="s7">Order-of-execution</span></a><b> </b><a href="../../ServerArchitecture/Synth.html"><span class="s7">Synth</span></a><b> </b><a href="../../More-On-Getting-Help.html"><span class="s7">More-On-Getting-Help</span></a><b> </b><a href="../../Other Topics/Internal-Snooping.html"><span class="s7">Internal-Snooping</span></a></span></p>
+<p class="p9"><span class="s7"><a href="../../ServerArchitecture/Group.html">Group</a></span><span class="s2"><b> </b><a href="../../ServerArchitecture/Node.html"><span class="s8">Node</span></a><b> </b><a href="../../ServerArchitecture/default_group.html"><span class="s8">default_group</span></a><b> </b><a href="../../ServerArchitecture/RootNode.html"><span class="s8">RootNode</span></a><b> </b><a href="../../Language/Intro-to-Objects.html"><span class="s8">Intro-to-Objects</span></a><b> </b><a href="../../ServerArchitecture/Order-of-execution.html"><span class="s8">Order-of-execution</span></a><b> </b><a href="../../ServerArchitecture/Synth.html"><span class="s8">Synth</span></a><b> </b><a href="../../More-On-Getting-Help.html"><span class="s8">More-On-Getting-Help</span></a><b> </b><a href="../../Other Topics/Internal-Snooping.html"><span class="s8">Internal-Snooping</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p3">____________________</p>
 <p class="p2"><br></p>

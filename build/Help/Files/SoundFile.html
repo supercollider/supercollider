@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -14,17 +14,17 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0024ab}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #90261e}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0f27a6}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7d2e22}
 p.p10 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #90261e; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7d2e22; min-height: 12.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
-span.s1 {color: #0024ab}
+span.s1 {color: #0f27a6}
 span.s2 {color: #000000}
-span.s3 {text-decoration: underline}
-span.s4 {color: #606060}
-span.s5 {font: 9.0px Monaco}
-span.s6 {font: 12.0px Helvetica}
+span.s3 {color: #606060}
+span.s4 {font: 9.0px Monaco}
+span.s5 {font: 12.0px Helvetica}
+span.s6 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -52,7 +52,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p7"><b><span class="s3">Creating</span></b></p>
+<p class="p7"><b>Creating</b></p>
 <p class="p4"><br></p>
 <p class="p3"><b>*new</b></p>
 <p class="p4"><br></p>
@@ -95,17 +95,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Here is the default SynthDef used for stereo files:</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SynthDef<span class="s2">(</span><span class="s4">"diskIn2"</span><span class="s2">, { </span>| bufnum, out,<span class="Apple-converted-space">  </span>gate = 1, sustain,<span class="Apple-converted-space">  </span>amp = 1, ar = 0, dr = 0.01 |</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SynthDef<span class="s2">(</span><span class="s3">"diskIn2"</span><span class="s2">, { </span>| bufnum, out,<span class="Apple-converted-space">  </span>gate = 1, sustain,<span class="Apple-converted-space">  </span>amp = 1, ar = 0, dr = 0.01 |</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out, <span class="s1">DiskIn</span>.ar(2, bufnum)<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* Linen.kr(gate, ar, 1, dr, 2)</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.linen(0, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>The control <b>sustain</b> determines playback duration based on the firstFrame and lastFrame.</p>
+<p class="p3"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>The control <b>sustain</b> determines playback duration based on the firstFrame and lastFrame.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The control <b>gate </b>allows early termination of the playback</p>
-<p class="p2"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span><b>playNow</b></p>
-<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>This is a boolean that determines whether the file is to be played immediately after cueing.</p>
+<p class="p2"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s4"><span class="Apple-tab-span">	</span></span><b>playNow</b></p>
+<p class="p3"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>This is a boolean that determines whether the file is to be played immediately after cueing.</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span>example:</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>f = SoundFile.collect("sounds/*")</p>
@@ -113,7 +113,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>e = f[1].cue( (addAction: 2, group: 1) );<span class="Apple-tab-span">	</span>// synth will play ahead of the default group</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><b><span class="s3">Read/Write</span></b></p>
+<p class="p7"><b>Read/Write</b></p>
 <p class="p4"><br></p>
 <p class="p3"><b>openRead(inPathname)</b></p>
 <p class="p4"><br></p>
@@ -146,7 +146,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Example:</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5">f = <span class="s1">SoundFile</span>.new.headerFormat_(<span class="s4">"AIFF"</span>).sampleFormat_(<span class="s4">"int16"</span>).numChannels_(1);</p>
+<p class="p5">f = <span class="s1">SoundFile</span>.new.headerFormat_(<span class="s3">"AIFF"</span>).sampleFormat_(<span class="s3">"int16"</span>).numChannels_(1);</p>
 <p class="p6"><span class="s2">f.openWrite(</span>"sounds/sfwrite.aiff"<span class="s2">);</span></p>
 <p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>// sawtooth</p>
 <p class="p5">b = <span class="s1">Signal</span>.sineFill(100, (1..20).reciprocal);</p>
@@ -164,7 +164,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>duration</b></p>
 <p class="p3">the duration in seconds of the file</p>
 <p class="p4"><br></p>
-<p class="p7"><b><span class="s3">Normalizing</span></b></p>
+<p class="p7"><b>Normalizing</b></p>
 <p class="p4"><br></p>
 <p class="p3"><b>*normalize(path, outPath, newHeaderFormat, newSampleFormat, startFrame, numFrames, maxAmp, linkChannels, chunkSize, threaded)</b></p>
 <p class="p4"><br></p>
@@ -191,7 +191,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3">The normalizer may be used to convert a soundfile from one sample format to another (e.g., to take a floating point soundfile produced by SuperCollider and produce an int16 or int24 soundfile suitable for use in other applications).</p>
 <p class="p4"><br></p>
-<p class="p7"><b><span class="s3">Instance Variables</span></b></p>
+<p class="p7"><b>Instance Variables</b></p>
 <p class="p4"><br></p>
 <p class="p3"><b>&lt;path</b></p>
 <p class="p4"><br></p>
@@ -215,7 +215,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><br></p>
 <p class="p3"><b>&lt;&gt;sampleFormat</b></p>
 <p class="p4"><br></p>
-<p class="p3">A String indicating the format of the sample data which was read by openRead and will be written by openWrite. libsndfile determines which header formats support which sample formats. This information is detailed at <span class="s3">http://www.mega-nerd.com/libsndfile</span>. The possible header formats are:</p>
+<p class="p3">A String indicating the format of the sample data which was read by openRead and will be written by openWrite. libsndfile determines which header formats support which sample formats. This information is detailed at <span class="s6">http://www.mega-nerd.com/libsndfile</span>. The possible header formats are:</p>
 <p class="p12"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample formats:</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>"int8", "int16", "int24", "int32"</p>
