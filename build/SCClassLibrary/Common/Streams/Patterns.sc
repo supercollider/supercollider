@@ -11,10 +11,13 @@ Pattern : AbstractFunction {
 		^Pchain(this, aPattern)
 	}
 	
-	play { arg clock, protoEvent, quant=1.0;
-		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)
+	play { arg clock, protoEvent, quant=1.0, phase = 0, offset = 0;
+		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant, phase, offset)
 	}
-
+	// phase causes pattern to start somewhere in the current measure rather than on a downbeat
+	// offset allows pattern to compute ahead a bit to allow negative lags for strummed chords
+	// and to ensure one pattern computes ahead of another
+	
 	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
 	iter { ^this.asStream }
 
