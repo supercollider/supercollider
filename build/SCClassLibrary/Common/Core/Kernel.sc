@@ -488,7 +488,9 @@ Interpreter {
 		"\n".post;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
 		func = this.compile(cmdLine);
+		thisProcess.nowExecutingPath = Document.current.path;
 		res = func.value;
+		thisProcess.nowExecutingPath = nil;
 		codeDump.value(code, res, func, this);
 		res.postln;
 	}
@@ -518,11 +520,11 @@ Interpreter {
 	}
 	
 	executeFile { arg pathName ... args;
-		var	result;
+		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
 		if (File.exists(pathName).not) { ["file \"",pathName,"\" does not exist."].join.postln; ^nil };
 		thisProcess.nowExecutingPath = pathName;
 		protect { result = this.compileFile(pathName).valueArray(args) }
-			{ thisProcess.nowExecutingPath = nil };
+			{ thisProcess.nowExecutingPath = saveExecutingPath };
 		^result
 	}
 	

@@ -203,7 +203,8 @@ Object  {
 	frozen { _ObjectIsPermanent; ^this.primitiveFailed }
 	
 	// errors
-	halt { 
+	halt {
+		thisProcess.nowExecutingPath = nil;
 		UI.reset;
 		this.prHalt 
 	}
