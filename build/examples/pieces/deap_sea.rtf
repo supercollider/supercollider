@@ -1,80 +1,85 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs18 \cf2 // julian rohrhuber (c 2007)\cf3 \
+\f0\fs18 \cf2 // julian rohrhuber (c 2007)\cf0 \
 \
 (\
-\cf4 SynthDef\cf3 (\cf5 "deepsea"\cf3 , \{ \cf4 arg\cf3  out, pan=0, amp=0.1, variation=0.9;\
-	\cf4 var\cf3  dt, n, freq, mul, t, u;\
-	n = \cf4 Rand\cf3 (7, 46);\
-	dt = 25.0 + \cf4 Rand\cf3 (-1.7, 1.7);\
-	dt = dt + \cf4 LFNoise2\cf3 .kr(2, variation) * 0.001;\
-	freq = 901 + \cf4 Rand\cf3 (0, 65);\
-	t = \cf4 Impulse\cf3 .ar(dt.reciprocal, 0, 100);\
-	mul = \cf4 PulseCount\cf3 .ar(t) < n;\
-	u = \cf4 BPF\cf3 .ar(mul * t, freq, 0.1);\
-	u = \cf4 BPF\cf3 .ar(u, freq, 0.2);\
-	\cf4 DetectSilence\cf3 .ar(u, doneAction:2);\
-	\cf4 Out\cf3 .ar(out, \cf4 Pan2\cf3 .ar(u, pan, amp));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "deepsea"\cf0 , \{ \cf3 arg\cf0  out, pan=0, amp=0.1, variation=0.9;\
+	\cf3 var\cf0  dt, n, freq, mul, t, u;\
+	n = \cf3 Rand\cf0 (7, 46);\
+	dt = 25.0 + \cf3 Rand\cf0 (-1.7, 1.7);\
+	dt = dt + \cf3 LFNoise2\cf0 .kr(2, variation) * 0.001;\
+	freq = 901 + \cf3 Rand\cf0 (0, 65);\
+	t = \cf3 Impulse\cf0 .ar(dt.reciprocal, 0, 100);\
+	mul = \cf3 PulseCount\cf0 .ar(t) < n;\
+	u = \cf3 BPF\cf0 .ar(mul * t, freq, 0.1);\
+	u = \cf3 BPF\cf0 .ar(u, freq, 0.2);\
+	\cf3 DetectSilence\cf0 .ar(u, doneAction:2);\
+	\cf3 Out\cf0 .ar(out, \cf3 Pan2\cf0 .ar(u, pan, amp));\
 \}).store;\
 )\
 \
 (\
-\cf4 SynthDef\cf3 (\cf5 "deepsea"\cf3 , \{ \cf4 arg\cf3  out, pan=0, amp=0.1, variation=0.9;\
-	\cf4 var\cf3  dt, n, freq, mul, t, u, count;\
-	n = \cf4 Rand\cf3 (7, 46);\
-	dt = 25.0 + \cf4 Rand\cf3 (-1.7, 1.7);\
-	dt = dt + \cf4 LFNoise2\cf3 .kr(2, variation) * 0.001;\
-	freq = 901 + \cf4 Rand\cf3 (0, 65);\
-	t = \cf4 Impulse\cf3 .ar(dt.reciprocal, 0, 100);\
-	count = \cf4 PulseCount\cf3 .ar(t);\
+\cf3 SynthDef\cf0 (\cf4 "deepsea"\cf0 , \{ \cf3 arg\cf0  out, pan=0, amp=0.1, variation=0.9;\
+	\cf3 var\cf0  dt, n, freq, mul, t, u, count;\
+	n = \cf3 Rand\cf0 (7, 46);\
+	dt = 25.0 + \cf3 Rand\cf0 (-1.7, 1.7);\
+	dt = dt + \cf3 LFNoise2\cf0 .kr(2, variation) * 0.001;\
+	freq = 901 + \cf3 Rand\cf0 (0, 65);\
+	t = \cf3 Impulse\cf0 .ar(dt.reciprocal, 0, 100);\
+	count = \cf3 PulseCount\cf0 .ar(t);\
 	mul = count < n;\
-	u = \cf4 BPF\cf3 .ar(mul * t, freq, 0.1);\
-	u = \cf4 BPF\cf3 .ar(u, freq * (count % \cf4 LFNoise1\cf3 .kr(1).range(2, 20) + 1), 0.2);\
-	\cf4 DetectSilence\cf3 .ar(u, doneAction:2);\
-	\cf4 Out\cf3 .ar(out, \cf4 Pan2\cf3 .ar(u, pan, amp * 10));\
+	u = \cf3 BPF\cf0 .ar(mul * t, freq, 0.1);\
+	u = \cf3 BPF\cf0 .ar(u, freq * (count % \cf3 LFNoise1\cf0 .kr(1).range(2, 20) + 1), 0.2);\
+	\cf3 DetectSilence\cf0 .ar(u, doneAction:2);\
+	\cf3 Out\cf0 .ar(out, \cf3 Pan2\cf0 .ar(u, pan, amp * 10));\
 \}).store;\
 )\
 \
 \
 \
-s.sendMsg(\cf5 "/s_new"\cf3 , \cf5 "deepsea"\cf3 , -1);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "deepsea"\cf0 , -1);\
 \
 \
-p = \cf4 ProxySpace\cf3 .push(s.boot);\
+p = \cf3 ProxySpace\cf0 .push(s.boot);\
 \
 ~out.play;\
+~out.fadeTime = 10;\
 \
 (\
-~fish = \cf4 Pbind\cf3 (\
-		\cf6 \\instrument\cf3 , \cf6 \\deepsea\cf3 ,\
-		\cf6 \\dur\cf3 , \cf4 Pfunc\cf3  #\{ rrand(9.0, 2.0) \},\
-		\cf6 \\pan\cf3 , \cf4 Pfunc\cf3  #\{ 1.0.rand2 \}\
+~fish = \cf3 Pbind\cf0 (\
+		\cf5 \\instrument\cf0 , \cf5 \\deepsea\cf0 ,\
+		\cf5 \\dur\cf0 , \cf3 Pfunc\cf0  #\{ rrand(9.0, 2.0) \},\
+		\cf5 \\pan\cf0 , \cf3 Pfunc\cf0  #\{ 1.0.rand2 \}\
 		);\
 )\
 \
 ~out = ~fish;\
-~out[1] = \cf6 \\filter\cf3  -> #\{ \cf4 arg\cf3  in; \cf4 BPF\cf3 .ar(in * 5, 700, 0.1) \};\
+~out[1] = \cf5 \\filter\cf0  -> #\{ \cf3 arg\cf0  in; \cf3 BPF\cf0 .ar(in * 5, 700, 0.1) \};\
 \
 (\
-~out[2] = \cf6 \\filter\cf3  -> #\{ \cf4 arg\cf3  in; \
-	\cf4 CombL\cf3 .ar(\cf4 LPF\cf3 .ar(in * \cf4 LFNoise1\cf3 .kr(0.1).max(0), 800), 0.5, 0.5) + in.reverse \
+~out[2] = \cf5 \\filter\cf0  -> #\{ \cf3 arg\cf0  in; \
+	\cf3 CombL\cf0 .ar(\cf3 LPF\cf0 .ar(in * \cf3 LFNoise1\cf0 .kr(0.1).max(0), 800), 0.5, 0.5) + in.reverse \
 \};\
 )\
 \
 (\
-~out[3] = \cf6 \\filter\cf3  -> #\{ \cf4 arg\cf3  in; \cf4 var\cf3  x; x = in;\
-						5.do \{ x = \cf4 AllpassN\cf3 .ar(x, 0.18, \{0.06.rand\} ! 2 + 0.06, 8) \};\
-						\cf4 LPF\cf3 .ar(x + in, 400) + (\cf4 LFNoise1\cf3 .kr(0.2) * in)\
+~out[3] = \cf5 \\filter\cf0  -> #\{ \cf3 arg\cf0  in; \cf3 var\cf0  x; x = in;\
+						5.do \{ x = \cf3 AllpassN\cf0 .ar(x, 0.18, \{0.06.rand\} ! 2 + 0.06, 8) \};\
+						\cf3 LPF\cf0 .ar(x + in, 400) + (\cf3 LFNoise1\cf0 .kr(0.2) * in)\
 					\};\
 \
 )\
 \
-~out[1] = \cf4 nil\cf3 ;\
-~out[2] = \cf4 nil\cf3 ;\
+\
+\
+~out[1] = \cf3 nil\cf0 ;\
+~out[2] = \cf3 nil\cf0 ;\
+\
 \
 p.clear(10).pop;\
 \
