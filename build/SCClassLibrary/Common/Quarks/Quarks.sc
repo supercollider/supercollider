@@ -325,7 +325,7 @@ Quarks
 		height = min(this.local.quarks.size * 25 + 120, GUI.window.screenBounds.height - 60);
 		maxPerPage = (height - 120) div: 25;
 		
-		window = GUI.window.new(this.name, Rect(300,60,550, height));
+		window = GUI.window.new(this.name, Rect(300, 60, 550, height));
 		window.view.decorator =  FlowLayout( window.view.bounds );
 		
 		caption = GUI.staticText.new(window, Rect(20,15,400,30));
