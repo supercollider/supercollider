@@ -173,13 +173,15 @@ QuarkView {
 		^super.new.init(parent, extent, quark, isInstalled)
 	}
 	init {|parent, extent, aQuark, argIsInstalled|
-		var installBounds, descrBounds, infoBounds, pad = 5;
+		var installBounds, descrBounds, infoBounds, sourceBounds, pad = 5;
 		
 		installBounds = Rect(0,0, extent.y, extent.y);
 		infoBounds = Rect(0,0, 40, extent.y);
+		sourceBounds = Rect(0, 0, 20, extent.y);
 		descrBounds = Rect(
 			0,0, 
-			extent.x - (infoBounds.width - infoBounds.width - (2*pad)), extent.y
+			extent.x - (infoBounds.width  - sourceBounds.width - (2*pad)),
+			extent.y
 		);
 		quark = aQuark;
 		isInstalled = argIsInstalled;
@@ -191,6 +193,14 @@ QuarkView {
 		nameView = GUI.staticText.new(parent, descrBounds).string_("% by %".format(quark.name, quark.author));
 		// the name
 		infoButton = GUI.button.new(parent, infoBounds).states_([["info"]]).action_{this.fullDescription};
+		
+		if(thisProcess.platformClass == OSXPlatform) {
+			GUI.button.new(parent, sourceBounds).states_([["src"]]).action_{
+				"open %/%".format(Quarks.local.path, quark.path).unixCmd;
+			};
+		};
+
+
 	}
 	updateButtonStates {
 		isInstalled.if({
