@@ -9,6 +9,7 @@ Boolean {
 	or { ^this.subclassResponsibility(thisMethod) }
 	nand { ^this.subclassResponsibility(thisMethod) }
 	
+	booleanValue { ^this }
 	
 	keywordWarnings { 
 		// turn on/off warnings if a keyword argument is not found
