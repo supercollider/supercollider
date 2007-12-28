@@ -54,6 +54,8 @@ SimpleNumber : Number {
 	isNegative { ^this < 0 }
 	isStrictlyPositive { ^this > 0 }
 	isNaN { ^(this >= 0 or: { this <= 0 }).not }
+	booleanValue { ^this > 0 }
+	binaryValue { ^this.sign.max(0) }
 
 	rectWindow { _RectWindow; ^this.primitiveFailed }
 	hanWindow { _HanWindow; ^this.primitiveFailed }
