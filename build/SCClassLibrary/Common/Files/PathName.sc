@@ -44,7 +44,7 @@ PathName {
 		^colonIndices ?? {
 			colonIndices = List.new;	
 		 	fullPath.do({ arg eachChar, i; 
-				if (eachChar == $/, { colonIndices.add(i) }); 
+				if (eachChar.isPathSeparator, { colonIndices.add(i) }); 
 			});
 			colonIndices
 		}
@@ -82,7 +82,7 @@ PathName {
 	isRelativePath { ^this.isAbsolutePath.not }
 	
 	isAbsolutePath { 
-		^fullPath.at(0) == $/
+		^fullPath.at(0).isPathSeparator
 	}
 	
 	asRelativePath {
@@ -185,7 +185,7 @@ PathName {
 	entries {
 		var path;
 		path = fullPath;
-		if(path.last != $/, { path = path ++ "/" });
+		if(path.last.isPathSeparator, { path = path ++ thisProcess.platform.pathSeparator });
 		^pathMatch(path ++ "*").collect({ arg item; PathName(item) });
 	}
 	
@@ -197,14 +197,14 @@ PathName {
 		var path;
 		path = this.pathMatch;
 		^if(path.notEmpty, {
-			path.at(0).last == $/
+			path.at(0).last.isPathSeparator
 		}, { false });
 	}
 	isFile {
 		var path;
 		path = this.pathMatch;
 		^if(path.notEmpty, {
-			path.at(0).last != $/
+			path.at(0).last.isPathSeparator.not
 		}, { false });
 	}
 	
@@ -218,7 +218,7 @@ PathName {
 	parentPath {
 		var ci = this.colonIndices;
 	
-		^if((fullPath.last == $/) && (ci.size > 1), {
+		^if((fullPath.last.isPathSeparator) && (ci.size > 1), {
 			fullPath.copyRange(0, ci[ci.size - 2]);
 		}, {
 			fullPath.copyRange(0, this.lastColonIndex)

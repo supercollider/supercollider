@@ -17,7 +17,8 @@ SynthDef {
 	classvar <synthDefDir;
 	
 	*synthDefDir_ { arg dir;
-		if (dir.last != $/) { dir = dir ++ $/ };
+		if (dir.last.isPathSeparator.not )
+			{ dir = dir ++ thisProcess.platform.pathSeparator };
 		synthDefDir = dir;
 	}
 	
