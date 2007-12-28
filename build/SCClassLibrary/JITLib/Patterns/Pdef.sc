@@ -4,6 +4,7 @@
 PatternProxy : Pattern {
 	var <source, <pattern, <>envir;
 	var >clock, quant, <>condition=true, reset;
+	
 				// quant new pattern insertion. can be [quant, offset]
 				// in EventPatternProxy it can be [quant, offset, onset]
 				
@@ -42,6 +43,11 @@ PatternProxy : Pattern {
 				func.value( inval ).embedInStream(inval)
 			};
 	}
+	
+	endless {
+		^Pn(this)
+	}
+	
 	*parallelise { arg list; ^Ptuple(list) }
 	
 	pattern_ { arg pat; this.source_(pat) }
@@ -97,36 +103,6 @@ PatternProxy : Pattern {
 			if(this.isEventPattern and: inval.isNil) { ^nil.alwaysYield }
 		};
 		^inval
-	}
-
-	endless { arg default;
-		^Proutine { arg inval;
-			var outval, count=0;
-			var pat = pattern;
-			var test = condition;
-			var resetTest = reset;
-			var stream = pattern.asStream;
-			default = default ?? { this.class.defaultValue };
-			loop {
-				this.receiveEvent(inval); // used in subclass
-				if(
-					(reset !== resetTest) 
-					or: { pat !== pattern and: { test.value(outval, count) } }
-				) {
-						pat = pattern;
-						test = condition;
-						resetTest = reset;
-						count = 0;
-						stream = this.constrainStream(stream);
-				};
-				outval = stream.next(inval);
-				count = count + 1;
-				outval = outval ? default;
-				inval = outval.yield;
-				// same here...
-				if(this.isEventPattern and: inval.isNil) { ^nil.alwaysYield }
-			}
-		}
 	}
 	
 	count { arg n=1;
@@ -479,7 +455,10 @@ EventPatternProxy : TaskProxy {
 					PfadeIn(new, fadeTime, delta, tolerance)
 				])
 			}
-		} { cleanup.cleanup(inval); pattern }.asStream
+		} { 
+			cleanup.cleanup(inval); 
+			pattern 
+		}.asStream
 	}
 
 	*parallelise { arg list; ^Ppar(list) }
