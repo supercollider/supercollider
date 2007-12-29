@@ -29,11 +29,11 @@
 			obj.didLoadFromPath(this);
 		},{
 			if(warnIfNotFound,{
-				warn("String-loadPath file not found " + this + path);
+				warn("String:loadPath file not found " + this + path);
 			});
 		});
 		if(obj.isNil and: warnIfNotFound, { 
-			warn("String-loadPath found nil, empty contents or parse error in " + path);
+			warn("String:loadPath found nil, empty contents or parse error in " + path);
 			
 			//^ObjectNotFound.new(path) 
 		});
@@ -45,12 +45,13 @@
 		if(File.exists(path),{
 			obj = thisProcess.interpreter.executeFile(path);
 			obj.didLoadFromPath(path);
+			^obj
 		},{
 			if(warnIfNotFound,{
-				warn("String-loadDocument file not found " + this + path);
-			})
+				warn("String:loadDocument file not found " + this + path);
+			});
+			^ObjectNotFound.new(path)
 		});
-		if(obj.notNil,{ ^obj },{^ObjectNotFound.new(path)});
 	}
 	enpath {
 		^Document.abrevPath(this)
