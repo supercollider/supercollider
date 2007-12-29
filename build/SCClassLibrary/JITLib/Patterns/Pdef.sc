@@ -74,6 +74,9 @@ PatternProxy : Pattern {
 	endless {
 		^Pn(this) // for now. need a fix later.
 	}
+	embed { |val|
+		^if(val.notNil) { Pchain(this, val) } { this }.embedInStream
+	}
 	
 	embedInStream { arg inval;
 		var pat, stream, outval, test, resetTest, count=0;
@@ -279,9 +282,6 @@ TaskProxy : PatternProxy {
 		this.source = this.source.copy;
 	}
 	
-	embed { |val|
-		^this.embedInStream(val)
-	}
 	
 	////////// playing interface //////////
 	
