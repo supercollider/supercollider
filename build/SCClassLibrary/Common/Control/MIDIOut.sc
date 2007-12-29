@@ -16,7 +16,7 @@ MIDIClient {
 	*init { arg inports=1, outports=1;
 		this.prInit(inports,outports);
 		initialized = true;
-		this.getEndPoints;
+		this.list;
 		// might ask for 1 and get 2 if your device has it
 		if(sources.size < inports or: {destinations.size < outports},{
 			"WARNING:".postln;
@@ -31,7 +31,7 @@ MIDIClient {
 		Post << "MIDI Destinations: " << Char.nl;
 		destinations.do({ |x| Post << Char.tab << x << Char.nl });
 	}
-	*getEndPoints {
+	*list {
 		var list;
 		list = this.prList;
 		if(list.notNil, {
