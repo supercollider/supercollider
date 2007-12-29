@@ -9,138 +9,169 @@
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #77381e}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0928ab}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-span.s1 {color: #000000}
-span.s2 {color: #001fb3}
-span.s3 {color: #436c1d}
-span.s4 {color: #001af9}
-span.s5 {color: #0000bf}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #316f11; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #316f11}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb7; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #0013bb}
+span.s2 {color: #000000}
+span.s3 {color: #0000bf}
+span.s4 {color: #0928ab}
+span.s5 {color: #556826}
+span.s6 {color: #002ded}
+span.s7 {color: #001bb7}
+span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>MIDIOut</b></p>
 <p class="p2"><br></p>
-<p class="p3"><br></p>
-<p class="p4">Interface MIDI output ports defined by the operating system to a set of user defined functions.</p>
-<p class="p3"><br></p>
-<p class="p3"><span class="Apple-converted-space">  </span></p>
-<p class="p3"><span class="Apple-converted-space">  </span></p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>*new(port, uid)</b></p>
-<p class="p4"><b>  *connect(port, uid)</b> (Linux only)</p>
-<p class="p4">        <b>*disconnect(port, uid)</b> (Linux only)</p>
-<p class="p4"><b>   </b></p>
-<p class="p3"><span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>noteOn</b> ( chan, note, veloc )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>noteOff</b> ( chan, note, veloc )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>polyTouch</b> ( chan, note, val )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>control</b> ( chan, ctlNum, val )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>program</b> ( chan, num )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>touch</b> ( chan, val )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>bend</b> ( chan, val )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>allNotesOff</b> ( chan )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>smpte</b> ( frames, seconds, minutes, hours, frameRate )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>songPtr</b> ( songPtr )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>songSelect</b> ( song )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>midiClock</b> (<span class="Apple-converted-space">  </span>)</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>startClock</b> (<span class="Apple-converted-space">  </span>)</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>continueClock</b> (<span class="Apple-converted-space">  </span>)</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>stopClock</b> (<span class="Apple-converted-space">  </span>)</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>reset</b> (<span class="Apple-converted-space">  </span>)</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>sysex</b> ( Int8Array )</p>
-<p class="p4"><b>        connect(uid)</b> (Linux only)</p>
-<p class="p4">        <b>disconnect(uid)</b> (Linux only)</p>
-<p class="p3"><br></p>
-<p class="p4">    private methods:</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>send</b> ( outport, uid, len, hiStatus, loStatus, a, b, latency )</p>
-<p class="p4"><span class="Apple-converted-space"> </span><b>prSysex</b> ( uid, Int8Array )</p>
-<p class="p4"><b>        *connectByUID(port, uid)</b> (Linux only)</p>
-<p class="p4">        <b>*disconnectByUID(port, uid)</b> (Linux only)</p>
+<p class="p3"><b>send midi messages</b></p>
+<p class="p4"><br></p>
+<p class="p3">a MIDIOut is bound to a specific MIDIEndPoint as defined by the operating<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">list out ports:<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span><span class="s1">MIDIClient</span>.destinations</p>
+<p class="p4"><br></p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>*new(port, uid)</b></p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>port is the index of the MIDIEndPoint in the MIDIClient.destinations array.</p>
+<p class="p4"><br></p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>on OS X the uid should be the uid of that port</p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>ie. MIDIClient.destinations[port].uid</p>
+<p class="p4"><b></b><br></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>*newByName(deviceName,portName)</b></p>
+<p class="p2"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>*findPort(deviceName,portName)</b></p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>searches for a connected MIDIEndPoint by name</p>
+<p class="p4"><br></p>
+<p class="p3"><b>  *connect(port, uid)</b> (Linux only)</p>
+<p class="p3">  <b>*disconnect(port, uid)</b> (Linux only)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>OS X does not need to connect   </p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>noteOn</b> ( chan, note, veloc )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>noteOff</b> ( chan, note, veloc )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>polyTouch</b> ( chan, note, val )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>control</b> ( chan, ctlNum, val )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>program</b> ( chan, num )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>touch</b> ( chan, val )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>bend</b> ( chan, val )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>allNotesOff</b> ( chan )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>smpte</b> ( frames, seconds, minutes, hours, frameRate )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>songPtr</b> ( songPtr )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>songSelect</b> ( song )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>midiClock</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>startClock</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>continueClock</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>stopClock</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>reset</b> (<span class="Apple-converted-space">  </span>)</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>sysex</b> ( Int8Array )</p>
+<p class="p3"><b> connect(uid)</b> (Linux only)</p>
+<p class="p3"> <b>disconnect(uid)</b> (Linux only)</p>
+<p class="p4"><br></p>
+<p class="p3"> private methods:</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>send</b> ( outport, uid, len, hiStatus, loStatus, a, b, latency )</p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>prSysex</b> ( uid, Int8Array )</p>
+<p class="p3"><b> *connectByUID(port, uid)</b> (Linux only)</p>
+<p class="p3"> <b>*disconnectByUID(port, uid)</b> (Linux only)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5">// examples:</p>
+<p class="p6">// examples:</p>
 <p class="p2"><br></p>
-<p class="p6">MIDIClient<span class="s1">.init;</span></p>
+<p class="p7">MIDIClient<span class="s2">.init;</span></p>
 <p class="p2"><br></p>
-<p class="p7">m = <span class="s2">MIDIOut</span>(0, <span class="s2">MIDIClient</span>.destinations.at(0).uid);</p>
-<p class="p7">m.noteOn(16, 60, 60);</p>
+<p class="p8">m = <span class="s3">MIDIOut</span>(0,<span class="s3">MIDIClient</span>.destinations[0].uid);</p>
+<p class="p5">m.noteOn(16, 60, 60);</p>
+<p class="p5">m.noteOn(16, 61, 60);</p>
+<p class="p5">m.noteOff(16, 61, 60);</p>
+<p class="p5">m.allNotesOff(16);</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s2">MIDIIn</span>.connect;</p>
-<p class="p7"><span class="s2">MIDIIn</span>.sysex = { <span class="s2">arg</span> uid, packet; [uid,packet].postln };</p>
-<p class="p7"><span class="s2">MIDIIn</span>.sysrt = { <span class="s2">arg</span> src, chan, val;<span class="Apple-converted-space">  </span>[src, chan, val].postln; };</p>
-<p class="p7"><span class="s2">MIDIIn</span>.smpte = { <span class="s2">arg</span> src, chan, val;<span class="Apple-converted-space">  </span>[src, chan, val].postln; };</p>
-<p class="p2"><br></p>
-<p class="p7">m.sysex(<span class="s2">MIDIClient</span>.destinations.at(0).uid, <span class="s2">Int8Array</span>[ 16rf0, 0, 0, 27, 11, 0,16rf7])</p>
-<p class="p2"><br></p>
-<p class="p7">m.smpte (24,16)<span class="Apple-converted-space"> </span></p>
-<p class="p7">m.midiClock<span class="Apple-converted-space"> </span></p>
-<p class="p7">m.start<span class="Apple-converted-space"> </span></p>
-<p class="p7">m.continue<span class="Apple-converted-space"> </span></p>
-<p class="p7">m.stop<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p5">// using patterns for sending midi events</p>
-<p class="p2"><br></p>
-<p class="p6">MIDIClient<span class="s1">.init;</span></p>
-<p class="p7">m = <span class="s2">MIDIOut</span>(0, <span class="s2">MIDIClient</span>.destinations.at(0).uid);</p>
-<p class="p2"><br></p>
-<p class="p7">a = <span class="s2">Pbind</span>(<span class="s3">\degree</span>, <span class="s2">Prand</span>([1, 2, 3, [0, 5]], <span class="s2">inf</span>), <span class="s3">\bend</span>, <span class="s2">Pwhite</span>(0, 76, <span class="s2">inf</span>));</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p5">// chain a midi event into the pattern and play it (see <a href="../../../../../SuperCollider/Help/Streams-Patterns-Events/Pchain.html"><span class="s4">Pchain</span></a>)</p>
-<p class="p2"><br></p>
-<p class="p7">(a &lt;&gt; (type: <span class="s3">\midi</span>, midiout: m)).play;</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p5">// the following keys are supported by midiEvent:</p>
-<p class="p7">noteOn</p>
-<p class="p7">noteOff</p>
-<p class="p7">polyTouch</p>
-<p class="p7">control</p>
-<p class="p7">program</p>
-<p class="p7">touch</p>
-<p class="p7">bend</p>
-<p class="p7">allNotesOff</p>
-<p class="p7">smpt</p>
-<p class="p7">songPtr</p>
-<p class="p7">sysex</p>
-<p class="p2"><br></p>
-<p class="p3"><br></p>
-<p class="p8"><b>Linux specific: Connecting and disconnecting ports.</b></p>
-<p class="p3"><br></p>
-<p class="p4">On Linux, a MIDIOut can be created without setting the destination:</p>
 <p class="p9"><br></p>
-<p class="p10">m = <span class="s5">MIDIOut</span>(0);</p>
-<p class="p3"><br></p>
-<p class="p4">in this case each message will be sent to any port connected to SuperCollider's first MIDI output. A connection can be made through:</p>
+<p class="p10"><span class="s3">MIDIIn</span><span class="s2">.connect; </span>// 1 port midi interface</p>
+<p class="p8"><span class="s3">MIDIIn</span>.sysex = { <span class="s3">arg</span> uid, packet; [uid,packet].postln };</p>
+<p class="p8"><span class="s3">MIDIIn</span>.sysrt = { <span class="s3">arg</span> src, chan, val;<span class="Apple-converted-space">  </span>[src, chan, val].postln; };</p>
+<p class="p8"><span class="s3">MIDIIn</span>.smpte = { <span class="s3">arg</span> src, chan, val;<span class="Apple-converted-space">  </span>[src, chan, val].postln; };</p>
 <p class="p9"><br></p>
-<p class="p10">m.connect( 2 );</p>
-<p class="p3"><br></p>
-<p class="p4">Note that by connecting in this way, you can connect more than one destination to the MIDI output.</p>
-<p class="p3"><br></p>
-<p class="p3"><b></b><br></p>
-<p class="p8"><b>Sending MIDI to other applications in OS X</b></p>
+<p class="p8">m.sysex(<span class="s3">Int8Array</span>[ 16rf0, 0, 0, 27, 11, 0,16rf7])</p>
+<p class="p9"><br></p>
+<p class="p8">m.smpte(24,16)<span class="Apple-converted-space"> </span></p>
+<p class="p8">m.midiClock<span class="Apple-converted-space"> </span></p>
+<p class="p8">m.start<span class="Apple-converted-space"> </span></p>
+<p class="p8">m.continue<span class="Apple-converted-space"> </span></p>
+<p class="p8">m.stop<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p8">Open the Audio MIDI Setup application.<span class="Apple-converted-space">  </span>Double-click on IAC Driver and check "device is online". <span class="Apple-converted-space"> </span></p>
-<p class="p11"><br></p>
-<p class="p8">reinitialize:</p>
-<p class="p11"><br></p>
-<p class="p10"><span class="s5">MIDIClient</span>.init(numIns,numOuts)</p>
 <p class="p2"><br></p>
-<p class="p8">The IAC Bus will now appear in MIDIClient.destinations.<span class="Apple-converted-space">  </span>It will appear first, which means that any code that you have written that addresses the first physical bus as 0 will now have to be changed.</p>
+<p class="p2"><br></p>
+<p class="p11"><b>Using patterns for sending midi events</b></p>
+<p class="p2"><br></p>
+<p class="p7">MIDIClient<span class="s2">.init;</span></p>
+<p class="p8">m = <span class="s3">MIDIOut</span>(0,<span class="s3">MIDIClient</span>.destinations[0].uid);</p>
+<p class="p2"><br></p>
+<p class="p5">a = <span class="s4">Pbind</span>(<span class="s5">\degree</span>, <span class="s4">Prand</span>([1, 2, 3, [0, 5]], <span class="s4">inf</span>), <span class="s5">\bend</span>, <span class="s4">Pwhite</span>(0, 76, <span class="s4">inf</span>));</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// chain a midi event into the pattern and play it (see <a href="../../../../../../../SuperCollider/Help/Streams-Patterns-Events/Pchain.html"><span class="s6">Pchain</span></a>)</p>
+<p class="p2"><br></p>
+<p class="p5">(a &lt;&gt; (type: <span class="s5">\midi</span>, midiout: m)).play;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">The following keys are supported by midi event:</p>
 <p class="p12"><br></p>
-<p class="p8">The IAC Bus will now also appear to other applications.</p>
-<p class="p3"><br></p>
+<p class="p13">\noteOn</p>
+<p class="p13">\noteOff</p>
+<p class="p13">\polyTouch</p>
+<p class="p13">\control</p>
+<p class="p13">\program</p>
+<p class="p13">\touch</p>
+<p class="p13">\bend</p>
+<p class="p13">\allNotesOff</p>
+<p class="p13">\smpt</p>
+<p class="p13">\songPtr</p>
+<p class="p13">\sysex</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><br></p>
+<p class="p3"><b>Linux specific: Connecting and disconnecting ports.</b></p>
+<p class="p4"><br></p>
+<p class="p3">On Linux, a MIDIOut can be created without setting the destination:</p>
+<p class="p2"><br></p>
+<p class="p5">m = <span class="s7">MIDIOut</span>(0);</p>
+<p class="p4"><br></p>
+<p class="p3">in this case each message will be sent to all ports connected to SuperCollider's first MIDI output.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">A connection can be made through:</p>
+<p class="p2"><br></p>
+<p class="p5">m.connect( 2 );</p>
+<p class="p4"><br></p>
+<p class="p3">Note that by connecting in this way, you can connect more than one destination to the MIDI output.</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p3"><b>Sending MIDI to other applications in OS X</b></p>
+<p class="p2"><br></p>
+<p class="p3">Open the Audio MIDI Setup application.<span class="Apple-converted-space">  </span>Double-click on IAC Driver and check "device is online". <span class="Apple-converted-space"> </span></p>
+<p class="p14"><br></p>
+<p class="p3">reinitialize:</p>
+<p class="p14"><br></p>
+<p class="p5"><span class="s7">MIDIClient</span>.init(numIns,numOuts)</p>
+<p class="p2"><br></p>
+<p class="p3">The IAC Bus will now appear in MIDIClient.destinations.<span class="Apple-converted-space">  </span>It will appear first, which means that any code that you have written that addresses the first physical bus as 0 will now have to be changed.</p>
+<p class="p3">For this reason it is always safer to find the port by name :</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">MIDIOut</span><span class="s2">.newByName(</span>"RemoveSL IN"<span class="s2">,</span>"Port 1"<span class="s2">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><br></p>
+<p class="p3">The IAC Bus will now also appear to other applications.</p>
+<p class="p4"><br></p>
 </body>
 </html>
