@@ -13,32 +13,33 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #81321c}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0924ad}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #902a19}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
-span.s1 {color: #0018f7}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #81321c}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; min-height: 12.0px}
+span.s1 {color: #0023f1}
 span.s2 {color: #000000}
-span.s3 {color: #091fb1}
+span.s3 {color: #0924ad}
 span.s4 {text-decoration: underline}
-span.s5 {color: #606060}
-span.s6 {color: #456c20}
+span.s5 {color: #0000bf}
+span.s6 {color: #606060}
+span.s7 {color: #4f6a25}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>MIDIIn</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>A popular 80s technology</b></p>
-<p class="p4"><br></p>
 <p class="p3">This document explains technical details of the MIDI hardware interface class, MIDIIn.</p>
 <p class="p4"><br></p>
-<p class="p3">Note that the interface in this class has significant limitations. MIDI responders created directly in MIDIIn cannot be created and destroyed dynamically, which significantly limits the ability to create flexible MIDI configurations. For general programming, <b>users should not use the MIDIIn class directly</b>. Instead, use the MIDIResponder classes (see helpfile: <a href="../crucial/Control/MIDIResponder.html"><span class="s1">MIDIResponder</span></a>).</p>
+<p class="p3">Note that the interface in this class has significant limitations. MIDI responders created directly in MIDIIn cannot be created and destroyed dynamically, which significantly limits the ability to create flexible MIDI configurations. For general programming, <b>users should not use the MIDIIn class directly</b>. Instead, use the MIDIResponder classes (see helpfile: <a href="../../../../../SuperCollider3.1/Help/crucial/Control/MIDIResponder.html"><span class="s1">MIDIResponder</span></a>).</p>
 <p class="p4"><br></p>
 <p class="p3">Certain MIDI messages are supported only through MIDIIn. These are: polytouch, program, sysex, sysrt, smpte.</p>
 <p class="p4"><br></p>
-<p class="p3">See the <a href="UsingMIDI.html"><span class="s1">UsingMIDI</span></a> helpfile for practical considerations and techniques for using MIDI in SC.</p>
+<p class="p3">See the <a href="../../../../../SuperCollider3.1/Help/Control/UsingMIDI.html"><span class="s1">UsingMIDI</span></a> helpfile for practical considerations and techniques for using MIDI in SC.</p>
 <p class="p4"><br></p>
 <p class="p5"><b>The MIDIIn class</b></p>
 <p class="p4"><br></p>
@@ -81,6 +82,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b><span class="s4">class methods:</span></b></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>*findPort(deviceName,portName)</b></p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>searches for a connected MIDIEndPoint by name</p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>list connected ins:</p>
+<p class="p6"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span><span class="s5">MIDIClient</span>.sources</p>
+<p class="p4"><b></b><br></p>
 <p class="p3"><b>*noteOn_(function)</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>function </b>is evaluated whenever a MIDI noteOn message is received, it is passed the following arguments:</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span></b>uid<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unique identifier of the MIDI port</p>
@@ -162,7 +168,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">s.boot;</p>
 <p class="p6">s.latency = 0;</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"sik-goo"</span>, { <span class="s3">arg</span> freq=440,formfreq=100,gate=0.0,bwfreq=800;</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s6">"sik-goo"</span>, { <span class="s3">arg</span> freq=440,formfreq=100,gate=0.0,bwfreq=800;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> x;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s3">Formant</span>.ar(</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">SinOsc</span>.kr(0.02, 0, 10, freq),<span class="Apple-converted-space"> </span></p>
@@ -177,16 +183,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p7">//set the action:</p>
 <p class="p6"><span class="s3">MIDIIn</span>.noteOn = {<span class="s3">arg</span> src, chan, num, vel;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s6">\freq</span>, num.midicps / 4.0);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s6">\gate</span>, vel / 200 );</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s6">\formfreq</span>, vel / 127 * 1000);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s7">\freq</span>, num.midicps / 4.0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s7">\gate</span>, vel / 200 );</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s7">\formfreq</span>, vel / 127 * 1000);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p6"><span class="s3">MIDIIn</span>.noteOff = { <span class="s3">arg</span> src,chan,num,vel;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s6">\gate</span>, 0.0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s7">\gate</span>, 0.0);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p6"><span class="s3">MIDIIn</span>.bend = { <span class="s3">arg</span> src,chan,val;</p>
 <p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//(val * 0.048828125).postln;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s6">\bwfreq</span>, val * 0.048828125 );</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.set(<span class="s7">\bwfreq</span>, val * 0.048828125 );</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
@@ -208,7 +214,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">(</p>
 <p class="p6">s.latency = 0;</p>
-<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"moto-rev"</span>, { <span class="s3">arg</span> ffreq=100;</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s6">"moto-rev"</span>, { <span class="s3">arg</span> ffreq=100;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> x;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s3">RLPF</span>.ar(<span class="s3">LFPulse</span>.ar(<span class="s3">SinOsc</span>.kr(0.2, 0, 10, 21), [0,0.1], 0.1),</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ffreq, 0.1)</p>
@@ -245,15 +251,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s3"><b>Keyboard</b></span><b> </b><span class="s3"><b>Split</b></span><b> for two voices</b></p>
+<p class="p11"><b>Keyboard Split for two voices</b></p>
 <p class="p3"><b>pbend to cutoff, mod to rez, 7 to amp</b></p>
 <p class="p10">// - matrix6k@somahq.com</p>
-<p class="p11"><b>prepare</b></p>
+<p class="p12"><b>prepare</b></p>
+<p class="p13"><br></p>
 <p class="p6">s.boot;</p>
 <p class="p6">(</p>
-<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"funk"</span>,{ <span class="s3">arg</span> freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed=0;</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s6">"funk"</span>,{ <span class="s3">arg</span> freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed=0;</p>
 <p class="p6"><span class="Apple-converted-space">     </span><span class="s3">var</span> e,x,env,range,filterfreq;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>e = <span class="s3">Env</span>.new([0, 0.1, 0.1, 0], [0, 0.1, 0.1], <span class="s6">'linear'</span>, 2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>e = <span class="s3">Env</span>.new([0, 0.1, 0.1, 0], [0, 0.1, 0.1], <span class="s7">'linear'</span>, 2);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>env=<span class="s3">Env</span>.adsr(0.3,1,1,1);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>range = cutoff -1;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>filterfreq = <span class="s3">SinOsc</span>.kr(lfospeed,0, range, cutoff).abs;</p>
@@ -267,9 +274,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">}).send(s);</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s3">SynthDef</span>(<span class="s5">"strings"</span>,{ <span class="s3">arg</span> freq = 700, amp = 0.2, gate = 1;</p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s6">"strings"</span>,{ <span class="s3">arg</span> freq = 700, amp = 0.2, gate = 1;</p>
 <p class="p6"><span class="Apple-converted-space">     </span><span class="s3">var</span> x,enve;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>enve = <span class="s3">Env</span>.new([0, 0.1, 0.1, 0], [2, 0.1, 1], <span class="s6">'linear'</span>, 2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>enve = <span class="s3">Env</span>.new([0, 0.1, 0.1, 0], [2, 0.1, 1], <span class="s7">'linear'</span>, 2);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s3">RLPF</span>.ar(<span class="s3">Mix</span>.ar([</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Mix</span>.arFill(2, {<span class="s3">Saw</span>.ar(freq +2.rand2,0.6)}),</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Mix</span>.arFill(2, {<span class="s3">Saw</span>.ar(freq *0.5 + 2.rand2,0.6)})</p>
@@ -280,7 +287,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">}).send(s);</p>
 <p class="p2"><br></p>
 <p class="p6">)</p>
-<p class="p11"><b>then...</b></p>
+<p class="p12"><b>then...</b></p>
 <p class="p6">(</p>
 <p class="p6"><span class="s3">var</span> keys, cutspec, cutbus, rezspec, rezbus, lfospec, lfobus;</p>
 <p class="p6">keys = <span class="s3">Array</span>.newClear(128);</p>
@@ -290,16 +297,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">g = <span class="s3">Group</span>.new;</p>
 <p class="p2"><br></p>
-<p class="p6">cutspec = <span class="s3">ControlSpec</span>(100,10000,<span class="s6">\linear</span>,0.001);</p>
-<p class="p6">cutbus = <span class="s3">Bus</span>.new(<span class="s6">\control</span>,1,1,s);</p>
+<p class="p6">cutspec = <span class="s3">ControlSpec</span>(100,10000,<span class="s7">\linear</span>,0.001);</p>
+<p class="p6">cutbus = <span class="s3">Bus</span>.new(<span class="s7">\control</span>,1,1,s);</p>
 <p class="p6">cutbus.value = 10000;</p>
 <p class="p2"><br></p>
-<p class="p6">rezspec = <span class="s3">ControlSpec</span>(1,0,<span class="s6">\linear</span>,0.001);</p>
-<p class="p6">rezbus = <span class="s3">Bus</span>.new(<span class="s6">\control</span>,2,1,s);</p>
+<p class="p6">rezspec = <span class="s3">ControlSpec</span>(1,0,<span class="s7">\linear</span>,0.001);</p>
+<p class="p6">rezbus = <span class="s3">Bus</span>.new(<span class="s7">\control</span>,2,1,s);</p>
 <p class="p6">rezbus.value = 1.0;</p>
 <p class="p2"><br></p>
-<p class="p6">lfospec = <span class="s3">ControlSpec</span>(0,50,<span class="s6">\linear</span>,0.001);</p>
-<p class="p6">lfobus = <span class="s3">Bus</span>.new(<span class="s6">\control</span>,3,1,s);</p>
+<p class="p6">lfospec = <span class="s3">ControlSpec</span>(0,50,<span class="s7">\linear</span>,0.001);</p>
+<p class="p6">lfobus = <span class="s3">Bus</span>.new(<span class="s7">\control</span>,3,1,s);</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s3">MIDIIn</span>.control = {<span class="s3">arg</span> src, chan, num, val;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(num == 1,{</p>
@@ -316,7 +323,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s3">MIDIIn</span>.noteOn = {<span class="s3">arg</span> src, chan, num, vel;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> node;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>if(num &lt; 60, {</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node = <span class="s3">Synth</span>.tail(g, <span class="s5">"funk"</span>, [<span class="s6">\freq</span>, num.midicps, <span class="s6">\amp</span>, vel/255]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node = <span class="s3">Synth</span>.tail(g, <span class="s6">"funk"</span>, [<span class="s7">\freq</span>, num.midicps, <span class="s7">\amp</span>, vel/255]);</p>
 <p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node.map(</span>"cutoff"<span class="s2">,1,</span>"rez"<span class="s2">,2,</span>"lfospeed"<span class="s2">,3);</span></p>
 <p class="p7">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node = Synth.basicNew("funk",s);</p>
 <p class="p7">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendBundle(nil,</p>
@@ -325,7 +332,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>keys.put(num, node)</p>
 <p class="p6"><span class="Apple-tab-span">	</span>},{<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node = <span class="s3">Synth</span>.tail(g, <span class="s5">"strings"</span>, [<span class="s6">\freq</span>, num.midicps, <span class="s6">\amp</span>, vel/255]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node = <span class="s3">Synth</span>.tail(g, <span class="s6">"strings"</span>, [<span class="s7">\freq</span>, num.midicps, <span class="s7">\amp</span>, vel/255]);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>keys.put(num, node)</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p6">};</p>
@@ -335,7 +342,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-converted-space">    </span>node = keys.at(num);</p>
 <p class="p6"><span class="Apple-converted-space">    </span>if (node.notNil, {</p>
 <p class="p6"><span class="Apple-converted-space">        </span>keys.put(num, <span class="s3">nil</span>);</p>
-<p class="p6"><span class="Apple-converted-space">        </span>s.sendMsg(<span class="s5">"/n_set"</span>, node.nodeID, <span class="s5">"gate"</span>, 0);</p>
+<p class="p6"><span class="Apple-converted-space">        </span>s.sendMsg(<span class="s6">"/n_set"</span>, node.nodeID, <span class="s6">"gate"</span>, 0);</p>
 <p class="p7"><span class="s2"><span class="Apple-converted-space">        </span></span>// or node.release</p>
 <p class="p7"><span class="s2"><span class="Apple-converted-space">        </span></span>// then free it ... or get the NodeWatcher to do it</p>
 <p class="p6"><span class="Apple-converted-space">    </span>});</p>

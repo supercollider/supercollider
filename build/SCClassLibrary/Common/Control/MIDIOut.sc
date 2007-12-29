@@ -4,6 +4,10 @@ MIDIEndPoint {
 	*new{ arg device, name, uid;
 		^super.newCopyArgs(device, name, uid)
 	}
+	printOn { arg stream;
+		stream << this.class.name << "(" <<*
+			[device, name]  <<")"
+	}
 }
 
 MIDIClient {
@@ -12,7 +16,7 @@ MIDIClient {
 	*init { arg inports=1, outports=1;
 		this.prInit(inports,outports);
 		initialized = true;
-		this.list;
+		this.getEndPoints;
 		// might ask for 1 and get 2 if your device has it
 		if(sources.size < inports or: {destinations.size < outports},{
 			"WARNING:".postln;
@@ -22,13 +26,12 @@ MIDIClient {
 				++ " outport(s).").postln;
 			"Some expected MIDI devices may not be available.".postln;
 		});
-		("Sources: "
-			++ sources.collect({ |x| x.device ++ " : " ++ x.name })
-			++ "\nDestinations: "
-			++ destinations.collect({ |x| x.device ++ " : " ++ x.name })
-		).postln;
+		Post << "MIDI Sources: " << Char.nl;
+		sources.do({ |x| Post << Char.tab << x << Char.nl });
+		Post << "MIDI Destinations: " << Char.nl;
+		destinations.do({ |x| Post << Char.tab << x << Char.nl });
 	}
-	*list {
+	*getEndPoints {
 		var list;
 		list = this.prList;
 		if(list.notNil, {
@@ -197,7 +200,10 @@ MIDIIn {
 	*doSMPTEaction { arg src, frameRate, timecode;
 		smpte.value(src, frameRate, timecode);
 	}
-	
+
+	*findPort { arg deviceName,portName;
+		^MIDIClient.sources.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
+	}
 	*connect { arg inport=0, device=0;
 		var uid,source;
 		if(MIDIClient.initialized.not,{ MIDIClient.init });
@@ -284,10 +290,21 @@ MIDIIn {
 }
 	
 MIDIOut {
-	var <>port, <> uid, <>latency=0.1;
+	var <>port, <>uid, <>latency=0.1;
 	
 	*new { arg port, uid=0;
 		^super.newCopyArgs(port, uid);
+	}
+	*newByName { arg deviceName,portName;
+		var endPoint;
+		endPoint = this.findPort(deviceName,portName);
+		if(endPoint.isNil,{
+			fail("Failed to find MIDIOut port " + deviceName + portName);
+		});
+		^this.new(endPoint,endPoint.uid)
+	}
+	*findPort { arg deviceName,portName;
+		^MIDIClient.sources.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
 	}
 		
 	write { arg len, hiStatus, loStatus, a=0, b=0;
