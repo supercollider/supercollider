@@ -432,7 +432,7 @@ EventStreamPlayer : PauseStream {
 	
 	next { arg inTime;
 		var nextTime;
-		var outEvent = stream.next(event);
+		var outEvent = stream.next(event.copy);		
 		if (outEvent.isNil) {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
@@ -451,7 +451,7 @@ EventStreamPlayer : PauseStream {
 	
 	asEventStreamPlayer { ^this }
 	
-		play { arg argClock, doReset = (false), quant=0.0, phase = 0, offset = 0;
+	play { arg argClock, doReset = (false), quant=0.0, phase = 0, offset = 0;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
