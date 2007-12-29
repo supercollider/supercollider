@@ -44,10 +44,6 @@ PatternProxy : Pattern {
 			};
 	}
 	
-	endless {
-		^Pn(this)
-	}
-	
 	*parallelise { arg list; ^Ptuple(list) }
 	
 	pattern_ { arg pat; this.source_(pat) }
@@ -74,6 +70,10 @@ PatternProxy : Pattern {
 	isEventPattern { ^false }
 	
 	receiveEvent { ^nil }
+	
+	endless {
+		^Pn(this) // for now. need a fix later.
+	}
 	
 	embedInStream { arg inval;
 		var pat, stream, outval, test, resetTest, count=0;
@@ -249,9 +249,14 @@ TaskProxy : PatternProxy {
 	}
 	
 	convertFunction { arg func;
-			^Prout {
+			^Prout { |inevent|
 					var inval = func.def.prototypeFrame !? { this.defaultEvent };
-					func.value(inval)
+					if(inevent.isNumber or: {inevent.isNil} or: { inval.isNil }) { 
+						inevent = inval
+					} {
+						inevent.parent_(inval);
+					};
+					func.value(inevent)
 			}
 	}
 	
@@ -272,6 +277,10 @@ TaskProxy : PatternProxy {
 	align { arg argQuant;
 		quant = argQuant;
 		this.source = this.source.copy;
+	}
+	
+	embed { |val|
+		^this.embedInStream(val)
 	}
 	
 	////////// playing interface //////////
@@ -312,8 +321,8 @@ TaskProxy : PatternProxy {
 	isPaused { ^player.isNil or: { player.wasStopped } }
 	canPause { ^player.notNil and: { player.streamHasEnded.not } }
 	
-	fork { arg clock, quant;
-		^this.asStream.play(clock ? thisThread.clock, quant)
+	fork { arg clock, quant, event;
+		^Routine { this.embedInStream(event) }.play(clock ? thisThread.clock, quant)
 	}
 	
 	stop { player.stop; player = nil; }
