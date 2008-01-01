@@ -5,20 +5,21 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.41">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #356f15}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
 span.s1 {color: #000000}
-span.s2 {color: #0012b9}
-span.s3 {color: #356f15}
-span.s4 {color: #a32011}
+span.s2 {color: #001bb9}
+span.s3 {color: #2c7014}
+span.s4 {color: #ad140d}
+span.s5 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -62,11 +63,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s2">var</span> fft;<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="s2">var</span> feature1, feature2, feature3;<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p7">in= <span class="s2">PlayBuf</span>.ar(1,d,<span class="s2">BufRateScale</span>.kr(d),1,0,1);</p>
+<p class="p7">in= <span class="s2">PlayBuf</span>.ar(1,d.bufnum,<span class="s2">BufRateScale</span>.kr(d.bufnum),1,0,1);</p>
 <p class="p5">//in = AudioIn.ar(1);<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p5">//Create some features</p>
-<p class="p7">fft = <span class="s2">FFT</span>(b, in);</p>
+<p class="p7">fft = <span class="s2">FFT</span>(b.bufnum, in);</p>
 <p class="p4"><br></p>
 <p class="p7">feature1= <span class="s2">RunningSum</span>.rms(in,64);</p>
 <p class="p7">feature2= <span class="s2">MFCC</span>.kr(fft,2); <span class="s4">//two coefficients</span></p>
@@ -98,6 +99,47 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7">a.free;</p>
+<p class="p4"><br></p>
+<p class="p5">//same thing, trying with Onsets UGen raw output</p>
+<p class="p7">(</p>
+<p class="p7">a= <span class="s2">SynthDef</span>(<span class="s3">\help_beattrack2_1</span>,{<span class="s2">arg</span> vol=1.0, beepvol=1.0, lock=0;</p>
+<p class="p7"><span class="s2">var</span> in, kbus;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s2">var</span> trackb,trackh,trackq,tempo, phase, period, groove;</p>
+<p class="p7"><span class="s2">var</span> bsound,hsound,qsound, beep;</p>
+<p class="p7"><span class="s2">var</span> fft;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s2">var</span> feature1, feature2, feature3;<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p7">in= <span class="s2">PlayBuf</span>.ar(1,d.bufnum,<span class="s2">BufRateScale</span>.kr(d.bufnum),1,0,1);</p>
+<p class="p5">//in = AudioIn.ar(1);<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p5">//Create some features</p>
+<p class="p7">fft = <span class="s2">FFT</span>(b.bufnum, in);</p>
+<p class="p4"><br></p>
+<p class="p7">feature1= <span class="s2">Onsets.kr</span>(fft,odftype:\mkl, <span class="s5">rawodf:1);</span></p>
+<p class="p4"><br></p>
+<p class="p7">feature2= <span class="s2">Onsets.kr</span>(fft,odftype:\complex, <span class="s5">rawodf:1);</span><span class="s4">//two coefficients</span></p>
+<p class="p4"><br></p>
+<p class="p7">kbus= <span class="s2">Out</span>.kr(0, [feature1,feature2]);<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p5">//Look at four features</p>
+<p class="p7">#trackb,trackh,trackq,tempo, phase, period, groove=<span class="s2">BeatTrack2</span>.kr(0,2,3.0, 0.02, lock, -2.5);</p>
+<p class="p4"><br></p>
+<p class="p7">beep= <span class="s2">SinOsc</span>.ar(1000,0.0,<span class="s2">Decay</span>.kr(trackb,0.1));</p>
+<p class="p4"><br></p>
+<p class="p7"><span class="s2">Out</span>.ar(0,<span class="s2">Pan2</span>.ar((vol*in)+(beepvol*beep),0.0));</p>
+<p class="p7">}).play</p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p5">//favour higher tempi in own weighting scheme</p>
 <p class="p7">(</p>
 <p class="p7">c=<span class="s2">Array</span>.fill(120,{<span class="s2">arg</span> i; 0.5+(0.5*(i/120))});</p>
@@ -112,12 +154,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s2">var</span> source, kbus;</p>
 <p class="p7"><span class="s2">var</span> bsound,hsound,qsound;</p>
 <p class="p4"><br></p>
-<p class="p5"><span class="s1">source= </span><span class="s2">AudioIn</span><span class="s1">.ar(1); </span>//PlayBuf.ar(1,d,BufRateScale.kr(d),1,0,1);</p>
+<p class="p5"><span class="s1">source= </span><span class="s2">AudioIn</span><span class="s1">.ar(1); </span>//PlayBuf.ar(1,d.bufnum,BufRateScale.kr(d.bufnum),1,0,1);</p>
 <p class="p4"><br></p>
 <p class="p5">//downsampling automatic via kr from ar</p>
 <p class="p5"><span class="s1">kbus= </span><span class="s2">Out</span><span class="s1">.kr(0, </span><span class="s2">LPF</span><span class="s1">.ar(source,1000)); </span>//([feature1, feature3]++feature2);<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p7">#trackb,trackh,trackq,tempo=<span class="s2">BeatTrack2</span>.kr(0,1,weightingscheme:e);</p>
+<p class="p7">#trackb,trackh,trackq,tempo=<span class="s2">BeatTrack2</span>.kr(0,1,weightingscheme:e.bufnum);</p>
 <p class="p4"><br></p>
 <p class="p7">bsound= <span class="s2">Pan2</span>.ar(<span class="s2">LPF</span>.ar(<span class="s2">WhiteNoise</span>.ar*(<span class="s2">Decay</span>.kr(trackb,0.05)),1000),0.0);</p>
 <p class="p4"><br></p>
@@ -128,6 +170,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s2">Out</span>.ar(0, source + bsound+hsound+qsound);</p>
 <p class="p7">}).play;</p>
 <p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
