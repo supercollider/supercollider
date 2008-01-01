@@ -187,7 +187,7 @@ EnvironmentRedirect {
 
 
 LazyEnvir : EnvironmentRedirect {
-	var <>proxyClass=\FuncProxy;
+	var <>proxyClass=\Maybe;
 	
 	makeProxy {
 		^proxyClass.asClass.new
