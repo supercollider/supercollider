@@ -1003,11 +1003,14 @@ NodeProxy : BusPlug {
 				}
 			}
 		};
-		^Node.orderNodesMsg(list) 
+		^list !? { Node.orderNodesMsg(list) }
 	}
 	
 	orderNodes { arg ... proxies;
-		server.sendBundle(nil, this.moveBeforeMsg(*proxies));
+		var msg = this.moveBeforeMsg(*proxies);
+		msg !? {
+			server.sendBundle(nil, msg)
+		}
 	}
 }
 
@@ -1015,7 +1018,8 @@ NodeProxy : BusPlug {
 
 Ndef : NodeProxy {
 	classvar <>defaultServer;
-	var key;
+	var <key;
+	
 	*new { arg key, object;
 		var res, server;
 		if(key.isKindOf(Association)) {
