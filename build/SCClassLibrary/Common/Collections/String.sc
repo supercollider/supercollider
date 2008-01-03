@@ -39,10 +39,10 @@ String[char] : RawArray {
 	
 	// no sense doing collect as per superclass collection
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; 
-		^this.perform(aSelector, aNumber)
+		^aNumber.asString.perform(aSelector, this);
 	}
 	performBinaryOpOnComplex { arg aSelector, aComplex; 
-		^this.perform(aSelector, aComplex)
+		^aComplex.asString.perform(aSelector, this);
 	}
 
 	isString { ^true }
