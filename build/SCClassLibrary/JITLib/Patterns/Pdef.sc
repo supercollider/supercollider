@@ -257,7 +257,7 @@ TaskProxy : PatternProxy {
 					if(inevent.isNumber or: {inevent.isNil} or: { inval.isNil }) { 
 						inevent = inval
 					} {
-						inevent.parent_(inval);
+						inevent.copy.parent_(inval);
 					};
 					func.value(inevent)
 			}
