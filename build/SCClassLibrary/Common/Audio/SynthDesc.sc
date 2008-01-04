@@ -26,9 +26,9 @@ SynthDesc {
 	
 	printOn { arg stream;
 		stream << name << " :\n";
-		controls.do {|control| control.printOn(stream) };
-		inputs.do {|input| stream << "   I "; input.printOn(stream) };
-		outputs.do {|output| stream << "   O "; output.printOn(stream) };
+		controls.do {|control| control.printOn(stream); $\n.printOn(stream) };
+		inputs.do {|input| stream << "   I "; input.printOn(stream); $\n.printOn(stream) };
+		outputs.do {|output| stream << "   O "; output.printOn(stream); $\n.printOn(stream) };
 	}
 	
 	*read { arg path, keepDefs=false, dict;
