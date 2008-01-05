@@ -28,7 +28,7 @@ PatternProxy : Pattern {
 		var pat = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 		if (obj.isNil) { pat = this.class.default }; 
 		if(quant.isNil) { pattern = pat } { this.sched { pattern = pat } };
-		source = obj;
+		source = obj; // keep original here.
 	}
 		
 	defaultEvent {
@@ -129,8 +129,12 @@ PatternProxy : Pattern {
 	
 		
 	*removeAll { 
-		this.all.do { arg pat; pat.stop }; 
+		this.clear; 
 		this.all.makeEmpty; 
+	}
+	
+	*clear { 
+		this.all.do { arg pat; pat.clear } 
 	}
 	
 	clear { 
