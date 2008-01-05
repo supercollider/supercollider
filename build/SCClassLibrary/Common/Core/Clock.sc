@@ -186,6 +186,10 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		if (beat.isNil) { beat = this.beats };
 		^this.bars2beats(this.beats2bars(beat).ceil);
 	}
+	beatInBar { 
+		// return the beat of the bar, range is 0 to < t.beatsPerBar
+		^this.beats - this.bars2beats(this.bar) 
+	}
 	
 	
 		
