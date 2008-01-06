@@ -142,6 +142,7 @@ int prArray_AtIdentityHash(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;		// key
 
 	array = a->uo;
+	if(array->size == 0) return errFailed;
 	index = arrayAtIdentityHash(array, b);
 	SetInt(a, index);
 	return errNone;
@@ -330,6 +331,7 @@ int prArray_AtIdentityHashInPairs(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;  // array
 	b = g->sp;		// key
 	
+	if(a->uo->size < 2) return errFailed;
 	i = arrayAtIdentityHashInPairs(a->uo, b);
 	SetInt(a, i);
 	return errNone;

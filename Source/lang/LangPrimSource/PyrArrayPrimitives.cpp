@@ -2145,6 +2145,10 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 	
 	PyrObject* env = a->uo;
 	PyrSlot* slots = env->slots;
+	
+		// Env:asArray always gives at least 8 array elements
+	if(env->size < 8) return errFailed;
+	
 	double time;
 	int err = slotDoubleVal(b, &time);
 	if (err) return err;
