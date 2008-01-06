@@ -14,6 +14,8 @@ should subscribe to the mailing lists:
    http://www.create.ucsb.edu/mailman/listinfo/sc-users
    http://www.create.ucsb.edu/mailman/listinfo/sc-devel
 
+Do not use non-ASCII characters (above code point 127) in your SuperCollider program path. Doing so will break options to open class or method files automatically.
+
 ------------------------------------------------------------------------
 System Requirements
 ------------------------------------------------------------------------
