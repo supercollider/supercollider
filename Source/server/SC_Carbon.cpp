@@ -126,7 +126,7 @@ bool sc_HasVectorUnit()
 void sc_SetDenormalFlags()
 {
 }
-#elif defined(SC_LINUX) && defined(__SSE__)
+#elif (SC_LINUX || SC_FREEBSD) && defined(__SSE__)
 # include <xmmintrin.h>
 
 // cpuid function that works with -fPIC from `minor' at http://red-bean.com

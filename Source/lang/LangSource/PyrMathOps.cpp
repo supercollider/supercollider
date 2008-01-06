@@ -361,6 +361,8 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opUnsignedShift : {
 #ifdef SC_WIN32
               unsigned long ia = a->ui;
+#elif defined(SC_FREEBSD)
+              u_long ia = a->ui;
 #else
               ulong ia = a->ui;
 #endif
