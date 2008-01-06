@@ -26,6 +26,11 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef SC_FREEBSD
+# include <complex.h>
+#endif
+
+
 float centsRatio[128];
 float semitoneFreq[128];
 

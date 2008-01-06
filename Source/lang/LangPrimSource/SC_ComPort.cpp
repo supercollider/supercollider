@@ -36,6 +36,10 @@
 # include <errno.h>
 #endif
 
+#ifdef SC_FREEBSD
+# include <errno.h>
+#endif
+
 #ifdef SC_DARWIN
 #include <errno.h>
 #endif

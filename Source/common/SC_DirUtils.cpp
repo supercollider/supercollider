@@ -129,6 +129,8 @@ bool sc_IsNonHostPlatformDir(const char *name)
 	char a[] = "linux", b[] = "windows";
 #elif defined(SC_LINUX)
 	char a[] = "osx", b[] = "windows";
+#elif defined(SC_FREEBSD)
+	char a[] = "osx", b[] = "windows";
 #elif defined(SC_WIN32)
 	char a[] = "osx", b[] = "linux";
 #endif
@@ -176,6 +178,11 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 		}
 	}
 #elif defined(SC_LINUX)
+	isAlias = sc_IsSymlink(path);
+	if (!realpath(path, returnPath))
+		strcpy(returnPath, path);
+	return;
+#elif defined(SC_FREEBSD)
 	isAlias = sc_IsSymlink(path);
 	if (!realpath(path, returnPath))
 		strcpy(returnPath, path);

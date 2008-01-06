@@ -45,6 +45,12 @@ typedef int socklen_t;
 # include <unistd.h>
 #endif
 
+#ifdef SC_FREEBSD
+# include <errno.h>
+# include <unistd.h>
+#endif
+
+
 #ifdef USE_RENDEZVOUS
 #include "Rendezvous.h"
 #endif

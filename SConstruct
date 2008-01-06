@@ -48,6 +48,11 @@ if PLATFORM == 'darwin':
     PLUGIN_EXT = '.scx'
     DEFAULT_AUDIO_API = 'coreaudio'
     DEFAULT_PREFIX = '/usr/local'
+elif PLATFORM == 'freebsd':
+    PLATFORM_SYMBOL = 'SC_FREEBSD'
+    PLUGIN_EXT = '.so'
+    DEFAULT_AUDIO_API = 'jack'
+    DEFAULT_PREFIX = '/usr/local'
 elif PLATFORM == 'linux':
     PLATFORM_SYMBOL = 'SC_LINUX'
     PLUGIN_EXT = '.so'
@@ -461,9 +466,15 @@ if env['SSE']:
     else:
         build_host_supports_sse = False
 	if CPU != 'ppc':
-           if PLATFORM != 'darwin':
-              flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
-              x86_flags = flag_line.split (": ")[1:][0].split ()
+	   if PLATFORM == 'freebsd':
+                machine_info = os.popen ("sysctl -a  hw.instruction_sse").read()[:-1]
+		x86_flags = 'no'
+		if "1" in [x for x in machine_info]:
+			build_host_supports_sse = True
+			x86_flags = 'sse'
+           elif PLATFORM != 'darwin':
+           	flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
+              	x86_flags = flag_line.split (": ")[1:][0].split ()
            else:
               machine_info = os.popen ("sysctl -a machdep.cpu").read()[:-1]
               x86_flags = machine_info.split()
@@ -601,7 +612,6 @@ serverEnv.Append(
                '#Headers/plugin_interface',
                '#Headers/server'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
-    LIBS = ['common', 'pthread', 'dl'],
     LIBPATH = 'build',
     LINKFLAGS = '-Wl,-rpath,' + FINAL_PREFIX + '/lib')
 libscsynthEnv = serverEnv.Copy(
@@ -617,11 +627,21 @@ libscsynthEnv = serverEnv.Copy(
     )
 
 # platform specific
+
+# functionality of libdl is included in libc on freebsd
+if PLATFORM == 'freebsd':
+    serverEnv.Append(LIBS = ['common', 'pthread'])
+else:
+    serverEnv.Append(LIBS = ['common', 'pthread', 'dl'])
+
 if PLATFORM == 'darwin':
     serverEnv.Append(
 	LINKFLAGS = '-framework CoreServices'
 	)
 elif PLATFORM == 'linux':
+    serverEnv.Append(CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')])
+
+elif PLATFORM == 'freebsd':
     serverEnv.Append(CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')])
 
 # required libraries
@@ -698,6 +718,12 @@ pluginEnv.Append(
     )
 if PLATFORM == 'darwin':
     pluginEnv['SHLINKFLAGS'] = '$LINKFLAGS -bundle -flat_namespace -undefined suppress'
+
+if PLATFORM == 'freebsd':
+    merge_lib_info(
+        pluginEnv,
+        libraries['sndfile'])
+
 
 plugins = []
 
@@ -812,13 +838,23 @@ langEnv.Append(
                '#Headers/server',
                '#Source/lang/LangSource/Bison'],
     CPPDEFINES = [['USE_SC_TERMINAL_CLIENT', env['TERMINAL_CLIENT']]],
-    LIBS = ['common', 'scsynth', 'pthread', 'dl', 'm'],
     LIBPATH = 'build'
     )
+
+
+# functionality of libdl is included in libc on freebsd
+if PLATFORM == 'freebsd':
+    langEnv.Append(LIBS = ['common', 'scsynth', 'pthread', 'm'])
+else:
+    langEnv.Append(LIBS = ['common', 'scsynth', 'pthread', 'dl',  'm'])
+
 if PLATFORM == 'darwin':
     langEnv.Append(
 	LINKFLAGS = '-framework CoreServices')
 elif PLATFORM == 'linux':
+    langEnv.Append(
+    LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
+elif PLATFORM == 'freebsd':
     langEnv.Append(
     LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
 

@@ -35,6 +35,12 @@
 
 # include <machine/endian.h>
 
+#elif defined(SC_FREEBSD)
+
+# include <machine/endian.h>
+# include <netinet/in.h>
+
+
 #elif defined(SC_WIN32)
 
 # define LITTLE_ENDIAN 1234
