@@ -183,12 +183,16 @@ msgsend : name blocklist1
 			{ 
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$2, (PyrParseNode*)$4, 0, 0); 
 			}
+		| name '(' ')' blocklist1
+			{ 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, NULL, NULL, (PyrParseNode*)$4); 
+			}
 		| name '(' arglist1 optkeyarglist ')' blocklist
 			{ 
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 
 						(PyrParseNode*)$4, (PyrParseNode*)$6); 
 			}
-		| '(' binop2 ')' '(' ')' blocklist
+		| '(' binop2 ')' '(' ')' blocklist1
 			{
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$2, NULL, NULL, (PyrParseNode*)$6); 
 			}
