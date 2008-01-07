@@ -12,15 +12,15 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #961e1e}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #782727}
-span.s1 {color: #001db9}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4d4d4d}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #821017}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #631a1e}
+span.s1 {color: #0000aa}
 span.s2 {color: #000000}
-span.s3 {color: #0023b6}
-span.s4 {color: #426f0e}
-span.s5 {color: #0428b3}
-span.s6 {color: #556b17}
+span.s3 {color: #000aa7}
+span.s4 {color: #345e0d}
+span.s5 {color: #0011a3}
+span.s6 {color: #445a13}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -38,7 +38,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b><span class="Apple-tab-span">	</span>pos</b> - the playback position for the grain to start with (0 is beginning, 1 is end of file)</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>interp -<i> </i></b>the interpolation method used for pitchshifting grains. 1 = no interpolation. 2 = linear.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4 = cubic interpolation (more computationally intensive).</p>
-<p class="p3"><span class="Apple-tab-span">	</span><b>pan</b> -<span class="Apple-converted-space">  </span>a value from -1 to 1. Determines where to pan the output in the same manner as PanAz.<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>pan</b> -<span class="Apple-converted-space">  </span>Determines where to pan the output. If numChannels = 1, no panning is done.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If numChannels = 2, panning is similar to Pan2.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if numChannels &gt; 2, pannins is the same as PanAz.<span class="Apple-tab-span">	</span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>envbufnum</b> - the buffer number containing a singal to use for the grain envelope. -1 uses a built-in<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Hanning envelope.</p>
 <p class="p2"><br></p>

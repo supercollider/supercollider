@@ -386,6 +386,7 @@ inline double sc_gloop(double in, double hi)
 	float panangle, pan1, pan2; \
 	float *out1, *out2; \
 	if (numOutputs > 1) { \
+		if (numOutputs == 2) pan = pan * 0.5; \
 		pan = sc_wrap(pan * 0.5f, 0.f, 1.f); \
 		float cpan = numOutputs * pan + 0.5; \
 		float ipan = floor(cpan); \
