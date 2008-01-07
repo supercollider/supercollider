@@ -629,6 +629,15 @@ void SC_BufReadCommand::InitChannels(sc_msg_iter& msg)
 	}
 }
 
+bool SC_BufReadCommand::CheckChannels(int inNumChannels)
+{
+	for (int i=0; i < mNumChannels; ++i) {
+		if (mChannels[i] >= inNumChannels)
+			return false;
+	}
+	return true;
+}
+
 void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames)
 {
 	for (int ci=0; ci < mNumChannels; ++ci) {
@@ -711,14 +720,12 @@ bool BufAllocReadChannelCmd::Stage2()
 		sf_seek(sf, mFileOffset, SEEK_SET);
 		sf_readf_float(sf, buf->data, mNumFrames);
 	} else {
-		// verify number of channels
-		if (mNumChannels > fileinfo.channels) {
-			char str[256];
-			sf_close(sf);
-			sprintf(str, "Channel mismatch. Requested %d channels. File '%s' has %d channels.\n",
-					mNumChannels, mFilename, fileinfo.channels);
+		// verify channel indexes
+		if (!CheckChannels(fileinfo.channels)) {
+			char* str = "Channel index out of range.\n";
 			SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
+			sf_close(sf);
 			return false;
 		}
 		// alloc data size
@@ -817,23 +824,13 @@ bool BufReadChannelCmd::Stage2()
 		return false;
 	}
 
-	if (mNumChannels) {
-		if (mNumChannels > fileinfo.channels) {
-			char str[256];
-			sf_close(sf);
-			sprintf(str, "Channel mismatch. Requested %d channels. File '%s' has %d channels.\n",
-					mNumChannels, mFilename, fileinfo.channels);
-			SendFailure(&mReplyAddress, "/b_read", str);
+	if (mNumChannels > 0) {
+		// verify channel indexes
+		if (!(CheckChannels(fileinfo.channels) && CheckChannels(buf->channels))) {
+			char* str = "Channel index out of range.\n";
+			SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
-			return false;
-		}
-		if (mNumChannels != buf->channels) {
-			char str[256];
 			sf_close(sf);
-			sprintf(str, "Channel mismatch. Requested %d channels. Buffer has %d channels.\n",
-					mNumChannels, buf->channels);
-			SendFailure(&mReplyAddress, "/b_read", str);
-			scprintf(str);
 			return false;
 		}
 	} else if (fileinfo.channels != buf->channels) {
