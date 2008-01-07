@@ -272,6 +272,7 @@ public:
 
 protected:
 	void InitChannels(sc_msg_iter& msg);
+	bool CheckChannels(int inNumChannels);
 	void CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames);
 
 protected:
