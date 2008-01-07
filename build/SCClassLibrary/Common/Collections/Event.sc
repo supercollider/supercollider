@@ -158,7 +158,8 @@ Event : Environment {
 				legato: 0.8,
 				sustain: #{ ~dur * ~legato * ~stretch },
 				lag: 0.0,
-				strum: 0.0
+				strum: 0.0,
+				strumEndsTogether: true
 			),
 			
 			ampEvent: (
@@ -213,19 +214,15 @@ Event : Environment {
 					if (strumTime < sustain) {
 						~schedBundle.value(lag + strumTime, server, msg);
 						if(sendGate) { 
-							~schedBundle.value(lag + sustain, server, [\n_set, msg[2], \gate, 0])
+							if (~strumEndsTogether) {
+								~schedBundle.value(lag + sustain, server, [\n_set, msg[2], \gate, 0])
+							} {
+								~schedBundle.value(lag + sustain + strumTime, server, [\n_set, msg[2], \gate, 0])
+							}
 						}
 
 					};
 				}				
-// or:
-//				schedStrummedNote: {| lag, strumTime, sustain, server, msg, sendGate |
-//					~schedBundle.value(lag + strumTime, server, msg);
-//					if(sendGate) { 
-//						~schedBundle.value(lag + sustain + strumTime, server, [\n_set, msg[2], \gate, 0])
-//					}
-//				}
-				
 			),
 			
 			bufferEvent: (
