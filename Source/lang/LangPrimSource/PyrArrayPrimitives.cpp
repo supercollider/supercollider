@@ -2024,25 +2024,29 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 	
 
 	n = sc_max(1, n);
-	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
-	for (i=j=k=0; i<n; ++i) {
-		if (slots[k].utag == tagObj) {
-			obj3 = slots[k].uo;
-			if (isKindOf((PyrObject*)obj3, class_list)) {
-				obj3 = obj3->slots[0].uo; // get the list's array
-			}
-			if (obj3 && isKindOf((PyrObject*)obj3, class_array)) {
-				m = j % obj3->size;
-				obj2->slots[i].ucopy = obj3->slots[m].ucopy;
-			} else {
-				obj2->slots[i].ucopy = slots[k].ucopy;
-			}
-		} else {
-			obj2->slots[i].ucopy = slots[k].ucopy;
-		}
-		k = (k+1) % obj1->size;
-		if (k == 0) j++;
-	}
+	if(obj1->size > 0) {
+	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
+	    for (i=j=k=0; i<n; ++i) {
+		    if (slots[k].utag == tagObj) {
+			    obj3 = slots[k].uo;
+			    if (isKindOf((PyrObject*)obj3, class_list)) {
+				    obj3 = obj3->slots[0].uo; // get the list's array
+			    }
+			    if (obj3 && isKindOf((PyrObject*)obj3, class_array)) {
+				    m = j % obj3->size;
+				    obj2->slots[i].ucopy = obj3->slots[m].ucopy;
+			    } else {
+				    obj2->slots[i].ucopy = slots[k].ucopy;
+			    }
+		    } else {
+			    obj2->slots[i].ucopy = slots[k].ucopy;
+		    }
+		    k = (k+1) % obj1->size;
+		    if (k == 0) j++;
+	    }
+	} else {
+	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, true, true);
+	}	
 	obj2->size = n;
 	a->uo = obj2;
 	return errNone;
