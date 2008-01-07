@@ -153,5 +153,6 @@ Score {
 		^score
 	}
 	
+	asScore {}
 }	
 
