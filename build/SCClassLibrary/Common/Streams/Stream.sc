@@ -432,18 +432,15 @@ EventStreamPlayer : PauseStream {
 	
 	next { arg inTime;
 		var nextTime;
-		var outEvent = stream.next(event.copy);		
+		var outEvent = stream.next(event.copy.put(\beats, thisThread.beats));		
 		if (outEvent.isNil) {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
 			this.stop;
 			^nil
 		}{
-			outEvent = cleanup.update(outEvent);
-			
-			if (muteCount > 0) { outEvent.put(\freq, \rest) };
-			outEvent.play;
-			if ((nextTime = outEvent.delta).isNil) { stream = nil };
+			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
+			if (nextTime.isNil) { ^(stream = nil) };
 			nextBeat = inTime + nextTime;	// inval is current logical beat
 			^nextTime
 		};
