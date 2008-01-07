@@ -1,8 +1,8 @@
 
 /* 
- ScoreStreamPlayer is a faux server that collects OSC commands from an EventStream into a Score.
- It implements the functionality of a TempoClock, so tempo changes and time based patterns within
- the event stream can be supported. 
+ ScoreStreamPlayer collects OSC commands from an EventStream into a Score. It is derived from server to provide allocation of nodeIDs, bufums, etc.
+
+  It implements the functionality of a TempoClock, to support tempo changes and time based patterns. 
  
  Patterns that play on multiple servers are not directly supported, but can be managed.
  For example, assuming the server is explicitly identified in the pattern:
@@ -24,58 +24,33 @@
 ScoreStreamPlayer : Server {
 	var <>beats, <>tempo;
 	var <>bundleList, <>maxTime;
-	var <>score;
 	
-	// bundling support added
 	*new { ^super.new("record").latency_(0) }
+	
+	beats2secs { | beats | ^beats }
+	secs2beats { | beats | ^beats }
 	
 	add { | beats, args|
 		bundleList = bundleList.add([beats min: maxTime] ++ args)
 	}
-	sendBundle { arg time ... msgs;
-		this.add(time * tempo + beats, msgs)
-	}
 	
- 	listSendBundle { arg time, msgs;
-		bundleList = this.add(time * tempo + beats, msgs)
+	prepareEvent { | event |
+		event = event.copy;
+		event.use({
+			~schedBundle = { | time, server ...bundle | 
+				this.add(time * tempo + beats, bundle)
+			};
+			~schedBundleArray = { | time, server, bundle | 
+				this.add(time * tempo + beats, bundle)
+			};
+		});
+		^event;
 	}
-
-
-	sendRaw { arg rawArray;
-		bundleList =this.add(beats, rawArray)
-	}
-	
-	sendMsg { arg ... msg;
-		this.add(beats, msg)
-	}
-
-	listSendMsg { arg msg;
-		bundleList = this.add(beats, msg)
-	}
-	
-	sendMsgSync { arg condition ... msgs;
-		bundleList = this.add(beats, msgs)
-	}
-	
-	sync { arg condition, msgs, latency; // array of bundles that cause async action
-		bundleList = this.add(beats, msgs)
-	}
-	
-	secs2beats { | seconds  |
-		^(beats/tempo)
-	}
-	
-	sched { | time, function |
-		var oldbeats = beats;
-		beats = time * tempo + beats;
-		function.value;
-		beats = oldbeats;
-	}
-	
-
+			
 	makeScore { | stream, duration = 1, event, timeOffset = 0|
-		var ev;
-		event = event ? Event.default;
+		var ev, startTime;
+		event = this.prepareEvent(event ? Event.default);
+			
 		beats = timeOffset;
 		tempo = 1;
 		bundleList = [];
@@ -83,6 +58,7 @@ ScoreStreamPlayer : Server {
 		Routine {
 			thisThread.clock = this;
 			while ({
+				thisThread.beats = beats;
 				ev = stream.next(event.copy);		
 				(maxTime >= beats) && ev.notNil
 			},{ 
@@ -91,7 +67,14 @@ ScoreStreamPlayer : Server {
 				beats = ev.delta * tempo + beats
 			})
 		}.next;
-		^score = Score(bundleList.add([duration, [\c_set, 0, 0]]) );
+		bundleList = bundleList.sort({ | a, b | b[0] >= a[0] });
+		bundleList[0][0].postln;
+		if ((startTime = bundleList[0][0]) < 0 ) {
+			timeOffset = timeOffset - startTime;
+		};
+		bundleList.do { | b | b[0] = b[0] + timeOffset }
+		
+		^Score(bundleList.add([duration, [\c_set, 0, 0]]) );
 	}
 	
 }
