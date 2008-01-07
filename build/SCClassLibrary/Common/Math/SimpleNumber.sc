@@ -380,6 +380,8 @@ SimpleNumber : Number {
 	
 	playAndDelta {}
 
+	asQuant { ^Quant(this, 0, nil) }
+
 	// a clock format
 	asTimeString { arg precision=0.1;
 		var hours,mins,secs;
