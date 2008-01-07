@@ -377,6 +377,9 @@ SimpleNumber : Number {
 	nextTimeOnGrid { arg clock;
 		^clock.nextTimeOnGrid(this, 0);
 	}
+	
+	playAndDelta {}
+
 	// a clock format
 	asTimeString { arg precision=0.1;
 		var hours,mins,secs;
