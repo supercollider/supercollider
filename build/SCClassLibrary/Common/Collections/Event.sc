@@ -42,6 +42,14 @@ Event : Environment {
 //		^this.delta
 	}
 	
+	// this method is called by EventStreamPlayer so it can schedule Routines as well
+	playAndDelta { | cleanup, mute |
+		if (mute) { this.put(\freq, \rest) };
+		cleanup.update(this);
+		this.play;
+		^this.delta;
+	}
+
 	printOn { arg stream, itemsPerLine = 5;
 		var max, itemsPerLinem1, i=0;
 		itemsPerLinem1 = itemsPerLine - 1;
