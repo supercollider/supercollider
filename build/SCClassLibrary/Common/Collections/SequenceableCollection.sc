@@ -1072,5 +1072,7 @@ SequenceableCollection : Collection {
 		^clock.nextTimeOnGrid(*this);
 	}
 
+	asQuant { ^Quant(*this) }
+
 //	asUGenInput { ^this.asArray.asUGenInput }
 }
