@@ -1651,18 +1651,22 @@ int prArrayExtendWrap(struct VMGlobals *g, int numArgsPushed)
 		
 	obj1 = a->uo;
 	size = b->ui;
-	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
-	obj2->size = size;
-	slots = obj2->slots;
-	// copy first part of list
-	memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
-	if (size > obj1->size) {
-		// copy second part
-		m = obj1->size;
-		for (i=0,j=m; j<size; ++i,++j) {
-			slots[j].ucopy = slots[i].ucopy;
+	if(obj1->size > 0) {
+	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
+	    obj2->size = size;
+	    slots = obj2->slots;
+	    // copy first part of list
+	    memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+	    if (size > obj1->size) {
+		    // copy second part
+		    m = obj1->size;
+		    for (i=0,j=m; j<size; ++i,++j) {
+			    slots[j].ucopy = slots[i].ucopy;
+		    }
 		}
-	}
+	    } else {
+	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
+	    }
 	a->uo = obj2;
 	return errNone;
 }
@@ -1679,18 +1683,22 @@ int prArrayExtendFold(struct VMGlobals *g, int numArgsPushed)
 		
 	obj1 = a->uo;
 	size = b->ui;
-	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
-	obj2->size = size;
-	slots = obj2->slots;
-	// copy first part of list
-	memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
-	if (size > obj1->size) {
-		// copy second part
-		m = obj1->size;
-		for (i=0,j=m; j<size; ++i,++j) {
-			slots[j].ucopy = slots[sc_fold(j,0,m-1)].ucopy;
+	if(obj1->size > 0) {
+	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
+	    obj2->size = size;
+	    slots = obj2->slots;
+	    // copy first part of list
+	    memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+	    if (size > obj1->size) {
+		    // copy second part
+		    m = obj1->size;
+		    for (i=0,j=m; j<size; ++i,++j) {
+			    slots[j].ucopy = slots[sc_fold(j,0,m-1)].ucopy;
+		    }
 		}
-	}
+	    } else {
+	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
+	    }
 	a->uo = obj2;
 	return errNone;
 }
@@ -1707,19 +1715,23 @@ int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
 		
 	obj1 = a->uo;
 	size = b->ui;
-	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
-	obj2->size = size;
-	slots = obj2->slots;
-	// copy first part of list
-	memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
-	if (size > obj1->size) {
-		// copy second part
-		m = obj1->size;
-		last.ucopy = slots[m-1].ucopy;
-		for (i=0,j=m; j<size; ++i,++j) {
-			slots[j].ucopy = last.ucopy;
-		}
-	}
+	if(obj1->size > 0) {
+	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
+	    obj2->size = size;
+	    slots = obj2->slots;
+	    // copy first part of list
+	    memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+	    if (size > obj1->size) {
+		    // copy second part
+		    m = obj1->size;
+		    last.ucopy = slots[m-1].ucopy;
+		    for (i=0,j=m; j<size; ++i,++j) {
+			    slots[j].ucopy = last.ucopy;
+		    }
+		} 
+	    } else {
+	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
+	    }
 	a->uo = obj2;
 	return errNone;
 }
