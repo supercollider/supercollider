@@ -19,11 +19,11 @@ DiskOut : UGen {
 }
 
 DiskIn : MultiOutUGen {
-	*ar { arg numChannels, bufnum;
-		^this.multiNew('audio', numChannels, bufnum)
+	*ar { arg numChannels, bufnum, loop = 0;
+		^this.multiNew('audio', numChannels, bufnum, loop)
 	}
-	init { arg numChannels, bufnum;
-		inputs = [bufnum];
+	init { arg numChannels, bufnum, loop = 0;
+		inputs = [bufnum, loop];
 		^this.initOutputs(numChannels, rate)
 	}
 }
