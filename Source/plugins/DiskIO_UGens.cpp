@@ -77,6 +77,7 @@ extern "C"
 enum {
 	kDiskCmd_Read,
 	kDiskCmd_Write,
+	kDiskCmd_ReadLoop,
 };
 
 struct DiskIOMsg
@@ -190,7 +191,7 @@ sendMessage:
 		// send a message to read
 		DiskIOMsg msg;
 		msg.mWorld = unit->mWorld;
-		msg.mCommand = kDiskCmd_Read;
+		msg.mCommand = (int)ZIN0(1) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
 		msg.mBufNum = (int)fbufnum;
 		msg.mPos = bufFrames2 - unit->m_framepos;
 		msg.mFrames = bufFrames2;
@@ -207,11 +208,21 @@ sendMessage:
 		uint32 mPos = bufFrames2 - unit->m_framepos;
 		if (mPos > (uint32)bufr->frames || mPos + bufFrames2 > (uint32)bufr->frames || (uint32) bufr->channels != bufChannels) return;
 		sf_count_t count;
-		count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
-		if (count < bufFrames2) {
-			memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels);
-		}	
-	}	
+
+		if ((int)ZIN0(1)) { // loop
+		        if (!bufr->sndfile) memset(bufr->data + mPos * bufr->channels, 0, bufFrames2 * bufr->channels * sizeof(float));
+			count = sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2);
+			while (bufFrames2 -= count) {
+				sf_seek(bufr->sndfile, 0, SEEK_SET);
+				count = sf_readf_float(bufr->sndfile, bufr->data + (mPos + count) * bufr->channels, bufFrames2);
+			}
+		} else { // non-loop
+		        count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
+			if (count < bufFrames2) {
+			  memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
+			}
+		}
+	}
 	}
 }
 
@@ -301,7 +312,18 @@ void DiskIOMsg::Perform()
 		case kDiskCmd_Read :
 			count = buf->sndfile ? sf_readf_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames) : 0;
 			if (count < mFrames) {
-				memset(buf->data + (mPos + count) * buf->channels, 0, (mFrames - count) * buf->channels);
+				memset(buf->data + (mPos + count) * buf->channels, 0, (mFrames - count) * buf->channels * sizeof(float));
+			}
+		break;
+		case kDiskCmd_ReadLoop :
+			if (!buf->sndfile) {
+				memset(buf->data + mPos * buf->channels, 0, mFrames * buf->channels * sizeof(float));
+				goto leave;
+			}
+			count = sf_readf_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
+			while (mFrames -= count) {
+				sf_seek(buf->sndfile, 0, SEEK_SET);
+				count = sf_readf_float(buf->sndfile, buf->data + (mPos + count) * buf->channels, mFrames);
 			}
 		break;
 		case kDiskCmd_Write :
