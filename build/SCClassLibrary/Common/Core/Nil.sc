@@ -54,6 +54,7 @@ Nil {
 	play {}
 	
 	nextTimeOnGrid { arg clock; ^clock !? { clock.nextTimeOnGrid } }
+	asQuant { ^Quant.new }
 
 	swapThisGroup {}
 	
