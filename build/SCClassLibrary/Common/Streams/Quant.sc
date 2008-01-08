@@ -5,21 +5,12 @@
 Quant {
 	var <>quant, <>phase, <>offset;
 
-	*new { |quant = 0, phase = 0, offset = 0| ^super.newCopyArgs(quant, phase, offset) }
+	*new { |quant = 0, phase, offset| ^super.newCopyArgs(quant, phase, offset) }
 	
 	nextTimeOnGrid { | clock |
 		var prPhase;
 		prPhase = (phase ? 0) - (offset ? 0);
 		^clock.nextTimeOnGrid(quant, prPhase);
-	}
-
-	synchronizeOffsets { | event |
-		if(offset.notNil) {
-			event = event.copy.put(\timingOffset, quant.offset)
-		} {
-			offset = event[\timingOffset];
-		};
-		^event
 	}
 
 	asQuant { ^this.copy }
