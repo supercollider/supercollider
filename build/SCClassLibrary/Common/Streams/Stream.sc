@@ -460,7 +460,7 @@ EventStreamPlayer : PauseStream {
 	
 	asEventStreamPlayer { ^this }
 	
-	play { arg argClock, doReset = (false), quant=0.0, phase = 0, offset = 0;
+	play { arg argClock, doReset = (false), quant=0.0;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
@@ -469,13 +469,9 @@ EventStreamPlayer : PauseStream {
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
 		era = CmdPeriod.era;
-		if (quant.isKindOf(SequenceableCollection)) {
-			phase = quant[1] ? phase;
-			quant = quant[0]
-		};
-		event = event.copy.put(\timingOffset, offset);
-		// following uses TempoClock:play's esoteric treatment of phase
-		// as an argument accompanying quant in an array
+		quant = quant.asQuant;
+		event = event.synchWithQuant(quant);
+
 		clock.play({
 			if(isWaiting and: { nextBeat.isNil }) {
 				clock.sched(0, this);
@@ -483,7 +479,7 @@ EventStreamPlayer : PauseStream {
 				this.changed(\playing)
 			};
 			nil
-		}, [quant, phase - offset]);
+		}, quant);
 		this.changed(\userPlayed);
 		^this
 	}
