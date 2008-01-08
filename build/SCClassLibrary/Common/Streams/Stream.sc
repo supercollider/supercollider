@@ -348,18 +348,27 @@ PauseStream : Stream
 			if(isWaiting and: { nextBeat.isNil }) {
 				clock.sched(0, this);
 				isWaiting = false;
+				this.changed(\playing)
 			};
 			nil
 		}, quant);
+		this.changed(\userPlayed);
 		^this
 	}
 	reset { ^originalStream.reset }
 	stop {
+		this.prStop;
+		this.changed(\userStopped);
+	}
+	prStop {
 		stream = nil;
 		isWaiting = false;
+	}
+	removedFromScheduler {
+		nextBeat = nil;
+		this.prStop;
 		this.changed(\stopped);
 	}
-	removedFromScheduler { nextBeat = nil; this.stop }
 	streamError { this.removedFromScheduler; streamHasEnded = true;  }
 	
 	wasStopped { 
@@ -368,8 +377,7 @@ PauseStream : Stream
 	}
 	
 	pause {
-		stream = nil;
-		isWaiting = false;
+		this.stop;
 	}
 	resume { arg argClock, quant=1.0; 
 		^this.play(clock ? argClock, false, quant) 
@@ -423,7 +431,11 @@ EventStreamPlayer : PauseStream {
 		^super.new(stream).event_(event ? Event.default).cleanup_(EventStreamCleanup.new);
 	}
 	
-	stop { stream = nextBeat = nil; isWaiting = false; 
+		// stop inherits from PauseStream, no change needed
+		// prStop needs to do cleanup.terminate
+	prStop {
+		stream = nextBeat = nil;
+		isWaiting = false;
 		cleanup.terminate
 	 }
 	
@@ -436,11 +448,11 @@ EventStreamPlayer : PauseStream {
 		if (outEvent.isNil) {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
-			this.stop;
+			this.removedFromScheduler;
 			^nil
 		}{
 			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
-			if (nextTime.isNil) { ^(stream = nil) };
+			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
 			nextBeat = inTime + nextTime;	// inval is current logical beat
 			^nextTime
 		};
@@ -468,9 +480,11 @@ EventStreamPlayer : PauseStream {
 			if(isWaiting and: { nextBeat.isNil }) {
 				clock.sched(0, this);
 				isWaiting = false;
+				this.changed(\playing)
 			};
 			nil
 		}, [quant, phase - offset]);
+		this.changed(\userPlayed);
 		^this
 	}
 
