@@ -1072,6 +1072,7 @@ SequenceableCollection : Collection {
 		^clock.nextTimeOnGrid(*this);
 	}
 
+	// we break up the array so that missing elements are set to nil in the Quant
 	asQuant { ^Quant(*this) }
 
 //	asUGenInput { ^this.asArray.asUGenInput }
