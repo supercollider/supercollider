@@ -21,6 +21,8 @@
 
 #include "SC_PlugIn.h"
 
+const int kMAXMEDIANSIZE = 32;
+
 static InterfaceTable *ft;
 
 struct ScopeOut : public Unit
@@ -94,8 +96,8 @@ struct RecordBuf : public Unit
 
 struct Pitch : public Unit
 {
-	float m_values[10];
-	int m_ages[10];
+	float m_values[kMAXMEDIANSIZE];
+	int m_ages[kMAXMEDIANSIZE];
 	float *m_buffer;
 	
 	float m_freq, m_minfreq, m_maxfreq, m_hasfreq, m_srate, m_ampthresh, m_peakthresh;
@@ -1407,7 +1409,7 @@ void Pitch_Ctor(Pitch *unit)
 	int maxbins = (int)ZIN0(kPitchMaxBins);
 	unit->m_maxlog2bins = LOG2CEIL(maxbins);
 
-	unit->m_medianSize = (int)ZIN0(kPitchMedian);
+	unit->m_medianSize = sc_clip((int)ZIN0(0), 0, kMAXMEDIANSIZE);  // (int)ZIN0(kPitchMedian);
 	unit->m_ampthresh = ZIN0(kPitchAmpThreshold);
 	unit->m_peakthresh = ZIN0(kPitchPeakThreshold);
 	
