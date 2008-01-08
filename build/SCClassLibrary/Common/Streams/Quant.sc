@@ -13,7 +13,15 @@ Quant {
 		^clock.nextTimeOnGrid(quant, prPhase);
 	}
 
-	asQuant {}
-}
+	synchronizeOffsets { | event |
+		if(offset.notNil) {
+			event = event.copy.put(\timingOffset, quant.offset)
+		} {
+			offset = event[\timingOffset];
+		};
+		^event
+	}
 
+	asQuant { ^this.copy }
+}
 
