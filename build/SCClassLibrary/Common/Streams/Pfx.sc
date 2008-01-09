@@ -52,7 +52,7 @@ Pgroup : FilterPattern {
 		event[\delta] = 1e-9; // no other sync choice for now. (~ 1 / 20000 sample delay)
 		event[\id] = groupID;
 		event[\group] = ingroup;
-		cleanup.add({ (type: \off, id: groupID, server: server).play });
+		cleanup.add(event, { (type: \off, id: groupID, server: server).play });
 		inevent = event.yield;
 		
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
@@ -119,7 +119,7 @@ Pbus : FilterPattern {
 		event[\instrument] = format("system_link_%_%", rate, numChannels);
 		event[\in] = bus;
 
-		cleanup.add( { 
+		cleanup.add(event, { 
 			(id: linkID, type: \off, gate: dur.neg, hasGate: true).play; 
 			freeBus.value;
 		});
