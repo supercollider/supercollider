@@ -2,11 +2,13 @@
 /**
   *
   * Subversion based package repository and package manager
-  * a work in progress.  sk, cx, LFSaw, danstowell
+  * sk, cx, LFSaw, danstowell
   *
   */
 
-// quarks are much worse than opiates, you should have been more careful
+
+// quarks are much worse than opiates, you should have been more careful !
+// now you have a quark dependency
 QuarkDependency
 {
 	// Note: "repos" should be nil if dependency is in same repos; otherwise the base URL of the repos.
@@ -29,7 +31,7 @@ QuarkDependency
 
 
 // a Quark is a single package of classes, helpfiles etc.
-// the QUARK file should contain an IdentityDictionary
+// the QUARK file is sc code and should be an IdentityDictionary
 // path is a relative path  relative to the repos root or the local root
 
 Quark
