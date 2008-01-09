@@ -5,24 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 19.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982513}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0021b5}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Courier}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Courier; min-height: 14.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana; min-height: 13.0px}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {text-decoration: underline}
-span.s2 {color: #001bb9}
+span.s2 {color: #0021b5}
 span.s3 {color: #000000}
 span.s4 {color: #606060}
 span.s5 {font: 9.0px Monaco}
@@ -183,28 +182,38 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">https://quarks.svn.sourceforge.net/svnroot/quarks</p>
 <p class="p4"><br></p>
 <p class="p2"><br></p>
-<p class="p11"><b>Creating a Quark for others to use</b></p>
+<p class="p11"><b>Creating a Quark</b></p>
 <p class="p2"><br></p>
-<p class="p3">You will need a (free) SourceForge account to publish a quark to the subversion repository. (You also need the account to be added to the "quarks" project - contact one of the admins listed at <span class="s1">http://sourceforge.net/projects/quarks</span> to do that.) Once you're authorised, here's what to do:</p>
-<p class="p4"><br></p>
 <p class="p12"><span class="s6">Create your folder in </span>{Application Support}/quarks/<span class="Apple-converted-space"> </span></p>
 <p class="p3">(we'll assume it's called <i>quarkname</i>)</p>
 <p class="p4"><br></p>
-<p class="p3">In a shell go to <span class="s7">{Application Support}/quarks/<span class="Apple-converted-space"> </span></span> and<span class="Apple-converted-space">  </span>execute :</p>
-<p class="p4"><br></p>
-<p class="p12">svn add quarkname</p>
+<p class="p3">Place your classes in this folder.</p>
 <p class="p4"><br></p>
 <p class="p3">Place a quark file called <i>quarkname</i>.quark into <span class="s7">{Application Support}/quarks/DIRECTORY</span></p>
 <p class="p3">(see [<b>Quark</b>] for the format)</p>
 <p class="p4"><br></p>
-<p class="p3">Then to publish:</p>
-<p class="p13"><br></p>
+<p class="p3">You can now install, re-compile, test and uninstall install the quark from your local system without having added it into the public repository.</p>
+<p class="p4"><br></p>
+<p class="p3">You can use quarks for your own private purposes to install and uninstall packages of classes.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>To add it into the public repository:</b></p>
+<p class="p4"><br></p>
+<p class="p3">You will need a (free) SourceForge account to publish a quark to the subversion repository. You will<span class="Apple-converted-space">  </span>need to be familiar with the basics of svn. <span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">You also need the account to be added to the "quarks" project - contact one of the admins listed at <span class="s1">http://sourceforge.net/projects/quarks</span> to do that.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3">Once you're authorised, here's what to do:</p>
+<p class="p4"><br></p>
+<p class="p3">In a shell like Terminal go to <span class="s7">{Application Support}/quarks/<span class="Apple-converted-space"> </span></span> and<span class="Apple-converted-space">  </span>execute :</p>
+<p class="p4"><br></p>
+<p class="p12">svn add quarkname</p>
+<p class="p4"><br></p>
 <p class="p12">svn add DIRECTORY/quarkname.quark</p>
 <p class="p2"><br></p>
-<p class="p12">svn commit -m "adding quarkname"</p>
+<p class="p12">svn commit -m "adding quarkname" quarkname</p>
+<p class="p8">svn commit -m "adding directory entry for quarkname" DIRECTORY/quarkname.quark</p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+<p class="p8">Be careful to commit only changes to your own quark and to the directory entry you have added.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -226,7 +235,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>publicly available SonEnvir quarks):</p>
 <p class="p2"><br></p>
 <p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir = <span class="s2">Quarks</span>(</p>
-<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>localPath: <span class="s2">Platform</span>.userAppSupportDir ++ <span class="s4">"/quarks-sonenvir"</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span>);</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -249,7 +258,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>SonEnvirTestQuark<span class="s3">.sayHello</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span>~qSonEnvir = <span class="s2">Quarks</span>(</p>
-<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>localPath: <span class="s2">Platform</span>.userAppSupportDir ++ <span class="s4">"/quarks-sonenvir"</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span>);</p>
 <p class="p2"><br></p>
