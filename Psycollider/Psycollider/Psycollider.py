@@ -125,6 +125,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
     self.Bind(stc.EVT_STC_MARGINCLICK, self.OnMarginClick)
     self.Bind(wx.EVT_KEY_DOWN, self.OnKeyPressed)
     self.Bind(wx.EVT_CHAR, self.OnChar)
+    self.Bind(wx.EVT_LEFT_DCLICK, self.OnDoubleClick)
     
     self.CmdKeyAssign(ord('+'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMIN)
     self.CmdKeyAssign(ord('-'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMOUT)
@@ -239,6 +240,35 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         self.AutoCompShow(0, " ".join(kw))
     else:
       event.Skip()
+
+  def OnDoubleClick(self, evt):
+    braceAtCaret = -1
+    braceOpposite = -1
+    charBefore = None
+    caretPos = self.GetCurrentPos()
+
+    if caretPos > 0:
+      charBefore = self.GetCharAt(caretPos - 1)
+
+    # check before
+    if charBefore and chr(charBefore) in "()":
+      braceAtCaret = caretPos - 1
+
+    # check after
+    if braceAtCaret < 0:
+      charAfter = self.GetCharAt(caretPos)
+
+      if charAfter and chr(charAfter) in "()":
+        braceAtCaret = caretPos
+
+    if braceAtCaret >= 0:
+      braceOpposite = self.BraceMatch(braceAtCaret)
+
+    if braceAtCaret != -1  and braceOpposite != -1:
+      if braceAtCaret < braceOpposite:
+        self.SetSelection(braceAtCaret+1, braceOpposite)
+      else:
+        self.SetSelection(braceOpposite+1, braceAtCaret)
 
 
   def OnUpdateUI(self, evt):
@@ -367,10 +397,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         line = line + 1;
 
     return line
-      
-    # this is where unicode -> string conversion occurs...
-    PySCLang.setCmdLine(str(sel))
-    PySCLang.sendMain(methodName)
+
 
 
 # ---------------------------------------------------------------------
@@ -410,6 +437,9 @@ class PsycolliderCodeWin(wx.MDIChildFrame):
   def SelectRange(self,rangeStart,rangeSize):
     self.codeSubWin.SetSelection(rangeStart,rangeStart+rangeSize)
     
+  def LineDown(self):
+    self.codeSubWin.LineDown()
+    
 # ---------------------------------------------------------------------
 # Log Window 
 # the post window to which the PySCLang module posts
@@ -444,6 +474,9 @@ class PsycolliderRTFWin(wx.MDIChildFrame):
 
   def SetSubWinFocus(self):
     self.rtfSubWin.SetFocus()
+
+  def LineDown(self):
+    self.rtfSubWin.LineDown()
    
 # ---------------------------------------------------------------------
 # HTML Window
@@ -464,6 +497,10 @@ class PsycolliderHTMLWin(wx.MDIChildFrame):
 
   def SetSubWinFocus(self):
     self.htmlSubWin.SetFocus()
+    
+  def LineDown(self):
+    self.htmlSubWin.LineDown()
+
 
 # ---------------------------------------------------------------------
 # Main window
@@ -639,7 +676,9 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     if sel == "" :
       # this means nothing was selected... retrieve current line instead
       selTuple = activeChild.GetCurLineAsString( )
-      sel = selTuple[0]  
+      sel = selTuple[0]
+    # move cursor down one line
+    activeChild.LineDown()
     # this is where unicode -> string conversion occurs...
     PySCLang.setCmdLine(str(sel))
     PySCLang.sendMain(methodName)
