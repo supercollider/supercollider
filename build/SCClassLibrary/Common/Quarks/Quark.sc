@@ -168,7 +168,7 @@ Quark
 
 QuarkView {
 	var	<quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton,
-		nameView, infoButton;
+		nameView, infoButton, srcButton;
 	*new{|parent, extent, quark, isInstalled|
 		^super.new.init(parent, extent, quark, isInstalled)
 	}
@@ -195,7 +195,7 @@ QuarkView {
 		infoButton = GUI.button.new(parent, infoBounds).states_([["info"]]).action_{this.fullDescription};
 		
 		if(thisProcess.platformClass == OSXPlatform) {
-			GUI.button.new(parent, sourceBounds).states_([["src"]]).action_{
+			srcButton = GUI.button.new(parent, sourceBounds).states_([["src"]]).action_{
 				"open %/%".format(Quarks.local.path, quark.path).unixCmd;
 			};
 		};
@@ -248,6 +248,6 @@ QuarkView {
 			.editable_( false );
 	}
 	remove {
-		[installButton, nameView, infoButton].do(_.remove);
+		[installButton, nameView, infoButton, srcButton].do(_.remove);
 	}
 }
