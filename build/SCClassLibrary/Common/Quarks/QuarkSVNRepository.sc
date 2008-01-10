@@ -88,10 +88,15 @@ QuarkSVNRepository
 			\osx, {
 				("echo \"
 --------------------------------------------------------------
-  SuperCollider quarks: accessing remote repository.
+
+  SuperCollider Quarks: accessing remote repository.
 
   If this is the first time, you may be asked to accept a
   security certificate. Please do so!
+
+  The command being run is:
+"++cmd.escapeChar($")++"
+
 --------------------------------------------------------------
 \"
 "++cmd).runInTerminal
