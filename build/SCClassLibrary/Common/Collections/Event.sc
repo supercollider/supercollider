@@ -50,6 +50,21 @@ Event : Environment {
 		^this.delta;
 	}
 
+	// A Quant specifies the quant and phase at which a TempoClock starts an EventStreamPlayer
+	// Its offset specifies how far ahead of time events are actually computed by the EventStream.
+	// offset allows ~strum to be negative, so strummed chords complete on the beat
+	// it also makes it possible for one pattern to run a little ahead of another to set values
+	// This method keeps ~timingOffset and Quant.offset the same.
+	
+	synchWithQuant { | quant |
+		if(quant.offset.notNil) {
+			^this.copy.put(\timingOffset, quant.offset)
+		} {
+			quant.offset = this[\timingOffset];
+			^this
+		};
+	}
+
 	printOn { arg stream, itemsPerLine = 5;
 		var max, itemsPerLinem1, i=0;
 		itemsPerLinem1 = itemsPerLine - 1;
