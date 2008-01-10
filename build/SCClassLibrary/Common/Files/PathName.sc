@@ -185,7 +185,7 @@ PathName {
 	entries {
 		var path;
 		path = fullPath;
-		if(path.last.isPathSeparator, { path = path ++ thisProcess.platform.pathSeparator });
+		if(path.last.isPathSeparator.not, { path = path ++ thisProcess.platform.pathSeparator });
 		^pathMatch(path ++ "*").collect({ arg item; PathName(item) });
 	}
 	
