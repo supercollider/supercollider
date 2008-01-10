@@ -83,7 +83,22 @@ QuarkSVNRepository
 		"".debug;
 		cmd.debug;
 		"".debug;
-		cmd.unixCmd;
+		Platform.case(
+			// On OSX we run it in a terminal window to minimise the risk of people getting stuck without a certificate
+			\osx, {
+				("echo \"
+--------------------------------------------------------------
+  SuperCollider quarks: accessing remote repository.
+
+  If this is the first time, you may be asked to accept a
+  security certificate. Please do so!
+--------------------------------------------------------------
+\"
+"++cmd).runInTerminal
+			},
+			// Non-OSX platforms run it internally
+			{cmd.unixCmd}
+		);
 	}
 	// Allows to wait for command to complete
 	svnSync { | cmd ... args |
