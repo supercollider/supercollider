@@ -36,7 +36,7 @@ PatternConductor  {
 		oldClock = clock;
 		eventStreamPlayers.do { | p | p.stop };
 		clock.tempo = stopTempo ? defaultStopTempo;
-		Task({ while {oldClock.queue.size >2 } { yield(1) }; oldClock.stop }).play(clock);
+		Task({ while {oldClock.queue.size >= 2 } { yield(1) }; oldClock.stop }).play(clock);
 		clock = nil;
 		eventStreamPlayers = nil;
 		CmdPeriod.remove(this);
