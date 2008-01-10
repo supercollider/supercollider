@@ -324,6 +324,9 @@ Quarks
 			views
 		};
 		
+			// make sure you have the most up-to-date directory
+		this.local.reread;
+		
 		height = min(this.local.quarks.size * 25 + 120, GUI.window.screenBounds.height - 60);
 		maxPerPage = (height - 120) div: 25;
 		
