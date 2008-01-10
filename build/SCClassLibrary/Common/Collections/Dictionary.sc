@@ -413,6 +413,21 @@ IdentityDictionary : Dictionary {
 	writeAsPlist { arg path;
 		this.as(Dictionary).writeAsPlist(path);
 	}
+
+		// Quant support.
+		// The Quant class assumes the quant/phase/offset scheduling model.
+		// If you want a different model, you can write a dictionary like so:
+		// (nextTimeOnGrid: { |clock| ... calculate absolute beat number here ... },
+		//	parameter: value, parameter: value, etc.)
+		// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
 	
+	nextTimeOnGrid { |clock|
+		if(this[\nextTimeOnGrid].notNil) {
+			^this[\nextTimeOnGrid].value(this, clock)
+		} {
+			^clock.nextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0))
+		}
+	}
+	asQuant { ^this.copy }
 }
 
