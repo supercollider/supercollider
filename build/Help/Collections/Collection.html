@@ -15,10 +15,10 @@ p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952415}
-span.s1 {color: #0d2bf0}
-span.s2 {color: #0a20b3}
-span.s3 {color: #952415}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #922612}
+span.s1 {color: #003cf0}
+span.s2 {color: #002db3}
+span.s3 {color: #922612}
 </style>
 </head>
 <body>
@@ -146,9 +146,11 @@ span.s3 {color: #952415}
 <p class="p2"><br></p>
 <p class="p3"><b>collect(function)</b></p>
 <p class="p2"><br></p>
-<p class="p3">Asnswer a new collection which consists of the results of function evaluated for each item in the collection. The function is passed two arguments, the item and an integer index.</p>
+<p class="p3">Answer a new collection which consists of the results of function evaluated for each item in the collection. The function is passed two arguments, the item and an integer index.</p>
 <p class="p2"><br></p>
 <p class="p6">List[1, 2, 3, 4].collect({ arg item, i; item + 10 });</p>
+<p class="p2"><br></p>
+<p class="p3">If you want to control what type of collection is returned, use <b>collectAs(function, class)</b>.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>select(function)</b></p>
 <p class="p2"><br></p>
@@ -156,11 +158,15 @@ span.s3 {color: #952415}
 <p class="p2"><br></p>
 <p class="p6">List[1, 2, 3, 4].select({ arg item, i; item.even });</p>
 <p class="p2"><br></p>
+<p class="p3">If you want to control what type of collection is returned, use <b>selectAs(function, class)</b>.</p>
+<p class="p2"><br></p>
 <p class="p3"><b>reject(function)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Answer a new collection which consists of all items in the receiver for which function answers false. The function is passed two arguments, the item and an integer index.</p>
 <p class="p2"><br></p>
 <p class="p6">List[1, 2, 3, 4].reject({ arg item, i; item.even });</p>
+<p class="p2"><br></p>
+<p class="p3">If you want to control what type of collection is returned, use <b>rejectAs(function, class)</b>.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>detect(function)</b></p>
 <p class="p2"><br></p>
