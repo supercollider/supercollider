@@ -8,9 +8,7 @@ Quant {
 	*new { |quant = 0, phase, offset| ^super.newCopyArgs(quant, phase, offset) }
 	
 	nextTimeOnGrid { | clock |
-		var prPhase;
-		prPhase = (phase ? 0) - (offset ? 0);
-		^clock.nextTimeOnGrid(quant, prPhase);
+		^clock.nextTimeOnGrid(quant, (phase ? 0) - (offset ? 0));
 	}
 
 	asQuant { ^this.copy }
