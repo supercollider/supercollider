@@ -178,7 +178,28 @@ SynthDesc {
 	}
 	
 	makeMsgFunc {
-		var string, comma=false;
+		var	string, comma=false;
+		var	count = IdentityDictionary.new;
+			// if a control name is duplicated, the msgFunc will be invalid
+			// that "shouldn't" happen but it might; better to check for it
+			// and throw a proper error
+		controls.do({ |controlName|
+			var	name;
+			if(controlName.name.asString.first.isAlpha) {
+				name = controlName.name.asSymbol;
+				if(count[name].isNil) {
+					count[name] = 1;
+				} {
+					count[name] = count[name] + 1;
+				};
+			};
+		});
+		count.keysValuesDo({ |name, counter|
+			if(counter > 1) {
+				MethodError("Could not build msgFunc for this SynthDesc: duplicate control name %"
+					.format(name), this).throw;
+			};
+		});
 		string = String.streamContents {|stream|
 			stream << "#{ ";
 			if (controlNames.size > 0) {
