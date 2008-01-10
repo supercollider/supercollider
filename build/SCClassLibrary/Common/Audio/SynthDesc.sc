@@ -179,7 +179,7 @@ SynthDesc {
 	
 	makeMsgFunc {
 		var	string, comma=false;
-		var	count = IdentityDictionary.new;
+		var	names = IdentitySet.new;
 			// if a control name is duplicated, the msgFunc will be invalid
 			// that "shouldn't" happen but it might; better to check for it
 			// and throw a proper error
@@ -187,17 +187,12 @@ SynthDesc {
 			var	name;
 			if(controlName.name.asString.first.isAlpha) {
 				name = controlName.name.asSymbol;
-				if(count[name].isNil) {
-					count[name] = 1;
+				if(names.includes(name)) {
+					MethodError("Could not build msgFunc for this SynthDesc: duplicate control name %"
+						.format(name), this).throw;
 				} {
-					count[name] = count[name] + 1;
+					names.add(name);
 				};
-			};
-		});
-		count.keysValuesDo({ |name, counter|
-			if(counter > 1) {
-				MethodError("Could not build msgFunc for this SynthDesc: duplicate control name %"
-					.format(name), this).throw;
 			};
 		});
 		string = String.streamContents {|stream|
