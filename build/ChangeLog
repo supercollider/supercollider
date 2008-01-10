@@ -4,6 +4,7 @@
 
 // HEADLINES:
 * 2007-11-xx new suite of machine listening ugens - Loudness, BeatTrack, Onsets, KeyTrack, SpecCentroid, SpecPcile, SpecFlatness - nc, ds
+* 2008-01-06 FreeBSD compatibility - hb
 
 // BUGFIXES:
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
@@ -23,7 +24,7 @@
 * 2007-11-27 Function:inEnvir added - jh
 * 2007-12-12 added Collection.flatIf - jr
 * 2007-12-15 added control rate functionality to NumRunningSynths - jr
-
+* 2008-01-10 String:runInTerminal method - ds
 
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
