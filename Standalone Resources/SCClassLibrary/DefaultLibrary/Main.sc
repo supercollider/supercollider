@@ -1,26 +1,26 @@
-// Special version of Main for demo stand-alone application.
-
 Main : Process {
+	var platform, argv;
+	var <>recvOSCfunc;
 	
+		// proof-of-concept: the interpreter can set this variable when executing code in a file
+		// should be nil most of the time
+	var	<>nowExecutingPath;
+
 	startup {
 		super.startup;
-		
 		// set the 's' interpreter variable to the internal server.
-		// You should use the internal server for standalone applications--
-		// otherwise, if your application has a problem, the user will
-		// be stuck with a process, possibly making sound, that he won't know 
-		// how to kill
 		interpreter.s = Server.internal;
-//		GUI.fromID( this.platform.defaultGUIScheme );
-//		GeneralHID.fromID( this.platform.defaultHIDScheme );
-//		this.platform.startup;
+		GUI.fromID( this.platform.defaultGUIScheme );
+		GeneralHID.fromID( this.platform.defaultHIDScheme );
+		this.platform.startup;
 		StartUp.run;
-		
-		// server windows turned off for stand-alone application
-//		Server.internal.makeWindow;
-//		Server.local.makeWindow;
-		
-		// Start the application using internal server
+		(
+			osx: "Welcome to SuperCollider, type cmd-d for help"
+		 ).at(platform.name).postln;
+		/* uncomment these lines if you want to close the Server windows */
+		// Server.local.window.close;
+		// Server.internal.window.close;
+		/* a sample stand-alone application */
 		interpreter.s.waitForBoot({
 			var sb, demo;
 			sb = SCWindow.screenBounds;
@@ -39,15 +39,12 @@ Main : Process {
 			// Close post window after application launches. If you want
 			// to hide it completely, put this line after Document.startup instead.
 			Document.closeAll(false);
-		}, 25);
-				
-		// You probably don't want to include this, since the user won't have it
-//		"~/scwork/startup.rtf".loadPaths;
+		}, 25);		
 	}
 	
 	shutdown { // at recompile, quit
 		Server.quitAll;
-		HIDDeviceService.releaseDeviceList;
+		this.platform.shutdown;
 		super.shutdown;
 	}
 	
@@ -56,22 +53,23 @@ Main : Process {
 	}
 	
 	stop { // called by command-.
-		
-		Server.freeAll; // stop all sounds on local servers
-		
+
 		SystemClock.clear;
 		AppClock.clear;
 		TempoClock.default.clear;
 		CmdPeriod.clear;
 		
+		Server.freeAll; // stop all sounds on local servers
 		Server.resumeThreads;
 	}
 	
 	recvOSCmessage { arg time, replyAddr, msg;
+		/// added by tboverma on Jul-17-2006
+		recvOSCfunc.value(time, replyAddr, msg);
 		// this method is called when an OSC message is received.
 		OSCresponder.respond(time, replyAddr, msg);
 	}
-	
+
 	recvOSCbundle { arg time, replyAddr ... msgs;
 		// this method is called when an OSC bundle is received.
 		msgs.do({ arg msg; 
@@ -80,8 +78,31 @@ Main : Process {
 	}
 	
 	newSCWindow {
-		SCWindow.viewPalette;
-		SCWindow.new.front;
+		var win, palette;
+		win = SCWindow("construction");
+		win.front;
+		win.toggleEditMode;
+	}
+
+
+	platformClass {
+		// override in platform specific extension
+		^Platform
+	}
+	platform {
+		^platform ?? { platform = this.platformClass.new }
+	}
+	argv {
+		^argv ?? { argv = this.prArgv }
+	}
+
+	showHelpBrowser {
+		Help.gui
 	}
 	
+	// PRIVATE
+	prArgv {
+		_Argv
+		^[]
+	}
 }
