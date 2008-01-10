@@ -5,20 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0025b2}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
 span.s3 {color: #000000}
-span.s4 {color: #0025b2}
-span.s5 {color: #416d1f}
+span.s4 {color: #0000bf}
+span.s5 {color: #007300}
 span.s6 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -56,17 +56,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">the instruments' default parameters are derived from the SynthDesc.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p1"><b>aSynthDef.store</b> also creates a synthDesc in the global library:</p>
+<p class="p1"><b>aSynthDef.store</b> and <b>aSynthDef.memStore</b> also create a synthDesc in the global library. <b>.store</b> saves a synthdef file on disk (like .load); <b>.memStore</b> creates the synthDesc wholly in memory and sends the synthdef to registered servers.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p6"><span class="Apple-tab-span">	</span>(</p>
-<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span>SynthDef</span>(<span class="s6">"test"</span>, { <span class="s4">arg</span> out, freq, xFade;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">SynthDef</span>(<span class="s6">"test"</span>, { <span class="s4">arg</span> out, freq, xFade;<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">XOut</span>.ar(out, xFade, <span class="s4">SinOsc</span>.ar(freq))<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>}).store</p>
 <p class="p5"><span class="Apple-tab-span">	</span>);</p>
-<p class="p3"><br></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span>SynthDescLib</span><span class="s3">.global.browse; </span>// browse the properties of SynthDescs</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">SynthDescLib</span><span class="s3">.global.browse; </span>// browse the properties of SynthDescs</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
 </body>
 </html>
