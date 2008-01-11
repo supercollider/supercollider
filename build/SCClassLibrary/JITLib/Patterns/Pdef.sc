@@ -415,7 +415,7 @@ EventPatternProxy : TaskProxy {
 						// inval is the next event that will be yielded
 						// constrainStream may add some values to it
 						// so IT MUST BE YIELDED
-						stream = this.constrainStream(stream, inval = inval.copy, cleanup);
+						stream = this.constrainStream(stream, inval, cleanup);
 						cleanup = EventStreamCleanup.new;
 			};
 			outval = stream.next(inval);
