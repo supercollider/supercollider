@@ -24,8 +24,13 @@
 #include <cstring>
 #include <sys/timeb.h>
 #include <time.h>
+#include <math.h>
 
 #include "SC_Win32Utils.h"
+
+struct _timeb win32_startupTime;
+unsigned __int64 win32_startupCount;
+double win32_queryFreq;
 
 void win32_ReplaceCharInString(char* string, int len, char src, char dst)
 {
@@ -50,12 +55,26 @@ void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars
     folder[0] = 0;
 }
 
+// syncing ftime and QueryPerformanceCounter for high precision timing
+void win32_synctimes() {
+	unsigned __int64 pf;
+    QueryPerformanceFrequency( (LARGE_INTEGER *)&pf );
+    win32_queryFreq = 1.0 / (double)pf;
+	QueryPerformanceCounter((LARGE_INTEGER*)&win32_startupCount);
+	_ftime_s(&win32_startupTime);
+}
+
 void win32_gettimeofday(timeval* tv, void*)
 {
-	struct _timeb timebuffer;
-	_ftime_s(&timebuffer);
-	tv->tv_sec = timebuffer.time; 
-	tv->tv_usec = timebuffer.millitm * 1000;
+	unsigned __int64 val;
+    QueryPerformanceCounter( (LARGE_INTEGER *)&val );
+	double seconds = (val - win32_startupCount) * win32_queryFreq;
+	double s = floor(seconds);
+//	_ftime_s(&win32_startupTime);
+//	tv->tv_sec = win32_startupTime.time;
+//	tv->tv_usec = win32_startupTime.millitm * 1000;
+	tv->tv_sec = win32_startupTime.time + (long)s;
+	tv->tv_usec = (win32_startupTime.millitm * 1000) + (long)(1000000.0 * (seconds-s));
 }
 
 void win32_GetHomeFolder(char* homeFolder, int bufLen)
@@ -140,6 +159,54 @@ int win32_nanosleep (const struct timespec *requested_time,
   remaining->tv_sec = 0;
   remaining->tv_nsec = 0;
   return 0;
+}
+
+/* spawns a command and returns a FILE handle for the output
+*/
+HANDLE win32_spawnCmd(char* szCmdline) {
+	HANDLE hChildStdoutRd, hChildStdoutWr;
+	SECURITY_ATTRIBUTES saAttr; 
+	BOOL fSuccess; 
+	PROCESS_INFORMATION piProcInfo; 
+	STARTUPINFO siStartInfo;
+	BOOL bFuncRetn = FALSE; 
+
+	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
+	saAttr.bInheritHandle = TRUE; 
+	saAttr.lpSecurityDescriptor = NULL; 
+	
+	if (! CreatePipe(&hChildStdoutRd, &hChildStdoutWr, &saAttr, 0)) {
+	  return NULL;
+	}
+	// create the process
+	ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
+	// Set up members of the STARTUPINFO structure. 
+ 
+	ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
+	siStartInfo.cb = sizeof(STARTUPINFO); 
+	siStartInfo.hStdError = hChildStdoutWr;
+	siStartInfo.hStdOutput = hChildStdoutWr;
+	siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+     
+	bFuncRetn = CreateProcess(NULL, 
+      szCmdline,     // command line 
+      NULL,          // process security attributes 
+      NULL,          // primary thread security attributes 
+      TRUE,          // handles are inherited 
+      CREATE_NO_WINDOW,             // creation flags 
+      NULL,          // use parent's environment 
+      NULL,          // use parent's current directory 
+      &siStartInfo,  // STARTUPINFO pointer 
+      &piProcInfo);  // receives PROCESS_INFORMATION 
+   
+	if (bFuncRetn == 0) {
+	  return NULL;
+	}
+    
+	CloseHandle(piProcInfo.hProcess);
+    CloseHandle(piProcInfo.hThread);
+	CloseHandle(hChildStdoutWr);
+	return hChildStdoutRd;
 }
 
 /* Based on code from PostgreSQL (pgsql/src/port/pipe.c)

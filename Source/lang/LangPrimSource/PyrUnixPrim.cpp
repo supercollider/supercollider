@@ -107,6 +107,18 @@ void* string_popen_thread_func(void *data);
 void* string_popen_thread_func(void *data)
 {
     char *cmdline = (char*)data;
+	char buf[1024];
+#if SC_WIN32
+	DWORD dwRead;
+	HANDLE out = win32_spawnCmd(cmdline);
+	if (!out) return 0;
+	while (true) {
+		if(!ReadFile( out, buf, 1024, &dwRead, NULL) || dwRead==0) break; 
+		postText(buf, dwRead); 
+	}
+	post(cmdline);
+	post(" terminated\n");
+#else
 	FILE *stream = popen(cmdline, "r");
 	free(cmdline);
     if (!stream) return 0;
@@ -127,7 +139,8 @@ void* string_popen_thread_func(void *data)
 	}
 	int res = pclose(stream);
 	post("RESULT = %d\n", res);
-    return 0;
+#endif
+	return 0;
 }   
 
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
@@ -139,7 +152,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
         char *cmdline = (char*)malloc(a->uo->size + 1);
  	int err = slotStrVal(a, cmdline, a->uo->size + 1);
 	if (err) return err;
-      
+    
         pthread_t thread;
         pthread_create(&thread, NULL, string_popen_thread_func, (void*)cmdline);
  	pthread_detach(thread);
