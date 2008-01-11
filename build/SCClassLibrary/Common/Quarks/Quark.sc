@@ -36,7 +36,7 @@ QuarkDependency
 
 Quark
 {
-	var <name, <summary, <version, <author, dependencies, <tags, <>path; 
+	var <name, <summary, <version, <author, dependencies, <tags, <>path, <isLocal;
 	var <parent; // the Quarks, if available 
 	var <info;
 	
@@ -66,6 +66,7 @@ Quark
  		version = this.getVersion(blob[\version]);
 		dependencies = this.getDependencies(blob[\dependencies]);
 		author = this.getString(blob[\author]);
+		isLocal = (Quarks.local.simplePath ++ "/" ++ path).pathMatch.notEmpty;
 		info = blob;
 		tags = ();
 	}
@@ -128,7 +129,8 @@ Quark
 		if(version.notNil,{ string = string + "[" ++ version ++ "]"; });
 		string = string 
 			++ "\n(by " ++ (author ? "anonymous") ++ ")"
-			++ "\n" ++ summary;
+			++ "\n" ++ summary
+			++ "\n" ++ "Checked out: " ++ if(isLocal, "yes", "no");
 		dependencies.notEmpty.if{
 			string = string ++ "\nDepends on";
 			dependencies.do{|dep|
@@ -237,10 +239,16 @@ QuarkView {
 	}
 	fullDescription {
 		var window;
+		var helpdoc = quark.info.helpdoc;
+		if(helpdoc.notNil) {
+				// get full path
+			helpdoc = "%/%/%".format(Quarks.local.simplePath, quark.path, helpdoc);
+			if(File.exists(helpdoc).not) { helpdoc = nil };
+		};
 		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
-		window.view.decorator = FlowLayout(window.view.bounds);
-//		GUI.staticText.new(window, window.view.bounds).string_(quark.longDesc);
-		GUI.textView.new( window, window.view.bounds.insetBy( 4, 4 ))
+//		window.view.decorator = FlowLayout(window.view.bounds);
+//		GUI.textView.new( window, window.view.bounds.insetBy( 4, 4 ))
+		GUI.textView.new( window, Rect(4, 4, 392, 170 + (helpdoc.isNil.binaryValue * 22)))
 			.font_( GUI.font.new( GUI.font.defaultSansFace, 12 ))
 			.background_( Color.grey( 0.9 ))	// Color.clear background doesn't work
 			.resize_( 5 )
@@ -248,6 +256,14 @@ QuarkView {
 			.hasVerticalScroller_( true )
 			.string_( quark.longDesc )
 			.editable_( false );
+		if(helpdoc.notNil) {
+			GUI.button.new(window, Rect(125, 176, 150, 20))
+				.resize_(8)
+				.states_([["Open quark help"]])
+				.action_({
+					helpdoc.openDocument
+				});
+		};
 	}
 	remove {
 		[installButton, nameView, infoButton, srcButton].do(_.remove);
