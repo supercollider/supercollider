@@ -207,36 +207,25 @@ Event : Environment {
 				
 				timingOffset: 0 ,
 				
-				schedBundle: #{ | time, server ...bundle |
-					time = time + ~timingOffset;
-					if (time == 0) {
-						server.sendBundle(server.latency, *bundle)
-					} {
-						thisThread.clock.sched ( time, { server.sendBundle(server.latency, *bundle) })
-					}		
+				schedBundle: #{ |lag, offset, server ...bundle |
+					thisThread.clock.sched ( offset, { server.sendBundle(server.latency + lag, *bundle) })
 				},
 
-				schedBundleArray: #{ | time, server, bundleArray |
-					time = time + ~timingOffset;
-					if (time == 0) {
-						server.sendBundle(server.latency, *bundleArray)
-					} {
-						thisThread.clock.sched ( time, { server.sendBundle(server.latency, *bundleArray) })
-					}		
+				schedBundleArray: #{ | lag, offset, server, bundleArray |
+					thisThread.clock.sched ( offset, { server.sendBundle(server.latency + lag, *bundleArray) })
 				},
-				
+								
 				schedStrummedNote: {| lag, strumTime, sustain, server, msg, sendGate |
-					if (strumTime < sustain) {
-						~schedBundle.value(lag + strumTime, server, msg);
-						if(sendGate) { 
-							if (~strumEndsTogether) {
-								~schedBundle.value(lag + sustain, server, [\n_set, msg[2], \gate, 0])
-							} {
-								~schedBundle.value(lag + sustain + strumTime, server, [\n_set, msg[2], \gate, 0])
-							}
-						}
-
-					};
+					var dur, schedBundle = ~schedBundle;
+					schedBundle.value(lag, strumTime + ~timingOffset, server, msg);
+					if(sendGate) { 
+						if (~strumEndsTogether) { 
+							dur = sustain ;
+						} { 
+							dur = sustain + strumTime 
+						};
+						schedBundle.value(lag, dur + ~timingOffset, server, [\n_set, msg[2], \gate, 0])
+					}
 				}				
 			),
 			
@@ -336,7 +325,7 @@ Event : Environment {
 					note: #{|server|
 						var freqs, lag, strum, strumTime, sustain;
 						var bndl, addAction, group, sendGate, ids;
-						var msgFunc, desc, synthLib, bundle, instrumentName;
+						var msgFunc, desc, synthLib, bundle, instrumentName, schedBundleArray, offset;
 						
 						freqs = ~detunedFreq.value;
 										
@@ -368,11 +357,13 @@ Event : Environment {
 							
 							// determine how to send those commands
 							lag = ~lag;
+							offset = ~timingOffset;
 							sendGate = ~sendGate ? ~hasGate;         // sendGate == false turns off releases
+							schedBundleArray = ~schedBundleArray;
 							if (	 (strum = ~strum) == 0 ) {
-								~schedBundleArray.value(lag, server, bndl);
+								schedBundleArray.value(lag, offset, server, bndl);
 								if (sendGate) { 
-									~schedBundleArray.value(lag + sustain, server, [\n_set, ids, \gate, 0].flop) 
+									~schedBundleArray.value(lag, sustain + offset, server, [\n_set, ids, \gate, 0].flop)
 								}
 							} {	
 								if (strum < 0) { bndl = bndl.reverse };
@@ -413,7 +404,7 @@ Event : Environment {
 								ids = Array.fill(bndl.size, {server.nextNodeID });
 								bndl.do { | msg, i | msg[2] = ids[i]  };
 							};
-							~schedBundleArray.value(~lag, server, bndl);
+							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
 						};
 						
 						~server = server;
@@ -435,7 +426,7 @@ Event : Environment {
 								bndl = ~args.envirPairs;
 							};
 							bndl = ([\n_set, ~id.asUGenInput] ++  bndl).asUGenInput.flop;
-							~schedBundleArray.value(~lag, server, bndl);
+							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
 						};
 					},
 			
@@ -443,43 +434,43 @@ Event : Environment {
 						var gate;
 						if (~hasGate) { 
 							gate = min(0.0, ~gate ? 0.0); // accept release times
-							~schedBundleArray.value(~lag, server,[\n_set, ~id.asUGenInput, \gate, gate].flop) 
+							~schedBundleArray.value(~lag, ~timingOffset, server,[\n_set, ~id.asUGenInput, \gate, gate].flop) 
 						} {
-							~schedBundle.value(~lag, server, [\n_free, ~id.asUGenInput])
+							~schedBundle.value(~lag, ~timingOffset, server, [\n_free, ~id.asUGenInput])
 						}						
 					},
 					
 					kill: #{|server|
-						~schedBundle.value(~lag, server, [\n_free, ~id.asUGenInput])
+						~schedBundle.value(~lag, ~timingOffset, server, [\n_free, ~id.asUGenInput])
 					},
 			
 					group: #{|server|
 						var bundle = [\g_new, ~id.asArray, Node.actionNumberFor(~addAction), ~group.asUGenInput].flop;
-						~schedBundleArray.value(~lag, server, bundle);
+						~schedBundleArray.value(~lag, ~timingOffset, server, bundle);
 					},
 			
 			
 					bus: #{|server|
 						var array;
 						array = ~array.asArray;
-						~schedBundle.value(~lag, server, [\c_setn, ~out.asUGenInput, array.size] ++ array);
+						~schedBundle.value(~lag, ~timingOffset, server, [\c_setn, ~out.asUGenInput, array.size] ++ array);
 					},
 					
 					gen: #{|server|
-						~schedBundle.value(~lag, server, [\b_gen, ~bufnum.asUGenInput, ~gencmd, ~genflags] ++ ~genarray);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, ~bufnum.asUGenInput, ~gencmd, ~genflags] ++ ~genarray);
 					},
 					
 					load: #{|server|
-						~schedBundle.value(~lag, server, [\b_allocRead, ~bufnum.asUGenInput, ~filename, ~frame, ~numframes]);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_allocRead, ~bufnum.asUGenInput, ~filename, ~frame, ~numframes]);
 					},
 					read: #{|server|
-						~schedBundle.value(~lag, server, [\b_read, ~bufnum.asUGenInput, ~filename, ~frame, ~numframes, ~bufpos, ~leaveOpen]);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_read, ~bufnum.asUGenInput, ~filename, ~frame, ~numframes, ~bufpos, ~leaveOpen]);
 					},
 					alloc: #{|server|
-						~schedBundle.value(~lag, server, [\b_alloc, ~bufnum.asUGenInput, ~numframes, ~numchannels]);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_alloc, ~bufnum.asUGenInput, ~numframes, ~numchannels]);
 					},
 					free: #{|server|
-						~schedBundle.value(~lag, server, [\b_free, ~bufnum.asUGenInput]);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_free, ~bufnum.asUGenInput]);
 					},
 					
 					midi: #{|server|
@@ -535,9 +526,9 @@ Event : Environment {
 					monoOff:  #{|server|
 			
 						if(~hasGate == false) {
-							~schedBundle.value(~lag, server, [\n_free] ++ ~id.asUGenInput);
+							~schedBundle.value(~lag, ~timingOffset, server, [\n_free] ++ ~id.asUGenInput);
 						} {
-							~schedBundle.value(~lag, server, *([\n_set, ~id.asUGenInput, \gate, 0].flop) ); 
+							~schedBundle.value(~lag, ~timingOffset, server, *([\n_set, ~id.asUGenInput, \gate, 0].flop) ); 
 						};
 						
 					},
@@ -552,7 +543,7 @@ Event : Environment {
 							~sustain = ~sustain.value;
 				
 							bndl = ([\n_set, ~id.asUGenInput] ++ ~msgFunc.valueEnvir).flop;
-							~schedBundle.value(~lag, server, *bndl);
+							~schedBundle.value(~lag, ~timingOffset, server, *bndl);
 						};
 					},
 			
@@ -574,7 +565,7 @@ Event : Environment {
 						if ((addAction == 0) || (addAction == 3)) {
 							bndl = bndl.reverse;
 						};
-						~schedBundle.value(~lag, server, *bndl);
+						~schedBundle.value(~lag, ~timingOffset, server, *bndl);
 						~updatePmono.value(ids, server);
 					},
 					
