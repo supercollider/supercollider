@@ -48,7 +48,7 @@ PfadeOut : PfadeIn {
 				c = elapsed - holdTime / fadeTime;
 				if(c >= 1.0) {
 					inval = cleanup.cleanup(inval);
-					^inval.yield;
+					^inval;
 				} {
 					inval[\amp] = (1.0 - c.max(0)) * inval[\amp];
 
