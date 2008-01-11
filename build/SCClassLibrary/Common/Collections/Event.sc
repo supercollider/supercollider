@@ -208,7 +208,7 @@ Event : Environment {
 				timingOffset: 0 ,
 				
 				schedBundle: #{ |lag, offset, server ...bundle |
-					thisThread.clock.sched ( offset, { server.sendBundle(server.latency + lag, *bundle) })
+					thisThread.clock.sched ( offset, { server.sendBundle(server.latency + lag, *bundle); bundle.postln })
 				},
 
 				schedBundleArray: #{ | lag, offset, server, bundleArray |
@@ -436,12 +436,12 @@ Event : Environment {
 							gate = min(0.0, ~gate ? 0.0); // accept release times
 							~schedBundleArray.value(~lag, ~timingOffset, server,[\n_set, ~id.asUGenInput, \gate, gate].flop) 
 						} {
-							~schedBundle.value(~lag, ~timingOffset, server, [\n_free, ~id.asUGenInput])
+							~schedBundleArray.value(~lag, ~timingOffset, server, [\n_free, ~id.asUGenInput].flop)
 						}						
 					},
 					
 					kill: #{|server|
-						~schedBundle.value(~lag, ~timingOffset, server, [\n_free, ~id.asUGenInput])
+						~schedBundleArray.value(~lag, ~timingOffset, server, [\n_free, ~id.asUGenInput].flop)
 					},
 			
 					group: #{|server|
