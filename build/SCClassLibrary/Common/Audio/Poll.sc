@@ -15,6 +15,7 @@ Poll : UGen {
 	*new1 { arg rate, trig, in, label, trigid;
 		label = label ?? {  "UGen(%)".format(in.class) };
 		label = label.asString.collectAs(_.ascii, Array);
+		if(rate === \scalar) { rate = \control };
 		if(trig.isNumber) { trig = Impulse.multiNew(rate, trig, 0) };
 		^super.new.rate_(rate).addToSynth.init([trig, in, trigid, label.size] ++ label);
 	}
