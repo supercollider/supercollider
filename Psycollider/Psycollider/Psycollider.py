@@ -832,6 +832,8 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     else:
       self.config.SetPath("/RecentFiles")
       self.file_history.Save(self.config)
+      self.StopServer()
+      self.StopSwingOSC()
       self.Destroy()
 
   def OnStartServer(self, event):
@@ -844,10 +846,15 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     pass
 
   def StopServer(self):
-    PySCLang.setCmdLine('s.sendMsg("/quit");')
+    PySCLang.setCmdLine('Server.default.sendMsg("/quit");')
     PySCLang.sendMain("interpretPrintCmdLine")
     pass
     
+  def StopSwingOSC(self):
+    PySCLang.setCmdLine('SwingOSC.default.sendMsg("/quit");')
+    PySCLang.sendMain("interpretPrintCmdLine")
+    pass
+
   def OnArrangeWindows(self, evt):
     currentlyActive = self.GetActiveChild()
     clientRect = self.GetClientSize()

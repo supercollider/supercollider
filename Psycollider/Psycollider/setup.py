@@ -16,7 +16,7 @@ setup(
     name = "Psycollider",
     zipfile=None,
     # needs to be console to prevent empty cmd-windows for scsynth...
-    console = [ 
+    windows = [ 
         { 
             "script": "Psycollider.py", 
             "icon_resources": [(1, "Psycollider.ico")] 
