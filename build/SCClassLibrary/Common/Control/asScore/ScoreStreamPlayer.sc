@@ -37,11 +37,11 @@ ScoreStreamPlayer : Server {
 	prepareEvent { | event |
 		event = event.copy;
 		event.use({
-			~schedBundle = { | time, server ...bundle | 
-				this.add(time * tempo + beats, bundle)
+			~schedBundle = { | lag, offset, server ...bundle | 
+				this.add(offset * tempo + lag + beats, bundle)
 			};
-			~schedBundleArray = { | time, server, bundle | 
-				this.add(time * tempo + beats, bundle)
+			~schedBundleArray = { | lag, offset, server, bundle | 
+				this.add(offset * tempo + lag + beats, bundle)
 			};
 		});
 		^event;
