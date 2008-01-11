@@ -1,0 +1,94 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red173\green20\blue13;\red0\green33\blue231;\red0\green27\blue185;
+\red44\green112\blue20;}
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs18 \cf0 (
+\f1\fs24 \
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs18 \cf2 /*
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 \
+RM octaver
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 \
+inSignal is RingModulated with a sinusoid with half freq
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 the resulting spectrum is given by all the components with\'ca
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 half freqs.
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 This results in a new spectrum one 8ve below with only odd partials\'ca
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 inSignal is the added again, so that even partials are\'ca
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 recovered.
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 \
+See:
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 Miller Puckette, The Theory and Technique of Electronic Music, p. 126
+\f1\fs24 \cf0 \
+\pard\pardeftab720\ql\qnatural
+{\field{\*\fldinst{HYPERLINK "http://crca.ucsd.edu/~msp/techniques/latest/book.pdf"}}{\fldrslt 
+\f0\fs18 \cf3 \ul \ulc3 http://crca.ucsd.edu/~msp/techniques/latest/book.pdf}}\
+\pard\pardeftab720\ql\qnatural
+{\field{\*\fldinst{HYPERLINK "http://crca.ucsd.edu/~msp/techniques/latest/book-html/node77.html#sect5.ringmod"}}{\fldrslt 
+\f0\fs18 \cf3 \ul \ulc3 http://crca.ucsd.edu/~msp/techniques/latest/book-html/node77.html#sect5.ringmod}}
+\f0\fs18 \cf2 \'ca
+\f1\fs24 \cf0 \
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs18 \cf2 \
+-av-
+\f1\fs24 \cf0 \
+
+\f0\fs18 \cf2 \
+*/
+\f1\fs24 \cf0 \
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs18 \cf0 \
+\
+\pard\pardeftab720\ql\qnatural
+\cf4 SynthDef\cf0 .new(\cf5 \\RmOctaver\cf0 , \{ \cf4 var\cf0  in, out = 0, freq, hasFreq, amp ;
+\f1\fs24 \
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs18 \cf0 	in = \cf4 AudioIn\cf0 .ar(1) ;
+\f1\fs24 \
+
+\f0\fs18 	# freq, hasFreq = \cf4 Pitch\cf0 .kr(in) ;
+\f1\fs24 \
+
+\f0\fs18 	amp = \cf4 Amplitude\cf0 .kr(in) ;
+\f1\fs24 \
+
+\f0\fs18 	Out.ar(out, \cf4 SinOsc\cf0 .ar(freq: freq*0.5, mul:amp*4)*in+in);
+\f1\fs24 \
+
+\f0\fs18 \}).send(s) ;
+\f1\fs24 \
+
+\f0\fs18 )
+\f1\fs24 \
+
+\f0\fs18 \
+\pard\pardeftab720\ql\qnatural
+\cf4 Synth\cf0 .new(\cf5 \\RmOctaver\cf0 ) ;
+\f1\fs24 \
+\
+\
+}
