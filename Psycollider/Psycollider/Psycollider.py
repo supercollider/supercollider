@@ -785,7 +785,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     self.OnSaveFileAsInWin(evt,activeWin)
 
   def CreateLogWindow(self):
-    self.logWin = PsycolliderLogWindow(self, -1, "SC Log")
+    self.logWin = PsycolliderLogWindow(self, -1, "SC Post Window")
     self.logWin.Show(True)
     PySCLang.setSCLogSink(WriteInLogWindow)
 
