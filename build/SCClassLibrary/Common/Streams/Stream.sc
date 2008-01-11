@@ -444,7 +444,7 @@ EventStreamPlayer : PauseStream {
 	
 	next { arg inTime;
 		var nextTime;
-		var outEvent = stream.next(event.copy.put(\beats, thisThread.beats));		
+		var outEvent = stream.next(event.copy);		
 		if (outEvent.isNil) {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
