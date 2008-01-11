@@ -160,7 +160,7 @@ Maybe : FuncProxy {
 
 }
 
-Fdef : FuncProxy {
+Fdef : Maybe {
 	classvar <>all;
 	
 	*initClass { 
