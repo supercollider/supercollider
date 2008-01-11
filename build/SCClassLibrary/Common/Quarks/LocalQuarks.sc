@@ -62,5 +62,15 @@ LocalQuarks
 		all = nil;
 		this.quarks;
 	}
+	
+		// stupid path has to be escaped above???
+		// well sometimes you need the raw path...
+	simplePath {
+		var	out = path.copy;
+		path.findAll("\\").reverseDo({ |i|
+			path.removeAt(i);
+		});
+		^path
+	}
 }
 
