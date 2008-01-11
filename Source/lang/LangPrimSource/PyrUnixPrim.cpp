@@ -128,8 +128,6 @@ void* string_popen_thread_func(void *data)
 //    setbuf(stream, 0);
 //    printf("err %d\n", err);
     
-    char buf[1024];
-    
     while (true) {
 		//printf("->fgets\n");
         char *string = fgets(buf, 1024, stream);
