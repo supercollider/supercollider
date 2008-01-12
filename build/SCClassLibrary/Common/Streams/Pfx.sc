@@ -40,6 +40,7 @@ Pgroup : FilterPattern {
 	embedInStream { arg inevent;
 	
 		var server, groupID, event, ingroup, cleanup;
+		var stream, lag;
 		
 		cleanup = EventStreamCleanup.new;
 		server = inevent[\server] ?? { Server.default };
@@ -52,18 +53,24 @@ Pgroup : FilterPattern {
 		event[\delta] = 1e-9; // no other sync choice for now. (~ 1 / 20000 sample delay)
 		event[\id] = groupID;
 		event[\group] = ingroup;
-		cleanup.addOff(event, { (type: \kill, id: groupID, server: server).play });
+		cleanup.addOff(event, { (lag: lag, type: \kill, id: groupID, server: server).play });
 		inevent = event.yield;
 		
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
-		^this.class.embedLoop(inevent, pattern.asStream, groupID, ingroup, cleanup);
+//		^this.class.embedLoop(inevent, pattern.asStream, groupID, ingroup, cleanup);
+		stream = pattern.asStream;
+		 loop {
+			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };			lag = event.use { ~sustain.value + 0.1};	
+			inevent = event.yield;
+			inevent.put(\group, groupID); 
+		}
 		
 	}
 
 	*embedLoop { arg inevent, stream, groupID, ingroup, cleanup;
-		var event;
+		var event, lag;
 		 loop {
-			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };						
+			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };			lag = event[\dur];	
 			inevent = event.yield;
 			inevent.put(\group, groupID); 
 		}
