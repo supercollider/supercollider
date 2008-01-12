@@ -456,7 +456,7 @@ EventPatternProxy : TaskProxy {
 
 			if(fadeTime.isNil) {
 				if(delta == 0) {
-					cleanup.cleanup(inval);
+					cleanup.exit(inval);
 					new 
 				} {
 					Pseq([EmbedOnce(Pfindur(delta, str, tolerance).asStream(cleanup)), new])
@@ -469,7 +469,7 @@ EventPatternProxy : TaskProxy {
 				])
 			}
 		} { 
-			cleanup.cleanup(inval); 
+			cleanup.exit(inval); 
 			pattern 
 		}.asStream
 	}
