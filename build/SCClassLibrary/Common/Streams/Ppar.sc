@@ -109,7 +109,7 @@ Ptpar : Ppar {
 Pgpar : Ppar {
 	
 	embedInStream { arg inevent;
-		var server, ids, patterns, event, ingroup, cleanup;
+		var server, ids, patterns, event, ingroup, cleanup, stream;
 		
 		server = inevent[\server] ?? { Server.default };
 		ingroup = inevent[\group];		
@@ -122,13 +122,19 @@ Pgpar : Ppar {
 		event[\id] = ids;
 		event[\group] = ingroup;
 		
-		inevent = event.yield;
+		inevent = event.yield.copy;
 		cleanup = EventStreamCleanup.new;
-		cleanup.add(inevent, { (type: \kill, id: ids, server: server).play; });
+		cleanup.addOff(inevent, { ( type: \kill, id: ids, server: server).play; });
 		
 		patterns = this.wrapPatterns(ids);
+		stream = Ppar(patterns, repeats).asStream;
+		
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
-		^Pgroup.embedLoop(inevent, Ppar(patterns, repeats).asStream, ids, ingroup, cleanup);
+		 loop {
+			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };			cleanup.update(event);		
+			inevent = event.yield;
+		}
+
 	}
 	
 
