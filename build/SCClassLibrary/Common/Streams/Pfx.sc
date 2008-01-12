@@ -20,7 +20,7 @@ Pfx : FilterPattern {
 		event[\id] = id;
 		event[\delta] = 0;
 		
-		cleanup.add(event, { (type: \off, id: id).play });		
+		cleanup.addOff(event, { (type: \off, id: id).play });		
 		inevent = event.yield;
 		
 		stream = pattern.asStream;
@@ -52,7 +52,7 @@ Pgroup : FilterPattern {
 		event[\delta] = 1e-9; // no other sync choice for now. (~ 1 / 20000 sample delay)
 		event[\id] = groupID;
 		event[\group] = ingroup;
-		cleanup.add(event, { (type: \off, id: groupID, server: server).play });
+		cleanup.addOff(event, { (type: \kill, id: groupID, server: server).play });
 		inevent = event.yield;
 		
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
@@ -119,10 +119,11 @@ Pbus : FilterPattern {
 		event[\instrument] = format("system_link_%_%", rate, numChannels);
 		event[\in] = bus;
 
-		cleanup.add(event, { 
+		cleanup.addOff(event, { 
 			(id: linkID, type: \off, gate: dur.neg, hasGate: true).play; 
-			freeBus.value;
 		});
+
+		cleanup.addFunction(event, { freeBus.value; });
 		
 		// doneAction = 3;   
 		// remove and deallocate both this synth and the preceeding node 
