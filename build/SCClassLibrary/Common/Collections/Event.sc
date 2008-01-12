@@ -208,7 +208,7 @@ Event : Environment {
 				timingOffset: 0 ,
 				
 				schedBundle: #{ |lag, offset, server ...bundle |
-					thisThread.clock.sched ( offset, { server.sendBundle(server.latency + lag, *bundle); bundle.postln })
+					thisThread.clock.sched ( offset, { server.sendBundle(server.latency + lag, *bundle);  })
 				},
 
 				schedBundleArray: #{ | lag, offset, server, bundleArray |
