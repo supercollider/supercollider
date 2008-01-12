@@ -309,7 +309,7 @@ Pfin : FilterPattern {
 			cleanup.update(inevent);			
 			event = inevent.yield;
 		});
-		^cleanup.cleanup(event)
+		^cleanup.exit(event)
 	}
 }
 
@@ -354,7 +354,7 @@ Pfindur : FilterPattern {
 				// must always copy an event before altering it.
 				// fix delta time and yield to play the event.
 				inevent = inevent.copy.put(\delta, dur - elapsed).yield;
-				^cleanup.cleanup(inevent); 
+				^cleanup.exit(inevent); 
 			};
 
 			elapsed = nextElapsed;
@@ -396,7 +396,7 @@ Psync : FilterPattern {
 				inevent = inevent.copy; 
 				inevent.put(\delta, maxdur - elapsed);
 				event = inevent.yield;
-				^cleanup.cleanup(event);			
+				^cleanup.exit(event);			
 			}
 			{
 				elapsed = nextElapsed;
