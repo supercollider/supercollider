@@ -428,21 +428,21 @@ EventStreamPlayer : PauseStream {
 	var <>event, <>muteCount = 0, <>cleanup;
 	
 	*new { arg stream, event;
-		^super.new(stream).event_(event ? Event.default).cleanup_(EventStreamCleanup.new);
+		^super.new(stream).event_(event ? Event.default).cleanup_(EventStreamPlayerCleanup.new);
 	}
 	
 		// stop inherits from PauseStream, no change needed
 		// prStop needs to do cleanup.terminate
-	prStop {		
+	prStop {	
+		cleanup.terminate;	
 		stream = nextBeat = nil;
 		isWaiting = false;
 	 }
 	 
 	stop {
-		cleanup.terminate;		// cleanup is here rather than prStop so that CmdPeriod will not cleanup
-							// this is probably a short term solution as it assumes all cleanup is
-							// freeing nodes
-		super.stop;
+		this.prStop;
+		cleanup.terminateNodeFunctions;		
+		this.changed(\userStopped);
 	}
 	
 	mute { muteCount = muteCount + 1; }
