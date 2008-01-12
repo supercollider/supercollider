@@ -488,7 +488,7 @@ Interpreter {
 		"\n".post;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
 		func = this.compile(cmdLine);
-		thisProcess.nowExecutingPath = Document.current.path;
+		thisProcess.nowExecutingPath = Document.current.tryPerform(\path);
 		res = func.value;
 		thisProcess.nowExecutingPath = nil;
 		codeDump.value(code, res, func, this);
