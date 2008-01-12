@@ -433,11 +433,17 @@ EventStreamPlayer : PauseStream {
 	
 		// stop inherits from PauseStream, no change needed
 		// prStop needs to do cleanup.terminate
-	prStop {
+	prStop {		
 		stream = nextBeat = nil;
 		isWaiting = false;
-		cleanup.terminate
 	 }
+	 
+	stop {
+		cleanup.terminate;		// cleanup is here rather than prStop so that CmdPeriod will not cleanup
+							// this is probably a short term solution as it assumes all cleanup is
+							// freeing nodes
+		super.stop;
+	}
 	
 	mute { muteCount = muteCount + 1; }
 	unmute { muteCount = muteCount - 1; }
