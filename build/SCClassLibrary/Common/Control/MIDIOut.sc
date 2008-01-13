@@ -296,15 +296,18 @@ MIDIOut {
 		^super.newCopyArgs(port, uid);
 	}
 	*newByName { arg deviceName,portName;
-		var endPoint;
-		endPoint = this.findPort(deviceName,portName);
-		if(endPoint.isNil,{
-			fail("Failed to find MIDIOut port " + deviceName + portName);
+		var endPoint,index;
+		endPoint = MIDIClient.destinations.detect({ |ep,epi|
+			index = epi; 
+			ep.device == deviceName and: {ep.name == portName}
 		});
-		^this.new(endPoint,endPoint.uid)
+		if(endPoint.isNil,{
+			Error("Failed to find MIDIOut port " + deviceName + portName).throw;
+		});
+		^this.new(index,endPoint.uid)
 	}
 	*findPort { arg deviceName,portName;
-		^MIDIClient.sources.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
+		^MIDIClient.destinations.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
 	}
 		
 	write { arg len, hiStatus, loStatus, a=0, b=0;
