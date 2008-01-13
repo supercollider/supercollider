@@ -270,7 +270,9 @@ Scheduler {
 		});
 	}
 	clear { // adc: priorityqueue has no pairsDo method, array has
-		queue.array.pairsDo { arg time, item; item.removedFromScheduler };
+		if(queue.array.notNil,{
+			queue.array.pairsDo { arg time, item; item.removedFromScheduler };
+		});
 		queue.clear 
 	}
 
