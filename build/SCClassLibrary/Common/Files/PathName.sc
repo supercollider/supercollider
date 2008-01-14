@@ -30,8 +30,8 @@ PathName {
 		)
 	}
 	*initClass {	
-		scroot = File.getcwd;	
-		tmp = ["/tmp/", "/WINDOWS/TEMP/", "sounds/"].detect({ |path|
+		scroot = File.getcwd;
+		tmp = ["/tmp/", scroot ++ "\\sounds\\", "sounds/"].detect({ |path|
 			File.exists(path);
 		});
 		tmp.isNil.if(
