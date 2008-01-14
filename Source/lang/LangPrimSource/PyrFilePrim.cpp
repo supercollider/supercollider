@@ -48,6 +48,7 @@ Primitives for File i/o.
 
 #ifdef SC_WIN32
 #include "SC_Win32Utils.h"
+#include "SC_DirUtils.h"
 #endif
 
 #include <fcntl.h>
@@ -115,6 +116,20 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		SetPtr(&pfile->fileptr, file);
 		SetTrue(a);
 	} else {
+#ifdef SC_WIN32
+		// check if directory exisits 
+		// create a temporary file (somewhere) for a handle
+		// the file is deleted automatically when closed
+		if (sc_DirectoryExists(filename)) {
+			int err;
+			err = tmpfile_s(&file);
+			if (!err) {
+				SetPtr(&pfile->fileptr, file);
+				SetTrue(a);
+				return errNone;
+			}
+		}
+#endif
 		SetNil(a);
 		SetFalse(a);
 	}
