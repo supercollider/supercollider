@@ -26,8 +26,8 @@ Document {
 		});
 		fork({ 
 			0.2.wait; 
-			post = this.listener.postln; 
-			if(post.notNil) { post.name_(" post ".postcs) } 
+			post = this.listener; 
+			if(post.notNil) { post.name_(" post ") } 
 		}, AppClock);
 	}
 	*open { arg path, selectionStart=0, selectionLength=0;
