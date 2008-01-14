@@ -18,12 +18,17 @@ Document {
 	var <editable;
 	
 	*startup {
-		var num, doc;
+		var num, doc, post;
 		allDocuments = [];
 		num = this.numberOfOpen;
 		num.do({arg i;
 			doc = this.newFromIndex(i);
 		});
+		fork({ 
+			0.2.wait; 
+			post = this.listener.postln; 
+			if(post.notNil) { post.name_(" post ".postcs) } 
+		}, AppClock);
 	}
 	*open { arg path, selectionStart=0, selectionLength=0;
 		^Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength)
