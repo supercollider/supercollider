@@ -93,6 +93,10 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
 
   def __init__ (self,parent):
     wx.html.HtmlWindow.__init__(self,parent)
+    self.Bind(wx.EVT_CHAR, self.OnChar)
+
+  def OnChar(self,event):
+    self.GetParent().GetParent().OnChildCharHook(event)
 
     
 # ---------------------------------------------------------------------
