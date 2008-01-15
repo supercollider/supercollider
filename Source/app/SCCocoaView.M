@@ -146,7 +146,7 @@ SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds)
 {
-	//mEnabled = mVisible = mCanFocus = true;
+
 	NSRect matrect = SCtoNSRect(mBounds);
 	mTextView = [[SCTextView alloc] initWithFrame:matrect];
 	NSView *view = mTop->GetNSView();		
@@ -221,9 +221,17 @@ void SCCocoaTextView::setBounds(SCRect inBounds)
 {
 		mBounds = inBounds;
 		[[mScrollView superview] setNeedsDisplayInRect:[mScrollView frame]];
-
-		[mScrollView setFrame: SCtoNSRect(mBounds)];
-		[mTextView setFrame: SCtoNSRect(mBounds)];
+		if(mParent->relativeOrigin()){
+			SCRect pbounds = mParent->getBounds();
+			mLayout.bounds.x = mBounds.x + pbounds.x;
+			mLayout.bounds.y = mBounds.y + pbounds.y;
+			mLayout.bounds.width = mBounds.width;
+			mLayout.bounds.height = mBounds.height;	
+		} else {
+			mLayout.bounds = mBounds;
+		}
+		[mScrollView setFrame: SCtoNSRect(mLayout.bounds)];
+		[mTextView setFrame: SCtoNSRect(mLayout.bounds)];
 
 	//	[mScrollView setBounds: SCtoNSRect(mBounds)];
 	//	[mTextView setBounds: SCtoNSRect(mBounds)];
@@ -549,8 +557,18 @@ void SCMovieView::setBounds(SCRect screct)
 {
 	[[mMovieView superview] setNeedsDisplayInRect:[mMovieView frame]];
 	mBounds = screct;
-	[mMovieView setFrame: SCtoNSRect(mBounds)];
-//	[mMovieView setBounds: SCtoNSRect(mBounds)];
+	if(mParent->relativeOrigin()){
+		SCRect pbounds = mParent->getBounds();
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;	
+	} else {
+		mLayout.bounds = mBounds;
+	}
+
+	[mMovieView setFrame: SCtoNSRect(mLayout.bounds)];
+	[mMovieView setBounds: SCtoNSRect(mBounds)]; //?
 	[mMovieView setNeedsDisplay: YES];
 }
 
@@ -597,10 +615,7 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		SCRect screct;
 		err = slotGetSCRect(slot, &screct);
 		if (err) return err;
-		mBounds = screct;
-		[mMovieView setFrame: SCtoNSRect(mBounds)];
-		[mMovieView setBounds: SCtoNSRect(mBounds)];
-		[mMovieView setNeedsDisplay: YES];
+		setBounds(screct);
 		return errNone;
 	}
 	
@@ -790,8 +805,18 @@ void SCQuartzComposerView::setBounds(SCRect screct)
 {
 	[[mQCView superview] setNeedsDisplayInRect:[mQCView frame]];
 	mBounds = screct;
-	[mQCView setFrame: SCtoNSRect(mBounds)];
+	if(mParent->relativeOrigin()){
+		SCRect pbounds = mParent->getBounds();
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;	
+	} else {
+		mLayout.bounds = mBounds;
+	}	
+	[mQCView setFrame: SCtoNSRect(mLayout.bounds)];
 	[mQCView setNeedsDisplay: YES];
+	
 }
 
 
@@ -820,8 +845,7 @@ int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		int err = slotGetSCRect(slot, &screct);
 		if (err) return err;
 		mBounds = screct;
-		[mQCView setFrame: SCtoNSRect(mBounds)];
-		[mQCView setNeedsDisplay: YES];
+		setBounds(screct);
 		return errNone;
 	}
 	
