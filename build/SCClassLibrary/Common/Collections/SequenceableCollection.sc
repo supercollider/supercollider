@@ -11,7 +11,8 @@ SequenceableCollection : Collection {
 			obj.add(start + (step * i));
 		};
 		^obj
-	}		
+	}	
+	
 	// fill with geometric series
 	*geom { arg size, start, grow;
 		var i=0;
@@ -73,6 +74,24 @@ SequenceableCollection : Collection {
 		});
 		^obj
 	}
+	
+	//fill with interpolation of values between start and end
+	 *interpolation { arg size, start=0.0, end=1.0;
+		var obj = this.new(size);
+		
+		if(size!=1,{
+		size.do {|i|
+		var t; 
+		
+			t= i/(size-1);
+			
+			obj.add(start + (t*(end-start)));
+		};
+		},{obj.add(start);});
+		
+		^obj
+ 	}
+		
 
 	++ { arg aSequenceableCollection; 
 		var newlist = this.species.new(this.size + aSequenceableCollection.size);

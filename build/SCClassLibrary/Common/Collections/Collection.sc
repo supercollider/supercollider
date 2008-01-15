@@ -291,6 +291,72 @@ Collection {
 			^minElement;
 		}
 	}
+	
+	maxIndex { | function |
+		var maxValue, maxIndex;
+		if (function.isNil) { // optimized version if no function
+			this.do { | elem, index | 
+				if (maxValue.isNil) {
+					maxValue = elem; 
+					maxIndex = index; 
+				}{
+					if (elem > maxValue) {
+						maxValue = elem; 
+						maxIndex = index; 
+					}
+				}		
+			}
+			^maxIndex;
+		}{
+			this.do {|elem, i| var val;
+				if (maxValue.isNil) {
+					maxValue = function.value(elem, i);
+					maxIndex = i; 
+				}{ 
+					val = function.value(elem, i);
+					if (val > maxValue) {
+						maxValue = val;
+						maxIndex = i; 
+					}
+				}		
+			}
+			^maxIndex;
+		}
+	}
+	
+	minIndex { | function |
+		var minValue, minIndex;
+		if (function.isNil) { // optimized version if no function
+			this.do {|elem, i| 
+				if (minValue.isNil) {
+					minValue = elem; 
+					minIndex = i; 
+				}{
+					if (elem < minValue) {
+						minValue = elem; 
+						minIndex = i;
+					}
+				}	
+			};
+			^minIndex;
+		}{
+			this.do {|elem, i| var val;
+				if (minValue.isNil) {
+					minValue = function.value(elem, i);
+					minIndex = i; 
+				}{ 
+					val = function.value(elem, i);
+					if (val < minValue) {
+						minValue = val;
+						minIndex = i; 
+					}
+				}	
+			}
+			^minIndex;
+		}
+	}
+	
+	
 	maxValue { | function |			// must supply a function
 		var maxValue, maxElement;
 		this.do {|elem, i| 
