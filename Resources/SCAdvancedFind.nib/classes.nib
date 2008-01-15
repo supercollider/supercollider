@@ -1,0 +1,48 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {"" = id; }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = NSLevelIndicator; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
+        {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
+        {CLASS = SCTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 
+        {
+            ACTIONS = {
+                findAction = id; 
+                replaceAction = id; 
+                searchScopeChanged = id; 
+                showRegularExpressionsHelpPanelAction = id; 
+            }; 
+            CLASS = SMLAdvancedFindController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                advancedFindSplitView = NSSplitView; 
+                advancedFindWindow = NSWindow; 
+                allDocumentsScope = NSButton; 
+                currentDocumentScope = NSButton; 
+                currentProjectScope = NSButton; 
+                currentlyDisplayedDocumentInAdvancedFind = id; 
+                findResultTextField = NSTextField; 
+                findResultsOutlineView = NSOutlineView; 
+                findResultsTreeController = NSTreeController; 
+                findSearchField = NSSearchField; 
+                mScrollView = NSScrollView; 
+                mTextView = NSTextView; 
+                regularExpressionsHelpPanel = NSPanel; 
+                replaceSearchField = NSSearchField; 
+                setIgnoreCaseButton = NSButton; 
+                setSearchInSelectionButton = NSButton; 
+                setUseRegularExpressionsButton = NSButton; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = SMLDummyView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = SMLFilterBarButton; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
+        {CLASS = SMLGradientBackgroundView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = SMLSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }
+    ); 
+    IBVersion = 1; 
+}
