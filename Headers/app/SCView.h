@@ -52,6 +52,7 @@ struct Layout
     float mMinWidth, mMaxWidth, mMinHeight, mMaxHeight;
     float mWeight;
     bool mShouldResize;
+	SCRect bounds; //relative Bounds in SCCompositeView
     // layout params for composite views
     char mHResize, mVResize;
 };
@@ -131,8 +132,10 @@ public:
 
 	virtual void setBounds(SCRect inBounds);
 	virtual SCRect getBounds();
+	virtual SCRect getDrawBounds(); //relative to ContainerView
 	virtual Layout getLayout();
-	virtual void setToCoordinateSystem(SCRect inBounds);
+//	virtual void setLayout(Layout inLayout);
+
 	
 	SCView* next() { return mNext; }
 	SCContainerView* parent() { return mParent; }
@@ -150,7 +153,11 @@ public:
 	
 	virtual bool isScroller() { return false; }
 	virtual bool isSubViewScroller() { return false; }
+	virtual bool isContainer() { return false; }
 	virtual SCRect checkMinimumSize() { return mBounds; }
+	virtual bool relativeOrigin() {return false;}
+	
+	bool isTopContainer(){ return (!mParent);};
 	
 protected:
 	friend class SCContainerView;
@@ -196,6 +203,8 @@ public:
 	virtual SCRect checkMinimumSize();
 	virtual void setVisibleFromParent();
 	virtual bool isVisible() {return mVisible && mParent->isVisible(); }
+	virtual bool relativeOrigin() {return mRelativeOrigin;}
+	virtual bool isContainer() { return true; }
 	
 protected:
 	SCView *mChildren;
@@ -383,7 +392,7 @@ public:
 
 protected:
 	virtual void setValueFromPoint(SCPoint point);
-	void calcThumbRect();
+	void calcThumbRect(SCRect bounds);
 	
 	SCRect mThumbRect;
 	double mValue, mStepSize, mStepScale;
