@@ -3588,7 +3588,7 @@ void SCMultiSliderView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *t
 	mouseTrack(where, modifiers,theEvent);
 }
 void SCMultiSliderView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent){
-    sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
+//    sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
     mouseTrack(where, modifiers,theEvent);
 }
 void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
