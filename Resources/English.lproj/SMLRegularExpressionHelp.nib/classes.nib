@@ -1,0 +1,66 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                findAction = id; 
+                replaceAction = id; 
+                searchScopeChanged = id; 
+                setOnlyInSelectionAction = id; 
+                setUseRegularExpressionsAction = id; 
+                showRegularExpressionsHelpPanelAction = id; 
+            }; 
+            CLASS = SMLAdvancedFindController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                advancedFindSplitView = NSSplitView; 
+                advancedFindWindow = NSWindow; 
+                allDocumentsScope = NSButton; 
+                currentDocumentScope = NSButton; 
+                currentProjectScope = NSButton; 
+                currentlyDisplayedDocumentInAdvancedFind = id; 
+                findResultTextField = NSTextField; 
+                findResultsOutlineView = NSOutlineView; 
+                findResultsTreeController = NSTreeController; 
+                findSearchField = NSSearchField; 
+                mTextView = SCTextView; 
+                regularExpressionsHelpPanel = NSPanel; 
+                replaceSearchField = NSSearchField; 
+                resultDocumentContentView = NSView; 
+                setIgnoreCaseButton = NSButton; 
+                setSearchInSelectionButton = NSButton; 
+                setUseRegularExpressionsButton = NSButton; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                cancelButtonEntabDetabGoToLineWindowsAction = id; 
+                createNewProjectAction = id; 
+                detabButtonDetabWindowAction = id; 
+                entabButtonEntabWindowAction = id; 
+                goButtonGoToLineWindowAction = id; 
+                setPrintFontAction = id; 
+            }; 
+            CLASS = SMLExtraInterfaceController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                commandResultTextView = NSTextView; 
+                commandResultWindow = NSWindow; 
+                detabWindow = NSWindow; 
+                entabWindow = NSWindow; 
+                goToLineWindow = NSWindow; 
+                lineTextFieldGoToLineWindow = NSTextField; 
+                newProjectWindow = NSWindow; 
+                openPanelAccessoryView = NSView; 
+                openPanelEncodingsPopUp = NSPopUpButton; 
+                printAccessoryView = NSView; 
+                regularExpressionsHelpPanel = NSPanel; 
+                spacesTextFieldDetabWindow = NSTextField; 
+                spacesTextFieldEntabWindow = NSTextField; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
