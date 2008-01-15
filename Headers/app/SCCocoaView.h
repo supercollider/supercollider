@@ -66,6 +66,9 @@ public:
 	virtual void setBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual void keyDown(int character, int modifiers, unsigned short keycode);
+	virtual void keyUp(int character, int modifiers, unsigned short keycode);
+		
 	SCTextView* getTextView(){return mTextView;};
 	void tabPrevFocus();
 	void tabNextFocus();
