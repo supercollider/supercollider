@@ -38,6 +38,8 @@
 		6A0CC1B60D3D44560080C454 /* NSStringICUAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0CC1AE0D3D44560080C454 /* NSStringICUAdditions.m */; };
 		6A0CC1BC0D3D44730080C454 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6A0CC1BA0D3D44730080C454 /* LICENSE.txt */; };
 		6A0CC1BD0D3D44730080C454 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6A0CC1BA0D3D44730080C454 /* LICENSE.txt */; };
+		6A0CC2690D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0CC2670D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib */; };
+		6A0CC26A0D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0CC2670D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib */; };
 		6A1C635E0CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */; };
 		6A1C635F0CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */; };
 		6A1C63600CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */; };
@@ -410,6 +412,7 @@
 		6A0CC1B90D3D44730080C454 /* ICUPattern.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ICUPattern.h; sourceTree = "<group>"; };
 		6A0CC1BA0D3D44730080C454 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		6A0CC1BB0D3D44730080C454 /* NSStringICUAdditions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = NSStringICUAdditions.h; sourceTree = "<group>"; };
+		6A0CC2680D3D5F1D0080C454 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SMLRegularExpressionHelp.nib; sourceTree = "<group>"; };
 		6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PyrUStringPrim.cpp; sourceTree = "<group>"; };
 		6A1C63690CFB6C50004ED3DA /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
 		6A1C636F0CFB6D27004ED3DA /* LICENSE.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = LICENSE.html; sourceTree = "<group>"; };
@@ -1186,6 +1189,7 @@
 				949318090C192C120018AB50 /* MainMenu.nib */,
 				9493180B0C192C120018AB50 /* MyDocument.nib */,
 				6A0CC1990D3D425D0080C454 /* SCAdvancedFind.nib */,
+				6A0CC2670D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib */,
 				9493180D0C192C120018AB50 /* SCGraphView.nib */,
 				9493180F0C192C120018AB50 /* GoToLinePanel.nib */,
 				949318100C192C120018AB50 /* Info.plist */,
@@ -1364,6 +1368,7 @@
 				6A0CC19B0D3D425D0080C454 /* SCAdvancedFind.nib in Resources */,
 				6A0CC1B50D3D44560080C454 /* LICENSE.txt in Resources */,
 				6A0CC1BD0D3D44730080C454 /* LICENSE.txt in Resources */,
+				6A0CC26A0D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1388,6 +1393,7 @@
 				6A0CC19A0D3D425D0080C454 /* SCAdvancedFind.nib in Resources */,
 				6A0CC1B10D3D44560080C454 /* LICENSE.txt in Resources */,
 				6A0CC1BC0D3D44730080C454 /* LICENSE.txt in Resources */,
+				6A0CC2690D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1701,6 +1707,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		6A0CC2670D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6A0CC2680D3D5F1D0080C454 /* English */,
+			);
+			name = SMLRegularExpressionHelp.nib;
+			sourceTree = "<group>";
+		};
 		949318010C192C120018AB50 /* Credits.rtf */ = {
 			isa = PBXVariantGroup;
 			children = (
