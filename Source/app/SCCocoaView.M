@@ -239,6 +239,15 @@ void SCCocoaTextView::setBounds(SCRect inBounds)
 		[mTextView setNeedsDisplay: YES];	
 }
 
+void SCCocoaTextView::keyDown(int character, int modifiers, unsigned short keycode)
+{
+}
+
+void SCCocoaTextView::keyUp(int character, int modifiers, unsigned short keycode)
+{
+}
+
+
 int slotColorVal(PyrSlot *slot, SCColor *sccolor);
 int setSlotColor(PyrSlot *slot, SCColor *sccolor);
 
