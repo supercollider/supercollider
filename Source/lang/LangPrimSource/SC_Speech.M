@@ -47,6 +47,7 @@
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSDictionary.h>
 
+//comment the following line to use cocoa speech
 #define useCarbonSpeech
 
 /////////////////////
