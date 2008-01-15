@@ -277,6 +277,7 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	if (inParent) inParent->add(this);
 	// store myself into sc object.
 	if (mObj) SetPtr(mObj->slots+0, this);
+	mLayout.bounds = mBounds;
         
 }
 
@@ -315,14 +316,8 @@ void SCView::stopAnimation()
 
 bool SCView::hit(SCPoint where) const
 {
-	return SCPointInRect(where, mBounds);
-}
- 
-void SCView::setToCoordinateSystem(SCRect inBounds)
-{
-	mBounds.x = mBounds.x + inBounds.x;
-	mBounds.y = mBounds.y + inBounds.y;
-
+	SCRect bounds = mLayout.bounds;
+	return SCPointInRect(where, bounds);
 }
 
 void SCView::keyDown(int character, int modifiers, unsigned short keycode)
@@ -526,8 +521,10 @@ void hPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor
 void SCView::draw(SCRect inDamage)
 {
     if (mBackground) {
+		SCRect bounds;
+		bounds = getDrawBounds(); 
         CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-        CGRect rect = SCtoCGRect(mBounds);
+        CGRect rect = SCtoCGRect(bounds);
         mBackground->draw(cgc, rect);
     }
 }
@@ -535,7 +532,8 @@ void SCView::draw(SCRect inDamage)
 void SCView::drawDisabled(SCRect inDamage)
 {
     if (!mEnabled && shouldDim()) {
-        CGRect rect = SCtoCGRect(mBounds);
+		SCRect bounds = getDrawBounds(); 	
+        CGRect rect = SCtoCGRect(bounds);
         CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
         CGContextSaveGState(cgc);
         CGContextSetRGBFillColor(cgc, 1., 1., 1., 0.5);
@@ -547,7 +545,9 @@ void SCView::drawDisabled(SCRect inDamage)
 void SCView::drawFocus(SCRect inDamage)
 {
     if (isFocus()) {
-        CGRect rect = SCtoCGRect(mBounds);
+		SCRect bounds = getDrawBounds(); 	
+	
+        CGRect rect = SCtoCGRect(bounds);
         rect.origin.x -= 2;
         rect.origin.y -= 2;
         rect.size.width += 4;
@@ -568,7 +568,9 @@ void SCView::drawFocus(SCRect inDamage)
 void SCView::drawDragHilite(SCRect inDamage)
 {
     if (mDragHilite) {
-        CGRect rect = SCtoCGRect(mBounds);
+		SCRect bounds = getDrawBounds(); 	
+	
+        CGRect rect = SCtoCGRect(bounds);
         rect.origin.x += 2;
         rect.origin.y += 2;
         rect.size.width -= 4;
@@ -584,7 +586,7 @@ void SCView::drawDragHilite(SCRect inDamage)
 
 void SCView::drawIfNecessary(SCRect inDamage)
 {
-	if (SCRectsDoIntersect(inDamage, mBounds) && mVisible) {
+	if (SCRectsDoIntersect(inDamage, getDrawBounds()) && mVisible) {
 		draw(inDamage);
 		drawDisabled(inDamage);
 		drawDragHilite(inDamage);
@@ -637,11 +639,36 @@ NSRect SCtoNSRect(SCRect screct);
 void SCView::setBounds(SCRect inBounds)
 {
     mBounds = inBounds;
+	if(mParent->relativeOrigin()){
+		SCRect pbounds = mParent->getLayout().bounds;
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;	
+	} else {
+		mLayout.bounds = mBounds;
+	}
+	
 }
 
 SCRect SCView::getBounds()
 {
 	return mBounds;
+}
+
+
+SCRect SCView::getDrawBounds() //relative to ContainerView
+{
+//	if(mParent->relativeOrigin()){
+//		SCRect pbounds = mParent->getBounds();
+//		mLayout.bounds.x = mBounds.x + pbounds.x;
+//		mLayout.bounds.y = mBounds.y + pbounds.y;
+//		mLayout.bounds.width = mBounds.width;
+//		mLayout.bounds.height = mBounds.height;	
+//	} else {
+//		mLayout.bounds = mBounds;
+//	}
+	return mLayout.bounds;
 }
 
 Layout SCView::getLayout()
@@ -692,7 +719,7 @@ SCView* SCView::prevFocus(SCView **prevView, bool canFocus)
 
 void SCView::refresh()
 {
-    mTop->addDamage(mBounds);
+    mTop->addDamage(mLayout.bounds);
 }
 
 // cannot call from primitives. i.e. new view, or get/set property
@@ -731,7 +758,8 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotGetSCRect(slot, &screct);
                 if (err) return err;
                 refreshFocus();
-                mBounds = screct;
+                //mBounds = screct;
+				setBounds(screct);
 				if(mTop->isScroller()) {
 					[(SCGraphView*)mTop->GetNSView() setFrameSizeToMinimum];
 				}
@@ -888,6 +916,7 @@ void SCView::beginDrag(SCPoint where)
 SCContainerView::SCContainerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds), mChildren(0), mNumChildren(0), mRelativeOrigin(false)
 { 
+	mLayout.bounds = mBounds;
 }
 
 SCContainerView::~SCContainerView()
@@ -899,6 +928,7 @@ SCContainerView::~SCContainerView()
         delete child;
         child = next;
     }
+	
 }
 
 int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -948,13 +978,7 @@ void SCContainerView::add(SCView *inChild)
 	mNumChildren++;
 	inChild->mParent = this;
 	inChild->mTop = mTop;
-	if(mRelativeOrigin){
-		inChild->setToCoordinateSystem(mBounds);
-	}
-//	bounds = child->getBounds();
-
 	inChild->refresh();
-
 }
 
 void SCContainerView::remove(SCView *inChild)
@@ -1082,18 +1106,40 @@ void SCCompositeView::setBounds(SCRect inBounds)
     SCView *child = mChildren;
 //    float right = mBounds.x + mBounds.width;
 //    float bottom = mBounds.y + mBounds.height;
+	mLayout.bounds = inBounds;
+//	if(isTopContainer()){
+//		post("i'm my own parent ... \t");
+//		post("in x:%f, y:%f\n", inBounds.x, inBounds.y);
+//	}
 
+	if(mParent){
+		SCRect pBounds = mParent->getBounds();
+		mLayout.bounds.x = inBounds.x + pBounds.x;
+		mLayout.bounds.y = inBounds.y + pBounds.y;
+
+	}
     while (child) {
         SCRect bounds = child->getBounds();
         Layout layout = child->getLayout();
+//        SCRect bounds = layout.bounds;
 		
         float offset;
         switch (layout.mHResize) {
             case layout_FixedLeft : 
                 break;
             case layout_FixedRight :
-                offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-                bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset);
+					if(!child->relativeOrigin()){
+							offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
+							bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
+					} else {
+						if(child->isContainer()){
+							if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
+								offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
+								bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
+							}
+						}
+					}
+			
                 break;
             case layout_HElastic :
                 offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
@@ -1108,8 +1154,17 @@ void SCCompositeView::setBounds(SCRect inBounds)
             case layout_FixedTop : 
                 break;
             case layout_FixedBottom :
-                offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
-                bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
+					if(!child->relativeOrigin()){
+							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
+							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);					
+					} else {
+						if(child->isContainer()){
+							if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
+								offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
+								bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
+							}
+						}
+					}
                 break;
             case layout_VElastic :
                 offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
@@ -1120,7 +1175,7 @@ void SCCompositeView::setBounds(SCRect inBounds)
                                 );*/
                 bounds.height = (inBounds.height) - ((bounds.y - mBounds.y) + offset);
         }
-		
+
         child->setBounds(bounds); 
         child = child->next();
     }
@@ -1395,7 +1450,7 @@ void SCTopView::beginDragCallback(SCPoint where, PyrSlot* slot, NSString* string
 
 void SCView::refreshFocus()
 {
-    SCRect focusBounds = mBounds;
+    SCRect focusBounds = getDrawBounds();
     focusBounds.x -= 4;
     focusBounds.y -= 4;
     focusBounds.width += 8;
@@ -1833,12 +1888,12 @@ SCSlider::SCSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 
 void SCSlider::draw(SCRect inDamage)
 {
-    
-    calcThumbRect();
+    SCRect bounds = getDrawBounds();
+    calcThumbRect(bounds);
     
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
 #if 1	
     QDDrawBevelRect(cgc, rect, 1, true);
@@ -1872,33 +1927,33 @@ bool SCSlider::setValue(double inValue, bool send)
 void SCSlider::setValueFromPoint(SCPoint point)
 {
     double moveableRange, value;
-    
-    if (mBounds.width > mBounds.height) {
-	moveableRange = mBounds.width - mThumbSize - 2;
-	value = (point.x - mBounds.x - 1 - mThumbSize/2) / moveableRange;
+	SCRect bounds = getDrawBounds();   
+    if (bounds.width > bounds.height) {
+	moveableRange = bounds.width - mThumbSize - 2;
+	value = (point.x - bounds.x - 1 - mThumbSize/2) / moveableRange;
     } else {
-	moveableRange = mBounds.height - mThumbSize - 2;
-	value = 1. - (point.y - mBounds.y - 1 - mThumbSize/2) / moveableRange;
+	moveableRange = bounds.height - mThumbSize - 2;
+	value = 1. - (point.y - bounds.y - 1 - mThumbSize/2) / moveableRange;
     }
     setValue(value, true);
 }
 
-void SCSlider::calcThumbRect()
+void SCSlider::calcThumbRect(SCRect bounds)
 {
     double moveableRange;
     
-    moveableRange = (mBounds.width > mBounds.height) 
-                  ?  mBounds.width : mBounds.height;
+    moveableRange = (bounds.width > bounds.height) 
+                  ?  bounds.width : bounds.height;
     moveableRange -= mThumbSize + 2;
         
     double offset = mValue * moveableRange;
 
-    if (mBounds.width > mBounds.height) {
-	mThumbRect = SCMakeRect(mBounds.x + offset + 1, mBounds.y + 1,
-				mThumbSize, mBounds.height - 2);   
+    if (bounds.width > bounds.height) {
+	mThumbRect = SCMakeRect(bounds.x + offset + 1, bounds.y + 1,
+				mThumbSize, bounds.height - 2);   
     } else {
-	mThumbRect = SCMakeRect(mBounds.x + 1, mBounds.y + mBounds.height - offset - 1 - mThumbSize,
-				mBounds.width - 2, mThumbSize);   
+	mThumbRect = SCMakeRect(bounds.x + 1, bounds.y + bounds.height - offset - 1 - mThumbSize,
+				bounds.width - 2, mThumbSize);   
     }
 }
 
@@ -2042,14 +2097,16 @@ bool SCRangeSlider::setValue(double inLo, double inHi, bool send)
 void SCRangeSlider::setValueFromPoint(SCPoint where)
 {
     double moveableRange, lo, hi;
-    if (mBounds.width > mBounds.height) {
-        moveableRange = mBounds.width - 5;
-        lo = (sc_min(mAnchor.x, where.x) - mBounds.x - 2) / moveableRange;
-        hi = (sc_max(mAnchor.x, where.x) - mBounds.x - 2) / moveableRange;
+    SCRect bounds = getDrawBounds();
+	
+    if (bounds.width > bounds.height) {
+        moveableRange = bounds.width - 5;
+        lo = (sc_min(mAnchor.x, where.x) - bounds.x - 2) / moveableRange;
+        hi = (sc_max(mAnchor.x, where.x) - bounds.x - 2) / moveableRange;
     } else {
-        moveableRange = mBounds.height - 5;
-        lo = 1. - (sc_max(mAnchor.y, where.y) - mBounds.y - 2) / moveableRange;
-        hi = 1. - (sc_min(mAnchor.y, where.y) - mBounds.y - 2) / moveableRange;
+        moveableRange = bounds.height - 5;
+        lo = 1. - (sc_max(mAnchor.y, where.y) - bounds.y - 2) / moveableRange;
+        hi = 1. - (sc_min(mAnchor.y, where.y) - bounds.y - 2) / moveableRange;
     }
     setValue(lo, hi, true);
 }
@@ -2057,20 +2114,20 @@ void SCRangeSlider::setValueFromPoint(SCPoint where)
 void SCRangeSlider::calcRangeRect()
 {
     double moveableRange;
-    
-    moveableRange = (mBounds.width > mBounds.height) 
-                  ?  mBounds.width : mBounds.height;
+    SCRect bounds = getDrawBounds();    
+    moveableRange = (bounds.width > bounds.height) 
+                  ?  bounds.width : bounds.height;
     moveableRange -= 5;
         
     double lo = mLo * moveableRange;
     double hi = mHi * moveableRange + 1;
 
-    if (mBounds.width > mBounds.height) {
-       mRangeRect = SCMakeRect(mBounds.x + lo + 2, mBounds.y + 1,
-                     hi - lo, mBounds.height - 2);   
+    if (bounds.width > bounds.height) {
+       mRangeRect = SCMakeRect(bounds.x + lo + 2, bounds.y + 1,
+                     hi - lo, bounds.height - 2);   
     } else {
-       mRangeRect = SCMakeRect(mBounds.x + 1, mBounds.y + mBounds.height - hi - 2,
-                     mBounds.width - 2, hi - lo);   
+       mRangeRect = SCMakeRect(bounds.x + 1, bounds.y + bounds.height - hi - 2,
+                     bounds.width - 2, hi - lo);   
     }
 }
 
@@ -2084,9 +2141,10 @@ void SCRangeSlider::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEv
 void SCRangeSlider::moveRangeFromPoint(SCPoint where)
 {
     double moveableRange, lo, hi, pos, range;
-    if (mBounds.width > mBounds.height) {
-        moveableRange = mBounds.width - 5;
-        pos = (where.x - mBounds.x - 2) / moveableRange;
+    SCRect bounds = getDrawBounds();	
+    if (bounds.width > bounds.height) {
+        moveableRange = bounds.width - 5;
+        pos = (where.x - bounds.x - 2) / moveableRange;
         range = mHi - mLo;
         if (pos-(range/2) < 0.0) {
             lo = 0;
@@ -2099,8 +2157,8 @@ void SCRangeSlider::moveRangeFromPoint(SCPoint where)
             hi = pos+(range/2);
         }
     } else {
-        moveableRange = mBounds.height - 5;
-        pos = (where.y - mBounds.y - 2) / moveableRange;
+        moveableRange = bounds.height - 5;
+        pos = (where.y - bounds.y - 2) / moveableRange;
         range = mHi - mLo;
         if (pos-(range/2) < 0.0) {
             lo = 0;
@@ -2119,14 +2177,15 @@ void SCRangeSlider::moveRangeFromPoint(SCPoint where)
 void SCRangeSlider::adjustLoFromPoint(SCPoint where)
 {
     double moveableRange, lo, hi, pos;
-    if (mBounds.width > mBounds.height) {
-        moveableRange = mBounds.width - 5;
-        pos = (where.x - mBounds.x - 2) / moveableRange;
+    SCRect bounds = getDrawBounds();	
+    if (bounds.width > bounds.height) {
+        moveableRange = bounds.width - 5;
+        pos = (where.x - bounds.x - 2) / moveableRange;
         lo = pos;
         hi = mHi;
     } else {
-        moveableRange = mBounds.height - 5;
-        pos = (where.y - mBounds.y - 2) / moveableRange;
+        moveableRange = bounds.height - 5;
+        pos = (where.y - bounds.y - 2) / moveableRange;
         lo = pos;
         hi = mHi;
     }
@@ -2135,14 +2194,15 @@ void SCRangeSlider::adjustLoFromPoint(SCPoint where)
 void SCRangeSlider::adjustHiFromPoint(SCPoint where)
 {
     double moveableRange, lo, hi, pos;
-    if (mBounds.width > mBounds.height) {
-        moveableRange = mBounds.width - 5;
-        pos = (where.x - mBounds.x - 2) / moveableRange;
+    SCRect bounds = getDrawBounds();	
+    if (bounds.width > bounds.height) {
+        moveableRange = bounds.width - 5;
+        pos = (where.x - bounds.x - 2) / moveableRange;
         lo = mLo;
         hi = pos;
     } else {
-        moveableRange = mBounds.height - 5;
-        pos = (where.y - mBounds.y - 2) / moveableRange;
+        moveableRange = bounds.height - 5;
+        pos = (where.y - bounds.y - 2) / moveableRange;
         lo = mLo;
         hi = pos;
     }
@@ -2267,10 +2327,17 @@ SC2DSlider::SC2DSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 void SC2DSlider::draw(SCRect inDamage)
 {
     calcThumbRect();
+	SCRect mTopBounds = mParent->getBounds();
+	SCRect bounds = mBounds;
+	if((mTopBounds.x !=0) || (mTopBounds.y != 0))
+	{
+		bounds.x = bounds.x + mTopBounds.x;
+		bounds.y = bounds.y + mTopBounds.y;
 
+	}
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
 
     QDDrawBevelRect(cgc, rect, 1, true);
@@ -2307,17 +2374,19 @@ const int THUMBSIZE = 12;
 
 void SC2DSlider::setValueFromPoint(SCPoint where)
 {
-    double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
-    double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
+    SCRect bounds = getDrawBounds();
+    double x = (where.x - bounds.x - 1 - THUMBSIZE/2) / (bounds.width - THUMBSIZE - 2);
+    double y = 1. - (where.y - bounds.y - 1 - THUMBSIZE/2) / (bounds.height - THUMBSIZE - 2);
     setValue(x, y, true);
 }
 
 void SC2DSlider::calcThumbRect()
 {        
-    double x = mX * (mBounds.width - THUMBSIZE - 2);
-    double y = mY * (mBounds.height - THUMBSIZE - 2);
+    SCRect bounds = getDrawBounds();
+    double x = mX * (bounds.width - THUMBSIZE - 2);
+    double y = mY * (bounds.height - THUMBSIZE - 2);
 
-    mThumbRect = SCMakeRect(mBounds.x + x + 1, mBounds.y + mBounds.height - y - 1 - THUMBSIZE, THUMBSIZE, THUMBSIZE);   
+    mThumbRect = SCMakeRect(bounds.x + x + 1, bounds.y + bounds.height - y - 1 - THUMBSIZE, THUMBSIZE, THUMBSIZE);   
 }
 
 void SC2DSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
@@ -2442,13 +2511,13 @@ void SCScope::draw0(CGContextRef cgc)
 	if (!data) return;
 	
 	int samples = mSndBuf.samples;
-	
+	SCRect bounds = getDrawBounds();
 	// draw scope.
-    CGRect rect = SCtoCGRect(mBounds);
-	int width = (int)mBounds.width - 2;
+    CGRect rect = SCtoCGRect(bounds);
+	int width = (int)bounds.width - 2;
 	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
 	//post("channels %d\n", channels);
-	float chanHeight = (mBounds.height - 2.) / channels;
+	float chanHeight = (bounds.height - 2.) / channels;
 	float chanHeight2 = 0.5 * chanHeight;
 	float yScale = mZoom.y * chanHeight2;
 	
@@ -2504,13 +2573,14 @@ void SCScope::draw1(CGContextRef cgc)
 	if (!data) return;
 	
 	int samples = mSndBuf.samples;
+	SCRect bounds = getDrawBounds();
 	
 	// draw scope.
-    CGRect rect = SCtoCGRect(mBounds);
-	int width = (int)mBounds.width - 2;
+    CGRect rect = SCtoCGRect(bounds);
+	int width = (int)bounds.width - 2;
 	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
 	//post("channels %d\n", channels);
-	float chanHeight = mBounds.height - 2.;
+	float chanHeight = bounds.height - 2.;
 	float chanHeight2 = 0.5 * chanHeight;
 	float yScale = mZoom.y * chanHeight2;
 	
@@ -2566,9 +2636,10 @@ void SCScope::draw2(CGContextRef cgc)
 	if (!data) return;
 	
 	int samples = mSndBuf.samples;
+	SCRect bounds = getDrawBounds();
 
 	// draw scope.
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(bounds);
 	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
 	float height = rect.size.height - 2.;
 	float height2 = 0.5 * height;
@@ -2603,10 +2674,10 @@ void SCScope::draw(SCRect inDamage)
 	bool didChange;
 	int err = getScopeBuf(mBufNum, &mSndBuf, didChange);
 	if (err) return;
-	
+	SCRect bounds = getDrawBounds();
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, true);
 
@@ -2838,6 +2909,8 @@ SCButton::~SCButton()
 void SCButton::draw(SCRect inDamage)
 {
     SCColor buttonColor;
+	SCRect bounds = getDrawBounds();
+	
     if (mStates) {
         SCButtonState *state = mStates + mValue;
         buttonColor = state->mButtonColor;
@@ -2846,7 +2919,7 @@ void SCButton::draw(SCRect inDamage)
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     
-    CGRect cgrect = SCtoCGRect(mBounds);
+    CGRect cgrect = SCtoCGRect(bounds);
     if (buttonColor.alpha > 0.0) {
         CGContextSetRGBFillColor(cgc, buttonColor.red, buttonColor.green, buttonColor.blue, buttonColor.alpha);
         CGContextFillRect(cgc, cgrect);
@@ -2854,7 +2927,7 @@ void SCButton::draw(SCRect inDamage)
     QDDrawBevelRect(cgc, cgrect, 2, mPushed);
     CGContextRestoreGState(cgc);
 
-        SCRect innerBounds = mBounds;
+        SCRect innerBounds = bounds;
         int inset = 2;
         int pushOffset = mPushed ? 2 : 0;
         innerBounds.x += inset + pushOffset;
@@ -3032,11 +3105,12 @@ void SCPopUpMenu::draw(SCRect inDamage)
 {    
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
+	SCRect dbounds = getDrawBounds();
 
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(dbounds);
     if (mBackground) mBackground->draw(cgc, rect);
     
-    CGRect bounds = SCtoCGRect(mBounds);
+    CGRect bounds = SCtoCGRect(dbounds);
     QDDrawBevelRect(cgc, bounds, 1, false);
 
 	CGContextSetRGBFillColor(cgc, mStringColor.red, mStringColor.green, mStringColor.blue, mStringColor.alpha);
@@ -3059,7 +3133,7 @@ void SCPopUpMenu::draw(SCRect inDamage)
 			GetMenuItemText(mMenuH, mValue+1, name);
 			char cstring[256];
 			p2cstrcpy(cstring, name);
-			SCRect innerBounds = mBounds;
+			SCRect innerBounds = dbounds;
 			int inset = 2;
 			innerBounds.x += inset + 10;
 			innerBounds.y += inset;
@@ -3092,6 +3166,7 @@ void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEven
         beginDrag(where);
     } else {    
 		if (!mMenuH) return;
+		SCRect bounds = getDrawBounds();
 		
 		[(SCGraphView*)mTop->GetNSView() startMenuTracking: this];
 	
@@ -3100,7 +3175,7 @@ void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEven
 			MacCheckMenuItem(mMenuH, i+1, mValue == i);
 		}
 	
-		NSPoint p = NSMakePoint(mBounds.x, mBounds.y);
+		NSPoint p = NSMakePoint(bounds.x, bounds.y);
 		NSView *view = mTop->GetNSView();
 		p = [view convertPoint: p toView: nil];
 		p = [[view window] convertBaseToScreen: p];
@@ -3264,16 +3339,18 @@ SCMultiSliderView::~SCMultiSliderView()
 
 void SCMultiSliderView::draw(SCRect inDamage)
 {
+	SCRect bounds = getDrawBounds();
+
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(bounds);
     CGContextClipToRect(cgc, rect);
     double * vals = mYValues;
 	int xpixels = mTabSize;
     int xstart = mStartIndex;
 	if(mElasticMode) {
-		if(mIsHorizontal) mElasticIndexStep =  (mBounds.width - 2)/(mTabSize-mStartIndex);
-		else mElasticIndexStep = (mBounds.height - 2)/(mTabSize-mStartIndex);
+		if(mIsHorizontal) mElasticIndexStep =  (bounds.width - 2)/(mTabSize-mStartIndex);
+		else mElasticIndexStep = (bounds.height - 2)/(mTabSize-mStartIndex);
 	} else mElasticIndexStep = 0.0;
 	double step = mElasticIndexStep;
 	
@@ -3348,25 +3425,25 @@ void SCMultiSliderView::draw(SCRect inDamage)
             }
             if(mIsHorizontal){
 				if(mElasticMode) 
-				drawRect = CGRectMake(mBounds.x + 1 + (currentI * mElasticIndexStep), 
-							mBounds.y + 1, 
+				drawRect = CGRectMake(bounds.x + 1 + (currentI * mElasticIndexStep), 
+							bounds.y + 1, 
 							(selsize * mElasticIndexStep), 
-							mBounds.height);
+							bounds.height);
 				else
-                drawRect = CGRectMake(mBounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), 
-							mBounds.y + 1, 
+                drawRect = CGRectMake(bounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), 
+							bounds.y + 1, 
 							(selsize * ( mXOffset + mThumbSize)) - mXOffset, 
-							mBounds.height);
+							bounds.height);
             } else {
 				if(mElasticMode) 
-				drawRect = CGRectMake( mBounds.x + 1, 
-							mBounds.y + 1 + (currentI * mElasticIndexStep), 
-							mBounds.width, 
+				drawRect = CGRectMake( bounds.x + 1, 
+							bounds.y + 1 + (currentI * mElasticIndexStep), 
+							bounds.width, 
 							(selsize * mElasticIndexStep));
 				else
-                drawRect = CGRectMake( mBounds.x + 1, 
-							mBounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), 
-							mBounds.width, 
+                drawRect = CGRectMake( bounds.x + 1, 
+							bounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), 
+							bounds.width, 
 							(selsize * ( mXOffset + mThumbSize))  - mXOffset);
             }
             CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, 0.4);
@@ -3418,22 +3495,26 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
 
 int SCMultiSliderView::indexFromPoint(SCPoint where)
 {
+	SCRect bounds = getDrawBounds();
+
     if(mIsHorizontal){
 		if(mElasticMode) 
-			return (int) ((where.x - mBounds.x -1)/mElasticIndexStep);
+			return (int) ((where.x - bounds.x -1)/mElasticIndexStep);
 		else
-			return (int) ((where.x - mBounds.x -1)/(mThumbSize + mXOffset)) + mStartIndex;
+			return (int) ((where.x - bounds.x -1)/(mThumbSize + mXOffset)) + mStartIndex;
     } else {
-        return (int) ((where.y - mBounds.y -1)/(mThumbSize + mXOffset)) + mStartIndex;
+        return (int) ((where.y - bounds.y -1)/(mThumbSize + mXOffset)) + mStartIndex;
     }
 }
 
 double SCMultiSliderView::valueFromPoint(SCPoint where)
 {
+	SCRect bounds = getDrawBounds();
+
     if(mIsHorizontal){
-        return 1.0 - (where.y - mBounds.y - 1 - mThumbSizeY/2) / (mBounds.height - mThumbSizeY - 2);
+        return 1.0 - (where.y - bounds.y - 1 - mThumbSizeY/2) / (bounds.height - mThumbSizeY - 2);
     } else {
-        return (where.x - mBounds.x - 1 - mThumbSizeY/2) / (mBounds.width - mThumbSizeY - 2);
+        return (where.x - bounds.x - 1 - mThumbSizeY/2) / (bounds.width - mThumbSizeY - 2);
     }
 }
 
@@ -3448,6 +3529,7 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, double step)
 {    
     double x,y, thumbx, thumby;
 	float xoffset = mXOffset;
+	SCRect bounds = getDrawBounds();
 	
 	//post("step is: %f ", step);
 	
@@ -3460,10 +3542,10 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, double step)
 			x = (double) indexIn * ( xoffset + mThumbSize);
 			thumbx = mThumbSize;
 		}
-        y = valIn * (mBounds.height - thumby - 2);
-        y = mBounds.y + mBounds.height - y - 1 - thumby; 
-        x = mBounds.x + x + 1;
-        if(mIsFilled) thumby = mBounds.height;
+        y = valIn * (bounds.height - thumby - 2);
+        y = bounds.y + bounds.height - y - 1 - thumby; 
+        x = bounds.x + x + 1;
+        if(mIsFilled) thumby = bounds.height;
     } else {
         thumbx = mThumbSizeY;
 		if(mElasticMode){
@@ -3472,13 +3554,13 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, double step)
 		}else{
 			y = (double) indexIn * ( xoffset + mThumbSize);
 		}
-		x = valIn * (mBounds.width - thumbx - 2);
-        //x = mBounds.x + mBounds.width - x - 1 - thumby;
-		x = mBounds.x + x + 1;
-		y = mBounds.y + y + 1;
+		x = valIn * (bounds.width - thumbx - 2);
+        //x = bounds.x + bounds.width - x - 1 - thumby;
+		x = bounds.x + x + 1;
+		y = bounds.y + y + 1;
         if(mIsFilled){
-            thumbx += x -  mBounds.x;
-            x = mBounds.x;
+            thumbx += x -  bounds.x;
+            x = bounds.x;
         }
         thumby = mThumbSize;
     }
@@ -3789,16 +3871,18 @@ SCUserView::~SCUserView()
 
 void SCUserView::draw(SCRect inDamage)
 {
-	if(mBounds.width == 0 || mBounds.height == 0) return;
+	SCRect bounds = getDrawBounds();
+
+	if(bounds.width == 0 || bounds.height == 0) return;
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
 	CGContextRef lCGContext;
 	CGContextRef cgc;
 	NSGraphicsContext* lGCtx;
 	if(mRelativeOrigin){
-		CGSize size = CGSizeMake(mBounds.width, mBounds.height);
+		CGSize size = CGSizeMake(bounds.width, bounds.height);
 		cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 		if(!mCGLayer) mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
-		CGRect cgrect = CGRectMake(0,0, mBounds.width, mBounds.height);
+		CGRect cgrect = CGRectMake(0,0, bounds.width, bounds.height);
 		lGCtx = [NSGraphicsContext currentContext];
 		lCGContext = CGLayerGetContext(mCGLayer);
 
@@ -3816,7 +3900,7 @@ void SCUserView::draw(SCRect inDamage)
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
 	if(mRelativeOrigin){
 		CGContextEndTransparencyLayer(lCGContext);	
-		CGContextDrawLayerInRect(cgc, SCtoCGRect(mBounds), mCGLayer);
+		CGContextDrawLayerInRect(cgc, SCtoCGRect(bounds), mCGLayer);
 		[NSGraphicsContext setCurrentContext: lGCtx];
 	}
 	#endif	
@@ -3825,8 +3909,10 @@ void SCUserView::draw(SCRect inDamage)
 
 void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
 {
-	mRealtiveMousePoint.x = where.x - mBounds.x;
-	mRealtiveMousePoint.y = where.y - mBounds.y;
+	SCRect bounds = getDrawBounds();
+
+	mRealtiveMousePoint.x = where.x - bounds.x;
+	mRealtiveMousePoint.y = where.y - bounds.y;
 
 //    PyrSlot args[3];
 //    SetFloat(args+0, where.x); 
@@ -3837,18 +3923,22 @@ void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
 
 void SCUserView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-	mRealtiveMousePoint.x = where.x - mBounds.x;
-	mRealtiveMousePoint.y = where.y - mBounds.y;
+	SCRect bounds = getDrawBounds();
+
+	mRealtiveMousePoint.x = where.x - bounds.x;
+	mRealtiveMousePoint.y = where.y - bounds.y;
 //    mouseAction(getsym("mouseBeginTrack"), where, modifiers);
 }
 
   void SCUserView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
   {
+  	SCRect bounds = getDrawBounds();
+
 	if (modifiers & NSCommandKeyMask) {
 		beginDrag(where);
 	} 
-		mRealtiveMousePoint.x = where.x - mBounds.x;
-	mRealtiveMousePoint.y = where.y - mBounds.y;
+		mRealtiveMousePoint.x = where.x - bounds.x;
+	mRealtiveMousePoint.y = where.y - bounds.y;
 //	else {
 //	mouseAction(getsym("mouseTrack"), where, modifiers);
 //	}
@@ -3944,7 +4034,9 @@ bool SCStaticText::shouldDim()
 void SCStaticText::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
-	drawString(mBounds);
+	SCRect bounds = getDrawBounds();
+	
+	drawString(bounds);
 }
 
 void SCStaticText::drawString(SCRect bounds)
@@ -4074,7 +4166,7 @@ NSRect SCtoNSRect(SCRect screct);
 void SCListView::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
-	SCRect bounds = mBounds;
+	SCRect bounds = getDrawBounds();	
 	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	CGContextSaveGState(cgc);
 	
@@ -4092,7 +4184,7 @@ void SCListView::draw(SCRect inDamage)
 
 	float totalHeight = itemHeight * numItems;
 				
-	float maxScroll = totalHeight - mBounds.height;
+	float maxScroll = totalHeight - bounds.height;
 	if (maxScroll < 0) maxScroll = 0;
 	mScroll = sc_clip(mScroll, 0, maxScroll);
 	
@@ -4109,15 +4201,15 @@ void SCListView::draw(SCRect inDamage)
 		itemBounds.width -= 16;
 		
 		// draw slider
-		SCRect sliderBounds = mBounds;
-		sliderBounds.x = mBounds.x + mBounds.width - 16;
+		SCRect sliderBounds = bounds;
+		sliderBounds.x = bounds.x + bounds.width - 16;
 		sliderBounds.width = 15;
 		sliderBounds.y += 1;
 		sliderBounds.height -= 2;
 		bevelRect = SCtoCGRect(sliderBounds);
 		QDDrawBevelRect(cgc, bevelRect, 1, true);
 
-		float travel = (1.f - fraction) * (mBounds.height - 4);
+		float travel = (1.f - fraction) * (bounds.height - 4);
 		SCRect thumbBounds = sliderBounds;
 		thumbBounds.y = 1.f + sliderBounds.y + travel * (mScroll / maxScroll);
 		thumbBounds.height = (sliderBounds.height - 2) * fraction;
@@ -4167,16 +4259,17 @@ void SCListView::draw(SCRect inDamage)
 void SCListView::scrollToValue()
 {
 	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
+	SCRect bounds = getDrawBounds();	
 	
 	float itemHeight = mStrSize.height + 3.f;
 	//float visibleItems = mBounds.height / itemHeight;
 	//float fraction = visibleItems / (float)numItems;
 	float totalHeight = itemHeight * numItems;
 				
-	float maxScroll = totalHeight - mBounds.height;
+	float maxScroll = totalHeight - bounds.height;
 	if (maxScroll < 0) maxScroll = 0;
 
-	SCRect itemBounds = mBounds;
+	SCRect itemBounds = bounds;
 	itemBounds.x += 4; 
 	itemBounds.y += 2 - mScroll; 
 	itemBounds.width -= 6; itemBounds.height -= 4;
@@ -4184,8 +4277,8 @@ void SCListView::scrollToValue()
 	
 	itemBounds.y += mValue * itemHeight;
 	
-	if (itemBounds.y < mBounds.y) mScroll = mValue * itemHeight;
-	else if (itemBounds.y + itemHeight > mBounds.y + mBounds.height) mScroll = (mValue + 1) * itemHeight - mBounds.height;
+	if (itemBounds.y < bounds.y) mScroll = mValue * itemHeight;
+	else if (itemBounds.y + itemHeight > bounds.y + bounds.height) mScroll = (mValue + 1) * itemHeight - bounds.height;
 }
 
 bool SCListView::setValue(int inValue, bool send)
@@ -4374,19 +4467,21 @@ void SCListView::receiveDrag()
 
 void SCListView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {	
+
 	mAnchor = where;
 	mAnchorScroll = mScroll;
+	SCRect bounds = getDrawBounds();	
 
 	mStrSize = nsStringSize((NSString*)CFSTR("XWYjpgy"), mFontName, mFontSize, mStringColor);
 	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
 	
 	float itemHeight = mStrSize.height + 3.f;
-	float visibleItems = mBounds.height / itemHeight;
+	float visibleItems = bounds.height / itemHeight;
 	float fraction = visibleItems / (float)numItems;
 	
-	mScrolling = fraction < 1.f && where.x >= mBounds.x + mBounds.width - 16;
+	mScrolling = fraction < 1.f && where.x >= bounds.x + bounds.width - 16;
 	if (!mScrolling) {
-		int value = (int)((where.y - mBounds.y - 2 + mScroll) / itemHeight);
+		int value = (int)((where.y - bounds.y - 2 + mScroll) / itemHeight);
 		setValue(value, true);
 	}
 }
@@ -4397,15 +4492,17 @@ void SCListView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
         beginDrag(where);
 	} else {
 		if (mScrolling) {
+			SCRect bounds = getDrawBounds();	
+	
 			int numItems = mArray ? CFArrayGetCount(mArray) : 0;
 			
 			float itemHeight = mStrSize.height + 3.f;
-			float visibleItems = mBounds.height / itemHeight;
+			float visibleItems = bounds.height / itemHeight;
 			float fraction = visibleItems / (float)numItems;
 			float totalHeight = itemHeight * numItems;
-			float travel = (1.f - fraction) * (mBounds.height - 4);
+			float travel = (1.f - fraction) * (bounds.height - 4);
 						
-			float maxScroll = totalHeight - mBounds.height;
+			float maxScroll = totalHeight - bounds.height;
 			if (maxScroll < 0) maxScroll = 0;
 			float sliderOffset = travel * (mAnchorScroll / maxScroll);
 
@@ -4565,7 +4662,9 @@ void SCEnvelopeView::draw(SCRect inDamage)
 {
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+	SCRect bounds = getDrawBounds();	
+	
+    CGRect rect = SCtoCGRect(bounds);
     CGContextClipToRect(cgc, rect);
 
     int xpixels = mActiveSize;
@@ -4677,10 +4776,12 @@ void SCEnvelopeView::setValueFromPoint(SCPoint where)
 {
     int indx = mSelectedIndex;
 	float width, height;
+	SCRect bounds = getDrawBounds();	
+	
 	width = (mEnvObj+ mSelectedIndex)->mRect.width;
 	height = (mEnvObj+ mSelectedIndex)->mRect.height;
-    double x = (double) (where.x - mBounds.x - 1 - width/2) / (mBounds.width - width - 2);
-    double y = (double) 1.0 - (where.y - mBounds.y - 1 - height/2) / (mBounds.height - height - 2);
+    double x = (double) (where.x - bounds.x - 1 - width/2) / (bounds.width - width - 2);
+    double y = (double) 1.0 - (where.y - bounds.y - 1 - height/2) / (bounds.height - height - 2);
     if(indx >= 0){
 		setValue(mEnvObj+ mSelectedIndex, x, y, true);
 		refresh();
@@ -4696,11 +4797,12 @@ bool SCEnvelopeView::setEnvRect(double valXIn, double valYIn, SCEnvObject * envo
 	envob->y = valYIn;
 	thumby = envob->mRect.height;
 	thumbx = envob->mRect.width;
+	SCRect bounds = getDrawBounds();	
 
-	x = valXIn * (mBounds.width - thumbx - 2);
-	y = valYIn * (mBounds.height - thumby - 2);
-	y = mBounds.y + mBounds.height - y - 1 - thumby; 
-	x = mBounds.x + x + 1;
+	x = valXIn * (bounds.width - thumbx - 2);
+	y = valYIn * (bounds.height - thumby - 2);
+	y = bounds.y + bounds.height - y - 1 - thumby; 
+	x = bounds.x + x + 1;
 
 	envob->mRect = SCMakeRect( x, y, thumbx, thumby);
 	envob->mDrawPoint.x = x + (envob->mRect.width * 0.5);
@@ -5229,10 +5331,11 @@ bool SCNumberBox::shouldDim()
 void SCNumberBox::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
-    
+   	SCRect bounds = getDrawBounds();	
+ 
 	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
 
     if (mBoxColor.alpha > 0.0) {
@@ -5244,11 +5347,11 @@ void SCNumberBox::draw(SCRect inDamage)
     CGContextRestoreGState(cgc);
 
     //drawBevelRect(SCtoQDRect(mBounds), 1, 1, SCtoQDColor(mBackColor), 2);
-	SCRect bounds = mBounds;
+	SCRect sbounds = bounds;
 
-	bounds.x += 2;
-	bounds.width -= 4;
-    drawString(bounds);
+	sbounds.x += 2;
+	sbounds.width -= 4;
+    drawString(sbounds);
 }
 
 int SCNumberBox::setProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -5313,16 +5416,17 @@ SCDragSource::~SCDragSource()
 void SCDragSource::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
+	SCRect bounds = getDrawBounds();	
 
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, false);
     CGContextRestoreGState(cgc);
         
     //drawBevelRect(SCtoQDRect(mBounds), 1, 0, SCtoQDColor(mBackColor), 2);
-    drawString(mBounds);
+    drawString(bounds);
 }
 
 bool SCDragSource::shouldDim()
@@ -5358,16 +5462,17 @@ SCDragSink::~SCDragSink()
 void SCDragSink::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
+	SCRect bounds = getDrawBounds();	
 
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+    CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, true);
     CGContextRestoreGState(cgc);
 
     //drawBevelRect(SCtoQDRect(mBounds), 1, 1, SCtoQDColor(mBackColor), 2);
-    drawString(mBounds);
+    drawString(bounds);
 }
 
 bool SCDragSink::shouldDim()
@@ -5407,19 +5512,21 @@ void SCDragBoth::draw(SCRect inDamage)
 
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(mBounds);
+	SCRect dbounds = getDrawBounds();	
+	
+    CGRect rect = SCtoCGRect(dbounds);
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, true);
-    SCRect bounds = mBounds;
+    SCRect bounds = dbounds;
     bounds.x += 2; bounds.y += 2; bounds.width -= 4; bounds.height -= 4;
     QDDrawBevelRect(cgc, SCtoCGRect(bounds), 1, false);
     CGContextRestoreGState(cgc);
 
-    //drawBevelRect(SCtoQDRect(mBounds), 1, 1, SCtoQDColor(mBackColor), 2);
-    //SCRect bounds = mBounds;
+    //drawBevelRect(SCtoQDRect(bounds), 1, 1, SCtoQDColor(mBackColor), 2);
+    //SCRect bounds = bounds;
     //bounds.x += 2; bounds.y += 2; bounds.width -= 4; bounds.height -= 4;
     //drawBevelRect(SCtoQDRect(bounds), 1, 0, SCtoQDColor(mBackColor), 2);
-    drawString(mBounds);
+    drawString(bounds);
 }
 
 int ivxSCDragBoth_object;
@@ -5460,14 +5567,16 @@ int SCTabletView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 void SCTabletView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     float x,y;
+	SCRect bounds = getDrawBounds();	
+	
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
-        x = where.x - mBounds.x;
-        y = where.y - mBounds.y;
+        x = where.x - bounds.x;
+        y = where.y - bounds.y;
         if(mClipToBounds) {
-            x = sc_clip(x,0.,mBounds.width);
-            y = sc_clip(y,0.,mBounds.height);
+            x = sc_clip(x,0.,bounds.width);
+            y = sc_clip(y,0.,bounds.height);
         }
         TABLETTRACK(s_mouseDown,x,y)
     }
@@ -5476,12 +5585,14 @@ void SCTabletView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEve
 void SCTabletView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     float x,y;
+	SCRect bounds = getDrawBounds();	
+	
     if (! (modifiers & NSCommandKeyMask)) {
-        x = where.x - mBounds.x;
-        y = where.y - mBounds.y;
+        x = where.x - bounds.x;
+        y = where.y - bounds.y;
         if(mClipToBounds) {
-            x = sc_clip(x,0.,mBounds.width);
-            y = sc_clip(y,0.,mBounds.height);
+            x = sc_clip(x,0.,bounds.width);
+            y = sc_clip(y,0.,bounds.height);
         }
         TABLETTRACK(s_doaction,x,y)
     }
@@ -5493,11 +5604,13 @@ void SCTabletView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent
     if (modifiers & NSCommandKeyMask) {
         this->receiveDrag();
     } else {
-        x = where.x - mBounds.x;
-        y = where.y - mBounds.y;
+		SCRect bounds = getDrawBounds();	
+	
+        x = where.x - bounds.x;
+        y = where.y - bounds.y;
         if(mClipToBounds) {
-            x = sc_clip(x,0.,mBounds.width);
-            y = sc_clip(y,0.,mBounds.height);
+            x = sc_clip(x,0.,bounds.width);
+            y = sc_clip(y,0.,bounds.height);
         }
         TABLETTRACK(s_mouseUp,x,y)
     }
