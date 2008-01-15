@@ -27,6 +27,7 @@
 #import "GetStringFromUser.h"
 #include "SCBase.h"
 #include "SC_DirUtils.h"
+#import "SMLAdvancedFindController.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -771,6 +772,11 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	
 }
 
+- (IBAction) advancedFindReplaceAction:(id)sender
+{
+	NSLog(@"hi");
+	[[SMLAdvancedFindController sharedInstance] showAdvancedFindWindow];
+}
 
 - (IBAction) showHelp: (id) sender;
 {
