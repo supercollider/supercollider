@@ -36,7 +36,8 @@ QuarkDependency
 
 Quark
 {
-	var <name, <summary, <version, <author, dependencies, <tags, <>path, <isLocal;
+	var <name, <summary, <version, <author, dependencies, <tags, <>path;
+	var <isLocal;// meaning that a local copy exists either because checked out or is local only
 	var <parent; // the Quarks, if available 
 	var <info;
 	
@@ -168,6 +169,7 @@ Quark
 		});
 		^deps
 	}
+	isCompatible { ^info['isCompatible'].value !== false }
 }
 
 QuarkView {
@@ -177,14 +179,15 @@ QuarkView {
 		^super.new.init(parent, extent, quark, isInstalled)
 	}
 	init {|parent, extent, aQuark, argIsInstalled|
-		var installBounds, descrBounds, infoBounds, sourceBounds, pad = 5;
+		var installBounds, descrBounds, infoBounds, sourceBounds, pad = 5,checkoutBounds;
 		
-		installBounds = Rect(0,0, extent.y, extent.y);
-		infoBounds = Rect(0,0, 40, extent.y);
+		//installBounds = Rect(0,0, extent.y, extent.y);
+		infoBounds = Rect(0,0, 25, extent.y);
 		sourceBounds = Rect(0, 0, 20, extent.y);
+		checkoutBounds = Rect(0,0,50,extent.y);
 		descrBounds = Rect(
 			0,0, 
-			extent.x - (infoBounds.width  - sourceBounds.width - (2*pad)),
+			(extent.x - infoBounds.width  - sourceBounds.width - checkoutBounds.width - (3*pad)),
 			extent.y
 		);
 		quark = aQuark;
@@ -196,15 +199,24 @@ QuarkView {
 		// the name with author
 		nameView = GUI.staticText.new(parent, descrBounds).string_("% by %".format(quark.name, quark.author));
 		// the name
-		infoButton = GUI.button.new(parent, infoBounds).states_([["info"]]).action_{this.fullDescription};
+		infoButton = GUI.button.new(parent, infoBounds)
+			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+			.states_([["info"]]).action_{this.fullDescription};
 		
-		if(thisProcess.platformClass == OSXPlatform) {
-			srcButton = GUI.button.new(parent, sourceBounds).states_([["src"]]).action_{
-				"open %/%".format(Quarks.local.path, quark.path).unixCmd;
-			};
+		if(quark.isLocal and: {thisProcess.platformClass == OSXPlatform}) {
+			srcButton = GUI.button.new(parent, sourceBounds)
+				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+				.states_([["src"]]).action_{
+					("open " ++ ("%/%".format(Quarks.local.path, quark.path).escapeChar($ ))).unixCmd;
+				};
 		};
-
-
+		if(quark.isLocal.not,{
+			GUI.button.new(parent, checkoutBounds)
+				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+				.states_([["checkout"]]).action_{
+					Quarks.checkout(quark.name);
+				};
+		});
 	}
 	updateButtonStates {
 		isInstalled.if({
@@ -256,7 +268,7 @@ QuarkView {
 			.hasVerticalScroller_( true )
 			.string_( quark.longDesc )
 			.editable_( false );
-		if(helpdoc.notNil) {
+		if(helpdoc.insp.notNil) {
 			GUI.button.new(window, Rect(125, 176, 150, 20))
 				.resize_(8)
 				.states_([["Open quark help"]])
