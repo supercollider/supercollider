@@ -350,7 +350,7 @@ void SCView::keyUp(int character, int modifiers, unsigned short keycode)
         ++g->sp;  SetInt(g->sp, modifiers); 
         ++g->sp;  SetInt(g->sp, character); 
         ++g->sp;  SetInt(g->sp, keycode); 
-        runInterpreter(g, method, 5);
+        runInterpreter(g, method, 5);		
         g->canCallOS = false;
     }
     pthread_mutex_unlock (&gLangMutex);
@@ -1112,11 +1112,15 @@ void SCCompositeView::setBounds(SCRect inBounds)
 //		post("in x:%f, y:%f\n", inBounds.x, inBounds.y);
 //	}
 
-	if(mParent){
-		SCRect pBounds = mParent->getBounds();
-		mLayout.bounds.x = inBounds.x + pBounds.x;
-		mLayout.bounds.y = inBounds.y + pBounds.y;
-
+	if(mParent ){
+		if(relativeOrigin()){
+			SCRect pBounds = mParent->getBounds();
+			mLayout.bounds.x = inBounds.x + pBounds.x;
+			mLayout.bounds.y = inBounds.y + pBounds.y;
+		} else {
+			mLayout.bounds.x = inBounds.x;
+			mLayout.bounds.y = inBounds.y;		
+		}
 	}
     while (child) {
         SCRect bounds = child->getBounds();
