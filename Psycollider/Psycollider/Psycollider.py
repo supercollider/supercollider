@@ -33,7 +33,7 @@ import wx.stc as stc
 import wx.html as html
 import wx.richtext as richtext
 import PySCLang
-import os, string, keyword, sys
+import os, string, keyword, sys, time
 
 if wx.Platform == '__WXMSW__':
   faces = { 'times': 'Times New Roman', 'mono' : 'Courier New', 'helv' : 'Arial', 'other': 'Comic Sans MS', 'size' : 10, 'size2': 8, }
@@ -656,6 +656,9 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     PySCLang.sendMain("stop");
 
   def On_Lang_CompileLibrary(self,evt):
+    self.StopServer()
+    self.StopSwingOSC()
+    time.sleep(1)
     PySCLang.compileLibrary()
 
   def On_Lang_ClearLogWindow(self,evt):
@@ -852,12 +855,10 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
   def StopServer(self):
     PySCLang.setCmdLine('Server.default.sendMsg("/quit");')
     PySCLang.sendMain("interpretPrintCmdLine")
-    pass
     
   def StopSwingOSC(self):
     PySCLang.setCmdLine('SwingOSC.default.sendMsg("/quit");')
     PySCLang.sendMain("interpretPrintCmdLine")
-    pass
 
   def OnArrangeWindows(self, evt):
     currentlyActive = self.GetActiveChild()
