@@ -28,7 +28,7 @@ QuarkSVNRepository
 	}
 	// checkout a specific quark
 	checkout { | q, localRoot, sync = false |
-		var args = [this.url ++ "/" ++ q.path, localRoot ++ "/" ++  q.path];
+		var args = [(this.url ++ "/" ++ q.path).escapeChar($ ), (localRoot ++ "/" ++  q.path).escapeChar($ )];
 		if(sync)
 			{this.svnSync("co", *args)}
 			{this.svn(    "co", *args)};
@@ -37,7 +37,7 @@ QuarkSVNRepository
 		var dir;
 		dir = (local.path.select{|c| (c != $\\)}) ++ "/DIRECTORY" ;
 		if(File.exists(dir).not, {
-			this.svn("co", this.url++"/DIRECTORY", local.path ++ "/DIRECTORY");
+			this.svn("co", (this.url++"/DIRECTORY").escapeChar($ ), (local.path ++ "/DIRECTORY").escapeChar($ ));
 			^false
 		});
 		^true
@@ -79,7 +79,7 @@ QuarkSVNRepository
 		^matches.sort({ |a,b| a.version > b.version }).first
 	}
 	svn { | cmd ... args |
-		cmd = ("export LANG='' ; " + svnpath + cmd + args.join(" ") + "2>&1");
+		cmd = ("export LANG='' ; " + svnpath.escapeChar($ ) + cmd + args.join(" ") + "2>&1");
 		"".debug;
 		cmd.debug;
 		"".debug;
