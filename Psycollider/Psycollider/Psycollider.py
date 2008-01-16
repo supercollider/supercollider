@@ -189,8 +189,13 @@ class PsycolliderWindow(wx.Frame):
         wx.GetApp().RefsTo(self.GetSelectedTextOrLine())   
     
     def Eval(self):
-        wx.GetApp().Eval(self.GetSelectedTextOrLine())  
-        
+        wx.GetApp().Eval(self.GetSelectedTextOrLine())
+        self.LineDown()
+
+    # needs to be overwritten by inhereting classes
+    def LineDown(self):
+	pass
+
     # should be overwritten by inheriting classes
     def GetSelectedTextOrLine(self):
         return ""
@@ -653,6 +658,9 @@ class PsycolliderCodeWin(PsycolliderWindow):
         
         return selection
 
+    def LineDown(self):
+	self.codeSubWin.LineDown()
+
 # ---------------------------------------------------------------------
 # HTML Sub Window 
 # 
@@ -660,7 +668,16 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
 
     def __init__ (self,parent):
         wx.html.HtmlWindow.__init__(self,parent)
-    
+	self.Bind(wx.EVT_CHAR, self.OnChar)         # this hack is to enable the alt+. shortcut
+                                                    # to stop playback, which doesn't seem to work otherwise
+                                                    # bug in wx?
+	
+    def OnChar(self, event):
+        if event.GetKeyCode() == 0x2e and event.AltDown():
+            self.GetParent().OnStop(None) 
+        else:
+            event.Skip()
+
 # ---------------------------------------------------------------------
 # HTML Window
 # accomodates HTML sub window
@@ -724,17 +741,24 @@ class PsycolliderPostWindow(PsycolliderWindow):
         self.Show(True)
             
     def OnCloseWindow(self, event):
-        PsycolliderWindow.OnCloseWindow(self, event)   
+        dlg = wx.MessageDialog(self,"This will shutdown PsyCollider and close all code windows, do you want to proceed?")
+	reply = dlg.ShowModal()
+	dlg.Destroy()
+        if reply == wx.ID_OK:
+		PsycolliderWindow.OnCloseWindow(self, event)
 
-        size = self.GetSize()
-        pos = self.GetPosition()
-        self.config.SetPath("/WindowSettings")
-        self.config.WriteInt('PostWindow-sizeX', size.x)
-        self.config.WriteInt('PostWindow-sizeY', size.y)
-        self.config.WriteInt('PostWindow-posX', pos.x)
-        self.config.WriteInt('PostWindow-posY', pos.y)
+		size = self.GetSize()
+		pos = self.GetPosition()
+		self.config.SetPath("/WindowSettings")
+		self.config.WriteInt('PostWindow-sizeX', size.x)
+		self.config.WriteInt('PostWindow-sizeY', size.y)
+		self.config.WriteInt('PostWindow-posX', pos.x)
+		self.config.WriteInt('PostWindow-posY', pos.y)
         
-        wx.GetApp().Shutdown()
+		wx.GetApp().Shutdown()
+	else:
+		wx.MessageBox("Cancled");
+		pass
         
     def SaveFile(self):
         if self.filePath == "":
@@ -779,7 +803,7 @@ class Psycollider(wx.App):
         self.config = wx.Config() 
         self.fileHistory = wx.FileHistory(maxFiles = MAX_HISTORY_FILES)
         
-        self.theMainFrame = PsycolliderPostWindow(None, -1, "Psycollider")
+        self.theMainFrame = PsycolliderPostWindow(None, -1, "Psycollider Post Window")
         self.theMainFrame.Show(True)
         self.SetTopWindow(self.theMainFrame)
         
@@ -955,9 +979,9 @@ class Psycollider(wx.App):
         PySCLang.sendMain("stop");
         
     def CompileLibrary(self):
-		self.StopServer()
-		self.StopSwingOSC()
-		time.sleep(1)
+	self.StopServer()
+	self.StopSwingOSC()
+	time.sleep(1)
         PySCLang.compileLibrary()
         
     def OpenClassDef(self, text):
@@ -1040,7 +1064,7 @@ class Psycollider(wx.App):
         # stop scsynth and swingosc
         self.StopServer()
         self.StopSwingOSC()
-		time.sleep(1)
+	time.sleep(1)
         
         
 # ---------------------------------------------------------------------
