@@ -175,10 +175,10 @@ Quark
 QuarkView {
 	var	<quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton,
 		nameView, infoButton, srcButton;
-	*new{|parent, extent, quark, isInstalled|
+	*new { |parent, extent, quark, isInstalled|
 		^super.new.init(parent, extent, quark, isInstalled)
 	}
-	init {|parent, extent, aQuark, argIsInstalled|
+	init { |parent, extent, aQuark, argIsInstalled|
 		var installBounds, descrBounds, infoBounds, sourceBounds, pad = 5,checkoutBounds;
 		
 		//installBounds = Rect(0,0, extent.y, extent.y);
@@ -210,13 +210,13 @@ QuarkView {
 					("open " ++ ("%/%".format(Quarks.local.path, quark.path).escapeChar($ ))).unixCmd;
 				};
 		};
-		if(quark.isLocal.not,{
+		/*if(quark.isLocal.not,{
 			GUI.button.new(parent, checkoutBounds)
 				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
 				.states_([["checkout"]]).action_{
 					Quarks.checkout(quark.name);
 				};
-		});
+		});*/
 	}
 	updateButtonStates {
 		isInstalled.if({
@@ -233,7 +233,7 @@ QuarkView {
 			// Quark is currently not installed
 			installButton.states = [
 				["-", Color.black, Color.clear],		// never installed
-				["*", Color.black, Color.blue(alpha: 0.5)],		// selected to install
+				["*", Color.black, Color.blue(alpha: 0.5)],				// selected to install
 			];
 			installButton.action = { arg butt;
 				toBeInstalled = butt.value>0;
@@ -258,11 +258,9 @@ QuarkView {
 			if(File.exists(helpdoc).not) { helpdoc = nil };
 		};
 		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
-//		window.view.decorator = FlowLayout(window.view.bounds);
-//		GUI.textView.new( window, window.view.bounds.insetBy( 4, 4 ))
 		GUI.textView.new( window, Rect(4, 4, 392, 170 + (helpdoc.isNil.binaryValue * 22)))
-			.font_( GUI.font.new( GUI.font.defaultSansFace, 12 ))
-			.background_( Color.grey( 0.9 ))	// Color.clear background doesn't work
+			.font_( GUI.font.new( GUI.font.defaultSansFace, 12 ) )
+			.background_( Color.grey( 0.9 ) )
 			.resize_( 5 )
 			.autohidesScrollers_( true )
 			.hasVerticalScroller_( true )
