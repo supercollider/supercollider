@@ -2972,6 +2972,9 @@ void initGUIPrimitives()
 			[doc setSCObject: nil];
 		}
 	}
+
+    [NSBezierPath setDefaultLineWidth: 1];
+	
 	definePrimitive(base, index++, "_TextWindow_ToFront", prTextWindow_ToFront, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_SelectedText", prTextWindow_SelectedText, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_InsertText", prTextWindow_InsertText, 2, 0);
