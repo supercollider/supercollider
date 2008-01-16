@@ -266,7 +266,7 @@ QuarkView {
 			.hasVerticalScroller_( true )
 			.string_( quark.longDesc )
 			.editable_( false );
-		if(helpdoc.insp.notNil) {
+		if(helpdoc.notNil) {
 			GUI.button.new(window, Rect(125, 176, 150, 20))
 				.resize_(8)
 				.states_([["Open quark help"]])
