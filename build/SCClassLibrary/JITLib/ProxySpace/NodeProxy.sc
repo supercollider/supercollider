@@ -294,7 +294,11 @@ NodeProxy : BusPlug {
 	end { arg fadeTime, reset=false;
 		var dt;
 		dt = fadeTime ? this.fadeTime;
-		Routine { this.free(dt, true); (dt + server.latency).wait; this.stop(0, reset);  } .play;
+		fork { 
+			this.free(dt, true); 
+			(dt + (server.latency ? 0)).wait; 
+			this.stop(0, reset);
+		}
 	}
 	
 	pause {
