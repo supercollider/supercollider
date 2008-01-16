@@ -477,10 +477,16 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		else selectedRange =	NSMakeRange(rangeStart, rangeSize);
 		
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+		BOOL editable = [mTextView isEditable];
+		if(!editable) [mTextView setEditable:YES]; //always allow programmatic editing
+		
 		if ([mTextView  shouldChangeTextInRange: selectedRange replacementString: string]) {
 			[mTextView  replaceCharactersInRange: selectedRange withString: string];
 			[mTextView  didChangeText];
 		}
+
+		if(!editable) [mTextView setEditable:NO];
+		
 		[string release];
 	
         return errNone;
