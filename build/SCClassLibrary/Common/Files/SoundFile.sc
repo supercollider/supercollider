@@ -283,18 +283,27 @@ SoundFile {
 		};
 	}
 
+	info { | path |
+		var flag = this.openRead;
+		if (flag) {
+			this.close; 
+		} {
+			^nil
+		}
+	}
+	
 	*collect { | path = "sounds/*" |
 		var paths, files;
 		paths = path.pathMatch;
-		files = paths.collect { | p | SoundFile.openRead(p) };
-		files = files.select { | f | f.notNil };
-		files.do { | f | f.close };
+		files = paths.collect { | p | SoundFile(p).info };
+		files = files.select(_.notNil);
 		^files;	
 	}
 
 	cue { | ev, playNow = false |
 		var server, packet;
 		ev = ev ? ();
+		if (this.numFrames == 0) { this.info };
 		ev.use {
 			~instrument = ~instrument ?? 	{"diskIn" ++ numChannels };
 			ev.synth;
@@ -331,6 +340,8 @@ SoundFile {
 		^ev;	
 	}
 	
-	play { | ev, playNow = true | ^this.cue(ev, playNow) }
+	play { | ev, playNow = true | 
+		^this.cue(ev, playNow) 
+	}
 	
 }
