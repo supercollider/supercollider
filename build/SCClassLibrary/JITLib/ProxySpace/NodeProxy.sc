@@ -859,7 +859,7 @@ NodeProxy : BusPlug {
 			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
 			this.stopAllToBundle(bundle);
 			if(freeGroup) { 
-				bundle.sched((fadeTime ? this.fadeTime) + server.latency, { group.free }); 
+				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { group.free }); 
 			};
 			bundle.send(server);
 		}
