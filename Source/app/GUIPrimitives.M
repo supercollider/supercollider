@@ -2517,7 +2517,7 @@ int prPen_SetWidth(struct VMGlobals *g, int numArgsPushed)
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetLineWidth(cgc, width);
-    
+    [NSBezierPath setDefaultLineWidth: width];
     return errNone;
 }
 
