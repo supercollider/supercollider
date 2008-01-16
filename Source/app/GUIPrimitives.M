@@ -1960,7 +1960,7 @@ int prColor_SetStroke(struct VMGlobals *g, int numArgsPushed)
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetRGBStrokeColor(cgc, red, green, blue, alpha);
-    CGContextSetRGBFillColor(cgc, red, green, blue, alpha);
+//    CGContextSetRGBFillColor(cgc, red, green, blue, alpha);
    /* NSColor *color = [NSColor colorWithCalibratedRed: red
                             green: green 
                             blue: blue 
@@ -1995,13 +1995,13 @@ int prColor_SetFill(struct VMGlobals *g, int numArgsPushed)
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetRGBFillColor(cgc, red, green, blue, alpha);
-   /* NSColor *color = [NSColor colorWithCalibratedRed: red
-                            green: green 
-                            blue: blue 
-                            alpha: alpha];
-    if (color) {
-        [color set];
-    }*/
+//	NSColor *color = [NSColor colorWithCalibratedRed: red
+//                            green: green 
+//                            blue: blue 
+//                            alpha: alpha];
+//    if (color) {
+//        [color setFill];
+//    }
     
     return errNone;
 }
@@ -2091,7 +2091,7 @@ int prPen_FillRect(struct VMGlobals *g, int numArgsPushed)
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextBeginPath(cgc);
 	CGContextAddRect(cgc, rect);
-    CGContextDrawPath(cgc, kCGPathFill);
+    CGContextFillPath(cgc);
     
     return errNone;
 }
