@@ -48,8 +48,19 @@ ScoreStreamPlayer : Server {
 	}
 			
 	makeScore { | stream, duration = 1, event, timeOffset = 0|
-		var ev, startTime;
-		event = this.prepareEvent(event ? Event.default);
+		var ev, startTime, proto;
+		proto = (
+			server: this,
+
+			schedBundle: { | lag, offset, server ...bundle | 
+				this.add(offset * tempo + lag + beats, bundle)
+			},
+			schedBundleArray: { | lag, offset, server, bundle | 
+				this.add(offset * tempo + lag + beats, bundle)
+			}
+		);
+					
+		event = event ? Event.default;
 			
 		beats = timeOffset;
 		tempo = 1;
@@ -62,7 +73,7 @@ ScoreStreamPlayer : Server {
 				ev = stream.next(event.copy);		
 				(maxTime >= beats) && ev.notNil
 			},{ 
-				ev[\server] = this;
+				ev.putAll(proto);
 				ev.play;
 				beats = ev.delta * tempo + beats
 			})
