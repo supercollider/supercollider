@@ -75,7 +75,8 @@
 			if(server.isLocal) {
 				def.load(server, synthMsg)
 			}{
-				"synthdef too large to send to remote server".warn 
+				"synthdef may have been too large to send to remote server".warn;
+				server.sendMsg("/d_recv", bytes, synthMsg);
 			}
 		} {
 			server.sendMsg("/d_recv", bytes, synthMsg)
