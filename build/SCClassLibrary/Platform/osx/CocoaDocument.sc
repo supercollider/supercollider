@@ -1,5 +1,15 @@
 CocoaDocument : Document {
 	
+	*startup { 
+		var post;
+		super.startup; 
+		fork({ 
+			0.2.wait; 
+			post = this.listener; 
+			if(post.notNil) { post.name_(" post ") } 
+		}, AppClock);
+	}
+
 	*new { arg title="Untitled", string="", makeListener=false;
 		^super.prBasicNew.initByString(title, string.asString, makeListener);
 	}
