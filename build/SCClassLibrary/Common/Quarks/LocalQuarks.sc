@@ -16,7 +16,7 @@ LocalQuarks
 	var all; // contains nil, or all local quarks
 
 	*new { | path, parent |
-		^super.newCopyArgs((path ?? { Platform.userAppSupportDir ++ "/quarks"}).escapeChar($ ), parent)
+		^super.newCopyArgs((path ?? { Platform.userAppSupportDir ++ "/quarks"}), parent)
 	}
 
 	name {
