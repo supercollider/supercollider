@@ -302,13 +302,22 @@ SCContainerView : SCView { // abstract class
 		if (decorator.notNil, { decorator.place(child); });
 	}
 	
+	init { |argParent, argBounds|
+		super.init(argParent, argBounds);
+			// if user changed default relativeOrigin to true,
+			// the client would be out of sync with the cocoa widget
+			// without resetting the view property
+		this.relativeOrigin = relativeOrigin;
+	}
+	
 	removeAll {
 		children.copy.do {|child| child.remove };
 	}
 	
 	relativeOrigin_{|bool|
 		relativeOrigin = bool;
-		this.setProperty(\relativeOrigin, bool);			}	
+		this.setProperty(\relativeOrigin, bool);
+	}	
 			
 	prRemoveChild { arg child;
 		children.remove(child);
@@ -342,7 +351,7 @@ SCTopView : SCCompositeView {
 //	remove { this.removeAll }
 
 	findWindow{
-		SCWindow.allWindows{|win|
+		SCWindow.allWindows.do {|win|
 			if(win.view == this){
 				^win
 			}

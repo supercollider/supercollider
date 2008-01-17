@@ -124,8 +124,14 @@ FlowView : SCViewHolder {
 			// so I will replace the last-added child with THIS
 		parent.asView.children[parent.asView.children.size-1] = this;
 
+		if(view.relativeOrigin) {
+			bounds = view.bounds.moveTo(2, 2);
+		} {
+			bounds = view.bounds;
+		};
+
 		// after i am placed by parent...
-		view.decorator = FlowLayout(this.bounds,Point(2,2),Point(4,4));
+		view.decorator = FlowLayout(bounds,Point(2,2),Point(4,4));
 		autoRemoves = IdentitySet.new;
 	}
 
