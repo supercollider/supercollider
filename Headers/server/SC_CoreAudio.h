@@ -95,6 +95,7 @@ protected:
 	// Common members
 	uint32	mHardwareBufferSize;	// bufferSize returned by kAudioDevicePropertyBufferSize
 	EngineFifo mFromEngine, mToEngine;
+	EngineFifo mOscPacketsToEngine;
 	SC_SyncCondition mAudioSync;
 	pthread_t mThread;
 	bool mRunThreadFlag;
@@ -147,9 +148,10 @@ public:
 		mPreferredSampleRate = inRate;
 	}
 
-	bool SendMsgToEngine(FifoMsg& inMsg);
-	bool SendMsgFromEngine(FifoMsg& inMsg);
-	
+	bool SendMsgToEngine(FifoMsg& inMsg);           // called by NRT thread
+	bool SendMsgFromEngine(FifoMsg& inMsg);         
+	bool SendOscPacketMsgToEngine(FifoMsg& inMsg);  // called by OSC socket listener threads, protected by mWorld->mDriverLock
+
 	void AddEvent(SC_ScheduledEvent& event) { mScheduler.Add(event); }
 
 	double GetAvgCPU() const { return mAvgCPU; }

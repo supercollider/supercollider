@@ -191,7 +191,7 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 		inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
 		FifoMsg fifoMsg;
 		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
-		result = driver->SendMsgToEngine(fifoMsg);
+		result = driver->SendOscPacketMsgToEngine(fifoMsg);
 	inWorld->mDriverLock->Unlock();
 	return result;
 }
@@ -387,6 +387,12 @@ bool SC_AudioDriver::SendMsgToEngine(FifoMsg& inMsg)
 {
 	mToEngine.Free();
 	return mToEngine.Write(inMsg);
+}
+
+bool SC_AudioDriver::SendOscPacketMsgToEngine(FifoMsg& inMsg)
+{
+	mOscPacketsToEngine.Free();
+	return mOscPacketsToEngine.Write(inMsg);
 }
 
 void SC_ScheduledEvent::Perform()
@@ -910,6 +916,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 			scprintf("oscTime %.9f %.9f\n", oscTime*kOSCtoSecs, CoreAudioHostTimeToOSC(AudioGetCurrentHostTime())*kOSCtoSecs);
 		}*/
 		mToEngine.Perform();
+		mOscPacketsToEngine.Perform();
 		
 		int bufFrames = world->mBufLength;
 		int numBufs = numSamplesPerCallback / bufFrames;
@@ -1565,6 +1572,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 		
 		mFromEngine.Free();
 		mToEngine.Perform();
+		mOscPacketsToEngine.Perform();
 		
 		int numInputs = mInputChannelCount;
 		int numOutputs = mOutputChannelCount;
@@ -1803,6 +1811,7 @@ void SC_VSTAudioDriver::Callback( const void *input, void *output,
 		
 		mFromEngine.Free();
 		mToEngine.Perform();
+		mOscPacketsToEngine.Perform();
 		
 		int numInputs = mInputChannelCount;
 		int numOutputs = mOutputChannelCount;
