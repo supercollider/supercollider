@@ -3,7 +3,7 @@
  *	for Mac OS X. It can be accessed from the GUI
  *	class using GUI.cocoa, GUI.fromID( \cocoa ) or GUI.get( \cocoa ).
  *
- *	@version	0.13, 09-Oct-07
+ *	@version	0.14, 17-Jan-08
  */
 CocoaGUI {
 	classvar extraClasses;
@@ -25,6 +25,13 @@ CocoaGUI {
 		^extraClasses.perform( selector, *args );
 	}
 	
+	///////////////// Common -> GUI /////////////////
+
+	*freqScope { ^FreqScope }
+	*freqScopeView { ^SCFreqScope }
+	*scopeView { ^SCScope }
+	*stethoscope { ^Stethoscope }
+
 	///////////////// Common -> GUI -> Base /////////////////
 
 	*view { ^SCView }
@@ -53,12 +60,9 @@ CocoaGUI {
 	*movieView { ^SCMovieView }
 	*textView { ^SCTextView }
 	*quartzComposerView { ^SCQuartzComposerView }
-	*scopeView { ^SCScope }
-	*freqScope { ^FreqScope }
-	*freqScopeView { ^SCFreqScope }
+	*scrollView { ^SCScrollView }
 	*ezSlider { ^EZSlider }
 	*ezNumber { ^EZNumber }
-	*stethoscope { ^Stethoscope }
 	
 	*font { ^Font }
 	*pen { ^Pen }
