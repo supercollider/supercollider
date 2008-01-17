@@ -24,7 +24,7 @@ QuarkSVNRepository
 	}
 	// easiest to just check out all
 	checkoutAll { |localRoot|
-		this.svn("co", this.url ++ "/", localRoot ++  "/")
+		this.svn("co", this.url ++ "/", localRoot.escapeChar($ ) ++  "/")
 	}
 	// checkout a specific quark
 	checkout { | q, localRoot, sync = false |
@@ -48,19 +48,18 @@ QuarkSVNRepository
 		dir = local.path.select{|c| (c != $\\)};
 		if(File.exists(dir).not, {
 			//"Quarks dir is not yet checked out.  Execute:".debug;
-			this.svn("co","-N",this.url, local.path);
-			this.svn("co",this.url++"/DIRECTORY", local.path);
+			this.svn("co","-N",this.url, local.path.escapeChar($ ));
+			this.svn("co",this.url++"/DIRECTORY", local.path.escapeChar($ ));
 			^false;
 		});
 		^true;
 	}
 	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not
 	updateDirectory {
-		this.svn("update",local.path ++ "/DIRECTORY/");
+		this.svn("update",(local.path ++ "/DIRECTORY/").escapeChar($ ));
 	}
 	update {
-		//"To update your local quarks working copies:".debug;
-		this.svn("update",local.path);
+		this.svn("update",local.path.escapeChar($ ));
 	}
 	// load all specification quark objects from DIRECTORY
 	// they may or may not be locally checked out
@@ -107,7 +106,7 @@ QuarkSVNRepository
 	}
 	// Allows to wait for command to complete
 	svnSync { | cmd ... args |
-		cmd = ("export LANG='' ; " + svnpath + cmd + args.join(" ") + "2>&1");
+		cmd = ("export LANG='' ; " + svnpath.escapeChar($ ) + cmd + args.join(" ") + "2>&1");
 		"".debug;
 		cmd.debug;
 		"".debug;
