@@ -536,6 +536,12 @@ SCLayoutView : SCContainerView {
 	spacing_ { arg distance;
 		this.setProperty(\spacing, distance)
 	}
+	setProperty { |key, value|
+			// layout views don't recognize relativeOrigin in the backend
+		if(key != \relativeOrigin) {
+			super.setProperty(key, value);
+		};
+	}
 }
 
 SCHLayoutView : SCLayoutView {}
@@ -1195,7 +1201,7 @@ SCDragBoth : SCDragSink {
 SCUserView : SCView {
 	var <>drawFunc;
 //	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
-	var < clearOnRefresh = true, < relativeOrigin = false;
+	var < clearOnRefresh = true, < relativeOrigin = true;
 	
 	draw { 
 		drawFunc.value(this) ;	
