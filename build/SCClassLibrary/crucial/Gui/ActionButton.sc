@@ -124,8 +124,8 @@ FlowView : SCViewHolder {
 			// so I will replace the last-added child with THIS
 		parent.asView.children[parent.asView.children.size-1] = this;
 
-		if(view.relativeOrigin) {
-			bounds = view.bounds.moveTo(2, 2);
+		if(view.tryPerform(\relativeOrigin) ? false) {
+			bounds = view.bounds.moveTo(0, 0);
 		} {
 			bounds = view.bounds;
 		};
