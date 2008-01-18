@@ -41,9 +41,6 @@
 // Add 'component' to 'path' using the platform path separator.
 void sc_AppendToPath(char *path, const char *component);
 
-// Scan a string, replace / and \ with the right path separator for the platform.
-void sc_FixPathSeparators(char *path);
-
 // Returns the expanded path with users home directory (also in newpath2)
 char *sc_StandardizePath(const char *path, char *newpath2);
 
