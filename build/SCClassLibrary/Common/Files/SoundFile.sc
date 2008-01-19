@@ -14,10 +14,8 @@
 		sample formats:
 			"int8", "int16", "int24", "int32"
 			"mulaw", "alaw",
-			"float"
-			
+			"float"			
 		not all header formats support all sample formats.
-
 */
 
 SoundFile {	
