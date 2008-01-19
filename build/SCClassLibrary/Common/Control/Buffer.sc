@@ -470,6 +470,15 @@ Buffer {
 	}
 	
 	copy { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
+		if(buf.notNil) {
+			this.deprecated(thisMethod, this.class.findRespondingMethodFor(\copyData));
+			this.copyData(buf, dstStartAt, srcStartAt, numSamples);
+		} {
+			^super.copy
+		}
+	}
+	
+	copyData { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
 		server.listSendMsg(
 			this.copyMsg(buf, dstStartAt, srcStartAt, numSamples)
 		)
