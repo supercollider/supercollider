@@ -33,22 +33,32 @@
   */
 + Integer { // at the next N beat
 	schedBundle { arg bundle,server,timeOfRequest;
-		var now,nowRound,tdelta,latencyBeats;
+		var now,nowRound,latencyBeats,deltaTillSend;
+		
 		latencyBeats = Tempo.secs2beats(server.latency);
 		now = TempoClock.default.elapsedBeats;
-		nowRound = (now + latencyBeats).roundUp((this / 4).reciprocal);
-		tdelta = Tempo.beats2secs(nowRound - now);
+		nowRound = now.roundUp(4 / this);
+		
+		deltaTillSend = (nowRound - now - latencyBeats);
+		if(deltaTillSend < 0.05,{
+			nowRound = nowRound + (4/this);
+			deltaTillSend = (nowRound - now - latencyBeats);
+		});
+			
+		TempoClock.default.sched( deltaTillSend, {
+			var lateness,latency;
+			// this executes at Server.latency before the event is due.
+			// calculate actual latency to the requested time
+			latency = Tempo.beats2secs(nowRound -  TempoClock.default.elapsedBeats);
 
-		// for server.latency seconds you are exposed to error if you are
-		// changing the tempo during that time
-		TempoClock.default.sched( nowRound - now, {
-			/*SystemClock.sched(server.latency,{
+			/*SystemClock.sched(latency,{
 				var b;
-				b = TempoClock.default.elapsedBeats.debug("the beat");
-				(b % 4).debug;
+				b = TempoClock.default.elapsedBeats;
+				[b,nowRound - b].debug("actual sched");
 				nil;
 			});*/
-			bundle.send(server, server.latency);
+			
+			bundle.send(server, latency);
 			nil
 		});		
 	}
