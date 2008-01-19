@@ -20,7 +20,10 @@ Pfx : FilterPattern {
 		event[\id] = id;
 		event[\delta] = 0;
 		
-		cleanup.addOff(event, { (type: \off, id: id).play });		
+		cleanup.addFunction(event, { |flag| 
+			if (flag) { (type: \off, id: id).play } 
+		});		
+		
 		inevent = event.yield;
 		
 		stream = pattern.asStream;
@@ -53,7 +56,9 @@ Pgroup : FilterPattern {
 		event[\delta] = 1e-9; // no other sync choice for now. (~ 1 / 20000 sample delay)
 		event[\id] = groupID;
 		event[\group] = ingroup;
-		cleanup.addOff(event, { (lag: lag, type: \kill, id: groupID, server: server).play });
+		cleanup.addFunction(event, { | flag |
+			if (flag) { (lag: lag, type: \kill, id: groupID, server: server).play }
+		});
 		inevent = event.yield;
 		
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
@@ -126,8 +131,8 @@ Pbus : FilterPattern {
 		event[\instrument] = format("system_link_%_%", rate, numChannels);
 		event[\in] = bus;
 
-		cleanup.addOff(event, { 
-			(id: linkID, type: \off, gate: dur.neg, hasGate: true).play; 
+		cleanup.addFunction(event, { | flag |
+			if(flag) { (id: linkID, type: \off, gate: dur.neg, hasGate: true).play }; 
 		});
 
 		cleanup.addFunction(event, { freeBus.value; });
