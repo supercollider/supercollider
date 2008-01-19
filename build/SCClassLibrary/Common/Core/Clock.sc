@@ -66,7 +66,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}	
 	
 	*cmdPeriod {
-		all.do({ arg item; item.clear });
+		all.do({ arg item; item.clear(false) });
 		all.do({ arg item; if (item.permanent.not, { item.stop })  })
 	}	
 
@@ -122,8 +122,10 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		_TempoClock_SchedAbs
 		^this.primitiveFailed
 	}
-	clear {
-		queue.pairsDo { arg time, item; item.removedFromScheduler };
+	clear { | releaseNodes = true |
+		// flag tells EventStreamPlayers that CmdPeriod is removing them, so
+		// nodes are already freed
+		queue.pairsDo { arg time, item; item.removedFromScheduler(releaseNodes) };
 		^this.prClear;
 	}
 
