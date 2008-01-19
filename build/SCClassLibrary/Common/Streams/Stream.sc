@@ -428,20 +428,25 @@ EventStreamPlayer : PauseStream {
 	var <>event, <>muteCount = 0, <>cleanup;
 	
 	*new { arg stream, event;
-		^super.new(stream).event_(event ? Event.default).cleanup_(EventStreamPlayerCleanup.new);
+		^super.new(stream).event_(event ? Event.default).cleanup_(EventStreamCleanup.new);
 	}
 	
-		// stop inherits from PauseStream, no change needed
-		// prStop needs to do cleanup.terminate
+	// freeNodes is passed as false from
+	//TempoClock:cmdPeriod
+	removedFromScheduler { | freeNodes = true |
+		nextBeat = nil;
+		cleanup.terminate(freeNodes);	
+		this.prStop;
+		this.changed(\stopped);
+	}
 	prStop {	
-		cleanup.terminate;	
 		stream = nextBeat = nil;
 		isWaiting = false;
 	 }
-	 
+	
 	stop {
+		cleanup.terminate;
 		this.prStop;
-		cleanup.terminateNodeFunctions;		
 		this.changed(\userStopped);
 	}
 	
