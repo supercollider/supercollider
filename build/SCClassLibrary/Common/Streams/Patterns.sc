@@ -323,7 +323,9 @@ Pmono : Pattern {
 					 id = argID;
 					 server = argServer;
 				};
-				cleanup.addOff(event, { (id: id, server: server, type: \off).play }); 
+				cleanup.addFunction(event, { | flag |
+					if (flag) { (id: id, server: server, type: \off).play }
+				}); 
 			}
 		};
 		loop {
