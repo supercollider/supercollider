@@ -124,7 +124,9 @@ Pgpar : Ppar {
 		
 		inevent = event.yield.copy;
 		cleanup = EventStreamCleanup.new;
-		cleanup.addOff(inevent, { ( lag: lag, type: \kill, id: ids, server: server).play; });
+		cleanup.addFunction(inevent, { | flag |
+			if (flag) { ( lag: lag, type: \kill, id: ids, server: server).play }; 
+		});
 		
 		patterns = this.wrapPatterns(ids);
 		stream = Ppar(patterns, repeats).asStream;
