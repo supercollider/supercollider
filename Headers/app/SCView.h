@@ -772,7 +772,7 @@ public:
  	virtual void receiveDrag();	
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-	
+	virtual void clearDrawing();	
 protected:
 	bool mClearOnRefresh;
 	bool mRelativeOrigin;
