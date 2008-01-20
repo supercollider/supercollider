@@ -139,7 +139,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			int32* name = msg->gets4();
 			int32 hash = Hash(name);
 			if (msg->nextTag('f') == 's') {
-				char* string = msg->gets();
+				const char* string = msg->gets();
 				if (*string == 'c') {
 					int bus = sc_atoi(string+1);
 					Graph_MapControl(graph, hash, name, 0, bus);
@@ -151,7 +151,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 		} else {
 			int32 index = msg->geti();
 			if (msg->nextTag('f') == 's') {
-				char* string = msg->gets();
+				const char* string = msg->gets();
 				if (*string == 'c') {
 					int bus = sc_atoi(string+1);
 					Graph_MapControl(graph, index, bus);

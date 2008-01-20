@@ -76,7 +76,7 @@ int SC_SequencedCommand::Init(char* /*inData*/, int /*inSize*/)
 	return kSCErr_None;
 }
 
-void SC_SequencedCommand::SendDone(char *inCommandName)
+void SC_SequencedCommand::SendDone(const char *inCommandName)
 {
 	::SendDone(&mReplyAddress, inCommandName);
 };
@@ -441,7 +441,7 @@ int BufAllocReadCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	
-	char *filename = msg.gets();
+	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
@@ -527,7 +527,7 @@ int BufReadCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	
-	char *filename = msg.gets();
+	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
@@ -667,7 +667,7 @@ int BufAllocReadChannelCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	
-	char *filename = msg.gets();
+	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
@@ -779,7 +779,7 @@ int BufReadChannelCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	
-	char *filename = msg.gets();
+	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
@@ -901,14 +901,14 @@ int BufWriteCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	
-	char *filename = msg.gets();
+	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
 
-	char *headerFormatString = msg.gets("aiff");	
-	char *sampleFormatString = msg.gets("int16");
+	const char *headerFormatString = msg.gets("aiff");
+	const char *sampleFormatString = msg.gets("int16");
 
 	mNumFrames = msg.geti(-1);
 	mBufOffset = msg.geti();
@@ -1247,7 +1247,7 @@ int LoadSynthDefCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	
-	char *filename = msg.gets();
+	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
@@ -1299,7 +1299,7 @@ int LoadSynthDefDirCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	
-	char *filename = msg.gets();
+	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);

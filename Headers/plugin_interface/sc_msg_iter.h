@@ -77,7 +77,7 @@ struct sc_msg_iter
 	int32 geti(int32 defaultValue = 0);
 	float32 getf(float32 defaultValue = 0.f);
 	float64 getd(float64 defaultValue = 0.f);
-	char *gets(char* defaultValue = 0);
+	const char *gets(const char* defaultValue = 0);
 	int32 *gets4(char* defaultValue = 0);
 	size_t getbsize();
 	void getb(char* outData, size_t inSize);
@@ -196,9 +196,9 @@ inline float64 sc_msg_iter::getd(float64 defaultValue)
 }
 
 
-inline char* sc_msg_iter::gets(char* defaultValue)
+inline const char* sc_msg_iter::gets(const char* defaultValue)
 {
-	char* value;
+	const char* value;
 	if (remain() <= 0) return 0;
 	if (tags) {
 		if (tags[count] == 's') {

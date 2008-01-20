@@ -98,7 +98,7 @@ void sc_CloseDir(SC_DirHandle *dir);
 // Skip compilation directories iff 'skipEntry' is TRUE.
 // Return TRUE iff pointing to a valid dir entry.
 // Return TRUE in 'skipEntry' iff entry should be skipped.
-bool sc_ReadDir(SC_DirHandle *dir, char *dirname, char *path, bool &skipEntry);
+bool sc_ReadDir(SC_DirHandle *dir, const char *dirname, char *path, bool &skipEntry);
 
 
 // Globbing

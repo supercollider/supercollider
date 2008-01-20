@@ -40,7 +40,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive);
 void DumpBackTrace(VMGlobals *g);
 void DumpStack(VMGlobals *g, PyrSlot *sp);
 void DumpFrame(struct PyrFrame *frame);
-bool FrameSanity(PyrFrame *frame, char *tagstr);
+bool FrameSanity(PyrFrame *frame, const char *tagstr);
 struct PyrProcess* newPyrProcess(VMGlobals *g, struct PyrClass *classobj);
 void startProcess(VMGlobals *g, PyrSymbol *selector);
 void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);

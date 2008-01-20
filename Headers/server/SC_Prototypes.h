@@ -182,8 +182,8 @@ void Unit_ZeroOutputs(struct Unit *inUnit, int inNumSamples);
 
 ////////////////////////////////////////////////////////////////////////
 
-void SendDone(struct ReplyAddress *inReply, char *inCommandName);
-void SendFailure(struct ReplyAddress *inReply, char *inCommandName, char *errString);
+void SendDone(struct ReplyAddress *inReply, const char *inCommandName);
+void SendFailure(struct ReplyAddress *inReply, const char *inCommandName, const char *errString);
 void ReportLateness(struct ReplyAddress *inReply, float32 seconds);
 void DumpReplyAddress(struct ReplyAddress *inReplyAddress);
 int32 Hash(struct ReplyAddress *inReplyAddress);

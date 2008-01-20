@@ -27,7 +27,7 @@
 #include "SC_Str4.h"
 #include <stdlib.h>
 
-bool UnitDef_Create(char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
+bool UnitDef_Create(const char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
 {
 	if (strlen(inName) >= kSCNameByteLen) return false;
 
@@ -54,7 +54,7 @@ bool UnitDef_Create(char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitD
 
 #include "SC_Lib_Cintf.h"
 
-bool UnitDef_AddCmd(char *inUnitDefName, char *inCmdName, UnitCmdFunc inFunc)
+bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFunc inFunc)
 {
 	if (strlen(inUnitDefName) >= kSCNameByteLen) return false;
 	int32 unitDefName[kSCNameLen];
@@ -81,7 +81,7 @@ bool UnitDef_AddCmd(char *inUnitDefName, char *inCmdName, UnitCmdFunc inFunc)
 	return true;
 }
 
-bool PlugIn_DefineCmd(char *inCmdName, PlugInCmdFunc inFunc, void *inUserData)
+bool PlugIn_DefineCmd(const char *inCmdName, PlugInCmdFunc inFunc, void *inUserData)
 {
 	
 	if (strlen(inCmdName) >= kSCNameByteLen) return false;

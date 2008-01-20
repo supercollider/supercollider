@@ -138,8 +138,8 @@ sweep phase:
 	list of nonlocal reached objects.
 */
 
-void fatalerror(char*str);
-void fatalerror(char*str)
+void fatalerror(const char*str);
+void fatalerror(const char*str)
 {
 	fprintf(stderr, str);
 	postfl(str);

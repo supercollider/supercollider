@@ -106,7 +106,7 @@ LongStack closedFuncCharNo;
 LongStack generatorStack;
 int lastClosedFuncCharNo = 0;
 
-char *binopchars = "!@%&*-+=|<>?/";
+const char *binopchars = "!@%&*-+=|<>?/";
 char yytext[MAXYYLEN];
 char curfilename[PATH_MAX];
 

@@ -47,17 +47,17 @@ struct InterfaceTable
 	int32 (*fRanSeed)();
 	
 	// define a unit def
-	bool (*fDefineUnit)(char *inUnitClassName, size_t inAllocSize, 
+	bool (*fDefineUnit)(const char *inUnitClassName, size_t inAllocSize,
 			UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
 
 	// define a command  /cmd
-	bool (*fDefinePlugInCmd)(char *inCmdName, PlugInCmdFunc inFunc, void* inUserData);
+	bool (*fDefinePlugInCmd)(const char *inCmdName, PlugInCmdFunc inFunc, void* inUserData);
 
 	// define a command for a unit generator  /u_cmd
-	bool (*fDefineUnitCmd)(char *inUnitClassName, char *inCmdName, UnitCmdFunc inFunc);
+	bool (*fDefineUnitCmd)(const char *inUnitClassName, const char *inCmdName, UnitCmdFunc inFunc);
 	
 	// define a buf gen
-	bool (*fDefineBufGen)(char *inName, BufGenFunc inFunc);
+	bool (*fDefineBufGen)(const char *inName, BufGenFunc inFunc);
 
 	// clear all of the unit's outputs.
 	void (*fClearUnitOutputs)(Unit *inUnit, int inNumSamples);

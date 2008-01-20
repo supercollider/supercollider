@@ -281,7 +281,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrString *string;
-	char *str;
+	const char *str;
 	
 	a = g->sp;
 	switch (g->thread->primitiveError.ui) {
@@ -3403,7 +3403,7 @@ void growPrimitiveTable(int newsize)
 	pyr_pool_runtime->Free(oldtable);
 }
 
-int definePrimitive(int base, int index, char *name, PrimitiveHandler handler,
+int definePrimitive(int base, int index, const char *name, PrimitiveHandler handler,
 	int numArgs, int varArgs)
 {
 	int tableIndex;
@@ -3440,7 +3440,7 @@ int definePrimitive(int base, int index, char *name, PrimitiveHandler handler,
 	return tableIndex;
 }
 
-int definePrimitiveWithKeys(int base, int index, char *name, 
+int definePrimitiveWithKeys(int base, int index, const char *name,
 	PrimitiveHandler handler, PrimitiveWithKeysHandler keyhandler,
 	int numArgs, int varArgs)
 {

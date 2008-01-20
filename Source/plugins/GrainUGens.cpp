@@ -1823,6 +1823,3 @@ void load(InterfaceTable *inTable)
 	DefineSimpleCantAliasUnit(Warp1);
 
 }
-
-
-	
