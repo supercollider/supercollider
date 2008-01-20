@@ -341,5 +341,29 @@ SoundFile {
 	play { | ev, playNow = true | 
 		^this.cue(ev, playNow) 
 	}
+
+	asEvent { | type = \allocRead |
+		if (type == \cue) {
+			^(	type: 			type,
+				path: 			path, 
+				numFrames: 		numFrames, 
+				sampleRate: 		sampleRate, 
+				numChannels: 		numChannels,
+				bufferSize:		0x10000,
+				firstFileFrame:	0,
+				firstBufferFrame: 	0,
+				leaveOpen:		1
+			)
+		} {	
+			^(	type: 			type,
+				path: 			path, 
+				numFrames: 		numFrames, 
+				sampleRate: 		sampleRate, 
+				numChannels: 		numChannels,
+				firstFileFrame:	0
+			)
+		}
+
+	}	
 	
 }
