@@ -1207,6 +1207,9 @@ SCUserView : SCView {
 		drawFunc.value(this) ;	
 	}
 	
+	clearDrawing{
+			this.setProperty(\clearDrawing);	}
+
 	mousePosition{
 		^this.getProperty(\mousePosition, Point.new)
 	}
