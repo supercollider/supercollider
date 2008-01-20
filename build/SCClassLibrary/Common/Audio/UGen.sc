@@ -71,6 +71,15 @@ UGen : AbstractFunction {
 			^LinExp.multiNew(rate, this, 0, 1, lo, hi)
 		});
  	}
+ 	
+ 	unipolar { arg mul = 1; 
+ 		^this.range(0, mul) 
+ 	}
+ 	
+ 	bipolar { arg mul = 1;
+ 		^this.range(mul.neg, mul) 
+  	}
+ 	
  	clip { arg lo,hi;
  		if(rate == \audio) {
  			^Clip.ar(this, lo, hi)
