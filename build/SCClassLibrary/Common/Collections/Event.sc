@@ -479,7 +479,9 @@ Event : Environment {
 					},
 			
 					group: #{|server|
-						var bundle = [\g_new, ~id.asArray, Node.actionNumberFor(~addAction), ~group.asUGenInput].flop;
+						var bundle;
+						if (~id.isNil) { ~id = server.nextNodeID };
+						bundle = [\g_new, ~id.asArray, Node.actionNumberFor(~addAction), ~group.asUGenInput].flop;
 						~schedBundleArray.value(~lag, ~timingOffset, server, bundle);
 					},
 			
