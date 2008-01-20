@@ -206,29 +206,49 @@ Event : Environment {
 				args: #[\freq, \amp, \pan, \trig],
 				
 				timingOffset: 0 ,
-				
+	//			
+//				schedBundle: #{ |lag, offset, server ...bundle |
+//					thisThread.clock.sched ( offset, {
+//							// the test is to prevent piles of "late" messages
+//							// if you're using nil server latency
+//						if(server.latency.isNil and: { lag == 0 or: { lag.isNil } }) {
+//							server.sendBundle(nil, *bundle)
+//						} {
+//							server.sendBundle((server.latency ? 0) + (lag ? 0), *bundle);
+//						}
+//					})
+//				},
+//
+//				schedBundleArray: #{ | lag, offset, server, bundleArray |
+//					thisThread.clock.sched ( offset, {
+//						if(server.latency.isNil and: { lag == 0 or: { lag.isNil } }) {
+//							server.sendBundle(nil, *bundleArray)
+//						} {
+//							server.sendBundle((server.latency ? 0) + (lag ? 0), *bundleArray);
+//						}
+//					})
+//				},
+//								
 				schedBundle: #{ |lag, offset, server ...bundle |
-					thisThread.clock.sched ( offset, {
-							// the test is to prevent piles of "late" messages
-							// if you're using nil server latency
-						if(server.latency.isNil and: { lag == 0 or: { lag.isNil } }) {
-							server.sendBundle(nil, *bundle)
-						} {
-							server.sendBundle((server.latency ? 0) + (lag ? 0), *bundle);
-						}
-					})
-				},
+				thisThread.clock.sched ( offset, {Ê
+					if (lag !=0 ) {
+						SystemClock.sched( lag, { server.sendBundle(server.latency, *bundle)Ê })
+					} {
+						server.sendBundle(server.latency, *bundle)
+					}
+				})
+			},
 
-				schedBundleArray: #{ | lag, offset, server, bundleArray |
-					thisThread.clock.sched ( offset, {
-						if(server.latency.isNil and: { lag == 0 or: { lag.isNil } }) {
-							server.sendBundle(nil, *bundleArray)
-						} {
-							server.sendBundle((server.latency ? 0) + (lag ? 0), *bundleArray);
-						}
-					})
-				},
-								
+			schedBundleArray: #{ | lag, offset, server, bundleArray |
+				thisThread.clock.sched ( offset, {
+					if (lag !=0 ) {
+						SystemClock.sched(lag, { server.sendBundle(server.latency, *bundleArray) })
+					} {
+						server.sendBundle(server.latency, *bundleArray)
+					}
+				})
+			},
+
 				schedStrummedNote: {| lag, strumTime, sustain, server, msg, sendGate |
 					var dur, schedBundle = ~schedBundle;
 					schedBundle.value(lag, strumTime + ~timingOffset, server, msg);
