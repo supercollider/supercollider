@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.44">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf; min-height: 12.0px}
+span.s1 {color: #0000bf}
+span.s2 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>ProxyMonitorGui<span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><br></p>
+<p class="p3">is a GUI for controlling the top-level of a proxy and its monitor.<span class="Apple-converted-space"> </span></p>
+<p class="p3">It is e.g. used in ProxyMixer, and it is crossplatform.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s1">Server</span>.default = s = <span class="s1">Server</span>.internal;</p>
+<p class="p4">s.boot;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">s.scope(8);</p>
+<p class="p4">p = <span class="s1">ProxySpace</span>.push;</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s2">~test = { </span>|freq=1000, dens=5, amp=1, lev=3|<span class="s2"><span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>var freqline = { exprand(0.3, 3) } ! 3 * XLine.kr(0.125, 1, 2);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Ringz</span>.ar(<span class="s1">Dust</span>.ar(dens ! 3, dens.reciprocal.sqrt), freq * freqline, 0.1)<span class="Apple-converted-space"> </span></p>
+<p class="p4">};</p>
+<p class="p4">~test.playN(0);</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4">GUI.cocoa;</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// make a ProxyMonitorGui</p>
+<p class="p5"><span class="s2">z = </span>ProxyMonitorGui<span class="s2">(~test);</span></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// without multichan out button, custom height</p>
+<p class="p4"><span class="s1">ProxyMonitorGui</span>(~test, height: 24, usePlayN: <span class="s1">false</span>);</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// left slider is vol</p>
+<p class="p4">~test.vol_(0.1);</p>
+<p class="p4">~test.vol_(0.25);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// drag source displays proxy key<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s2">z.proxy = ~otto12345;<span class="Apple-tab-span">	</span></span>// up to 9 letters on osx</p>
+<p class="p4">z.proxy = ~test;<span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2">~test.stop;<span class="Apple-tab-span">	</span></span>// play / stop button:</p>
+<p class="p4">~test.playN;</p>
+<p class="p6"><span class="s2">~test.end;<span class="Apple-tab-span">	</span></span>// alt-stop fully ends the proxy.</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// number box sets first output channel</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// when you want to play out of adjacent channels.</p>
+<p class="p4">~test.playN(0);<span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// playing out to multiple channels blocks the numberbox:</p>
+<p class="p4">~test.playN([0, 2, 5]);<span class="Apple-tab-span">	</span></p>
+<p class="p4">~test.playN([1, 2, 5]);<span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// ... and the button next to it shows the output shape now:</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// ("-&lt;" is multiple outs, "-=" is adjacent outs.</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// clicking on that button opens an editing dialog:</p>
+<p class="p4">~test.playNDialog;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// not working with swingOSC yet.</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// the pause button pauses and resumes</p>
+<p class="p4">~test.pause;</p>
+<p class="p4">~test.resume;</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// snd button re-sends proxy's sound as compiled,</p>
+<p class="p4">~test.send;</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// or with option-click, it rebuilds the proxy's sound function,</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// so e.g. normal random numbers or lookups in the lang get remade.</p>
+<p class="p4">~test.rebuild;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">ProxyMonitorGui</span> gets its look from <span class="s1">GUI</span>.skin, so you could customize it there.</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s1">If</span> you use <span class="s1">SwingOsc</span>, try:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">g = <span class="s1">SwingOSC</span>.default;<span class="Apple-converted-space"> </span></p>
+<p class="p5">g.boot;</p>
+<p class="p4"><span class="s1">GUI</span>.swing;</p>
+<p class="p7"><br></p>
+<p class="p5">y = ProxyMonitorGui<span class="s2">(~test);</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>
