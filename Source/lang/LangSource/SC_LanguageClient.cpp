@@ -112,7 +112,7 @@ bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* file
 bool SC_LanguageClient::readDefaultLibraryConfig()
 {
 #ifndef SC_WIN32
-	char* paths[3] = { ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg" };
+	const char* paths[3] = { ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg" };
 
 	char ipath[PATH_MAX];
 	char opath[PATH_MAX];
@@ -212,7 +212,7 @@ void SC_LanguageClient::snprintMemArg(char* dst, size_t size, int arg)
 {
 	int rem = arg;
 	int mod = 0;
-	char* modstr = "";
+	const char* modstr = "";
 
 	while (((rem % 1024) == 0) && (mod < 4)) {
 		rem /= 1024;

@@ -113,7 +113,7 @@ extern char curfilename[PATH_MAX];
 
 extern int runcount;
 
-extern char *binopchars;
+extern const char *binopchars;
 extern char yytext[MAXYYLEN];
 extern char curfilename[PATH_MAX];
 

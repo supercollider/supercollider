@@ -34,7 +34,7 @@
 
 extern InterfaceTable gInterfaceTable;
 
-bool BufGen_Create(char *inName, BufGenFunc inFunc)
+bool BufGen_Create(const char *inName, BufGenFunc inFunc)
 {
 	BufGen *bufGen = (BufGen*)malloc(sizeof(BufGen));
 	str4cpy(bufGen->mBufGenName, inName);

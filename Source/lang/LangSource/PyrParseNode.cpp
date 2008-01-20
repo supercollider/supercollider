@@ -75,7 +75,7 @@ int compileErrors = 0;
 extern bool compilingCmdLine;
 extern int errLineOffset, errCharPosOffset;
 
-char* nodename[] = {
+const char* nodename[] = {
 	"ClassNode",
 	"ClassExtNode",
 	"MethodNode",
@@ -1236,7 +1236,6 @@ void PyrMethodNode::compile(PyrSlot *result)
 		post("\tExtension overwriting %s:%s\n\t\tin file '%s'.\n", 
 			oldmethod->ownerclass.uoc->name.us->name, oldmethod->name.us->name, 
 			extPath);
-            
         asRelativePath(oldmethod->filenameSym.us->name, extPath);
         post("\t\tOriginal method in file '%s'.\n", extPath);
 

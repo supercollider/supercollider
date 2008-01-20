@@ -81,7 +81,7 @@ struct scpacket {
 		*wrpos++ = htonl(slot.i >> 32);
 		*wrpos++ = htonl(slot.i & 0x00000000FFFFFFFF);
 	}
-	void adds(char *src)
+	void adds(const char *src)
 	{
 		size_t len = strlen(src);
 		size_t len4 = (len + 4) >> 2;
@@ -90,7 +90,7 @@ struct scpacket {
 		memcpy(wrpos, src, (size_t)len);
 		wrpos += len4;
 	}
-	void adds(char *src, size_t len)
+	void adds(const char *src, size_t len)
 	{
 		size_t len4 = (len + 4) >> 2;
 		if (wrpos + len4 > endpos) BUFFEROVERFLOW;

@@ -426,7 +426,7 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
 	myCmdData->y = args->getf();
 	
 	// how to pass a string argument:
-	char *name = args->gets(); // get the string argument
+	const char *name = args->gets(); // get the string argument
 	if (name) {
 		myCmdData->name = (char*)RTAlloc(inWorld, strlen(name)+1); // allocate space, free it in cmdCleanup.
 		strcpy(myCmdData->name, name); // copy the string

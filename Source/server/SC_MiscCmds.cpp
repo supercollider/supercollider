@@ -42,7 +42,7 @@ Node* Msg_GetNode(World *inWorld, sc_msg_iter& msg)
 	Node *node;
 	if (msg.nextTag('i') == 's')
 	{
-		char* loc = msg.gets();
+		const char* loc = msg.gets();
 		int32 nodeID = msg.geti();
 		node = World_GetNode(inWorld, nodeID);
 		while (*loc)
@@ -384,7 +384,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 			int32* name = msg.gets4();
 			int32 hash = Hash(name);
 			if (msg.nextTag('f') == 's') {
-				char* string = msg.gets();
+				const char* string = msg.gets();
 				if (*string == 'c') {
 					int bus = sc_atoi(string+1);
 					Node_MapControl(node, hash, name, 0, bus);
@@ -396,7 +396,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		} else {
 			int32 index = msg.geti();
 			if (msg.nextTag('f') == 's') {
-				char* string = msg.gets();
+				const char* string = msg.gets();
 				if (*string == 'c') {
 					int bus = sc_atoi(string+1);
 					Node_MapControl(node, index, bus);
@@ -425,7 +425,7 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 			int32 n = msg.geti();
 			for (int i=0; msg.remain() && i<n; ++i) {
 				if (msg.nextTag('f') == 's') {
-					char* string = msg.gets();
+					const char* string = msg.gets();
 					if (*string == 'c') {
 						int bus = sc_atoi(string+1);
 						Node_MapControl(node, hash, name, i, bus);
@@ -440,7 +440,7 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 			int32 n = msg.geti();
 			for (int i=0; msg.remain() && i<n; ++i) {
 				if (msg.nextTag('f') == 's') {
-					char* string = msg.gets();
+					const char* string = msg.gets();
 					if (*string == 'c') {
 						int bus = sc_atoi(string+1);
 						Node_MapControl(node, index+i, bus);
@@ -475,7 +475,7 @@ SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 			}
 
 			if (msg.nextTag('f') == 's') {
-				char* string = msg.gets();
+				const char* string = msg.gets();
 				if (*string == 'c') {
 					int bus = sc_atoi(string+1);
 					for (int i=0; i<n; ++i) {
@@ -497,7 +497,7 @@ SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 				Node_SetControl(node, index+i, value);
 			}
 			if (msg.nextTag('f') == 's') {
-				char* string = msg.gets();
+				const char* string = msg.gets();
 				if (*string == 'c') {
 					int bus = sc_atoi(string+1);
 					for (int i=0; i<n; ++i) {

@@ -88,7 +88,7 @@ inline void str4cpy(int32 *dst, const int32 *src)
 	} while (c & kLASTCHAR);
 }
 
-inline int sc_atoi(char *string)
+inline int sc_atoi(const char *string)
 {
 	int value = 0;
 	if (*string == 0) return -1;

@@ -54,10 +54,10 @@ struct UnitDef
 };
 
 extern "C" {
-bool UnitDef_Create(char *inName, size_t inAllocSize, 
+bool UnitDef_Create(const char *inName, size_t inAllocSize,
 	UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
-bool UnitDef_AddCmd(char *inUnitDefName, char *inCmdName, UnitCmdFunc inFunc);
-bool PlugIn_DefineCmd(char *inCmdName, PlugInCmdFunc inFunc, void *inUserData);
+bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFunc inFunc);
+bool PlugIn_DefineCmd(const char *inCmdName, PlugInCmdFunc inFunc, void *inUserData);
 }
 
 int Unit_DoCmd(World *inWorld, int inSize, char *inData);

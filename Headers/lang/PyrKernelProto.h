@@ -56,7 +56,7 @@ PyrBlock* newPyrBlock(int flags);
 PyrMethod* newPyrMethod();
 PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	int numInstVars, int numClassVars);
-void addIntrinsicVar(PyrClass *classobj, char *varName, PyrSlot *slot);
+void addIntrinsicVar(PyrClass *classobj, const char *varName, PyrSlot *slot);
 
 
 

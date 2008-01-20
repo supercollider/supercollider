@@ -925,8 +925,8 @@ bool detectSendSelectorIn(PyrBlock *theBlock, PyrSymbol *testSelector)
 }
 
 
-char* byteCodeString(int code);
-char* byteCodeString(int code)
+const char* byteCodeString(int code);
+const char* byteCodeString(int code)
 {
 		switch (code) {
 			case 0 : return "PushClassX";

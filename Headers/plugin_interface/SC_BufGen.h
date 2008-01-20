@@ -34,7 +34,7 @@ struct BufGen
 };
 
 extern "C" {
-bool BufGen_Create(char *inName, BufGenFunc inFunc);
+bool BufGen_Create(const char *inName, BufGenFunc inFunc);
 }
 
 #endif

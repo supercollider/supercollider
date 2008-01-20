@@ -197,7 +197,7 @@ void dumpPyrSlot(PyrSlot* slot);
 void slotString(PyrSlot *slot, char *str);
 void slotOneWord(PyrSlot *slot, char *str);
 bool postString(PyrSlot *slot, char *str);
-char *slotSymString(PyrSlot* slot);
+const char *slotSymString(PyrSlot* slot);
 int asCompileString(PyrSlot *slot, char *str);
 
 int slotIntVal(PyrSlot* slot, int *value);

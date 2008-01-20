@@ -389,7 +389,7 @@ extern bool gTailIsMethodReturn;
 
 extern bool compilingCmdLine;
 
-extern char* nodename[];
+extern const char* nodename[];
 
 void compileNode(PyrParseNode* node, PyrSlot *result, bool onTailBranch);
 

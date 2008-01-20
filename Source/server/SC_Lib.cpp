@@ -30,7 +30,7 @@
 #include "SC_Str4.h"
 
 
-void SendDone(ReplyAddress *inReply, char *inCommandName)
+void SendDone(ReplyAddress *inReply, const char *inCommandName)
 {
 	small_scpacket packet;
 	packet.adds("/done");
@@ -41,7 +41,7 @@ void SendDone(ReplyAddress *inReply, char *inCommandName)
 	SendReply(inReply, packet.data(), packet.size());
 };
 
-void SendFailure(ReplyAddress *inReply, char *inCommandName, char *errString)
+void SendFailure(ReplyAddress *inReply, const char *inCommandName, const char *errString)
 {
 	small_scpacket packet;
 	packet.adds("/fail");

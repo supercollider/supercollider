@@ -337,7 +337,7 @@ void initSymbols()
 	gFormatElemTag[obj_symbol] = tagSym;
 }
 
-char *slotSymString(PyrSlot* slot)
+const char *slotSymString(PyrSlot* slot)
 {
 	switch (slot->utag) {
 		case tagObj : return slot->uo->classptr->name.us->name;
@@ -641,7 +641,7 @@ bool classFindInstVar(PyrClass* classobj, PyrSymbol *name, int *index)
 	return false;
 }
 
-int instVarOffset(char *classname, char *instvarname)
+int instVarOffset(const char *classname, const char *instvarname)
 {
 	PyrSymbol *instvarsymbol, *classsymbol;
 	PyrClass* classobj;
@@ -660,7 +660,7 @@ int instVarOffset(char *classname, char *instvarname)
 	return index;
 }
 
-int classVarOffset(char *classname, char *classvarname, PyrClass** classobj)
+int classVarOffset(const char *classname, const char *classvarname, PyrClass** classobj)
 {
 	PyrSymbol *classvarsymbol, *classsymbol;
 	int index;
@@ -1297,7 +1297,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	return classobj;
 }
 
-void addIntrinsicVar(PyrClass *classobj, char *varName, PyrSlot *slot)
+void addIntrinsicVar(PyrClass *classobj, const char *varName, PyrSlot *slot)
 {
 	//postfl("%s  %s  %d\n", classobj->name.us->name, varName, 
 	//	classobj->instVarNames.uo->size);
@@ -1305,8 +1305,8 @@ void addIntrinsicVar(PyrClass *classobj, char *varName, PyrSlot *slot)
 	objAddIndexedSlot(classobj->iprototype.uo, slot);
 }
 
-void addIntrinsicClassVar(PyrClass *classobj, char *varName, PyrSlot *slot);
-void addIntrinsicClassVar(PyrClass *classobj, char *varName, PyrSlot *slot)
+void addIntrinsicClassVar(PyrClass *classobj, const char *varName, PyrSlot *slot);
+void addIntrinsicClassVar(PyrClass *classobj, const char *varName, PyrSlot *slot)
 {
 	//postfl("%s  %s  %d\n", classobj->name.us->name, varName, 
 	//	classobj->instVarNames.uo->size);
@@ -1932,8 +1932,8 @@ void CallStackSanity(VMGlobals *g, char *tagstr)
 	}
 }
 
-bool FrameSanity(PyrFrame *frame, char *tagstr);
-bool FrameSanity(PyrFrame *frame, char *tagstr)
+bool FrameSanity(PyrFrame *frame, const char *tagstr);
+bool FrameSanity(PyrFrame *frame, const char *tagstr)
 {	
 	bool failed = false;
 	if (frame==NULL) return false;

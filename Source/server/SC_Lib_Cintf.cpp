@@ -82,7 +82,7 @@ extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
-bool PlugIn_LoadDir(char *dirname, bool reportError);
+bool PlugIn_LoadDir(const char *dirname, bool reportError);
 
 #ifdef SC_DARWIN
 void read_section(const struct mach_header *mhp, unsigned long slide, const char *segname, const char *sectname)
@@ -244,7 +244,7 @@ bool PlugIn_Load(const char *filename)
 #endif
 }
 
-bool PlugIn_LoadDir(char *dirname, bool reportError)
+bool PlugIn_LoadDir(const char *dirname, bool reportError)
 {
 	bool success = true;
 

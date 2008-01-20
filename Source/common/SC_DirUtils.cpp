@@ -356,7 +356,7 @@ void sc_CloseDir(SC_DirHandle* dir)
 	delete dir;
 }
 
-bool sc_ReadDir(SC_DirHandle* dir, char* dirname, char* path, bool& skipEntry)
+bool sc_ReadDir(SC_DirHandle* dir, const char* dirname, char* path, bool& skipEntry)
 {
 #ifdef SC_WIN32
 	bool success = true;
