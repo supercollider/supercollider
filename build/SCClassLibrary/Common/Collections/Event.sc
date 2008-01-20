@@ -208,11 +208,25 @@ Event : Environment {
 				timingOffset: 0 ,
 				
 				schedBundle: #{ |lag, offset, server ...bundle |
-					thisThread.clock.sched ( offset, { server.sendBundle(server.latency + lag, *bundle);  })
+					thisThread.clock.sched ( offset, {
+							// the test is to prevent piles of "late" messages
+							// if you're using nil server latency
+						if(server.latency.isNil and: { lag == 0 or: { lag.isNil } }) {
+							server.sendBundle(nil, *bundle)
+						} {
+							server.sendBundle((server.latency ? 0) + (lag ? 0), *bundle);
+						}
+					})
 				},
 
 				schedBundleArray: #{ | lag, offset, server, bundleArray |
-					thisThread.clock.sched ( offset, { server.sendBundle(server.latency + lag, *bundleArray) })
+					thisThread.clock.sched ( offset, {
+						if(server.latency.isNil and: { lag == 0 or: { lag.isNil } }) {
+							server.sendBundle(nil, *bundleArray)
+						} {
+							server.sendBundle((server.latency ? 0) + (lag ? 0), *bundleArray);
+						}
+					})
 				},
 								
 				schedStrummedNote: {| lag, strumTime, sustain, server, msg, sendGate |
