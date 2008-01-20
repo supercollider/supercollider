@@ -1018,36 +1018,38 @@ void OffsetOut_Ctor(OffsetOut* unit)
 
 void OffsetOut_Dtor(OffsetOut* unit)
 {
+	// Ctor may not have run, if unit was immediately created->paused->freed!
+	if(unit->m_saved){
+		World *world = unit->mWorld;
+		int bufLength = world->mBufLength;
+		int numChannels = unit->mNumInputs - 1;
 
-	World *world = unit->mWorld;
-	int bufLength = world->mBufLength;
-	int numChannels = unit->mNumInputs - 1;
-
-	int32 offset = unit->mParent->mSampleOffset;
-	int32 remain = BUFLENGTH - offset;
-	
-	float *out = unit->m_bus;
-	float *saved = unit->m_saved;
-	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
-	for (int i=0; i<numChannels; ++i, out+=bufLength, saved += offset) {
-		//Print("out %d  %d %d  %d %d\n", 
-		//	i, touched[i] == bufCounter, unit->m_empty,
-		//	offset, remain);
-			
-		if (!unit->m_empty) {
-			if (touched[i] == bufCounter) {
-				Accum(offset, out, saved);
-			} else {
-				Copy(offset, out, saved);
-				Clear(remain, out + offset);
-				touched[i] = bufCounter;
+		int32 offset = unit->mParent->mSampleOffset;
+		int32 remain = BUFLENGTH - offset;
+		
+		float *out = unit->m_bus;
+		float *saved = unit->m_saved;
+		int32 *touched = unit->m_busTouched;
+		int32 bufCounter = unit->mWorld->mBufCounter;
+		for (int i=0; i<numChannels; ++i, out+=bufLength, saved += offset) {
+			//Print("out %d  %d %d  %d %d\n", 
+			//	i, touched[i] == bufCounter, unit->m_empty,
+			//	offset, remain);
+				
+			if (!unit->m_empty) {
+				if (touched[i] == bufCounter) {
+					Accum(offset, out, saved);
+				} else {
+					Copy(offset, out, saved);
+					Clear(remain, out + offset);
+					touched[i] = bufCounter;
+				}
 			}
+			//Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
 		}
-		//Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
-	}
 
-	RTFree(unit->mWorld, unit->m_saved);
+		RTFree(unit->mWorld, unit->m_saved);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
