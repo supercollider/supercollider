@@ -112,7 +112,10 @@ FlowView : SCViewHolder {
 	}
 	init { arg argParent, bounds;
 		var w;
+//">> FlowView:init".postln;
 		parent = argParent ?? { GUI.window.new("",bounds).front };
+//try { parent.asView.instVarAt(0).postln };
+//bounds.debug("bounds");
 		bounds = if(bounds.notNil,{
 			bounds.asRect  // .moveTo(0,0)  // why was this here? bad idea
 		},{
@@ -120,6 +123,7 @@ FlowView : SCViewHolder {
 		});
 			// this adds the composite view to the parent composite view
 		view = this.class.viewClass.new(parent.asView, bounds);
+//"created composite view [".post; view.instVarAt(0).post; "]".postln;
 			// now a tricky hack... the parent needs the FlowView as a child, not the composite view
 			// so I will replace the last-added child with THIS
 		parent.asView.children[parent.asView.children.size-1] = this;
@@ -129,13 +133,16 @@ FlowView : SCViewHolder {
 		} {
 			bounds = view.bounds;
 		};
-
+//bounds.debug("initialize decorator bounds to");
 		// after i am placed by parent...
-		view.decorator = FlowLayout(bounds,Point(2,2),Point(4,4));
+		view.decorator = FlowLayout(bounds,Point(2, 2),Point(4, 4));
 		autoRemoves = IdentitySet.new;
+//"<< FlowView:init".postln;
 	}
 
 	reflowAll {
+//">> FlowView:reflowAll - ".post;
+//view.instVarAt(0).postln;
 		view.decorator/*.bounds_(this.bounds)*/.reset;
 		view.children.do({ |widget|
 			if(widget.isKindOf( StartRow ),{
@@ -144,6 +151,8 @@ FlowView : SCViewHolder {
 				view.decorator.place(widget);
 			})
 		});
+//"<< FlowView:reflowAll - ".post;
+//view.instVarAt(0).postln;
 	}
 	innerBounds { ^view.decorator.innerBounds }
 	resizeToFit { arg reflow = false,tryParent = false;
@@ -159,7 +168,11 @@ FlowView : SCViewHolder {
 		new = view.bounds.resizeTo(used.width,used.height);
 		view.bounds = new;
 
-		view.decorator.bounds = new; // if the left/top moved this buggers it
+		if(view.tryPerform(\relativeOrigin) ? false) {
+			view.decorator.bounds = new.moveTo(0, 0);
+		} {
+			view.decorator.bounds = new; // if the left/top moved this buggers it
+		};
 		if(reflow,{ this.reflowAll; });
 		if(tryParent,{
 			this.parent.tryPerform(\resizeToFit,reflow,tryParent);
@@ -167,13 +180,25 @@ FlowView : SCViewHolder {
 		^new
 	}
 	bounds_ { arg b, reflow = true;
+//">> FlowView:bounds_: %, ".postf(b);
+//try { view.instVarAt(0).post };
+//"\n".post;
 		if(b != view.bounds,{
 			view.bounds = b;
 			if(view.decorator.notNil,{
-				view.decorator.bounds = b;
+				if(view.tryPerform(\relativeOrigin) ? false) {
+					view.decorator.bounds = b.moveTo(0, 0) //.debug("set decorator bounds to");
+				} {
+					view.decorator.bounds = b //.debug("set decorator bounds to");
+				};
 				reflow.if({ this.reflowAll; });
 			})
-		});
+		}/*, {
+			view.decorator.bounds.debug("decorator bounds remain");
+		}*/);
+//"<< FlowView:bounds_ ".post;
+//try { view.instVarAt(0).post };
+//"\n".post;
 	}
 	wouldExceedBottom { arg aBounds; ^view.decorator.wouldExceedBottom(aBounds) }
 	anyChildExceeds {
