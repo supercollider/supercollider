@@ -65,6 +65,12 @@ Event : Environment {
 		};
 	}
 
+	// This enables events to represent the server resources they created in an Event
+	// So, ~bufnum = (type: \sine1, amps: 1/(1..10)) is possible
+	asUGenInput {		
+		^this[ EventTypesWithCleanup.ugenInputTypes[this[\type] ] ] ;
+	}
+
 	printOn { arg stream, itemsPerLine = 5;
 		var max, itemsPerLinem1, i=0;
 		itemsPerLinem1 = itemsPerLine - 1;
