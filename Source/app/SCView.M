@@ -3909,7 +3909,26 @@ void SCUserView::draw(SCRect inDamage)
 	}
 	#endif	
 }
+void SCUserView::clearDrawing()
+{
+	if(!mCGLayer) return;
+	SCRect bounds = getDrawBounds();
+	CGContextRef lCGContext;
+	CGContextRef cgc;
+	NSGraphicsContext* lGCtx;
+	CGRect cgrect = CGRectMake(0,0, bounds.width, bounds.height);
 
+	lGCtx = [NSGraphicsContext currentContext];
+	lCGContext = CGLayerGetContext(mCGLayer);
+	NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];		
+	[NSGraphicsContext setCurrentContext: gclayer];
+		
+	CGContextClearRect(lCGContext,  cgrect);
+	CGContextSetRGBFillColor (lCGContext, 1, 1, 1, 0);
+	CGContextFillRect (lCGContext,  cgrect);
+	CGContextDrawLayerInRect(cgc, SCtoCGRect(bounds), mCGLayer);
+	[NSGraphicsContext setCurrentContext: lGCtx];
+}
 
 void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
 {
@@ -3986,7 +4005,10 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		mRelativeOrigin = IsTrue(slot);
 		return errNone;
     }		
-	
+	if (strcmp(name, "clearDrawing")==0) {
+		clearDrawing();
+		return errNone;		
+	};
     return SCView::setProperty(symbol, slot);
 }
 
