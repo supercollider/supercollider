@@ -1114,7 +1114,7 @@ void SCCompositeView::setBounds(SCRect inBounds)
 
 	if(mParent ){
 		if(relativeOrigin()){
-			SCRect pBounds = mParent->getBounds();
+			SCRect pBounds = mParent->getDrawBounds();
 			mLayout.bounds.x = inBounds.x + pBounds.x;
 			mLayout.bounds.y = inBounds.y + pBounds.y;
 		} else {
