@@ -7,6 +7,7 @@
 * 2008-01-06 FreeBSD compatibility - hb
 * 2008-01-10 Quarks updating on OSX should now be easier for first-time users; commands are run in a separate terminal window - ds
 * 2008-01-15 "Advanced find" in Mac interface - jt
+* 2008-01-20 Buffer.copy changed to match other .copy methods - now copies language-side object rather than server buffer. Buffer.copyData can be used to copy data from one server buffer to another - jh
 
 // BUGFIXES:
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
@@ -15,6 +16,7 @@
 * 2007-12-12 Node-setn fixed when using integers as control indices - jr
 * 2008-01-16 fixed Pen: bug with fillRect, fillOval and fillColor (bugtracker id 1837775) - jt
 * 2008-01-20 CheckBadValues rate-checking was too restrictive - ds
+* 2008-01-20 fix for Saw and Pulse's offset noise on first instantiation, thanks to hisao takagi - ds
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 * 2007-11-16 MIDIOut.connect and disconnect - mb

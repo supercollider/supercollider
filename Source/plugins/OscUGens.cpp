@@ -3050,7 +3050,7 @@ void Saw_Ctor(Saw *unit)
 	unit->m_N = (int32)((SAMPLERATE * 0.5) / unit->m_freqin);
 	unit->m_scale = 0.5/unit->m_N;
 	unit->m_phase = 0;
-	unit->m_y1 = 1.f;
+	unit->m_y1 = -0.46f;
 
 	ZOUT0(0) = 0.f;
 }
@@ -3199,7 +3199,7 @@ void Pulse_Ctor(Pulse *unit)
 	unit->m_N = (int32)((SAMPLERATE * 0.5) / unit->m_freqin);
 	unit->m_scale = 0.5/unit->m_N;
 	unit->m_phase = 0;
-	unit->m_y1 = 1.f;
+	unit->m_y1 = 0.f;
 	ZOUT0(0) = 0.f;
 }
 
