@@ -5,17 +5,18 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-span.s1 {color: #326f17}
-span.s2 {color: #0019b7}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {color: #456c20}
+span.s2 {color: #0000bf}
 span.s3 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -31,14 +32,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><br></p>
 <p class="p5">s = <span class="s2">Server</span>.local;</p>
-<p class="p4"><br></p>
+<p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p6"><span class="s2">SynthDef</span><span class="s3">(</span>"pitchFollow1"<span class="s3">,{</span></p>
+<p class="p7"><span class="s2">SynthDef</span><span class="s3">(</span>"pitchFollow1"<span class="s3">,{</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> in, amp, freq, hasFreq, out;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s2">Mix</span>.new(<span class="s2">AudioIn</span>.ar([1,2]));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s2">Mix</span>.new(<span class="s2">SoundIn</span>.ar([0,1]));</p>
 <p class="p5"><span class="Apple-tab-span">	</span>amp = <span class="s2">Amplitude</span>.kr(in, 0.05, 0.05);</p>
 <p class="p5"><span class="Apple-tab-span">	</span># freq, hasFreq = <span class="s2">Pitch</span>.kr(in, ampThreshold: 0.02, median: 7);</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>//freq = Lag.kr(freq.cpsmidi.round(1).midicps, 0.05);</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>//freq = Lag.kr(freq.cpsmidi.round(1).midicps, 0.05);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>out = <span class="s2">Mix</span>.new(<span class="s2">VarSaw</span>.ar(freq * [0.5,1,2], 0, <span class="s2">LFNoise1</span>.kr(0.3,0.1,0.1), amp));</p>
 <p class="p5"><span class="Apple-tab-span">	</span>6.do({</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out = <span class="s2">AllpassN</span>.ar(out, 0.040, [0.040.rand,0.040.rand], 2)</p>
@@ -46,11 +47,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0,out)</p>
 <p class="p5">}).play(s);</p>
 <p class="p5">)</p>
-<p class="p4"><br></p>
+<p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p6"><span class="s2">SynthDef</span><span class="s3">(</span>"pitchFollow2"<span class="s3">,{</span></p>
+<p class="p7"><span class="s2">SynthDef</span><span class="s3">(</span>"pitchFollow2"<span class="s3">,{</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> in, amp, freq, hasFreq, out;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s2">Mix</span>.new(<span class="s2">AudioIn</span>.ar([1,2]));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s2">Mix</span>.new(<span class="s2">SoundIn</span>.ar([0,1]));</p>
 <p class="p5"><span class="Apple-tab-span">	</span>amp = <span class="s2">Amplitude</span>.kr(in, 0.05, 0.05);</p>
 <p class="p5"><span class="Apple-tab-span">	</span># freq, hasFreq = <span class="s2">Pitch</span>.kr(in, ampThreshold: 0.02, median: 7);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>out = <span class="s2">CombC</span>.ar(<span class="s2">LPF</span>.ar(in, 1000), 0.1, (2 * freq).reciprocal, -6).distort * 0.05;</p>

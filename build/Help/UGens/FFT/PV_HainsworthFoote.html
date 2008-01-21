@@ -12,13 +12,14 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016e6}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {color: #000000}
 span.s2 {text-decoration: underline}
-span.s3 {color: #091fb1}
-span.s4 {color: #456c20}
+span.s3 {color: #0000bf}
+span.s4 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -53,66 +54,66 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">//just Hainsworth metric with low threshold<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7">(</p>
 <p class="p7">b=<span class="s3">Buffer</span>.alloc(s,2048,1);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p8">SynthDef<span class="s1">(</span><span class="s4">\fftod</span><span class="s1">,</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p9">SynthDef<span class="s1">(</span><span class="s4">\fftod</span><span class="s1">,</span></p>
 <p class="p7">{</p>
 <p class="p7"><span class="Apple-converted-space"> </span><span class="s3">var</span> source1, detect;</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s3">AudioIn</span>.ar(1);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s3">SoundIn</span>.ar(0);<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>detect= <span class="s3">PV_HainsworthFoote</span>.ar(<span class="s3">FFT</span>(b,source1), 1.0, 0.0);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0,<span class="s3">SinOsc</span>.ar([440,445],0,<span class="s3">Decay</span>.ar(0.1*detect,0.1)));</p>
 <p class="p7">}).play(s);<span class="Apple-tab-span">	</span></p>
 <p class="p7">)<span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><br></p>
 <p class="p6">//spot note transitions<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7">(</p>
 <p class="p7">b=<span class="s3">Buffer</span>.alloc(s,2048,1);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p8">SynthDef<span class="s1">(</span><span class="s4">\fftod</span><span class="s1">,</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p9">SynthDef<span class="s1">(</span><span class="s4">\fftod</span><span class="s1">,</span></p>
 <p class="p7">{</p>
 <p class="p7"><span class="Apple-converted-space"> </span><span class="s3">var</span> source1, detect;</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s3">LFSaw</span>.ar(<span class="s3">LFNoise0</span>.kr(1,90,400),0,0.5);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>detect= <span class="s3">PV_HainsworthFoote</span>.ar(<span class="s3">FFT</span>(b,source1), 1.0, 0.0, 0.9, 0.5);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0,<span class="s3">Pan2</span>.ar(source1,-1.0)+ <span class="s3">Pan2</span>.ar(<span class="s3">SinOsc</span>.ar(440,0,<span class="s3">Decay</span>.ar(0.1*detect,0.1)),1.0));</p>
 <p class="p7">}).play(s);<span class="Apple-tab-span">	</span></p>
 <p class="p7">)<span class="Apple-tab-span">	</span></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
 <p class="p6">//Foote solo- never triggers with threshold over 1.0, threshold under mouse control<span class="Apple-tab-span">	</span></p>
 <p class="p7">(</p>
 <p class="p7">b=<span class="s3">Buffer</span>.alloc(s,2048,1);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p8">SynthDef<span class="s1">(</span><span class="s4">\fftod</span><span class="s1">,</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p9">SynthDef<span class="s1">(</span><span class="s4">\fftod</span><span class="s1">,</span></p>
 <p class="p7">{</p>
 <p class="p7"><span class="Apple-converted-space"> </span><span class="s3">var</span> source1, detect;</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s3">AudioIn</span>.ar(1);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s3">SoundIn</span>.ar(0);<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>detect= <span class="s3">PV_HainsworthFoote</span>.ar(<span class="s3">FFT</span>(b,source1), 0.0, 1.0, <span class="s3">MouseX</span>.kr(0.0,1.1), 0.02);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0,<span class="s3">Pan2</span>.ar(source1,-1.0)+ <span class="s3">Pan2</span>.ar(<span class="s3">SinOsc</span>.ar(440,0,<span class="s3">Decay</span>.ar(0.1*detect,0.1)),1.0));</p>
 <p class="p7">}).play(s);<span class="Apple-tab-span">	</span></p>
 <p class="p7">)</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
 <p class="p6">//compare to Amplitude UGen</p>
 <p class="p7">(</p>
-<p class="p5"><br></p>
-<p class="p8">SynthDef<span class="s1">(</span><span class="s4">\fftod</span><span class="s1">,</span></p>
+<p class="p8"><br></p>
+<p class="p9">SynthDef<span class="s1">(</span><span class="s4">\fftod</span><span class="s1">,</span></p>
 <p class="p7">{</p>
 <p class="p7"><span class="Apple-converted-space"> </span><span class="s3">var</span> source1, detect;</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s3">AudioIn</span>.ar(1);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>source1= <span class="s3">SoundIn</span>.ar(0);<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>detect= (<span class="s3">Amplitude</span>.ar(source1)) &gt; (<span class="s3">MouseX</span>.kr(0.0,1.1));</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0,<span class="s3">Pan2</span>.ar(source1,-1.0)+ <span class="s3">Pan2</span>.ar(<span class="s3">SinOsc</span>.ar(440,0,<span class="s3">Decay</span>.ar(0.1*detect,0.1)),1.0));</p>
 <p class="p7">}).play(s);<span class="Apple-tab-span">	</span></p>
 <p class="p7">)</p>

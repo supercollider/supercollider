@@ -10,15 +10,16 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0012b9}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #356f15}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0018f7}
+span.s2 {color: #0522ef}
 span.s3 {color: #000000}
-span.s4 {color: #0012b9}
-span.s5 {color: #356f15}
+span.s4 {color: #0000bf}
+span.s5 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -37,21 +38,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p4">// Create a buffer.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="s3">b=</span><span class="s4">Buffer</span><span class="s3">.alloc(s, s.sampleRate, 1); </span>//enough space for one second of mono audio <span class="Apple-converted-space"> </span></p>
-<p class="p3"><br></p>
+<p class="p5"><br></p>
 <p class="p4">// Write to the Buffer with BufWr, read using two Taps, one for each ear!</p>
-<p class="p5">(</p>
-<p class="p6">SynthDef<span class="s3">(</span><span class="s5">\helpTap</span><span class="s3">, {</span>|bufnum|</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> source, capture;<span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>source= </span><span class="s4">AudioIn</span><span class="s3">.ar(1); </span>//use headphones to avoid feedback</p>
-<p class="p5"><span class="Apple-tab-span">	</span>capture= <span class="s4">BufWr</span>.ar(source, bufnum, <span class="s4">Phasor</span>.ar(0,1, 0, <span class="s4">BufFrames</span>.ir(bufnum),1));</p>
-<p class="p3"><span class="Apple-converted-space"> </span></p>
+<p class="p6">(</p>
+<p class="p7">SynthDef<span class="s3">(</span><span class="s5">\helpTap</span><span class="s3">, {</span>|bufnum|</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">var</span> source, capture;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>source= </span><span class="s4">SoundIn</span><span class="s3">.ar(0); </span>//use headphones to avoid feedback</p>
+<p class="p6"><span class="Apple-tab-span">	</span>capture= <span class="s4">BufWr</span>.ar(source, bufnum, <span class="s4">Phasor</span>.ar(0,1, 0, <span class="s4">BufFrames</span>.ir(bufnum),1));</p>
+<p class="p5"><span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">Out</span><span class="s3">.ar(0, </span><span class="s4">Tap</span><span class="s3">.ar(bufnum, 1, [0.1,0.9])); </span>//multichannel expansion, so one tap each ear <span class="Apple-converted-space"> </span></p>
-<p class="p5">}).send(s);<span class="Apple-converted-space"> </span></p>
-<p class="p5">)</p>
-<p class="p3"><br></p>
-<p class="p7"><span class="s3">x=</span><span class="s4">Synth</span><span class="s3">(</span>\helpTap<span class="s3">,[</span>\bufnum<span class="s3">, b]);</span></p>
-<p class="p3"><br></p>
-<p class="p5">x.free;</p>
+<p class="p6">}).send(s);<span class="Apple-converted-space"> </span></p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p8"><span class="s3">x=</span><span class="s4">Synth</span><span class="s3">(</span>\helpTap<span class="s3">,[</span>\bufnum<span class="s3">, b]);</span></p>
+<p class="p5"><br></p>
+<p class="p6">x.free;</p>
 </body>
 </html>

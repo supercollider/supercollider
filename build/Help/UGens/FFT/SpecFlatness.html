@@ -11,13 +11,13 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco; min-height: 15.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
-span.s1 {color: #0d2bf0}
-span.s2 {color: #0012b9}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {color: #1531e8}
+span.s2 {color: #0000bf}
 span.s3 {color: #000000}
-span.s4 {color: #a32011}
+span.s4 {color: #bf0000}
 span.s5 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -59,7 +59,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">(</p>
 <p class="p7"><span class="s3">{ </span>// Now try with your own voice</p>
 <p class="p5"><span class="s2">var</span> in, chain;</p>
-<p class="p5">in = <span class="s2">AudioIn</span>.ar([1,2]).mean;</p>
+<p class="p5">in = <span class="s2">SoundIn</span>.ar([0,1]).mean;</p>
 <p class="p5">chain = <span class="s2">FFT</span>(b, in);</p>
 <p class="p5"><span class="s2">Out</span>.kr(0, [in, <span class="s2">SpecFlatness</span>.kr(chain).poll(1, <span class="s5">"flatness: "</span>)]);</p>
 <p class="p5">}.scope;</p>
