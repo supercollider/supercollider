@@ -71,19 +71,18 @@ PatternProxy : Pattern {
 	
 	receiveEvent { ^nil }
 	
-	endless {
-		^Pn(this) // for now. need a fix later.
-	}
 	embed { |val|
 		^if(val.notNil) { Pchain(this, val) } { this }.embedInStream
 	}
 	
 	embedInStream { arg inval;
-		var pat, stream, outval, test, resetTest, count=0;
-		pat = pattern;
-		test = condition;
-		resetTest = reset;
-		stream = pattern.asStream;
+		
+		var outval, count = 0;
+		var pat = pattern;
+		var test = condition;
+		var resetTest = reset;
+		var stream = pattern.asStream;
+		
 		while {
 			this.receiveEvent(inval); // used in subclass
 			
@@ -102,10 +101,40 @@ PatternProxy : Pattern {
 			outval.notNil
 		}{
 			inval = outval.yield;
-			// maybe this is not needed anymore?
-			if(this.isEventPattern and: inval.isNil) { ^nil.alwaysYield }
 		};
 		^inval
+	}
+	
+	endless {
+		
+		^Proutine { arg inval;
+			
+			var outval, count = 0;
+			var pat = pattern;
+			var test = condition;
+			var resetTest = reset;
+			var stream = pattern.asStream;
+			var default = this.class.defaultValue;
+			
+			loop {
+				this.receiveEvent(inval); // used in subclass
+				
+				if(
+					(reset !== resetTest) 
+					or: { pat !== pattern and: { test.value(outval, count) } }
+				) {
+							pat = pattern;
+							test = condition;
+							resetTest = reset;
+							count = 0;
+							stream = this.constrainStream(stream);
+				};
+				outval = stream.next(inval) ? default;
+				count = count + 1;
+				inval = outval.yield;
+			}
+		}
+		
 	}
 	
 	count { arg n=1;
@@ -396,12 +425,15 @@ EventPatternProxy : TaskProxy {
 	*defaultValue { ^Event.silent }
 
 	embedInStream { arg inval, cleanup;
-		var pat, stream, outval, test, resetTest, count=0;
+		
+		var outval, count=0;
+		var pat = pattern;
+		var test = condition;
+		var resetTest = reset;
+		var stream = pattern.asStream;
+		
 		cleanup = cleanup ? EventStreamCleanup.new;
-		pat = pattern;
-		test = condition;
-		resetTest = reset;
-		stream = pattern.asStream;
+		
 		while {
 			this.receiveEvent(inval);	
 			if(
@@ -413,8 +445,7 @@ EventPatternProxy : TaskProxy {
 						resetTest = reset;
 						count = 0;
 						// inval is the next event that will be yielded
-						// constrainStream may add some values to it
-						// so IT MUST BE YIELDED
+						// constrainStream may add some values to it so IT MUST BE YIELDED
 						stream = this.constrainStream(stream, inval, cleanup);
 						cleanup = EventStreamCleanup.new;
 			};
@@ -429,7 +460,45 @@ EventPatternProxy : TaskProxy {
 		^inval
 		
 	}
+	
+	endless {
+		
+		^Proutine { arg inval;
+			
+			var outval;
+			var cleanup = EventStreamCleanup.new;
+			var count = 0;
+			var pat = pattern;
+			var test = condition;
+			var resetTest = reset;
+			var stream = pattern.asStream;
+			var default = this.class.defaultValue;
+			
+			loop {
+				this.receiveEvent(inval);	
+				if(
+					(reset !== resetTest) 
+					or: { pat !== pattern and: { test.value(outval, count) } }
+				) {
+							pat = pattern;
+							test = condition;
+							resetTest = reset;
+							count = 0;
+							// inval is the next event that will be yielded
+							// constrainStream may add some values to it so IT MUST BE YIELDED
+							stream = this.constrainStream(stream, inval, cleanup);
+							cleanup = EventStreamCleanup.new;
+				};
+				outval = stream.next(inval) ? default;
+				count = count + 1;
+				outval = cleanup.update(outval);
+				inval = outval.yield;
+			}
+		}
+		
+	}
 
+	
 	constrainStream { arg str, inval, cleanup;
 		var delta, tolerance, new;
 		var quantVal, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
