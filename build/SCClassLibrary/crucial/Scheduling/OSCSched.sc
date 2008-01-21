@@ -3,8 +3,8 @@ BeatSched {
 
 	classvar <global;
 	
-	var clock,tempo,tempoClock;
-	var epoch=0.0;
+	var clock,tempo,<tempoClock;
+	var epoch=0.0,beatEpoch=0.0;
 	var nextTask; // for exclusive locks
 
 	var pq,nextAbsTime,nextAbsFunc,nextAbsList;
@@ -21,6 +21,8 @@ BeatSched {
 	init {
 		pq = PriorityQueue.new;
 		nextAbsFunc = nextAbsTime = nil;
+		beatEpoch = 0.0;//tempoClock.elapsedBeats;
+		epoch = 0.0;//Main.elapsedTime;
 	}
 	
 	*xblock { ^global.xblock }	
@@ -34,9 +36,28 @@ BeatSched {
 	xblock { nextTask = nil; } // block any previous xsched
 	time { ^Main.elapsedTime - epoch }
 	time_ { arg seconds; epoch = Main.elapsedTime - seconds; }
-	beat { ^tempo.secs2beats(Main.elapsedTime - epoch) }
+
+	// if the tempo changed at any time in the past, this is wrong !
+	beat {
+		//[tempo.secs2beats(Main.elapsedTime - epoch) 
+		//	,tempoClock.elapsedBeats - beatEpoch ].debug("via tempo, via clock");
+
+		//^tempo.secs2beats(Main.elapsedTime - epoch)
+		^tempoClock.elapsedBeats - beatEpoch
+	} 
 	beat_ { arg beat;
+		// setting the beat will reset the fabric of beat-time itself
+		// so that any previously playing musical elements are not 
+		// expected to line up with anything you do in the future.
+		// its a hard reset.
 		epoch = Main.elapsedTime - tempo.beats2secs(beat);
+		beatEpoch = tempoClock.elapsedBeats - beat;
+		//  it means that the although we are using the tempoClock for relative beat scheduling
+		// the determination of the epoch (beat 0) is set NOW.
+		
+		
+		// tempoClock.beats2secs( tempoClock.elapsedBeats );
+		// tempo.beats2secs(beat);
 	}
 	clear {
 		pq.clear;
