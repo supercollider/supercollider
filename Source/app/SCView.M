@@ -2341,7 +2341,7 @@ void SC2DSlider::draw(SCRect inDamage)
 	}
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    CGRect rect = SCtoCGRect(bounds);
+    CGRect rect = SCtoCGRect(getDrawBounds());
     if (mBackground) mBackground->draw(cgc, rect);
 
     QDDrawBevelRect(cgc, rect, 1, true);
