@@ -463,7 +463,8 @@ void SC_JackDriver::Run()
 	try {
 		mFromEngine.Free();
 		mToEngine.Perform();
-		
+		mOscPacketsToEngine.Perform();
+
 		int numInputs = mInputList->mSize;
 		int numOutputs = mOutputList->mSize;
 		jack_port_t **inPorts = mInputList->mPorts;
