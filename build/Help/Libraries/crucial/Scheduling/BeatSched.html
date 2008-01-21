@@ -5,16 +5,16 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {color: #0019b7}
+span.s1 {color: #001fb3}
 span.s2 {font: 12.0px Helvetica}
 span.s3 {color: #606060}
 span.s4 {color: #000000}
@@ -36,8 +36,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>All of these methods exist as both<span class="Apple-converted-space"> </span></b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>class (the default global scheduler)<span class="Apple-converted-space"> </span></b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>eg.</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">BeatSched</span>.tsched(seconds,function)</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>and instance methods (a specific scheduler).<span class="Apple-converted-space"> </span></b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>eg.</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beatSched = <span class="s1">BeatSched</span>.new;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beatSched.tsched(seconds,function)</p>
 <p class="p2"><br></p>
@@ -56,8 +58,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>example:<span class="Apple-converted-space">  </span>a monkey is hitting many buttons, changing his mind about which<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>sound to play next. this would result in many messages being stacked up all<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>at the same time, and the server would choke trying to execute them all. <span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span>this is a kind of enforced monophony.</p>
-<p class="p3"><span class="Apple-tab-span">	</span>another example:<span class="Apple-converted-space">  </span>a sequence plays successive notes, all using xsched, <span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>so the x-methods are a kind of enforced monophony.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>another example:<span class="Apple-converted-space">  </span>a monophonic sequence plays successive notes, all using xsched, <span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>you then switch to a different sequence.<span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>you don't want the note that was<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>scheduled from the previous sequence to happen.<span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>using one of the x-methods,<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>you don't have to worry about it, the old notes will be cleared when new ones</p>
@@ -93,7 +95,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-converted-space">        </span>this is also used to start a "song":<span class="Apple-converted-space">  </span>zero the beat, and all absolute times</p>
 <p class="p3"><span class="Apple-converted-space">        </span>previously scheduled events will be unpredictable</p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>deltaTillNext(quantizeDivision)</b></p>
-<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>returns the number of seconds untiil the next quantizeDivision.</p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>returns the number of beats untiil the next quantizeDivision.</p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>4.0 means the next even bar</p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>16.0 means the next 4 bar cycle</p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>0.25 means the next 16th note</p>
+<p class="p3"><b><span class="Apple-converted-space"> </span>tdeltaTillNext(quantizeDivision)</b></p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>returns the number of seconds untiil the next beat quantizeDivision.</p>
 <p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>4.0 means the next even bar</p>
 <p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>16.0 means the next 4 bar cycle</p>
 <p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>0.25 means the next 16th note</p>
@@ -119,7 +126,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span>b.time;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>b.beat;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>b.beat; // the beat is determined by the tempoClock</p>
 <p class="p5"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span>TempoClock.default.tempo = 2;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>b.beat.postln;</p>
