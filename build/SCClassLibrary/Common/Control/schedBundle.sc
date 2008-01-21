@@ -4,24 +4,14 @@
 
 + Nil { // now
 	schedBundle { arg bundle,server,timeOfRequest;
-		bundle.send(server,nil); //0.0
+		bundle.send(server,nil,nil); //0.0
 	}
 }
 
 
 + Float { // relative seconds
 	schedBundle {  arg bundle,server,timeOfRequest;
-		var now;
-		if(timeOfRequest.notNil,{
-			now = Main.elapsedTime;
-			if((now - timeOfRequest) <= this,{
-				bundle.send(server,this);
-			},{ // better late than never...
-				bundle.send(server,0.0);
-			});
-		},{
-			bundle.send(server,this);
-		});
+		bundle.send(server,this,timeOfRequest);
 	}
 }
 /**
@@ -33,34 +23,36 @@
   */
 + Integer { // at the next N beat
 	schedBundle { arg bundle,server,timeOfRequest;
-		var now,nowRound,latencyBeats,deltaTillSend;
 		
-		latencyBeats = Tempo.secs2beats(server.latency);
-		now = TempoClock.default.elapsedBeats;
-		nowRound = now.roundUp(4 / this);
-		
-		deltaTillSend = (nowRound - now - latencyBeats);
-		if(deltaTillSend < 0.05,{
-			nowRound = nowRound + (4/this);
+		bundle.doPrepare(server,{
+			var now,nowRound,latencyBeats,deltaTillSend;
+			latencyBeats = Tempo.secs2beats(server.latency);
+			now = TempoClock.default.elapsedBeats;
+			nowRound = now.roundUp(4 / this);
+			
 			deltaTillSend = (nowRound - now - latencyBeats);
-		});
-			
-		TempoClock.default.sched( deltaTillSend, {
-			var lateness,latency;
-			// this executes at Server.latency before the event is due.
-			// calculate actual latency to the requested time
-			latency = Tempo.beats2secs(nowRound -  TempoClock.default.elapsedBeats);
+			if(deltaTillSend < 0.05,{
+				nowRound = nowRound + (4/this);
+				deltaTillSend = (nowRound - now - latencyBeats);
+			});
+						
+			TempoClock.default.sched( deltaTillSend, {
+				var lateness,delta;
+				// this executes at Server.latency before the event is due.
+				// calculate actual latency to the requested time
+				delta = Tempo.beats2secs(nowRound -  TempoClock.default.elapsedBeats);
 
-			/*SystemClock.sched(latency,{
-				var b;
-				b = TempoClock.default.elapsedBeats;
-				[b,nowRound - b].debug("actual sched");
-				nil;
-			});*/
-			
-			bundle.send(server, latency);
-			nil
-		});		
+				/*SystemClock.sched(delta,{
+					var b;
+					b = TempoClock.default.elapsedBeats;
+					[b,nowRound - b].debug("actual sched");
+					nil;
+				});*/
+				
+				bundle.prSend(server, delta,Main.elapsedTime);
+				nil
+			});
+		});
 	}
 }
 
@@ -71,8 +63,9 @@
 		var delta;
 		delta = rawSeconds - this.class.localtime.rawSeconds;
 		if(delta >= 0.0,{
-			bundle.send(server,delta);
-		})
+			// should we prepare this a few seconds ahead of time ?
+			bundle.send(server,delta,timeOfRequest);
+		});
 	}
 }
 
