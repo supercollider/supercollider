@@ -17,31 +17,30 @@ MIDIClockOut {
 		^super.newCopyArgs(sched,port)
 	}
 	
-	start {
+	play {
 		var delta,songBeat = 0.0,quantize=4.0;
 		if(isPlaying,{
 			"MIDIClockOut is already playing".inform;
 			^this
 		});
 		sched.xqsched(quantize,{
-			click = 0;
 			if(songBeat.notNil,{ sched.beat = songBeat });
-			port.songPtr(sched.beat);
-			port.start;
-			isPlaying = true;
-			this.next;
-			CmdPeriod.add(this);
+			this.start;
 		});
 	}
-	stop {
-		sched.clear;
-		port.stop;
-		isPlaying = false;
+	start {
+		click = 0;
+		sched.beat = 0.0;
+		port.songPtr(sched.beat);
+		port.start;
+		isPlaying = true;
+		this.next;
+		CmdPeriod.add(this);
 	}
 	next {
 		// calculate the beat delta to the logical time we should be at for the 
 		// number of clocks we have sent.  this means we don't slip due to rounding errors
-		// or scheduling errors.
+		// or scheduling slippage.
 		var currentBeat,currentClick,delta,beat;
 		currentBeat = (click / 24).floor;
 		currentClick = click - (currentBeat * 24);
@@ -64,9 +63,25 @@ MIDIClockOut {
 			this.next;
 		});
 	}
+	stop {
+		sched.clear;
+		port.stop;
+		isPlaying = false;
+	}
+	
+	// player support
+	// if in a player structure, we will receive didStop
+	prepareToBundle { arg group,b;
+		b.addMessage( this,\start);
+	}
+	stopToBundle { arg b;
+		b.addMessage( this,\stop);
+	}
+
 	/*songPtr { arg gotoBeat,atTime;
 		
 	}*/
+	
 	cmdPeriod {
 		this.stop;
 	}
