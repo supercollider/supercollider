@@ -25,11 +25,12 @@ OSCBundle {
 		});
 	}
 
-	send { arg server, time;
+	send { arg server, time, timeOfRequest;
 		server = server ?? { Server.default };
-		this.doPrepare(server, { this.prSend(server, time) })
+		timeOfRequest = timeOfRequest ?? {Main.elapsedTime};
+		this.doPrepare(server, { this.prSend(server, time,timeOfRequest) })
 	}
-
+	// see atTime helpfile
 	sendAtTime { arg server, atTime, timeOfRequest; // offset by preparation
 		server = server ?? { Server.default };
 		atTime.schedBundle(this,server,timeOfRequest ?? { Main.elapsedTime});
@@ -74,9 +75,9 @@ OSCBundle {
 
 	// private //
 
-	prSend { arg server, latency;
+	prSend { arg server, delta,timeOfRequest;
 		if(messages.notNil, {
-			server.listSendBundle(latency ?? { server.latency }, messages);
+			server.listSendBundle(delta ?? { server.latency }, messages);
 		})
 	}
 
@@ -116,13 +117,23 @@ MixedBundle : OSCBundle {
 
 	// private //
 
-	prSend { arg server, latency;
-		latency = latency ?? { server.latency };
+	prSend { arg server, delta, timeOfRequest;
+		if(delta.isNil,{
+			delta = server.latency;
+		},{
+			delta = (timeOfRequest + delta) - Main.elapsedTime;
+			if(delta.isNegative,{
+				("bundle sent late:" + delta).warn;
+				delta = 0.0;// just send it now
+			});
+		});
 		if(functions.notNil) {
-			SystemClock.sched(latency, { this.doFunctions });
+			SystemClock.sched(delta, { 
+				this.doFunctions;
+			});
 		};
 		if(messages.notNil) {
-			server.listSendBundle(latency, messages);
+			server.listSendBundle(delta, messages);
 		};
 		this.doSendFunctions;
 	}
