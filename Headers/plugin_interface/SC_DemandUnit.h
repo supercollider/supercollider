@@ -46,12 +46,20 @@ inline float DemandInput(Unit* unit, int index)
 	return IN0(index);
 }
 
-inline float DemandInput(Unit* unit, int index, int offset)
+// support for audio rate input to demand UGens
+
+inline float DemandInputA(Unit* unit, int index, int offset)
 {
 	Unit* fromUnit = unit->mInput[index]->mFromUnit;
-	if (fromUnit && fromUnit->mCalcRate == calc_DemandRate)
-		(fromUnit->mCalcFunc)(fromUnit, 1);
-	return IN(index)[offset];
+	if(!fromUnit) { return IN0(index); } 
+	if (fromUnit->mCalcRate == calc_DemandRate) {
+		(fromUnit->mCalcFunc)(fromUnit, offset);
+		return IN0(index);
+	} else if (fromUnit->mCalcRate == calc_FullRate) {
+		return IN(index)[offset - 1];
+	} else {
+		return IN0(index);
+	}
 }
 
 inline void ResetInput(Unit* unit, int index)
@@ -63,7 +71,7 @@ inline void ResetInput(Unit* unit, int index)
 
 #define ISDEMANDINPUT(index) IsDemandInput(unit, (index))
 #define DEMANDINPUT(index) DemandInput(unit, (index))
-#define DEMANDINPUT2(index, offset) DemandInput(unit, (index), (offset))
+#define DEMANDINPUT_A(index, offset) DemandInputA(unit, (index), (offset))
 #define RESETINPUT(index) ResetInput(unit, (index))
 
 #endif

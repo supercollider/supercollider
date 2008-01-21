@@ -243,7 +243,7 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 		if (ztrig > 0.f && prevtrig <= 0.f) {
 			//Print("triggered\n");
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
+				float x = DEMANDINPUT_A(j, i + 1);
 				//printf("in  %d %g\n", k, x);
 				if (sc_isnan(x)) x = prevout[k];
 				else prevout[k] = x;
@@ -291,7 +291,7 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 		
 		if (ztrig > 0.f && prevtrig <= 0.f) {
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
+				float x = DEMANDINPUT_A(j, i + 1);
 				if (sc_isnan(x)) x = prevout[k];
 				else prevout[k] = x;
 				out[k][i] = x;
@@ -419,7 +419,7 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
-			float x = DEMANDINPUT(duty_level);
+			float x = DEMANDINPUT_A(duty_level, i + 1);
 			//printf("in  %d %g\n", k, x);
 			if(sc_isnan(x)) {
 				x = prevout;
@@ -463,13 +463,13 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
 		
-			float x = DEMANDINPUT(duty_level);
+			float x = DEMANDINPUT_A(duty_level, i + 1);
 			//printf("in  %d %g\n", k, x);
 			if(sc_isnan(x)) {
 				x = prevout;
@@ -510,17 +510,17 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
-			reset = DEMANDINPUT(duty_reset) * sr + .5f + reset;
+			reset = DEMANDINPUT_A(duty_reset, i + 1) * sr + .5f + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
-			float x = DEMANDINPUT(duty_level);
+			float x = DEMANDINPUT_A(duty_level, i + 1);
 			//printf("in  %d %g\n", k, x);
 			if(sc_isnan(x)) {
 				x = prevout;
@@ -884,9 +884,9 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 			// printf("reset: %f %f \n", zreset, unit->m_prevreset);
 			RESETINPUT(d_env_level);
 			if(zreset <= 1.f) { 
-				DEMANDINPUT(d_env_level); // remove first level
+				DEMANDINPUT_A(d_env_level, i + 1); // remove first level
 			} else {
-				level = DEMANDINPUT(d_env_level); // jump to first level
+				level = DEMANDINPUT_A(d_env_level, i + 1); // jump to first level
 			}
 			
 			RESETINPUT(d_env_dur);
@@ -918,7 +918,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				
 				// new time
 				
-				float dur = DEMANDINPUT(d_env_dur);
+				float dur = DEMANDINPUT_A(d_env_dur, i + 1);
 				// printf("dur: %f \n", dur);
 				if(sc_isnan(dur)) { 
 					release = true; 
@@ -930,8 +930,8 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				
 				// new shape
 				float count;
-				curve = DEMANDINPUT(d_env_shape);
-				shape = (int)DEMANDINPUT(d_env_shape);
+				curve = DEMANDINPUT_A(d_env_shape, i + 1);
+				shape = (int)DEMANDINPUT_A(d_env_shape, i + 1);
 				
 				// printf("shapes: %i \n", shape);
 				if (sc_isnan(curve)) curve = unit->m_shape;
@@ -948,7 +948,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				
 				// new end level
 				
-				double endLevel = DEMANDINPUT(d_env_level);
+				double endLevel = DEMANDINPUT_A(d_env_level, i + 1);
 				// printf("levels: %f %f\n", level, endLevel);
 				if (sc_isnan(endLevel)) { 
 					endLevel = unit->m_endLevel;
@@ -1165,12 +1165,12 @@ void TDuty_next_da(TDuty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
 			}
-			float x = DEMANDINPUT(duty_level);
+			float x = DEMANDINPUT_A(duty_level, i + 1);
 			//printf("in  %d %g\n", k, x);
 			if (sc_isnan(x)) x = 0.f;
 			out[i] = x;
@@ -1206,12 +1206,12 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
 			}
-			float x = DEMANDINPUT(duty_level);
+			float x = DEMANDINPUT_A(duty_level, i + 1);
 			//printf("in  %d %g\n", k, x);
 			if (sc_isnan(x)) x = 0.f;
 			out[i] = x;
@@ -1242,17 +1242,17 @@ void TDuty_next_dd(TDuty *unit, int inNumSamples)
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
-			reset = DEMANDINPUT(duty_reset) * sr + .5f + reset;
+			reset = DEMANDINPUT_A(duty_reset, i + 1) * sr + .5f + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
 			}
-			float x = DEMANDINPUT(duty_level);
+			float x = DEMANDINPUT_A(duty_level, i + 1);
 			//printf("in  %d %g\n", k, x);
 			if (sc_isnan(x)) x = 0.f;
 			out[i] = x;
@@ -1299,10 +1299,10 @@ void Dseries_next(Dseries *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_value = DEMANDINPUT(1);
-			unit->m_step = DEMANDINPUT(2);
+			unit->m_value = DEMANDINPUT_A(1, inNumSamples);
+			unit->m_step = DEMANDINPUT_A(2, inNumSamples);
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
 			OUT0(0) = NAN;
@@ -1329,10 +1329,10 @@ void Dgeom_next(Dgeom *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_value = DEMANDINPUT(1);
-			unit->m_grow = DEMANDINPUT(2);
+			unit->m_value = DEMANDINPUT_A(1, inNumSamples);
+			unit->m_grow = DEMANDINPUT_A(2, inNumSamples);
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
 			OUT0(0) = NAN;
@@ -1359,10 +1359,10 @@ void Dwhite_next(Dwhite *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_lo = DEMANDINPUT(1);
-			float hi = DEMANDINPUT(2);
+			unit->m_lo = DEMANDINPUT_A(1, inNumSamples);
+			float hi = DEMANDINPUT_A(2, inNumSamples);
 			unit->m_range = hi - unit->m_lo;
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
@@ -1390,10 +1390,10 @@ void Diwhite_next(Diwhite *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_lo = (int32)floor(DEMANDINPUT(1) + 0.5f);
-			int32 hi = (int32)floor(DEMANDINPUT(2) + 0.5f);
+			unit->m_lo = (int32)floor(DEMANDINPUT_A(1, inNumSamples) + 0.5f);
+			int32 hi = (int32)floor(DEMANDINPUT_A(2, inNumSamples) + 0.5f);
 			unit->m_range = hi - unit->m_lo + 1;
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
@@ -1421,11 +1421,11 @@ void Dbrown_next(Dbrown *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_lo = DEMANDINPUT(1);
-			unit->m_hi = DEMANDINPUT(2);
-			unit->m_step = DEMANDINPUT(3);
+			unit->m_lo = DEMANDINPUT_A(1, inNumSamples);
+			unit->m_hi = DEMANDINPUT_A(2, inNumSamples);
+			unit->m_step = DEMANDINPUT_A(3, inNumSamples);
 			unit->m_val = unit->mParent->mRGen->frand() * (unit->m_hi - unit->m_lo) + unit->m_lo;
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
@@ -1454,11 +1454,11 @@ void Dibrown_next(Dibrown *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_lo = (int32)floor(DEMANDINPUT(1) + 0.5f);
-			unit->m_hi = (int32)floor(DEMANDINPUT(2) + 0.5f);
-			unit->m_step = (int32)floor(DEMANDINPUT(3) + 0.5f);
+			unit->m_lo = (int32)floor(DEMANDINPUT_A(1, inNumSamples) + 0.5f);
+			unit->m_hi = (int32)floor(DEMANDINPUT_A(2, inNumSamples) + 0.5f);
+			unit->m_step = (int32)floor(DEMANDINPUT_A(3, inNumSamples) + 0.5f);
 			unit->m_val = unit->mParent->mRGen->irand(unit->m_hi - unit->m_lo + 1) + unit->m_lo;
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
@@ -1489,7 +1489,7 @@ void Dseq_next(Dseq *unit, int inNumSamples)
 	if (inNumSamples) {
 		//Print("   unit->m_repeats %d\n", unit->m_repeats);
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
@@ -1509,7 +1509,7 @@ void Dseq_next(Dseq *unit, int inNumSamples)
 					unit->m_needToResetChild = false;
 					RESETINPUT(unit->m_index);
 				}
-				float x = DEMANDINPUT(unit->m_index);
+				float x = DEMANDINPUT_A(unit->m_index, inNumSamples);
 				if (sc_isnan(x)) {
 					unit->m_index++;
 					unit->m_needToResetChild = true;
@@ -1518,7 +1518,7 @@ void Dseq_next(Dseq *unit, int inNumSamples)
 					return;
 				}
 			} else {
-				OUT0(0) = IN0(unit->m_index);
+				OUT0(0) = DEMANDINPUT_A(unit->m_index, inNumSamples);
 				//Print("   unit->m_index %d   OUT0(0) %g\n", unit->m_index, OUT0(0));
 				unit->m_index++;
 				unit->m_needToResetChild = true;
@@ -1546,7 +1546,7 @@ void Dser_next(Dser *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
@@ -1562,7 +1562,7 @@ void Dser_next(Dser *unit, int inNumSamples)
 					unit->m_needToResetChild = false;
 					RESETINPUT(unit->m_index);
 				}
-				float x = DEMANDINPUT(unit->m_index);
+				float x = DEMANDINPUT_A(unit->m_index, inNumSamples);
 				if (sc_isnan(x)) {
 					unit->m_index++;
 					unit->m_repeatCount++;
@@ -1601,7 +1601,7 @@ void Drand_next(Drand *unit, int inNumSamples)
 	if (inNumSamples) {
 		
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
@@ -1614,7 +1614,7 @@ void Drand_next(Drand *unit, int inNumSamples)
 					unit->m_needToResetChild = false;
 					RESETINPUT(unit->m_index);
 				}
-				float x = DEMANDINPUT(unit->m_index);
+				float x = DEMANDINPUT_A(unit->m_index, inNumSamples);
 				if (sc_isnan(x)) {
 					unit->m_index = unit->mParent->mRGen->irand(unit->mNumInputs - 1) + 1;
 					unit->m_repeatCount++;
@@ -1624,7 +1624,7 @@ void Drand_next(Drand *unit, int inNumSamples)
 					return;
 				}
 			} else {
-				OUT0(0) = IN0(unit->m_index);
+				OUT0(0) = DEMANDINPUT_A(unit->m_index, inNumSamples);
 				unit->m_index = unit->mParent->mRGen->irand(unit->mNumInputs - 1) + 1;
 				unit->m_repeatCount++;
 				unit->m_needToResetChild = true;
@@ -1652,7 +1652,7 @@ void Dxrand_next(Dxrand *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		if (unit->m_repeats < 0.) {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
@@ -1668,7 +1668,7 @@ void Dxrand_next(Dxrand *unit, int inNumSamples)
 					unit->m_needToResetChild = false;
 					RESETINPUT(unit->m_index);
 				}
-				float x = DEMANDINPUT(unit->m_index);
+				float x = DEMANDINPUT_A(unit->m_index, inNumSamples);
 				if (sc_isnan(x)) {
 					int newindex = unit->mParent->mRGen->irand(unit->mNumInputs - 2) + 1;
 					unit->m_index = newindex < unit->m_index ? newindex : newindex + 1;
@@ -1679,7 +1679,7 @@ void Dxrand_next(Dxrand *unit, int inNumSamples)
 					return;
 				}
 			} else {
-				OUT0(0) = IN0(unit->m_index);
+				OUT0(0) = DEMANDINPUT_A(unit->m_index, inNumSamples);
 				int newindex = unit->mParent->mRGen->irand(unit->mNumInputs - 2) + 1;
 				unit->m_index = newindex < unit->m_index ? newindex : newindex + 1;
 				unit->m_repeatCount++;
@@ -1708,14 +1708,14 @@ void Dxrand_Ctor(Dxrand *unit)
 void Dswitch1_next(Dswitch1 *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		if (sc_isnan(x)) {
 			OUT0(0) = x;
 			return;
 		}
 		int index = (int32)floor(x + 0.5f);
 		index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
-		OUT0(0) = DEMANDINPUT(index);
+		OUT0(0) = DEMANDINPUT_A(index, inNumSamples);
 	} else {
 		for (int i=0; i<unit->mNumInputs; ++i) {
 			RESETINPUT(i);
@@ -1736,10 +1736,10 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 	int index; 
 	float ival;
 	if (inNumSamples) {
-		float val = DEMANDINPUT(unit->m_index);
+		float val = DEMANDINPUT_A(unit->m_index, inNumSamples);
 		printf("index: %i\n", (int) val);
 		if(sc_isnan(val)) {
-			ival = DEMANDINPUT(0);
+			ival = DEMANDINPUT_A(0, inNumSamples);
 		
 			if(sc_isnan(ival)) { 
 				OUT0(0) = ival; 
@@ -1748,7 +1748,7 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 			
 			index = (int32)floor(ival + 0.5f);
 			index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
-			val = DEMANDINPUT(index);
+			val = DEMANDINPUT_A(unit->m_index, inNumSamples);
 			
 			RESETINPUT(unit->m_index);
 			printf("resetting index: %i\n", unit->m_index);
@@ -1761,7 +1761,7 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 		for (int i=0; i<unit->mNumInputs; ++i) {
 			RESETINPUT(i);
 		}
-		index = (int32)floor(DEMANDINPUT(0) + 0.5f);
+		index = (int32)floor(DEMANDINPUT_A(0, inNumSamples) + 0.5f);
 		index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
 		unit->m_index = index;
 	}
@@ -1786,7 +1786,7 @@ void Donce_next(Donce *unit, int inNumSamples)
 		if (unit->m_bufcounter == unit->mWorld->mBufCounter) {
 			OUT0(0) = unit->m_prev;
 		} else {
-			float x = DEMANDINPUT(0);
+			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_prev = x;
 			OUT0(0) = x;
 		}
@@ -1846,7 +1846,7 @@ void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 		{
 			if (ISDEMANDINPUT(1))
 			{
-				float x = DEMANDINPUT(1);
+				float x = DEMANDINPUT_A(1, inNumSamples);
 				if (sc_isnan(x)) {
 					OUT0(0) = NAN;
 					return;		//x = 0.0;
