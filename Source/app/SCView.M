@@ -3917,6 +3917,7 @@ void SCUserView::clearDrawing()
 	CGContextRef cgc;
 	NSGraphicsContext* lGCtx;
 	CGRect cgrect = CGRectMake(0,0, bounds.width, bounds.height);
+	cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 
 	lGCtx = [NSGraphicsContext currentContext];
 	lCGContext = CGLayerGetContext(mCGLayer);
@@ -4934,6 +4935,8 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 			setValueFromPoint(where);
     }
 }
+
+
 /*
 void SCEnvelopeView::setVisibleSize()
 {
