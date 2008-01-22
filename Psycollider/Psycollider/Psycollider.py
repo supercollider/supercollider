@@ -729,7 +729,7 @@ class PsycolliderPostWindow(PsycolliderWindow):
         self.Show(True)
             
     def OnCloseWindow(self, event):
-        dlg = wx.MessageDialog(self,"This will shutdown PsyCollider and close all code windows, do you want to proceed?")
+        dlg = wx.MessageDialog(self,"This will shutdown PsyCollider, stop all servers and close all code windows.\n Do you want to quit?")
         reply = dlg.ShowModal()
         dlg.Destroy()
         if reply == wx.ID_OK:
@@ -744,7 +744,6 @@ class PsycolliderPostWindow(PsycolliderWindow):
 
             wx.GetApp().Shutdown()
 	else:
-		wx.MessageBox("Cancled");
 		pass
         
     def SaveFile(self):
