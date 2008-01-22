@@ -148,8 +148,10 @@ Server : Model {
 	
 	var <window, <>scopeWindow;
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
-	
+
 	var <bufferArray, <bufInfoResponder, <waitingForBufInfo = false, <waitingBufs = 0;
+
+	var <volume;
 	
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
@@ -169,7 +171,11 @@ Server : Model {
 		this.newAllocators;	
 		bufferArray = Array.newClear(options.numBuffers + 2);
 		Server.changed(\serverAdded, this);
+		/* begin add */
+		volume = Volume.new(server: this, numChans: options.numOutputBusChannels, persist: true);
+		/* end add */
 	}
+	
 	initTree {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
 		this.sendMsg("/g_new", 1);
@@ -671,7 +677,7 @@ Server : Model {
 		CmdPeriod.add(this);
 	}
 	
-	// CmdPeriod support for Server-scope and Server-record
+	// CmdPeriod support for Server-scope and Server-record and Server-volume
 	cmdPeriod {
 		if(recordNode.notNil) { recordNode = nil; };
 		if(recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
@@ -749,4 +755,20 @@ Server : Model {
 	}
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
+	
+	/* begin add for volume controls - in db */
+	volume_ {arg newVolume;
+		volume.volume_(newVolume);
+
+		}
+	
+
+		
+	mute {
+		volume.mute;
+		}
+		
+	unmute {
+		volume.unmute;
+	}
 }
