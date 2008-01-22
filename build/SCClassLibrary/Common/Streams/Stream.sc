@@ -196,7 +196,7 @@ Stream : AbstractFunction {
 	
 	play { arg clock, quant=0.0;
 		clock = clock ? TempoClock.default;
-		clock.play(this, quant);
+		clock.play(this, quant.asQuant);
 	}
 	
 	trace { arg key, printStream, prefix="";
@@ -351,7 +351,7 @@ PauseStream : Stream
 				this.changed(\playing)
 			};
 			nil
-		}, quant);
+		}, quant.asQuant);
 		this.changed(\userPlayed);
 		^this
 	}
