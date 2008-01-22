@@ -171,9 +171,7 @@ Server : Model {
 		this.newAllocators;	
 		bufferArray = Array.newClear(options.numBuffers + 2);
 		Server.changed(\serverAdded, this);
-		/* begin add */
 		volume = Volume.new(server: this, numChans: options.numOutputBusChannels, persist: true);
-		/* end add */
 	}
 	
 	initTree {
@@ -756,13 +754,9 @@ Server : Model {
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 	
-	/* begin add for volume controls - in db */
 	volume_ {arg newVolume;
 		volume.volume_(newVolume);
-
 		}
-	
-
 		
 	mute {
 		volume.mute;

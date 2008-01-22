@@ -103,7 +103,13 @@
 					"cannot dump a remote server's messages".inform
 				}
 			
-			};
+			}
+//			{char === $m} { this.volume.muted.if({
+			{char === $m} { this.volume.isMuted.if({
+				this.unmute
+				}, {
+				this.mute
+				}) };
 		};
 		
 		if (isLocal, {
@@ -196,7 +202,6 @@
 			numView
 		});
 
-		/* begin add */
 		{
 			var volSpec, cpVol;
 			var volumeSlider, volumeNum, muteButton, muteActions, volController;
@@ -234,6 +239,14 @@
 					newdb = volSpec.map(me.value);
 					this.volume_(newdb);
 					volumeNum.value_(newdb.round(0.1));
+					})
+				.keyDownAction_({arg slider, char, modifiers, unicode, keycode;
+					if (char == $], { slider.increment; });
+					if (char == $[, { slider.decrement; });
+					if (unicode == 16rF700, { slider.increment; });
+					if (unicode == 16rF703, { slider.increment; });
+					if (unicode == 16rF701, { slider.decrement; });
+					if (unicode == 16rF702, { slider.decrement; });					nil;
 					});
 			volController = SimpleController(volume)
 				.put(\amp, {|changer, what, vol|
@@ -249,8 +262,8 @@
 				})				
 					
 		}.value;
-		/* end add */	
-		w.front;
+ 
+ 		w.front;
 
 		ctlr = SimpleController(this)
 			.put(\serverRunning, {	if(serverRunning,running,stopped) })
