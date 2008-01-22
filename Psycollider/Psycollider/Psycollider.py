@@ -1,34 +1,4 @@
 # File: Psycollider.py
-#
-# Updated by John Glover (Jan 2008)
-# glover.john@gmail.com
-#
-# Main Changes:
-#   - SDI model
-#   - Remembers the size and position of the post window
-#   - Allows you to save the contents of the post window (file > save/save as)
-#   - Automatically stops sc server and swing osc when closing the main (post) window
-#   - Allows you to change the default window size
-#   - Double clicking on brackets selects the block of text they surround (update by Christopher)
-#   - Like the GEdit SC plugin (linux), you can execute a block of text surrounded by round brackets
-#     by placing the cursor at the opening bracket and pressing evaluate (ctrl + enter).
-#     This only happens if the open bracket is the first character on the line (not including white space)
-#   - Disabled word wrap in the text editor
-#
-# Todo:
-#   - Enable display of file history in multiple windows, not just post window.
-#   - Methods dealing with rtf files removed for now, as they weren't working anyway. Add them back in anyway?
-#
-# Original by:
-#
-# Benjamin Golinvaux
-# benjamin.golinvaux@euresys.com
-# messenger: bgolinvaux@hotmail.com
-# 
-# and is currently maintained by:
-#
-# Christopher Frauenberger 
-# frauenberger@iem.at
 # 
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License as
@@ -44,7 +14,29 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 #  USA
+#
+# Originally started by
+# Benjamin Golinvaux
+# benjamin.golinvaux@euresys.com
+# messenger: bgolinvaux@hotmail.com
 # 
+# currently maintained by:
+# Christopher Frauenberger - frauenberger@iem.at
+# John Glover - glover.john@gmail.com 
+# 
+# Latest changes:
+# Jan 2008 (John)
+#   - SDI model
+#   - Remembers the size and position of the post window
+#   - Allows you to save the contents of the post window (file > save/save as)
+#   - Automatically stops sc server and swing osc when closing the main (post) window
+#   - Allows you to change the default window size
+#   - Double clicking on brackets selects the block of text they surround (update by Christopher)
+#   - Like the GEdit SC plugin (linux), you can execute a block of text surrounded by round brackets
+#     by placing the cursor at the opening bracket and pressing evaluate (ctrl + enter).
+#     This only happens if the open bracket is the first character on the line (not including white space)
+#   - Disabled word wrap in the text editor
+#
 # ---------------------------------------------------------------------
 
 import PySCLang
@@ -85,13 +77,14 @@ except IOError:
 
 SC3_KEYWORDS.sort()
 
+
 # ---------------------------------------------------------------------
 # PsycolliderWindow
 #
-# Base class for all windows,
+# Base class for all windows
 #   - creates the default menus
 #   - asks to save a modified file when closing
-#   - adds file history (todo: fix for windows other than post window)
+#   - adds file history
 class PsycolliderWindow(wx.Frame):
     config = None                   # wx.FileConfig object
     menubar = None                  # wx.MenuBar object
@@ -119,6 +112,7 @@ class PsycolliderWindow(wx.Frame):
         if not self.CanCloseWindow():
             event.Veto()        
             
+        wx.GetApp().fileHistory.RemoveMenu(self.fileMenu)
         wx.GetApp().ClosedWindow(self)
         self.Destroy()
         
@@ -192,9 +186,9 @@ class PsycolliderWindow(wx.Frame):
         wx.GetApp().Eval(self.GetSelectedTextOrLine())
         self.LineDown()
 
-    # needs to be overwritten by inhereting classes
+    # needs to be overwritten by inheriting classes
     def LineDown(self):
-	pass
+        pass
 
     # should be overwritten by inheriting classes
     def GetSelectedTextOrLine(self):
@@ -223,7 +217,7 @@ class PsycolliderWindow(wx.Frame):
                 elif reply == wx.ID_CANCEL:
                     return False
         else:
-          return True    
+            return True    
         
     def CreateMenuBar(self):
         self.fileMenu = wx.Menu()
@@ -296,11 +290,9 @@ class PsycolliderWindow(wx.Frame):
         
         self.Bind(wx.EVT_MENU, self.OnSetDefaultWindowSize, id=self.setDefaultWindowSize.GetId())
         
-        # quick hack for now to make sure this only happens for the post window
-        # not sure why this doesn't work with all windows
-        if type(self) == PsycolliderPostWindow:
-            wx.GetApp().fileHistory.UseMenu(self.fileMenu)
-            self.Bind(wx.EVT_MENU_RANGE, wx.GetApp().doFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
+        wx.GetApp().fileHistory.UseMenu(self.fileMenu)
+        wx.GetApp().fileHistory.AddFilesToThisMenu(self.fileMenu)
+        self.Bind(wx.EVT_MENU_RANGE, wx.GetApp().doFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
         
 
 # ---------------------------------------------------------------------
@@ -612,12 +604,10 @@ class PsycolliderCodeWin(PsycolliderWindow):
                 file.write(content)
                 self.SetTitle(self.filePath) 
                 self.isModified = False
+                file.close()
             except:
                 # Todo: better error handling? Just print error message for now
-                wx.MessageBox("Error: Could not save file " + self.filePath)
-                return None
-            finally:
-                file.close()
+                wx.MessageBox("Error: Could not save file " + self.filePath)        
                 
     def SaveFileAs(self):
         fileDlg = wx.FileDialog(self,style=wx.SAVE)
@@ -627,19 +617,18 @@ class PsycolliderCodeWin(PsycolliderWindow):
                 file = open(self.filePath ,"w")
                 content = self.codeSubWin.GetText()
                 file.write(content)
+                file.close()
             except:
                 # Todo: better error handling? Just print error message for now
                 wx.MessageBox("Error: Could not save file " + self.filePath)
-                return None
-            finally:
-                file.close()
+                return None                
             
             self.SetTitle(self.filePath) 
             self.isModified = False
             wx.GetApp().AddFileToHistory(self.filePath)
             
     def GetSelectedTextOrLine(self):
-        '''Returns selected text if any. If not, returns the current line'''
+        """Returns selected text if any. If not, returns the current line"""
         selection = str(self.codeSubWin.GetSelectedText())
         
         if selection == "":
@@ -659,7 +648,7 @@ class PsycolliderCodeWin(PsycolliderWindow):
         return selection
 
     def LineDown(self):
-	self.codeSubWin.LineDown()
+        self.codeSubWin.LineDown()
 
 # ---------------------------------------------------------------------
 # HTML Sub Window 
@@ -668,7 +657,7 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
 
     def __init__ (self,parent):
         wx.html.HtmlWindow.__init__(self,parent)
-	self.Bind(wx.EVT_CHAR, self.OnChar)         # this hack is to enable the alt+. shortcut
+        self.Bind(wx.EVT_CHAR, self.OnChar)         # this hack is to enable the alt+. shortcut
                                                     # to stop playback, which doesn't seem to work otherwise
                                                     # bug in wx?
 	
@@ -698,7 +687,7 @@ class PsycolliderHTMLWin(PsycolliderWindow):
         return self.htmlSubWin.SelectLine(y)
         
     def GetSelectedTextOrLine(self):
-        '''Returns selected text'''
+        """Returns selected text"""
         return str(self.GetSelectedText())
 
     def SetSubWinFocus(self):
@@ -725,7 +714,6 @@ class PsycolliderPostWindow(PsycolliderWindow):
         self.fileMenu.Remove(self.htmlToCode.GetId())   # Remove unnecessary menu items
         self.langMenu.Remove(self.run.GetId())
         self.langMenu.Remove(self.stop.GetId())
-        self.langMenu.Remove(self.compileLibrary.GetId())
         self.langMenu.Remove(self.openClassDef.GetId())
         self.langMenu.Remove(self.impOf.GetId())
         self.langMenu.Remove(self.refsTo.GetId())
@@ -742,20 +730,19 @@ class PsycolliderPostWindow(PsycolliderWindow):
             
     def OnCloseWindow(self, event):
         dlg = wx.MessageDialog(self,"This will shutdown PsyCollider and close all code windows, do you want to proceed?")
-	reply = dlg.ShowModal()
-	dlg.Destroy()
+        reply = dlg.ShowModal()
+        dlg.Destroy()
         if reply == wx.ID_OK:
-		PsycolliderWindow.OnCloseWindow(self, event)
+            PsycolliderWindow.OnCloseWindow(self, event)
+            size = self.GetSize()
+            pos = self.GetPosition()
+            self.config.SetPath("/WindowSettings")
+            self.config.WriteInt('PostWindow-sizeX', size.x)
+            self.config.WriteInt('PostWindow-sizeY', size.y)
+            self.config.WriteInt('PostWindow-posX', pos.x)
+            self.config.WriteInt('PostWindow-posY', pos.y)
 
-		size = self.GetSize()
-		pos = self.GetPosition()
-		self.config.SetPath("/WindowSettings")
-		self.config.WriteInt('PostWindow-sizeX', size.x)
-		self.config.WriteInt('PostWindow-sizeY', size.y)
-		self.config.WriteInt('PostWindow-posX', pos.x)
-		self.config.WriteInt('PostWindow-posY', pos.y)
-        
-		wx.GetApp().Shutdown()
+            wx.GetApp().Shutdown()
 	else:
 		wx.MessageBox("Cancled");
 		pass
@@ -768,12 +755,10 @@ class PsycolliderPostWindow(PsycolliderWindow):
                 file = open(self.filePath, "w")
                 content = self.log.GetRange(0, self.log.GetLastPosition())
                 file.write(content)
+                file.close()
             except:
                 # Todo: better error handling? Just print error message for now
                 wx.MessageBox("Error: Could not save file " + filePath)
-                return None
-            finally:
-                file.close()
                 
     def SaveFileAs(self):
         fileDlg = wx.FileDialog(self,style=wx.SAVE)
@@ -783,12 +768,10 @@ class PsycolliderPostWindow(PsycolliderWindow):
                 file = open(self.filePath ,"w")
                 content = self.log.GetRange(0, self.log.GetLastPosition())
                 file.write(content)
+                file.close()
             except:
                 # Todo: better error handling? Just print error message for now
                 wx.MessageBox("Error: Could not save file " + self.filePath)
-                return None
-            finally:
-                file.close()
  
  
 # ---------------------------------------------------------------------
@@ -801,15 +784,16 @@ class Psycollider(wx.App):
     
     def OnInit(self):
         self.config = wx.Config() 
-        self.fileHistory = wx.FileHistory(maxFiles = MAX_HISTORY_FILES)
+
+        # File history
+        self.fileHistory = wx.FileHistory()
+        self.config.SetPath("/RecentFiles") 
+        self.fileHistory.Load(self.config)
         
+        # Create post window
         self.theMainFrame = PsycolliderPostWindow(None, -1, "Psycollider Post Window")
         self.theMainFrame.Show(True)
         self.SetTopWindow(self.theMainFrame)
-        
-        # File history
-        self.config.SetPath("/RecentFiles") 
-        self.fileHistory.Load(self.config)
         
         # enable images for html
         wx.InitAllImageHandlers()
@@ -830,8 +814,10 @@ class Psycollider(wx.App):
         """Open a file from file history"""
         fileNumber = event.GetId() - wx.ID_FILE1
         filename = self.fileHistory.GetHistoryFile(fileNumber)
-        self.OpenFile(filename)
-        self.AddFileToHistory(filename) # add it back to the history so it will be moved up the list
+        newWindow = self.OpenFile(filename)
+        if newWindow != None:
+            self.openWindows.append(newWindow)
+            self.AddFileToHistory(filename) # add it back to the history so it will be moved up the list
        
     def GetServerAddressAndPort(self):
         return ("127.1.0.1", "57110")
@@ -857,43 +843,43 @@ class Psycollider(wx.App):
         # folder called 'SCClassLibrary', we change cwd to that 
         # folder and we're done
         if os.path.isdir(classLibPath) and leafName == 'SCClassLibrary':
-          classLibPath_split = os.path.split(classLibPath)
-          classLibParentFolder = classLibPath_split[0]
-          os.chdir(classLibParentFolder)
-          return True
+            classLibPath_split = os.path.split(classLibPath)
+            classLibParentFolder = classLibPath_split[0]
+            os.chdir(classLibParentFolder)
+            return True
           
         # if something was stored in the config, but does not exist
         # anymore or is not correct, let's warn the user
         if classLibPath != uniqueName:
-          wx.MessageBox("The path stored in the application preferences is not a valid SCClassLibrary folder. You will now be requested to select an existing SCClassLibrary folder","Error", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox("The path stored in the application preferences is not a valid SCClassLibrary folder. You will now be requested to select an existing SCClassLibrary folder","Error", wx.OK | wx.ICON_ERROR)
 
         # ask the user to locate the folder
         continueLookingForFolder = True
         classLibFolderFound = False
         while continueLookingForFolder:
-          dlg = wx.DirDialog(None, "Please locate the SCClassLibrary")
-          if dlg.ShowModal() == wx.ID_CANCEL:
-            wx.MessageBox("Sorry. No class library available. Psycollider will not work correctly","Error", wx.OK | wx.ICON_ERROR)
-            continueLookingForFolder = False
-          else:
-            classLibPath = dlg.GetPath()
-            leafName = (os.path.split(classLibPath))[1]
-            if leafName != 'SCClassLibrary':
-              wx.MessageBox("The folder needs to be called SCClassLibrary for Psycollider to work correctly", "Error", wx.OK | wx.ICON_ERROR)
+            dlg = wx.DirDialog(None, "Please locate the SCClassLibrary")
+            if dlg.ShowModal() == wx.ID_CANCEL:
+                wx.MessageBox("Sorry. No class library available. Psycollider will not work correctly","Error", wx.OK | wx.ICON_ERROR)
+                continueLookingForFolder = False
             else:
-              continueLookingForFolder = False
-              classLibFolderFound = True
+                classLibPath = dlg.GetPath()
+                leafName = (os.path.split(classLibPath))[1]
+                if leafName != 'SCClassLibrary':
+                    wx.MessageBox("The folder needs to be called SCClassLibrary for Psycollider to work correctly", "Error", wx.OK | wx.ICON_ERROR)
+                else:
+                    continueLookingForFolder = False
+                    classLibFolderFound = True
 
         # only if a valid SCClassLibrary folder was found, then 
         # set the current folder as its parent
         if classLibFolderFound:
-          config.Write("SCClassLibraryPath",classLibPath)
-          classLibPath_split = os.path.split(classLibPath)
-          classLibParentFolder = classLibPath_split[0]
-          os.chdir(classLibParentFolder)
-          return True
+            config.Write("SCClassLibraryPath",classLibPath)
+            classLibPath_split = os.path.split(classLibPath)
+            classLibParentFolder = classLibPath_split[0]
+            os.chdir(classLibParentFolder)
+            return True
         else:
-          return False
+            return False
             
     def NewCodeWindow(self):
         window = PsycolliderCodeWin(self.theMainFrame, -1, "Untitled %d" % (len(self.openWindows)+1))
@@ -938,12 +924,11 @@ class Psycollider(wx.App):
         try:
             file = open(path ,"r")
             textContent = file.read()
+            file.close()
         except:
             # Todo: better error handling? Just print error message for now
             wx.MessageBox("Psycollider Error: Could not open file " + path)
-            return None
-        finally:
-            file.close()
+            return None  
             
         if textContent[0:5] == '{\\rtf':
             win = self.NewCodeWindow()
@@ -954,6 +939,7 @@ class Psycollider(wx.App):
         elif (textContent.find('<html') >= 0 or textContent.find('<HTML') >= 0):
             win = self.NewHTMLWindow()
             win.htmlSubWin.LoadPage(path)
+            return win
             
         else:
             # everything else is plain text code window
@@ -979,9 +965,9 @@ class Psycollider(wx.App):
         PySCLang.sendMain("stop");
         
     def CompileLibrary(self):
-	self.StopServer()
-	self.StopSwingOSC()
-	time.sleep(1)
+        self.StopServer()
+        self.StopSwingOSC()
+        time.sleep(1)
         PySCLang.compileLibrary()
         
     def OpenClassDef(self, text):
@@ -1050,7 +1036,7 @@ class Psycollider(wx.App):
     def SetDefaultWindowSize(self, sizeX, sizeY):
         self.config.SetPath("/WindowSettings")
         self.config.WriteInt('DefaultSizeX', sizeX)
-        self.config.WriteInt('DefaultSizeY', sizeY)
+        self.config.WriteInt('DefaultSizeY', sizeY)  
 
     def AddFileToHistory(self, path):
         self.fileHistory.AddFileToHistory(path)
@@ -1064,7 +1050,6 @@ class Psycollider(wx.App):
         # stop scsynth and swingosc
         self.StopServer()
         self.StopSwingOSC()
-	time.sleep(1)
         
         
 # ---------------------------------------------------------------------
