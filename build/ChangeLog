@@ -8,6 +8,8 @@
 * 2008-01-10 Quarks updating on OSX should now be easier for first-time users; commands are run in a separate terminal window - ds
 * 2008-01-15 "Advanced find" in Mac interface - jt
 * 2008-01-20 Buffer.copy changed to match other .copy methods - now copies language-side object rather than server buffer. Buffer.copyData can be used to copy data from one server buffer to another - jh
+* 2008-01-20 - add volume controls to the Server and Server guis - jp
+
 
 // BUGFIXES:
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
