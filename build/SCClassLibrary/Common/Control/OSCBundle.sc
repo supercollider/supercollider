@@ -121,10 +121,12 @@ MixedBundle : OSCBundle {
 		if(delta.isNil,{
 			delta = server.latency;
 		},{
-			delta = (timeOfRequest + delta) - Main.elapsedTime;
-			if(delta.isNegative,{
-				("bundle sent late:" + delta).warn;
-				delta = 0.0;// just send it now
+			if(timeOfRequest.notNil,{
+				delta = (timeOfRequest + delta) - Main.elapsedTime;
+				if(delta.isNegative,{
+					("bundle sent late:" + delta).warn;
+					delta = 0.0;// just send it now
+				});
 			});
 		});
 		if(functions.notNil) {
