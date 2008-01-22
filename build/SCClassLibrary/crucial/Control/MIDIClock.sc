@@ -3,8 +3,8 @@ MIDIClockOut {
 
 	var <>sched,<>port,click,<isPlaying = false;
 	
-	*new { arg deviceName,portName;
-		var sched,port;
+	*new { arg deviceName,portName,tempoClock;
+		var port;
 		if(deviceName.notNil and: portName.notNil,{
 			port = MIDIOut.newByName(deviceName,portName);
 		},{
@@ -13,8 +13,7 @@ MIDIClockOut {
 		if(port.isNil,{
 			Error("Device not found " + deviceName + portName).throw;
 		});
-		sched = BeatSched.new;
-		^super.newCopyArgs(sched,port)
+		^super.newCopyArgs(BeatSched.new(tempoClock:tempoClock),port)
 	}
 	
 	play {
