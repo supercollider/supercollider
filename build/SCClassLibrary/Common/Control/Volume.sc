@@ -24,8 +24,7 @@ z.free;
 Volume {
 
 	var startBus, numChans, <min, <max, server, persist, <amp, <>window,Ê<volume, spec;Ê
-	var <lag, sdname, gui, <isPlaying, <muteamp, <muted = false, cpFun, isMuted=false;
-
+	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false;
 	
 	*new {Ê arg server, startBus = 0, numChans = 2, min = -90, max = 6, persist = false;
 		^super.newCopyArgs(startBus, numChans, min, max, server, persist).initVolume;
@@ -37,7 +36,6 @@ Volume {
 		volume = 0;
 		isPlaying = false;
 		gui = false;
-//		spec = [min, max, \db].asSpec;
 	}
 
 	sendDef {
@@ -46,29 +44,32 @@ Volume {
 		}).send(server);
 	}
 
-	play {arg isMuted = false;
+	play {arg mute = false;
 		var cond;
 		cond = Condition.new;
-		server.serverRunning.if({
-			Routine.run({
-				this.sendDef;
-				server.sync(cond);
-				isPlaying = true;
-				cpFun.isNil.if({
-					CmdPeriod.add(cpFun = {
-						persist.if({
-							this.play(muted);
-							}, {
-							this.free;
+		isPlaying.not.if({
+			server.serverRunning.if({
+				Routine.run({
+					this.sendDef;
+					server.sync(cond);
+					isPlaying = true;
+					cpFun.isNil.if({
+						CmdPeriod.add(cpFun = {
+							persist.if({
+								isPlaying = false;
+								this.play(isMuted);
+								}, {
+								this.free;
+								});
 							});
 						});
-					});
-				amp = Synth(sdname, [\amp, volume.dbamp, \lag, lag], 
-					target: 1, addAction: \addAfter);
-				isMuted.if({this.mute});
+					amp = Synth(sdname, [\amp, volume.dbamp, \lag, lag], 
+						target: 1, addAction: \addAfter);
+					mute.if({this.mute});
+					})
+				}, {
+				"Volume only works on a running Server. Please boot".warn;
 				})
-			}, {
-			"Volume only works on a running Server. Please boot".warn;
 			})	
 		}
 		
@@ -88,7 +89,6 @@ Volume {
 	}
 	
 	unmute{
-		isMuted = true;
 		this.prunmute;
 		(this.muteamp == 0.0).if({
 			this.free;
@@ -97,16 +97,14 @@ Volume {
 
 	
 	prmute {
-		isMuted = false;
+		isMuted = true;
 		muteamp = volume;
 		amp.set([\amp, -inf.dbamp]);
-		muted = true;
 		this.changed(\mute, true);
 		}
 		
 	prunmute {
-	
-		muted = false;
+		isMuted = false;	
 		amp.set([\amp, muteamp.dbamp]);
 		this.changed(\mute, false);
 		
@@ -121,7 +119,7 @@ Volume {
 	volume_ { arg aVolume;
 		volume = aVolume;
 		(volume == 0.0).if({
-			(this.isPlaying and: {this.muted.not}).if({
+			(this.isPlaying and: {this.isMuted.not}).if({
 				this.free; 
 				})
 			}, {
@@ -129,8 +127,8 @@ Volume {
 				this.playVolume(isMuted);
 				})
 			});		
-		muted.if({muteamp = volume});
-		(isPlaying && muted.not).if({amp.set([\amp, volume.dbamp])}) ;
+		isMuted.if({muteamp = volume});
+		(isPlaying && isMuted.not).if({amp.set([\amp, volume.dbamp])}) ;
 		this.changed(\amp, volume);
 	}
 	

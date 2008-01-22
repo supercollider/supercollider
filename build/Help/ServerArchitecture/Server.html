@@ -5,36 +5,36 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="949">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #79311c}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #653423}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #79311c; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #653423; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #003ca9}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #932b10}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #003ca9; min-height: 12.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #59652b}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1d40a3}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #77311d}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1d40a3; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5e632f}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
-span.s3 {color: #004cea}
+span.s2 {color: #0026f7}
+span.s3 {color: #2453e2}
 span.s4 {color: #000000}
-span.s5 {color: #003ca9}
+span.s5 {color: #1d40a3}
 span.s6 {font: 12.0px Helvetica}
 span.s7 {color: #606060}
-span.s8 {color: #003cfb}
+span.s8 {color: #1847f3}
 span.s9 {font: 9.0px Monaco}
-span.s10 {color: #59652b}
-span.s11 {color: #79311c}
-span.s12 {color: #0033b4}
-span.s13 {color: #49681d}
+span.s10 {color: #5e632f}
+span.s11 {color: #653423}
+span.s12 {color: #1639ae}
+span.s13 {color: #556623}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -195,10 +195,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><br></p>
 <p class="p1"><b>defaultGroup - </b>returns this Server's default group.</p>
 <p class="p11"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b>volume -</b> an instance of Volume that runs after the defualt group.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>volume_(level) -</b> sets the Volume of the Server's output to level. Level is in db.</p>
 <p class="p11"><br></p>
+<p class="p1"><b>mute - </b>mute the server's output. This can also be toggled from the Server window with the 'm' key.</p>
 <p class="p11"><br></p>
+<p class="p1"><b>unmute - </b>unmute the server. This can also be toggled from the Server window with the 'm' key.</p>
 <p class="p11"><br></p>
 <p class="p8"><b>Automatic Message Bundling</b></p>
 <p class="p7"><br></p>
@@ -227,7 +230,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="s4"><span class="Apple-tab-span">	</span></span>// don't send</p>
 <p class="p9"><span class="Apple-tab-span">	</span>(</p>
-<p class="p9"><span class="Apple-tab-span">	</span> b = s.makeBundle(<span class="s5">false</span>, {<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>b = s.makeBundle(<span class="s5">false</span>, {<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = { <span class="s5">PinkNoise</span>.ar(0.1) * <span class="s5">In</span>.kr(0, 1); }.play;</p>
 <p class="p9"><span class="Apple-tab-span">	</span>});</p>
 <p class="p9"><span class="Apple-tab-span">	</span>)</p>
