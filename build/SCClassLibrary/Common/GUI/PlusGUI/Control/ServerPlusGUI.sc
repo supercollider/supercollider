@@ -13,7 +13,7 @@
 		if(w.isNil) {
 			label = name.asString + "server";
 			w = window = gui.window.new( label,
-						Rect(10, named.values.indexOf(this) * 120 + 10, 306, 92),
+						Rect(10, named.values.indexOf(this) * 144 + 10, 306, 116),
 						resizable: false );
 			w.view.decorator = FlowLayout(w.view.bounds);
 		} { label = w.name };
@@ -195,7 +195,61 @@
 			
 			numView
 		});
-		
+
+		/* begin add */
+		{
+			var volSpec, cpVol;
+			var volumeSlider, volumeNum, muteButton, muteActions, volController;
+			muteActions = [{this.unmute}, {this.mute}];
+			volSpec = [volume.min, volume.max, \db].asSpec;
+			
+			muteButton = gui.button.new(w, Rect(0, 0, 24, 24))
+				.states_([
+					["M", Color.black, Color.clear],
+					["M", Color.black, Color.red]
+					])
+				.action_({arg me;
+					this.serverRunning.if({
+						muteActions[me.value].value;
+						}, {
+						"The server must be booted to mute it".warn;
+						me.value_(0);
+						});
+					});
+					
+			volumeNum = gui.numberBox.new(w, Rect(0, 0, 36, 24))
+				.value_(0.0)
+				.action_({arg me;
+					var newdb;
+					newdb = me.value;
+					this.volume_(newdb);
+					volumeSlider.value_(volSpec.unmap(newdb));
+					});
+			
+			volumeSlider = gui.slider.new(w, Rect(0, 0, 230, 24))
+				.value_(volSpec.unmap(0))
+				.onClose_{volController.remove}
+				.action_({arg me; 
+					var newdb;
+					newdb = volSpec.map(me.value);
+					this.volume_(newdb);
+					volumeNum.value_(newdb.round(0.1));
+					});
+			volController = SimpleController(volume)
+				.put(\amp, {|changer, what, vol|
+					{
+						volumeNum.value_(vol.round(0.01));
+						volumeSlider.value_(volSpec.unmap(vol));
+					}.defer		
+				})
+				.put(\mute, {|changer, what, flag|
+					{
+						muteButton.value_(flag.binaryValue);
+					}.defer		
+				})				
+					
+		}.value;
+		/* end add */	
 		w.front;
 
 		ctlr = SimpleController(this)
