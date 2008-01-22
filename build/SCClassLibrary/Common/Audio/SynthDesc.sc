@@ -188,13 +188,22 @@ SynthDesc {
 			if(controlName.name.asString.first.isAlpha) {
 				name = controlName.name.asSymbol;
 				if(names.includes(name)) {
-					MethodError("Could not build msgFunc for this SynthDesc: duplicate control name %"
-						.format(name), this).throw;
+					"Could not build msgFunc for this SynthDesc: duplicate control name %"
+						.format(name).warn;
+					comma = true;
 				} {
 					names.add(name);
 				};
 			};
 		});
+			// reusing variable to know if I should continue or not
+		if(comma) {
+"\nYour synthdef has been saved in the library and loaded on the server, if running.
+Use of this synth in Patterns will not detect argument names automatically because of the duplicate name(s).".postln;
+			msgFunc = nil;
+			^this
+		};
+		comma = false;
 		string = String.streamContents {|stream|
 			stream << "#{ ";
 			if (controlNames.size > 0) {
