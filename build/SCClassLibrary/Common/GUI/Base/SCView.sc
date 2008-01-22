@@ -291,11 +291,23 @@ SCView {  // abstract class
 		currentDragString = currentDrag;
 		currentDrag = currentDrag.interpret;
 	}
-	
+
+		// temporary implementation until Jan commits a primitive
+	absoluteBounds {
+		var	bounds = this.bounds;
+		this.getParents.do({ |parent|
+			(parent.tryPerform(\relativeOrigin) == true).if({
+				bounds = bounds.moveBy(parent.bounds.left, parent.bounds.top)
+			}, {
+				^bounds
+			});
+		});
+		^bounds
+	}
 }
 
 SCContainerView : SCView { // abstract class
-	var <children, <>decorator, < relativeOrigin = false;
+	var <children, <>decorator, < relativeOrigin = true;
 			
 	add { arg child;
 		children = children.add(child);
