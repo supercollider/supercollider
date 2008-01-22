@@ -12,16 +12,16 @@
 //s.options.dump;
 
 Server.program = "scsynth.exe";
-s.boot;
-
-PathName.tmp_("temp\\");
+s.boot;
 
 SwingOSC.program = "java -jar SwingOSC\\build\\SwingOSC.jar";
-
 g=SwingOSC.default;
 g.options.protocol_(\tcp);
 g.boot;
 
-"\n\nThis is Psycollider, build November 2007".postln;
-"Have fun! \n\n\n\n".postln;
+GUI.swing;
+
+// make window for server
+{ s.makeWindow(); }.defer(3);
+
 
