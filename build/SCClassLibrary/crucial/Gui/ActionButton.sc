@@ -116,10 +116,13 @@ FlowView : SCViewHolder {
 		parent = argParent ?? { GUI.window.new("",bounds).front };
 //try { parent.asView.instVarAt(0).postln };
 //bounds.debug("bounds");
-		bounds = if(bounds.notNil,{
-			bounds.asRect  // .moveTo(0,0)  // why was this here? bad idea
+		if(bounds.notNil,{
+			bounds = bounds.asRect  // .moveTo(0,0)  // why was this here? bad idea
 		},{
-			parent.asView.bounds.insetAll(2,2,2,2)
+			bounds = parent.asView.bounds.insetAll(2,2,2,2);
+			if(parent.tryPerform(\relativeOrigin) ? false) {
+				bounds = bounds.setOriginRelativeTo(parent);
+			};
 		});
 			// this adds the composite view to the parent composite view
 		view = this.class.viewClass.new(parent.asView, bounds);
