@@ -307,7 +307,7 @@ SCView {  // abstract class
 }
 
 SCContainerView : SCView { // abstract class
-	var <children, <>decorator, < relativeOrigin = true;
+	var <children, <>decorator, < relativeOrigin = false;
 			
 	add { arg child;
 		children = children.add(child);
