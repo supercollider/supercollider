@@ -5,8 +5,8 @@ PatternProxy : Pattern {
 	var <source, <pattern, <>envir;
 	var >clock, quant, <>condition=true, reset;
 	
-				// quant new pattern insertion. can be [quant, offset]
-				// in EventPatternProxy it can be [quant, offset, onset]
+				// quant new pattern insertion. can be [quant, phase, offset]
+				// in EventPatternProxy it can be [quant, phase, offset, onset]
 				
 	classvar <>defaultQuant, defaultEnvir;
 	
@@ -47,8 +47,13 @@ PatternProxy : Pattern {
 	*parallelise { arg list; ^Ptuple(list) }
 	
 	pattern_ { arg pat; this.source_(pat) }
-	offset_ { arg val; quant = quant.instill(1, val) }
-	offset { arg val; ^quant.obtain(1) }
+	
+	offset_ { arg val; quant = quant.instill(2, val) }
+	offset { arg val; ^quant.obtain(2) }
+	phase_ { arg val; quant = quant.instill(1, val) }
+	phase { arg val; ^quant.obtain(1) }
+	quantBeat_ { arg val; quant = quant.instill(0, val) }
+	quantBeat { arg val; ^quant.obtain(0) }
 	
 	set { arg ... args; 
 		if(envir.isNil) { this.envir = this.class.event };
@@ -501,23 +506,18 @@ EventPatternProxy : TaskProxy {
 	
 	constrainStream { arg str, inval, cleanup;
 		var delta, tolerance, new;
-		var quantVal, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
+		var quantBeat, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
 		
 		^if(quant.notNil) {
-			
-			if(quant.isSequenceableCollection) {
-				quantVal = quant[0];
-				catchUp = quant[2];
-			} {
-				quantVal = quant;
-			};
+			quantBeat = this.quantBeat;
+			catchUp = this.outset;
 			
 			delta = thisThread.clock.timeToNextBeat(quant);
-			tolerance = quantVal % delta % 0.125;
+			tolerance = quantBeat % delta % 0.125;
 			if(catchUp.notNil) {
 				deltaTillCatchUp = thisThread.clock.timeToNextBeat(catchUp);
 				new = pattern.asStream;
-				forwardTime = quantVal - delta + deltaTillCatchUp;
+				forwardTime = quantBeat - delta + deltaTillCatchUp;
 				delta = new.fastForward(forwardTime, tolerance) + deltaTillCatchUp;
 			} {
 				new = pattern
@@ -545,8 +545,8 @@ EventPatternProxy : TaskProxy {
 
 	*parallelise { arg list; ^Ppar(list) }
 	
-	outset_ { arg val; quant = quant.instill(2, val) }
-	outset { arg val; ^this.quant.obtain(2) }
+	outset_ { arg val; quant = quant.instill(3, val) }
+	outset { arg val; ^this.quant.obtain(3) }
 	
 		
 	// branching from another thread

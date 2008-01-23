@@ -5,24 +5,28 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0025b2}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0034a8}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7f2a1c}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0025b2; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #416d1f}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0034a8; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #52692a}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7f2a1c; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0024f8}
+span.s2 {color: #003eea}
 span.s3 {font: 9.0px Monaco}
 span.s4 {color: #000000}
-span.s5 {color: #416d1f}
-span.s6 {color: #0025b2}
+span.s5 {color: #52692a}
+span.s6 {color: #0034a8}
 span.s7 {color: #606060}
+span.s8 {color: #2c7014}
+span.s9 {color: #001bb9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -66,11 +70,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>quant_(beats)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the quantisation time for beat accurate scheduling</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be a pair [quant, offset]</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be a pair [quant, phase, offset]</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>*<b>defaultQuant_(beats)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the default quantisation for new instances (default: nil)</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be a pair [quant, offset]</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be a pair [quant, phase, offset]</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>condition_(func)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>provide a condition under which the pattern is switched when a new one is inserted.</p>
@@ -281,9 +285,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">t.nextN(3);</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p4">Pdefn<span class="s4">(</span><span class="s5">\z</span><span class="s4">, { </span>|e|<span class="s4"> <span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span></span>//(e.a + e.b) + 0.1.rand.round(0.01) 1</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s6">Pseq</span>([1, 2, e.b], 1)</p>
+<p class="p9">Pdefn<span class="s4">(</span><span class="s8">\z</span><span class="s4">, { </span>|e|<span class="s4"> <span class="Apple-converted-space"> </span></span></p>
+<p class="p10"><span class="s4"><span class="Apple-tab-span">	</span></span>//(e.a + e.b) + 0.1.rand.round(0.01) 1</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s9">Pseq</span>([1, 2, e.a], <span class="s9">1</span>)</p>
 <p class="p6">})</p>
 <p class="p6">);<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
@@ -309,10 +313,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\z</span>).map(<span class="s5">\a</span>, <span class="s5">\other</span>);</p>
 <p class="p2"><br></p>
+<p class="p6">t = Pn(<span class="s6">Pdefn</span>(<span class="s5">\z</span>)).asStream;</p>
+<p class="p2"><br></p>
 <p class="p5"><span class="s4">t.nextN(3); </span>// Pdefn default value (1) is used</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\other</span><span class="s4">, </span><span class="s6">Prand</span><span class="s4">([200, 300, 400], </span><span class="s6">inf</span><span class="s4">)); </span>// assign a pattern to \other</p>
-<p class="p9"><br></p>
+<p class="p11"><br></p>
 <p class="p6">t.nextN(3);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
