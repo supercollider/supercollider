@@ -40,33 +40,6 @@ OSCBundle {
 		if(preparationMessages.isNil) { ^onComplete.value };
 
 		Routine.run {
-			/*
-			var packetSize = 16, bundle;
-			if(safeSizes) {
-				bundle = [];
-
-				preparationMessages.do { |msg|
-					var msgSize = msg.msgSize;
-										// this is not exactly true, as we'll pack it in a
-										// bundle later.
-										// 65515 = 65535 - 16 - 4:
-					if(msgSize >= 65515) { "Preparation message too big to send via UDP".error };
-					if(packetSize + msgSize > 65535) {
-						server.sync(Condition.new, bundle);
-						packetSize = 16;
-						bundle = [];
-					};
-					bundle = bundle.add(msg);
-					packetSize = packetSize + msgSize + 4;
-				};
-				if(packetSize > 0) { // send last one
-					server.sync(Condition.new, bundle);
-				}
-			} {
-				server.sync(Condition.new,preparationMessages)
-			};
-			*/
-			//postf("preparationMessages: %\n", preparationMessages.asCompileString);
 			server.sync(Condition.new, preparationMessages);
 			onComplete.value;
 		};
