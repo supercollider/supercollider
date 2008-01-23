@@ -122,7 +122,7 @@
 // support for absolute / relative coordinates in composite views
 
 + Rect {
-		// "this" is a Rect with absolute coordinates
+		// "this" is a Rect with coordinates relative to "view"'s parent
 	setOriginRelativeTo { |view|
 		var	b = view.bounds;
 		^this.moveBy(b.left.neg, b.top.neg)
@@ -130,7 +130,12 @@
 	
 		// "this" is a Rect with coordinates relative to the view
 	setOriginAbsolute { |view|
-		var	b = view.tryPerform(\absoluteBounds) ?? { view.bounds };
-		^this.moveBy(b.left, b.top)
+		var	b;
+		if((view.tryPerform(\relativeOrigin) ? false).not) {
+			b = view.tryPerform(\absoluteBounds) ?? { view.bounds };
+			^this.moveBy(b.left, b.top)
+		} {
+			^this
+		}
 	}
 }
