@@ -17,18 +17,29 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifdef SC_WIN32
+#define hypotf _hypotf
+#endif
 
 #include "onsetsds.h"
 
 
 #define ODS_DEBUG_POST_CSV 0
 
+
+#ifdef SC_WIN32
+// the MSVC 2005 compiler is not up to date with inline
+float onsetsds_phase_rewrap(float phase);
+float onsetsds_phase_rewrap(float phase){
+	return (phase>MINUSPI && phase<PI) ? phase : phase + TWOPI * (1.f + floorf((MINUSPI - phase) * INV_TWOPI));
+}
+#else
 // Inline
 inline float onsetsds_phase_rewrap(float phase);
 inline float onsetsds_phase_rewrap(float phase){
 	return (phase>MINUSPI && phase<PI) ? phase : phase + TWOPI * (1.f + floorf((MINUSPI - phase) * INV_TWOPI));
 }
-
+#endif
 
 size_t onsetsds_memneeded (int odftype, size_t fftsize, unsigned int medspan){
 	
@@ -84,6 +95,8 @@ size_t onsetsds_memneeded (int odftype, size_t fftsize, unsigned int medspan){
 void onsetsds_init(OnsetsDS *ods, float *odsdata, int fftformat, 
                            int odftype, size_t fftsize, unsigned int medspan, float srate){
 
+   int numbins, realnumbins;
+
 	// The main pointer to the processing area - other pointers will indicate areas within this
 	ods->data = odsdata;
 	// Set all vals in processing area to zero
@@ -91,8 +104,8 @@ void onsetsds_init(OnsetsDS *ods, float *odsdata, int fftformat,
 	
 	ods->srate = srate;
 	
-	int numbins  = (fftsize >> 1) - 1; // No of bins, not counting DC/nyq
-	int realnumbins = numbins + 2;
+	numbins  = (fftsize >> 1) - 1; // No of bins, not counting DC/nyq
+	realnumbins = numbins + 2;
 
 	// Also point the other pointers to the right places
 	ods->curr     = (OdsPolarBuf*) odsdata;
@@ -258,19 +271,18 @@ void onsetsds_loadframe(OnsetsDS* ods, float* fftbuf){
 
 void onsetsds_whiten(OnsetsDS* ods){
 	
+	float val,oldval, relaxcoef, floor;
+	int numbins, i;
+	OdsPolarBuf *curr;
+	float *psp;
+	float *pspp1; // Offset by 1, avoids quite a lot of "+1"s in the following code
+
 	if(ods->whtype == ODS_WH_NONE){
 		//printf("onsetsds_whiten(): ODS_WH_NONE, skipping\n");
 		return;
 	}
 	
 	// NB: Apart from the above, ods->whtype is currently IGNORED and only one mode is used.
-	
-	
-	float val,oldval, relaxcoef, floor;
-	int numbins, i;
-	OdsPolarBuf *curr;
-	float *psp;
-	float *pspp1; // Offset by 1, avoids quite a lot of "+1"s in the following code
 	
 	relaxcoef = ods->relaxcoef;
 	numbins = ods->numbins;
@@ -324,6 +336,9 @@ void onsetsds_odf(OnsetsDS* ods){
 	int i, tbpointer;
 	float deviation, diff, curmag;
 	double totdev;
+	float predmag, predphase, yesterphase, yesterphasediff;
+	float yestermag;
+
 	
 	bool rectify = true;
 	
@@ -359,7 +374,6 @@ void onsetsds_odf(OnsetsDS* ods){
 			// Iterate through, calculating the deviation from expected value.
 			totdev = 0.0;
 			tbpointer = 0;
-			float predmag, predphase, yesterphase, yesterphasediff;
 			for (i=0; i<numbins; ++i) {
 				curmag = ods_abs(curr->bin[i].mag);
 			
@@ -455,7 +469,6 @@ void onsetsds_odf(OnsetsDS* ods){
 			// Iterate through, calculating the Modified Kullback-Liebler distance
 			totdev = 0.0;
 			tbpointer = 0;
-			float yestermag;
 			for (i=0; i<numbins; ++i) {
 				curmag = ods_abs(curr->bin[i].mag);
 				yestermag = ods->other[tbpointer];
@@ -503,14 +516,14 @@ void SelectionSort(float *array, int length)
 
 void onsetsds_detect(OnsetsDS* ods){
 	
+	float* sortbuf = ods->sortbuf;
+	int medspan = ods->medspan;
+
 	// Shift the yesterval to its rightful place
 	ods->odfvalpostprev = ods->odfvalpost;
 	
 	///////// MEDIAN REMOVAL ////////////
-	
-	float* sortbuf = ods->sortbuf;
-	int medspan = ods->medspan;
-	
+		
 	// Copy odfvals to sortbuf
 	memcpy(sortbuf, ods->odfvals, medspan * sizeof(float));
 	

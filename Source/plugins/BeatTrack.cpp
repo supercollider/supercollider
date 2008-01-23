@@ -783,7 +783,7 @@ void finaldecision(BeatTrack *unit) {
 	float phasebeforeamort= ((float)unit->m_bestphase/unit->m_torround);
 	
 	//add phase to compensate for ELAPSEDTIME
-	unit->m_currphase= unit->m_phase = fmod(phasebeforeamort+phaseelapsed,1.0);
+	unit->m_currphase= unit->m_phase = fmod(phasebeforeamort+phaseelapsed,(float)1.0);
 	
 }
 

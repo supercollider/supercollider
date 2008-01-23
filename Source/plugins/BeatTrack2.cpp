@@ -384,7 +384,7 @@ void finaldecision(BeatTrack2 *unit) {
 	
 	//unit->m_amortlength will be numtempi *2  = 240
 	
-	float bestphase = fmod( ((unit->bestphase[bestcandidate] * unit->m_phaseaccuracy)  + (unit->m_krlength * (unit->m_amortlength)))/(unit->m_period), 1.0); 
+	float bestphase = fmod( ((unit->bestphase[bestcandidate] * unit->m_phaseaccuracy)  + (unit->m_krlength * (unit->m_amortlength)))/(unit->m_period), (float)1.0); 
 	
 	//if(unit->m_prediction) {
 	
@@ -409,7 +409,7 @@ void finaldecision(BeatTrack2 *unit) {
 unit->m_predictperiod = g_periods[unit->besttempo[bestcandidate]]; 
 
 //time elapsed since a known beat is phase of winner in seconds, to calculation start point, plus time for calculation (120 control blocks) divided by period, modulo 1.0
-unit->m_predictphase= fmod( ( (unit->bestphase[bestcandidate] * unit->m_phaseaccuracy)  + (unit->m_krlength * (unit->m_amortlength)) + unit->m_calculationperiod)/(unit->m_period), 1.0); 
+unit->m_predictphase= fmod( ( (unit->bestphase[bestcandidate] * unit->m_phaseaccuracy)  + (unit->m_krlength * (unit->m_amortlength)) + unit->m_calculationperiod)/(unit->m_period),(float)1.0); 
 
 
 
