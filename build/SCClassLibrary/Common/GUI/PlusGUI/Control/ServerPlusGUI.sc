@@ -13,15 +13,17 @@
 		if(w.isNil) {
 			label = name.asString + "server";
 			w = window = gui.window.new( label,
-						Rect(10, named.values.indexOf(this) * 144 + 10, 306, 116),
+						Rect(5, named.values.indexOf(this) * 125 + 5, 288, 98),
 						resizable: false );
 			w.view.decorator = FlowLayout(w.view.bounds);
 		} { label = w.name };
 		
 		if(isLocal,{
-			booter = gui.button.new(w, Rect(0,0, 48, 24));
+			booter = gui.button.new(w, Rect(0,0, 44, 18));
+			booter.canFocus = false;
+			booter.font = GUI.font.new("Helvetica", 9);
 			booter.states = [["Boot", Color.black, Color.clear],
-						   ["Quit", Color.black, Color.clear]];
+						   ["Quit", Color.black, Color.green.alpha_(0.2)]];
 			
 			booter.action = { arg view; 
 				if(view.value == 1, {
@@ -34,20 +36,22 @@
 			};
 			booter.setProperty(\value,serverRunning.binaryValue);
 			
-			killer = gui.button.new(w, Rect(0,0, 24, 24));
+			killer = gui.button.new(w, Rect(0,0, 20, 18));
 			killer.states = [["K", Color.black, Color.clear]];
-			
+			killer.font = GUI.font.new("Helvetica", 9);
+			killer.canFocus = false;
 			killer.action = { Server.killAll };	
 		});
 		
-		active = gui.staticText.new(w, Rect(0,0, 78, 24));
+		active = gui.staticText.new(w, Rect(0,0, 78, 18));
 		active.string = this.name.asString;
 		active.align = \center;
-		active.font = gui.font.new( gui.font.defaultSansFace, 16 ).boldVariant;
-		active.background = Color.black;
+		active.font = gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
+		active.background = Color.white;
 		if(serverRunning,running,stopped);		
 
-		makeDefault = gui.button.new(w, Rect(0,0, 60, 24));
+		makeDefault = gui.button.new(w, Rect(0,0, 54, 18));
+		makeDefault.font = GUI.font.new("Helvetica", 9);
 		makeDefault.states = [["-> default", Color.black, Color.clear]];
 		makeDefault.action = {
 			thisProcess.interpreter.s = this;
@@ -56,12 +60,14 @@
 
 		//w.view.decorator.nextLine;
 		
-		recorder = gui.button.new(w, Rect(0,0, 72, 24));
+		recorder = gui.button.new(w, Rect(0,0, 66, 18));
+		recorder.font = GUI.font.new("Helvetica", 9);
 		recorder.states = [
 			["prepare rec", Color.black, Color.clear],
-			["record >", Color.red, Color.gray(0.1)],
-			["stop []", Color.black, Color.red]
+			["record >", Color.red, Color.gray(0.1).alpha_(0.3)],
+			["stop []", Color.black, Color.red.alpha_(0.3)]
 		];
+		
 		recorder.action = {
 			if (recorder.value == 1) {
 				this.prepareForRecord;
@@ -115,19 +121,22 @@
 		if (isLocal, {
 			
 			running = {
-				active.stringColor_(Color.red);
+				active.stringColor_(Color.new255(74, 120, 74));
+				active.string = "running";
 				booter.setProperty(\value,1);
 				recorder.enabled = true;
 			};
 			stopped = {
 				active.stringColor_(Color.grey(0.3));
+				active.string = "inactive";
 				booter.setProperty(\value,0);
 				recorder.setProperty(\value,0);
 				recorder.enabled = false;
 
 			};
 			booting = {
-				active.stringColor_(Color.yellow(0.9));
+				active.stringColor_(Color.new255(255, 140, 0));
+				active.string = "booting";
 				//booter.setProperty(\value,0);
 			};
 			bundling = {
@@ -143,19 +152,20 @@
 		},{	
 			running = {
 				active.stringColor = Color.red;
+				active.string = "running";
 				active.background = Color.red;
 				recorder.enabled = true;
 			};
 			stopped = {
-				active.stringColor = Color.red;
-				active.background = Color.black;
+				active.stringColor_(Color.grey(0.3));
+				active.string = "inactive";
 				recorder.setProperty(\value,0);
 				recorder.enabled = false;
 
 			};
 			booting = {
-				active.stringColor = Color.red;
-				active.background = Color.yellow;
+				active.stringColor_(Color.new255(255, 140, 0));
+				active.string = "booting";
 			};
 			
 			bundling = {
@@ -181,20 +191,24 @@
 			"UGens :", "Synths :", "Groups :", "SynthDefs :"
 		].collect({ arg name, i;
 			var label,numView, pctView;
-			label = gui.staticText.new(w, Rect(0,0, 80, 14));
+			label = gui.staticText.new(w, Rect(0,0, 80, 12));
 			label.string = name;
+			label.font = GUI.font.new("Helvetica", 9);
 			label.align = \right;
 		
 			if (i < 2, { 
-				numView = gui.staticText.new(w, Rect(0,0, 38, 14));
+				numView = gui.staticText.new(w, Rect(0,0, 38, 12));
 				numView.string = "?";
+				numView.font = GUI.font.new("Helvetica", 9);
 				numView.align = \left;
 			
-				pctView = gui.staticText.new(w, Rect(0,0, 12, 14));
+				pctView = gui.staticText.new(w, Rect(0,0, 12, 12));
 				pctView.string = "%";
+				pctView.font = GUI.font.new("Helvetica", 9);
 				pctView.align = \left;
 			},{
-				numView = gui.staticText.new(w, Rect(0,0, 50, 14));
+				numView = gui.staticText.new(w, Rect(0,0, 50, 12));
+				numView.font = GUI.font.new("Helvetica", 9);
 				numView.string = "?";
 				numView.align = \left;
 			});
@@ -208,10 +222,15 @@
 			muteActions = [{this.unmute}, {this.mute}];
 			volSpec = [volume.min, volume.max, \db].asSpec;
 			
-			muteButton = gui.button.new(w, Rect(0, 0, 24, 24))
+			gui.staticText.new(w, Rect(0,0, 44, 18))
+				.font_(GUI.font.new("Helvetica", 9))
+				.string_("  volume :");
+
+			muteButton = gui.button.new(w, Rect(0, 0, 20, 16))
+				.font_(GUI.font.new("Helvetica", 9))
 				.states_([
 					["M", Color.black, Color.clear],
-					["M", Color.black, Color.red]
+					["M", Color.black, Color.red.alpha_(0.3)]
 					])
 				.action_({arg me;
 					this.serverRunning.if({
@@ -219,11 +238,13 @@
 						}, {
 						"The server must be booted to mute it".warn;
 						me.value_(0);
-						});
+						})
 					});
 					
-			volumeNum = gui.numberBox.new(w, Rect(0, 0, 36, 24))
+			volumeNum = gui.numberBox.new(w, Rect(0, 0, 36, 15))
+				.font_(GUI.font.new("Helvetica", 9))
 				.value_(0.0)
+				.align_(\center)
 				.action_({arg me;
 					var newdb;
 					newdb = me.value;
@@ -231,7 +252,7 @@
 					volumeSlider.value_(volSpec.unmap(newdb));
 					});
 			
-			volumeSlider = gui.slider.new(w, Rect(0, 0, 230, 24))
+			volumeSlider = gui.slider.new(w, Rect(0, 0, 166, 16))
 				.value_(volSpec.unmap(0))
 				.onClose_{volController.remove}
 				.action_({arg me; 
