@@ -5,28 +5,26 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8b2719; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002dad; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7f2a1c; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0034a8; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #0033f1}
+span.s3 {color: #003eea}
 span.s4 {text-decoration: underline ; color: #0021e7}
-span.s5 {color: #0000bf}
+span.s5 {color: #001bb9}
 span.s6 {color: #606060}
 span.s7 {color: #000000}
-span.s8 {color: #007300}
-span.s9 {color: #bf0000}
+span.s8 {color: #2c7014}
+span.s9 {color: #ad140d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -43,7 +41,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1"><b>Pdef(key)</b> returns the instance, <b>Pdef(key, pat)</b> stores the pattern and returns the instance, like Tdef and Ndef.</p>
 <p class="p3"><br></p>
-<p class="p1">It can be used to store event Patterns globally. Changes in this global library have effect immediately, or if quant/offset values are given, at the next time step. For value patterns (numerical, non event patterns)<span class="Apple-converted-space"> </span></p>
+<p class="p1">It can be used to store event Patterns globally. Changes in this global library have effect immediately, or if quant/phase values are given, at the next time step. For value patterns (numerical, non event patterns)<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="s4"><a href="Pdefn.html">Pdefn</a></span> is used.</p>
 <p class="p3"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
@@ -75,11 +73,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>quant_(beats)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the quantisation time for beat accurate scheduling.</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be an array [quant, offset, outset]</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be an array [quant, phase, offset, outset], or just [quant, phase] etc.</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>*<b>defaultQuant_(beats)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the default quantisation for new instances (default: 1.0)</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be an array<span class="Apple-converted-space">  </span>[quant, offset, outset]</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>can be an array<span class="Apple-converted-space">  </span>[quant, phase, offset, outset]</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>condition_(func)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>provide a condition under which the pattern is switched when a new one is inserted.</p>
@@ -158,172 +156,172 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1"><b>a) embedding Pdef into a stream:</b></p>
 <p class="p3"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p5">(</p>
-<p class="p5"><span class="s5">SynthDef</span>(<span class="s6">"Pdefhelp"</span>, { <span class="s5">arg</span> out, freq, sustain=1, amp=1, pan;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">var</span> env, u=1;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.03, sustain), 1, doneAction:2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>3.do { <span class="s5">var</span> d; d = exprand(0.01, 1); u = <span class="s5">SinOsc</span>.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">Pan2</span>.ar(<span class="s5">SinOsc</span>.ar(u + 1 * freq, 0, amp * env), pan));</p>
-<p class="p4"><br></p>
-<p class="p5">}).store;</p>
-<p class="p5">)</p>
-<p class="p5">s.boot;</p>
-<p class="p4"><br></p>
-<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span>\metronom<span class="s7">, </span><span class="s5">Pbind</span><span class="s7">(</span>\instrument<span class="s7">, </span>\Pdefhelp<span class="s7">, </span>\dur<span class="s7">, 1, </span>\degree<span class="s7">, 16, </span>\legato<span class="s7">, 0.1)).play;</span></p>
-<p class="p4"><br></p>
-<p class="p5">x = <span class="s5">Pseq</span>([<span class="s5">Pdef</span>(<span class="s8">\a</span>), <span class="s5">Pdef</span>(<span class="s8">\b</span>), <span class="s5">Pdef</span>(<span class="s8">\c</span>)], <span class="s5">inf</span>).play;</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3])));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\b</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[7, 8, 7, 8])));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\c</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 1, 2], 2)));</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\c</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[4, 3, 1, 2]*3)));</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p7">// infinite loops are scheduled (to ths clock's next beat by default) and released:</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.753, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3, 2], <span class="s5">inf</span>)));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3] + 1, 1)));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3] - 4, 1)));</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5] - 1, 1)));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.753, <span class="s8">\degree</span>, <span class="s5">Pshuf</span>(#[0, 5, 4, 3, 2], <span class="s5">inf</span>)));</p>
-<p class="p4"><br></p>
-<p class="p5">x.stop;</p>
-<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span>\metronom<span class="s7">).stop;</span></p>
-<p class="p4"><br></p>
-<p class="p7">// Pdef can be used in multiple patterns:</p>
-<p class="p4"><br></p>
-<p class="p5">(</p>
-<p class="p5">x = <span class="s5">Ppar</span>([</p>
-<p class="p8"><span class="s7"><span class="Apple-tab-span">	</span></span>Pbindf<span class="s7">(</span>Pn<span class="s7">(</span>Pdef<span class="s7">(</span><span class="s8">\a</span><span class="s7">), </span>inf<span class="s7">),</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\gtranspose</span>, <span class="s5">Pstutter</span>(8, <span class="s5">Pseq</span>(#[0, 2, 0, 3],<span class="s5">inf</span>))</p>
-<p class="p5"><span class="Apple-tab-span">	</span>),</p>
-<p class="p8"><span class="s7"><span class="Apple-tab-span">	</span></span>Pbindf<span class="s7">(</span>Pn<span class="s7">(</span>Pdef<span class="s7">(</span><span class="s8">\a</span><span class="s7">), </span>inf<span class="s7">),</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\gtranspose</span>, <span class="s5">Pstutter</span>(8, <span class="s5">Pseq</span>(#[7, 4, 0, 3],<span class="s5">inf</span>)),<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\dur</span>, 0.6</p>
-<p class="p5"><span class="Apple-tab-span">	</span>),</p>
-<p class="p8"><span class="s7"><span class="Apple-tab-span">	</span></span>Pbindf<span class="s7">(</span>Pn<span class="s7">(</span>Pdef<span class="s7">(</span><span class="s8">\a</span><span class="s7">), </span>inf<span class="s7">),</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3, 2, 3, 2], 1)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">]).play;</p>
-<p class="p5">)</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.1, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 1, 0, 1, 2], <span class="s5">inf</span>)));</p>
-<p class="p4"><br></p>
-<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span>\a<span class="s7">, </span><span class="s5">Pbind</span><span class="s7">(</span>\instrument<span class="s7">, </span>\Pdefhelp<span class="s7">, </span>\dur<span class="s7">, 0.2, </span>\degree<span class="s7">, </span><span class="s5">Pseq</span><span class="s7">([0, 4], </span><span class="s5">inf</span><span class="s7">)));</span></p>
-<p class="p4"><br></p>
-<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span>\a<span class="s7">, </span><span class="s5">Pbind</span><span class="s7">(</span>\instrument<span class="s7">, </span>\Pdefhelp<span class="s7">, </span>\dur<span class="s7">, 1, </span>\degree<span class="s7">, </span><span class="s5">Pseq</span><span class="s7">([0, 4], </span><span class="s5">inf</span><span class="s7">)));</span></p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.2, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([0, 4, <span class="s5">Prand</span>([6, 8b],2)], <span class="s5">inf</span>)));</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.1, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 1b, 1, 2b, 2, 3, 4b, 4, 5], <span class="s5">inf</span>)));</p>
-<p class="p4"><br></p>
-<p class="p7">// using a fade time, the above changes are crossfaded</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>).fadeTime = 2;</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.2, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([0, 4, <span class="s5">Prand</span>([6, 8b],2)], <span class="s5">inf</span>)));</p>
-<p class="p4"><br></p>
-<p class="p7">// ...</p>
-<p class="p4"><br></p>
-<p class="p7"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\a</span><span class="s7">).set(</span><span class="s8">\detune</span><span class="s7">, -50); </span>// set environment</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\a</span>).set(<span class="s8">\detune</span>, 0);</p>
-<p class="p4"><br></p>
-<p class="p5">x.stop;</p>
 <p class="p2"><br></p>
-<p class="p9"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s5">SynthDef</span>(<span class="s6">"Pdefhelp"</span>, { <span class="s5">arg</span> out, freq, sustain=1, amp=1, pan;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> env, u=1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.03, sustain), 1, doneAction:2);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>3.do { <span class="s5">var</span> d; d = exprand(0.01, 1); u = <span class="s5">SinOsc</span>.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">Pan2</span>.ar(<span class="s5">SinOsc</span>.ar(u + 1 * freq, 0, amp * env), pan));</p>
+<p class="p2"><br></p>
+<p class="p4">}).store;</p>
+<p class="p4">)</p>
+<p class="p4">s.boot;</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5">Pdef</span><span class="s7">(</span>\metronom<span class="s7">, </span><span class="s5">Pbind</span><span class="s7">(</span>\instrument<span class="s7">, </span>\Pdefhelp<span class="s7">, </span>\dur<span class="s7">, 1, </span>\degree<span class="s7">, 16, </span>\legato<span class="s7">, 0.1)).play;</span></p>
+<p class="p2"><br></p>
+<p class="p4">x = <span class="s5">Pseq</span>([<span class="s5">Pdef</span>(<span class="s8">\a</span>), <span class="s5">Pdef</span>(<span class="s8">\b</span>), <span class="s5">Pdef</span>(<span class="s8">\c</span>)], <span class="s5">inf</span>).play;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3])));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\b</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[7, 8, 7, 8])));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\c</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 1, 2], 2)));</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\c</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[4, 3, 1, 2]*3)));</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// infinite loops are scheduled (to ths clock's next beat by default) and released:</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.753, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3, 2], <span class="s5">inf</span>)));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3] + 1, 1)));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3] - 4, 1)));</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5] - 1, 1)));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.753, <span class="s8">\degree</span>, <span class="s5">Pshuf</span>(#[0, 5, 4, 3, 2], <span class="s5">inf</span>)));</p>
+<p class="p2"><br></p>
+<p class="p4">x.stop;</p>
+<p class="p5"><span class="s5">Pdef</span><span class="s7">(</span>\metronom<span class="s7">).stop;</span></p>
+<p class="p2"><br></p>
+<p class="p6">// Pdef can be used in multiple patterns:</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">x = <span class="s5">Ppar</span>([</p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>Pbindf<span class="s7">(</span>Pn<span class="s7">(</span>Pdef<span class="s7">(</span><span class="s8">\a</span><span class="s7">), </span>inf<span class="s7">),</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\gtranspose</span>, <span class="s5">Pstutter</span>(8, <span class="s5">Pseq</span>(#[0, 2, 0, 3],<span class="s5">inf</span>))</p>
+<p class="p4"><span class="Apple-tab-span">	</span>),</p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>Pbindf<span class="s7">(</span>Pn<span class="s7">(</span>Pdef<span class="s7">(</span><span class="s8">\a</span><span class="s7">), </span>inf<span class="s7">),</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\gtranspose</span>, <span class="s5">Pstutter</span>(8, <span class="s5">Pseq</span>(#[7, 4, 0, 3],<span class="s5">inf</span>)),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\dur</span>, 0.6</p>
+<p class="p4"><span class="Apple-tab-span">	</span>),</p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>Pbindf<span class="s7">(</span>Pn<span class="s7">(</span>Pdef<span class="s7">(</span><span class="s8">\a</span><span class="s7">), </span>inf<span class="s7">),</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 5, 4, 3, 2, 3, 2], 1)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>)</p>
+<p class="p4">]).play;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.1, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 1, 0, 1, 2], <span class="s5">inf</span>)));</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5">Pdef</span><span class="s7">(</span>\a<span class="s7">, </span><span class="s5">Pbind</span><span class="s7">(</span>\instrument<span class="s7">, </span>\Pdefhelp<span class="s7">, </span>\dur<span class="s7">, 0.2, </span>\degree<span class="s7">, </span><span class="s5">Pseq</span><span class="s7">([0, 4], </span><span class="s5">inf</span><span class="s7">)));</span></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5">Pdef</span><span class="s7">(</span>\a<span class="s7">, </span><span class="s5">Pbind</span><span class="s7">(</span>\instrument<span class="s7">, </span>\Pdefhelp<span class="s7">, </span>\dur<span class="s7">, 1, </span>\degree<span class="s7">, </span><span class="s5">Pseq</span><span class="s7">([0, 4], </span><span class="s5">inf</span><span class="s7">)));</span></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.2, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([0, 4, <span class="s5">Prand</span>([6, 8b],2)], <span class="s5">inf</span>)));</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.1, <span class="s8">\degree</span>, <span class="s5">Pseq</span>(#[0, 1b, 1, 2b, 2, 3, 4b, 4, 5], <span class="s5">inf</span>)));</p>
+<p class="p2"><br></p>
+<p class="p6">// using a fade time, the above changes are crossfaded</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>).fadeTime = 2;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>, <span class="s5">Pbind</span>(<span class="s8">\instrument</span>, <span class="s8">\Pdefhelp</span>, <span class="s8">\dur</span>, 0.2, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([0, 4, <span class="s5">Prand</span>([6, 8b],2)], <span class="s5">inf</span>)));</p>
+<p class="p2"><br></p>
+<p class="p6">// ...</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\a</span><span class="s7">).set(</span><span class="s8">\detune</span><span class="s7">, -50); </span>// set environment</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\a</span>).set(<span class="s8">\detune</span>, 0);</p>
+<p class="p2"><br></p>
+<p class="p4">x.stop;</p>
+<p class="p2"><br></p>
+<p class="p8"><br></p>
 <p class="p1"><b>b) playing Pdef</b></p>
-<p class="p9"><br></p>
-<p class="p4"><span class="s7"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
-<p class="p5">(</p>
-<p class="p7">// load a synthdef</p>
-<p class="p5">s.boot;</p>
-<p class="p8">SynthDef<span class="s7">(</span><span class="s6">"gpdef"</span><span class="s7">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s5">arg</span> out=0, freq=440, sustain=0.05, amp=0.1, pan;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> env;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.01, sustain), doneAction:2) * amp;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">Pan2</span>.ar(<span class="s5">SinOsc</span>.ar(freq, 0, env), pan))</p>
-<p class="p5"><span class="Apple-tab-span">	</span>}).store;</p>
-<p class="p5">)</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p7"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\x</span><span class="s7">); </span>// creates a Pdef with a default pattern.</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p7"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\x</span><span class="s7">).play; </span>// play it. A silent resting pattern is used.</p>
-<p class="p7"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\y</span><span class="s7">).play; </span>// play a second one (automatically instantiated)</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p7">// assign various patterns to it:</p>
-<p class="p4"><br></p>
-<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span>\x<span class="s7">, </span><span class="s5">Pbind</span><span class="s7">(</span>\dur<span class="s7">, 0.25, </span>\instrument<span class="s7">, </span>\gpdef<span class="s7">));<span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6], <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6]+1, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6]-1, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b]-2, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p4"><br></p>
-<p class="p7">// using fadeTime:</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>).fadeTime = 8.0;</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6]+4.rand, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6]-2, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p4"><br></p>
-<p class="p5">(</p>
-<p class="p8">Pdef<span class="s7">(</span><span class="s8">\x</span><span class="s7">, </span>Pbind<span class="s7">(</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\dur</span>, 1 / 6,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, <span class="s5">Prand</span>([8, 2, 3, 9, 10],1) - 5, 6]+1, <span class="s5">inf</span>),<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s7">, </span>\gpdef</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>);</p>
-<p class="p5">)</p>
-<p class="p5">(</p>
-<p class="p8">Pdef<span class="s7">(</span><span class="s8">\x</span><span class="s7">, </span>Pbind<span class="s7">(</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\dur</span>, 0.25,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, <span class="s5">Prand</span>([8, 2, 3, 9, 10],1), 6], <span class="s5">inf</span>),<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s7">, </span>\gpdef<span class="s7">)</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>);</p>
-<p class="p5">)</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).stop;</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
-<p class="p4"><br></p>
-<p class="p7">// tempo change</p>
-<p class="p5"><span class="s5">TempoClock</span>.default.tempo = 1.3;</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5, 6]+1, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p4"><br></p>
-<p class="p7">// drop in ending patterns</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, [7,4], 5, 6]-2), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, [7,4], 5, 4]-3), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.35, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, [7,4], 5, 4, 3]-3), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pshuf</span>([3, [7,4], 5, 6]-2), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p7">// clear all.</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).clear;<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>).clear;<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="s5">TempoClock</span>.default.tempo = 1.0;</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
+<p class="p8"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4">(</p>
+<p class="p6">// load a synthdef</p>
+<p class="p4">s.boot;</p>
+<p class="p7">SynthDef<span class="s7">(</span><span class="s6">"gpdef"</span><span class="s7">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s5">arg</span> out=0, freq=440, sustain=0.05, amp=0.1, pan;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> env;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.01, sustain), doneAction:2) * amp;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">Pan2</span>.ar(<span class="s5">SinOsc</span>.ar(freq, 0, env), pan))</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}).store;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\x</span><span class="s7">); </span>// creates a Pdef with a default pattern.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\x</span><span class="s7">).play; </span>// play it. A silent resting pattern is used.</p>
+<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\y</span><span class="s7">).play; </span>// play a second one (automatically instantiated)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// assign various patterns to it:</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5">Pdef</span><span class="s7">(</span>\x<span class="s7">, </span><span class="s5">Pbind</span><span class="s7">(</span>\dur<span class="s7">, 0.25, </span>\instrument<span class="s7">, </span>\gpdef<span class="s7">));<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6], <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6]+1, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6]-1, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b]-2, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p2"><br></p>
+<p class="p6">// using fadeTime:</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>).fadeTime = 8.0;</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6]+4.rand, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5b, 6]-2, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p7">Pdef<span class="s7">(</span><span class="s8">\x</span><span class="s7">, </span>Pbind<span class="s7">(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\dur</span>, 1 / 6,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, <span class="s5">Prand</span>([8, 2, 3, 9, 10],1) - 5, 6]+1, <span class="s5">inf</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s7">, </span>\gpdef</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>);</p>
+<p class="p4">)</p>
+<p class="p4">(</p>
+<p class="p7">Pdef<span class="s7">(</span><span class="s8">\x</span><span class="s7">, </span>Pbind<span class="s7">(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\dur</span>, 0.25,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, <span class="s5">Prand</span>([8, 2, 3, 9, 10],1), 6], <span class="s5">inf</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s7">, </span>\gpdef<span class="s7">)</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>);</p>
+<p class="p4">)</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).stop;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
+<p class="p2"><br></p>
+<p class="p6">// tempo change</p>
+<p class="p4"><span class="s5">TempoClock</span>.default.tempo = 1.3;</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, 4, 5, 6]+1, <span class="s5">inf</span>), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p2"><br></p>
+<p class="p6">// drop in ending patterns</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, [7,4], 5, 6]-2), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.125, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, [7,4], 5, 4]-3), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.35, <span class="s8">\degree</span>, <span class="s5">Pseq</span>([3, [7,4], 5, 4, 3]-3), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\dur</span>, 0.25, <span class="s8">\degree</span>, <span class="s5">Pshuf</span>([3, [7,4], 5, 6]-2), <span class="s8">\instrument</span>, <span class="s8">\gpdef</span>));</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// clear all.</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).clear;<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>).clear;<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="s5">TempoClock</span>.default.tempo = 1.0;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>recursion:</b></p>
 <p class="p3"><br></p>
 <p class="p1">Pdefs can be used recursively under the condition that the stream call structure allows it.</p>
 <p class="p1">a structure like the following works:</p>
-<p class="p10"><br></p>
-<p class="p4"><br></p>
-<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span>\x<span class="s7">, </span><span class="s5">Pseq</span><span class="s7">([</span><span class="s5">Pbind</span><span class="s7">(</span>\instrument<span class="s7">, </span>\gpdef<span class="s7">), </span><span class="s5">Pdef</span><span class="s7">(</span>\x<span class="s7">)], </span><span class="s5">inf</span><span class="s7">));<span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
+<p class="p3"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5">Pdef</span><span class="s7">(</span>\x<span class="s7">, </span><span class="s5">Pseq</span><span class="s7">([</span><span class="s5">Pbind</span><span class="s7">(</span>\instrument<span class="s7">, </span>\gpdef<span class="s7">), </span><span class="s5">Pdef</span><span class="s7">(</span>\x<span class="s7">)], </span><span class="s5">inf</span><span class="s7">));<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
 <p class="p3"><br></p>
 <p class="p1">but the following would crash, because .embedInStream is called recursively with no limit:</p>
 <p class="p3"><br></p>
-<p class="p7">// Pdef(\y, Pseq([Pdef(\y), Pbind(\instrument, \gpdef)], inf));</p>
+<p class="p6">// Pdef(\y, Pseq([Pdef(\y), Pbind(\instrument, \gpdef)], inf));</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
@@ -337,30 +335,30 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">one has to wait for 32 beats until the change happens. Using an outset of 1, it is assumed that you had already</p>
 <p class="p1">changed the pattern at the first beat, the stream is fast forwarded to the time it would be at now if you had done so. The new pattern is inserted at the next beat (outset=1).</p>
 <p class="p3"><br></p>
-<p class="p1"><b>quant can be: [quant, offset, outset]</b></p>
+<p class="p1"><b>quant can be: [quant, phase, offset, outset]</b></p>
 <p class="p2"><br></p>
-<p class="p7">// examples</p>
-<p class="p5">(</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).quant_([8, 0, 1]);</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>).quant_([8, 0.5, 1]); <span class="s9">// offset by half a beat</span></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>).play;</p>
-<p class="p5">)</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7)+2, <span class="s5">inf</span>)));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7)-2, <span class="s5">inf</span>)));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7)+2, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.5));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7).scramble-2, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.25, <span class="s8">\legato</span>, 0.3));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)));</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>([ 1, 5, 6, 7, 0, 3, 2, 4 ], <span class="s5">inf</span>), <span class="s8">\dur</span>, 1));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>([ 0, 2, 2, 4, 0, 4, 0, 4 ], <span class="s5">inf</span>), <span class="s8">\dur</span>, 1));</p>
-<p class="p4"><br></p>
-<p class="p7"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\x</span><span class="s7">).quant_([8, 1/3, 1]); </span>// offset by 1/6 beat relative to y</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>([ 1, 1, 1, 7, 0, 2, 2, 4 ], <span class="s5">inf</span>), <span class="s8">\legato</span>, 0.1));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>([ 3, 3, 3, 4b ], <span class="s5">inf</span>), <span class="s8">\legato</span>, 0.1));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7).scramble-4, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.25, <span class="s8">\legato</span>, 0.3));</p>
-<p class="p4"><br></p>
+<p class="p6">// examples</p>
+<p class="p4">(</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).quant_([8, 0, 0, 1]);</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>).quant_([8, 0.5, 0, 1]); <span class="s9">// phase: half a beat</span></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>).play;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7)+2, <span class="s5">inf</span>)));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7)-2, <span class="s5">inf</span>)));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7)+2, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.5));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7).scramble-2, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.25, <span class="s8">\legato</span>, 0.3));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)));</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>([ 1, 5, 6, 7, 0, 3, 2, 4 ], <span class="s5">inf</span>), <span class="s8">\dur</span>, 1));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>([ 0, 2, 2, 4, 0, 4, 0, 4 ], <span class="s5">inf</span>), <span class="s8">\dur</span>, 1));</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\x</span><span class="s7">).quant_([8, 1/3, 0, 1]); </span>// phase: 1/6 beat relative to y</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>([ 1, 1, 1, 7, 0, 2, 2, 4 ], <span class="s5">inf</span>), <span class="s8">\legato</span>, 0.1));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>([ 3, 3, 3, 4b ], <span class="s5">inf</span>), <span class="s8">\legato</span>, 0.1));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\y</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7).scramble-4, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.25, <span class="s8">\legato</span>, 0.3));</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><br></p>
@@ -370,36 +368,36 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">quant is very long. This is hard to avoid, so it simply has to be taken into account.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p7">// some testing</p>
-<p class="p5">(</p>
-<p class="p7"><span class="s5">var</span><span class="s7"> quant = #[8, 0, 1]; </span>// quantise to 8 beats, no offset, insert quant to 1 beat</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).quant_(quant);</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
-<p class="p5"><span class="s5">Routine</span> { loop { 8.do { <span class="s5">|i|</span> (<span class="s6">"uhr:"</span>+i).postln; 1.wait } } }.play(quant:quant);</p>
-<p class="p5"><span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)).play(quant:quant);</p>
-<p class="p5">)</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7)+2, <span class="s5">inf</span>)).trace(<span class="s8">\degree</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>) + [0, 3]).trace(<span class="s8">\degree</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>) + [0, 6], <span class="s8">\dur</span>, 0.5).trace(<span class="s8">\degree</span>));</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).fadeTime = 8;</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)).trace(<span class="s8">\degree</span>));</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7).reverse, <span class="s5">inf</span>) + [0, 6], <span class="s8">\dur</span>, 0.5));</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).fadeTime = <span class="s5">nil</span>;</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).quant = 1;</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)).trace(<span class="s8">\degree</span>));</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).quant = 8;</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)).trace(<span class="s8">\degree</span>));</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p6">// some testing</p>
+<p class="p4">(</p>
+<p class="p6"><span class="s5">var</span><span class="s7"> quant = #[8, 0, 0, 1]; </span>// quantise to 8 beats, no phase, insert quant to 1 beat</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).quant_(quant);</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
+<p class="p4"><span class="s5">Routine</span> { loop { 8.do { <span class="s5">|i|</span> (<span class="s6">"uhr:"</span>+i).postln; 1.wait } } }.play(quant:quant);</p>
+<p class="p4"><span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)).play(quant:quant);</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7)+2, <span class="s5">inf</span>)).trace(<span class="s8">\degree</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>) + [0, 3]).trace(<span class="s8">\degree</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>) + [0, 6], <span class="s8">\dur</span>, 0.5).trace(<span class="s8">\degree</span>));</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).fadeTime = 8;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)).trace(<span class="s8">\degree</span>));</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7).reverse, <span class="s5">inf</span>) + [0, 6], <span class="s8">\dur</span>, 0.5));</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).fadeTime = <span class="s5">nil</span>;</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).quant = 1;</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)).trace(<span class="s8">\degree</span>));</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).quant = 8;</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7), <span class="s5">inf</span>)).trace(<span class="s8">\degree</span>));</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p1"><b>update condition</b></p>
 <p class="p3"><br></p>
@@ -411,24 +409,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">As counting up (such as <i>"every nth event, a swap can happen"</i>) is a common task, there is a method for this,</p>
 <p class="p1">called <b>count(n).</b></p>
 <p class="p3"><br></p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
-<p class="p7"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\x</span><span class="s7">).quant = 0; </span>// we don't want quant here.</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..5), <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.3)).condition_({ <span class="s5">|val, i|</span> i.postln % 6 == 0 });</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7) + 5.rand, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.3)).condition_({ <span class="s5">|val, i|</span> (i % 8).postln == 0 });</p>
-<p class="p4"><br></p>
-<p class="p7">// the above is equvalent to:</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7) + 5.rand, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.3)).count(8);</p>
-<p class="p4"><br></p>
-<p class="p7">// the value that is sent in is the event, so decisions can be made dependent on the event's fields</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).play;</p>
+<p class="p6"><span class="s5">Pdef</span><span class="s7">(</span><span class="s8">\x</span><span class="s7">).quant = 0; </span>// we don't want quant here.</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..5), <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.3)).condition_({ <span class="s5">|val, i|</span> i.postln % 6 == 0 });</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7) + 5.rand, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.3)).condition_({ <span class="s5">|val, i|</span> (i % 8).postln == 0 });</p>
+<p class="p2"><br></p>
+<p class="p6">// the above is equvalent to:</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>, <span class="s5">Pbind</span>(<span class="s8">\degree</span>, <span class="s5">Pseq</span>((0..7) + 5.rand, <span class="s5">inf</span>), <span class="s8">\dur</span>, 0.3)).count(8);</p>
+<p class="p2"><br></p>
+<p class="p6">// the value that is sent in is the event, so decisions can be made dependent on the event's fields</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>reset</b></p>
-<p class="p11"><span class="Apple-converted-space"> </span></p>
-<p class="p7">// reset to change immediately:</p>
-<p class="p5"><span class="s5">Pdef</span>(<span class="s8">\x</span>).reset;</p>
-<p class="p4"><br></p>
+<p class="p9"><span class="Apple-converted-space"> </span></p>
+<p class="p6">// reset to change immediately:</p>
+<p class="p4"><span class="s5">Pdef</span>(<span class="s8">\x</span>).reset;</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
