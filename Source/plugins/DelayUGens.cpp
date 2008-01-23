@@ -5777,7 +5777,7 @@ void GrainTap_Ctor(GrainTap *unit)
 inline float IN_AT(Unit* unit, int index, int offset) 
 {
 	if (INRATE(index) == calc_FullRate) return IN(index)[offset];
-	if (INRATE(index) == calc_DemandRate) return DEMANDINPUT(index);
+	if (INRATE(index) == calc_DemandRate) return DEMANDINPUT_A(index, offset + 1);
 	return ZIN0(index);
 }
 
