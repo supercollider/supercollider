@@ -24,13 +24,8 @@
 #include <cstring>
 #include <sys/timeb.h>
 #include <time.h>
-#include <math.h>
 
 #include "SC_Win32Utils.h"
-
-struct _timeb win32_startupTime;
-unsigned __int64 win32_startupCount;
-double win32_queryFreq;
 
 void win32_ReplaceCharInString(char* string, int len, char src, char dst)
 {
@@ -55,26 +50,13 @@ void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars
     folder[0] = 0;
 }
 
-// syncing ftime and QueryPerformanceCounter for high precision timing
-void win32_synctimes() {
-	unsigned __int64 pf;
-    QueryPerformanceFrequency( (LARGE_INTEGER *)&pf );
-    win32_queryFreq = 1.0 / (double)pf;
-	QueryPerformanceCounter((LARGE_INTEGER*)&win32_startupCount);
-	_ftime_s(&win32_startupTime);
-}
 
 void win32_gettimeofday(timeval* tv, void*)
 {
-	unsigned __int64 val;
-    QueryPerformanceCounter( (LARGE_INTEGER *)&val );
-	double seconds = (val - win32_startupCount) * win32_queryFreq;
-	double s = floor(seconds);
-//	_ftime_s(&win32_startupTime);
-//	tv->tv_sec = win32_startupTime.time;
-//	tv->tv_usec = win32_startupTime.millitm * 1000;
-	tv->tv_sec = win32_startupTime.time + (long)s;
-	tv->tv_usec = (win32_startupTime.millitm * 1000) + (long)(1000000.0 * (seconds-s));
+	struct _timeb timebuffer;
+	_ftime_s(&timebuffer);
+	tv->tv_sec = timebuffer.time; 
+	tv->tv_usec = timebuffer.millitm * 1000;
 }
 
 void win32_GetHomeFolder(char* homeFolder, int bufLen)

@@ -11,7 +11,6 @@
 //s.options.device_("MME : Realtek AC97 Audio");
 //s.options.dump;
 
-Server.program = "scsynth.exe";
 s.boot;
 
 SwingOSC.program = "java -jar SwingOSC\\build\\SwingOSC.jar";
