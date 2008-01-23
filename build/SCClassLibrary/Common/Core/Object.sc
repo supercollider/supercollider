@@ -195,6 +195,7 @@ Object  {
 	isString { ^false }
 	isValidUGenInput { ^false }
 	isException { ^false }
+	isFunction { ^false }
 
 	matchItem {|item| ^this === item }
 
