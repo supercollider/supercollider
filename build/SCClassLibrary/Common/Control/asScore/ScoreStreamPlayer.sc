@@ -79,7 +79,6 @@ ScoreStreamPlayer : Server {
 			})
 		}.next;
 		bundleList = bundleList.sort({ | a, b | b[0] >= a[0] });
-		bundleList[0][0].postln;
 		if ((startTime = bundleList[0][0]) < 0 ) {
 			timeOffset = timeOffset - startTime;
 		};
