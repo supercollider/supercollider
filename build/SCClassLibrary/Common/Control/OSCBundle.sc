@@ -130,7 +130,7 @@ MixedBundle : OSCBundle {
 			});
 		});
 		if(functions.notNil) {
-			SystemClock.sched(delta, { 
+			SystemClock.sched(delta ? 0.0, { 
 				this.doFunctions;
 			});
 		};
