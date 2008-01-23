@@ -5,6 +5,7 @@ Function : AbstractFunction {
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 	
+	isFunction { ^true }
 	isClosed { ^def.sourceCode.notNil }
 
 	storeOn { arg stream; stream << (def.sourceCode ? "{ \"open Function\" }"); }
