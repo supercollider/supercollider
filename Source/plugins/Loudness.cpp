@@ -213,7 +213,7 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
 	//unit->m_phontotal= phontotal; 
 	//now to sones: 
 	/* from Praat: Excitation.c  Sones = 2 ** ((Phones - 40) / 10)  */
-	unit->m_sones= pow (2.0, (phontotal - 40) / 10);
+	unit->m_sones= pow ((float)2.0, (phontotal - 40) / 10);
 	
 	//printf("phontotal %f sones %f \n",phontotal, unit->m_sones);
 	
