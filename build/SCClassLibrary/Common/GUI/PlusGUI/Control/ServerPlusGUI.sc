@@ -4,11 +4,12 @@
 		var active, booter, killer, makeDefault, running, booting, stopped, bundling;
 		var recorder, scoper;
 		var countsViews, ctlr;
-		var dumping=false, label, gui;
+		var dumping=false, label, gui, font;
 		
 		if (window.notNil, { ^window.front });
 		
 		gui = GUI.current;
+		font = GUI.font.new("Helvetica", 10);
 		
 		if(w.isNil) {
 			label = name.asString + "server";
@@ -21,7 +22,7 @@
 		if(isLocal,{
 			booter = gui.button.new(w, Rect(0,0, 44, 18));
 			booter.canFocus = false;
-			booter.font = GUI.font.new("Helvetica", 9);
+			booter.font = font;
 			booter.states = [["Boot", Color.black, Color.clear],
 						   ["Quit", Color.black, Color.green.alpha_(0.2)]];
 			
@@ -38,7 +39,7 @@
 			
 			killer = gui.button.new(w, Rect(0,0, 20, 18));
 			killer.states = [["K", Color.black, Color.clear]];
-			killer.font = GUI.font.new("Helvetica", 9);
+			killer.font = font;
 			killer.canFocus = false;
 			killer.action = { Server.killAll };	
 		});
@@ -51,7 +52,7 @@
 		if(serverRunning,running,stopped);		
 
 		makeDefault = gui.button.new(w, Rect(0,0, 54, 18));
-		makeDefault.font = GUI.font.new("Helvetica", 9);
+		makeDefault.font = font;
 		makeDefault.states = [["-> default", Color.black, Color.clear]];
 		makeDefault.action = {
 			thisProcess.interpreter.s = this;
@@ -61,7 +62,7 @@
 		//w.view.decorator.nextLine;
 		
 		recorder = gui.button.new(w, Rect(0,0, 66, 18));
-		recorder.font = GUI.font.new("Helvetica", 9);
+		recorder.font = font;
 		recorder.states = [
 			["prepare rec", Color.black, Color.clear],
 			["record >", Color.red, Color.gray(0.1).alpha_(0.3)],
@@ -193,22 +194,22 @@
 			var label,numView, pctView;
 			label = gui.staticText.new(w, Rect(0,0, 80, 12));
 			label.string = name;
-			label.font = GUI.font.new("Helvetica", 9);
+			label.font = font;
 			label.align = \right;
 		
 			if (i < 2, { 
-				numView = gui.staticText.new(w, Rect(0,0, 38, 12));
+				numView = gui.staticText.new(w, Rect(0,0, 34, 12));
 				numView.string = "?";
-				numView.font = GUI.font.new("Helvetica", 9);
+				numView.font = font;
 				numView.align = \left;
 			
 				pctView = gui.staticText.new(w, Rect(0,0, 12, 12));
 				pctView.string = "%";
-				pctView.font = GUI.font.new("Helvetica", 9);
+				pctView.font = font;
 				pctView.align = \left;
 			},{
 				numView = gui.staticText.new(w, Rect(0,0, 50, 12));
-				numView.font = GUI.font.new("Helvetica", 9);
+				numView.font = font;
 				numView.string = "?";
 				numView.align = \left;
 			});
@@ -223,11 +224,11 @@
 			volSpec = [volume.min, volume.max, \db].asSpec;
 			
 			gui.staticText.new(w, Rect(0,0, 44, 18))
-				.font_(GUI.font.new("Helvetica", 9))
+				.font_(font)
 				.string_("  volume :");
 
 			muteButton = gui.button.new(w, Rect(0, 0, 20, 16))
-				.font_(GUI.font.new("Helvetica", 9))
+				.font_(font)
 				.states_([
 					["M", Color.black, Color.clear],
 					["M", Color.black, Color.red.alpha_(0.3)]
@@ -242,7 +243,7 @@
 					});
 					
 			volumeNum = gui.numberBox.new(w, Rect(0, 0, 36, 15))
-				.font_(GUI.font.new("Helvetica", 9))
+				.font_(font)
 				.value_(0.0)
 				.align_(\center)
 				.action_({arg me;
