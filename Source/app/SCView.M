@@ -3918,17 +3918,20 @@ void SCUserView::clearDrawing()
 	NSGraphicsContext* lGCtx;
 	CGRect cgrect = CGRectMake(0,0, bounds.width, bounds.height);
 	cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-
 	lGCtx = [NSGraphicsContext currentContext];
+	CGContextSaveGState(cgc);
+
 	lCGContext = CGLayerGetContext(mCGLayer);
 	NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];		
-	[NSGraphicsContext setCurrentContext: gclayer];
+//	[NSGraphicsContext setCurrentContext: gclayer];
 		
 	CGContextClearRect(lCGContext,  cgrect);
 	CGContextSetRGBFillColor (lCGContext, 1, 1, 1, 0);
 	CGContextFillRect (lCGContext,  cgrect);
 	CGContextDrawLayerInRect(cgc, SCtoCGRect(bounds), mCGLayer);
-	[NSGraphicsContext setCurrentContext: lGCtx];
+	CGContextRestoreGState(cgc);
+//	[NSGraphicsContext setCurrentContext: lGCtx];
+	
 }
 
 void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
