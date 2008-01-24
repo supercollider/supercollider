@@ -422,8 +422,8 @@ void BinaryOpUGen_Ctor(BinaryOpUGen *unit)
 void zero_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : 0.f;
 	} else {
 		RESETINPUT(0);
@@ -434,8 +434,8 @@ void zero_d(BinaryOpUGen *unit, int inNumSamples)
 void firstarg_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a;
 	} else {
 		RESETINPUT(0);
@@ -446,8 +446,8 @@ void firstarg_d(BinaryOpUGen *unit, int inNumSamples)
 void secondarg_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : b;
 	} else {
 		RESETINPUT(0);
@@ -458,8 +458,8 @@ void secondarg_d(BinaryOpUGen *unit, int inNumSamples)
 void add_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a + b;
 	} else {
 		RESETINPUT(0);
@@ -470,8 +470,8 @@ void add_d(BinaryOpUGen *unit, int inNumSamples)
 void sub_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a - b;
 	} else {
 		RESETINPUT(0);
@@ -482,8 +482,8 @@ void sub_d(BinaryOpUGen *unit, int inNumSamples)
 void mul_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * b;
 	} else {
 		RESETINPUT(0);
@@ -494,8 +494,8 @@ void mul_d(BinaryOpUGen *unit, int inNumSamples)
 void div_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a / b;
 	} else {
 		RESETINPUT(0);
@@ -506,8 +506,8 @@ void div_d(BinaryOpUGen *unit, int inNumSamples)
 void mod_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_mod(a, b);
 	} else {
 		RESETINPUT(0);
@@ -518,8 +518,8 @@ void mod_d(BinaryOpUGen *unit, int inNumSamples)
 void max_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_max(a, b);
 	} else {
 		RESETINPUT(0);
@@ -530,8 +530,8 @@ void max_d(BinaryOpUGen *unit, int inNumSamples)
 void min_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_min(a, b);
 	} else {
 		RESETINPUT(0);
@@ -542,8 +542,8 @@ void min_d(BinaryOpUGen *unit, int inNumSamples)
 void and_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_andt(a, b);
 	} else {
 		RESETINPUT(0);
@@ -554,8 +554,8 @@ void and_d(BinaryOpUGen *unit, int inNumSamples)
 void or_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_ort(a, b);
 	} else {
 		RESETINPUT(0);
@@ -566,8 +566,8 @@ void or_d(BinaryOpUGen *unit, int inNumSamples)
 void xor_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_xort(a, b);
 	} else {
 		RESETINPUT(0);
@@ -578,8 +578,8 @@ void xor_d(BinaryOpUGen *unit, int inNumSamples)
 void amclip_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_amclip(a, b);
 	} else {
 		RESETINPUT(0);
@@ -590,8 +590,8 @@ void amclip_d(BinaryOpUGen *unit, int inNumSamples)
 void scaleneg_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_scaleneg(a, b);
 	} else {
 		RESETINPUT(0);
@@ -602,8 +602,8 @@ void scaleneg_d(BinaryOpUGen *unit, int inNumSamples)
 void pow_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a < 0.f ? -pow(-a, b) : pow(a, b));
 	} else {
 		RESETINPUT(0);
@@ -614,8 +614,8 @@ void pow_d(BinaryOpUGen *unit, int inNumSamples)
 void ring1_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * b + a;
 	} else {
 		RESETINPUT(0);
@@ -626,8 +626,8 @@ void ring1_d(BinaryOpUGen *unit, int inNumSamples)
 void ring2_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * b + a + b;
 	} else {
 		RESETINPUT(0);
@@ -638,8 +638,8 @@ void ring2_d(BinaryOpUGen *unit, int inNumSamples)
 void ring3_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * a * b;
 	} else {
 		RESETINPUT(0);
@@ -650,8 +650,8 @@ void ring3_d(BinaryOpUGen *unit, int inNumSamples)
 void ring4_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * a * b - a * b * b;
 	} else {
 		RESETINPUT(0);
@@ -662,8 +662,8 @@ void ring4_d(BinaryOpUGen *unit, int inNumSamples)
 void thresh_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_thresh(a, b);
 	} else {
 		RESETINPUT(0);
@@ -674,8 +674,8 @@ void thresh_d(BinaryOpUGen *unit, int inNumSamples)
 void clip2_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_clip2(a, b);
 	} else {
 		RESETINPUT(0);
@@ -686,8 +686,8 @@ void clip2_d(BinaryOpUGen *unit, int inNumSamples)
 void excess_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_excess(a, b);
 	} else {
 		RESETINPUT(0);
@@ -698,8 +698,8 @@ void excess_d(BinaryOpUGen *unit, int inNumSamples)
 void lt_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a < b ? 1.f : 0.f);
 	} else {
 		RESETINPUT(0);
@@ -710,8 +710,8 @@ void lt_d(BinaryOpUGen *unit, int inNumSamples)
 void gt_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a > b ? 1.f : 0.f);
 	} else {
 		RESETINPUT(0);
@@ -722,8 +722,8 @@ void gt_d(BinaryOpUGen *unit, int inNumSamples)
 void le_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a <= b ? 1.f : 0.f);
 	} else {
 		RESETINPUT(0);
@@ -734,8 +734,8 @@ void le_d(BinaryOpUGen *unit, int inNumSamples)
 void ge_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a >= b ? 1.f : 0.f);
 	} else {
 		RESETINPUT(0);
@@ -746,8 +746,8 @@ void ge_d(BinaryOpUGen *unit, int inNumSamples)
 void eq_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a == b ? 1.f : 0.f);
 	} else {
 		RESETINPUT(0);
@@ -758,8 +758,8 @@ void eq_d(BinaryOpUGen *unit, int inNumSamples)
 void neq_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a != b ? 1.f : 0.f);
 	} else {
 		RESETINPUT(0);
@@ -770,8 +770,8 @@ void neq_d(BinaryOpUGen *unit, int inNumSamples)
 void sumsqr_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * a + b * b;
 	} else {
 		RESETINPUT(0);
@@ -782,8 +782,8 @@ void sumsqr_d(BinaryOpUGen *unit, int inNumSamples)
 void difsqr_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * a - b * b;
 	} else {
 		RESETINPUT(0);
@@ -794,8 +794,8 @@ void difsqr_d(BinaryOpUGen *unit, int inNumSamples)
 void sqrsum_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		float z;
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (z = a + b, z * z);
 	} else {
@@ -807,8 +807,8 @@ void sqrsum_d(BinaryOpUGen *unit, int inNumSamples)
 void sqrdif_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		float z;
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (z = a - b, z * z);
 	} else {
@@ -820,8 +820,8 @@ void sqrdif_d(BinaryOpUGen *unit, int inNumSamples)
 void absdif_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : fabs(a - b);
 	} else {
 		RESETINPUT(0);
@@ -832,8 +832,8 @@ void absdif_d(BinaryOpUGen *unit, int inNumSamples)
 void round_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_round(a, b);
 	} else {
 		RESETINPUT(0);
@@ -844,8 +844,8 @@ void round_d(BinaryOpUGen *unit, int inNumSamples)
 void roundUp_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_roundUp(a, b);
 	} else {
 		RESETINPUT(0);
@@ -856,8 +856,8 @@ void roundUp_d(BinaryOpUGen *unit, int inNumSamples)
 void trunc_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_trunc(a, b);
 	} else {
 		RESETINPUT(0);
@@ -868,8 +868,8 @@ void trunc_d(BinaryOpUGen *unit, int inNumSamples)
 void fold2_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_fold2(a, b);
 	} else {
 		RESETINPUT(0);
@@ -880,8 +880,8 @@ void fold2_d(BinaryOpUGen *unit, int inNumSamples)
 void wrap2_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_wrap2(a, b);
 	} else {
 		RESETINPUT(0);
@@ -892,8 +892,8 @@ void wrap2_d(BinaryOpUGen *unit, int inNumSamples)
 void atan2_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : atan2(a, b);
 	} else {
 		RESETINPUT(0);
@@ -904,8 +904,8 @@ void atan2_d(BinaryOpUGen *unit, int inNumSamples)
 void hypot_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : hypot(a, b);
 	} else {
 		RESETINPUT(0);
@@ -916,8 +916,8 @@ void hypot_d(BinaryOpUGen *unit, int inNumSamples)
 void hypotx_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float a = DEMANDINPUT(0);
-		float b = DEMANDINPUT(1);
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_hypotx(a, b);
 	} else {
 		RESETINPUT(0);

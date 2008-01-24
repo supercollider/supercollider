@@ -339,7 +339,7 @@ void Demand_next_ka(Demand *unit, int inNumSamples)
 		}
 		if (ztrig > 0.f && prevtrig <= 0.f) {
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
+				float x = DEMANDINPUT_A(j, i + 1);
 				if (sc_isnan(x)) x = prevout[k];
 				else prevout[k] = x;
 				out[k][i] = x;
@@ -414,7 +414,7 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(duty_dur) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
@@ -1737,7 +1737,7 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 	float ival;
 	if (inNumSamples) {
 		float val = DEMANDINPUT_A(unit->m_index, inNumSamples);
-		printf("index: %i\n", (int) val);
+		//printf("index: %i\n", (int) val);
 		if(sc_isnan(val)) {
 			ival = DEMANDINPUT_A(0, inNumSamples);
 		
@@ -1761,7 +1761,7 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 		for (int i=0; i<unit->mNumInputs; ++i) {
 			RESETINPUT(i);
 		}
-		index = (int32)floor(DEMANDINPUT_A(0, inNumSamples) + 0.5f);
+		index = (int32)floor(DEMANDINPUT(0) + 0.5f);
 		index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
 		unit->m_index = index;
 	}
