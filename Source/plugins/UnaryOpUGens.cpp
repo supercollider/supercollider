@@ -797,7 +797,7 @@ void ramp_a(UnaryOpUGen *unit, int inNumSamples)
 void invert_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : -(x);
 	} else {
 		RESETINPUT(0);
@@ -807,7 +807,7 @@ void invert_d(UnaryOpUGen *unit, int inNumSamples)
 void not_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : (x > 0.f ? 0.f : 1.f);
 	} else {
 		RESETINPUT(0);
@@ -817,7 +817,7 @@ void not_d(UnaryOpUGen *unit, int inNumSamples)
 void zero_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : 0.f;
 	} else {
 		RESETINPUT(0);
@@ -827,7 +827,7 @@ void zero_d(UnaryOpUGen *unit, int inNumSamples)
 void thru_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : (x);
 	} else {
 		RESETINPUT(0);
@@ -837,7 +837,7 @@ void thru_d(UnaryOpUGen *unit, int inNumSamples)
 void abs_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : fabs(x);
 	} else {
 		RESETINPUT(0);
@@ -847,7 +847,7 @@ void abs_d(UnaryOpUGen *unit, int inNumSamples)
 void recip_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : 1.f / x;
 	} else {
 		RESETINPUT(0);
@@ -857,7 +857,7 @@ void recip_d(UnaryOpUGen *unit, int inNumSamples)
 void floor_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : floor(x);
 	} else {
 		RESETINPUT(0);
@@ -867,7 +867,7 @@ void floor_d(UnaryOpUGen *unit, int inNumSamples)
 void ceil_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : ceil(x);
 	} else {
 		RESETINPUT(0);
@@ -877,7 +877,7 @@ void ceil_d(UnaryOpUGen *unit, int inNumSamples)
 void sin_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sin(x);
 	} else {
 		RESETINPUT(0);
@@ -887,7 +887,7 @@ void sin_d(UnaryOpUGen *unit, int inNumSamples)
 void cos_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : cos(x);
 	} else {
 		RESETINPUT(0);
@@ -897,7 +897,7 @@ void cos_d(UnaryOpUGen *unit, int inNumSamples)
 void tan_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : tan(x);
 	} else {
 		RESETINPUT(0);
@@ -907,7 +907,7 @@ void tan_d(UnaryOpUGen *unit, int inNumSamples)
 void asin_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : asin(x);
 	} else {
 		RESETINPUT(0);
@@ -917,7 +917,7 @@ void asin_d(UnaryOpUGen *unit, int inNumSamples)
 void acos_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : acos(x);
 	} else {
 		RESETINPUT(0);
@@ -927,7 +927,7 @@ void acos_d(UnaryOpUGen *unit, int inNumSamples)
 void atan_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : atan(x);
 	} else {
 		RESETINPUT(0);
@@ -937,7 +937,7 @@ void atan_d(UnaryOpUGen *unit, int inNumSamples)
 void sinh_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sinh(x);
 	} else {
 		RESETINPUT(0);
@@ -947,7 +947,7 @@ void sinh_d(UnaryOpUGen *unit, int inNumSamples)
 void cosh_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : cosh(x);
 	} else {
 		RESETINPUT(0);
@@ -957,7 +957,7 @@ void cosh_d(UnaryOpUGen *unit, int inNumSamples)
 void tanh_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : tanh(x);
 	} else {
 		RESETINPUT(0);
@@ -967,7 +967,7 @@ void tanh_d(UnaryOpUGen *unit, int inNumSamples)
 void log_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : log(x);
 	} else {
 		RESETINPUT(0);
@@ -977,7 +977,7 @@ void log_d(UnaryOpUGen *unit, int inNumSamples)
 void log2_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_log2(x);
 	} else {
 		RESETINPUT(0);
@@ -987,7 +987,7 @@ void log2_d(UnaryOpUGen *unit, int inNumSamples)
 void log10_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_log10(x);
 	} else {
 		RESETINPUT(0);
@@ -997,7 +997,7 @@ void log10_d(UnaryOpUGen *unit, int inNumSamples)
 void exp_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : exp(x);
 	} else {
 		RESETINPUT(0);
@@ -1007,7 +1007,7 @@ void exp_d(UnaryOpUGen *unit, int inNumSamples)
 void sqrt_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_sqrt(x);
 	} else {
 		RESETINPUT(0);
@@ -1017,7 +1017,7 @@ void sqrt_d(UnaryOpUGen *unit, int inNumSamples)
 void ampdb_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_ampdb(x);
 	} else {
 		RESETINPUT(0);
@@ -1027,7 +1027,7 @@ void ampdb_d(UnaryOpUGen *unit, int inNumSamples)
 void dbamp_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_dbamp(x);
 	} else {
 		RESETINPUT(0);
@@ -1037,7 +1037,7 @@ void dbamp_d(UnaryOpUGen *unit, int inNumSamples)
 void midicps_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_midicps(x);
 	} else {
 		RESETINPUT(0);
@@ -1047,7 +1047,7 @@ void midicps_d(UnaryOpUGen *unit, int inNumSamples)
 void cpsmidi_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_cpsmidi(x);
 	} else {
 		RESETINPUT(0);
@@ -1057,7 +1057,7 @@ void cpsmidi_d(UnaryOpUGen *unit, int inNumSamples)
 void midiratio_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_midiratio(x);
 	} else {
 		RESETINPUT(0);
@@ -1067,7 +1067,7 @@ void midiratio_d(UnaryOpUGen *unit, int inNumSamples)
 void ratiomidi_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_ratiomidi(x);
 	} else {
 		RESETINPUT(0);
@@ -1077,7 +1077,7 @@ void ratiomidi_d(UnaryOpUGen *unit, int inNumSamples)
 void cpsoct_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_cpsoct(x);
 	} else {
 		RESETINPUT(0);
@@ -1087,7 +1087,7 @@ void cpsoct_d(UnaryOpUGen *unit, int inNumSamples)
 void octcps_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_octcps(x);
 	} else {
 		RESETINPUT(0);
@@ -1097,7 +1097,7 @@ void octcps_d(UnaryOpUGen *unit, int inNumSamples)
 void frac_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_frac(x);
 	} else {
 		RESETINPUT(0);
@@ -1107,7 +1107,7 @@ void frac_d(UnaryOpUGen *unit, int inNumSamples)
 void squared_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : x*x;
 	} else {
 		RESETINPUT(0);
@@ -1117,7 +1117,7 @@ void squared_d(UnaryOpUGen *unit, int inNumSamples)
 void cubed_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : x*x*x;
 	} else {
 		RESETINPUT(0);
@@ -1127,7 +1127,7 @@ void cubed_d(UnaryOpUGen *unit, int inNumSamples)
 void sign_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : (x < 0.f ? -1.f : (x > 0.f ? 1.f : 0.f));
 	} else {
 		RESETINPUT(0);
@@ -1137,7 +1137,7 @@ void sign_d(UnaryOpUGen *unit, int inNumSamples)
 void distort_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_distort(x);
 	} else {
 		RESETINPUT(0);
@@ -1147,7 +1147,7 @@ void distort_d(UnaryOpUGen *unit, int inNumSamples)
 void distortneg_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : (x < 0.f ? x/(1.f-x) : x);
 	} else {
 		RESETINPUT(0);
@@ -1157,7 +1157,7 @@ void distortneg_d(UnaryOpUGen *unit, int inNumSamples)
 void softclip_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_softclip(x);
 	} else {
 		RESETINPUT(0);
@@ -1167,7 +1167,7 @@ void softclip_d(UnaryOpUGen *unit, int inNumSamples)
 void rectwindow_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_rectwindow(x);
 	} else {
 		RESETINPUT(0);
@@ -1177,7 +1177,7 @@ void rectwindow_d(UnaryOpUGen *unit, int inNumSamples)
 void hanwindow_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_hanwindow(x);
 	} else {
 		RESETINPUT(0);
@@ -1187,7 +1187,7 @@ void hanwindow_d(UnaryOpUGen *unit, int inNumSamples)
 void welwindow_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_welwindow(x);
 	} else {
 		RESETINPUT(0);
@@ -1197,7 +1197,7 @@ void welwindow_d(UnaryOpUGen *unit, int inNumSamples)
 void triwindow_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_triwindow(x);
 	} else {
 		RESETINPUT(0);
@@ -1207,7 +1207,7 @@ void triwindow_d(UnaryOpUGen *unit, int inNumSamples)
 void ramp_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_ramp(x);
 	} else {
 		RESETINPUT(0);
@@ -1217,7 +1217,7 @@ void ramp_d(UnaryOpUGen *unit, int inNumSamples)
 void scurve_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		float x = DEMANDINPUT(0);
+		float x = DEMANDINPUT_A(0, inNumSamples);
 		OUT0(0) = sc_isnan(x) ? NAN : sc_scurve(x);
 	} else {
 		RESETINPUT(0);

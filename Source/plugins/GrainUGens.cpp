@@ -175,7 +175,7 @@ static float cubicinterp(float x, float y0, float y1, float y2, float y3)
 inline float IN_AT(Unit* unit, int index, int offset) 
 {
 	if (INRATE(index) == calc_FullRate) return IN(index)[offset];
-	if (INRATE(index) == calc_DemandRate) return DEMANDINPUT(index);
+	if (INRATE(index) == calc_DemandRate) return DEMANDINPUT_A(index, offset + 1);
 	return ZIN0(index);
 }
 
