@@ -62,7 +62,7 @@ struct TDuty : public Unit
 
 struct Dseries : public Unit
 {
-	float m_repeats;
+	double m_repeats;
 	int32 m_repeatCount;
 	double m_value;
 	double m_step;
@@ -70,7 +70,7 @@ struct Dseries : public Unit
 
 struct Dgeom : public Unit
 {
-	float m_repeats;
+	double m_repeats;
 	int32 m_repeatCount;
 	double m_value;
 	double m_grow;
@@ -78,7 +78,7 @@ struct Dgeom : public Unit
 
 struct Dwhite : public Unit
 {
-	float m_repeats;
+	double m_repeats;
 	int32 m_repeatCount;
 	float m_lo;
 	float m_range;
@@ -86,7 +86,7 @@ struct Dwhite : public Unit
 
 struct Dbrown : public Unit
 {
-	float m_repeats;
+	double m_repeats;
 	int32 m_repeatCount;
 	float m_lo;
 	float m_hi;
@@ -96,7 +96,7 @@ struct Dbrown : public Unit
 
 struct Diwhite : public Unit
 {
-	float m_repeats;
+	double m_repeats;
 	int32 m_repeatCount;
 	int32 m_lo;
 	int32 m_range;
@@ -104,7 +104,7 @@ struct Diwhite : public Unit
 
 struct Dibrown : public Unit
 {
-	float m_repeats;
+	double m_repeats;
 	int32 m_repeatCount;
 	int32 m_lo;
 	int32 m_hi;
@@ -114,7 +114,7 @@ struct Dibrown : public Unit
 
 struct Dseq : public Unit
 {
-	float m_repeats;
+	double m_repeats;
 	int32 m_repeatCount;
 	int32 m_index;
 	bool m_needToResetChild;
