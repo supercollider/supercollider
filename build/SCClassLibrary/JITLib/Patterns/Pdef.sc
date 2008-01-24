@@ -509,7 +509,7 @@ EventPatternProxy : TaskProxy {
 		var quantBeat, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
 		
 		^if(quant.notNil) {
-			quantBeat = this.quantBeat;
+			quantBeat = this.quantBeat ? 0;
 			catchUp = this.outset;
 			
 			delta = thisThread.clock.timeToNextBeat(quant);
