@@ -414,13 +414,13 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
 			float x = DEMANDINPUT_A(duty_level, i + 1);
-			//printf("in  %d %g\n", k, x);
+			//printf("in  %d\n", count);
 			if(sc_isnan(x)) {
 				x = prevout;
 				int doneAction = (int)ZIN0(duty_doneAction);
@@ -463,14 +463,13 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
 		
 			float x = DEMANDINPUT_A(duty_level, i + 1);
-			//printf("in  %d %g\n", k, x);
 			if(sc_isnan(x)) {
 				x = prevout;
 				int doneAction = (int)ZIN0(duty_doneAction);
@@ -478,14 +477,14 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 			} else {
 				prevout = x;
 			}
-
+			
 			out[i] = x;
 			
 		} else {
-			count--;
+			
 			out[i] = prevout;
 		}
-		
+		count--;
 		prevreset = zreset;
 	}
 	
@@ -510,12 +509,12 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
-			reset = DEMANDINPUT_A(duty_reset, i + 1) * sr + .5f + reset;
+			reset = DEMANDINPUT_A(duty_reset, i + 1) * sr + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
@@ -529,12 +528,10 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 			} else {
 				prevout = x;
 			}
-			out[i] = x;
-		} else {
-			count--;
-			out[i] = prevout;
 		}
-		
+				
+		out[i] = prevout;
+		count--;
 	}
 	
 	unit->m_count = count;
@@ -553,7 +550,7 @@ void Duty_Ctor(Duty *unit)
 	} else { 
 		if(INRATE(duty_reset) == calc_DemandRate) {
 			SETCALC(Duty_next_dd);
-			unit->m_prevreset = DEMANDINPUT(duty_reset) * SAMPLERATE + .5f;
+			unit->m_prevreset = DEMANDINPUT(duty_reset) * SAMPLERATE;
 		} else {
 			SETCALC(Duty_next_dk);
 			unit->m_prevreset = 0.f;
