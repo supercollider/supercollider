@@ -68,6 +68,7 @@ void Usage()
 		"   -w <number-of-wire-buffers>         (default %d)\n"
 		"   -r <number-of-random-seeds>         (default %d)\n"
 		"   -D <load synthdefs? 1 or 0>         (default %d)\n"
+		"   -R <publish to Rendezvous? 1 or 0>  (default %d)\n"
 		"   -l <max-logins>                     (default %d)\n"
 		"          maximum number of named return addresses stored\n"
 		"          also maximum number of tcp connections accepted\n"
@@ -141,7 +142,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 	
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHv", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvR", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -253,6 +254,10 @@ int main(int argc, char* argv[])
 			case 'v' :
 				checkNumArgs(2);
 				options.mVerbosity = atoi(argv[j+1]);
+				break;
+			case 'R' :
+				checkNumArgs(2);
+				options.mRendezvous = atoi(argv[j+1]) > 0;
 				break;
 			default: Usage();
 		}
