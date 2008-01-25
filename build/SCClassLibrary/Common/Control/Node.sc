@@ -59,7 +59,8 @@ Node {
 	// map to Bus objects
 	busMap { arg firstControl, aBus ... args;
 		var values;
-		"busMap is deprecated, use map".warn;
+		// busMap is not deprecated for multichannel buses
+		//"busMap is deprecated, use map".warn;
 		values = List.new;
 		args.pairsDo({ arg control, bus; values.addAll([control, bus.index, bus.numChannels])});
 		server.sendMsg(48, nodeID, firstControl, aBus.index, aBus.numChannels, *values);
@@ -67,7 +68,8 @@ Node {
 	}
 	busMapMsg { arg firstControl, aBus ... args;
 		var values;
-		"busMapMsg is deprecated, use map".warn;
+		// busMap is not deprecated for multichannel buses
+		//"busMapMsg is deprecated, use map".warn;
 		values = List.new;
 		args.pairsDo({ arg control, bus; values.addAll([control, bus.index, bus.numChannels])});
 		^[48, nodeID, firstControl, aBus.index, aBus.numChannels] ++ values;
