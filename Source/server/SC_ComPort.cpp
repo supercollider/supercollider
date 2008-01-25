@@ -311,10 +311,12 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 	Start();
 
 #ifdef USE_RENDEZVOUS
-	pthread_create(&mRendezvousThread, 
-		NULL, 
-		rendezvous_thread_func, 
-		(void*)this);
+	if(inWorld->mRendezvous){
+		pthread_create(&mRendezvousThread, 
+			NULL, 
+			rendezvous_thread_func, 
+			(void*)this);
+	}
 #endif
 }
 
@@ -453,10 +455,12 @@ SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnec
     
     Start();
 #ifdef USE_RENDEZVOUS
-	pthread_create(&mRendezvousThread, 
-		NULL, 
-		rendezvous_thread_func, 
-		(void*)this);
+	if(inWorld->mRendezvous){
+		pthread_create(&mRendezvousThread, 
+			NULL, 
+			rendezvous_thread_func, 
+			(void*)this);
+	}
 #endif
 }
 

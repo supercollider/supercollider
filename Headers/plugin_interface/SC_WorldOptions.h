@@ -73,6 +73,8 @@ struct WorldOptions
 	const char *mDeviceName;
 	
 	int mVerbosity;
+	
+	bool mRendezvous;
 };
 
 const WorldOptions kDefaultWorldOptions = 
@@ -89,6 +91,7 @@ const WorldOptions kDefaultWorldOptions =
 #endif
 	,0
 	,0
+	,1
 };
 
 //#ifdef SC_WIN32

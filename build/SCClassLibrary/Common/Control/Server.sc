@@ -30,6 +30,7 @@ ServerOptions
 	var <>blockAllocClass;
 	
 	var <>verbosity = 0;
+	var <>rendezvous = true; // Whether server publishes port to Rendezvous
 	
 	var <>initialNodeID = 1000;
 	
@@ -112,6 +113,9 @@ ServerOptions
 		});
 		if (verbosity != 0, {
 			o = o ++ " -v " ++ verbosity;
+		});
+		if (rendezvous.not, {
+			o = o ++ " -R 0";
 		});
 		^o
 	}

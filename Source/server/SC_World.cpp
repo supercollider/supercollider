@@ -368,6 +368,8 @@ World* World_New(WorldOptions *inOptions)
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;
 
+		world->mRendezvous = inOptions->mRendezvous;
+		
 		if(inOptions->mVerbosity >= 0) {
 			scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
 		}

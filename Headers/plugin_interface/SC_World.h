@@ -90,6 +90,8 @@ struct World
 	int mVerbosity;
 	int mErrorNotification;
 	int mLocalErrorNotification;
+	
+	bool mRendezvous; // Allow user to disable Rendezvous
 };
 
 extern "C" {

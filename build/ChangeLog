@@ -37,8 +37,8 @@
 * 2008-01-10 String:runInTerminal method - ds
 * 2008-01-11 poll now works for scalar ugens - jr
 * 2008-01-15 Collection:maxIndex and Collection:minIndex - nc
+* 2008-01-24 Server.options.rendezvous to (de)activate Rendezvous if desired - ds
 * 2008-01-24 demand ugens accept audio rate inputs correctly - jr
-
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
 
