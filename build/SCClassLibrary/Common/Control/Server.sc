@@ -485,6 +485,9 @@ Server : Model {
 			});
 			serverBooting = false;
 			this.initTree;
+			(volume.volume != 0.0).if({
+				volume.play;
+				});
 		});
 		if (isLocal.not, { 
 			"You will have to manually boot remote server.".inform;
@@ -553,6 +556,9 @@ Server : Model {
 		this.serverRunning = false;
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		RootNode(this).freeAll;
+		volume.isPlaying.if({
+			volume.free
+			});
 		this.newAllocators;
 		this.resetBufferAutoInfo;
 	}
