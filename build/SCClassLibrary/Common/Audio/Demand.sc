@@ -9,7 +9,7 @@ Demand : MultiOutUGen {
 		inputs = argInputs;
 		^this.initOutputs(inputs.size - 2, rate)
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+ 	checkInputs { ^this.checkSameRateAsFirstInput }	
 }
 
 Duty : UGen {
@@ -52,25 +52,35 @@ DemandEnvGen : UGen {
 	}
 }
 
-Dseries : UGen {
+DUGen : UGen {
+	init { arg ... argInputs;
+		super.init(*argInputs);
+		this.forceAudioRateInputsIntoUGenGraph;
+	}
+	forceAudioRateInputsIntoUGenGraph { // this is here until another solution is found.
+ 		inputs.do { |in| if(in.rate == \audio) { in + 1 } }; // a mock addition serves the purpose
+ 	}
+}
+
+Dseries : DUGen {
 	*new { arg start = 1, step = 1, length = 100;
 		^this.multiNew('demand', length, start, step)
 	}	
 }
 
-Dgeom : UGen {
+Dgeom : DUGen {
 	*new { arg start = 1, grow = 2, length=100;
 		^this.multiNew('demand', length, start, grow)
 	}	
 }
 
-Dbufrd : UGen {
+Dbufrd : DUGen {
 	*new { arg bufnum=0, phase=0.0, loop=1.0;
 		^this.multiNew('demand', bufnum, phase, loop)	
 	}
 }
 
-ListDUGen : UGen {
+ListDUGen : DUGen {
 	*new { arg list, repeats=1;
 		^this.multiNewList(['demand', repeats] ++ list)
 	}
@@ -81,7 +91,7 @@ Dser : ListDUGen {}
 Drand : ListDUGen {}
 Dxrand : ListDUGen {}
 
-Dswitch1 : UGen {
+Dswitch1 : DUGen {
 	*new { arg list, index;
 		^this.multiNewList(['demand', index] ++ list)
 	}
@@ -89,7 +99,7 @@ Dswitch1 : UGen {
 
 Dswitch : Dswitch1 {}
 
-Dwhite : UGen {
+Dwhite : DUGen {
 	*new { arg lo = 0.0, hi = 1.0, length=inf;
 		^this.multiNew('demand', length, lo, hi)
 	}
@@ -97,7 +107,7 @@ Dwhite : UGen {
 
 Diwhite : Dwhite {}
 
-Dbrown : UGen {
+Dbrown : DUGen {
 	*new { arg lo = 0.0, hi = 1.0, step = 0.01, length=inf;
 		^this.multiNew('demand', length, lo, hi, step)
 	}
