@@ -557,7 +557,7 @@ void Duty_Ctor(Duty *unit)
 		}
 	}
 	
-	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f;
+	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE;
 	unit->m_prevout = DEMANDINPUT(duty_level);
 	OUT0(0) = unit->m_prevout;
 	
@@ -658,7 +658,7 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 					running = false;
 					phase = MAXFLOAT;
 				} else {
-					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + .5f + phase;
+					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + phase;
 				}
 				
 				
@@ -922,7 +922,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 					running = false;
 					phase = MAXFLOAT;
 				} else {
-					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + .5f + phase;
+					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + phase;
 				}
 				
 				// new shape
@@ -1162,7 +1162,7 @@ void TDuty_next_da(TDuty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
@@ -1172,10 +1172,9 @@ void TDuty_next_da(TDuty *unit, int inNumSamples)
 			if (sc_isnan(x)) x = 0.f;
 			out[i] = x;
 		} else {
-			count--;
 			out[i] = 0.f;
 		}
-		
+		count--;
 		prevreset = zreset;
 	}
 	
@@ -1203,7 +1202,7 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
@@ -1213,10 +1212,9 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 			if (sc_isnan(x)) x = 0.f;
 			out[i] = x;
 		} else {
-			count--;
 			out[i] = 0.f;
 		}
-		
+		count--;
 		prevreset = zreset;
 	}
 	
@@ -1239,12 +1237,12 @@ void TDuty_next_dd(TDuty *unit, int inNumSamples)
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
-			reset = DEMANDINPUT_A(duty_reset, i + 1) * sr + .5f + reset;
+			reset = DEMANDINPUT_A(duty_reset, i + 1) * sr + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + .5f + count;
+			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
@@ -1254,10 +1252,10 @@ void TDuty_next_dd(TDuty *unit, int inNumSamples)
 			if (sc_isnan(x)) x = 0.f;
 			out[i] = x;
 		} else {
-			count--;
+			
 			out[i] = 0.f;
 		}
-		
+		count--;
 	}
 	
 	unit->m_count = count;
@@ -1273,17 +1271,17 @@ void TDuty_Ctor(TDuty *unit)
 			SETCALC(TDuty_next_da);
 			unit->m_prevreset = 0.f;
 		
-	} else { 
+	} else {
 		if(INRATE(1) == calc_DemandRate) {
 			SETCALC(TDuty_next_dd);
-			unit->m_prevreset = DEMANDINPUT(1) * SAMPLERATE + .5f;
+			unit->m_prevreset = DEMANDINPUT(1) * SAMPLERATE;
 		} else {
 			SETCALC(TDuty_next_dk);
 			unit->m_prevreset = 0.f;
 		}
 	}
 	
-	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f;
+	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE;
 	OUT0(0) = 0.f;
 }
 
