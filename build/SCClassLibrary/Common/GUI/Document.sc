@@ -13,6 +13,8 @@ Document {
 	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseUpAction, <>toFrontAction, <>endFrontAction, <>onClose, <>mouseDownAction;
 	
 	var <stringColor;
+	
+	var <envir, savedEnvir;
 // 	var >path, visible; 
 // replaced by primitves: title, background
 	var <editable;
@@ -25,15 +27,15 @@ Document {
 			doc = this.newFromIndex(i);
 		});
 	}
-	*open { arg path, selectionStart=0, selectionLength=0;
-		^Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength)
+	
+	*open { arg path, selectionStart=0, selectionLength=0, envir;
+		current.restoreCurrentEnvironment;		
+		^Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength).envir_(envir);
 	}
 	
-	*new { arg title="Untitled", string="", makeListener=false;
-		^Document.implementationClass.new(title, string, makeListener);
-	}
-	*prBasicNew {
-		^super.new
+	*new { arg title="Untitled", string="", makeListener=false, envir;
+		current.restoreCurrentEnvironment;
+		^Document.implementationClass.new(title, string, makeListener).envir_(envir);
 	}
 	
 //class:
@@ -271,15 +273,18 @@ Document {
 	}
 	
 //actions:	
+	
 	didBecomeKey {
 		this.class.current = this;
+		this.saveCurrentEnvironment;
 		toFrontAction.value(this);
 	}
 	
 	didResignKey {
 		endFrontAction.value(this);
+		this.restoreCurrentEnvironment;
 	}
-	
+
 	makeWikiPage { arg wikiWord, extension=(".rtf"), directory;
 		var filename, file, doc, string, dirName;
 		directory = directory ? wikiDir;
@@ -461,6 +466,7 @@ Document {
 
 	closed {
 		onClose.value(this); // call user function
+		this.restoreCurrentEnvironment;
 		allDocuments.remove(this);
 		dataptr = nil;
 	}
@@ -596,30 +602,35 @@ Document {
 	//
 	//hasPath  was loaded
 	
+	
+// Environment handling  Document with its own envir must set and restore currentEnvironment on entry and exit.
+// Requires alteration of *open, *new, closed, didBecomeKey, and didResignKey
+	envir_ { | ev |Ê
+		envir = ev;
+		if (this.class.current == this) {Ê
+			if (savedEnvir.isNil) {	 
+				this.saveCurrentEnvironment
+			}
+		}
+	}	
+	
+	restoreCurrentEnvironment {
+		if (envir.notNil) { currentEnvironment = savedEnvir };
+	}
+	
+	saveCurrentEnvironment {
+		if (envir.notNil) {  
+			savedEnvir = currentEnvironment; 
+			currentEnvironment = envir; 
+		}
+	}
+
+	*prBasicNew {
+		^super.new
+	}
+	
+
+	
 }
 
-
-EnvirDocument : Document {
-	var <>envir;
-	
-	*new { arg envir, title="- Untitled Environment", string="";
-		^super.new(title, string).envir_(envir)
-	}
-	
-	*open { arg envir, path, selectionStart=0, selectionLength=0;
-		var doc = super.open(path, selectionStart, selectionLength);
-		^doc !? { doc.envir_(envir) }	}
-	
-	didBecomeKey {
-		envir !? { envir.push };
-		this.class.current = this;
-		toFrontAction.value(this);
-	}
-	
-	didResignKey {
-		envir !? { envir.pop };
-		endFrontAction.value(this);
-	}
-
-}
 
