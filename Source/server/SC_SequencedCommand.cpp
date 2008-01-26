@@ -722,7 +722,7 @@ bool BufAllocReadChannelCmd::Stage2()
 	} else {
 		// verify channel indexes
 		if (!CheckChannels(fileinfo.channels)) {
-			char* str = "Channel index out of range.\n";
+            const char* str = "Channel index out of range.\n";
 			SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
@@ -827,7 +827,7 @@ bool BufReadChannelCmd::Stage2()
 	if (mNumChannels > 0) {
 		// verify channel indexes
 		if (!(CheckChannels(fileinfo.channels) && CheckChannels(buf->channels))) {
-			char* str = "Channel index out of range.\n";
+            const char* str = "Channel index out of range.\n";
 			SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);

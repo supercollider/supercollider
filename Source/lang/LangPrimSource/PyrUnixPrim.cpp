@@ -30,6 +30,7 @@ Primitives for Unix.
 #include "GC.h"
 #include "SC_RGen.h"
 #include "SC_DirUtils.h"
+#include <cstring>
 
 #ifdef SC_WIN32
 #include <stdio.h>
