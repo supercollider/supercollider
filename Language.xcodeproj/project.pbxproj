@@ -344,6 +344,120 @@
 		94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
 		94F5FC7F0C1E6F7F005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
 		94F5FC810C1E6F92005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
+		F338A4290D0F10A100ACFF58 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 949318010C192C120018AB50 /* Credits.rtf */; };
+		F338A42A0D0F10A100ACFF58 /* FindPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 949318030C192C120018AB50 /* FindPanel.nib */; };
+		F338A42B0D0F10A100ACFF58 /* FindPanel.strings in Resources */ = {isa = PBXBuildFile; fileRef = 949318050C192C120018AB50 /* FindPanel.strings */; };
+		F338A42C0D0F10A100ACFF58 /* GetStringDlg.nib in Resources */ = {isa = PBXBuildFile; fileRef = 949318070C192C120018AB50 /* GetStringDlg.nib */; };
+		F338A42D0D0F10A100ACFF58 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 949318090C192C120018AB50 /* MainMenu.nib */; };
+		F338A42E0D0F10A100ACFF58 /* MyDocument.nib in Resources */ = {isa = PBXBuildFile; fileRef = 9493180B0C192C120018AB50 /* MyDocument.nib */; };
+		F338A42F0D0F10A100ACFF58 /* SCGraphView.nib in Resources */ = {isa = PBXBuildFile; fileRef = 9493180D0C192C120018AB50 /* SCGraphView.nib */; };
+		F338A4300D0F10A100ACFF58 /* GoToLinePanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 9493180F0C192C120018AB50 /* GoToLinePanel.nib */; };
+		F338A4310D0F10A100ACFF58 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 949318100C192C120018AB50 /* Info.plist */; };
+		F338A4320D0F10A100ACFF58 /* SCcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 949318170C192C120018AB50 /* SCcube.icns */; };
+		F338A4330D0F10A100ACFF58 /* html.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5B0C19DEF6002304F7 /* html.icns */; };
+		F338A4340D0F10A100ACFF58 /* rtf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5C0C19DEF6002304F7 /* rtf.icns */; };
+		F338A4350D0F10A100ACFF58 /* sc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5D0C19DEF6002304F7 /* sc.icns */; };
+		F338A4360D0F10A100ACFF58 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
+		F338A4380D0F10A100ACFF58 /* HTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 940739A50CBB6E9C00EAA155 /* HTMLRenderer.m */; };
+		F338A4390D0F10A100ACFF58 /* CocoaBridgePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310A60C1921F90018AB50 /* CocoaBridgePrimitives.M */; };
+		F338A43A0D0F10A100ACFF58 /* CocoaFilePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310A70C1921F90018AB50 /* CocoaFilePrimitives.M */; };
+		F338A43B0D0F10A100ACFF58 /* DrawBackground.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310A80C1921F90018AB50 /* DrawBackground.M */; };
+		F338A43C0D0F10A100ACFF58 /* GetStringFromUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310A90C1921F90018AB50 /* GetStringFromUser.m */; };
+		F338A43D0D0F10A100ACFF58 /* GoToPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310AA0C1921F90018AB50 /* GoToPanel.M */; };
+		F338A43E0D0F10A100ACFF58 /* GUIPrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310AB0C1921F90018AB50 /* GUIPrimitives.M */; };
+		F338A43F0D0F10A100ACFF58 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310AC0C1921F90018AB50 /* main.m */; };
+		F338A4400D0F10A100ACFF58 /* MyDocument.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310AD0C1921F90018AB50 /* MyDocument.M */; };
+		F338A4410D0F10A100ACFF58 /* post_queue.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310AE0C1921F90018AB50 /* post_queue.M */; };
+		F338A4420D0F10A100ACFF58 /* RendezvousClient.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310AF0C1921F90018AB50 /* RendezvousClient.M */; };
+		F338A4430D0F10A100ACFF58 /* SCCocoaView.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310B00C1921F90018AB50 /* SCCocoaView.M */; };
+		F338A4440D0F10A100ACFF58 /* SCDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = 949310B10C1921F90018AB50 /* SCDialog.mm */; };
+		F338A4450D0F10A100ACFF58 /* SCGraphView.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310B20C1921F90018AB50 /* SCGraphView.M */; };
+		F338A4460D0F10A100ACFF58 /* SCNSWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310B40C1921F90018AB50 /* SCNSWindow.m */; };
+		F338A4470D0F10A100ACFF58 /* SCService.mm in Sources */ = {isa = PBXBuildFile; fileRef = 949310B50C1921F90018AB50 /* SCService.mm */; };
+		F338A4480D0F10A100ACFF58 /* SCSoundFileView.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310B60C1921F90018AB50 /* SCSoundFileView.M */; };
+		F338A4490D0F10A100ACFF58 /* SCTextView.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310B70C1921F90018AB50 /* SCTextView.M */; };
+		F338A44A0D0F10A100ACFF58 /* SCView.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310B80C1921F90018AB50 /* SCView.M */; };
+		F338A44B0D0F10A100ACFF58 /* SCVirtualMachine.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310B90C1921F90018AB50 /* SCVirtualMachine.M */; };
+		F338A44C0D0F10A100ACFF58 /* syntaxColorize.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310BA0C1921F90018AB50 /* syntaxColorize.M */; };
+		F338A44D0D0F10A100ACFF58 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310BB0C1921F90018AB50 /* TabletEvents.m */; };
+		F338A44E0D0F10A100ACFF58 /* TextFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310BC0C1921F90018AB50 /* TextFinder.m */; };
+		F338A44F0D0F10A100ACFF58 /* UserPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310BD0C1921F90018AB50 /* UserPanel.M */; };
+		F338A4500D0F10A100ACFF58 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C00C1921F90018AB50 /* dtoa.c */; };
+		F338A4510D0F10A100ACFF58 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C10C1921F90018AB50 /* g_fmt.c */; };
+		F338A4520D0F10A100ACFF58 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C20C1921F90018AB50 /* SC_AllocPool.cpp */; };
+		F338A4530D0F10A100ACFF58 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C30C1921F90018AB50 /* SC_DirUtils.cpp */; };
+		F338A4540D0F10A100ACFF58 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C40C1921F90018AB50 /* SC_Sem.cpp */; };
+		F338A4550D0F10A100ACFF58 /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C50C1921F90018AB50 /* SC_StandAloneInfo_Darwin.cpp */; };
+		F338A4560D0F10A100ACFF58 /* SC_StringBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C60C1921F90018AB50 /* SC_StringBuffer.cpp */; };
+		F338A4570D0F10A100ACFF58 /* SC_StringParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C70C1921F90018AB50 /* SC_StringParser.cpp */; };
+		F338A4580D0F10A100ACFF58 /* SC_Win32Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C80C1921F90018AB50 /* SC_Win32Utils.cpp */; };
+		F338A4590D0F10A100ACFF58 /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C90C1921F90018AB50 /* scsynthsend.cpp */; };
+		F338A45A0D0F10A100ACFF58 /* OSCData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310CC0C1921F90018AB50 /* OSCData.cpp */; };
+		F338A45B0D0F10A100ACFF58 /* PyrArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310CD0C1921F90018AB50 /* PyrArchiver.cpp */; };
+		F338A45C0D0F10A100ACFF58 /* PyrArrayPrimitives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310CE0C1921F90018AB50 /* PyrArrayPrimitives.cpp */; };
+		F338A45D0D0F10A100ACFF58 /* PyrBitPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310CF0C1921F90018AB50 /* PyrBitPrim.cpp */; };
+		F338A45E0D0F10A100ACFF58 /* PyrCharPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D00C1921F90018AB50 /* PyrCharPrim.cpp */; };
+		F338A45F0D0F10A100ACFF58 /* PyrFilePrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D10C1921F90018AB50 /* PyrFilePrim.cpp */; };
+		F338A4600D0F10A100ACFF58 /* PyrListPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D20C1921F90018AB50 /* PyrListPrim.cpp */; };
+		F338A4610D0F10A100ACFF58 /* PyrMathPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D30C1921F90018AB50 /* PyrMathPrim.cpp */; };
+		F338A4620D0F10A100ACFF58 /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D40C1921F90018AB50 /* PyrPlatformPrim.cpp */; };
+		F338A4630D0F10A100ACFF58 /* PyrPrimitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D50C1921F90018AB50 /* PyrPrimitive.cpp */; };
+		F338A4640D0F10A100ACFF58 /* PyrSched.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D60C1921F90018AB50 /* PyrSched.cpp */; };
+		F338A4650D0F10A100ACFF58 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D70C1921F90018AB50 /* PyrSerialPrim.cpp */; };
+		F338A4660D0F10A100ACFF58 /* PyrSignalPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D80C1921F90018AB50 /* PyrSignalPrim.cpp */; };
+		F338A4670D0F10A100ACFF58 /* PyrStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310D90C1921F90018AB50 /* PyrStringPrim.cpp */; };
+		F338A4680D0F10A100ACFF58 /* PyrSymbolPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DA0C1921F90018AB50 /* PyrSymbolPrim.cpp */; };
+		F338A4690D0F10A100ACFF58 /* PyrUnixPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DB0C1921F90018AB50 /* PyrUnixPrim.cpp */; };
+		F338A46A0D0F10A100ACFF58 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DC0C1921F90018AB50 /* SC_CoreMIDI.cpp */; };
+		F338A46B0D0F10A100ACFF58 /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DD0C1921F90018AB50 /* SC_HID.cpp */; };
+		F338A46C0D0F10A100ACFF58 /* SC_Speech.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E00C1921F90018AB50 /* SC_Speech.cpp */; };
+		F338A46D0D0F10A100ACFF58 /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E10C1921F90018AB50 /* SC_Wii.cpp */; };
+		F338A46E0D0F10A100ACFF58 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310E50C1921F90018AB50 /* wiiremote.c */; };
+		F338A46F0D0F10A100ACFF58 /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E80C1921F90018AB50 /* AdvancingAllocPool.cpp */; };
+		F338A4700D0F10A100ACFF58 /* alloca.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E90C1921F90018AB50 /* alloca.cpp */; };
+		F338A4710D0F10A100ACFF58 /* lang11d_tab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310EC0C1921F90018AB50 /* lang11d_tab.cpp */; };
+		F338A4720D0F10A100ACFF58 /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310EE0C1921F90018AB50 /* ByteCodeArray.cpp */; };
+		F338A4730D0F10A100ACFF58 /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310F00C1921F90018AB50 /* dumpByteCodes.cpp */; };
+		F338A4740D0F10A100ACFF58 /* DumpParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310F10C1921F90018AB50 /* DumpParseNode.cpp */; };
+		F338A4750D0F10A100ACFF58 /* GC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310F20C1921F90018AB50 /* GC.cpp */; };
+		F338A4760D0F10A100ACFF58 /* InitAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310FE0C1921F90018AB50 /* InitAlloc.cpp */; };
+		F338A4770D0F10A100ACFF58 /* PyrFileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310FF0C1921F90018AB50 /* PyrFileUtils.cpp */; };
+		F338A4780D0F10A100ACFF58 /* PyrInterpreter3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311000C1921F90018AB50 /* PyrInterpreter3.cpp */; };
+		F338A4790D0F10A100ACFF58 /* PyrLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311010C1921F90018AB50 /* PyrLexer.cpp */; };
+		F338A47A0D0F10A100ACFF58 /* PyrMathOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311020C1921F90018AB50 /* PyrMathOps.cpp */; };
+		F338A47B0D0F10A100ACFF58 /* PyrMathSupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311030C1921F90018AB50 /* PyrMathSupport.cpp */; };
+		F338A47C0D0F10A100ACFF58 /* PyrMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311040C1921F90018AB50 /* PyrMessage.cpp */; };
+		F338A47D0D0F10A100ACFF58 /* PyrObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311050C1921F90018AB50 /* PyrObject.cpp */; };
+		F338A47E0D0F10A100ACFF58 /* PyrParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311060C1921F90018AB50 /* PyrParseNode.cpp */; };
+		F338A47F0D0F10A100ACFF58 /* PyrSignal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311070C1921F90018AB50 /* PyrSignal.cpp */; };
+		F338A4800D0F10A100ACFF58 /* PyrSymbolTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311080C1921F90018AB50 /* PyrSymbolTable.cpp */; };
+		F338A4810D0F10A100ACFF58 /* Samp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311090C1921F90018AB50 /* Samp.cpp */; };
+		F338A4820D0F10A100ACFF58 /* SC_LibraryConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9493110D0C1921F90018AB50 /* SC_LibraryConfig.cpp */; };
+		F338A4830D0F10A100ACFF58 /* SimpleStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9493110F0C1921F90018AB50 /* SimpleStack.cpp */; };
+		F338A4840D0F10A100ACFF58 /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311100C1921F90018AB50 /* VMGlobals.cpp */; };
+		F338A4850D0F10A100ACFF58 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 949314390C1925B90018AB50 /* fftlib.c */; };
+		F338A4860D0F10A100ACFF58 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6800C19E6E500634E4D /* SC_ComPort.cpp */; };
+		F338A4870D0F10A100ACFF58 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AB0C19E79F00634E4D /* HID_Error_Handler.c */; };
+		F338A4880D0F10A100ACFF58 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
+		F338A4890D0F10A100ACFF58 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
+		F338A48A0D0F10A100ACFF58 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6B10C19E79F00634E4D /* HID_Utilities.c */; };
+		F338A48B0D0F10A100ACFF58 /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A1C635D0CFB6B72004ED3DA /* PyrUStringPrim.cpp */; };
+		F338A48D0D0F10A100ACFF58 /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
+		F338A48E0D0F10A100ACFF58 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
+		F338A48F0D0F10A100ACFF58 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069702E6A1C601CA2799 /* Carbon.framework */; };
+		F338A4900D0F10A100ACFF58 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
+		F338A4910D0F10A100ACFF58 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069802E6A1C601CA2799 /* Cocoa.framework */; };
+		F338A4920D0F10A100ACFF58 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069602E6A1C601CA2799 /* ApplicationServices.framework */; };
+		F338A4930D0F10A100ACFF58 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069902E6A1C601CA2799 /* CoreAudio.framework */; };
+		F338A4940D0F10A100ACFF58 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
+		F338A4950D0F10A100ACFF58 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
+		F338A4960D0F10A100ACFF58 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
+		F338A4970D0F10A100ACFF58 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
+		F338A4980D0F10A100ACFF58 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
+		F338A4990D0F10A100ACFF58 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
+		F338A49A0D0F10A100ACFF58 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 949313CB0C19234D0018AB50 /* IOBluetooth.framework */; };
+		F338A49B0D0F10A100ACFF58 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D9ED1C0C2773CF00223DF8 /* WebKit.framework */; };
+		F338A49C0D0F10A100ACFF58 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -390,6 +504,13 @@
 			remoteInfo = libscsynth;
 		};
 		94F5FC3A0C1E6E7A005CDF9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F;
+			remoteInfo = libscsynth;
+		};
+		F338A4270D0F10A100ACFF58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
 			proxyType = 1;
@@ -681,6 +802,9 @@
 		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
+		F338A41A0D0F06C000ACFF58 /* Info copy 4.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy 4.plist"; sourceTree = "<group>"; };
+		F338A4A10D0F10A100ACFF58 /* SoloTutti.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloTutti.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F338A4A30D0F10A100ACFF58 /* Info copy 5.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy 5.plist"; sourceTree = "<group>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		F50D069602E6A1C601CA2799 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		F50D069702E6A1C601CA2799 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -757,6 +881,29 @@
 				949313CC0C19234D0018AB50 /* IOBluetooth.framework in Frameworks */,
 				94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */,
 				6A1C636A0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F338A48C0D0F10A100ACFF58 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F338A48D0D0F10A100ACFF58 /* libscsynth.a in Frameworks */,
+				F338A48E0D0F10A100ACFF58 /* libsndfile.a in Frameworks */,
+				F338A48F0D0F10A100ACFF58 /* Carbon.framework in Frameworks */,
+				F338A4900D0F10A100ACFF58 /* CoreServices.framework in Frameworks */,
+				F338A4910D0F10A100ACFF58 /* Cocoa.framework in Frameworks */,
+				F338A4920D0F10A100ACFF58 /* ApplicationServices.framework in Frameworks */,
+				F338A4930D0F10A100ACFF58 /* CoreAudio.framework in Frameworks */,
+				F338A4940D0F10A100ACFF58 /* CoreMIDI.framework in Frameworks */,
+				F338A4950D0F10A100ACFF58 /* IOKit.framework in Frameworks */,
+				F338A4960D0F10A100ACFF58 /* QuickTime.framework in Frameworks */,
+				F338A4970D0F10A100ACFF58 /* Quartz.framework in Frameworks */,
+				F338A4980D0F10A100ACFF58 /* QTKit.framework in Frameworks */,
+				F338A4990D0F10A100ACFF58 /* QuartzCore.framework in Frameworks */,
+				F338A49A0D0F10A100ACFF58 /* IOBluetooth.framework in Frameworks */,
+				F338A49B0D0F10A100ACFF58 /* WebKit.framework in Frameworks */,
+				F338A49C0D0F10A100ACFF58 /* libicucore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1194,6 +1341,8 @@
 				9493180F0C192C120018AB50 /* GoToLinePanel.nib */,
 				949318100C192C120018AB50 /* Info.plist */,
 				949318170C192C120018AB50 /* SCcube.icns */,
+				F338A41A0D0F06C000ACFF58 /* Info copy 4.plist */,
+				F338A4A30D0F10A100ACFF58 /* Info copy 5.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1217,6 +1366,7 @@
 				94B6ABC00AF45D2900E478BB /* SuperCollider.app */,
 				949314DD0C192A550018AB50 /* sclang */,
 				94442CC80C2C8AE40050BF9F /* Standalone Template.app */,
+				F338A4A10D0F10A100ACFF58 /* SoloTutti.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1303,12 +1453,32 @@
 			productReference = 94B6ABC00AF45D2900E478BB /* SuperCollider.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F338A4250D0F10A100ACFF58 /* SoloTutti */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F338A49E0D0F10A100ACFF58 /* Build configuration list for PBXNativeTarget "SoloTutti" */;
+			buildPhases = (
+				F338A4280D0F10A100ACFF58 /* Resources */,
+				F338A4370D0F10A100ACFF58 /* Sources */,
+				F338A48C0D0F10A100ACFF58 /* Frameworks */,
+				F338A49D0D0F10A100ACFF58 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F338A4260D0F10A100ACFF58 /* PBXTargetDependency */,
+			);
+			name = SoloTutti;
+			productName = test2;
+			productReference = F338A4A10D0F10A100ACFF58 /* SoloTutti.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "Language" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
@@ -1325,6 +1495,7 @@
 				94B6ABBF0AF45D2900E478BB /* SuperCollider */,
 				949314DC0C192A550018AB50 /* sclang */,
 				94442C500C2C8AE40050BF9F /* Standalone Template */,
+				F338A4250D0F10A100ACFF58 /* SoloTutti */,
 			);
 		};
 /* End PBXProject section */
@@ -1397,10 +1568,44 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F338A4280D0F10A100ACFF58 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F338A4290D0F10A100ACFF58 /* Credits.rtf in Resources */,
+				F338A42A0D0F10A100ACFF58 /* FindPanel.nib in Resources */,
+				F338A42B0D0F10A100ACFF58 /* FindPanel.strings in Resources */,
+				F338A42C0D0F10A100ACFF58 /* GetStringDlg.nib in Resources */,
+				F338A42D0D0F10A100ACFF58 /* MainMenu.nib in Resources */,
+				F338A42E0D0F10A100ACFF58 /* MyDocument.nib in Resources */,
+				F338A42F0D0F10A100ACFF58 /* SCGraphView.nib in Resources */,
+				F338A4300D0F10A100ACFF58 /* GoToLinePanel.nib in Resources */,
+				F338A4310D0F10A100ACFF58 /* Info.plist in Resources */,
+				F338A4320D0F10A100ACFF58 /* SCcube.icns in Resources */,
+				F338A4330D0F10A100ACFF58 /* html.icns in Resources */,
+				F338A4340D0F10A100ACFF58 /* rtf.icns in Resources */,
+				F338A4350D0F10A100ACFF58 /* sc.icns in Resources */,
+				F338A4360D0F10A100ACFF58 /* LICENSE.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		944449E80C2C99E90050BF9F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\n# We use rsync instead of cp becuase Xcode doesn't do recursive dependency tracking \n# and rsync (which does quick modification date comparisons) will be faster.\n# It also excludes .svn dirs during the copy and deletes files not found in the\n# origin.\n\nCOPY=\"rsync -r --exclude='.svn'\"\nFILES=\" \"$BUILT_PRODUCTS_DIR/SCClassLibrary\" \"$BUILT_PRODUCTS_DIR/plugins\" \"\n\nif [ -d \"$TARGET_NAME Resources\" ]; then\n\t$COPY $FILES \"$TARGET_NAME Resources\"/ \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nelse\n\t$COPY $FILES \"Standalone Resources\"/ \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nfi";
+		};
+		F338A49D0D0F10A100ACFF58 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1676,6 +1881,97 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F338A4370D0F10A100ACFF58 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F338A4380D0F10A100ACFF58 /* HTMLRenderer.m in Sources */,
+				F338A4390D0F10A100ACFF58 /* CocoaBridgePrimitives.M in Sources */,
+				F338A43A0D0F10A100ACFF58 /* CocoaFilePrimitives.M in Sources */,
+				F338A43B0D0F10A100ACFF58 /* DrawBackground.M in Sources */,
+				F338A43C0D0F10A100ACFF58 /* GetStringFromUser.m in Sources */,
+				F338A43D0D0F10A100ACFF58 /* GoToPanel.M in Sources */,
+				F338A43E0D0F10A100ACFF58 /* GUIPrimitives.M in Sources */,
+				F338A43F0D0F10A100ACFF58 /* main.m in Sources */,
+				F338A4400D0F10A100ACFF58 /* MyDocument.M in Sources */,
+				F338A4410D0F10A100ACFF58 /* post_queue.M in Sources */,
+				F338A4420D0F10A100ACFF58 /* RendezvousClient.M in Sources */,
+				F338A4430D0F10A100ACFF58 /* SCCocoaView.M in Sources */,
+				F338A4440D0F10A100ACFF58 /* SCDialog.mm in Sources */,
+				F338A4450D0F10A100ACFF58 /* SCGraphView.M in Sources */,
+				F338A4460D0F10A100ACFF58 /* SCNSWindow.m in Sources */,
+				F338A4470D0F10A100ACFF58 /* SCService.mm in Sources */,
+				F338A4480D0F10A100ACFF58 /* SCSoundFileView.M in Sources */,
+				F338A4490D0F10A100ACFF58 /* SCTextView.M in Sources */,
+				F338A44A0D0F10A100ACFF58 /* SCView.M in Sources */,
+				F338A44B0D0F10A100ACFF58 /* SCVirtualMachine.M in Sources */,
+				F338A44C0D0F10A100ACFF58 /* syntaxColorize.M in Sources */,
+				F338A44D0D0F10A100ACFF58 /* TabletEvents.m in Sources */,
+				F338A44E0D0F10A100ACFF58 /* TextFinder.m in Sources */,
+				F338A44F0D0F10A100ACFF58 /* UserPanel.M in Sources */,
+				F338A4500D0F10A100ACFF58 /* dtoa.c in Sources */,
+				F338A4510D0F10A100ACFF58 /* g_fmt.c in Sources */,
+				F338A4520D0F10A100ACFF58 /* SC_AllocPool.cpp in Sources */,
+				F338A4530D0F10A100ACFF58 /* SC_DirUtils.cpp in Sources */,
+				F338A4540D0F10A100ACFF58 /* SC_Sem.cpp in Sources */,
+				F338A4550D0F10A100ACFF58 /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				F338A4560D0F10A100ACFF58 /* SC_StringBuffer.cpp in Sources */,
+				F338A4570D0F10A100ACFF58 /* SC_StringParser.cpp in Sources */,
+				F338A4580D0F10A100ACFF58 /* SC_Win32Utils.cpp in Sources */,
+				F338A4590D0F10A100ACFF58 /* scsynthsend.cpp in Sources */,
+				F338A45A0D0F10A100ACFF58 /* OSCData.cpp in Sources */,
+				F338A45B0D0F10A100ACFF58 /* PyrArchiver.cpp in Sources */,
+				F338A45C0D0F10A100ACFF58 /* PyrArrayPrimitives.cpp in Sources */,
+				F338A45D0D0F10A100ACFF58 /* PyrBitPrim.cpp in Sources */,
+				F338A45E0D0F10A100ACFF58 /* PyrCharPrim.cpp in Sources */,
+				F338A45F0D0F10A100ACFF58 /* PyrFilePrim.cpp in Sources */,
+				F338A4600D0F10A100ACFF58 /* PyrListPrim.cpp in Sources */,
+				F338A4610D0F10A100ACFF58 /* PyrMathPrim.cpp in Sources */,
+				F338A4620D0F10A100ACFF58 /* PyrPlatformPrim.cpp in Sources */,
+				F338A4630D0F10A100ACFF58 /* PyrPrimitive.cpp in Sources */,
+				F338A4640D0F10A100ACFF58 /* PyrSched.cpp in Sources */,
+				F338A4650D0F10A100ACFF58 /* PyrSerialPrim.cpp in Sources */,
+				F338A4660D0F10A100ACFF58 /* PyrSignalPrim.cpp in Sources */,
+				F338A4670D0F10A100ACFF58 /* PyrStringPrim.cpp in Sources */,
+				F338A4680D0F10A100ACFF58 /* PyrSymbolPrim.cpp in Sources */,
+				F338A4690D0F10A100ACFF58 /* PyrUnixPrim.cpp in Sources */,
+				F338A46A0D0F10A100ACFF58 /* SC_CoreMIDI.cpp in Sources */,
+				F338A46B0D0F10A100ACFF58 /* SC_HID.cpp in Sources */,
+				F338A46C0D0F10A100ACFF58 /* SC_Speech.cpp in Sources */,
+				F338A46D0D0F10A100ACFF58 /* SC_Wii.cpp in Sources */,
+				F338A46E0D0F10A100ACFF58 /* wiiremote.c in Sources */,
+				F338A46F0D0F10A100ACFF58 /* AdvancingAllocPool.cpp in Sources */,
+				F338A4700D0F10A100ACFF58 /* alloca.cpp in Sources */,
+				F338A4710D0F10A100ACFF58 /* lang11d_tab.cpp in Sources */,
+				F338A4720D0F10A100ACFF58 /* ByteCodeArray.cpp in Sources */,
+				F338A4730D0F10A100ACFF58 /* dumpByteCodes.cpp in Sources */,
+				F338A4740D0F10A100ACFF58 /* DumpParseNode.cpp in Sources */,
+				F338A4750D0F10A100ACFF58 /* GC.cpp in Sources */,
+				F338A4760D0F10A100ACFF58 /* InitAlloc.cpp in Sources */,
+				F338A4770D0F10A100ACFF58 /* PyrFileUtils.cpp in Sources */,
+				F338A4780D0F10A100ACFF58 /* PyrInterpreter3.cpp in Sources */,
+				F338A4790D0F10A100ACFF58 /* PyrLexer.cpp in Sources */,
+				F338A47A0D0F10A100ACFF58 /* PyrMathOps.cpp in Sources */,
+				F338A47B0D0F10A100ACFF58 /* PyrMathSupport.cpp in Sources */,
+				F338A47C0D0F10A100ACFF58 /* PyrMessage.cpp in Sources */,
+				F338A47D0D0F10A100ACFF58 /* PyrObject.cpp in Sources */,
+				F338A47E0D0F10A100ACFF58 /* PyrParseNode.cpp in Sources */,
+				F338A47F0D0F10A100ACFF58 /* PyrSignal.cpp in Sources */,
+				F338A4800D0F10A100ACFF58 /* PyrSymbolTable.cpp in Sources */,
+				F338A4810D0F10A100ACFF58 /* Samp.cpp in Sources */,
+				F338A4820D0F10A100ACFF58 /* SC_LibraryConfig.cpp in Sources */,
+				F338A4830D0F10A100ACFF58 /* SimpleStack.cpp in Sources */,
+				F338A4840D0F10A100ACFF58 /* VMGlobals.cpp in Sources */,
+				F338A4850D0F10A100ACFF58 /* fftlib.c in Sources */,
+				F338A4860D0F10A100ACFF58 /* SC_ComPort.cpp in Sources */,
+				F338A4870D0F10A100ACFF58 /* HID_Error_Handler.c in Sources */,
+				F338A4880D0F10A100ACFF58 /* HID_Name_Lookup.c in Sources */,
+				F338A4890D0F10A100ACFF58 /* HID_Queue_Utilities.c in Sources */,
+				F338A48A0D0F10A100ACFF58 /* HID_Utilities.c in Sources */,
+				F338A48B0D0F10A100ACFF58 /* PyrUStringPrim.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1703,6 +1999,11 @@
 			isa = PBXTargetDependency;
 			name = libscsynth;
 			targetProxy = 94F5FC3A0C1E6E7A005CDF9F /* PBXContainerItemProxy */;
+		};
+		F338A4260D0F10A100ACFF58 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libscsynth;
+			targetProxy = F338A4270D0F10A100ACFF58 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2061,6 +2362,84 @@
 			};
 			name = Deployment;
 		};
+		F338A49F0D0F10A100ACFF58 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				INFOPLIST_FILE = "/Users/joshp/src/supercollider/Resources/Info copy 5.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-Wstrict-aliasing",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Development;
+		};
+		F338A4A00D0F10A100ACFF58 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				INFOPLIST_FILE = "/Users/joshp/src/supercollider/Resources/Info copy 5.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-Wstrict-aliasing",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Deployment;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2105,6 +2484,15 @@
 			buildConfigurations = (
 				94B6ABC80AF45D2900E478BB /* Development */,
 				94B6ABC90AF45D2900E478BB /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		F338A49E0D0F10A100ACFF58 /* Build configuration list for PBXNativeTarget "SoloTutti" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F338A49F0D0F10A100ACFF58 /* Development */,
+				F338A4A00D0F10A100ACFF58 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
