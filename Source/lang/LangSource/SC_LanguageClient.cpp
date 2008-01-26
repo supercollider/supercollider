@@ -25,6 +25,7 @@
 
 #include "SC_LanguageClient.h"
 #include "SC_LibraryConfig.h"
+#include <cstring>
 
 #ifdef SC_WIN32
 # include <stdio.h>

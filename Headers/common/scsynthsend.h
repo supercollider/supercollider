@@ -24,6 +24,7 @@
 #include "SC_Endian.h"
 #include "SC_Types.h"
 #include <stdexcept>
+#include <cstring>
 
 struct netaddr {
 	int socket;
