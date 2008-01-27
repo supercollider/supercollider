@@ -5,30 +5,35 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0027ee}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Trebuchet MS; min-height: 14.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8a2d16}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7f2f1a}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #673622}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #613724}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #002aff}
-span.s4 {color: #0046df}
+span.s3 {color: #0038f8}
+span.s4 {color: #0c4dd9}
 span.s5 {text-decoration: underline}
-span.s6 {color: #0028b3}
-span.s7 {color: #4c691f}
-span.s8 {color: #8a2d16}
-span.s9 {color: #0d38a1}
-span.s10 {color: #5c6531}
-span.s11 {color: #0000ff}
-span.s12 {color: #003fe8}
-span.s13 {color: #673622}
+span.s6 {color: #0030ae}
+span.s7 {color: #526725}
+span.s8 {color: #7f2f1a}
+span.s9 {color: #0000bf}
+span.s10 {color: #007300}
+span.s11 {color: #0024f8}
+span.s12 {color: #0048e2}
+span.s13 {color: #123c9d}
+span.s14 {color: #5e6435}
+span.s15 {color: #613724}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -50,6 +55,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Convenience Methods</b></p>
 <p class="p5"><br></p>
+<p class="p2"><b></b><br></p>
 <p class="p4"><b>scope(name, bufsize, zoom)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Displays the output of this UGen in an individual <a href="../GUI/Stethoscope.html"><span class="s4">Stethoscope</span></a><b> </b>window. <b>name</b> is the name of the window.</p>
@@ -61,30 +67,48 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p6"><span class="s6">Server</span><span class="s2">.default = s = </span><span class="s6">Server</span><span class="s2">.local.boot; </span>// switch back to local server.</p>
 <p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p4"><b>poll(trig, label, trigid)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Polls the output of this UGen every <b>interval</b> seconds, and posts the result. The default <b>trig </b>is 10, which converts to 10 triggers per second (or every 0.1 seconds). See <a href="Triggers/Poll.html"><span class="s4">Poll</span></a> for more info on polling.</p>
 <p class="p2"><br></p>
-<p class="p8">{ <span class="s9">SinOsc</span>.ar(<span class="s9">LFNoise0</span>.ar(2).range(420, 460).poll(label: <span class="s10">\LFNoise</span>), 0, 0.2) }.play;</p>
-<p class="p7"><br></p>
-<p class="p6">// Multichannel polling is supported</p>
-<p class="p8">(</p>
-<p class="p8">{<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s6">var</span> freqs = <span class="s6">SinOsc</span>.ar([0.2, 0.3]).range(420, 460);</p>
-<p class="p8"><span class="Apple-tab-span">	</span>freqs.poll(label: [<span class="s7">\freq1</span>,<span class="s7"> \freq2</span>]);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s6">SinOsc</span>.ar(freqs, 0, 0.2);</p>
-<p class="p8">}.play;</p>
-<p class="p8">)</p>
+<p class="p9">{ <span class="s9">SinOsc</span>.ar(<span class="s9">LFNoise0</span>.ar(2).range(420, 460).poll(label: <span class="s10">\LFNoise</span>), 0, 0.2) }.play;</p>
+<p class="p10"><br></p>
+<p class="p11">// multichannel polling:</p>
+<p class="p9">(</p>
+<p class="p9">{<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s9">var</span> freqs = <span class="s9">SinOsc</span>.ar([0.2, 0.3]).range(420, 460);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>freqs.poll(label: [<span class="s10">\freq1</span>, <span class="s10">\freq2</span>]);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s9">SinOsc</span>.ar(freqs, 0, 0.2);</p>
+<p class="p9">}.play;</p>
+<p class="p9">)</p>
 <p class="p2"><br></p>
 <p class="p4"><b>range(lo, hi)</b></p>
 <p class="p2"><br></p>
-<p class="p4">Scales the output of this UGen to be within the range of <b>lo</b> and <b>hi</b>. <b>N.B.</b> 'range' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
+<p class="p4">Scales the output of this UGen to be within the range of <b>lo</b> and <b>hi</b>. Note that 'range' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
 <p class="p2"><br></p>
-<p class="p8">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.ar(0.3).range(440, 660), 0, 0.5) * 0.1 }.play;</p>
+<p class="p9">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.ar(0.3).range(440, 660), 0, 0.5) * 0.1 }.play;</p>
 <p class="p2"><br></p>
 <p class="p4"><b>exprange(lo, hi)</b></p>
 <p class="p2"><br></p>
-<p class="p4">Maps the output of this UGen exponentially to be within the range of <b>lo</b> and <b>hi</b> using a <a href="Filters/LinExp.html"><span class="s4">LinExp</span></a> UGen. <b>lo</b> and <b>hi</b> should both be non-zero and have the same sign. <b>N.B.</b> 'exprange' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
+<p class="p4">Maps the output of this UGen exponentially to be within the range of <b>lo</b> and <b>hi</b> using a <a href="Filters/LinExp.html"><span class="s4">LinExp</span></a> UGen. <b>lo</b> and <b>hi</b> should both be non-zero and have the same sign. Note that 'exprange' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
+<p class="p2"><br></p>
+<p class="p9">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.ar(0.3).exprange(440, 6600), 0, 0.5) * 0.1 }.play;</p>
+<p class="p2"><br></p>
+<p class="p4"><b>unipolar(mul)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Scales the output of this UGen to be between <b>(0..mul)</b> range (default 1). Note that 'unipolar' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
+<p class="p2"><br></p>
+<p class="p9">{ <span class="s9">SinOsc</span>.ar(300, 0, 0.5) * <span class="s9">SinOsc</span>.kr(2).unipolar * 0.1 }.play;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>bipolar(mul)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Scales the output of this UGen to be between <b>(-mul..mul)</b> range (default 1). Note that 'bipolar' expects the default output range, and thus should not be used in conjunction with <b>mul</b> and <b>add</b> arguments.</p>
+<p class="p2"><br></p>
+<p class="p9">{ <span class="s9">SinOsc</span>.ar(500 + <span class="s9">LFPulse</span>.ar(4).bipolar(40), 0, 0.5) * 0.1 }.play;</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><b>clip(lo, hi)</b></p>
 <p class="p2"><br></p>
@@ -154,10 +178,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Outputs <b>trueUGen</b> when the receiver outputs 1, <b>falseUGen</b> when the receiver outputs 0. If the receiver outputs a value between 0 and 1, a mixture of both will be played. (This is implemented as: ^(this * (trueUGen - falseUGen)) + falseUGen) Note that both <b>trueUGen</b> and <b>falseUGen</b> will be calculated regardless of whether they are output, so this may not be the most efficient approach.</p>
 <p class="p2"><br></p>
-<p class="p9">// note different syntax in these two examples</p>
-<p class="p8">{ if( <span class="s9">LFNoise1</span>.kr(1.0, 0.5, 0.5) , <span class="s9">SinOsc</span>.ar, <span class="s9">Saw</span>.ar ) * 0.1 }.play;</p>
+<p class="p12">// note different syntax in these two examples</p>
+<p class="p8">{ if( <span class="s13">LFNoise1</span>.kr(1.0, 0.5, 0.5) , <span class="s13">SinOsc</span>.ar, <span class="s13">Saw</span>.ar ) * 0.1 }.play;</p>
 <p class="p7"><br></p>
-<p class="p8">{ <span class="s9">Trig1</span>.ar(<span class="s9">Dust</span>.ar(3), 0.2).lag(0.1).if(<span class="s9">FSinOsc</span>.ar(440), <span class="s9">FSinOsc</span>.ar(880)) * 0.1 }.play;</p>
+<p class="p8">{ <span class="s13">Trig1</span>.ar(<span class="s13">Dust</span>.ar(3), 0.2).lag(0.1).if(<span class="s13">FSinOsc</span>.ar(440), <span class="s13">FSinOsc</span>.ar(880)) * 0.1 }.play;</p>
 <p class="p2"><br></p>
 <p class="p4"><b>@ y</b></p>
 <p class="p2"><br></p>
@@ -170,6 +194,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><b>dumpArgs</b></p>
 <p class="p4">        </p>
 <p class="p4">Posts a list of the arguments for this UGen and their values.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Other Instance Methods</b></p>
@@ -190,7 +216,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>signalRange</b></p>
 <p class="p2"><br></p>
-<p class="p4">Returns a symbol indicating the signal range of the receiver. Either <span class="s10">\bipolar</span> or <span class="s10">\unipolar</span>.</p>
+<p class="p4">Returns a symbol indicating the signal range of the receiver. Either <span class="s14">\bipolar</span> or <span class="s14">\unipolar</span>.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>numChannels</b> </p>
 <p class="p2"><br></p>
@@ -224,10 +250,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Returns the receiver. Thus UGen-dup effectively returns a reference to the original and is a convenient way to copy a mono signal to multiple channels.</p>
 <p class="p2"><br></p>
-<p class="p8">{ <span class="s9">SinOsc</span>.ar(<span class="s9">Rand</span>(200, 4000), 0, 0.2).dup }.plot <span class="s13">// this is the same UGen</span></p>
+<p class="p8">{ <span class="s13">SinOsc</span>.ar(<span class="s13">Rand</span>(200, 4000), 0, 0.2).dup }.plot <span class="s15">// this is the same UGen</span></p>
 <p class="p4">    </p>
 <p class="p4">Function-dup evaluates that function multiple times, thus potentially returning distinct UGens.</p>
 <p class="p2"><br></p>
-<p class="p8">{ {<span class="s9">SinOsc</span>.ar(<span class="s9">Rand</span>(200, 4000), 0, 0.2)}.dup }.plot <span class="s13">// these are different UGens</span></p>
+<p class="p8">{ {<span class="s13">SinOsc</span>.ar(<span class="s13">Rand</span>(200, 4000), 0, 0.2)}.dup }.plot <span class="s15">// these are different UGens</span></p>
 </body>
 </html>
