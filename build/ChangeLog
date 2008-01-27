@@ -10,6 +10,7 @@
 * 2008-01-20 Buffer.copy changed to match other .copy methods - now copies language-side object rather than server buffer. Buffer.copyData can be used to copy data from one server buffer to another - jh
 * 2008-01-20 - add volume controls to the Server and Server guis - jp
 * 2008-01-xx Pattern library implementation changes, Pfx, Pbus, Pgroup etc. - rk, jr, jh
+* 2008-01-26 TDuty outputs trigger first, not level. for backwards compatibility TDuty_old - jr
 
 
 // BUGFIXES:
@@ -20,6 +21,7 @@
 * 2008-01-16 fixed Pen: bug with fillRect, fillOval and fillColor (bugtracker id 1837775) - jt
 * 2008-01-20 CheckBadValues rate-checking was too restrictive - ds
 * 2008-01-20 fix for Saw and Pulse's offset noise on first instantiation, thanks to hisao takagi - ds
+* 2008-01-26 TDuty / Duty does not drift anymore - jr
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 * 2007-11-16 MIDIOut.connect and disconnect - mb
@@ -39,6 +41,10 @@
 * 2008-01-15 Collection:maxIndex and Collection:minIndex - nc
 * 2008-01-24 Server.options.rendezvous to (de)activate Rendezvous if desired - ds
 * 2008-01-24 demand ugens accept audio rate inputs correctly - jr
+* 2008-01-26 added Dbufwr ugen, for writing to buffers from a demand ugen chain  - jr
+
+
+
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
 
