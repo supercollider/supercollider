@@ -1,4 +1,4 @@
-ProxyMonitorGui { 		var <>proxy, <win, <zone, <flow, <skipjack, <usesPlayN; 	var <ampSl, <ampSpec, <playBut, <nameBut, <setOutBox, <playNDialogBut, <pauseBut, <sendBut; 	var <monHasSeriesOut = true; 	var <oldState; 
+ProxyMonitorGui { 		var <>proxy, <win, <zone, <flow, <skipjack, <usesPlayN; 	var <ampSl, <ampSpec, <playBut, <nameBut, <setOutBox, <playNDialogBut, <pauseBut, <sendBut; 	var <monHasSeriesOut = true; 	var <oldState = #[]; 
 		*new { |px, w, height=16, usePlayN=true, makeWatcher=true| 		^super.new.proxy_(px).init(w, height, usePlayN, makeWatcher); 	}	init { |w, height, usePlayN, makeWatcher| 
 		var skin = GUI.skin;		var font = GUI.font.new(*GUI.skin.fontSpecs);
 				usesPlayN = usePlayN; 		ampSpec = ControlSpec(0, 1, 'amp', 0, 0.25);				win = w ?? { GUI.window.new("pxmon", Rect(0, 0, 330, 50)) };		zone = GUI.compositeView.new(win, Rect(0, 0, 310, height)); 		zone.background_(skin.foreground);		flow = FlowLayout(zone.bounds, 0@0, skin.gap);		zone.decorator = flow; 				ampSl = GUI.slider.new(zone, Rect(0,0,110, height))			.action_({ arg slid; 
@@ -18,19 +18,20 @@
 				btn.value_(1 - btn.value)			})
 			;			if (win.isKindOf(GUI.window)) { win.front };		if (makeWatcher) { this.makeWatcher };	}	makeWatcher { 		skipjack.stop;		skipjack = SkipJack({ this.updateAll }, 			0.5, 			{ win.isClosed },			"PxMon" + try { proxy.key }		);		skipjack.start;	}		updateAll { 		var monitor, outs, amps, newHasSeriesOut;
 		 		var currState;
-		var currVol=0, pxname="", plays=0, playsSpread=false, pauses=0, canSend=0; 
+		var currVol=0, pxname="", isAudio=false, plays=0, playsSpread=false, pauses=0, canSend=0; 
 				if (win.isClosed) {skipjack.stop; ^this };
 				if (proxy.notNil) { 
 					pxname = proxy.key;	
 			canSend = proxy.objects.notEmpty.binaryValue;			pauses = proxy.paused.binaryValue;
-						monitor = proxy.monitor; 
+			
+			isAudio = proxy.rate == \audio;			monitor = proxy.monitor; 
 			plays = monitor.isPlaying.binaryValue;
 			
 			if (monitor.notNil, { 				currVol = ampSpec.unmap(proxy.monitor.vol);
 				playsSpread = proxy.monitor.hasSeriesOuts.not;				outs = monitor.outs; 			}); 
 		};
 		
-		currState = [currVol, pxname, plays, outs, playsSpread, pauses, canSend];
+		currState = [currVol, pxname, isAudio, plays, outs, playsSpread, pauses, canSend];
 		
 		if (currState != oldState) { 
 		//	"updating".postln; 
@@ -40,6 +41,13 @@
 			pauseBut.value_(pauses);
 			playBut.value_(plays);
 			sendBut.value_(canSend);
+
+			if (isAudio != oldState[2]) { 
+				ampSl.enabled_(isAudio);
+				playBut.enabled_(isAudio);
+				setOutBox.enabled_(isAudio);
+				playNDialogBut.enabled_(isAudio);
+			}; 
 			
 			if (setOutBox.hasFocus.not) {	 
 				setOutBox.value_(try { outs[0] } ? 0);

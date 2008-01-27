@@ -155,7 +155,7 @@ EZSlider
 			(dimensions = dimensions.copy).x_(dimensions.x - (2*gap.x));
 		});
 
-		labelView = SCStaticText(window, labelWidth @ dimensions.y);
+		labelView = GUI.staticText.new(window, labelWidth @ dimensions.y);
 		labelView.string = label;
 		labelView.align = \right;
 		
@@ -163,40 +163,43 @@ EZSlider
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
-		sliderView = SCSlider(window, (dimensions.x - labelWidth - numberWidth) @ dimensions.y);
+		sliderView = GUI.slider.new(window, (dimensions.x - labelWidth - numberWidth) @ dimensions.y);
 		sliderView.action = {
-			value = controlSpec.map(sliderView.value);
-			numberView.value = value.round(round);
-			action.value(this);
+			this.valueAction_(controlSpec.map(sliderView.value));
 		};
 		if (controlSpec.step != 0) {
 			sliderView.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
 		};
 
 		sliderView.receiveDragHandler = { arg slider;
-			slider.valueAction = controlSpec.unmap(SCView.currentDrag);
+			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
 		};
 		
 		sliderView.beginDragAction = { arg slider;
 			controlSpec.map(slider.value)
 		};
 
-		numberView = SCNumberBox(window, numberWidth @ dimensions.y);
-		numberView.action = {
-			numberView.value = value = controlSpec.constrain(numberView.value);
-			sliderView.value = controlSpec.unmap(value);
-			action.value(this);
-		};
+		numberView = GUI.numberBox.new(window, numberWidth @ dimensions.y);
+		numberView.action = { this.valueAction_(numberView.value) };
 		
 		if (initAction) {
-			this.value = initVal;
+			this.valueAction_(initVal);
 		}{
-			value = initVal;
-			sliderView.value = controlSpec.unmap(value);
-			numberView.value = value.round(round);
+			this.value_(initVal);
 		};
 	}
-	value_ { arg value; numberView.valueAction = value }
+	
+	value_ { arg val; 
+		value = controlSpec.constrain(val);
+		numberView.value = value.round(round);
+		sliderView.value = controlSpec.unmap(value);
+	}
+	valueAction_ { arg val; 
+		this.value_(val);
+		this.doAction;
+	}
+	doAction { action.value(this) }
+
 	set { arg label, spec, argAction, initVal, initAction=false;
 		labelView.string = label;
 		controlSpec = spec.asSpec;
@@ -211,9 +214,11 @@ EZSlider
 		};
 	}
 	
-	visible_ { |bool|
-		[labelView, sliderView, numberView].do(_.visible_(bool))
-	}
+	visible { ^sliderView.visible }
+	visible_ { |bool| [labelView, sliderView, numberView].do(_.visible_(bool)) }
+	
+	enabled {  ^sliderView.enabled } 
+	enabled_ { |bool| [sliderView, numberView].do(_.enabled_(bool)) }
 	
 	remove { [labelView, sliderView, numberView].do(_.remove) }
 }
@@ -233,7 +238,7 @@ EZNumber
 	init { arg window, dimensions, label, argControlSpec, argAction, initVal, 
 			initAction, labelWidth, numberWidth;
 
-		labelView = SCStaticText(window, labelWidth @ dimensions.y);
+		labelView = GUI.staticText.new(window, labelWidth @ dimensions.y);
 		labelView.string = label;
 		labelView.align = \right;
 		
@@ -241,20 +246,27 @@ EZNumber
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
-		numberView = SCNumberBox(window, numberWidth @ dimensions.y);
+		numberView = GUI.numberBox.new(window, numberWidth @ dimensions.y);
 		numberView.action = {
-			numberView.value = value = controlSpec.constrain(numberView.value);
-			action.value(this);
+			this.valueAction_(numberView.value);
 		};
 		
 		if (initAction) {
-			this.value = initVal;
+			this.valueAction = initVal;
 		}{
-			value = initVal;
-			numberView.value = value.round(round);
+			this.value = initVal;
 		};
 	}
-	value_ { arg value; numberView.valueAction = value }
+	value_ { arg val; 
+		value = controlSpec.constrain(val);
+		numberView.value = value.round(round);
+	}
+	valueAction_ { arg val; 
+		this.value_(val);
+		this.doAction;
+	}
+	doAction { action.value(this) }
+
 	set { arg label, spec, argAction, initVal, initAction=false;
 		labelView.string = label;
 		controlSpec = spec.asSpec;
@@ -268,9 +280,11 @@ EZNumber
 		};
 	}
 	
-	visible_ { |bool|
-		[labelView, numberView].do(_.visible_(bool))
-	}
+	visible { ^numberView.visible }
+	visible_ { |bool| [labelView, numberView].do(_.visible_(bool)) }
+	
+	enabled {  ^numberView.enabled } 
+	enabled_ { |bool| numberView.enabled_(bool) }
 	
 	remove { [labelView, numberView].do(_.remove) }
 }
