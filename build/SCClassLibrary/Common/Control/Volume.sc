@@ -129,9 +129,10 @@ Volume {
 			server.serverRunning.if({
 				this.playVolume(isMuted);
 				})
-			});		
-		isMuted.if({muteamp = volume});
-		(isPlaying && isMuted.not).if({amp.set([\amp, volume.dbamp])}) ;
+			});
+		volume = volume.clip(-90, 6);	
+		if(isMuted) { muteamp = volume };
+		if(isPlaying && isMuted.not) { amp.set([\amp, volume.dbamp]) };
 		this.changed(\amp, volume);
 	}
 	
