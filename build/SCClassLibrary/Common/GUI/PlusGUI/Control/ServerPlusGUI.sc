@@ -111,12 +111,8 @@
 				}
 			
 			}
-//			{char === $m} { this.volume.muted.if({
-			{char === $m} { this.volume.isMuted.if({
-				this.unmute
-				}, {
-				this.mute
-				}) };
+			{char === $m} { if(this.volume.isMuted) { this.unmute } { this.mute } }
+			{char === $0} { this.volume = 0.0; };
 		};
 		
 		if (isLocal, {
@@ -179,6 +175,7 @@
 			w.onClose = {
 				// but do not remove other responders
 				this.stopAliveThread;
+				window = nil;
 				ctlr.remove;
 			};
 		});
@@ -217,6 +214,7 @@
 			numView
 		});
 
+		if(isLocal or: { options.remoteControlVolume })
 		{
 			var volSpec, cpVol;
 			var volumeSlider, volumeNum, muteButton, muteActions, volController;
@@ -284,7 +282,7 @@
 					}.defer		
 				})				
 					
-		}.value;
+		};
  
  		w.front;
 

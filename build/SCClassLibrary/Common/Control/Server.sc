@@ -33,6 +33,7 @@ ServerOptions
 	var <>rendezvous = true; // Whether server publishes port to Rendezvous
 	
 	var <>initialNodeID = 1000;
+	var <>remoteControlVolume = false;
 	
 	*initClass {
 		default = this.new.blockAllocClass_(ContiguousBlockAllocator);
