@@ -1,4 +1,7 @@
 Main : Process {
+
+	classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="rc1";
+
 	var platform, argv;
 	var <>recvOSCfunc;
 	
@@ -77,6 +80,16 @@ Main : Process {
 
 	showHelpBrowser {
 		Help.gui
+	}
+
+	*version {^[scVersionMajor, ".", scVersionMinor, scVersionPostfix].join}
+	
+	*versionAtLeast { |maj, min|
+	Ê^((maj>=scVersionMajor) and:{ min.isNil or: { min>=scVersionMinor } })
+	}
+	
+	*versionAtMost { |maj, min|
+	Ê^((maj<=scVersionMajor) and:{ min.isNil or: { min<=scVersionMinor } })
 	}
 	
 	// PRIVATE
