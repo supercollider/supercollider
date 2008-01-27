@@ -32,7 +32,24 @@ Duty : UGen {
 	}
 }
 
-TDuty : Duty {}
+TDuty : Duty {
+	*ar { arg dur=1.0, reset=0.0, level=1.0, doneAction=0, gapFirst=0;
+		^this.multiNew('audio', dur, reset, doneAction, level, gapFirst)
+	}
+	*kr { arg dur=1.0, reset=0.0, level=1.0, doneAction=0, gapFirst=0;
+		^this.multiNew('control', dur, reset, doneAction, level, gapFirst)
+	}
+}
+
+// old version with gap first
+TDuty_old  {
+	*ar { arg dur=1.0, reset=0.0, level=1.0, doneAction=0;
+		^TDuty.ar(dur, reset, level, doneAction, 1)
+	}
+	*kr { arg dur=1.0, reset=0.0, level=1.0, doneAction=0;
+		^TDuty.kr(dur, reset, level, doneAction, 1)
+	}
+}
 
 DemandEnvGen : UGen {
 
@@ -77,6 +94,12 @@ Dgeom : DUGen {
 Dbufrd : DUGen {
 	*new { arg bufnum=0, phase=0.0, loop=1.0;
 		^this.multiNew('demand', bufnum, phase, loop)	
+	}
+}
+
+Dbufwr : DUGen {
+	*new { arg input=0.0, bufnum=0, phase=0.0, loop=1.0;
+		^this.multiNew('demand', bufnum, phase, input, loop)
 	}
 }
 

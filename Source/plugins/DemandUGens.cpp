@@ -126,6 +126,13 @@ struct Dbufrd : public Unit
 	SndBuf *m_buf;
 };
 
+struct Dbufwr : public Unit
+{
+	float m_fbufnum;
+	float m_pos;
+	SndBuf *m_buf;
+};
+
 struct Dser : public Dseq
 {
 };
@@ -194,6 +201,9 @@ void Dseq_next(Dseq *unit, int inNumSamples);
 
 void Dbufrd_Ctor(Dbufrd *unit);
 void Dbufrd_next(Dbufrd *unit, int inNumSamples);
+
+void Dbufwr_Ctor(Dbufwr *unit);
+void Dbufwr_next(Dbufwr *unit, int inNumSamples);
 
 void Dser_Ctor(Dser *unit);
 void Dser_next(Dser *unit, int inNumSamples);
@@ -1280,8 +1290,12 @@ void TDuty_Ctor(TDuty *unit)
 			unit->m_prevreset = 0.f;
 		}
 	}
-	
-	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE;
+	// support for gap-first.
+	if(IN0(4)) {
+		unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE;
+	} else {
+		unit->m_count = 0.f;
+	}
 	OUT0(0) = 0.f;
 }
 
@@ -1746,7 +1760,7 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 			val = DEMANDINPUT_A(unit->m_index, inNumSamples);
 			
 			RESETINPUT(unit->m_index);
-			printf("resetting index: %i\n", unit->m_index);
+			// printf("resetting index: %i\n", unit->m_index);
 			unit->m_index = index;
 		}
 		OUT0(0) = val;
@@ -1828,7 +1842,6 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 
 void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 {
-  //	float *phasein = ZIN(1);
 	int32 loop     = (int32)IN0(2);	
 	
 	GET_BUF
@@ -1839,16 +1852,12 @@ void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 	double phase;
 	if (inNumSamples)
 		{
-			if (ISDEMANDINPUT(1))
-			{
-				float x = DEMANDINPUT_A(1, inNumSamples);
-				if (sc_isnan(x)) {
+			float x = DEMANDINPUT_A(1, inNumSamples);
+			if (sc_isnan(x)) {
 					OUT0(0) = NAN;
-					return;		//x = 0.0;
-				}
-				phase = x;
-			} else
-				phase = IN0(1);
+					return;
+			}
+			phase = x;
 			
 			phase = sc_loop((Unit*)unit, phase, loopMax, loop); 
 			int32 iphase = (int32)phase; 
@@ -1872,6 +1881,59 @@ void Dbufrd_Ctor(Dbufrd *unit)
   OUT0(0) = 0.f;    
 }
 
+////////////////////////////////////
+
+void Dbufwr_next(Dbufwr *unit, int inNumSamples)
+{
+ 
+	int32 loop     = (int32)IN0(3);	
+	
+	GET_BUF
+	CHECK_BUF
+
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
+
+	double phase;
+	float val;
+	if (inNumSamples)
+		{
+			float x = DEMANDINPUT_A(1, inNumSamples);
+			if (sc_isnan(x)) {
+					OUT0(0) = NAN;
+					return;
+			}
+			phase = x;
+			float val = DEMANDINPUT_A(2, inNumSamples);
+			if (sc_isnan(val)) {
+					OUT0(0) = NAN;
+					return;	
+			}
+			
+			phase = sc_loop((Unit*)unit, phase, loopMax, loop); 
+			int32 iphase = (int32)phase; 
+			float* table0 = bufData + iphase * bufChannels;
+			table0[0] = val;
+		}
+		else
+		{
+			RESETINPUT(1);
+			RESETINPUT(2);
+		}
+}
+
+void Dbufwr_Ctor(Dbufwr *unit)
+{
+  
+  SETCALC(Dbufwr_next);
+
+  unit->m_fbufnum = -1e9f;
+
+  Dbufwr_next(unit, 0);
+  ClearUnitOutputs(unit, 1);
+   
+}
+
+
 //////////////////////////////////////////////////////
 
 
@@ -1893,6 +1955,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Dseq);
 	DefineSimpleUnit(Dser);
 	DefineSimpleUnit(Dbufrd);
+	DefineSimpleUnit(Dbufwr);
 	DefineSimpleUnit(Drand);
 	DefineSimpleUnit(Dxrand);
 	DefineSimpleUnit(Dswitch1);
