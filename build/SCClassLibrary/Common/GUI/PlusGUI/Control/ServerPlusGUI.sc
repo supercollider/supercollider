@@ -215,7 +215,7 @@
 			numView
 		});
 
-		if(isLocal or: { options.remoteControlVolume })
+		if(isLocal or: { options.remoteControlVolume }) {
 		{
 			var volSpec, cpVol;
 			var volumeSlider, volumeNum, muteButton, muteActions, volController;
@@ -284,6 +284,7 @@
 					}.defer		
 				})				
 					
+		}.value;
 		};
  
  		w.front;
