@@ -417,7 +417,7 @@ IdentityDictionary : Dictionary {
 		// Quant support.
 		// The Quant class assumes the quant/phase/offset scheduling model.
 		// If you want a different model, you can write a dictionary like so:
-		// (nextTimeOnGrid: { |clock| ... calculate absolute beat number here ... },
+		// (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
 		//	parameter: value, parameter: value, etc.)
 		// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
 	
@@ -429,5 +429,6 @@ IdentityDictionary : Dictionary {
 		}
 	}
 	asQuant { ^this.copy }
+	offset { ^this[\offset] }		// for synchWithQuant()
 }
 
