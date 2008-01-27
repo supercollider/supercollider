@@ -242,7 +242,7 @@
 						})
 					});
 					
-			volumeNum = gui.numberBox.new(w, Rect(0, 0, 36, 15))
+			volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 15))
 				.font_(font)
 				.value_(0.0)
 				.align_(\center)
@@ -253,7 +253,7 @@
 					volumeSlider.value_(volSpec.unmap(newdb));
 					});
 			
-			volumeSlider = gui.slider.new(w, Rect(0, 0, 164, 16))
+			volumeSlider = gui.slider.new(w, Rect(0, 0, 172, 16))
 				.value_(volSpec.unmap(0))
 				.onClose_{volController.remove}
 				.action_({arg me; 
