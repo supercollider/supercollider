@@ -53,6 +53,7 @@
 
 		makeDefault = gui.button.new(w, Rect(0,0, 54, 18));
 		makeDefault.font = font;
+		makeDefault.canFocus = false;
 		makeDefault.states = [["-> default", Color.black, Color.clear]];
 		makeDefault.action = {
 			thisProcess.interpreter.s = this;
