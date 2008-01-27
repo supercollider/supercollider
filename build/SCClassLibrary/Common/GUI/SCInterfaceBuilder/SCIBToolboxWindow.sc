@@ -90,7 +90,7 @@ SCIBPanelWindow
 			this.panelSelect
 		};
 		
-		userview.mouseTrackFunc = { |v,x,y| this.drag(x,y) };
+		userview.mouseMoveAction = { |v,x,y| this.drag(x,y) };
 		userview.focus;
 		
 		this.initDrawFunc
