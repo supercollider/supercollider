@@ -387,7 +387,7 @@ PauseStream : Stream
 		stream = originalStream
 	}
 
-	start { arg argClock, quant=1.0;
+	start { arg argClock, quant;
 		^this.play(argClock, true, quant)
 	}
 
