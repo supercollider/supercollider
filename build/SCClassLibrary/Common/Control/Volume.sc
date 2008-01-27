@@ -23,7 +23,7 @@ z.free;
 
 Volume {
 
-	var startBus, numChans, <min, <max, server, persist, <amp, <>window,Ê<volume, spec;Ê
+	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window,Ê<volume, spec;Ê
 	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false, <isPrepping;
 	
 	*new {Ê arg server, startBus = 0, numChans = 2, min = -90, max = 6, persist = false;
@@ -40,8 +40,11 @@ Volume {
 	}
 
 	sendDef {
-		SynthDef(sdname = (\volume_amp_control++numChans).asSymbol, { arg amp = 1, lag = 0.1, volume_gate=1;
-			XOut.ar(startBus, Linen.kr(volume_gate, doneAction:2), In.ar(startBus, numChans) * Lag.kr(amp, lag) );
+		SynthDef(sdname = (\volume_amp_control ++ numChans).asSymbol, 
+			{ arg volume_amp = 1, volume_lag = 0.1, volume_gate=1;
+			XOut.ar(startBus, 
+				Linen.kr(volume_gate, doneAction:2), 
+				In.ar(startBus, numChans) * Lag.kr(volume_amp, volume_lag) );
 		}).send(server);
 	}
 
@@ -66,7 +69,7 @@ Volume {
 								});
 							});
 						});
-					amp = Synth(sdname, [\amp, volume.dbamp, \lag, lag], 
+					ampSynth = Synth(sdname, [\volume_amp, volume.dbamp, \volume_lag, lag], 
 						target: 1, addAction: \addAfter);
 					mute.if({this.mute});
 					})
@@ -77,7 +80,7 @@ Volume {
 		}
 		
 	free {
-		amp.set(\volume_gate, 0.0);
+		ampSynth.set(\volume_gate, 0.0);
 		isPlaying = false;
 		CmdPeriod.remove(cpFun);
 		cpFun = nil;
@@ -102,13 +105,13 @@ Volume {
 	prmute {
 		isMuted = true;
 		muteamp = volume;
-		amp.set([\amp, -inf.dbamp]);
+		ampSynth.set([\volume_amp, -inf.dbamp]);
 		this.changed(\mute, true);
 		}
 		
 	prunmute {
 		isMuted = false;	
-		amp.set([\amp, muteamp.dbamp]);
+		ampSynth.set([\volume_amp, muteamp.dbamp]);
 		this.changed(\mute, false);
 		
 		}
@@ -132,7 +135,7 @@ Volume {
 			});
 		volume = volume.clip(-90, 6);	
 		if(isMuted) { muteamp = volume };
-		if(isPlaying && isMuted.not) { amp.set([\amp, volume.dbamp]) };
+		if(isPlaying && isMuted.not) { ampSynth.set([\volume_amp, volume.dbamp]) };
 		this.changed(\amp, volume);
 	}
 	
@@ -146,7 +149,7 @@ Volume {
 			
 	lag_ {arg aLagTime;
 		lag = aLagTime;
-		amp.set([\lag, lag]);
+		ampSynth.set([\volume_lag, lag]);
 		}
 		
 	
