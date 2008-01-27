@@ -40,8 +40,8 @@ Volume {
 	}
 
 	sendDef {
-		SynthDef(sdname = (\volume_amp_control++numChans).asSymbol, { arg amp = 1, lag = 0.1;
-			ReplaceOut.ar( startBus, In.ar(startBus, numChans) * Lag.kr(amp, lag) );
+		SynthDef(sdname = (\volume_amp_control++numChans).asSymbol, { arg amp = 1, lag = 0.1, volume_gate=1;
+			XOut.ar(startBus, Linen.kr(volume_gate, doneAction:2), In.ar(startBus, numChans) * Lag.kr(amp, lag) );
 		}).send(server);
 	}
 
@@ -77,7 +77,7 @@ Volume {
 		}
 		
 	free {
-		amp.free;
+		amp.set(\volume_gate, 0.0);
 		isPlaying = false;
 		CmdPeriod.remove(cpFun);
 		cpFun = nil;
