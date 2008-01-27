@@ -225,7 +225,7 @@
 			
 			gui.staticText.new(w, Rect(0,0, 44, 18))
 				.font_(font)
-				.string_("  volume :");
+				.string_(" volume :");
 
 			muteButton = gui.button.new(w, Rect(0, 0, 20, 16))
 				.font_(font)
@@ -253,15 +253,16 @@
 					volumeSlider.value_(volSpec.unmap(newdb));
 					});
 			
-			volumeSlider = gui.slider.new(w, Rect(0, 0, 166, 16))
+			volumeSlider = gui.slider.new(w, Rect(0, 0, 164, 16))
 				.value_(volSpec.unmap(0))
 				.onClose_{volController.remove}
 				.action_({arg me; 
 					var newdb;
-					newdb = volSpec.map(me.value);
+					newdb = volSpec.map(me.value).round(0.1);
 					this.volume_(newdb);
-					volumeNum.value_(newdb.round(0.1));
+					volumeNum.value_(newdb);
 					})
+//				.step_(0.002)
 				.keyDownAction_({arg slider, char, modifiers, unicode, keycode;
 					if (char == $], { slider.increment; });
 					if (char == $[, { slider.decrement; });

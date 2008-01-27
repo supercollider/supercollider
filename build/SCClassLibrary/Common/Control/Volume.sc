@@ -24,7 +24,7 @@ z.free;
 Volume {
 
 	var startBus, numChans, <min, <max, server, persist, <amp, <>window,Ê<volume, spec;Ê
-	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false;
+	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false, <isPrepping;
 	
 	*new {Ê arg server, startBus = 0, numChans = 2, min = -90, max = 6, persist = false;
 		^super.newCopyArgs(startBus, numChans, min, max, server, persist).initVolume;
@@ -35,6 +35,7 @@ Volume {
 		server = server ?? {Server.default};
 		volume = 0;
 		isPlaying = false;
+		isPrepping = false;
 		gui = false;
 	}
 
@@ -47,12 +48,14 @@ Volume {
 	play {arg mute = false;
 		var cond;
 		cond = Condition.new;
-		isPlaying.not.if({
+		(isPlaying || isPrepping).not.if({
 			server.serverRunning.if({
 				Routine.run({
 					this.sendDef;
+					isPrepping = true;
 					server.sync(cond);
 					isPlaying = true;
+					isPrepping = false;
 					cpFun.isNil.if({
 						CmdPeriod.add(cpFun = {
 							persist.if({
