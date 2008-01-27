@@ -387,8 +387,10 @@ PauseStream : Stream
 		stream = originalStream
 	}
 
-	start { ^this.play(clock, true) }
-		
+	start { arg argClock, quant=1.0;
+		^this.play(argClock, true, quant)
+	}
+
 	stream_ { arg argStream; 
 		originalStream = argStream; 
 		if (stream.notNil, { stream = argStream; streamHasEnded = argStream.isNil; });
