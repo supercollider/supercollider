@@ -24,36 +24,36 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>EZSlider<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>wrapper class for label, slider, number box</b></p>
+<p class="p1"><span class="s1"><b>EZNumber<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>wrapper class for label, slider, number box</b></p>
 <p class="p2"><br></p>
-<p class="p1"><b>EZSlider(window, dimensions, label, controlSpec, action, initVal, initAction, labelWidth, numberWidth)</b></p>
+<p class="p1"><b>EZNumber(window, dimensions, label, controlSpec, action, initVal, initAction, labelWidth, numberWidth)</b></p>
 <p class="p3"><br></p>
-<p class="p1">EZSlider is a wrapper class for managing a label, slider and number box.</p>
+<p class="p1">EZNumber is a wrapper class for managing a label and a number box.</p>
 <p class="p3"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>window </b>- the window containing the views.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>dimensions</b> - a Point giving the width and height of the combined views.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>label</b> - a String</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>controlSpec</b> - the ControlSpec for the value.</p>
-<p class="p1"><span class="Apple-tab-span">	</span><b>action</b> - a function called when the value changes. The function is passed the EZSlider instance as its argument.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>action</b> - a function called when the value changes. The function is passed the EZNumber instance as its argument.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>initVal</b> - the value to initialize the slider and number box with. If nil, then it uses the ControlSpec's default value.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>initAction</b> - a Boolean indicating whether the action function should be called when setting the initial value. The default is false.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>labelWidth</b> - number of pixels width for the label. default is 80.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>numberWidth</b> - number of pixels width for the number box. default is 80.</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p1">The contained views can be accessed via the EZSlider instance variables:</p>
-<p class="p1"><span class="Apple-tab-span">	</span><b>labelView</b>, <b>sliderView</b>, <b>numberView</b></p>
+<p class="p1">The contained views can be accessed via the EZNumber instance variables:</p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>sliderView</b>, <b>numberView</b></p>
 <p class="p3"><br></p>
 <p class="p1">Another useful instance variable is <b>round</b>, the rounding precision for the number box display. The default value for <b>round</b> is 0.001 .</p>
 <p class="p3"><br></p>
-<p class="p1">see also <b>EZNumber</b> and <b>EZRanger</b>.<span class="Apple-converted-space"> </span></p>
+<p class="p1">see also <b>EZSlider</b> and <b>EZRanger</b>.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p5">// Example:</p>
 <p class="p6">(</p>
-<p class="p6">w = <span class="s2">GUI.window.new</span>(<span class="s3">"EZSlider"</span>, <span class="s2">Rect</span>(20, 400, 440, 180));</p>
+<p class="p6">w = <span class="s2">GUI.window.new</span>(<span class="s3">"EZNumber"</span>, <span class="s2">Rect</span>(20, 400, 440, 180));</p>
 <p class="p6">w.front;</p>
 <p class="p6">w.view.decorator = <span class="s2">FlowLayout</span>(w.view.bounds);</p>
 <p class="p4"><br></p>
-<p class="p5"><span class="s4">e = </span><span class="s2">EZSlider</span><span class="s4">(w, </span>// window</p>
+<p class="p5"><span class="s4">e = </span><span class="s2">EZNumber</span><span class="s4">(w, </span>// window</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>400 @ 24, <span class="s5">// dimensions</span></p>
 <p class="p7"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"Cutoff"<span class="s4">, </span><span class="s5">// label</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">ControlSpec</span>(200, 5000, <span class="s6">\exp</span>), <span class="s5">// control spec</span></p>
@@ -71,6 +71,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">e.visible_(true);</p>
 <p class="p4"><br></p>
 <p class="p6">e.remove; w.refresh;</p>
+<p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p5">// Another example</p>
@@ -113,7 +114,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s6">\h</span>,<span class="s6">\v</span>].choose, 100, rrand(0.1,0.9));</p>
 <p class="p4"><br></p>
 <p class="p5">// add a button to start and stop the sound.</p>
-<p class="p6">startButton = <span class="s2">GUI.button</span>(w, 75 @ 24);</p>
+<p class="p6">startButton = <span class="s2">GUI.button.new</span>(w, 75 @ 24);</p>
 <p class="p6">startButton.states = [</p>
 <p class="p6"><span class="Apple-tab-span">	</span>[<span class="s3">"Start"</span>, <span class="s2">Color</span>.black, <span class="s2">Color</span>.green],</p>
 <p class="p6"><span class="Apple-tab-span">	</span>[<span class="s3">"Stop"</span>, <span class="s2">Color</span>.white, <span class="s2">Color</span>.red]</p>
@@ -136,23 +137,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">// create controls for all parameters</p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">noteControl = <span class="s2">EZSlider</span>(w, 400 @ 24, <span class="s3">"Note"</span>, <span class="s2">ControlSpec</span>(24, 60, <span class="s6">\lin</span>, 1),<span class="Apple-converted-space"> </span></p>
+<p class="p6">noteControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Note"</span>, <span class="s2">ControlSpec</span>(24, 60, <span class="s6">\lin</span>, 1),<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"note"</span>, ez.value); }, 36);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">cutoffControl = <span class="s2">EZSlider</span>(w, 400 @ 24, <span class="s3">"Cutoff"</span>, <span class="s2">ControlSpec</span>(200, 5000, <span class="s6">\exp</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p6">cutoffControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Cutoff"</span>, <span class="s2">ControlSpec</span>(200, 5000, <span class="s6">\exp</span>),<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"fc"</span>, ez.value); }, 1000);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">resonControl = <span class="s2">EZSlider</span>(w, 400 @ 24, <span class="s3">"Resonance"</span>, <span class="s2">ControlSpec</span>(0.1, 0.7),<span class="Apple-converted-space"> </span></p>
+<p class="p6">resonControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Resonance"</span>, <span class="s2">ControlSpec</span>(0.1, 0.7),<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"rq"</span>, ez.value); }, 0.2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">balanceControl = <span class="s2">EZSlider</span>(w, 400 @ 24, <span class="s3">"Balance"</span>, <span class="s6">\bipolar</span>,<span class="Apple-converted-space"> </span></p>
+<p class="p6">balanceControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Balance"</span>, <span class="s6">\bipolar</span>,<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"bal"</span>, ez.value); }, 0);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">ampControl = <span class="s2">EZSlider</span>(w, 400 @ 24, <span class="s3">"Amp"</span>, <span class="s6">\db</span>,<span class="Apple-converted-space"> </span></p>
+<p class="p6">ampControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Amp"</span>, <span class="s6">\db</span>,<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"amp"</span>, ez.value.dbamp); }, -6);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><br></p>
