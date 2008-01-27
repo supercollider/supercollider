@@ -23,7 +23,7 @@ NodeIDAllocator
 	allocPerm {
 		var x;
 		if(permFreed.size > 0) {
-			x = permFreed.choose;
+			x = permFreed.minItem;
 			permFreed.remove(x);
 		} {
 			x = perm;
