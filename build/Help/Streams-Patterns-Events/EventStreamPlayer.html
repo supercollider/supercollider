@@ -5,11 +5,13 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+span.s1 {color: #0022ed}
+span.s2 {color: #0000ff}
 </style>
 </head>
 <body>
@@ -23,7 +25,21 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 <p class="p2"><br></p>
 <p class="p3">The <b>EventStreamPlayer</b> holds a stream which returns a series of Events, and a protoEvent. At each call to next, it copies the protoEvent, passes that to the stream, and calls <b>play</b> on the <b>Event</b> returned.</p>
 <p class="p2"><br></p>
-<p class="p3">for more on <b>EventStreamPlayer<span class="Apple-converted-space"> </span></b> see [Streams-Patterns-Events4]</p>
+<p class="p3">for more on <b>EventStreamPlayer<span class="Apple-converted-space"> </span></b> see <a href="Streams-Patterns-Events4.html"><span class="s1">Streams-Patterns-Events4</span></a></p>
 <p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">EventStreamPlayer uses the same control methods and status notifications as <a href="../Scheduling/Task.html"><span class="s2">Task</span></a>.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>play(argClock, doReset, quant)</b></p>
+<p class="p3"><b>argClock</b> - (optional) Override the clock assigned in Task.new</p>
+<p class="p3"><b>doReset</b> - If true, the task will start over from the beginning. Default is false (task will resume where it was when it was last stopped)</p>
+<p class="p3"><b>quant</b> - see the <a href="Quant.html"><span class="s2">Quant</span></a> helpfile</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>start(argClock, quant)</b> - Restart the task from the beginning.</p>
+<p class="p3"><b>resume(argClock, quant)</b> - Resume the task where it left off.</p>
+<p class="p3"><b>pause</b> - Stop playing now.</p>
+<p class="p3"><b>stop</b> - Stop playing now. (Pause and stop have the same implementation.)</p>
+<p class="p3"><b>reset</b> - Set the stream to restart from the beginning the next time it's played.</p>
 </body>
 </html>

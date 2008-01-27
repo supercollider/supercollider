@@ -14,14 +14,15 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #812f21}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0028a7}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-span.s1 {color: #001af9}
-span.s2 {color: #001fb3}
+span.s1 {color: #002ce8}
+span.s2 {color: #0028a7}
 span.s3 {color: #000000}
 span.s4 {color: #606060}
-span.s5 {color: #436c1d}
+span.s5 {color: #0000ff}
+span.s6 {color: #506a2b}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -141,8 +142,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>play(clock, quant)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clock</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a Clock, <b>TempoClock</b> by default</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>quant</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>either a number<b> n</b> (quantize to <b>n </b>beats)</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or an array<b> [n, m]</b> (quantize to <b>n</b> beats, with offset <b>m</b>)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>quant</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see the <a href="../../Scheduling/Quant.html"><span class="s5">Quant</span></a> helpfile</p>
 <p class="p2"><br></p>
 <p class="p3">In the SuperCollider application, a Routine can be played using a Clock, as can any Stream.</p>
 <p class="p3">every time the Routine yields, it should do so with a float, the clock will interpret that, usually</p>
@@ -204,18 +204,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>inval = 99.yield;</p>
 <p class="p4">});</p>
 <p class="p6"><br></p>
-<p class="p4">outval = r.next(<span class="s5">'a'</span>);</p>
+<p class="p4">outval = r.next(<span class="s6">'a'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
-<p class="p4">outval = r.next(<span class="s5">'b'</span>);</p>
+<p class="p4">outval = r.next(<span class="s6">'b'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
 <p class="p4">r.reset; <span class="s4">"reset"</span>.postln;</p>
-<p class="p4">outval = r.next(<span class="s5">'c'</span>);</p>
+<p class="p4">outval = r.next(<span class="s6">'c'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
-<p class="p4">outval = r.next(<span class="s5">'d'</span>);</p>
+<p class="p4">outval = r.next(<span class="s6">'d'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
-<p class="p4">outval = r.next(<span class="s5">'e'</span>);</p>
+<p class="p4">outval = r.next(<span class="s6">'e'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
-<p class="p4">outval = r.next(<span class="s5">'f'</span>);</p>
+<p class="p4">outval = r.next(<span class="s6">'f'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
