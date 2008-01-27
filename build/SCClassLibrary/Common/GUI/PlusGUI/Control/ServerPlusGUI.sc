@@ -248,7 +248,7 @@
 				.align_(\center)
 				.action_({arg me;
 					var newdb;
-					newdb = me.value;
+					newdb = me.value.clip(-90, 6);
 					this.volume_(newdb);
 					volumeSlider.value_(volSpec.unmap(newdb));
 					});
