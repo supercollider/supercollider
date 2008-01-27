@@ -227,6 +227,7 @@
 
 			muteButton = gui.button.new(w, Rect(0, 0, 20, 16))
 				.font_(font)
+				.canFocus_(false)
 				.states_([
 					["M", Color.black, Color.clear],
 					["M", Color.black, Color.red.alpha_(0.3)]
