@@ -47,9 +47,12 @@ inline float DemandInput(Unit* unit, int index)
 }
 
 // support for audio rate input to demand UGens
+// offset comes in as inNumSamples, so is in the range 1..size ! inNumSamples = 0 has a special meaning (reset).
+// it is converted to a buffer index here.
 
 inline float DemandInputA(Unit* unit, int index, int offset)
 {
+	// printf("DemandInput_A. offset: %i\n", offset);
 	Unit* fromUnit = unit->mInput[index]->mFromUnit;
 	if(!fromUnit) { return IN0(index); } 
 	if (fromUnit->mCalcRate == calc_DemandRate) {
