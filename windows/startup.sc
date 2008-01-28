@@ -21,6 +21,6 @@ g.boot;
 GUI.swing;
 
 // make window for server
-{ s.makeWindow(); }.defer(3);
+g.waitForBoot({ s.makeWindow(); });
 
 
