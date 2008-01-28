@@ -10,16 +10,16 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 20.0px Helvetica; min-height: 24.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bd2928}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 20.0px Helvetica}
-span.s2 {color: #000ca2}
+span.s2 {color: #0000bf}
 span.s3 {color: #606060}
 span.s4 {color: #000000}
-span.s5 {color: #bd2928}
-span.s6 {color: #1b6f2f}
+span.s5 {color: #bf0000}
+span.s6 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -49,7 +49,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">// Example:</p>
 <p class="p6">(</p>
-<p class="p6">w = <span class="s2">GUI.window.new</span>(<span class="s3">"EZNumber"</span>, <span class="s2">Rect</span>(20, 400, 440, 180));</p>
+<p class="p6">w = <span class="s2">GUI</span>.window.new(<span class="s3">"EZNumber"</span>, <span class="s2">Rect</span>(20, 400, 440, 180));</p>
 <p class="p6">w.front;</p>
 <p class="p6">w.view.decorator = <span class="s2">FlowLayout</span>(w.view.bounds);</p>
 <p class="p4"><br></p>
@@ -63,12 +63,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">)</p>
 <p class="p4"><br></p>
 <p class="p6">e.enabled;</p>
-<p class="p6">e.enabled_(false);</p>
-<p class="p6">e.enabled_(true);</p>
+<p class="p6">e.enabled_(<span class="s2">false</span>);</p>
+<p class="p6">e.enabled_(<span class="s2">true</span>);</p>
 <p class="p4"><br></p>
 <p class="p6">e.visible;</p>
-<p class="p6">e.visible_(false);</p>
-<p class="p6">e.visible_(true);</p>
+<p class="p6">e.visible_(<span class="s2">false</span>);</p>
+<p class="p6">e.visible_(<span class="s2">true</span>);</p>
 <p class="p4"><br></p>
 <p class="p6">e.remove; w.refresh;</p>
 <p class="p4"><br></p>
@@ -77,8 +77,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// Another example</p>
 <p class="p6">(</p>
 <p class="p5">// start server</p>
-<p class="p6">s = <span class="s2">Server</span>.internal;</p>
-<p class="p6"><span class="s2">Server</span>.default = s;</p>
 <p class="p6">s.boot;</p>
 <p class="p6">)</p>
 <p class="p4"><br></p>
@@ -101,12 +99,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">(</p>
 <p class="p6"><span class="s2">var</span> w, startButton, noteControl, cutoffControl, resonControl;</p>
 <p class="p6"><span class="s2">var</span> balanceControl, ampControl;</p>
-<p class="p6"><span class="s2">var</span> id, cmdPeriodFunc;</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s4">id = s.nextNodeID; </span>// generate a note id.</p>
+<p class="p6"><span class="s2">var</span> node, cmdPeriodFunc;</p>
 <p class="p4"><br></p>
 <p class="p5">// make the window</p>
-<p class="p6">w = <span class="s2">GUI.window.new</span>(<span class="s3">"another control panel"</span>, <span class="s2">Rect</span>(20, 400, 440, 180));</p>
+<p class="p6">w = <span class="s2">GUI</span>.window.new(<span class="s3">"another control panel"</span>, <span class="s2">Rect</span>(20, 400, 440, 180));</p>
 <p class="p5"><span class="s4">w.front; </span>// make window visible and front window.</p>
 <p class="p6">w.view.decorator = <span class="s2">FlowLayout</span>(w.view.bounds);</p>
 <p class="p4"><br></p>
@@ -114,7 +110,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s6">\h</span>,<span class="s6">\v</span>].choose, 100, rrand(0.1,0.9));</p>
 <p class="p4"><br></p>
 <p class="p5">// add a button to start and stop the sound.</p>
-<p class="p6">startButton = <span class="s2">GUI.button.new</span>(w, 75 @ 24);</p>
+<p class="p6">startButton = <span class="s2">GUI</span>.button.new(w, 75 @ 24);</p>
 <p class="p6">startButton.states = [</p>
 <p class="p6"><span class="Apple-tab-span">	</span>[<span class="s3">"Start"</span>, <span class="s2">Color</span>.black, <span class="s2">Color</span>.green],</p>
 <p class="p6"><span class="Apple-tab-span">	</span>[<span class="s3">"Stop"</span>, <span class="s2">Color</span>.white, <span class="s2">Color</span>.red]</p>
@@ -122,39 +118,38 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">startButton.action = {<span class="s2">|view|</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if (view.value == 1) {</p>
 <p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// start sound</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s3">"/s_new"</span>, <span class="s3">"window-test"</span>, id, 0, 0,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node = <span class="s2">Synth</span>( <span class="s3">"window-test"</span>, [</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">"note"</span>, noteControl.value,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">"fc"</span>, cutoffControl.value,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">"rq"</span>, resonControl.value,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">"bal"</span>, balanceControl.value,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">"amp"</span>, ampControl.value.dbamp);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if (view.value == 0) {</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">"amp"</span>, ampControl.value.dbamp ]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>} {</p>
 <p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// set gate to zero to cause envelope to release</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"gate"</span>, 0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node.release; node = <span class="s2">nil</span>;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p6">};</p>
 <p class="p4"><br></p>
 <p class="p5">// create controls for all parameters</p>
 <p class="p6">w.view.decorator.nextLine;</p>
 <p class="p6">noteControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Note"</span>, <span class="s2">ControlSpec</span>(24, 60, <span class="s6">\lin</span>, 1),<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"note"</span>, ez.value); }, 36);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"note"</span>, ez.value )}, 36);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
 <p class="p6">cutoffControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Cutoff"</span>, <span class="s2">ControlSpec</span>(200, 5000, <span class="s6">\exp</span>),<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"fc"</span>, ez.value); }, 1000);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"fc"</span>, ez.value )}, 1000);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
 <p class="p6">resonControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Resonance"</span>, <span class="s2">ControlSpec</span>(0.1, 0.7),<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"rq"</span>, ez.value); }, 0.2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"rq"</span>, ez.value )}, 0.2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
 <p class="p6">balanceControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Balance"</span>, <span class="s6">\bipolar</span>,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"bal"</span>, ez.value); }, 0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"bal"</span>, ez.value )}, 0);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
 <p class="p6">ampControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Amp"</span>, <span class="s6">\db</span>,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> s.sendMsg(<span class="s3">"/n_set"</span>, id, <span class="s3">"amp"</span>, ez.value.dbamp); }, -6);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"amp"</span>, ez.value.dbamp )}, -6);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><br></p>
 <p class="p5">// set start button to zero upon a cmd-period</p>
@@ -163,7 +158,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">// stop the sound when window closes and remove cmdPeriodFunc.</p>
 <p class="p6">w.onClose = {</p>
-<p class="p6"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s3">"/n_free"</span>, id);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>node.free; node = <span class="s2">nil</span>;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">CmdPeriod</span>.remove(cmdPeriodFunc);</p>
 <p class="p6">};</p>
 <p class="p4"><br></p>
