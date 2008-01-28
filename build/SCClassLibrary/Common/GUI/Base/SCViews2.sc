@@ -156,6 +156,8 @@ EZSlider
 		});
 
 		labelView = GUI.staticText.new(window, labelWidth @ dimensions.y);
+		sliderView = GUI.slider.new(window, (dimensions.x - labelWidth - numberWidth) @ dimensions.y);
+		numberView = GUI.numberBox.new(window, numberWidth @ dimensions.y);
 		labelView.string = label;
 		labelView.align = \right;
 		
@@ -163,7 +165,6 @@ EZSlider
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
-		sliderView = GUI.slider.new(window, (dimensions.x - labelWidth - numberWidth) @ dimensions.y);
 		sliderView.action = {
 			this.valueAction_(controlSpec.map(sliderView.value));
 		};
@@ -179,7 +180,6 @@ EZSlider
 			controlSpec.map(slider.value)
 		};
 
-		numberView = GUI.numberBox.new(window, numberWidth @ dimensions.y);
 		numberView.action = { this.valueAction_(numberView.value) };
 		
 		if (initAction) {

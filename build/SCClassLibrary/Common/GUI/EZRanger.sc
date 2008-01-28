@@ -91,7 +91,7 @@ EZRanger {
 	visible { ^rangeSlider.visible }
 	visible_ { |flag| this.views.do(_.visible_(flag)) }
 	enabled { ^rangeSlider.visible }
-	enabled_ { |flag| this.views.do(_.enabled_(flag)) }
+	enabled_ { |flag| [loBox, rangeSlider, hiBox].do(_.enabled_(flag)) }
 
 	remove { 	this.views.do(_.remove); zone.remove }
 }
