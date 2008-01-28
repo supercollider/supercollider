@@ -11,7 +11,7 @@ Pattern : AbstractFunction {
 		^Pchain(this, aPattern)
 	}
 	
-	play { arg clock, protoEvent, quant=1.0;
+	play { arg clock, protoEvent, quant;
 		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)
 	}
 	// phase causes pattern to start somewhere in the current measure rather than on a downbeat

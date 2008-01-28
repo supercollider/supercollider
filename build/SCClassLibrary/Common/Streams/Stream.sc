@@ -194,7 +194,7 @@ Stream : AbstractFunction {
 		^EventStreamPlayer(this, protoEvent);
 	}
 	
-	play { arg clock, quant=0.0;
+	play { arg clock, quant;
 		clock = clock ? TempoClock.default;
 		clock.play(this, quant.asQuant);
 	}
@@ -335,7 +335,7 @@ PauseStream : Stream
 	
 	isPlaying { ^stream.notNil }
 	
-	play { arg argClock, doReset = (false), quant=0.0;
+	play { arg argClock, doReset = (false), quant;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
@@ -379,7 +379,7 @@ PauseStream : Stream
 	pause {
 		this.stop;
 	}
-	resume { arg argClock, quant=1.0; 
+	resume { arg argClock, quant; 
 		^this.play(clock ? argClock, false, quant) 
 	}
 	
@@ -473,7 +473,7 @@ EventStreamPlayer : PauseStream {
 	
 	asEventStreamPlayer { ^this }
 	
-	play { arg argClock, doReset = (false), quant=0.0;
+	play { arg argClock, doReset = (false), quant;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
