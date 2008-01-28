@@ -305,7 +305,7 @@ SC_WIIManager::SC_WIIManager()
 
 	if (IOBluetoothGetVersion(&outSoftwareVersion, &outHardwareVersion)==kIOReturnSuccess)
 	{
-		if (outSoftwareVersion.majorRev < 1 || outSoftwareVersion.minorAndBugRev < 0x63)
+		if (outSoftwareVersion.majorRev < 1 && outSoftwareVersion.minorAndBugRev < 0x63)
 		{
 			error("WII: requires Bluetooth version 1.6.3 or later.");
 			return;
