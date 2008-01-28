@@ -85,7 +85,7 @@ QuarkSVNRepository
 		Platform.case(
 			// On OSX we run it in a terminal window to minimise the risk of people getting stuck without a certificate
 			\osx, {
-				("echo \"
+				("echo " ++ $" ++ "
 --------------------------------------------------------------
 
   SuperCollider Quarks: accessing remote repository.
@@ -94,11 +94,10 @@ QuarkSVNRepository
   security certificate. Please do so!
 
   The command being run is:
-"++cmd.escapeChar($")++"
+" ++ cmd.escapeChar($") ++ "
 
 --------------------------------------------------------------
-\"
-"++cmd).runInTerminal
+" ++ $" ++ cmd).runInTerminal
 			},
 			// Non-OSX platforms run it internally
 			{cmd.unixCmd}
