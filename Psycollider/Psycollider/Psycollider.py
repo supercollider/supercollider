@@ -36,6 +36,10 @@
 #     by placing the cursor at the opening bracket and pressing evaluate (ctrl + enter).
 #     This only happens if the open bracket is the first character on the line (not including white space)
 #   - Disabled word wrap in the text editor
+#	- Can toggle displaying of line numbers on/off in code editor
+#     (effects all code windows and is saved to config)
+#   - added ability to clear the recent file list (file history)
+#   - added the option to set the tab size in code windows (saved to config)
 #
 # ---------------------------------------------------------------------
 
@@ -164,6 +168,9 @@ class PsycolliderWindow(wx.Frame):
     def OnSetDefaultWindowSize(self, event):
         size = self.GetSize()
         wx.GetApp().SetDefaultWindowSize(size.x, size.y)
+        
+    def OnClearRecentFileList(self, event):
+        wx.GetApp().ClearRecentFileList()
            
     # should be overwritten by inheriting classes
     def SaveFile(self):
@@ -248,6 +255,8 @@ class PsycolliderWindow(wx.Frame):
         self.clearPostWindow = wx.MenuItem(self.langMenu, -1, '&Clear Post Window\tAlt+P')
         
         self.setDefaultWindowSize = wx.MenuItem(self.optionsMenu, -1, '&Set This Window Size As Default')
+        self.clearRecentFileList = wx.MenuItem(self.optionsMenu, -1, '&Clear Recent File List')
+ 
          
         self.fileMenu.AppendItem(self.newCodeWin)
         self.fileMenu.AppendItem(self.htmlToCode)
@@ -269,6 +278,7 @@ class PsycolliderWindow(wx.Frame):
         self.langMenu.AppendItem(self.clearPostWindow)
         
         self.optionsMenu.AppendItem(self.setDefaultWindowSize)
+        self.optionsMenu.AppendItem(self.clearRecentFileList)
         
         self.Bind(wx.EVT_MENU, self.OnNewCodeWin, id=self.newCodeWin.GetId())
         self.Bind(wx.EVT_MENU, self.OnHtmlToCode, id=self.htmlToCode.GetId())
@@ -289,6 +299,7 @@ class PsycolliderWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnClearPostWindow, id=self.clearPostWindow.GetId())
         
         self.Bind(wx.EVT_MENU, self.OnSetDefaultWindowSize, id=self.setDefaultWindowSize.GetId())
+        self.Bind(wx.EVT_MENU, self.OnClearRecentFileList, id=self.clearRecentFileList.GetId())
         
         wx.GetApp().fileHistory.UseMenu(self.fileMenu)
         wx.GetApp().fileHistory.AddFilesToThisMenu(self.fileMenu)
@@ -354,12 +365,12 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         # Scintilla sample property files.
 
         # Global default styles for all languages
-        self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(mono)s,size:%(size)d" % faces)
-        self.StyleClearAll()  # Reset all to be like the default
+        #self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(mono)s,size:%(size)d" % faces)
+        #self.StyleClearAll()  # Reset all to be like the default
     
         # Global default styles for all languages
         self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(mono)s,size:%(size)d" % faces)
-        #self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,  "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
+        self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,  "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
         self.StyleSetSpec(stc.STC_STYLE_CONTROLCHAR, "face:%(other)s" % faces)
         self.StyleSetSpec(stc.STC_STYLE_BRACELIGHT,  "fore:#FFFFFF,back:#00FFFF,bold")
         self.StyleSetSpec(stc.STC_STYLE_BRACEBAD,    "fore:#000000,back:#FF3333,bold")
@@ -565,22 +576,76 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                 line = line + 1;
         
         return line
-
+    
+    def SetShowLineNumbers(self, value):
+        if value:
+            self.SetMarginType(2, stc.STC_MARGIN_NUMBER)
+        else:
+            self.SetMarginType(2, stc.STC_MARGIN_SYMBOL)
+     
+    def GetTabSize(self):
+        return self.GetTabWidth()
+        
+    def SetTabSize(self, tabSize):
+        self.SetTabWidth(tabSize)
+        
 
 # ---------------------------------------------------------------------
 # Code Window
 # accomodates the code sub window
 class PsycolliderCodeWin(PsycolliderWindow):
 
+    SHOW_LINE_NUMBERS = False   # default
+    TAB_SIZE = 8                # default tab size
+
     def __init__ (self, parent, id, title, pos=wx.DefaultPosition, size=wx.DefaultSize):
         PsycolliderWindow.__init__(self, parent, id, title)
         self.fileMenu.Remove(self.htmlToCode.GetId())   # Remove unnecessary menu item
-        self.codeSubWin = PsycolliderCodeSubWin(self)  
+        self.codeSubWin = PsycolliderCodeSubWin(self)
+        
+        # line numbers 
+        self.config.SetPath("/CodeWindowOptions")
+        self.showLineNumbers.Check(self.config.ReadInt('ShowLineNumbers', self.SHOW_LINE_NUMBERS))
+        self.codeSubWin.SetShowLineNumbers(self.showLineNumbers.IsChecked())
+        
+        # tab size
+        self.codeSubWin.SetTabSize(self.config.ReadInt('TabSize', self.TAB_SIZE))
     
     def OnStcChange(self, event):
         if not self.isModified:
             self.SetTitle(self.GetTitle() + "*")
             self.isModified = True
+            
+    def OnShowLineNumbers(self, event):
+        for window in wx.GetApp().GetOpenWindows():
+            if type(window) == PsycolliderCodeWin:
+                window.SetShowLineNumbers(self.showLineNumbers.IsChecked())
+        
+        self.config.SetPath("/CodeWindowOptions")
+        self.config.WriteInt('ShowLineNumbers', self.showLineNumbers.IsChecked())
+        
+    def OnSetTabSize(self, event):
+        newTabSize = -1
+        getNewTabSize = wx.TextEntryDialog(self, 'Set tab size to:', 'Set Tab Size', str(self.TAB_SIZE))
+        getNewTabSize.SetValue(str(self.codeSubWin.GetTabSize()))
+        
+        if getNewTabSize.ShowModal() == wx.ID_OK:
+            try:
+                newTabSize = int(getNewTabSize.GetValue())
+                if newTabSize <= 0:
+                    raise
+            except:
+                WriteInLogWindow("Invalid tab size, ignoring. Please enter a positive integer\n")
+                return
+                
+        getNewTabSize.Destroy()
+   
+        for window in wx.GetApp().GetOpenWindows():
+            if type(window) == PsycolliderCodeWin:
+                window.codeSubWin.SetTabSize(newTabSize)
+        
+        self.config.SetPath("/CodeWindowOptions")
+        self.config.WriteInt('TabSize', newTabSize)
 
     def GetSelectedText(self):
         return self.codeSubWin.GetSelectedText()
@@ -593,6 +658,10 @@ class PsycolliderCodeWin(PsycolliderWindow):
 
     def SelectRange(self,rangeStart,rangeSize):
         self.codeSubWin.SetSelection(rangeStart,rangeStart+rangeSize)
+    
+    def SetShowLineNumbers(self, value):
+        self.showLineNumbers.Check(value)
+        self.codeSubWin.SetShowLineNumbers(value)
         
     def SaveFile(self):
         if self.filePath == "":
@@ -626,7 +695,7 @@ class PsycolliderCodeWin(PsycolliderWindow):
             self.SetTitle(self.filePath) 
             self.isModified = False
             wx.GetApp().AddFileToHistory(self.filePath)
-            
+    
     def GetSelectedTextOrLine(self):
         """Returns selected text if any. If not, returns the current line"""
         selection = str(self.codeSubWin.GetSelectedText())
@@ -649,6 +718,19 @@ class PsycolliderCodeWin(PsycolliderWindow):
 
     def LineDown(self):
         self.codeSubWin.LineDown()
+        
+    def CreateMenuBar(self):
+        PsycolliderWindow.CreateMenuBar(self)
+        
+        self.showLineNumbers = wx.MenuItem(self.optionsMenu, -1, 'S&how Line Numbers', kind=wx.ITEM_CHECK)
+        self.setTabSize = wx.MenuItem(self.optionsMenu, -1, 'S&et Tab Size')
+        self.optionsMenu.AppendSeparator()
+        self.optionsMenu.AppendItem(self.showLineNumbers)
+        self.optionsMenu.AppendItem(self.setTabSize)
+        self.Bind(wx.EVT_MENU, self.OnShowLineNumbers, id=self.showLineNumbers.GetId())
+        self.Bind(wx.EVT_MENU, self.OnSetTabSize, id=self.setTabSize.GetId())
+
+        
 
 # ---------------------------------------------------------------------
 # HTML Sub Window 
@@ -729,7 +811,7 @@ class PsycolliderPostWindow(PsycolliderWindow):
         self.Show(True)
             
     def OnCloseWindow(self, event):
-        dlg = wx.MessageDialog(self,"This will shutdown PsyCollider, stop all servers and close all code windows.\n Do you want to quit?")
+        dlg = wx.MessageDialog(self, "This will shutdown PsyCollider, stop all servers and close all code windows.\n Do you want to quit?")
         reply = dlg.ShowModal()
         dlg.Destroy()
         if reply == wx.ID_OK:
@@ -744,6 +826,7 @@ class PsycolliderPostWindow(PsycolliderWindow):
 
             wx.GetApp().Shutdown()
 	else:
+		wx.MessageBox("Canceled");
 		pass
         
     def SaveFile(self):
@@ -950,12 +1033,14 @@ class Psycollider(wx.App):
             return win
 
     def StopServer(self):
-        PySCLang.setCmdLine('s.sendMsg("/quit");')
-        PySCLang.sendMain("interpretPrintCmdLine")
+        if PySCLang.compiledOK():
+            PySCLang.setCmdLine('s.sendMsg("/quit");')
+            PySCLang.sendMain("interpretPrintCmdLine")
 
     def StopSwingOSC(self):
-        PySCLang.setCmdLine('SwingOSC.default.sendMsg("/quit");')
-        PySCLang.sendMain("interpretPrintCmdLine")
+        if PySCLang.compiledOK():
+            PySCLang.setCmdLine('SwingOSC.default.sendMsg("/quit");')
+            PySCLang.sendMain("interpretPrintCmdLine")
         
     def Run(self):
         PySCLang.sendMain("run");
@@ -1035,10 +1120,19 @@ class Psycollider(wx.App):
     def SetDefaultWindowSize(self, sizeX, sizeY):
         self.config.SetPath("/WindowSettings")
         self.config.WriteInt('DefaultSizeX', sizeX)
-        self.config.WriteInt('DefaultSizeY', sizeY)  
+        self.config.WriteInt('DefaultSizeY', sizeY)
+        WriteInLogWindow("Set default window size to " + str(sizeX) + " x " + str(sizeY) + "\n")
 
+    def ClearRecentFileList(self):
+        numFiles = self.fileHistory.GetCount()
+        for i in range(numFiles):
+            self.fileHistory.RemoveFileFromHistory(0)   # remove the first file every time
+        
     def AddFileToHistory(self, path):
         self.fileHistory.AddFileToHistory(path)
+        
+    def GetOpenWindows(self):
+        return self.openWindows
         
     def Shutdown(self):
         # Recent file list
