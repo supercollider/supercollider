@@ -66,11 +66,12 @@ Main : Process {
 		win.toggleEditMode;
 	}
 
-
-	platformClass {
-		// override in platform specific extension
-		^Platform
-	}
+//	override in platform specific extension
+//
+//	platformClass {		
+//		^Platform
+//	}
+	
 	platform {
 		^platform ?? { platform = this.platformClass.new }
 	}
