@@ -62,11 +62,11 @@ MXHID {
 
 
 	*startEventLoop{ |rate|
-		if ( rate.notNil,
+		if ( rate.isNil or: (rate.size == 0),
 			{
-			HIDDeviceService.runEventLoop(rate[0]);
-			},{
 			HIDDeviceService.runEventLoop;
+			},{
+			HIDDeviceService.runEventLoop(rate[0]);
 			});
 		this.initAction;
 	}
