@@ -203,5 +203,29 @@
 			</array>
 		</dict>
 	</array>
+	<key>UTExportedTypeDeclarations</key> 
+    <array> 
+        <dict> 
+            <key>UTTypeConformsTo</key> 
+            <array> 
+                <string>public.text</string> 
+                <string>public.plain-text</string> 
+            </array> 
+            <key>UTTypeDescription</key> 
+            <string>SC3 text file</string> 
+            <key>UTTypeIdentifier</key> 
+            <string>org.supercollider.sc</string> 
+            <key>UTTypeTagSpecification</key> 
+            <dict> 
+                <key>com.apple.ostype</key> 
+                <string>TEXT</string> 
+                <key>public.filename-extension</key> 
+                <array> 
+                 <string>sc</string> 
+                 <string>scd</string> 
+                </array> 
+            </dict> 
+        </dict> 
+        </array> 
 </dict>
 </plist>
