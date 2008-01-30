@@ -955,7 +955,7 @@ class Psycollider(wx.App):
         # only if a valid SCClassLibrary folder was found, then 
         # set the current folder as its parent
         if classLibFolderFound:
-            config.Write("SCClassLibraryPath",classLibPath)
+            self.config.Write("SCClassLibraryPath",classLibPath)
             classLibPath_split = os.path.split(classLibPath)
             classLibParentFolder = classLibPath_split[0]
             os.chdir(classLibParentFolder)
