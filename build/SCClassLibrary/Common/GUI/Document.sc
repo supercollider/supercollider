@@ -29,13 +29,29 @@ Document {
 	}
 	
 	*open { arg path, selectionStart=0, selectionLength=0, envir;
+		var doc, env;
+		env = currentEnvironment;
 		current.restoreCurrentEnvironment;		
-		^Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength).envir_(envir);
+		doc = Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength);
+		if (doc.notNil) {
+			doc.envir_(envir)
+		} {
+			currentEnvironment = env
+		};
+		^doc
 	}
 	
 	*new { arg title="Untitled", string="", makeListener=false, envir;
-		current.restoreCurrentEnvironment;
-		^Document.implementationClass.new(title, string, makeListener).envir_(envir);
+		var doc, env;
+		env = currentEnvironment;
+		current.restoreCurrentEnvironment;		
+		doc = Document.implementationClass.new(title, string, makeListener);
+		if (doc.notNil) {
+			doc.envir_(envir)
+		} {
+			currentEnvironment = env
+		};
+		^doc
 	}
 	
 //class:
