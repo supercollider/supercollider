@@ -25,9 +25,6 @@ s.waitForBoot(\{\
 	w = \cf3 SCWindow\cf0 .new(\cf5 "scope in a gui"\cf0 , \cf3 Rect\cf0 (100, 400, 400, 300))\
 		.onClose_(\{a.free;\}) \cf2 // free synth on closing window\cf0 \
 		.front;\
-	\
-	\cf3 SCStaticText\cf0 (w, \cf3 Rect\cf0 (10, 0, 90, 140))\
-		.string_(\cf5 " Freq \\n\\n Rate \\n\\n Amp \\n\\n Pan"\cf0 );\
 \
 	\cf3 SCMultiSliderView\cf0 (w, \cf3 Rect\cf0 (10, 10, 90, 120))\
 		.value_([0.4, 0.5, 0.6, 0.5])\
@@ -45,6 +42,9 @@ s.waitForBoot(\{\
 				\{2\} \{ a.set(\cf4 \\amp\cf0 , sl.value[sl.index]) \}\
 				\{3\} \{ a.set(\cf4 \\pan\cf0 , (sl.value[sl.index]*2)-1) \};\
 		\});\
+	\
+	\cf3 SCStaticText\cf0 (w, \cf3 Rect\cf0 (10, 0, 90, 140))\
+		.string_(\cf5 " Freq \\n\\n Rate \\n\\n Amp \\n\\n Pan"\cf0 );\
 \
 	\cf3 SCStaticText\cf0 (w, \cf3 Rect\cf0 (10, 140, 90, 16))\
 		.string_(\cf5 "xZoom:"\cf0 );\
@@ -52,9 +52,10 @@ s.waitForBoot(\{\
 	\cf3 SCSlider\cf0 (w, \cf3 Rect\cf0 (10, 160, 90, 16))\
 		.action_(\{\cf3 |sl|\cf0  sc.xZoom_(sl.value*4)\});\
 \
-	sc= \cf3 SCScope\cf0 (w, \cf3 Rect\cf0 (120,10,260,260))\
-		.bufnum_(b)\
+	sc = \cf3 SCScope\cf0 (w, \cf3 Rect\cf0 (120,10,260,260))\
+		.bufnum_(b.bufnum)\
 		.background_(\cf3 Color\cf0 .white)\
+		.resize_(5)\
 		.waveColors_([\cf3 Color\cf0 .black, \cf3 Color\cf0 .black]);\
 \});\
 )\
