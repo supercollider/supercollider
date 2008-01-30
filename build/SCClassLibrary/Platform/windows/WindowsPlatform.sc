@@ -1,7 +1,7 @@
 WindowsPlatform : Platform
 {
 	name { ^\windows }
-	startupFiles { ^#["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath] }	
+	startupFiles { ^#["startup.sc", "~\\SuperCollider\\startup.sc"] }	
 
 	startup {
 
