@@ -18,6 +18,11 @@
 		^scopeWindow
 	}
 	
+	freqscope {
+		GUI.freqScope.new;
+	}
+
+	
 }
 
 + Bus {
@@ -44,4 +49,10 @@
 		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
 		^synth
 	}
+	
+	freqscope {
+		this.play;
+		GUI.freqScope.new;
+	}
 }
+
