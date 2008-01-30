@@ -204,11 +204,11 @@ FreqScope {
 	var <scope, <window;
 
 	*new { arg width=512, height=300, busNum=0, scopeColor, bgColor;
+		var rect, scope, window, pad, font, freqLabel, freqLabelDist, dbLabel, dbLabelDist;
+		var setFreqLabelVals, setDBLabelVals;
+		var nyquistKHz;
 		if(scopeOpen != true, { // block the stacking up of scope windows
 			//make scope
-			var rect, scope, window, pad, font, freqLabel, freqLabelDist, dbLabel, dbLabelDist;
-			var setFreqLabelVals, setDBLabelVals;
-			var nyquistKHz;
 			
 			scopeOpen = true;
 			
@@ -354,7 +354,9 @@ FreqScope {
 				.canFocus_(false)
 			;
 			
-			window.onClose_({ scope.kill; scopeOpen = false; }).front;
+			window.onClose_({ scope.kill; 
+			scopeOpen = false; 
+			}).front;
 			^this.newCopyArgs(scope, window)
 		});
 	}
