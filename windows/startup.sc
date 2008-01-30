@@ -11,8 +11,6 @@
 //s.options.device_("MME : Realtek AC97 Audio");
 //s.options.dump;
 
-s.boot;
-
 SwingOSC.program = "java -jar SwingOSC\\build\\SwingOSC.jar";
 g=SwingOSC.default;
 g.options.protocol_(\tcp);
