@@ -313,7 +313,7 @@ void SC_LanguageClient::onInterpStartup()
 // =====================================================================
 
 // this is defined in PySCLang 
-#ifndef SC_WIN32
+#ifndef PYSCLANG
 void setPostFile(FILE* file)
 {
 	SC_LanguageClient::instance()->setPostFile(file);
