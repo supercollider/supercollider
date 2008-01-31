@@ -145,11 +145,11 @@ Patch : HasPatchIns  {
 	var <instr,<>args;
 	var synthPatchIns,<argsForSynth,<argNamesForSynth,<synthArgsIndices;
 	
-	var <synthDef;
+	var <synthDef,<>outClass;
 	var <numChannels,<rate; // determined after making synthdef
 	
-	*new { arg name,inputs;
-		^super.new.loadSubject(name).createArgs(loadDocument(inputs) ? [])
+	*new { arg name,inputs,outClass;
+		^super.new.loadSubject(name).createArgs(loadDocument(inputs) ? []).outClass_(outClass ? Out)
 	}
 	rand {
 		this.inputs.do({ |in|
@@ -255,7 +255,7 @@ Patch : HasPatchIns  {
 		// could be cached, must be able to invalidate it
 		// if an input changes
 		^synthDef ?? {
-			synthDef = InstrSynthDef.build(this.instr,this.args,Out);
+			synthDef = InstrSynthDef.build(this.instr,this.args,this.outClass);
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
