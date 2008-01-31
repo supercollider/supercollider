@@ -204,52 +204,69 @@ Instr  {
 		search = Library.atList(([this] ++ symbolized));
 		if(search.notNil,{ ^search });
 
-		// look for a file
-		if((path = this.findPath(symbolized)).isNil,{
-			^nil
-		});
-		instr = path.loadPath(false);
-		if(instr.notNil,{ instr.path = path });
-		
-		// now see if its there
+		this.findFileFor(symbolized);
+	
+		// its either loaded now or its nil
 		^Library.atList([this] ++ symbolized);
-		// else it returns nil : not found
 	}
-	*findPath { arg symbolized;
+	*findFileFor { arg symbolized;
 		var quarkInstr,found;
-		found = this.findPathIn(symbolized,this.dir);
+		// the user's primary Instr directory
+		found = this.findFileInDir(symbolized,this.dir);
 		if(found.notNil,{ ^found });
-		
+
+		// look in each quark with an Instr directory
 		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr").pathMatch;
 		quarkInstr.do({ |path|
-			found = this.findPathIn(symbolized,path);
+			found = this.findFileInDir(symbolized,path);
 			if(found.notNil,{ ^found });
 		});
 		^nil
 	}
-	*findPathIn { arg symbolized, rootPath;
-		var pathParts,path;
+	*findFileInDir { arg symbolized, rootPath,
+						fullInstrName;// only needed for recursion
+		var pathParts,pathPartsFirst;
 
 		pathParts = symbolized.collect(_.asString);
-		// if its a multi-part name then the last item is the instr name
-		// and the next to last is the file name.
-		// so remove last item :
-		if (pathParts.size > 1, { pathParts.pop });
+		pathPartsFirst = pathParts.first;
+		if(fullInstrName.isNil,{ fullInstrName = symbolized.copy });
+		
+		// if its a multi-part name then could be
+		// [\synths,\stereo,\SinOsc,\pmod]
+		// synths.scd
+		// or synths/stereo.scd
+		// or synths/stereo/SinOsc/pmod.scd
 
-		// .rtf .txt .sc .scd or plain
-		rootPath = (rootPath ++ pathParts.join("/"));
 		
-		path = rootPath ++ ".rtf";
+		(rootPath++"*").pathMatch.do({ |path|
+			var file,orcname,symbols;
+			file = path.copyRange(rootPath.size,path.size-1);
+			if(file.last == $/,{
+				// its a directory, look deeper
+				if(file.copyRange(0,file.size-2) == pathPartsFirst,{
+					
+					symbolized.removeAt(0);
+					^this.findFileInDir( symbolized, rootPath ++ file, fullInstrName );
+				});
+			},{
+				orcname = PathName(file).fileNameWithoutExtension;
+				if(orcname == pathPartsFirst,{
+					// .rtf .txt .sc .scd or plain
+					path.load;
+					
+					//fullInstrName copied up until including orcname
+					symbols = [];
+					fullInstrName.any({ |n|
+						symbols = symbols.add(n);
+						n == orcname
+					});
+							
+					Instr.leaves(symbols).do({ |instr| instr.path = path });
+					^path
+				});
+			});			
+		});
 		
-		if(File.exists(path),{ ^path });
-		path = rootPath ++ ".txt";
-		if(File.exists(path),{ ^path });
-		path = rootPath ++ ".sc";
-		if(File.exists(path),{ ^path });
-		path = rootPath ++ ".scd";
-		if(File.exists(path),{ ^path });
-		path = rootPath;
-		if(File.exists(path),{ ^path });
 		^nil
 	}
 	
@@ -262,7 +279,7 @@ Instr  {
 		})
 	}
 	*singleNameAsNames { arg singleName;
-		^singleName.split($~).collect({ arg n; n.asSymbol })
+		^singleName.asString.split($~).collect({ arg n; n.asSymbol })
 	}
 	
 	*loadAll {
@@ -270,7 +287,6 @@ Instr  {
 		(this.dir ++ "*").pathMatch.do({ arg path; path.loadPath(false) });
 		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr/*").pathMatch;
 		quarkInstr.do({ |path|
-			path.debug("loading");
 			path.loadPath(true);
 		});
 	}
@@ -286,7 +302,9 @@ Instr  {
 		if(dir.isNil,{ dir = Document.dir ++ "Instr/"; });
 	}
 	init { arg specs,outsp;
-		path = thisProcess.nowExecutingPath; //  ?? { Document.current.path };
+		/*if(path.isNil,{
+			path = thisProcess.nowExecutingPath; //  ?? { Document.current.path };
+		});*/
 		this.makeSpecs(specs ? #[]);
 		if(outsp.isNil,{
 			outSpec = nil;
@@ -320,7 +338,6 @@ Instr  {
 			});
 	}
 
-	//guiClass { ^InstrGui }
 	guiBody { arg layout;
 		var defs,tf,source,lines,h,w;
 		source = this.func.def.sourceCode;
@@ -332,6 +349,7 @@ Instr  {
 		tf.string = source;
 		
 		if(path.notNil,{
+			CXLabel(layout.startRow,path);
 			ActionButton(layout.startRow,"open file...",{ path.openTextFile });
 		});
 		ArgNameLabel("outSpec:",layout.startRow,150);
