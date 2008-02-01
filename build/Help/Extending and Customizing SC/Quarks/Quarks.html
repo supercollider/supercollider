@@ -12,17 +12,19 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002ab0}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8b2817}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0c2dac}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7c301a}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {text-decoration: underline}
-span.s2 {color: #0000bf}
+span.s2 {color: #0013bb}
 span.s3 {color: #000000}
-span.s4 {color: #002ab0}
+span.s4 {color: #0c2dac}
 span.s5 {color: #606060}
 span.s6 {font: 9.0px Monaco}
 span.s7 {font: 12.0px Helvetica}
@@ -119,11 +121,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Note: Quarks may specify other quarks that they are dependent on.<span class="Apple-converted-space">  </span>Quarks.install will also attempt to install those other quarks that the desired quark depends upon, if not already installed. You can prevent this if neccessary by passing <span class="s6">false</span> as the second argument to Quarks.install.</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s4">Quarks</span>.install( <span class="s5">"somequark"</span>, incdeps: <span class="s4">false</span> )</p>
+<p class="p9"><span class="s4">Quarks</span>.install( <span class="s5">"somequark"</span>, includeDependencies: <span class="s4">false</span> )</p>
 <p class="p2"><br></p>
 <p class="p3">Similarly the install command will attempt to <b>download</b> quarks if you don't already have them locally. You can prevent this using the allowCheckout argument:</p>
 <p class="p4"><br></p>
-<p class="p9"><span class="s4">Quarks</span>.install( <span class="s5">"somequark"</span>, allowCheckout: <span class="s4">false</span> )</p>
+<p class="p9"><span class="s4">Quarks</span>.install( <span class="s5">"somequark"</span>, checkoutIfNeeded: <span class="s4">false</span> )</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p10"><b>Uninstall</b></p>
@@ -183,14 +185,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3">In a shell like Terminal go to <span class="s8">{Application Support}/quarks/<span class="Apple-converted-space"> </span></span> and<span class="Apple-converted-space">  </span>execute :</p>
 <p class="p4"><br></p>
-<p class="p11">svn add quarkname</p>
+<p class="p12">svn add quarkname</p>
 <p class="p4"><br></p>
-<p class="p11">svn add DIRECTORY/quarkname.quark</p>
+<p class="p12">svn add DIRECTORY/quarkname.quark</p>
 <p class="p2"><br></p>
-<p class="p11">svn commit -m "adding quarkname" quarkname</p>
+<p class="p12">svn commit -m "adding quarkname" quarkname</p>
 <p class="p9">svn commit -m "adding directory entry for quarkname" DIRECTORY/quarkname.quark</p>
 <p class="p2"><br></p>
-<p class="p9">Be careful to commit only changes to your own quark and to the directory entry you have added.</p>
+<p class="p13">Be careful to commit only changes to your own quark and to the directory entry you have added.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -212,7 +214,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>publicly available SonEnvir quarks):</p>
 <p class="p2"><br></p>
 <p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir = <span class="s4">Quarks</span>(</p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>localPath: <span class="s4">Platform</span>.userAppSupportDir ++ <span class="s5">"/quarks-sonenvir"</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>);</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -235,7 +237,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>SonEnvirTestQuark<span class="s3">.sayHello</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>~qSonEnvir = <span class="s4">Quarks</span>(</p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reposPath: </span>"https://svn.sonenvir.at/repos/SonEnvir/trunk/src/quarks-sonenvir"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>localPath: <span class="s4">Platform</span>.userAppSupportDir ++ <span class="s5">"/quarks-sonenvir"</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>);</p>
 <p class="p2"><br></p>
