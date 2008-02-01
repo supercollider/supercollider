@@ -134,8 +134,17 @@ Crucial {
 		);
 	}	
 	*menu {
-	
-		// this is everything in Library(\menuItems) functions put up on a menu
+		/* 
+			what I do is
+			
+			edit Main::run
+			
+			run {
+				Crucial.menu
+			}
+			
+			so that command-r will pop open this menu
+		*/ 
 		
 		var a,rec,pause;
 		if(menu.notNil,{ menu.close });
@@ -173,13 +182,29 @@ Crucial {
 		ActionButton(menu.startRow,"Query All Nodes",{
 			Library.at(\menuItems,\tools,'Server Node Report').value;		},minWidth: 250);
 
+		ActionButton(menu.startRow,"Annotated Buses",{
+			Library.at(\menuItems,\tools,'Annotated Buses Report').value;		},minWidth: 250);
+
+		ActionButton(menu.startRow,"Listen to Buses",{
+			Library.at(\menuItems,\tools,'listen to audio busses').value;		},minWidth: 250);
+
+		ActionButton(menu.startRow,"Annotated Nodes",{
+			Library.at(\menuItems,\tools,'Annotated Nodes Report').value;		},minWidth: 250);
+
+		ActionButton(menu.startRow,"edit ~/startup.rtf",{
+			"startup.rtf".openDocument
+		},minWidth: 250);
+
 		ActionButton(menu.startRow,"kill all",{
 			Server.killAll;
 		},minWidth: 250);
-			
+
+		ActionButton(menu.startRow,"Quarks",{
+			Quarks.gui;
+		},minWidth: 250);			
 			
 	
-		TempoGui.setTempoKeys;
+		//TempoGui.setTempoKeys;
 		Tempo.default.gui(menu.startRow);
 
 		menu.resizeToFit.front;
@@ -206,6 +231,29 @@ Crucial {
 		});
 		Library.put(\menuItems,\test,'simple audio test',{
 			{SinOsc.ar([500,550],0,0.1)}.play
+		});
+		
+		Library.put(\menuItems,\test,'listen to audio busses',{
+			var s;
+			s = Server.default;
+			Sheet({ |layout|
+				CXLabel( layout, "Audio Busses");
+				s.audioBusAllocator.blocks.do({ |b|
+					var listen;
+					listen = Patch({ In.ar( b.address, b.size ) });
+					layout.startRow;
+					ToggleButton( layout,"listen",{
+						listen.play
+					},{
+						listen.stop
+					});
+					CXLabel( layout, b.address.asString + "(" ++ b.size.asString ++ ")"
+						,100 );
+					CXLabel( layout,  
+						Library.at(AbstractPlayer, \busAnnotations, s,\audio, b.address)
+						,540 );
+				})
+			});
 		});
 		
 		Library.put(\menuItems,\test,'run Class unit tests',{
