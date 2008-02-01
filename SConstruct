@@ -309,8 +309,20 @@ env = Environment(options = opts,
                   URL = 'http://supercollider.sourceforge.net',
                   TARBALL = PACKAGE + VERSION + '.tbz2')
 
-###uncomment this when there are problems with ccache:
-#env['ENV']['PATH'] = ['/usr/local/bin', '/usr/bin', '/bin']
+
+# checks for DISTCC and CCACHE as used in modern linux-distros:
+
+if os.path.exists('/usr/lib/distcc/bin'):
+    os.environ['PATH']         = '/usr/lib/distcc/bin:' + os.environ['PATH']
+    env['ENV']['DISTCC_HOSTS'] = os.environ['DISTCC_HOSTS']
+    
+if os.path.exists('/usr/lib/ccache/bin'):
+    os.environ['PATH']         = '/usr/lib/ccache/bin:' + os.environ['PATH']
+    env['ENV']['CCACHE_DIR']   = os.environ['CCACHE_DIR']
+    
+env['ENV']['PATH'] = os.environ['PATH']
+env['ENV']['HOME'] = os.environ['HOME']
+
 
 # ======================================================================
 # installation directories
@@ -488,10 +500,11 @@ if env['SSE']:
 else:
     features['sse'] = False
 
-# x11
 if env['X11']:
     if type(env['X11']) != types.StringType:
-        env['X11'] = '/usr/X11R6'
+        if os.path.exists('/usr/X11R6'):
+            env['X11'] = '/usr/X11R6'
+        else: env['X11'] = '/usr'
     x11Env = Environment(
         CPPPATH = [os.path.join(env['X11'], 'include')],
         LIBPATH = [os.path.join(env['X11'], 'lib')])
@@ -501,6 +514,8 @@ if env['X11']:
     libraries['x11'] = x11Conf.Finish()
 else:
     features['x11'] = False
+
+
 
 opts.Save('scache.conf', env)
 Help(opts.GenerateHelpText(env))
