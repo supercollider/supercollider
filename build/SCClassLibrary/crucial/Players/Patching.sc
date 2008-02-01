@@ -162,12 +162,10 @@ AudioPatchOut : ControlPatchOut {
 	control { arg controlPatchIn,needsValueSetNow;
 		//no problem, an audio output into a control input is common
 		// and no action needs to be taken
-		//[controlPatchIn,this,"control -> audio"].insp;
 	}
 	scalar { arg scalarPatchIn;
 		// polling of value not yet implemented on scserver
 		// scalarPatchIn.value = bus.get;
-		//[this,scalarPatchIn].insp("audio -> scalar not yet implemented");
 		thisMethod.notYetImplemented;
 	}
 }
