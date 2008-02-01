@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -18,78 +18,79 @@ p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 6.0px Monaco; min-height: 9.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-span.s1 {text-decoration: underline}
-span.s2 {color: #0029b6}
-span.s3 {font: 12.0px Helvetica}
-span.s4 {color: #9c230e}
-span.s5 {color: #002bf8}
-span.s6 {color: #000000}
+span.s1 {color: #0000ff}
+span.s2 {text-decoration: underline}
+span.s3 {color: #0031b1}
+span.s4 {font: 12.0px Helvetica}
+span.s5 {color: #8e2713}
+span.s6 {color: #0038f1}
+span.s7 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>SequenceableCollection</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Superclass: Collection</b></p>
+<p class="p3"><b>Superclass: </b><a href="Collection.html"><span class="s1"><b>Collection</b></span></a></p>
 <p class="p2"><br></p>
-<p class="p3">SequenceableCollection is a subclass of Collection whose elements can be indexed by an Integer. It has many useful subclasses; <b>Array</b> and <b>List</b> are amongst the most commonly used.</p>
+<p class="p3">SequenceableCollection is a subclass of Collection whose elements can be indexed by an Integer. It has many useful subclasses; <a href="Array.html"><span class="s1"><b>Array</b></span></a> and <a href="List.html"><span class="s1"><b>List</b></span></a> are amongst the most commonly used.</p>
 <p class="p2"><br></p>
-<p class="p4"><b><span class="s1">Class Methods</span></b></p>
+<p class="p4"><b><span class="s2">Class Methods</span></b></p>
 <p class="p2"><br></p>
 <p class="p3"><b>*series(size, start, step)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Fill a SequenceableCollection with an arithmetic series.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Array</span>.series(5, 10, 2);</p>
+<p class="p5"><span class="s3">Array</span>.series(5, 10, 2);</p>
 <p class="p2"><br></p>
 <p class="p3"><b>*geom(size, start, grow)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Fill a SequenceableCollection with a geometric series.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Array</span>.geom(5, 1, 3);</p>
+<p class="p5"><span class="s3">Array</span>.geom(5, 1, 3);</p>
 <p class="p6"><br></p>
 <p class="p3"><b>*fib(size, a, b)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Fill a SequenceableCollection with a fibonacci series.<span class="Apple-converted-space"> </span></p>
 <p class="p3">b is the starting value (default: 1), a is the starting step value (default: 0)</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Array</span>.fib(5);</p>
-<p class="p5"><span class="s2">Array</span>.fib(5, 2, 32); // start from 32 with step 2.</p>
+<p class="p5"><span class="s3">Array</span>.fib(5);</p>
+<p class="p5"><span class="s3">Array</span>.fib(5, 2, 32); // start from 32 with step 2.</p>
 <p class="p7"><br></p>
 <p class="p3"><b>*rand(size, minVal, maxVal)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Fill a SequenceableCollection with random values in the range minVal to maxVal.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Array</span>.rand(8, 1, 100);</p>
+<p class="p5"><span class="s3">Array</span>.rand(8, 1, 100);</p>
 <p class="p7"><br></p>
 <p class="p3"><b>*rand2(size, val)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Fill a SequenceableCollection with random values in the range -val to +val.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Array</span>.rand2(8, 100);</p>
+<p class="p5"><span class="s3">Array</span>.rand2(8, 100);</p>
 <p class="p7"><br></p>
 <p class="p3"><b>*linrand(size, minVal, maxVal)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Fill a SequenceableCollection with random values in the range minVal to maxVal with a linear</p>
 <p class="p3">distribution.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Array</span>.linrand(8, 1, 100);</p>
+<p class="p5"><span class="s3">Array</span>.linrand(8, 1, 100);</p>
 <p class="p6"><br></p>
 <p class="p3"><b>*exprand(size, minVal, maxVal)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Fill a SequenceableCollection with random values in the range minVal to maxVal with exponential</p>
 <p class="p3">distribution.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Array</span>.exprand(8, 1, 100);</p>
+<p class="p5"><span class="s3">Array</span>.exprand(8, 1, 100);</p>
 <p class="p7"><br></p>
 <p class="p3"><b>*interpolation(size, start, end)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Fill a SequenceableCollection with the interpolated values between the start and end values.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Array</span>.interpolation(5, 3.2, 20.5);</p>
+<p class="p5"><span class="s3">Array</span>.interpolation(5, 3.2, 20.5);</p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
-<p class="p4"><b><span class="s1">Instance Methods</span></b></p>
+<p class="p4"><b><span class="s2">Instance Methods</span></b></p>
 <p class="p7"><br></p>
 <p class="p3"><b>first</b></p>
 <p class="p2"><br></p>
@@ -112,14 +113,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>returns the closest index of the value in the collection (collection must be sorted)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>[2, 3, 5, 6].indexIn(5.2)</p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span></span>[2, 3, 5, 6].indexIn(5.2)</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>indexInBetween(val)</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>returns a linearly interpolated float index for the value (collection must be sorted)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>inverse operation is <b>blendAt</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>x = [2, 3, 5, 6].indexInBetween(5.2)</p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span></span>x = [2, 3, 5, 6].indexInBetween(5.2)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>[2, 3, 5, 6].blendAt(x)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -127,7 +128,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>returns a linearly interpolated value between the two closest indices</p>
 <p class="p3"><span class="Apple-tab-span">	</span>inverse operation is <b>indexInBetween</b></p>
-<p class="p5"><span class="s3"><b><span class="Apple-tab-span">	</span></b></span>x = [2, 5, 6].blendAt(0.4)</p>
+<p class="p5"><span class="s4"><b><span class="Apple-tab-span">	</span></b></span>x = [2, 5, 6].blendAt(0.4)</p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
@@ -138,7 +139,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">x.copyRange(a, b) can also be written as <b>x[a..b]</b></p>
 <p class="p7"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s2">var</span> y, z;</p>
+<p class="p5"><span class="s3">var</span> y, z;</p>
 <p class="p5">z = [1, 2, 3, 4, 5];</p>
 <p class="p5">y = z.copyRange(1,3);</p>
 <p class="p5">z.postln;</p>
@@ -213,12 +214,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">argument should be sorted before the second argument.</p>
 <p class="p3">If the function is nil, the following default function is used.</p>
 <p class="p2"><br></p>
-<p class="p5">{ <span class="s2">arg</span> a, b; a &lt; b }</p>
+<p class="p5">{ <span class="s3">arg</span> a, b; a &lt; b }</p>
 <p class="p8"><br></p>
 <p class="p9"><br></p>
 <p class="p5">[6, 2, 1, 7, 5].sort;</p>
 <p class="p6"><br></p>
-<p class="p5">[6, 2, 1, 7, 5].sort({ <span class="s2">arg</span> a, b; a &gt; b }); <span class="s4">// reverse sort</span></p>
+<p class="p5">[6, 2, 1, 7, 5].sort({ <span class="s3">arg</span> a, b; a &gt; b }); <span class="s5">// reverse sort</span></p>
 <p class="p7"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>swap(i, j)</b></p>
@@ -230,14 +231,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Calls function for every adjacent pair of elements in the SequentialCollection.</p>
 <p class="p3">The function is passed the two adjacent elements and an index.</p>
 <p class="p2"><br></p>
-<p class="p5">[1, 2, 3, 4, 5].doAdjacentPairs({ <span class="s2">arg</span> a, b; [a, b].postln; });</p>
+<p class="p5">[1, 2, 3, 4, 5].doAdjacentPairs({ <span class="s3">arg</span> a, b; [a, b].postln; });</p>
 <p class="p2"><br></p>
 <p class="p3"><b>separate(function)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Separates the collection into sub-collections by calling the function for each adjacent pair of elements.</p>
 <p class="p3">If the function returns true, then a separation is made between the elements.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="Apple-converted-space"> </span>[1, 2, 3, 5, 6, 8, 10].separate({ <span class="s2">arg</span> a, b; (b - a) &gt; 1 }).postcs;</p>
+<p class="p5"><span class="Apple-converted-space"> </span>[1, 2, 3, 5, 6, 8, 10].separate({ <span class="s3">arg</span> a, b; (b - a) &gt; 1 }).postcs;</p>
 <p class="p7"><br></p>
 <p class="p3"><b>clump(groupSize)</b></p>
 <p class="p7"><br></p>
@@ -274,7 +275,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>convertDigits(base)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Returns an integer resulting from interpreting the elements as digits to a given base (default 10).</p>
-<p class="p3">See also <b>asDigits</b> in <a href="../Math/Integer.html"><span class="s5">Integer</span></a> for the complementary method.</p>
+<p class="p3">See also <b>asDigits</b> in <a href="../Math/Integer.html"><span class="s6">Integer</span></a> for the complementary method.</p>
 <p class="p6"><br></p>
 <p class="p5">[1, 0, 0, 0].convertDigits;</p>
 <p class="p5">[1, 0, 0, 0].convertDigits(2);</p>
@@ -282,16 +283,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p3"><b>hammingDistance(that)</b></p>
 <p class="p2"><br></p>
-<p class="p3">Returns the count of array elements that are not equal in identical positions. <span class="s1">http://en.wikipedia.org/wiki/Hamming_distance</span></p>
+<p class="p3">Returns the count of array elements that are not equal in identical positions. <span class="s2">http://en.wikipedia.org/wiki/Hamming_distance</span></p>
 <p class="p2"><br></p>
 <p class="p3">The collections are not wrapped - if one array is shorter than the other, the difference in size should be included in the count.</p>
 <p class="p7"><br></p>
 <p class="p5">[0, 0, 0, 1, 1, 1, 0, 1, 0, 0].hammingDistance([0, 0, 1, 1, 0, 0, 0, 0, 1, 1])</p>
-<p class="p10">"SuperMan"<span class="s6">.hammingDistance(</span>"SuperCollider"<span class="s6">);</span></p>
+<p class="p10">"SuperMan"<span class="s7">.hammingDistance(</span>"SuperCollider"<span class="s7">);</span></p>
 <p class="p7"><br></p>
-<p class="p4"><b><span class="s1">Math Support</span></b></p>
+<p class="p4"><b><span class="s2">Math Support</span></b></p>
 <p class="p2"><br></p>
-<p class="p4"><b><span class="s1">Unary Messages:</span></b></p>
+<p class="p4"><b><span class="s2">Unary Messages:</span></b></p>
 <p class="p2"><br></p>
 <p class="p3">All of the following messages send the message performUnaryOp to the receiver with the</p>
 <p class="p3">unary message selector as an argument.</p>
@@ -311,7 +312,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p5">[1, 2, 3, 4].reciprocal;</p>
 <p class="p2"><br></p>
-<p class="p4"><b><span class="s1">Binary Messages:</span></b></p>
+<p class="p4"><b><span class="s2">Binary Messages:</span></b></p>
 <p class="p11"><br></p>
 <p class="p3">All of the following messages send the message performBinaryOp to the receiver with the</p>
 <p class="p3">binary message selector and the second operand as arguments.</p>

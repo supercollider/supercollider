@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -15,18 +15,19 @@ p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7b2b19}
-span.s1 {color: #0a4ee3}
-span.s2 {color: #073aa9}
-span.s3 {color: #7b2b19}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #712d1c}
+span.s1 {color: #0000ff}
+span.s2 {color: #1354dd}
+span.s3 {color: #0e3fa5}
+span.s4 {color: #712d1c}
 </style>
 </head>
 <body>
 <p class="p1"><b>Collection</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>superclass: Object</b></p>
+<p class="p3"><b>superclass: </b><a href="../Core/Object.html"><span class="s1"><b>Object</b></span></a></p>
 <p class="p2"><br></p>
-<p class="p3">Collections are groups of objects. Collection is an abstract class. You do not create direct instances of Collection. There are many types of Collections including List, Array, Dictionary, Bag, Set, SortedList, etc. See the <a href="Collections.html"><span class="s1"><b>Collections</b></span></a> overview for a complete listing of all subclasses.</p>
+<p class="p3">Collections are groups of objects. Collection is an abstract class. You do not create direct instances of Collection. There are many types of Collections including <a href="List.html"><span class="s1">List</span></a>, <a href="Array.html"><span class="s1">Array</span></a>, <a href="Dictionary.html"><span class="s1">Dictionary</span></a>, <a href="Bag.html"><span class="s1">Bag</span></a>, <a href="Set.html"><span class="s1">Set</span></a>, <a href="SortedList.html"><span class="s1">SortedList</span></a>, etc. See the <a href="Collections.html"><span class="s2"><b>Collections</b></span></a> overview for a complete listing of all subclasses.</p>
 <p class="p2"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
@@ -36,20 +37,20 @@ span.s3 {color: #7b2b19}
 <p class="p2"><br></p>
 <p class="p3">Creates a new Collection from another collection.</p>
 <p class="p4"><br></p>
-<p class="p6"><span class="s2">Array</span>.newFrom(Set[4, 2, 1]);</p>
-<p class="p6"><span class="s2">Set</span>.newFrom(Array[4, 2, 1]);</p>
+<p class="p6"><span class="s3">Array</span>.newFrom(Set[4, 2, 1]);</p>
+<p class="p6"><span class="s3">Set</span>.newFrom(Array[4, 2, 1]);</p>
 <p class="p4"><br></p>
 <p class="p3"><b>*with(collection)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Creates a new Collection from the args.</p>
 <p class="p4"><br></p>
-<p class="p6"><span class="s2">Array</span>.with(4, 2, 1);</p>
+<p class="p6"><span class="s3">Array</span>.with(4, 2, 1);</p>
 <p class="p4"><br></p>
 <p class="p3"><b>*fill(size, function)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Creates a Collection of the given size, the elements of which are determined by evaluation the given function. The function is passed the index as an argument.</p>
 <p class="p4"><br></p>
-<p class="p6"><span class="s2">Array</span>.fill(4, { <span class="s2">arg</span> i; i * 2 });</p>
+<p class="p6"><span class="s3">Array</span>.fill(4, { <span class="s3">arg</span> i; i * 2 });</p>
 <p class="p7"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
@@ -59,13 +60,13 @@ span.s3 {color: #7b2b19}
 <p class="p2"><br></p>
 <p class="p3">Answers the number of objects contained in the Collection.</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s2">List</span>[1, 2, 3, 4].size;</p>
+<p class="p6"><span class="s3">List</span>[1, 2, 3, 4].size;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>isEmpty</b></p>
 <p class="p2"><br></p>
 <p class="p3">Answer whether the receiver contains no objects.</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s2">List</span>[].isEmpty;</p>
+<p class="p6"><span class="s3">List</span>[].isEmpty;</p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
 <p class="p8"><br></p>
@@ -76,7 +77,7 @@ span.s3 {color: #7b2b19}
 <p class="p2"><br></p>
 <p class="p3">Add anObject to the receiver.</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s2">List</span>[1, 2].add(3);</p>
+<p class="p6"><span class="s3">List</span>[1, 2].add(3);</p>
 <p class="p2"><br></p>
 <p class="p3"><b>addAll(aCollection)</b></p>
 <p class="p2"><br></p>
@@ -186,15 +187,15 @@ span.s3 {color: #7b2b19}
 <p class="p3">In functional programming, the operation known as a fold.</p>
 <p class="p3">inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection. The function takes two arguments and returns the new value. The accumulated value is initialzed to initialValue.</p>
 <p class="p2"><br></p>
-<p class="p6">[1,2,3,4,5].inject(0, <span class="s2">_</span>+<span class="s2">_</span>); <span class="s3">// 15</span></p>
+<p class="p6">[1,2,3,4,5].inject(0, <span class="s3">_</span>+<span class="s3">_</span>); <span class="s4">// 15</span></p>
 <p class="p7"><br></p>
-<p class="p6">[1,2,3,4,5].inject(1, <span class="s2">_</span>*<span class="s2">_</span>); <span class="s3">// 120</span></p>
+<p class="p6">[1,2,3,4,5].inject(1, <span class="s3">_</span>*<span class="s3">_</span>); <span class="s4">// 120</span></p>
 <p class="p7"><br></p>
 <p class="p9">// same as .collect(_.squared)</p>
-<p class="p6">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ b.squared }); <span class="s3">// [ 1, 4, 9, 16, 25 ]</span></p>
-<p class="p6">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> [b] ++ a ++ [b]}); <span class="s3">// [ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]</span></p>
-<p class="p6">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ b ++ a});</p>
-<p class="p6">[1,2,3,4,5].inject([], {<span class="s2">|a,b|</span> a ++ a ++ b});</p>
+<p class="p6">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> a ++ b.squared }); <span class="s4">// [ 1, 4, 9, 16, 25 ]</span></p>
+<p class="p6">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> [b] ++ a ++ [b]}); <span class="s4">// [ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]</span></p>
+<p class="p6">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> a ++ b ++ a});</p>
+<p class="p6">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> a ++ a ++ b});</p>
 <p class="p7"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>any(function)</b></p>
@@ -271,13 +272,13 @@ span.s3 {color: #7b2b19}
 <p class="p2"><br></p>
 <p class="p3"><b>iter</b></p>
 <p class="p2"><br></p>
-<p class="p3">returns a <a href="../Core/Kernel/Routine.html"><span class="s1">Routine</span></a> that returns the elements one by one.</p>
+<p class="p3">returns a <a href="../Core/Kernel/Routine.html"><span class="s2">Routine</span></a> that returns the elements one by one.</p>
 <p class="p2"><br></p>
-<p class="p6">r = <span class="s2">Set</span>[10, 2, -3, -4].iter;</p>
+<p class="p6">r = <span class="s3">Set</span>[10, 2, -3, -4].iter;</p>
 <p class="p6">r.next;</p>
 <p class="p6">r.next;</p>
 <p class="p6">r.next;</p>
-<p class="p6">r.next; <span class="s3">// nil.</span></p>
+<p class="p6">r.next; <span class="s4">// nil.</span></p>
 <p class="p7"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
