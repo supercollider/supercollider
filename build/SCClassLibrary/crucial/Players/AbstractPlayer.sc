@@ -65,7 +65,7 @@ AbstractPlayer : AbstractFunction  {
 		if(status !== \readyForPlay,{ this.prepareToBundle(group, bundle, false, bus) });
 		this.makePatchOut(group,false,bus,bundle);
 		this.spawnToBundle(bundle);
-		bundle.sendAtTime(this.server,atTime,timeOfRequest);
+		bundle.sendAtTime(this.server,atTime ? this.defaultAtTime,timeOfRequest);
 	}
 	
 	prepareForPlay { arg agroup,private = false,bus;
@@ -131,7 +131,8 @@ AbstractPlayer : AbstractFunction  {
 			Library.put(SynthDef,server,dn,true);
 		});
 	}
-
+	// the default behavior for play
+	defaultAtTime { ^nil } // immediate
 	loadBuffersToBundle {}
 	//makeResourcesToBundle { }
 	//freeResourcesToBundle { }
@@ -481,7 +482,8 @@ AbstractPlayer : AbstractFunction  {
 		// value will be passed to the real synth at play time
 		synthDef.addIr(name, 0); // \out is an .ir bus index
 	}
-
+	// synth arg is the argument value (float,integer) to pass to the synth itself.
+	// the synth arg for a player is the index of the bus that it is playing on
 	synthArg { ^patchOut.synthArg }
 	instrArgFromControl { arg control;
 		// a Patch could be either
@@ -641,14 +643,14 @@ AbstractPlayer : AbstractFunction  {
 			Library.put(AbstractPlayer, \nodeAnnotations, 
 				thing.server ?? {"node has no server, cannot annotate".die}, 
 				thing.nodeID ?? {"nodeID is nil, cannot annotate".die},
-			 	this.asString ++ ":" ++ note);
+			 	"owner:" + this.asString + "Ñ" + note);
 		},{
 			if(thing.isKindOf(Bus),{
 				Library.put(AbstractPlayer, \busAnnotations, 
 					thing.server ?? {"Bus has no server, cannot annotate".die},
 					thing.rate ?? {"Bus has no rate, cannot annotate".die}, 
 					thing.index ?? {"Bus has no index, cannot annotate".die}, 
-					this.asString + thing.asString ++ ":" ++ note);
+					"owner:"+this.asString + thing.asString + "Ñ" + note);
 			});
 		});			
 	}
