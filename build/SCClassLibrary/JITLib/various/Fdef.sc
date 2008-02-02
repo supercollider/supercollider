@@ -1,27 +1,17 @@
 
-FuncProxy : Ref {
-	classvar <>defaultValue=1;
-	func { ^value }
-	
-	value { arg ... args; ^value.valueArray(args) ? defaultValue }
-	valueArray { arg args; ^value.valueArray(args) ? defaultValue  }
-	valueEnvir { arg ... args; ^value.valueEnvir(*args) ? defaultValue  }
-	valueArrayEnvir {  arg ... args; ^value.valueArrayEnvir(args) ? defaultValue  }
-	
-	source_ { arg obj; if(obj !== this) {  this.value = obj } } // catch at least identity
-	source { ^value }
-	clear { value = nil }
-}
-
-
 // maybe we want to call "value" "reduce" and only use one class.
 
-Maybe : FuncProxy {
+Maybe : Ref {
 	
 	classvar <callers, <current, <>callFunc;
 	classvar <>defaultValue;
 	classvar <>protected = false, <>verbose = false;
+	classvar <>defaultValue=1;
 	
+	source { ^value }
+	source_ { arg obj; this.value = obj } 
+	
+	clear { value = nil }
 	
 	value { arg ... args;
 		^this.reduceFuncProxy(args)
@@ -29,6 +19,15 @@ Maybe : FuncProxy {
 	valueArray { arg args;
 			^this.reduceFuncProxy(args)
 	}
+	valueEnvir { arg ... args; 
+		^this.notYetImplemented(thisMethod)
+		//^value.valueEnvir(*args) ? defaultValue
+	}
+	valueArrayEnvir {  arg ... args; 
+		^this.notYetImplemented(thisMethod)
+		//^value.valueArrayEnvir(args) ? defaultValue  
+	}
+	
 	// this allows recursion
 	apply { arg ... args;
 		^this.reduceFuncProxy(args, false)
@@ -84,7 +83,7 @@ Maybe : FuncProxy {
 	}
 	
 	reduceFuncProxy { arg args, protect=true;
-		//this.postln;
+
 		^if(protect.not) { 
 			value.reduceFuncProxy(args) 
 		} {
