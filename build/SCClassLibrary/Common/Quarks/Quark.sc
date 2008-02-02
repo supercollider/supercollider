@@ -174,22 +174,22 @@ Quark
 
 QuarkView {
 	var	<quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton,
-		nameView, infoButton, srcButton;
+		nameView, authorView, infoButton, srcButton;
 	*new { |parent, extent, quark, isInstalled|
 		^super.new.init(parent, extent, quark, isInstalled)
 	}
 	init { |parent, extent, aQuark, argIsInstalled|
-		var installBounds, descrBounds, infoBounds, sourceBounds, pad = 5,checkoutBounds;
+		var installBounds, descrBounds, authorBounds, infoBounds, sourceBounds,
+			pad = 5,checkoutBounds, remainder;
 		
 		//installBounds = Rect(0,0, extent.y, extent.y);
 		infoBounds = Rect(0,0, 25, extent.y);
 		sourceBounds = Rect(0, 0, 20, extent.y);
 		checkoutBounds = Rect(0,0,50,extent.y);
-		descrBounds = Rect(
-			0,0, 
-			(extent.x - infoBounds.width  - sourceBounds.width - checkoutBounds.width - (3*pad)),
-			extent.y
-		);
+		remainder = extent.x - infoBounds.width  - sourceBounds.width -
+			checkoutBounds.width - (3*pad);
+		descrBounds = Rect(0, 0, (remainder * 0.60).asInteger, extent.y);
+		authorBounds = Rect(0, 0, (remainder * 0.40).asInteger, extent.y);
 		quark = aQuark;
 		isInstalled = argIsInstalled;
 		
@@ -197,8 +197,8 @@ QuarkView {
 		this.updateButtonStates;
 
 		// the name with author
-		nameView = GUI.staticText.new(parent, descrBounds).string_("% by %".format(quark.name, quark.author));
-		// the name
+		nameView = GUI.staticText.new(parent, descrBounds).string_(quark.name);
+		authorView = GUI.staticText.new(parent, authorBounds).string_(quark.author);
 		infoButton = GUI.button.new(parent, infoBounds)
 			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
 			.states_([["info"]]).action_{this.fullDescription};
