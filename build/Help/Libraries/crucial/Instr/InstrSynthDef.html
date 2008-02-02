@@ -5,21 +5,27 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #0019b7}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #000000}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-span.s1 {color: #0019b7}
-span.s2 {color: #326f17}
+span.s1 {color: #001fb3}
+span.s2 {color: #436c1d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>InstrSynthDef</b></p>
 <p class="p2"><br></p>
-<p class="p3">this is how Patch performs its magic.</p>
+<p class="p3">superclass: SynthDef</p>
+<p class="p2"><br></p>
+<p class="p3">A standard SynthDef creates a synth on the server that has control inputs for each function argument on the synth def function.</p>
+<p class="p2"><br></p>
+<p class="p3">An InstrSynthDef will build a different synth def depending on what objects were passed into it.<span class="Apple-converted-space">  </span>Some of the inputs (and some of the synth def function's arguments) will not result in control inputs on the synth at all.</p>
+<p class="p2"><br></p>
+<p class="p3">To use Patch, you don't need to know or understand the following, but if you are trying to write arcane input or player objects, then this will be of interest.</p>
 <p class="p2"><br></p>
 <p class="p3">how it works :</p>
 <p class="p2"><br></p>

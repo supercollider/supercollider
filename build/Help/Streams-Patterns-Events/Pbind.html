@@ -10,21 +10,22 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942e0e}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #843514}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0d30b7}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #476819}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942e0e; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #942e0e}
-span.s1 {color: #0d30b7}
-span.s2 {color: #476819}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1433b3}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4f661f}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #843514; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #843514}
+span.s1 {color: #1433b3}
+span.s2 {color: #4f661f}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #606060}
-span.s6 {color: #001af9}
-span.s7 {color: #942e0e}
+span.s5 {text-decoration: underline ; color: #0000ff}
+span.s6 {color: #606060}
+span.s7 {color: #0025f3}
+span.s8 {color: #843514}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -66,7 +67,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">)</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p3">To use a SynthDef other than the default, we need to read the synth description library so that event knows what type of arguments the SynthDef has.<span class="Apple-converted-space">  </span>Use <b>.store</b> or <b>.memStore</b> (instead of load or send) to create a Synth Description (SynthDesc) and store it in the SynthDescLib. The difference between store and memStore is that store rights the synthdef file to disk so that the definition will be loaded automatically in the future. memStore makes the synthdef ready to use with event patterns, but does not write the file to disk.. See <b><span class="s4">[SynthDef]</span></b> help.</p>
+<p class="p3">To use a SynthDef other than the default, we need to read the synth description library so that event knows what type of arguments the SynthDef has.<span class="Apple-converted-space">  </span>Use <b>.store</b> or <b>.memStore</b> (instead of load or send) to create a Synth Description (SynthDesc) and store it in the SynthDescLib. The difference between store and memStore is that store rights the synthdef file to disk so that the definition will be loaded automatically in the future. memStore makes the synthdef ready to use with event patterns, but does not write the file to disk.. See <b><span class="s4">[</b><a href="SC://SynthDef"><span class="s5"><b>SynthDef</span></b></a><b>]</b></span> help.</p>
 <p class="p2"><br></p>
 <p class="p3">Special <b>control name conventions</b><span class="Apple-converted-space">  </span>which should be used so that the SynthDef works with the default system:</p>
 <p class="p2"><br></p>
@@ -223,7 +224,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">synthdef and re-read the synthdesclib.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6"><span class="s1">SynthDef</span>(<span class="s5">"acid"</span>, { <span class="s1">arg</span> out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8, amp = 1;</p>
+<p class="p6"><span class="s1">SynthDef</span>(<span class="s6">"acid"</span>, { <span class="s1">arg</span> out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8, amp = 1;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pan2</span>.ar(</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(</p>
@@ -285,7 +286,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">)</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p3">Using <a href="../../../../../SuperCollider3.1/Help/Libraries/JITLib/Patterns/Pdef.html"><span class="s6">Pdef</span></a> (JITLib) makes it easy to replace patterns on the fly:</p>
+<p class="p3">Using <a href="../../../../../../../SuperCollider3.1/Help/Libraries/JITLib/Patterns/Pdef.html"><span class="s7">Pdef</span></a> (JITLib) makes it easy to replace patterns on the fly:</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p6">(</p>
@@ -299,7 +300,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">)</p>
 <p class="p6">(</p>
 <p class="p6"><span class="s1">Pdef</span>(<span class="s2">\buckyball</span>, <span class="s1">Pbind</span>(<span class="s2">\instrument</span>,<span class="s2">\acid</span>, <span class="s2">\dur</span>,<span class="s1">Pseq</span>([0.25,0.5,0.25],<span class="s1">inf</span>), <span class="s2">\root</span>,[-24,-17],<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">\degree</span>,<span class="s1">Pseq</span>([0b,3b,5b,7b,9b,11b,5b,0b],<span class="s1">inf</span>), <span class="s2">\pan</span>,<span class="s1">Pfunc</span>({1.0.rand2}),<span class="Apple-converted-space">  </span><span class="s7">//notice the flats</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">\degree</span>,<span class="s1">Pseq</span>([0b,3b,5b,7b,9b,11b,5b,0b],<span class="s1">inf</span>), <span class="s2">\pan</span>,<span class="s1">Pfunc</span>({1.0.rand2}),<span class="Apple-converted-space">  </span><span class="s8">//notice the flats</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">\cut</span>,<span class="s1">Pxrand</span>([1000,500,2000,300],<span class="s1">inf</span>), <span class="s2">\rez</span>,<span class="s1">Pfunc</span>({0.7.rand +0.3}), <span class="s2">\amp</span>,0.2));</p>
 <p class="p6">)</p>
 <p class="p5"><br></p>
@@ -319,7 +320,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">(</p>
 <p class="p4">//efx synthdef- dig the timing on the delay and the pbind.<span class="Apple-converted-space">  </span>:-P</p>
-<p class="p6"><span class="s1">SynthDef</span>(<span class="s5">"pbindefx"</span>, { <span class="s1">arg</span> out, in, time1=0.25, time2=0.5; <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p6"><span class="s1">SynthDef</span>(<span class="s6">"pbindefx"</span>, { <span class="s1">arg</span> out, in, time1=0.25, time2=0.5; <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>var audio, efx;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>audio = <span class="s1">In</span>.ar([20,21],2);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>efx=<span class="s1">CombN</span>.ar(audio, 0.5, [time1,time2], 10, 1, audio); <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
@@ -327,12 +328,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">}).load(s);</p>
 <p class="p10"><br></p>
 <p class="p4">//create efx synth</p>
-<p class="p6"><span class="s1">a = Synth</span>.after(1, <span class="s5">"pbindefx"</span>);</p>
+<p class="p6"><span class="s1">a = Synth</span>.after(1, <span class="s6">"pbindefx"</span>);</p>
 <p class="p10"><br></p>
 <p class="p4">//if you don't like the beats change to 0.4,0.24</p>
 <p class="p4">//a.set(\time1,0.4, \time2,0.24);</p>
 <p class="p5"><br></p>
-<p class="p6"><span class="s1">SynthDef</span>(<span class="s5">"acid"</span>, { <span class="s1">arg</span> out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;</p>
+<p class="p6"><span class="s1">SynthDef</span>(<span class="s6">"acid"</span>, { <span class="s1">arg</span> out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pan2</span>.ar(</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(</p>
