@@ -5,7 +5,7 @@ MIDIEndPoint {
 		^super.newCopyArgs(device, name, uid)
 	}
 	printOn { arg stream;
-		stream << this.class.name << "(" <<*
+		stream << this.class.name << "(" <<<*
 			[device, name]  <<")"
 	}
 }
