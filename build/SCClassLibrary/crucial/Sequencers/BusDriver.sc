@@ -26,15 +26,17 @@ StreamKrDur : BusDriver {
 	var <>values,<>durations;
 	var valst,durst;
 
-	*new { arg values=0.0,deltas=0.25,lag=0.0;
+	*new { arg values=0.0,durations=0.25,lag=0.0;
 		// make refs of arrays into Pseq
 		if(values.isKindOf(Ref),{
 			values = Pseq(values.value,inf);
 		});
-		if(deltas.isKindOf(Ref),{
-			deltas = Pseq(deltas.value,inf);
+		if(durations.isKindOf(Ref),{
+			durations = Pseq(durations.value,inf);
+		},{
+			durations = durations.loadDocument;
 		});
-		^super.new.values_(values).durations_(deltas.loadDocument).lag_(lag).skdinit
+		^super.new.values_(values).durations_(durations).lag_(lag).skdinit
 	}
 	skdinit {
 		sched = TempoClock.default;
