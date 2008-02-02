@@ -228,6 +228,8 @@ SampleSpec : ScalarSpec {
 	canAccept { arg ting; ^ting.isKindOf(Sample) }
 
 }
+
+// abstract class for container objects whose content items conform to itemSpec
 HasItemSpec : ScalarSpec {
 	var <>itemSpec;
 	*new { arg itemSpec;
@@ -242,12 +244,15 @@ HasItemSpec : ScalarSpec {
 	default { ^itemSpec.default }
 	storeArgs { ^[itemSpec] }
 }
+
+// an array that has items that conform to itemSpec
 ArraySpec : HasItemSpec {
 	canAccept { arg ting;
 		^ting.isArray // ... and every is in itemSpec
 	}
 }
 
+// a stream that returns items conforming to the itemSpec
 StreamSpec : HasItemSpec {
 	constrain { arg value; ^itemSpec.constrain(value) }
 	canAccept { arg ting;
@@ -257,25 +262,24 @@ StreamSpec : HasItemSpec {
 	defaultControl {  arg val; ^IrNumberEditor(val ? itemSpec.default, itemSpec) }
 }
 
+// a player whose output conforms to itemSpec
 PlayerSpec : HasItemSpec {
 	canAccept { arg ting;
 		^(ting.isKindOf(AbstractPlayer) and: {ting.spec == itemSpec})
 	}
 }
 
-
 // for generic object input to a Patch
-
+ 
 ObjectSpec : Spec {
-	var	<>defaultControl;
+	var  <>defaultControl;
 
 	*new { |obj|
 		^super.newCopyArgs(obj)
 	}
-	
-	storeOn { |stream|
-		stream << "ObjectSpec(";
-		defaultControl.storeOn(stream);
-		stream << ")";
+
+	storeArgs { |stream|
+		^[defaultControl]
 	}
 }
+

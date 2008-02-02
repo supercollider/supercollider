@@ -91,7 +91,7 @@ Instr  {
 			1
 		});
 	}
-	path { ^path /*?? {dir ++ name.first.asString ++ ".rtf"}*/ }
+	path { ^path }
 
 	maxArgs { ^this.argsSize }
 	argsSize { ^func.def.argNames.size }
@@ -137,13 +137,13 @@ Instr  {
 	store { 
 		var args;
 		args = this.specs.collect({ arg spec,i;
-					if(spec.rate == \control or: spec.rate == \stream,{
-						IrNumberEditor(this.initAt(i),spec);
-					},{
-						spec.defaultControl(this.initAt(i))
-					})
-				}); 
-			^this.asSynthDef(args).store
+				if(spec.rate == \control or: spec.rate == \stream,{
+					IrNumberEditor(this.initAt(i),spec);
+				},{
+					spec.defaultControl(this.initAt(i))
+				})
+			}); 
+		^this.asSynthDef(args).store
 	}
 	asDefName {
 		^this.store.name
@@ -269,7 +269,16 @@ Instr  {
 		
 		^nil
 	}
+	dotNotation {
+		^String.streamContents({ arg s;
+			name.do({ arg n,i;
+				if(i > 0,{ s << $. });
+				s << n;
+			})
+		})
+	}
 	
+	// this is a tilda delimited version of the name
 	asSingleName {
 		^String.streamContents({ arg s;
 			name.do({ arg n,i;
@@ -284,10 +293,16 @@ Instr  {
 	
 	*loadAll {
 		var quarkInstr;
-		(this.dir ++ "*").pathMatch.do({ arg path; path.loadPath(false) });
+		(this.dir ++ "*").pathMatch.do({ arg path; 
+			if(path.last != $/,{
+				path.loadPath(false)
+			})
+		});
 		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr/*").pathMatch;
 		quarkInstr.do({ |path|
-			path.loadPath(true);
+			if(path.last != $/,{
+				path.loadPath(false);
+			})
 		});
 	}
 	*clearAll {
