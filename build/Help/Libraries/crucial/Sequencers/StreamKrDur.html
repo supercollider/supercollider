@@ -5,37 +5,38 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 26.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a71e12}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #942b17}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; min-height: 12.0px}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Monaco; min-height: 17.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #316c17}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0019b7}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #316c17}
-p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; color: #a71e12; min-height: 11.0px}
-span.s1 {color: #0019b7}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #42691d}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #001fb3}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17; min-height: 12.0px}
+p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #42691d}
+p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
+p.p22 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; color: #942b17; min-height: 11.0px}
+span.s1 {color: #001fb3}
 span.s2 {color: #000000}
 span.s3 {font: 10.0px Monaco; color: #000000}
 span.s4 {font: 9.0px Monaco; color: #000000}
 span.s5 {font: 10.0px Monaco}
 span.s6 {font: 9.0px Monaco}
-span.s7 {color: #a71e12}
-span.s8 {color: #316c17}
+span.s7 {color: #942b17}
+span.s8 {color: #42691d}
 span.s9 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -43,24 +44,23 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>StreamKrDur</b></p>
 <p class="p2"><br></p>
-<p class="p3">superclass: StreamKr ... AbstractPlayer</p>
+<p class="p3">superclass: BusDriver -&gt; AbstractPlayer</p>
 <p class="p4"><br></p>
 <p class="p3"><b>StreamKrDur.new(pattern,durations,lagTime)</b></p>
 <p class="p4"><br></p>
-<p class="p3">This plays a pattern in real time on the client, and sends those values as /c_set messages to its bus on the server.</p>
+<p class="p3">This plays a pattern in real time in the language, and sends those values as /c_set messages to its bus on the server.</p>
 <p class="p3">Durations are specified in beats by a second pattern.</p>
 <p class="p4"><br></p>
 <p class="p3">Its timing are exact, its messages are sent to the server with a small latency period before they should be played.<span class="Apple-converted-space">  </span>That is to say when you start playing a StreamKrDur, it will run slightly and exactly ahead of time.</p>
-<p class="p3">It is cancellable and stoppable within the value of Server-latency.</p>
-<p class="p4"><br></p>
-<p class="p3">It is extremely efficient in CPU usage on the client, using less than it takes to switch from one text window to another.</p>
+<p class="p3">It is cancellable and stoppable within Server-latency.</p>
 <p class="p4"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>pattern</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a Pattern or Stream of floats<span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a Pattern or Stream of floats</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or a Ref of an array of values eg. `[200,400,600]</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>durations</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a float specifying the beat constant duration</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a stream or pattern of beat durations</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or a ref to an array of beat durations eg `[0.25,0.5,1]</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a Pattern or Stream of beat durations</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or a Ref to an array of beat durations eg `[0.25,0.5,1]</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>lag</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>lag time for a Lag.kr that will be added to the output. <span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if 0.0 (default) no Lag will be used.</p>
@@ -161,8 +161,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span> p.gui;</p>
 <p class="p14">)</p>
 <p class="p2"><br></p>
-<p class="p14">A metronome</p>
-<p class="p2"><br></p>
+<p class="p5"><b>A metronome</b></p>
 <p class="p7">(</p>
 <p class="p7"><span class="s1">var</span> nome,layout;</p>
 <p class="p7">nome = <span class="s1">Patch</span>({ <span class="s1">arg</span> beat,freq,amp;</p>
@@ -188,18 +187,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">},minWidth: 250);</p>
 <p class="p8"><br></p>
 <p class="p7">)</p>
-<p class="p8"><br></p>
-<p class="p7">In this case since the beat clock, and both stream kr durs are running all at the same tempo, you</p>
-<p class="p7">could better use an InstrGateSpawner and do separate events. Only one scheduler then instead of 2.<span class="Apple-converted-space"> </span></p>
-<p class="p7">See the example there.</p>
-<p class="p8"><br></p>
-<p class="p7">But if you wanted them in different syncs, different streams and a continous running synth<span class="Apple-converted-space"> </span></p>
-<p class="p7">(have fun with the Decay), then this would be a good starting point.</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p3">with a Pbind you are creating a new event for every note and creating new UGens and a new Synth each time.<span class="Apple-converted-space">  </span>this is not so efficient.<span class="Apple-converted-space">  </span>what I am doing here is like an analog synth:<span class="Apple-converted-space">  </span>the oscillators play constantly and it is gated to create notes.<span class="Apple-converted-space">  </span>its more fluid, liquid and uses significantly less cpu.<span class="Apple-converted-space">  </span>this can even be done with samples.</p>
-<p class="p14">(</p>
 <p class="p18"><br></p>
+<p class="p5">In this case since the beat clock, and both stream kr durs are running all at the same tempo, it</p>
+<p class="p5">would be slightly more efficient to use an InstrGateSpawner and do separate events. Only one scheduler then instead of 2.<span class="Apple-converted-space"> </span></p>
+<p class="p5">See the example in InstrGateSpawner</p>
+<p class="p18"><br></p>
+<p class="p5">But if you wanted them in different syncs, different streams and a continuos running synth<span class="Apple-converted-space"> </span></p>
+<p class="p5">(and have fun with the Decay), then this would be a good starting point.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">With a Pbind you are creating a new event for every note and creating new UGens and a new Synth each time.<span class="Apple-converted-space">  </span>This is more like an analog synth:<span class="Apple-converted-space">  </span>the oscillators play constantly and they are gated to create notes. <span class="Apple-converted-space"> </span></p>
+<p class="p14">(</p>
+<p class="p19"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Tempo</span>.bpm = 130;</p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Instr</span>([<span class="s8">\oscillOrc</span>,<span class="s8">\trigged</span>, <span class="s8">\pmosc</span>],{ <span class="s1">arg</span> trig=0.0,freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;</p>
@@ -212,13 +211,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>});</p>
 <p class="p8"><br></p>
-<p class="p19"><span class="s2"><span class="Apple-tab-span">	</span>p=</span><span class="s1">Patch</span><span class="s2">.new([</span>\oscillOrc<span class="s2">,</span>\trigged<span class="s2">, </span>\pmosc<span class="s2">],</span></p>
+<p class="p20"><span class="s2"><span class="Apple-tab-span">	</span>p=</span><span class="s1">Patch</span><span class="s2">.new([</span>\oscillOrc<span class="s2">,</span>\trigged<span class="s2">, </span>\pmosc<span class="s2">],</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>[</p>
 <p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>BeatClockPlayer<span class="s2">(16.0),</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>StreamKrDur<span class="s2">(<span class="Apple-converted-space"> </span></span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Prand</span>(<span class="s1">Array</span>.fill(rrand(4,16),{ rrand(20,80).midicps }),<span class="s1">inf</span>),</p>
-<p class="p20"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> 0.25,</span>// a float</p>
+<p class="p21"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> 0.25,</span>// a float</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> 0.1),</p>
 <p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></span>StreamKrDur<span class="s2">(<span class="Apple-converted-space"> </span></span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">Pbrown</span>(40,100,100,<span class="s1">inf</span>),<span class="Apple-converted-space"> </span></p>
@@ -234,27 +233,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span>  </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span> p.gui;</p>
 <p class="p14">)</p>
-<p class="p21"><br></p>
-<p class="p21"><span class="Apple-tab-span">	</span></p>
-<p class="p21"><span class="Apple-tab-span">	</span></p>
-<p class="p20">//durations will be multiples of trigger pulse</p>
-<p class="p20">//</p>
-<p class="p20">//stream kr dur has to find the lowest common multiple</p>
-<p class="p20">//</p>
-<p class="p20">//l = [0.125,0.25,1.0,1.5];</p>
-<p class="p20">//</p>
-<p class="p20">//l = [0.25,0.25 + 0.125, 1.0,1.5];</p>
-<p class="p20">//</p>
-<p class="p20">////fails</p>
-<p class="p20">//l = Array.fill(8,{ rrand(0.1,0.5) });</p>
-<p class="p20">//</p>
-<p class="p20">//(l % (l.minItem)) every is 0</p>
-<p class="p20">//or</p>
-<p class="p20">//</p>
-<p class="p20">//g = (l % (l.minItem)).reject({ arg t; t==0 }).minItem</p>
-<p class="p20">//</p>
-<p class="p20">//l / g<span class="Apple-converted-space">  </span>should be all integers</p>
-<p class="p20">//<span class="Apple-tab-span">	</span>or it fails</p>
-<p class="p20">//</p>
+<p class="p22"><br></p>
 </body>
 </html>

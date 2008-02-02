@@ -11,14 +11,13 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
 span.s3 {color: #000000}
-span.s4 {color: #0000bf}
-span.s5 {color: #007300}
+span.s4 {color: #0013bb}
+span.s5 {color: #316f11}
 span.s6 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -52,8 +51,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">SynthDescLib</span>.global.synthDescs.at(<span class="s5">\default</span>).msgFunc.postcs;</p>
 <p class="p2"><br></p>
-<p class="p1">SynthDescs are needed by the event stream system, so when using <b>Pbind</b> and <b>NotePlayer</b>,</p>
-<p class="p1">the instruments' default parameters are derived from the SynthDesc.</p>
+<p class="p1">SynthDescs are needed by the event stream system, so when using <b>Pbind</b>, the instruments' default parameters are derived from the SynthDesc.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p1"><b>aSynthDef.store</b> and <b>aSynthDef.memStore</b> also create a synthDesc in the global library. <b>.store</b> saves a synthdef file on disk (like .load); <b>.memStore</b> creates the synthDesc wholly in memory and sends the synthdef to registered servers.</p>
@@ -64,9 +62,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">XOut</span>.ar(out, xFade, <span class="s4">SinOsc</span>.ar(freq))<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>}).store</p>
 <p class="p5"><span class="Apple-tab-span">	</span>);</p>
-<p class="p6"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">SynthDescLib</span><span class="s3">.global.browse; </span>// browse the properties of SynthDescs</p>
-<p class="p6"><br></p>
-<p class="p6"><br></p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">SynthDescLib</span><span class="s3">.global.browse; </span>// browse the properties of SynthDescs</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
 </body>
 </html>

@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-span.s1 {color: #0019b7}
-span.s2 {color: #326f17}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0424af}
+span.s1 {color: #0424af}
+span.s2 {color: #4e6a22}
 span.s3 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -28,12 +28,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">a StreamSpec specifies an input that will be used in a stream or pattern.</p>
 <p class="p3">The default control is an IrNumberControl, though usually you will be more</p>
-<p class="p3">intereseted in using Patterns as inputs. <span class="Apple-converted-space"> </span></p>
+<p class="p3">interested in using Patterns as inputs. <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p3">The most common use is for InstrSpawner and InstrGateSpawner. An IrNumberControl<span class="Apple-converted-space"> </span></p>
-<p class="p3">or a Pattern (any object that returns a rate of \stream) will result in the creation</p>
-<p class="p3">of an .ir rate input to the synth function.<span class="Apple-converted-space">  </span>Then on each spawning, the synth</p>
-<p class="p3">is created and on that .ir rate input is passed in the next value of the stream.</p>
+<p class="p3">The most common use is for InstrSpawner and InstrGateSpawner. <span class="Apple-converted-space">  </span>These spawn single usually short events just like Patterns, so only an initial value is needed, not a continous control input.</p>
+<p class="p2"><br></p>
+<p class="p3">An IrNumberControl<span class="Apple-converted-space">  </span>or a Pattern (any object that returns a rate of \stream) will result in the creation of an .ir rate input to the synth function.<span class="Apple-converted-space">  </span>Then on each spawning, the synth is created and on that .ir rate input is passed in the next value of the stream.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s1">StreamSpec</span>( [ 0.01, 8.0,<span class="s2">\exp</span> ] )</p>
