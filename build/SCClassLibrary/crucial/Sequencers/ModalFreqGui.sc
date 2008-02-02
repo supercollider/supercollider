@@ -16,14 +16,3 @@ ModalFreqGui : KrPlayerGui {
 
 }
 
-
-Midi2FreqGui : KrPlayerGui {
-
-	guiBody { arg layout;
-		CXLabel(layout.startRow,"note:");
-		model.note.gui(layout);
-		CXLabel(layout.startRow,"octave:");
-		model.octave.gui(layout);
-	}
-
-}
