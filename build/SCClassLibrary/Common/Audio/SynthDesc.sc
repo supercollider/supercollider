@@ -116,7 +116,12 @@ SynthDesc {
 		var ugenInputs, ugen;
 		var control;
 		
-		ugenClass = stream.getPascalString.asSymbol.asClass;
+		ugenClass = stream.getPascalString.asSymbol;
+		if(ugenClass.asClass.isNil,{ 
+			Error("No UGen class found for" + ugenClass + "which was specified in synth def file: " + this.name ++ ".scsyndef").throw;
+		});
+		ugenClass = ugenClass.asClass;
+
 		rateIndex = stream.getInt8;
 		numInputs = stream.getInt16;
 		numOutputs = stream.getInt16;
