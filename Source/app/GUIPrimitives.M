@@ -969,9 +969,9 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
         NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) return errFailed;
 		docCreatedFromLang = true;
-        
-		[docctl newDocument: nil];
-        MyDocument* doc = [docctl currentDocument];
+        NSError * outError;
+		MyDocument* doc = [docctl openUntitledDocumentAndDisplay:YES  error: &outError];
+//      MyDocument* doc = [docctl currentDocument];
         if (!doc) {
 			docCreatedFromLang = false;
 			return errFailed;
