@@ -79,32 +79,10 @@ HasPatchIns : AbstractPlayer {
 		^array
 	}
 	
-	controllables { arg offset=0, array;
-		var inputs;
-		var defaultControl;
-		inputs = this.inputs;
-		if(array.isNil,{ array = [] });
-		inputs.do({ arg a,i;
-			var spec;
-			spec = this.specAt(i);
-			if(spec.rate == \control /* and: {
-				a.isNumber or: {a.isKindOf(KrNumberEditor)} or: {
-					defaultControl = ControlPrototypes.forSpec(spec,this.argNameAt(i));
-					a.isKindOf(defaultControl.class)
-				}
-			}*/,{ // if
-				array = array.add([a, offset + i, this.argNameAt(i), this.specAt(i) ]);
-			},{ // else
-				if(a.isKindOf(HasPatchIns),{
-					a.controllables(offset + i, array)
-				})
-			})
-		});
-		^array
-	}
 	setInput { arg ai,ag;
 		^this.subclassResponsibility(thisMethod)
 	}
+	// see deepSpecAt below
 	setDeepInput { arg ai,ag,offset=0;
 		var inputs;
 		inputs = this.inputs;
@@ -122,22 +100,24 @@ HasPatchIns : AbstractPlayer {
 			}
 		})
 	}
-	deepSpecAt { arg ai,offset=0;
+	// this finds the spec of an input in a subpatch.
+	// argi is an index into an array of all args of this patch followed by depth first traversal of all subpatches
+	deepSpecAt { arg argi,offset=0;
 		var inputs,deepSpec;
 		inputs = this.inputs;
-		if(inputs.size + offset > ai,{
-			^this.specAt(ai - offset)
+		if(inputs.size + offset > argi,{
+			^this.specAt(argi - offset)
 		});
 		offset = offset + inputs.size;
 		inputs.detect({ arg a,i;
 			a.isKindOf(HasPatchIns) and: { 
-				deepSpec = a.deepSpecAt(ai,offset + i);
+				deepSpec = a.deepSpecAt(argi,offset + i);
 				offset = offset + a.inputs.size;
 				deepSpec.notNil
 			}
 		});
 		^deepSpec
-	}		
+	}
 }
 
 Patch : HasPatchIns  {
@@ -383,13 +363,13 @@ Patch : HasPatchIns  {
 	
 	children { ^args }
 
-	printOn { arg s; s << this.class.name << "(" << instr.name.asCompileString << " )"; }
+	printOn { arg s; s << this.class.name << "(" <<< instr.dotNotation << " )"; }
 	storeParamsOn { arg stream;
 		var last;
 		if(this.class === Patch,{ // an indulgence ...
 			last = args.size - 1;
 			// anything with a path gets stored as abreviated
-			stream << "(" <<< this.instr.name << ",[";
+			stream << "(" <<< this.instr.dotNotation << ",[";
 				if(stream.isKindOf(PrettyPrintStream),{ stream.indent(1); });
 				args.do({ arg ag,i;
 					stream.nl;

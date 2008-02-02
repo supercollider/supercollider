@@ -22,7 +22,7 @@ ControlPrototypes {
 			//}
 			// by the class of the spec
 			?? {this.firstAt(spec.class,spec)}
-		)	
+		)
 	}
 
 	*firstAt { arg argName,spec;
@@ -64,7 +64,6 @@ ControlPrototypes {
 	}
 	*listForSpec { arg argName,spec;
 		var try,class,specname;
-
 		try = this.at(argName,spec);
 		if(try.notNil,{ ^try });
 
@@ -75,8 +74,9 @@ ControlPrototypes {
 		});
 		
 		class = spec.class;
+
 		while({
-			try.isNil and: {class != Object}
+			try.isNil and: class != Object
 		},{
 			try = this.at(class,spec);
 			class = class.superclass;
