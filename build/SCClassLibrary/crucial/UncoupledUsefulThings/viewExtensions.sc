@@ -131,7 +131,7 @@
 		// "this" is a Rect with coordinates relative to the view
 	setOriginAbsolute { |view|
 		var	b;
-		if((view.tryPerform(\relativeOrigin) ? false).not) {
+		if((view.tryPerform(\relativeOrigin) ? false)) {
 			b = view.tryPerform(\absoluteBounds) ?? { view.bounds };
 			^this.moveBy(b.left, b.top)
 		} {
