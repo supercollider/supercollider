@@ -60,6 +60,8 @@ SynthDesc {
 	readSynthDef { arg stream, keepDef=false;
 		var numControls, numConstants, numControlNames, numUGens;
 		
+		protect {
+		
 		inputs = [];
 		outputs = [];
 		
@@ -105,7 +107,10 @@ SynthDesc {
 			constants = nil;
 		};
 		this.makeMsgFunc;
-		UGen.buildSynthDef = nil;
+		
+		} {
+			UGen.buildSynthDef = nil;
+		}
 		
 	}
 	
