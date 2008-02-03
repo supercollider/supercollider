@@ -1913,6 +1913,7 @@ void Dbufwr_next(Dbufwr *unit, int inNumSamples)
 			int32 iphase = (int32)phase; 
 			float* table0 = bufData + iphase * bufChannels;
 			table0[0] = val;
+			OUT0(0) = val;
 		}
 		else
 		{
@@ -1929,8 +1930,8 @@ void Dbufwr_Ctor(Dbufwr *unit)
   unit->m_fbufnum = -1e9f;
 
   Dbufwr_next(unit, 0);
-  ClearUnitOutputs(unit, 1);
-   
+  //ClearUnitOutputs(unit, 1);
+	OUT0(0) = 0.f; // output what is written
 }
 
 
