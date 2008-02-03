@@ -27,8 +27,7 @@
 
 + Bus {
 	scope { arg bufsize = 4096, zoom;
-		//^server.scope(numChannels, index, bufsize, zoom, rate) // original
-		^server.scope(numChannels, this.index, bufsize, zoom, rate) // THOR
+		^server.scope(numChannels, index, bufsize, zoom, rate);
 	}
 }
 

@@ -17,19 +17,20 @@ RM octaver
 \f1\fs24 \cf0 \
 
 \f0\fs18 \cf2 \
-inSignal is RingModulated with a sinusoid with half freq
+inSignal is RingModulated by a sinusoidal tone with half frequency.
 \f1\fs24 \cf0 \
 
-\f0\fs18 \cf2 the resulting spectrum is given by all the components with\'ca
+\f0\fs18 \cf2 The resulting spectrum is given by all the components of inSignal with\'ca
 \f1\fs24 \cf0 \
 
 \f0\fs18 \cf2 half freqs.
 \f1\fs24 \cf0 \
 
-\f0\fs18 \cf2 This results in a new spectrum one 8ve below with only odd partials\'ca
+\f0\fs18 \cf2 This means that the new spectrum is a one 8ve below version of the input signal's one, \
+with only odd partials.\'ca
 \f1\fs24 \cf0 \
 
-\f0\fs18 \cf2 inSignal is the added again, so that even partials are\'ca
+\f0\fs18 \cf2 As a consequence, if inSignal is added again, even partials are\'ca
 \f1\fs24 \cf0 \
 
 \f0\fs18 \cf2 recovered.
@@ -52,7 +53,7 @@ See:
 \pard\pardeftab720\ql\qnatural
 
 \f0\fs18 \cf2 \
--av-
+andreavalle
 \f1\fs24 \cf0 \
 
 \f0\fs18 \cf2 \
@@ -61,31 +62,30 @@ See:
 \pard\pardeftab720\ql\qnatural
 
 \f0\fs18 \cf0 \
-\
+s = Server.local.waitForBoot(\{\
 \pard\pardeftab720\ql\qnatural
-\cf4 SynthDef\cf0 .new(\cf5 \\RmOctaver\cf0 , \{ \cf4 var\cf0  in, out = 0, freq, hasFreq, amp ;
+\cf4 	SynthDef\cf0 .new(\cf5 \\RmOctaver\cf0 , \{ \cf4 var\cf0  in, out = 0, freq, hasFreq ;
 \f1\fs24 \
-\pard\pardeftab720\ql\qnatural
-
-\f0\fs18 \cf0 	in = \cf4 AudioIn\cf0 .ar(1) ;
+	
+\f0\fs18 	in = \cf4 SoundIn\cf0 .ar(0) ;
 \f1\fs24 \
-
+	
 \f0\fs18 	# freq, hasFreq = \cf4 Pitch\cf0 .kr(in) ;
 \f1\fs24 \
-
-\f0\fs18 	amp = \cf4 Amplitude\cf0 .kr(in) ;
+	
+\f0\fs18 	Out.ar(out, \cf4 SinOsc\cf0 .ar(freq: freq*0.5)*in+in);
 \f1\fs24 \
-
-\f0\fs18 	Out.ar(out, \cf4 SinOsc\cf0 .ar(freq: freq*0.5, mul:amp*4)*in+in);
-\f1\fs24 \
-
+	
 \f0\fs18 \}).send(s) ;
 \f1\fs24 \
+\pard\pardeftab720\ql\qnatural
 
-\f0\fs18 )
+\f0\fs18 \cf0 \})\
+)
 \f1\fs24 \
 
 \f0\fs18 \
+\
 \pard\pardeftab720\ql\qnatural
 \cf4 Synth\cf0 .new(\cf5 \\RmOctaver\cf0 ) ;
 \f1\fs24 \
