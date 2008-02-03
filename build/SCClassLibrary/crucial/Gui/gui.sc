@@ -14,7 +14,7 @@
 	}
 
 	smallGui { arg  ... args;
-		if(this.guiClass.findMethod(\smallGui).notNil,{
+		if(this.guiClass.findRespondingMethodFor(\smallGui).notNil,{
 			^this.guiClass.new(this).performList(\smallGui,args);
 		},{
 			^Tile(this,args.first.asPageLayout)
@@ -163,7 +163,9 @@
 	}
 }
 + SCLayoutView {
-	asFlowView {}
+	asFlowView { |bounds|
+		^FlowView(this,bounds ?? {this.bounds})
+	}
 }
 
 + FlowView {
