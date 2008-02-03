@@ -1,13 +1,13 @@
 
+// SCViewHolder makes it possible to add more capabilities by holding an SCView, not subclassing it
 SCViewHolder {
-	
+
 	classvar <>consumeKeyDowns = false;// should the view by default consume keydowns
 
-	// SCViewHolder makes it possible to add more capabilities by holding an SCView, not subclassing it
 	var <view;
-	
+
 	view_ { arg v;
-		// subclasses need ALWAYS use this method to set the view
+		// subclasses need to ALWAYS use this method to set the view
 		view = v;
 		view.onClose = { this.viewDidClose; };
 	}
@@ -27,7 +27,7 @@ SCViewHolder {
 	}
 	keyDownResponder { ^nil }
 	enableKeyDowns { this.keyDownAction = this.keyDownResponder }
-	
+
 	asView { ^view }
 	bounds { ^view.bounds }
 	bounds_ { arg b; view.bounds_(b) }
@@ -44,7 +44,7 @@ SCViewHolder {
 	font_ { arg f;
 		view.font = f;
 	}
-	
+
 		// allow all messages the view understands to delegate to the view
 	doesNotUnderstand { |selector ... args|
 		var	result;
@@ -69,16 +69,13 @@ RelativeToParent {
 	}
 }
 
-
-// backwards compat because i changed the name of the class
-SCViewAdapter : SCViewHolder { }
-
+SCViewAdapter : SCViewHolder {}
 
 /**
   * a non-visible view that keeps the place in a flow layout
   * to mark where a row was started.  then when the view is reflowed due to resizing etc.
   * the layout can do a new row when this is encountered.
-  * this is only added by FlowView.startRow 
+  * this is only added by FlowView.startRow
   */
 StartRow : SCViewHolder {
 	*new { arg parent,bounds;
@@ -90,6 +87,12 @@ StartRow : SCViewHolder {
 	bounds { ^Rect(0,0,0,0) }
 	bounds_ {}
 	prClose {}
+	remove {
+		super.remove;
+		if(view.notNil,{
+			view.prRemoveChild(this)
+		});
+	}
 }
 
 /**
@@ -99,7 +102,7 @@ FlowView : SCViewHolder {
 
 	var	<parent;
 	var	autoRemoves;
-	
+
 	*layout { arg f,bounds;
 		var v;
 		v = this.new(nil,bounds);
@@ -111,42 +114,39 @@ FlowView : SCViewHolder {
 		^super.new.init(parent, bounds);
 	}
 	init { arg argParent, bounds;
-		var w;
-//">> FlowView:init".postln;
+		var w,parentView;
 		parent = argParent ?? { GUI.window.new("",bounds).front };
-//try { parent.asView.instVarAt(0).postln };
-//bounds.debug("bounds");
+		parentView = parent.asView;
 		if(bounds.notNil,{
-			bounds = bounds.asRect  // .moveTo(0,0)  // why was this here? bad idea
+			bounds = bounds.asRect
 		},{
-			bounds = parent.asView.bounds.insetAll(2,2,2,2);
-			if(parent.tryPerform(\relativeOrigin) ? false) {
+			bounds = parentView.bounds.insetAll(2,2,2,2);
+			if(parentView.tryPerform(\relativeOrigin) ? false) {
 				bounds = bounds.setOriginRelativeTo(parent);
 			};
 		});
-			// this adds the composite view to the parent composite view
-		view = this.class.viewClass.new(parent.asView, bounds);
-//"created composite view [".post; view.instVarAt(0).post; "]".postln;
-			// now a tricky hack... the parent needs the FlowView as a child, not the composite view
-			// so I will replace the last-added child with THIS
-		parent.asView.children[parent.asView.children.size-1] = this;
+		// this adds the composite view to the parent composite view
+		view = this.class.viewClass.new(parentView, bounds);
+		// now a tricky hack... the parent needs the FlowView as a child, not the composite view
+		// so I will replace the last-added child with THIS
+		if(parentView.children[parentView.children.size-1] === view,{
+			parentView.children[parentView.children.size-1] = this;
+		},{
+			Error("FlowView unexpected result : parent's last child is not my view").throw;
+		});
 
+		// the parent might be a vertical, horizontal or flow
+		// and might now have placed me, so get the bounds
+		bounds = view.bounds;
 		if(view.tryPerform(\relativeOrigin) ? false) {
-			bounds = view.bounds.moveTo(0, 0);
-		} {
-			bounds = view.bounds;
+			bounds = bounds.moveTo(0, 0);
 		};
-//bounds.debug("initialize decorator bounds to");
-		// after i am placed by parent...
-		view.decorator = FlowLayout(bounds,Point(2, 2),Point(4, 4));
+		view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
 		autoRemoves = IdentitySet.new;
-//"<< FlowView:init".postln;
 	}
 
 	reflowAll {
-//">> FlowView:reflowAll - ".post;
-//view.instVarAt(0).postln;
-		view.decorator/*.bounds_(this.bounds)*/.reset;
+		view.decorator.reset;
 		view.children.do({ |widget|
 			if(widget.isKindOf( StartRow ),{
 				view.decorator.nextLine
@@ -154,8 +154,6 @@ FlowView : SCViewHolder {
 				view.decorator.place(widget);
 			})
 		});
-//"<< FlowView:reflowAll - ".post;
-//view.instVarAt(0).postln;
 	}
 	innerBounds { ^view.decorator.innerBounds }
 	resizeToFit { arg reflow = false,tryParent = false;
@@ -167,7 +165,7 @@ FlowView : SCViewHolder {
 		// should respect any settings !
 		//used.width = used.width.clip(this.getProperty(\minWidth),this.getProperty(\maxWidth));
 		//used.height = used.height.clip(this.getProperty(\minHeight),this.getProperty(\maxHeight));
-		
+
 		new = view.bounds.resizeTo(used.width,used.height);
 		view.bounds = new;
 
@@ -183,25 +181,17 @@ FlowView : SCViewHolder {
 		^new
 	}
 	bounds_ { arg b, reflow = true;
-//">> FlowView:bounds_: %, ".postf(b);
-//try { view.instVarAt(0).post };
-//"\n".post;
 		if(b != view.bounds,{
 			view.bounds = b;
 			if(view.decorator.notNil,{
 				if(view.tryPerform(\relativeOrigin) ? false) {
-					view.decorator.bounds = b.moveTo(0, 0) //.debug("set decorator bounds to");
+					view.decorator.bounds = b.moveTo(0, 0)
 				} {
-					view.decorator.bounds = b //.debug("set decorator bounds to");
+					view.decorator.bounds = b
 				};
 				reflow.if({ this.reflowAll; });
 			})
-		}/*, {
-			view.decorator.bounds.debug("decorator bounds remain");
-		}*/);
-//"<< FlowView:bounds_ ".post;
-//try { view.instVarAt(0).post };
-//"\n".post;
+		});
 	}
 	wouldExceedBottom { arg aBounds; ^view.decorator.wouldExceedBottom(aBounds) }
 	anyChildExceeds {
@@ -211,13 +201,13 @@ FlowView : SCViewHolder {
 			r.containsRect( c.bounds ).not
 		});
 	}
-			
+
 	// to replace PageLayout
 	layRight { arg x,y;
 		^Rect(0,0,x,y)
 	}
 	startRow {
-		view.add(StartRow.new/*(this)*/); //won't really put a view in there yet
+		view.add(StartRow.new); //won't really put a view in there yet
 		view.decorator.nextLine
 	}
 	removeOnClose { arg updater;
@@ -226,9 +216,9 @@ FlowView : SCViewHolder {
 	remove {
 		autoRemoves.do({ |updater| updater.remove });
 		autoRemoves = nil;
-			// am I still alive in the window?
+		// am I still alive in the window?
 		view.notClosed.if({
-				// since this is in the parent's children array, view.remove is not enough by itself
+			// since this is in the parent's children array, view.remove is not enough by itself
 			this.parent.prRemoveChild(this);
 			view.remove;
 		});
@@ -240,12 +230,12 @@ FlowView : SCViewHolder {
 	}
 	hr { arg color,height=3,borderStyle=1; // html joke
 		this.startRow;
-		// should fill all and still return a minimal bounds 
+		// should fill all and still return a minimal bounds
 		GUI.staticText.new(this,Rect(0,0,view.decorator.innerBounds.width - (2 * 4), height,0))
 				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
 	}
-	
-		// other messages to delegate -- must mimic SCLayoutView interface
+
+	// mimic SCLayoutView interface
 	children { ^view.children }
 	decorator { ^view.decorator }
 	decorator_ { |dec| view.decorator = dec }
@@ -254,6 +244,17 @@ FlowView : SCViewHolder {
 	}
 	removeAll {
 		view.removeAll;
+		// SCContainerView removeAll is a bit odd
+		// it relies on the children to remove themselves
+		// but a StartRow doesn't ever know its parent
+		// so it doesn't remove itself
+		view.children.do({ |child|
+			if(child.isKindOf(StartRow),{
+				view.prRemoveChild(child)
+			})
+		});
+
+		view.decorator.reset;
 	}
 	prRemoveChild { |child|
 		view.prRemoveChild(child);
@@ -278,12 +279,12 @@ SCButtonAdapter : SCViewHolder {
 	flowMakeView { arg layout,x,y;
 		this.view = GUI.button.new(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}); });
-	}		
+	}
 
 	makeViewWithStringSize { arg layout,stringsize,minWidth,minHeight;
 		// minWidth is now dependant on font size !
 		// NSFont-boundingRectForFont
-		// or NSString- (NSSize) sizeWithAttributes: (NSDictionary *) attributes 
+		// or NSString- (NSSize) sizeWithAttributes: (NSDictionary *) attributes
 		this.makeView( layout,
 					(stringsize.clip(3,55) * 7.9).max(minWidth?20),
 						(minHeight ) )
@@ -304,8 +305,8 @@ SCButtonAdapter : SCViewHolder {
 		s = view.states;
 		s.at(0).put(2,color);
 		view.states = s;
-	}	
-	labelColor_ { arg color; 	
+	}
+	labelColor_ { arg color;
 		var s;
 		s = view.states;
 		s.at(0).put(1,color);
@@ -317,7 +318,7 @@ SCButtonAdapter : SCViewHolder {
 ActionButton : SCButtonAdapter {
 
 	var <action;
-	
+
 	*new { arg layout,title,function,minWidth=20,minHeight,color,backcolor,font;
 		^super.new.init(layout,title,function,minWidth,minHeight,color,backcolor,font)
 	}
@@ -325,9 +326,12 @@ ActionButton : SCButtonAdapter {
 		var environment;
 		title = title.asString;
 		this.makeViewWithStringSize(layout,title.size,minWidth,minHeight);
-		view.states_([[title,color ?? {Color.black}, 
+		view.states_([[title,color ?? {Color.black},
 			backcolor ?? {Color.new255(205, 201, 201)}]]);
-		view.font_(font ?? {GUI.font.new("Helvetica",12.0)});
+		view.font_(font ?? {
+			GUI.font.new("Helvetica",12.0)
+			//GUI.font.performList(\new, GUI.skin.fontSpecs)
+		});
 		view.action_(function);
 		if(consumeKeyDowns,{ this.keyDownAction = {nil}; });
 	}
@@ -337,14 +341,14 @@ ActionButton : SCButtonAdapter {
 ToggleButton : SCButtonAdapter {
 
 	var <state,<>onFunction,<>offFunction;
-	
+
 	*new { arg layout,title,onFunction,offFunction,init=false,minWidth=20,minHeight;
 			^super.new.init(layout,init, title,minWidth,minHeight)
 				.onFunction_(onFunction).offFunction_(offFunction)
 	}
 	value { ^state }
 	toggle { arg way,doAction = true;
-		if(doAction,{		
+		if(doAction,{
 			this.prSetState(way ? state.not)
 		},{
 			state = way ? state.not;
@@ -365,7 +369,7 @@ ToggleButton : SCButtonAdapter {
 		view.setProperty(\value,state.binaryValue);
 		view.action_({this.prSetState(state.not)});
 	}
-	prSetState { arg newstate; 
+	prSetState { arg newstate;
 		state = newstate;
 		if(state,{
 			onFunction.value(this)
