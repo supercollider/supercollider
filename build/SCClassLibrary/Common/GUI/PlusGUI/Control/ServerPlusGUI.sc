@@ -4,7 +4,7 @@
 		var active, booter, killer, makeDefault, running, booting, stopped, bundling;
 		var recorder, scoper;
 		var countsViews, ctlr;
-		var dumping=false, label, gui, font;
+		var dumping=false, label, gui, font, volumeNum;
 		
 		if (window.notNil, { ^window.front });
 		
@@ -113,7 +113,9 @@
 			
 			}
 			{char === $m} { if(this.volume.isMuted) { this.unmute } { this.mute } }
-			{char === $0} { this.volume = 0.0; };
+			{char === $0 and: {volumeNum.hasFocus.not}} { 
+				this.volume = 0.0; 
+				};
 		};
 		
 		if (isLocal, {
@@ -218,7 +220,7 @@
 		if(isLocal or: { options.remoteControlVolume }) {
 		{
 			var volSpec, cpVol;
-			var volumeSlider, volumeNum, muteButton, muteActions, volController;
+			var volumeSlider, muteButton, muteActions, volController;
 			muteActions = [{this.unmute}, {this.mute}];
 			volSpec = [volume.min, volume.max, \db].asSpec;
 			
@@ -262,7 +264,6 @@
 					this.volume_(newdb);
 					volumeNum.value_(newdb);
 					})
-//				.step_(0.002)
 				.keyDownAction_({arg slider, char, modifiers, unicode, keycode;
 					if (char == $], { slider.increment; });
 					if (char == $[, { slider.decrement; });
