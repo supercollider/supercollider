@@ -43,7 +43,7 @@
 * 2008-01-24 demand ugens accept audio rate inputs correctly - jr
 * 2008-01-26 added Dbufwr ugen, for writing to buffers from a demand ugen chain  - jr
 * 2008-01-27 Main:version and associated methods for programmatically determining which version SC is - ds
-
+* 2008-02-03 Server:defaultRecDir class variable, to allow user to specify default rec location - ds
 
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////

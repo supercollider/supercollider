@@ -132,7 +132,7 @@ ServerOptions
 }
 
 Server : Model {
-	classvar <>local, <>internal, <>default, <>named, <>set, <>program;
+	classvar <>local, <>internal, <>default, <>named, <>set, <>program, <>defaultRecDir="recordings";
 	
 	var <name, <addr, <clientID=0;
 	var <isLocal, <inProcess;
@@ -674,8 +674,10 @@ Server : Model {
 	}
 	
 	prepareForRecord { arg path;
-		if (path.isNil) { path = "recordings/SC_" ++ Date.localtime.stamp ++ "." ++ 
-			recHeaderFormat; };
+		if (path.isNil) { 
+			path = defaultRecDir ++ "/SC_" ++ Date.localtime.stamp 
+							++ "." ++ recHeaderFormat; 
+		};
 		recordBuf = Buffer.alloc(this, 65536, recChannels,
 			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
 			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
