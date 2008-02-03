@@ -1,39 +1,39 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green115\blue0;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs18 \cf2 \
+\f0\fs18 \cf0 \
 (\
 a = 1.0;\
 b = 1.8;\
-x = \{ \cf3 |phi, a, b|\cf2  a * phi - (b * sin(phi)) \};\
-y = \{ \cf3 |phi, a, b|\cf2  a - (b * sin(phi + 0.5pi)) \};\
+x = \{ \cf2 |phi, a, b|\cf0  a * phi - (b * sin(phi)) \};\
+y = \{ \cf2 |phi, a, b|\cf0  a - (b * sin(phi + 0.5pi)) \};\
 \
 \pard\pardeftab560\ql\qnatural
-\cf2 (\
-		w = \cf3 SCWindow\cf2 (\cf4 "Trochoid"\cf2 , \cf3 Rect\cf2 (128, 64, 800, 400)).front;\
-		w.view.background_(\cf3 Color\cf2 .white);\
+\cf0 (\
+		w = \cf2 SCWindow\cf0 (\cf3 "Trochoid"\cf0 , \cf2 Rect\cf0 (128, 64, 800, 400)).front;\
+		w.view.background_(\cf2 Color\cf0 .white);\
 		w.drawHook = \{\
-			\cf3 Color\cf2 .black.set;\
-			\cf3 Pen\cf2 .moveTo(0 @ 150);\
-			((0..900) / 50).do \{ \cf3 |phi|\cf2 \
-				\cf3 var\cf2  x0 = x.(phi, a, b);\
-				\cf3 var\cf2  y0 = y.(phi, a, b);\
-				\cf3 Pen\cf2 .lineTo((50 * x0) @ (50 * y0 + 150));\
+			\cf2 Color\cf0 .black.set;\
+			\cf2 Pen\cf0 .moveTo(0 @ 150);\
+			((0..900) / 50).do \{ \cf2 |phi|\cf0 \
+				\cf2 var\cf0  x0 = x.(phi, a, b);\
+				\cf2 var\cf0  y0 = y.(phi, a, b);\
+				\cf2 Pen\cf0 .lineTo((50 * x0) @ (50 * y0 + 150));\
 			\};			\
 \
-			\cf3 Pen\cf2 .stroke\
+			\cf2 Pen\cf0 .stroke\
 		\};\
 		w.refresh;\
 );\
 )\
 \
 (\
-\cf3 Tdef\cf2 (\cf5 \\x\cf2 , \{\
+\cf2 Tdef\cf0 (\cf4 \\x\cf0 , \{\
 	loop \{\
-		((0..100) / 25).do \{ \cf3 |m|\cf2 \
+		((0..100) / 25).do \{ \cf2 |m|\cf0 \
 			b = m;\
 			defer \{w.refresh\};\
 			0.1.wait\
@@ -43,38 +43,38 @@ y = \{ \cf3 |phi, a, b|\cf2  a - (b * sin(phi + 0.5pi)) \};\
 )\
 \
 \
-\cf6 // sonification of a trochoid\cf2 \
+\cf5 // sonification of a trochoid\cf0 \
 \
 \
-p = \cf3 ProxySpace\cf2 .push(s.boot); \cf6 // enter\cf2 \
+p = \cf2 ProxySpace\cf0 .push(s.boot); \cf5 // enter\cf0 \
 ~out.play;\
 \
 (\
 ~out = \{\
-	\cf3 SinOsc\cf2 .ar(500).dup * ~modulation.kr(2) * 0.04\
+	\cf2 SinOsc\cf0 .ar(500).dup * ~modulation.kr(2) * 0.04\
 \
 \};\
 )\
 \
 (\
 ~phi = \{\
-	\cf3 LFSaw\cf2 .kr(3).range(0, 2pi)\
+	\cf2 LFSaw\cf0 .kr(3).range(0, 2pi)\
 \};\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
-\cf2 \
+\cf0 \
 ~modulation = \{\
-	\cf3 var\cf2  x, y;\
-	\cf3 var\cf2  a, b;\
+	\cf2 var\cf0  x, y;\
+	\cf2 var\cf0  a, b;\
 	a = 1.0;\
-	b = \cf3 XLine\cf2 .kr(0.1, 2, 30);\
-	x = \{ \cf3 |phi, a, b|\cf2  a * phi - (b * sin(phi)) \}.value(~phi.kr, a, b);\
-	y = \{ \cf3 |phi, a, b|\cf2  a - (b * sin(phi + 0.5pi)) \}.value(~phi.kr, a, b);\
+	b = \cf2 XLine\cf0 .kr(0.1, 2, 30);\
+	x = \{ \cf2 |phi, a, b|\cf0  a * phi - (b * sin(phi)) \}.value(~phi.kr, a, b);\
+	y = \{ \cf2 |phi, a, b|\cf0  a - (b * sin(phi + 0.5pi)) \}.value(~phi.kr, a, b);\
 	[x, y]\
 \}\
 \pard\pardeftab560\ql\qnatural
-\cf2 )\
+\cf0 )\
 \
-p.clear.pop; \cf6 // exit\cf2 \
+p.clear.pop; \cf5 // exit\cf0 \
 \
 \
 }

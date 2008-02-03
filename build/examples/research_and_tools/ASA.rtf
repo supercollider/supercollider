@@ -8,10 +8,11 @@
 Two Auditory Scene Analysis experiences \
 as proposed by Bregman, Auditory Scene Analysis, MIT Press, 1990\
 \
-1. Streaming: varying rate of presentation and \
-frequency gap between the two series of sinusoidal one or two stream(s) appear(s).\
+1. Streaming: if rate of presentation and \
+frequency gap between the two series of sinusoidal tones are varied, \
+ one or two stream(s) appear(s).\
 \
-2. Miniature ASA Problem: varying frequency distance of A and C with respect to B, and attack time of C, two grouping are possible: \
+2. Miniature ASA Problem: varying frequency distance of A and C with respect to B, and attack time of C, two groupings are possible: \
 (A+B)/C: a two note melody with a low tone (parallel)\
 A(B+C): a simple tone and a complex tone (sequence)\
 \
@@ -60,7 +61,7 @@ Streaming\
 			0, mul\
 		) * \cf3 EnvGen\cf0 .kr(env)\
 	)\
-\}).load(s);\
+\}).send(s);\
 \
 \
 \
@@ -74,7 +75,7 @@ Streaming\
 			0, mul\
 		) * \cf3 EnvGen\cf0 .kr(env)\
 	)\
-\}).load(s);\
+\}).send(s);\
 \
 \
 \
@@ -92,21 +93,15 @@ Streaming\
 
 \fs18 \cf0 r1 = \cf3 Routine\cf0 .new(\{\
 	\cf3 inf\cf0 .do(\{ \cf3 arg\cf0  i; \cf3 var\cf0  k;\
-	\cf3 var\cf0  arr=[0,0, 1, 0, 2];\
-	synth1 = \cf3 Synth\cf0 .new(\cf4 "sine1"\cf0 );\
-	\cf2 //i.mod(5).postln;\cf0 \
-	k = arr[i.mod(5)]*100+base;\
-	\cf2 //k.postln;\cf0 \
-	synth1.set(\cf4 "freq"\cf0 , k);\
-	synth1.set(\cf4 "dur"\cf0 , rateSlide.value);\
-	synth1.set(\cf4 "mul"\cf0 , volumeSlide.value*volume1);\
-	rateSlide.value.wait;\
-	synth1.free;\
-	\});\
-	0.5.wait;\
-	\cf4 "finished"\cf0 .postln;\
-\
-\
+	\cf3 	var\cf0  arr=[0,0, 1, 0, 2];\
+		synth1 = \cf3 Synth\cf0 .new(\cf4 "sine1"\cf0 );\
+		k = arr[i.mod(5)]*100+base;\
+		synth1.set(\cf4 "freq"\cf0 , k);\
+		synth1.set(\cf4 "dur"\cf0 , rateSlide.value);\
+		synth1.set(\cf4 "mul"\cf0 , volumeSlide.value*volume1);\
+		rateSlide.value.wait;\
+		synth1.free;\
+		\});\
 \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -118,21 +113,15 @@ Streaming\
 \fs18 \cf0 \
 r2 = \cf3 Routine\cf0 .new(\{\
 	\cf3 inf\cf0 .do(\{ \cf3 arg\cf0  i; \cf3 var\cf0  k;\
-	\cf3 var\cf0  arr=[1, 0, 3, 1, 2];\
-	synth2 = \cf3 Synth\cf0 .new(\cf4 "sine2"\cf0 );\
-	\cf2 //i.mod(5).postln;\cf0 \
-	k = arr[i.mod(5)]*100+base+deltaSlide.value;\
-	\cf2 //k.postln;		\cf0 \
-	synth2.set(\cf4 "freq"\cf0 , k);\
-	synth2.set(\cf4 "dur"\cf0 , rateSlide.value);\
-	synth2.set(\cf4 "mul"\cf0 , volumeSlide.value*volume2);\
-	rateSlide.value.wait;\
-	synth2.free;\
+		\cf3 var\cf0  arr=[1, 0, 3, 1, 2];\
+		synth2 = \cf3 Synth\cf0 .new(\cf4 "sine2"\cf0 );\
+		k = arr[i.mod(5)]*100+base+deltaSlide.value;\
+		synth2.set(\cf4 "freq"\cf0 , k);\
+		synth2.set(\cf4 "dur"\cf0 , rateSlide.value);\
+		synth2.set(\cf4 "mul"\cf0 , volumeSlide.value*volume2);\
+		rateSlide.value.wait;\
+		synth2.free;\
 	\});\
-	0.5.wait;\
-	\cf4 "finished"\cf0 .postln;\
-	\
-\
 \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -146,25 +135,24 @@ r2 = \cf3 Routine\cf0 .new(\{\
 \fs10 \cf0 \
 \
 
-\fs18 w = \cf3 SCWindow\cf0 (\cf4 "ASA: Streaming"\cf0 , \cf3 Rect\cf0 (20, 400, 440, 150));\
-w.front; \cf2 // make window visible and front window.
-\fs20 \cf0 \
+\fs18 w = \cf3 GUI.window.new\cf0 (\cf4 "ASA: Streaming"\cf0 , \cf3 Rect\cf0 (20, 400, 440, 150)).front;
+\fs20 \
 w.view.decorator = \cf3 FlowLayout\cf0 (w.view.bounds);
 \fs26 \
 
-\fs18 rateSlide = \cf3 EZSlider\cf0 (w, 400 @ 20, \cf4 "DurEach"\cf0 , \cf3 ControlSpec\cf0 (0.05, 2.0, \cf5 \\exp\cf0 , 0.001, 0.01), \
+\fs18 rateSlide = GUI.\cf3 ezSlider.new\cf0 (w, 400 @ 20, \cf4 "DurEach"\cf0 , \cf3 ControlSpec\cf0 (0.05, 2.0, \cf5 \\exp\cf0 , 0.001, 0.01), \
 	\{\cf3 arg\cf0  ez; ez.value;\}, 0.1);\
-deltaSlide = \cf3 EZSlider\cf0 (w, 400 @ 20, \cf4 "Delta"\cf0 , \cf3 ControlSpec\cf0 (0, 1000, \cf5 \\lin\cf0 , 1, 1), \
+deltaSlide = GUI.\cf3 ezSlider.new\cf0 (w, 400 @ 20, \cf4 "Delta"\cf0 , \cf3 ControlSpec\cf0 (0, 1000, \cf5 \\lin\cf0 , 1, 1), \
 	\{\cf3 arg\cf0  ez; ez.value;\}, 500);\
 	\
-volumeSlide = \cf3 EZSlider\cf0 (w, 400 @ 20, \cf4 "Volume"\cf0 , \cf3 ControlSpec\cf0 (0.0, 1.0, \cf5 \\lin\cf0 , 0.1, 0.1), \
+volumeSlide = GUI.\cf3 ezSlider.new\cf0 (w, 400 @ 20, \cf4 "Volume"\cf0 , \cf3 ControlSpec\cf0 (0.0, 1.0, \cf5 \\lin\cf0 , 0.1, 0.1), \
 	\{\cf3 arg\cf0  ez; ez.value;\}, 0.5);\
 \
 \
 \
 w.view.decorator.nextLine.shift(50, 20);\
 \
-	pauseButton1 = \cf3 SCButton\cf0 (w, 110 @ 30);\
+	pauseButton1 = \cf3 GUI.button.new\cf0 (w, 110 @ 30);\
 	pauseButton1.states = [\
 			[\cf4 "1 now is active"\cf0 ,\cf3 Color\cf0 .black,\cf3 Color\cf0 .red],\
 			[\cf4 "1 now is muted"\cf0 ,\cf3 Color\cf0 .white,\cf3 Color\cf0 .black],\
@@ -178,7 +166,7 @@ w.view.decorator.nextLine.shift(50, 20);\
 w.view.decorator.shift(10, 0);\
 		\
 \
-	pauseButton2 = \cf3 SCButton\cf0 (w, 110 @ 30);\
+	pauseButton2 = \cf3 GUI.button.new\cf0 (w, 110 @ 30);\
 	pauseButton2.states = [\
 			[\cf4 "2 now is active"\cf0 ,\cf3 Color\cf0 .black,\cf3 Color\cf0 .red],\
 			[\cf4 "2 now is muted"\cf0 ,\cf3 Color\cf0 .white,\cf3 Color\cf0 .black],\
@@ -244,7 +232,7 @@ The miniature ASA problem\
 			0, mul\
 		) * \cf3 EnvGen\cf0 .kr(env)\
 	)\
-\}).load(s);\
+\}).send(s);\
 \
 \
 \
@@ -258,7 +246,7 @@ The miniature ASA problem\
 			0, mul\
 		) * \cf3 EnvGen\cf0 .kr(env)\
 	)\
-\}).load(s);\
+\}).send(s);\
 \
 \
 \
@@ -272,9 +260,9 @@ The miniature ASA problem\
 			0, mul\
 		) * \cf3 EnvGen\cf0 .kr(env)\
 	)\
-\}).load(s);\
+\}).send(s);\
 \
-\cf2 // Two analogous routines\cf0 \
+\cf2 // Three analogous routines\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs22 \cf0 \
@@ -282,17 +270,13 @@ The miniature ASA problem\
 
 \fs18 \cf0 r1 = \cf3 Routine\cf0 .new(\{\
 	\cf3 inf\cf0 .do(\{ \cf3 arg\cf0  i;\
-	synth1 = \cf3 Synth\cf0 .new(\cf4 "sineA"\cf0 );\
-	synth1.set(\cf4 "freq"\cf0 , freqASlide.value);\
-	synth1.set(\cf4 "dur"\cf0 , rateSlide.value);\
-	synth1.set(\cf4 "mul"\cf0 , volumeSlide.value*volume1);\
-	rateSlide.value.wait;\
-	synth1.free;\
-	\});\
-	0.5.wait;\
-	\cf4 "finished"\cf0 .postln;\
-\
-\
+		synth1 = \cf3 Synth\cf0 .new(\cf4 "sineA"\cf0 );\
+		synth1.set(\cf4 "freq"\cf0 , freqASlide.value);\
+		synth1.set(\cf4 "dur"\cf0 , rateSlide.value);\
+		synth1.set(\cf4 "mul"\cf0 , volumeSlide.value*volume1);\
+		rateSlide.value.wait;\
+		synth1.free;\
+	\})\
 \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -304,16 +288,12 @@ The miniature ASA problem\
 \fs18 \cf0 \
 r2 = \cf3 Routine\cf0 .new(\{\
 	\cf3 inf\cf0 .do(\{ \cf3 arg\cf0  i; \
-	synth2 = \cf3 Synth\cf0 .new(\cf4 "sineB"\cf0 );\
-	synth2.set(\cf4 "dur"\cf0 , rateSlide.value);\
-	synth2.set(\cf4 "mul"\cf0 , volumeSlide.value*volume2);\
-	rateSlide.value.wait;\
-	synth2.free;\
-	\});\
-	0.5.wait;\
-	\cf4 "finished"\cf0 .postln;\
-	\
-\
+		synth2 = \cf3 Synth\cf0 .new(\cf4 "sineB"\cf0 );\
+		synth2.set(\cf4 "dur"\cf0 , rateSlide.value);\
+		synth2.set(\cf4 "mul"\cf0 , volumeSlide.value*volume2);\
+		rateSlide.value.wait;\
+		synth2.free;\
+	\})\
 \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -324,18 +304,14 @@ r2 = \cf3 Routine\cf0 .new(\{\
 
 \fs18 \cf0 r3 = \cf3 Routine\cf0 .new(\{\
 	\cf3 inf\cf0 .do(\{ \cf3 arg\cf0  i;\
-	synth3 = \cf3 Synth\cf0 .new(\cf4 "sineC"\cf0 );\
-	synth3.set(\cf4 "freq"\cf0 , freqCSlide.value);\
-	synth3.set(\cf4 "dur"\cf0 , rateSlide.value);\
-	synth3.set(\cf4 "mul"\cf0 , volumeSlide.value*volume3);\
-	synth3.set(\cf4 "shift"\cf0 , shiftCSlide.value);\
-	rateSlide.value.wait;\
-	synth3.free;\
-	\});\
-	0.5.wait;\
-	\cf4 "finished"\cf0 .postln;\
-\
-\
+		synth3 = \cf3 Synth\cf0 .new(\cf4 "sineC"\cf0 );\
+		synth3.set(\cf4 "freq"\cf0 , freqCSlide.value);\
+		synth3.set(\cf4 "dur"\cf0 , rateSlide.value);\
+		synth3.set(\cf4 "mul"\cf0 , volumeSlide.value*volume3);\
+		synth3.set(\cf4 "shift"\cf0 , shiftCSlide.value);\
+		rateSlide.value.wait;\
+		synth3.free;\
+	\})\
 \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -348,33 +324,33 @@ r2 = \cf3 Routine\cf0 .new(\{\
 \fs10 \cf0 \
 \
 
-\fs18 w = \cf3 SCWindow\cf0 (\cf4 "ASA: Miniature problem"\cf0 , \cf3 Rect\cf0 (20, 400, 440, 220));\
+\fs18 w = \cf3 GUI.window.new\cf0 (\cf4 "ASA: Miniature problem"\cf0 , \cf3 Rect\cf0 (20, 400, 440, 220));\
 w.front; \cf2 // make window visible and front window.
 \fs20 \cf0 \
 
 \fs18 w.view.decorator = \cf3 FlowLayout\cf0 (w.view.bounds);\
-rateSlide = \cf3 EZSlider\cf0 (w, 400 @ 20, \cf4 "DurEach"\cf0 , \cf3 ControlSpec\cf0 (0.2, 2.0, \cf5 \\exp\cf0 , 0.001, 0.01), \
+rateSlide = \cf3 GUI.ezSlider.new\cf0 (w, 400 @ 20, \cf4 "DurEach"\cf0 , \cf3 ControlSpec\cf0 (0.2, 2.0, \cf5 \\exp\cf0 , 0.001, 0.01), \
 	\{\cf3 arg\cf0  ez; ez.value;\}, 1.0);\
-freqASlide = \cf3 EZSlider\cf0 (w, 400 @ 20, \cf4 "Freq A"\cf0 , \cf3 ControlSpec\cf0 (50, 2000, \cf5 \\exp\cf0 , 1, 1), \
+freqASlide = GUI.e\cf3 zSlider.new\cf0 (w, 400 @ 20, \cf4 "Freq A"\cf0 , \cf3 ControlSpec\cf0 (50, 2000, \cf5 \\exp\cf0 , 1, 1), \
 	\{\cf3 arg\cf0  ez; ez.value;\}, 1000);\
 w.view.decorator.nextLine.shift(30);\
-text = 	\cf3 SCTextField\cf0 (w,\cf3 Rect\cf0 (0,0,150,30));\
+text = 	\cf3 GUI.textField.new\cf0 (w,\cf3 Rect\cf0 (0,0,150,30));\
 text.string = \cf4 "Freq B = fixed at 500 Hz"\cf0 ;\
 text.boxColor_(\cf3 Color\cf0 .grey);\
 text.stringColor_(\cf3 Color\cf0 .white);\
 w.view.decorator.nextLine;\
-freqCSlide = \cf3 EZSlider\cf0 (w, 400 @ 20, \cf4 "Freq C"\cf0 , \cf3 ControlSpec\cf0 (50, 500, \cf5 \\exp\cf0 , 1, 1), \
+freqCSlide = \cf3 GUI.ezSlider.new\cf0 (w, 400 @ 20, \cf4 "Freq C"\cf0 , \cf3 ControlSpec\cf0 (50, 500, \cf5 \\exp\cf0 , 1, 1), \
 	\{\cf3 arg\cf0  ez; ez.value;\}, 250);	\
-shiftCSlide = \cf3 EZSlider\cf0 (w, 400 @ 20, \cf4 "Shift C"\cf0 , \cf3 ControlSpec\cf0 (-0.5, 0.0, \cf5 \\lin\cf0 , 0.01, 0.01), \
+shiftCSlide = \cf3 GUI.ezSlider.new\cf0 (w, 400 @ 20, \cf4 "Shift C"\cf0 , \cf3 ControlSpec\cf0 (-0.5, 0.0, \cf5 \\lin\cf0 , 0.01, 0.01), \
 	\{\cf3 arg\cf0  ez; ez.value;\}, 0.0);		\
-volumeSlide = \cf3 EZSlider\cf0 (w, 400 @ 20, \cf4 "Volume"\cf0 , \cf3 ControlSpec\cf0 (0.0, 1.0, \cf5 \\lin\cf0 , 0.1, 0.1), \
+volumeSlide = \cf3 GUI.ezSlider.new\cf0 (w, 400 @ 20, \cf4 "Volume"\cf0 , \cf3 ControlSpec\cf0 (0.0, 1.0, \cf5 \\lin\cf0 , 0.1, 0.1), \
 	\{\cf3 arg\cf0  ez; ez.value;\}, 0.5);\
 \
 \
 \
 w.view.decorator.nextLine.shift(50, 20);\
 \
-	pauseButton1 = \cf3 SCButton\cf0 (w, 110 @ 30);\
+	pauseButton1 = \cf3 GUI.button.new\cf0 (w, 110 @ 30);\
 	pauseButton1.states = [\
 			[\cf4 "A now is active"\cf0 ,\cf3 Color\cf0 .black,\cf3 Color\cf0 .red],\
 			[\cf4 "A now is muted"\cf0 ,\cf3 Color\cf0 .white,\cf3 Color\cf0 .black],\
@@ -388,7 +364,7 @@ w.view.decorator.nextLine.shift(50, 20);\
 w.view.decorator.shift(10, 0);\
 		\
 \
-	pauseButton2 = \cf3 SCButton\cf0 (w, 110 @ 30);\
+	pauseButton2 = \cf3 GUI.button.new\cf0 (w, 110 @ 30);\
 	pauseButton2.states = [\
 			[\cf4 "C now is active"\cf0 ,\cf3 Color\cf0 .black,\cf3 Color\cf0 .red],\
 			[\cf4 "C now is muted"\cf0 ,\cf3 Color\cf0 .white,\cf3 Color\cf0 .black],\
