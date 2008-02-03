@@ -25,7 +25,7 @@
 				c = sin(z * 0.005);
 				bounds = bounds.insetBy(i, i);
 				bb = bounds.moveBy(13 * a, 13 * b);
-				colors.wrapAt(i).set;
+				GUI.pen.color=colors.wrapAt(i);
 				GUI.pen.width = 30.rand;
 				fillOrStroke.wrapAt(i).value(bb);
 			};
