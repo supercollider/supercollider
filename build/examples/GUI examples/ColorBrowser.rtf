@@ -1,61 +1,64 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green115\blue0;}
 \deftab720
 \pard\pardeftab720\ql\qnatural
 
-\f0\fs18 \cf2 // Color Browser\cf0 \
-\cf2 // (c) 2007 Tom Hall. \cf0 \
+\f0\fs18 \cf2 // Color Browser\cf3 \
+\cf2 // (c) 2007 Tom Hall. \cf3 \
 \
-\cf2 // Evaluate the X Windows color data below first\cf0 \
+\cf2 // 
+\fs40 \cf2 !!
+\fs18 \cf2  Evaluate the X Windows color data (x = [...]) below first 
+\fs40 \cf2 !!
+\fs18 \cf3 \
 \
-\cf2 // Make a GUI with a button for each X Window color\cf0 \
-\cf2 // Pressing the buttons selects a colr and posts its name and 8-bit values\cf0 \
-\cf2 // Closing the window makes a new window with selected colors (one time only)\
-\cf0 \
+\cf2 // Make a GUI with a button for each X Window color\cf3 \
+\cf2 // Pressing the buttons selects a colr and posts its name and 8-bit values\cf3 \
+\cf2 // Closing the window makes a new window with selected colors (one time only)\cf3 \
+\
 (\
-\pard\pardeftab720\ql\qnatural
-\cf3 var\cf0  colorWindow, sortFn, screenBounds, btnWidth;\
-colorWindow = \{\cf3 arg\cf0  colors, btnWidth=60, fontSize=9, bounds, inclGrey=\cf3 false\cf0 , winOnClose=\cf3 true\cf0 ;\
-	\cf3 var\cf0  w, color, colArr, prevCol, colName, btn, txtCol, isGrey, colsCollect = [];	\
-	bounds = bounds ? \cf3 Rect\cf0 (10, 10, 252, 240);\
-	w = \cf3 GUI\cf0 .window.new(\cf4 "Color browser"\cf0 , bounds, scroll: \cf3 true\cf0 );\
-	w.view.decorator = \cf3 FlowLayout\cf0 (w.view.bounds, \cf3 Point\cf0 (0,0), \cf3 Point\cf0 (0,0));\
-	colors.do(\{ \cf3 arg\cf0  colAssoc, i;\'ca\
+\cf4 var\cf3  colorWindow, sortFn, screenBounds, btnWidth;\
+colorWindow = \{\cf4 arg\cf3  colors, btnWidth=60, fontSize=9, bounds, inclGrey=\cf4 false\cf3 , winOnClose=\cf4 true\cf3 ;\
+	\cf4 var\cf3  w, color, colArr, prevCol, colName, btn, txtCol, isGrey, colsCollect = [];	\
+	bounds = bounds ? \cf4 Rect\cf3 (10, 10, 252, 240);\
+	w = \cf4 GUI\cf3 .window.new(\cf5 "Color browser"\cf3 , bounds, scroll: \cf4 true\cf3 );\
+	w.view.decorator = \cf4 FlowLayout\cf3 (w.view.bounds, \cf4 Point\cf3 (0,0), \cf4 Point\cf3 (0,0));\
+	colors.do(\{ \cf4 arg\cf3  colAssoc, i;\'ca\
 		color = colAssoc.value;\
 		colArr = color.asArray;\
 		colName = colAssoc.key.asString;\
 		if(colArr != prevCol, \{ \
 			if (inclGrey.not, \{\
-				isGrey = colName.containsi(\cf4 "gray"\cf0 ) or: \{colName.containsi(\cf4 "grey"\cf0 )\};\
+				isGrey = colName.containsi(\cf5 "gray"\cf3 ) or: \{colName.containsi(\cf5 "grey"\cf3 )\};\
 			\}, \{\
-				isGrey = \cf3 false\cf0 ; \
+				isGrey = \cf4 false\cf3 ; \
 			\});\
 			if (isGrey.not, \{\
-				txtCol = if(colArr.sum < 2.45, \{\cf3 Color\cf0 .white\}, \{\cf3 Color\cf0 .black\});\
-				btn = \cf3 GUI\cf0 .button.new(w, \cf3 Rect\cf0 (0,0, btnWidth, (btnWidth/3).round)); \
-				btn.font = \cf3 Font\cf0 (\cf4 "Helvetica"\cf0 , fontSize);\
-				btn.states = [[\cf4 ""\cf0 , txtCol, color],[colName, txtCol, color]];\
-				btn.action_(\{ \cf3 arg\cf0  butt;\
-					\cf3 var\cf0  name, val256;\
+				txtCol = if(colArr.sum < 2.45, \{\cf4 Color\cf3 .white\}, \{\cf4 Color\cf3 .black\});\
+				btn = \cf4 GUI\cf3 .button.new(w, \cf4 Rect\cf3 (0,0, btnWidth, (btnWidth/3).round)); \
+				btn.font = \cf4 GUI\cf3 .font.new(\cf5 "Helvetica"\cf3 , fontSize);\
+				btn.states = [[\cf5 ""\cf3 , txtCol, color],[colName, txtCol, color]];\
+				btn.action_(\{ \cf4 arg\cf3  butt;\
+					\cf4 var\cf3  name, val256;\
 					name = colors[i].key;\
 					val256 = (colors[i].value.asArray * 255).keep(3);\
-					format(\cf4 "%  %"\cf0 ,name , val256).postln;\
+					format(\cf5 "%  %"\cf3 ,name , val256).postln;\
 					colsCollect = colsCollect.add(colors[i]);\
 				\});\
 			\});\
 		\});\
 		prevCol = colArr;	\
 	\});\
-	\cf2 // Make a final window with selected colors\cf0 \
+	\cf2 // Make a final window with selected colors\cf3 \
 	if (winOnClose, \{\
 		w.onClose = \{\
-			\cf3 var\cf0  winHeight, sortedCols;\
+			\cf4 var\cf3  winHeight, sortedCols;\
 			if (colsCollect.notEmpty, \{\
 				winHeight =  colsCollect.size.round(2)/2 * 67;\
-				sortedCols = colsCollect.sort(\{ \cf3 arg\cf0  a, b; (a.value.asArray.sum) > (b.value.asArray.sum)\});\
-				colorWindow.value(sortedCols, 200, 11, \cf3 Rect\cf0 (200, 200, 412, winHeight), \cf3 true\cf0 , \cf3 false\cf0 );\
+				sortedCols = colsCollect.sort(\{ \cf4 arg\cf3  a, b; (a.value.asArray.sum) > (b.value.asArray.sum)\});\
+				colorWindow.value(sortedCols, 200, 11, \cf4 Rect\cf3 (200, 200, 412, winHeight), \cf4 true\cf3 , \cf4 false\cf3 );\
 				sortedCols.asCompileString.postln;\
 			\});\
 		\};\
@@ -63,769 +66,768 @@ colorWindow = \{\cf3 arg\cf0  colors, btnWidth=60, fontSize=9, bounds, inclGrey=
 	w.front;\
 \};\
 \
-\pard\pardeftab720\ql\qnatural
-\cf2 // sort colors by intensity\cf0 \
-sortFn = \{ \cf3 arg\cf0  a, b; (a.value.asArray.sum) > (b.value.asArray.sum)\};\
+\cf2 // sort colors by intensity\cf3 \
+sortFn = \{ \cf4 arg\cf3  a, b; (a.value.asArray.sum) > (b.value.asArray.sum)\};\
 \
-\cf2 // calculate window and button sizes relatve to screen resolution\cf0 \
-screenBounds = \cf3 GUI\cf0 .window.screenBounds.extent.asArray;\
-\cf2 // 508 colors including grey scale\cf0 \
+\cf2 // calculate window and button sizes relatve to screen resolution\cf3 \
+screenBounds = \cf4 GUI\cf3 .window.screenBounds.extent.asArray;\
+\cf2 // 508 colors including grey scale\cf3 \
 btnWidth = (((screenBounds[0]*screenBounds[1])/508).sqrt * 1.6).floor.round;\
 \
-\cf2 // make the GUI (includes greys)\cf0 \
-colorWindow.value(x.sort(sortFn), btnWidth, (btnWidth/8).round, \cf3 Rect\cf0 (0, 0, screenBounds[0], screenBounds[1]), \cf3 true\cf0 );\
+\cf2 // make the GUI (includes greys)\cf3 \
+colorWindow.value(x.sort(sortFn), btnWidth, (btnWidth/8).round, \cf4 Rect\cf3 (0, 0, screenBounds[0], screenBounds[1]), \cf4 true\cf3 );\
 \
-\cf2 // Other layouts\cf0 \
-\cf2 //colorWindow.value(x.sort(sortFn)) // small, excludes greys, with scrollbar\cf0 \
-\cf2 //colorWindow.value(x.sort(sortFn), 56, 6, Rect(5, 40, 672, 628)) // excludes greys\cf0 \
-\cf2 //colorWindow.value(x.sort(sortFn), 200, 11, Rect(200, 200, 412, 400)) // bigger buttons, excludes greys\cf0 \
-\cf2 //colorWindow.value(x.sort(sortFn), 1000, 48, Rect(100, 100, 1012, 670)) // big buttons, excludes greys\
-\cf0 \
+\cf2 // Other layouts\cf3 \
+\cf2 //colorWindow.value(x.sort(sortFn)) // small, excludes greys, with scrollbar\cf3 \
+\cf2 //colorWindow.value(x.sort(sortFn), 56, 6, Rect(5, 40, 672, 628)) // excludes greys\cf3 \
+\cf2 //colorWindow.value(x.sort(sortFn), 200, 11, Rect(200, 200, 412, 400)) // bigger buttons, excludes greys\cf3 \
+\cf2 //colorWindow.value(x.sort(sortFn), 1000, 48, Rect(100, 100, 1012, 670)) // big buttons, excludes greys\cf3 \
+\
 )\
 \
-\cf2 // X Windows colors\cf0 \
-\cf2 // see http://en.wikipedia.org/wiki/X11_color_names\
-\cf0 \
+\cf2 // X Windows colors\cf3 \
+\cf2 // see http://en.wikipedia.org/wiki/X11_color_names\cf3 \
+\
 (\
 x = [\
-\'ca \'ca \cf5 'alice blue'\cf0  -> \cf3 Color\cf0 .new255(240, 248, 255),\
-\'ca \'ca \cf5 'AliceBlue'\cf0  -> \cf3 Color\cf0 .new255(240, 248, 255),\
-\'ca \'ca \cf5 'antique white'\cf0  -> \cf3 Color\cf0 .new255(250, 235, 215),\
-\'ca \'ca \cf5 'AntiqueWhite'\cf0  -> \cf3 Color\cf0 .new255(250, 235, 215),\
-\'ca \'ca \cf5 'AntiqueWhite1'\cf0  -> \cf3 Color\cf0 .new255(255, 239, 219),\
-\'ca \'ca \cf5 'AntiqueWhite2'\cf0  -> \cf3 Color\cf0 .new255(238, 223, 204),\
-\'ca \'ca \cf5 'AntiqueWhite3'\cf0  -> \cf3 Color\cf0 .new255(205, 192, 176),\
-\'ca \'ca \cf5 'AntiqueWhite4'\cf0  -> \cf3 Color\cf0 .new255(139, 131, 120),\
-\'ca \'ca \cf5 'aquamarine'\cf0  -> \cf3 Color\cf0 .new255(127, 255, 212),\
-\'ca \'ca \cf5 'aquamarine1'\cf0  -> \cf3 Color\cf0 .new255(127, 255, 212),\
-\'ca \'ca \cf5 'aquamarine2'\cf0  -> \cf3 Color\cf0 .new255(118, 238, 198),\
-\'ca \'ca \cf5 'aquamarine3'\cf0  -> \cf3 Color\cf0 .new255(102, 205, 170),\
-\'ca \'ca \cf5 'aquamarine4'\cf0  -> \cf3 Color\cf0 .new255(69, 139, 116),\
-\'ca \'ca \cf5 'azure'\cf0  -> \cf3 Color\cf0 .new255(240, 255, 255),\
-\'ca \'ca \cf5 'azure1'\cf0  -> \cf3 Color\cf0 .new255(240, 255, 255),\
-\'ca \'ca \cf5 'azure2'\cf0  -> \cf3 Color\cf0 .new255(224, 238, 238),\
-\'ca \'ca \cf5 'azure3'\cf0  -> \cf3 Color\cf0 .new255(193, 205, 205),\
-\'ca \'ca \cf5 'azure4'\cf0  -> \cf3 Color\cf0 .new255(131, 139, 139),\
-\'ca \'ca \cf5 'beige'\cf0  -> \cf3 Color\cf0 .new255(245, 245, 220),\
-\'ca \'ca \cf5 'bisque'\cf0  -> \cf3 Color\cf0 .new255(255, 228, 196),\
-\'ca \'ca \cf5 'bisque1'\cf0  -> \cf3 Color\cf0 .new255(255, 228, 196),\
-\'ca \'ca \cf5 'bisque2'\cf0  -> \cf3 Color\cf0 .new255(238, 213, 183),\
-\'ca \'ca \cf5 'bisque3'\cf0  -> \cf3 Color\cf0 .new255(205, 183, 158),\
-\'ca \'ca \cf5 'bisque4'\cf0  -> \cf3 Color\cf0 .new255(139, 125, 107),\
-\'ca \'ca \cf5 'black'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 0),\
-\'ca \'ca \cf5 'blanched almond'\cf0  -> \cf3 Color\cf0 .new255(255, 235, 205),\
-\'ca \'ca \cf5 'BlanchedAlmond'\cf0  -> \cf3 Color\cf0 .new255(255, 235, 205),\
-\'ca \'ca \cf5 'blue'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 255),\
-\'ca \'ca \cf5 'blue violet'\cf0  -> \cf3 Color\cf0 .new255(138, 43, 226),\
-\'ca \'ca \cf5 'blue1'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 255),\
-\'ca \'ca \cf5 'blue2'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 238),\
-\'ca \'ca \cf5 'blue3'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 205),\
-\'ca \'ca \cf5 'blue4'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 139),\
-\'ca \'ca \cf5 'BlueViolet'\cf0  -> \cf3 Color\cf0 .new255(138, 43, 226),\
-\'ca \'ca \cf5 'brown'\cf0  -> \cf3 Color\cf0 .new255(165, 42, 42),\
-\'ca \'ca \cf5 'brown1'\cf0  -> \cf3 Color\cf0 .new255(255, 64, 64),\
-\'ca \'ca \cf5 'brown2'\cf0  -> \cf3 Color\cf0 .new255(238, 59, 59),\
-\'ca \'ca \cf5 'brown3'\cf0  -> \cf3 Color\cf0 .new255(205, 51, 51),\
-\'ca \'ca \cf5 'brown4'\cf0  -> \cf3 Color\cf0 .new255(139, 35, 35),\
-\'ca \'ca \cf5 'burlywood'\cf0  -> \cf3 Color\cf0 .new255(222, 184, 135),\
-\'ca \'ca \cf5 'burlywood1'\cf0  -> \cf3 Color\cf0 .new255(255, 211, 155),\
-\'ca \'ca \cf5 'burlywood2'\cf0  -> \cf3 Color\cf0 .new255(238, 197, 145),\
-\'ca \'ca \cf5 'burlywood3'\cf0  -> \cf3 Color\cf0 .new255(205, 170, 125),\
-\'ca \'ca \cf5 'burlywood4'\cf0  -> \cf3 Color\cf0 .new255(139, 115, 85),\
-\'ca \'ca \cf5 'cadet blue'\cf0  -> \cf3 Color\cf0 .new255(95, 158, 160),\
-\'ca \'ca \cf5 'CadetBlue'\cf0  -> \cf3 Color\cf0 .new255(95, 158, 160),\
-\'ca \'ca \cf5 'CadetBlue1'\cf0  -> \cf3 Color\cf0 .new255(152, 245, 255),\
-\'ca \'ca \cf5 'CadetBlue2'\cf0  -> \cf3 Color\cf0 .new255(142, 229, 238),\
-\'ca \'ca \cf5 'CadetBlue3'\cf0  -> \cf3 Color\cf0 .new255(122, 197, 205),\
-\'ca \'ca \cf5 'CadetBlue4'\cf0  -> \cf3 Color\cf0 .new255(83, 134, 139),\
-\'ca \'ca \cf5 'chartreuse'\cf0  -> \cf3 Color\cf0 .new255(127, 255, 0),\
-\'ca \'ca \cf5 'chartreuse1'\cf0  -> \cf3 Color\cf0 .new255(127, 255, 0),\
-\'ca \'ca \cf5 'chartreuse2'\cf0  -> \cf3 Color\cf0 .new255(118, 238, 0),\
-\'ca \'ca \cf5 'chartreuse3'\cf0  -> \cf3 Color\cf0 .new255(102, 205, 0),\
-\'ca \'ca \cf5 'chartreuse4'\cf0  -> \cf3 Color\cf0 .new255(69, 139, 0),\
-\'ca \'ca \cf5 'chocolate'\cf0  -> \cf3 Color\cf0 .new255(210, 105, 30),\
-\'ca \'ca \cf5 'chocolate1'\cf0  -> \cf3 Color\cf0 .new255(255, 127, 36),\
-\'ca \'ca \cf5 'chocolate2'\cf0  -> \cf3 Color\cf0 .new255(238, 118, 33),\
-\'ca \'ca \cf5 'chocolate3'\cf0  -> \cf3 Color\cf0 .new255(205, 102, 29),\
-\'ca \'ca \cf5 'chocolate4'\cf0  -> \cf3 Color\cf0 .new255(139, 69, 19),\
-\'ca \'ca \cf5 'coral'\cf0  -> \cf3 Color\cf0 .new255(255, 127, 80),\
-\'ca \'ca \cf5 'coral1'\cf0  -> \cf3 Color\cf0 .new255(255, 114, 86),\
-\'ca \'ca \cf5 'coral2'\cf0  -> \cf3 Color\cf0 .new255(238, 106, 80),\
-\'ca \'ca \cf5 'coral3'\cf0  -> \cf3 Color\cf0 .new255(205, 91, 69),\
-\'ca \'ca \cf5 'coral4'\cf0  -> \cf3 Color\cf0 .new255(139, 62, 47),\
-\'ca \'ca \cf5 'cornflower blue'\cf0  -> \cf3 Color\cf0 .new255(100, 149, 237),\
-\'ca \'ca \cf5 'CornflowerBlue'\cf0  -> \cf3 Color\cf0 .new255(100, 149, 237),\
-\'ca \'ca \cf5 'cornsilk'\cf0  -> \cf3 Color\cf0 .new255(255, 248, 220),\
-\'ca \'ca \cf5 'cornsilk1'\cf0  -> \cf3 Color\cf0 .new255(255, 248, 220),\
-\'ca \'ca \cf5 'cornsilk2'\cf0  -> \cf3 Color\cf0 .new255(238, 232, 205),\
-\'ca \'ca \cf5 'cornsilk3'\cf0  -> \cf3 Color\cf0 .new255(205, 200, 177),\
-\'ca \'ca \cf5 'cornsilk4'\cf0  -> \cf3 Color\cf0 .new255(139, 136, 120),\
-\'ca \'ca \cf5 'cyan'\cf0  -> \cf3 Color\cf0 .new255(0, 255, 255),\
-\'ca \'ca \cf5 'cyan1'\cf0  -> \cf3 Color\cf0 .new255(0, 255, 255),\
-\'ca \'ca \cf5 'cyan2'\cf0  -> \cf3 Color\cf0 .new255(0, 238, 238),\
-\'ca \'ca \cf5 'cyan3'\cf0  -> \cf3 Color\cf0 .new255(0, 205, 205),\
-\'ca \'ca \cf5 'cyan4'\cf0  -> \cf3 Color\cf0 .new255(0, 139, 139),\
-\'ca \'ca \cf5 'dark goldenrod'\cf0  -> \cf3 Color\cf0 .new255(184, 134, 11),\
-\'ca \'ca \cf5 'dark green'\cf0  -> \cf3 Color\cf0 .new255(0, 100, 0),\
-\'ca \'ca \cf5 'dark khaki'\cf0  -> \cf3 Color\cf0 .new255(189, 183, 107),\
-\'ca \'ca \cf5 'dark olive green'\cf0  -> \cf3 Color\cf0 .new255(85, 107, 47),\
-\'ca \'ca \cf5 'dark orange'\cf0  -> \cf3 Color\cf0 .new255(255, 140, 0),\
-\'ca \'ca \cf5 'dark orchid'\cf0  -> \cf3 Color\cf0 .new255(153, 50, 204),\
-\'ca \'ca \cf5 'dark salmon'\cf0  -> \cf3 Color\cf0 .new255(233, 150, 122),\
-\'ca \'ca \cf5 'dark sea green'\cf0  -> \cf3 Color\cf0 .new255(143, 188, 143),\
-\'ca \'ca \cf5 'dark slate blue'\cf0  -> \cf3 Color\cf0 .new255(72, 61, 139),\
-\'ca \'ca \cf5 'dark slate gray'\cf0  -> \cf3 Color\cf0 .new255(47, 79, 79),\
-\'ca \'ca \cf5 'dark slate grey'\cf0  -> \cf3 Color\cf0 .new255(47, 79, 79),\
-\'ca \'ca \cf5 'dark turquoise'\cf0  -> \cf3 Color\cf0 .new255(0, 206, 209),\
-\'ca \'ca \cf5 'dark violet'\cf0  -> \cf3 Color\cf0 .new255(148, 0, 211),\
-\'ca \'ca \cf5 'DarkGoldenrod'\cf0  -> \cf3 Color\cf0 .new255(184, 134, 11),\
-\'ca \'ca \cf5 'DarkGoldenrod1'\cf0  -> \cf3 Color\cf0 .new255(255, 185, 15),\
-\'ca \'ca \cf5 'DarkGoldenrod2'\cf0  -> \cf3 Color\cf0 .new255(238, 173, 14),\
-\'ca \'ca \cf5 'DarkGoldenrod3'\cf0  -> \cf3 Color\cf0 .new255(205, 149, 12),\
-\'ca \'ca \cf5 'DarkGoldenrod4'\cf0  -> \cf3 Color\cf0 .new255(139, 101, 8),\
-\'ca \'ca \cf5 'DarkGreen'\cf0  -> \cf3 Color\cf0 .new255(0, 100, 0),\
-\'ca \'ca \cf5 'DarkKhaki'\cf0  -> \cf3 Color\cf0 .new255(189, 183, 107),\
-\'ca \'ca \cf5 'DarkOliveGreen'\cf0  -> \cf3 Color\cf0 .new255(85, 107, 47),\
-\'ca \'ca \cf5 'DarkOliveGreen1'\cf0  -> \cf3 Color\cf0 .new255(202, 255, 112),\
-\'ca \'ca \cf5 'DarkOliveGreen2'\cf0  -> \cf3 Color\cf0 .new255(188, 238, 104),\
-\'ca \'ca \cf5 'DarkOliveGreen3'\cf0  -> \cf3 Color\cf0 .new255(162, 205, 90),\
-\'ca \'ca \cf5 'DarkOliveGreen4'\cf0  -> \cf3 Color\cf0 .new255(110, 139, 61),\
-\'ca \'ca \cf5 'DarkOrange'\cf0  -> \cf3 Color\cf0 .new255(255, 140, 0),\
-\'ca \'ca \cf5 'DarkOrange1'\cf0  -> \cf3 Color\cf0 .new255(255, 127, 0),\
-\'ca \'ca \cf5 'DarkOrange2'\cf0  -> \cf3 Color\cf0 .new255(238, 118, 0),\
-\'ca \'ca \cf5 'DarkOrange3'\cf0  -> \cf3 Color\cf0 .new255(205, 102, 0),\
-\'ca \'ca \cf5 'DarkOrange4'\cf0  -> \cf3 Color\cf0 .new255(139, 69, 0),\
-\'ca \'ca \cf5 'DarkOrchid'\cf0  -> \cf3 Color\cf0 .new255(153, 50, 204),\
-\'ca \'ca \cf5 'DarkOrchid1'\cf0  -> \cf3 Color\cf0 .new255(191, 62, 255),\
-\'ca \'ca \cf5 'DarkOrchid2'\cf0  -> \cf3 Color\cf0 .new255(178, 58, 238),\
-\'ca \'ca \cf5 'DarkOrchid3'\cf0  -> \cf3 Color\cf0 .new255(154, 50, 205),\
-\'ca \'ca \cf5 'DarkOrchid4'\cf0  -> \cf3 Color\cf0 .new255(104, 34, 139),\
-\'ca \'ca \cf5 'DarkSalmon'\cf0  -> \cf3 Color\cf0 .new255(233, 150, 122),\
-\'ca \'ca \cf5 'DarkSeaGreen'\cf0  -> \cf3 Color\cf0 .new255(143, 188, 143),\
-\'ca \'ca \cf5 'DarkSeaGreen1'\cf0  -> \cf3 Color\cf0 .new255(193, 255, 193),\
-\'ca \'ca \cf5 'DarkSeaGreen2'\cf0  -> \cf3 Color\cf0 .new255(180, 238, 180),\
-\'ca \'ca \cf5 'DarkSeaGreen3'\cf0  -> \cf3 Color\cf0 .new255(155, 205, 155),\
-\'ca \'ca \cf5 'DarkSeaGreen4'\cf0  -> \cf3 Color\cf0 .new255(105, 139, 105),\
-\'ca \'ca \cf5 'DarkSlateBlue'\cf0  -> \cf3 Color\cf0 .new255(72, 61, 139),\
-\'ca \'ca \cf5 'DarkSlateGray'\cf0  -> \cf3 Color\cf0 .new255(47, 79, 79),\
-\'ca \'ca \cf5 'DarkSlateGray1'\cf0  -> \cf3 Color\cf0 .new255(151, 255, 255),\
-\'ca \'ca \cf5 'DarkSlateGray2'\cf0  -> \cf3 Color\cf0 .new255(141, 238, 238),\
-\'ca \'ca \cf5 'DarkSlateGray3'\cf0  -> \cf3 Color\cf0 .new255(121, 205, 205),\
-\'ca \'ca \cf5 'DarkSlateGray4'\cf0  -> \cf3 Color\cf0 .new255(82, 139, 139),\
-\'ca \'ca \cf5 'DarkSlateGrey'\cf0  -> \cf3 Color\cf0 .new255(47, 79, 79),\
-\'ca \'ca \cf5 'DarkTurquoise'\cf0  -> \cf3 Color\cf0 .new255(0, 206, 209),\
-\'ca \'ca \cf5 'DarkViolet'\cf0  -> \cf3 Color\cf0 .new255(148, 0, 211),\
-\'ca \'ca \cf5 'deep pink'\cf0  -> \cf3 Color\cf0 .new255(255, 20, 147),\
-\'ca \'ca \cf5 'deep sky blue'\cf0  -> \cf3 Color\cf0 .new255(0, 191, 255),\
-\'ca \'ca \cf5 'DeepPink'\cf0  -> \cf3 Color\cf0 .new255(255, 20, 147),\
-\'ca \'ca \cf5 'DeepPink1'\cf0  -> \cf3 Color\cf0 .new255(255, 20, 147),\
-\'ca \'ca \cf5 'DeepPink2'\cf0  -> \cf3 Color\cf0 .new255(238, 18, 137),\
-\'ca \'ca \cf5 'DeepPink3'\cf0  -> \cf3 Color\cf0 .new255(205, 16, 118),\
-\'ca \'ca \cf5 'DeepPink4'\cf0  -> \cf3 Color\cf0 .new255(139, 10, 80),\
-\'ca \'ca \cf5 'DeepSkyBlue'\cf0  -> \cf3 Color\cf0 .new255(0, 191, 255),\
-\'ca \'ca \cf5 'DeepSkyBlue1'\cf0  -> \cf3 Color\cf0 .new255(0, 191, 255),\
-\'ca \'ca \cf5 'DeepSkyBlue2'\cf0  -> \cf3 Color\cf0 .new255(0, 178, 238),\
-\'ca \'ca \cf5 'DeepSkyBlue3'\cf0  -> \cf3 Color\cf0 .new255(0, 154, 205),\
-\'ca \'ca \cf5 'DeepSkyBlue4'\cf0  -> \cf3 Color\cf0 .new255(0, 104, 139),\
-\'ca \'ca \cf5 'dim gray'\cf0  -> \cf3 Color\cf0 .new255(105, 105, 105),\
-\'ca \'ca \cf5 'dim grey'\cf0  -> \cf3 Color\cf0 .new255(105, 105, 105),\
-\'ca \'ca \cf5 'DimGray'\cf0  -> \cf3 Color\cf0 .new255(105, 105, 105),\
-\'ca \'ca \cf5 'DimGrey'\cf0  -> \cf3 Color\cf0 .new255(105, 105, 105),\
-\'ca \'ca \cf5 'dodger blue'\cf0  -> \cf3 Color\cf0 .new255(30, 144, 255),\
-\'ca \'ca \cf5 'DodgerBlue'\cf0  -> \cf3 Color\cf0 .new255(30, 144, 255),\
-\'ca \'ca \cf5 'DodgerBlue1'\cf0  -> \cf3 Color\cf0 .new255(30, 144, 255),\
-\'ca \'ca \cf5 'DodgerBlue2'\cf0  -> \cf3 Color\cf0 .new255(28, 134, 238),\
-\'ca \'ca \cf5 'DodgerBlue3'\cf0  -> \cf3 Color\cf0 .new255(24, 116, 205),\
-\'ca \'ca \cf5 'DodgerBlue4'\cf0  -> \cf3 Color\cf0 .new255(16, 78, 139),\
-\'ca \'ca \cf5 'firebrick'\cf0  -> \cf3 Color\cf0 .new255(178, 34, 34),\
-\'ca \'ca \cf5 'firebrick1'\cf0  -> \cf3 Color\cf0 .new255(255, 48, 48),\
-\'ca \'ca \cf5 'firebrick2'\cf0  -> \cf3 Color\cf0 .new255(238, 44, 44),\
-\'ca \'ca \cf5 'firebrick3'\cf0  -> \cf3 Color\cf0 .new255(205, 38, 38),\
-\'ca \'ca \cf5 'firebrick4'\cf0  -> \cf3 Color\cf0 .new255(139, 26, 26),\
-\'ca \'ca \cf5 'floral white'\cf0  -> \cf3 Color\cf0 .new255(255, 250, 240),\
-\'ca \'ca \cf5 'FloralWhite'\cf0  -> \cf3 Color\cf0 .new255(255, 250, 240),\
-\'ca \'ca \cf5 'forest green'\cf0  -> \cf3 Color\cf0 .new255(34, 139, 34),\
-\'ca \'ca \cf5 'ForestGreen'\cf0  -> \cf3 Color\cf0 .new255(34, 139, 34),\
-\'ca \'ca \cf5 'gainsboro'\cf0  -> \cf3 Color\cf0 .new255(220, 220, 220),\
-\'ca \'ca \cf5 'ghost white'\cf0  -> \cf3 Color\cf0 .new255(248, 248, 255),\
-\'ca \'ca \cf5 'GhostWhite'\cf0  -> \cf3 Color\cf0 .new255(248, 248, 255),\
-\'ca \'ca \cf5 'gold'\cf0  -> \cf3 Color\cf0 .new255(255, 215, 0),\
-\'ca \'ca \cf5 'gold1'\cf0  -> \cf3 Color\cf0 .new255(255, 215, 0),\
-\'ca \'ca \cf5 'gold2'\cf0  -> \cf3 Color\cf0 .new255(238, 201, 0),\
-\'ca \'ca \cf5 'gold3'\cf0  -> \cf3 Color\cf0 .new255(205, 173, 0),\
-\'ca \'ca \cf5 'gold4'\cf0  -> \cf3 Color\cf0 .new255(139, 117, 0),\
-\'ca \'ca \cf5 'goldenrod'\cf0  -> \cf3 Color\cf0 .new255(218, 165, 32),\
-\'ca \'ca \cf5 'goldenrod1'\cf0  -> \cf3 Color\cf0 .new255(255, 193, 37),\
-\'ca \'ca \cf5 'goldenrod2'\cf0  -> \cf3 Color\cf0 .new255(238, 180, 34),\
-\'ca \'ca \cf5 'goldenrod3'\cf0  -> \cf3 Color\cf0 .new255(205, 155, 29),\
-\'ca \'ca \cf5 'goldenrod4'\cf0  -> \cf3 Color\cf0 .new255(139, 105, 20),\
-\'ca \'ca \cf5 'gray'\cf0  -> \cf3 Color\cf0 .new255(190, 190, 190),\
-\'ca \'ca \cf5 'gray0'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 0),\
-\'ca \'ca \cf5 'gray1'\cf0  -> \cf3 Color\cf0 .new255(3, 3, 3),\
-\'ca \'ca \cf5 'gray10'\cf0  -> \cf3 Color\cf0 .new255(26, 26, 26),\
-\'ca \'ca \cf5 'gray100'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 255),\
-\'ca \'ca \cf5 'gray11'\cf0  -> \cf3 Color\cf0 .new255(28, 28, 28),\
-\'ca \'ca \cf5 'gray12'\cf0  -> \cf3 Color\cf0 .new255(31, 31, 31),\
-\'ca \'ca \cf5 'gray13'\cf0  -> \cf3 Color\cf0 .new255(33, 33, 33),\
-\'ca \'ca \cf5 'gray14'\cf0  -> \cf3 Color\cf0 .new255(36, 36, 36),\
-\'ca \'ca \cf5 'gray15'\cf0  -> \cf3 Color\cf0 .new255(38, 38, 38),\
-\'ca \'ca \cf5 'gray16'\cf0  -> \cf3 Color\cf0 .new255(41, 41, 41),\
-\'ca \'ca \cf5 'gray17'\cf0  -> \cf3 Color\cf0 .new255(43, 43, 43),\
-\'ca \'ca \cf5 'gray18'\cf0  -> \cf3 Color\cf0 .new255(46, 46, 46),\
-\'ca \'ca \cf5 'gray19'\cf0  -> \cf3 Color\cf0 .new255(48, 48, 48),\
-\'ca \'ca \cf5 'gray2'\cf0  -> \cf3 Color\cf0 .new255(5, 5, 5),\
-\'ca \'ca \cf5 'gray20'\cf0  -> \cf3 Color\cf0 .new255(51, 51, 51),\
-\'ca \'ca \cf5 'gray21'\cf0  -> \cf3 Color\cf0 .new255(54, 54, 54),\
-\'ca \'ca \cf5 'gray22'\cf0  -> \cf3 Color\cf0 .new255(56, 56, 56),\
-\'ca \'ca \cf5 'gray23'\cf0  -> \cf3 Color\cf0 .new255(59, 59, 59),\
-\'ca \'ca \cf5 'gray24'\cf0  -> \cf3 Color\cf0 .new255(61, 61, 61),\
-\'ca \'ca \cf5 'gray25'\cf0  -> \cf3 Color\cf0 .new255(64, 64, 64),\
-\'ca \'ca \cf5 'gray26'\cf0  -> \cf3 Color\cf0 .new255(66, 66, 66),\
-\'ca \'ca \cf5 'gray27'\cf0  -> \cf3 Color\cf0 .new255(69, 69, 69),\
-\'ca \'ca \cf5 'gray28'\cf0  -> \cf3 Color\cf0 .new255(71, 71, 71),\
-\'ca \'ca \cf5 'gray29'\cf0  -> \cf3 Color\cf0 .new255(74, 74, 74),\
-\'ca \'ca \cf5 'gray3'\cf0  -> \cf3 Color\cf0 .new255(8, 8, 8),\
-\'ca \'ca \cf5 'gray30'\cf0  -> \cf3 Color\cf0 .new255(77, 77, 77),\
-\'ca \'ca \cf5 'gray31'\cf0  -> \cf3 Color\cf0 .new255(79, 79, 79),\
-\'ca \'ca \cf5 'gray32'\cf0  -> \cf3 Color\cf0 .new255(82, 82, 82),\
-\'ca \'ca \cf5 'gray33'\cf0  -> \cf3 Color\cf0 .new255(84, 84, 84),\
-\'ca \'ca \cf5 'gray34'\cf0  -> \cf3 Color\cf0 .new255(87, 87, 87),\
-\'ca \'ca \cf5 'gray35'\cf0  -> \cf3 Color\cf0 .new255(89, 89, 89),\
-\'ca \'ca \cf5 'gray36'\cf0  -> \cf3 Color\cf0 .new255(92, 92, 92),\
-\'ca \'ca \cf5 'gray37'\cf0  -> \cf3 Color\cf0 .new255(94, 94, 94),\
-\'ca \'ca \cf5 'gray38'\cf0  -> \cf3 Color\cf0 .new255(97, 97, 97),\
-\'ca \'ca \cf5 'gray39'\cf0  -> \cf3 Color\cf0 .new255(99, 99, 99),\
-\'ca \'ca \cf5 'gray4'\cf0  -> \cf3 Color\cf0 .new255(10, 10, 10),\
-\'ca \'ca \cf5 'gray40'\cf0  -> \cf3 Color\cf0 .new255(102, 102, 102),\
-\'ca \'ca \cf5 'gray41'\cf0  -> \cf3 Color\cf0 .new255(105, 105, 105),\
-\'ca \'ca \cf5 'gray42'\cf0  -> \cf3 Color\cf0 .new255(107, 107, 107),\
-\'ca \'ca \cf5 'gray43'\cf0  -> \cf3 Color\cf0 .new255(110, 110, 110),\
-\'ca \'ca \cf5 'gray44'\cf0  -> \cf3 Color\cf0 .new255(112, 112, 112),\
-\'ca \'ca \cf5 'gray45'\cf0  -> \cf3 Color\cf0 .new255(115, 115, 115),\
-\'ca \'ca \cf5 'gray46'\cf0  -> \cf3 Color\cf0 .new255(117, 117, 117),\
-\'ca \'ca \cf5 'gray47'\cf0  -> \cf3 Color\cf0 .new255(120, 120, 120),\
-\'ca \'ca \cf5 'gray48'\cf0  -> \cf3 Color\cf0 .new255(122, 122, 122),\
-\'ca \'ca \cf5 'gray49'\cf0  -> \cf3 Color\cf0 .new255(125, 125, 125),\
-\'ca \'ca \cf5 'gray5'\cf0  -> \cf3 Color\cf0 .new255(13, 13, 13),\
-\'ca \'ca \cf5 'gray50'\cf0  -> \cf3 Color\cf0 .new255(127, 127, 127),\
-\'ca \'ca \cf5 'gray51'\cf0  -> \cf3 Color\cf0 .new255(130, 130, 130),\
-\'ca \'ca \cf5 'gray52'\cf0  -> \cf3 Color\cf0 .new255(133, 133, 133),\
-\'ca \'ca \cf5 'gray53'\cf0  -> \cf3 Color\cf0 .new255(135, 135, 135),\
-\'ca \'ca \cf5 'gray54'\cf0  -> \cf3 Color\cf0 .new255(138, 138, 138),\
-\'ca \'ca \cf5 'gray55'\cf0  -> \cf3 Color\cf0 .new255(140, 140, 140),\
-\'ca \'ca \cf5 'gray56'\cf0  -> \cf3 Color\cf0 .new255(143, 143, 143),\
-\'ca \'ca \cf5 'gray57'\cf0  -> \cf3 Color\cf0 .new255(145, 145, 145),\
-\'ca \'ca \cf5 'gray58'\cf0  -> \cf3 Color\cf0 .new255(148, 148, 148),\
-\'ca \'ca \cf5 'gray59'\cf0  -> \cf3 Color\cf0 .new255(150, 150, 150),\
-\'ca \'ca \cf5 'gray6'\cf0  -> \cf3 Color\cf0 .new255(15, 15, 15),\
-\'ca \'ca \cf5 'gray60'\cf0  -> \cf3 Color\cf0 .new255(153, 153, 153),\
-\'ca \'ca \cf5 'gray61'\cf0  -> \cf3 Color\cf0 .new255(156, 156, 156),\
-\'ca \'ca \cf5 'gray62'\cf0  -> \cf3 Color\cf0 .new255(158, 158, 158),\
-\'ca \'ca \cf5 'gray63'\cf0  -> \cf3 Color\cf0 .new255(161, 161, 161),\
-\'ca \'ca \cf5 'gray64'\cf0  -> \cf3 Color\cf0 .new255(163, 163, 163),\
-\'ca \'ca \cf5 'gray65'\cf0  -> \cf3 Color\cf0 .new255(166, 166, 166),\
-\'ca \'ca \cf5 'gray66'\cf0  -> \cf3 Color\cf0 .new255(168, 168, 168),\
-\'ca \'ca \cf5 'gray67'\cf0  -> \cf3 Color\cf0 .new255(171, 171, 171),\
-\'ca \'ca \cf5 'gray68'\cf0  -> \cf3 Color\cf0 .new255(173, 173, 173),\
-\'ca \'ca \cf5 'gray69'\cf0  -> \cf3 Color\cf0 .new255(176, 176, 176),\
-\'ca \'ca \cf5 'gray7'\cf0  -> \cf3 Color\cf0 .new255(18, 18, 18),\
-\'ca \'ca \cf5 'gray70'\cf0  -> \cf3 Color\cf0 .new255(179, 179, 179),\
-\'ca \'ca \cf5 'gray71'\cf0  -> \cf3 Color\cf0 .new255(181, 181, 181),\
-\'ca \'ca \cf5 'gray72'\cf0  -> \cf3 Color\cf0 .new255(184, 184, 184),\
-\'ca \'ca \cf5 'gray73'\cf0  -> \cf3 Color\cf0 .new255(186, 186, 186),\
-\'ca \'ca \cf5 'gray74'\cf0  -> \cf3 Color\cf0 .new255(189, 189, 189),\
-\'ca \'ca \cf5 'gray75'\cf0  -> \cf3 Color\cf0 .new255(191, 191, 191),\
-\'ca \'ca \cf5 'gray76'\cf0  -> \cf3 Color\cf0 .new255(194, 194, 194),\
-\'ca \'ca \cf5 'gray77'\cf0  -> \cf3 Color\cf0 .new255(196, 196, 196),\
-\'ca \'ca \cf5 'gray78'\cf0  -> \cf3 Color\cf0 .new255(199, 199, 199),\
-\'ca \'ca \cf5 'gray79'\cf0  -> \cf3 Color\cf0 .new255(201, 201, 201),\
-\'ca \'ca \cf5 'gray8'\cf0  -> \cf3 Color\cf0 .new255(20, 20, 20),\
-\'ca \'ca \cf5 'gray80'\cf0  -> \cf3 Color\cf0 .new255(204, 204, 204),\
-\'ca \'ca \cf5 'gray81'\cf0  -> \cf3 Color\cf0 .new255(207, 207, 207),\
-\'ca \'ca \cf5 'gray82'\cf0  -> \cf3 Color\cf0 .new255(209, 209, 209),\
-\'ca \'ca \cf5 'gray83'\cf0  -> \cf3 Color\cf0 .new255(212, 212, 212),\
-\'ca \'ca \cf5 'gray84'\cf0  -> \cf3 Color\cf0 .new255(214, 214, 214),\
-\'ca \'ca \cf5 'gray85'\cf0  -> \cf3 Color\cf0 .new255(217, 217, 217),\
-\'ca \'ca \cf5 'gray86'\cf0  -> \cf3 Color\cf0 .new255(219, 219, 219),\
-\'ca \'ca \cf5 'gray87'\cf0  -> \cf3 Color\cf0 .new255(222, 222, 222),\
-\'ca \'ca \cf5 'gray88'\cf0  -> \cf3 Color\cf0 .new255(224, 224, 224),\
-\'ca \'ca \cf5 'gray89'\cf0  -> \cf3 Color\cf0 .new255(227, 227, 227),\
-\'ca \'ca \cf5 'gray9'\cf0  -> \cf3 Color\cf0 .new255(23, 23, 23),\
-\'ca \'ca \cf5 'gray90'\cf0  -> \cf3 Color\cf0 .new255(229, 229, 229),\
-\'ca \'ca \cf5 'gray91'\cf0  -> \cf3 Color\cf0 .new255(232, 232, 232),\
-\'ca \'ca \cf5 'gray92'\cf0  -> \cf3 Color\cf0 .new255(235, 235, 235),\
-\'ca \'ca \cf5 'gray93'\cf0  -> \cf3 Color\cf0 .new255(237, 237, 237),\
-\'ca \'ca \cf5 'gray94'\cf0  -> \cf3 Color\cf0 .new255(240, 240, 240),\
-\'ca \'ca \cf5 'gray95'\cf0  -> \cf3 Color\cf0 .new255(242, 242, 242),\
-\'ca \'ca \cf5 'gray96'\cf0  -> \cf3 Color\cf0 .new255(245, 245, 245),\
-\'ca \'ca \cf5 'gray97'\cf0  -> \cf3 Color\cf0 .new255(247, 247, 247),\
-\'ca \'ca \cf5 'gray98'\cf0  -> \cf3 Color\cf0 .new255(250, 250, 250),\
-\'ca \'ca \cf5 'gray99'\cf0  -> \cf3 Color\cf0 .new255(252, 252, 252),\
-\'ca \'ca \cf5 'green'\cf0  -> \cf3 Color\cf0 .new255(0, 255, 0),\
-\'ca \'ca \cf5 'green yellow'\cf0  -> \cf3 Color\cf0 .new255(173, 255, 47),\
-\'ca \'ca \cf5 'green1'\cf0  -> \cf3 Color\cf0 .new255(0, 255, 0),\
-\'ca \'ca \cf5 'green2'\cf0  -> \cf3 Color\cf0 .new255(0, 238, 0),\
-\'ca \'ca \cf5 'green3'\cf0  -> \cf3 Color\cf0 .new255(0, 205, 0),\
-\'ca \'ca \cf5 'green4'\cf0  -> \cf3 Color\cf0 .new255(0, 139, 0),\
-\'ca \'ca \cf5 'GreenYellow'\cf0  -> \cf3 Color\cf0 .new255(173, 255, 47),\
-\'ca \'ca \cf5 'grey'\cf0  -> \cf3 Color\cf0 .new255(190, 190, 190),\
-\'ca \'ca \cf5 'grey0'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 0),\
-\'ca \'ca \cf5 'grey1'\cf0  -> \cf3 Color\cf0 .new255(3, 3, 3),\
-\'ca \'ca \cf5 'grey10'\cf0  -> \cf3 Color\cf0 .new255(26, 26, 26),\
-\'ca \'ca \cf5 'grey100'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 255),\
-\'ca \'ca \cf5 'grey11'\cf0  -> \cf3 Color\cf0 .new255(28, 28, 28),\
-\'ca \'ca \cf5 'grey12'\cf0  -> \cf3 Color\cf0 .new255(31, 31, 31),\
-\'ca \'ca \cf5 'grey13'\cf0  -> \cf3 Color\cf0 .new255(33, 33, 33),\
-\'ca \'ca \cf5 'grey14'\cf0  -> \cf3 Color\cf0 .new255(36, 36, 36),\
-\'ca \'ca \cf5 'grey15'\cf0  -> \cf3 Color\cf0 .new255(38, 38, 38),\
-\'ca \'ca \cf5 'grey16'\cf0  -> \cf3 Color\cf0 .new255(41, 41, 41),\
-\'ca \'ca \cf5 'grey17'\cf0  -> \cf3 Color\cf0 .new255(43, 43, 43),\
-\'ca \'ca \cf5 'grey18'\cf0  -> \cf3 Color\cf0 .new255(46, 46, 46),\
-\'ca \'ca \cf5 'grey19'\cf0  -> \cf3 Color\cf0 .new255(48, 48, 48),\
-\'ca \'ca \cf5 'grey2'\cf0  -> \cf3 Color\cf0 .new255(5, 5, 5),\
-\'ca \'ca \cf5 'grey20'\cf0  -> \cf3 Color\cf0 .new255(51, 51, 51),\
-\'ca \'ca \cf5 'grey21'\cf0  -> \cf3 Color\cf0 .new255(54, 54, 54),\
-\'ca \'ca \cf5 'grey22'\cf0  -> \cf3 Color\cf0 .new255(56, 56, 56),\
-\'ca \'ca \cf5 'grey23'\cf0  -> \cf3 Color\cf0 .new255(59, 59, 59),\
-\'ca \'ca \cf5 'grey24'\cf0  -> \cf3 Color\cf0 .new255(61, 61, 61),\
-\'ca \'ca \cf5 'grey25'\cf0  -> \cf3 Color\cf0 .new255(64, 64, 64),\
-\'ca \'ca \cf5 'grey26'\cf0  -> \cf3 Color\cf0 .new255(66, 66, 66),\
-\'ca \'ca \cf5 'grey27'\cf0  -> \cf3 Color\cf0 .new255(69, 69, 69),\
-\'ca \'ca \cf5 'grey28'\cf0  -> \cf3 Color\cf0 .new255(71, 71, 71),\
-\'ca \'ca \cf5 'grey29'\cf0  -> \cf3 Color\cf0 .new255(74, 74, 74),\
-\'ca \'ca \cf5 'grey3'\cf0  -> \cf3 Color\cf0 .new255(8, 8, 8),\
-\'ca \'ca \cf5 'grey30'\cf0  -> \cf3 Color\cf0 .new255(77, 77, 77),\
-\'ca \'ca \cf5 'grey31'\cf0  -> \cf3 Color\cf0 .new255(79, 79, 79),\
-\'ca \'ca \cf5 'grey32'\cf0  -> \cf3 Color\cf0 .new255(82, 82, 82),\
-\'ca \'ca \cf5 'grey33'\cf0  -> \cf3 Color\cf0 .new255(84, 84, 84),\
-\'ca \'ca \cf5 'grey34'\cf0  -> \cf3 Color\cf0 .new255(87, 87, 87),\
-\'ca \'ca \cf5 'grey35'\cf0  -> \cf3 Color\cf0 .new255(89, 89, 89),\
-\'ca \'ca \cf5 'grey36'\cf0  -> \cf3 Color\cf0 .new255(92, 92, 92),\
-\'ca \'ca \cf5 'grey37'\cf0  -> \cf3 Color\cf0 .new255(94, 94, 94),\
-\'ca \'ca \cf5 'grey38'\cf0  -> \cf3 Color\cf0 .new255(97, 97, 97),\
-\'ca \'ca \cf5 'grey39'\cf0  -> \cf3 Color\cf0 .new255(99, 99, 99),\
-\'ca \'ca \cf5 'grey4'\cf0  -> \cf3 Color\cf0 .new255(10, 10, 10),\
-\'ca \'ca \cf5 'grey40'\cf0  -> \cf3 Color\cf0 .new255(102, 102, 102),\
-\'ca \'ca \cf5 'grey41'\cf0  -> \cf3 Color\cf0 .new255(105, 105, 105),\
-\'ca \'ca \cf5 'grey42'\cf0  -> \cf3 Color\cf0 .new255(107, 107, 107),\
-\'ca \'ca \cf5 'grey43'\cf0  -> \cf3 Color\cf0 .new255(110, 110, 110),\
-\'ca \'ca \cf5 'grey44'\cf0  -> \cf3 Color\cf0 .new255(112, 112, 112),\
-\'ca \'ca \cf5 'grey45'\cf0  -> \cf3 Color\cf0 .new255(115, 115, 115),\
-\'ca \'ca \cf5 'grey46'\cf0  -> \cf3 Color\cf0 .new255(117, 117, 117),\
-\'ca \'ca \cf5 'grey47'\cf0  -> \cf3 Color\cf0 .new255(120, 120, 120),\
-\'ca \'ca \cf5 'grey48'\cf0  -> \cf3 Color\cf0 .new255(122, 122, 122),\
-\'ca \'ca \cf5 'grey49'\cf0  -> \cf3 Color\cf0 .new255(125, 125, 125),\
-\'ca \'ca \cf5 'grey5'\cf0  -> \cf3 Color\cf0 .new255(13, 13, 13),\
-\'ca \'ca \cf5 'grey50'\cf0  -> \cf3 Color\cf0 .new255(127, 127, 127),\
-\'ca \'ca \cf5 'grey51'\cf0  -> \cf3 Color\cf0 .new255(130, 130, 130),\
-\'ca \'ca \cf5 'grey52'\cf0  -> \cf3 Color\cf0 .new255(133, 133, 133),\
-\'ca \'ca \cf5 'grey53'\cf0  -> \cf3 Color\cf0 .new255(135, 135, 135),\
-\'ca \'ca \cf5 'grey54'\cf0  -> \cf3 Color\cf0 .new255(138, 138, 138),\
-\'ca \'ca \cf5 'grey55'\cf0  -> \cf3 Color\cf0 .new255(140, 140, 140),\
-\'ca \'ca \cf5 'grey56'\cf0  -> \cf3 Color\cf0 .new255(143, 143, 143),\
-\'ca \'ca \cf5 'grey57'\cf0  -> \cf3 Color\cf0 .new255(145, 145, 145),\
-\'ca \'ca \cf5 'grey58'\cf0  -> \cf3 Color\cf0 .new255(148, 148, 148),\
-\'ca \'ca \cf5 'grey59'\cf0  -> \cf3 Color\cf0 .new255(150, 150, 150),\
-\'ca \'ca \cf5 'grey6'\cf0  -> \cf3 Color\cf0 .new255(15, 15, 15),\
-\'ca \'ca \cf5 'grey60'\cf0  -> \cf3 Color\cf0 .new255(153, 153, 153),\
-\'ca \'ca \cf5 'grey61'\cf0  -> \cf3 Color\cf0 .new255(156, 156, 156),\
-\'ca \'ca \cf5 'grey62'\cf0  -> \cf3 Color\cf0 .new255(158, 158, 158),\
-\'ca \'ca \cf5 'grey63'\cf0  -> \cf3 Color\cf0 .new255(161, 161, 161),\
-\'ca \'ca \cf5 'grey64'\cf0  -> \cf3 Color\cf0 .new255(163, 163, 163),\
-\'ca \'ca \cf5 'grey65'\cf0  -> \cf3 Color\cf0 .new255(166, 166, 166),\
-\'ca \'ca \cf5 'grey66'\cf0  -> \cf3 Color\cf0 .new255(168, 168, 168),\
-\'ca \'ca \cf5 'grey67'\cf0  -> \cf3 Color\cf0 .new255(171, 171, 171),\
-\'ca \'ca \cf5 'grey68'\cf0  -> \cf3 Color\cf0 .new255(173, 173, 173),\
-\'ca \'ca \cf5 'grey69'\cf0  -> \cf3 Color\cf0 .new255(176, 176, 176),\
-\'ca \'ca \cf5 'grey7'\cf0  -> \cf3 Color\cf0 .new255(18, 18, 18),\
-\'ca \'ca \cf5 'grey70'\cf0  -> \cf3 Color\cf0 .new255(179, 179, 179),\
-\'ca \'ca \cf5 'grey71'\cf0  -> \cf3 Color\cf0 .new255(181, 181, 181),\
-\'ca \'ca \cf5 'grey72'\cf0  -> \cf3 Color\cf0 .new255(184, 184, 184),\
-\'ca \'ca \cf5 'grey73'\cf0  -> \cf3 Color\cf0 .new255(186, 186, 186),\
-\'ca \'ca \cf5 'grey74'\cf0  -> \cf3 Color\cf0 .new255(189, 189, 189),\
-\'ca \'ca \cf5 'grey75'\cf0  -> \cf3 Color\cf0 .new255(191, 191, 191),\
-\'ca \'ca \cf5 'grey76'\cf0  -> \cf3 Color\cf0 .new255(194, 194, 194),\
-\'ca \'ca \cf5 'grey77'\cf0  -> \cf3 Color\cf0 .new255(196, 196, 196),\
-\'ca \'ca \cf5 'grey78'\cf0  -> \cf3 Color\cf0 .new255(199, 199, 199),\
-\'ca \'ca \cf5 'grey79'\cf0  -> \cf3 Color\cf0 .new255(201, 201, 201),\
-\'ca \'ca \cf5 'grey8'\cf0  -> \cf3 Color\cf0 .new255(20, 20, 20),\
-\'ca \'ca \cf5 'grey80'\cf0  -> \cf3 Color\cf0 .new255(204, 204, 204),\
-\'ca \'ca \cf5 'grey81'\cf0  -> \cf3 Color\cf0 .new255(207, 207, 207),\
-\'ca \'ca \cf5 'grey82'\cf0  -> \cf3 Color\cf0 .new255(209, 209, 209),\
-\'ca \'ca \cf5 'grey83'\cf0  -> \cf3 Color\cf0 .new255(212, 212, 212),\
-\'ca \'ca \cf5 'grey84'\cf0  -> \cf3 Color\cf0 .new255(214, 214, 214),\
-\'ca \'ca \cf5 'grey85'\cf0  -> \cf3 Color\cf0 .new255(217, 217, 217),\
-\'ca \'ca \cf5 'grey86'\cf0  -> \cf3 Color\cf0 .new255(219, 219, 219),\
-\'ca \'ca \cf5 'grey87'\cf0  -> \cf3 Color\cf0 .new255(222, 222, 222),\
-\'ca \'ca \cf5 'grey88'\cf0  -> \cf3 Color\cf0 .new255(224, 224, 224),\
-\'ca \'ca \cf5 'grey89'\cf0  -> \cf3 Color\cf0 .new255(227, 227, 227),\
-\'ca \'ca \cf5 'grey9'\cf0  -> \cf3 Color\cf0 .new255(23, 23, 23),\
-\'ca \'ca \cf5 'grey90'\cf0  -> \cf3 Color\cf0 .new255(229, 229, 229),\
-\'ca \'ca \cf5 'grey91'\cf0  -> \cf3 Color\cf0 .new255(232, 232, 232),\
-\'ca \'ca \cf5 'grey92'\cf0  -> \cf3 Color\cf0 .new255(235, 235, 235),\
-\'ca \'ca \cf5 'grey93'\cf0  -> \cf3 Color\cf0 .new255(237, 237, 237),\
-\'ca \'ca \cf5 'grey94'\cf0  -> \cf3 Color\cf0 .new255(240, 240, 240),\
-\'ca \'ca \cf5 'grey95'\cf0  -> \cf3 Color\cf0 .new255(242, 242, 242),\
-\'ca \'ca \cf5 'grey96'\cf0  -> \cf3 Color\cf0 .new255(245, 245, 245),\
-\'ca \'ca \cf5 'grey97'\cf0  -> \cf3 Color\cf0 .new255(247, 247, 247),\
-\'ca \'ca \cf5 'grey98'\cf0  -> \cf3 Color\cf0 .new255(250, 250, 250),\
-\'ca \'ca \cf5 'grey99'\cf0  -> \cf3 Color\cf0 .new255(252, 252, 252),\
-\'ca \'ca \cf5 'honeydew'\cf0  -> \cf3 Color\cf0 .new255(240, 255, 240),\
-\'ca \'ca \cf5 'honeydew1'\cf0  -> \cf3 Color\cf0 .new255(240, 255, 240),\
-\'ca \'ca \cf5 'honeydew2'\cf0  -> \cf3 Color\cf0 .new255(224, 238, 224),\
-\'ca \'ca \cf5 'honeydew3'\cf0  -> \cf3 Color\cf0 .new255(193, 205, 193),\
-\'ca \'ca \cf5 'honeydew4'\cf0  -> \cf3 Color\cf0 .new255(131, 139, 131),\
-\'ca \'ca \cf5 'hot pink'\cf0  -> \cf3 Color\cf0 .new255(255, 105, 180),\
-\'ca \'ca \cf5 'HotPink'\cf0  -> \cf3 Color\cf0 .new255(255, 105, 180),\
-\'ca \'ca \cf5 'HotPink1'\cf0  -> \cf3 Color\cf0 .new255(255, 110, 180),\
-\'ca \'ca \cf5 'HotPink2'\cf0  -> \cf3 Color\cf0 .new255(238, 106, 167),\
-\'ca \'ca \cf5 'HotPink3'\cf0  -> \cf3 Color\cf0 .new255(205, 96, 144),\
-\'ca \'ca \cf5 'HotPink4'\cf0  -> \cf3 Color\cf0 .new255(139, 58, 98),\
-\'ca \'ca \cf5 'indian red'\cf0  -> \cf3 Color\cf0 .new255(205, 92, 92),\
-\'ca \'ca \cf5 'IndianRed'\cf0  -> \cf3 Color\cf0 .new255(205, 92, 92),\
-\'ca \'ca \cf5 'IndianRed1'\cf0  -> \cf3 Color\cf0 .new255(255, 106, 106),\
-\'ca \'ca \cf5 'IndianRed2'\cf0  -> \cf3 Color\cf0 .new255(238, 99, 99),\
-\'ca \'ca \cf5 'IndianRed3'\cf0  -> \cf3 Color\cf0 .new255(205, 85, 85),\
-\'ca \'ca \cf5 'IndianRed4'\cf0  -> \cf3 Color\cf0 .new255(139, 58, 58),\
-\'ca \'ca \cf5 'ivory'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 240),\
-\'ca \'ca \cf5 'ivory1'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 240),\
-\'ca \'ca \cf5 'ivory2'\cf0  -> \cf3 Color\cf0 .new255(238, 238, 224),\
-\'ca \'ca \cf5 'ivory3'\cf0  -> \cf3 Color\cf0 .new255(205, 205, 193),\
-\'ca \'ca \cf5 'ivory4'\cf0  -> \cf3 Color\cf0 .new255(139, 139, 131),\
-\'ca \'ca \cf5 'khaki'\cf0  -> \cf3 Color\cf0 .new255(240, 230, 140),\
-\'ca \'ca \cf5 'khaki1'\cf0  -> \cf3 Color\cf0 .new255(255, 246, 143),\
-\'ca \'ca \cf5 'khaki2'\cf0  -> \cf3 Color\cf0 .new255(238, 230, 133),\
-\'ca \'ca \cf5 'khaki3'\cf0  -> \cf3 Color\cf0 .new255(205, 198, 115),\
-\'ca \'ca \cf5 'khaki4'\cf0  -> \cf3 Color\cf0 .new255(139, 134, 78),\
-\'ca \'ca \cf5 'lavender'\cf0  -> \cf3 Color\cf0 .new255(230, 230, 250),\
-\'ca \'ca \cf5 'lavender blush'\cf0  -> \cf3 Color\cf0 .new255(255, 240, 245),\
-\'ca \'ca \cf5 'LavenderBlush'\cf0  -> \cf3 Color\cf0 .new255(255, 240, 245),\
-\'ca \'ca \cf5 'LavenderBlush1'\cf0  -> \cf3 Color\cf0 .new255(255, 240, 245),\
-\'ca \'ca \cf5 'LavenderBlush2'\cf0  -> \cf3 Color\cf0 .new255(238, 224, 229),\
-\'ca \'ca \cf5 'LavenderBlush3'\cf0  -> \cf3 Color\cf0 .new255(205, 193, 197),\
-\'ca \'ca \cf5 'LavenderBlush4'\cf0  -> \cf3 Color\cf0 .new255(139, 131, 134),\
-\'ca \'ca \cf5 'lawn green'\cf0  -> \cf3 Color\cf0 .new255(124, 252, 0),\
-\'ca \'ca \cf5 'LawnGreen'\cf0  -> \cf3 Color\cf0 .new255(124, 252, 0),\
-\'ca \'ca \cf5 'lemon chiffon'\cf0  -> \cf3 Color\cf0 .new255(255, 250, 205),\
-\'ca \'ca \cf5 'LemonChiffon'\cf0  -> \cf3 Color\cf0 .new255(255, 250, 205),\
-\'ca \'ca \cf5 'LemonChiffon1'\cf0  -> \cf3 Color\cf0 .new255(255, 250, 205),\
-\'ca \'ca \cf5 'LemonChiffon2'\cf0  -> \cf3 Color\cf0 .new255(238, 233, 191),\
-\'ca \'ca \cf5 'LemonChiffon3'\cf0  -> \cf3 Color\cf0 .new255(205, 201, 165),\
-\'ca \'ca \cf5 'LemonChiffon4'\cf0  -> \cf3 Color\cf0 .new255(139, 137, 112),\
-\'ca \'ca \cf5 'light blue'\cf0  -> \cf3 Color\cf0 .new255(173, 216, 230),\
-\'ca \'ca \cf5 'light coral'\cf0  -> \cf3 Color\cf0 .new255(240, 128, 128),\
-\'ca \'ca \cf5 'light cyan'\cf0  -> \cf3 Color\cf0 .new255(224, 255, 255),\
-\'ca \'ca \cf5 'light goldenrod'\cf0  -> \cf3 Color\cf0 .new255(238, 221, 130),\
-\'ca \'ca \cf5 'light goldenrod yellow'\cf0  -> \cf3 Color\cf0 .new255(250, 250, 210),\
-\'ca \'ca \cf5 'light gray'\cf0  -> \cf3 Color\cf0 .new255(211, 211, 211),\
-\'ca \'ca \cf5 'light grey'\cf0  -> \cf3 Color\cf0 .new255(211, 211, 211),\
-\'ca \'ca \cf5 'light pink'\cf0  -> \cf3 Color\cf0 .new255(255, 182, 193),\
-\'ca \'ca \cf5 'light salmon'\cf0  -> \cf3 Color\cf0 .new255(255, 160, 122),\
-\'ca \'ca \cf5 'light sea green'\cf0  -> \cf3 Color\cf0 .new255(32, 178, 170),\
-\'ca \'ca \cf5 'light sky blue'\cf0  -> \cf3 Color\cf0 .new255(135, 206, 250),\
-\'ca \'ca \cf5 'light slate blue'\cf0  -> \cf3 Color\cf0 .new255(132, 112, 255),\
-\'ca \'ca \cf5 'light slate gray'\cf0  -> \cf3 Color\cf0 .new255(119, 136, 153),\
-\'ca \'ca \cf5 'light slate grey'\cf0  -> \cf3 Color\cf0 .new255(119, 136, 153),\
-\'ca \'ca \cf5 'light steel blue'\cf0  -> \cf3 Color\cf0 .new255(176, 196, 222),\
-\'ca \'ca \cf5 'light yellow'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 224),\
-\'ca \'ca \cf5 'LightBlue'\cf0  -> \cf3 Color\cf0 .new255(173, 216, 230),\
-\'ca \'ca \cf5 'LightBlue1'\cf0  -> \cf3 Color\cf0 .new255(191, 239, 255),\
-\'ca \'ca \cf5 'LightBlue2'\cf0  -> \cf3 Color\cf0 .new255(178, 223, 238),\
-\'ca \'ca \cf5 'LightBlue3'\cf0  -> \cf3 Color\cf0 .new255(154, 192, 205),\
-\'ca \'ca \cf5 'LightBlue4'\cf0  -> \cf3 Color\cf0 .new255(104, 131, 139),\
-\'ca \'ca \cf5 'LightCoral'\cf0  -> \cf3 Color\cf0 .new255(240, 128, 128),\
-\'ca \'ca \cf5 'LightCyan'\cf0  -> \cf3 Color\cf0 .new255(224, 255, 255),\
-\'ca \'ca \cf5 'LightCyan1'\cf0  -> \cf3 Color\cf0 .new255(224, 255, 255),\
-\'ca \'ca \cf5 'LightCyan2'\cf0  -> \cf3 Color\cf0 .new255(209, 238, 238),\
-\'ca \'ca \cf5 'LightCyan3'\cf0  -> \cf3 Color\cf0 .new255(180, 205, 205),\
-\'ca \'ca \cf5 'LightCyan4'\cf0  -> \cf3 Color\cf0 .new255(122, 139, 139),\
-\'ca \'ca \cf5 'LightGoldenrod'\cf0  -> \cf3 Color\cf0 .new255(238, 221, 130),\
-\'ca \'ca \cf5 'LightGoldenrod1'\cf0  -> \cf3 Color\cf0 .new255(255, 236, 139),\
-\'ca \'ca \cf5 'LightGoldenrod2'\cf0  -> \cf3 Color\cf0 .new255(238, 220, 130),\
-\'ca \'ca \cf5 'LightGoldenrod3'\cf0  -> \cf3 Color\cf0 .new255(205, 190, 112),\
-\'ca \'ca \cf5 'LightGoldenrod4'\cf0  -> \cf3 Color\cf0 .new255(139, 129, 76),\
-\'ca \'ca \cf5 'LightGoldenrodYellow'\cf0  -> \cf3 Color\cf0 .new255(250, 250, 210),\
-\'ca \'ca \cf5 'LightGray'\cf0  -> \cf3 Color\cf0 .new255(211, 211, 211),\
-\'ca \'ca \cf5 'LightGrey'\cf0  -> \cf3 Color\cf0 .new255(211, 211, 211),\
-\'ca \'ca \cf5 'LightPink'\cf0  -> \cf3 Color\cf0 .new255(255, 182, 193),\
-\'ca \'ca \cf5 'LightPink1'\cf0  -> \cf3 Color\cf0 .new255(255, 174, 185),\
-\'ca \'ca \cf5 'LightPink2'\cf0  -> \cf3 Color\cf0 .new255(238, 162, 173),\
-\'ca \'ca \cf5 'LightPink3'\cf0  -> \cf3 Color\cf0 .new255(205, 140, 149),\
-\'ca \'ca \cf5 'LightPink4'\cf0  -> \cf3 Color\cf0 .new255(139, 95, 101),\
-\'ca \'ca \cf5 'LightSalmon'\cf0  -> \cf3 Color\cf0 .new255(255, 160, 122),\
-\'ca \'ca \cf5 'LightSalmon1'\cf0  -> \cf3 Color\cf0 .new255(255, 160, 122),\
-\'ca \'ca \cf5 'LightSalmon2'\cf0  -> \cf3 Color\cf0 .new255(238, 149, 114),\
-\'ca \'ca \cf5 'LightSalmon3'\cf0  -> \cf3 Color\cf0 .new255(205, 129, 98),\
-\'ca \'ca \cf5 'LightSalmon4'\cf0  -> \cf3 Color\cf0 .new255(139, 87, 66),\
-\'ca \'ca \cf5 'LightSeaGreen'\cf0  -> \cf3 Color\cf0 .new255(32, 178, 170),\
-\'ca \'ca \cf5 'LightSkyBlue'\cf0  -> \cf3 Color\cf0 .new255(135, 206, 250),\
-\'ca \'ca \cf5 'LightSkyBlue1'\cf0  -> \cf3 Color\cf0 .new255(176, 226, 255),\
-\'ca \'ca \cf5 'LightSkyBlue2'\cf0  -> \cf3 Color\cf0 .new255(164, 211, 238),\
-\'ca \'ca \cf5 'LightSkyBlue3'\cf0  -> \cf3 Color\cf0 .new255(141, 182, 205),\
-\'ca \'ca \cf5 'LightSkyBlue4'\cf0  -> \cf3 Color\cf0 .new255(96, 123, 139),\
-\'ca \'ca \cf5 'LightSlateBlue'\cf0  -> \cf3 Color\cf0 .new255(132, 112, 255),\
-\'ca \'ca \cf5 'LightSlateGray'\cf0  -> \cf3 Color\cf0 .new255(119, 136, 153),\
-\'ca \'ca \cf5 'LightSlateGrey'\cf0  -> \cf3 Color\cf0 .new255(119, 136, 153),\
-\'ca \'ca \cf5 'LightSteelBlue'\cf0  -> \cf3 Color\cf0 .new255(176, 196, 222),\
-\'ca \'ca \cf5 'LightSteelBlue1'\cf0  -> \cf3 Color\cf0 .new255(202, 225, 255),\
-\'ca \'ca \cf5 'LightSteelBlue2'\cf0  -> \cf3 Color\cf0 .new255(188, 210, 238),\
-\'ca \'ca \cf5 'LightSteelBlue3'\cf0  -> \cf3 Color\cf0 .new255(162, 181, 205),\
-\'ca \'ca \cf5 'LightSteelBlue4'\cf0  -> \cf3 Color\cf0 .new255(110, 123, 139),\
-\'ca \'ca \cf5 'LightYellow'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 224),\
-\'ca \'ca \cf5 'LightYellow1'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 224),\
-\'ca \'ca \cf5 'LightYellow2'\cf0  -> \cf3 Color\cf0 .new255(238, 238, 209),\
-\'ca \'ca \cf5 'LightYellow3'\cf0  -> \cf3 Color\cf0 .new255(205, 205, 180),\
-\'ca \'ca \cf5 'LightYellow4'\cf0  -> \cf3 Color\cf0 .new255(139, 139, 122),\
-\'ca \'ca \cf5 'lime green'\cf0  -> \cf3 Color\cf0 .new255(50, 205, 50),\
-\'ca \'ca \cf5 'LimeGreen'\cf0  -> \cf3 Color\cf0 .new255(50, 205, 50),\
-\'ca \'ca \cf5 'linen'\cf0  -> \cf3 Color\cf0 .new255(250, 240, 230),\
-\'ca \'ca \cf5 'magenta'\cf0  -> \cf3 Color\cf0 .new255(255, 0, 255),\
-\'ca \'ca \cf5 'magenta1'\cf0  -> \cf3 Color\cf0 .new255(255, 0, 255),\
-\'ca \'ca \cf5 'magenta2'\cf0  -> \cf3 Color\cf0 .new255(238, 0, 238),\
-\'ca \'ca \cf5 'magenta3'\cf0  -> \cf3 Color\cf0 .new255(205, 0, 205),\
-\'ca \'ca \cf5 'magenta4'\cf0  -> \cf3 Color\cf0 .new255(139, 0, 139),\
-\'ca \'ca \cf5 'maroon'\cf0  -> \cf3 Color\cf0 .new255(176, 48, 96),\
-\'ca \'ca \cf5 'maroon1'\cf0  -> \cf3 Color\cf0 .new255(255, 52, 179),\
-\'ca \'ca \cf5 'maroon2'\cf0  -> \cf3 Color\cf0 .new255(238, 48, 167),\
-\'ca \'ca \cf5 'maroon3'\cf0  -> \cf3 Color\cf0 .new255(205, 41, 144),\
-\'ca \'ca \cf5 'maroon4'\cf0  -> \cf3 Color\cf0 .new255(139, 28, 98),\
-\'ca \'ca \cf5 'medium aquamarine'\cf0  -> \cf3 Color\cf0 .new255(102, 205, 170),\
-\'ca \'ca \cf5 'medium blue'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 205),\
-\'ca \'ca \cf5 'medium orchid'\cf0  -> \cf3 Color\cf0 .new255(186, 85, 211),\
-\'ca \'ca \cf5 'medium purple'\cf0  -> \cf3 Color\cf0 .new255(147, 112, 219),\
-\'ca \'ca \cf5 'medium sea green'\cf0  -> \cf3 Color\cf0 .new255(60, 179, 113),\
-\'ca \'ca \cf5 'medium slate blue'\cf0  -> \cf3 Color\cf0 .new255(123, 104, 238),\
-\'ca \'ca \cf5 'medium spring green'\cf0  -> \cf3 Color\cf0 .new255(0, 250, 154),\
-\'ca \'ca \cf5 'medium turquoise'\cf0  -> \cf3 Color\cf0 .new255(72, 209, 204),\
-\'ca \'ca \cf5 'medium violet red'\cf0  -> \cf3 Color\cf0 .new255(199, 21, 133),\
-\'ca \'ca \cf5 'MediumAquamarine'\cf0  -> \cf3 Color\cf0 .new255(102, 205, 170),\
-\'ca \'ca \cf5 'MediumBlue'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 205),\
-\'ca \'ca \cf5 'MediumOrchid'\cf0  -> \cf3 Color\cf0 .new255(186, 85, 211),\
-\'ca \'ca \cf5 'MediumOrchid1'\cf0  -> \cf3 Color\cf0 .new255(224, 102, 255),\
-\'ca \'ca \cf5 'MediumOrchid2'\cf0  -> \cf3 Color\cf0 .new255(209, 95, 238),\
-\'ca \'ca \cf5 'MediumOrchid3'\cf0  -> \cf3 Color\cf0 .new255(180, 82, 205),\
-\'ca \'ca \cf5 'MediumOrchid4'\cf0  -> \cf3 Color\cf0 .new255(122, 55, 139),\
-\'ca \'ca \cf5 'MediumPurple'\cf0  -> \cf3 Color\cf0 .new255(147, 112, 219),\
-\'ca \'ca \cf5 'MediumPurple1'\cf0  -> \cf3 Color\cf0 .new255(171, 130, 255),\
-\'ca \'ca \cf5 'MediumPurple2'\cf0  -> \cf3 Color\cf0 .new255(159, 121, 238),\
-\'ca \'ca \cf5 'MediumPurple3'\cf0  -> \cf3 Color\cf0 .new255(137, 104, 205),\
-\'ca \'ca \cf5 'MediumPurple4'\cf0  -> \cf3 Color\cf0 .new255(93, 71, 139),\
-\'ca \'ca \cf5 'MediumSeaGreen'\cf0  -> \cf3 Color\cf0 .new255(60, 179, 113),\
-\'ca \'ca \cf5 'MediumSlateBlue'\cf0  -> \cf3 Color\cf0 .new255(123, 104, 238),\
-\'ca \'ca \cf5 'MediumSpringGreen'\cf0  -> \cf3 Color\cf0 .new255(0, 250, 154),\
-\'ca \'ca \cf5 'MediumTurquoise'\cf0  -> \cf3 Color\cf0 .new255(72, 209, 204),\
-\'ca \'ca \cf5 'MediumVioletRed'\cf0  -> \cf3 Color\cf0 .new255(199, 21, 133),\
-\'ca \'ca \cf5 'midnight blue'\cf0  -> \cf3 Color\cf0 .new255(25, 25, 112),\
-\'ca \'ca \cf5 'MidnightBlue'\cf0  -> \cf3 Color\cf0 .new255(25, 25, 112),\
-\'ca \'ca \cf5 'mint cream'\cf0  -> \cf3 Color\cf0 .new255(245, 255, 250),\
-\'ca \'ca \cf5 'MintCream'\cf0  -> \cf3 Color\cf0 .new255(245, 255, 250),\
-\'ca \'ca \cf5 'misty rose'\cf0  -> \cf3 Color\cf0 .new255(255, 228, 225),\
-\'ca \'ca \cf5 'MistyRose'\cf0  -> \cf3 Color\cf0 .new255(255, 228, 225),\
-\'ca \'ca \cf5 'MistyRose1'\cf0  -> \cf3 Color\cf0 .new255(255, 228, 225),\
-\'ca \'ca \cf5 'MistyRose2'\cf0  -> \cf3 Color\cf0 .new255(238, 213, 210),\
-\'ca \'ca \cf5 'MistyRose3'\cf0  -> \cf3 Color\cf0 .new255(205, 183, 181),\
-\'ca \'ca \cf5 'MistyRose4'\cf0  -> \cf3 Color\cf0 .new255(139, 125, 123),\
-\'ca \'ca \cf5 'moccasin'\cf0  -> \cf3 Color\cf0 .new255(255, 228, 181),\
-\'ca \'ca \cf5 'navajo white'\cf0  -> \cf3 Color\cf0 .new255(255, 222, 173),\
-\'ca \'ca \cf5 'NavajoWhite'\cf0  -> \cf3 Color\cf0 .new255(255, 222, 173),\
-\'ca \'ca \cf5 'NavajoWhite1'\cf0  -> \cf3 Color\cf0 .new255(255, 222, 173),\
-\'ca \'ca \cf5 'NavajoWhite2'\cf0  -> \cf3 Color\cf0 .new255(238, 207, 161),\
-\'ca \'ca \cf5 'NavajoWhite3'\cf0  -> \cf3 Color\cf0 .new255(205, 179, 139),\
-\'ca \'ca \cf5 'NavajoWhite4'\cf0  -> \cf3 Color\cf0 .new255(139, 121, 94),\
-\'ca \'ca \cf5 'navy'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 128),\
-\'ca \'ca \cf5 'navy blue'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 128),\
-\'ca \'ca \cf5 'NavyBlue'\cf0  -> \cf3 Color\cf0 .new255(0, 0, 128),\
-\'ca \'ca \cf5 'old lace'\cf0  -> \cf3 Color\cf0 .new255(253, 245, 230),\
-\'ca \'ca \cf5 'OldLace'\cf0  -> \cf3 Color\cf0 .new255(253, 245, 230),\
-\'ca \'ca \cf5 'olive drab'\cf0  -> \cf3 Color\cf0 .new255(107, 142, 35),\
-\'ca \'ca \cf5 'OliveDrab'\cf0  -> \cf3 Color\cf0 .new255(107, 142, 35),\
-\'ca \'ca \cf5 'OliveDrab1'\cf0  -> \cf3 Color\cf0 .new255(192, 255, 62),\
-\'ca \'ca \cf5 'OliveDrab2'\cf0  -> \cf3 Color\cf0 .new255(179, 238, 58),\
-\'ca \'ca \cf5 'OliveDrab3'\cf0  -> \cf3 Color\cf0 .new255(154, 205, 50),\
-\'ca \'ca \cf5 'OliveDrab4'\cf0  -> \cf3 Color\cf0 .new255(105, 139, 34),\
-\'ca \'ca \cf5 'orange'\cf0  -> \cf3 Color\cf0 .new255(255, 165, 0),\
-\'ca \'ca \cf5 'orange red'\cf0  -> \cf3 Color\cf0 .new255(255, 69, 0),\
-\'ca \'ca \cf5 'orange1'\cf0  -> \cf3 Color\cf0 .new255(255, 165, 0),\
-\'ca \'ca \cf5 'orange2'\cf0  -> \cf3 Color\cf0 .new255(238, 154, 0),\
-\'ca \'ca \cf5 'orange3'\cf0  -> \cf3 Color\cf0 .new255(205, 133, 0),\
-\'ca \'ca \cf5 'orange4'\cf0  -> \cf3 Color\cf0 .new255(139, 90, 0),\
-\'ca \'ca \cf5 'OrangeRed'\cf0  -> \cf3 Color\cf0 .new255(255, 69, 0),\
-\'ca \'ca \cf5 'OrangeRed1'\cf0  -> \cf3 Color\cf0 .new255(255, 69, 0),\
-\'ca \'ca \cf5 'OrangeRed2'\cf0  -> \cf3 Color\cf0 .new255(238, 64, 0),\
-\'ca \'ca \cf5 'OrangeRed3'\cf0  -> \cf3 Color\cf0 .new255(205, 55, 0),\
-\'ca \'ca \cf5 'OrangeRed4'\cf0  -> \cf3 Color\cf0 .new255(139, 37, 0),\
-\'ca \'ca \cf5 'orchid'\cf0  -> \cf3 Color\cf0 .new255(218, 112, 214),\
-\'ca \'ca \cf5 'orchid1'\cf0  -> \cf3 Color\cf0 .new255(255, 131, 250),\
-\'ca \'ca \cf5 'orchid2'\cf0  -> \cf3 Color\cf0 .new255(238, 122, 233),\
-\'ca \'ca \cf5 'orchid3'\cf0  -> \cf3 Color\cf0 .new255(205, 105, 201),\
-\'ca \'ca \cf5 'orchid4'\cf0  -> \cf3 Color\cf0 .new255(139, 71, 137),\
-\'ca \'ca \cf5 'pale goldenrod'\cf0  -> \cf3 Color\cf0 .new255(238, 232, 170),\
-\'ca \'ca \cf5 'pale green'\cf0  -> \cf3 Color\cf0 .new255(152, 251, 152),\
-\'ca \'ca \cf5 'pale turquoise'\cf0  -> \cf3 Color\cf0 .new255(175, 238, 238),\
-\'ca \'ca \cf5 'pale violet red'\cf0  -> \cf3 Color\cf0 .new255(219, 112, 147),\
-\'ca \'ca \cf5 'PaleGoldenrod'\cf0  -> \cf3 Color\cf0 .new255(238, 232, 170),\
-\'ca \'ca \cf5 'PaleGreen'\cf0  -> \cf3 Color\cf0 .new255(152, 251, 152),\
-\'ca \'ca \cf5 'PaleGreen1'\cf0  -> \cf3 Color\cf0 .new255(154, 255, 154),\
-\'ca \'ca \cf5 'PaleGreen2'\cf0  -> \cf3 Color\cf0 .new255(144, 238, 144),\
-\'ca \'ca \cf5 'PaleGreen3'\cf0  -> \cf3 Color\cf0 .new255(124, 205, 124),\
-\'ca \'ca \cf5 'PaleGreen4'\cf0  -> \cf3 Color\cf0 .new255(84, 139, 84),\
-\'ca \'ca \cf5 'PaleTurquoise'\cf0  -> \cf3 Color\cf0 .new255(175, 238, 238),\
-\'ca \'ca \cf5 'PaleTurquoise1'\cf0  -> \cf3 Color\cf0 .new255(187, 255, 255),\
-\'ca \'ca \cf5 'PaleTurquoise2'\cf0  -> \cf3 Color\cf0 .new255(174, 238, 238),\
-\'ca \'ca \cf5 'PaleTurquoise3'\cf0  -> \cf3 Color\cf0 .new255(150, 205, 205),\
-\'ca \'ca \cf5 'PaleTurquoise4'\cf0  -> \cf3 Color\cf0 .new255(102, 139, 139),\
-\'ca \'ca \cf5 'PaleVioletRed'\cf0  -> \cf3 Color\cf0 .new255(219, 112, 147),\
-\'ca \'ca \cf5 'PaleVioletRed1'\cf0  -> \cf3 Color\cf0 .new255(255, 130, 171),\
-\'ca \'ca \cf5 'PaleVioletRed2'\cf0  -> \cf3 Color\cf0 .new255(238, 121, 159),\
-\'ca \'ca \cf5 'PaleVioletRed3'\cf0  -> \cf3 Color\cf0 .new255(205, 104, 137),\
-\'ca \'ca \cf5 'PaleVioletRed4'\cf0  -> \cf3 Color\cf0 .new255(139, 71, 93),\
-\'ca \'ca \cf5 'papaya whip'\cf0  -> \cf3 Color\cf0 .new255(255, 239, 213),\
-\'ca \'ca \cf5 'PapayaWhip'\cf0  -> \cf3 Color\cf0 .new255(255, 239, 213),\
-\'ca \'ca \cf5 'peach puff'\cf0  -> \cf3 Color\cf0 .new255(255, 218, 185),\
-\'ca \'ca \cf5 'PeachPuff'\cf0  -> \cf3 Color\cf0 .new255(255, 218, 185),\
-\'ca \'ca \cf5 'PeachPuff1'\cf0  -> \cf3 Color\cf0 .new255(255, 218, 185),\
-\'ca \'ca \cf5 'PeachPuff2'\cf0  -> \cf3 Color\cf0 .new255(238, 203, 173),\
-\'ca \'ca \cf5 'PeachPuff3'\cf0  -> \cf3 Color\cf0 .new255(205, 175, 149),\
-\'ca \'ca \cf5 'PeachPuff4'\cf0  -> \cf3 Color\cf0 .new255(139, 119, 101),\
-\'ca \'ca \cf5 'peru'\cf0  -> \cf3 Color\cf0 .new255(205, 133, 63),\
-\'ca \'ca \cf5 'pink'\cf0  -> \cf3 Color\cf0 .new255(255, 192, 203),\
-\'ca \'ca \cf5 'pink1'\cf0  -> \cf3 Color\cf0 .new255(255, 181, 197),\
-\'ca \'ca \cf5 'pink2'\cf0  -> \cf3 Color\cf0 .new255(238, 169, 184),\
-\'ca \'ca \cf5 'pink3'\cf0  -> \cf3 Color\cf0 .new255(205, 145, 158),\
-\'ca \'ca \cf5 'pink4'\cf0  -> \cf3 Color\cf0 .new255(139, 99, 108),\
-\'ca \'ca \cf5 'plum'\cf0  -> \cf3 Color\cf0 .new255(221, 160, 221),\
-\'ca \'ca \cf5 'plum1'\cf0  -> \cf3 Color\cf0 .new255(255, 187, 255),\
-\'ca \'ca \cf5 'plum2'\cf0  -> \cf3 Color\cf0 .new255(238, 174, 238),\
-\'ca \'ca \cf5 'plum3'\cf0  -> \cf3 Color\cf0 .new255(205, 150, 205),\
-\'ca \'ca \cf5 'plum4'\cf0  -> \cf3 Color\cf0 .new255(139, 102, 139),\
-\'ca \'ca \cf5 'powder blue'\cf0  -> \cf3 Color\cf0 .new255(176, 224, 230),\
-\'ca \'ca \cf5 'PowderBlue'\cf0  -> \cf3 Color\cf0 .new255(176, 224, 230),\
-\'ca \'ca \cf5 'purple'\cf0  -> \cf3 Color\cf0 .new255(160, 32, 240),\
-\'ca \'ca \cf5 'purple1'\cf0  -> \cf3 Color\cf0 .new255(155, 48, 255),\
-\'ca \'ca \cf5 'purple2'\cf0  -> \cf3 Color\cf0 .new255(145, 44, 238),\
-\'ca \'ca \cf5 'purple3'\cf0  -> \cf3 Color\cf0 .new255(125, 38, 205),\
-\'ca \'ca \cf5 'purple4'\cf0  -> \cf3 Color\cf0 .new255(85, 26, 139),\
-\'ca \'ca \cf5 'red'\cf0  -> \cf3 Color\cf0 .new255(255, 0, 0),\
-\'ca \'ca \cf5 'red1'\cf0  -> \cf3 Color\cf0 .new255(255, 0, 0),\
-\'ca \'ca \cf5 'red2'\cf0  -> \cf3 Color\cf0 .new255(238, 0, 0),\
-\'ca \'ca \cf5 'red3'\cf0  -> \cf3 Color\cf0 .new255(205, 0, 0),\
-\'ca \'ca \cf5 'red4'\cf0  -> \cf3 Color\cf0 .new255(139, 0, 0),\
-\'ca \'ca \cf5 'rosy brown'\cf0  -> \cf3 Color\cf0 .new255(188, 143, 143),\
-\'ca \'ca \cf5 'RosyBrown'\cf0  -> \cf3 Color\cf0 .new255(188, 143, 143),\
-\'ca \'ca \cf5 'RosyBrown1'\cf0  -> \cf3 Color\cf0 .new255(255, 193, 193),\
-\'ca \'ca \cf5 'RosyBrown2'\cf0  -> \cf3 Color\cf0 .new255(238, 180, 180),\
-\'ca \'ca \cf5 'RosyBrown3'\cf0  -> \cf3 Color\cf0 .new255(205, 155, 155),\
-\'ca \'ca \cf5 'RosyBrown4'\cf0  -> \cf3 Color\cf0 .new255(139, 105, 105),\
-\'ca \'ca \cf5 'royal blue'\cf0  -> \cf3 Color\cf0 .new255(65, 105, 225),\
-\'ca \'ca \cf5 'RoyalBlue'\cf0  -> \cf3 Color\cf0 .new255(65, 105, 225),\
-\'ca \'ca \cf5 'RoyalBlue1'\cf0  -> \cf3 Color\cf0 .new255(72, 118, 255),\
-\'ca \'ca \cf5 'RoyalBlue2'\cf0  -> \cf3 Color\cf0 .new255(67, 110, 238),\
-\'ca \'ca \cf5 'RoyalBlue3'\cf0  -> \cf3 Color\cf0 .new255(58, 95, 205),\
-\'ca \'ca \cf5 'RoyalBlue4'\cf0  -> \cf3 Color\cf0 .new255(39, 64, 139),\
-\'ca \'ca \cf5 'saddle brown'\cf0  -> \cf3 Color\cf0 .new255(139, 69, 19),\
-\'ca \'ca \cf5 'SaddleBrown'\cf0  -> \cf3 Color\cf0 .new255(139, 69, 19),\
-\'ca \'ca \cf5 'salmon'\cf0  -> \cf3 Color\cf0 .new255(250, 128, 114),\
-\'ca \'ca \cf5 'salmon1'\cf0  -> \cf3 Color\cf0 .new255(255, 140, 105),\
-\'ca \'ca \cf5 'salmon2'\cf0  -> \cf3 Color\cf0 .new255(238, 130, 98),\
-\'ca \'ca \cf5 'salmon3'\cf0  -> \cf3 Color\cf0 .new255(205, 112, 84),\
-\'ca \'ca \cf5 'salmon4'\cf0  -> \cf3 Color\cf0 .new255(139, 76, 57),\
-\'ca \'ca \cf5 'sandy brown'\cf0  -> \cf3 Color\cf0 .new255(244, 164, 96),\
-\'ca \'ca \cf5 'SandyBrown'\cf0  -> \cf3 Color\cf0 .new255(244, 164, 96),\
-\'ca \'ca \cf5 'sea green'\cf0  -> \cf3 Color\cf0 .new255(46, 139, 87),\
-\'ca \'ca \cf5 'SeaGreen'\cf0  -> \cf3 Color\cf0 .new255(46, 139, 87),\
-\'ca \'ca \cf5 'SeaGreen1'\cf0  -> \cf3 Color\cf0 .new255(84, 255, 159),\
-\'ca \'ca \cf5 'SeaGreen2'\cf0  -> \cf3 Color\cf0 .new255(78, 238, 148),\
-\'ca \'ca \cf5 'SeaGreen3'\cf0  -> \cf3 Color\cf0 .new255(67, 205, 128),\
-\'ca \'ca \cf5 'SeaGreen4'\cf0  -> \cf3 Color\cf0 .new255(46, 139, 87),\
-\'ca \'ca \cf5 'seashell'\cf0  -> \cf3 Color\cf0 .new255(255, 245, 238),\
-\'ca \'ca \cf5 'seashell1'\cf0  -> \cf3 Color\cf0 .new255(255, 245, 238),\
-\'ca \'ca \cf5 'seashell2'\cf0  -> \cf3 Color\cf0 .new255(238, 229, 222),\
-\'ca \'ca \cf5 'seashell3'\cf0  -> \cf3 Color\cf0 .new255(205, 197, 191),\
-\'ca \'ca \cf5 'seashell4'\cf0  -> \cf3 Color\cf0 .new255(139, 134, 130),\
-\'ca \'ca \cf5 'sienna'\cf0  -> \cf3 Color\cf0 .new255(160, 82, 45),\
-\'ca \'ca \cf5 'sienna1'\cf0  -> \cf3 Color\cf0 .new255(255, 130, 71),\
-\'ca \'ca \cf5 'sienna2'\cf0  -> \cf3 Color\cf0 .new255(238, 121, 66),\
-\'ca \'ca \cf5 'sienna3'\cf0  -> \cf3 Color\cf0 .new255(205, 104, 57),\
-\'ca \'ca \cf5 'sienna4'\cf0  -> \cf3 Color\cf0 .new255(139, 71, 38),\
-\'ca \'ca \cf5 'sky blue'\cf0  -> \cf3 Color\cf0 .new255(135, 206, 235),\
-\'ca \'ca \cf5 'SkyBlue'\cf0  -> \cf3 Color\cf0 .new255(135, 206, 235),\
-\'ca \'ca \cf5 'SkyBlue1'\cf0  -> \cf3 Color\cf0 .new255(135, 206, 255),\
-\'ca \'ca \cf5 'SkyBlue2'\cf0  -> \cf3 Color\cf0 .new255(126, 192, 238),\
-\'ca \'ca \cf5 'SkyBlue3'\cf0  -> \cf3 Color\cf0 .new255(108, 166, 205),\
-\'ca \'ca \cf5 'SkyBlue4'\cf0  -> \cf3 Color\cf0 .new255(74, 112, 139),\
-\'ca \'ca \cf5 'slate blue'\cf0  -> \cf3 Color\cf0 .new255(106, 90, 205),\
-\'ca \'ca \cf5 'slate gray'\cf0  -> \cf3 Color\cf0 .new255(112, 128, 144),\
-\'ca \'ca \cf5 'slate grey'\cf0  -> \cf3 Color\cf0 .new255(112, 128, 144),\
-\'ca \'ca \cf5 'SlateBlue'\cf0  -> \cf3 Color\cf0 .new255(106, 90, 205),\
-\'ca \'ca \cf5 'SlateBlue1'\cf0  -> \cf3 Color\cf0 .new255(131, 111, 255),\
-\'ca \'ca \cf5 'SlateBlue2'\cf0  -> \cf3 Color\cf0 .new255(122, 103, 238),\
-\'ca \'ca \cf5 'SlateBlue3'\cf0  -> \cf3 Color\cf0 .new255(105, 89, 205),\
-\'ca \'ca \cf5 'SlateBlue4'\cf0  -> \cf3 Color\cf0 .new255(71, 60, 139),\
-\'ca \'ca \cf5 'SlateGray'\cf0  -> \cf3 Color\cf0 .new255(112, 128, 144),\
-\'ca \'ca \cf5 'SlateGray1'\cf0  -> \cf3 Color\cf0 .new255(198, 226, 255),\
-\'ca \'ca \cf5 'SlateGray2'\cf0  -> \cf3 Color\cf0 .new255(185, 211, 238),\
-\'ca \'ca \cf5 'SlateGray3'\cf0  -> \cf3 Color\cf0 .new255(159, 182, 205),\
-\'ca \'ca \cf5 'SlateGray4'\cf0  -> \cf3 Color\cf0 .new255(108, 123, 139),\
-\'ca \'ca \cf5 'SlateGrey'\cf0  -> \cf3 Color\cf0 .new255(112, 128, 144),\
-\'ca \'ca \cf5 'snow'\cf0  -> \cf3 Color\cf0 .new255(255, 250, 250),\
-\'ca \'ca \cf5 'snow1'\cf0  -> \cf3 Color\cf0 .new255(255, 250, 250),\
-\'ca \'ca \cf5 'snow2'\cf0  -> \cf3 Color\cf0 .new255(238, 233, 233),\
-\'ca \'ca \cf5 'snow3'\cf0  -> \cf3 Color\cf0 .new255(205, 201, 201),\
-\'ca \'ca \cf5 'snow4'\cf0  -> \cf3 Color\cf0 .new255(139, 137, 137),\
-\'ca \'ca \cf5 'spring green'\cf0  -> \cf3 Color\cf0 .new255(0, 255, 127),\
-\'ca \'ca \cf5 'SpringGreen'\cf0  -> \cf3 Color\cf0 .new255(0, 255, 127),\
-\'ca \'ca \cf5 'SpringGreen1'\cf0  -> \cf3 Color\cf0 .new255(0, 255, 127),\
-\'ca \'ca \cf5 'SpringGreen2'\cf0  -> \cf3 Color\cf0 .new255(0, 238, 118),\
-\'ca \'ca \cf5 'SpringGreen3'\cf0  -> \cf3 Color\cf0 .new255(0, 205, 102),\
-\'ca \'ca \cf5 'SpringGreen4'\cf0  -> \cf3 Color\cf0 .new255(0, 139, 69),\
-\'ca \'ca \cf5 'steel blue'\cf0  -> \cf3 Color\cf0 .new255(70, 130, 180),\
-\'ca \'ca \cf5 'SteelBlue'\cf0  -> \cf3 Color\cf0 .new255(70, 130, 180),\
-\'ca \'ca \cf5 'SteelBlue1'\cf0  -> \cf3 Color\cf0 .new255(99, 184, 255),\
-\'ca \'ca \cf5 'SteelBlue2'\cf0  -> \cf3 Color\cf0 .new255(92, 172, 238),\
-\'ca \'ca \cf5 'SteelBlue3'\cf0  -> \cf3 Color\cf0 .new255(79, 148, 205),\
-\'ca \'ca \cf5 'SteelBlue4'\cf0  -> \cf3 Color\cf0 .new255(54, 100, 139),\
-\'ca \'ca \cf5 'tan'\cf0  -> \cf3 Color\cf0 .new255(210, 180, 140),\
-\'ca \'ca \cf5 'tan1'\cf0  -> \cf3 Color\cf0 .new255(255, 165, 79),\
-\'ca \'ca \cf5 'tan2'\cf0  -> \cf3 Color\cf0 .new255(238, 154, 73),\
-\'ca \'ca \cf5 'tan3'\cf0  -> \cf3 Color\cf0 .new255(205, 133, 63),\
-\'ca \'ca \cf5 'tan4'\cf0  -> \cf3 Color\cf0 .new255(139, 90, 43),\
-\'ca \'ca \cf5 'thistle'\cf0  -> \cf3 Color\cf0 .new255(216, 191, 216),\
-\'ca \'ca \cf5 'thistle1'\cf0  -> \cf3 Color\cf0 .new255(255, 225, 255),\
-\'ca \'ca \cf5 'thistle2'\cf0  -> \cf3 Color\cf0 .new255(238, 210, 238),\
-\'ca \'ca \cf5 'thistle3'\cf0  -> \cf3 Color\cf0 .new255(205, 181, 205),\
-\'ca \'ca \cf5 'thistle4'\cf0  -> \cf3 Color\cf0 .new255(139, 123, 139),\
-\'ca \'ca \cf5 'tomato'\cf0  -> \cf3 Color\cf0 .new255(255, 99, 71),\
-\'ca \'ca \cf5 'tomato1'\cf0  -> \cf3 Color\cf0 .new255(255, 99, 71),\
-\'ca \'ca \cf5 'tomato2'\cf0  -> \cf3 Color\cf0 .new255(238, 92, 66),\
-\'ca \'ca \cf5 'tomato3'\cf0  -> \cf3 Color\cf0 .new255(205, 79, 57),\
-\'ca \'ca \cf5 'tomato4'\cf0  -> \cf3 Color\cf0 .new255(139, 54, 38),\
-\'ca \'ca \cf5 'turquoise'\cf0  -> \cf3 Color\cf0 .new255(64, 224, 208),\
-\'ca \'ca \cf5 'turquoise1'\cf0  -> \cf3 Color\cf0 .new255(0, 245, 255),\
-\'ca \'ca \cf5 'turquoise2'\cf0  -> \cf3 Color\cf0 .new255(0, 229, 238),\
-\'ca \'ca \cf5 'turquoise3'\cf0  -> \cf3 Color\cf0 .new255(0, 197, 205),\
-\'ca \'ca \cf5 'turquoise4'\cf0  -> \cf3 Color\cf0 .new255(0, 134, 139),\
-\'ca \'ca \cf5 'violet'\cf0  -> \cf3 Color\cf0 .new255(238, 130, 238),\
-\'ca \'ca \cf5 'violet red'\cf0  -> \cf3 Color\cf0 .new255(208, 32, 144),\
-\'ca \'ca \cf5 'VioletRed'\cf0  -> \cf3 Color\cf0 .new255(208, 32, 144),\
-\'ca \'ca \cf5 'VioletRed1'\cf0  -> \cf3 Color\cf0 .new255(255, 62, 150),\
-\'ca \'ca \cf5 'VioletRed2'\cf0  -> \cf3 Color\cf0 .new255(238, 58, 140),\
-\'ca \'ca \cf5 'VioletRed3'\cf0  -> \cf3 Color\cf0 .new255(205, 50, 120),\
-\'ca \'ca \cf5 'VioletRed4'\cf0  -> \cf3 Color\cf0 .new255(139, 34, 82),\
-\'ca \'ca \cf5 'wheat'\cf0  -> \cf3 Color\cf0 .new255(245, 222, 179),\
-\'ca \'ca \cf5 'wheat1'\cf0  -> \cf3 Color\cf0 .new255(255, 231, 186),\
-\'ca \'ca \cf5 'wheat2'\cf0  -> \cf3 Color\cf0 .new255(238, 216, 174),\
-\'ca \'ca \cf5 'wheat3'\cf0  -> \cf3 Color\cf0 .new255(205, 186, 150),\
-\'ca \'ca \cf5 'wheat4'\cf0  -> \cf3 Color\cf0 .new255(139, 126, 102),\
-\'ca \'ca \cf5 'white'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 255),\
-\'ca \'ca \cf5 'white smoke'\cf0  -> \cf3 Color\cf0 .new255(245, 245, 245),\
-\'ca \'ca \cf5 'WhiteSmoke'\cf0  -> \cf3 Color\cf0 .new255(245, 245, 245),\
-\'ca \'ca \cf5 'yellow'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 0),\
-\'ca \'ca \cf5 'yellow green'\cf0  -> \cf3 Color\cf0 .new255(154, 205, 50),\
-\'ca \'ca \cf5 'yellow1'\cf0  -> \cf3 Color\cf0 .new255(255, 255, 0),\
-\'ca \'ca \cf5 'yellow2'\cf0  -> \cf3 Color\cf0 .new255(238, 238, 0),\
-\'ca \'ca \cf5 'yellow3'\cf0  -> \cf3 Color\cf0 .new255(205, 205, 0),\
-\'ca \'ca \cf5 'yellow4'\cf0  -> \cf3 Color\cf0 .new255(139, 139, 0),\
-\'ca \'ca \cf5 'YellowGreen'\cf0  -> \cf3 Color\cf0 .new255(154, 205, 50)\
+\'ca \'ca \cf6 'alice blue'\cf3  -> \cf4 Color\cf3 .new255(240, 248, 255),\
+\'ca \'ca \cf6 'AliceBlue'\cf3  -> \cf4 Color\cf3 .new255(240, 248, 255),\
+\'ca \'ca \cf6 'antique white'\cf3  -> \cf4 Color\cf3 .new255(250, 235, 215),\
+\'ca \'ca \cf6 'AntiqueWhite'\cf3  -> \cf4 Color\cf3 .new255(250, 235, 215),\
+\'ca \'ca \cf6 'AntiqueWhite1'\cf3  -> \cf4 Color\cf3 .new255(255, 239, 219),\
+\'ca \'ca \cf6 'AntiqueWhite2'\cf3  -> \cf4 Color\cf3 .new255(238, 223, 204),\
+\'ca \'ca \cf6 'AntiqueWhite3'\cf3  -> \cf4 Color\cf3 .new255(205, 192, 176),\
+\'ca \'ca \cf6 'AntiqueWhite4'\cf3  -> \cf4 Color\cf3 .new255(139, 131, 120),\
+\'ca \'ca \cf6 'aquamarine'\cf3  -> \cf4 Color\cf3 .new255(127, 255, 212),\
+\'ca \'ca \cf6 'aquamarine1'\cf3  -> \cf4 Color\cf3 .new255(127, 255, 212),\
+\'ca \'ca \cf6 'aquamarine2'\cf3  -> \cf4 Color\cf3 .new255(118, 238, 198),\
+\'ca \'ca \cf6 'aquamarine3'\cf3  -> \cf4 Color\cf3 .new255(102, 205, 170),\
+\'ca \'ca \cf6 'aquamarine4'\cf3  -> \cf4 Color\cf3 .new255(69, 139, 116),\
+\'ca \'ca \cf6 'azure'\cf3  -> \cf4 Color\cf3 .new255(240, 255, 255),\
+\'ca \'ca \cf6 'azure1'\cf3  -> \cf4 Color\cf3 .new255(240, 255, 255),\
+\'ca \'ca \cf6 'azure2'\cf3  -> \cf4 Color\cf3 .new255(224, 238, 238),\
+\'ca \'ca \cf6 'azure3'\cf3  -> \cf4 Color\cf3 .new255(193, 205, 205),\
+\'ca \'ca \cf6 'azure4'\cf3  -> \cf4 Color\cf3 .new255(131, 139, 139),\
+\'ca \'ca \cf6 'beige'\cf3  -> \cf4 Color\cf3 .new255(245, 245, 220),\
+\'ca \'ca \cf6 'bisque'\cf3  -> \cf4 Color\cf3 .new255(255, 228, 196),\
+\'ca \'ca \cf6 'bisque1'\cf3  -> \cf4 Color\cf3 .new255(255, 228, 196),\
+\'ca \'ca \cf6 'bisque2'\cf3  -> \cf4 Color\cf3 .new255(238, 213, 183),\
+\'ca \'ca \cf6 'bisque3'\cf3  -> \cf4 Color\cf3 .new255(205, 183, 158),\
+\'ca \'ca \cf6 'bisque4'\cf3  -> \cf4 Color\cf3 .new255(139, 125, 107),\
+\'ca \'ca \cf6 'black'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 0),\
+\'ca \'ca \cf6 'blanched almond'\cf3  -> \cf4 Color\cf3 .new255(255, 235, 205),\
+\'ca \'ca \cf6 'BlanchedAlmond'\cf3  -> \cf4 Color\cf3 .new255(255, 235, 205),\
+\'ca \'ca \cf6 'blue'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 255),\
+\'ca \'ca \cf6 'blue violet'\cf3  -> \cf4 Color\cf3 .new255(138, 43, 226),\
+\'ca \'ca \cf6 'blue1'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 255),\
+\'ca \'ca \cf6 'blue2'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 238),\
+\'ca \'ca \cf6 'blue3'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 205),\
+\'ca \'ca \cf6 'blue4'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 139),\
+\'ca \'ca \cf6 'BlueViolet'\cf3  -> \cf4 Color\cf3 .new255(138, 43, 226),\
+\'ca \'ca \cf6 'brown'\cf3  -> \cf4 Color\cf3 .new255(165, 42, 42),\
+\'ca \'ca \cf6 'brown1'\cf3  -> \cf4 Color\cf3 .new255(255, 64, 64),\
+\'ca \'ca \cf6 'brown2'\cf3  -> \cf4 Color\cf3 .new255(238, 59, 59),\
+\'ca \'ca \cf6 'brown3'\cf3  -> \cf4 Color\cf3 .new255(205, 51, 51),\
+\'ca \'ca \cf6 'brown4'\cf3  -> \cf4 Color\cf3 .new255(139, 35, 35),\
+\'ca \'ca \cf6 'burlywood'\cf3  -> \cf4 Color\cf3 .new255(222, 184, 135),\
+\'ca \'ca \cf6 'burlywood1'\cf3  -> \cf4 Color\cf3 .new255(255, 211, 155),\
+\'ca \'ca \cf6 'burlywood2'\cf3  -> \cf4 Color\cf3 .new255(238, 197, 145),\
+\'ca \'ca \cf6 'burlywood3'\cf3  -> \cf4 Color\cf3 .new255(205, 170, 125),\
+\'ca \'ca \cf6 'burlywood4'\cf3  -> \cf4 Color\cf3 .new255(139, 115, 85),\
+\'ca \'ca \cf6 'cadet blue'\cf3  -> \cf4 Color\cf3 .new255(95, 158, 160),\
+\'ca \'ca \cf6 'CadetBlue'\cf3  -> \cf4 Color\cf3 .new255(95, 158, 160),\
+\'ca \'ca \cf6 'CadetBlue1'\cf3  -> \cf4 Color\cf3 .new255(152, 245, 255),\
+\'ca \'ca \cf6 'CadetBlue2'\cf3  -> \cf4 Color\cf3 .new255(142, 229, 238),\
+\'ca \'ca \cf6 'CadetBlue3'\cf3  -> \cf4 Color\cf3 .new255(122, 197, 205),\
+\'ca \'ca \cf6 'CadetBlue4'\cf3  -> \cf4 Color\cf3 .new255(83, 134, 139),\
+\'ca \'ca \cf6 'chartreuse'\cf3  -> \cf4 Color\cf3 .new255(127, 255, 0),\
+\'ca \'ca \cf6 'chartreuse1'\cf3  -> \cf4 Color\cf3 .new255(127, 255, 0),\
+\'ca \'ca \cf6 'chartreuse2'\cf3  -> \cf4 Color\cf3 .new255(118, 238, 0),\
+\'ca \'ca \cf6 'chartreuse3'\cf3  -> \cf4 Color\cf3 .new255(102, 205, 0),\
+\'ca \'ca \cf6 'chartreuse4'\cf3  -> \cf4 Color\cf3 .new255(69, 139, 0),\
+\'ca \'ca \cf6 'chocolate'\cf3  -> \cf4 Color\cf3 .new255(210, 105, 30),\
+\'ca \'ca \cf6 'chocolate1'\cf3  -> \cf4 Color\cf3 .new255(255, 127, 36),\
+\'ca \'ca \cf6 'chocolate2'\cf3  -> \cf4 Color\cf3 .new255(238, 118, 33),\
+\'ca \'ca \cf6 'chocolate3'\cf3  -> \cf4 Color\cf3 .new255(205, 102, 29),\
+\'ca \'ca \cf6 'chocolate4'\cf3  -> \cf4 Color\cf3 .new255(139, 69, 19),\
+\'ca \'ca \cf6 'coral'\cf3  -> \cf4 Color\cf3 .new255(255, 127, 80),\
+\'ca \'ca \cf6 'coral1'\cf3  -> \cf4 Color\cf3 .new255(255, 114, 86),\
+\'ca \'ca \cf6 'coral2'\cf3  -> \cf4 Color\cf3 .new255(238, 106, 80),\
+\'ca \'ca \cf6 'coral3'\cf3  -> \cf4 Color\cf3 .new255(205, 91, 69),\
+\'ca \'ca \cf6 'coral4'\cf3  -> \cf4 Color\cf3 .new255(139, 62, 47),\
+\'ca \'ca \cf6 'cornflower blue'\cf3  -> \cf4 Color\cf3 .new255(100, 149, 237),\
+\'ca \'ca \cf6 'CornflowerBlue'\cf3  -> \cf4 Color\cf3 .new255(100, 149, 237),\
+\'ca \'ca \cf6 'cornsilk'\cf3  -> \cf4 Color\cf3 .new255(255, 248, 220),\
+\'ca \'ca \cf6 'cornsilk1'\cf3  -> \cf4 Color\cf3 .new255(255, 248, 220),\
+\'ca \'ca \cf6 'cornsilk2'\cf3  -> \cf4 Color\cf3 .new255(238, 232, 205),\
+\'ca \'ca \cf6 'cornsilk3'\cf3  -> \cf4 Color\cf3 .new255(205, 200, 177),\
+\'ca \'ca \cf6 'cornsilk4'\cf3  -> \cf4 Color\cf3 .new255(139, 136, 120),\
+\'ca \'ca \cf6 'cyan'\cf3  -> \cf4 Color\cf3 .new255(0, 255, 255),\
+\'ca \'ca \cf6 'cyan1'\cf3  -> \cf4 Color\cf3 .new255(0, 255, 255),\
+\'ca \'ca \cf6 'cyan2'\cf3  -> \cf4 Color\cf3 .new255(0, 238, 238),\
+\'ca \'ca \cf6 'cyan3'\cf3  -> \cf4 Color\cf3 .new255(0, 205, 205),\
+\'ca \'ca \cf6 'cyan4'\cf3  -> \cf4 Color\cf3 .new255(0, 139, 139),\
+\'ca \'ca \cf6 'dark goldenrod'\cf3  -> \cf4 Color\cf3 .new255(184, 134, 11),\
+\'ca \'ca \cf6 'dark green'\cf3  -> \cf4 Color\cf3 .new255(0, 100, 0),\
+\'ca \'ca \cf6 'dark khaki'\cf3  -> \cf4 Color\cf3 .new255(189, 183, 107),\
+\'ca \'ca \cf6 'dark olive green'\cf3  -> \cf4 Color\cf3 .new255(85, 107, 47),\
+\'ca \'ca \cf6 'dark orange'\cf3  -> \cf4 Color\cf3 .new255(255, 140, 0),\
+\'ca \'ca \cf6 'dark orchid'\cf3  -> \cf4 Color\cf3 .new255(153, 50, 204),\
+\'ca \'ca \cf6 'dark salmon'\cf3  -> \cf4 Color\cf3 .new255(233, 150, 122),\
+\'ca \'ca \cf6 'dark sea green'\cf3  -> \cf4 Color\cf3 .new255(143, 188, 143),\
+\'ca \'ca \cf6 'dark slate blue'\cf3  -> \cf4 Color\cf3 .new255(72, 61, 139),\
+\'ca \'ca \cf6 'dark slate gray'\cf3  -> \cf4 Color\cf3 .new255(47, 79, 79),\
+\'ca \'ca \cf6 'dark slate grey'\cf3  -> \cf4 Color\cf3 .new255(47, 79, 79),\
+\'ca \'ca \cf6 'dark turquoise'\cf3  -> \cf4 Color\cf3 .new255(0, 206, 209),\
+\'ca \'ca \cf6 'dark violet'\cf3  -> \cf4 Color\cf3 .new255(148, 0, 211),\
+\'ca \'ca \cf6 'DarkGoldenrod'\cf3  -> \cf4 Color\cf3 .new255(184, 134, 11),\
+\'ca \'ca \cf6 'DarkGoldenrod1'\cf3  -> \cf4 Color\cf3 .new255(255, 185, 15),\
+\'ca \'ca \cf6 'DarkGoldenrod2'\cf3  -> \cf4 Color\cf3 .new255(238, 173, 14),\
+\'ca \'ca \cf6 'DarkGoldenrod3'\cf3  -> \cf4 Color\cf3 .new255(205, 149, 12),\
+\'ca \'ca \cf6 'DarkGoldenrod4'\cf3  -> \cf4 Color\cf3 .new255(139, 101, 8),\
+\'ca \'ca \cf6 'DarkGreen'\cf3  -> \cf4 Color\cf3 .new255(0, 100, 0),\
+\'ca \'ca \cf6 'DarkKhaki'\cf3  -> \cf4 Color\cf3 .new255(189, 183, 107),\
+\'ca \'ca \cf6 'DarkOliveGreen'\cf3  -> \cf4 Color\cf3 .new255(85, 107, 47),\
+\'ca \'ca \cf6 'DarkOliveGreen1'\cf3  -> \cf4 Color\cf3 .new255(202, 255, 112),\
+\'ca \'ca \cf6 'DarkOliveGreen2'\cf3  -> \cf4 Color\cf3 .new255(188, 238, 104),\
+\'ca \'ca \cf6 'DarkOliveGreen3'\cf3  -> \cf4 Color\cf3 .new255(162, 205, 90),\
+\'ca \'ca \cf6 'DarkOliveGreen4'\cf3  -> \cf4 Color\cf3 .new255(110, 139, 61),\
+\'ca \'ca \cf6 'DarkOrange'\cf3  -> \cf4 Color\cf3 .new255(255, 140, 0),\
+\'ca \'ca \cf6 'DarkOrange1'\cf3  -> \cf4 Color\cf3 .new255(255, 127, 0),\
+\'ca \'ca \cf6 'DarkOrange2'\cf3  -> \cf4 Color\cf3 .new255(238, 118, 0),\
+\'ca \'ca \cf6 'DarkOrange3'\cf3  -> \cf4 Color\cf3 .new255(205, 102, 0),\
+\'ca \'ca \cf6 'DarkOrange4'\cf3  -> \cf4 Color\cf3 .new255(139, 69, 0),\
+\'ca \'ca \cf6 'DarkOrchid'\cf3  -> \cf4 Color\cf3 .new255(153, 50, 204),\
+\'ca \'ca \cf6 'DarkOrchid1'\cf3  -> \cf4 Color\cf3 .new255(191, 62, 255),\
+\'ca \'ca \cf6 'DarkOrchid2'\cf3  -> \cf4 Color\cf3 .new255(178, 58, 238),\
+\'ca \'ca \cf6 'DarkOrchid3'\cf3  -> \cf4 Color\cf3 .new255(154, 50, 205),\
+\'ca \'ca \cf6 'DarkOrchid4'\cf3  -> \cf4 Color\cf3 .new255(104, 34, 139),\
+\'ca \'ca \cf6 'DarkSalmon'\cf3  -> \cf4 Color\cf3 .new255(233, 150, 122),\
+\'ca \'ca \cf6 'DarkSeaGreen'\cf3  -> \cf4 Color\cf3 .new255(143, 188, 143),\
+\'ca \'ca \cf6 'DarkSeaGreen1'\cf3  -> \cf4 Color\cf3 .new255(193, 255, 193),\
+\'ca \'ca \cf6 'DarkSeaGreen2'\cf3  -> \cf4 Color\cf3 .new255(180, 238, 180),\
+\'ca \'ca \cf6 'DarkSeaGreen3'\cf3  -> \cf4 Color\cf3 .new255(155, 205, 155),\
+\'ca \'ca \cf6 'DarkSeaGreen4'\cf3  -> \cf4 Color\cf3 .new255(105, 139, 105),\
+\'ca \'ca \cf6 'DarkSlateBlue'\cf3  -> \cf4 Color\cf3 .new255(72, 61, 139),\
+\'ca \'ca \cf6 'DarkSlateGray'\cf3  -> \cf4 Color\cf3 .new255(47, 79, 79),\
+\'ca \'ca \cf6 'DarkSlateGray1'\cf3  -> \cf4 Color\cf3 .new255(151, 255, 255),\
+\'ca \'ca \cf6 'DarkSlateGray2'\cf3  -> \cf4 Color\cf3 .new255(141, 238, 238),\
+\'ca \'ca \cf6 'DarkSlateGray3'\cf3  -> \cf4 Color\cf3 .new255(121, 205, 205),\
+\'ca \'ca \cf6 'DarkSlateGray4'\cf3  -> \cf4 Color\cf3 .new255(82, 139, 139),\
+\'ca \'ca \cf6 'DarkSlateGrey'\cf3  -> \cf4 Color\cf3 .new255(47, 79, 79),\
+\'ca \'ca \cf6 'DarkTurquoise'\cf3  -> \cf4 Color\cf3 .new255(0, 206, 209),\
+\'ca \'ca \cf6 'DarkViolet'\cf3  -> \cf4 Color\cf3 .new255(148, 0, 211),\
+\'ca \'ca \cf6 'deep pink'\cf3  -> \cf4 Color\cf3 .new255(255, 20, 147),\
+\'ca \'ca \cf6 'deep sky blue'\cf3  -> \cf4 Color\cf3 .new255(0, 191, 255),\
+\'ca \'ca \cf6 'DeepPink'\cf3  -> \cf4 Color\cf3 .new255(255, 20, 147),\
+\'ca \'ca \cf6 'DeepPink1'\cf3  -> \cf4 Color\cf3 .new255(255, 20, 147),\
+\'ca \'ca \cf6 'DeepPink2'\cf3  -> \cf4 Color\cf3 .new255(238, 18, 137),\
+\'ca \'ca \cf6 'DeepPink3'\cf3  -> \cf4 Color\cf3 .new255(205, 16, 118),\
+\'ca \'ca \cf6 'DeepPink4'\cf3  -> \cf4 Color\cf3 .new255(139, 10, 80),\
+\'ca \'ca \cf6 'DeepSkyBlue'\cf3  -> \cf4 Color\cf3 .new255(0, 191, 255),\
+\'ca \'ca \cf6 'DeepSkyBlue1'\cf3  -> \cf4 Color\cf3 .new255(0, 191, 255),\
+\'ca \'ca \cf6 'DeepSkyBlue2'\cf3  -> \cf4 Color\cf3 .new255(0, 178, 238),\
+\'ca \'ca \cf6 'DeepSkyBlue3'\cf3  -> \cf4 Color\cf3 .new255(0, 154, 205),\
+\'ca \'ca \cf6 'DeepSkyBlue4'\cf3  -> \cf4 Color\cf3 .new255(0, 104, 139),\
+\'ca \'ca \cf6 'dim gray'\cf3  -> \cf4 Color\cf3 .new255(105, 105, 105),\
+\'ca \'ca \cf6 'dim grey'\cf3  -> \cf4 Color\cf3 .new255(105, 105, 105),\
+\'ca \'ca \cf6 'DimGray'\cf3  -> \cf4 Color\cf3 .new255(105, 105, 105),\
+\'ca \'ca \cf6 'DimGrey'\cf3  -> \cf4 Color\cf3 .new255(105, 105, 105),\
+\'ca \'ca \cf6 'dodger blue'\cf3  -> \cf4 Color\cf3 .new255(30, 144, 255),\
+\'ca \'ca \cf6 'DodgerBlue'\cf3  -> \cf4 Color\cf3 .new255(30, 144, 255),\
+\'ca \'ca \cf6 'DodgerBlue1'\cf3  -> \cf4 Color\cf3 .new255(30, 144, 255),\
+\'ca \'ca \cf6 'DodgerBlue2'\cf3  -> \cf4 Color\cf3 .new255(28, 134, 238),\
+\'ca \'ca \cf6 'DodgerBlue3'\cf3  -> \cf4 Color\cf3 .new255(24, 116, 205),\
+\'ca \'ca \cf6 'DodgerBlue4'\cf3  -> \cf4 Color\cf3 .new255(16, 78, 139),\
+\'ca \'ca \cf6 'firebrick'\cf3  -> \cf4 Color\cf3 .new255(178, 34, 34),\
+\'ca \'ca \cf6 'firebrick1'\cf3  -> \cf4 Color\cf3 .new255(255, 48, 48),\
+\'ca \'ca \cf6 'firebrick2'\cf3  -> \cf4 Color\cf3 .new255(238, 44, 44),\
+\'ca \'ca \cf6 'firebrick3'\cf3  -> \cf4 Color\cf3 .new255(205, 38, 38),\
+\'ca \'ca \cf6 'firebrick4'\cf3  -> \cf4 Color\cf3 .new255(139, 26, 26),\
+\'ca \'ca \cf6 'floral white'\cf3  -> \cf4 Color\cf3 .new255(255, 250, 240),\
+\'ca \'ca \cf6 'FloralWhite'\cf3  -> \cf4 Color\cf3 .new255(255, 250, 240),\
+\'ca \'ca \cf6 'forest green'\cf3  -> \cf4 Color\cf3 .new255(34, 139, 34),\
+\'ca \'ca \cf6 'ForestGreen'\cf3  -> \cf4 Color\cf3 .new255(34, 139, 34),\
+\'ca \'ca \cf6 'gainsboro'\cf3  -> \cf4 Color\cf3 .new255(220, 220, 220),\
+\'ca \'ca \cf6 'ghost white'\cf3  -> \cf4 Color\cf3 .new255(248, 248, 255),\
+\'ca \'ca \cf6 'GhostWhite'\cf3  -> \cf4 Color\cf3 .new255(248, 248, 255),\
+\'ca \'ca \cf6 'gold'\cf3  -> \cf4 Color\cf3 .new255(255, 215, 0),\
+\'ca \'ca \cf6 'gold1'\cf3  -> \cf4 Color\cf3 .new255(255, 215, 0),\
+\'ca \'ca \cf6 'gold2'\cf3  -> \cf4 Color\cf3 .new255(238, 201, 0),\
+\'ca \'ca \cf6 'gold3'\cf3  -> \cf4 Color\cf3 .new255(205, 173, 0),\
+\'ca \'ca \cf6 'gold4'\cf3  -> \cf4 Color\cf3 .new255(139, 117, 0),\
+\'ca \'ca \cf6 'goldenrod'\cf3  -> \cf4 Color\cf3 .new255(218, 165, 32),\
+\'ca \'ca \cf6 'goldenrod1'\cf3  -> \cf4 Color\cf3 .new255(255, 193, 37),\
+\'ca \'ca \cf6 'goldenrod2'\cf3  -> \cf4 Color\cf3 .new255(238, 180, 34),\
+\'ca \'ca \cf6 'goldenrod3'\cf3  -> \cf4 Color\cf3 .new255(205, 155, 29),\
+\'ca \'ca \cf6 'goldenrod4'\cf3  -> \cf4 Color\cf3 .new255(139, 105, 20),\
+\'ca \'ca \cf6 'gray'\cf3  -> \cf4 Color\cf3 .new255(190, 190, 190),\
+\'ca \'ca \cf6 'gray0'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 0),\
+\'ca \'ca \cf6 'gray1'\cf3  -> \cf4 Color\cf3 .new255(3, 3, 3),\
+\'ca \'ca \cf6 'gray10'\cf3  -> \cf4 Color\cf3 .new255(26, 26, 26),\
+\'ca \'ca \cf6 'gray100'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 255),\
+\'ca \'ca \cf6 'gray11'\cf3  -> \cf4 Color\cf3 .new255(28, 28, 28),\
+\'ca \'ca \cf6 'gray12'\cf3  -> \cf4 Color\cf3 .new255(31, 31, 31),\
+\'ca \'ca \cf6 'gray13'\cf3  -> \cf4 Color\cf3 .new255(33, 33, 33),\
+\'ca \'ca \cf6 'gray14'\cf3  -> \cf4 Color\cf3 .new255(36, 36, 36),\
+\'ca \'ca \cf6 'gray15'\cf3  -> \cf4 Color\cf3 .new255(38, 38, 38),\
+\'ca \'ca \cf6 'gray16'\cf3  -> \cf4 Color\cf3 .new255(41, 41, 41),\
+\'ca \'ca \cf6 'gray17'\cf3  -> \cf4 Color\cf3 .new255(43, 43, 43),\
+\'ca \'ca \cf6 'gray18'\cf3  -> \cf4 Color\cf3 .new255(46, 46, 46),\
+\'ca \'ca \cf6 'gray19'\cf3  -> \cf4 Color\cf3 .new255(48, 48, 48),\
+\'ca \'ca \cf6 'gray2'\cf3  -> \cf4 Color\cf3 .new255(5, 5, 5),\
+\'ca \'ca \cf6 'gray20'\cf3  -> \cf4 Color\cf3 .new255(51, 51, 51),\
+\'ca \'ca \cf6 'gray21'\cf3  -> \cf4 Color\cf3 .new255(54, 54, 54),\
+\'ca \'ca \cf6 'gray22'\cf3  -> \cf4 Color\cf3 .new255(56, 56, 56),\
+\'ca \'ca \cf6 'gray23'\cf3  -> \cf4 Color\cf3 .new255(59, 59, 59),\
+\'ca \'ca \cf6 'gray24'\cf3  -> \cf4 Color\cf3 .new255(61, 61, 61),\
+\'ca \'ca \cf6 'gray25'\cf3  -> \cf4 Color\cf3 .new255(64, 64, 64),\
+\'ca \'ca \cf6 'gray26'\cf3  -> \cf4 Color\cf3 .new255(66, 66, 66),\
+\'ca \'ca \cf6 'gray27'\cf3  -> \cf4 Color\cf3 .new255(69, 69, 69),\
+\'ca \'ca \cf6 'gray28'\cf3  -> \cf4 Color\cf3 .new255(71, 71, 71),\
+\'ca \'ca \cf6 'gray29'\cf3  -> \cf4 Color\cf3 .new255(74, 74, 74),\
+\'ca \'ca \cf6 'gray3'\cf3  -> \cf4 Color\cf3 .new255(8, 8, 8),\
+\'ca \'ca \cf6 'gray30'\cf3  -> \cf4 Color\cf3 .new255(77, 77, 77),\
+\'ca \'ca \cf6 'gray31'\cf3  -> \cf4 Color\cf3 .new255(79, 79, 79),\
+\'ca \'ca \cf6 'gray32'\cf3  -> \cf4 Color\cf3 .new255(82, 82, 82),\
+\'ca \'ca \cf6 'gray33'\cf3  -> \cf4 Color\cf3 .new255(84, 84, 84),\
+\'ca \'ca \cf6 'gray34'\cf3  -> \cf4 Color\cf3 .new255(87, 87, 87),\
+\'ca \'ca \cf6 'gray35'\cf3  -> \cf4 Color\cf3 .new255(89, 89, 89),\
+\'ca \'ca \cf6 'gray36'\cf3  -> \cf4 Color\cf3 .new255(92, 92, 92),\
+\'ca \'ca \cf6 'gray37'\cf3  -> \cf4 Color\cf3 .new255(94, 94, 94),\
+\'ca \'ca \cf6 'gray38'\cf3  -> \cf4 Color\cf3 .new255(97, 97, 97),\
+\'ca \'ca \cf6 'gray39'\cf3  -> \cf4 Color\cf3 .new255(99, 99, 99),\
+\'ca \'ca \cf6 'gray4'\cf3  -> \cf4 Color\cf3 .new255(10, 10, 10),\
+\'ca \'ca \cf6 'gray40'\cf3  -> \cf4 Color\cf3 .new255(102, 102, 102),\
+\'ca \'ca \cf6 'gray41'\cf3  -> \cf4 Color\cf3 .new255(105, 105, 105),\
+\'ca \'ca \cf6 'gray42'\cf3  -> \cf4 Color\cf3 .new255(107, 107, 107),\
+\'ca \'ca \cf6 'gray43'\cf3  -> \cf4 Color\cf3 .new255(110, 110, 110),\
+\'ca \'ca \cf6 'gray44'\cf3  -> \cf4 Color\cf3 .new255(112, 112, 112),\
+\'ca \'ca \cf6 'gray45'\cf3  -> \cf4 Color\cf3 .new255(115, 115, 115),\
+\'ca \'ca \cf6 'gray46'\cf3  -> \cf4 Color\cf3 .new255(117, 117, 117),\
+\'ca \'ca \cf6 'gray47'\cf3  -> \cf4 Color\cf3 .new255(120, 120, 120),\
+\'ca \'ca \cf6 'gray48'\cf3  -> \cf4 Color\cf3 .new255(122, 122, 122),\
+\'ca \'ca \cf6 'gray49'\cf3  -> \cf4 Color\cf3 .new255(125, 125, 125),\
+\'ca \'ca \cf6 'gray5'\cf3  -> \cf4 Color\cf3 .new255(13, 13, 13),\
+\'ca \'ca \cf6 'gray50'\cf3  -> \cf4 Color\cf3 .new255(127, 127, 127),\
+\'ca \'ca \cf6 'gray51'\cf3  -> \cf4 Color\cf3 .new255(130, 130, 130),\
+\'ca \'ca \cf6 'gray52'\cf3  -> \cf4 Color\cf3 .new255(133, 133, 133),\
+\'ca \'ca \cf6 'gray53'\cf3  -> \cf4 Color\cf3 .new255(135, 135, 135),\
+\'ca \'ca \cf6 'gray54'\cf3  -> \cf4 Color\cf3 .new255(138, 138, 138),\
+\'ca \'ca \cf6 'gray55'\cf3  -> \cf4 Color\cf3 .new255(140, 140, 140),\
+\'ca \'ca \cf6 'gray56'\cf3  -> \cf4 Color\cf3 .new255(143, 143, 143),\
+\'ca \'ca \cf6 'gray57'\cf3  -> \cf4 Color\cf3 .new255(145, 145, 145),\
+\'ca \'ca \cf6 'gray58'\cf3  -> \cf4 Color\cf3 .new255(148, 148, 148),\
+\'ca \'ca \cf6 'gray59'\cf3  -> \cf4 Color\cf3 .new255(150, 150, 150),\
+\'ca \'ca \cf6 'gray6'\cf3  -> \cf4 Color\cf3 .new255(15, 15, 15),\
+\'ca \'ca \cf6 'gray60'\cf3  -> \cf4 Color\cf3 .new255(153, 153, 153),\
+\'ca \'ca \cf6 'gray61'\cf3  -> \cf4 Color\cf3 .new255(156, 156, 156),\
+\'ca \'ca \cf6 'gray62'\cf3  -> \cf4 Color\cf3 .new255(158, 158, 158),\
+\'ca \'ca \cf6 'gray63'\cf3  -> \cf4 Color\cf3 .new255(161, 161, 161),\
+\'ca \'ca \cf6 'gray64'\cf3  -> \cf4 Color\cf3 .new255(163, 163, 163),\
+\'ca \'ca \cf6 'gray65'\cf3  -> \cf4 Color\cf3 .new255(166, 166, 166),\
+\'ca \'ca \cf6 'gray66'\cf3  -> \cf4 Color\cf3 .new255(168, 168, 168),\
+\'ca \'ca \cf6 'gray67'\cf3  -> \cf4 Color\cf3 .new255(171, 171, 171),\
+\'ca \'ca \cf6 'gray68'\cf3  -> \cf4 Color\cf3 .new255(173, 173, 173),\
+\'ca \'ca \cf6 'gray69'\cf3  -> \cf4 Color\cf3 .new255(176, 176, 176),\
+\'ca \'ca \cf6 'gray7'\cf3  -> \cf4 Color\cf3 .new255(18, 18, 18),\
+\'ca \'ca \cf6 'gray70'\cf3  -> \cf4 Color\cf3 .new255(179, 179, 179),\
+\'ca \'ca \cf6 'gray71'\cf3  -> \cf4 Color\cf3 .new255(181, 181, 181),\
+\'ca \'ca \cf6 'gray72'\cf3  -> \cf4 Color\cf3 .new255(184, 184, 184),\
+\'ca \'ca \cf6 'gray73'\cf3  -> \cf4 Color\cf3 .new255(186, 186, 186),\
+\'ca \'ca \cf6 'gray74'\cf3  -> \cf4 Color\cf3 .new255(189, 189, 189),\
+\'ca \'ca \cf6 'gray75'\cf3  -> \cf4 Color\cf3 .new255(191, 191, 191),\
+\'ca \'ca \cf6 'gray76'\cf3  -> \cf4 Color\cf3 .new255(194, 194, 194),\
+\'ca \'ca \cf6 'gray77'\cf3  -> \cf4 Color\cf3 .new255(196, 196, 196),\
+\'ca \'ca \cf6 'gray78'\cf3  -> \cf4 Color\cf3 .new255(199, 199, 199),\
+\'ca \'ca \cf6 'gray79'\cf3  -> \cf4 Color\cf3 .new255(201, 201, 201),\
+\'ca \'ca \cf6 'gray8'\cf3  -> \cf4 Color\cf3 .new255(20, 20, 20),\
+\'ca \'ca \cf6 'gray80'\cf3  -> \cf4 Color\cf3 .new255(204, 204, 204),\
+\'ca \'ca \cf6 'gray81'\cf3  -> \cf4 Color\cf3 .new255(207, 207, 207),\
+\'ca \'ca \cf6 'gray82'\cf3  -> \cf4 Color\cf3 .new255(209, 209, 209),\
+\'ca \'ca \cf6 'gray83'\cf3  -> \cf4 Color\cf3 .new255(212, 212, 212),\
+\'ca \'ca \cf6 'gray84'\cf3  -> \cf4 Color\cf3 .new255(214, 214, 214),\
+\'ca \'ca \cf6 'gray85'\cf3  -> \cf4 Color\cf3 .new255(217, 217, 217),\
+\'ca \'ca \cf6 'gray86'\cf3  -> \cf4 Color\cf3 .new255(219, 219, 219),\
+\'ca \'ca \cf6 'gray87'\cf3  -> \cf4 Color\cf3 .new255(222, 222, 222),\
+\'ca \'ca \cf6 'gray88'\cf3  -> \cf4 Color\cf3 .new255(224, 224, 224),\
+\'ca \'ca \cf6 'gray89'\cf3  -> \cf4 Color\cf3 .new255(227, 227, 227),\
+\'ca \'ca \cf6 'gray9'\cf3  -> \cf4 Color\cf3 .new255(23, 23, 23),\
+\'ca \'ca \cf6 'gray90'\cf3  -> \cf4 Color\cf3 .new255(229, 229, 229),\
+\'ca \'ca \cf6 'gray91'\cf3  -> \cf4 Color\cf3 .new255(232, 232, 232),\
+\'ca \'ca \cf6 'gray92'\cf3  -> \cf4 Color\cf3 .new255(235, 235, 235),\
+\'ca \'ca \cf6 'gray93'\cf3  -> \cf4 Color\cf3 .new255(237, 237, 237),\
+\'ca \'ca \cf6 'gray94'\cf3  -> \cf4 Color\cf3 .new255(240, 240, 240),\
+\'ca \'ca \cf6 'gray95'\cf3  -> \cf4 Color\cf3 .new255(242, 242, 242),\
+\'ca \'ca \cf6 'gray96'\cf3  -> \cf4 Color\cf3 .new255(245, 245, 245),\
+\'ca \'ca \cf6 'gray97'\cf3  -> \cf4 Color\cf3 .new255(247, 247, 247),\
+\'ca \'ca \cf6 'gray98'\cf3  -> \cf4 Color\cf3 .new255(250, 250, 250),\
+\'ca \'ca \cf6 'gray99'\cf3  -> \cf4 Color\cf3 .new255(252, 252, 252),\
+\'ca \'ca \cf6 'green'\cf3  -> \cf4 Color\cf3 .new255(0, 255, 0),\
+\'ca \'ca \cf6 'green yellow'\cf3  -> \cf4 Color\cf3 .new255(173, 255, 47),\
+\'ca \'ca \cf6 'green1'\cf3  -> \cf4 Color\cf3 .new255(0, 255, 0),\
+\'ca \'ca \cf6 'green2'\cf3  -> \cf4 Color\cf3 .new255(0, 238, 0),\
+\'ca \'ca \cf6 'green3'\cf3  -> \cf4 Color\cf3 .new255(0, 205, 0),\
+\'ca \'ca \cf6 'green4'\cf3  -> \cf4 Color\cf3 .new255(0, 139, 0),\
+\'ca \'ca \cf6 'GreenYellow'\cf3  -> \cf4 Color\cf3 .new255(173, 255, 47),\
+\'ca \'ca \cf6 'grey'\cf3  -> \cf4 Color\cf3 .new255(190, 190, 190),\
+\'ca \'ca \cf6 'grey0'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 0),\
+\'ca \'ca \cf6 'grey1'\cf3  -> \cf4 Color\cf3 .new255(3, 3, 3),\
+\'ca \'ca \cf6 'grey10'\cf3  -> \cf4 Color\cf3 .new255(26, 26, 26),\
+\'ca \'ca \cf6 'grey100'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 255),\
+\'ca \'ca \cf6 'grey11'\cf3  -> \cf4 Color\cf3 .new255(28, 28, 28),\
+\'ca \'ca \cf6 'grey12'\cf3  -> \cf4 Color\cf3 .new255(31, 31, 31),\
+\'ca \'ca \cf6 'grey13'\cf3  -> \cf4 Color\cf3 .new255(33, 33, 33),\
+\'ca \'ca \cf6 'grey14'\cf3  -> \cf4 Color\cf3 .new255(36, 36, 36),\
+\'ca \'ca \cf6 'grey15'\cf3  -> \cf4 Color\cf3 .new255(38, 38, 38),\
+\'ca \'ca \cf6 'grey16'\cf3  -> \cf4 Color\cf3 .new255(41, 41, 41),\
+\'ca \'ca \cf6 'grey17'\cf3  -> \cf4 Color\cf3 .new255(43, 43, 43),\
+\'ca \'ca \cf6 'grey18'\cf3  -> \cf4 Color\cf3 .new255(46, 46, 46),\
+\'ca \'ca \cf6 'grey19'\cf3  -> \cf4 Color\cf3 .new255(48, 48, 48),\
+\'ca \'ca \cf6 'grey2'\cf3  -> \cf4 Color\cf3 .new255(5, 5, 5),\
+\'ca \'ca \cf6 'grey20'\cf3  -> \cf4 Color\cf3 .new255(51, 51, 51),\
+\'ca \'ca \cf6 'grey21'\cf3  -> \cf4 Color\cf3 .new255(54, 54, 54),\
+\'ca \'ca \cf6 'grey22'\cf3  -> \cf4 Color\cf3 .new255(56, 56, 56),\
+\'ca \'ca \cf6 'grey23'\cf3  -> \cf4 Color\cf3 .new255(59, 59, 59),\
+\'ca \'ca \cf6 'grey24'\cf3  -> \cf4 Color\cf3 .new255(61, 61, 61),\
+\'ca \'ca \cf6 'grey25'\cf3  -> \cf4 Color\cf3 .new255(64, 64, 64),\
+\'ca \'ca \cf6 'grey26'\cf3  -> \cf4 Color\cf3 .new255(66, 66, 66),\
+\'ca \'ca \cf6 'grey27'\cf3  -> \cf4 Color\cf3 .new255(69, 69, 69),\
+\'ca \'ca \cf6 'grey28'\cf3  -> \cf4 Color\cf3 .new255(71, 71, 71),\
+\'ca \'ca \cf6 'grey29'\cf3  -> \cf4 Color\cf3 .new255(74, 74, 74),\
+\'ca \'ca \cf6 'grey3'\cf3  -> \cf4 Color\cf3 .new255(8, 8, 8),\
+\'ca \'ca \cf6 'grey30'\cf3  -> \cf4 Color\cf3 .new255(77, 77, 77),\
+\'ca \'ca \cf6 'grey31'\cf3  -> \cf4 Color\cf3 .new255(79, 79, 79),\
+\'ca \'ca \cf6 'grey32'\cf3  -> \cf4 Color\cf3 .new255(82, 82, 82),\
+\'ca \'ca \cf6 'grey33'\cf3  -> \cf4 Color\cf3 .new255(84, 84, 84),\
+\'ca \'ca \cf6 'grey34'\cf3  -> \cf4 Color\cf3 .new255(87, 87, 87),\
+\'ca \'ca \cf6 'grey35'\cf3  -> \cf4 Color\cf3 .new255(89, 89, 89),\
+\'ca \'ca \cf6 'grey36'\cf3  -> \cf4 Color\cf3 .new255(92, 92, 92),\
+\'ca \'ca \cf6 'grey37'\cf3  -> \cf4 Color\cf3 .new255(94, 94, 94),\
+\'ca \'ca \cf6 'grey38'\cf3  -> \cf4 Color\cf3 .new255(97, 97, 97),\
+\'ca \'ca \cf6 'grey39'\cf3  -> \cf4 Color\cf3 .new255(99, 99, 99),\
+\'ca \'ca \cf6 'grey4'\cf3  -> \cf4 Color\cf3 .new255(10, 10, 10),\
+\'ca \'ca \cf6 'grey40'\cf3  -> \cf4 Color\cf3 .new255(102, 102, 102),\
+\'ca \'ca \cf6 'grey41'\cf3  -> \cf4 Color\cf3 .new255(105, 105, 105),\
+\'ca \'ca \cf6 'grey42'\cf3  -> \cf4 Color\cf3 .new255(107, 107, 107),\
+\'ca \'ca \cf6 'grey43'\cf3  -> \cf4 Color\cf3 .new255(110, 110, 110),\
+\'ca \'ca \cf6 'grey44'\cf3  -> \cf4 Color\cf3 .new255(112, 112, 112),\
+\'ca \'ca \cf6 'grey45'\cf3  -> \cf4 Color\cf3 .new255(115, 115, 115),\
+\'ca \'ca \cf6 'grey46'\cf3  -> \cf4 Color\cf3 .new255(117, 117, 117),\
+\'ca \'ca \cf6 'grey47'\cf3  -> \cf4 Color\cf3 .new255(120, 120, 120),\
+\'ca \'ca \cf6 'grey48'\cf3  -> \cf4 Color\cf3 .new255(122, 122, 122),\
+\'ca \'ca \cf6 'grey49'\cf3  -> \cf4 Color\cf3 .new255(125, 125, 125),\
+\'ca \'ca \cf6 'grey5'\cf3  -> \cf4 Color\cf3 .new255(13, 13, 13),\
+\'ca \'ca \cf6 'grey50'\cf3  -> \cf4 Color\cf3 .new255(127, 127, 127),\
+\'ca \'ca \cf6 'grey51'\cf3  -> \cf4 Color\cf3 .new255(130, 130, 130),\
+\'ca \'ca \cf6 'grey52'\cf3  -> \cf4 Color\cf3 .new255(133, 133, 133),\
+\'ca \'ca \cf6 'grey53'\cf3  -> \cf4 Color\cf3 .new255(135, 135, 135),\
+\'ca \'ca \cf6 'grey54'\cf3  -> \cf4 Color\cf3 .new255(138, 138, 138),\
+\'ca \'ca \cf6 'grey55'\cf3  -> \cf4 Color\cf3 .new255(140, 140, 140),\
+\'ca \'ca \cf6 'grey56'\cf3  -> \cf4 Color\cf3 .new255(143, 143, 143),\
+\'ca \'ca \cf6 'grey57'\cf3  -> \cf4 Color\cf3 .new255(145, 145, 145),\
+\'ca \'ca \cf6 'grey58'\cf3  -> \cf4 Color\cf3 .new255(148, 148, 148),\
+\'ca \'ca \cf6 'grey59'\cf3  -> \cf4 Color\cf3 .new255(150, 150, 150),\
+\'ca \'ca \cf6 'grey6'\cf3  -> \cf4 Color\cf3 .new255(15, 15, 15),\
+\'ca \'ca \cf6 'grey60'\cf3  -> \cf4 Color\cf3 .new255(153, 153, 153),\
+\'ca \'ca \cf6 'grey61'\cf3  -> \cf4 Color\cf3 .new255(156, 156, 156),\
+\'ca \'ca \cf6 'grey62'\cf3  -> \cf4 Color\cf3 .new255(158, 158, 158),\
+\'ca \'ca \cf6 'grey63'\cf3  -> \cf4 Color\cf3 .new255(161, 161, 161),\
+\'ca \'ca \cf6 'grey64'\cf3  -> \cf4 Color\cf3 .new255(163, 163, 163),\
+\'ca \'ca \cf6 'grey65'\cf3  -> \cf4 Color\cf3 .new255(166, 166, 166),\
+\'ca \'ca \cf6 'grey66'\cf3  -> \cf4 Color\cf3 .new255(168, 168, 168),\
+\'ca \'ca \cf6 'grey67'\cf3  -> \cf4 Color\cf3 .new255(171, 171, 171),\
+\'ca \'ca \cf6 'grey68'\cf3  -> \cf4 Color\cf3 .new255(173, 173, 173),\
+\'ca \'ca \cf6 'grey69'\cf3  -> \cf4 Color\cf3 .new255(176, 176, 176),\
+\'ca \'ca \cf6 'grey7'\cf3  -> \cf4 Color\cf3 .new255(18, 18, 18),\
+\'ca \'ca \cf6 'grey70'\cf3  -> \cf4 Color\cf3 .new255(179, 179, 179),\
+\'ca \'ca \cf6 'grey71'\cf3  -> \cf4 Color\cf3 .new255(181, 181, 181),\
+\'ca \'ca \cf6 'grey72'\cf3  -> \cf4 Color\cf3 .new255(184, 184, 184),\
+\'ca \'ca \cf6 'grey73'\cf3  -> \cf4 Color\cf3 .new255(186, 186, 186),\
+\'ca \'ca \cf6 'grey74'\cf3  -> \cf4 Color\cf3 .new255(189, 189, 189),\
+\'ca \'ca \cf6 'grey75'\cf3  -> \cf4 Color\cf3 .new255(191, 191, 191),\
+\'ca \'ca \cf6 'grey76'\cf3  -> \cf4 Color\cf3 .new255(194, 194, 194),\
+\'ca \'ca \cf6 'grey77'\cf3  -> \cf4 Color\cf3 .new255(196, 196, 196),\
+\'ca \'ca \cf6 'grey78'\cf3  -> \cf4 Color\cf3 .new255(199, 199, 199),\
+\'ca \'ca \cf6 'grey79'\cf3  -> \cf4 Color\cf3 .new255(201, 201, 201),\
+\'ca \'ca \cf6 'grey8'\cf3  -> \cf4 Color\cf3 .new255(20, 20, 20),\
+\'ca \'ca \cf6 'grey80'\cf3  -> \cf4 Color\cf3 .new255(204, 204, 204),\
+\'ca \'ca \cf6 'grey81'\cf3  -> \cf4 Color\cf3 .new255(207, 207, 207),\
+\'ca \'ca \cf6 'grey82'\cf3  -> \cf4 Color\cf3 .new255(209, 209, 209),\
+\'ca \'ca \cf6 'grey83'\cf3  -> \cf4 Color\cf3 .new255(212, 212, 212),\
+\'ca \'ca \cf6 'grey84'\cf3  -> \cf4 Color\cf3 .new255(214, 214, 214),\
+\'ca \'ca \cf6 'grey85'\cf3  -> \cf4 Color\cf3 .new255(217, 217, 217),\
+\'ca \'ca \cf6 'grey86'\cf3  -> \cf4 Color\cf3 .new255(219, 219, 219),\
+\'ca \'ca \cf6 'grey87'\cf3  -> \cf4 Color\cf3 .new255(222, 222, 222),\
+\'ca \'ca \cf6 'grey88'\cf3  -> \cf4 Color\cf3 .new255(224, 224, 224),\
+\'ca \'ca \cf6 'grey89'\cf3  -> \cf4 Color\cf3 .new255(227, 227, 227),\
+\'ca \'ca \cf6 'grey9'\cf3  -> \cf4 Color\cf3 .new255(23, 23, 23),\
+\'ca \'ca \cf6 'grey90'\cf3  -> \cf4 Color\cf3 .new255(229, 229, 229),\
+\'ca \'ca \cf6 'grey91'\cf3  -> \cf4 Color\cf3 .new255(232, 232, 232),\
+\'ca \'ca \cf6 'grey92'\cf3  -> \cf4 Color\cf3 .new255(235, 235, 235),\
+\'ca \'ca \cf6 'grey93'\cf3  -> \cf4 Color\cf3 .new255(237, 237, 237),\
+\'ca \'ca \cf6 'grey94'\cf3  -> \cf4 Color\cf3 .new255(240, 240, 240),\
+\'ca \'ca \cf6 'grey95'\cf3  -> \cf4 Color\cf3 .new255(242, 242, 242),\
+\'ca \'ca \cf6 'grey96'\cf3  -> \cf4 Color\cf3 .new255(245, 245, 245),\
+\'ca \'ca \cf6 'grey97'\cf3  -> \cf4 Color\cf3 .new255(247, 247, 247),\
+\'ca \'ca \cf6 'grey98'\cf3  -> \cf4 Color\cf3 .new255(250, 250, 250),\
+\'ca \'ca \cf6 'grey99'\cf3  -> \cf4 Color\cf3 .new255(252, 252, 252),\
+\'ca \'ca \cf6 'honeydew'\cf3  -> \cf4 Color\cf3 .new255(240, 255, 240),\
+\'ca \'ca \cf6 'honeydew1'\cf3  -> \cf4 Color\cf3 .new255(240, 255, 240),\
+\'ca \'ca \cf6 'honeydew2'\cf3  -> \cf4 Color\cf3 .new255(224, 238, 224),\
+\'ca \'ca \cf6 'honeydew3'\cf3  -> \cf4 Color\cf3 .new255(193, 205, 193),\
+\'ca \'ca \cf6 'honeydew4'\cf3  -> \cf4 Color\cf3 .new255(131, 139, 131),\
+\'ca \'ca \cf6 'hot pink'\cf3  -> \cf4 Color\cf3 .new255(255, 105, 180),\
+\'ca \'ca \cf6 'HotPink'\cf3  -> \cf4 Color\cf3 .new255(255, 105, 180),\
+\'ca \'ca \cf6 'HotPink1'\cf3  -> \cf4 Color\cf3 .new255(255, 110, 180),\
+\'ca \'ca \cf6 'HotPink2'\cf3  -> \cf4 Color\cf3 .new255(238, 106, 167),\
+\'ca \'ca \cf6 'HotPink3'\cf3  -> \cf4 Color\cf3 .new255(205, 96, 144),\
+\'ca \'ca \cf6 'HotPink4'\cf3  -> \cf4 Color\cf3 .new255(139, 58, 98),\
+\'ca \'ca \cf6 'indian red'\cf3  -> \cf4 Color\cf3 .new255(205, 92, 92),\
+\'ca \'ca \cf6 'IndianRed'\cf3  -> \cf4 Color\cf3 .new255(205, 92, 92),\
+\'ca \'ca \cf6 'IndianRed1'\cf3  -> \cf4 Color\cf3 .new255(255, 106, 106),\
+\'ca \'ca \cf6 'IndianRed2'\cf3  -> \cf4 Color\cf3 .new255(238, 99, 99),\
+\'ca \'ca \cf6 'IndianRed3'\cf3  -> \cf4 Color\cf3 .new255(205, 85, 85),\
+\'ca \'ca \cf6 'IndianRed4'\cf3  -> \cf4 Color\cf3 .new255(139, 58, 58),\
+\'ca \'ca \cf6 'ivory'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 240),\
+\'ca \'ca \cf6 'ivory1'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 240),\
+\'ca \'ca \cf6 'ivory2'\cf3  -> \cf4 Color\cf3 .new255(238, 238, 224),\
+\'ca \'ca \cf6 'ivory3'\cf3  -> \cf4 Color\cf3 .new255(205, 205, 193),\
+\'ca \'ca \cf6 'ivory4'\cf3  -> \cf4 Color\cf3 .new255(139, 139, 131),\
+\'ca \'ca \cf6 'khaki'\cf3  -> \cf4 Color\cf3 .new255(240, 230, 140),\
+\'ca \'ca \cf6 'khaki1'\cf3  -> \cf4 Color\cf3 .new255(255, 246, 143),\
+\'ca \'ca \cf6 'khaki2'\cf3  -> \cf4 Color\cf3 .new255(238, 230, 133),\
+\'ca \'ca \cf6 'khaki3'\cf3  -> \cf4 Color\cf3 .new255(205, 198, 115),\
+\'ca \'ca \cf6 'khaki4'\cf3  -> \cf4 Color\cf3 .new255(139, 134, 78),\
+\'ca \'ca \cf6 'lavender'\cf3  -> \cf4 Color\cf3 .new255(230, 230, 250),\
+\'ca \'ca \cf6 'lavender blush'\cf3  -> \cf4 Color\cf3 .new255(255, 240, 245),\
+\'ca \'ca \cf6 'LavenderBlush'\cf3  -> \cf4 Color\cf3 .new255(255, 240, 245),\
+\'ca \'ca \cf6 'LavenderBlush1'\cf3  -> \cf4 Color\cf3 .new255(255, 240, 245),\
+\'ca \'ca \cf6 'LavenderBlush2'\cf3  -> \cf4 Color\cf3 .new255(238, 224, 229),\
+\'ca \'ca \cf6 'LavenderBlush3'\cf3  -> \cf4 Color\cf3 .new255(205, 193, 197),\
+\'ca \'ca \cf6 'LavenderBlush4'\cf3  -> \cf4 Color\cf3 .new255(139, 131, 134),\
+\'ca \'ca \cf6 'lawn green'\cf3  -> \cf4 Color\cf3 .new255(124, 252, 0),\
+\'ca \'ca \cf6 'LawnGreen'\cf3  -> \cf4 Color\cf3 .new255(124, 252, 0),\
+\'ca \'ca \cf6 'lemon chiffon'\cf3  -> \cf4 Color\cf3 .new255(255, 250, 205),\
+\'ca \'ca \cf6 'LemonChiffon'\cf3  -> \cf4 Color\cf3 .new255(255, 250, 205),\
+\'ca \'ca \cf6 'LemonChiffon1'\cf3  -> \cf4 Color\cf3 .new255(255, 250, 205),\
+\'ca \'ca \cf6 'LemonChiffon2'\cf3  -> \cf4 Color\cf3 .new255(238, 233, 191),\
+\'ca \'ca \cf6 'LemonChiffon3'\cf3  -> \cf4 Color\cf3 .new255(205, 201, 165),\
+\'ca \'ca \cf6 'LemonChiffon4'\cf3  -> \cf4 Color\cf3 .new255(139, 137, 112),\
+\'ca \'ca \cf6 'light blue'\cf3  -> \cf4 Color\cf3 .new255(173, 216, 230),\
+\'ca \'ca \cf6 'light coral'\cf3  -> \cf4 Color\cf3 .new255(240, 128, 128),\
+\'ca \'ca \cf6 'light cyan'\cf3  -> \cf4 Color\cf3 .new255(224, 255, 255),\
+\'ca \'ca \cf6 'light goldenrod'\cf3  -> \cf4 Color\cf3 .new255(238, 221, 130),\
+\'ca \'ca \cf6 'light goldenrod yellow'\cf3  -> \cf4 Color\cf3 .new255(250, 250, 210),\
+\'ca \'ca \cf6 'light gray'\cf3  -> \cf4 Color\cf3 .new255(211, 211, 211),\
+\'ca \'ca \cf6 'light grey'\cf3  -> \cf4 Color\cf3 .new255(211, 211, 211),\
+\'ca \'ca \cf6 'light pink'\cf3  -> \cf4 Color\cf3 .new255(255, 182, 193),\
+\'ca \'ca \cf6 'light salmon'\cf3  -> \cf4 Color\cf3 .new255(255, 160, 122),\
+\'ca \'ca \cf6 'light sea green'\cf3  -> \cf4 Color\cf3 .new255(32, 178, 170),\
+\'ca \'ca \cf6 'light sky blue'\cf3  -> \cf4 Color\cf3 .new255(135, 206, 250),\
+\'ca \'ca \cf6 'light slate blue'\cf3  -> \cf4 Color\cf3 .new255(132, 112, 255),\
+\'ca \'ca \cf6 'light slate gray'\cf3  -> \cf4 Color\cf3 .new255(119, 136, 153),\
+\'ca \'ca \cf6 'light slate grey'\cf3  -> \cf4 Color\cf3 .new255(119, 136, 153),\
+\'ca \'ca \cf6 'light steel blue'\cf3  -> \cf4 Color\cf3 .new255(176, 196, 222),\
+\'ca \'ca \cf6 'light yellow'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 224),\
+\'ca \'ca \cf6 'LightBlue'\cf3  -> \cf4 Color\cf3 .new255(173, 216, 230),\
+\'ca \'ca \cf6 'LightBlue1'\cf3  -> \cf4 Color\cf3 .new255(191, 239, 255),\
+\'ca \'ca \cf6 'LightBlue2'\cf3  -> \cf4 Color\cf3 .new255(178, 223, 238),\
+\'ca \'ca \cf6 'LightBlue3'\cf3  -> \cf4 Color\cf3 .new255(154, 192, 205),\
+\'ca \'ca \cf6 'LightBlue4'\cf3  -> \cf4 Color\cf3 .new255(104, 131, 139),\
+\'ca \'ca \cf6 'LightCoral'\cf3  -> \cf4 Color\cf3 .new255(240, 128, 128),\
+\'ca \'ca \cf6 'LightCyan'\cf3  -> \cf4 Color\cf3 .new255(224, 255, 255),\
+\'ca \'ca \cf6 'LightCyan1'\cf3  -> \cf4 Color\cf3 .new255(224, 255, 255),\
+\'ca \'ca \cf6 'LightCyan2'\cf3  -> \cf4 Color\cf3 .new255(209, 238, 238),\
+\'ca \'ca \cf6 'LightCyan3'\cf3  -> \cf4 Color\cf3 .new255(180, 205, 205),\
+\'ca \'ca \cf6 'LightCyan4'\cf3  -> \cf4 Color\cf3 .new255(122, 139, 139),\
+\'ca \'ca \cf6 'LightGoldenrod'\cf3  -> \cf4 Color\cf3 .new255(238, 221, 130),\
+\'ca \'ca \cf6 'LightGoldenrod1'\cf3  -> \cf4 Color\cf3 .new255(255, 236, 139),\
+\'ca \'ca \cf6 'LightGoldenrod2'\cf3  -> \cf4 Color\cf3 .new255(238, 220, 130),\
+\'ca \'ca \cf6 'LightGoldenrod3'\cf3  -> \cf4 Color\cf3 .new255(205, 190, 112),\
+\'ca \'ca \cf6 'LightGoldenrod4'\cf3  -> \cf4 Color\cf3 .new255(139, 129, 76),\
+\'ca \'ca \cf6 'LightGoldenrodYellow'\cf3  -> \cf4 Color\cf3 .new255(250, 250, 210),\
+\'ca \'ca \cf6 'LightGray'\cf3  -> \cf4 Color\cf3 .new255(211, 211, 211),\
+\'ca \'ca \cf6 'LightGrey'\cf3  -> \cf4 Color\cf3 .new255(211, 211, 211),\
+\'ca \'ca \cf6 'LightPink'\cf3  -> \cf4 Color\cf3 .new255(255, 182, 193),\
+\'ca \'ca \cf6 'LightPink1'\cf3  -> \cf4 Color\cf3 .new255(255, 174, 185),\
+\'ca \'ca \cf6 'LightPink2'\cf3  -> \cf4 Color\cf3 .new255(238, 162, 173),\
+\'ca \'ca \cf6 'LightPink3'\cf3  -> \cf4 Color\cf3 .new255(205, 140, 149),\
+\'ca \'ca \cf6 'LightPink4'\cf3  -> \cf4 Color\cf3 .new255(139, 95, 101),\
+\'ca \'ca \cf6 'LightSalmon'\cf3  -> \cf4 Color\cf3 .new255(255, 160, 122),\
+\'ca \'ca \cf6 'LightSalmon1'\cf3  -> \cf4 Color\cf3 .new255(255, 160, 122),\
+\'ca \'ca \cf6 'LightSalmon2'\cf3  -> \cf4 Color\cf3 .new255(238, 149, 114),\
+\'ca \'ca \cf6 'LightSalmon3'\cf3  -> \cf4 Color\cf3 .new255(205, 129, 98),\
+\'ca \'ca \cf6 'LightSalmon4'\cf3  -> \cf4 Color\cf3 .new255(139, 87, 66),\
+\'ca \'ca \cf6 'LightSeaGreen'\cf3  -> \cf4 Color\cf3 .new255(32, 178, 170),\
+\'ca \'ca \cf6 'LightSkyBlue'\cf3  -> \cf4 Color\cf3 .new255(135, 206, 250),\
+\'ca \'ca \cf6 'LightSkyBlue1'\cf3  -> \cf4 Color\cf3 .new255(176, 226, 255),\
+\'ca \'ca \cf6 'LightSkyBlue2'\cf3  -> \cf4 Color\cf3 .new255(164, 211, 238),\
+\'ca \'ca \cf6 'LightSkyBlue3'\cf3  -> \cf4 Color\cf3 .new255(141, 182, 205),\
+\'ca \'ca \cf6 'LightSkyBlue4'\cf3  -> \cf4 Color\cf3 .new255(96, 123, 139),\
+\'ca \'ca \cf6 'LightSlateBlue'\cf3  -> \cf4 Color\cf3 .new255(132, 112, 255),\
+\'ca \'ca \cf6 'LightSlateGray'\cf3  -> \cf4 Color\cf3 .new255(119, 136, 153),\
+\'ca \'ca \cf6 'LightSlateGrey'\cf3  -> \cf4 Color\cf3 .new255(119, 136, 153),\
+\'ca \'ca \cf6 'LightSteelBlue'\cf3  -> \cf4 Color\cf3 .new255(176, 196, 222),\
+\'ca \'ca \cf6 'LightSteelBlue1'\cf3  -> \cf4 Color\cf3 .new255(202, 225, 255),\
+\'ca \'ca \cf6 'LightSteelBlue2'\cf3  -> \cf4 Color\cf3 .new255(188, 210, 238),\
+\'ca \'ca \cf6 'LightSteelBlue3'\cf3  -> \cf4 Color\cf3 .new255(162, 181, 205),\
+\'ca \'ca \cf6 'LightSteelBlue4'\cf3  -> \cf4 Color\cf3 .new255(110, 123, 139),\
+\'ca \'ca \cf6 'LightYellow'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 224),\
+\'ca \'ca \cf6 'LightYellow1'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 224),\
+\'ca \'ca \cf6 'LightYellow2'\cf3  -> \cf4 Color\cf3 .new255(238, 238, 209),\
+\'ca \'ca \cf6 'LightYellow3'\cf3  -> \cf4 Color\cf3 .new255(205, 205, 180),\
+\'ca \'ca \cf6 'LightYellow4'\cf3  -> \cf4 Color\cf3 .new255(139, 139, 122),\
+\'ca \'ca \cf6 'lime green'\cf3  -> \cf4 Color\cf3 .new255(50, 205, 50),\
+\'ca \'ca \cf6 'LimeGreen'\cf3  -> \cf4 Color\cf3 .new255(50, 205, 50),\
+\'ca \'ca \cf6 'linen'\cf3  -> \cf4 Color\cf3 .new255(250, 240, 230),\
+\'ca \'ca \cf6 'magenta'\cf3  -> \cf4 Color\cf3 .new255(255, 0, 255),\
+\'ca \'ca \cf6 'magenta1'\cf3  -> \cf4 Color\cf3 .new255(255, 0, 255),\
+\'ca \'ca \cf6 'magenta2'\cf3  -> \cf4 Color\cf3 .new255(238, 0, 238),\
+\'ca \'ca \cf6 'magenta3'\cf3  -> \cf4 Color\cf3 .new255(205, 0, 205),\
+\'ca \'ca \cf6 'magenta4'\cf3  -> \cf4 Color\cf3 .new255(139, 0, 139),\
+\'ca \'ca \cf6 'maroon'\cf3  -> \cf4 Color\cf3 .new255(176, 48, 96),\
+\'ca \'ca \cf6 'maroon1'\cf3  -> \cf4 Color\cf3 .new255(255, 52, 179),\
+\'ca \'ca \cf6 'maroon2'\cf3  -> \cf4 Color\cf3 .new255(238, 48, 167),\
+\'ca \'ca \cf6 'maroon3'\cf3  -> \cf4 Color\cf3 .new255(205, 41, 144),\
+\'ca \'ca \cf6 'maroon4'\cf3  -> \cf4 Color\cf3 .new255(139, 28, 98),\
+\'ca \'ca \cf6 'medium aquamarine'\cf3  -> \cf4 Color\cf3 .new255(102, 205, 170),\
+\'ca \'ca \cf6 'medium blue'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 205),\
+\'ca \'ca \cf6 'medium orchid'\cf3  -> \cf4 Color\cf3 .new255(186, 85, 211),\
+\'ca \'ca \cf6 'medium purple'\cf3  -> \cf4 Color\cf3 .new255(147, 112, 219),\
+\'ca \'ca \cf6 'medium sea green'\cf3  -> \cf4 Color\cf3 .new255(60, 179, 113),\
+\'ca \'ca \cf6 'medium slate blue'\cf3  -> \cf4 Color\cf3 .new255(123, 104, 238),\
+\'ca \'ca \cf6 'medium spring green'\cf3  -> \cf4 Color\cf3 .new255(0, 250, 154),\
+\'ca \'ca \cf6 'medium turquoise'\cf3  -> \cf4 Color\cf3 .new255(72, 209, 204),\
+\'ca \'ca \cf6 'medium violet red'\cf3  -> \cf4 Color\cf3 .new255(199, 21, 133),\
+\'ca \'ca \cf6 'MediumAquamarine'\cf3  -> \cf4 Color\cf3 .new255(102, 205, 170),\
+\'ca \'ca \cf6 'MediumBlue'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 205),\
+\'ca \'ca \cf6 'MediumOrchid'\cf3  -> \cf4 Color\cf3 .new255(186, 85, 211),\
+\'ca \'ca \cf6 'MediumOrchid1'\cf3  -> \cf4 Color\cf3 .new255(224, 102, 255),\
+\'ca \'ca \cf6 'MediumOrchid2'\cf3  -> \cf4 Color\cf3 .new255(209, 95, 238),\
+\'ca \'ca \cf6 'MediumOrchid3'\cf3  -> \cf4 Color\cf3 .new255(180, 82, 205),\
+\'ca \'ca \cf6 'MediumOrchid4'\cf3  -> \cf4 Color\cf3 .new255(122, 55, 139),\
+\'ca \'ca \cf6 'MediumPurple'\cf3  -> \cf4 Color\cf3 .new255(147, 112, 219),\
+\'ca \'ca \cf6 'MediumPurple1'\cf3  -> \cf4 Color\cf3 .new255(171, 130, 255),\
+\'ca \'ca \cf6 'MediumPurple2'\cf3  -> \cf4 Color\cf3 .new255(159, 121, 238),\
+\'ca \'ca \cf6 'MediumPurple3'\cf3  -> \cf4 Color\cf3 .new255(137, 104, 205),\
+\'ca \'ca \cf6 'MediumPurple4'\cf3  -> \cf4 Color\cf3 .new255(93, 71, 139),\
+\'ca \'ca \cf6 'MediumSeaGreen'\cf3  -> \cf4 Color\cf3 .new255(60, 179, 113),\
+\'ca \'ca \cf6 'MediumSlateBlue'\cf3  -> \cf4 Color\cf3 .new255(123, 104, 238),\
+\'ca \'ca \cf6 'MediumSpringGreen'\cf3  -> \cf4 Color\cf3 .new255(0, 250, 154),\
+\'ca \'ca \cf6 'MediumTurquoise'\cf3  -> \cf4 Color\cf3 .new255(72, 209, 204),\
+\'ca \'ca \cf6 'MediumVioletRed'\cf3  -> \cf4 Color\cf3 .new255(199, 21, 133),\
+\'ca \'ca \cf6 'midnight blue'\cf3  -> \cf4 Color\cf3 .new255(25, 25, 112),\
+\'ca \'ca \cf6 'MidnightBlue'\cf3  -> \cf4 Color\cf3 .new255(25, 25, 112),\
+\'ca \'ca \cf6 'mint cream'\cf3  -> \cf4 Color\cf3 .new255(245, 255, 250),\
+\'ca \'ca \cf6 'MintCream'\cf3  -> \cf4 Color\cf3 .new255(245, 255, 250),\
+\'ca \'ca \cf6 'misty rose'\cf3  -> \cf4 Color\cf3 .new255(255, 228, 225),\
+\'ca \'ca \cf6 'MistyRose'\cf3  -> \cf4 Color\cf3 .new255(255, 228, 225),\
+\'ca \'ca \cf6 'MistyRose1'\cf3  -> \cf4 Color\cf3 .new255(255, 228, 225),\
+\'ca \'ca \cf6 'MistyRose2'\cf3  -> \cf4 Color\cf3 .new255(238, 213, 210),\
+\'ca \'ca \cf6 'MistyRose3'\cf3  -> \cf4 Color\cf3 .new255(205, 183, 181),\
+\'ca \'ca \cf6 'MistyRose4'\cf3  -> \cf4 Color\cf3 .new255(139, 125, 123),\
+\'ca \'ca \cf6 'moccasin'\cf3  -> \cf4 Color\cf3 .new255(255, 228, 181),\
+\'ca \'ca \cf6 'navajo white'\cf3  -> \cf4 Color\cf3 .new255(255, 222, 173),\
+\'ca \'ca \cf6 'NavajoWhite'\cf3  -> \cf4 Color\cf3 .new255(255, 222, 173),\
+\'ca \'ca \cf6 'NavajoWhite1'\cf3  -> \cf4 Color\cf3 .new255(255, 222, 173),\
+\'ca \'ca \cf6 'NavajoWhite2'\cf3  -> \cf4 Color\cf3 .new255(238, 207, 161),\
+\'ca \'ca \cf6 'NavajoWhite3'\cf3  -> \cf4 Color\cf3 .new255(205, 179, 139),\
+\'ca \'ca \cf6 'NavajoWhite4'\cf3  -> \cf4 Color\cf3 .new255(139, 121, 94),\
+\'ca \'ca \cf6 'navy'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 128),\
+\'ca \'ca \cf6 'navy blue'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 128),\
+\'ca \'ca \cf6 'NavyBlue'\cf3  -> \cf4 Color\cf3 .new255(0, 0, 128),\
+\'ca \'ca \cf6 'old lace'\cf3  -> \cf4 Color\cf3 .new255(253, 245, 230),\
+\'ca \'ca \cf6 'OldLace'\cf3  -> \cf4 Color\cf3 .new255(253, 245, 230),\
+\'ca \'ca \cf6 'olive drab'\cf3  -> \cf4 Color\cf3 .new255(107, 142, 35),\
+\'ca \'ca \cf6 'OliveDrab'\cf3  -> \cf4 Color\cf3 .new255(107, 142, 35),\
+\'ca \'ca \cf6 'OliveDrab1'\cf3  -> \cf4 Color\cf3 .new255(192, 255, 62),\
+\'ca \'ca \cf6 'OliveDrab2'\cf3  -> \cf4 Color\cf3 .new255(179, 238, 58),\
+\'ca \'ca \cf6 'OliveDrab3'\cf3  -> \cf4 Color\cf3 .new255(154, 205, 50),\
+\'ca \'ca \cf6 'OliveDrab4'\cf3  -> \cf4 Color\cf3 .new255(105, 139, 34),\
+\'ca \'ca \cf6 'orange'\cf3  -> \cf4 Color\cf3 .new255(255, 165, 0),\
+\'ca \'ca \cf6 'orange red'\cf3  -> \cf4 Color\cf3 .new255(255, 69, 0),\
+\'ca \'ca \cf6 'orange1'\cf3  -> \cf4 Color\cf3 .new255(255, 165, 0),\
+\'ca \'ca \cf6 'orange2'\cf3  -> \cf4 Color\cf3 .new255(238, 154, 0),\
+\'ca \'ca \cf6 'orange3'\cf3  -> \cf4 Color\cf3 .new255(205, 133, 0),\
+\'ca \'ca \cf6 'orange4'\cf3  -> \cf4 Color\cf3 .new255(139, 90, 0),\
+\'ca \'ca \cf6 'OrangeRed'\cf3  -> \cf4 Color\cf3 .new255(255, 69, 0),\
+\'ca \'ca \cf6 'OrangeRed1'\cf3  -> \cf4 Color\cf3 .new255(255, 69, 0),\
+\'ca \'ca \cf6 'OrangeRed2'\cf3  -> \cf4 Color\cf3 .new255(238, 64, 0),\
+\'ca \'ca \cf6 'OrangeRed3'\cf3  -> \cf4 Color\cf3 .new255(205, 55, 0),\
+\'ca \'ca \cf6 'OrangeRed4'\cf3  -> \cf4 Color\cf3 .new255(139, 37, 0),\
+\'ca \'ca \cf6 'orchid'\cf3  -> \cf4 Color\cf3 .new255(218, 112, 214),\
+\'ca \'ca \cf6 'orchid1'\cf3  -> \cf4 Color\cf3 .new255(255, 131, 250),\
+\'ca \'ca \cf6 'orchid2'\cf3  -> \cf4 Color\cf3 .new255(238, 122, 233),\
+\'ca \'ca \cf6 'orchid3'\cf3  -> \cf4 Color\cf3 .new255(205, 105, 201),\
+\'ca \'ca \cf6 'orchid4'\cf3  -> \cf4 Color\cf3 .new255(139, 71, 137),\
+\'ca \'ca \cf6 'pale goldenrod'\cf3  -> \cf4 Color\cf3 .new255(238, 232, 170),\
+\'ca \'ca \cf6 'pale green'\cf3  -> \cf4 Color\cf3 .new255(152, 251, 152),\
+\'ca \'ca \cf6 'pale turquoise'\cf3  -> \cf4 Color\cf3 .new255(175, 238, 238),\
+\'ca \'ca \cf6 'pale violet red'\cf3  -> \cf4 Color\cf3 .new255(219, 112, 147),\
+\'ca \'ca \cf6 'PaleGoldenrod'\cf3  -> \cf4 Color\cf3 .new255(238, 232, 170),\
+\'ca \'ca \cf6 'PaleGreen'\cf3  -> \cf4 Color\cf3 .new255(152, 251, 152),\
+\'ca \'ca \cf6 'PaleGreen1'\cf3  -> \cf4 Color\cf3 .new255(154, 255, 154),\
+\'ca \'ca \cf6 'PaleGreen2'\cf3  -> \cf4 Color\cf3 .new255(144, 238, 144),\
+\'ca \'ca \cf6 'PaleGreen3'\cf3  -> \cf4 Color\cf3 .new255(124, 205, 124),\
+\'ca \'ca \cf6 'PaleGreen4'\cf3  -> \cf4 Color\cf3 .new255(84, 139, 84),\
+\'ca \'ca \cf6 'PaleTurquoise'\cf3  -> \cf4 Color\cf3 .new255(175, 238, 238),\
+\'ca \'ca \cf6 'PaleTurquoise1'\cf3  -> \cf4 Color\cf3 .new255(187, 255, 255),\
+\'ca \'ca \cf6 'PaleTurquoise2'\cf3  -> \cf4 Color\cf3 .new255(174, 238, 238),\
+\'ca \'ca \cf6 'PaleTurquoise3'\cf3  -> \cf4 Color\cf3 .new255(150, 205, 205),\
+\'ca \'ca \cf6 'PaleTurquoise4'\cf3  -> \cf4 Color\cf3 .new255(102, 139, 139),\
+\'ca \'ca \cf6 'PaleVioletRed'\cf3  -> \cf4 Color\cf3 .new255(219, 112, 147),\
+\'ca \'ca \cf6 'PaleVioletRed1'\cf3  -> \cf4 Color\cf3 .new255(255, 130, 171),\
+\'ca \'ca \cf6 'PaleVioletRed2'\cf3  -> \cf4 Color\cf3 .new255(238, 121, 159),\
+\'ca \'ca \cf6 'PaleVioletRed3'\cf3  -> \cf4 Color\cf3 .new255(205, 104, 137),\
+\'ca \'ca \cf6 'PaleVioletRed4'\cf3  -> \cf4 Color\cf3 .new255(139, 71, 93),\
+\'ca \'ca \cf6 'papaya whip'\cf3  -> \cf4 Color\cf3 .new255(255, 239, 213),\
+\'ca \'ca \cf6 'PapayaWhip'\cf3  -> \cf4 Color\cf3 .new255(255, 239, 213),\
+\'ca \'ca \cf6 'peach puff'\cf3  -> \cf4 Color\cf3 .new255(255, 218, 185),\
+\'ca \'ca \cf6 'PeachPuff'\cf3  -> \cf4 Color\cf3 .new255(255, 218, 185),\
+\'ca \'ca \cf6 'PeachPuff1'\cf3  -> \cf4 Color\cf3 .new255(255, 218, 185),\
+\'ca \'ca \cf6 'PeachPuff2'\cf3  -> \cf4 Color\cf3 .new255(238, 203, 173),\
+\'ca \'ca \cf6 'PeachPuff3'\cf3  -> \cf4 Color\cf3 .new255(205, 175, 149),\
+\'ca \'ca \cf6 'PeachPuff4'\cf3  -> \cf4 Color\cf3 .new255(139, 119, 101),\
+\'ca \'ca \cf6 'peru'\cf3  -> \cf4 Color\cf3 .new255(205, 133, 63),\
+\'ca \'ca \cf6 'pink'\cf3  -> \cf4 Color\cf3 .new255(255, 192, 203),\
+\'ca \'ca \cf6 'pink1'\cf3  -> \cf4 Color\cf3 .new255(255, 181, 197),\
+\'ca \'ca \cf6 'pink2'\cf3  -> \cf4 Color\cf3 .new255(238, 169, 184),\
+\'ca \'ca \cf6 'pink3'\cf3  -> \cf4 Color\cf3 .new255(205, 145, 158),\
+\'ca \'ca \cf6 'pink4'\cf3  -> \cf4 Color\cf3 .new255(139, 99, 108),\
+\'ca \'ca \cf6 'plum'\cf3  -> \cf4 Color\cf3 .new255(221, 160, 221),\
+\'ca \'ca \cf6 'plum1'\cf3  -> \cf4 Color\cf3 .new255(255, 187, 255),\
+\'ca \'ca \cf6 'plum2'\cf3  -> \cf4 Color\cf3 .new255(238, 174, 238),\
+\'ca \'ca \cf6 'plum3'\cf3  -> \cf4 Color\cf3 .new255(205, 150, 205),\
+\'ca \'ca \cf6 'plum4'\cf3  -> \cf4 Color\cf3 .new255(139, 102, 139),\
+\'ca \'ca \cf6 'powder blue'\cf3  -> \cf4 Color\cf3 .new255(176, 224, 230),\
+\'ca \'ca \cf6 'PowderBlue'\cf3  -> \cf4 Color\cf3 .new255(176, 224, 230),\
+\'ca \'ca \cf6 'purple'\cf3  -> \cf4 Color\cf3 .new255(160, 32, 240),\
+\'ca \'ca \cf6 'purple1'\cf3  -> \cf4 Color\cf3 .new255(155, 48, 255),\
+\'ca \'ca \cf6 'purple2'\cf3  -> \cf4 Color\cf3 .new255(145, 44, 238),\
+\'ca \'ca \cf6 'purple3'\cf3  -> \cf4 Color\cf3 .new255(125, 38, 205),\
+\'ca \'ca \cf6 'purple4'\cf3  -> \cf4 Color\cf3 .new255(85, 26, 139),\
+\'ca \'ca \cf6 'red'\cf3  -> \cf4 Color\cf3 .new255(255, 0, 0),\
+\'ca \'ca \cf6 'red1'\cf3  -> \cf4 Color\cf3 .new255(255, 0, 0),\
+\'ca \'ca \cf6 'red2'\cf3  -> \cf4 Color\cf3 .new255(238, 0, 0),\
+\'ca \'ca \cf6 'red3'\cf3  -> \cf4 Color\cf3 .new255(205, 0, 0),\
+\'ca \'ca \cf6 'red4'\cf3  -> \cf4 Color\cf3 .new255(139, 0, 0),\
+\'ca \'ca \cf6 'rosy brown'\cf3  -> \cf4 Color\cf3 .new255(188, 143, 143),\
+\'ca \'ca \cf6 'RosyBrown'\cf3  -> \cf4 Color\cf3 .new255(188, 143, 143),\
+\'ca \'ca \cf6 'RosyBrown1'\cf3  -> \cf4 Color\cf3 .new255(255, 193, 193),\
+\'ca \'ca \cf6 'RosyBrown2'\cf3  -> \cf4 Color\cf3 .new255(238, 180, 180),\
+\'ca \'ca \cf6 'RosyBrown3'\cf3  -> \cf4 Color\cf3 .new255(205, 155, 155),\
+\'ca \'ca \cf6 'RosyBrown4'\cf3  -> \cf4 Color\cf3 .new255(139, 105, 105),\
+\'ca \'ca \cf6 'royal blue'\cf3  -> \cf4 Color\cf3 .new255(65, 105, 225),\
+\'ca \'ca \cf6 'RoyalBlue'\cf3  -> \cf4 Color\cf3 .new255(65, 105, 225),\
+\'ca \'ca \cf6 'RoyalBlue1'\cf3  -> \cf4 Color\cf3 .new255(72, 118, 255),\
+\'ca \'ca \cf6 'RoyalBlue2'\cf3  -> \cf4 Color\cf3 .new255(67, 110, 238),\
+\'ca \'ca \cf6 'RoyalBlue3'\cf3  -> \cf4 Color\cf3 .new255(58, 95, 205),\
+\'ca \'ca \cf6 'RoyalBlue4'\cf3  -> \cf4 Color\cf3 .new255(39, 64, 139),\
+\'ca \'ca \cf6 'saddle brown'\cf3  -> \cf4 Color\cf3 .new255(139, 69, 19),\
+\'ca \'ca \cf6 'SaddleBrown'\cf3  -> \cf4 Color\cf3 .new255(139, 69, 19),\
+\'ca \'ca \cf6 'salmon'\cf3  -> \cf4 Color\cf3 .new255(250, 128, 114),\
+\'ca \'ca \cf6 'salmon1'\cf3  -> \cf4 Color\cf3 .new255(255, 140, 105),\
+\'ca \'ca \cf6 'salmon2'\cf3  -> \cf4 Color\cf3 .new255(238, 130, 98),\
+\'ca \'ca \cf6 'salmon3'\cf3  -> \cf4 Color\cf3 .new255(205, 112, 84),\
+\'ca \'ca \cf6 'salmon4'\cf3  -> \cf4 Color\cf3 .new255(139, 76, 57),\
+\'ca \'ca \cf6 'sandy brown'\cf3  -> \cf4 Color\cf3 .new255(244, 164, 96),\
+\'ca \'ca \cf6 'SandyBrown'\cf3  -> \cf4 Color\cf3 .new255(244, 164, 96),\
+\'ca \'ca \cf6 'sea green'\cf3  -> \cf4 Color\cf3 .new255(46, 139, 87),\
+\'ca \'ca \cf6 'SeaGreen'\cf3  -> \cf4 Color\cf3 .new255(46, 139, 87),\
+\'ca \'ca \cf6 'SeaGreen1'\cf3  -> \cf4 Color\cf3 .new255(84, 255, 159),\
+\'ca \'ca \cf6 'SeaGreen2'\cf3  -> \cf4 Color\cf3 .new255(78, 238, 148),\
+\'ca \'ca \cf6 'SeaGreen3'\cf3  -> \cf4 Color\cf3 .new255(67, 205, 128),\
+\'ca \'ca \cf6 'SeaGreen4'\cf3  -> \cf4 Color\cf3 .new255(46, 139, 87),\
+\'ca \'ca \cf6 'seashell'\cf3  -> \cf4 Color\cf3 .new255(255, 245, 238),\
+\'ca \'ca \cf6 'seashell1'\cf3  -> \cf4 Color\cf3 .new255(255, 245, 238),\
+\'ca \'ca \cf6 'seashell2'\cf3  -> \cf4 Color\cf3 .new255(238, 229, 222),\
+\'ca \'ca \cf6 'seashell3'\cf3  -> \cf4 Color\cf3 .new255(205, 197, 191),\
+\'ca \'ca \cf6 'seashell4'\cf3  -> \cf4 Color\cf3 .new255(139, 134, 130),\
+\'ca \'ca \cf6 'sienna'\cf3  -> \cf4 Color\cf3 .new255(160, 82, 45),\
+\'ca \'ca \cf6 'sienna1'\cf3  -> \cf4 Color\cf3 .new255(255, 130, 71),\
+\'ca \'ca \cf6 'sienna2'\cf3  -> \cf4 Color\cf3 .new255(238, 121, 66),\
+\'ca \'ca \cf6 'sienna3'\cf3  -> \cf4 Color\cf3 .new255(205, 104, 57),\
+\'ca \'ca \cf6 'sienna4'\cf3  -> \cf4 Color\cf3 .new255(139, 71, 38),\
+\'ca \'ca \cf6 'sky blue'\cf3  -> \cf4 Color\cf3 .new255(135, 206, 235),\
+\'ca \'ca \cf6 'SkyBlue'\cf3  -> \cf4 Color\cf3 .new255(135, 206, 235),\
+\'ca \'ca \cf6 'SkyBlue1'\cf3  -> \cf4 Color\cf3 .new255(135, 206, 255),\
+\'ca \'ca \cf6 'SkyBlue2'\cf3  -> \cf4 Color\cf3 .new255(126, 192, 238),\
+\'ca \'ca \cf6 'SkyBlue3'\cf3  -> \cf4 Color\cf3 .new255(108, 166, 205),\
+\'ca \'ca \cf6 'SkyBlue4'\cf3  -> \cf4 Color\cf3 .new255(74, 112, 139),\
+\'ca \'ca \cf6 'slate blue'\cf3  -> \cf4 Color\cf3 .new255(106, 90, 205),\
+\'ca \'ca \cf6 'slate gray'\cf3  -> \cf4 Color\cf3 .new255(112, 128, 144),\
+\'ca \'ca \cf6 'slate grey'\cf3  -> \cf4 Color\cf3 .new255(112, 128, 144),\
+\'ca \'ca \cf6 'SlateBlue'\cf3  -> \cf4 Color\cf3 .new255(106, 90, 205),\
+\'ca \'ca \cf6 'SlateBlue1'\cf3  -> \cf4 Color\cf3 .new255(131, 111, 255),\
+\'ca \'ca \cf6 'SlateBlue2'\cf3  -> \cf4 Color\cf3 .new255(122, 103, 238),\
+\'ca \'ca \cf6 'SlateBlue3'\cf3  -> \cf4 Color\cf3 .new255(105, 89, 205),\
+\'ca \'ca \cf6 'SlateBlue4'\cf3  -> \cf4 Color\cf3 .new255(71, 60, 139),\
+\'ca \'ca \cf6 'SlateGray'\cf3  -> \cf4 Color\cf3 .new255(112, 128, 144),\
+\'ca \'ca \cf6 'SlateGray1'\cf3  -> \cf4 Color\cf3 .new255(198, 226, 255),\
+\'ca \'ca \cf6 'SlateGray2'\cf3  -> \cf4 Color\cf3 .new255(185, 211, 238),\
+\'ca \'ca \cf6 'SlateGray3'\cf3  -> \cf4 Color\cf3 .new255(159, 182, 205),\
+\'ca \'ca \cf6 'SlateGray4'\cf3  -> \cf4 Color\cf3 .new255(108, 123, 139),\
+\'ca \'ca \cf6 'SlateGrey'\cf3  -> \cf4 Color\cf3 .new255(112, 128, 144),\
+\'ca \'ca \cf6 'snow'\cf3  -> \cf4 Color\cf3 .new255(255, 250, 250),\
+\'ca \'ca \cf6 'snow1'\cf3  -> \cf4 Color\cf3 .new255(255, 250, 250),\
+\'ca \'ca \cf6 'snow2'\cf3  -> \cf4 Color\cf3 .new255(238, 233, 233),\
+\'ca \'ca \cf6 'snow3'\cf3  -> \cf4 Color\cf3 .new255(205, 201, 201),\
+\'ca \'ca \cf6 'snow4'\cf3  -> \cf4 Color\cf3 .new255(139, 137, 137),\
+\'ca \'ca \cf6 'spring green'\cf3  -> \cf4 Color\cf3 .new255(0, 255, 127),\
+\'ca \'ca \cf6 'SpringGreen'\cf3  -> \cf4 Color\cf3 .new255(0, 255, 127),\
+\'ca \'ca \cf6 'SpringGreen1'\cf3  -> \cf4 Color\cf3 .new255(0, 255, 127),\
+\'ca \'ca \cf6 'SpringGreen2'\cf3  -> \cf4 Color\cf3 .new255(0, 238, 118),\
+\'ca \'ca \cf6 'SpringGreen3'\cf3  -> \cf4 Color\cf3 .new255(0, 205, 102),\
+\'ca \'ca \cf6 'SpringGreen4'\cf3  -> \cf4 Color\cf3 .new255(0, 139, 69),\
+\'ca \'ca \cf6 'steel blue'\cf3  -> \cf4 Color\cf3 .new255(70, 130, 180),\
+\'ca \'ca \cf6 'SteelBlue'\cf3  -> \cf4 Color\cf3 .new255(70, 130, 180),\
+\'ca \'ca \cf6 'SteelBlue1'\cf3  -> \cf4 Color\cf3 .new255(99, 184, 255),\
+\'ca \'ca \cf6 'SteelBlue2'\cf3  -> \cf4 Color\cf3 .new255(92, 172, 238),\
+\'ca \'ca \cf6 'SteelBlue3'\cf3  -> \cf4 Color\cf3 .new255(79, 148, 205),\
+\'ca \'ca \cf6 'SteelBlue4'\cf3  -> \cf4 Color\cf3 .new255(54, 100, 139),\
+\'ca \'ca \cf6 'tan'\cf3  -> \cf4 Color\cf3 .new255(210, 180, 140),\
+\'ca \'ca \cf6 'tan1'\cf3  -> \cf4 Color\cf3 .new255(255, 165, 79),\
+\'ca \'ca \cf6 'tan2'\cf3  -> \cf4 Color\cf3 .new255(238, 154, 73),\
+\'ca \'ca \cf6 'tan3'\cf3  -> \cf4 Color\cf3 .new255(205, 133, 63),\
+\'ca \'ca \cf6 'tan4'\cf3  -> \cf4 Color\cf3 .new255(139, 90, 43),\
+\'ca \'ca \cf6 'thistle'\cf3  -> \cf4 Color\cf3 .new255(216, 191, 216),\
+\'ca \'ca \cf6 'thistle1'\cf3  -> \cf4 Color\cf3 .new255(255, 225, 255),\
+\'ca \'ca \cf6 'thistle2'\cf3  -> \cf4 Color\cf3 .new255(238, 210, 238),\
+\'ca \'ca \cf6 'thistle3'\cf3  -> \cf4 Color\cf3 .new255(205, 181, 205),\
+\'ca \'ca \cf6 'thistle4'\cf3  -> \cf4 Color\cf3 .new255(139, 123, 139),\
+\'ca \'ca \cf6 'tomato'\cf3  -> \cf4 Color\cf3 .new255(255, 99, 71),\
+\'ca \'ca \cf6 'tomato1'\cf3  -> \cf4 Color\cf3 .new255(255, 99, 71),\
+\'ca \'ca \cf6 'tomato2'\cf3  -> \cf4 Color\cf3 .new255(238, 92, 66),\
+\'ca \'ca \cf6 'tomato3'\cf3  -> \cf4 Color\cf3 .new255(205, 79, 57),\
+\'ca \'ca \cf6 'tomato4'\cf3  -> \cf4 Color\cf3 .new255(139, 54, 38),\
+\'ca \'ca \cf6 'turquoise'\cf3  -> \cf4 Color\cf3 .new255(64, 224, 208),\
+\'ca \'ca \cf6 'turquoise1'\cf3  -> \cf4 Color\cf3 .new255(0, 245, 255),\
+\'ca \'ca \cf6 'turquoise2'\cf3  -> \cf4 Color\cf3 .new255(0, 229, 238),\
+\'ca \'ca \cf6 'turquoise3'\cf3  -> \cf4 Color\cf3 .new255(0, 197, 205),\
+\'ca \'ca \cf6 'turquoise4'\cf3  -> \cf4 Color\cf3 .new255(0, 134, 139),\
+\'ca \'ca \cf6 'violet'\cf3  -> \cf4 Color\cf3 .new255(238, 130, 238),\
+\'ca \'ca \cf6 'violet red'\cf3  -> \cf4 Color\cf3 .new255(208, 32, 144),\
+\'ca \'ca \cf6 'VioletRed'\cf3  -> \cf4 Color\cf3 .new255(208, 32, 144),\
+\'ca \'ca \cf6 'VioletRed1'\cf3  -> \cf4 Color\cf3 .new255(255, 62, 150),\
+\'ca \'ca \cf6 'VioletRed2'\cf3  -> \cf4 Color\cf3 .new255(238, 58, 140),\
+\'ca \'ca \cf6 'VioletRed3'\cf3  -> \cf4 Color\cf3 .new255(205, 50, 120),\
+\'ca \'ca \cf6 'VioletRed4'\cf3  -> \cf4 Color\cf3 .new255(139, 34, 82),\
+\'ca \'ca \cf6 'wheat'\cf3  -> \cf4 Color\cf3 .new255(245, 222, 179),\
+\'ca \'ca \cf6 'wheat1'\cf3  -> \cf4 Color\cf3 .new255(255, 231, 186),\
+\'ca \'ca \cf6 'wheat2'\cf3  -> \cf4 Color\cf3 .new255(238, 216, 174),\
+\'ca \'ca \cf6 'wheat3'\cf3  -> \cf4 Color\cf3 .new255(205, 186, 150),\
+\'ca \'ca \cf6 'wheat4'\cf3  -> \cf4 Color\cf3 .new255(139, 126, 102),\
+\'ca \'ca \cf6 'white'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 255),\
+\'ca \'ca \cf6 'white smoke'\cf3  -> \cf4 Color\cf3 .new255(245, 245, 245),\
+\'ca \'ca \cf6 'WhiteSmoke'\cf3  -> \cf4 Color\cf3 .new255(245, 245, 245),\
+\'ca \'ca \cf6 'yellow'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 0),\
+\'ca \'ca \cf6 'yellow green'\cf3  -> \cf4 Color\cf3 .new255(154, 205, 50),\
+\'ca \'ca \cf6 'yellow1'\cf3  -> \cf4 Color\cf3 .new255(255, 255, 0),\
+\'ca \'ca \cf6 'yellow2'\cf3  -> \cf4 Color\cf3 .new255(238, 238, 0),\
+\'ca \'ca \cf6 'yellow3'\cf3  -> \cf4 Color\cf3 .new255(205, 205, 0),\
+\'ca \'ca \cf6 'yellow4'\cf3  -> \cf4 Color\cf3 .new255(139, 139, 0),\
+\'ca \'ca \cf6 'YellowGreen'\cf3  -> \cf4 Color\cf3 .new255(154, 205, 50)\
 ]\
 )\
 \

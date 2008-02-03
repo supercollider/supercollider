@@ -1,66 +1,67 @@
 {\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
+\red96\green96\blue96;\red0\green115\blue0;}
 \deftab160
 \pard\tqr\tx1180\tx1200\pardeftab160\li1200\fi-1200\ql\qnatural
 
-\f0\fs24 \cf0 \
+\f0\fs24 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab160\ql\qnatural
 
-\f1\fs18 \cf0 (\
-\cf2 var\cf0  linetext, drawletter;\
-\cf2 var\cf0  w, h = 800, v = 60, seed = \cf2 Date\cf0 .seed, run = \cf2 true\cf0 ;\
-\cf2 var\cf0  time, name, sourcestring;\
-\cf2 var\cf0  yellowness, penwidth;\
+\f1\fs18 \cf2 (\
+\cf3 var\cf2  linetext, drawletter;\
+\cf3 var\cf2  w, h = 800, v = 60, seed = \cf3 Date\cf2 .seed, run = \cf3 true\cf2 ;\
+\cf3 var\cf2  time, name, sourcestring;\
+\cf3 var\cf2  yellowness, penwidth, pen;\
 \
-\cf3 //name=[\\s,\\u,\\p,\\e,\\r,\\c,\\o,\\l,\\l,\\i,\\d,\\e,\\r];\cf0 \
+\cf4 //name=[\\s,\\u,\\p,\\e,\\r,\\c,\\o,\\l,\\l,\\i,\\d,\\e,\\r];\cf2 \
 \
-\cf3 //sourcestring= "any lower case text";\cf0 \
+\cf4 //sourcestring= "any lower case text";\cf2 \
 \
-sourcestring= \cf4 "welcome to supercollider"\cf0 ;\
+sourcestring= \cf5 "welcome to supercollider"\cf2 ;\
 \
-name=\cf2 Array\cf0 .fill(sourcestring.size,\{\cf2 arg\cf0  i; sourcestring[i].asSymbol\});\
+name=\cf3 Array\cf2 .fill(sourcestring.size,\{\cf3 arg\cf2  i; sourcestring[i].asSymbol\});\
 \
 time=0;\
 \
 linetext= (\
-\cf5 'a'\cf0 :[[[0,1],[0.5,0]],[[0.5,0],[1,1]],[[0.25,0.5],[0.75,0.5]]],\
-\cf5 'b'\cf0 :[[[0,1],[0,0]],[[0,1],[1,1]],[[0,0],[1,0]],[[0,0.5],[0.75,0.5]],[[0.75,0.5],[1,0.75]],[[0.75,0.5],[1,0.25]],[[1,0.75],[1,1]],[[1,0.25],[1,0]]],\
-\cf5 'c'\cf0 :[[[0,1],[0,0]],[[0,0],[1,0]],[[0,1],[1,1]]],\
-\cf5 'd'\cf0 :[[[0,1],[0,0]],[[0,0],[0.75,0]],[[0,1],[0.75,1]],[[0.75,1],[1,0.75]],[[0.75,0],[1,0.25]],[[1,0.25],[1,0.75]]],\
-\cf5 'e'\cf0 :[[[0,0],[0,1]],[[0,0],[1,0]],[[0,1],[1,1]],[[0,0.5],[1,0.5]]],\
-\cf5 'f'\cf0 :[[[0,0],[0,1]],[[0,0],[1,0]],[[0,0.5],[1,0.5]]],\
-\cf5 'g'\cf0 :[[[0,1],[0,0]],[[0,0],[1,0]],[[0,1],[1,1]],[[1,1],[1,0.5]],[[0.5,0.5],[1,0.5]]],\
-\cf5 'h'\cf0 :[[[0,1],[0,0]],[[0,0.5],[1,0.5]],[[1,1],[1,0]]],\
-\cf5 'i'\cf0 :[[[0,0],[1,0]],[[0.5,0],[0.5,1]],[[0,1],[1,1]]],\
-\cf5 'j'\cf0 :[[[0,0],[1,0]],[[0.5,0],[0.5,1]],[[0,1],[0.5,1]]],\
-\cf5 'k'\cf0 :[[[0,1],[0,0]],[[0,0.5],[1,1]],[[0,0.5],[1,0]]],\
-\cf5 'l'\cf0 :[[[0,1],[0,0]],[[0,1],[1,1]]],\
-\cf5 'm'\cf0 :[[[0,1],[0,0]],[[0,0],[0.5,0.5]],[[0.5,0.5],[1,0]],[[1,0],[1,1]]],\
-\cf5 'n'\cf0 :[[[0,1],[0,0]],[[0,0],[1,1]],[[1,1],[1,0]]],\
-\cf5 'o'\cf0 :[[[0,1],[0,0]],[[0,0],[1,0]],[[0,1],[1,1]],[[1,0],[1,1]]],\
-\cf5 'p'\cf0 :[[[0,0],[0,1]],[[0,0],[1,0]],[[0,0.5],[1,0.5]],[[1,0],[1,0.5]]],\
-\cf5 'q'\cf0 :[[[0,0],[0,0.75]],[[0,0],[0.75,0]],[[0,0.75],[0.75,0.75]],[[0.75,0],[0.75,0.75]],[[0.5,0.5],[1,1]]],\
-\cf5 'r'\cf0 :[[[0,0],[0,1]],[[0,0],[1,0]],[[0,0.5],[1,0.5]],[[1,0],[1,0.5]],[[0,0.5],[1,1]]],\
-\cf5 's'\cf0 :[[[0,0],[0,0.5]],[[0,0],[1,0]],[[0,1],[1,1]],[[0,0.5],[1,0.5]],[[1,0.5],[1,1]]],\
-\cf5 't'\cf0 :[[[0,0],[1,0]],[[0.5,0],[0.5,1]]],\
-\cf5 'u'\cf0 :[[[0,1],[0,0]],[[0,1],[1,1]],[[1,0],[1,1]]],\
-\cf5 'v'\cf0 :[[[0,0],[0.5,1]],[[0.5,1],[1,0]]],\
-\cf5 'w'\cf0 :[[[0,0],[0.25,1]],[[0.25,1],[0.5,0.5]],[[0.5,0.5],[0.75,1]],[[0.75,1],[1,0]]],\
-\cf5 'x'\cf0 :[[[0,0],[1,1]],[[0,1],[1,0]]],\
-\cf5 'y'\cf0 :[[[0,0],[0.5,0.5]],[[0.5,0.5],[1,0]],[[0.5,0.5],[0.5,1]]],\
-\cf5 'z'\cf0 :[[[0,1],[1,0]],[[0,0],[1,0]],[[0,1],[1,1]]],\
-(\cf4 " "\cf0 .asSymbol):[[[0,1],[1,1]],[[0,0.8],[0,1]],[[1,0.8],[1,1]]]\
+\cf6 'a'\cf2 :[[[0,1],[0.5,0]],[[0.5,0],[1,1]],[[0.25,0.5],[0.75,0.5]]],\
+\cf6 'b'\cf2 :[[[0,1],[0,0]],[[0,1],[1,1]],[[0,0],[1,0]],[[0,0.5],[0.75,0.5]],[[0.75,0.5],[1,0.75]],[[0.75,0.5],[1,0.25]],[[1,0.75],[1,1]],[[1,0.25],[1,0]]],\
+\cf6 'c'\cf2 :[[[0,1],[0,0]],[[0,0],[1,0]],[[0,1],[1,1]]],\
+\cf6 'd'\cf2 :[[[0,1],[0,0]],[[0,0],[0.75,0]],[[0,1],[0.75,1]],[[0.75,1],[1,0.75]],[[0.75,0],[1,0.25]],[[1,0.25],[1,0.75]]],\
+\cf6 'e'\cf2 :[[[0,0],[0,1]],[[0,0],[1,0]],[[0,1],[1,1]],[[0,0.5],[1,0.5]]],\
+\cf6 'f'\cf2 :[[[0,0],[0,1]],[[0,0],[1,0]],[[0,0.5],[1,0.5]]],\
+\cf6 'g'\cf2 :[[[0,1],[0,0]],[[0,0],[1,0]],[[0,1],[1,1]],[[1,1],[1,0.5]],[[0.5,0.5],[1,0.5]]],\
+\cf6 'h'\cf2 :[[[0,1],[0,0]],[[0,0.5],[1,0.5]],[[1,1],[1,0]]],\
+\cf6 'i'\cf2 :[[[0,0],[1,0]],[[0.5,0],[0.5,1]],[[0,1],[1,1]]],\
+\cf6 'j'\cf2 :[[[0,0],[1,0]],[[0.5,0],[0.5,1]],[[0,1],[0.5,1]]],\
+\cf6 'k'\cf2 :[[[0,1],[0,0]],[[0,0.5],[1,1]],[[0,0.5],[1,0]]],\
+\cf6 'l'\cf2 :[[[0,1],[0,0]],[[0,1],[1,1]]],\
+\cf6 'm'\cf2 :[[[0,1],[0,0]],[[0,0],[0.5,0.5]],[[0.5,0.5],[1,0]],[[1,0],[1,1]]],\
+\cf6 'n'\cf2 :[[[0,1],[0,0]],[[0,0],[1,1]],[[1,1],[1,0]]],\
+\cf6 'o'\cf2 :[[[0,1],[0,0]],[[0,0],[1,0]],[[0,1],[1,1]],[[1,0],[1,1]]],\
+\cf6 'p'\cf2 :[[[0,0],[0,1]],[[0,0],[1,0]],[[0,0.5],[1,0.5]],[[1,0],[1,0.5]]],\
+\cf6 'q'\cf2 :[[[0,0],[0,0.75]],[[0,0],[0.75,0]],[[0,0.75],[0.75,0.75]],[[0.75,0],[0.75,0.75]],[[0.5,0.5],[1,1]]],\
+\cf6 'r'\cf2 :[[[0,0],[0,1]],[[0,0],[1,0]],[[0,0.5],[1,0.5]],[[1,0],[1,0.5]],[[0,0.5],[1,1]]],\
+\cf6 's'\cf2 :[[[0,0],[0,0.5]],[[0,0],[1,0]],[[0,1],[1,1]],[[0,0.5],[1,0.5]],[[1,0.5],[1,1]]],\
+\cf6 't'\cf2 :[[[0,0],[1,0]],[[0.5,0],[0.5,1]]],\
+\cf6 'u'\cf2 :[[[0,1],[0,0]],[[0,1],[1,1]],[[1,0],[1,1]]],\
+\cf6 'v'\cf2 :[[[0,0],[0.5,1]],[[0.5,1],[1,0]]],\
+\cf6 'w'\cf2 :[[[0,0],[0.25,1]],[[0.25,1],[0.5,0.5]],[[0.5,0.5],[0.75,1]],[[0.75,1],[1,0]]],\
+\cf6 'x'\cf2 :[[[0,0],[1,1]],[[0,1],[1,0]]],\
+\cf6 'y'\cf2 :[[[0,0],[0.5,0.5]],[[0.5,0.5],[1,0]],[[0.5,0.5],[0.5,1]]],\
+\cf6 'z'\cf2 :[[[0,1],[1,0]],[[0,0],[1,0]],[[0,1],[1,1]]],\
+(\cf5 " "\cf2 .asSymbol):[[[0,1],[1,1]],[[0,0.8],[0,1]],[[1,0.8],[1,1]]]\
 );\
 \
-w = \cf2 SCWindow\cf0 (\cf4 "welcome"\cf0 , \cf2 Rect\cf0 (40, 500, h, v));\
-w.view.background = \cf2 Color\cf0 .blue(0.5);\
-w.onClose = \{ run = \cf2 false\cf0  \};\
+w = \cf3 GUI\cf2 .window.new(\cf5 "welcome"\cf2 , \cf3 Rect\cf2 (40, 500, h, v));\
+w.view.background = \cf3 Color\cf2 .blue(0.5);\
+w.onClose = \{ run = \cf3 false\cf2  \};\
 w.front;\
 \
-drawletter=\{\cf2 arg\cf0  which, startx, starty, xscale=100, yscale,prop=1.0;\
-\cf2 var\cf0  data;\
+pen = \cf3 GUI\cf2 .pen;\
+drawletter=\{\cf3 arg\cf2  which, startx, starty, xscale=100, yscale,prop=1.0;\
+\cf3 var\cf2  data;\
 \
 yscale= yscale ? xscale;\
 \
@@ -68,12 +69,12 @@ data= linetext[which];\
 \
 prop=(round((data.size)*prop).asInteger).max(1);\
 \
-prop.do(\{\cf2 arg\cf0  i;\
-\cf2 var\cf0  val=data[i];\
+prop.do(\{\cf3 arg\cf2  i;\
+\cf3 var\cf2  val=data[i];\
 \
-\cf2 Pen\cf0 .beginPath;\
-\cf2 Pen\cf0 .line(\cf2 Point\cf0 (startx+(xscale*val[0][0]),starty+(yscale*val[0][1])),\cf2 Point\cf0 (startx+(xscale*val[1][0]),starty+(yscale*val[1][1])));\
-\cf2 Pen\cf0 .stroke;\
+pen.beginPath;\
+pen.line(\cf3 Point\cf2 (startx+(xscale*val[0][0]),starty+(yscale*val[0][1])),\cf3 Point\cf2 (startx+(xscale*val[1][0]),starty+(yscale*val[1][1])));\
+pen.stroke;\
 \
 \});\
 \
@@ -86,16 +87,16 @@ penwidth=rrand(2,3);\
 \
 w.drawHook = \{\
 \
-	\cf2 Pen\cf0 .use \{\cf2 var\cf0  xoscil, xsizoscil,yoscil, todraw, usedtime;\
+	pen.use \{\cf3 var\cf2  xoscil, xsizoscil,yoscil, todraw, usedtime;\
 \
-		\cf2 Pen\cf0 .width= penwidth;\
-		\cf2 Color\cf0 .yellow(yellowness).set;\
+		pen.width= penwidth;\
+		pen.color=\cf3 Color\cf2 .yellow(yellowness);\
 		\
 		usedtime=time.min(1.0);\
 	\
 		todraw=(round((name.size)*usedtime).asInteger).max(1);\
 		\
-		todraw.do(\{\cf2 arg\cf0  j;\
+		todraw.do(\{\cf3 arg\cf2  j;\
 		\
 		xoscil= sin(2*pi*time+(j*pi*0.13))*140/(1+(10*time));\
 		\
@@ -115,8 +116,8 @@ w.drawHook = \{\
 \{ while \{ time<2.0 \} \{ \
 \
 w.refresh; 		\
-time=(time+0.025); \cf3 //%2.0;\cf0 \
-0.05.wait; \} \}.fork(\cf2 AppClock\cf0 )\
+time=(time+0.025); \cf4 //%2.0;\cf2 \
+0.05.wait; \} \}.fork(\cf3 AppClock\cf2 )\
 \
 )\
 }

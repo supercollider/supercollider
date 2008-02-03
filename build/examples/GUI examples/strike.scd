@@ -1,14 +1,17 @@
 // strike
 // Julian Rohrhuber, 2006
 
+GUI.cocoa;	// use Mac OS X native GUI
+GUI.swing;	// use Java GUI
+
 // neon
 (
-	var xx, yy, x, y, c, width, z=1, pp, zz=0, mm=10, alph=1.0;
+	var xx, yy, x, y, c, width, z=1, pp, zz=0, mm=10, alph=1.0, pen;
 	width = 1;
 	w = GUI.window.new(Char.bullet, Rect(100, 100, 600, 600)).front;
 	w.view.background_(Color.gray(0.6));
 
-	v = GUI.userView.new(w, w.view.bounds).mouseTrackFunc_({|v,ax,ay| 
+	v = GUI.userView.new(w, w.view.bounds).mouseMoveAction_({|v,ax,ay| 
 		x = ax; y = ay;
 		
 		4.do {
@@ -26,16 +29,17 @@
 			[xx, yy].choose.value([10, -10, 5, -5, 2, -2].choose * 2);
 			
 	};
+	pen = GUI.pen;
 	w.drawHook = {
 		// set the Color
-		try { GUI.pen.setSmoothing(false) };
-		GUI.pen.width = width;
+		try { pen.setSmoothing(false) };
+		pen.width = width;
 		z.do { |i|
-			Color.rand.alpha_(i.linexp(0, z-1, 1.0, alph)).set;
-			GUI.pen.moveTo(c[0]);
+			pen.strokeColor = Color.rand.alpha_(i.linexp(0, z-1, 1.0, alph));
+			pen.moveTo(c[0]);
 			c.size.do { |i| GUI.pen.lineTo(c.wrapAt(i)) };
-			GUI.pen.stroke;
-			GUI.pen.translate([-2, -2, 2, 2] @@ zz, [-2, 2, -2, 2]*2 @@ zz);
+			pen.stroke;
+			pen.translate([-2, -2, 2, 2] @@ zz, [-2, 2, -2, 2]*2 @@ zz);
 			
 		};
 		z = z + 1 % mm;
@@ -53,7 +57,7 @@
 // tetris
 (
 		var xx, yy, x, y, c, d, width, viewheight;
-		var phunz, steps, nKeep;
+		var phunz, steps, nKeep, pen;
 		
 		q = q ?? ();
 		
@@ -68,12 +72,12 @@
 		steps = #[1, 1, 2, 2, 2, 2, 4];
 		
 		v = GUI.userView.new(w, w.view.bounds);
-		v.mouseTrackFunc_({|v,ax,ay| 
+		v.mouseMoveAction_({|v,ax,ay| 
 			x = ax; y = ay;
 			phunz.(8);
 			q.updateData(d);
 		 });
-		 v.mouseEndTrackFunc_({|v,ax,ay| 
+		 v.mouseUpAction_({|v,ax,ay| 
 			q.sendData(d);
 		 });
 		
@@ -91,30 +95,30 @@
 		yy = { |d=1| c = c.add(x @ (y = y + d)) };
 		
 		phunz.(20);
+		pen = GUI.pen;
 		w.drawHook = {
 			
-			try {ÊGUI.pen.setSmoothing(false) };
+			try {Êpen.setSmoothing(false) };
 			
-			GUI.pen.width = width; 
+			pen.width = width; 
 			
 			d.do { |x, i| 
-				GUI.pen.moveTo(x[0]);
+				pen.moveTo(x[0]);
 				x.do { |point|
-					blend(
+					pen.strokeColor = blend(
 						Color.green, 
 						Color.yellow, 
 						point.y.linlin(0, viewheight, 1, -1)
-					).alpha_(point.y.linexp(0, viewheight, 0.5, 0.1))
-					.set;
-					GUI.pen.lineTo(point);
+					).alpha_(point.y.linexp(0, viewheight, 0.5, 0.1));
+					pen.lineTo(point);
 				};
-				GUI.pen.stroke;
+				pen.stroke;
 			};
 			d = d.deepCollect(2, { |x| x.y = x.y + 0.5 % viewheight });
 	
 		};
 		w.refresh;
-		fork {Êloop {Ê0.01.wait; defer {Êw.refresh; } } };
+		{Êloop {Ê0.015.wait; w.refresh }}.fork( AppClock );
 )
 
 
