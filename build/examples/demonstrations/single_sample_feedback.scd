@@ -4,7 +4,11 @@
 // single sample feedback
 // compare LinCongN and Duty
 
-b.free; b = Buffer.alloc(s, 1, 1);
+(
+Server.internal.waitForBoot {
+	b.free; b = Buffer.alloc(Server.internal, 1, 1);
+}
+);
 
 (
 {
