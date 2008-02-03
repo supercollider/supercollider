@@ -1,7 +1,12 @@
 OSXPlatform : UnixPlatform
 {
 	name { ^\osx }
-	startupFiles { ^#["~/scwork/startup.rtf"] }
+
+	startupFiles {
+		var filename = "startup.rtf";
+		^[this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
+	}
+	
 	startup {
 		Document.implementationClass.startup;
 		// make server window
