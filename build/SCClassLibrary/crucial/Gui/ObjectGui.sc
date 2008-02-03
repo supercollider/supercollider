@@ -1,7 +1,7 @@
 
 ObjectGui : SCViewHolder { // aka AbstractController
 
-	var <>model,<dragSource;
+	var <model,<dragSource;
 
 	guiBody { arg layout;
 		// implement this in your subclass
@@ -11,7 +11,6 @@ ObjectGui : SCViewHolder { // aka AbstractController
 		var new;
 		new = super.new;
 		new.model_(model);
-		model.addDependant(new);
 		^new
 	}
 	guify { arg layout,bounds,title;
@@ -56,7 +55,17 @@ ObjectGui : SCViewHolder { // aka AbstractController
 			.beginDragAction_({ model })
 			.object_(n);	
 	}
-	
+	model_ { |newModel|
+		if(model.notNil,{
+			model.removeDependant(this);
+			model = newModel;
+			model.addDependant(this);
+			this.update;
+		},{
+			model = newModel;
+			model.addDependant(this);
+		})
+	}
 	saveConsole { arg layout;
 		^SaveConsole(model,"",layout).save.saveAs.print;
 	}
