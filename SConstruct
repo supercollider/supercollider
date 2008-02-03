@@ -104,6 +104,9 @@ def CheckPKG(context, name):
     context.Result(ret)
     return (ret, res)
 
+def get_new_pkg_env():
+    return Environment(ENV = make_os_env('PATH', 'PKG_CONFIG_PATH'))
+
 def merge_lib_info(env, *others):
     for other in others:
         env.AppendUnique(CCFLAGS = other.get('CCFLAGS', []))
@@ -348,23 +351,30 @@ def make_conf(env):
     return Configure(env, custom_tests = { 'CheckPKGConfig' : CheckPKGConfig,
 					   'CheckPKG' : CheckPKG })
 
-conf = make_conf(env)
+def isDefaultBuild():
+    return not env.GetOption('clean') and not 'debian' in COMMAND_LINE_TARGETS
 
-if not conf.CheckPKGConfig('0'):
-    print 'pkg-config not found.'
-    Exit(1)
+conf = make_conf(env)
 
 # libraries
 libraries = { }
 features = { }
 
-# sndfile
-success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
-if not success: Exit(1)
+if isDefaultBuild():
+    if not conf.CheckPKGConfig('0'):
+        print 'pkg-config not found.'
+        Exit(1)
+    
+    # sndfile
+    success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
+    if not success: Exit(1)
 
-# FFTW 
-success, libraries['fftwf'] = conf.CheckPKG('fftw3f')
-if not success: Exit(1)
+    # FFTW 
+    success, libraries['fftwf'] = conf.CheckPKG('fftw3f')
+    if not success: Exit(1)
+else:
+    libraries['sndfile'] = get_new_pkg_env() 
+    libraries['fftwf'] = get_new_pkg_env() 
 
 # audio api
 if env['AUDIOAPI'] == 'jack':
@@ -377,7 +387,10 @@ if env['AUDIOAPI'] == 'jack':
             )
     else:
         success, libraries['audioapi'] = conf.CheckPKG('jack')
-        if not success: Exit(1)
+        if isDefaultBuild():
+            if not success: Exit(1)
+        else:
+            libraries['audioapi'] = get_new_pkg_env()
         libraries['audioapi'].Append(
             CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_JACK'),
                           'SC_USE_JACK_CLIENT_NEW'],
