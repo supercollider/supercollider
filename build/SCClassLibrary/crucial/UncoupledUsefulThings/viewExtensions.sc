@@ -13,7 +13,7 @@
 
 	flow { arg func,bounds;
 		var f,comp;
-		f = FlowView(this,bounds /*?? { this.bounds }*/);
+		f = FlowView(this,bounds); // flow view intellegently calc defaults bounds
 		func.value(f);
 		f.resizeToFit;
 		^f
@@ -35,10 +35,43 @@
 		comp = GUI.compositeView.new(this,bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
-	}		
+	}
+	scroll { arg func,bounds,autohidesScrollers=true,autoScrolls=true,hasHorizontalScroller=true,hasVerticalScroller=true;
+		var comp;
+		comp = GUI.scrollView.new(this,bounds ?? { this.bounds });
+		comp.autohidesScrollers = autohidesScrollers;
+		comp.autoScrolls = autoScrolls;
+		comp.hasHorizontalScroller = hasHorizontalScroller;
+		comp.hasVerticalScroller = hasVerticalScroller;
+		func.value(comp);
+		^comp
+	}
 }
 
-+ SCScrollView {
++ SCLayoutView {
+	// because a scroll view inside an h or v layout will crash the lang
+	// layer in a composite view to protect it until we fix that bug.
+	scroll { arg func,bounds,autohidesScrollers=true,autoScrolls=true,hasHorizontalScroller=true,hasVerticalScroller=true;
+		var scroll;
+		this.comp({ |comp|
+			scroll = GUI.scrollView.new(comp,bounds ?? { this.bounds });
+			scroll.autohidesScrollers = autohidesScrollers;
+			scroll.autoScrolls = autoScrolls;
+			scroll.hasHorizontalScroller = hasHorizontalScroller;
+			scroll.hasVerticalScroller = hasVerticalScroller;
+			func.value(scroll);
+		},bounds);
+		^scroll
+	}
+}
+
+/* but its already an SCContainerView
+	the difference in the bounds.moveTo is a problem somewhere else in the system,
+	nothing to do with SCScrollView per se.
+	the FlowView already detects and fixes any bounds problems.
+*/
+/*
++ SCScrollView {
 	flow { |func, bounds|
 		var f,comp;
 		f = FlowView(this,(bounds ?? { this.bounds.moveTo(0, 0) }));
@@ -46,10 +79,13 @@
 		f.resizeToFit;
 		^f
 	}
+	scroll { ^this }
 }
+*/
 
 + FlowView {
 
+	// you might wish to put a smaller flow inside the flow view you are already in.
 	flow { arg func,bounds;
 		var f;
 		f = FlowView(this,bounds ?? { this.decorator.indentedRemaining });
@@ -79,6 +115,17 @@
 		func.value(comp);
 		^comp
 	}
+	scroll { arg func,bounds,autohidesScrollers=true,autoScrolls=true,hasHorizontalScroller=true,hasVerticalScroller=true;
+		var comp;
+		comp = GUI.scrollView.new(this,bounds ?? { this.bounds });
+		comp.autohidesScrollers = autohidesScrollers;
+		comp.autoScrolls = autoScrolls;
+		comp.hasHorizontalScroller = hasHorizontalScroller;
+		comp.hasVerticalScroller = hasVerticalScroller;
+		func.value(comp);
+		^comp
+	}
+		
 	indentedRemaining { ^this.decorator.indentedRemaining }
 }
 
@@ -95,6 +142,9 @@
 	}
 	comp { arg func,bounds;
 		^this.view.comp(func,bounds)
+	}
+	scroll { arg ... args;
+		^this.view.performList(\scroll,args)
 	}
 }
 
