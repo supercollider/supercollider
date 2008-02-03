@@ -11,7 +11,7 @@
 * 2008-01-20 - add volume controls to the Server and Server guis - jp
 * 2008-01-xx Pattern library implementation changes, Pfx, Pbus, Pgroup etc. - rk, jr, jh
 * 2008-01-26 TDuty outputs trigger first, not level. for backwards compatibility TDuty_old - jr
-
+* 2008-02-03 moved the search location for "startup.rtf" on Mac - now searches in system, then user, "Application Support/SuperCollider" folders - ds
 
 // BUGFIXES:
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
