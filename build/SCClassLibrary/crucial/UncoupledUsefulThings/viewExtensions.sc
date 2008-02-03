@@ -54,7 +54,7 @@
 	scroll { arg func,bounds,autohidesScrollers=true,autoScrolls=true,hasHorizontalScroller=true,hasVerticalScroller=true;
 		var scroll;
 		this.comp({ |comp|
-			scroll = GUI.scrollView.new(comp,bounds ?? { this.bounds });
+			scroll = GUI.scrollView.new(comp,comp.bounds.setOriginAbsolute(comp));
 			scroll.autohidesScrollers = autohidesScrollers;
 			scroll.autoScrolls = autoScrolls;
 			scroll.hasHorizontalScroller = hasHorizontalScroller;
@@ -179,6 +179,7 @@
 	}
 	
 		// "this" is a Rect with coordinates relative to the view
+		// fixBoundsForView
 	setOriginAbsolute { |view|
 		var	b;
 		if((view.tryPerform(\relativeOrigin) ? false)) {
@@ -189,3 +190,5 @@
 		}
 	}
 }
+
+
