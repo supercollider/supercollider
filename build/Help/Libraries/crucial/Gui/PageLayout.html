@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Helvetica; min-height: 13.0px}
@@ -14,12 +14,13 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-span.s1 {color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #98281a}
+span.s1 {color: #0023b2}
 span.s2 {color: #606060}
 span.s3 {color: #000000}
-span.s4 {color: #316c17}
-span.s5 {color: #a71e12}
+span.s4 {color: #0000bf}
+span.s5 {color: #3e691d}
+span.s6 {color: #98281a}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -38,7 +39,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span>f=<span class="s1">PageLayout</span>.new(<span class="s2">"flow"</span>);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>504.do({ <span class="s1">arg</span> i;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SCButton</span>( f.window, f.layRight(30,30) )</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">GUI</span><span class="s3">.button.new</span>( f.window, f.layRight(30,30) )</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.states_([[i.asString,<span class="s1">Color</span>.black,<span class="s1">Color</span>.white]])</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
@@ -56,7 +57,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">var</span> r;</p>
 <p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r= f.layRight(30,30); </span>// obtain the rectangle first</p>
 <p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// in case we cascade to the next window</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SCButton</span>( f.window, r )</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">GUI</span><span class="s3">.button.new</span>( f.window, r )</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.states_([[i.asString,Color.black,Color.white]])</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p6"><span class="Apple-tab-span">	</span>f.front;</p>
@@ -85,19 +86,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">resizes all windows to fit their contents, brings them all to front</p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
-<p class="p6">(<span class="Apple-converted-space"> </span></p>
+<p class="p6">(</p>
 <p class="p6"><span class="s1"><span class="Apple-tab-span">	</span>var</span> f,sliders;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>f= <span class="s1">PageLayout</span>.new("a vaguely practical example");</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>sliders=<span class="s1">Array</span>.fill(rrand(16,32),{ <span class="s1">arg</span> i;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SC<span class="s1">Slider</span>( f.window, f.layRight(10, 150));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span><span class="s3">.slider.new</span>( f.window, f.layRight(10, 150));</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p7"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span>f.within( 50,150,{ <span class="s1">arg</span> subf;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SC<span class="s1">Slider</span>( subf.window, subf.layDown( 30,30));</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SC<span class="s1">Slider</span>( subf.window, subf.layDown( 30,30));</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SC<span class="s1">Slider</span>( subf.window, subf.layDown( 30,30));</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SC<span class="s1">Slider</span>( subf.window, subf.layDown( 30,30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>f.resizeToFit;</p>
@@ -145,11 +146,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p4">A <span class="s1">PageLayout</span> closes all of its windows when any of its windows is closed.</p>
-<p class="p4">When a <span class="s1">PageLayout</span> closes, it sends the <span class="s4">\didClose</span> notification (see NotificationCenter).</p>
+<p class="p4">When a <span class="s1">PageLayout</span> closes, it sends the <span class="s5">\didClose</span> notification (see NotificationCenter).</p>
 <p class="p5"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span>You can register to receive that notification:</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">NotificationCenter</span>.registerOneShot( f,<span class="s4">\didClose</span>, yourObject,{</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">NotificationCenter</span>.registerOneShot( f,<span class="s5">\didClose</span>, yourObject,{</p>
 <p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// stop the model from playing, clean house,<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// unregister a keydown etc.</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
@@ -188,7 +189,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>in Object::guify this happens:</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>layout.removeOnClose(guiObject)</p>
+<p class="p4"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>layout.removeOnClose(guiObject)</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
