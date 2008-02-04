@@ -1,0 +1,3 @@
+Usage:
+
+Put any optional installs (SwingOSC, sc3-plugins, etc) into the ./optional directory. Run ./package_osx to build a disk image and run ./package_source to build a source tarball.
