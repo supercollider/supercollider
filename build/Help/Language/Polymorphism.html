@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,16 +14,18 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco; min-height: 15.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 7.0px Monaco; min-height: 10.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #a71e12}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #316c17}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0019b7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #98281a}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #3e691d}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0023b2}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #606060}
-span.s1 {color: #0019b7}
+span.s1 {color: #0023b2}
 span.s2 {color: #000000}
-span.s3 {color: #316c17}
-span.s4 {color: #a71e12}
+span.s3 {color: #3e691d}
+span.s4 {color: #98281a}
 span.s5 {color: #606060}
+span.s6 {color: #bf0000}
+span.s7 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -117,13 +119,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><br></p>
 <p class="p6">{ <span class="s1">PinkNoise</span>.ar(0.1) }.play;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// Function</span></p>
 <p class="p11"><br></p>
-<p class="p6">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// AppClock</span></p>
-<p class="p6"><span class="s1">var</span> w, r;</p>
-<p class="p6">w = <span class="s1">SCWindow</span>(<span class="s5">"trem"</span>, <span class="s1">Rect</span>(512, 256, 360, 130));</p>
+<p class="p6">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">// AppClock</span></p>
+<p class="p6"><span class="s7">var</span> w, r;</p>
+<p class="p6">w = <span class="s7">GUI</span>.window.new(<span class="s5">"trem"</span>, <span class="s7">Rect</span>(512, 256, 360, 130));</p>
 <p class="p6">w.front;</p>
-<p class="p6">r = <span class="s1">Routine</span>({ arg appClockTime;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>["AppClock has been playing for secs:",appClockTime].postln;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>60.do({ <span class="s1">arg</span> i;</p>
+<p class="p6">r = <span class="s7">Routine</span>({ <span class="s7">arg</span> appClockTime;</p>
+<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>"AppClock has been playing for secs:"<span class="s2">,appClockTime].postln;</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>60.do({ <span class="s7">arg</span> i;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.05.yield;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds = w.bounds.moveBy(10.rand2, 10.rand2);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.alpha = cos(i*0.1pi)*0.5+0.5;</p>
@@ -131,7 +133,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.yield;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.close;</p>
 <p class="p6">});</p>
-<p class="p6"><span class="s1">AppClock</span>.play(r);</p>
+<p class="p6"><span class="s7">AppClock</span>.play(r);</p>
 <p class="p6">)</p>
 <p class="p11"><br></p>
 <p class="p6">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// SynthDef</span></p>

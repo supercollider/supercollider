@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -13,14 +13,20 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0023b2}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #98281a}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #406c1d}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {color: #000000}
-span.s2 {color: #0019b7}
-span.s3 {color: #326f17}
+span.s2 {color: #0023b2}
+span.s3 {color: #406c1d}
 span.s4 {color: #606060}
+span.s5 {color: #0000bf}
+span.s6 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -95,7 +101,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>joy.x_(x).y_(y).changed;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>});</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>joy = <span class="s2">SC2DSlider</span>(layout, 100 @ 100)</p>
+<p class="p9"><span class="Apple-tab-span">	</span>joy = <span class="s5">GUI</span>.slider2D.new<span class="s1">(layout, 100 @ 100)</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s2">arg</span> sl;</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// at this time not in environment</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>metaPatch.use({ </span>// use the metaPatch's environment</p>
@@ -120,7 +126,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3">You can place them on any window</p>
 <p class="p5">(</p>
-<p class="p5">w = <span class="s2">SCWindow</span>.new(<span class="s4">"other"</span>,<span class="s2">Rect</span>(20,20,700,200));</p>
+<p class="p5"><span class="s1">w = </span><span class="s5">GUI</span><span class="s1">.window</span>.new(<span class="s4">"other"</span>,<span class="s2">Rect</span>(20,20,700,200));</p>
 <p class="p5">w.front;</p>
 <p class="p4"><br></p>
 <p class="p5">g = m.gui(w,<span class="s2">Rect</span>(30,30,500,200));</p>
@@ -155,7 +161,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>~quantity = quantity.poll;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>~a = <span class="s2">Array</span>.fill(~quantity,{ <span class="s2">arg</span> i;</p>
-<p class="p9"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Patch</span><span class="s1">.new([</span>\klankperc<span class="s1">,</span>\k2a<span class="s1">],</span></p>
+<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Patch</span><span class="s1">.new([</span>\klankperc<span class="s1">,</span>\k2a<span class="s1">],</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
 <p class="p7"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>BeatClockPlayer<span class="s1">(16),</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i * (3.midiratio),</p>
@@ -238,102 +244,102 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p8">// beat juggler</p>
-<p class="p4"><br></p>
-<p class="p7">Interface<span class="s1">({ </span>arg<span class="s1"> sample;</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>~beatStart1 = <span class="s2">NumberEditor</span>(0.0,[0.0,8.0,<span class="s3">\lin</span>,0.25]);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>~beatStart2 = <span class="s2">NumberEditor</span>(0.0,[0.0,8.0,<span class="s3">\lin</span>,0.25]);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>~durations = [ 2.0,2.0];</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span>~patch = <span class="s2">InstrGateSpawner</span>({ <span class="s2">arg</span> sample,dur, pchRatio,beatStart,amp=0.3,envadsr,tempo;</p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> gate;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gate = <span class="s2">Trig1</span>.kr(1.0,dur / tempo);</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pchRatio = pchRatio * sample.pchRatioKr;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beatStart = beatStart * sample.beatsizeIr;</p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(sample.numChannels,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufnumIr,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pchRatio,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beatStart,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0)</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s2">EnvGen</span>.kr(envadsr, gate,amp,doneAction: 2 )</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},[</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample,</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// dur uses a Pfunc to ask the delta till the next event</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pfunc</span>({ <span class="s2">arg</span> igs;<span class="Apple-converted-space">  </span>(igs.delta * 0.9) }),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// get an .ir input into the synth function</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~pchRatio = <span class="s2">IrNumberEditor</span>(1.0,[-2,2,<span class="s3">\lin</span>,0.25]),</p>
-<p class="p4"><br></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// patterns naturally create an .ir input</p>
-<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pswitch1<span class="s1">([</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~beatStart1,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~beatStart2</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</span><span class="s2">Pseq</span><span class="s1">([0,1],</span><span class="s2">inf</span><span class="s1">))<span class="Apple-tab-span">	</span></span>// juggle back and forth</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// stream of beat durations</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pseq</span>(~durations,<span class="s2">inf</span>));</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>~patch<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5">},[</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// a blank sample</p>
-<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>Sample<span class="s1">.new(</span>nil<span class="s1">)</span></p>
-<p class="p5">])</p>
-<p class="p8"><span class="s1">.gui_({ </span><span class="s2">arg</span><span class="s1"> layout; </span>// we are given a FlowView</p>
-<p class="p4"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> env,ddsp,bdsp;</p>
-<p class="p4"><br></p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">CXLabel</span><span class="s1">(layout,</span>"Click the sample path (nil) to browse for a sample. You can choose new samples even while playing."<span class="s1">);</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>layout.startRow;</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>/* the environment from the build function above is available here */</p>
-<p class="p5"><span class="Apple-tab-span">	</span>~sample.gui(layout,500@100);</p>
-<p class="p4"><br></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>/* but when view actions fire you will be in a different environment</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>so save it here in a variable for use later */</p>
-<p class="p5"><span class="Apple-tab-span">	</span>env = currentEnvironment;</p>
-<p class="p4"><br></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// .vert returns an SCVLayoutView so we can stack each 2d over its caption<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>layout.vert({ <span class="s2">arg</span> layout;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SC2DSlider</span>(layout,100@100)</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s2">arg</span> sl;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env.use({</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// set a 0..1 value, map it to the spec ranges of the NumberEditors</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~beatStart1.setUnmappedValue(sl.x);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~beatStart2.setUnmappedValue(sl.y);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bdsp.object_( [~beatStart1.value,~beatStart2.value]).changed;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SCStaticText</span>(layout,100@13).object_(<span class="s4">"Beat starts:"</span>);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bdsp = <span class="s2">SCStaticText</span>(layout,100@13).object_([~beatStart1.value,~beatStart2.value].asString);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>},100@120);</p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>layout.vert({ <span class="s2">arg</span> layout;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SC2DSlider</span>(layout,100@100)</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s2">arg</span> sl;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env.use({</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> stride,part;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stride = 2 ** [3,4,5,6].at((sl.x * 3).asInteger) * 0.125;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>part = (stride * (1.0 - sl.y)).round(0.25).clip(0.25,stride - 0.25);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~durations.put(0,part);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~durations.put(1,stride - part);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ddsp.object_(~durations.sum.asString + <span class="s4">"="</span> + ~durations).changed;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SCStaticText</span>(layout,100@13).object_(<span class="s4">"beats"</span>);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ddsp = <span class="s2">SCStaticText</span>(layout,100@13).object_(~durations.sum.asString + <span class="s4">"="</span> + ~durations);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>},100@120);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">CXLabel</span>(layout,<span class="s4">"pchRatio:"</span>);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>~pchRatio.gui(layout);</p>
-<p class="p5">})</p>
-<p class="p5">.gui</p>
-<p class="p4"><br></p>
+<p class="p11">// beat juggler</p>
+<p class="p12"><br></p>
+<p class="p13">Interface<span class="s1">({ </span>arg<span class="s1"> sample;</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>~beatStart1 = <span class="s5">NumberEditor</span>(0.0,[0.0,8.0,<span class="s6">\lin</span>,0.25]);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>~beatStart2 = <span class="s5">NumberEditor</span>(0.0,[0.0,8.0,<span class="s6">\lin</span>,0.25]);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>~durations = [ 2.0,2.0];</p>
+<p class="p12"><br></p>
+<p class="p9"><span class="Apple-tab-span">	</span>~patch = <span class="s5">InstrGateSpawner</span>({ <span class="s5">arg</span> sample,dur, pchRatio,beatStart,amp=0.3,envadsr,tempo;</p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> gate;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gate = <span class="s5">Trig1</span>.kr(1.0,dur / tempo);</p>
+<p class="p12"><br></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pchRatio = pchRatio * sample.pchRatioKr;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beatStart = beatStart * sample.beatsizeIr;</p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">PlayBuf</span>.ar(sample.numChannels,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufnumIr,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pchRatio,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beatStart,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0)</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s5">EnvGen</span>.kr(envadsr, gate,amp,doneAction: 2 )</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},[</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample,</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// dur uses a Pfunc to ask the delta till the next event</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pfunc</span>({ <span class="s5">arg</span> igs;<span class="Apple-converted-space">  </span>(igs.delta * 0.9) }),</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// get an .ir input into the synth function</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~pchRatio = <span class="s5">IrNumberEditor</span>(1.0,[-2,2,<span class="s6">\lin</span>,0.25]),</p>
+<p class="p12"><br></p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// patterns naturally create an .ir input</p>
+<p class="p13"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pswitch1<span class="s1">([</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~beatStart1,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~beatStart2</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</span><span class="s5">Pseq</span><span class="s1">([0,1],</span><span class="s5">inf</span><span class="s1">))<span class="Apple-tab-span">	</span></span>// juggle back and forth</p>
+<p class="p12"><br></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// stream of beat durations</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>(~durations,<span class="s5">inf</span>));</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>~patch<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9">},[</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>// a blank sample</p>
+<p class="p13"><span class="s1"><span class="Apple-tab-span">	</span></span>Sample<span class="s1">.new(</span>nil<span class="s1">)</span></p>
+<p class="p9">])</p>
+<p class="p11"><span class="s1">.gui_({ </span><span class="s5">arg</span><span class="s1"> layout; </span>// we are given a FlowView</p>
+<p class="p12"><br></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s5">var</span> env,ddsp,bdsp;</p>
+<p class="p12"><br></p>
+<p class="p14"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s5">CXLabel</span><span class="s1">(layout,</span>"Click the sample path (nil) to browse for a sample. You can choose new samples even while playing."<span class="s1">);</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>layout.startRow;</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>/* the environment from the build function above is available here */</p>
+<p class="p9"><span class="Apple-tab-span">	</span>~sample.gui(layout,500@100);</p>
+<p class="p12"><br></p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>/* but when view actions fire you will be in a different environment</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>so save it here in a variable for use later */</p>
+<p class="p9"><span class="Apple-tab-span">	</span>env = currentEnvironment;</p>
+<p class="p12"><br></p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>// .vert returns an SCVLayoutView so we can stack each 2d over its caption<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>layout.vert({ <span class="s5">arg</span> layout;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">GUI</span>.slider2D.new(layout,100@100)</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s5">arg</span> sl;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env.use({</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// set a 0..1 value, map it to the spec ranges of the NumberEditors</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~beatStart1.setUnmappedValue(sl.x);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~beatStart2.setUnmappedValue(sl.y);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bdsp.object_( [~beatStart1.value,~beatStart2.value]).changed;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">GUI</span>.staticText.new(layout,100@13).object_(<span class="s4">"Beat starts:"</span>);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bdsp = <span class="s5">GUI</span>.staticText.new(layout,100@13).object_([~beatStart1.value,~beatStart2.value].asString);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>},100@120);</p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>layout.vert({ <span class="s5">arg</span> layout;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">GUI</span>.slider2D.new(layout,100@100)</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s5">arg</span> sl;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env.use({</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> stride,part;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stride = 2 ** [3,4,5,6].at((sl.x * 3).asInteger) * 0.125;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>part = (stride * (1.0 - sl.y)).round(0.25).clip(0.25,stride - 0.25);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~durations.put(0,part);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>~durations.put(1,stride - part);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ddsp.object_(~durations.sum.asString + <span class="s4">"="</span> + ~durations).changed;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">GUI</span>.staticText.new(layout,100@13).object_(<span class="s4">"beats"</span>);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ddsp = <span class="s5">GUI</span>.staticText.new(layout,100@13).object_(~durations.sum.asString + <span class="s4">"="</span> + ~durations);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>},100@120);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s5">CXLabel</span>(layout,<span class="s4">"pchRatio:"</span>);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>~pchRatio.gui(layout);</p>
+<p class="p9">})</p>
+<p class="p9">.gui</p>
+<p class="p12"><br></p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
