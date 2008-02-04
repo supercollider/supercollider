@@ -129,7 +129,6 @@ struct Dbufrd : public Unit
 struct Dbufwr : public Unit
 {
 	float m_fbufnum;
-	float m_pos;
 	SndBuf *m_buf;
 };
 
@@ -1833,22 +1832,36 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	return in - hi * floor(in/hi); 
 }
 
-#define CHECK_BUF \
+#define D_CHECK_BUF \
 	if (!bufData) { \
                 unit->mDone = true; \
-		ClearUnitOutputs(unit, inNumSamples); \
+		ClearUnitOutputs(unit, 1); \
 		return; \
 	}
+	
+#define D_GET_BUF \
+	float fbufnum  = DEMANDINPUT_A(0, inNumSamples);; \
+	if (fbufnum != unit->m_fbufnum) { \
+		uint32 bufnum = (int)fbufnum; \
+		World *world = unit->mWorld; \
+		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
+		unit->m_fbufnum = fbufnum; \
+		unit->m_buf = world->mSndBufs + bufnum; \
+	} \
+	SndBuf *buf = unit->m_buf; \
+	float *bufData __attribute__((__unused__)) = buf->data; \
+	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
+	uint32 bufFrames = buf->frames; \
 
 void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 {
-	int32 loop     = (int32)IN0(2);	
+	int32 loop     = (int32)DEMANDINPUT_A(2, inNumSamples);	
 	
-	GET_BUF
-	CHECK_BUF
-
+	D_GET_BUF
+	D_CHECK_BUF
+	
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
-
+	
 	double phase;
 	if (inNumSamples)
 		{
@@ -1886,10 +1899,10 @@ void Dbufrd_Ctor(Dbufrd *unit)
 void Dbufwr_next(Dbufwr *unit, int inNumSamples)
 {
  
-	int32 loop     = (int32)IN0(3);	
+	int32 loop     = (int32)DEMANDINPUT_A(3, inNumSamples);	
 	
-	GET_BUF
-	CHECK_BUF
+	D_GET_BUF
+	D_CHECK_BUF
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 
@@ -1930,8 +1943,7 @@ void Dbufwr_Ctor(Dbufwr *unit)
   unit->m_fbufnum = -1e9f;
 
   Dbufwr_next(unit, 0);
-  //ClearUnitOutputs(unit, 1);
-	OUT0(0) = 0.f; // output what is written
+  OUT0(0) = 0.f;
 }
 
 
