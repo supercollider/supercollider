@@ -222,7 +222,7 @@ SaveConsole : AbstractConsole {
 	getPathThen {  arg then ... args;
 		//var defPath;
 		//defPath=(defaultPath.value ? object).asString;
-		CocoaDialog.savePanel({arg argpath;
+		GUI.dialog.savePanel({arg argpath;
 			this.path = argpath;
 			this.performList(then,[path] ++ args);
 		});
@@ -262,7 +262,7 @@ SoundFileFormats { // an interface
 	gui { arg layout;
 		var items;
 		items = #['float32', 'aiff16', 'aiff24','wav16'];
-		GUI.sCPopUpMenu.new(layout,Rect(0,0,80,16))
+		GUI.popUpMenu.new(layout,Rect(0,0,80,16))
 			.items_(items)
 			.action_({ arg pop;
 				format = items.at(pop.value);
