@@ -21,10 +21,38 @@ BusDriver : SynthlessPlayer {
 	}
 }
 
+/*
+StreamKr : Kr { // trigger is a kr rate trigger
+	
+	var <>trigger;
+	
+	*new { arg subject=0.0,trigger=0.0,lag=0.0;
+		^super.new(subject,lag).trigger_(trigger)
+	}
+	
+	kr { 
+		var k;
+		k=Sequencer.kr(subject.asStream,trigger.value);
+		^if(lag != 0.0,{
+			Lag.kr(k,lag.value)
+		},{
+			k
+		})
+	}
+	
+	storeParamsOn { arg stream;
+		stream.storeArgs([this.enpath(subject),trigger,lag]);
+	}
+	children { ^[subject,trigger,lag] }
+	*guiClass { ^StreamKrGui }
+	
+}
+*/
+
 StreamKrDur : BusDriver {
 
 	var <>values,<>durations;
-	var valst,durst;
+	var valst,durst,lastValue;
 
 	*new { arg values=0.0,durations=0.25,lag=0.0;
 		// make refs of arrays into Pseq
@@ -43,7 +71,7 @@ StreamKrDur : BusDriver {
 		routine = Routine({
 			var dur,val,server;
 			server = this.server;
-			latency = server.latency;
+			latency = server.latency ? 0.05;
 			//first val already sent
 			dur = durst.next;
 			// small slippage if tempo changes during first event.
@@ -55,6 +83,7 @@ StreamKrDur : BusDriver {
 			},{
 				msg.put(2,val);
 				server.listSendBundle(latency,bnd);
+				lastValue = val;
 				dur.yield
 			});
 		});
@@ -84,6 +113,7 @@ StreamKrDur : BusDriver {
 		//sched.play(routine);
 		super.didSpawn;
 	}
+	poll { ^lastValue }
 	storeArgs { ^[values,durations,lag] }
 	guiClass { ^StreamKrDurGui }
 }
@@ -95,5 +125,6 @@ Stream2Trig : StreamKrDur { // outputs just a single pulse trig
 	instrArgFromControl { arg control;
 		^InTrig.kr( control,1)
 	}
+	poll { ^nil }
 }
 

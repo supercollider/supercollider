@@ -11,6 +11,7 @@
 
 + Float { // relative seconds
 	schedBundle {  arg bundle,server,timeOfRequest;
+		// this also need doPrepare
 		bundle.send(server,this,timeOfRequest);
 	}
 }
@@ -26,7 +27,7 @@
 		
 		bundle.doPrepare(server,{
 			var now,nowRound,latencyBeats,deltaTillSend;
-			latencyBeats = Tempo.secs2beats(server.latency);
+			latencyBeats = Tempo.secs2beats(server.latency ? 0.05);
 			now = TempoClock.default.elapsedBeats;
 			nowRound = now.roundUp(4 / this);
 			

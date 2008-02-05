@@ -2,21 +2,21 @@
 BeatSched {
 
 	classvar <global;
-	
+
 	var clock,tempo,<tempoClock;
 	var epoch=0.0,beatEpoch=0.0;
 	var nextTask; // for exclusive locks
 
 	var pq,nextAbsTime,nextAbsFunc,nextAbsList;
-	
+
 	*new { arg clock,tempo,tempoClock;
 		^super.newCopyArgs(clock ? SystemClock,
 			tempo ?? {Tempo.default},
 			tempoClock ?? {TempoClock.default}).init
-	}		
-	*initClass { 
+	}
+	*initClass {
 		Class.initClassTree(Tempo);
-		global = this.new; 
+		global = this.new;
 	}
 	init {
 		pq = PriorityQueue.new;
@@ -24,45 +24,45 @@ BeatSched {
 		beatEpoch = 0.0;//tempoClock.elapsedBeats;
 		epoch = 0.0;//Main.elapsedTime;
 	}
-	
-	*xblock { ^global.xblock }	
+
+	*xblock { ^global.xblock }
 	*time { ^global.time }
 	*time_ { arg seconds; ^global.time_(seconds) }
 	*beat { ^global.beat }
 	*beat_ { arg beat; ^global.beat_(beat) }
 	*clear { ^global.clear }
 	*deltaTillNext { arg quantize;	^global.deltaTillNext(quantize) }
-	*tdeltaTillNext { arg quantize; ^global.tdeltaTillNext(quantize) }	
+	*tdeltaTillNext { arg quantize; ^global.tdeltaTillNext(quantize) }
 	xblock { nextTask = nil; } // block any previous xsched
 	time { ^Main.elapsedTime - epoch }
 	time_ { arg seconds; epoch = Main.elapsedTime - seconds; }
 
 	// if the tempo changed at any time in the past, this is wrong !
 	beat {
-		//[tempo.secs2beats(Main.elapsedTime - epoch) 
+		//[tempo.secs2beats(Main.elapsedTime - epoch)
 		//	,tempoClock.elapsedBeats - beatEpoch ].debug("via tempo, via clock");
 
 		//^tempo.secs2beats(Main.elapsedTime - epoch)
 		^tempoClock.elapsedBeats - beatEpoch
-	} 
+	}
 	beat_ { arg beat;
 		// setting the beat will reset the fabric of beat-time itself
-		// so that any previously playing musical elements are not 
+		// so that any previously playing musical elements are not
 		// expected to line up with anything you do in the future.
 		// its a hard reset.
 		epoch = Main.elapsedTime - tempo.beats2secs(beat);
 		beatEpoch = tempoClock.elapsedBeats - beat;
 		//  it means that the although we are using the tempoClock for relative beat scheduling
 		// the determination of the epoch (beat 0) is set NOW.
-		
-		
+
+
 		// tempoClock.beats2secs( tempoClock.elapsedBeats );
 		// tempo.beats2secs(beat);
 	}
 	clear {
 		pq.clear;
 		nextTask = nextAbsFunc = nextAbsTime = nil;
-	}	
+	}
 	deltaTillNext { arg quantize; // delta in beats till next beat
 		var beats,next;
 		beats = this.beat;
@@ -74,15 +74,15 @@ BeatSched {
 		beats = this.beat;
 		next = beats.trunc(quantize);
 		^if(next == beats,0 ,{ tempo.beats2secs(next + quantize - beats) }) // now or next
-	}	
-	
+	}
+
 	/** global scheduler **/
 	*tsched { arg seconds,function;
 		^global.tsched(seconds,function);
 	}
 	*xtsched { arg seconds,function;
 		^global.xtsched(seconds,function);
-	}		
+	}
 	*sched { arg beats,function;
 		^global.sched(beats,function)
 	}
@@ -97,7 +97,7 @@ BeatSched {
 	}
 	*tschedAbs { arg time,function;
 		^global.tschedAbs(time,function)
-	}		
+	}
 	*xtschedAbs { arg time,function;
 		^global.xtschedAbs(time,function)
 	}
@@ -131,7 +131,7 @@ BeatSched {
 			}
 		);
 		//this.xtsched(tempo.beats2secs(beats),function)
-	}	
+	}
 	qsched { arg quantize,function;
 		this.sched(this.deltaTillNext(quantize),function)
 	}
@@ -150,7 +150,7 @@ BeatSched {
 			},{
 				this.tschedAbsNext; // sched meself
 			});
-		})			
+		})
 	}
 	xtschedAbs { arg time,function;
 		if(time >= this.time,{ // in the future ?
@@ -170,7 +170,7 @@ BeatSched {
 			//this.tsched(time,function)
 		});
 	}*/
-	
+
 	// private
 	tschedAbsNext  {
 		var function,secs;
@@ -191,7 +191,7 @@ BeatSched {
 
 OSCSched : BeatSched {
 	classvar <global;
-	
+
 	*initClass { global = this.new; }
 
 	/** global scheduler **/
@@ -200,7 +200,7 @@ OSCSched : BeatSched {
 	}
 	*xtsched { arg seconds,server,bundle,onArrival;
 		^global.xtsched(seconds,server,bundle,onArrival);
-	}		
+	}
 	*sched { arg beats,server,bundle,onArrival;
 		^global.sched(beats,server,bundle,onArrival)
 	}
@@ -215,16 +215,18 @@ OSCSched : BeatSched {
 	}
 	*tschedAbs { arg time,server,bundle,onArrival;
 		^global.tschedAbs(time,server,bundle,onArrival)
-	}		
+	}
 	// xtschedAbs
 	*schedAbs { arg beat,server,bundle,onArrival;
 		^global.tschedAbs(beat,server,bundle,onArrival)
 	}
-	
+
 	/**  instance methods **/
 	tsched { arg seconds,server,bundle,onArrival;
-		clock.sched(seconds - server.latency,{
-			server.listSendBundle(server.latency,bundle);
+		var latency;
+		latency = server.latency ? 0.05;
+		clock.sched(seconds - latency,{
+			server.listSendBundle(latency,bundle);
 			nil
 		});
 		if(onArrival.notNil,{
@@ -232,10 +234,11 @@ OSCSched : BeatSched {
 		});
 	}
 	xtsched { arg seconds,server,bundle,onArrival;
-		var thTask,notCancelled;
-		clock.sched(seconds - server.latency,thTask = nextTask = {
+		var thTask,notCancelled,latency;
+		latency = server.latency ? 0.05;
+		clock.sched(seconds - latency,thTask = nextTask = {
 			if(notCancelled = (thTask === nextTask),{
-				server.listSendBundle(server.latency,bundle)
+				server.listSendBundle(latency,bundle)
 			});
 			nil
 		});
@@ -247,12 +250,15 @@ OSCSched : BeatSched {
 		var thTask;
 		clock.sched(seconds,thTask = nextTask = { if(thTask === nextTask,function); nil })
 	}
-		
+
 	sched { arg beats,server,bundle,onArrival,onSend;
-		tempoClock.dsched(beats - server.latency,{ // lazily using the seconds as beats
+		var latency;
+		latency = server.latency ? 0.05;
+		tempoClock.dsched(beats - latency,{ // this is correct : treat latency as though it were beats ...
 			onSend.value;
+			// and convert those beats to seconds here
 			// inaccurate final delivery if tempo is changing quickly
-			server.listSendBundle(tempo.beats2secs(server.latency),bundle);
+			server.listSendBundle(tempo.beats2secs(latency).debug("latency in seconds"),bundle);
 			nil
 		});
 		if(onArrival.notNil,{
@@ -260,10 +266,11 @@ OSCSched : BeatSched {
 		});
 	}
 	xsched { arg beats,server,bundle,onArrival;
-		var thTask,notCancelled;
-		tempoClock.dsched(beats - server.latency,thTask = nextTask = {
+		var thTask,notCancelled,latency;
+		latency = server.latency ? 0.05;
+		tempoClock.dsched(beats - latency,thTask = nextTask = {
 			if(notCancelled = (thTask === nextTask),{
-				server.listSendBundle(tempo.beats2secs(server.latency),bundle)
+				server.listSendBundle(tempo.beats2secs(latency),bundle)
 			});
 			nil
 		});
@@ -271,7 +278,7 @@ OSCSched : BeatSched {
 			tempoClock.dsched(beats,{ if(notCancelled,onArrival); nil })
 		});
 	}
-	
+
 	qsched { arg quantize,server,bundle,onArrival;
 		this.sched(this.deltaTillNext(quantize),server,bundle,onArrival)
 
@@ -279,7 +286,7 @@ OSCSched : BeatSched {
 	xqsched { arg quantize,server,bundle,onArrival;
 		this.xsched(this.deltaTillNext(quantize),server,bundle,onArrival )
 	}
-	
+
 	tschedAbs { arg time,server,bundle,onArrival;
 		if(time >= this.time,{ // in the future ?
 			pq.put(time,[server,bundle,onArrival]);
@@ -292,7 +299,7 @@ OSCSched : BeatSched {
 			},{
 				this.tschedAbsNext; // sched meself
 			});
-		})			
+		})
 	}
 	// xtschedAbs
 	schedAbs { arg beat,server,bundle,onArrival;
@@ -308,36 +315,38 @@ OSCSched : BeatSched {
 			},{
 				this.tschedAbsNext; // sched meself
 			});
-		})	
+		})
 		*/
 		this.tschedAbs(tempo.beats2secs(beat),server,bundle,onArrival)
 	}
 
 	xschedBundle { arg beatDelta,server,bundle;
+		// what if it has preparation messages ?
 		this.xsched(beatDelta,server,bundle.messages,{bundle.doFunctions});
 	}
 
 
 	// private
 	tschedAbsNext  {
-		var list,secs,server;
+		var list,secs,server,latency;
 		var thTask,notCancelled;
 		if((nextAbsTime = pq.topPriority).notNil,{
 			list = nextAbsList = pq.pop;
 			secs = nextAbsTime - this.time;
 			server = list.at(0);
-			clock.sched(secs - server.latency,thTask = nextAbsFunc = {
+			latency = server.latency ? 0.05;
+			clock.sched(secs - latency,thTask = nextAbsFunc = {
 				if(notCancelled = (thTask === nextAbsFunc),{
-					server.listSendBundle(server.latency,list.at(1))
+					server.listSendBundle(latency,list.at(1))
 				});
 				nil
 			});
-			clock.sched(secs,{ 
+			clock.sched(secs,{
 				if(notCancelled,{
 					list.at(2).value;
 					this.tschedAbsNext;
-				}); 
-				nil 
+				});
+				nil
 			})
 		});
 	}
