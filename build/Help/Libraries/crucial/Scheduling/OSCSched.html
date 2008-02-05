@@ -12,16 +12,16 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0424af; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #84331b}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-span.s1 {color: #001fb3}
+span.s1 {color: #0424af}
 span.s2 {color: #000000}
-span.s3 {color: #436c1d}
+span.s3 {color: #4e6a22}
 span.s4 {color: #606060}
-span.s5 {color: #942b17}
+span.s5 {color: #84331b}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -117,7 +117,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">In most cases, you will wish to create a private instance of OSCSched when using this technique.</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p3">warning: older examples, not tested recently</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>load all of these for use in all following examples</b></p>
 <p class="p5">s = <span class="s1">Server</span>.local;</p>
@@ -130,8 +129,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0, zout);</p>
 <p class="p5">}).send(s);</p>
 <p class="p8"><br></p>
-<p class="p5">i = [ <span class="s3">'/s_new'</span>, <span class="s4">"bubbles"</span>, 1002, 1, 0 ];</p>
-<p class="p5">o = [ <span class="s3">'/n_free'</span>, 1002 ];</p>
+<p class="p5">n = s.nodeAllocator.alloc;</p>
+<p class="p5">i = [[ <span class="s3">'/s_new'</span>, <span class="s4">"bubbles"</span>, n, 1, 0 ]];</p>
+<p class="p5">o = [[ <span class="s3">'/n_free'</span>, n ]];</p>
 <p class="p8"><br></p>
 <p class="p5">c = <span class="s1">OSCSched</span>.new;</p>
 <p class="p5">)</p>

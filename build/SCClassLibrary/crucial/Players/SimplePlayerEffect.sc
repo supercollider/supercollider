@@ -89,7 +89,7 @@ EnvelopedPlayer : AbstractSinglePlayerEffect {
 		status = \isReleaseing;
 		if(releaseTime.isNil,{ releaseTime = env.releaseTime; });
 		if(synth.notNil,{
-			bundle.add(synth.releaseMsg(releaseTime + server.latency));
+			bundle.add(synth.releaseMsg(releaseTime + (server.latency?0.05)));
 		});
 		if(releaseTime > 0.01,{
 			bundle.addFunction({

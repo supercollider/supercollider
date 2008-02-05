@@ -69,7 +69,9 @@ TempoBus   {
 	}
 	update { arg changed,changer;
 		if(changed === tempo,{
-			bus.server.listSendBundle(bus.server.latency, [bus.setMsg(tempo.tempo)]);
+			//bus.server.latency ? 0.05
+			// why delay ?
+			bus.server.listSendBundle(0.05, [bus.setMsg(tempo.tempo)]);
 			//bus.value = tempo.tempo;	
 		})
 	}
