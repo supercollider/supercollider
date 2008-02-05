@@ -180,7 +180,7 @@ Buffer {
 			if(collection.isKindOf(RawArray).not, 
 				{data = collection.collectAs({|item| item}, FloatArray)}, {data = collection;}
 			);
-			if ( collection.size > (numFrames - startFrame), 
+			if ( collection.size > ((numFrames - startFrame) * numChannels), 
 				{ "Collection larger than available number of Frames".warn });
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
@@ -210,7 +210,7 @@ Buffer {
 		collsize = collection.size;
 		server = server ? Server.default;
 		bufnum = server.bufferAllocator.alloc(1);
-		buffer = super.newCopyArgs(server, bufnum, collsize, numChannels)
+		buffer = super.newCopyArgs(server, bufnum, (collsize/numChannels).ceil, numChannels)
 			.addToServerArray.sampleRate_(server.sampleRate);
 		
 		// first send with alloc
@@ -230,10 +230,10 @@ Buffer {
 		collstream.collection = collection;
 		collsize = collection.size;
 		
-		if ( collsize > (numFrames - startFrame), 
+		if ( collsize > ((numFrames - startFrame) * numChannels), 
 				{ "Collection larger than available number of Frames".warn });
 		
-		this.streamCollection(collstream, collsize, startFrame, wait, action);
+		this.streamCollection(collstream, collsize, startFrame * numChannels, wait, action);
 	}
 	
 	// called internally
