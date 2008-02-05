@@ -9,16 +9,15 @@
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7c331e}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #000000}
-span.s3 {color: #1126aa}
-span.s4 {color: #606060}
-span.s5 {color: #7c331e}
-span.s6 {color: #0522ef}
+span.s2 {text-decoration: underline ; color: #0000ff}
+span.s3 {text-decoration: underline ; color: #0021e7}
+span.s4 {color: #0c2ea5}
+span.s5 {color: #606060}
+span.s6 {color: #733421}
+span.s7 {color: #0031e8}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -34,24 +33,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span>0 (the default) is for <b><i>Welch</i></b> windowing, typically recommended for phase-vocoder work;<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>1 is for <b><i>Hann</i></b> windowing, typically recommended for analysis work.</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s2"><b>See also:</b> <a href="http://FFT%20Overview.html">FFT Overview</a>, <a href="FFT.html">FFT</a>, <a href="PV_Copy.html">PV_Copy</a></span></p>
-<p class="p4"><br></p>
-<p class="p5">s = <span class="s3">Server</span>.local;<span class="Apple-converted-space"> </span></p>
-<p class="p4"><br></p>
-<p class="p5">b = <span class="s3">Buffer.alloc</span>(s,2048,1);</p>
-<p class="p4"><br></p>
-<p class="p4"><br></p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-noopFFT"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s3">WhiteNoise</span>.ar(0.01);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(bufnum, in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain.inspect; <span class="s5">// its an FFT</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">IFFT</span>(chain) // inverse FFT</p>
-<p class="p5"><span class="Apple-tab-span">	</span>);</p>
-<p class="p5">}).play(s,[\out,0,\bufnum,b]);</p>
-<p class="p4"><br></p>
-<p class="p1">See <a href="FFT.html"><span class="s6">FFT</span></a> for more examples.</p>
+<p class="p1"><b>See also:</b> <a href="FFT Overview.html"><span class="s2">FFT Overview</span></a>, <a href="FFT.html"><span class="s3">FFT</span></a>, <a href="PV_Copy.html"><span class="s3">PV_Copy</span></a></p>
+<p class="p3"><br></p>
+<p class="p4">s = <span class="s4">Server</span>.local;<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p4">b = <span class="s4">Buffer.alloc</span>(s,2048,1);</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s4">SynthDef</span>(<span class="s5">"help-noopFFT"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s4">WhiteNoise</span>.ar(0.01);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(bufnum, in);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>chain.inspect; <span class="s6">// its an FFT</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">IFFT</span>(chain) // inverse FFT</p>
+<p class="p4"><span class="Apple-tab-span">	</span>);</p>
+<p class="p4">}).play(s,[\out,0,\bufnum,b]);</p>
+<p class="p3"><br></p>
+<p class="p1">See <a href="FFT.html"><span class="s7">FFT</span></a> for more examples.</p>
 <p class="p2"><br></p>
 </body>
 </html>
