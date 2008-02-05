@@ -30,7 +30,7 @@ struct ScopeOut : public Unit
 	SndBuf *m_buf;
 	SndBufUpdates *m_bufupdates;
 	float m_fbufnum;
-	uint32 m_framepos;
+	uint32 m_framepos, m_framecount;
 };
 
 struct PlayBuf : public Unit
@@ -4950,17 +4950,12 @@ void SimpleLoopBuf_Ctor(SimpleLoopBuf *unit)
 void ScopeOut_next(ScopeOut *unit, int inNumSamples)
 {
 	GET_SCOPEBUF
-	//Print("reads %d  writes %d\n", bufupdates->reads, bufupdates->writes);
-	if (bufupdates->reads != bufupdates->writes) return;
 
 	if (!bufData) {
 		unit->m_framepos = 0;
 		return;
 	}
-	
-	//Print("bufData %08X\n", bufData); 
-	//Print("unit->mNumInputs %d  bufChannels %d\n", unit->mNumInputs, bufChannels);
-	
+
 	SETUP_IN(1)
 	
 	uint32 framepos = unit->m_framepos;
@@ -4968,11 +4963,32 @@ void ScopeOut_next(ScopeOut *unit, int inNumSamples)
 		unit->m_framepos = 0;
 	}
 	
+	if (bufupdates->reads != bufupdates->writes) {
+		unit->m_framepos += inNumSamples;
+		return;
+	}
+
 	bufData += framepos * bufChannels;
 
-	int remain = sc_min((uint32)inNumSamples, bufFrames - framepos);
+	int remain = (bufFrames - framepos), wrap = 0;
+
+	if(inNumSamples <= remain) {
+		remain = inNumSamples;
+		wrap = 0;
+	}
+	else
+		wrap = inNumSamples - remain;
+
 	if (bufChannels > 2) {
 		for (int j=0; j<remain; ++j) {
+			for (uint32 i=0; i<bufChannels; ++i) {
+				*bufData++ = *++(in[i]);
+			}
+		}
+
+		bufData = buf->data;
+
+		for (int j=0; j<wrap; ++j) {
 			for (uint32 i=0; i<bufChannels; ++i) {
 				*bufData++ = *++(in[i]);
 			}
@@ -4984,20 +5000,32 @@ void ScopeOut_next(ScopeOut *unit, int inNumSamples)
 			*bufData++ = *++in0;
 			*bufData++ = *++in1;
 		}
+
+		bufData = buf->data;
+
+		for (int j=0; j<wrap; ++j) {
+			*bufData++ = *++in0;
+			*bufData++ = *++in1;
+		}
 	} else {
 		float *in0 = in[0];
 		for (int j=0; j<remain; ++j) {
 			*bufData++ = *++in0;
 		}
+
+		bufData = buf->data;
+
+		for (int j=0; j<wrap; ++j) {
+			*bufData++ = *++in0;
+		}
 	}
 	
-	unit->m_framepos += remain;
-	//Print("scop %d %d %d    %d %d\n", 
-	//	bufFrames, unit->m_framepos, remain, bufupdates->reads, bufupdates->writes);
+	unit->m_framepos += inNumSamples;
+	unit->m_framecount += inNumSamples;
 		
-	if (unit->m_framepos >= bufFrames) {
+	if (unit->m_framecount >= bufFrames) {
 		bufupdates->writes++;
-		unit->m_framepos = 0;
+		unit->m_framecount = 0;
 	}
 }
 
@@ -5007,6 +5035,7 @@ void ScopeOut_Ctor(ScopeOut *unit)
 {	
 	unit->m_fbufnum = -1e9;
 	unit->m_framepos = 0;
+	unit->m_framecount = 0;
 	SETCALC(ScopeOut_next);
 }
 
