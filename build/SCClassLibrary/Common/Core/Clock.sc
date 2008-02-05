@@ -30,6 +30,15 @@ SystemClock : Clock {
 	*secs2beats { arg secs; ^secs }
 	*beats { ^thisThread.seconds }
 	*seconds { ^thisThread.seconds }
+	
+	// tempo clock compatibility
+	*beats2bars { ^0 }
+	*bars2beats { ^0 }
+	*timeToNextBeat { ^0 }
+	*nextTimeOnGrid { arg quant = 1, phase = 0;
+		^this.beats + phase
+	}
+	
 }
 
 
@@ -246,6 +255,15 @@ AppClock : Clock {
 	*beats2secs { arg beats; ^beats }
 	*secs2beats { arg secs; ^secs }
 	beats { ^thisThread.seconds }
+	
+	// tempo clock compatibility
+	*beats { ^thisThread.seconds }
+	*beats2bars { ^0 }
+	*bars2beats { ^0 }
+	*timeToNextBeat { ^0 }
+	*nextTimeOnGrid { arg quant = 1, phase = 0;
+		^this.beats + phase
+	}
 }
 
 
