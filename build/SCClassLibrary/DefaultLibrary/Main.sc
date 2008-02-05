@@ -86,11 +86,19 @@ Main : Process {
 	*version {^[scVersionMajor, ".", scVersionMinor, scVersionPostfix].join}
 	
 	*versionAtLeast { |maj, min|
-	Ê^((maj>=scVersionMajor) and:{ min.isNil or: { min>=scVersionMinor } })
+		^if((maj==scVersionMajor) and:{min.notNil}){
+			scVersionMinor >= min
+		}{
+			scVersionMajor >= maj
+		};
 	}
 	
 	*versionAtMost { |maj, min|
-	Ê^((maj<=scVersionMajor) and:{ min.isNil or: { min<=scVersionMinor } })
+		^if((maj==scVersionMajor) and:{min.notNil}){
+			scVersionMinor <= min
+		}{
+			scVersionMajor <= maj
+		};
 	}
 	
 	// PRIVATE
