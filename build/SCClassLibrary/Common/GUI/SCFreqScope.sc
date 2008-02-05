@@ -37,7 +37,7 @@ SCFreqScope : SCScope {
 			mul = 0.00285;
 			numSamples = (BufSamples.kr(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
 			signal = In.ar(in);
-			chain = FFT(fftbufnum, signal);
+			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
 			chain = PV_MagSmear(chain, 1);
 			// -1023 to 1023, 0 to 2046, 2 to 2048 (skip first 2 elements DC and Nyquist)
 			phasor = LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, numSamples, numSamples + 2);
@@ -51,7 +51,7 @@ SCFreqScope : SCScope {
 			mul = 0.00285;
 			halfSamples = BufSamples.kr(fftbufnum) * 0.5;
 			signal = In.ar(in);
-			chain = FFT(fftbufnum, signal);
+			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
 			chain = PV_MagSmear(chain, 1);
 			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
 			phasor = phasor.round(2); // the evens are magnitude
