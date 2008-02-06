@@ -17,6 +17,9 @@ Simply run "setup.exe" and PsyCollider will install on your System (default is P
 After that you will have a PsyCollider.exe you can double cklick to run the program.
 
 
+NOTE: Your system must provide both audio input and audio output. Otherwise the synthesis server will not start 
+(see also sc-users mailinglist discussion)
+
 +-------------+
 | compilation |
 +-------------+
