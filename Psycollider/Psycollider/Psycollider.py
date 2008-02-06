@@ -648,7 +648,7 @@ class PsycolliderCodeWin(PsycolliderWindow):
         self.config.WriteInt('TabSize', newTabSize)
 
     def GetSelectedText(self):
-        return self.codeSubWin.GetSelectedText()
+        return self.codeSubWin.GetSelectedTextUTF8()
 
     def GetCurLineAsString(self):
         return self.codeSubWin.GetCurLine()
@@ -669,7 +669,7 @@ class PsycolliderCodeWin(PsycolliderWindow):
         else:
             try:
                 file = open(self.filePath, "w")
-                content = self.codeSubWin.GetText()
+                content = self.codeSubWin.GetTextUTF8()
                 file.write(content)
                 self.SetTitle(self.filePath) 
                 self.isModified = False
@@ -684,13 +684,13 @@ class PsycolliderCodeWin(PsycolliderWindow):
             self.filePath = fileDlg.GetPath()
             try:
                 file = open(self.filePath ,"w")
-                content = self.codeSubWin.GetText()
+                content = self.codeSubWin.GetTextUTF8()
                 file.write(content)
                 file.close()
             except:
                 # Todo: better error handling? Just print error message for now
                 wx.MessageBox("Error: Could not save file " + self.filePath)
-                return None                
+                return None               
             
             self.SetTitle(self.filePath) 
             self.isModified = False
@@ -698,11 +698,11 @@ class PsycolliderCodeWin(PsycolliderWindow):
     
     def GetSelectedTextOrLine(self):
         """Returns selected text if any. If not, returns the current line"""
-        selection = str(self.codeSubWin.GetSelectedText())
+        selection = str(self.codeSubWin.GetSelectedTextUTF8())
         
         if selection == "":
             # get current line, return if not at an open '(' bracket
-            currentLine = self.codeSubWin.GetLine(self.codeSubWin.GetCurrentLine())
+            currentLine = self.codeSubWin.GetLineUTF8(self.codeSubWin.GetCurrentLine())
             selection = str(currentLine)
             
             # see if the cursor is at a matched bracket
@@ -712,7 +712,7 @@ class PsycolliderCodeWin(PsycolliderWindow):
                     # make sure the open bracket is the first character in the line
                     if currentLine.strip().find('(') == 0:
                         # get all text up to and including the closing bracket
-                        selection = str(self.codeSubWin.GetTextRange(x, y+1))
+                        selection = str(self.codeSubWin.GetTextRangeUTF8(x, y+1))
         
         return selection
 
@@ -1014,7 +1014,7 @@ class Psycollider(wx.App):
             
         if textContent[0:5] == '{\\rtf':
             win = self.NewCodeWindow()
-            win.codeSubWin.AddText('Sorry, still no RTF support, wxRichTextControl does not yet support reading RTF files...')
+            win.codeSubWin.AddTextUTF8('Sorry, still no RTF support, wxRichTextControl does not yet support reading RTF files...')
             win.isModified = False
             return win
             
@@ -1026,7 +1026,7 @@ class Psycollider(wx.App):
         else:
             # everything else is plain text code window
             win = self.NewCodeWindow()
-            win.codeSubWin.AddText(textContent)
+            win.codeSubWin.AddTextUTF8(textContent)
             win.filePath = path 
             win.SetTitle(path)
             win.isModified = 0
@@ -1148,6 +1148,12 @@ class Psycollider(wx.App):
 # ---------------------------------------------------------------------
 # WriteInLogWindow
 def WriteInLogWindow(text):
+    try:
+        # try to encode text as utf8
+        text = text.encode('utf-8')
+    except:
+        pass
+        
     if wx.GetApp().theMainFrame == None:
         sys.stdout.write(text)
     else:
@@ -1155,7 +1161,6 @@ def WriteInLogWindow(text):
         
 # ---------------------------------------------------------------------
 def OpenTextFile(path, rangeStart, rangeSize):
-    #sys.stdout.write("Calling OpenTextFile in python");
     if wx.GetApp().theMainFrame == None:
         wx.MessageBox("Cannot open %s since the main window is not created yet","Error",wx.OK | wx.ICON_ERROR)
     else:
