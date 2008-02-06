@@ -22,4 +22,7 @@ WindowsPlatform : Platform
 		this.loadStartupFiles;
 
 	}
+	
+	defaultGUIScheme { ^\swing }
+	defaultHIDScheme { ^nil }
 }
