@@ -79,7 +79,8 @@ Volume {
 						// we have permanent node IDs so we should use them
 					nodeID = server.nodeAllocator.allocPerm(1);
 					ampSynth = Synth.basicNew(sdname, server, nodeID);
-					server.sendBundle(nil, ampSynth.newMsg(1, [\amp, volume.dbamp, \lag, lag],
+					server.sendBundle(nil, ampSynth.newMsg(1, 
+						[\volume_amp, volume.dbamp, \lag, lag].debug("volume parms"),
 						addAction: \addAfter));
 					mute.if({this.mute});
 				})
