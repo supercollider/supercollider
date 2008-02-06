@@ -1003,7 +1003,9 @@ void SCContainerView::remove(SCView *inChild)
 
 void SCContainerView::drawIfNecessary(SCRect inDamage)
 {
-    if (SCRectsDoIntersect(inDamage, mBounds) && mVisible) {
+	SCRect drawBounds;
+	drawBounds = getDrawBounds();
+    if (SCRectsDoIntersect(inDamage, drawBounds) && mVisible) {
             draw(inDamage);
             SCView *child = mChildren;
 			SCView *children[mNumChildren];
@@ -1787,13 +1789,18 @@ void SCScrollView::drawIfNecessary(SCRect inDamage)
 
 void SCScrollView::drawSubViewIfNecessary(SCRect inDamage)
 {
-    if (SCRectsDoIntersect(inDamage, mBounds) && mVisible) {
+	SCRect maxContentBounds;
+	// its not my mBounds nor my drawBounds that we want to test against
+	// but rather my contents' total bounds
+	maxContentBounds = checkMinimumSize();
+	// there might be a short cut to this
+
+    if (SCRectsDoIntersect(inDamage, maxContentBounds) && mVisible) {
 		draw(inDamage);
 		SCView *child = mChildren;
 		SCView *children[mNumChildren];
 		int k = mNumChildren;
 		while (child) {
-//              child->drawIfNecessary(inDamage);
 			children[--k] = child;
 			child = child->next();
 		}
