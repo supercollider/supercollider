@@ -164,7 +164,10 @@ Quark
 			});
 			deps.do({|dep|
 				quark = dep.asQuark(parent);
-				deps = deps ++ quark.dependencies(recursive: true, knownList: ([QuarkDependency(name, version)] ++ knownList));
+				if(quark.notNil) {
+					deps = deps ++ quark.dependencies(recursive: true, 
+						knownList: ([QuarkDependency(name, version)] ++ knownList));
+				};
 			});
 		});
 		^deps
