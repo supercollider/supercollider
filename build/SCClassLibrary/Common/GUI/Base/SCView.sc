@@ -426,7 +426,6 @@ SCScrollTopView : SCTopView {
 	
 	visibleOrigin_ { arg point;  
 		this.setProperty( \clipViewOrigin, point );
-		this.doAction;
 	}
 	
 	visibleOrigin { ^this.getProperty( \clipViewOrigin, Point.new );}
