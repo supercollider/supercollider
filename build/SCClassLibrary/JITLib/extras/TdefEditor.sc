@@ -51,6 +51,7 @@ TaskProxyEditor {
 
 		win = w ?? { sys.window.new("task px edit", Rect(0, 0, 190, 30)) };
 		zone = sys.compositeView.new(win, Rect(0, 0, 190, height)); 
+		zone.resize_(5);
 		zone.background_(skin.foreground);
 		
 		flow = FlowLayout(zone.bounds, 0@0, skin.gap);
@@ -64,10 +65,12 @@ TaskProxyEditor {
 			])
 		//	.action_({ "edit all".postln })
 			.keyDownAction_({ |btn, char| if (char.ascii == 127) { proxy.clear; proxy = nil }; })
+			.resize_(2)
 		;
 
 		playBut = sys.button.new(zone, Rect(0,0, width, height))
 			.font_(font)
+			.resize_(3)
 			.states_([
 				[" >", skin.fontColor, skin.offColor], 
 				[" _", skin.fontColor, skin.onColor ],
@@ -92,6 +95,7 @@ TaskProxyEditor {
 
 		pauseBut = sys.button.new(zone, Rect(0,0, width, height))
 			.font_(font)
+			.resize_(3)
 			.states_([
 				["paus", skin.fontColor, skin.onColor], 
 				["rsum", skin.fontColor, skin.offColor]
@@ -114,6 +118,7 @@ TaskProxyEditor {
 
 		srcBut = sys.button.new(zone, Rect(0,0, width, height))
 			.font_(font)
+			.resize_(3)
 			.states_([ 
 				["src", skin.fontColor, skin.offColor],
 				["src", skin.fontColor, skin.onColor]
@@ -125,6 +130,7 @@ TaskProxyEditor {
 
 		envBut = sys.button.new(zone, Rect(0,0, width, height))
 			.font_(font)
+			.resize_(3)
 			.states_([ 
 				["env", skin.fontColor, skin.offColor],
 				["env", skin.fontColor, skin.onColor]
@@ -262,7 +268,7 @@ TaskProxyAllGui {
 		win = w ?? { sys.window.new(name, Rect(0, 0, 194, 16 * size + 5)) };
 		zone = sys.compositeView.new(win, Rect(0, 0, 200, 16 * size + 10)); 
 	//	zone.background_(scheme.foreground);
-
+		zone.resize_(5);
 		flow = FlowLayout(zone.bounds, 0@0, 0@0);
 		zone.decorator = flow; 
 		try { win.front };
