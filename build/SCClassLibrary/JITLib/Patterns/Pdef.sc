@@ -357,9 +357,7 @@ TaskProxy : PatternProxy {
 	hasPlayer { ^player.notNil }
 	hasEnded { ^player.isNil or: { player.streamHasEnded } }
 	isPaused { ^player.isNil or: { player.wasStopped  } }
-	canPause { ^player.notNil and: 
-		{ player.streamHasEnded.not and: { player.cleanup.functions.isEmpty } } 
-	}
+	canPause { ^player.notNil and: { player.canPause } }
 	
 	fork { arg clock, quant, event;
 		^Routine { this.embedInStream(event) }.play(clock ? thisThread.clock, quant)

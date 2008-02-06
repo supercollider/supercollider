@@ -375,6 +375,7 @@ PauseStream : Stream
 		^streamHasEnded.not and: { stream.isNil } // stopped by clock or stop-message
 		or: { CmdPeriod.era != era } // stopped by cmd-period, after stream has ended
 	}
+	canPause { ^this.streamHasEnded.not }
 	
 	pause {
 		this.stop;
@@ -454,6 +455,7 @@ EventStreamPlayer : PauseStream {
 	
 	mute { muteCount = muteCount + 1; }
 	unmute { muteCount = muteCount - 1; }
+	canPause { ^this.streamHasEnded.not and: { cleanup.functions.isEmpty } }
 	
 	next { arg inTime;
 		var nextTime;
