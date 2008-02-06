@@ -14,11 +14,17 @@
 	}
 
 	smallGui { arg  ... args;
-		if(this.guiClass.findRespondingMethodFor(\smallGui).notNil,{
+		var class;
+		class = this.guiClass;
+		if(class.findMethod(\smallGui).notNil,{
 			^this.guiClass.new(this).performList(\smallGui,args);
-		},{
-			^Tile(this,args.first.asPageLayout)
 		});
+		while ({ class = class.superclass; class !== Object },{
+			if(class.findMethod(\smallGui).notNil,{
+				^this.guiClass.new(this).performList(\smallGui,args);
+			});
+		});
+		^Tile(this,args.first.asPageLayout)
 	}
 	insp { arg  ... args;
 		Insp(this,args);
