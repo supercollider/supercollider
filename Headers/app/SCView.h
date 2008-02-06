@@ -336,6 +336,7 @@ public:
 	
 	virtual bool isScroller() { return true; }
 	
+	virtual SCRect getDrawBounds();
 	virtual void setInternalBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);

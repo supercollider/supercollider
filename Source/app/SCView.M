@@ -1572,6 +1572,11 @@ SCRect SCScrollTopView::checkMinimumSize()
 	
 	return candidate;
 }
+
+SCRect SCScrollTopView::getDrawBounds() //relative to ContainerView
+{
+	return checkMinimumSize();
+}
 	
 void SCScrollTopView::setInternalBounds(SCRect inBounds)
 {
