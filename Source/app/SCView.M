@@ -759,10 +759,13 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
                 if (err) return err;
                 refreshFocus();
                 //mBounds = screct;
-				setBounds(screct);
+				
 				if(mTop->isScroller()) {
+					((SCScrollTopView*)mTop)->setInSetClipViewOrigin(true);
+					setBounds(screct);
 					[(SCGraphView*)mTop->GetNSView() setFrameSizeToMinimum];
-				}
+					((SCScrollTopView*)mTop)->setInSetClipViewOrigin(false);
+				} else {setBounds(screct);}
                 refreshFocus();
 		return errNone;
 	}
