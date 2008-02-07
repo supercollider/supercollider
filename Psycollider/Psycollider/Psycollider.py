@@ -58,7 +58,7 @@ else:
   gAppHelpFolder = 'Help-windows'
   
 gHelpFolder = 'Help'
-gUserExtensionFolder = '~\\SuperCollider\\Extensions'
+gUserExtensionFolder = os.path.join(os.path.expanduser("~"), "SuperCollider\\Extensions")
 
 MAX_HISTORY_FILES = 9
 DEFAULT_SIZEX = 500
@@ -1085,7 +1085,7 @@ class Psycollider(wx.App):
         elif sel == "%" : sel = "modulo"					# from "%.rtf"
         
         if sel != "":
-            for helpFolder in [gHelpFolder, os.path.expanduser(gUserExtensionFolder)]:
+            for helpFolder in [gHelpFolder, gUserExtensionFolder]:
                 for folderPath, foldersInPath, fileNamesInFolder in os.walk(helpFolder):
                     # don't visit CVS directories
                     if 'CVS' in foldersInPath:
