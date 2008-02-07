@@ -337,6 +337,9 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         self.SetProperty("fold", "1")
         self.SetProperty("tab.timmy.whinge.level", "1")
         self.SetMargins(1,0) # yssr
+        
+        # set end-of-line character to LF
+        self.SetEOLMode(wx.stc.STC_EOL_LF);
     
         # some settings for appearance
         self.SetViewWhiteSpace(False)
@@ -589,6 +592,11 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
     def SetTabSize(self, tabSize):
         self.SetTabWidth(tabSize)
         
+    def GetText(self):
+        # append an extra space, as GetTextUTF8() seems to remove the last character, wx bug?
+        self.AppendTextUTF8(" ")
+        return self.GetTextUTF8()
+        
 
 # ---------------------------------------------------------------------
 # Code Window
@@ -669,7 +677,7 @@ class PsycolliderCodeWin(PsycolliderWindow):
         else:
             try:
                 file = open(self.filePath, "w")
-                content = self.codeSubWin.GetTextUTF8()
+                content = self.codeSubWin.GetText()
                 file.write(content)
                 self.SetTitle(self.filePath) 
                 self.isModified = False
@@ -684,7 +692,7 @@ class PsycolliderCodeWin(PsycolliderWindow):
             self.filePath = fileDlg.GetPath()
             try:
                 file = open(self.filePath ,"w")
-                content = self.codeSubWin.GetTextUTF8()
+                content = self.codeSubWin.GetText()
                 file.write(content)
                 file.close()
             except:
