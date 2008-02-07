@@ -34,6 +34,7 @@ Volume {
 		var cond;
 		server = server ?? {Server.default};
 		volume = 0;
+		lag = 0.1;
 		isPlaying = false;
 		isPrepping = false;
 		gui = false;
@@ -80,7 +81,7 @@ Volume {
 					nodeID = server.nodeAllocator.allocPerm(1);
 					ampSynth = Synth.basicNew(sdname, server, nodeID);
 					server.sendBundle(nil, ampSynth.newMsg(1, 
-						[\volume_amp, volume.dbamp, \lag, lag].debug("volume parms"),
+						[\volume_amp, volume.dbamp, \volume_lag, lag],
 						addAction: \addAfter));
 					mute.if({this.mute});
 				})
