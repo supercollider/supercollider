@@ -1001,6 +1001,8 @@ void SCContainerView::add(SCView *inChild)
 	mNumChildren++;
 	inChild->mParent = this;
 	inChild->mTop = mTop;
+	SCRect childBounds = inChild->getBounds();
+	inChild->setBounds(childBounds);	//need to set the bounds again for relative Origins - jt
 	inChild->refresh();
 }
 
