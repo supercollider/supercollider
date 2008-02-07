@@ -381,7 +381,12 @@ void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, mObj); 
+		if(mParent->relativeOrigin()){
+			SCRect tbounds = mParent->getDrawBounds();
+			where.x = where.x - tbounds.x;
+			where.y = where.y - tbounds.y;
+		}		
+		++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetFloat(g->sp, where.x); 
         ++g->sp;  SetFloat(g->sp, where.y); 
         ++g->sp;  SetInt(g->sp, modifiers); 
@@ -399,6 +404,11 @@ void SCView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
+		if(mParent->relativeOrigin()){
+			SCRect tbounds = mParent->getDrawBounds();
+			where.x = where.x - tbounds.x;
+			where.y = where.y - tbounds.y;
+		}			
         ++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetFloat(g->sp, where.x); 
         ++g->sp;  SetFloat(g->sp, where.y); 
@@ -415,6 +425,11 @@ void SCView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
+		if(mParent->relativeOrigin()){
+			SCRect tbounds = mParent->getDrawBounds();
+			where.x = where.x - tbounds.x;
+			where.y = where.y - tbounds.y;
+		}			
         ++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetFloat(g->sp, where.x); 
         ++g->sp;  SetFloat(g->sp, where.y); 
@@ -480,6 +495,11 @@ void SCView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
+		if(mParent->relativeOrigin()){
+			SCRect tbounds = mParent->getDrawBounds();
+			where.x = where.x - tbounds.x;
+			where.y = where.y - tbounds.y;
+		}			
         ++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetInt(g->sp, (int) where.x); 
         ++g->sp;  SetInt(g->sp, (int) where.y); 
@@ -1735,7 +1755,7 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 	if (inParent) {
 		inParent->add(this);
 	}
-	NSRect bounds = SCtoNSRect(mBounds);
+	NSRect bounds = SCtoNSRect(getDrawBounds());
 
 	NSView *topGraphview = mTop->GetNSView();
 	SCGraphView* view = [[SCGraphView alloc] initWithFrame: NSMakeRect(0, 0, bounds.size.width, bounds.size.height)];
@@ -2346,14 +2366,7 @@ SC2DSlider::SC2DSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 void SC2DSlider::draw(SCRect inDamage)
 {
     calcThumbRect();
-	SCRect mTopBounds = mParent->getBounds();
-	SCRect bounds = mBounds;
-	if((mTopBounds.x !=0) || (mTopBounds.y != 0))
-	{
-		bounds.x = bounds.x + mTopBounds.x;
-		bounds.y = bounds.y + mTopBounds.y;
 
-	}
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(getDrawBounds());
