@@ -1871,7 +1871,7 @@ void SCScrollView::setBounds(SCRect inBounds)
 
 SCRect SCScrollView::getBounds()
 {
-	return mBounds;
+	return NStoSCRect([mNSScrollView frame]);
 }
 
 int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
