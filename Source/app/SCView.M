@@ -274,21 +274,21 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 		mConstructionMode(-1)
 {
 	mFocusColor = SCMakeColor(0.0,0.0,0.0, 0.5); 
-	if (inParent){ 
+	mBounds = inBounds;
+	if (inParent){
 		inParent->add(this);
 		if(inParent->relativeOrigin()){
 			SCRect pbounds = inParent->getLayout().bounds;
 			mLayout.bounds.x = mBounds.x + pbounds.x;
 			mLayout.bounds.y = mBounds.y + pbounds.y;
 			mLayout.bounds.width = mBounds.width;
-			mLayout.bounds.height = mBounds.height;	
+			mLayout.bounds.height = mBounds.height;
 		} else {
 			mLayout.bounds = mBounds;
-		}
+       }
 	}
 	// store myself into sc object.
-	if (mObj) SetPtr(mObj->slots+0, this);
-        
+	if (mObj) SetPtr(mObj->slots+0, this);        
 }
 
 SCView::~SCView()
@@ -678,6 +678,7 @@ void SCView::setBounds(SCRect inBounds)
 	} else {
 		mLayout.bounds = mBounds;
 	}
+	
 }
 
 SCRect SCView::getBounds()
@@ -1009,7 +1010,7 @@ void SCContainerView::add(SCView *inChild)
 	mChildren = inChild;
 	mNumChildren++;
 	inChild->mParent = this;
-	inChild->mTop = mTop;	
+	inChild->mTop = mTop;
 	inChild->refresh();
 }
 
@@ -1803,7 +1804,9 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 	SetNSScrollView(scrollView);
 	[topGraphview addSubview: scrollView];
 	[view setFrameSizeToMinimum];
+	setBounds(inBounds);
 	setVisibleFromParent();
+	
 }
 
 void SCScrollView::add(SCView *inChild)
@@ -1854,18 +1857,9 @@ void SCScrollView::drawSubViewIfNecessary(SCRect inDamage)
 
 void SCScrollView::setBounds(SCRect inBounds)
 {
-//	NSRect oldFrame = [mNSScrollView frame];
-    mBounds = inBounds;
-	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getLayout().bounds;
-		mLayout.bounds.x = mBounds.x + pbounds.x;
-		mLayout.bounds.y = mBounds.y + pbounds.y;
-		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
-	} else {
-		mLayout.bounds = mBounds;
-	}	
-	[mNSScrollView setFrame: SCtoNSRect(mLayout.bounds)];
+	NSRect oldFrame = [mNSScrollView frame];
+	
+	[mNSScrollView setFrame: SCtoNSRect(inBounds)];
 
 }
 
@@ -2693,7 +2687,7 @@ void SCScope::draw2(CGContextRef cgc)
 	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
 	float height = rect.size.height - 2.;
 	float height2 = 0.5 * height;
-	float width = rect.size.width - 2.;
+	float width = mBounds.width - 2.;
 	float width2 = 0.5 * width;
 	float yScale = mZoom.y * height2;
 	float xScale = mZoom.x * width2;
