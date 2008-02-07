@@ -22,6 +22,7 @@
 * 2008-01-20 CheckBadValues rate-checking was too restrictive - ds
 * 2008-01-20 fix for Saw and Pulse's offset noise on first instantiation, thanks to hisao takagi - ds
 * 2008-01-26 TDuty / Duty does not drift anymore - jr
+* 2008-02-07 Fixed hang and incorrect background drawing in Cocoa scrollviews - sw
 
 // OTHER ADDITIONS / IMPROVEMENTS:
 * 2007-11-16 MIDIOut.connect and disconnect - mb
@@ -44,6 +45,7 @@
 * 2008-01-26 added Dbufwr ugen, for writing to buffers from a demand ugen chain  - jr
 * 2008-01-27 Main:version and associated methods for programmatically determining which version SC is - ds
 * 2008-02-03 Server:defaultRecDir class variable, to allow user to specify default rec location - ds
+* 2008-02-07 SCScrollView and SCScrollTopView no longer fire their action when scrolled programatically - sw
 
 
 ///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
