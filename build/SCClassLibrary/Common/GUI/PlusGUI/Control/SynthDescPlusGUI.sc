@@ -2,7 +2,6 @@
 	makeWindow {
 		var w, s, startButton, sliders;
 		var id, cmdPeriodFunc;
-		var synthDesc;
 		var usefulControls, numControls;
 		var getSliderValues, gui;
 
@@ -59,12 +58,13 @@
 					s.sendBundle(s.latency, ["/s_new", name, id, 0, 0] ++ getSliderValues.value);
 				};
 				if (view.value == 0) {
-					if (synthDesc.hasGate) {
+					if (this.hasGate) {
 						// set gate to zero to cause envelope to release
 						s.sendMsg("/n_set", id, "gate", 0);
 					}{
 						s.sendMsg("/n_free", id);
 					};
+					id = nil;
 				};
 		};
 		
@@ -93,7 +93,9 @@
 		
 		// stop the sound when window closes and remove cmdPeriodFunc.
 		w.onClose = {
-			s.sendMsg("/n_free", id);
+			if(id.notNil) {
+				s.sendMsg("/n_free", id);
+			};
 			CmdPeriod.remove(cmdPeriodFunc);
 		};
 		
