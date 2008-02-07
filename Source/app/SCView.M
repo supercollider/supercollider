@@ -274,10 +274,20 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 		mConstructionMode(-1)
 {
 	mFocusColor = SCMakeColor(0.0,0.0,0.0, 0.5); 
-	if (inParent) inParent->add(this);
+	if (inParent){ 
+		inParent->add(this);
+		if(inParent->relativeOrigin()){
+			SCRect pbounds = inParent->getLayout().bounds;
+			mLayout.bounds.x = mBounds.x + pbounds.x;
+			mLayout.bounds.y = mBounds.y + pbounds.y;
+			mLayout.bounds.width = mBounds.width;
+			mLayout.bounds.height = mBounds.height;	
+		} else {
+			mLayout.bounds = mBounds;
+		}
+	}
 	// store myself into sc object.
 	if (mObj) SetPtr(mObj->slots+0, this);
-	mLayout.bounds = mBounds;
         
 }
 
@@ -668,7 +678,6 @@ void SCView::setBounds(SCRect inBounds)
 	} else {
 		mLayout.bounds = mBounds;
 	}
-	
 }
 
 SCRect SCView::getBounds()
@@ -1000,9 +1009,7 @@ void SCContainerView::add(SCView *inChild)
 	mChildren = inChild;
 	mNumChildren++;
 	inChild->mParent = this;
-	inChild->mTop = mTop;
-	SCRect childBounds = inChild->getBounds();
-	inChild->setBounds(childBounds);	//need to set the bounds again for relative Origins - jt
+	inChild->mTop = mTop;	
 	inChild->refresh();
 }
 
@@ -1847,15 +1854,24 @@ void SCScrollView::drawSubViewIfNecessary(SCRect inDamage)
 
 void SCScrollView::setBounds(SCRect inBounds)
 {
-	NSRect oldFrame = [mNSScrollView frame];
-	
-	[mNSScrollView setFrame: SCtoNSRect(inBounds)];
+//	NSRect oldFrame = [mNSScrollView frame];
+    mBounds = inBounds;
+	if(mParent->relativeOrigin()){
+		SCRect pbounds = mParent->getLayout().bounds;
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;	
+	} else {
+		mLayout.bounds = mBounds;
+	}	
+	[mNSScrollView setFrame: SCtoNSRect(mLayout.bounds)];
 
 }
 
 SCRect SCScrollView::getBounds()
 {
-	return NStoSCRect([mNSScrollView frame]);
+	return mBounds;
 }
 
 int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
