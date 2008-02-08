@@ -39,6 +39,7 @@ HistoryGui {
 			// to do: disable if history is not current!
 		startBut = sys.button.new(w, Rect(0, 0, 50, 20)) ////
 			.states_([ ["start"], ["end"]])
+			.canFocus_(false)
 			.action_({ |btn|
 				switch(btn.value, 
 					0, { if (history == History.current) { History.end } }, 
@@ -47,6 +48,7 @@ HistoryGui {
 			});
 		
 		filtBut = sys.button.new(w, Rect(42, 22, 32, 20)) ////
+			.canFocus_(false)
 			.states_([["all"], ["filt"]]).action_({ |btn| 
 				this.filtering_(btn.value > 0);
 				if (filtering) { this.filterLines };
@@ -67,11 +69,13 @@ HistoryGui {
 		topBut = sys.button.new(w, Rect(190, 22, 32, 20))
 			.states_([["top"], ["keep"]]).value_(0)
 			.resize_(3)
+			.canFocus_(false)
 			.action_({ |but| this.stickMode_(but.value) });
 		
 		sys.button.new(w, Rect(42, 22, 32, 20)) ////
 			.states_([["rip"]])
 			.resize_(3)
+			.canFocus_(false)
 			.action_({ |btn| this.findDoc; doc.string_(textV.string); });		
 		listV = sys.listView.new(w,bounds.moveTo(2, 44).resizeBy(-4, -48))
 			.font_(font)
