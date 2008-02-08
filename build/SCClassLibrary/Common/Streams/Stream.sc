@@ -355,7 +355,7 @@ PauseStream : Stream
 		this.changed(\userPlayed);
 		^this
 	}
-	reset { ^originalStream.reset }
+	reset { originalStream.reset }
 	stop {
 		this.prStop;
 		this.changed(\userStopped);
