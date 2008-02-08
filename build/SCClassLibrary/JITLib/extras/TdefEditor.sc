@@ -268,7 +268,7 @@ TaskProxyAllGui {
 		win = w ?? { sys.window.new(name, Rect(0, 0, 194, 16 * size + 5)) };
 		zone = sys.compositeView.new(win, Rect(0, 0, 200, 16 * size + 10)); 
 	//	zone.background_(scheme.foreground);
-		zone.resize_(5);
+		zone.resize_(2);
 		flow = FlowLayout(zone.bounds, 0@0, 0@0);
 		zone.decorator = flow; 
 		try { win.front };
