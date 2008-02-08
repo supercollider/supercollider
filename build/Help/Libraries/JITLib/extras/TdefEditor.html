@@ -5,18 +5,19 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #0019b7}
-span.s4 {color: #326f17}
+span.s3 {color: #0000bf}
+span.s4 {color: #007300}
 span.s5 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -27,72 +28,71 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">TdefEditor uses the Gui class to be platform independent;<span class="Apple-converted-space"> </span></p>
 <p class="p1">it also uses the Document class which is not cross-platform yet.</p>
 <p class="p2"><br></p>
-<p class="p1">play/stop button :<span class="Apple-converted-space"> </span></p>
+<p class="p1"><b>play/stop button</b> :<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>indicates whether the tdef is playing:<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>" &gt;"<span class="Apple-converted-space">  </span>if it is stopped,<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>" _" if it is playing and active,<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>" |" if it is playing, but the stream has ended.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p1">pause/resume button:<span class="Apple-converted-space"> </span></p>
+<p class="p1"><b>pause/resume button</b>:<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>only visible if one can pause or resume the Tdef.</p>
 <p class="p1"><span class="Apple-tab-span">	</span>"paus" when you can pause it,</p>
 <p class="p1"><span class="Apple-tab-span">	</span>"rsum" when you can resume it.</p>
 <p class="p3"><br></p>
-<p class="p1">src button:<span class="Apple-converted-space"> </span></p>
+<p class="p1"><b>src button</b>:<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>opens a document to edit the source (function) of the Tdef.</p>
 <p class="p1"><span class="Apple-tab-span">	</span>green if a source exists, white if not.</p>
 <p class="p3"><br></p>
-<p class="p1">env button:<span class="Apple-converted-space"> </span></p>
+<p class="p1"><b>env button</b>:<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>opens a document to edit the environment of the Tdef,<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>which is where one can keep all variables the tdef uses</p>
 <p class="p1"><span class="Apple-tab-span">	</span>for easy access.</p>
 <p class="p1"><span class="Apple-tab-span">	</span>green if the tdef has an envir, white if not.</p>
 <p class="p2"><br></p>
-<p class="p4">(</p>
-<p class="p4"><span class="s3">Tdef</span>(<span class="s4">\a</span>, { <span class="s3">|e|</span> 100.do { <span class="s3">|i|</span> i.postln; 0.5.wait } });</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s5">t = </span>TdefEditor<span class="s5">(</span>Tdef<span class="s5">(</span><span class="s4">\a</span><span class="s5">), 4);</span></p>
-<p class="p4"><span class="s3">Tdef</span>(<span class="s4">\a</span>).set(<span class="s4">\otto</span>, 12, <span class="s4">\ann</span>, 1234);</p>
-<p class="p4">)</p>
-<p class="p4"><span class="s3">Tdef</span>(<span class="s4">\a</span>).stop;</p>
-<p class="p4"><span class="s3">Tdef</span>(<span class="s4">\a</span>).play;</p>
-<p class="p4"><span class="s3">Tdef</span>(<span class="s4">\a</span>).pause;</p>
-<p class="p4"><span class="s3">Tdef</span>(<span class="s4">\a</span>).resume;</p>
-<p class="p2"><br></p>
-<p class="p4">t.proxy_(<span class="s3">nil</span>);</p>
-<p class="p4">t.proxy_(<span class="s3">Tdef</span>(<span class="s4">\a</span>));</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p4"><span class="s3">Tdef</span>(<span class="s4">\b</span>,<span class="Apple-converted-space">  </span>{ <span class="s3">|e|</span> 100.do { <span class="s3">|i|</span> <span class="s3">Tdef</span>(<span class="s4">\a</span>).set(<span class="s4">\otto</span>, 8.rand); exprand(0.1, 3.0).wait } });</p>
-<p class="p4"><span class="s3">Tdef</span>(<span class="s4">\b</span>).play;</p>
-<p class="p5">TdefEditor<span class="s5">(</span>Tdef<span class="s5">(</span><span class="s4">\b</span><span class="s5">));</span></p>
-<p class="p2"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span>// see all Tdefs:<span class="Apple-converted-space"> </span></p>
-<p class="p5">TdefAllGui<span class="s5">(16);</span></p>
-<p class="p2"><br></p>
-<p class="p5"><span class="s5">See also </span>TdefAllGui, PdefEditor, PdefAllGui.</p>
-<p class="p2"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span>// full test suite for TdefEditor:</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s5">t = </span>TdefEditor<span class="s5">();<span class="Apple-converted-space"> </span></span></p>
-<p class="p4">t.proxy_(Tdef(\a));</p>
-<p class="p4">t.proxy_(Tdef(\b));</p>
-<p class="p4">t.proxy_(nil);</p>
-<p class="p4">t.proxy_(Tdef(\a));</p>
-<p class="p2"><br></p>
-<p class="p4">Tdef(\a, { 10.do { |i| i.postln; 0.5.wait } });</p>
-<p class="p4">Tdef(\a).source_(nil);</p>
-<p class="p2"><br></p>
-<p class="p4">Tdef(\a).set(\otto, 2);</p>
-<p class="p4">Tdef(\a).envir_(nil);</p>
-<p class="p2"><br></p>
-<p class="p4">Tdef(\a, { 10.do { |i| i.postln; 0.5.wait } });</p>
-<p class="p4">Tdef(\a).play;</p>
-<p class="p4">Tdef(\a).pause;</p>
-<p class="p4">Tdef(\a).resume;</p>
-<p class="p2"><br></p>
-<p class="p6"><span class="Apple-tab-span">	</span>// bug still there: setting envir starts tdef!</p>
-<p class="p4">Tdef(\a).set(\otto, 2);</p>
-<p class="p2"><br></p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>, { <span class="s3">|e|</span> 100.do { <span class="s3">|i|</span> i.postln; 0.5.wait } });</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s5">t = </span>TdefEditor<span class="s5">(</span>Tdef<span class="s5">(</span><span class="s4">\a</span><span class="s5">), 4);</span></p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).set(<span class="s4">\otto</span>, 12, <span class="s4">\ann</span>, 1234);</p>
+<p class="p5">)</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).stop;</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).play;</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).pause;</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).resume;</p>
+<p class="p4"><br></p>
+<p class="p5">t.proxy_(<span class="s3">nil</span>);</p>
+<p class="p5">t.proxy_(<span class="s3">Tdef</span>(<span class="s4">\a</span>));</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\b</span>,<span class="Apple-converted-space">  </span>{ <span class="s3">|e|</span> 100.do { <span class="s3">|i|</span> <span class="s3">Tdef</span>(<span class="s4">\a</span>).set(<span class="s4">\otto</span>, 8.rand); exprand(0.1, 3.0).wait } });</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\b</span>).play;</p>
+<p class="p6">TdefEditor<span class="s5">(</span>Tdef<span class="s5">(</span><span class="s4">\b</span><span class="s5">));</span></p>
+<p class="p4"><br></p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>// see all Tdefs:<span class="Apple-converted-space"> </span></p>
+<p class="p6">TdefAllGui<span class="s5">(16);</span></p>
+<p class="p4"><br></p>
+<p class="p6">See<span class="s5"> also </span>TdefAllGui<span class="s5">, </span>PdefEditor<span class="s5">, </span>PdefAllGui<span class="s5">.</span></p>
+<p class="p4"><br></p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>// full test suite for TdefEditor:</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s5">t = </span>TdefEditor<span class="s5">();<span class="Apple-converted-space"> </span></span></p>
+<p class="p5">t.proxy_(<span class="s3">Tdef</span>(<span class="s4">\a</span>));</p>
+<p class="p5">t.proxy_(<span class="s3">Tdef</span>(<span class="s4">\b</span>));</p>
+<p class="p5">t.proxy_(<span class="s3">nil</span>);</p>
+<p class="p5">t.proxy_(<span class="s3">Tdef</span>(<span class="s4">\a</span>));</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>, { 10.do { <span class="s3">|i|</span> i.postln; 0.5.wait } });</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).source_(<span class="s3">nil</span>);</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).set(<span class="s4">\otto</span>, 2);</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).envir_(<span class="s3">nil</span>);</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>, { 10.do { <span class="s3">|i|</span> i.postln; 0.5.wait } });</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).play;</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).pause;</p>
+<p class="p5"><span class="s3">Tdef</span>(<span class="s4">\a</span>).resume;</p>
+<p class="p4"><br></p>
 </body>
 </html>
