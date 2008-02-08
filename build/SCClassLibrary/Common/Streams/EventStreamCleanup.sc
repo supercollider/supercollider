@@ -1,7 +1,8 @@
 
 // Cleanup functions are passed a flag.
-// The flas is set false if nodes have already been freed by CmdPeriod
+// The flag is set false if nodes have already been freed by CmdPeriod
 // This caused a minor change to TempoClock:clear and TempoClock:cmdPeriod
+
 EventStreamCleanup {
 	var <>functions;		// cleanup functions from child streams and parent stream
 	*new { ^super.new.clear }
@@ -21,9 +22,11 @@ EventStreamCleanup {
 	}
 	
 	update { | event |
-		functions = functions.addAll(event[\addToNodeCleanup]);
-		functions = functions.addAll(event[\addToCleanup]);
-		functions = functions.removeAll(event[\removeFromCleanup]);
+		event !? {
+			functions = functions.addAll(event[\addToNodeCleanup]);
+			functions = functions.addAll(event[\addToCleanup]);
+			functions = functions.removeAll(event[\removeFromCleanup]);
+		};
 		^event
 	}
 	
