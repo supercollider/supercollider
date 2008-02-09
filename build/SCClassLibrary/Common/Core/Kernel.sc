@@ -198,7 +198,7 @@ Process {
 		// This method is called before recompiling or quitting.
 		// Override in class 'Main' to do whatever you want.
 		UI.shutdown;
-		//OSCPort.closeAll;
+		NetAddr.disconnectAll;
 		File.closeAll;
 		Archive.write;
 	}

@@ -5,9 +5,6 @@ NetAddr {
 
 	*initClass {
 		connections = IdentityDictionary.new;
-		UI.registerForShutdown({
-			this.disconnectAll;
-		});
 	}
 
 	*new { arg hostname, port=0;
