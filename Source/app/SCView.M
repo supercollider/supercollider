@@ -586,7 +586,6 @@ void SCView::drawFocus(SCRect inDamage)
         CGContextSetLineWidth(cgc, 2);
 //        CGContextSetRGBStrokeColor(cgc, 0., 0., 0., 0.5);
 		CGContextSetRGBStrokeColor(cgc, mFocusColor.red, mFocusColor.green, mFocusColor.blue, mFocusColor.alpha);
-		post("drawFocus at:%f\n",  rect.origin.x);
 
         CGContextStrokeRect(cgc, rect);
         CGContextRestoreGState(cgc);
