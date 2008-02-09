@@ -1607,7 +1607,7 @@ SCRect SCScrollTopView::checkMinimumSize()
 
 SCRect SCScrollTopView::getDrawBounds() //relative to ContainerView
 {
-	return checkMinimumSize();
+	return SCRectUnion(mBounds, checkMinimumSize());
 }
 	
 void SCScrollTopView::setInternalBounds(SCRect inBounds)
@@ -1764,17 +1764,29 @@ SCView* NewSCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect inBo
 SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 : SCScrollTopView(inObj, inBounds)
 {
-	if (inParent) {
-		inParent->add(this);
-	}
-	NSRect bounds = SCtoNSRect(getDrawBounds());
 
+	NSRect bounds = SCtoNSRect(inBounds);
+
+	if (inParent){
+		inParent->add(this);
+		if(inParent->relativeOrigin()){
+			SCRect pbounds = inParent->getLayout().bounds;
+			mLayout.bounds.x = mBounds.x + pbounds.x;
+			mLayout.bounds.y = mBounds.y + pbounds.y;
+			mLayout.bounds.width = mBounds.width;
+			mLayout.bounds.height = mBounds.height;
+		} else {
+			mLayout.bounds = mBounds;
+		}
+	}
+	
+	
 	NSView *topGraphview = mTop->GetNSView();
 	SCGraphView* view = [[SCGraphView alloc] initWithFrame: NSMakeRect(0, 0, bounds.size.width, bounds.size.height)];
 	[view setSCObject: [(SCGraphView*)topGraphview getSCObject]];
 	
 	[view setSCTopView: this];
-	NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame: bounds];
+	NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame: SCtoNSRect(mLayout.bounds)];
 	[scrollView setHasVerticalScroller:YES];
 	[scrollView setHasHorizontalScroller:YES];
 	[scrollView setAutohidesScrollers:YES];
@@ -1806,7 +1818,7 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 	SetNSScrollView(scrollView);
 	[topGraphview addSubview: scrollView];
 	[view setFrameSizeToMinimum];
-	setBounds(inBounds);
+	setBounds(mLayout.bounds);
 	setVisibleFromParent();
 	
 }
