@@ -576,7 +576,6 @@ void SCView::drawFocus(SCRect inDamage)
 {
     if (isFocus()) {
 		SCRect bounds = getDrawBounds(); 	
-	
         CGRect rect = SCtoCGRect(bounds);
         rect.origin.x -= 2;
         rect.origin.y -= 2;
@@ -587,6 +586,7 @@ void SCView::drawFocus(SCRect inDamage)
         CGContextSetLineWidth(cgc, 2);
 //        CGContextSetRGBStrokeColor(cgc, 0., 0., 0., 0.5);
 		CGContextSetRGBStrokeColor(cgc, mFocusColor.red, mFocusColor.green, mFocusColor.blue, mFocusColor.alpha);
+		post("drawFocus at:%f\n",  rect.origin.x);
 
         CGContextStrokeRect(cgc, rect);
         CGContextRestoreGState(cgc);
@@ -1366,6 +1366,7 @@ void SCHLayoutView::setBounds(SCRect inBounds)
         child = child->next();
     }
     mBounds = inBounds;
+	mLayout.bounds = mBounds;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -1455,6 +1456,8 @@ void SCVLayoutView::setBounds(SCRect inBounds)
         child = child->next();
     }
     mBounds = inBounds;
+	mLayout.bounds = mBounds;
+	
 }
 
 
