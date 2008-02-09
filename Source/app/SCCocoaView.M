@@ -147,7 +147,7 @@ SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SC
 	: SCView(inParent, inObj, inBounds)
 {
 
-	NSRect matrect = SCtoNSRect(mBounds);
+	NSRect matrect = SCtoNSRect(getDrawBounds());
 	mTextView = [[SCTextView alloc] initWithFrame:matrect];
 	NSView *view = mTop->GetNSView();		
 	mCocoaToLangAction = [SCCocoaTextViewResponder alloc];
@@ -313,16 +313,8 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		//add avariable to choos if this should resize the textview too
 		err = slotGetSCRect(slot, &screct);
 		if (err) return err;
-		[[mScrollView superview] setNeedsDisplayInRect:[mScrollView frame]];
-		mBounds = screct;
 
-		[mScrollView setFrame: SCtoNSRect(mBounds)];
-		[mTextView setFrame: SCtoNSRect(mBounds)];
-
-	//	[mScrollView setBounds: SCtoNSRect(mBounds)];
-	//	[mTextView setBounds: SCtoNSRect(mBounds)];
-		[mScrollView setNeedsDisplay: YES];
-		[mTextView setNeedsDisplay: YES];
+		setBounds(screct);
 	
 		return errNone;
 	}
@@ -552,7 +544,7 @@ SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 SCMovieView::SCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds)
 {
-		NSRect matrect = SCtoNSRect(mBounds);
+		NSRect matrect = SCtoNSRect(getDrawBounds());
 		mMovieView = [[NSMovieView alloc] initWithFrame:matrect];
 		NSView *view = mTop->GetNSView();	
 		[view addSubview: mMovieView];
