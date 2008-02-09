@@ -231,11 +231,11 @@ TaskProxyEditor {
 		};
 		
 		if (guiStates[1] != oldStates[1]) { 
-			"src changed: ".post; [guiStates[1], oldStates[1]].postln;
+		//	"src changed: ".post; [guiStates[1], oldStates[1]].postln;
 			srcBut.value_(guiStates[1]).refresh;
 		};
 		if (guiStates[2] != oldStates[2]) { 
-			"env changed: ".post; [guiStates[1], oldStates [1]].postln;
+		//	"env changed: ".post; [guiStates[1], oldStates [1]].postln;
 			envBut.value_(guiStates[2]).refresh;
 		};
 
