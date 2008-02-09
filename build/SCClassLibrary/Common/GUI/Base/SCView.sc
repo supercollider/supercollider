@@ -1481,7 +1481,7 @@ SCEnvelopeView : SCMultiSliderView {
 
 	strings_ { arg astrings;
 		astrings.do({arg str,i;
-			this.string_(i,str);
+			this.setString(i,str);
 		});
 	}
 	value {
