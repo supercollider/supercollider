@@ -1214,6 +1214,11 @@ SCUserView : SCView {
 //	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
 	var < clearOnRefresh = true, < relativeOrigin = true;
 	
+	init { |argParent, argBounds|
+		super.init(argParent, argBounds);
+		this.relativeOrigin = relativeOrigin;
+	}
+	
 	draw { 
 		drawFunc.value(this) ;	
 	}
