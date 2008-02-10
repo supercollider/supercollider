@@ -26,7 +26,7 @@ PathName {
 						s <<  char
 					});
 				})
-			})
+			}).standardizePath
 		)
 	}
 	*initClass {	
