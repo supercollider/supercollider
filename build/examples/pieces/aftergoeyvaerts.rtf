@@ -1,17 +1,18 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f0\fs18 \cf2 //after goeyvaerts\cf0 \
-\cf2 // (Nick Collins) (CC 2007)\cf0 \
+\cf2 //(C) Nick Collins 2007\cf0 \
 \
 \
 \pard\pardeftab560\ql\qnatural
 \cf2 //first send the SynthDefs; make sure the Server is on\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf3 SynthDef\cf0 (\cf4 \\goeysynth\cf0 , \{\
 \cf3 arg\cf0  freq=440,amp=0.1, sustain=0.1, pan=0.0; \
 \cf3 var\cf0  source, env;\
@@ -24,12 +25,14 @@ env= \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 ([0,1,0.4,0.7,0],[\cf3 Rand\cf0 (0.001,0.0
 \
 \}).send(s);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf2 //preferred version if you have the FreeVerb UGen, commented out by default\cf0 \
 \cf2 //SynthDef(\\goeyfx, \{\cf0 \
 \cf2 //ReplaceOut.ar(0,FreeVerb.ar(In.ar(0,2),0.33,1.5))\cf0 \
 \cf2 //\}).send(s);\cf0 \
 \
 \cf2 //adapted from JmC reverb\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf3 SynthDef\cf0 (\cf4 \\goeyfx\cf0 , \{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  a,c,z,y,in;\
@@ -56,12 +59,15 @@ a.do(\{ y = \cf3 AllpassN\cf0 .ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf3 Synth\cf0 (\cf4 \\goeysynth\cf0 ,[\cf4 \\freq\cf0 ,440]); \cf2 //test\cf0 \
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf2 //now run the piece\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf3 var\cf0  n, octaves, basenote, selections, probs;\
 \cf3 var\cf0  ioirow, ioimult, noterow, amprow, susrow, panrow;\
 \cf3 var\cf0  fxsynth;\
@@ -122,6 +128,7 @@ probs=\cf3 Array\cf0 .fill(n,\{1.0\});\
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 \cf2 //future possibilities:\cf0 \
 \cf2 //add different rhythmic sections, and also, use fold or wrap on array data\cf0 \
 \cf2 //up to four notes at once in selection; optional slight spread? really need independent voices too\cf0 \

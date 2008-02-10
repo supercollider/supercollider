@@ -1,11 +1,11 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f0\fs18 \cf2 // a theory of harmony\cf0 \
-\cf2 // (Nick Collins) (CC 2007)\cf0 \
+\cf2 //(C) Nick Collins 2007\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 //plaintive chords patch demonstrating scheduling attacks ahead of the beat and applying reverb\cf0 \
@@ -25,7 +25,7 @@ detune=\cf3 SinOsc\cf0 .kr(detrate,0,det,det);\
 \
 slip= \cf3 Mix\cf0 .ar(\cf3 Pulse\cf0 .ar([note-detune,note+detune].midicps,\cf3 Lag\cf0 .kr(\cf3 LFNoise0\cf0 .kr(wrate,wspan,0.5)),0.1))*\cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 ([0,1,0],[atk,0.5]),doneAction:2);\
 \cf3 Out\cf0 .ar(0,\cf3 Pan2\cf0 .ar(slip,pan));\
-\}).load(s);\
+\}).send(s);\
 \
 \cf3 SynthDef\cf0 (\cf4 \\fastatk\cf0 ,\{\cf3 arg\cf0  note=60,dcy=0.3,pan=0.0;\
 \cf3 var\cf0  osc;\

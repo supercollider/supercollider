@@ -1,11 +1,11 @@
-{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
 \red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f0\fs18 \cf2 // Autohausen \cf0 \
-\cf2 // (Nick Collins) (CC 2007)\cf0 \
+\cf2 //(C) Nick Collins 2007\cf0 \
 \cf2 \
 \pard\pardeftab560\ql\qnatural
 \cf2 \
@@ -177,30 +177,28 @@ temposeries=\cf3 Pseq\cf0 (((30,35..120)/60).scramble,\cf3 inf\cf0 ).asStream;\
 fxsynth.set(\cf4 \\shift\cf0 ,[0.0,1.0,rrand(0.25,0.75)].choose,\cf4 \\rate\cf0 ,[1,0.5,0.25,0.125,4].choose);\
 basefreq=[27.5,55,110,220,330,660].choose;\
 \
-val[2].do \{\
-\
-if(0.1.coin,\{\
-t.tempo_(temposeries.next)\}); \
-\
-if(0.02.coin,\{\cf2 \
-\cf0 basefreq=[27.5,55,110,220,330,660].choose\
-\}); \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
-\cf0 s.makeBundle(s.latency, \{\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
-\cf3 var\cf0  instrtype;\
-\
-instrtype=instrseries.next;\
+val[2].do \{	\
 	\
+	if(0.1.coin,\{\
+	t.tempo_(temposeries.next)\}); \
+	\
+	if(0.02.coin,\{\cf2 \
+	\cf0 basefreq=[27.5,55,110,220,330,660].choose\
+	\}); \
+	\
+	s.makeBundle(s.latency, \{	\
+		\cf3 var\cf0  instrtype;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\ql\qnatural\pardirnatural
+\cf0 		\
+		instrtype=instrseries.next;\
+			\
+		numatonce.next.do\{\
+			\cf3 Synth\cf0 .before(fxsynth,instrtype ,[\cf4 \\freq\cf0 , basefreq*freqseries.next, \cf4 \\amp\cf0 , (dynamicseries.next)*0.25, \cf4 \\pan\cf0 , panseries.next, \cf4 \\attack\cf0 , attackseries.next,  \cf4 \\decay\cf0 , decayseries.next,  \cf4 \\sustain\cf0 ,  sustainseries.next, \cf4 \\bandwidth\cf0 , bandwidthseries.next ]);\
 \pard\pardeftab560\ql\qnatural
-\cf0 numatonce.next.do\{\
-\pard\pardeftab560\ql\qnatural
-\cf3 Synth\cf0 .before(fxsynth,instrtype ,[\cf4 \\freq\cf0 , basefreq*freqseries.next, \cf4 \\amp\cf0 , (dynamicseries.next)*0.25, \cf4 \\pan\cf0 , panseries.next, \cf4 \\attack\cf0 , attackseries.next,  \cf4 \\decay\cf0 , decayseries.next,  \cf4 \\sustain\cf0 ,  sustainseries.next, \cf4 \\bandwidth\cf0 , bandwidthseries.next ]);\
-\};\
-\});\
-\
-ioiseries.next.wait;\
+\cf0 		\};\
+	\});\
+	\
+	ioiseries.next.wait;\
 \};\
 \
 \}\
@@ -210,6 +208,5 @@ ioiseries.next.wait;\
 \
 \
 \
-\pard\pardeftab560\ql\qnatural
 \cf2 //future: add ringmod and glissandi, plus distortion for old magnetic tape? differentiate moments more...\cf0 \
 }
