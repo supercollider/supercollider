@@ -1147,7 +1147,7 @@ void SCCompositeView::setBounds(SCRect inBounds)
 //	}
 
 	if(mParent ){
-		if(relativeOrigin()){
+		if(mParent->relativeOrigin()){
 			SCRect pBounds = mParent->getDrawBounds();
 			mLayout.bounds.x = inBounds.x + pBounds.x;
 			mLayout.bounds.y = inBounds.y + pBounds.y;
@@ -1298,6 +1298,18 @@ void SCHLayoutView::setBounds(SCRect inBounds)
 {
     SCView *child = mChildren;
     float totalWeight = 0.0;
+	//if reativeOrigin is true, the inBounds need to be moved to absolute bounds
+    mBounds = inBounds;
+	if(mParent->relativeOrigin()){
+		SCRect pbounds = mParent->getLayout().bounds;
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;	
+	} else {
+		mLayout.bounds = mBounds;
+	}	
+	SCRect absBounds = mLayout.bounds;
     while(child) {
         Layout layout = child->getLayout();
         // could store this when child added
@@ -1305,7 +1317,7 @@ void SCHLayoutView::setBounds(SCRect inBounds)
         child = child->next();
     }
     // subtract the spacers we will use
-    float totalWidth = inBounds.width - (mSpacing * (mNumChildren - 1));
+    float totalWidth = absBounds.width - (mSpacing * (mNumChildren - 1));
 
     // find views who are constrained by a minimum or maximum size 
     // and remove them from the set of weights.
@@ -1345,9 +1357,9 @@ void SCHLayoutView::setBounds(SCRect inBounds)
     //totalWidth is now the remaining flexible width
     
     // now layout the views
-    float left = inBounds.x;
-    float top = inBounds.y;
-    float height = inBounds.height;
+    float left = absBounds.x;
+    float top = absBounds.y;
+    float height = absBounds.height;
     scaleWeight = totalWidth * (1.0/totalWeight);
     child = mChildren;
     int i=0;
@@ -1364,8 +1376,7 @@ void SCHLayoutView::setBounds(SCRect inBounds)
         left += (width + mSpacing);
         child = child->next();
     }
-    mBounds = inBounds;
-	mLayout.bounds = mBounds;
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -1394,8 +1405,20 @@ void SCVLayoutView::setBounds(SCRect inBounds)
         totalWeight += layout.mWeight;
         child = child->next();
     }
+	//if reativeOrigin is true, the inBounds need to be moved to absolute bounds
+    mBounds = inBounds;
+	if(mParent->relativeOrigin()){
+		SCRect pbounds = mParent->getLayout().bounds;
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;	
+	} else {
+		mLayout.bounds = mBounds;
+	}	
+	SCRect absBounds = mLayout.bounds;	
     // subtract the spacers we will use
-    float totalHeight = inBounds.height - (mSpacing * (mNumChildren - 1));
+    float totalHeight = absBounds.height - (mSpacing * (mNumChildren - 1));
 
     // find views who are constrained by a minimum or maximum size 
     // and remove them from the set of weights.
@@ -1435,9 +1458,9 @@ void SCVLayoutView::setBounds(SCRect inBounds)
     //totalHeight is now the remaining flexible height
     
     // now layout the views
-    float left = inBounds.x;
-    float top = inBounds.y;
-    float width = inBounds.width;
+    float left = absBounds.x;
+    float top = absBounds.y;
+    float width = absBounds.width;
     scaleWeight = totalHeight * (1.0/totalWeight);
     child = mChildren;
     int i=0;
@@ -1454,8 +1477,6 @@ void SCVLayoutView::setBounds(SCRect inBounds)
         top += (height + mSpacing);
         child = child->next();
     }
-    mBounds = inBounds;
-	mLayout.bounds = mBounds;
 	
 }
 
