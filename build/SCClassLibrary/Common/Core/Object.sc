@@ -131,6 +131,23 @@ Object  {
 			properties.every { |selector| this.perform(selector) == that.perform(selector) }
 		}
 	}
+	compareObject { arg that,instVarNames;
+		if(this === that,{ ^true });
+		// possibly ok if one of us isKindOf the other
+		if(this.class !== that.class,{ ^false });
+		if(instVarNames.notNil,{
+			instVarNames.do({ |varname|
+				if(this.instVarAt(varname) != that.instVarAt(varname),{
+					^false
+				})
+			});
+		},{
+			this.instVarSize.do({ arg i;
+				if(this.instVarAt(i) != that.instVarAt(i),{ ^false });
+			});
+		});			
+		^true
+	}
 	
 	basicHash { _ObjectHash; ^this.primitiveFailed }
 	hash { _ObjectHash; ^this.primitiveFailed }
@@ -425,10 +442,6 @@ Object  {
 			});
 		});		
 	}
-
-	// layout support
-	getLayoutSize { ^LayoutSize.new }
-	layout {}
 
 	inspect { ^this.inspectorClass.new(this) }
 	inspectorClass { ^ObjectInspector }
