@@ -440,6 +440,18 @@ SCScrollTopView : SCTopView {
 	innerBounds {
 		^this.getProperty(\innerBounds, Rect.new)
 	}
+	
+	bounds {
+		var	bounds = this.absoluteBounds;
+		this.getParents.do({ |parent|
+			(parent.tryPerform(\relativeOrigin) == true).if({
+				bounds = bounds.moveBy(parent.bounds.left.neg, parent.bounds.top.neg)
+			}, {
+				^bounds
+			});
+		});
+		^bounds
+	}
 
 //	handleKeyModifiersChangedBubbling { arg view, modifiers;
 //		var result;
