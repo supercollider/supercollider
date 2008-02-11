@@ -1,7 +1,6 @@
 
 OSCBundle {
 	var <messages, <preparationMessages;
-	classvar <>safeSizes = false;
 
 	add { arg msg; messages = messages.add(msg) }
 	addAll { arg mgs; messages = messages.addAll(mgs) }
