@@ -6,13 +6,6 @@ Ppar : ListPattern {
 			priorityQ.put(0.0, pattern.asStream);
 		});
 	}
-	purgeQueue { arg priorityQ;
-		while { priorityQ.notEmpty } { priorityQ.pop.next(nil) }
-	}
-		
-	// tests for nil events and relays them to all child streams
-	// nil events come from Pfin, Pfindur, and PatternConductor 
-	// to force streams to end early
 
 	embedInStream { arg inval;
 		var assn;
@@ -33,7 +26,7 @@ Ppar : ListPattern {
 				now = nexttime;	
 			});
 			
-			inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
+			//inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 			
 			while({
 				priorityQ.notEmpty
@@ -49,7 +42,7 @@ Ppar : ListPattern {
 						outval.put(\delta, nexttime - now);
 						
 						inval = outval.yield;
-						inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
+						// inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 						now = nexttime;	
 					},{
 						priorityQ.clear;
@@ -61,7 +54,7 @@ Ppar : ListPattern {
 					outval.put(\delta, nexttime - now);
 					
 					inval = outval.yield;
-					inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
+					// inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 					now = nexttime;	
 				});	
 			});
@@ -69,6 +62,10 @@ Ppar : ListPattern {
 		^inval;
 	}
 	
+	/*
+	purgeQueue { arg priorityQ;
+		while { priorityQ.notEmpty } { priorityQ.pop }
+	}*/
 	
 }	
 
