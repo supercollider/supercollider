@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
@@ -36,9 +36,9 @@
 				<string>rtfd</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>rtf</string>
+			<string>rtfd</string>
 			<key>CFBundleTypeName</key>
-			<string>RTFD (with attachments)</string>
+			<string>RTF With Attachments</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
@@ -49,41 +49,13 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>scd</string>
 				<string>txt</string>
-				<string>TXT</string>
-				<string>text</string>
-				<string>*</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>txt</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/plain</string>
-			</array>
+			<string>scd</string>
 			<key>CFBundleTypeName</key>
 			<string>Plain Text</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>****</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSDocumentClass</key>
-			<string>MyDocument</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>txt</string>
-			<key>CFBundleTypeName</key>
-			<string>Apple SimpleText document</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>TEXT</string>
-				<string>sEXT</string>
-				<string>ttro</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
@@ -99,7 +71,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>sc</string>
 			<key>CFBundleTypeName</key>
-			<string>SC class file</string>
+			<string>Class</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
@@ -120,27 +92,11 @@
 				<string>text/html</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>SC Help (HTML)</string>
+			<string>HTML</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>HTML</string>
 			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSDocumentClass</key>
-			<string>MyDocument</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>scd</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>txt</string>
-			<key>CFBundleTypeName</key>
-			<string>scel document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
@@ -156,9 +112,23 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>quark</string>
 			<key>CFBundleTypeName</key>
-			<string>quark file</string>
+			<string>Quark</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>*</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeName</key>
+			<string>Other</string>
 			<key>LSTypeIsPackage</key>
 			<false/>
 			<key>NSDocumentClass</key>
@@ -203,29 +173,29 @@
 			</array>
 		</dict>
 	</array>
-	<key>UTExportedTypeDeclarations</key> 
-    <array> 
-        <dict> 
-            <key>UTTypeConformsTo</key> 
-            <array> 
-                <string>public.text</string> 
-                <string>public.plain-text</string> 
-            </array> 
-            <key>UTTypeDescription</key> 
-            <string>SC3 text file</string> 
-            <key>UTTypeIdentifier</key> 
-            <string>org.supercollider.sc</string> 
-            <key>UTTypeTagSpecification</key> 
-            <dict> 
-                <key>com.apple.ostype</key> 
-                <string>TEXT</string> 
-                <key>public.filename-extension</key> 
-                <array> 
-                 <string>sc</string> 
-                 <string>scd</string> 
-                </array> 
-            </dict> 
-        </dict> 
-        </array> 
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.text</string>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>SC3 text file</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.supercollider.sc</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<string>TEXT</string>
+				<key>public.filename-extension</key>
+				<array>
+					<string>sc</string>
+					<string>scd</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
