@@ -890,6 +890,19 @@ int SCView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
             SetFloat(slots+3, mBounds.height);
             return errNone;
 	}
+	if (strcmp(name, "absoluteBounds")==0) {
+			SCRect drawBounds;
+            if (!(isKindOfSlot(slot, s_rect->u.classobj))) {
+                return errWrongType;
+            }
+			drawBounds = mLayout.bounds;
+            PyrSlot *slots = slot->uo->slots;
+            SetFloat(slots+0, drawBounds.x);
+            SetFloat(slots+1, drawBounds.y);
+            SetFloat(slots+2, drawBounds.width);
+            SetFloat(slots+3, drawBounds.height);
+			return errNone;
+	}
 	if (strcmp(name, "visible")==0) {
                 SetBool(slot, mVisible);
 		return errNone;
@@ -948,7 +961,14 @@ void SCView::beginDrag(SCPoint where)
 SCContainerView::SCContainerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds), mChildren(0), mNumChildren(0), mRelativeOrigin(false)
 { 
-	mLayout.bounds = mBounds;
+	mLayout.bounds = inBounds;
+	if(mParent ){
+		if(mParent->relativeOrigin()){
+			SCRect pBounds = mParent->getDrawBounds(); // or jsut absolute frame bounds ?
+			mLayout.bounds.x = inBounds.x + pBounds.x;
+			mLayout.bounds.y = inBounds.y + pBounds.y;
+		}
+	}
 }
 
 SCContainerView::~SCContainerView()

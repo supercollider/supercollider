@@ -294,6 +294,8 @@ SCView {  // abstract class
 
 		// temporary implementation until Jan commits a primitive
 	absoluteBounds {
+		^this.getProperty(\absoluteBounds,Rect.new)
+		/* set up unit test to verify against this :
 		var	bounds = this.bounds;
 		this.getParents.do({ |parent|
 			(parent.tryPerform(\relativeOrigin) == true).if({
@@ -302,7 +304,7 @@ SCView {  // abstract class
 				^bounds
 			});
 		});
-		^bounds
+		^bounds*/
 	}
 }
 
