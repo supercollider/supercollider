@@ -7,23 +7,22 @@
 <meta name="Generator" content="Cocoa HTML Writer">
 <meta name="CocoaVersion" content="824.44">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #000000}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016ff}
 span.s1 {color: #000000}
 span.s2 {color: #0000bf}
 span.s3 {color: #007300}
-span.s4 {font: 12.0px Helvetica; color: #0000ff}
-span.s5 {color: #0030dd}
+span.s4 {text-decoration: underline ; color: #0014f4}
+span.s5 {font: 12.0px Helvetica; color: #0016ff}
+span.s6 {color: #0035e2}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -101,7 +100,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>Pn(pattern, repeats)</b> -- repeat the pattern as many times as repeats indicates</p>
 <p class="p3"><b>Pstutter(n, pattern)</b> -- repeat individual values from a pattern <i>n</i> times. <i>n</i> may be a numeric pattern itself.</p>
 <p class="p2"><br></p>
-<p class="p3">You can use patterns inside of other patterns. Here, we generate random numbers over a gradually increasing range.</p>
+<p class="p3">You can use patterns inside of other patterns. Here, we generate random numbers over a gradually increasing range. The upper bound on the random number generator is a stream that starts at 0.01, then proceeds to 0.02, 0.03 and so on, as the plot shows clearly.</p>
 <p class="p2"><br></p>
 <p class="p5">p = <span class="s2">Pwhite</span>(0.0, <span class="s2">Pseries</span>(0.01, 0.01, <span class="s2">inf</span>), 100).asStream;</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// .all pulls from the stream until it returns nil</p>
@@ -140,19 +139,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">The first thing to notice is how short, concise and clean the syntax is. Nothing is extra; it focuses all your attention on what is supposed to play and minimizes distractions from program logic.</p>
 <p class="p2"><br></p>
-<p class="p3">The <a href="../../Streams-Patterns-Events/Streams.html">Streams</a> documentation explains how all of this works in detail. The high level overview goes like this:</p>
+<p class="p3">The <a href="../../Streams-Patterns-Events/Streams.html"><span class="s4">Streams</span></a> documentation explains how all of this works in detail. The high-level overview goes like this:</p>
 <p class="p2"><br></p>
 <p class="p3">- The Pbind pattern generates Event objects, which contain names and values describing how the note is supposed to sound.</p>
 <p class="p2"><br></p>
 <p class="p3">- It does this by reading through the 'name, pattern' pairs, getting values from each pattern stream in turn and adding the values to the result Event.</p>
 <p class="p2"><br></p>
-<p class="p3">- Then the event is played. It interprets the values according to a set of defaults and rules encoded within the event prototype and performs an action in response. The default action is to play a new synth on the server. You can choose from several other actions defined in the default event prototype, which are documented in the streams series of help files.</p>
+<p class="p3">- Then the event is played. It interprets the values according to a set of defaults and rules encoded within the event prototype and performs an action in response. The default action is to play a new synth on the server. You can choose from several other actions defined in the default event prototype, which are documented in the Streams series of help files.</p>
 <p class="p2"><br></p>
 <p class="p3">- To play the synth, the event needs to know which values to pass as arguments to the server. SuperCollider can store information about a synthdef into a library of synthdef descriptions using the 'store' and 'memStore' methods. <b>'.store'</b> corresponds to <b>'.load(s)'</b>, saving the synthdef file on disk and reading argument information from the disk file. <b>'.memStore'</b> is like <b>'.send(s)'</b>; the synthdef is sent directly to the server with no disk file, and the description library extracts the required information from the synthdef in memory.</p>
 <p class="p2"><br></p>
 <p class="p3">- The delta value in the event tells SuperCollider how long to wait until playing the next event.</p>
 <p class="p2"><br></p>
-<p class="p3">An introductory tutorial cannot cover all the possibilities. Learning a set of core pattern classes is important; the <a href="../../Streams-Patterns-Events/Streams-Patterns-Events1.html">Streams-Patterns-Events</a> help file series is a more comprehensive introduction. Pattern manipulations, and ways to combine or nest patterns, open up the field to nearly every compositional need.</p>
+<p class="p3">An introductory tutorial cannot cover all the possibilities. Learning a set of core pattern classes is important; the <a href="../../Streams-Patterns-Events/Streams-Patterns-Events1.html"><span class="s4">Streams-Patterns-Events</span></a> help file series is a more comprehensive introduction. Pattern manipulations, and ways to combine or nest patterns, open up the field to nearly every compositional need.</p>
 <p class="p2"><br></p>
 <p class="p3">For example, we can generate a rhythmic (but not necessarily metric) bassline by choosing randomly from a set of Pbind sequences. (Some of these will use Pmono, which is a variant of Pbind designed to play monophonic synth lines.) While this is a bigger block of code, its structure is fairly simple and it brings together several concepts introduced in the sequencing tutorials. Note that the quant argument to play is used to keep a couple of distinct sequences together on the beat.</p>
 <p class="p2"><br></p>
@@ -218,17 +217,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p7"><b>Further reading:</b></p>
 <p class="p2"><br></p>
-<p class="p10"><a href="../../Streams-Patterns-Events/Streams.html">Streams</a><span class="s1"><span class="Apple-tab-span">	</span><a href="../../Streams-Patterns-Events/Streams-Patterns-Events1.html"><span class="s4">Streams-Patterns-Events</span></a></span></p>
+<p class="p10"><span class="s4"><a href="../../Streams-Patterns-Events/Streams.html">Streams</a></span><span class="s1"><span class="Apple-tab-span">	</span><a href="../../Streams-Patterns-Events/Streams-Patterns-Events1.html"><span class="s5">Streams-Patterns-Events</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p7"><b>Suggested exercises:</b></p>
 <p class="p2"><br></p>
 <p class="p3">- Choose a familiar tune and write a Pbind for it, using any synthdef you like.</p>
 <p class="p3">- Add as many phrases as you wish to the bassline sequence in the previous example.</p>
 <p class="p2"><br></p>
-<p class="p11">____________________</p>
-<p class="p12"><br></p>
-<p class="p11">This document is part of the tutorial <b>Getting Started With SuperCollider</b>.</p>
-<p class="p12"><br></p>
-<p class="p11">Click here to return to the table of Contents: <a href="Getting Started With SC.html"><span class="s5">Getting Started With SC</span></a></p>
+<p class="p3">____________________</p>
+<p class="p2"><br></p>
+<p class="p3">This document is part of the tutorial <b>Getting Started With SuperCollider</b>.</p>
+<p class="p2"><br></p>
+<p class="p3">Click here to return to the table of Contents: <a href="Getting Started With SC.html"><span class="s6">Getting Started With SC</span></a></p>
 </body>
 </html>
