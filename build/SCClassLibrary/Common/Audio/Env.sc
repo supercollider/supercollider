@@ -58,6 +58,9 @@ Env {
 		loopNode = z;
 		array = nil;
 	}
+	== { arg that;
+		^this.compareObject(that,['levels','times','curves','releaseNode','loopNode'])
+	}
 	
 	asArray {
 		if (array.isNil) { array = this.prAsArray }

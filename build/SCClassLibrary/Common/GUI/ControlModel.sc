@@ -16,13 +16,24 @@ Spec {
 		^this.subclassResponsibility(thisMethod)
 	}
 	== { arg that;
-		if(this === that,{ ^true });
-		if(this.class !== that.class,{ ^false });
-		this.instVarSize.do({ arg i;
-			if(this.instVarAt(i) != that.instVarAt(i),{ ^false });
-		});
-		^true
+		^this.compareObject(that)
+//		if(this === that,{ ^true });
+//		if(this.class !== that.class,{ ^false });
+//		this.instVarSize.do({ arg i;
+//			if(this.instVarAt(i) != that.instVarAt(i),{ ^false });
+//		});
+//		^true
 	}
+
+	printOn { arg stream;
+		var args;
+		this.printClassNameOn(stream);
+		args = this.storeArgs;
+		if(args.notEmpty) {
+			stream << "(" <<<* args << ")";
+		}
+	}
+
 }
 
 ControlSpec : Spec {
@@ -134,6 +145,11 @@ Warp {
 	asSpecifier {
 		^warps.findKeyForValue(this.class)
 	}
+	== { arg that;
+		if(this === that,{ ^true; });
+		if(that.class !== this.class,{ ^false });
+		^true
+	}
 }
 
 LinearWarp : Warp {
@@ -182,6 +198,11 @@ CurveWarp : Warp {
 		^log((b - value) / a) / curve
 	}
 	asSpecifier { ^curve }
+	== { arg that;
+		if(this === that,{ ^true; });
+		if(that.class !== this.class,{ ^false });
+		^curve == that.instVarAt(\curve)
+	}
 }
 
 CosineWarp : LinearWarp {
