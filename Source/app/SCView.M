@@ -1738,7 +1738,7 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 int SCScrollTopView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	char *name = symbol->name;
-	if (strcmp(name, "bounds")==0) {
+	if (strcmp(name, "absoluteBounds")==0) {
 		if (!(isKindOfSlot(slot, s_rect->u.classobj))) {
 			return errWrongType;
 		}
