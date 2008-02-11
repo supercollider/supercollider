@@ -642,18 +642,19 @@ class PsycolliderCodeWin(PsycolliderWindow):
                 newTabSize = int(getNewTabSize.GetValue())
                 if newTabSize <= 0:
                     raise
+                    
+                for window in wx.GetApp().GetOpenWindows():
+                    if type(window) == PsycolliderCodeWin:
+                        window.codeSubWin.SetTabSize(newTabSize)
+            
+                self.config.SetPath("/CodeWindowOptions")
+                self.config.WriteInt('TabSize', newTabSize)
+            
             except:
                 WriteInLogWindow("Invalid tab size, ignoring. Please enter a positive integer\n")
                 return
                 
         getNewTabSize.Destroy()
-   
-        for window in wx.GetApp().GetOpenWindows():
-            if type(window) == PsycolliderCodeWin:
-                window.codeSubWin.SetTabSize(newTabSize)
-        
-        self.config.SetPath("/CodeWindowOptions")
-        self.config.WriteInt('TabSize', newTabSize)
 
     def GetSelectedText(self):
         return self.codeSubWin.GetSelectedTextUTF8()
