@@ -58,6 +58,10 @@ Float : SimpleNumber {
 	
 	storeOn { |stream|
 		var	str = super.asString;
-		stream << (if(str != "inf" and: { str.find(".").isNil }) { str ++ ".0" } { str })
+		stream << str;
+		// if it doesn't already have a . or is 1e-05 then add a .0 to force it to Float
+		if(str != "inf" and: { str.find(".").isNil } and: { str.find("e").isNil},{
+			stream << ".0";
+		})
 	}
 }
