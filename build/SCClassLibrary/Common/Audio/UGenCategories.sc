@@ -1,7 +1,7 @@
 /*
 Categorisation of SC UGens, created by Dan Stowell, 2007.
 */
-+ A2K             { }
++ A2K             { *categories { ^ #["UGens>Conversion"] } }
 + AbstractIn      { *categories { ^ #["UGens>I/O"] } }
 + AbstractOut     { *categories { ^ #["UGens>I/O"] } }
 + AmpComp         { *categories { ^ #["UGens>Analysis>Amplitude"] } }
@@ -10,6 +10,9 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + AudioIn         { *categories { ^ #["UGens>I/O"] } }
 + Ball            { *categories { ^ #["UGens>Filters>Nonlinear"] } }
 + BasicOpUGen     { }
++ BeatTrack       { *categories { ^ #["UGens>Analysis", "UGens>FFT"] } }
++ BeatTrack2      { *categories { ^ #["UGens>Analysis", "UGens>FFT"] } }
++ BiPanB2         { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
 + Blip            { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + BufCombN        { *categories { ^ #["UGens>Delays"] } }
 + BufDelayN       { *categories { ^ #["UGens>Delays"] } }
@@ -25,13 +28,16 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Convolution     { *categories { ^ #["UGens>FFT"] } }
 + Convolution2    { *categories { ^ #["UGens>FFT"] } }
 + Convolution2L   { *categories { ^ #["UGens>FFT"] } }
++ StereoConvolution2L   { *categories { ^ #["UGens>FFT"] } }
 + Convolution3    { *categories { ^ #["UGens>FFT"] } }
 + COsc            { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Crackle         { *categories { ^ #["UGens>Generators>Stochastic"] } }
++ DecodeB2         { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
 + Dbrown          { *categories { ^ #["UGens>Demand"] } }
 + Dbufrd          { *categories { ^ #["UGens>Demand"] } }
++ Dbufwr          { *categories { ^ #["UGens>Demand"] } }
 + DC              { *categories { ^ #["UGens>Generators>Single-value"] } }
-+ DegreeToKey     { }
++ DegreeToKey     { *categories { ^ #["UGens>Conversion"] } }
 + Delay1          { *categories { ^ #["UGens>Delays"] } }
 + DelayN          { *categories { ^ #["UGens>Delays"] } }
 + Demand          { *categories { ^ #["UGens>Demand"] } }
@@ -46,12 +52,15 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Dust            { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Dust2           { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Duty            { *categories { ^ #["UGens>Demand"] } }
++ Klang           { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + Dwhite          { *categories { ^ #["UGens>Demand"] } }
-+ DynKlank        { *categories { ^ #["UGens>Generators>Deterministic"] } }
++ DynKlang        { *categories { ^ #["UGens>Generators>Deterministic"] } }
++ DynKlank        { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + Env             {  }
 + EnvGen          { *categories { ^ #["UGens>Envelopes"] } }
 + ExpRand         { *categories { ^ #["UGens>Generators>Stochastic", "UGens>Generators>Single-value"]} }
-+ FFT             { *categories { ^ #["UGens>FFT"] } } 
++ FFT             { *categories { ^ #["UGens>FFT"] } }
++ FFTTrigger	    { *categories { ^ #["UGens>FFT"] } }
 + Filter          { *categories { ^ #["UGens>Filters>Linear"] } }
 + Formant         { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Free            { *categories { ^ #["UGens>Synth control"] } }
@@ -64,6 +73,10 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Gendy1          { *categories { ^ #["UGens>Generators>Stochastic"] } }        
 + Gendy2          { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Gendy3          { *categories { ^ #["UGens>Generators>Stochastic"] } }
++ GrainBuf        { *categories { ^ #["UGens>Buffer", "UGens>Generators>Granular"] } }
++ GrainFM         { *categories { ^ #["UGens>Generators>Granular"] } }
++ GrainSin        { *categories { ^ #["UGens>Generators>Granular"] } }
++ GrainIn         { *categories { ^ #["UGens>Generators>Granular"] } }
 + GVerb           { *categories { ^ #["UGens>Reverb"] } }
 + Hasher          { *categories { ^ #["UGens>Filters>Nonlinear"] } }
 + Hilbert         { *categories { ^ #["UGens>Filters>Nonlinear"] } }
@@ -77,10 +90,10 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + InRange         { *categories { ^ #["UGens>Maths"] } }
 + InRect          { *categories { ^ #["UGens>Maths"] } }
 + IRand           { *categories { ^ #["UGens>Generators>Stochastic", "UGens>Generators>Single-value"]} }
-+ K2A             { }
++ K2A             { *categories { ^ #["UGens>Conversion"] } }
 + KeyTrack        { *categories { ^ #["UGens>Analysis>Pitch"] } }
 + KeyState        { *categories { ^ #["UGens>User interaction"] } }
-+ Klang           { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
++ Klang           { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Klank           { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + LastValue       { *categories { ^ #["UGens>Trigger"] } }
 + Latch           { *categories { ^ #["UGens>Trigger"] } }
@@ -109,7 +122,9 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Osc             { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + OscN            { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + PackFFT		    { *categories { ^ #["UGens>FFT"] } }
-+ Panner          { *categories { ^ #["UGens>Multichannel"] } }
++ PanB            { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
++ PanB2           { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
++ Panner          { *categories { ^ #["UGens>Multichannel>Panners"] } }
 + Pause           { *categories { ^ #["UGens>Synth control"] } }
 + PauseSelf       { *categories { ^ #["UGens>Synth control"] } }
 + PauseSelfWhenDone {  *categories { ^ #["UGens>Synth control"] } }
@@ -129,6 +144,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + PV_BinShift     { *categories { ^ #["UGens>FFT"] } }
 + PV_BinWipe      { *categories { ^ #["UGens>FFT"] } }
 + PV_BrickWall    { *categories { ^ #["UGens>FFT"] } }
++ PV_ChainUGen    { *categories { ^ #["UGens>FFT"] } }
 + PV_ConformalMap { *categories { ^ #["UGens>FFT"] } }
 + PV_Diffuser     { *categories { ^ #["UGens>FFT"] } }
 + PV_HainsworthFoote{ *categories { ^ #["UGens>FFT"] } }
@@ -148,20 +164,27 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + RandID          { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + RandSeed        { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + RecordBuf       { *categories { ^ #["UGens>Buffer"] } }
++ Rotate2         { *categories { ^ #["UGens>Multichannel>Ambisonics","UGens>Multichannel>Panners"] } }
 + RunningSum      { *categories { ^ #["UGens>Maths"] } }
 + Saw             { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + ScopeOut        { *categories { ^ #["UGens>Buffer"] } }
-+ Select          { *categories { ^ #["UGens>Multichannel"] } }
++ Select          { *categories { ^ #["UGens>Multichannel>Select"] } }
++ SelectX         { *categories { ^ #["UGens>Multichannel>Select"] } }
++ SelectXFocus    { *categories { ^ #["UGens>Multichannel>Select"] } }
 + SendTrig        { *categories { ^ #["UGens>Trigger"] } }
 + Silent          { *categories { ^ #["UGens>Generators>Single-value"] } }
 + SinOsc          { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + SinOscFB        { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Slew            { *categories { ^ #["UGens>Filters>Nonlinear"] } }
++ SpecCentroid    { *categories { ^ #["UGens>Analysis", "UGens>FFT"] } }
++ SpecFlatness    { *categories { ^ #["UGens>Analysis", "UGens>FFT"] } }
++ SpecPcile       { *categories { ^ #["UGens>Analysis", "UGens>FFT"] } }
 + Spring          { *categories { ^ #["UGens>Filters>Nonlinear"] } }
 + Stepper         { *categories { ^ #["UGens>Trigger"] } }
 + Sweep           { *categories { ^ #["UGens>Trigger"] } }
 + SyncSaw         { *categories { ^ #["UGens>Generators>Deterministic"] } }
-+ T2K             { }
++ T2A             { *categories { ^ #["UGens>Conversion"] } }
++ T2K             { *categories { ^ #["UGens>Conversion"] } }
 + Tap             { *categories { ^ #["UGens>Buffer"] } }
 + TBall           { *categories { ^ #["UGens>Filters>Nonlinear"] } }
 + TDelay          { *categories { ^ #["UGens>Trigger", "UGens>Delays"] } }
@@ -173,6 +196,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + TRand           { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Trig1           { *categories { ^ #["UGens>Trigger"] } }
 + TWindex         { *categories { ^ #["UGens>Generators>Stochastic"] } }
++ TWChoose        { *categories { ^ #["UGens>Multichannel>Select"] } }
 + UGen            { *categories { ^ #["UGens>Unclassified"] } }
 + UnpackFFT	    { *categories { ^ #["UGens>FFT"] } }
 + Unpack1FFT	    { *categories { ^ #["UGens>FFT"] } }
@@ -182,6 +206,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + VOsc3           { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Warp1           { *categories { ^ #["UGens>Buffer", "UGens>Generators>Granular"] } }
 + WhiteNoise      { *categories { ^ #["UGens>Generators>Stochastic"] } }
-+ XFade           { *categories { ^ #["UGens>Multichannel"] } }
++ XFade           { *categories { ^ #["UGens>Multichannel>Select"] } }
 + XLine           { *categories { ^ #["UGens>Envelopes"] } }
 + ZeroCrossing    { *categories { ^ #["UGens>Analysis>Pitch"] } }
