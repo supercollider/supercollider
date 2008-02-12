@@ -2,7 +2,7 @@ SimpleNumber : Number {
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 
-	isValidUGenInput { ^true }
+	isValidUGenInput { ^this.isNaN.not }
 	numChannels { ^1 }
 	
 	magnitude { ^this.abs }
@@ -269,7 +269,10 @@ SimpleNumber : Number {
 			a * (m * exp(x) * rTau + 1) / (n * exp(x) * rTau + 1)
 		}
 	}
-	 
+	gauss { arg standardDeviation;
+		^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
+	}
+
 	asPoint { ^Point.new(this, this) }
 
 	asWarp { arg spec; ^CurveWarp.new(spec, this) }
