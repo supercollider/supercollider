@@ -1,3 +1,6 @@
 Usage:
 
-Put any optional installs (SwingOSC, sc3-plugins, etc) into the ./optional directory. Run ./package_osx to build a disk image and run ./package_source to build a source tarball.
+1- Build SuperCollider.
+2- Put any optional installs (SwingOSC, sc3-plugins, etc) into the ./optional directory. 
+3- Run ./package_osx to build a disk image.
+4- Run ./package_source to build a source tarball.
