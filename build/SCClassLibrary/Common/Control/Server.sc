@@ -132,7 +132,7 @@ ServerOptions
 }
 
 Server : Model {
-	classvar <>local, <>internal, <>default, <>named, <>set, <>program, <>defaultRecDir="recordings";
+	classvar <>local, <>internal, <>default, <>named, <>set, <>program;
 	
 	var <name, <addr, <clientID=0;
 	var <isLocal, <inProcess;
