@@ -429,6 +429,6 @@ IdentityDictionary : Dictionary {
 		}
 	}
 	asQuant { ^this.copy }
-	offset { ^this[\offset] }		// for synchWithQuant()
+	timingOffset { ^this[\timingOffset] }		// for synchWithQuant()
 }
 
