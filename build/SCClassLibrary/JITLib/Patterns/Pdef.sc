@@ -5,8 +5,8 @@ PatternProxy : Pattern {
 	var <source, <pattern, <>envir;
 	var >clock, quant, <>condition=true, reset;
 	
-				// quant new pattern insertion. can be [quant, phase, offset]
-				// in EventPatternProxy it can be [quant, phase, offset, onset]
+				// quant new pattern insertion. can be [quant, phase, timingOffset]
+				// in EventPatternProxy it can be [quant, phase, timingOffset, onset]
 				
 	classvar <>defaultQuant, defaultEnvir;
 	
@@ -48,8 +48,8 @@ PatternProxy : Pattern {
 	
 	pattern_ { arg pat; this.source_(pat) }
 	
-	offset_ { arg val; quant = quant.instill(2, val) }
-	offset { arg val; ^quant.obtain(2) }
+	timingOffset_ { arg val; quant = quant.instill(2, val) }
+	timingOffset { arg val; ^quant.obtain(2) }
 	phase_ { arg val; quant = quant.instill(1, val) }
 	phase { arg val; ^quant.obtain(1) }
 	quantBeat_ { arg val; quant = quant.instill(0, val) }
