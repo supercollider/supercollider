@@ -674,9 +674,18 @@ Server : Model {
 	}
 	
 	prepareForRecord { arg path;
-		if (path.isNil) { 
-			path = defaultRecDir ++ "/SC_" ++ Date.localtime.stamp 
-							++ "." ++ recHeaderFormat; 
+		if (path.isNil) {
+			if(File.exists(thisProcess.platform.recordingsDir).not) {
+				systemCmd("mkdir" + thisProcess.platform.recordingsDir.quote);
+			};
+
+			// temporary kludge to fix Date's brokenness on windows
+			if(thisProcess.platform.name == \windows) {
+				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Main.elapsedTime.round(0.01) ++ "." ++ recHeaderFormat;
+
+			} {
+				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;
+			};
 		};
 		recordBuf = Buffer.alloc(this, 65536, recChannels,
 			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},

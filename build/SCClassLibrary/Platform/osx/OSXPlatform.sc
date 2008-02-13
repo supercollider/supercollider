@@ -1,5 +1,10 @@
 OSXPlatform : UnixPlatform
 {
+	initPlatform {
+		super.initPlatform;
+		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
+	}
+
 	name { ^\osx }
 
 	startupFiles {

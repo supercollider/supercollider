@@ -2,7 +2,7 @@ Main : Process {
 
 	classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="rc3";
 
-	var platform, argv;
+	var <platform, argv;
 	var <>recvOSCfunc;
 	
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
@@ -10,7 +10,14 @@ Main : Process {
 	var	<>nowExecutingPath;
 
 	startup {
+		// setup the platform first so that class initializers can call platform methods.
+		// create the platform, then intialize it so that initPlatform can call methods
+		// that depend on thisProcess.platform methods.
+		platform = this.platformClass.new;
+		platform.initPlatform;
+	
 		super.startup;
+		
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
 		GUI.fromID( this.platform.defaultGUIScheme );
@@ -71,10 +78,7 @@ Main : Process {
 //	platformClass {		
 //		^Platform
 //	}
-	
-	platform {
-		^platform ?? { platform = this.platformClass.new }
-	}
+
 	argv {
 		^argv ?? { argv = this.prArgv }
 	}
