@@ -13,7 +13,7 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-span.s1 {color: #0022ed}
+span.s1 {color: #0029f3}
 span.s2 {color: #0000bf}
 span.s3 {color: #007300}
 span.s4 {color: #606060}
@@ -33,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">phase: An offset to push the scheduling time into the middle of the bar. +1 is one beat later, -1 is one beat earlier. A negative phase is legal, but it might result in a scheduling time that is later than the current time, in which case scheduling will be incorrect. It's your responsibility to take this into account.</p>
 <p class="p2"><br></p>
-<p class="p3">offset: For use with patterns only -- this enables patterns to run slightly ahead of their sounding time on the clock, giving you control over the order in which threads execute.</p>
+<p class="p3">timingOffset: For use with patterns only -- this enables patterns to run slightly ahead of their sounding time on the clock, giving you control over the order in which threads execute.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Examples</b></p>
 <p class="p2"><br></p>
@@ -51,7 +51,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Every point in time can be precisely identified this way, and it can be related back easily to the Western concept of meter or time signature.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b>*new(quant, phase, offset)</b></p>
+<p class="p3"><b>*new(quant, phase, timingOffset)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Explicitly create an instance of Quant, which may be used and reused. Phase and offset may be nil, in which case they are treated as 0. If quant is nil, it will schedule for the current time exactly.</p>
 <p class="p2"><br></p>
