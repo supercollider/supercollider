@@ -57,10 +57,10 @@ Event : Environment {
 	// This method keeps ~timingOffset and Quant.offset the same.
 	
 	synchWithQuant { | quant |
-		if(quant.offset.notNil) {
-			^this.copy.put(\timingOffset, quant.offset)
+		if(quant.timingOffset.notNil) {
+			^this.copy.put(\timingOffset, quant.timingOffset)
 		} {
-			quant.offset = this[\timingOffset];
+			quant.timingOffset = this[\timingOffset];
 			^this
 		};
 	}
