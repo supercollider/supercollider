@@ -27,6 +27,9 @@ Maybe : Ref {
 		^this.notYetImplemented(thisMethod)
 		//^value.valueArrayEnvir(args) ? defaultValue  
 	}
+	functionPerformList { arg selector, arglist;
+		^this.performList(selector, arglist)
+	}
 	
 	// this allows recursion
 	apply { arg ... args;
