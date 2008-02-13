@@ -11,7 +11,7 @@ MultiChanRecorder {
 		busses = buses;
 	}
 	prepareForRecord { arg basePath;
-		path = basePath ?? (Server.defaultRecDir ++ "/SC_" ++ Date.localtime.stamp);
+		path = basePath ?? (thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp);
 		recordBufs = busses.collect({ arg b,i;
 			Buffer.alloc(b.server, 65536, b.numChannels,{ arg buf;
 				var chanNum="",chanPath;

@@ -290,13 +290,17 @@ String[char] : RawArray {
 
 	// path concatenate
 	+/+ { arg path;
+		var pathSeparator = thisProcess.platform.pathSeparator;
+		
 		if (path.respondsTo(\fullPath)) {
 			^PathName(this +/+ path.fullPath)
 		};
-		if (this.last == $/ or: { path.first == $/ }) {
+		
+		if (this.last == pathSeparator or: { path.first == pathSeparator }) {
 			^this ++ path
 		};
-		^this ++ "/" ++ path
+		
+		^this ++ pathSeparator ++ path
 	}
 
 	// runs a unix command and returns the result code.

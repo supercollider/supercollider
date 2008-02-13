@@ -1,14 +1,12 @@
 Platform
 {
-	var <classLibraryDir, <helpDir, features;
+	var <classLibraryDir, <helpDir, <>recordingsDir, features;
 
-	*new {
-		^super.new.initPlatform
-	}
 	initPlatform {
 		classLibraryDir = thisMethod.filenameSymbol.asString.dirname.dirname;
 		helpDir = thisMethod.filenameSymbol.asString.dirname.dirname.dirname ++ "/Help";
 		features = IdentityDictionary.new;
+		recordingsDir = this.userAppSupportDir +/+ "Recordings";
 	}
 
 	name { ^this.subclassResponsibility }
@@ -89,5 +87,5 @@ UnixPlatform : Platform
 		arch = pipe.getLine;
 		pipe.close;
 		^arch.asSymbol;
-		}
+	}
 }
