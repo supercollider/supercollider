@@ -746,8 +746,8 @@ void Convolution2L_next(Convolution2L *unit, int wrongNumSamples)
 			riffts(unit->m_tempbuf, log2n, 1, cosTable[log2n]);
 
 			// now crossfade between outbuf and tempbuf
-			float fact1 = unit->m_cfpos/unit->m_cflength;     // crossfade amount startpoint
-			float rc = 1/(unit->m_cflength*unit->m_insize); //crossfade amount increase per sample
+			float fact1 = (float) unit->m_cfpos/unit->m_cflength;     // crossfade amount startpoint
+			float rc = (float) 1./(unit->m_cflength*unit->m_insize); //crossfade amount increase per sample
 			float * p4 = unit->m_outbuf;
 			float * p5 = unit->m_tempbuf;
 			for ( int i=0; i < unit->m_insize; i++ )
@@ -772,6 +772,7 @@ void Convolution2L_next(Convolution2L *unit, int wrongNumSamples)
 					}
 				}
 			unit->m_cfpos++;
+		//	printf("cfpos %i, cf_length %i \n", unit->m_cfpos, unit->m_cflength);
 			if ( unit->m_cfpos == unit->m_cflength ) // at end of crossfade, update the current buffer index
 				{
 				if ( unit->m_curbuf == 0 )
@@ -1046,8 +1047,8 @@ void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 			riffts(unit->m_tempbuf[1], log2n, 1, cosTable[log2n]);
 
 			// now crossfade between outbuf and tempbuf
-			float fact1 = unit->m_cfpos/unit->m_cflength;     // crossfade amount startpoint
-			float rc = 1/(unit->m_cflength*unit->m_insize); //crossfade amount increase per sample
+			float fact1 = (float) unit->m_cfpos/unit->m_cflength;     // crossfade amount startpoint
+			float rc = (float) 1./(unit->m_cflength*unit->m_insize); //crossfade amount increase per sample
 			float * p4L = unit->m_outbuf[0];
 			float * p5L = unit->m_tempbuf[0];
 			float * p4R = unit->m_outbuf[1];
