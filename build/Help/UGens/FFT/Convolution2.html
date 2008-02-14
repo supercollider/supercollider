@@ -11,19 +11,23 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #2146db}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d281b}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #264cd6}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001fe8}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902f20}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6c3725}
-span.s1 {color: #59643a}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #653928}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+span.s1 {color: #5b633c}
 span.s2 {text-decoration: underline}
 span.s3 {color: #000000}
-span.s4 {color: #0024b5}
+span.s4 {color: #062cb0}
 span.s5 {color: #606060}
-span.s6 {color: #3b6c19}
-span.s7 {color: #1230a3}
+span.s6 {color: #45691f}
+span.s7 {color: #16359f}
+span.s8 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -41,7 +45,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>trigger</b> - update the kernel on a change from &lt;=0 to &gt;0</p>
 <p class="p3"><b>framesize </b>- size of FFT frame, must be a power of two. Convolution uses twice this number internally, maximum value you can give this argument is 2^16=65536. Note that it gets progressively more expensive to run for higher powers! 512, 1024, 2048, 4096 standard.</p>
 <p class="p4"><br></p>
-<p class="p6"><span class="s3">See also <a href="Convolution2L.html">Convolution2L</a>.</span></p>
+<p class="p6"><span class="s3">See also <a href="Convolution2L.html"><span class="s2">Convolution2L</span></a>.</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -63,13 +67,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p8">(</p>
-<p class="p8"><span class="s4">SynthDef</span>( <span class="s5">"conv-test"</span>, { <span class="s4">arg</span> kernel, trig=0;</p>
+<p class="p8"><span class="s4">SynthDef</span>( <span class="s5">"conv-test"</span>, { <span class="s4">arg</span> kernel, t_trig=0;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">var</span> input;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span>input=<span class="s4">Impulse</span>.ar(1);</p>
 <p class="p2"><br></p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0,<span class="s4">Convolution2</span>.ar(input,kernel,trig,2048, 0.5));</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0,<span class="s4">Convolution2</span>.ar(input,kernel,t_trig,2048, 0.5));</p>
 <p class="p8">}).send(s)</p>
 <p class="p2"><br></p>
 <p class="p8">)</p>
@@ -79,20 +83,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p7">// changing the buffer number:</p>
 <p class="p8">x.set(<span class="s6">\kernel</span>,c);</p>
-<p class="p8">x.set(<span class="s6">\trig</span>,0);</p>
-<p class="p7"><span class="s3">x.set(</span><span class="s6">\trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p7"><span class="s3">x.set(</span><span class="s6">\t_trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
 <p class="p8">x.set(<span class="s6">\kernel</span>,d);</p>
-<p class="p8">x.set(<span class="s6">\trig</span>,0);</p>
-<p class="p7"><span class="s3">x.set(</span><span class="s6">\trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p7"><span class="s3">x.set(</span><span class="s6">\t_trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
 <p class="p2"><br></p>
 <p class="p8">d.zero;</p>
 <p class="p7"><span class="s3">40.do({ </span><span class="s4">|it|</span><span class="s3"> d.set(20*it+10, 1); });</span>// changing the buffers' contents</p>
-<p class="p8">x.set(<span class="s6">\trig</span>,0);</p>
-<p class="p7"><span class="s3">x.set(</span><span class="s6">\trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p7"><span class="s3">x.set(</span><span class="s6">\t_trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
 <p class="p2"><br></p>
 <p class="p8">x.set(<span class="s6">\kernel</span>,b);</p>
-<p class="p8">x.set(<span class="s6">\trig</span>,0);</p>
-<p class="p7"><span class="s3">x.set(</span><span class="s6">\trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p7"><span class="s3">x.set(</span><span class="s6">\t_trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -147,24 +147,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p8">//one last example</p>
-<p class="p8">(</p>
-<p class="p8">b = <span class="s7">Buffer</span>.alloc(s, 512, 1);</p>
-<p class="p8">b.sine1(1.0/[1,2,3,4,5,6], <span class="s7">true</span>, <span class="s7">true</span>, <span class="s7">true</span>);</p>
-<p class="p8">)</p>
-<p class="p2"><br></p>
-<p class="p8">(</p>
-<p class="p8"><span class="Apple-tab-span">	</span>{ <span class="s7">var</span> input, kernel;</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>input=<span class="s7">AudioIn</span>.ar(1);</p>
-<p class="p2"><br></p>
-<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s7">Out</span>.ar(0,<span class="s7">Convolution2</span>.ar(input,b,0, 512, 0.5));</p>
-<p class="p8"><span class="Apple-tab-span">	</span> }.play;</p>
-<p class="p2"><br></p>
-<p class="p8">)</p>
-<p class="p2"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p12">//one last example</p>
+<p class="p13">(</p>
+<p class="p13">b = <span class="s8">Buffer</span>.alloc(s, 512, 1);</p>
+<p class="p13">b.sine1(1.0/[1,2,3,4,5,6], <span class="s8">true</span>, <span class="s8">true</span>, <span class="s8">true</span>);</p>
+<p class="p13">)</p>
+<p class="p11"><br></p>
+<p class="p13">(</p>
+<p class="p13"><span class="Apple-tab-span">	</span>{ <span class="s8">var</span> input, kernel;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span>input=<span class="s8">AudioIn</span>.ar(1);</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="s8">Out</span>.ar(0,<span class="s8">Convolution2</span>.ar(input,b,0, 512, 0.5));</p>
+<p class="p13"><span class="Apple-tab-span">	</span> }.play;</p>
+<p class="p11"><br></p>
+<p class="p13">)</p>
+<p class="p11"><br></p>
 </body>
 </html>

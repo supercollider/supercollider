@@ -11,22 +11,20 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #2146db}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d281b}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #264cd6}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902f20}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-span.s1 {color: #0000ff}
-span.s2 {color: #59643a}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad1d13}
+span.s1 {color: #0022f8}
+span.s2 {color: #5b633c}
 span.s3 {text-decoration: underline}
-span.s4 {text-decoration: underline ; color: #001fe8}
+span.s4 {text-decoration: underline ; color: #002ce2}
 span.s5 {color: #000000}
-span.s6 {color: #0024b5}
+span.s6 {color: #062cb0}
 span.s7 {color: #606060}
-span.s8 {color: #0000bf}
-span.s9 {color: #007300}
-span.s10 {color: #3b6c19}
+span.s8 {color: #0019ba}
+span.s9 {color: #2b6f11}
+span.s10 {color: #45691f}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -46,7 +44,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>bufnumR </b>- buffer index for the fixed kernel of the right channel, may be modulated in combination with the trigger</p>
 <p class="p3"><b>trigger</b> - update the kernel on a change from &lt;=0 to &gt;0</p>
 <p class="p3"><b>framesize </b>- size of FFT frame, must be a power of two. Convolution uses twice this number internally, maximum value you can give this argument is 2^16=65536. Note that it gets progressively more expensive to run for higher powers! 512, 1024, 2048, 4096 standard.</p>
-<p class="p3"><b>crossfade</b> - The number of periods over which a crossfade is made. The default is 1.</p>
+<p class="p3"><b>crossfade</b> - The number of periods over which a crossfade is made. The default is 1. This must be an integer.</p>
 <p class="p4"><br></p>
 <p class="p3">See also <a href="Convolution2.html"><span class="s4">Convolution2</span></a> and <a href="Convolution2L.html"><span class="s1">Convolution2L</span></a>.</p>
 <p class="p2"><br></p>
@@ -70,36 +68,32 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p7">(</p>
-<p class="p7"><span class="s6">SynthDef</span>( <span class="s7">"conv-test"</span>, { <span class="s6">arg</span> kernel1, kernel2, trig=0;</p>
+<p class="p7"><span class="s6">SynthDef</span>( <span class="s7">"conv-test"</span>, { <span class="s6">arg</span> kernel1, kernel2, t_trig=0;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s6">var</span> input;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>input=<span class="s6">Impulse</span>.ar(1);</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0,Stereo<span class="s6">Convolution2L</span>.ar(input,kernel1, kernel2,trig,2048, 0.5));</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0,Stereo<span class="s6">Convolution2L</span>.ar(input,kernel1, kernel2,trig,2048, 1, 0.5));</p>
 <p class="p7">}).send(s)</p>
 <p class="p2"><br></p>
 <p class="p7">)</p>
 <p class="p2"><br></p>
-<p class="p8"><br></p>
-<p class="p9">x = <span class="s8">Synth</span>.new(<span class="s7">"conv-test"</span>,[<span class="s9">\kernel1</span>,b,<span class="s9">\kernel2</span>,c]);</p>
-<p class="p8"><br></p>
-<p class="p10">// changing the buffer number:</p>
-<p class="p9">x.set(<span class="s9">\kernel1</span>,d);</p>
-<p class="p9">x.set(<span class="s9">\trig</span>,0);</p>
-<p class="p10"><span class="s5">x.set(</span><span class="s9">\trig</span><span class="s5">,1); </span>// after this trigger, the change will take effect.</p>
-<p class="p9">x.set(<span class="s9">\kernel2</span>,d);</p>
-<p class="p9">x.set(<span class="s9">\trig</span>,0);</p>
-<p class="p10"><span class="s5">x.set(</span><span class="s9">\trig</span><span class="s5">,1); </span>// after this trigger, the change will take effect.</p>
-<p class="p8"><br></p>
+<p class="p2"><br></p>
+<p class="p7">x = <span class="s8">Synth</span>.new(<span class="s7">"conv-test"</span>,[<span class="s9">\kernel1</span>,b,<span class="s9">\kernel2</span>,c]);</p>
+<p class="p2"><br></p>
+<p class="p8">// changing the buffer number:</p>
+<p class="p7">x.set(<span class="s9">\kernel1</span>,d);</p>
+<p class="p8"><span class="s5">x.set(</span><span class="s9">\t_trig</span><span class="s5">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p7">x.set(<span class="s9">\kernel2</span>,d);</p>
+<p class="p8"><span class="s5">x.set(</span><span class="s9">\t_trig</span><span class="s5">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p2"><br></p>
 <p class="p7">d.zero;</p>
 <p class="p6"><span class="s5">40.do({ </span><span class="s6">|it|</span><span class="s5"> d.set(20*it+10, 1); });</span>// changing the buffers' contents</p>
-<p class="p7">x.set(<span class="s10">\trig</span>,0);</p>
-<p class="p6"><span class="s5">x.set(</span><span class="s10">\trig</span><span class="s5">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p6"><span class="s5">x.set(</span><span class="s10">\t_trig</span><span class="s5">,1); </span>// after this trigger, the change will take effect.</p>
 <p class="p2"><br></p>
 <p class="p7">x.set(<span class="s10">\kernel1</span>,b);</p>
-<p class="p7">x.set(<span class="s10">\trig</span>,0);</p>
-<p class="p6"><span class="s5">x.set(</span><span class="s10">\trig</span><span class="s5">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p6"><span class="s5">x.set(</span><span class="s10">\t_trig</span><span class="s5">,1); </span>// after this trigger, the change will take effect.</p>
 <p class="p2"><br></p>
 </body>
 </html>

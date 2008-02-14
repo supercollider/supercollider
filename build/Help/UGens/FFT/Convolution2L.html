@@ -11,23 +11,27 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #264cd6}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902f20}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad1d13}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #653928}
-span.s1 {color: #5b633c}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #2b51d1}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001fe8}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #843424}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d281b}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5f3a2a}
+span.s1 {color: #5d623e}
 span.s2 {text-decoration: underline}
 span.s3 {color: #000000}
-span.s4 {text-decoration: underline ; color: #002ce2}
-span.s5 {color: #062cb0}
-span.s6 {color: #606060}
-span.s7 {color: #0019ba}
-span.s8 {color: #2b6f11}
-span.s9 {color: #45691f}
-span.s10 {color: #16359f}
+span.s4 {text-decoration: underline ; color: #0736dc}
+span.s5 {color: #0000bf}
+span.s6 {color: #0d32ac}
+span.s7 {color: #606060}
+span.s8 {color: #0024b5}
+span.s9 {color: #3b6c19}
+span.s10 {color: #4c6724}
+span.s11 {color: #1b399b}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -44,132 +48,159 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>bufnum</b>- buffer index for the fixed kernel, may be modulated in combination with the trigger</p>
 <p class="p3"><b>trigger</b> - update the kernel on a change from &lt;=0 to &gt;0</p>
 <p class="p3"><b>framesize </b>- size of FFT frame, must be a power of two. Convolution uses twice this number internally, maximum value you can give this argument is 2^16=65536. Note that it gets progressively more expensive to run for higher powers! 512, 1024, 2048, 4096 standard.</p>
-<p class="p3"><b>crossfade</b> - The number of periods over which a crossfade is made. The default is 1.</p>
+<p class="p3"><b>crossfade</b> - The number of periods over which a crossfade is made. The default is 1. This must be an integer.</p>
 <p class="p4"><br></p>
-<p class="p6"><span class="s3">See also <a href="Convolution2.html"><span class="s4">Convolution2</span></a> and <a href="StereoConvolution2L.html">StereoConvolution2L</a>.</span></p>
+<p class="p6"><span class="s3">See also <a href="Convolution2.html"><span class="s4">Convolution2</span></a> and <a href="StereoConvolution2L.html"><span class="s2">StereoConvolution2L</span></a>.</span></p>
+<p class="p2"><br></p>
+<p class="p7">s = <span class="s5">Server</span>.local.boot;</p>
+<p class="p2"><br></p>
+<p class="p8"><span class="s3">(</span>//allocate three buffers</p>
+<p class="p9">b = <span class="s6">Buffer</span>.alloc(s,2048);</p>
+<p class="p9">c = <span class="s6">Buffer</span>.alloc(s,2048);</p>
+<p class="p9">d = <span class="s6">Buffer</span>.alloc(s,2048);</p>
+<p class="p2"><br></p>
+<p class="p9">b.zero;</p>
+<p class="p9">c.zero;</p>
+<p class="p9">d.zero;</p>
+<p class="p9">)</p>
+<p class="p2"><br></p>
+<p class="p9">(</p>
+<p class="p9">50.do({ <span class="s6">|it|</span> c.set(20*it+10, 1.0.rand); });</p>
+<p class="p9">3.do({ <span class="s6">|it|</span> b.set(400*it+100, 1); });</p>
+<p class="p9">20.do({ <span class="s6">|it|</span> d.set(40*it+20, 1); });</p>
+<p class="p9">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p7"><span class="s3">(</span>//allocate three buffers</p>
-<p class="p8">b = <span class="s5">Buffer</span>.alloc(s,2048);</p>
-<p class="p8">c = <span class="s5">Buffer</span>.alloc(s,2048);</p>
-<p class="p8">d = <span class="s5">Buffer</span>.alloc(s,2048);</p>
-<p class="p2"><br></p>
-<p class="p8">b.zero;</p>
-<p class="p8">c.zero;</p>
-<p class="p8">d.zero;</p>
-<p class="p8">)</p>
-<p class="p2"><br></p>
-<p class="p8">(</p>
-<p class="p8">50.do({ <span class="s5">|it|</span> c.set(20*it+10, 1.0.rand); });</p>
-<p class="p8">3.do({ <span class="s5">|it|</span> b.set(400*it+100, 1); });</p>
-<p class="p8">20.do({ <span class="s5">|it|</span> d.set(40*it+20, 1); });</p>
-<p class="p8">)</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p8">(</p>
-<p class="p8"><span class="s5">SynthDef</span>( <span class="s6">"conv-test"</span>, { <span class="s5">arg</span> kernel, trig=0;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s5">var</span> input;</p>
+<p class="p9">(</p>
+<p class="p9"><span class="s6">SynthDef</span>( <span class="s7">"conv-test"</span>, { <span class="s6">arg</span> kernel, t_trig=0;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s6">var</span> input;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>input=<span class="s5">Impulse</span>.ar(1);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>input=<span class="s6">Impulse</span>.ar(1);</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(0,<span class="s5">Convolution2L</span>.ar(input,kernel,trig,2048, 0.5));</p>
-<p class="p8">}).send(s)</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0,<span class="s6">Convolution2L</span>.ar(input,kernel,t_trig,2048, 1, 0.5));</p>
+<p class="p9">}).send(s)</p>
 <p class="p2"><br></p>
-<p class="p8">)</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p8">x = <span class="s7">Synth</span>.new(<span class="s6">"conv-test"</span>,[<span class="s8">\kernel</span>,b]);</p>
-<p class="p2"><br></p>
-<p class="p9">// changing the buffer number:</p>
-<p class="p8">x.set(<span class="s8">\kernel</span>,c);</p>
-<p class="p8">x.set(<span class="s8">\trig</span>,0);</p>
-<p class="p9"><span class="s3">x.set(</span><span class="s8">\trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
-<p class="p8">x.set(<span class="s8">\kernel</span>,d);</p>
-<p class="p8">x.set(<span class="s8">\trig</span>,0);</p>
-<p class="p9"><span class="s3">x.set(</span><span class="s8">\trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
-<p class="p2"><br></p>
-<p class="p8">d.zero;</p>
-<p class="p7"><span class="s3">40.do({ </span><span class="s5">|it|</span><span class="s3"> d.set(20*it+10, 1); });</span>// changing the buffers' contents</p>
-<p class="p8">x.set(<span class="s9">\trig</span>,0);</p>
-<p class="p7"><span class="s3">x.set(</span><span class="s9">\trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
-<p class="p2"><br></p>
-<p class="p8">x.set(<span class="s9">\kernel</span>,b);</p>
-<p class="p8">x.set(<span class="s9">\trig</span>,0);</p>
-<p class="p7"><span class="s3">x.set(</span><span class="s9">\trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p9">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p9">x = <span class="s8">Synth</span>.new(<span class="s7">"conv-test"</span>,[<span class="s9">\kernel</span>,b]);</p>
 <p class="p2"><br></p>
-<p class="p7">////next example</p>
+<p class="p10">// changing the buffer number:</p>
+<p class="p9">x.set(<span class="s9">\kernel</span>,c);</p>
+<p class="p10"><span class="s3">x.set(</span><span class="s9">\t_trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p9">x.set(<span class="s9">\kernel</span>,d);</p>
+<p class="p10"><span class="s3">x.set(</span><span class="s9">\t_trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
 <p class="p2"><br></p>
-<p class="p10"><span class="s3">b = </span><span class="s5">Buffer</span><span class="s3">.read(s,</span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
+<p class="p9">d.zero;</p>
+<p class="p8"><span class="s3">40.do({ </span><span class="s6">|it|</span><span class="s3"> d.set(20*it+10, 1); });</span>// changing the buffers' contents</p>
+<p class="p8"><span class="s3">x.set(</span><span class="s10">\</span><span class="s9">t_</span><span class="s10">trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
 <p class="p2"><br></p>
-<p class="p8">(</p>
-<p class="p8"><span class="Apple-tab-span">	</span>{ <span class="s5">var</span> input, kernel;</p>
+<p class="p9">x.set(<span class="s10">\kernel</span>,b);</p>
+<p class="p8"><span class="s3">x.set(</span><span class="s10">\</span><span class="s9">t_</span><span class="s10">trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p11"><br></p>
+<p class="p7">x.free;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p12"><span class="s3">( </span>// longer crossfade</p>
+<p class="p7"><span class="s5">SynthDef</span>( <span class="s7">"conv-test2"</span>, { <span class="s5">arg</span> kernel, t_trig=0;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s5">var</span> input;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>input=<span class="s5">Impulse</span>.ar(1);</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(0,<span class="s5">Convolution2L</span>.ar(input,kernel,t_trig,2048, 5, 0.5));</p>
+<p class="p7">}).send(s)</p>
+<p class="p11"><br></p>
+<p class="p9">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p9">x = <span class="s8">Synth</span>.new(<span class="s7">"conv-test2"</span>,[<span class="s9">\kernel</span>,b]);</p>
+<p class="p2"><br></p>
+<p class="p10">// changing the buffer number:</p>
+<p class="p9">x.set(<span class="s9">\kernel</span>,c);</p>
+<p class="p10"><span class="s3">x.set(</span><span class="s9">\t_trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p9">x.set(<span class="s9">\kernel</span>,d);</p>
+<p class="p10"><span class="s3">x.set(</span><span class="s9">\t_trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p2"><br></p>
+<p class="p9">d.zero;</p>
+<p class="p8"><span class="s3">40.do({ </span><span class="s6">|it|</span><span class="s3"> d.set(20*it+10, 1); });</span>// changing the buffers' contents</p>
+<p class="p8"><span class="s3">x.set(</span><span class="s10">\</span><span class="s9">t_</span><span class="s10">trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p2"><br></p>
+<p class="p9">x.set(<span class="s10">\kernel</span>,b);</p>
+<p class="p8"><span class="s3">x.set(</span><span class="s10">\</span><span class="s9">t_</span><span class="s10">trig</span><span class="s3">,1); </span>// after this trigger, the change will take effect.</p>
+<p class="p2"><br></p>
+<p class="p9">x.free;</p>
+<p class="p2"><br></p>
+<p class="p8">////next example</p>
+<p class="p2"><br></p>
+<p class="p13"><span class="s3">b = </span><span class="s6">Buffer</span><span class="s3">.read(s,</span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
+<p class="p2"><br></p>
+<p class="p9">(</p>
+<p class="p9"><span class="Apple-tab-span">	</span>{ <span class="s6">var</span> input, kernel;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>input= <span class="s5">SoundIn</span>.ar(0);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>input= <span class="s6">SoundIn</span>.ar(0);</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(0,<span class="s5">Convolution2L</span>.ar(input,b,0,512, 0.5));</p>
-<p class="p8"><span class="Apple-tab-span">	</span> }.play;</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0,<span class="s6">Convolution2L</span>.ar(input,b,0,512, 1,0.5));</p>
+<p class="p9"><span class="Apple-tab-span">	</span> }.play;</p>
 <p class="p2"><br></p>
-<p class="p8">)</p>
+<p class="p9">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">//another example</p>
+<p class="p8">//another example</p>
 <p class="p2"><br></p>
-<p class="p8">(</p>
-<p class="p7">//must have power of two framesize- FFT size will be sorted by Convolution2 to be double this</p>
-<p class="p7">//maximum is currently a=8192 for FFT of size 16384</p>
-<p class="p8">a=2048;</p>
-<p class="p8">s = <span class="s5">Server</span>.local;<span class="Apple-converted-space"> </span></p>
-<p class="p7">//kernel buffer</p>
-<p class="p8">g = <span class="s5">Buffer</span>.alloc(s,a,1);</p>
-<p class="p8">)</p>
+<p class="p9">(</p>
+<p class="p8">//must have power of two framesize- FFT size will be sorted by Convolution2 to be double this</p>
+<p class="p8">//maximum is currently a=8192 for FFT of size 16384</p>
+<p class="p9">a=2048;</p>
+<p class="p9">s = <span class="s6">Server</span>.local;<span class="Apple-converted-space"> </span></p>
+<p class="p8">//kernel buffer</p>
+<p class="p9">g = <span class="s6">Buffer</span>.alloc(s,a,1);</p>
+<p class="p9">)</p>
 <p class="p2"><br></p>
-<p class="p8">(</p>
-<p class="p8">g.set(0,1.0);</p>
-<p class="p8">100.do({<span class="s10">arg</span> i; g.set(a.rand, (i+1).reciprocal)});</p>
-<p class="p8">)</p>
+<p class="p9">(</p>
+<p class="p9">g.set(0,1.0);</p>
+<p class="p9">100.do({<span class="s11">arg</span> i; g.set(a.rand, (i+1).reciprocal)});</p>
+<p class="p9">)</p>
 <p class="p2"><br></p>
-<p class="p8">(</p>
-<p class="p11">//random impulse response</p>
+<p class="p9">(</p>
+<p class="p14">//random impulse response</p>
 <p class="p2"><br></p>
-<p class="p8"><span class="Apple-tab-span">	</span>{</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s10">var</span> input,inputAmp,threshhold,gate;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>{</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s11">var</span> input,inputAmp,threshhold,gate;</p>
 <p class="p2"><br></p>
-<p class="p8">input = <span class="s10">AudioIn</span>.ar(1);<span class="Apple-converted-space"> </span></p>
-<p class="p8">inputAmp = <span class="s10">Amplitude</span>.kr(input);</p>
-<p class="p11"><span class="s3">threshhold = 0.02;<span class="Apple-tab-span">	</span></span>// noise gating threshold</p>
-<p class="p8">gate = <span class="s10">Lag</span>.kr(inputAmp &gt; threshhold, 0.01);<span class="Apple-tab-span">	</span></p>
+<p class="p9">input = <span class="s11">AudioIn</span>.ar(1);<span class="Apple-converted-space"> </span></p>
+<p class="p9">inputAmp = <span class="s11">Amplitude</span>.kr(input);</p>
+<p class="p14"><span class="s3">threshhold = 0.02;<span class="Apple-tab-span">	</span></span>// noise gating threshold</p>
+<p class="p9">gate = <span class="s11">Lag</span>.kr(inputAmp &gt; threshhold, 0.01);<span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s10">Out</span>.ar(0,<span class="s10">Convolution2L</span>.ar(input*gate,g,0, a, 0.5));</p>
-<p class="p8"><span class="Apple-tab-span">	</span> }.play;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s11">Out</span>.ar(0,<span class="s11">Convolution2L</span>.ar(input*gate,g,0, a, 1, 0.5));</p>
+<p class="p9"><span class="Apple-tab-span">	</span> }.play;</p>
 <p class="p2"><br></p>
-<p class="p8">)</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+<p class="p9">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p8">//one last example</p>
-<p class="p8">(</p>
-<p class="p8">b = <span class="s10">Buffer</span>.alloc(s, 512, 1);</p>
-<p class="p8">b.sine1(1.0/[1,2,3,4,5,6], <span class="s10">true</span>, <span class="s10">true</span>, <span class="s10">true</span>);</p>
-<p class="p8">)</p>
 <p class="p2"><br></p>
-<p class="p8">(</p>
-<p class="p8"><span class="Apple-tab-span">	</span>{ <span class="s10">var</span> input, kernel;</p>
+<p class="p2"><br></p>
+<p class="p9">//one last example</p>
+<p class="p9">(</p>
+<p class="p9">b = <span class="s11">Buffer</span>.alloc(s, 512, 1);</p>
+<p class="p9">b.sine1(1.0/[1,2,3,4,5,6], <span class="s11">true</span>, <span class="s11">true</span>, <span class="s11">true</span>);</p>
+<p class="p9">)</p>
+<p class="p2"><br></p>
+<p class="p9">(</p>
+<p class="p9"><span class="Apple-tab-span">	</span>{ <span class="s11">var</span> input, kernel;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>input=<span class="s10">AudioIn</span>.ar(1);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>input=<span class="s11">AudioIn</span>.ar(1);</p>
 <p class="p2"><br></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s10">Out</span>.ar(0,<span class="s10">Convolution2L</span>.ar(input,b,0, 512, 0.5));</p>
-<p class="p8"><span class="Apple-tab-span">	</span> }.play;</p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span></span>//must have power of two framesize</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s11">Out</span>.ar(0,<span class="s11">Convolution2L</span>.ar(input,b,0, 512, 1, 0.5));</p>
+<p class="p9"><span class="Apple-tab-span">	</span> }.play;</p>
 <p class="p2"><br></p>
-<p class="p8">)</p>
+<p class="p9">)</p>
 <p class="p2"><br></p>
 </body>
 </html>
