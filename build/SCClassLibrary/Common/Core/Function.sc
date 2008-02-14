@@ -17,6 +17,8 @@ Function : AbstractFunction {
 	
 	choose { ^this.value }
 	
+	update { |obj, what ... args| this.value(obj, what, *args) }
+	
 	
 	// evaluation
 	value { arg ... args; 
