@@ -4031,10 +4031,10 @@ void SCUserView::clearDrawing()
 
 void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
 {
-	SCRect bounds = getDrawBounds();
-
-	mRealtiveMousePoint.x = where.x - bounds.x;
-	mRealtiveMousePoint.y = where.y - bounds.y;
+//	SCRect bounds = getDrawBounds();
+//
+//	mRealtiveMousePoint.x = where.x - bounds.x;
+//	mRealtiveMousePoint.y = where.y - bounds.y;
 
 //    PyrSlot args[3];
 //    SetFloat(args+0, where.x); 
@@ -4054,17 +4054,47 @@ void SCUserView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent
 
   void SCUserView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
   {
-  	SCRect bounds = getDrawBounds();
+//  	SCRect bounds = getDrawBounds();
+//	mRealtiveMousePoint.x = where.x - bounds.x;
+//	mRealtiveMousePoint.y = where.y - bounds.y;
+//	if (modifiers & NSCommandKeyMask) {
+//		beginDrag(where);
+//	} 
 
-	if (modifiers & NSCommandKeyMask) {
-		beginDrag(where);
-	} 
-		mRealtiveMousePoint.x = where.x - bounds.x;
-	mRealtiveMousePoint.y = where.y - bounds.y;
 //	else {
 //	mouseAction(getsym("mouseTrack"), where, modifiers);
 //	}
   }
+
+void SCUserView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+	SCRect bounds = getDrawBounds();
+
+	mRealtiveMousePoint.x = where.x - bounds.x;
+	mRealtiveMousePoint.y = where.y - bounds.y;
+	SCView::mouseDownAction(where, modifiers, theEvent);
+	
+}
+
+void SCUserView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+	SCRect bounds = getDrawBounds();
+
+	mRealtiveMousePoint.x = where.x - bounds.x;
+	mRealtiveMousePoint.y = where.y - bounds.y;
+	SCView::mouseMoveAction(where, modifiers, theEvent);
+	
+}
+
+void SCUserView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+	SCRect bounds = getDrawBounds();
+
+	mRealtiveMousePoint.x = where.x - bounds.x;
+	mRealtiveMousePoint.y = where.y - bounds.y;
+	SCView::mouseUpAction(where, modifiers, theEvent);
+
+}	 
 
 
 void SCUserView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
@@ -4855,6 +4885,8 @@ void SCEnvelopeView::draw(SCRect inDamage)
         for(int i = xstart; i < xpixels; i++){
             envobj = &mEnvObj[i];
             drawRect = SCtoCGRect(envobj->mRect);
+            setEnvRect(envobj->x, envobj->y, envobj);
+			
             fillcolor = envobj->mColor;
             CGContextSetRGBFillColor(cgc, fillcolor.red, fillcolor.green, fillcolor.blue, fillcolor.alpha);
             CGContextFillRect (cgc, drawRect);
