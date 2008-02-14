@@ -767,7 +767,10 @@ public:
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);	
-    virtual void keyDown(int character, int modifiers);
+	virtual void mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void keyDown(int character, int modifiers);
 	virtual void keyUp(int character, int modifiers);
  	virtual bool canReceiveDrag();
  	virtual void receiveDrag();	
