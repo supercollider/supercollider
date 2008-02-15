@@ -122,11 +122,17 @@ inline int32 sc_msg_iter::geti(int32 defaultValue)
 		} else if (tags[count] == 'f') {
 			value = (int32)OSCfloat(rdpos);
 			rdpos += sizeof(float32);
-/*		} else if (tags[count] == 's') {
-			value = atoi(rdpos);
+		} else if (tags[count] == 's') {
+			/*	value = atoi(rdpos); */
+			value = defaultValue;
 			rdpos = OSCstrskip(rdpos);
-*/
+		} else if (tags[count] == 'b') {
+			value = defaultValue;
+			skipb();
 		} else {
+			/* this is dangerous, as rdpos is not
+			   advanced accordingly while count++ takes
+			   place */
 			value = defaultValue;
 		}
 	} else {
@@ -151,11 +157,17 @@ inline float32 sc_msg_iter::getf(float32 defaultValue)
 		} else if (tags[count] == 'i') {
 			value = static_cast<float32>(OSCint(rdpos));
 			rdpos += sizeof(int32);
-/*		} else if (tags[count] == 's') {
-			value = atof(rdpos);
+		} else if (tags[count] == 's') {
+			/*    value = atof(rdpos); */
+			value = defaultValue;
 			rdpos = OSCstrskip(rdpos);
-*/
+		} else if (tags[count] == 'b') {
+			value = defaultValue;
+			skipb();
 		} else {
+			/* this is dangerous, as rdpos is not
+			   advanced accordingly while count++ takes
+			   place */
 			value = defaultValue;
 		}
 	} else {
@@ -180,11 +192,17 @@ inline float64 sc_msg_iter::getd(float64 defaultValue)
 		} else if (tags[count] == 'i') {
 			value = (float64)OSCint(rdpos);
 			rdpos += sizeof(int32);
-/*		} else if (tags[count] == 's') {
-			value = atof(rdpos);
+		} else if (tags[count] == 's') {
+			/*    value = atof(rdpos); */
+			value = defaultValue;
 			rdpos = OSCstrskip(rdpos);
-*/
+		} else if (tags[count] == 'b') {
+			value = defaultValue;
+			skipb();
 		} else {
+			/* this is dangerous, as rdpos is not
+			   advanced accordingly while count++ takes
+			   place */
 			value = defaultValue;
 		}
 	} else {
