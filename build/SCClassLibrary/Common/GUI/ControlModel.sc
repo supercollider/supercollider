@@ -24,7 +24,9 @@ Spec {
 //		});
 //		^true
 	}
-
+	findKey {
+		^Spec.specs.findKeyForValue(this)
+	}
 	printOn { arg stream;
 		var args;
 		this.printClassNameOn(stream);
@@ -102,7 +104,7 @@ ControlSpec : Spec {
 			
 			\db -> ControlSpec(0.ampdb, 1.ampdb, \db, units: " dB"),
 			\amp -> ControlSpec(0, 1, \amp, 0, 0),
-			\boostcut -> ControlSpec(-20, 20, units: " dB"),
+			\boostcut -> ControlSpec(-20, 20, units: " dB",default: 0),
 			
 			\pan -> ControlSpec(-1, 1, default: 0),
 			\detune -> ControlSpec(-20, 20, default: 0, units: " Hz"),
@@ -112,6 +114,13 @@ ControlSpec : Spec {
 			\delay -> ControlSpec(0.0001, 1, \exp, 0, 0.3, units: " secs")
 		]);
 	}
+	*newFrom { arg similar;
+		^this.new(similar.minval, similar.maxval, similar.warp.asSpecifier, similar.step, similar.default, similar.units)
+	}
+	copy {
+		^this.class.newFrom(this)
+	}
+
 }
 
 
