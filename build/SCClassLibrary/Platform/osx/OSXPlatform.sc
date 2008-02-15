@@ -15,7 +15,7 @@ OSXPlatform : UnixPlatform
 	startup {
 		Document.implementationClass.startup;
 		// make server window
-		Server.internal.makeWindow;
+		// Server.internal.makeWindow;
 		Server.local.makeWindow;
 		this.loadStartupFiles;
 	}

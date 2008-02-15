@@ -681,8 +681,8 @@
 		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
-		F338A41A0D0F06C000ACFF58 /* Info copy 4.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy 4.plist"; sourceTree = "<group>"; };
-		F338A4A30D0F10A100ACFF58 /* Info copy 5.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy 5.plist"; sourceTree = "<group>"; };
+		F338A41A0D0F06C000ACFF58 /* Info copy 4.plist */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Info copy 4.plist"; sourceTree = "<group>"; };
+		F338A4A30D0F10A100ACFF58 /* Info copy 5.plist */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Info copy 5.plist"; sourceTree = "<group>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		F50D069602E6A1C601CA2799 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		F50D069702E6A1C601CA2799 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -1313,7 +1313,6 @@
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "Language" */;
-			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;

@@ -118,20 +118,27 @@ HIDDeviceService{
 	
 	*buildDeviceList{arg usagePage=1, usage=4;
 		var devlist, elelist;
+		// the following line would solve the bug when rebuilding the device list, but then there is no way to keep track of already opened devices:
+	//		this.releaseDeviceList;
 		devices = Array.new;
 		devlist = this.prbuildDeviceList(usagePage, usage);
 		devlist ?? {"HIDDeviceService: no devices found".warn; ^nil};
 		devlist.do({arg dev;
 			var newdev;
-			newdev = HIDDevice(dev.at(0), dev.at(1), dev.at(2), dev.at(3), dev.at(4), dev.at(5), dev.at(6), dev.at(7));
-			elelist = this.prbuildElementList(newdev.locID,
-				Array.newClear(HIDDeviceService.prGetElementListSize(newdev.locID)));
-			elelist.do({arg ele;
-				if(ele.notNil){
-					newdev.prAddElement(ele.at(0), ele.at(1), ele.at(2), ele.at(3), ele.at(4), ele.at(5), ele.at(6), ele.at(7));
-				};
+			// this is an ugly, ugly workaround:
+			if ( dev.isKindOf( Array ), {
+				if ( dev[0].isKindOf( String ) and: dev[1].isKindOf( String ) and: dev[2].isKindOf( String ) and: dev[7].isKindOf( String ) and: dev[3].isKindOf( Integer ) and: dev[4].isKindOf( Integer ) and: dev[5].isKindOf( Integer ) and: dev[6].isKindOf( Integer ), {
+					newdev = HIDDevice(dev.at(0), dev.at(1), dev.at(2), dev.at(3), dev.at(4), dev.at(5), dev.at(6), dev.at(7));
+					elelist = this.prbuildElementList(newdev.locID,
+						Array.newClear(HIDDeviceService.prGetElementListSize(newdev.locID)));
+					elelist.do({arg ele;
+						if(ele.notNil){
+							newdev.prAddElement(ele.at(0), ele.at(1), ele.at(2), ele.at(3), ele.at(4), ele.at(5), ele.at(6), ele.at(7));
+						};
+					});
+					devices = devices.add(newdev);
+				});
 			});
-			devices = devices.add(newdev);
 		});
 		initialized = true;
 	}

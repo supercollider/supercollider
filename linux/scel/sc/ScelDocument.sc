@@ -196,7 +196,13 @@ ScelDocument : Document{
 	//	isFront { thisdoc.isFront }
 	editable_{arg abool=true; this.prisEditable_( abool ) }
 
-	path{ ^thisdoc.prGetFileName }
+	path{ 
+		if ( thisdoc.notNil, {
+			^^thisdoc.prGetFileName;
+		},{ 
+			^path_p;
+		});
+	// was:	{^thisdoc.prGetFileName }
 	
 	*addToList{ |doc| 
 		var key, sceld; 
