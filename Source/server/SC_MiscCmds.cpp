@@ -1341,7 +1341,7 @@ SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 	Graph *graph = Msg_GetGraph(inWorld, msg);
 	if (!graph) return kSCErr_NodeNotFound;
 			
-	int numheads = msg.remain() >> 2;
+	int numheads = msg.tags ? strlen(msg.tags) - 1 : msg.remain() >> 2;
 
 	big_scpacket packet;
 	packet.adds("/n_set");
@@ -1388,7 +1388,7 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 	
 	// figure out how many tags to allocate   
 	int numcontrols = 0;
-	int numheads = msg.remain() >> 3;
+	int numheads = msg.tags ? strlen(msg.tags) - 1 >> 1 : msg.remain() >> 3;
 	
 	while (msg.remain()) {
 		msg.geti(); // skip start
