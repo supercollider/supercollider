@@ -122,7 +122,7 @@ void ampmix_ka(MulAdd *unit, int inNumSamples)
 		if (amp_cur == 0.f) {
 			ZCopy(inNumSamples, out, mix);
 		} else if (amp_cur == 1.f) {
-			ZAccum(inNumSamples, out, mix);
+			LOOP(inNumSamples, ZXP(out) = ZXP(in) + ZXP(mix); );
 		} else {
 			LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); );
 		}
@@ -710,7 +710,7 @@ void MulAdd_Ctor(MulAdd *unit)
 	int mulRate = INRATE(1);
 	int addRate = INRATE(2);
 
-	//Print("muladd %d %d %g %g\n", mulRate, addRate, mul, add);
+	//Print("muladd %d %d %g %g\n", mulRate, addRate, unit->mPrevMul, unit->mPrevAdd);
 	//Print("**** %08X %08X %08X    %08X\n", IN(0), IN(1), IN(2), OUT(0));
 
 #if __VEC__	
