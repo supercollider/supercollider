@@ -16,5 +16,20 @@ Quant {
 	}
 
 	asQuant { ^this.copy }
+	
+	printOn { |stream|
+		stream << "Quant(" << quant;
+		if(phase.notNil) { stream << ", " << phase };
+		if(timingOffset.notNil) {
+			stream << ", ";
+			if(phase.isNil) {
+				stream << "nil, ";
+			};
+			stream << timingOffset
+		};
+		stream << ")"
+	}
+	
+	storeArgs { ^[quant, phase, timingOffset] }
 }
 
