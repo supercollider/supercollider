@@ -25,8 +25,9 @@ Volume {
 
 	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window,Ê<volume, spec;Ê
 	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false, <isPrepping;
+	var <synthNumChans;	// the actual number of channels, which might be set automatically
 	
-	*new {Ê arg server, startBus = 0, numChans = 2, min = -90, max = 6, persist = false;
+	*new {Ê arg server, startBus = 0, numChans, min = -90, max = 6, persist = false;
 		^super.newCopyArgs(startBus, numChans, min, max, server, persist).initVolume;
 	}
 
@@ -41,11 +42,11 @@ Volume {
 	}
 
 	sendDef {
-		SynthDef(sdname = (\volume_amp_control ++ numChans).asSymbol, 
+		SynthDef(sdname = (\volume_amp_control ++ synthNumChans).asSymbol, 
 			{ arg volume_amp = 1, volume_lag = 0.1, volume_gate=1;
 			XOut.ar(startBus, 
 				Linen.kr(volume_gate, releaseTime: 0.05, doneAction:2), 
-				In.ar(startBus, numChans) * Lag.kr(volume_amp, volume_lag) );
+				In.ar(startBus, synthNumChans) * Lag.kr(volume_amp, volume_lag) );
 		}).send(server);
 	}
 
@@ -55,6 +56,11 @@ Volume {
 		(isPlaying || isPrepping).not.if({
 			server.serverRunning.if({
 				Routine.run({
+					if(numChans.isNil) {
+						synthNumChans = server.options.numOutputBusChannels;
+					} {
+						synthNumChans = numChans;
+					};
 					this.sendDef;
 					isPrepping = true;
 					server.sync(cond);
@@ -98,6 +104,14 @@ Volume {
 		isPlaying = false;
 		CmdPeriod.remove(cpFun);
 		cpFun = nil;
+	}
+	
+	numChans { ^numChans ? synthNumChans ? server.options.numOutputBusChannels }
+	numChans_ { |num|
+		if(isPlaying and: { num != synthNumChans }) {
+			"Change in number of channels will not take effect until volume is reset to 0dB.".warn;
+		};
+		numChans = num;
 	}
 	
 	mute{

@@ -176,7 +176,7 @@ Server : Model {
 		this.newAllocators;	
 		bufferArray = Array.newClear(options.numBuffers + 2);
 		Server.changed(\serverAdded, this);
-		volume = Volume.new(server: this, numChans: options.numOutputBusChannels, persist: true);
+		volume = Volume.new(server: this, persist: true);
 	}
 	
 	initTree {
