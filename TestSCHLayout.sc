@@ -1,5 +1,5 @@
 
-TestSCHLayout : UnitTest {
+TestSCHLayoutView : UnitTest {
 	
 	test_elasticBackground {
 		var q,w,h;
@@ -50,8 +50,8 @@ TestSCHLayout : UnitTest {
 			
 			k = Array.fill(numChildren, { |i| var kid;
 				//parent.decorator.left.postln;
-			Ê Ê Ê Êkid = childClass.perform(\new, parent, 50 @ 40);
-			Ê Ê Ê Êkid.background = Color.rand(0.1, 0.2).alpha_(0.2);
+				kid = childClass.perform(\new, parent, 50 @ 40);
+				kid.background = Color.rand(0.1, 0.2).alpha_(0.2);
 				kid
 			});
 		
@@ -63,6 +63,32 @@ TestSCHLayout : UnitTest {
 		});
 
 	}
+	
+	test_inComp {
+		
+		[\slider,\hLayoutView].do({ |selector,i|
+	
+			var win, gray, white, blue;
+	
+			win = GUI.window.new(selector.asString + "both blue views should be at the top of the white comp ", Rect(100 + (i*410), 100, 400, 300));
+			win.view.relativeOrigin = true;
+	
+			gray = GUI.compositeView.new(win, Rect(40, 30, 300, 200));
+			gray.relativeOrigin = true;
+			gray.background = Color.gray;
+	
+			white = GUI.compositeView.new(gray, Rect(20, 20, 200, 100));
+			white.relativeOrigin = true;
+			white.background = Color.white;
+	
+			blue = GUI.perform(selector).new(white, white.bounds.width @ 20);
+			blue.background = Color.blue(1.0, 0.4);
+			win.front;
+
+		});
+
+	}
+
 
 }
 
