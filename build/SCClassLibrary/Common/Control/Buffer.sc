@@ -340,11 +340,13 @@ Buffer {
 		var b;
 		server = server ? Server.default;
 		server.bufferAllocator.blocks.do({ arg block;
-			b = b.add( ["/b_free",block.start] );
-			server.bufferAllocator.free(block.start);	 
+			(block.address .. block.address + block.size - 1).do({ |i|
+				b = b.add( ["/b_free", i] );
+			});
+			server.bufferAllocator.free(block.address);	 
 		});
-		server.sendBundle(b);
-	}		
+		server.sendBundle(nil, *b);
+	}
 	zero { arg completionMessage;
 		server.listSendMsg(this.zeroMsg(completionMessage));
 	}
