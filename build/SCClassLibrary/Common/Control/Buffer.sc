@@ -340,8 +340,8 @@ Buffer {
 		var b;
 		server = server ? Server.default;
 		server.bufferAllocator.blocks.do({ arg block;
-			b = b.add( ["/b_free",block.address] );
-			server.bufferAllocator.free(block.address);	 
+			b = b.add( ["/b_free",block.start] );
+			server.bufferAllocator.free(block.start);	 
 		});
 		server.sendBundle(b);
 	}		
