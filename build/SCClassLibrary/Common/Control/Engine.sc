@@ -167,6 +167,8 @@ ContiguousBlock {
 
 	*new { |start, size| ^super.newCopyArgs(start, size) }
 
+	address { ^start }
+
 	adjoins { |block|
 		^(start < block.start and: { start + size >= block.start })
 			or: { start > block.start and: { block.start + block.size >= start } }
