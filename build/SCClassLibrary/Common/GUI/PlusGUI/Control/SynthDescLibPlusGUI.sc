@@ -125,24 +125,24 @@
 				controlsListView.items = [];
 			}{
 				ugensListView.items = synthDesc.def.children.collect { |x, i|
-					i.asString.extend(7, $ ) ++ x.class.name.asString;
+					i.asString.copy.extend(7, $ ) ++ x.class.name.asString;
 				};
 				
 				inputsListView.items = synthDesc.inputs.collect { |x|
 					var string;
-					string = x.rate.asString;
+					string = x.rate.asString.copy;
 					string = string.extend(9, $ ) ++ " " ++ x.startingChannel;
 					string = string.extend(19, $ ) ++ " " ++ x.numberOfChannels;
 				};
 				outputsListView.items = synthDesc.outputs.collect { |x|
 					var string;
-					string = x.rate.asString;
+					string = x.rate.asString.copy;
 					string = string.extend(9, $ ) ++ " " ++ x.startingChannel;
 					string = string.extend(19, $ ) ++ " " ++ x.numberOfChannels;
 				};
 				controlsListView.items = synthDesc.controls.collect { |x|
 					var string;
-					string = if (x.name.notNil) { x.name.asString; }{ "" };
+					string = if (x.name.notNil) { x.name.asString.copy; }{ "" };
 					if (x.rate.notNil) 
 					{ 
 						string = string.extend(12, $ ) ++ " " ++ x.rate; 
