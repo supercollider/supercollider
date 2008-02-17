@@ -11,7 +11,7 @@
 				
 		usefulControls = controls.select {|controlName, i|
 			var ctlname;
-			ctlname = controlName.name;
+			ctlname = controlName.name.asString;
 			(ctlname != "?") && (ctlname != "gate")
 		};
 		
