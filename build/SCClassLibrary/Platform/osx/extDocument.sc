@@ -1,3 +1,4 @@
-+ Document {
+/*+ Document {
 	*implementationClass { ^CocoaDocument }
 }
+*/

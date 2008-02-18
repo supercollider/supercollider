@@ -8,6 +8,8 @@ Document {
 	
 	classvar <>autoRun = true;
 	classvar <>wikiBrowse = true;
+	
+	classvar <>implementationClass;
 
 	//don't change the order of these vars:
 	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseUpAction, <>toFrontAction, <>endFrontAction, <>onClose, <>mouseDownAction;
