@@ -1,6 +1,25 @@
-Usage:
+./package usage:
 
-1- Build SuperCollider.
-2- Put any optional installs (SwingOSC, sc3-plugins, etc) into the ./optional directory. 
-3- Run ./package_osx to build a disk image.
-4- Run ./package_source to build a source tarball.
+-v version:
+    Specify a version number.
+
+-s:
+    Build a source package. If this option is not specified the default
+    is to build a DMG.
+
+-o:
+    Include the optional installs located in the ./optional directory.
+
+-----------------------------------------------------------------------
+
+Typical usage when posting a new release on SourceForge:
+
+# Place the mac optional installs in the ./optional directory.
+./package -v 3.2
+./package -v 3.2 -o
+
+# Place the source optional installs in the ./optional directory.
+./package -v 3.2 -s
+./package -v 3.2 -s -o
+
+-----------------------------------------------------------------------

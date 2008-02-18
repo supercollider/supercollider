@@ -90,7 +90,8 @@ build requirements (optional features)
 
    for sclang's linux input device (LID) interface
 
- o for scel: the Emacs interface see the README in the directory scel
+ o for scel: the Emacs interface see the README in the directory 
+   `linux/scel'
 
 ------------------------------------------------------------------------
 build requirements (debian users)
@@ -140,6 +141,18 @@ to scons; note that cleaning the `install' target also removes locally
 built files.
 
 ------------------------------------------------------------------------
+Building a Debian package
+------------------------------------------------------------------------
+
+Execute these commands to build a Debian package:
+
+	$ scons PREFIX=/usr DEVELOPMENT=yes LID=yes
+	$ scons debian
+
+The .deb package will be put in the debian folder, and can then be 
+installed just like any other Debian package.
+
+------------------------------------------------------------------------
 running scsynth (standalone)
 ------------------------------------------------------------------------
 
@@ -167,15 +180,15 @@ running sclang
 ------------------------------------------------------------------------
 
 it is recommended to use sclang in combination with the SCEL emacs
-interface in `scel'. see the README in this directory for installation
+interface in `scel'. see the README in `linux/scel' for installation
 and usage.
 
 sclang executes the startup file `~/.sclang.sc' after class library
 initialization. this file can contain statements you don't want to put
 in a custom Main class, like setting default variables. an example can
-be found in `examples/sclang.sc'.
+be found in `linux/examples/sclang.sc'.
 
-you _have_ to have a directory '~/share/SuperCollider/'. This is where
+you _have_ to have a directory `~/share/SuperCollider/'. This is where
 automatically a synthdefs directory is created. It is also the place
 to put Extensions to the class library, in a folder called Extensions.
 
@@ -184,7 +197,7 @@ path specified with the `-d' option.
 
 for advanced setups, sclang's compilation search path can be
 customized with a library configuration file. an example is provided
-in `examples/sclang.cfg'; install it as `/etc/sclang.cfg' or
+in `linux/examples/sclang.cfg'; install it as `/etc/sclang.cfg' or
 `~/.sclang.cfg'. This config file is only needed when you want to
 _exclude_ directories from the class library. Otherwise it is not needed.
 
