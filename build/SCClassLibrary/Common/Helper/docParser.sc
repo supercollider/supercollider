@@ -4,10 +4,9 @@
 
 DocParser {
 	
-	var <>class ;
-	var <classMethods, <instMethods, <getters, <setters, <methods, <classMethods ;
+	var <>targetClass ;
+	var <classMethodList, <instMethodList, <getters, <setters ;
 	var <file, <source ;
-	//var imDict, cmDict, classDoc ;
 	
 	
 	*new {  arg class ;
@@ -17,32 +16,25 @@ DocParser {
 	initDocParser { arg aClass ;
 		var instVarNames = aClass.instVarNames ;
 		instVarNames = instVarNames ? [] ;
-		class = aClass ;
-		classMethods = class.class.methods ;
-		file = File.new(class.filenameSymbol.asString, "r") ;
+		targetClass = aClass ;
+		classMethodList = targetClass.class.methods ;
+		file = File.new(targetClass.filenameSymbol.asString, "r") ;
 		source = file.readAllString ;
 		file.close ;
-		instMethods = class.methods ;
-		instMethods = instMethods ? [] ;
-		setters = instMethods.reject({ arg item ; item.name.asString.includes($_).not }) ;
-		getters = instMethods.select({ arg item ; 
+		instMethodList = targetClass.methods ;
+		instMethodList = instMethodList ? [] ;
+		setters = instMethodList.reject({ arg item ; item.name.asString.includes($_).not }) ;
+		getters = instMethodList.select({ arg item ; 
 			instVarNames.includes(item.name) }) ;
 		setters = setters ? [] ; getters = getters ? [] ;
-		instMethods = instMethods.reject({ arg item ; 
+		instMethodList = instMethodList.reject({ arg item ; 
 			 getters.includes(item) || setters.includes(item) }) ;
-/*
-		classMethods.collect(_.name).postln ;
-		classMethods.collect(_.name).postln ;
-		setters.collect(_.name).postln ;
-		getters.collect(_.name).postln ;
-		instMethods.collect(_.name).postln ;
-*/
 		^this
 	}
 	
 	createCmIndices {
 		var cmIndices = [] ;
-		classMethods.do({ arg method ; 
+		classMethodList.do({ arg method ; 
 			cmIndices = cmIndices.add(method.charPos)
 		}) ;
 		^cmIndices
@@ -50,7 +42,7 @@ DocParser {
 	
 	createImIndices {
 		var imIndices = [] ;
-		instMethods.do({ arg method ; 
+		instMethodList.do({ arg method ; 
 			imIndices = imIndices.add(method.charPos)
 		}) ;
 		^imIndices
@@ -79,12 +71,12 @@ DocParser {
 		var classDoc ; 
 		cmIndices = cmIndices.add(imIndices[0]) ;
 		imIndices =imIndices.add(source.size) ;
-		classMethods.do({ arg method, i ;
+		classMethodList.do({ arg method, i ;
 			cmDict.add( i ->
 				[method, this.getMethodDoc(method, cmIndices[i], cmIndices[i+1])]
 			)
 		}) ;
-		instMethods.do({ arg method, i ;
+		instMethodList.do({ arg method, i ;
 			imDict.add( i ->
 				[method, this.getMethodDoc(method, imIndices[i], imIndices[i+1])]
 			)
