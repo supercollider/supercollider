@@ -55,6 +55,7 @@
 		startButton.action = {|view|
 				if (view.value == 1) {
 					// start sound
+					if(id.isNil) { id = s.nextNodeID };
 					s.sendBundle(s.latency, ["/s_new", name, id, 0, 0] ++ getSliderValues.value);
 				};
 				if (view.value == 0) {
