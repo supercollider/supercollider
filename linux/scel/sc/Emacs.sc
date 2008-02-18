@@ -213,6 +213,7 @@ Emacs {
 		if (outFileName.isNil) {
 			"Emacs: No communication FIFO available.".postln;
 		}{
+			Document.implementationClass = ScelDocument;
 			outStream = CollStream.on(String.new);
 			outFile = File(outFileName, "w");
 			UI.registerForShutdown({

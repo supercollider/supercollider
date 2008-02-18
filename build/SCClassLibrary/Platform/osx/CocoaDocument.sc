@@ -1,4 +1,8 @@
 CocoaDocument : Document {
+
+	*initClass{
+		Document.implementationClass = CocoaDocument;
+	}
 	
 	*startup { 
 		var post;
