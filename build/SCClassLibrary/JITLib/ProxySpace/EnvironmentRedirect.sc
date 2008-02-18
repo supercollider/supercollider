@@ -156,20 +156,12 @@ EnvironmentRedirect {
      
      linkDoc { arg doc, pushNow=true;
      	doc = doc ? Document.current;
-     	if(doc.isKindOf(EnvirDocument), {
-     		doc.envir_(this)
-     	}, {
-     		if(pushNow) { this.push };
-     		"added actions to current doc".inform;
-     		doc	.toFrontAction_({ this.push })
-     			.endFrontAction_({ this.pop });
-     	});
+     	doc.envir_(this);
+     	if(pushNow and: { currentEnvironment !== this }) { this.push };
      }
      
      unlinkDoc { arg doc;
-     	if(doc.isKindOf(EnvirDocument)) { doc.envir_(nil) ^this };
-     	"removed actions from current doc".inform;
-     	doc.toFrontAction_(nil).endFrontAction_(nil)
+     	doc.envir_(nil);
      }
      
      // networking
