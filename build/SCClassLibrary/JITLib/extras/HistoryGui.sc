@@ -2,11 +2,11 @@ HistoryGui {
 
 	classvar <w, <>docTitle = "History repeats", <>docHeight=120;
 	
-	var <history, <w, <startBut, <pop, <keyPop, <topBut;
+	var <history, <w, <textV; 
+	var <startBut, <filtBut, <filTextV, <filtBut, <keyPop, <topBut;
 	var <doc, <oldDocs, <docFlag = \sameDoc, <>stickMode=0; 
 	
 	var <filters, <filteredIndices, <filteredShorts, <filtering = false;
-	var <filtBut, <keyPop, <filTextV, <textV, <filterBtn;
 	var lastLineSelected = 0, lastLinesShown;
 	 
 	*new { |history, where, numTextLines=12| 
@@ -30,7 +30,6 @@ HistoryGui {
 			.keyDownAction_({ |txvw, char, mod, uni, keycode| 
 				char.postcs;
 				if ([3, 13].includes(char.ascii)) {
-					"gets here?".postln;
 					this.findDoc; doc.string_(textV.string);
 				};
 			})
@@ -133,8 +132,7 @@ HistoryGui {
 				} { 
 					this.filterLines; 
 					filteredShorts;
-				};
-			//	[\linesToShow, linesToShow].postln; 
+				} ? [];
 				
 				if (linesToShow != lastLinesShown) { 
 				//	"or updating listview here?".postln; 
