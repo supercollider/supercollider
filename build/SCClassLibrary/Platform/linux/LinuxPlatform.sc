@@ -4,7 +4,7 @@ LinuxPlatform : UnixPlatform
 	startupFiles { ^#["~/.sclang.sc"] }
 	startup {
 		// Document setup
-		if (\EmacsDocument.asClass.notNil) {
+		if (Document.implementationClass == ScelDocument ) {
 			Document.implementationClass.startup;
 		};
 		
