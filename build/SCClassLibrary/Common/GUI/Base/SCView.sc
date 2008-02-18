@@ -1226,7 +1226,7 @@ SCDragBoth : SCDragSink {
 SCUserView : SCView {
 	var <>drawFunc;
 //	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
-	var < clearOnRefresh = true, < relativeOrigin = true;
+	var < clearOnRefresh = true, < relativeOrigin = false;
 	
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
