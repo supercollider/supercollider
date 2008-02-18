@@ -1,0 +1,80 @@
+#!/bin/bash
+
+basename=`basename $PWD`
+if [ $basename != "Packager" ]; then
+    echo "This script must be ran from within the Packager directory."
+    exit 1
+fi
+
+if [ -d SuperCollider ]; then
+	echo "Please remove the ./SuperCollider directory before running this script."
+	exit 1
+fi
+
+version=`date "+%Y-%m-%d"`
+include_optionals=false
+package_type="osx"
+
+while getopts ":v:os" Option
+do
+  case $Option in
+    v ) version=$OPTARG
+        ;;
+    o ) include_optionals=true
+        ;;
+    s ) package_type="source"
+        ;;
+  esac
+done
+shift $(($OPTIND - 1))
+
+revision=`svnversion -n ../`
+if ( echo $revision | grep "M" > /dev/null 2>&1 ); then
+    echo "WARNING: The working copy has uncommitted changes which will be included in the package."
+fi
+
+if ( echo $revision | grep ":" > /dev/null 2>&1 ); then
+    echo "WARNING: The working copy has mixed revision numbers (some folders had 'svn update' ran more recently than others)."
+fi
+revision=`echo $revision | sed -e 's/^[^:]*://;s/[A-Za-z]//'`
+
+if [ $package_type == "source" ]; then
+    mkdir SuperCollider-Source
+    svn export -q --force ../ SuperCollider-Source
+    
+    if $include_optionals; then
+        cp -Rp optional SuperCollider-Source/optional_installs
+        cp OPTIONALS_README_SOURCE.txt SuperCollider-Source/optional_installs/README.txt
+        filename="SuperCollider-$version-Source-With-Extras.tar.gz"
+    else
+        filename="SuperCollider-$version-Source.tar.gz"
+    fi
+    
+    tar cfz "$filename" SuperCollider-Source
+    rm -rf SuperCollider-Source
+    exit
+else
+    if $include_optionals; then
+        opt_options='--copy dmg_with_optionals.ds_store:/.DS_Store --copy optional/:/Optional\ Installs --copy OPTIONALS_README_OSX.rtf:/Optional\ Installs/README.rtf'
+        filename="SuperCollider-$version-With-Extras.dmg"
+    else
+        opt_options='--copy dmg_without_optionals.ds_store:/.DS_Store'
+        filename="SuperCollider-$version.dmg"
+    fi
+
+    about_version="$version (Revision $revision)"
+    echo "About box version string:" $about_version
+
+    svn export -q --force ../build SuperCollider
+    cp -R ../build/SuperCollider.app ../build/scsynth ../build/sclang SuperCollider
+    cp ../build/plugins/* SuperCollider/plugins/
+    find SuperCollider/help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
+    defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleVersion -string "$about_version"
+    defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleGetInfoString -string "$version"
+    plutil -convert xml1 $PWD/SuperCollider/SuperCollider.app/Contents/Info.plist
+
+    # use eval to force any escapes or quotes in $opt_options to be evaluated
+    eval './pkg-dmg --verbosity 0 --source ./SuperCollider --target "$filename" --sourcefile --volname SuperCollider --mkdir /.background --copy background.png:/.background/background.png --symlink /Applications:/Applications '$opt_options
+
+    rm -rf ./SuperCollider
+fi
