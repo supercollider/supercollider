@@ -281,6 +281,10 @@ ScelDocument : Document{
 
 	bounds_{
 	}
+	
+	*current {
+		^EmacsDocument.current.sceld;
+	}	
 
 	// invalid methods
 	initByIndex {
