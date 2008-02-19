@@ -53,10 +53,12 @@ void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars
 
 void win32_gettimeofday(timeval* tv, void*)
 {
-	struct _timeb timebuffer;
-	_ftime_s(&timebuffer);
-	tv->tv_sec = timebuffer.time; 
-	tv->tv_usec = timebuffer.millitm * 1000;
+	long unsigned secBetween1601and1970 = 11644473600ULL;
+	FILETIME fileTime;
+	GetSystemTimeAsFileTime(&fileTime);
+	tv->tv_sec  = (* (unsigned __int64 *) &fileTime / (unsigned __int64)10000000) - secBetween1601and1970;
+	tv->tv_usec = (* (unsigned __int64 *) &fileTime % (unsigned __int64)10000000)/(unsigned __int64)10;
+	
 }
 
 void win32_GetHomeFolder(char* homeFolder, int bufLen)

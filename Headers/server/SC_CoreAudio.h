@@ -221,6 +221,8 @@ class SC_PortAudioDriver : public SC_AudioDriver
 
     int mInputChannelCount, mOutputChannelCount;
     PaStream *mStream;
+	PaTime mPaStreamStartupTime;
+	int64 mPaStreamStartupTimeOSC;
 
 protected:
     // Driver interface methods

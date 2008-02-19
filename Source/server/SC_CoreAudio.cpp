@@ -155,6 +155,14 @@ int64 oscTimeNow()
 	return GetCurrentOSCTime();
 }
 
+int64 PaStreamTimeToOSC(PaTime pa_time) {
+	uint64 s, f;
+	s = (uint64)pa_time;
+	f = (uint64)((pa_time - s) * 1000000 * kMicrosToOSCunits);
+
+	return (s << 32) + f;
+}
+
 void initializeScheduler()
 {
 	gOSCoffset = GetCurrentOSCTime(); 
@@ -198,7 +206,7 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 
 int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
-	//scprintf("->PerformOSCMessage %d\n", inData[0]);
+	// scprintf("->PerformOSCMessage %d\n", inData[0]);
 	SC_LibCmd *cmdObj;
 	int cmdNameLen;
 	if (inData[0] == 0) {
@@ -266,7 +274,6 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 	
 		// in real time engine, schedule the packet
 		int64 time = OSCtime(packet->mData + 8);
-
 		if (time == 0 || time == 1) {
 			PerformOSCBundle(world, packet);
 		} else {
@@ -277,6 +284,11 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 				
 				//ReportLateness(packet->mReply, seconds)
 			}
+			// DEBUG
+			// else	
+				//scprintf("scheduled in %.6f at time %.6f\n", 
+				//	(time-driver->mOSCbuftime)*kOSCtoSecs, 
+				//	(time-gStartupOSCTime)*kOSCtoSecs);
 			
 			SC_ScheduledEvent event(world, time, packet);
 			driver->AddEvent(event);
@@ -1561,14 +1573,15 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
             PaStreamCallbackFlags statusFlags )
 {
     World *world = mWorld;
-
     (void) frameCount, timeInfo, statusFlags; // suppress unused parameter warnings
-    
+
 	try {
-		int64 oscTime = GetCurrentOSCTime();
-		int64 temptime = oscTime;
-		
-		mOSCbuftime = oscTime;
+		// synchronise against the output buffer - timeInfo->currentTime is 0.0 bug in PA?
+		if (mPaStreamStartupTime==0 && mPaStreamStartupTimeOSC==0) {
+			mPaStreamStartupTimeOSC = GetCurrentOSCTime();
+			mPaStreamStartupTime = timeInfo->outputBufferDacTime;
+		}
+		mOSCbuftime = PaStreamTimeToOSC(timeInfo->outputBufferDacTime - mPaStreamStartupTime) + mPaStreamStartupTimeOSC;
 		
 		mFromEngine.Free();
 		mToEngine.Perform();
@@ -1578,7 +1591,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 		int numOutputs = mOutputChannelCount;
 		const float **inBuffers = (const float**)input;
 		float **outBuffers = (float**)output;
-
+		
 		int numSamples = NumSamplesPerCallback();
 		int bufFrames = mWorld->mBufLength;
 		int numBufs = numSamples / bufFrames;
@@ -1593,6 +1606,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 
 		int bufFramePos = 0;
 
+		int64 oscTime = mOSCbuftime;
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
 	
@@ -1612,17 +1626,30 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 				*tch++ = bufCounter;
 			}
 
-
 			// run engine
-
 			int64 schedTime;
 			int64 nextTime = oscTime + oscInc;
+			// DEBUG
+			/*
+			if (mScheduler.Ready(nextTime)) {
+				double diff = (mScheduler.NextTime() - mOSCbuftime)*kOSCtoSecs; 
+				scprintf("rdy %.6f %.6f %.6f %.6f \n", (mScheduler.NextTime()-gStartupOSCTime) * kOSCtoSecs, (mOSCbuftime-gStartupOSCTime)*kOSCtoSecs, diff, (nextTime-gStartupOSCTime)*kOSCtoSecs);
+			}
+			*/
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
-				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
+				float diffTimeFloor = floor(diffTime);
+				world->mSampleOffset = (int)diffTimeFloor;
+				world->mSubsampleOffset = diffTime - diffTimeFloor;
+				
+				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
+				else if (world->mSampleOffset >= world->mBufLength) world->mSampleOffset = world->mBufLength-1;
+				
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
-				world->mSampleOffset = 0;
 			}
+			world->mSampleOffset = 0;
+			world->mSubsampleOffset = 0.f;
 
 			World_Run(world);
 
@@ -1639,7 +1666,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 			}
 
 			// update buffer time
-			mOSCbuftime = nextTime;
+			oscTime = mOSCbuftime = nextTime;
 		}
 	} catch (std::exception& exc) {
 		scprintf("SC_PortAudioDriver: exception in real time: %s\n", exc.what());
@@ -1729,6 +1756,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		inStreamParams.channelCount = mInputChannelCount;
 		inStreamParams.sampleFormat = fmt;
 		inStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency; //$$$todo : allow user to choose latency instead of this
+		scprintf("suggestedLatency used: %.3f\n", Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency);
 		inStreamParams.hostApiSpecificStreamInfo = NULL;
 
 		PaStreamParameters outStreamParams;
@@ -1760,6 +1788,13 @@ bool SC_PortAudioDriver::DriverStart()
     PaError paerror = Pa_StartStream( mStream );
     if( paerror != paNoError )
         PRINT_PORTAUDIO_ERROR( Pa_StartStream, paerror );
+
+	// sync times
+	mPaStreamStartupTimeOSC = 0;
+	mPaStreamStartupTime = 0;
+	// it would be better to do the sync here, but the timeInfo in the callback is incomplete
+	//mPaStreamStartupTimeOSC = GetCurrentOSCTime();
+	//mPaStreamStartupTime = Pa_GetStreamTime(mStream);
 
 	return paerror == paNoError;
 }
