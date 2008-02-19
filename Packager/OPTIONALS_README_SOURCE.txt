@@ -8,7 +8,9 @@ Quarks are the standard method for handling the distribution of class library ex
 
 1) To install for one user move the quarks directory to "~/share/SuperCollider". To install for all users, move the quarks directory to "/usr/local/share/SuperCollider".
 
-2) Follow the steps outlined inside the Quarks helpfile to actually install a Quark.
+2) Follow the steps outlined inside the Quarks helpfile to actually install a Quark.You do NOT need to download the quarks (you already have), at this point, you should be able to start installing Quarks by running:
+
+Quarks.gui
 
 
 SC3-PLUGINS
