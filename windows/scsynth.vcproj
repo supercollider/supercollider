@@ -331,7 +331,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="pa-v19_svn"
+				Name="pa-v19-20071207"
 				>
 				<Filter
 					Name="include"
@@ -431,6 +431,14 @@
 						</File>
 						<File
 							RelativePath="..\..\portaudio\src\common\pa_cpuload.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\portaudio\src\common\pa_debugprint.c"
+							>
+						</File>
+						<File
+							RelativePath="..\..\portaudio\src\common\pa_debugprint.h"
 							>
 						</File>
 						<File
@@ -715,6 +723,10 @@
 										XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 									/>
 								</FileConfiguration>
+							</File>
+							<File
+								RelativePath="..\..\portaudio\src\os\win\pa_win_waveformat.c"
+								>
 							</File>
 							<File
 								RelativePath="..\..\portaudio\src\os\win\pa_x86_plain_converters.c"
