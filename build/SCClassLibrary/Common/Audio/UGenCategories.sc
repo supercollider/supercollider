@@ -52,7 +52,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Dust            { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Dust2           { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Duty            { *categories { ^ #["UGens>Demand"] } }
-+ Klang           { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + Dwhite          { *categories { ^ #["UGens>Demand"] } }
 + DynKlang        { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + DynKlank        { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
