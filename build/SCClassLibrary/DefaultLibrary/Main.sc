@@ -1,6 +1,6 @@
 Main : Process {
 
-	classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="rc3";
+	classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="";
 
 	var <platform, argv;
 	var <>recvOSCfunc;
