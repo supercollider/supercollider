@@ -9,7 +9,7 @@ Bus {
 		server = server ? Server.default;
 		alloc = server.controlBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{
-			error("Meta_Bus-control: failed to get a control bus allocated."
+			error("Meta_Bus:control: failed to get a control bus allocated."
 				+ "numChannels:" + numChannels + "server:" + server.name);
 			^nil
 		});
@@ -20,7 +20,7 @@ Bus {
 		server = server ? Server.default;
 		alloc = server.audioBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{
-			error("Meta_Bus-audio: failed to get an audio bus allocated."
+			error("Meta_Bus:audio: failed to get an audio bus allocated."
 			+ "numChannels:" + numChannels + "server:" + server.name);
 			^nil
 		});
@@ -129,6 +129,7 @@ Bus {
 	}
 	
 	== { arg aBus;
+		if(aBus === this,{ ^true });
 		^aBus respondsTo: #[\index, \numChannels, \rate, \server]
 		and: { aBus.index == index 
 		and: { aBus.numChannels == numChannels
