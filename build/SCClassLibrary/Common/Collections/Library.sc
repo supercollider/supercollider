@@ -137,13 +137,13 @@ MultiLevelIdentityDictionary : Collection
 			var key,item;
 			key = items.at(i);
 			item = items.at(i + 1);
-			if(item.isKindOf(Function),{
+			if(item.isArray.not,{
 				this.put(* keys ++ [key,item]);
 			},{
 				//array
 				this.prPutTree(keys ++ [key],item);
 			})
-		})
+		});
 	}
 	leaves { arg startAt;
 		if(startAt.isNil,{
