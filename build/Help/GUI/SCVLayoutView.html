@@ -5,17 +5,19 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
-span.s1 {color: #0019b7}
-span.s2 {color: #a71e12}
-span.s3 {color: #326f17}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #84331b}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #84331b; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+span.s1 {color: #0424af}
+span.s2 {color: #84331b}
+span.s3 {color: #4e6a22}
 span.s4 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -135,5 +137,55 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">w.front</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p7"><b>nesting</b></p>
+<p class="p3">(</p>
+<p class="p3">q = 10;</p>
+<p class="p3">w = <span class="s1">SCWindow</span>.new("nesting",Rect(30,30,400,800));</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">SCVLayoutView</span>(w,<span class="s1">Rect</span>(10,10,300,700));</p>
+<p class="p2"><br></p>
+<p class="p3">v.background = Color.blue;</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{ arg i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">SCSlider</span>(v,<span class="s1">Rect</span>(0,0,75,20)).value_(i / q)</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p3">h = <span class="s1">SCHLayoutView</span>(v,<span class="s1">Rect</span>(10,10,300,300));</p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{ arg i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">SCSlider</span>(h,<span class="s1">Rect</span>(0,0,20,70)).value_(i / q)</p>
+<p class="p3">});</p>
+<p class="p3">h.background = Color.yellow;</p>
+<p class="p2"><br></p>
+<p class="p3">w.front</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p8">Although relativeOrigin can be set, it is irrelevant.<span class="Apple-converted-space">  </span>Only the width and height of the bounds of a child view is used.</p>
+<p class="p5">(</p>
+<p class="p2"><br></p>
+<p class="p3">q = 10;</p>
+<p class="p3">w = <span class="s1">SCWindow</span>.new("nesting",Rect(30,30,400,800));</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">SCVLayoutView</span>(w,<span class="s1">Rect</span>(10,10,300,700));</p>
+<p class="p3">v.relativeOrigin = true;</p>
+<p class="p3">v.background = Color.blue;</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{ arg i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">SCSlider</span>(v,<span class="s1">Rect</span>(0,0,75,20)).value_(i / q)</p>
+<p class="p3">});</p>
+<p class="p2"><br></p>
+<p class="p3">h = <span class="s1">SCHLayoutView</span>(v,<span class="s1">Rect</span>(10,10,300,300));</p>
+<p class="p3">h.relativeOrigin = true;</p>
+<p class="p3"><span class="s1">Array</span>.fill(q,{ arg i;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">SCSlider</span>(h,<span class="s1">Rect</span>(0,0,20,70)).value_(i / q)</p>
+<p class="p3">});</p>
+<p class="p3">h.background = Color.yellow;</p>
+<p class="p2"><br></p>
+<p class="p3">w.front</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5">)</p>
 </body>
 </html>
