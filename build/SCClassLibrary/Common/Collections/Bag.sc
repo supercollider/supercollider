@@ -43,7 +43,17 @@ Bag : Collection {
 			 })
 		});
 	}
-	
+	countsDo { arg function;
+		var j = 0;
+		contents.associationsDo({ arg assn;
+			function.value(assn.key,assn.value,j);
+			 j = j + 1;
+		});
+	}	
+	itemCount { arg item;
+		^(contents.at(item) ? 0)
+	}
+
 	// PRIVATE IMPLEMENTATION
 	setDictionary { arg n;
 		contents = Dictionary.new(n)
