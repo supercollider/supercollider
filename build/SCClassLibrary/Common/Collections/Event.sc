@@ -180,7 +180,7 @@ Event : Environment {
 				sustain: #{ ~dur * ~legato * ~stretch },
 				lag: 0.0,
 				strum: 0.0,
-				strumEndsTogether: true
+				strumEndsTogether: false
 			),
 			
 			ampEvent: (
@@ -264,7 +264,7 @@ Event : Environment {
 						} { 
 							dur = sustain + strumTime 
 						};
-						schedBundle.value(lag, dur + ~timingOffset, server, [\n_set, msg[2], \gate, 0])
+						schedBundle.value(lag, dur + ~timingOffset, server, [\n_set, msg[3], \gate, 0])
 					}
 				}				
 			),
