@@ -4,6 +4,7 @@ Psym : FilterPattern {
 	*new { arg pattern, dict;
 		^super.new(pattern).dict_(dict)
 	}
+	storeArgs { ^[pattern,dict] }
 	
 	lookupClass { ^Pdef }
 	lookUp { arg key;
@@ -53,7 +54,7 @@ Ptsym : Psym {
 	*new { arg pattern, dict, quant, dur, tolerance = 0.001;
 		^super.newCopyArgs(pattern, dict, quant, dur, tolerance)
 	}
-	
+	storeArgs { ^[ pattern, dict, quant, dur, tolerance ] }
 	embedInStream { arg inval;
 		var str, outval, pat, quantVal, quantStr, durVal, durStr;
 		str = pattern.asStream;

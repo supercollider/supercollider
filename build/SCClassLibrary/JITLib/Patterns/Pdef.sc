@@ -792,7 +792,7 @@ Pdict : Pattern {
 	*new { arg dict, which, repeats=inf, default;
 		^super.newCopyArgs(dict, which, repeats, default);
 	}
-	
+	storeArgs { ^[dict,which,repeats,default ] }
 	embedInStream { arg inval;
 		var keyStream, key;
 		keyStream = which.asStream;

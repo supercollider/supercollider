@@ -91,7 +91,8 @@ Pbus : FilterPattern {
 		^super.new(pattern).dur_(dur).numChannels_(numChannels).rate_(rate).fadeTime_(fadeTime)
 	}
 	
-
+	storeArgs { ^[ pattern, dur, fadeTime, numChannels, rate ] }
+	
 	embedInStream { arg inevent;
 		var server, groupID, linkID, bus, ingroup, cleanup;
 		var patterns, event, freeBus, stream;
