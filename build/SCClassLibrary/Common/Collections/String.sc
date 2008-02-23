@@ -61,8 +61,10 @@ String[char] : RawArray {
 	matchRegexp { arg string, start = 0, end; _String_Regexp ^this.primitiveFailed }
 
 	die { arg ... culprits;
-		("\n\nFATAL ERROR: " ++ this).postln;
-		culprits.do({ arg c; if(c.isString,{c.postln},{c.dump}) });
+		if(culprits.notEmpty,{
+			("\n\nFATAL ERROR: ").postln;
+			culprits.do({ arg c; if(c.isString,{c.postln},{c.dump}) });
+		});
 		Error(this).throw; 
 	}
 	error { "ERROR:\n".post; this.postln; }
@@ -240,6 +242,14 @@ String[char] : RawArray {
 			^this
 		})
 	}
+	withoutTrailingSlash {
+		if(this.last == $/,{
+			^this.copyRange(0,this.size-2)
+		},{
+			^this
+		})
+	}
+			
 	absolutePath{
 		var first;
 		first = this[0];
