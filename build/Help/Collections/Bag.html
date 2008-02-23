@@ -13,16 +13,16 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-span.s1 {color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
+span.s1 {color: #0013bb}
 span.s2 {color: #606060}
 span.s3 {color: #000000}
-span.s4 {color: #bf0000}
+span.s4 {color: #a8220e}
 </style>
 </head>
 <body>
@@ -70,6 +70,18 @@ span.s4 {color: #bf0000}
 <p class="p3">The function is passed two arguments, the item and an integer index.</p>
 <p class="p2"><br></p>
 <p class="p7"><span class="s1">Bag</span>[1, 2, 3, 300].do({ <span class="s1">arg</span> item, i; item.postln });</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s1">Bag</span>[1, 2, 2, 3, 300].do({ <span class="s1">arg</span> item, i; item.postln });</p>
+<p class="p2"><br></p>
+<p class="p3"><b>countsDo(function)</b></p>
+<p class="p3">args to function: item, count, i</p>
+<p class="p2"><br></p>
+<p class="p3">Evaluates function for each unique item in the Bag along with that item's count.</p>
+<p class="p3">The function is passed two arguments, the item, the quantity of that item in the Bag and an integer index.</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s1">Bag</span>[1, 2, 3, 300].countsDo({ <span class="s1">arg</span> item, count, i; [item,count].postln });</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s1">Bag</span>[1, 2, 2, 3, 300].countsDo({ <span class="s1">arg</span> item, count, i; [item,count].postln });</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Difference between Bag and IdentityBag:</b></p>
