@@ -22,6 +22,6 @@ GetStringDialog  {
 			b.string = String.new ++ defaultString;
 			b.action = {arg field; func.value(true,field.value); l.close; };
 		},prompt);
-		//{ b.view.focus }.defer;
+		{ b.focus }.defer;
 	}
 }
