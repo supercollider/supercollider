@@ -7,6 +7,12 @@ Main : Process {
 	var	<>nowExecutingPath;
 
 	startup {
+		// setup the platform first so that class initializers can call platform methods.
+		// create the platform, then intialize it so that initPlatform can call methods
+		// that depend on thisProcess.platform methods.
+		platform = this.platformClass.new;
+		platform.initPlatform;
+
 		super.startup;
 		// set the 's' interpreter variable to the internal server.
 		interpreter.s = Server.internal;
