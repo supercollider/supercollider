@@ -6,7 +6,7 @@ Pproto  : Pattern {
 	*new { | makeFunction, pattern, cleanupFunc|
 		^super.newCopyArgs( makeFunction, pattern, cleanupFunc)
 	}
-		
+	storeArgs { ^[makeFunction,pattern,cleanupFunc] }	
 	embedInStream { | event |
 		var stream,  ev, evType;			
 		var cleanup, cleanupList, eventCleanupFunc;

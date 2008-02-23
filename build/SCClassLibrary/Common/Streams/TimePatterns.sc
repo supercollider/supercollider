@@ -30,7 +30,7 @@ Pstep : Pattern {
 		^inval;
 	}
 	storeArgs {
-		^[list, repeats, durs]
+		^[list, durs, repeats]
 	}	
 }
 

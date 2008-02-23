@@ -58,6 +58,7 @@ Penvir : Pattern {
 	*new { arg envir, pattern, independent=true;
 		^super.newCopyArgs(envir, pattern, independent)
 	}
+	storeArgs { ^[envir,pattern,independent] }
 	embedInStream { arg inval;
 		if(independent) 
 			{ Event.new(8, nil, envir) }

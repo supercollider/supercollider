@@ -3,6 +3,7 @@ Pindex : Pattern {
 	*new { arg listPat, indexPat, repeats=1;
 		^super.newCopyArgs(listPat, indexPat, repeats)
 	}
+	storeArgs { ^[listPat,indexPat,repeats] }
 	embedInStream { arg inval;
 		var indexStream, index, item, itemCount;
 		var listStream = listPat.asStream;

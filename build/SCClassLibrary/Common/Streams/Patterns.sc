@@ -186,6 +186,9 @@ PdegreeToKey : Pnaryop {
 	*new { arg pattern, scale, stepsPerOctave=12; 
 		^super.new('degreeToKey', pattern, [scale, stepsPerOctave])
 	}
+	// this is not reversible
+	// but it would save as something that played the same
+	//storeArgs { ^[ pattern, scale, stepsPerOctave ] }
 }
 
 Pchain : Pattern {
@@ -551,10 +554,10 @@ Pstep3add : Pattern {
 
 PstepNfunc : Pattern {
 	var <function, <>patterns;
-	*new { arg func, patterns;
-		^super.newCopyArgs(func, patterns)
+	*new { arg function, patterns;
+		^super.newCopyArgs(function, patterns)
 	}
-	
+	storeArgs { ^[function,patterns] }
 	embedInStream { arg inval;
 		var val;		
 		var size = patterns.size;
@@ -595,6 +598,7 @@ Ptime : Pattern {
 	*new { arg repeats=inf;
 		^super.newCopyArgs(repeats)
 	}
+	storeArgs { ^[repeats] }
 	embedInStream { arg inval;
 		var start = thisThread.beats;
 		repeats.value.do { inval = (thisThread.beats - start).yield };
@@ -609,6 +613,7 @@ Pprotect : FilterPattern {
 	*new { arg pattern, func;
 		^super.new(pattern).func_(func)
 	}
+	storeArgs { ^[ pattern, func ] }
 	asStream {
 		var rout = Routine(pattern.embedInStream(_));
 		rout.exceptionHandler = { |error|Ê
@@ -642,7 +647,7 @@ Pif : Pattern {
 	*new { |condition, iftrue, iffalse, default|
 		^super.newCopyArgs(condition, iftrue, iffalse, default)
 	}
-	storeArgs { ^[condition, iftrue, iffalse] }
+	storeArgs { ^[condition, iftrue, iffalse,default] }
 	asStream {
 		var	condStream = condition.asStream,
 			trueStream = iftrue.asStream,

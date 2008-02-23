@@ -249,9 +249,13 @@ Pstretchp : Pstretch {
 
 Pplayer : FilterPattern {
 	var <>playerPattern, <>subPattern;
+	// this is broken:
 	*new { arg playerPattern, subPattern;
+	// super new copy args puts it in pattern, playerPattern
+	// -cx
 		^super.newCopyArgs(playerPattern, subPattern)
 	}
+	storeArgs { ^[ playerPattern, subPattern ] }
 	embedInStream { arg event;
 		var player, inevent;
 		var playerStream = playerPattern.asStream;
@@ -561,7 +565,7 @@ Pclutch : FilterPattern {
 	*new { arg pattern, connected = true;
 		^super.new(pattern).connected_(connected)
 	}
-	
+	storeArgs { ^[ pattern, connected ] }
 	embedInStream { arg inval;
 		var clutchStream = connected.asStream;
 		var stream = pattern.asStream;
@@ -625,6 +629,7 @@ Ptrace : FilterPattern {
 	*new { arg pattern, key, printStream, prefix; 
 		^super.newCopyArgs(pattern, key, printStream, prefix) 
 	}
+	storeArgs { ^[ pattern, key, printStream, prefix ] }
 	asStream {
 		^pattern.asStream.trace(key, printStream, prefix)
 	}
@@ -634,7 +639,7 @@ Ptrace : FilterPattern {
 Pclump : FilterPattern {
 	var <>n;
 	*new { arg n, pattern;
-		^super.newCopyArgs(pattern, n) 
+		^super.new(pattern).n_(n)
 	}
 	embedInStream { arg event;
 		var next, list, nval;
@@ -655,13 +660,10 @@ Pclump : FilterPattern {
 			event = list.yield;
 		}
 	}
+	storeArgs { ^[ n, pattern ] }
 }
 
-Pflatten : FilterPattern {
-	var <>n;
-	*new { arg n, pattern;
-		^super.newCopyArgs(pattern, n) 
-	}
+Pflatten : Pclump {
 	embedInStream { arg event;
 		var next, nval;
 		var stream = pattern.asStream;
@@ -729,6 +731,7 @@ Prorate : FilterPattern {
 			}
 		}
 	}
+	storeArgs { ^[proportion,pattern] }
 }
 
 Pavaroh : FilterPattern {

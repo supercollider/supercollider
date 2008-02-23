@@ -3,6 +3,7 @@ Prewrite : FilterPattern {
 	*new { arg pattern, dict, levels;
 		^super.new(pattern).dict_(dict).levels_(levels)
 	}
+	storeArgs { ^[ pattern, dict, levels ] }
 	rewriteList { arg list, inval, level;
 		var newlist;
 		if (level == 0, { 

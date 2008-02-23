@@ -28,6 +28,7 @@ PfadeIn : FilterPattern {
 				}
 			}
 	}
+	storeArgs { ^[ pattern, fadeTime, holdTime, tolerance ] }
 }
 
 PfadeOut : PfadeIn {
