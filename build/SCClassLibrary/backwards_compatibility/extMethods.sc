@@ -27,19 +27,23 @@
 	*stop {
 		RootNode.new.freeAll;
 	}
-	*isPlaying {
+	//*isPlaying {
 		//server is running
 		// at least one thing playing
-		RootNode.new.head.deepDo({ arg child;
-			if(child.isPlaying,{ ^true })
-		});
-		^false
-	}
+	// deepDo is gone
+		//RootNode.new.head.deepDo({ arg child;
+		//	if(child.isPlaying,{ ^true })
+		//});
+		//^false
+	//}
 	*play { arg func;
 		^func.play;
 	}
 	play {
 		//if not already playing, play
+	}
+	*sampleRate {
+		^Server.default.sampleRate ? Server.default.options.sampleRate ? 44100.0
 	}
 }
 
