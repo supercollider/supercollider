@@ -17,11 +17,17 @@ QuarkSVNRepository
 	}
 	
 	*new { | url, local |
-		if(svnpath.isNil || File.exists(svnpath).not,{
-			Error("Path to SVN executable is not correct.  Set \n\tQuarkSVNRepository.svnpath = \"/full/path/to/svn\"\n in your startup ").throw;
-		});
+		if(svnpath.isNil) {
+			Post 
+			<< 	"\tSVN not found! Quarks placed in the directory"
+			<<	"\n\n\t\t" << Platform.userAppSupportDir << "/quarks"
+			<< 	"\n\n\t" << "will be available, but you need svn to checkout updated versions."
+			<<	"\n\n\t" << "svn can be downloaded from:"
+			<< 	"\n\n\t\t" << "http://subversion.tigris.org/project_packages.html\n"
+		};
 		^this.newCopyArgs(url ? "https://quarks.svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
 	}
+
 	// easiest to just check out all
 	checkoutAll { |localRoot|
 		this.svn("co", this.url ++ "/", localRoot.escapeChar($ ) ++  "/")
@@ -33,15 +39,29 @@ QuarkSVNRepository
 			{this.svnSync("co", *args)}
 			{this.svn(    "co", *args)};
 	}
+	
 	checkoutDirectory {
 		var dir;
+		if (svnpath.isNil) {
+			"\n\tSince SVN not installed, you cannot checkout Quarks. ".postln.halt;
+		};
+		if ( (Quarks.local.path ++ "/*").pathMatch.size != 0 ) {
+			if (  (Quarks.local.path ++ "/.svn").pathMatch.size == 0 ) {
+				Post 
+				<< "\n\tCurrent Quarks are not SVN. Delete the directories \n\t\t " 
+				<< Quarks.local.path << "\n\tand\n\t\t"
+				<< Platform.userExtensionDir << "/quarks\n" 
+				<< "\tand recompile before checking out quarks";
+				nil.halt;
+			}
+		};
 		dir = (local.path.select{|c| (c != $\\)}) ++ "/DIRECTORY" ;
-		if(File.exists(dir).not, {
-			this.svn("co", (this.url++"/DIRECTORY").escapeChar($ ), (local.path ++ "/DIRECTORY").escapeChar($ ));
-			^false
-		});
-		^true
+		this.svn("co", (this.url++"/DIRECTORY").escapeChar($ ), 
+				(local.path ++ "/DIRECTORY").escapeChar($ )
+		);
+		^false
 	}
+
 	// check if the quarks directory is checked out yet
 	checkDir {
 		var dir;
@@ -78,6 +98,9 @@ QuarkSVNRepository
 		^matches.sort({ |a,b| a.version > b.version }).first
 	}
 	svn { | cmd ... args |
+		if (svnpath.isNil) { 
+			Error("SVN is not installed! Quarks cannot be updated.").throw;
+		};
 		cmd = ("export LANG='' ; " + svnpath.escapeChar($ ) + cmd + args.join(" ") + "2>&1");
 		"".debug;
 		cmd.debug;
@@ -88,12 +111,12 @@ QuarkSVNRepository
 				("echo " ++ $" ++ "
 --------------------------------------------------------------
 
-  SuperCollider Quarks: accessing remote repository.
+  SuperCollider Quarks: accessing remote repository.
 
-  If this is the first time, you may be asked to accept a
-  security certificate. Please do so!
+  If this is the first time, you may be asked to accept a
+  security certificate. Please do so!
 
-  The command being run is:
+  The command being run is:
 " ++ cmd.escapeChar($") ++ "
 
 --------------------------------------------------------------
