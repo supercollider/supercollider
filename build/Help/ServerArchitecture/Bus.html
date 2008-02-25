@@ -14,17 +14,17 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {color: #0000ff}
-span.s2 {color: #0018f7}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #0018f7}
+span.s2 {color: #0522ef}
 span.s3 {color: #0000bf}
 span.s4 {color: #000000}
 span.s5 {color: #007300}
-span.s6 {color: #606060}
+span.s6 {color: #0012b9}
+span.s7 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -69,17 +69,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3"><b>server</b> - Get the Bus' server object.</p>
 <p class="p4"><br></p>
-<p class="p3"><b>asMapArg</b> - Returns a symbol consisting of the letter 'c' followed by the bus's index. This may be used when setting a synth node's control inputs to maps the input to the control bus. See the <a href="Node.html"><span class="s2">Node</span></a> help file for more information on mapping controls to buses.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><b>asMap</b> - Returns a symbol consisting of the letter 'c' followed by the bus's index. This may be used when setting a synth node's control inputs to maps the input to the control bus. See the <a href="Node.html"><span class="s2">Node</span></a> help file for more information on mapping controls to buses.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p3"><b>Note:</b> It is impossible to map a synth control to an audio rate bus. Calling this method on an audio bus will throw an error.</p>
 <p class="p4"><br></p>
 <p class="p7">(</p>
-<p class="p7"><span class="s3">var</span><span class="Apple-tab-span">	</span>ffreqbus = <span class="s3">Bus</span>.control(s, 1),</p>
-<p class="p7"><span class="Apple-tab-span">	</span>rqbus = <span class="s3">Bus</span>.control(s, 1);</p>
-<p class="p8"><br></p>
-<p class="p9">SynthDef<span class="s4">(</span><span class="s5">\rlpf</span><span class="s4">, { </span>|bus, ffreq, rq|</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">ReplaceOut</span>.ar(bus, <span class="s3">RLPF</span>.ar(<span class="s3">In</span>.ar(bus, 1), ffreq, rq))</p>
-<p class="p7">}).play(s, [<span class="s5">\ffreq</span>, ffreqbus.asMapArg, <span class="s5">\rq</span>, rqbus.asMapArg]);</p>
+<p class="p7">~ffreqbus = <span class="s3">Bus</span>.control(s, 1).set(440);</p>
+<p class="p7">~rqbus = <span class="s3">Bus</span>.control(s, 1).set(0.01);</p>
+<p class="p7">)</p>
+<p class="p7">(</p>
+<p class="p8">SynthDef<span class="s4">(</span><span class="s5">\rlpf</span><span class="s4">, { </span>|ffreq, rq|</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, <span class="s3">RLPF</span>.ar(<span class="s3">WhiteNoise</span>.ar(0.2), ffreq, rq))</p>
+<p class="p7">}).play(s, [<span class="s5">\ffreq</span>, ~ffreqbus.asMap, <span class="s5">\rq</span>, ~rqbus.asMap]);</p>
 <p class="p7">)</p>
 <p class="p4"><br></p>
 <p class="p5"><b>Asynchronous Control Bus Methods</b></p>
@@ -107,54 +108,54 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>setnMsg(values)</b> - Returns a msg of the type /c_setn for use in osc bundles. <b>values </b>is a an array of values to which adjacent channels should be set, starting at this bus' first channel.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p3"><b>fillMsg(value)</b> - Returns a msg of the type /c_fill for use in osc bundles. <b>value </b>is the value to which this bus' channels will be set.</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p7">s = <span class="s3">Server</span>.local;</p>
-<p class="p7">s.boot;</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p7">(</p>
-<p class="p11">// something to play with</p>
-<p class="p7"><span class="s3">SynthDef</span>(<span class="s6">"help-Bus"</span>, { <span class="s3">arg</span> out=0,ffreq=100;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> x;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>x = <span class="s3">RLPF</span>.ar(<span class="s3">LFPulse</span>.ar(<span class="s3">SinOsc</span>.kr(0.2, 0, 10, 21), [0,0.1], 0.1),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ffreq, 0.1)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> .clip2(0.4);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, x);</p>
-<p class="p7">}).send(s);</p>
-<p class="p8"><br></p>
-<p class="p7">)</p>
-<p class="p8"><br></p>
-<p class="p12"><span class="s4">x = </span><span class="s3">Synth</span><span class="s4">(</span>"help-Bus"<span class="s4">);</span></p>
-<p class="p8"><br></p>
-<p class="p11">// get a bus</p>
-<p class="p7">b = <span class="s3">Bus</span>.control(s);</p>
-<p class="p8"><br></p>
-<p class="p11">// map the synth's second input (ffreq) to read</p>
-<p class="p11">// from the bus' output index</p>
-<p class="p7">x.map(1, b);</p>
-<p class="p8"><br></p>
-<p class="p11">// By setting the bus' value you send a /c_fill message</p>
-<p class="p11">// to each channel of the bus setting it to supplied float value</p>
-<p class="p7">b.value = 100;</p>
-<p class="p7">b.value = 1000;</p>
-<p class="p7">b.value = 30;</p>
-<p class="p8"><br></p>
-<p class="p11">// Since this is a single channel bus this has the same effect</p>
-<p class="p7">b.set(300);</p>
-<p class="p7">b.numChannels.postln;</p>
-<p class="p8"><br></p>
-<p class="p11">// multi-channel:<span class="Apple-converted-space">  </span>b.set(300,350);</p>
-<p class="p11">// Get the current value. This is asynchronous so you can't rely on it happening immediately.</p>
-<p class="p7">(</p>
-<p class="p12"><span class="s4">a = </span>"waiting"<span class="s4">;</span></p>
-<p class="p7">b.get({<span class="s3">arg</span> value; a = value; (<span class="s6">"after the server responds a is set to:"</span> + a).postln;});</p>
-<p class="p7">(<span class="s6">"a is now:"</span> + a).postln;</p>
-<p class="p7">)</p>
-<p class="p8"><br></p>
-<p class="p7">x.free;</p>
-<p class="p8"><br></p>
-<p class="p11"><span class="s4">b.free; </span>// release it so it may be reallocated!</p>
-<p class="p8"><br></p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p9">s = <span class="s6">Server</span>.local;</p>
+<p class="p9">s.boot;</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p9">(</p>
+<p class="p10">// something to play with</p>
+<p class="p9"><span class="s6">SynthDef</span>(<span class="s7">"help-Bus"</span>, { <span class="s6">arg</span> out=0,ffreq=100;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s6">var</span> x;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>x = <span class="s6">RLPF</span>.ar(<span class="s6">LFPulse</span>.ar(<span class="s6">SinOsc</span>.kr(0.2, 0, 10, 21), [0,0.1], 0.1),</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> ffreq, 0.1)</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> .clip2(0.4);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(out, x);</p>
+<p class="p9">}).send(s);</p>
+<p class="p2"><br></p>
+<p class="p9">)</p>
+<p class="p2"><br></p>
+<p class="p11"><span class="s4">x = </span><span class="s6">Synth</span><span class="s4">(</span>"help-Bus"<span class="s4">);</span></p>
+<p class="p2"><br></p>
+<p class="p10">// get a bus</p>
+<p class="p9">b = <span class="s6">Bus</span>.control(s);</p>
+<p class="p2"><br></p>
+<p class="p10">// map the synth's second input (ffreq) to read</p>
+<p class="p10">// from the bus' output index</p>
+<p class="p9">x.map(1, b);</p>
+<p class="p2"><br></p>
+<p class="p10">// By setting the bus' value you send a /c_fill message</p>
+<p class="p10">// to each channel of the bus setting it to supplied float value</p>
+<p class="p9">b.value = 100;</p>
+<p class="p9">b.value = 1000;</p>
+<p class="p9">b.value = 30;</p>
+<p class="p2"><br></p>
+<p class="p10">// Since this is a single channel bus this has the same effect</p>
+<p class="p9">b.set(300);</p>
+<p class="p9">b.numChannels.postln;</p>
+<p class="p2"><br></p>
+<p class="p10">// multi-channel:<span class="Apple-converted-space">  </span>b.set(300,350);</p>
+<p class="p10">// Get the current value. This is asynchronous so you can't rely on it happening immediately.</p>
+<p class="p9">(</p>
+<p class="p11"><span class="s4">a = </span>"waiting"<span class="s4">;</span></p>
+<p class="p9">b.get({<span class="s6">arg</span> value; a = value; (<span class="s7">"after the server responds a is set to:"</span> + a).postln;});</p>
+<p class="p9">(<span class="s7">"a is now:"</span> + a).postln;</p>
+<p class="p9">)</p>
+<p class="p2"><br></p>
+<p class="p9">x.free;</p>
+<p class="p2"><br></p>
+<p class="p10"><span class="s4">b.free; </span>// release it so it may be reallocated!</p>
+<p class="p2"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
 </body>
 </html>
