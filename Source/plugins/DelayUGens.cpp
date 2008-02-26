@@ -6071,7 +6071,17 @@ Pluck - Karplus-Strong
 */
 void Pluck_Ctor(Pluck *unit)
 {
-	FeedbackDelay_Reset(unit);
+//	FeedbackDelay_Reset(unit);
+	float maxdelaytime = unit->m_maxdelaytime = IN0(2);
+	float delaytime = unit->m_delaytime = IN0(3);
+	unit->m_dlybuf = 0;
+	DelayUnit_AllocDelayLine(unit);
+	unit->m_dsamp = CalcDelay(unit, unit->m_delaytime);	
+	
+	unit->m_numoutput = 0;
+	unit->m_iwrphase = 0;
+	unit->m_feedbk = CalcFeedback(unit->m_delaytime, unit->m_decaytime);
+	
 	if (INRATE(1) == calc_FullRate) {
 	    if(INRATE(5) == calc_FullRate){
 		SETCALC(Pluck_next_aa_z);
