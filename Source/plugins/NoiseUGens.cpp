@@ -766,10 +766,12 @@ void CoinGate_next(CoinGate* unit, int inNumSamples)
 		if (prevtrig <= 0.f && curtrig > 0.f) {
 			if(rgen.frand() < probability) {
 					level = curtrig;
+			} else {
+					level = 0.f; 
 			}
 		}
 		prevtrig = curtrig;
-		ZXP(out) = level; 
+		ZXP(out) = level;
 	)
 	
 	unit->m_trig = prevtrig;
