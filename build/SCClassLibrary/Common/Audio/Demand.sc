@@ -74,9 +74,8 @@ DUGen : UGen {
 		super.init(*argInputs);
 		this.forceAudioRateInputsIntoUGenGraph;
 	}
-	forceAudioRateInputsIntoUGenGraph { // this is here until another solution is found.
- 		inputs.do { |in| if(in.rate == \audio) { in + 1 } }; // a mock addition serves the purpose
- 	}
+	forceAudioRateInputsIntoUGenGraph {
+ 		inputs.do { |in| if(in.rate == \audio) { in <! 0 } };	}
 }
 
 Dseries : DUGen {
