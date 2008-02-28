@@ -128,7 +128,7 @@ void initialize_library()
 	
 	// get extension directories
 	char extensionDir[MAXPATHLEN];
-
+	if (!sc_IsStandAlone()) {
  	// load system extension plugins
 	sc_GetSystemExtensionDirectory(extensionDir, MAXPATHLEN);
  	PlugIn_LoadDir(extensionDir, false);
@@ -142,7 +142,7 @@ void initialize_library()
 	while (!sp.AtEnd()) {
 		PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
 	}
-
+	}
 #ifdef SC_DARWIN
 	/* on darwin plugins are lazily loaded (dlopen uses mmap internally), which can produce audible
 		glitches when UGens have to be paged-in. to work around this we preload all the plugins by
