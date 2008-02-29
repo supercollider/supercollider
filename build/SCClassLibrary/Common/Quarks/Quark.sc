@@ -58,6 +58,9 @@ Quark
 	*new { | blob, parent |
 		^super.new.init(blob, parent)
 	}
+	*find { |name|
+		^Quarks.local.quarks.detect({ |q| q.name == name })
+	}
 	init { | blob , argParent |
 		parent = argParent;
 
@@ -144,16 +147,8 @@ Quark
 	postDesc {
 		this.longDesc.postln;
 	}
-	== { arg that; 
-		^that respondsTo: #[name, summary, version, author, dependencies, tags, path] 
-			and: {(this.name  == that.name)
-			and: {this.summary == that.summary}
-			and: {this.version  == that.version}
-			and: {this.author  == that.author}
-			and: {this.dependencies  == that.dependencies}
-			and: {this.tags  == that.tags}
-			and: {this.path  == that.path}
-		}
+	== { arg that;
+		^this.compareObject(that,[\name, \summary, \version, \author, \dependencies, \tags, \path]);
 	}
 	dependencies { |recursive = false, knownList|
 		var deps, quark, selfasdep;
