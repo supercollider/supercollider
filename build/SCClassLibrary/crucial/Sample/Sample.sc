@@ -62,30 +62,34 @@ BufferProxy { // blank space for delays, loopers etc.
 		// invalidate any other cached ones
 		^this
 	}
-
-	bufnum { ^if(buffer.notNil,{ buffer.bufnum }, nil) }
+	numFrames { ^size }
+	bufnum {
+		if(UGen.buildSynthDef.notNil,{
+			("Use bufnumIr, not bufnum to obtain a buffer number inside of a synth def. in:" + UGen.buildSynthDef.instrName).warn;
+		});
+		^if(buffer.notNil,{ buffer.bufnum }, nil) 
+	}
 	
 	bufnumIr {
 		// add a secret ir control
 		^bufnumControl ?? {
-			bufnumControl = UGen.buildSynthDef.addSecretIr(
-				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
+			bufnumControl = UGen.buildSynthDef.addSecretIr(this,0,\bufnum);
 		}
 	}
 	
-	// no reason to use the kr versions since reloading always happens to the same buffer
+	// the only reason to use the kr version is if you wish to modulate which buffer to use
 	bufnumKr {
 		// add a secret kr control
 		^bufnumControl ?? {
-			bufnumControl = UGen.buildSynthDef.addSecretKr(
-				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
+			bufnumControl = UGen.buildSynthDef.addSecretKr(this,0,\bufnum);
 		}
-	}
-	sampleRateKr {
-		^BufSampleRate.kr(this.bufnumKr)
 	}
 	sampleRateIr {
 		^BufSampleRate.ir(this.bufnumIr)
+	}
+	// only reason to use kr is if the buffer will be loaded with a new sample
+	sampleRateKr {
+		^BufSampleRate.kr(this.bufnumKr)
 	}
 	
 	bufRateScaleKr {
@@ -317,12 +321,21 @@ Sample : AbstractSample { // a small sound loaded from disk
 	tempo_ { arg tm;
 		tempo = tm; 
 		beats = tempo * (size/soundFile.sampleRate);
-		beatsize = size / beats;
+		if(beats > 0,{
+			beatsize = size / beats;
+		},{
+			beatsize = 0;
+		});
 	}
 	beats_ { arg bt;
 		beats = bt;
-		beatsize = size / beats;
-		tempo = beats / (size/soundFile.sampleRate);
+		if(beats > 0,{
+			beatsize = size / beats;
+			tempo = beats / (size/soundFile.sampleRate);
+		},{
+			beatsize = 0;
+			tempo = 0;
+		})
 	}
 	bpm_ { arg bpm; this.tempo_(bpm / 60.0); }
 	bpm { ^tempo * 60.0; }
@@ -354,13 +367,9 @@ Sample : AbstractSample { // a small sound loaded from disk
 		beatsizek = pchk = tempoi = nil;
 	}
 	pchRatioKr {
-		// ISSUE once its built and InstrSynthDef object discarded
-		// how do you know to send the secret ones ?
-		// for now the InstrSynthDef is always there when its playing anyway
-		// i haven't had any problems
 		^pchk ?? { 
-			pchk = 
-				(this.bufRateScaleIr * UGen.buildSynthDef.tempoKr(forArgi,\getTempoBus))
+			pchk =
+				(this.bufRateScaleIr * UGen.buildSynthDef.tempoKr(this,\getTempoBus))
 					.madd(this.sampleTempoIr.reciprocal)
 		}
 	}
@@ -370,16 +379,12 @@ Sample : AbstractSample { // a small sound loaded from disk
 	beatsizeIr {
 		^beatsizek ?? {
 			beatsizek = 
-				UGen.buildSynthDef.addSecretIr( 
-					("__beatsize__" ++ forArgi.asString).asSymbol,
-					beatsize,forArgi,\beatsize
-				);
+				UGen.buildSynthDef.addSecretIr( this,beatsize,\beatsize);
 		}
 	}
 	sampleTempoIr {
 		^tempoi ?? {
-			tempoi = UGen.buildSynthDef.addSecretIr(("__stempo__" ++ forArgi.asString).asSymbol,
-											tempo,forArgi,\tempo);
+			tempoi = UGen.buildSynthDef.addSecretIr(this,tempo,\tempo);
 		}
 	}
 	/*
@@ -411,6 +416,20 @@ Sample : AbstractSample { // a small sound loaded from disk
 				this
 			]).play
 	}
+	asSignal { arg channel; // nil is stereo interleaved, or 0, 1
+		var file,sig;
+		file = SoundFile.new;
+		file.openRead(this.soundFilePath);
+		//Error("Failed to open sound file").throw;
+		sig = FloatArray.newClear(file.numFrames * file.numChannels);
+		file.readData(sig);
+		file.close;
+		if(channel.notNil and: {this.numChannels > 1},{
+			sig = sig.clump(this.numChannels).flop.at(channel);
+		});
+		^sig.as(Signal)
+	}
+
 }
 
 ArrayBuffer : BufferProxy {

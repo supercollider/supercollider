@@ -1,7 +1,7 @@
 
 ModalFreqUGen { // a pseudo ugen
 
-	*kr { arg degree=0,bufferProxy,root=0.0,octave=5.0,stepsPerOctave=12.0;
+	*kr { arg degree=0,bufferProxy,root=0.0,octave=4.0,stepsPerOctave=12.0;
 
 		var note,midinote;
 		
@@ -19,7 +19,7 @@ ModalFreqUGen { // a pseudo ugen
 		
 		^midinote.midicps;	
 	}
-	*ar { arg degree=0,bufferProxy,root=0.0,octave=5.0,stepsPerOctave=12.0;
+	*ar { arg degree=0,bufferProxy,root=0.0,octave=4.0,stepsPerOctave=12.0;
 		var note,midinote;
 		note=DegreeToKey.ar(bufferProxy.bufnumKr,
 					degree.round(1.0),

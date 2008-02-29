@@ -10,11 +10,11 @@ Silence : SynthlessPlayer {
 
 PlayerInputProxy : Silence { // audio
 
-	var <>spec,<>initValue = 0,>numChannels;
+	var <>spec,<>initValue = 0;
 	var <patchIn;
 	var inBus;
 
-	*new { arg spec=\audio;
+	*new { arg spec=\stereo; // \mono, \stereo
 		^super.new.spec_(spec.asSpec).pipinit
 	}
 	pipinit {
@@ -43,7 +43,7 @@ PlayerInputProxy : Silence { // audio
 		patchOut = PatchOut(this,nil,inBus);
 	}
 	rate { ^spec.rate }
-	numChannels { ^(numChannels ?? {spec.tryPerform(\numChannels) ? 1}) }
+	numChannels { ^(spec.numChannels) }
 }
 
 

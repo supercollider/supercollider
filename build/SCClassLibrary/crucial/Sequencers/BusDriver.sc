@@ -1,7 +1,7 @@
 
 BusDriver : SynthlessPlayer {
 
-	var <>lag=0.0,<>latency=0.2;
+	var <>lag=0.0,<>latency=0.1;
 	var sched,bus,msg,bnd,resched,routine;
 	
 	rate { ^\control }
@@ -52,7 +52,7 @@ StreamKr : Kr { // trigger is a kr rate trigger
 StreamKrDur : BusDriver {
 
 	var <>values,<>durations;
-	var valst,durst,lastValue;
+	var valst,deltast,<lastValue,<delta,<beat;
 
 	*new { arg values=0.0,durations=0.25,lag=0.0;
 		// make refs of arrays into Pseq
@@ -67,53 +67,101 @@ StreamKrDur : BusDriver {
 		^super.new.values_(values).durations_(durations).lag_(lag).skdinit
 	}
 	skdinit {
+		// if values is of spec EventStreamSpec, throw an error (Pbind)
+		
 		sched = TempoClock.default;
 		routine = Routine({
-			var dur,val,server;
+			var val,server,beatsTillNext,beatLatency;
 			server = this.server;
 			latency = server.latency ? 0.05;
-			//first val already sent
-			dur = durst.next;
-			// small slippage if tempo changes during first event.
-			// but only within the window of latency
-			(dur - Tempo.secs2beats(latency)).yield;
+			beatLatency = Tempo.secs2beats(latency);
+
+			// first val already sent
+			delta = deltast.next ?? {routine.stop};
+			beat = beat + delta;
+			// what beat am I really supposed to play at ?
+			// this is accurate enough for now.  its just minor scheduler drift
+			
+			beatsTillNext = delta - beatLatency;
+			// this goes negative if delta is less than server latency
+			while({ beatsTillNext < beatLatency},{
+				// so make up some time
+				// beatsTillNext.debug("beatsTillNext");
+
+				// send immediately
+				val = valst.next ?? {routine.stop};
+				lastValue = val;
+				msg.put(2,val);
+				server.listSendBundle( Tempo.beats2secs(delta), bnd);
+
+				delta = delta + deltast.next ?? {routine.stop};
+
+				beatsTillNext = delta - beatLatency;
+			});
+			//beatsTillNext.yield;
+			beatLatency.yield;
+
+			// would be better to calc the exact time based on scheduling slippage
 			while({
-				(val = valst.next).notNil and:
-				(dur = durst.next).notNil
+				(delta = deltast.next(this)).notNil and:
+				(val = valst.next(this)).notNil
 			},{
 				msg.put(2,val);
 				server.listSendBundle(latency,bnd);
 				lastValue = val;
-				dur.yield
+				delta.yield
 			});
 		});
-		valst = values.asStream;
-		durst = durations.asStream;
 	}
 	reset {
 		routine.stop;
-		// should be able to just reset these
-		valst = values.asStream;
-		durst = durations.asStream;
 	}		
 	// has no synth, just a bus
 	spawnToBundle { arg bundle;
+		valst = values.asStream;
+		deltast = durations.asStream;
+		beat = 0.0;
 		bus = patchOut.bus;
-		msg = ["/c_set",bus.index,valst.next];
-		bnd = [msg];
-		// send first message
-		bundle.add(msg);
-		bundle.addMessage(this,\didSpawn);
+		lastValue = valst.next;
+		if(lastValue.notNil,{
+			msg = ["/c_set",bus.index,lastValue];
+			bnd = [msg];
+			// send first message
+			bundle.add(msg);
+			bundle.addMessage(this,\didSpawn);
+		});
 	}
 	didSpawn {
 		routine.reset;
-		//valst = values.asStream;
-		//durst = durations.asStream;
+		// immediately
 		sched.schedAbs(sched.elapsedBeats, routine);
-		//sched.play(routine);
+		//because sched.play(routine); <- this uses nexttime on grid
+		
 		super.didSpawn;
 	}
 	poll { ^lastValue }
+	spec {
+		var valuesSpec,makeSpec;
+		// values might have a stream spec, who has an item spec that is the result
+		valuesSpec = values.tryPerform(\spec);
+		if(valuesSpec.notNil,{
+			if(valuesSpec.isKindOf(StreamSpec),{ 
+				valuesSpec = valuesSpec.itemSpec;
+				if(valuesSpec.isKindOf(ControlSpec),{
+					makeSpec = ControlSpec(valuesSpec.minval,valuesSpec.maxval,valuesSpec.warp,
+							valuesSpec.step,valuesSpec.default,valuesSpec.units);
+					^makeSpec
+				});
+			})
+		});
+		if(values.isNumber,{
+			^ControlSpec(values,values,default: values)
+		});
+		// else I couldn't tell you so we continue to guess "control"
+		^super.spec	
+	}
+		
+	children { ^[values,durations] }
 	storeArgs { ^[values,durations,lag] }
 	guiClass { ^StreamKrDurGui }
 }
@@ -121,10 +169,13 @@ StreamKrDur : BusDriver {
 
 Stream2Trig : StreamKrDur { // outputs just a single pulse trig
 
+	// *new(levels, deltas)
+	
 	// doesn't use lag	
 	instrArgFromControl { arg control;
 		^InTrig.kr( control,1)
 	}
 	poll { ^nil }
+	spec { ^\trig.asSpec }
 }
 

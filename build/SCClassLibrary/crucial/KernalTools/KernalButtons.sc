@@ -20,14 +20,14 @@ MethodLabel : ActionButton {
 	// show args and prototypes
 	*new { arg  method,layout,minWidth=100;
 		^super.new(layout,method.ownerClass.name.asString ++ "-" ++ method.name.asString,
-			{method.ginsp},minWidth,17,nil,Color.new255(245, 222, 179),GUI.font.new("Monaco",9));
+			{method.ginsp},minWidth,GUI.skin.buttonHeight,nil,Color.new255(245, 222, 179),GUI.font.new("Monaco",9));
 	}
 	*withoutClass { arg  method,layout,minWidth=100;
-		^super.new(layout, method.name.asString,{method.ginsp},minWidth,17,nil,
+		^super.new(layout, method.name.asString,{method.ginsp},minWidth,GUI.skin.buttonHeight,nil,
 			Color.new255(245, 222, 179),GUI.font.new("Monaco",9));
 	}
 	*classMethod { arg  method,layout,minWidth=100;
-		^super.new(layout,"*" ++ method.name.asString,{method.ginsp},minWidth,17,nil,
+		^super.new(layout,"*" ++ method.name.asString,{method.ginsp},minWidth,GUI.skin.buttonHeight,nil,
 			Color.new255(245, 222, 179),GUI.font.new("Monaco",9));
 	}
 	
@@ -53,7 +53,8 @@ Tile : ActionButton {
 	*new { arg  target,layout,minWidth=100; 
 		^super.new(layout,target.asString,{ 
 				target.gui; 
-			},minWidth,17, Color.black,Color(0, 0, 0.1,0.2))
+				//#F6F9F5
+			},minWidth,GUI.skin.buttonHeight, Color.black,	Color.new255(248, 248, 255))
 	}
 
 }
@@ -71,7 +72,7 @@ InspectorLink : ActionButton {
 			Color.black,Color.white,GUI.font.new("Helvetica-Bold",18))
 	}
 	*icon { arg target,layout;
-		^GUI.button.new(layout,Rect(0,0,6,17))
+		^GUI.button.new(layout,Rect(0,0,6,GUI.skin.buttonHeight))
 			.action_({ target.insp })
 			.states_([["i",Color.black,Color.white]])
 			.font_(GUI.font.new("Helvetica-Bold",9));

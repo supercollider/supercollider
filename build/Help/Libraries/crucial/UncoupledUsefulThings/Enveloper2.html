@@ -7,12 +7,13 @@
 <meta name="Generator" content="Cocoa HTML Writer">
 <meta name="CocoaVersion" content="824.44">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #091fb1}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; color: #000000}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
-span.s1 {color: #091fb1}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #81321c}
+span.s1 {color: #000000}
+span.s2 {color: #0924ad}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -23,15 +24,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">(</p>
 <p class="p2"><br></p>
-<p class="p4">b = <span class="s1">Bus</span>.control(<span class="s1">Server</span>.local);</p>
+<p class="p4">b = <span class="s2">Bus</span>.control(<span class="s2">Server</span>.local);</p>
 <p class="p4">{</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> p,qnty=4,gate;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>gate = <span class="s1">In</span>.kr(b);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s1">Mix</span>.arFill(qnty.asInteger,{ <span class="s1">arg</span> i;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar(440 + rrand(1,5))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> p,qnty=4,gate;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>gate = <span class="s2">In</span>.kr(b);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s2">Mix</span>.arFill(qnty.asInteger,{ <span class="s2">arg</span> i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SinOsc</span>.ar(440 + rrand(1,5))</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}) * qnty.reciprocal;</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Enveloper2</span>.ar(p,gate,<span class="s1">Env</span>.adsr)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Enveloper2</span>.ar(p,gate,<span class="s2">Env</span>.adsr)</p>
 <p class="p4">}.play;</p>
 <p class="p2"><br></p>
 <p class="p4">)</p>

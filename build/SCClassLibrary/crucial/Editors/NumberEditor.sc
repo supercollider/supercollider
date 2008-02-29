@@ -2,18 +2,18 @@
 Editor {
 	var  <>action, // { arg value,theEditor; }
 		<>value, <patchOut;
-	
+
 	guiClass { ^ObjectGui }
 
 	storeOn { arg stream;
 		value.storeOn(stream)
 	}
-	
+
 	next { ^this.value }// Object would return this
 	poll { ^value }
 	embedInStream { arg inval; ^this.asStream.embedInStream(inval); }
 	asStream { ^FuncStream(this) }
-	
+
 	setPatchOut { arg po; patchOut = po }
 	makePatchOut {
 		patchOut = ScalarPatchOut(this)
@@ -22,7 +22,7 @@ Editor {
 	instrArgFromControl { arg control;
 		^control
 	}
-	
+
 	editWithCallback { arg callback;
 		ModalDialog({ arg layout;
 			this.gui(layout);
@@ -37,18 +37,19 @@ Editor {
 		this.value_(val);
 		action.value(value);
 	}
+	spec { ^thisMethod.subclassResponsibility }
 
 }
 
 NumberEditor : Editor {
-	
+
 	var <spec;
-	
+
 	*new { arg value=1.0,spec='amp';
 		^super.new.init(value,spec)
 	}
 	init { arg val,aspec;
-		spec = aspec.asSpec ?? {ControlSpec.new};
+		spec = (aspec.asSpec ?? {ControlSpec.new});
 		this.value_(spec.constrain(val));
 	}
 	spec_ { arg aspec;
@@ -64,10 +65,10 @@ NumberEditor : Editor {
 	unmappedValue {
 		^spec.unmap(value)
 	}
-	rand { arg standardDeviation = 0.25;
+	rand { arg standardDeviation = 0.15,mean;
 		// gaussian centered on the spec default
 		var default,unmapped;
-		default = spec.unmap( spec.default );
+		default = spec.unmap( mean ? spec.default );
 		unmapped = (sqrt(-2.0 * log(1.0.rand)) * sin(2pi.rand) * standardDeviation + default);
 		this.setUnmappedValue(unmapped);
 	}
@@ -85,10 +86,10 @@ NumberEditor : Editor {
 
 }
 
-KrNumberEditor : NumberEditor { 
+KrNumberEditor : NumberEditor {
 	classvar <>defaultLag = 0.1;
  	var <>lag;
- 
+
 	init { arg val,aspec;
 		super.init(val, aspec);
 		lag = defaultLag;
@@ -109,7 +110,7 @@ KrNumberEditor : NumberEditor {
 			^control
 		})
 	}
-	makePatchOut { 
+	makePatchOut {
 		patchOut = UpdatingScalarPatchOut(this,enabled: false);
 	}
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
@@ -119,7 +120,7 @@ KrNumberEditor : NumberEditor {
 	freePatchOut { arg bundle;
 		bundle.addFunction({ patchOut.free; patchOut = nil; })
 	}
-	
+
 	guiClass { ^KrNumberEditorGui }
 
 }
@@ -139,7 +140,7 @@ IrNumberEditor : NumberEditor {
 PopUpEditor : KrNumberEditor {
 
 	var <>labels, <>values,<selectedIndex;
-	
+
 	*new { arg initVal,labels,values;
 		^super.new.pueinit(initVal,values,labels)
 	}
@@ -153,7 +154,7 @@ PopUpEditor : KrNumberEditor {
 		},{
 			values = v ?? { Array.series(labels.size,0,1) };
 			labels = l.collect({ arg l; l.asString });
-		});	
+		});
 		selectedIndex = values.indexOf(value) ? 0;
 	}
 	value_ { arg val;

@@ -14,7 +14,7 @@ SampleGui : ObjectGui {
 		var n;
 		n = model.class.asString;
 		InspectorLink.icon(model,layout);
-		GUI.dragSource.new(layout,Rect(0,0,(n.size * 7.5).max(70),17))
+		GUI.dragSource.new(layout,Rect(0,0,(n.size * 7.5).max(70),GUI.skin.buttonHeight))
 			.stringColor_(Color.new255(70, 130, 200))
 			.background_(Color.white)
 			.align_(\center)
@@ -22,14 +22,14 @@ SampleGui : ObjectGui {
 			.object_(n);
 	}
 	guiBody { arg layout;
-		var xfade, r, size;
+		var xfade, r, size,absBounds;
 		
 		divs = 1;
 		zout = 1.1; zin = zout.reciprocal;
 		zyout = 1.1; zyin = zyout.reciprocal;
 		rScroll = 0.01; lScroll = rScroll * -1;
 
-		layout = this.guify(layout,Rect(0,0,700,500),model.asString);
+		//layout = this.guify(layout,Rect(0,0,700,500),model.asString);
 		nameG = ActionButton(layout,"pathname",{
 			this.loadDialog
 		},minWidth:140).background_(Color.white);
@@ -61,9 +61,11 @@ SampleGui : ObjectGui {
 
 		size = layout.asView.bounds.width - 220;
 		layout.startRow;
+		//absBounds = Rect(0, 0, size, 80);
+		//absBounds = absBounds.moveToPoint(layout.absoluteBounds.origin);
+		//absBounds = absBounds.moveBy(0,layout.decorator.top);
 		v = GUI.soundFileView.new(layout, Rect(0, 0, size, 80))
 			.canFocus_(true).gridOn_(true).timeCursorOn_(false);
-		//d = GUI.slider(layout, Rect(0,0,size,7)).action_({|slider| v.scrollTo(slider.value) });
 		d = GUI.slider2D.new(layout, size@30)
 			.action_({|sl| 
 				var y;
@@ -74,7 +76,6 @@ SampleGui : ObjectGui {
 			
 		layout.startRow;
 		CXLabel(layout,"Resolution:");
-		//GUI.staticText.new(layout, Rect(0, 0, 40, 18)).string_("Resolution:").align_(\right);
 		GUI.numberBox.new(layout, Rect(0, 0, 30, 18)).value_(block)
 			.action_({|numbox|
 				numbox.value = max(numbox.value,1);
@@ -88,7 +89,6 @@ SampleGui : ObjectGui {
 
 			});
 		CXLabel(layout,"divs/beat:");
-		//GUI.staticText.new(layout, Rect(0, 0, 40, 18)).string_("Divs/beat:").align_(\right);
 		GUI.numberBox.new(layout, Rect(0, 0, 30, 18)).value_(divs)
 			.action_({|numbox|
 				numbox.value = max(numbox.value,1);

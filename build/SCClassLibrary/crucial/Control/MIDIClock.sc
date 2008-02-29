@@ -76,7 +76,7 @@ MIDIClockOut {
 	stopToBundle { arg b;
 		b.addMessage( this,\stop);
 	}
-
+	synthArg { ^nil }
 	/*songPtr { arg gotoBeat,atTime;
 		
 	}*/

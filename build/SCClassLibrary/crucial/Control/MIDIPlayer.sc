@@ -1,7 +1,6 @@
 
 // see MIDIPlayer for all help files
-
-//cvs commit -m "gate and freq players act classical monophonically; CmdPeriod disengages all players" MIDIPlayer.sc
+// abstract class
 
 MIDIPlayer : SynthlessPlayer { // InterfacePlayer, Control
 
@@ -42,7 +41,7 @@ MIDIPlayer : SynthlessPlayer { // InterfacePlayer, Control
 	rate { ^\control }
 }
 
-//abstract class
+// abstract class
 MIDIHoldsNotes : MIDIPlayer {
 	var off,heldNotes;
 	removeResponders {
@@ -51,7 +50,7 @@ MIDIHoldsNotes : MIDIPlayer {
 	}
 }
 
-//does not release until the last key is released
+// does not release until the last key is released
 MIDIGatePlayer : MIDIHoldsNotes {
 	
 	*new { arg spec=\amp;
@@ -71,7 +70,7 @@ MIDIGatePlayer : MIDIHoldsNotes {
 	}
 }
 
-//implements classic analog monophonic style including trills
+// implements classic analog monophonic style including trills
 MIDIFreqPlayer : MIDIHoldsNotes {
 	*new { arg init=440.0; ^super.new.value_(init) }
 	initResponders {

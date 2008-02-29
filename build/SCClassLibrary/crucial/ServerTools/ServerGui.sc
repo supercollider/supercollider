@@ -9,7 +9,7 @@ ServerGui : ObjectGui {
 		var active,booter;
 		
 		if(model.isLocal,{
-			booter = GUI.button.new(layout, Rect(0,0, 47, 17));
+			booter = GUI.button.new(layout, Rect(0,0, 47, GUI.skin.buttonHeight));
 			booter.states = [["Boot", Color.black, Color.clear],
 						   ["Quit", Color.black, Color.clear]];
 			booter.font = GUI.font.new("Helvetica",10);
@@ -28,7 +28,7 @@ ServerGui : ObjectGui {
 			booter.setProperty(\value,model.serverRunning.binaryValue);
 		});
 		
-		active = GUI.staticText.new(layout, Rect(0,0, 60, 17));
+		active = GUI.staticText.new(layout, Rect(0,0, 60, GUI.skin.buttonHeight));
 		active.string = model.name.asString;
 		active.align = \center;
 		active.font = GUI.font.new("Helvetica-Bold", 11);
@@ -67,7 +67,7 @@ ServerGui : ObjectGui {
 			};
 		});
 			
-		status = CXLabel(layout,"               ");
+		status = CXLabel(layout,"                                       ");
 		status.font = GUI.font.new("Helvetica",9);
 		status.background = Color.black;
 		status.stringColor = Color.green;
@@ -76,7 +76,7 @@ ServerGui : ObjectGui {
 			model.startAliveThread(0.0,1.0);
 		});
 		
-		recorder = GUI.button.new(layout, Rect(0,0, 10, 17));
+		recorder = GUI.button.new(layout, Rect(0,0, 10, GUI.skin.buttonHeight));
 		recorder.states = [
 			["*", Color.black, Color.clear],
 			["*", Color.red, Color.gray(0.1)],
@@ -94,10 +94,12 @@ ServerGui : ObjectGui {
 		if(model.serverRunning,running,stopped);
 		updater = IdentityDictionary[
 					\serverRunning -> { if(model.serverRunning,running,stopped) },
-					\counts -> { status.label = 
-					model.avgCPU.round(0.1).asString ++ "/" ++ model.peakCPU.round(0.1) ++ "%      "
-					+ model.numUGens ++ "u"
-					+ model.numSynths ++ "s";},
+					\counts -> { 
+						 status.label = 
+							model.avgCPU.round(0.1).asString ++ "/" ++ model.peakCPU.round(0.1) ++ "%      "
+							+ model.numUGens ++ "u"
+							+ model.numSynths ++ "s";
+					},
 					\cmdPeriod -> {
 						recorder.setProperty(\value,0);
 					}];

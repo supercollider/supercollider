@@ -92,7 +92,7 @@ CXObjectInspector : ObjectGui {
 		ActionButton(layout,"gui",{ model.topGui });
 		ActionButton(layout,"post",{ model.asCompileString.postln });
 		ActionButton(layout,"dump",{ model.dump });
-		ActionButton(layout,":=> var x",{
+		ActionButton(layout,"assign to var x",{
 			thisProcess.interpreter.performList('x_',model);
 		});
 		ActionButton(layout,"open class file",{
@@ -107,17 +107,18 @@ ClassGui : CXObjectInspector { // ClassGui
 
 	guiBody { arg layout;
 	
-		var iNames,supers,scale;
-		layout.hr;
+		var iNames,supers,scale,width;
 	
+		width = (layout.bounds.width - 30) / (model.superclasses.size + 1);
 		// you are here
-		InspectorLink.big(model,layout.startRow,minWidth:200);
-		CXLabel(layout,":",y: 30);
+		//InspectorLink(model,layout.startRow,minWidth:width);
+		ClassNameLabel(model,layout,width,30);
+		//CXLabel(layout,":",height: 30);
 		supers = model.superclasses;
 		if(supers.notNil,{
 			scale = supers.size;
 			supers.do({ arg sup,i;
-				ClassNameLabel(sup,layout,100,30);
+				ClassNameLabel(sup,layout,width,30);
 			})
 		});
 
@@ -130,11 +131,6 @@ ClassGui : CXObjectInspector { // ClassGui
 			model.openHelpFile;
 		});
 
-		// subclasses
-		// needs a scroll view
-		this.displaySubclassesOf(model,layout,0,50);
-		
-		layout.hr;		
 		
 		// explicit references
 		/*
@@ -162,7 +158,7 @@ ClassGui : CXObjectInspector { // ClassGui
 			CXLabel(layout.startRow,"vars:",minWidth:160).bold;
 			model.instVarNames.size.do({ arg ivi;
 				if(ivi % 8 ==0,{ layout.startRow });
-				VariableNameLabel(model.instVarNames.at(ivi),layout,minWidth:100);
+				VariableNameLabel(model.instVarNames.at(ivi),layout,minWidth:width);
 				// iprototype
 			});
 		});		
@@ -170,7 +166,7 @@ ClassGui : CXObjectInspector { // ClassGui
 		// meta_class methods
 		if(model.class.methods.size > 0,{
 			model.class.methods.size.do({arg cmi;
-				MethodLabel.classMethod(model.class.methods.at(cmi),layout.startRow,minWidth:160);
+				MethodLabel.classMethod(model.class.methods.at(cmi),layout.startRow,minWidth:width);
 			});
 		});	
 		
@@ -179,13 +175,13 @@ ClassGui : CXObjectInspector { // ClassGui
 		// MethodBrowser(class)
 		// show up to 50 methods, up the superclass chain (stop at object ?)
 		// show when methods are overriden by subclass
-		if(model.methods.size < 50,{
-			this.displayMethodsOf(model,layout,true);
-		},{
-			ActionButton(layout.startRow,"display instance methods (" + model.methods.size + ")",{
-				this.displayMethodsOf(model);
-			})
-		});
+		//if(model.methods.size < 50,{
+			this.displayMethodsOf(model,layout,true,width);
+		//},{
+		//	ActionButton(layout.startRow,"display instance methods (" + model.methods.size + ")",{
+		//		this.displayMethodsOf(model);
+		//	},minWidth:width)
+		//});
 		ActionButton(layout,"find method...",{
 			GetStringDialog("find method...","",{ arg ok,string;
 				var class,method;
@@ -204,37 +200,54 @@ ClassGui : CXObjectInspector { // ClassGui
 		});		
 				
 		this.dependantsGui(layout);
+		
+		// subclasses
+		// needs a scroll view
+		layout.hr;
+		//layout.scroll({ |layout|
+			this.displaySubclassesOf(model,layout,0,50);
+		//});
+		
+		//layout.hr;		
+
 	}
 	
-	displayMethodsOf { arg class,f,withoutClass = false;
-		f = f.asFlowView;
-		if(class.methods.notNil,{
-			class.methods.do({ arg meth;
+	displayMethodsOf { arg class,f,withoutClass = true,width=160,indent=0;
+		var methods;
+		methods = class.methods;
+		if(methods.notNil,{
+			//this.displayMethods(methods,f,withoutClass,width,indent);
+		//});
+		// go to the superclasses
+		// display all methods not already shown
+		// with an indent of one class width
+	//}
+	//displayMethods { arg class,f,withoutClass = true,width=160,indent=0;
+			f = f.asFlowView;
+		//if(class.methods.notNil,{
+			methods.do({ arg meth;
 				if(withoutClass,{
-					MethodLabel.withoutClass(meth,f.startRow,minWidth:160)
+					MethodLabel.withoutClass(meth,f.startRow,minWidth:width)
 				},{
-					MethodLabel(meth,f.startRow,minWidth:200);
+					MethodLabel(meth,f.startRow,minWidth:width);
 				});
 				class.superclasses.do({ arg superclass;
 					var supermethod;
 					supermethod = superclass.findMethod(meth.name);
 					if(supermethod.notNil,{
-						MethodLabel(supermethod,f,minWidth:200)
+						MethodLabel(supermethod,f,minWidth:width)
+					},{
+						// leave space
+						GUI.staticText.new(f,Rect(0,0,width,GUI.skin.buttonHeight))
 					});
 				})
-			})
-		});
-		if(class.superclass.notNil,{ // not Object
-			ActionButton(f.startRow,"Methods of" + class.superclass.name + "...",{
-				Sheet({ arg f;
-					this.displayMethodsOf(class.superclass,f)
-				},"Methods of" + class.superclass.name);
 			})
 		});
 	}	
 	
 	displaySubclassesOf { arg class,layout,shown,limit,indent = 50;
 		var subclasses;
+		layout = layout.asFlowView;
 		if(class.subclasses.notNil,{
 			subclasses = class.subclasses.as(Array)
 				.sort({arg a,b; a.name.asString < b.name.asString});
@@ -268,7 +281,19 @@ MethodGui : ObjectGui {
 //		Tile(model.class,layout);
 //		CXLabel(layout,model.asString);
 //	}
-	
+	source {
+		var classSource,myIndex,nextMethod,tillChar;
+		classSource = File(model.fileNameSymbol.asString,"r").readAllString;
+		myIndex = model.ownerClass.methods.indexOf(model);
+		nextMethod = model.ownerClass.methods[myIndex+1];
+		if(nextMethod.notNil,{
+			tillChar = nextMethod.charPos;
+		},{
+			tillChar = model.charPos + 500; // actually till the next class begins on this page or the page ends
+		});
+		^classSource.copyRange(model.charPos,tillChar)
+	}
+			
 	guiBody { arg layout;
 		var prototypeFrame;
 		var started=false,supers;
@@ -279,7 +304,7 @@ MethodGui : ObjectGui {
 		ActionButton(layout,"Help",{ 
 			model.openHelpFile;
 		});
-	
+		//this.source.gui(layout);
 		
 		// from Object down...		
 		layout.startRow;
@@ -288,12 +313,10 @@ MethodGui : ObjectGui {
 			supers.reverse.do({ arg class;
 				var supermethod;
 				supermethod = class.findMethod(model.name);
-				ClassNameLabel(class,layout.startRow,minWidth:300);
 				if(supermethod.notNil,{
-					//	started = true;
+					ClassNameLabel(class,layout.startRow,minWidth:300);
 					MethodLabel(supermethod,layout,minWidth:300);
 				});
-
 			})
 		});	
 		
@@ -308,9 +331,9 @@ MethodGui : ObjectGui {
 			//r.gui(layout.startRow);
 			//r.debug;
 			if(r.isKindOf(FunctionDef),{
-				InspectorLink(r,layout.startRow);
+				InspectorLink(r,layout.startRow,300);
 			},{
-				MethodLabel(r,layout.startRow);
+				MethodLabel(r,layout.startRow,300);
 			});
 		});
 		// would rather look at the source code for most things

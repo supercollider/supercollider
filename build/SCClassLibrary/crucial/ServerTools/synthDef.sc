@@ -41,10 +41,18 @@
 		bundle.add(this.freeMsg)
 	}
 }
-		
+
 + Buffer {
 	synthArg {
 		^bufnum
+	}
+}
++ SequenceableCollection {
+	asBufnum {
+		var bp;
+		bp = ArrayBuffer(this);
+		// UGen.buildSynthDef.addSecretObject(bp);
+		^bp.bufnumIr
 	}
 }
 
@@ -107,21 +115,21 @@
 
 + ControlSpec {
 	canAccept { arg thing;
-		var ts;
+		var thingSpec;
 		^if(thing.isNumber,{
 			thing.inclusivelyBetween(clipLo,clipHi)
 		},{
-			if(thing.isKindOf(AbstractPlayer),{
-				(thing.spec.class == this.class and: {
-					ts = thing.spec;
-					// thing does not exceed my bounds
-					//ts.clipHi <= clipHi and: {ts.clipLo >= clipLo}
-					// need more detail
-					true
-				})
-			},{
-				false
-			})
+			thingSpec = thing.tryPerform(\spec);
+			if(thingSpec.isNil,{ ^false });
+			if(thingSpec.class !== this.class, { ^false });
+			if(thingSpec == this,{ ^true });
+			// if thingSpec is within my bounds
+			// TODO check if my minval is greater than my maxval
+			if(thingSpec.minval >= this.minval and: 
+				{thingSpec.maxval <= this.maxval},{
+					^true
+			});
+			^false
 		});
 	}
 }

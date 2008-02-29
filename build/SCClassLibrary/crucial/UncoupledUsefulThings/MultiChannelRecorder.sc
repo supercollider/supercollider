@@ -53,7 +53,7 @@ MultiChanRecorder {
 			"Recording".inform;
 		});
 	}
-	isRecording { ^recordNode.insp("isrecording?").isPlaying }
+	isRecording { ^recordNode.isPlaying }
 	pauseRecording { arg atTime;
 		if(recordNode.notNil,{ 
 			recordNode.run(false,atTime); "Paused".inform 

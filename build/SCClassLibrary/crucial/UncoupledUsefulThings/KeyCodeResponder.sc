@@ -260,7 +260,7 @@ KeyCodeResponderStack {
 	value { arg view, char,modifier,unicode,keycode;
 		var result;
 		stack.do({ arg responder;
-			result = responder.value(view, char,modifier,unicode,keycode);
+			result = responder.value(view,char,modifier,unicode,keycode);
 		});
 		^result
 	}
@@ -292,12 +292,11 @@ SimpleKDRUnit {
 	*new { arg modifier,function,description;
 		^super.newCopyArgs(modifier,function,description)
 	}
-	value { arg char,modifier,unicode,keycode;
-		[modifier,requireMask,modifier & requireMask, (modifier & requireMask) == requireMask].debug("simple");
+	value { arg view,char,modifier,unicode,keycode;
 		if((modifier & requireMask) == requireMask,{function.value(char,modifier,unicode,keycode)})
 	}
 	== { arg that;
-		^that.requireMask == requireMask and: {this.class === that.class }
+		^this.compareObject(that,['requireMask'])
 	}
 	guiClass { ^SimpleKDRUnitGui }
 	report {

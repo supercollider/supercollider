@@ -7,13 +7,14 @@ AbstractSinglePlayerEffect : HasSubject {
 
 	var sharedBus;
 
+
 	makeResourcesToBundle { arg bundle;
 		sharedBus = SharedBus.newFrom(patchOut.bus,this);
 		patchOut.bus = sharedBus;
 	}
 	prepareChildrenToBundle { arg bundle;
-		subject.prepareToBundle(this.group,bundle, true,sharedBus,true);
-	}		
+		subject.prepareToBundle(this.group,bundle, true,sharedBus);
+	}
 	preparePlayer { arg player,bus;
 		^player.prepareForPlay(this.group,true,sharedBus);
 	}
@@ -62,6 +63,10 @@ PlayerAmp : AbstractSinglePlayerEffect {
 	guiClass { ^PlayerAmpGui }
 }
 
+/*
+	put an envelope on the player's output bus.
+	correct numChannels of the player's output eg. from 1 to 2 if needed
+*/
 EnvelopedPlayer : AbstractSinglePlayerEffect {
 	
 	var <>env,<>numChannels;

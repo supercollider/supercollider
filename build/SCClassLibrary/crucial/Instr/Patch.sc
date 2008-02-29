@@ -20,7 +20,7 @@ HasPatchIns : AbstractPlayer {
 	// the following methods all have to do with querying and iterating over
 	// the inputs to this player.  an example is finding all possibly modulatable
 	// inputs in this or any sub-patch and then assigning available controllers to those.
-	// these methods are for querying for PlayerInputProxy that are placeholders for 
+	// these methods are for querying for PlayerInputProxy that are placeholders for
 	// a potentially modulateable input
 	mapInputToBus { arg i,bus;
 		var patchOut;
@@ -28,7 +28,7 @@ HasPatchIns : AbstractPlayer {
 		patchOut = PatchOut.performList(bus.rate,[nil,bus.server.asGroup,bus]);
 		patchOut.connectTo(patchIns.at(i), this.isPlaying );
 	}
-	
+
 	/*
 	have to bundle it
 		connectInputToPlayer { arg i,player;
@@ -39,7 +39,7 @@ HasPatchIns : AbstractPlayer {
 			});
 			player.patchOut.connectTo(patchIns.at(i), this.isPlaying);
 		}
-	*/				
+	*/
 	/*
 	setInput { arg i,newarg;
 		var old,newargpatchOut;
@@ -48,7 +48,7 @@ HasPatchIns : AbstractPlayer {
 		if(this.isPlaying,{
 			old.free; // release old  thru some manager ?
 			newarg
-			
+
 			//old.patchOut.releaseConnection;
 			newargpatchOut = newarg.play(Destination.newByRate(this.instr.specs.at(i).rate,
 								NodeControl(patchOut.synth,i + 1)));
@@ -78,7 +78,7 @@ HasPatchIns : AbstractPlayer {
 		});
 		^array
 	}
-	
+
 	setInput { arg ai,ag;
 		^this.subclassResponsibility(thisMethod)
 	}
@@ -93,7 +93,7 @@ HasPatchIns : AbstractPlayer {
 		offset = offset + inputs.size;
 		^inputs.any({ arg a,i;
 			var set=false;
-			a.isKindOf(HasPatchIns) and: { 
+			a.isKindOf(HasPatchIns) and: {
 				set = a.setDeepInput(ai,ag,offset + i);
 				offset = offset + a.inputs.size;
 				set
@@ -110,7 +110,7 @@ HasPatchIns : AbstractPlayer {
 		});
 		offset = offset + inputs.size;
 		inputs.detect({ arg a,i;
-			a.isKindOf(HasPatchIns) and: { 
+			a.isKindOf(HasPatchIns) and: {
 				deepSpec = a.deepSpecAt(argi,offset + i);
 				offset = offset + a.inputs.size;
 				deepSpec.notNil
@@ -121,20 +121,22 @@ HasPatchIns : AbstractPlayer {
 }
 
 Patch : HasPatchIns  {
-		
-	var <instr,<>args;
+
+	var <instr,<args;
 	var synthPatchIns,<argsForSynth,<argNamesForSynth,<synthArgsIndices;
-	
+
 	var <synthDef,<>outClass;
-	var <numChannels,<rate; // determined after making synthdef
-	
+	var numChannels,rate; // determined after making synthdef
+
+	var <stepChildren;
+
 	*new { arg name,inputs,outClass;
 		^super.new.loadSubject(name).createArgs(loadDocument(inputs) ? []).outClass_(outClass ? Out)
 	}
-	rand {
-		this.inputs.do({ |in|
+	rand { arg standardDeviation=0.15;
+		this.inputs.do({ |in,i|
 			// at least NumberEditors will respond
-			in.tryPerform(\rand);
+			in.tryPerform(\rand,standardDeviation,this.instr.initAt(i));
 		})
 	}
 	inputs { ^args }
@@ -151,6 +153,15 @@ Patch : HasPatchIns  {
 			argsForSynth.put(synthArgi,newArg);
 		});
 	}
+	args_ { arg inputs;
+		// if you didn't give enough then set defaults for the others
+		if(inputs.size != args.size,{
+			Error("Args are not the correct size, should be "+args.size).throw;
+		});
+		inputs.do({ |in,i|
+			this.setInput(i,in)
+		});
+	}
 	set { arg index, value;
 		var argg;
 		argg = args[index];
@@ -162,6 +173,45 @@ Patch : HasPatchIns  {
 	}
 	argNameAt { arg i; ^instr.argNameAt(i) }
 	specAt { arg i; ^instr.specs.at(i) }
+	// out
+	spec {
+		^this.instr.outSpec ?? {
+			if(this.rate.notNil and: this.numChannels.notNil,{
+				if(this.rate == \audio,{
+					AudioSpec(this.numChannels)
+				},{
+					// having built, I think we should know better than this
+					// check the final result of the instr synth def build,
+					// check its signalRange
+					ControlSpec(-1,1)
+				})
+			},{
+				//("This patch "+this+"does not yet know its output rate until it is built.").warn;
+				nil
+			});
+		};
+	}
+	rate {
+		^rate ?? {
+			if(this.instr.outSpec.notNil,{
+				this.instr.outSpec.rate
+			},{
+				//( this.asString + ": rate is unknown").warn;
+				nil
+			});
+		};
+	}
+	numChannels {
+		^numChannels ?? {
+			if(this.instr.outSpec.notNil,{
+				this.instr.outSpec.numChannels
+			},{
+				//( this.asString + ": numChannels is unknown").warn;
+				nil
+			});
+		}
+	}
+
 	indexFromName { arg argName;
 		^instr.argNames.indexOf(argName)
 	}
@@ -174,7 +224,7 @@ Patch : HasPatchIns  {
 			^nil
 		})
 	}
-	
+
 	loadSubject { arg name;
 		if(instr.notNil,{
 			instr.removeDependant(this);
@@ -194,23 +244,46 @@ Patch : HasPatchIns  {
 		synthPatchIns = [];
 		argsSize = this.instr.argsSize;
 		synthArgsIndices = Array.newClear(argsSize);
-		
-		args=Array.fill(argsSize,{arg i; 
-			var proto,spec,ag,patchIn,darg;
+
+		args=Array.fill(argsSize,{arg i;
+			var proto,spec,ag,patchIn,darg,inSpec;
 			spec = instr.specs.at(i);
-			ag = 
-				argargs.at(i) // explictly specified
-				?? 
-				{ //  or auto-create a suitable control...
-					darg = instr.initAt(i);
-					if(darg.isNumber,{
-						proto = spec.defaultControl(darg);
-					},{
-						proto = spec.defaultControl;
+			if(argargs.at(i).notNil,{
+				ag = argargs[i];//.asInputForPatch(spec,argName,initAt);
+				/*
+					check the spec of the incoming arg if possible.
+					compare it to required spec.
+				*/
+				inSpec = ag.tryPerform(\spec);
+				if(inSpec.notNil and: {inSpec.class !== spec.class},{
+					// spec validation
+					// only if you did supply an explicit spec
+					if(spec.canAccept(ag).not and: {instr.explicitSpecs[i] == spec},{
+						//Error(
+							String.streamContents({ arg stream;
+								stream << "For " <<< this.instr << Char.nl;
+								stream << " in " << this << Char.nl;
+								stream << "The supplied input: " << Char.nl;
+									stream << Char.tab << ag << Char.nl;
+								stream << "With spec: " << Char.nl;
+									stream <<	 Char.tab <<< inSpec << Char.nl;
+								stream << "does not match the Instr's spec:" << Char.nl;
+									stream << Char.tab <<< spec << Char.nl;
+								stream << "for arg: " << instr.argNameAt(i) << Char.nl;
+							}).warn
+							//).throw;
 					});
-					proto
-				};
-				
+				});
+			},{
+				//  or auto-create a suitable control...
+				darg = instr.initAt(i);
+				if(darg.isNumber,{
+					proto = spec.defaultControl(darg);
+				},{
+					proto = spec.defaultControl;
+				});
+				ag = proto
+			});
 			patchIn = PatchIn.newByRate(spec.rate);
 			patchIns = patchIns.add(patchIn);
 
@@ -218,16 +291,18 @@ Patch : HasPatchIns  {
 			if(spec.rate != \scalar
 				and: {ag.rate != \scalar}
 			,{
+				// if rate is \stream and spec is not EventStream
+				// then fail
 				argsForSynth = argsForSynth.add(ag);
 				argNamesForSynth = argNamesForSynth.add(this.argNameAt(i));
 				synthPatchIns = synthPatchIns.add(patchIn);
 				synthArgsIndices.put(i,synthPatchIns.size - 1);
 			},{
-				// watch scalars for changes. 
+				// watch scalars for changes.
 				// if Env or Sample or quantity changed, synth def is invalid
 				//if(ag.isNumber.not,{ ag.addDependant(this); });
 			});
-			ag		
+			ag
 		});
 	}
 
@@ -235,28 +310,32 @@ Patch : HasPatchIns  {
 		// could be cached, must be able to invalidate it
 		// if an input changes
 		^synthDef ?? {
+			if(this.spec.rate == 'stream',{
+				("Output rate is 'stream', not yet supported").warn;
+				^nil
+			});
 			synthDef = InstrSynthDef.build(this.instr,this.args,this.outClass);
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
 			this.watchScalars;
 			this.instr.addDependant(this);
+			stepChildren = synthDef.secretObjects;
+
 			synthDef
 		}
 	}
 	watchScalars {
 		this.args.do({ arg ag,i;
-			if(this.specAt(i).rate != \scalar
-				and: {ag.rate != \scalar}
+			if(this.specAt(i).rate === \scalar
+				or: {ag.rate === \scalar}
 			,{
-	
-			},{
-				// watch scalars for changes. 
+				// watch scalars for changes.
 				// if Env or Sample or quantity changed, synth def is invalid
-				if(ag.isNumber.not,{ 
-					ag.addDependant(this); 
+				if(ag.isNumber.not,{
+					ag.addDependant(this);
 				});
-			});	
+			});
 		})
 	}
 	update { arg changed,changer;
@@ -273,17 +352,18 @@ Patch : HasPatchIns  {
 		if(changed === this.instr,{
 			synthDef = nil;
 			defName = nil;
+			stepChildren = nil;
 		});
 	}
-	invalidateSynthDef { 
+	invalidateSynthDef {
 		synthDef = nil;
 		defName = nil;
-		readyForPlay = false;
+		stepChildren = nil;
 		this.releaseArgs;
 		this.instr.removeDependant(this);
 	}
 	releaseArgs {
-		// Sample, Env, NumberEditor are watched 
+		// Sample, Env, NumberEditor are watched
 		this.args.do({ arg ag; ag.removeDependant(this) })
 	}
 	didFree {
@@ -291,28 +371,53 @@ Patch : HasPatchIns  {
 		did = super.didFree;
 		if(did,{ this.invalidateSynthDef; });
 		^did
-	}		
-	
+	}
+
+	prepareChildrenToBundle { arg bundle;
+		super.prepareChildrenToBundle(bundle);
+		stepChildren.do({ arg child;
+			child.prepareToBundle(group,bundle,true,nil,false);
+		});
+	}
+
 	// has inputs
 	spawnToBundle { arg bundle;
 		var synthArgs;
-		if(patchOut.isNil,{ 
+		if(patchOut.isNil,{
 			"PatchOut is nil. Has this been prepared for play ?".die(this,thisMethod.asString);
 		});
+
+		// experimental but harmless
+		// If I am a builder patch, building a stream
+		if(this.rate === 'stream',{
+			this.children.do({ arg child;
+				child.spawnToBundle(bundle);
+			});
+			this.stepChildren.do({ arg child;
+				child.spawnToBundle(bundle);
+			});
+			bundle.addMessage(this,\didSpawn);
+			^this
+		});
+
 		// would be better to track if def is loaded
 		// this is a needless extra call
 		this.asSynthDef;// make sure it exists
-		
+
 		this.children.do({ arg child;
 			child.spawnToBundle(bundle);
 		});
+		this.stepChildren.do({ arg child;
+			child.spawnToBundle(bundle);
+		});
+
 		synth = Synth.basicNew(this.defName,this.server);
 		this.annotate(synth,"synth");
 		NodeWatcher.register(synth);
 		bundle.add(
 			synth.addToTailMsg(patchOut.group,
 				this.synthDefArgs
-				++ synthDef.secretDefArgs(args)
+				++ synthDef.secretDefArgs
 			)
 		);
 		bundle.addMessage(this,\didSpawn);
@@ -332,23 +437,56 @@ Patch : HasPatchIns  {
 		^args
 	}
 	defName { ^defName } // super would say 'Patch'
-	
+
 	stopToBundle { arg bundle;
 		super.stopToBundle(bundle);
-		bundle.addMessage(this,\didStop);
+		//bundle.addMessage(this,\didStop);
+		stepChildren.do({ |sc|
+			sc.stopToBundle(bundle)
+		})
 	}
-	
+
 	// act like a simple ugen function
 	// mostly this won't work except with simple UGens
-	ar { arg ... overideArgs;	^this.valueArray(overideArgs) }
+	//ar { arg ... overideArgs;	^this.valueArray(overideArgs) }
 	value { arg ... overideArgs;  ^this.valueArray(overideArgs) }
-	valueArray { arg  overideArgs;  
+	valueArray { arg  overideArgs;
+		var result,usedArgs;
 		// each arg is valued as it is passed into the instr function
-		^instr.valueArray(
-			args.collect({ arg a,i; (overideArgs.at(i) ? a).value; })  
-		)
+		usedArgs = args.collect({ arg a,i;
+					{
+						(overideArgs.at(i) ? a).value;
+					}.try({ arg err;
+						"Error while argument "+i+"for the function was .valued".postln;
+						if(overideArgs.size > 0,{
+							"Args passed in to Patch-value:".postln;
+							overideArgs.do({ |oa| oa.dump });
+						});
+						"Patch's args:".postln;
+						args.dump;
+						err.throw;
+					})
+				}) ;
+		{
+			result = instr.valueArray(usedArgs);
+		}.try({ arg err;
+			("ERROR during Patch-value " + this).postln;
+			"ARGS:".postln;
+			this.instr.argNames.do({ |an,i|
+				("	%:	%".format(an,usedArgs[i])).postln;
+			});
+			//err.errorString.postln;
+			//this.dump;
+
+			err.throw;
+		});
+		^result
 	}
-	
+	reportError {
+
+
+	}
+
 	/*storeModifiersOn { arg stream;
 		// this allows a known defName to be used to look up in the cache
 		// otherwise a Patch doesn't know its defName until after building
@@ -360,7 +498,7 @@ Patch : HasPatchIns  {
 		// for reloading from storeModifiersOn
 		defName = df;
 	}*/
-	
+
 	children { ^args }
 
 	printOn { arg s; s << this.class.name << "(" <<< instr.dotNotation << " )"; }

@@ -81,7 +81,7 @@ ControlPrototypes {
 			try = this.at(class,spec);
 			class = class.superclass;
 		});
-		^try
+		^spec.defaultControl
 	}
 }
 

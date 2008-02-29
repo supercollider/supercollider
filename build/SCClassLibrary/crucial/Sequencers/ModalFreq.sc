@@ -3,9 +3,9 @@
 ModalFreq : AbstractPlayerProxy {
 
 	// players or floats will work
-	var <>degree,<>scale,<>root,<>octave=5.0,<>stepsPerOctave=12.0;
+	var <>degree,<>scale,<>root,<>octave=4.0,<>stepsPerOctave=12.0;
 	
-	*new { arg degree=0,scale,root=0.0,octave=5.0,stepsPerOctave=12.0;
+	*new { arg degree=0,scale,root=0.0,octave=4.0,stepsPerOctave=12.0;
 		^super.new.degree_(degree).scale_(scale ?? {#[0, 2, 4, 5, 7, 9, 11]})
 			.root_(root).octave_(octave).stepsPerOctave_(stepsPerOctave)
 			.init
