@@ -2,10 +2,10 @@
 
 HasSubjectGui : AbstractPlayerGui {
 	//smallGui could not gui the subject
-	var subjg;
+	var subjectGui;
 	guiBody { arg layout;
 		layout.startRow;
-		subjg = model.subject.gui(layout);
+		subjectGui = model.subject.gui(layout);
 	}
 }
 
@@ -45,9 +45,11 @@ PlayerAmpGui : HasSubjectGui {
 StreamKrDurGui : HasSubjectGui {
 
 	guiBody { arg layout;
-		CXLabel(layout,"delta:");
-		model.durations.smallGui(layout);
 		layout.startRow;
-		subjg = model.values.gui(layout);
+		ArgNameLabel("values:",layout);
+		subjectGui = model.values.gui(layout);
+		layout.startRow;
+		ArgNameLabel("durations:",layout);
+		model.durations.gui(layout);
 	}
 }

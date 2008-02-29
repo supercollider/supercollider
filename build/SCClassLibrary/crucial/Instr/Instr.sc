@@ -5,15 +5,20 @@ Instr  {
 	classvar <dir;
 
 	var  <>name, <>func, <>specs, <>outSpec, >path;
+	var <explicitSpecs;
 	
 	// specs are optional, can be guessed from the argnames
 	// outSpec is optional, can be determined by evaluating the func
-	*new { arg name, func, specs, outSpec = \audio;
+	*new { arg name, func, specs, outSpec;
 		var previous;
 		if(func.isNil,{ ^this.at(name) });
 		name = this.symbolizeName(name);
 		previous = Library.atList(name.copy.addFirst(this));
 		if(previous.notNil,{
+			if(previous.isKindOf(Instr).not,{
+				Error("The Instr name address " + name + 
+					"is already occupied by a branch node. You may only add new Instr to the leaves").throw;
+			});
 			previous.func = func;
 			previous.init(specs,outSpec);
 			previous.changed(this);
@@ -21,37 +26,50 @@ Instr  {
 		});
 		^super.newCopyArgs(name,func).init(specs,outSpec)
 	}
-	*put { arg instr;
-		^Library.putList([this,this.symbolizeName(instr.name),instr].flatten )
-	}
-	*remove { arg instr;
-		^Library.global.removeAt([this,this.symbolizeName(instr.name)].flatten )
-	}
-	// bulk insert an orchestra of instr
-	*orc { arg name, pairs, outSpec = \audio;
-		forBy(0,pairs.size-1,2,	{ arg i;
-			this.class( [name,pairs@i ],pairs@(i+1),nil,outSpec)
-		})
-	}
-	
 	*at { arg  name;
 		var search;
 		search = this.objectAt(name);
 		//if(search.notNil,{ search = search.asInstr; });
 		^search
 	}
-
+	*loadAll {
+		var quarkInstr;
+		(this.dir ++ "*").pathMatch.do({ arg path;
+			{
+				if(path.last != $/,{
+					path.loadPath(false)
+				})
+			}.try({ arg err;
+				("ERROR while loading " + path).postln;
+				err.throw;
+			});
+		});
+		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr/*").pathMatch;
+		quarkInstr.do({ |path|
+			{
+				if(path.last != $/,{
+					path.loadPath(false);
+				})
+			}.try({ arg err;
+				("ERROR while loading " + path).postln;
+				err.throw;
+			});				
+		});
+	}
+	*clearAll {
+		Library.global.removeAt(this)
+	}
+	
 	*ar { arg name, args;
 		var instr;
 		instr=this.at(name);
 		if(instr.isNil,{
-			die("(Meta_Instr-ar) Instr not found !!" 
-					+ name.asCompileString +  thisMethod);
+			die("Instr not found !!" 
+					+ name.asCompileString + "in Meta_Instr:ar");
 		},{
 			^instr.valueArray(args)
 		})
 	}
-	
 	ar { arg ... inputs;
 		^func.valueArray(inputs);
 	}
@@ -168,23 +186,42 @@ Instr  {
 		})
 	}
 	*leaves { arg startAt; // address array
+		var dict;
 		if(startAt.isNil,{
-			startAt = Library.global.at(this);
-			if(startAt.isNil,{ ^[] });
+			dict = Library.global.at(this);
+			if(dict.isNil,{ ^[] });
 		},{
-			startAt = this.at(startAt.first);
+			dict = this.at(this.symbolizeName(startAt).first);
 		});
-		^Library.global.prNestedValuesFromDict(startAt).flat
+		if(dict.isNil,{
+			Error("Instr address not found:" + startAt.asCompileString).throw;
+		});
+		^Library.global.prNestedValuesFromDict(dict).flat
 	}
+	// select instr in your entire library that output the given spec
 	*selectBySpec { arg outSpec;
 		outSpec = outSpec.asSpec;
 		^this.leaves.select({ |ins| ins.outSpec == outSpec })
 	}
+	// i'm feeling lucky...
 	*chooseBySpec { arg outSpec;
 		^this.selectBySpec(outSpec).choose
 	}
 	
 	//private
+	*put { arg instr;
+		^Library.putList([this,this.symbolizeName(instr.name),instr].flatten )
+	}
+	*remove { arg instr;
+		^Library.global.removeAt([this,this.symbolizeName(instr.name)].flatten )
+	}
+	// bulk insert an orchestra of instr
+	*orc { arg name, pairs, outSpec = \audio;
+		forBy(0,pairs.size-1,2,	{ arg i;
+			this.new( [name,pairs@i ],pairs@(i+1),nil,outSpec)
+		})
+	}
+	
 	*symbolizeName { arg name;
 		if(name.isString,{
 			^name.split($.).collect(_.asSymbol);
@@ -201,7 +238,7 @@ Instr  {
 	*objectAt { arg name;
 		var symbolized,search,path,pathParts,rootPath,instr;
 		symbolized = this.symbolizeName(name);
-		search = Library.atList(([this] ++ symbolized));
+		search = Library.atList([this] ++ symbolized);
 		if(search.notNil,{ ^search });
 
 		this.findFileFor(symbolized);
@@ -223,35 +260,35 @@ Instr  {
 		});
 		^nil
 	}
+	// .rtf .txt .sc .scd or plain
 	*findFileInDir { arg symbolized, rootPath,
 						fullInstrName;// only needed for recursion
 		var pathParts,pathPartsFirst;
 
 		pathParts = symbolized.collect(_.asString);
+
 		pathPartsFirst = pathParts.first;
 		if(fullInstrName.isNil,{ fullInstrName = symbolized.copy });
 		
 		// if its a multi-part name then could be
 		// [\synths,\stereo,\SinOsc,\pmod]
+		// possible files:
 		// synths.scd
 		// or synths/stereo.scd
 		// or synths/stereo/SinOsc/pmod.scd
 
-		
 		(rootPath++"*").pathMatch.do({ |path|
 			var file,orcname,symbols;
 			file = path.copyRange(rootPath.size,path.size-1);
 			if(file.last == $/,{
-				// its a directory, look deeper
 				if(file.copyRange(0,file.size-2) == pathPartsFirst,{
-					
-					symbolized.removeAt(0);
-					^this.findFileInDir( symbolized, rootPath ++ file, fullInstrName );
+					^this.findFileInDir(symbolized.copyRange(1,symbolized.size-1), 
+										rootPath ++ file, 
+										fullInstrName );
 				});
 			},{
 				orcname = PathName(file).fileNameWithoutExtension;
 				if(orcname == pathPartsFirst,{
-					// .rtf .txt .sc .scd or plain
 					path.load;
 					
 					//fullInstrName copied up until including orcname
@@ -260,11 +297,10 @@ Instr  {
 						symbols = symbols.add(n);
 						n == orcname
 					});
-							
 					Instr.leaves(symbols).do({ |instr| instr.path = path });
 					^path
 				});
-			});			
+			});
 		});
 		
 		^nil
@@ -291,44 +327,43 @@ Instr  {
 		^singleName.asString.split($~).collect({ arg n; n.asSymbol })
 	}
 	
-	*loadAll {
-		var quarkInstr;
-		(this.dir ++ "*").pathMatch.do({ arg path; 
-			if(path.last != $/,{
-				path.loadPath(false)
-			})
-		});
-		quarkInstr = (Platform.userExtensionDir ++ "/quarks/*/Instr/*").pathMatch;
-		quarkInstr.do({ |path|
-			if(path.last != $/,{
-				path.loadPath(false);
-			})
-		});
-	}
-	*clearAll {
-		Library.global.removeAt(this)
-	}
+
 
 	asString { ^"%(%)".format(this.class.name, this.defName.asCompileString) }
-		
+	storeArgs { 
+		if(this.path.notNil,{ 
+			^[this.dotNotation]
+		},{
+			^[this.dotNotation,this.func,this.specs,this.outSpec]
+		});
+	}
+			
 	*initClass {
 		Class.initClassTree(Document);
 		// default is relative to your doc directory
 		if(dir.isNil,{ dir = Document.dir ++ "Instr/"; });
 	}
 	init { arg specs,outsp;
-		/*if(path.isNil,{
+		if(path.isNil,{
 			path = thisProcess.nowExecutingPath; //  ?? { Document.current.path };
-		});*/
+		});
+		specs = specs ? #[];
+		if(specs.isKindOf(SequenceableCollection).not,{ 
+			Error("Specs should be of type array or nil.").throw 
+		});
 		this.makeSpecs(specs ? #[]);
 		if(outsp.isNil,{
 			outSpec = nil;
 		},{
 			outSpec = outsp.asSpec;
+			if(outSpec.isNil,{
+				("Out spec not found: " + outsp.asCompileString + "for" + this).warn
+			});
 		});
 		this.class.put(this);
 	}
 	makeSpecs { arg argspecs;
+		explicitSpecs = specs;
 		specs =  
 			Array.fill(this.argsSize,{ arg i;
 				var sp,name;
@@ -354,26 +389,30 @@ Instr  {
 	}
 
 	guiBody { arg layout;
-		var defs,tf,source,lines,h,w;
+		var defs,tf,source,lines,h,w,specWidth;
 		source = this.func.def.sourceCode;
-		lines = source.split($\n);
-		w = lines.maxValue({ |l| l.size }) * 10;
-		h = lines.size * 20;
-		
-		tf = GUI.textField.new(layout,Rect(0,0,w,h));
-		tf.string = source;
-		
+		if(source.notNil,{
+			lines = source.split($\n);
+	
+			w = lines.maxValue({ |l| l.size }) * 7;
+			h = lines.size * 13;
+			
+			tf = GUI.textField.new(layout,Rect(0,0,w,h));
+			tf.string = source;
+			tf.font_(GUI.font.new("Helvetica",10.0));
+		});		
 		if(path.notNil,{
 			CXLabel(layout.startRow,path);
-			ActionButton(layout.startRow,"open file...",{ path.openTextFile });
+			// ActionButton(layout.startRow,"open file...",{ path.openTextFile });
 		});
 		ArgNameLabel("outSpec:",layout.startRow,150);
-		this.outSpec.gui(layout);
+		this.outSpec.asString.gui(layout);
 		this.argNames.do({ arg a,i;
 			layout.startRow;		
 			ArgNameLabel(  a ,layout,150);
 			CXLabel(layout, " = " ++ this.defArgAt(i).asString,100);
-			this.specs.at(i).gui(layout);
+			specWidth = min(layout.indentedRemaining.width,300);
+			this.specs.at(i).asCompileString.gui(layout,specWidth@GUI.skin.buttonHeight);
 		});
 
 		layout.startRow;
@@ -386,6 +425,7 @@ Instr  {
 
 
 // an object that points to an Instr and is saveable/loadable as a compile string
+// rarely needed these days.  to be deprec.
 InstrAt {
 	var <>name,<>path,instr;
 	*new { arg name;

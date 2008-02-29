@@ -1,9 +1,9 @@
 
 + Object {
-	/* rather than write a little gui class for every object
-	 you can just add an extension method guiBody here */
-	guiClass { ^ModelImplementsGuiBody }
-	guiBody {}
+
+	guiClass { ^ObjectGui }
+	//guiClass { ^ModelImplementsGuiBody }
+	//guiBody {}
 
 	gui { arg  ... args;
 		^this.guiClass.new(this).performList(\gui,args);
@@ -26,6 +26,12 @@
 		});
 		^Tile(this,args.first.asPageLayout)
 	}
+	*instVarsForGui { ^[] }
+	*publicInstVars {
+		^this.instVarNames.select({ |ivar| this.findRespondingMethodFor(ivar).notNil })
+	}
+	
+	// Insp
 	insp { arg  ... args;
 		Insp(this,args);
 	}
@@ -33,6 +39,7 @@
 	ginsp { arg  ... args;
 		Insp(this,args,true);
 	}
+	
 	debug { arg caller;
 		// by using this rather than just postln
 		// you can command-shift-y on debug and find every one you left
@@ -48,7 +55,12 @@
 		this.dump;
 		Error("FATAL ERROR").throw;
 	}
-//	isStartRow { ^false }		// see StartRow
+	checkKind { arg shouldBeKindOf;
+		if(this.isKindOf(shouldBeKindOf).not,{
+			Error("Type check failed:" + this + "should be kind of:" + shouldBeKindOf).throw;
+		})
+	}
+
 }
 
 + Collection {
@@ -66,6 +78,61 @@
 		});
 	}
 }
+
+// these all get simple guis : just a label with the name
++ String {
+	guiClass { ^StringGui }
+}
++ Symbol {
+	guiClass { ^StringGui }
+}
+// though it would be nice to have it indicated what class it is
++ SimpleNumber {
+	guiClass { ^StringGui }
+}
++ Boolean {
+	guiClass { ^StringGui }
+}
++ Nil {
+	guiClass { ^StringGui }
+}
+
+
++ Pattern {
+	// by default gui all public inst vars
+	*instVarsForGui {
+		^this.publicInstVars
+	}
+}
++ Pbind {
+	guiBody { |f|
+		var endval = patternpairs.size-1;
+		forBy (0, endval, 2) { arg i;
+			f.startRow;
+			ArgNameLabel(patternpairs[i],f);
+			patternpairs[i+1].gui(f);
+		};
+	}
+}
++ Pswitch  {
+//	guiClass { ^PswitchGui }
+	guiBody { arg layout;
+		this.list.do({ arg l;
+			l.gui(layout.startRow);
+		});
+		this.which.gui(layout);
+	}
+}
+
++ Pstutter {
+	guiBody { arg layout;
+		pattern.gui(layout);
+		n.gui(layout.startRow);
+	}
+}
+
+
+
 + RawArray { // string, signal
 	debug { arg caller;
 		// by using this rather than just postln
@@ -121,6 +188,9 @@
 	}
 }
 
+
+
+/* layout support */
 + Nil {
 
 	asPageLayout { arg name,bounds,metal=true;
@@ -189,23 +259,6 @@
 
 		//bounds = bounds ?? {this.view.bounds};
 		//^FlowView(this.view,this.layRight(bounds.width - 10,bounds.height - 10))
-	}
-}
-
-+ Pswitch  {
-//	guiClass { ^PswitchGui }
-	guiBody { arg layout;
-		this.list.do({ arg l;
-			l.gui(layout.startRow);
-		});
-		this.which.gui(layout);
-	}
-}
-
-+ Pstutter {
-	guiBody { arg layout;
-		pattern.gui(layout);
-		n.gui(layout.startRow);
 	}
 }
 

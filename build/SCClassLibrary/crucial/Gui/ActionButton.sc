@@ -35,6 +35,7 @@ SCViewHolder {
 	enabled { ^view.enabled }
 	enabled_ { |b| view.enabled_(b) }
 	refresh { view.refresh }
+	background { ^view.background }
 	background_ { arg b; view.background_(b) }
 	focus { arg flag=true; view.focus(flag) }
 	visible_ { arg boo; view.visible = boo }
@@ -57,8 +58,8 @@ SCViewHolder {
 	}
 }
 
-// for using inside composite views
-// bounds are expressed relative to the parent's
+// a decorator for use with composite views that are set to relativeOrigin = false
+// bounds can then be expressed relative to the parent's
 RelativeToParent {
 	var <>bounds;
 	*new { arg bounds;
@@ -101,7 +102,7 @@ StartRow : SCViewHolder {
 FlowView : SCViewHolder {
 
 	var	<parent;
-	var	autoRemoves;
+	var	autoRemoves,prevMaxHeight,prevMaxRight;
 
 	*layout { arg f,bounds;
 		var v;
@@ -110,23 +111,24 @@ FlowView : SCViewHolder {
 		^v
 	}
 	*viewClass { ^GUI.compositeView }
-	*new { arg parent, bounds;
-		^super.new.init(parent, bounds);
+	*new { arg parent, bounds,margin,gap;
+		^super.new.init(parent, bounds,margin,gap);
 	}
-	init { arg argParent, bounds;
+	init { arg argParent, bounds,margin,gap;
 		var w,parentView;
 		parent = argParent ?? { GUI.window.new("",bounds).front };
 		parentView = parent.asView;
 		if(bounds.notNil,{
 			bounds = bounds.asRect
 		},{
-			bounds = parentView.bounds.insetAll(2,2,2,2);
+			bounds = parentView.bounds;//.insetAll(2,2,2,2);
 			if(parentView.tryPerform(\relativeOrigin) ? false) {
 				bounds = bounds.setOriginRelativeTo(parent);
 			};
 		});
 		// this adds the composite view to the parent composite view
 		view = this.class.viewClass.new(parentView, bounds);
+		view.tryPerform(\relativeOrigin_, true);
 		// now a tricky hack... the parent needs the FlowView as a child, not the composite view
 		// so I will replace the last-added child with THIS
 		if(parentView.children[parentView.children.size-1] === view,{
@@ -141,27 +143,58 @@ FlowView : SCViewHolder {
 		if(view.tryPerform(\relativeOrigin) ? false) {
 			bounds = bounds.moveTo(0, 0);
 		};
-		view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
+		//view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
+		view.decorator = FlowLayout(bounds,margin ? 2@0/*GUI.skin.margin*/,gap ? 4@4);
 		autoRemoves = IdentitySet.new;
 	}
+	startRow {
+		view.add(StartRow.new); //won't really put a view in there yet
+		this.decorator.nextLine
+	}
+	removeOnClose { arg updater;
+		autoRemoves.add(updater);
+	}
+	hr { arg color,height=3,borderStyle=1; // html joke
+		this.startRow;
+		// should fill all and still return a minimal bounds
+		GUI.staticText.new(this,Rect(0,0,this.decorator.innerBounds.width - (2 * 4), height,0))
+				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
+	}
 
-	reflowAll {
-		view.decorator.reset;
-		view.children.do({ |widget|
-			if(widget.isKindOf( StartRow ),{
-				view.decorator.nextLine
-			},{
-				view.decorator.place(widget);
+	innerBounds { ^this.decorator.innerBounds }
+	bounds_ { arg b, reflow = true;
+		if(b != view.bounds,{
+			view.bounds = b;
+			if(this.decorator.notNil,{
+				if(view.tryPerform(\relativeOrigin) ? false) {
+					this.decorator.bounds = b.moveTo(0, 0)
+				} {
+					this.decorator.bounds = b
+				};
+				reflow.if({ this.reflowAll; });
 			})
 		});
 	}
-	innerBounds { ^view.decorator.innerBounds }
+	indentedRemaining { ^this.decorator.indentedRemaining }
+	used { ^this.decorator.used }
+
+	reflowAll {
+		this.decorator.reset;
+		view.children.do({ |widget|
+			if(widget.isKindOf( StartRow ),{
+				this.decorator.nextLine
+			},{
+				this.decorator.place(widget);
+			})
+		});
+	}
 	resizeToFit { arg reflow = false,tryParent = false;
 		var used,new;
 
 		if(reflow,{ this.reflowAll; });
 
-		used = view.decorator.used;
+		used = this.decorator.used;
+
 		// should respect any settings !
 		//used.width = used.width.clip(this.getProperty(\minWidth),this.getProperty(\maxWidth));
 		//used.height = used.height.clip(this.getProperty(\minHeight),this.getProperty(\maxHeight));
@@ -169,10 +202,11 @@ FlowView : SCViewHolder {
 		new = view.bounds.resizeTo(used.width,used.height);
 		view.bounds = new;
 
+		// ? but if relativeOrigin is true, then the decorator is already relative
 		if(view.tryPerform(\relativeOrigin) ? false) {
-			view.decorator.bounds = new.moveTo(0, 0);
+			this.decorator.bounds = new.moveTo(0, 0);
 		} {
-			view.decorator.bounds = new; // if the left/top moved this buggers it
+			this.decorator.bounds = new; // if the left/top moved this buggers it
 		};
 		if(reflow,{ this.reflowAll; });
 		if(tryParent,{
@@ -180,20 +214,25 @@ FlowView : SCViewHolder {
 		});
 		^new
 	}
-	bounds_ { arg b, reflow = true;
-		if(b != view.bounds,{
-			view.bounds = b;
-			if(view.decorator.notNil,{
-				if(view.tryPerform(\relativeOrigin) ? false) {
-					view.decorator.bounds = b.moveTo(0, 0)
-				} {
-					view.decorator.bounds = b
-				};
-				reflow.if({ this.reflowAll; });
-			})
+	// i've been trying since 2003 to do this
+	reflowDeep {
+		this.allChildren.reverseDo({ |view|
+			if(view.isKindOf(FlowView),{
+				view.bounds = view.bounds.resizeTo(1000,1000);
+				view.reflowAll.resizeToFit;
+			});
 		});
+		// sometimes this doesn't work, but if you do it twice it usually does
+		
+//		best way:
+//		enlarge the view to full bounds within its parent.
+// 		this can only be done if you are the last or only child
+//		call deepReflow on shallow children in reverse order
+//		resize self to fit
 	}
-	wouldExceedBottom { arg aBounds; ^view.decorator.wouldExceedBottom(aBounds) }
+
+
+	wouldExceedBottom { arg aBounds; ^this.decorator.wouldExceedBottom(aBounds) }
 	anyChildExceeds {
 		var r;
 		r = view.bounds;
@@ -202,16 +241,31 @@ FlowView : SCViewHolder {
 		});
 	}
 
+	// if the view you are adding is unsure how much space it is going to take
+	// then take everything
+	allocateRemaining {
+		prevMaxHeight = this.decorator.maxHeight;
+		prevMaxRight = this.decorator.maxRight;
+		^this.decorator.indentedRemaining
+	}
+	// and afterwards
+	// state what you actually used.
+	// see FlowView-flow
+	didUseAllocated { arg vbounds;
+		if(prevMaxHeight.isNil,{
+			Error("didUseAllocated called without prior call to allocateRemaining").throw;
+		});
+		this.decorator.left = vbounds.right + this.decorator.margin.x;
+		// maxRight is max right of all rows ever laid
+		// but maxHeight is the max of this row only
+		// but they both have to be rescinded
+		this.decorator.maxRight = max( prevMaxRight, vbounds.right );
+		this.decorator.maxHeight = max( prevMaxHeight,vbounds.height);
+	}
+
 	// to replace PageLayout
 	layRight { arg x,y;
 		^Rect(0,0,x,y)
-	}
-	startRow {
-		view.add(StartRow.new); //won't really put a view in there yet
-		view.decorator.nextLine
-	}
-	removeOnClose { arg updater;
-		autoRemoves.add(updater);
 	}
 	remove {
 		autoRemoves.do({ |updater| updater.remove });
@@ -227,12 +281,6 @@ FlowView : SCViewHolder {
 		autoRemoves.do({ arg u; u.remove });
 		autoRemoves = nil;
 		view.viewDidClose;
-	}
-	hr { arg color,height=3,borderStyle=1; // html joke
-		this.startRow;
-		// should fill all and still return a minimal bounds
-		GUI.staticText.new(this,Rect(0,0,view.decorator.innerBounds.width - (2 * 4), height,0))
-				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
 	}
 
 	// mimic SCLayoutView interface
@@ -254,8 +302,10 @@ FlowView : SCViewHolder {
 			})
 		});
 
-		view.decorator.reset;
+		this.decorator.reset;
 	}
+
+	//private
 	prRemoveChild { |child|
 		view.prRemoveChild(child);
 	}
@@ -265,29 +315,19 @@ FlowView : SCViewHolder {
 // abstract
 SCButtonAdapter : SCViewHolder {
 
-	classvar <>defaultHeight=17;
-
 	makeView { arg layout,x,y;
 		var rect;
-		//if((layout.isKindOf(SCLayoutView) or: layout.isKindOf(FlowView)).not,{
-		//	layout = layout.asFlowView;
-		//});
 		if((layout.isNil or: { layout.isKindOf(MultiPageLayout) }),{ layout = layout.asFlowView; });
-		this.view = GUI.button.new(layout,Rect(0,0,x,y ? defaultHeight));
+		this.view = GUI.button.new(layout,Rect(0,0,x,y ? GUI.skin.buttonHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}) });
 	}
 	flowMakeView { arg layout,x,y;
-		this.view = GUI.button.new(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
+		this.view = GUI.button.new(layout.asFlowView,Rect(0,0,x,y ? GUI.skin.buttonHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}); });
 	}
 
-	makeViewWithStringSize { arg layout,stringsize,minWidth,minHeight;
-		// minWidth is now dependant on font size !
-		// NSFont-boundingRectForFont
-		// or NSString- (NSSize) sizeWithAttributes: (NSDictionary *) attributes
-		this.makeView( layout,
-					(stringsize.clip(3,55) * 7.9).max(minWidth?20),
-						(minHeight ) )
+	makeViewWithStringSize { arg layout,optimalWidth,minWidth,minHeight;
+		this.makeView( layout,(optimalWidth + 10).max(minWidth?20),(minHeight ) )
 	}
 	initOneState { arg name,textcolor,backcolor;
 		view.states_([[name,textcolor ? Color.black, backcolor ? Color.white]])
@@ -323,15 +363,15 @@ ActionButton : SCButtonAdapter {
 		^super.new.init(layout,title,function,minWidth,minHeight,color,backcolor,font)
 	}
 	init { arg layout,title,function,minWidth=20,minHeight,color,backcolor,font;
-		var environment;
+		var environment,optimalWidth;
 		title = title.asString;
-		this.makeViewWithStringSize(layout,title.size,minWidth,minHeight);
+		if(title.size > 40,{ title = title.copyRange(0,40) });
+		if(font.isNil,{ font = GUI.font.new(*GUI.skin.fontSpecs) });
+		optimalWidth = title.bounds(font).width;
+		this.makeViewWithStringSize(layout,optimalWidth,minWidth,minHeight);
 		view.states_([[title,color ?? {Color.black},
 			backcolor ?? {Color.new255(205, 201, 201)}]]);
-		view.font_(font ?? {
-			GUI.font.new("Helvetica",12.0)
-			//GUI.font.performList(\new, GUI.skin.fontSpecs)
-		});
+		view.font_(font);
 		view.action_(function);
 		if(consumeKeyDowns,{ this.keyDownAction = {nil}; });
 	}
@@ -357,17 +397,17 @@ ToggleButton : SCButtonAdapter {
 	}
 	// private
 	init { arg layout,init,title,minWidth,minHeight;
-		var offc,onc;
-		this.makeViewWithStringSize(layout,title.size,minWidth,minHeight);
-		offc=Color.new255(154, 205, 50);
-		onc=Color.new255(245, 222, 179);
+		var font;
+		font = GUI.font.new(*GUI.skin.fontSpecs);
+		this.makeViewWithStringSize(layout,title.bounds(font).width,minWidth,minHeight);
 		view.states = [
-			[title,Color.black,layout.asView.background],
-			[title,Color.black,onc]
+			[title,GUI.skin.fontColor,GUI.skin.offColor],
+			[title,GUI.skin.fontColor,GUI.skin.onColor]
 		];
 		state=init;
 		view.setProperty(\value,state.binaryValue);
 		view.action_({this.prSetState(state.not)});
+		view.font = font;
 	}
 	prSetState { arg newstate;
 		state = newstate;

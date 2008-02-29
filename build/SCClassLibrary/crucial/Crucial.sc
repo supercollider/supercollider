@@ -2,22 +2,37 @@
 Crucial {
 
 	classvar menu, debugNodeWatcher;
-		
+
 	*initClass {
-		// force to init first
-		Class.initClassTree(Warp);
-		Class.initClassTree(Spec);
-		this.initSpecs;
-		Class.initClassTree(Library);
-		this.initLibraryItems;	
+		// you can add these to your startup
+		// further specs defined
+		// Crucial.initSpecs;
+		// add useful functions for introspection, common tasks
+		// Crucial.initLibraryItems;
+
+		Class.initClassTree(GUI);
+		Class.initClassTree(CocoaGUI);
+		// this skin is cleaner and more basic than the default
+		// GUI.setSkin(\crucial) in your startup
+		GUI.skins.put(\crucial,
+			(
+				fontSpecs: 	["Helvetica", 11.0],
+				fontColor: 	Color.black,
+				background: 	Color.white,
+				foreground:	Color.grey(0.95),
+				onColor:		Color.new255(255, 250, 250),
+				offColor:		Color.clear,
+				gap:			4 @ 4,
+				margin: 		2@0,
+				buttonHeight:	17
+			));
 	}
 
 	*initSpecs {
-		
-		// this will be moved somewhere more polite
-		// or it should only add where not previously defined
-		
-		Spec.specs.putAll(			
+		Class.initClassTree(Warp);
+		Class.initClassTree(Spec);
+
+		Spec.specs.putAll(
 		  IdentityDictionary[
 			'audio'->AudioSpec.new,
 			//'lofreq'->ControlSpec.new(0.1, 100, 'exp', 0, 6),
@@ -55,7 +70,7 @@ Crucial {
 			'radians'->ControlSpec.new(0, 6.28319, 'lin', 0, 3.14159),
 			'numChannels'->StaticSpec.new(1, 8, 'lin', 1, 2),
 			'freqScale'->ControlSpec.new(0.01, 10, 'lin', 0, 1.0),
-			'qnty0'->StaticIntegerSpec.new(0, 20, 'lin', 1, 10),
+			'qnty0'->StaticIntegerSpec.new(0, 20, 10),
 			'ffreqMul'->ControlSpec.new(0.1, 16000, 'exp', 0, 2),
 			//'freq'->ControlSpec.new(20, 20000, 'exp', 0, 440),
 			//'phase'->ControlSpec.new(0, 6.28319, 'lin', 0, 3.14159),
@@ -71,22 +86,22 @@ Crucial {
 			'thru'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'off'->NoLagControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'revTime'->ControlSpec.new(0, 16, 'lin', 0, 8),
-			'taps'->StaticIntegerSpec.new(1, 10, 'lin', 1, 6),
-			'combs'->StaticIntegerSpec.new(1, 10, 'lin', 1, 6),
+			'taps'->StaticIntegerSpec.new(1, 10, 6),
+			'combs'->StaticIntegerSpec.new(1, 10, 6),
 			'unipolar'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'microDelay'->ControlSpec.new(0.0001, 0.05, 'lin', 0, 0.02505),
 			'microAttack'->ControlSpec.new(0.0001, 0.2, 'lin', 0, 0.10005),
 			'microDecay'->ControlSpec.new(0.0001, 0.2, 'lin', 0, 0.10005),
-			'combSelect'->StaticIntegerSpec.new(0, 5, 'lin', 1, 3),
-			'medianLength'->StaticIntegerSpec.new(0, 15, 'lin', 1, 8),
-			'uzi'->StaticIntegerSpec.new(1, 16, 'lin', 1, 9),
+			'combSelect'->StaticIntegerSpec.new(0, 5, 3),
+			'medianLength'->StaticIntegerSpec.new(0, 15, 8),
+			'uzi'->StaticIntegerSpec.new(1, 16, 9),
 			'numharms'->ControlSpec.new(1, 100, 'lin', 0, 50.5),
 			'sustain'->ControlSpec.new(0, 16, 'lin', 0, 8),
 			'sensitivity'->ControlSpec.new(0, 12, 'lin', 0, 6),
 			'gain'->ControlSpec.new(0.000001, 4, 'exp', 0, 2),
 			'dur'->ControlSpec.new(0, 16, 'lin', 0, 1),
 			'density'->ControlSpec.new(0, 30, 'lin', 0, 1.0),
-			'qnty'->StaticIntegerSpec.new(1, 24, 'lin', 1, 4),
+			'qnty'->StaticIntegerSpec.new(1, 24, 4),
 			'winSize'->StaticSpec.new(0.01, 4, 'lin', 0, 0.2),
 			'pchDispersion'->ControlSpec.new(0, 4, 'lin', 0, 0.05),
 			'timeDispersion'->ControlSpec.new(0, 3, 'lin', 0, 0.05),
@@ -96,7 +111,7 @@ Crucial {
 			'overlap'->ControlSpec.new(0, 12, 'lin', 0, 6),
 			'maxDelay'->StaticSpec.new(0.005, 1, 'lin', 0, 0.5),
 			'speed'->ControlSpec.new(0.001, 8, 'lin', 0, 4.0),
-			'root'->ControlSpec.new(0, 11, 'lin', 1, 0),
+			'root'->ControlSpec.new(0, 64, 'lin', 1, 0),
 			'bidecay'->ControlSpec.new(-10, 10, 'lin', 0, 0.05),
 			'midinote'->ControlSpec.new(0, 127, 'lin', 1, 64),
 			'note'->ControlSpec.new(0, 11, 'lin', 1, 0),
@@ -127,30 +142,32 @@ Crucial {
 			//'delay'->ControlSpec.new(0.005, 1, 'lin', 0, 0.5025),
 			\in->AudioSpec.new,
 			\k->ControlSpec(-6.0,6.0),
-			\stepsPerOctave->ControlSpec(0.5,128.0),
-			\mul -> ControlSpec(0,1),
-			\add -> ControlSpec(0,1)
+			\stepsPerOctave->ControlSpec(1.0,128.0,\lin,1.0,12.0),
+			\mul -> ControlSpec(0.0,1.0,\lin,0,1.0),
+			\add -> ControlSpec(0.0,1.0,\lin,0.0,0.0)
 		  ]
 		);
-	}	
+	}
 	*menu {
-		/* 
+		/*
 			what I do is
-			
+
 			edit Main::run
-			
+
 			run {
 				Crucial.menu
 			}
-			
+
 			so that command-r will pop open this menu
-		*/ 
-		
+			
+			call Crucial-initLibraryItems first
+		*/
+
 		var a,rec,pause;
 		if(menu.notNil,{ menu.close });
-		
+
 		menu = MultiPageLayout.new("-Library-");
-		
+
 		Server.default.gui(menu);
 		menu.startRow;
 
@@ -168,8 +185,8 @@ Crucial {
 			Server.default.startAliveThread;
 			Server.default.dumpOSC(0)
 		},Server.default.dumpMode != 0 ,minWidth: 250);
-		
-		
+
+
 		if(debugNodeWatcher.isNil,{
 			debugNodeWatcher = AnnotatedDebugNodeWatcher(Server.default);
 		});
@@ -178,6 +195,16 @@ Crucial {
 		},{
 			debugNodeWatcher.stop;
 		},debugNodeWatcher.isWatching,minWidth: 250);
+
+		ToggleButton(menu.startRow,"Server Log",{
+			Server.default = Server(\localhost, ServerLog("127.0.0.1", 57110));
+		},{
+			Server.default = Server(\localhost, NetAddr("127.0.0.1", 57110));
+		},false,minWidth: 250);
+		
+		ActionButton(menu.startRow,"ServerLog.report",{
+			Server.default.addr.report
+		},minWidth: 250);
 
 		ActionButton(menu.startRow,"Query All Nodes",{
 			Library.at(\menuItems,\tools,'Server Node Report').value;		},minWidth: 250);
@@ -201,22 +228,23 @@ Crucial {
 
 		ActionButton(menu.startRow,"Quarks",{
 			Quarks.gui;
-		},minWidth: 250);			
-			
-	
+		},minWidth: 250);
+
+
 		//TempoGui.setTempoKeys;
 		Tempo.default.gui(menu.startRow);
 
 		menu.resizeToFit.front;
-		
+
 		a.focus;
 	}
 	*initLibraryItems {
+		Class.initClassTree(Library);
 
 		Library.put(\menuItems,'introspection','ClassBrowser',{
 			Object.gui
 		});
-		
+
 		// tools
 		Library.put(\menuItems,\load,'browse for objects...',{
 			GetFileDialog({ arg ok,loadPath;
@@ -225,41 +253,50 @@ Crucial {
 				});
 			})
 		});
-		
+
 		Library.put(\menuItems,\test,'audioIn Test',{
 			{AudioIn.ar([1,2])}.play
 		});
 		Library.put(\menuItems,\test,'simple audio test',{
 			{SinOsc.ar([500,550],0,0.1)}.play
 		});
-		
+
 		Library.put(\menuItems,\test,'listen to audio busses',{
 			var s;
 			s = Server.default;
 			Sheet({ |layout|
-				CXLabel( layout, "Audio Busses");
+				CXLabel( layout, "Audio Busses",width:685);
 				s.audioBusAllocator.blocks.do({ |b|
 					var listen;
-					listen = Patch({ In.ar( b.address, b.size ) });
+					b.insp;
+					listen = Patch({ In.ar( b.start, b.size ) });
 					layout.startRow;
 					ToggleButton( layout,"listen",{
 						listen.play
 					},{
 						listen.stop
 					});
-					CXLabel( layout, b.address.asString + "(" ++ b.size.asString ++ ")"
+					CXLabel( layout, b.start.asString + "(" ++ b.size.asString ++ ")"
 						,100 );
-					CXLabel( layout,  
-						Library.at(AbstractPlayer, \busAnnotations, s,\audio, b.address)
+					CXLabel( layout,
+						Library.at(AbstractPlayer, \busAnnotations, s,\audio, b.start)
 						,540 );
 				})
 			});
 		});
-		
-		Library.put(\menuItems,\test,'run Class unit tests',{
-			TestCase.runAll;
+
+		Library.put(\menuItems,\test,'UnitTest.runAll',{
+			UnitTest.runAll;
 		});
-			
+
+		Library.put(\menuItems,\test,'manually run unit tests',{
+			CXMenu.newWith(
+				UnitTest.allSubclasses.collect({ |testClass|
+					testClass.asSymbol -> { testClass.run }
+				})
+			).closeOnSelect_(false).gui
+		});
+
 		Library.put(\menuItems,\post,'post [char,unicode,modifier,keycode]...',{
 			Sheet({ arg l;
 				ActionButton.new(l,"press keys and modifiers").focus
@@ -274,7 +311,7 @@ Crucial {
 				if(ok,{ color.post;})
 			});
 		});*/
-		
+
 		Library.put(\menuItems,\post,'post path...',{
 			GetFileDialog({ arg ok,loadPath;
 				if(ok,{
@@ -284,15 +321,15 @@ Crucial {
 		});
 		Library.put(\menuItems,\post,'post array of paths...',{
 			CocoaDialog.getPaths({ arg paths;
-				Post <<<  paths.collect({ arg p; 
-							PathName(p).asRelativePath })   
+				Post <<<  paths.collect({ arg p;
+							PathName(p).asRelativePath })
 					<< Char.nl;
 			})
 		});
 		Library.put(\menuItems,\post,'post Unicode...',{
 			UnicodeResponder.tester;
 		});
-				
+
 		Library.put(\menuItems,\introspection,'find class...',{
 			GetStringDialog("Classname or partial string","",{
 				arg ok,string;
@@ -323,41 +360,26 @@ Crucial {
 				})
 			});
 		});
-		/*
-		Library.put(\menuItems,\introspection,\methodfinder,{
-			GetStringDialog("methodname or partial string","",{
-				arg ok,string;
-				var matches,f,classes;
-				matches = IdentitySet.new;
-				if(ok,{
-					Class.allClasses.do({ arg cl;
-						if(cl.isMetaClass.not and: {cl.name.asString.containsi(string)},{
-							matches = matches.add(cl);
-						});
-					});
 
-					f = PageLayout.new;
-					matches.do({ arg cl;
-						CXLabel(f.startRow,cl.name,minWidth:200);
-						ActionButton(f.startRow,"source",{
-							cl.openCodeFile;
-						},60);
-						ActionButton(f,"help",{
-							if(cl.hasHelpFile,{
-								cl.openHelpFile;
-							},{
-								cl.ownerClass.openHelpFile;
+		Library.put(\menuItems,\introspection,\methodfinder,{
+			GetStringDialog("Search methods...","",{ arg ok,string;
+				Sheet({ |layout|
+					var matches;
+					Object.allSubclasses.do({ |class|
+						class.methods.do({ |meth|
+							if(meth.name.asString.find(string,true).notNil,{
+								matches = matches.add(meth,true);
+								layout.startRow;
+								MethodLabel(meth,layout,300);
 							});
-						},60);
-						ActionButton(f,"browser",{
-							cl.gui;
-						},60);
+						})
 					});
-					f.resizeToFit;
-				})
-			});
+					if(matches.isNil,{
+						("No methods matching " + string + "found").gui(layout);
+					})
+				},"Method search")
+			})
 		});
-		*/
 
 		Library.put(\menuItems,\introspection,\findReferencesToClass,{
 			GetStringDialog("Class name:","",{ arg ok,string;
@@ -378,7 +400,7 @@ Crucial {
 								if(lit.asClass.isNil,{
 									lit.post;
 									(30 - lit.asString.size).do({ " ".post; });
-									(class.name.asString ++ "-" ++ 
+									(class.name.asString ++ ":" ++
 										method.name.asString).postln;
 								})
 							})
@@ -386,31 +408,31 @@ Crucial {
 					})
 				});
 		});
-	
+
 		Library.put(\menuItems,\introspection,'find method-not-found',{
 			/*
 				search for potential method not found errors
-			
+
 				look through all methods for method selectors that
 					are not defined for any class
-				
+
 				this finds many false cases,
 				but i found a good 7 or 8 typos in mine and others code
-			
+
 				// could reject any spec names
 				// any instr names
 				// sound file types
 			*/
-		
+
 			var allMethodNames;
 			allMethodNames = IdentityDictionary.new;
-		
+
 			Class.allClasses.do({ arg class;
 				(class.methods).do({ arg method;
 					allMethodNames.put(method.name,true);
 				})
 			});
-		
+
 			Class.allClasses.do({ arg class;
 				(class.methods).do({ arg method;
 					var selectors;
@@ -421,7 +443,7 @@ Crucial {
 								if(allMethodNames.at(lit).isNil,{
 									lit.post;
 									(30 - lit.asString.size).do({ " ".post; });
-									(class.name.asString ++ "-" ++ method.name.asString).postln;
+									(class.name.asString ++ ":" ++ method.name.asString).postln;
 								})
 							})
 						})
@@ -430,7 +452,7 @@ Crucial {
 			});
 
 		});
-	
+
 		//needs a tree browser
 		Library.put(\menuItems,\introspection,'non-nil class variables',{
 			Sheet({ arg f;
@@ -445,11 +467,11 @@ Crucial {
 								InspectorLink(cv,f);
 							})
 						});
-					})		
+					})
 				})
 			},"Classvars")
 		});
-	
+
 		Library.put(\menuItems,\introspection,'find duplicate variable name errors',{
 			var f;
 			f = { arg class,found;
@@ -463,29 +485,35 @@ Crucial {
 						myFound.addAll(full);
 						if(full.notEmpty,{
 							Post << sub << " has defined a variable with the same name as a superclass." << Char.nl;
-						
+
 							Post << full << Char.nl << Char.nl;
 						});
 					});
 					f.value(sub,myFound);
 				});
 			};
-			
-			f.value(Object);		
+
+			f.value(Object);
 		});
-		
+		Library.put(\menuItems,\introspection,'Unit Tests...',{
+			var x;
+			x = CXMenu.newWith( UnitTest.allSubclasses.collect({ |class| class.asString -> { class.run } }) );
+			x.closeOnSelect = false;
+			x.gui
+		});
+
 		// browse all currently loaded Instr
 //		Library.put(\menuItems,\sounds,\orcs,{ arg onSelect;
 //			// if there's nothing in Instr it does the top
 //			MLIDbrowser(\Instr,onSelect).gui
 //		});
-		
+
 		Library.put(\menuItems,\post,'post Instr address',{
 			MLIDbrowser(\Instr,{ arg instr;
-				instr.name.asCompileString.post; 
+				instr.name.asCompileString.post;
 			}).gui;
 		});
-		
+
 		Library.put(\menuItems,\sounds,'make new Patch',{
 			MLIDbrowser(\Instr,{ arg instr;
 				Patch(instr.name).topGui
@@ -508,12 +536,12 @@ Crucial {
 				CXLabel(f.startRow,"address");
 				CXLabel(f,"numChannels");
 				Server.default.audioBusAllocator.blocks.do({ arg block;
-					CXLabel(f.startRow,block.address);
+					CXLabel(f.startRow,block.start);
 					CXLabel(f,block.size);
 				});
 			},"allocated AudioBuses on default")
 		});
-		
+
 		Library.put(\menuItems,\tools,'Annotated Buses Report',{
 			var a;
 			"Audio Buses:".postln;
@@ -532,7 +560,7 @@ Crucial {
 			});
 		});
 
-		/*		
+		/*
 		Library.put(\menuItems,\tools,'Annotated Node Report',{
 			var a;
 			a = Library.at(AbstractPlayer, \busAnnotations, Server.default,\audio);
@@ -548,35 +576,35 @@ Crucial {
 				})
 			});
 		});*/
-		
+
 		Library.put(\menuItems,\tools,'Server Node Report',{
 			var probe,probing,resp,nodes,server,report,indent = 0,order=0;
 			var nodeWatcher;
-			
+
 			server = Server.default;
 			nodeWatcher = NodeWatcher.newFrom(server);
-			
+
 			nodes = IdentityDictionary.new;
 			probing = List.new;
-			
+
 			probe = { arg nodeID;
 				probing.add(nodeID);
 				server.sendMsg("/n_query",nodeID);
 			};
-			
+
 			report = { arg nodeID=0;
 				var child,node;
 				indent.do({ " ".post });
 				nodes.at(nodeID).use({
 					~order = order;
-					if(~isGroup,{ 
+					if(~isGroup,{
 						node = nodeWatcher.nodes.at(nodeID);
 						if(node.notNil,{
 							Post << node << " " << AbstractPlayer.getAnnotation(node)  << Char.nl;
 						},{
 							("Group(" ++ nodeID ++ ")").postln;
 						});
-	
+
 						child = ~head;
 						indent = indent + 8;
 						while({
@@ -597,13 +625,13 @@ Crucial {
 					});
 				});
 			};
-				
+
 			resp = OSCresponder(server.addr,'/n_info',{ arg a,b,c;
 						var cmd,nodeID,parent,prev,next,isGroup,head,tail;
 						# cmd,nodeID,parent,prev,next,isGroup,head,tail = c;
-						
+
 						//[cmd,nodeID,parent,prev,next,isGroup,head,tail].debug;
-						
+
 						nodes.put(nodeID,
 							Environment.make({
 								~nodeID = nodeID;
@@ -615,7 +643,7 @@ Crucial {
 								~tail = tail;
 							})
 						);
-						
+
 						if(next > 0,{
 							probe.value(next);
 						});
@@ -630,10 +658,10 @@ Crucial {
 							report.value;
 						});
 					}).add;
-					
+
 			probe.value(0);
 
 		});
 	}
-	
+
 }

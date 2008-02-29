@@ -67,16 +67,7 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 			//start player
 			player.makePatchOut(this.group,true,nil,bundle);
 			
-			
-			
-			
-			
 			//TODO   prepareToBundle
-			
-			
-			
-			
-			
 			
 			player.spawnToBundle(bundle);
 			this.respawnMixerToBundle(bundle);
@@ -107,7 +98,7 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 	
 	children { ^this.players }
 	storeArgs { ^[players] }
-
+	rate { ^\audio }
 	guiClass { ^PlayerMixerGui }
 
 }

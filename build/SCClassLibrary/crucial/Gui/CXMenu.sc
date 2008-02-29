@@ -1,35 +1,46 @@
 
 CXMenu : SCViewHolder { // multiple actions
 
-	var <nameFuncs,<layout,<>backColor,<>stringColor,
-			<>closeOnSelect=true,lastButton,buttonWidth=150,focus = 0;
-	/**
-	  * name => { }, name => { }, ...
-	  */
+	var <nameFuncs, <layout, <>backColor, <>stringColor, <>closeOnSelect=true;
+		
+	var lastButton,buttonWidth=150,focus = 0,isMyLayout=false;
+
+	// name -> { }, name -> { }, ...
 	*new { arg ... nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
 	*newWith { arg nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
-	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=160;
-		buttonWidth = argbuttonWidth;
-		layout= lay ?? {MultiPageLayout.new("menu",Rect(20,20,windowWidth,height))};
-		view = GUI.vLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));
-		this.guiBody;
+	gui { arg lay,windowWidth=170,height=400,argButtonWidth=160;
+		var w,wbounds;
+		buttonWidth = argButtonWidth;
+		if(windowWidth.isNumber,{ // backwards compat
+			wbounds = Rect(20,20,windowWidth ? buttonWidth + 10,height);		},{
+			wbounds = windowWidth.asRect
+		});
+		layout = lay ?? {
+			isMyLayout = true;
+			MultiPageLayout.new("menu",wbounds,scroll:true);
+		};
+		//view = GUI.scrollView.new(layout,Rect(0,0,buttonWidth+4,height));
+		view = GUI.vLayoutView.new(layout,
+			Rect(0,0,buttonWidth, (GUI.skin.buttonHeight + GUI.skin.gap.y) * nameFuncs.size));
+		this.guiBody(false);
 		this.enableKeyDowns;
+		if(isMyLayout,{ layout.resizeToFit });
 		if(lay.isNil,{ layout.front });
 	}
-	guiBody {
+	guiBody { arg resize;
 		nameFuncs.do({arg nf;
-			this.addToGui(nf);
+			this.addToGui(nf,resize);
 		});
 	}
 	add { arg nf;
 		nameFuncs = nameFuncs.add(nf);
 		if(layout.notNil,{ this.addToGui(nf); });
 	}
-	addToGui { arg nf;
+	addToGui { arg nf,resize=true;
 		var ab;
 		ab = ActionButton(view,nf.key,{
 				nf.value.value; 
@@ -47,11 +58,18 @@ CXMenu : SCViewHolder { // multiple actions
 			},buttonWidth)
 			.background_(backColor ? Color.new255(112, 128, 144))
 			.labelColor_(stringColor ? Color.white);
-		view.bounds = view.bounds.resizeTo(buttonWidth,24 * nameFuncs.size);
+		view.bounds = view.bounds.resizeTo(buttonWidth,
+						(GUI.skin.buttonHeight + GUI.skin.gap.y) * nameFuncs.size);
+		/*if(isMyLayout,{
+			if(layout.window.view.bounds.containsRect(view.bounds).not,{
+				layout.resizeToFit;
+			})
+		});*/
 	}
 	resize {
-		// what if its not my layout ?
-		//layout.resizeToFit;
+		if(isMyLayout,{
+			layout.resizeToFit;
+		});
 	}
 	nameFuncs_ { arg nf;
 		nameFuncs = nf;

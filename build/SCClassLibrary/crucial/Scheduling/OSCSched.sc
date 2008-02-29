@@ -21,8 +21,8 @@ BeatSched {
 	init {
 		pq = PriorityQueue.new;
 		nextAbsFunc = nextAbsTime = nil;
-		beatEpoch = 0.0;//tempoClock.elapsedBeats;
-		epoch = 0.0;//Main.elapsedTime;
+		beatEpoch = tempoClock.elapsedBeats;
+		epoch = Main.elapsedTime;
 	}
 
 	*xblock { ^global.xblock }

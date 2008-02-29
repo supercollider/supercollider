@@ -5,7 +5,7 @@ TempoGui : ObjectGui {
 	
 	writeName {}
 	guiBody { arg layout;
-		var gn,gnomeInstr;
+		var gn,gnomeInstr,h;
 		tempoG = NumberEditor(model.bpm,[1.0,666.0])
 			.action_({arg t; model.bpm_(t)});
 			
@@ -14,9 +14,9 @@ TempoGui : ObjectGui {
 		gnomeInstr = Instr("TempoGui.gnomeInstr");
 		if(gnomeInstr.isNil,{
 			Instr("TempoGui.gnomeInstr",
-				{ arg beat,freq,amp;
+				{ arg trig,freq,amp;
 					Decay2.ar( 
-						K2A.ar(beat), 0.01,0.11, 
+						K2A.ar(trig), 0.01,0.11, 
 						SinOsc.ar( freq, 0, amp )
 					)
 				});
@@ -24,20 +24,23 @@ TempoGui : ObjectGui {
 		gnome = Patch("TempoGui.gnomeInstr",[
 			BeatClockPlayer.new(4.0),
 			StreamKrDur(
-				Pseq([ 750, 500, 500, 500, 750, 500, 500, 500, 750, 500, 500, 500, 750, 500, 500, 500 ],inf), 
+				Pseq([ 750, 500, 500, 500, 750, 500, 500, 500, 
+					   750, 500, 500, 500, 750, 500, 500, 500 ],inf), 
 				1.0),
 			StreamKrDur(
-				Pseq([1,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25] * 0.01,inf),
+				Pseq([1,0.25,0.5,0.25,0.75,0.25,0.5,0.25,
+					  0.75,0.25,0.5,0.25,0.75,0.25,0.5,0.25] * 0.01,inf),
 				1.0)
 		]);
 
-		gn = GUI.button.new(layout,17@17);
+		h = GUI.skin.buttonHeight;
+		gn = GUI.button.new(layout,h@h);
 		gn.states = [ ["M",Color.black,Color.white],["M",Color.white,Color.black]];
 		gn.action = {
 			if(gnome.isPlaying.not,{ 
 				gnome.play(atTime: 1) 
 			},{
-				gnome.stop							
+				gnome.stop
 			})
 		};
 	}

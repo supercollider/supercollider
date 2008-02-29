@@ -31,7 +31,7 @@ BeatClockPlayer : KrPlayer {
 	synthDefArgs { // synthinputs collect synthArg
 		^[ \i_tempoIndex, tempoBus.index,\out,patchOut.synthArg]//.debug("beat clock player args")
 	}
-
+	spec { ^\trig.asSpec }
 	guiClass { ^BeatClockPlayerGui }
 
 }

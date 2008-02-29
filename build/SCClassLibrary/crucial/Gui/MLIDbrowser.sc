@@ -39,7 +39,7 @@ MLIDbrowser { // MultiLevelIdentityDictionary browser
 				item.keys.asList.collect({ arg key;
 					key->{ this.browse(item.at(key),item) }
 				});
-			menu.gui;
+			menu.gui(height:min(item.size*30,600));
 			menu.keyDownAction = (menu.keyDownResponder ++ kdr);
 			menu.focusOn(0);
 		})

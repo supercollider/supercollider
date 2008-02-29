@@ -16,8 +16,7 @@ AudioSpec : Spec {
 			\audio1 -> mono,
 			\audio2 -> mono,
 			\stereo -> stereo,
-			\mono -> mono,
-			\audioEvent -> stereo
+			\mono -> mono
 			];
 		)
 	}
@@ -40,6 +39,21 @@ MultiTrackAudioSpec : AudioSpec {
 	storeArgs { ^[tracks,numChannels] }
 }
 
+// has a gate. generally short duration.  for Pbind, InstrGateSpawner etc.
+AudioEventSpec : AudioSpec {
+	*initClass {
+		var a;
+		specs.addAll(
+		 [
+			\audioEvent -> a = AudioEventSpec.new,
+			\audioGateEvent -> a
+			];
+		)
+	}
+	default{
+		^Event.default
+	}
+}
 
 EffectSpec : AudioSpec {
 	var <>numInputs;
@@ -52,6 +66,7 @@ EffectSpec : AudioSpec {
 		 [
 			\monoEffect -> EffectSpec(1),
 			\stereoEffect -> EffectSpec(2),
+			\audioEffect -> EffectSpec(2), // tho it could be multi chans
 			\dualAudioEffect -> EffectSpec(2,2),
 			\dualStereoEffect -> EffectSpec(2,2)
 			];
@@ -88,6 +103,9 @@ TempoSpec : Spec {
 			];
 		)
 	}
+	canAccept { arg thing;
+		^thing.isKindOf(TempoPlayer) or: {thing.isFloat}
+	}
 }
 
 NoLagControlSpec : ControlSpec {
@@ -120,6 +138,11 @@ StaticIntegerSpec : StaticSpec {
 	*new { arg minval=0, maxval=10, default, units;
 		^super.new(minval.asInteger, maxval.asInteger, \lin, 1, default , units )
 	}
+	storeArgs { ^[minval,maxval,default,units] }
+	*newFrom { arg similar;
+		^this.new(similar.minval, similar.maxval,similar.default, similar.units)
+	}
+
 	init { 
 		warp = warp.asWarp(this);
 		if(minval < maxval,{
@@ -166,6 +189,7 @@ EnvSpec : ScalarSpec {
 	defaultControl {
 		^EnvEditor.new(prototype.copy)
 	}
+	default { ^prototype.copy }
 	
 	*initClass {
 		specs.addAll(
@@ -187,7 +211,7 @@ EnvSpec : ScalarSpec {
 		)
 	}	
 	canAccept { arg thing;
-		^thing.isKindOf(Env)
+		^thing.isKindOf(Env) or: {thing.isKindOf(EnvEditor)}
 	}
 }
 
@@ -211,6 +235,13 @@ BufferProxySpec : ScalarSpec {
 
 	//defaultControl { ^prototype.deepCopy } // this caused a deepCopy crash !?
 	defaultControl { ^BufferProxy(numFrames,numChannels,sampleRate) }
+	default { ^this.defaultControl }
+	canAccept { arg thing; 
+		^thing.isKindOf(BufferProxy) 
+			and: {thing.numChannels == numChannels}
+			and: {thing.sampleRate == sampleRate}
+			and: {thing.numFrames >= numFrames}
+	}
 }
 
 SampleSpec : ScalarSpec {
@@ -229,6 +260,20 @@ SampleSpec : ScalarSpec {
 
 }
 
+ScaleSpec : ScalarSpec {
+	var <>prototype;
+	*new { arg prototype;
+		^super.new.prototype_(prototype)
+	}
+	canAccept { arg ting;
+		^ting.isArray and: {ting.every(_.isNumber)} // ... and every is in itemSpec
+	}
+	default { ^prototype }
+	defaultControl { ^this.default }
+	storeArgs { ^[prototype] }
+}
+
+
 // abstract class for container objects whose content items conform to itemSpec
 HasItemSpec : ScalarSpec {
 	var <>itemSpec;
@@ -242,15 +287,32 @@ HasItemSpec : ScalarSpec {
 	}
 	defaultControl { ^itemSpec.defaultControl }
 	default { ^itemSpec.default }
+	map { arg val;
+		^itemSpec.map(val)
+	}
+	unmap { arg val;
+		^itemSpec.unmap(val)
+	}
+	constrain { arg val;
+		^itemSpec.constrain(val)
+	}
 	storeArgs { ^[itemSpec] }
 }
 
 // an array that has items that conform to itemSpec
 ArraySpec : HasItemSpec {
-	canAccept { arg ting;
-		^ting.isArray // ... and every is in itemSpec
+	var <>size;
+	*new { arg itemSpec,size=16;
+		^super.new(itemSpec).size_(size)
 	}
+	canAccept { arg ting;
+		^ting.isArray and: {ting.every({ |item| itemSpec.canAccept(item) })}
+	}
+	default { ^Array.fill(size,{itemSpec.default}) }
+	defaultControl { ^this.default }
+	storeArgs { ^[itemSpec,size] }
 }
+
 
 // a stream that returns items conforming to the itemSpec
 StreamSpec : HasItemSpec {
@@ -259,13 +321,35 @@ StreamSpec : HasItemSpec {
 		^(ting.rate == \stream or: {itemSpec.canAccept(ting) })
 	}
 	rate { ^\stream }
-	defaultControl {  arg val; ^IrNumberEditor(val ? itemSpec.default, itemSpec) }
+	defaultControl {  arg val;
+		^itemSpec.defaultControl(val)
+		//^IrNumberEditor(val ? itemSpec.default, itemSpec) 
+	}
+}
+
+// an EventStream is playable as audio, but its also a stream of events for further pattern work
+EventStreamSpec : Spec {
+	rate { ^\stream }
+	defaultControl { ^Pbind.new }
 }
 
 // a player whose output conforms to itemSpec
 PlayerSpec : HasItemSpec {
 	canAccept { arg ting;
 		^(ting.isKindOf(AbstractPlayer) and: {ting.spec == itemSpec})
+	}
+	rate { ^itemSpec.rate }
+}
+
+// should change to InstrSpec : could be as an instr or a string or a function
+InstrNameSpec : HasItemSpec {
+	var <>hasGate,<>hasAudioInput; // nil means "does not care"
+	*new { arg outSpec,hasGate,hasAudioInput;
+		^super.new(outSpec).hasGate_(hasGate).hasAudioInput_(hasAudioInput)
+	}
+	rate {^\scalar }
+	canAccept { arg ting;
+		^(ting.isString and: {Instr(ting).notNil})
 	}
 }
 

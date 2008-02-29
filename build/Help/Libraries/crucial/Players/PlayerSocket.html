@@ -5,47 +5,33 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0424af}
-span.s1 {color: #0013bb}
-span.s2 {color: #316f11}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0b2aab}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6e3d20}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1731a0}
+span.s1 {color: #0b2aab}
+span.s2 {color: #5a6628}
 span.s3 {color: #000000}
-span.s4 {color: #0000bf}
-span.s5 {color: #007300}
-span.s6 {color: #0424af}
-span.s7 {color: #4e6a22}
+span.s4 {color: #1731a0}
+span.s5 {color: #5f6430}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>PlayerSocket</b></p>
 <p class="p2"><br></p>
-<p class="p3">a voice that is able to switch between different players.</p>
+<p class="p3">a voice that is able to host and switch between different players.</p>
+<p class="p3">Players can be loaded, prepared and spawned without stopping the PlayerSocket.</p>
 <p class="p4"><br></p>
-<p class="p3">when it switches to a new player, it sends .release to the old one.</p>
-<p class="p4"><br></p>
-<p class="p3">a Patch with a \gate and an EnvGen will release. after releaseTime, it will be</p>
-<p class="p3">sent .stop which will stop it and all its children.</p>
-<p class="p4"><br></p>
-<p class="p3">a Patch with no \gate will not release, but after releaseTime it will be</p>
-<p class="p3">sent .stop which will stop it abruptly.</p>
+<p class="p3">Players are played using an EnvelopedPlayer so that when the socket releases the voice (to end it or to switch to the next incoming player being played in the socket) the outgoing player is released cleanly.</p>
 <p class="p4"><br></p>
 <p class="p3">the default releaseTime is 0.0 which will stop immediately. <span class="Apple-converted-space"> </span></p>
-<p class="p4"><br></p>
-<p class="p3">a releaseTime of nil will not send stop at all.<span class="Apple-converted-space">  </span>if you use an EnvGen doneAction of 2, the node will be ended when the gate goes down.<span class="Apple-converted-space">  </span>a PlayerNodeWatcher is planned to watch for this and stop all the children which would otherwise go on playing.</p>
 <p class="p4"><br></p>
 <p class="p3"><b>*new(rate,numChannels,round)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>rate</b> - all players should be the same rate</p>
@@ -59,120 +45,49 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>qspawnPlayer(aPlayer,releaseTime)</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>spawn at the next clock division</b></p>
 <p class="p3"><b>releaseVoice(releaseTime)</b></p>
-<p class="p5"><b>source = aPlayer</b></p>
+<p class="p3"><b>source = aPlayer</b></p>
 <p class="p2"><br></p>
-<p class="p6">(</p>
-<p class="p6">q = <span class="s1">Patch</span>({ <span class="s1">Saw</span>.ar(600) * 0.2 });</p>
-<p class="p6">r = <span class="s1">Patch</span>({ <span class="s1">Saw</span>.ar(800) * 0.2 });</p>
-<p class="p6">p = <span class="s1">PlayerSocket</span>.new(<span class="s2">\audio</span>,1);</p>
-<p class="p6">p.play;</p>
-<p class="p6">)</p>
-<p class="p2"><br></p>
-<p class="p6">p.prepareAndSpawn(q,0.1);</p>
-<p class="p6">p.prepareAndSpawn(r,0.1);</p>
-<p class="p6">p.prepareAndSpawn(q,0.1);</p>
-<p class="p6">p.prepareAndSpawn(r,0.1);</p>
-<p class="p2"><br></p>
-<p class="p6">(</p>
-<p class="p6">p.prepareAndSpawn(</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Patch</span>({ <span class="s1">arg</span> freq=400,gate=1.0;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Saw</span>.ar(freq) * <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.adsr(0.1,2.0,0.3,2.0),gate)</p>
-<p class="p6"><span class="Apple-tab-span">	</span>},[</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(38,70).midicps,</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>KrNumberEditor<span class="s3">(1.0,</span><span class="s2">\gate</span><span class="s3">)</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>]),</p>
-<p class="p6"><span class="Apple-tab-span">	</span>1.0</p>
-<p class="p6">)</p>
-<p class="p6">)</p>
-<p class="p8">// the current player in the socket is set to :<span class="Apple-converted-space">  </span>p.source</p>
-<p class="p2"><br></p>
-<p class="p8">// even an already playing patch</p>
-<p class="p6">t = <span class="s1">Patch</span>({ <span class="s1">Saw</span>.ar(400) * 0.2 });</p>
-<p class="p6">t.play;</p>
-<p class="p2"><br></p>
-<p class="p8">// can be set to be the source</p>
-<p class="p6">p.source = t;</p>
-<p class="p8">// and its group will be moved</p>
-<p class="p2"><br></p>
-<p class="p6">p.releaseVoice(1.0);</p>
+<p class="p5">(</p>
+<p class="p5">q = <span class="s1">Patch</span>({ <span class="s1">Saw</span>.ar(40.midicps) * 0.05 });</p>
+<p class="p5">r = <span class="s1">Patch</span>({ <span class="s1">Saw</span>.ar(52.midicps) * 0.05 });</p>
+<p class="p5">p = <span class="s1">PlayerSocket</span>.new(<span class="s2">\audio</span>,1);</p>
+<p class="p5">p.play;</p>
+<p class="p5">)</p>
+<p class="p5">// then get the socked to alternately spawn q and r</p>
+<p class="p5">p.prepareAndQSpawn(q,0.1);</p>
+<p class="p5">p.prepareAndQSpawn(r,0.1);</p>
+<p class="p5">p.prepareAndQSpawn(q,0.1);</p>
+<p class="p5">p.prepareAndQSpawn(r,0.1);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p8">//we are asleep now</p>
-<p class="p6">p.isSleeping;</p>
+<p class="p5">(</p>
+<p class="p5">p.prepareAndSpawn(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Patch</span>({ <span class="s1">arg</span> freq=400,gate=1.0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Saw</span>.ar(freq) * <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.adsr(0.1,2.0,0.3,2.0),gate) * 0.1</p>
+<p class="p5"><span class="Apple-tab-span">	</span>},[</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(38,70).midicps,</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>KrNumberEditor<span class="s3">(1.0,</span><span class="s2">\gate</span><span class="s3">)</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>]),</p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.0</p>
+<p class="p5">)</p>
+<p class="p5">)</p>
+<p class="p7">// the current player in the socket is set to :<span class="Apple-converted-space">  </span>p.source</p>
 <p class="p2"><br></p>
-<p class="p6">p.isPlaying;</p>
-<p class="p2"><br></p>
-<p class="p6">p.free;</p>
-<p class="p2"><br></p>
-<p class="p6">p.isSleeping;</p>
-<p class="p2"><br></p>
-<p class="p6">p.isPlaying;</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p5"><b>Setting an already playing player as the source</b></p>
-<p class="p6">(</p>
-<p class="p9">a = <span class="s4">Patch</span>({ <span class="s4">arg</span> audio;</p>
-<p class="p10"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">RLPF</span>.ar( audio, 600 )</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9">},[</p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>PlayerSocket<span class="s3">(</span><span class="s5">\audio</span><span class="s3">,1)</span></p>
-<p class="p9">]);</p>
-<p class="p10"><br></p>
-<p class="p12">// a is playing, but there is no input yet</p>
-<p class="p9">a.play;</p>
-<p class="p10"><br></p>
-<p class="p12">// first start b playing on a separate bus</p>
-<p class="p9">b = <span class="s4">Patch</span>({ <span class="s4">Saw</span>.ar(300) });</p>
-<p class="p9">b.play(bus: <span class="s4">Bus</span>.audio(s,2))</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p12">// plug b into the player socket</p>
-<p class="p9">a.inputs[0].source = b;</p>
-<p class="p10"><br></p>
-<p class="p12">// now we hear b played through a</p>
-<p class="p10"><br></p>
-<p class="p6">)</p>
+<p class="p5">p.releaseVoice(1.0);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5"><b>It will move the new source into the correct group</b></p>
-<p class="p6">(</p>
-<p class="p9">s.boot;</p>
-<p class="p10"><br></p>
-<p class="p9">f = <span class="s4">Group</span>.new;</p>
-<p class="p9">g = <span class="s4">Group</span>.after(f);</p>
-<p class="p10"><br></p>
-<p class="p9">a = <span class="s4">Patch</span>({ <span class="s4">arg</span> audio;</p>
-<p class="p10"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">RLPF</span>.ar( audio, 600 )</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9">},[</p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>PlayerSocket<span class="s3">(</span><span class="s5">\audio</span><span class="s3">,1)</span></p>
-<p class="p9">]);</p>
-<p class="p10"><br></p>
-<p class="p12">// a is playing, but there is no input yet</p>
-<p class="p9">a.play(group:f);</p>
-<p class="p9">a.group</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p12">// play b in group G AFTER the player socket</p>
-<p class="p9">b = <span class="s4">Patch</span>({ <span class="s4">Saw</span>.ar(300) });</p>
-<p class="p9">b.play(bus: <span class="s4">Bus</span>.audio(s,2),group: g)</p>
-<p class="p10"><br></p>
-<p class="p12">// true</p>
-<p class="p9">b.group == g</p>
-<p class="p10"><br></p>
-<p class="p12">// plug b into the player socket</p>
-<p class="p9">a.inputs[0].source = b;</p>
-<p class="p10"><br></p>
-<p class="p12">// b, which was already playing on group g, <span class="Apple-converted-space"> </span></p>
-<p class="p12">// was moved into the a.socketGroup</p>
-<p class="p10"><br></p>
-<p class="p12">// its no longer in g: false</p>
-<p class="p9">b.group == g</p>
-<p class="p10"><br></p>
-<p class="p6">)</p>
+<p class="p7">//we are asleep now</p>
+<p class="p5">p.isSleeping;</p>
+<p class="p2"><br></p>
+<p class="p5">p.isPlaying;</p>
+<p class="p2"><br></p>
+<p class="p5">p.free;</p>
+<p class="p2"><br></p>
+<p class="p5">p.isSleeping;</p>
+<p class="p2"><br></p>
+<p class="p5">p.isPlaying;</p>
+<p class="p2"><br></p>
+<p class="p5">p.insp</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -183,66 +98,70 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6">Testing short time intervals</p>
-<p class="p6">(</p>
-<p class="p6">q = <span class="s6">Patch</span>({ <span class="s6">Saw</span>.ar(600) * 0.2 });</p>
-<p class="p6">r = <span class="s6">Patch</span>({ <span class="s6">Saw</span>.ar(800) * 0.2 });</p>
-<p class="p6">p = <span class="s6">PlayerSocket</span>.new(<span class="s7">\audio</span>,1);</p>
-<p class="p6">p.play;</p>
-<p class="p2"><br></p>
-<p class="p13">Routine<span class="s3">({</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>2.0.wait;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>16.do({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(0.01,0.2).wait;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p.prepareAndSpawn([r,q].choose,rrand(0.01,1.0));</p>
-<p class="p6"><span class="Apple-tab-span">	</span>});</p>
-<p class="p6"><span class="Apple-tab-span">	</span>2.0.wait;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>p.release;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>4.0.wait;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>p.stop;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>1.0.wait;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>p.free;</p>
-<p class="p6">}).play(<span class="s6">AppClock</span>)</p>
-<p class="p6">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p5">Testing short time intervals</p>
+<p class="p5">(</p>
+<p class="p5">q = <span class="s4">Patch</span>({ <span class="s4">Saw</span>.ar(600) * 0.2 });</p>
+<p class="p5">r = <span class="s4">Patch</span>({ <span class="s4">Saw</span>.ar(800) * 0.2 });</p>
+<p class="p5">p = <span class="s4">PlayerSocket</span>.new(<span class="s5">\audio</span>,1);</p>
+<p class="p5">p.play;</p>
+<p class="p2"><br></p>
+<p class="p8">Routine<span class="s3">({</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>2.0.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>32.do({</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(0.01,0.2).wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p.prepareAndSpawn([r,q].choose,rrand(0.01,1.0));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p5"><span class="Apple-tab-span">	</span>2.0.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>p.release;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>4.0.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>p.stop;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.0.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>p.free;</p>
+<p class="p5">}).play(<span class="s4">AppClock</span>)</p>
+<p class="p5">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6">see also PlayerPool which is a subclass of this</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6">As an input to a Patch</p>
-<p class="p6">(</p>
-<p class="p6">q = <span class="s6">Patch</span>({ <span class="s6">Saw</span>.ar * 0.2 });</p>
-<p class="p6">r = <span class="s6">Patch</span>({ <span class="s6">Saw</span>.ar(800) * 0.2 });</p>
-<p class="p6">p = <span class="s6">PlayerSocket</span>.new(numChannels: 1);</p>
-<p class="p6">e = <span class="s6">Patch</span>({ <span class="s6">arg</span> audio; <span class="s6">RLPF</span>.ar(audio,200) },[ p ]);</p>
-<p class="p6">e.play;</p>
-<p class="p6">)</p>
+<p class="p5">see also PlayerPool which is a subclass of this</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6">p.prepareAndSpawn(q);</p>
-<p class="p2"><br></p>
-<p class="p6">p.prepareAndSpawn(r);</p>
-<p class="p2"><br></p>
-<p class="p6">p.prepareAndSpawn(q);</p>
-<p class="p2"><br></p>
-<p class="p6">p.prepareAndSpawn(r);</p>
-<p class="p2"><br></p>
-<p class="p6">// if you know that you have prepared it</p>
-<p class="p6">p.spawnPlayer(q);</p>
-<p class="p2"><br></p>
-<p class="p6">p.spawnPlayer(r);</p>
+<p class="p5">As an input to a Patch</p>
+<p class="p5">(</p>
+<p class="p5">q = <span class="s4">Patch</span>({ <span class="s4">Saw</span>.ar * 0.2 });</p>
+<p class="p5">r = <span class="s4">Patch</span>({ <span class="s4">Saw</span>.ar(800) * 0.2 });</p>
+<p class="p5">p = <span class="s4">PlayerSocket</span>.new(numChannels: 1);</p>
+<p class="p5">e = <span class="s4">Patch</span>({ <span class="s4">arg</span> audio; <span class="s4">RLPF</span>.ar(audio,200) },[ p ]);</p>
+<p class="p5">e.play;</p>
+<p class="p5">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6">p.releaseVoice</p>
+<p class="p5">p.prepareAndSpawn(q);</p>
 <p class="p2"><br></p>
-<p class="p6">p.insp</p>
-<p class="p6">e.insp</p>
-<p class="p6">p.synthArg</p>
+<p class="p5">p.prepareAndSpawn(r);</p>
 <p class="p2"><br></p>
-<p class="p6">e.free;</p>
+<p class="p5">p.prepareAndSpawn(q);</p>
+<p class="p2"><br></p>
+<p class="p5">p.prepareAndSpawn(r);</p>
+<p class="p2"><br></p>
+<p class="p5">// if you know that you have prepared it</p>
+<p class="p5">p.spawnPlayer(q);</p>
+<p class="p2"><br></p>
+<p class="p5">q.readyForPlay</p>
+<p class="p2"><br></p>
+<p class="p5">p.spawnPlayer(r);</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">p.releaseVoice</p>
+<p class="p2"><br></p>
+<p class="p5">p.insp</p>
+<p class="p5">e.insp</p>
+<p class="p5">p.synthArg</p>
+<p class="p2"><br></p>
+<p class="p5">e.free;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 </body>

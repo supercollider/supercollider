@@ -3,11 +3,11 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 
 	var <>selected, <>list, <>autostart=false;
 	
-	*new { arg list,selected=0,env,round=0.0;
+	*new { arg list,selected=0,env,round=0.0,rate=\audio,numChannels=2;
 		list = loadDocument(list);
-		^super.prNew(list.first.rate,
+		^super.prNew(list.first.rate ? rate,
 				//with patches they still don't know
-				list.maxValue({ arg it; it.numChannels }),
+				list.maxValue({ arg it; it.numChannels }) ? numChannels,
 				round, 
 				env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})
 			.list_(list)
@@ -49,8 +49,9 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	children { ^list }
 
 	prepareChildrenToBundle { arg bundle;
+		super.prepareChildrenToBundle(bundle);
 		list.do({ arg child;
-			child.prepareToBundle(socketGroup,bundle,true,sharedBus,true);
+			child.prepareToBundle(socketGroup,bundle,true,sharedBus);
 		});
 	}
 	spawnToBundle { arg bundle;

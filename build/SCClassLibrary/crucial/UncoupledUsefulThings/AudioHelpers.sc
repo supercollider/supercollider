@@ -67,7 +67,7 @@ XFaderN  {
 	*ar { arg inputs, bipolar,width=2.0;
 		var whiches;
 		inputs = inputs.dereference;
-		whiches = PanAz.ar(inputs.size,1.0,bipolar,width);
+		whiches = PanAz.ar(inputs.size,SinOsc.ar(0.0,add:1.0),bipolar,width);
 
 		^Mix.ar(
 			inputs.collect({ arg sound,i;
@@ -78,7 +78,7 @@ XFaderN  {
 	*kr { arg inputs, bipolar,width=2.0;
 		var whiches;
 		inputs = inputs.dereference;
-		whiches = PanAz.ar(inputs.size,1.0,bipolar,width);
+		whiches = PanAz.ar(inputs.size,SinOsc.ar(0.0,add:1.0),bipolar,width);
 
 		^Mix.ar(
 			inputs.collect({ arg sound,i;
@@ -108,7 +108,7 @@ Enveloper2 {
 		var ts,gated;
 		gated = Latch.kr(gate,gate);
 		env ?? {env = Env.adsr};
-		^audio.value * EnvGen.kr(env,gate,gated)
+		^audio * EnvGen.kr(env,gate,gated)
 	}
 
 }

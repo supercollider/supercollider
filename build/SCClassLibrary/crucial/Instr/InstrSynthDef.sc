@@ -3,17 +3,19 @@ InstrSynthDef : SynthDef {
 	
 	classvar watchedServers;
 	
-	var <longName;
+	var <longName,instr,inputs,outputProxies;
 	
-	// secret because the function doesn't see them
-	// but they are needed to pass into the synth
-	var secretIrPairs, secretKrPairs;
+	// secret because the function doesn't have them as arg names
+	// they are created in the context of the synth def and added
+	// magically/secretly.
+	// this is for adding buffers, samples, inline players, subpatches, spawners etc.
+	var secretIr, secretKr,stepchildren;
 	
 	var <>tempTempoKr;
 	
-	var <rate,<numChannels; //after build
+	var <rate,<numChannels; // known only after building
 
-	*new { // arg name,rate,numChannels,secretIrPairs,secretKrPairs,bytes;
+	*new {
 		^super.prNew
 	}
 	*build { arg instr,args,outClass = \Out;
@@ -24,42 +26,61 @@ InstrSynthDef : SynthDef {
 			.buildUgenGraph(instr,args ? #[],outClass)
 			.finishBuild
 	}
-	buildUgenGraph { arg instr,args,outClass;
+	buildUgenGraph { arg argInstr,args,outClass;
 		var result,fixedID="";
 		var isScalarOut;
-		var outputProxies;
 
+		outClass = outClass.asClass;
+		
+		instr = argInstr;
+		inputs = args;
+		
 		// restart controls in case of *wrap
 		controlNames = nil;
 		controls = nil;
-		
-		// OutputProxy In InTrig Float etc.		
-		outputProxies = this.buildControlsWithObjects(instr,args);
+		secretIr = nil;
+		secretKr = nil;
+		stepchildren = nil;
 
-		result = instr.valueArray(outputProxies);
-		rate = result.rate;
-		numChannels = max(1,result.size);
-		
-		if(result != 0.0,{
-			outClass = outClass.asClass;
-			if(outClass === XOut,{
-				"XOut not tested yet.".error;
-				//out = outClass.perform(if(this.rate == \audio,\ar,\kr),
-				//			inputs.at(0),xfader.value,out)
-			});
-				
-			if(rate == \audio,{
-				result = outClass.ar(Control.names([\out]).ir([0]) , result);
-				// can still add Out controls if you always use \out, not index
-			},{
-				if(rate == \control,{
-					result = outClass.kr(Control.names([\out]).ir([0]) , result);
+		{
+			// create OutputProxy In InTrig Float etc.
+			outputProxies = this.buildControlsWithObjects(instr,inputs);
+			result = instr.valueArray(outputProxies);
+			rate = result.rate;
+			numChannels = max(1,result.size);
+	
+			if(result != 0.0,{
+				if(outClass === XOut,{
+					"XOut not tested yet.".error;
+					//out = outClass.perform(if(this.rate == \audio,\ar,\kr),
+					//			inputs.at(0),xfader.value,out)
+				});
+					
+				if(rate == \audio,{
+					result = outClass.ar(Control.names([\out]).ir([0]) , result);
+					// can still add Out controls if you always use \out, not index
 				},{
-					("InstrSynthDef: scalar rate ? result of your function:" + result).error;
-				})
+					if(rate == \control,{
+						result = outClass.kr(Control.names([\out]).ir([0]) , result);
+					},{
+						("InstrSynthDef: scalar rate ? result of your function:" + result + rate).error;
+					})
+				});
 			});
-		});
+		}.try({ arg err;
+			var info;
+			err.errorString.postln;
+			info = this.buildErrorString;
+			info.postln;
+			//this.dumpUGens;
+			// since we failed while loading synth defs
+			// any other previously succesful builds will
+			// assume that they finished loading
+			// so clear all from the cache
+			InstrSynthDef.clearCache(Server.default);
 
+			err.throw;
+		});
 
 		//is based on the instr name, ir, kr pattern, fixedValues
 		// outClass,numChannels (in case it expanded)
@@ -79,9 +100,8 @@ InstrSynthDef : SynthDef {
 		});
 		name = name ++ fixedID.hash.asFileSafeString; */
 
-		longName = name ++ this.class.defNameFromObjects(args);
+		longName = name ++ this.class.defNameFromObjects(inputs);
 		name = longName.hash.asFileSafeString;
-		("InstrSynthDef built:" + name + longName).inform;
 	}
 	
 	// passed to Instr function but not to synth
@@ -97,30 +117,83 @@ InstrSynthDef : SynthDef {
 	// argi points to the slot in objects (as supplied to secretDefArgs)
 	// selector will be called on that object to produce the synthArg
 	// thus sample can indicate itself and be asked for \tempo or \bufnum
-	addSecretIr { arg name,value,argi,selector;
-		secretIrPairs = secretIrPairs.add([name,value,argi,selector]);
-		^Control.names([name]).ir([value])
+//	addSecretIr { arg name,value,argi,selector;
+//		secretIrPairs = secretIrPairs.add([name,value,argi,selector]);
+//		^Control.names([name]).ir([value])
+//	}
+//	addSecretKr { arg name,value,argi,selector;
+//		secretKrPairs = secretKrPairs.add([name,value,argi,selector]);
+//		^Control.names([name]).kr([value])
+//	}
+
+	// initialValue is used for building the synth def
+	// selector is what will be called on the object to obtain the real value
+	// when the synth is sent
+	addSecretIr { arg object,initialValue,selector;
+		var name;
+		name = "__secret_ir__"++(secretIr.size);
+		secretIr = secretIr.add([object,name,initialValue,selector]);
+		^Control.names([name]).ir([initialValue])
 	}
-	addSecretKr { arg name,value,argi,selector;
-		secretKrPairs = secretKrPairs.add([name,value,argi,selector]);
-		^Control.names([name]).kr([value])
+	addSecretKr { arg object,initialValue,selector;
+		var name;
+		name = "__secret_kr__"++(secretIr.size);
+		secretKr = secretKr.add( [object,name,initialValue,selector]);
+		^Control.names([name]).kr([initialValue])
 	}
-	secretDefArgs { arg objects;
+	playerIn { arg object;
+		var bus;
+		bus = this.addSecretIr(object,0,\synthArg);
+		^object.instrArgFromControl(bus);
+	}
+
+//	addSecretAr { arg object,initialValue,selector;
+//		var name;
+//		name = "__secret_ar__"++(secretIr.size);
+//		secretAr = secretAr.add( [object,initialValue,secretKr.size,selector]);
+//		// secretIr = secretIr.add([name,value,argi,selector]);
+//		^Control.names([name]).ar([initialValue])
+//	}
+	secretObjects {
+		var so;
+		so = IdentitySet.new;
+		if(secretIr.notNil,{
+			secretIr.do({ |list|
+				so.add( list[0] );
+			})
+		});
+		if(secretKr.notNil,{
+			secretKr.do({ |list|
+				so.add( list[0] );
+			})
+		});
+		if(stepchildren.notNil,{
+			stepchildren.do({ |stepchild|
+				so.add( stepchild )
+			})
+		});
+		^so.as(Array)
+	}
+	secretDefArgs {
 		var synthArgs,size;
-		size = secretIrPairs.size * 2 + (secretKrPairs.size * 2);
+		size = secretIr.size * 2 + (secretKr.size * 2);
 		if(size == 0, { ^#[] });
 		synthArgs = Array(size);
-		secretIrPairs.do({ arg n,i;
-			synthArgs.add(n.at(0)); // secret arg name
-			synthArgs.add(objects.at(n.at(2)).perform(n.at(3))); // value
+		secretIr.do({ arg n,i;
+			var object,name,value,selector;
+			#object,name,value,selector = n;
+			synthArgs.add(name); // secret arg name
+			synthArgs.add(object.perform(selector)); // value
 		});
-		secretKrPairs.do({ arg n,i;
-			synthArgs.add(n.at(0)); // name
-			synthArgs.add(objects.at(n.at(2)).perform(n.at(3))); // initial value
+		secretKr.do({ arg n,i;
+			var object,name,value,selector;
+			#object,name,value,selector = n;
+			synthArgs.add(name); // secret arg name
+			synthArgs.add(object.perform(selector)); // value
 		});
 		^synthArgs
 	}
-
+	
 	buildControlsWithObjects { arg instr,objects;
 		var argNames,defargs,outputProxies;
 		objects.do({ arg obj,argi; obj.initForSynthDef(this,argi) });
@@ -131,17 +204,72 @@ InstrSynthDef : SynthDef {
 			defarg
 		});
 		outputProxies = this.buildControls;
-		// wrap them in In.kr etc. if needed
+		// the objects themselves know how best to be represented in teh synth graph
+		// they wrap themselves in In.kr In.ar or they add themselves directly eg (Env)
 		^outputProxies.collect({ arg outp,i;
 			defargs.at(i).instrArgFromControl(outp,i)
 		})
 	}
-	
-	tempoKr { arg argi,selector;
-		^(tempTempoKr ?? { // first client to request will later be asked to produce the TempoBus
+
+	// give more information, relevant to the def function evaluated
+	checkInputs {
+		var errors,message;
+		children.do { arg ugen;
+			var err;
+			if ((err = ugen.checkInputs).notNil) { 
+				errors = errors.add([ugen, err]);
+			};
+		};
+		if(errors.notNil,{
+			this.buildErrorString.postln;
+			errors.do({ |err|
+				var ugen,msg;
+				#ugen,msg = err;
+				("UGen" + ugen.class.asString + msg).postln;
+				ugen.dumpArgs;
+			});
+			//instr.func.asCompileString.postln;
+			//this.dumpUGens;
+			Error("SynthDef" + this.name + "build failed").throw;
+		});
+		^true
+	}
+	finishBuild {
+		super.finishBuild;
+		inputs = nil;
+		outputProxies = nil;
+		instr = nil;
+		("InstrSynthDef built:" + name + longName).inform;
+	}
+	buildErrorString {
+		^String.streamContents({ arg stream;
+				stream << Char.nl << "ERROR: " <<< instr << " build failed" << Char.nl;
+				stream << "Inputs:" << Char.nl;
+				inputs.do({ |in,i|
+					stream << Char.tab << instr.argNameAt(i) << ": " << in << Char.nl;
+				});
+				stream << "Args passed into Instr function:" << Char.nl;
+				outputProxies.do({ |op,i|
+					stream << Char.tab << instr.argNameAt(i) << ": " << op << Char.nl;
+				});
+				if(secretIr.notNil or: secretKr.notNil,{
+					stream << "Secret args passed in:" << Char.nl;
+					secretIr.do({ |op,i|
+						stream << Char.tab << op[1] << ": " << op[2] << " (" << op[0] << ":" << op[3] << ")" << Char.nl;
+					});
+					secretKr.do({ |op,i|
+						stream << Char.tab << op[1] << ": " << op[2] << " (" << op[0] << ":" << op[3] << ")" << Char.nl;
+					});
+				});
+			});
+	}
+	instrName { ^instr.dotNotation }
+	tempoKr { arg object,selector;
+		// first client to request will later be asked to produce the TempoBus
+		^(tempTempoKr ?? { 
 			tempTempoKr = In.kr(
-				this.addSecretKr(("__tempo__" ++ argi.asString).asSymbol,1.0,argi,selector),
-			1)
+				this.addSecretKr(object,1.0,selector)
+			)
 		})
 	}
 	
@@ -173,7 +301,7 @@ InstrSynthDef : SynthDef {
 	}
 	*clearCache { arg server;
 		"Clearing AbstractPlayer SynthDef cache".inform;
-		Library.put(SynthDef,server,nil);		
+		Library.global.removeAt(SynthDef,server);
 	}
 	*loadCacheFromDir { arg server,dir;
 		dir = dir ? SynthDef.synthDefDir;

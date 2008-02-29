@@ -1,4 +1,9 @@
 
++ Function {
+	iplay { arg ...args;
+		Patch(this,args).play
+	}
+}
 
 + Instr {
 	asInstr {}
@@ -39,9 +44,10 @@
 + Class { // eg. SinOsc the class becomes a UGenInstr
 	// any class that responds to .ar or .kr
 	asInstr {
-		^UGenInstr(this)	
+		^UGenInstr(this)
 	}
 }
+
 
 + Function {
 	asInstr {
@@ -83,6 +89,24 @@
 
 + Spec {
 	rate { ^\scalar }
+
+	*findKeyForSpec { arg spec;
+		var matching,exact;
+		// find the exact spec object
+		exact = Spec.specs.findKeyForValue(spec);
+		if(exact.notNil,{ ^exact });
+
+		matching = [];
+		Spec.specs.keysValuesDo({ |k,v|
+			if(v == spec,{
+				matching = matching.add(k);
+			})
+		});
+		// if there is precisely one, then it is most probably what you are looking for
+		if(matching.size == 1,{ ^matching[0] });
+		// many matched
+		^nil
+	}
 }
 
 + ControlSpec 	{
@@ -92,7 +116,73 @@
 	}
 
 	rate { ^\control }
+	
+	optimalRange { arg stdDev=0.3;
+		var linMinVal,linMaxVal,linDefault,toSpec;
+		toSpec = this.copy;
+		linDefault = this.unmap(this.default);
+		linMinVal = (linDefault - stdDev).max(0.0);
+		linMaxVal = (linDefault +  stdDev).min(1.0);
+		toSpec.minval = this.map(linMinVal);
+		toSpec.maxval = this.map(linMaxVal);
+		^toSpec
+	}
 }
+
+/** spec **/
+
+	
++ ListPattern {
+
+	spec {
+		var firstItemClass,firstItemSpec;
+		if(list.first.respondsTo(\spec),{
+			firstItemSpec = list.first.spec;
+			if(list.every({ |item| item.tryPerform(\spec) == firstItemSpec }),{
+				// an array of Pbinds etc.
+				if(firstItemSpec.isKindOf(EventStreamSpec),{ ^firstItemSpec });
+				// a stream of my items
+				^StreamSpec(firstItemSpec)
+			});
+		});
+		// something with spec unknowable 
+		firstItemClass = list.first.class;
+		if(list.every({ |item| item.class == firstItemClass }),{
+			// this is dodgy
+			if(list.first.isNumber,{
+				if(firstItemClass.isKindOf(Integer),{
+					^StreamSpec(StaticIntegerSpec(list.minItem,list.maxItem))
+				});
+				^StreamSpec(StaticSpec(list.minItem,list.maxItem))
+			});
+		});
+		("unable to determine spec" + this.asCompileString).die;
+	}	
+}
++ Pfsm {
+	spec {
+		^thisMethod.notYetImplemented	
+	}
+}
+
++ Pbind {
+	spec {
+		^EventStreamSpec.new
+	}
+}
++ Pmono {
+	spec {
+		^EventStreamSpec.new
+	}
+}
+/*
++ Pseries {
+	spec {
+		StreamSpec( integer, or float, unknown range )
+	}
+}
+*/
+
 
 
 /** addToDefName **/
@@ -125,6 +215,15 @@
 		^2
 	}
 }
++ BufferProxy {
+	spec {
+		var def,me;
+		def = \bufferProxy.asSpec;
+		me = BufferProxySpec(size,numChannels,sampleRate);
+		if(me == def,{ ^def });
+		^me
+	}
+}
 + Sample {
 	addToDefName { arg stream;
 		// beatsizek
@@ -133,6 +232,10 @@
 		if(beatsizek.notNil,{ sum = sum + 2 });
 		stream << sum;
 		^2
+	}
+	spec {
+		//	^SampleSpec.new
+		^\sample.asSpec ?? {SampleSpec.new}
 	}
 }
 + AbstractPlayer {

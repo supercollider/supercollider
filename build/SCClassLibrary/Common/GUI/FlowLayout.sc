@@ -1,8 +1,8 @@
 
 FlowLayout {
 	var <bounds, <>margin, <>gap;
-	var <left, <top, <maxHeight,<maxRight; 
-	
+	var <>left, <>top, <>maxHeight,<>maxRight;
+
 	*new { arg bounds, margin, gap;
 		^super.newCopyArgs(bounds, margin, gap).init
 	}
@@ -21,11 +21,11 @@ FlowLayout {
 		vbounds = view.bounds;
 		width = vbounds.width;
 		height = vbounds.height;
-		if ((left + width) > (bounds.right - margin.x), { this.nextLine });
-		
+		if ((left + width) > (bounds.right - margin.x), { this.nextLine; });
+
 		view.bounds = Rect(left, top, width, height);
 
-		maxRight = max(maxRight,left + width);		
+		maxRight = max(maxRight,left + width);
 		left = left + width + gap.x;
 		maxHeight = max(maxHeight, height);
 	}
@@ -57,7 +57,21 @@ FlowLayout {
 		currentBounds.height = top + maxHeight;
 		^currentBounds
 	}
+	// rounded out to the nearest rect + margin
+	used {
+		^Rect(bounds.left,bounds.top,
+			maxRight + margin.x - bounds.left,
+			(top + maxHeight + margin.y ) - bounds.top)
+	}
+	// largest allocatable rect starting in the current row
+	// going down as far as possible
+	indentedRemaining {
+		var inb;
+		inb = this.innerBounds;
+		^Rect(left,top,
+			inb.width - (left - inb.left - margin.x),
+			inb.height - (top - inb.top - margin.y))
+	}
 }
 
 
-	

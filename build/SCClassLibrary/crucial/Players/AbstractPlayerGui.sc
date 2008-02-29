@@ -42,14 +42,9 @@ AbstractPlayerGui : ObjectGui {
 		})
 	}	
 	
-	writeName { arg layout,big=false; 
-			//color it based on whether it has a .path 
-							// (was loaded from disk)
-		/*if(big,{
-			InspectorLink.big(model,layout);
-		},{
-			InspectorLink.new(model,layout);
-		});*/
+	writeName { arg layout; 
+		//color it based on whether it has a .path 
+						// (was loaded from disk)
 		super.writeName(layout);
 		if(model.path.notNil,{
 			ActionButton(layout,"edit file",{
@@ -84,7 +79,6 @@ AbstractPlayerGui : ObjectGui {
 	synthConsole { arg layout;
 		var s, server = model.server.asTarget.server;
 		server.gui(layout);
-//		Server.local.gui(layout);
 		s = //SynthConsole(model,layout).play.registerPlayKey.record.pauseableRecord.write({ 
 			// model.timeDuration }).scope.stop.formats.tempo;
 		SynthConsole(model,layout).play.record.stop.free.tempo;
@@ -99,7 +93,7 @@ AbstractPlayerGui : ObjectGui {
 		var dur,div;
 		dur = model.timeDuration;
 		if(dur.notNil,{
-			^dur.asTimeString; //(dur / 60.0).asInteger.asString ++ ":" ++ (dur % 60.0).round(0.01).asString
+			^dur.asTimeString;
 		},{
 			^"inf"
 		});

@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.44">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+span.s1 {color: #0000bf}
+span.s2 {color: #0013bb}
+span.s3 {color: #000000}
+</style>
+</head>
+<body>
+<p class="p1"><b>ServerLog</b></p>
+<p class="p2"><br></p>
+<p class="p3">Log everything going to and coming from the server.</p>
+<p class="p3">Display that traffic in order of event time.<span class="Apple-converted-space">  </span>Event time is when the event happened.<span class="Apple-converted-space">  </span>For a message or bundle sent that is the time it was sent plus its latency.<span class="Apple-converted-space">  </span>Messages received come time stamped with their event time.</p>
+<p class="p4"><br></p>
+<p class="p5">I built this after being stumped by one of those node not found things.<span class="Apple-converted-space">  </span>a bundle had been sent with latency, the response from the server had not yet arrived, and something else found the synth still alive, freed it with nil latency (succesfully), then the bundle already sent failed to find the node.<span class="Apple-converted-space">  </span>using ServerLog you can see right away what the real order of excecution was. <span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p5">It also highlights fails and nils in red.<span class="Apple-converted-space">  </span>you can notice quickly when a bundle was sent out with a nil that probably shouldn't have.</p>
+<p class="p4"><br></p>
+<p class="p7">s = <span class="s1">Server</span>.default;</p>
+<p class="p7"><span class="s1">ServerLog</span>.start(s);</p>
+<p class="p4"><br></p>
+<p class="p8">g = <span class="s2">Group</span>.new(s);</p>
+<p class="p8">h = <span class="s2">Group</span>.tail(g);</p>
+<p class="p2"><br></p>
+<p class="p9">// execute these at the same time</p>
+<p class="p8">(</p>
+<p class="p8">s.sendBundle(0.2, g.freeMsg);</p>
+<p class="p8">h.free;</p>
+<p class="p8">)</p>
+<p class="p5">This should have been posted :</p>
+<p class="p2"><br></p>
+<p class="p8"><span class="s2">Group</span>(1000)</p>
+<p class="p2"><br></p>
+<p class="p8"><span class="s2">Group</span>(1001)</p>
+<p class="p2"><br></p>
+<p class="p8"><span class="s2">Group</span>(1001)</p>
+<p class="p8"><span class="s2">FAILURE</span> /n_run <span class="s2">Node</span> not found</p>
+<p class="p4"><br></p>
+<p class="p10"><span class="s1">ServerLog</span><span class="s3">.report(500) </span>// show last 500 events</p>
+<p class="p11"><br></p>
+<p class="p10">// the gui is far easier to read</p>
+<p class="p12">ServerLog<span class="s3">.gui</span></p>
+<p class="p4"><br></p>
+<p class="p6"><br></p>
+<p class="p5">This failure happened because the bundle had a delta of 0.2, while the free message for node 1000 was sent afterwards, but without a delta.</p>
+<p class="p6"><br></p>
+<p class="p5">On the gui you can see the events ordered correctly.<span class="Apple-converted-space">  </span>You see /n_free followed by an /n_end confirmation from the server, then you see the /n_free for node 1000 being executed afterwards.</p>
+<p class="p6"><br></p>
+<p class="p5">Status replies are logged every time there is a change.<span class="Apple-converted-space">  </span>The server is polled a few times a second to request a status update.<span class="Apple-converted-space">  </span>The position of the status.reply in the server log is a result of when the poll happened and when it was returned.<span class="Apple-converted-space">  </span>It is not a direct response to the messages to add or delete nodes.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>There is still one big mystery:<span class="Apple-converted-space">  </span>why does the /fail appear BEFORE the /n_end ??<span class="Apple-converted-space">  </span>0.03 seconds or so.<span class="Apple-converted-space">  </span>Does the language and the server have different clocks ?<span class="Apple-converted-space">  </span>Or is there a bug up in there somewhere ?</b></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+</body>
+</html>

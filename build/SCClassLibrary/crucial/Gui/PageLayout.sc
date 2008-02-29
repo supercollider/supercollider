@@ -1,66 +1,55 @@
 
 MultiPageLayout  {
 
-	classvar <>bgcolor;
-	
-	var windows,views,margin;
-	var onBoundsExceeded='newWindow',metal;
-	var <>isClosed=false;
+	var <window,<view;
+	var <>isClosed=false,boundsWereExplicit=false;
 	
 	var autoRemoves;
 	
-	*new { arg title,bounds,margin,metal=true;
-		^super.new.init(title,bounds,margin,metal)
+	*new { arg title,bounds,margin,background,scroll=true;
+		^super.new.init(title,bounds,margin,background,scroll)
 	}
 	
-	init { arg title,bounds,argmargin,argmetal=true;
+	init { arg title,bounds,argMargin,background,argScroll=true;
 		var w,v;
-		bounds = if(bounds.notNil,{  bounds.asRect },{GUI.window.screenBounds.insetAll(10,20,0,25)});
-		windows=windows.add
-		(	
-			w=GUI.window.new("< " ++ title.asString ++ " >",
-						bounds, border: true )
-				.onClose_({
-					this.close; // close all windows in this layout
-				})
-		);
-		metal = argmetal;
-		if(metal.not,{
-			w.view.background_(bgcolor);
+		bounds = if(bounds.notNil,{
+					boundsWereExplicit = true;
+					bounds.asRect 
+				},{
+					GUI.window.screenBounds.insetAll(10,20,0,25)
+				});
+		window = GUI.window.new("< " ++ title.asString ++ " >",
+					bounds, border: true, scroll: argScroll )
+			.onClose_({
+				this.close; // close all windows in this layout
+			});
+		window.front;
+		if(background.isKindOf(Boolean),{  // bwcompat : metal=true/false
+			background = background.if(nil,{Color(0.886274509803, 0.94117647058824, 0.874509803921, 1)}) 
+		});
+		
+		if(background.notNil,{
+			window.view.background_(background);
 		});
 		isClosed = false;
-		v =  FlowView( w );
-		margin = argmargin;
-		if(margin.notNil,{
-			v.decorator.margin_(margin);
-		});
-		views = views.add(v );
+		view =  FlowView( window );
+		view.decorator.margin_(argMargin ?? {GUI.skin.margin});
 		autoRemoves = [];
 	}
-	*on { arg parent,bounds,margin,metal=true;
-		^super.new.initon(parent,bounds,margin,metal)
+	*on { arg parent,bounds,margin,background;
+		^super.new.initon(parent,bounds,margin,background)
 	}
-	initon { arg parent,bounds,argmargin,argmetal=true;
-		var r,v;
-		windows = []; // first window not under my control
-		v = FlowView(parent,bounds);
-		margin = argmargin;
-		if(margin.notNil,{
-			v.decorator.margin_(margin);
+	initon { arg parent,bounds,argmargin,background;
+		view = FlowView(parent,bounds);
+		if(argmargin.notNil,{
+			view.decorator.margin_(argmargin);
 		});
-		views = [v];
-		metal = argmetal;
-		onBoundsExceeded = \warnError;
 		autoRemoves = [];
 	}
 	
-	window { ^windows.last }
-	view { ^views.last }
 	asView { ^this.view }
+	bounds { ^this.view.bounds }
 	add { arg view;
-		if(this.view.wouldExceedBottom(view.bounds),{
-			this.perform(onBoundsExceeded);
-		});
 		this.view.add(view);
 	}
 	asPageLayout { arg name,bounds;
@@ -72,49 +61,43 @@ MultiPageLayout  {
 		this.view.startRow;
 	}
 	
-	*guify { arg lay,title,width,height,metal=false;
+	*guify { arg lay,title,width,height,background;
 		^lay ?? {
-			this.new(title,width,height,metal: metal )
+			this.new(title,width,height,background: background )
 		}
 	}
 	
 	// act like a GUIWindow 
 	checkNotClosed { ^isClosed.not }
 	front {
-		windows.reverseDo({arg w; w.front }); 
+		window.front
 	}
 	hide {
-		windows.do({ arg w; w.alpha = 0.0; })
-		//windows.do({ arg w; w.hide })
+		window.alpha = 0.0;
 	}
 	show {
-		windows.do({ arg w; w.alpha = 1.0;  })
-		//windows.do({ arg w; w.show })
+		window.alpha = 1.0;
 	}
 	close { // called when the GUIWindow closes
 		if(isClosed.not,{
 			isClosed = true; 
 			autoRemoves.do({ arg updater; updater.remove(false) });
 			autoRemoves = nil;
-			if(windows.notNil,{
-				windows.do({ arg w; 
-					w.close; 
-				});
-				windows=views=nil;
+			window.do({ arg w; 
+				w.close; 
 			});
+			window=view=nil;
 			NotificationCenter.notify(this,\didClose);
 		});
 	}
-	onClose_ { arg f; windows.first.onClose = f; }
+	onClose_ { arg f; window.onClose = f; }
 	refresh {
-		windows.do({ arg w; w.refresh })
+		window.refresh
 	}
 	hr { arg color,height=8,borderStyle=1; // html joke
 		this.view.hr;
 	}
-	indent { arg by = 1;
-		//tabs = max(0,tabs + by);
-	}
+	// wow, old school
 	layRight { arg w,h; ^Rect(0,0,w,h) }
 
 	focus { arg index=0;
@@ -129,38 +112,44 @@ MultiPageLayout  {
 		autoRemoves = autoRemoves.add(dependant);
 	}
 	
-	resizeToFit { 
-		views.reverse.do({ arg v,vi;
-			var b;
-			b = v.resizeToFit;
-			windows.at(vi).setInnerExtent(b.width, b.height );
-		});
+	resizeToFit { arg reflow=false;
+		//var fs;
+		//fs = GUI.window.screenBounds;
+		
+		var b,wb,wbw,wbh;
+		b = view.resizeToFit(reflow);
+		window.setInnerExtent(wbw = b.width + 2, wbh = b.height + 6 + 17);
+		/*
+		auto-place the window.  but we need to know if you explicitly passed in bounds.
+		*/
+		/*
+		if(boundsWereExplicit.not,{
+			wb = windows.at(vi).innerExtent;
+			// if height is less than 80% of full screen
+			if(wbh <= (fs.height * 0.8),{
+				// move its top to be level at golden ratio
+				wb.top = fs.height - (fs.height / 1.6180339887);
+			},{
+				wb.top = 0;
+			});
+			// move its left corner to be centered
+			wb.left = (fs.width - wbw) / 2;
+			windows.at(vi).bounds = wb;
+		}); */
+
+	}
+	reflowAll {
+		view.reflowAll;
 	}
 	fullScreen {
-		windows.reverse.do({ arg w;
-			w.bounds = GUI.window.screenBounds.insetAll(10,20,0,25);
-				// .fullScreen   issues
-		});
+		window.bounds = GUI.window.screenBounds.insetAll(10,20,0,25);
 	}
 	endFullScreen {
-		windows.do({ arg w; w.endFullScreen })
-	}
-	warnError {
-		"MultiPageLayout exceeded bounds !!".warn;
+		window.endFullScreen
 	}
 
-	newWindow {
-		var ow;
-		ow = this.window;
-		this.init("..." ++ ow.name,
-				ow.bounds.moveBy(50,10),
-				nil,
-				metal);
-		this.window.front;
-	}
-	*initClass {
-		bgcolor = Color(0.886274509803, 0.94117647058824, 0.874509803921, 1);
-	}
+
+	
 }
 
 Sheet {
@@ -227,7 +216,7 @@ PageLayout  {
 							posx ? 20,posy ? 20,hspacer ? 5,vspacer ? 3, 
 							metal)
 	}
-
+	
 	// see also .within
 	*newWithin { arg w,rect;
 		^super.new.initWithin(w,rect);

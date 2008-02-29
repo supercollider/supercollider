@@ -21,10 +21,6 @@ SharedBus : Bus {
 	free {
 		if(released,{
 			super.free;
-		/*	AbstractPlayer is calling this wrong
-			this.in sp("freeing");
-			},{
-			this.in sp("free denied");*/
 		});
 	}
 	realloc {

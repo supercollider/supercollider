@@ -70,7 +70,12 @@ InstrSpawner : Patch {
 	update { arg changed,changer;
 		// one of my scalar inputs changed
 		if(this.isPlaying,{
-			synthDef.secretDefArgs(this.args).do({ arg newarg,i;
+		"one of my inputs changed, need to send sample change etc.".warn;
+
+//				newArgs = synthDef.secretDefArgs;
+//				synth.performList(\set,newArgs);
+
+			synthDef.secretDefArgs.do({ arg newarg,i;
 				sendArray.put(i + firstSecretDefArgIndex, newarg);
 			})
 		},{
@@ -90,11 +95,17 @@ InstrSpawner : Patch {
 		streams = Array(argsForSynth.size);
 		sendArray = Array(argsForSynth.size * 2);
 		synthArgsIndices.do({ arg ind,i;
+			var input;
 			if(ind.notNil,{
 				// a pattern or player
 				// eg. a ModalFreq would use asStream rather than its synth version
-				streams.add(args.at(i).asStream);
-
+				input = args.at(i);
+				if(input.class === Patch and: {input.spec.rate === 'stream'},{
+					// still needs to be built
+					streams.add(input.value.asStream);
+				},{
+					streams.add(input.asStream);
+				});
 				sendArray.add(this.instr.argNameAt(i));
 				sendArray.add(nil); // where the value will go
 			})
@@ -113,7 +124,6 @@ InstrSpawner : Patch {
 			})
 		});
 		sendArray.put(4,spawnGroup.nodeID);
-		// looks like i already did this above
 		sendArray.put(sendArray.size - 1, this.patchOut.synthArg);
 
 		CmdPeriod.add(this);		
@@ -124,6 +134,7 @@ InstrSpawner : Patch {
 		// this happens in .stop too
 		bundle.addFunction({ CmdPeriod.remove(this) });
 	}
+	children { ^super.children.add(deltaPattern) }
 	prepareChildrenToBundle { arg bundle;
 		this.children.do({ arg child;
 			child.prepareToBundle(spawnGroup,bundle,true,nil,true)
@@ -138,7 +149,7 @@ InstrSpawner : Patch {
 	spawnToBundle { arg bundle;
 		if(patchOut.isNil,{ 
 			(thisMethod.asString 
-				+ "PatchOut is nil. This has not been prepared for play.").die(this);
+				+ "patchOut is nil. This has not been prepared for play.").die(this);
 		});
 		this.makeTask;
 
@@ -259,9 +270,11 @@ ScurryableInstrGateSpawner : InstrGateSpawner {
 
 /**
 
-InstrGateSleepSpawner : InstrGateSpawner {
 	// assumes doneAction 1 (sleep)
 	//  just wakes and sets the gate back to 1
+
+
+InstrGateSleepSpawner : InstrGateSpawner {
 
 	prepareToBundle { arg group,bundle;
 		super.prepareToBundle(group,bundle);

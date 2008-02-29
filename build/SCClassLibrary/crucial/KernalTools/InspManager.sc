@@ -1,13 +1,13 @@
 
 Insp {
 	var <subject,<notes,<guiInstead,<name,layout,box,hidden = false;
-	
+
 	*new { arg subject, notes,guiInstead;
 		^super.newCopyArgs(subject,notes,guiInstead ? false).init
 	}
 	init {
 		if(notes.notEmpty,{
-			name = notes.first.asString + subject;
+			name = subject.asString + "{"++notes.first.asString++"}";
 		},{
 			name = subject.asString;
 		});
@@ -54,10 +54,10 @@ Insp {
 		hidden = true;
 	}
 	remove {
-		if(box.notNil,{ 
+		if(box.notNil,{
 			box.remove;
 			box = nil;
-		});	
+		});
 	}
 	didClose {
 		box = nil;
@@ -68,16 +68,16 @@ InspManager {
 
 	classvar <global;
 	var <insps,menu,<currentInsp,inspView;
-	
+
 	*initClass { global = this.new }
-	
+
 	watch { arg insp;
-		insps = insps.add(insp);	
+		insps = insps.add(insp);
 		if(menu.isNil, {
 			menu = \pleaseWait;
 			{
 				var h,fb,f,w;
-				f = GUI.window.new("inspect",Rect(100,100,1000,900));
+				f = GUI.window.new("inspect",Rect(440,500,1000,900));
 				f.view.background = Color.white;
 				h = f.bounds.height - 50;
 				w = f.bounds.width;
@@ -86,14 +86,15 @@ InspManager {
 				menu.background = Color(0.7,0.7,0.7,0.5);
 				menu.items = [insp.name];
 				menu.action = { this.showInsp(insps.at(menu.value)) };
-				
+
 				inspView = GUI.compositeView.new(f, Rect(210,0,w - 170,h));
+				inspView.tryPerform(\relativeOrigin_,true);
 				inspView.background = Color(0.17,0.1,0.1,0.15);
 				this.showInsp(insp);
 
 				f.onClose = { this.remove; };
-				f.front;				
-				nil; 
+				f.front;
+				nil;
 			}.defer;
 		},{
 			{
@@ -102,12 +103,12 @@ InspManager {
 				this.showInsp(insp);
 				nil
 			}.defer;
-		});		
+		});
 	}
 	showInsp { arg insp;
 		if(currentInsp.notNil,{
-			currentInsp.hide 
-		});			
+			currentInsp.hide
+		});
 		currentInsp = insp;
 		insp.show(inspView);
 		menu.value = insps.indexOf(insp);

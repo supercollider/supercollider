@@ -13,6 +13,7 @@ KrPlayer : AbstractPlayer {
 	kr {  ^this.subclassResponsibility(thisMethod) }
 	ar { ^K2A.ar(this.kr) }
 	value { ^this.kr }
+	poll { ^this }
 
 	//guiClass { ^KrPlayerGui }
 	

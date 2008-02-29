@@ -8,6 +8,9 @@ EnvEditor : Editor {
 	var <>levelSpec;
 	
 	*new { arg env,levelSpec;
+		if(levelSpec.isNil,{
+			levelSpec = StaticSpec(env.levels.minItem,env.levels.maxItem);
+		});
 		^super.new.value_(env).levelSpec_(levelSpec.asSpec)
 	}
 	instrArgFromControl { arg control;
@@ -50,6 +53,7 @@ EnvEditor : Editor {
 	times { ^value.times }
 	levels { ^value.levels }
 	curves { ^value.curves }
+	spec { ^EnvSpec(this.value) }
 	//pr
 	env {// direct access for the gui
 		^value // the prototype env that we edit
