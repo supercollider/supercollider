@@ -252,7 +252,22 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		};
 		msgFunc = string.compile.value;
 	}
+	// parse the def name out of the bytes array sent with /d_recv
+	*defNameFromBytes { arg int8Array;
+		var s,n,numDefs,size;	
+		s = CollStream(int8Array);
 	
+		s.getInt32;
+		s.getInt32;
+		numDefs = s.getInt16;
+		size = s.getInt8;
+		n = String.newClear(size);
+		^Array.fill(size,{
+		  s.getChar.asAscii
+		}).as(String)
+	}
+	
+
 }
 
 SynthDescLib {
