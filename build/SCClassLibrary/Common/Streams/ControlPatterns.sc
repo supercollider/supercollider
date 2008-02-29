@@ -8,7 +8,7 @@ Phid : Pattern {
 	*new { arg element, locID=0, repeats=inf;
 		^super.newCopyArgs(element, locID, repeats)
 	}
-	
+	storeArgs { ^[element,locID,repeats] }
 	embedInStream { arg event;
 		var all, device, spec, elements, deviceName, min, max;
 			all = HIDDeviceService.devices;
