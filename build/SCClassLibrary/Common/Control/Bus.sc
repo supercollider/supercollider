@@ -152,7 +152,7 @@ Bus {
 	}
 	kr {
 		if(rate == \audio,{
-			^A2K.kr(index,numChannels)
+			^A2K.kr( In.ar(index,numChannels) )
 		},{
 			^In.kr(index,numChannels)
 		})
