@@ -1,6 +1,4 @@
 
-// the drawing routines in these classes use Quickdraw.
-// If you want CoreGraphics drawing, use methods in Pen.
 
 Rect {
 	var <>left=0, <>top=0, <>width=0, <>height=0;
@@ -132,6 +130,8 @@ Rect {
 		stream << this.class.name << "(" <<* [left, top, width, height] << ")";
 	}
 	
+	// the drawing routine here use Quickdraw.
+	// If you want CoreGraphics drawing, use methods in Pen.
 	draw { arg color, operation=2;
 		_Rect_Draw
 		^this.primitiveFailed
@@ -148,6 +148,7 @@ Rect {
 	}
 	hash { ^left.hash bitXor: top.hash bitXor: width.hash bitXor: height.hash }
 	
+	// deprec
 	layout { arg argBounds; 
 		this.set(argBounds.left, argBounds.top, argBounds.width, argBounds.height);
 	}
