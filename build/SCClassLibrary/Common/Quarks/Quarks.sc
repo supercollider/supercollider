@@ -5,7 +5,7 @@
   *
   *  this is the interface class for 
   *   accessing the SVN repository, (eg. the sourceforge quarks project)
-  *   downloading those to the local quarks folder (Platform.userExtensionDir/quarks)
+  *   downloading those to the local quarks folder (Platform.userAppSupportDir/quarks)
   *   installing individual quarks by symlinking from the local quark folder into the [Platform dependent]/Extensions folder
   *
   */
