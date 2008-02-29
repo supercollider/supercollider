@@ -13,7 +13,7 @@
  *	@version	0.16, 10-Apr-07
  */
 GUI { 
-	classvar <scheme, <schemes, <skin, skins;
+	classvar <scheme, <schemes, <skin, <skins;
 	
 	*new { arg key; ^scheme.perform( key )}
 
@@ -183,5 +183,14 @@ GUI {
 	 */
 	*doesNotUnderstand { arg selector ... args;
 		^scheme.perform( selector, args );
+	}
+	
+	/**
+	 *	Add skins by GUI.skins.put(skinName,( fontSpecs: etc.  )  )
+	 *	Set that as default here.
+	 */
+	*setSkin { arg skinName;
+		skin = skins[skinName];
+		scheme.font.new(*GUI.skin.fontSpecs).setDefault;
 	}
 }
