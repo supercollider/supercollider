@@ -614,6 +614,25 @@ if conf.CheckFunc('strtod'):
 	)
 commonEnv = conf.Finish()
 
+# ======================================================================
+# Source/common dtoa.c (needs other flags)
+# ======================================================================
+
+dtoaEnv = commonEnv.Copy()
+
+dtoaCCFDict = dtoaEnv.Dictionary('CCFLAGS')
+dtoaCCFDict.remove('-O3')
+dtoaEnv.Replace(CCFLAGS = dtoaCCFDict)
+
+dtoaSources = Split('''
+Source/common/dtoa.c
+''')
+dtoaEnv.StaticObject('dtoa.o', dtoaSources)
+
+# ======================================================================
+# back to common
+# ======================================================================
+
 commonSources = Split('''
 Source/common/SC_AllocPool.cpp
 Source/common/SC_DirUtils.cpp
@@ -621,14 +640,15 @@ Source/common/SC_Sem.cpp
 Source/common/SC_StringBuffer.cpp
 Source/common/SC_StringParser.cpp
 Source/common/g_fmt.c
-Source/common/dtoa.c
 Source/common/scsynthsend.cpp
+Source/common/dtoa.o
 ''')
 if PLATFORM == 'darwin':
     commonSources += [
 	'Source/common/SC_StandAloneInfo_Darwin.cpp'
 	]
 commonEnv.Library('build/common', commonSources)
+
 
 # ======================================================================
 # Source/server
