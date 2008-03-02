@@ -1,6 +1,12 @@
 
 + Server {
+
+	// splitting makeWindow and makeGui, makes sure that makeWindow can be overridden while maintaining the availability of the GUI server window
 	makeWindow { arg w;
+		this.makeGui( w );
+	}
+	
+	makeGui { arg w;
 		var active, booter, killer, makeDefault, running, booting, stopped, bundling;
 		var recorder, scoper;
 		var countsViews, ctlr;
