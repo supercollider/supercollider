@@ -157,6 +157,12 @@ MXHID {
 				^nil
 			});
 	}
+
+	grab{ // not implemented on osx
+	}
+
+	ungrab{ // not implemented on osx
+	}
 	
 	*initUsageMap{
 	

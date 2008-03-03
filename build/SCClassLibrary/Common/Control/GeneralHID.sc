@@ -104,6 +104,12 @@ GeneralHIDDevice{
 			"".postln;
 			sl.do{ |slt| "\t".post; slt.asString.postln; } };
 	}
+	grab{
+		device.grab;
+	}
+	ungrab{
+		device.ungrab;
+	}
 }
 
 GeneralHIDSlot{
