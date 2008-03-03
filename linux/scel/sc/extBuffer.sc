@@ -1,14 +1,19 @@
 + Server {
+
 	makeWindow { arg w;
+		this.makeEmacsWindow( w );
+	}
+
+	makeEmacsWindow { arg w;
 		var active, booter, killer, makeDefault, running, booting, stopped;
 		var recorder, scoper;
 		var countsViews, ctlr;
 		var dumping=false, startDump, stopDump, stillRunning;
 		
-		if (window.notNil, { ^window.front });
+		if (emacsbuf.notNil, { ^emacsbuf.front });
 		
 		if(w.isNil,{
-			w = window = EmacsBuffer("*" ++ name.asString ++ " server*");
+			w = emacsbuf = EmacsBuffer("*" ++ name.asString ++ " server*");
 		});
 		
 		if(isLocal,{
@@ -90,7 +95,7 @@
 			};
 			
 			w.onClose = {
-				window = nil;
+				emacsbuf = nil;
 				ctlr.remove;
 			};
 		},{	
