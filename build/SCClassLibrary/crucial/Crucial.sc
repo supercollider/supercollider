@@ -11,7 +11,7 @@ Crucial {
 		// Crucial.initLibraryItems;
 
 		Class.initClassTree(GUI);
-		Class.initClassTree(CocoaGUI);
+		if (thisProcess.platform.name == \osx, { Class.initClassTree(CocoaGUI)} );
 		// this skin is cleaner and more basic than the default
 		// GUI.setSkin(\crucial) in your startup
 		GUI.skins.put(\crucial,
