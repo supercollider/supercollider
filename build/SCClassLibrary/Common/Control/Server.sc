@@ -152,6 +152,7 @@ Server : Model {
 	var <>tree;
 	
 	var <window, <>scopeWindow;
+	var <emacsbuf;
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
 
 	var <bufferArray, <bufInfoResponder, <waitingForBufInfo = false, <waitingBufs = 0;
