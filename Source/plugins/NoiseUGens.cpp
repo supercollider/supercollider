@@ -653,7 +653,7 @@ void TExpRand_Ctor(TExpRand* unit)
 	RGen& rgen = *unit->mParent->mRGen;	
 	
 	ZOUT0(0) = unit->m_value = pow(ratio, rgen.frand()) * lo;
-	if(unit->mCalcRate == calc_FullRate){ SETCALC(TRand_next_a); } else { SETCALC(TRand_next_k); }
+	if(unit->mCalcRate == calc_FullRate){ SETCALC(TExpRand_next_a); } else { SETCALC(TExpRand_next_k); }
 	unit->m_trig = ZIN0(2);
 }
 
