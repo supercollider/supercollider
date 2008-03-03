@@ -143,4 +143,10 @@ GLID{
 		);
 	}
 
+	grab{
+		device.grab;
+	}
+	ungrab{
+		device.ungrab;
+	}
 }
