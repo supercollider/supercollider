@@ -32,7 +32,7 @@ Help {
 			// Help file paths - will be used for categorising, if categories is nil or if not a class's helpfile.
 			// Otherwise they'll be stored for quick access to helpfile.
 			fileslist = IdentityDictionary.new;
-			PathName.new(Platform.helpDir).filesDo({|pathname|
+			PathName.new(Platform.helpDir.standardizePath).filesDo({|pathname|
 				if(pathname.fileName.endsWith(".html") 
 						&& pathname.fullPath.contains("3vs2").not
 						&& pathname.fullPath.contains("help-scripts").not
@@ -48,7 +48,7 @@ Help {
 			
 			// Now add the remaining ones to the tree - they're everything except the classes which 
 			//      have declared their own categorisation(s).
-			helpRootLen = (Platform.helpDir).size + 1;
+			helpRootLen = (Platform.helpDir.standardizePath).size + 1;
 			fileslist.keysValuesDo({ |classsym, path|
 				
 				subc = path[helpRootLen..].split($/);
