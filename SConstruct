@@ -33,6 +33,8 @@ f = open('VERSION')
 VERSION = f.readline()
 f.close()
 
+os.execlp( 'sh', 'setMainVersion.sh' )
+
 def short_cpu_name(cpu):
     if cpu == 'Power Macintosh':
 	cpu = 'ppc'
