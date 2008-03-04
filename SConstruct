@@ -28,7 +28,10 @@ import tarfile
 # ======================================================================
 
 PACKAGE = 'SuperCollider'
-VERSION = '3.1.1'
+
+f = open('VERSION')
+VERSION = f.readline()
+f.close()
 
 def short_cpu_name(cpu):
     if cpu == 'Power Macintosh':
