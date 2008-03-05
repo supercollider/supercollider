@@ -363,7 +363,7 @@ Instr  {
 		this.class.put(this);
 	}
 	makeSpecs { arg argspecs;
-		explicitSpecs = specs;
+		explicitSpecs = specs ? [];
 		specs =  
 			Array.fill(this.argsSize,{ arg i;
 				var sp,name;

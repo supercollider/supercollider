@@ -11,7 +11,6 @@ Crucial {
 		// Crucial.initLibraryItems;
 
 		Class.initClassTree(GUI);
-		if (thisProcess.platform.name == \osx, { Class.initClassTree(CocoaGUI)} );
 		// this skin is cleaner and more basic than the default
 		// GUI.setSkin(\crucial) in your startup
 		GUI.skins.put(\crucial,
@@ -197,13 +196,13 @@ Crucial {
 		},debugNodeWatcher.isWatching,minWidth: 250);
 
 		ToggleButton(menu.startRow,"Server Log",{
-			Server.default = Server(\localhost, ServerLog("127.0.0.1", 57110));
+			ServerLog.start;
 		},{
-			Server.default = Server(\localhost, NetAddr("127.0.0.1", 57110));
+			ServerLog.stop;
 		},false,minWidth: 250);
 		
 		ActionButton(menu.startRow,"ServerLog.report",{
-			Server.default.addr.report
+			ServerLog.gui(tail:500);
 		},minWidth: 250);
 
 		ActionButton(menu.startRow,"Query All Nodes",{
@@ -268,7 +267,6 @@ Crucial {
 				CXLabel( layout, "Audio Busses",width:685);
 				s.audioBusAllocator.blocks.do({ |b|
 					var listen;
-					b.insp;
 					listen = Patch({ In.ar( b.start, b.size ) });
 					layout.startRow;
 					ToggleButton( layout,"listen",{
@@ -282,7 +280,7 @@ Crucial {
 						Library.at(AbstractPlayer, \busAnnotations, s,\audio, b.start)
 						,540 );
 				})
-			});
+			},"Audio Busses");
 		});
 
 		Library.put(\menuItems,\test,'UnitTest.runAll',{
@@ -533,11 +531,19 @@ Crucial {
 		});
 		Library.put(\menuItems,\tools,\audioBuses,{
 			Sheet({ arg f;
-				CXLabel(f.startRow,"address");
-				CXLabel(f,"numChannels");
+				CXLabel(f,"Total allocated bus blocks:" + Server.default.audioBusAllocator.blocks.size);
+
+				f.startRow;
+				CXLabel(f, "index");
+				CXLabel(f, "numChannels");
 				Server.default.audioBusAllocator.blocks.do({ arg block;
-					CXLabel(f.startRow,block.start);
-					CXLabel(f,block.size);
+					var ann;
+					CXLabel(f.startRow, block.start);
+					CXLabel(f, block.size);
+					ann = Library.at(AbstractPlayer, \busAnnotations, Server.default, \audio, block.start);
+					if(ann.notNil,{
+						CXLabel(f,ann);
+					});
 				});
 			},"allocated AudioBuses on default")
 		});
@@ -547,6 +553,8 @@ Crucial {
 			"Audio Buses:".postln;
 			a = Library.at(AbstractPlayer, \busAnnotations, Server.default,\audio);
 			if(a.notNil,{
+				// search to see if the bus is still allocated
+				// or do this based on the server's allocator
 				a.keysValuesDo({ |k,v|
 					[k,v].postln
 				})

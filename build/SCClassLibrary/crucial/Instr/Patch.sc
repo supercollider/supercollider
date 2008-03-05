@@ -196,8 +196,8 @@ Patch : HasPatchIns  {
 			if(this.instr.outSpec.notNil,{
 				this.instr.outSpec.rate
 			},{
-				//( this.asString + ": rate is unknown").warn;
-				nil
+				//( this.asString + ": rate is unknown, guessing Audio").warn;
+				^'audio'
 			});
 		};
 	}

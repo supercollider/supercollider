@@ -143,6 +143,7 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 	free {
 		// PlayerMixer has multiple patchOuts sharing the same bus
 		if(bus.notNil and: {bus.index.notNil},{
+			AbstractPlayer.removeAnnotation(bus);
 			bus.free;
 		});
 		bus = nil;

@@ -4,8 +4,9 @@ ServerLogGui : ObjectGui {
 
 	var nodeColors;
 
-	guiBody { arg layout,tail;
-		var w;
+	guiBody { arg layout ... args;
+		var w,tail=500;
+		args.debug("server log args");
 		w = layout.bounds.width;
 		nodeColors = Dictionary.new;
 

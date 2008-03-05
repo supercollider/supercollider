@@ -15,7 +15,7 @@ AbstractPlayerGui : ObjectGui {
 			this.view = layout;
 			this.writeName(layout);
 			this.guiBody(layout);
-		},bounds).background_(this.background);
+		},layout.view.indentedRemaining).background_(this.background);
 		this.enableKeyDowns;
 		if(lay.isNil,{
 			layout.resizeToFit.front;

@@ -47,6 +47,7 @@ TempoBus   {
 	
 	init { arg server;
 		bus = Bus.control(server,1);
+		AbstractPlayer.annotate(bus,"TempoBus");
 		bus.set(tempo.tempo);
 		tempo.addDependant(this);
 		
