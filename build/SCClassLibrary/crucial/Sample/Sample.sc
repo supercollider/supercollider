@@ -48,7 +48,7 @@ BufferProxy { // blank space for delays, loopers etc.
 		readyForPlay = false;
 	}
 	freePatchOut { arg bundle;
-		bundle.addMessage(patchOut,\free);
+		bundle.addFunction({ patchOut.free; patchOut = nil; })
 	}
 	freeHeavyResources {
 		buffer.free; // release bufnum to allocator

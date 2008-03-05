@@ -243,7 +243,7 @@ InstrSynthDef : SynthDef {
 	}
 	buildErrorString {
 		^String.streamContents({ arg stream;
-				stream << Char.nl << "ERROR: " <<< instr << " build failed" << Char.nl;
+				stream << Char.nl << "ERROR: Instr build failed; " <<< instr << Char.nl;
 				stream << "Inputs:" << Char.nl;
 				inputs.do({ |in,i|
 					stream << Char.tab << instr.argNameAt(i) << ": " << in << Char.nl;

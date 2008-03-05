@@ -14,28 +14,33 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #87311d}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0727ae}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0727ae}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #793720}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0d2baa}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0d2baa}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #87311d}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #793720}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000; min-height: 14.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0000bf}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bf0000}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000; min-height: 14.0px}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bf0000; min-height: 14.0px}
+p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb7}
+p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
 span.s1 {font: 19.0px Helvetica}
-span.s2 {color: #0727ae}
-span.s3 {color: #496722}
+span.s2 {color: #0d2baa}
+span.s3 {color: #506526}
 span.s4 {color: #000000}
-span.s5 {color: #4b6922}
+span.s5 {color: #526726}
 span.s6 {color: #606060}
-span.s7 {color: #0013bb}
-span.s8 {color: #316f11}
-span.s9 {color: #007300}
-span.s10 {color: #0000bf}
+span.s7 {color: #0000bf}
+span.s8 {color: #007300}
+span.s9 {color: #bf0000}
+span.s10 {color: #001bb7}
+span.s11 {color: #436c19}
+span.s12 {color: #316f11}
+span.s13 {color: #0013bb}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -111,37 +116,41 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">// controlling the display</p>
 <p class="p6">(</p>
-<p class="p6">Sheet({ arg f;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>f.startRow;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).gui(f); // default</p>
-<p class="p5"><br></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).smallGui(f); // smallGui never has slider</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).gui(f,nil, false); //use gui,nil bounds, slider: false<span class="Apple-tab-span">	</span></p>
-<p class="p5"><br></p>
-<p class="p6"><span class="Apple-tab-span">	</span>f.startRow;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).gui(f,60@10,true); // slider 60 by 10</p>
-<p class="p6"><span class="Apple-tab-span">	</span>f.startRow;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).gui(f, 200@40, true); // slider 200 by 40</p>
-<p class="p6"><span class="Apple-tab-span">	</span>f.startRow;</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).smallGui(f);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).smallGui(f);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).smallGui(f);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).smallGui(f);</p>
-<p class="p5"><br></p>
-<p class="p6"><span class="Apple-tab-span">	</span>f.startRow;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).gui(f,20@100,true);<span class="Apple-tab-span">	</span>// verticle, with slider</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">NumberEditor</span>(440.0,<span class="s3">\freq</span>).gui(f,20@100,true);<span class="Apple-tab-span">	</span>// verticle, with slider</p>
-<p class="p6">})</p>
+<p class="p15">Sheet<span class="s4">({ </span>arg<span class="s4"> f;</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).gui(f); <span class="s9">// default</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p17"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s7">NumberEditor</span><span class="s4">(440.0,</span><span class="s8">\freq</span><span class="s4">).smallGui(f); </span>// smallGui never has slider</p>
+<p class="p16"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p17"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s7">NumberEditor</span><span class="s4">(440.0,</span><span class="s8">\freq</span><span class="s4">).gui(f,</span><span class="s7">nil</span><span class="s4">, </span><span class="s7">false</span><span class="s4">); </span>//use gui,nil bounds, slider: false</p>
+<p class="p17"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p17"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s7">NumberEditor</span><span class="s4">(440.0,</span><span class="s8">\freq</span><span class="s4">).gui(f,</span><span class="s7">nil</span><span class="s4">, </span><span class="s7">true,false</span><span class="s4">); </span>//use gui,nil bounds, box: false<span class="Apple-tab-span">	</span></p>
+<p class="p18"><br></p>
+<p class="p16"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).gui(f,60@10,<span class="s7">true</span>); <span class="s9">// slider 60 by 10</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).gui(f, 200@40, <span class="s7">true</span>); <span class="s9">// slider+box 200 by 40</span></p>
+<p class="p17"><span class="Apple-tab-span">	</span>// it considers 200@40 big enough to do its default size</p>
+<p class="p19"><span class="Apple-tab-span">	</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).smallGui(f);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).smallGui(f);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).smallGui(f);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).smallGui(f);</p>
+<p class="p18"><br></p>
+<p class="p16"><span class="Apple-tab-span">	</span>f.startRow;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).gui(f,20@100,<span class="s7">true</span>);<span class="Apple-tab-span">	</span><span class="s9">// verticle, with slider</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">NumberEditor</span>(440.0,<span class="s8">\freq</span>).gui(f,20@100,<span class="s7">true</span>);<span class="Apple-tab-span">	</span><span class="s9">// verticle, with slider</span></p>
+<p class="p16">})</p>
 <p class="p6">)</p>
 <p class="p5"><br></p>
 <p class="p6">Putting them on a Sheet</p>
 <p class="p6">(</p>
-<p class="p7">w = <span class="s7">Sheet</span>({ <span class="s7">arg</span> h;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>c = <span class="s7">Array</span>.fill(10,{ <span class="s7">arg</span> i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> n;</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s8">\amp</span><span class="s4">);</span></p>
+<p class="p7">w = <span class="s10">Sheet</span>({ <span class="s10">arg</span> h;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>c = <span class="s10">Array</span>.fill(10,{ <span class="s10">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">var</span> n;</p>
+<p class="p20"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s11">\amp</span><span class="s4">);</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>h.startRow;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.gui(h);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n</p>
@@ -152,10 +161,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">Putting them on a MultiPageLayout</p>
 <p class="p6">(</p>
-<p class="p15"><span class="s4">w = </span>MultiPageLayout<span class="s4">.new;</span></p>
-<p class="p7">c = <span class="s7">Array</span>.fill(10,{ <span class="s7">arg</span> i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> n;</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s8">\amp</span><span class="s4">);</span></p>
+<p class="p20"><span class="s4">w = </span>MultiPageLayout<span class="s4">.new;</span></p>
+<p class="p7">c = <span class="s10">Array</span>.fill(10,{ <span class="s10">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">var</span> n;</p>
+<p class="p20"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s11">\amp</span><span class="s4">);</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>w.startRow;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n.gui(w);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n</p>
@@ -165,12 +174,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">Putting them on normal windows</p>
 <p class="p7">(</p>
-<p class="p7">w = <span class="s7">GUI</span>.window.new;</p>
+<p class="p7">w = <span class="s10">GUI</span>.window.new;</p>
 <p class="p7">w.front;</p>
-<p class="p7">c = <span class="s7">Array</span>.fill(10,{ <span class="s7">arg</span> i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> n;</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s8">\amp</span><span class="s4">);</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>n.gui(w,<span class="s7">Rect</span>(10,25 * i, 150,13));</p>
+<p class="p7">c = <span class="s10">Array</span>.fill(10,{ <span class="s10">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">var</span> n;</p>
+<p class="p20"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s11">\amp</span><span class="s4">);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.gui(w,<span class="s10">Rect</span>(10,25 * i, 150,13));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n</p>
 <p class="p7">});</p>
 <p class="p11"><br></p>
@@ -179,12 +188,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">using a MultiPageLayout on a window</p>
 <p class="p7">(</p>
 <p class="p11"><br></p>
-<p class="p7">w = <span class="s7">GUI</span>.window.new;</p>
+<p class="p7">w = <span class="s10">GUI</span>.window.new;</p>
 <p class="p7">w.front;</p>
-<p class="p15"><span class="s4">p = </span>MultiPageLayout<span class="s4">.on(w);</span></p>
-<p class="p7">c = <span class="s7">Array</span>.fill(10,{ <span class="s7">arg</span> i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> n;</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s8">\amp</span><span class="s4">);</span></p>
+<p class="p20"><span class="s4">p = </span>MultiPageLayout<span class="s4">.on(w);</span></p>
+<p class="p7">c = <span class="s10">Array</span>.fill(10,{ <span class="s10">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">var</span> n;</p>
+<p class="p20"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s11">\amp</span><span class="s4">);</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>n.gui(p);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>p.startRow;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n</p>
@@ -196,12 +205,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">put them on a FlowView</p>
 <p class="p7">(</p>
 <p class="p11"><br></p>
-<p class="p7">w = <span class="s7">GUI</span>.window.new;</p>
+<p class="p7">w = <span class="s10">GUI</span>.window.new;</p>
 <p class="p7">w.front;</p>
-<p class="p7">p = <span class="s7">FlowView</span>(w,<span class="s7">Rect</span>(10,10,500,500));</p>
-<p class="p7">c = <span class="s7">Array</span>.fill(10,{ <span class="s7">arg</span> i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> n;</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s8">\amp</span><span class="s4">);</span></p>
+<p class="p7">p = <span class="s10">FlowView</span>(w,<span class="s10">Rect</span>(10,10,500,500));</p>
+<p class="p7">c = <span class="s10">Array</span>.fill(10,{ <span class="s10">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">var</span> n;</p>
+<p class="p20"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s11">\amp</span><span class="s4">);</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>n.gui(p);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>p.startRow;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n</p>
@@ -218,12 +227,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">// a nice glitch display</p>
 <p class="p7">//verticle not working yet</p>
 <p class="p7">(</p>
-<p class="p7">w = <span class="s7">GUI</span>.window.new;</p>
+<p class="p7">w = <span class="s10">GUI</span>.window.new;</p>
 <p class="p7">w.front;</p>
-<p class="p7">c = <span class="s7">Array</span>.fill(10,{ <span class="s7">arg</span> i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> n;</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s8">\amp</span><span class="s4">);</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>n.gui(w,<span class="s7">Rect</span>(10 + (15 * i),25, 13,150));</p>
+<p class="p7">c = <span class="s10">Array</span>.fill(10,{ <span class="s10">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">var</span> n;</p>
+<p class="p20"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s11">\amp</span><span class="s4">);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.gui(w,<span class="s10">Rect</span>(10 + (15 * i),25, 13,150));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n</p>
 <p class="p7">});</p>
 <p class="p11"><br></p>
@@ -231,13 +240,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><br></p>
 <p class="p7">// in SCVLayout not working yet either</p>
 <p class="p7">(</p>
-<p class="p7">w = <span class="s7">GUI</span>.window.new;</p>
+<p class="p7">w = <span class="s10">GUI</span>.window.new;</p>
 <p class="p7">w.front;</p>
-<p class="p7">v = <span class="s7">GUI</span>.vLayoutView.new(w,w.view.bounds);</p>
-<p class="p7">c = <span class="s7">Array</span>.fill(10,{ <span class="s7">arg</span> i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> n;</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s8">\amp</span><span class="s4">);</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>n.gui(v,<span class="s7">Rect</span>(0,0,100,20));</p>
+<p class="p7">v = <span class="s10">GUI</span>.vLayoutView.new(w,w.view.bounds);</p>
+<p class="p7">c = <span class="s10">Array</span>.fill(10,{ <span class="s10">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">var</span> n;</p>
+<p class="p20"><span class="s4"><span class="Apple-tab-span">	</span>n = </span>NumberEditor<span class="s4">(0,</span><span class="s11">\amp</span><span class="s4">);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.gui(v,<span class="s10">Rect</span>(0,0,100,20));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n</p>
 <p class="p7">});</p>
 <p class="p11"><br></p>
@@ -246,12 +255,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">//works with sliders</p>
 <p class="p6">(</p>
-<p class="p7">w = <span class="s7">GUI</span>.window.new;</p>
+<p class="p7">w = <span class="s10">GUI</span>.window.new;</p>
 <p class="p7">w.front;</p>
-<p class="p7">v = <span class="s7">GUI</span>.vLayoutView.new(w,w.view.bounds);</p>
-<p class="p7">c = <span class="s7">Array</span>.fill(10,{ <span class="s7">arg</span> i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> n;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s7">GUI</span>.slider.new(v,<span class="s7">Rect</span>(0,0,100,20));</p>
+<p class="p7">v = <span class="s10">GUI</span>.vLayoutView.new(w,w.view.bounds);</p>
+<p class="p7">c = <span class="s10">Array</span>.fill(10,{ <span class="s10">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">var</span> n;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s10">GUI</span>.slider.new(v,<span class="s10">Rect</span>(0,0,100,20));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n</p>
 <p class="p7">});</p>
 <p class="p11"><br></p>
@@ -259,30 +268,30 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p6">(</p>
-<p class="p16"><br></p>
-<p class="p17"><br></p>
-<p class="p18">Sheet<span class="s4">({ </span>|f|</p>
-<p class="p17"><br></p>
-<p class="p18"><span class="s4">n = </span>NumberEditor<span class="s4">(440,</span><span class="s9">\freq</span><span class="s4">);</span></p>
-<p class="p19">n.gui(f,<span class="s10">nil</span>,<span class="s10">true</span>);</p>
-<p class="p17"><br></p>
-<p class="p17"><br></p>
-<p class="p19"><span class="s10">NumberEditor</span>(440,<span class="s9">\freq</span>).gui(f,100@30);</p>
-<p class="p17"><br></p>
-<p class="p19"><span class="s10">NumberEditor</span>(440,<span class="s9">\freq</span>).gui(f,30@100);</p>
-<p class="p17"><br></p>
-<p class="p19"><span class="s10">NumberEditor</span>(440,<span class="s9">\freq</span>).gui(f,150@20);</p>
-<p class="p17"><br></p>
-<p class="p19"><span class="s10">NumberEditor</span>(440,<span class="s9">\freq</span>).gui(f,20@150);</p>
-<p class="p17"><br></p>
-<p class="p19"><span class="s10">NumberEditor</span>(440,<span class="s9">\freq</span>).gui(f,10@150);</p>
-<p class="p17"><br></p>
-<p class="p19"><span class="s10">NumberEditor</span>(440,<span class="s9">\freq</span>).gui(f,40@150);</p>
-<p class="p17"><br></p>
-<p class="p19"><span class="s10">NumberEditor</span>(440,<span class="s9">\freq</span>).gui(f,30@150);</p>
-<p class="p17"><br></p>
-<p class="p19">})</p>
-<p class="p17"><br></p>
+<p class="p5"><br></p>
+<p class="p11"><br></p>
+<p class="p21">Sheet<span class="s4">({ </span>|f|</p>
+<p class="p11"><br></p>
+<p class="p21"><span class="s4">n = </span>NumberEditor<span class="s4">(440,</span><span class="s12">\freq</span><span class="s4">);</span></p>
+<p class="p7">n.gui(f,<span class="s13">nil</span>,<span class="s13">true</span>);</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p7"><span class="s13">NumberEditor</span>(440,<span class="s12">\freq</span>).gui(f,100@30);</p>
+<p class="p11"><br></p>
+<p class="p7"><span class="s13">NumberEditor</span>(440,<span class="s12">\freq</span>).gui(f,30@100);</p>
+<p class="p11"><br></p>
+<p class="p7"><span class="s13">NumberEditor</span>(440,<span class="s12">\freq</span>).gui(f,150@20);</p>
+<p class="p11"><br></p>
+<p class="p7"><span class="s13">NumberEditor</span>(440,<span class="s12">\freq</span>).gui(f,20@150);</p>
+<p class="p11"><br></p>
+<p class="p7"><span class="s13">NumberEditor</span>(440,<span class="s12">\freq</span>).gui(f,10@150);</p>
+<p class="p11"><br></p>
+<p class="p7"><span class="s13">NumberEditor</span>(440,<span class="s12">\freq</span>).gui(f,40@150);</p>
+<p class="p11"><br></p>
+<p class="p7"><span class="s13">NumberEditor</span>(440,<span class="s12">\freq</span>).gui(f,30@150);</p>
+<p class="p11"><br></p>
+<p class="p7">})</p>
+<p class="p11"><br></p>
 <p class="p7">)</p>
 </body>
 </html>

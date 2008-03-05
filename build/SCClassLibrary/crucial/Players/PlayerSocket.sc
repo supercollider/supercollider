@@ -119,6 +119,7 @@ PlayerSocket : AbstractPlayerProxy {
 	freeResourcesToBundle { arg bundle;
 		socketGroup.freeToBundle(bundle);
 		socketGroup = nil;
+		
 	}
 
 	prepareChildrenToBundle { arg bundle;
@@ -147,20 +148,32 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 
 	instrArgFromControl { arg control;
-		^if(source.notNil,{
+		// avoiding the super which delegates to the source
+		// i control the enveloped players etc. so don't feed it the source's instrArg
+		// feed it mine
+		^this.rate.switch(
+			\audio,{
+				^In.ar(control,this.numChannels ?? {Error("numChannels is nil"+this).throw})
+			},
+			\control,{
+				^In.kr(control,this.numChannels ?? {Error("numChannels is nil"+this).throw})
+			},
+			\stream,{
+				^control
+				//this.synthArg
+			},
+			{
+				Error("AbstractPlayer:instrArgFromControl: rate unknown = "+this.rate).throw
+			}
+		)
+
+/*		^if(source.notNil,{
 			source.instrArgFromControl(control)
 		},{
-			if(this.rate == \audio,{
-				In.ar(control,this.numChannels)
-			},{
-				if(this.rate == \control,{
-					In.kr(control,this.numChannels)
-				},{
-					control
-				})
-			})
+			^super.instrArgFromControl(control)
 		})
-	}
+*/	}
+	
 	spawnToBundle { arg bundle;
 		if(source.notNil,{
 			this.setSourceToBundle(source,bundle);
@@ -217,14 +230,14 @@ PlayerSocket : AbstractPlayerProxy {
 		});
 	}
 	didFree {
-		if(super.didFree) {
-			socketStatus = \isSleeping;
-			//isSleeping = true;
-			if(sharedBus.notNil,{
-				sharedBus.releaseBus(this);
-				sharedBus = nil;
-			});
-		}
+		super.didFree;
+		socketStatus = \isSleeping;
+		//isSleeping = true;
+		if(sharedBus.notNil,{
+			sharedBus.releaseBus(this);
+			AbstractPlayer.removeAnnotation(sharedBus);
+			sharedBus = nil;
+		});
 	}
 
 	// emergency kill off contents
@@ -241,6 +254,7 @@ PlayerEffectSocket : PlayerSocket {
 		// who did we get this from ?
 		//"PlayerEffectSocket-setInputBus".debug;
 		inputBus = SharedBus.newFrom(abus.asBus,this);
+		this.annotate(inputBus,"inputBus");
 		// assume not playing yet
 	}
 

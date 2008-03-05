@@ -10,6 +10,7 @@ AbstractSinglePlayerEffect : HasSubject {
 
 	makeResourcesToBundle { arg bundle;
 		sharedBus = SharedBus.newFrom(patchOut.bus,this);
+		AbstractPlayer.annotate(sharedBus,"AbstractSinglePlayerEffect");
 		patchOut.bus = sharedBus;
 	}
 	prepareChildrenToBundle { arg bundle;

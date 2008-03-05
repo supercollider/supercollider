@@ -36,6 +36,8 @@ AbstractPlayerEffect : HasSubject {
 		bundle.add( effectGroup.addAfterMsg(subjectGroup) );
 	}
 	freeResourcesToBundle { arg bundle;
+		// this confuses because the subject and effect free themselves,
+		// the their enclosing group is also freed.
 		subjectGroup.freeToBundle(bundle);
 		effectGroup.freeToBundle(bundle);
 		subjectGroup = effectGroup = nil;

@@ -1,5 +1,5 @@
 
-PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
+PlayerMixer : AbstractPlayer {  // will become a HasPatchIns
 
 	var <>players;
 	
@@ -7,7 +7,6 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 		^super.new.players_(loadDocument(players) ? [])
 	}
 
-	voices { ^this.players }
 	
 	asSynthDef {
 		^SynthDef(this.defName,{ arg out=0;
@@ -99,6 +98,53 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 	children { ^this.players }
 	storeArgs { ^[players] }
 	rate { ^\audio }
+	numChannels { ^this.players.first.numChannels }
 	guiClass { ^PlayerMixerGui }
 
 }
+
+GroupedPlayerMixer : PlayerMixer {
+	
+	var groupings,groups;
+	
+	*new { arg ... players;
+		^super.new.gpminit(players)
+	}
+	gpminit { arg pls;
+		groupings = pls.collect({ |p| loadDocument(p) });
+		players = groupings.flat;
+		
+	}
+//	prepareToBundle { arg agroup,bundle,private = false, bus;
+
+	makeResourcesToBundle { arg bundle;
+		groups = groupings.collect({ |pls,i| 
+			var g;
+			g = Group.basicNew(this.server);
+			this.annotate(g,"group"+i);
+			NodeWatcher.register(g);
+			bundle.add( g.addToTailMsg(group) );
+			g
+		});
+		super.makeResourcesToBundle(bundle);
+/*		sharedBus = SharedBus.newFrom(patchOut.bus,this);
+		this.annotate(sharedBus,"Shared Bus");
+		patchOut.bus = sharedBus;
+*/
+	}
+	prepareChildrenToBundle { arg bundle;
+		groupings.do({ |pls,gi|
+			pls.do({ |pl|
+				pl.prepareToBundle( groups[gi], bundle,true, nil )
+			})
+		})
+	}
+	
+	freeResourcesToBundle { arg bundle;
+		groups.do(_.freeToBundle(bundle));
+		groups = nil;
+	}
+
+}
+
+

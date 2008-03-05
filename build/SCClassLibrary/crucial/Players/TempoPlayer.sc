@@ -34,3 +34,4 @@ TempoPlayer : KrPlayer { //Synthless
 	asSynthDef { ("shouldn't call this" + thisMethod).die; }
 	spec { ^\tempo.asSpec }
 }
+

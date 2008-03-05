@@ -78,12 +78,12 @@ AbstractPlayer : AbstractFunction  {
 		^#[\readyForPlay, \isPlaying,\isStopped, \isStopping].includes(status)
 	}
 	readyForPlay { ^status === \readyForPlay }
-	prepareForPlay { arg agroup,private = false,bus;
+	prepareForPlay { arg group,private = false,bus;
 		var bundle;
 		bundle = AbstractPlayer.bundleClass.new;
-		this.prepareToBundle(agroup,bundle,private,bus);
+		this.prepareToBundle(group,bundle,private,bus);
 
-		^bundle.send(group.server)
+		^bundle.send(this.group.server)
 	}
 
 	prepareToBundle { arg agroup,bundle,private = false, bus;
@@ -378,10 +378,10 @@ AbstractPlayer : AbstractFunction  {
 				// sends to all the children
 				this.stopToBundle(bundle);
 			});
-			this.freeResourcesToBundle(bundle);
 			this.children.do({ arg child;
 				child.freeToBundle(bundle);
 			});
+			this.freeResourcesToBundle(bundle);
 			status = \isFreeing;
 			bundle.addMessage(this,\didFree);
 		})
@@ -406,12 +406,10 @@ AbstractPlayer : AbstractFunction  {
 	}
 	freePatchOut { arg bundle;
 		bundle.addFunction({
-			if([\isStopping,\isFreeing,\isStopped].includes(status).not,{
-				patchOut.free; // free the bus
-				patchOut = nil;
-				group  = nil;
-				//server = nil;
-			})
+			patchOut.free; // free the bus
+			patchOut = nil;
+			group  = nil;
+			//server = nil;
 		});
 	}
 
@@ -505,19 +503,19 @@ AbstractPlayer : AbstractFunction  {
 	synthArg { ^patchOut.synthArg }
 	instrArgFromControl { arg control;
 		// a Patch could be either
-		^this.rate.switch(
+		this.rate.switch(
 			\audio,{
-				In.ar(control,this.numChannels)
+				^In.ar(control,this.numChannels ?? {Error("numChannels is nil"+this).throw})
 			},
 			\control,{
-				In.kr(control,this.numChannels)
+				^In.kr(control,this.numChannels ?? {Error("numChannels is nil"+this).throw})
 			},
 			\stream,{
-				control
+				^control
 				//this.synthArg
 			},
 			{
-				Error("AbstractPlayer-instrArgFromControl: rate unknown = "+this.rate).throw
+				Error("AbstractPlayer:instrArgFromControl: rate unknown = "+this.rate).throw
 			}
 		)
 	}
@@ -558,8 +556,10 @@ AbstractPlayer : AbstractFunction  {
 	}
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		// if my bus is public, change to private
+		var b;
 		if(this.isPlaying and: {this.rate == \audio} and: {this.bus.isAudioOut},{
-			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
+			this.bus = b = Bus.alloc(this.rate,this.server,this.numChannels);
+			AbstractPlayer.annotate(b,"connected to patch in, made bus");
 		});
 		if(patchOut.isNil,{
 			"no PatchOut: this object not prepared".error;
@@ -707,6 +707,24 @@ AbstractPlayer : AbstractFunction  {
 			});
 		});
 		//^Library.at(AbstractPlayer, node.server, node.nodeID) ? "";
+	}
+	*removeAnnotation { arg thing;
+		// shouldnt have to do this since its just a lookup by integer indices
+/*		if(thing.isKindOf(Node),{
+			Library.global.removeAt(AbstractPlayer, \nodeAnnotations,
+				thing.server ?? {"node has no server, cannot un-annotate".die},
+				thing.nodeID ?? {"nodeID is nil, cannot un-annotate".die}
+			 	);
+		},{
+			if(thing.isKindOf(Bus),{
+				Library.global.removeAt(AbstractPlayer, \busAnnotations,
+					thing.server ?? {"Bus has no server, cannot un-annotate".die},
+					thing.rate ?? {"Bus has no rate, cannot un-annotate".die},
+					thing.index ?? {"Bus has no index, cannot un-annotate".die}
+					);
+			});
+		});
+*/
 	}
 
 	// using the arg passing version

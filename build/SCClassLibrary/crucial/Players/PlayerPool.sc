@@ -5,9 +5,9 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	
 	*new { arg list,selected=0,env,round=0.0,rate=\audio,numChannels=2;
 		list = loadDocument(list);
-		^super.prNew(list.first.rate ? rate,
+		^super.prNew(rate,
 				//with patches they still don't know
-				list.maxValue({ arg it; it.numChannels }) ? numChannels,
+				numChannels ?? {list.maxValue({ arg it; it.numChannels })},
 				round, 
 				env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})
 			.list_(list)
@@ -48,12 +48,14 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	}
 	children { ^list }
 
+	/* do not pre-load the children, just the initially selected one (the source)
+	and the enveloped players
 	prepareChildrenToBundle { arg bundle;
 		super.prepareChildrenToBundle(bundle);
 		list.do({ arg child;
 			child.prepareToBundle(socketGroup,bundle,true,sharedBus);
 		});
-	}
+	}*/
 	spawnToBundle { arg bundle;
 		if(autostart,{
 			if(round == 0.0,{
