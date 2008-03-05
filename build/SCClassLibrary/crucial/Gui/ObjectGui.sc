@@ -6,7 +6,7 @@ ObjectGui : SCViewHolder { // aka AbstractController
 	guiBody { arg layout;
 		// override this in your gui subclass
 		
-		// or if you are quick and lazy then just implement guiBody in the MODEL
+		// or if you are lazy then just implement guiBody in the MODEL
 		if(model.respondsTo(\guiBody) and: {model.isKindOf(ObjectGui).not},{
 			model.guiBody(layout)
 		},{
@@ -15,11 +15,7 @@ ObjectGui : SCViewHolder { // aka AbstractController
 			//ObjectGui.guiVarsOf(model,layout);
 		})
 	}
-	//I was simply gui-ing all public instvars of the object
-	// but there are too many loops where objects hold each other
-	// the gui feedsback.
-	// and its too annoying every time you discover a new one.
-	
+
 	// classes return instVarsForGui : a list of \symbols
 	// by default empty : don't display any variables
 	*guiInstVarsOf { arg object,layout;

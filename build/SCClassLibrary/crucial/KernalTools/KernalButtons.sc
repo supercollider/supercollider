@@ -50,7 +50,10 @@ SelectorLabel : ActionButton {
 //aka GuiLink
 Tile : ActionButton {
 
-	*new { arg  target,layout,minWidth=100; 
+	*new { arg  target,layout,minWidth=100;
+		if(target.guiClass == StringGui,{
+			^target.gui(layout);
+		});
 		^super.new(layout,target.asString,{ 
 				target.gui; 
 				//#F6F9F5

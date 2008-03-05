@@ -3,6 +3,7 @@ AbstractPlayerGui : ObjectGui {
 	
 	gui { arg lay,bounds ... args;
 		var layout;
+
 		layout=this.guify(lay,bounds);
 		if(lay.isNil,{ 
 			// top level controls
@@ -11,12 +12,15 @@ AbstractPlayerGui : ObjectGui {
 			Do(\topGuiPlugIns,model,layout);
 			layout.startRow;
 		});
+		
 		layout.flow({ arg layout;
 			this.view = layout;
 			this.writeName(layout);
 			this.guiBody(layout);
-		},layout.view.indentedRemaining).background_(this.background);
+		},bounds).background_(this.background);
+		if(bounds.isNil,{ layout.resizeToFit });
 		this.enableKeyDowns;
+
 		if(lay.isNil,{
 			layout.resizeToFit.front;
 			view.focus;

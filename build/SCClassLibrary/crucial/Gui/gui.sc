@@ -26,6 +26,7 @@
 		});
 		^Tile(this,args.first.asPageLayout)
 	}
+	// return an array of symbols specifying which vars to put up on the gui
 	*instVarsForGui { ^[] }
 	*publicInstVars {
 		^this.instVarNames.select({ |ivar| this.findRespondingMethodFor(ivar).notNil })
