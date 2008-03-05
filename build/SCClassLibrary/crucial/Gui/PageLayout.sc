@@ -60,7 +60,7 @@ MultiPageLayout  {
 	startRow { 
 		this.view.startRow;
 	}
-	
+	indentedRemaining { ^this.view.indentedRemaining }
 	*guify { arg lay,title,width,height,background;
 		^lay ?? {
 			this.new(title,width,height,background: background )

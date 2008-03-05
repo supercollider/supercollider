@@ -16,7 +16,7 @@ NumberEditorGui : EditorGui {
 	guiBody { arg layout,slider=true, box=true;
 		var bounds,h;
 		bounds = layout.indentedRemaining;
-		bounds.debug;
+
 		//[layout,slider,box].debug;
 		// massive space,
 			// box, slider horz
