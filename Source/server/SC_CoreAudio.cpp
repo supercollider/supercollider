@@ -1720,6 +1720,8 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	PaError paerror;
 	const PaDeviceInfo *pdi;
 	const PaHostApiInfo *apiInfo;
+	const PaStreamInfo *psi;
+	double latency;
 	PaDeviceIndex numDevices = Pa_GetDeviceCount();
 	
 	// print out all options:
@@ -1738,16 +1740,19 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	if (mDeviceInOut[1] == paNoDevice) mDeviceInOut[1] = Pa_GetDefaultOutputDevice();
 
 	*outNumSamples = mWorld->mBufLength;
-    *outSampleRate = 44100.; ///$$$TODO fixme use the cmd-line supplied param
+	if (mPreferredSampleRate)
+		*outSampleRate = mPreferredSampleRate;
+	else
+		*outSampleRate = 44100.;
 
 	if (mDeviceInOut[0]!=paNoDevice && mDeviceInOut[1]!=paNoDevice) {
 		PaSampleFormat fmt = paFloat32 | paNonInterleaved;
 		mInputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[0] )->maxInputChannels;
 		mOutputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[1] )->maxOutputChannels;
-		fprintf(stdout, "\nBooting with:\n In: %s : %s \n",
+		fprintf(stdout, "\nBooting with:\n  In: %s : %s \n",
 			Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[0] )->hostApi)->name,
 			Pa_GetDeviceInfo( mDeviceInOut[0] )->name); 
-		fprintf(stdout, " Out: %s : %s \n",
+		fprintf(stdout, "  Out: %s : %s \n",
 			Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[1] )->hostApi)->name,
 			Pa_GetDeviceInfo( mDeviceInOut[1] )->name); 
 
@@ -1755,20 +1760,28 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		inStreamParams.device = mDeviceInOut[0];
 		inStreamParams.channelCount = mInputChannelCount;
 		inStreamParams.sampleFormat = fmt;
-		inStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency; //$$$todo : allow user to choose latency instead of this
-		scprintf("suggestedLatency used: %.3f\n", Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency);
+		inStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency;
 		inStreamParams.hostApiSpecificStreamInfo = NULL;
 
 		PaStreamParameters outStreamParams;
 		outStreamParams.device = mDeviceInOut[1];
 		outStreamParams.channelCount = mOutputChannelCount;
 		outStreamParams.sampleFormat = fmt;
-		outStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[1] )->defaultLowOutputLatency; //$$$todo : allow user to choose latency instead of this
+		outStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[1] )->defaultLowOutputLatency;
 		outStreamParams.hostApiSpecificStreamInfo = NULL;
 
 		paerror = Pa_OpenStream(&mStream, &inStreamParams, &outStreamParams, *outSampleRate, *outNumSamples, paNoFlag, SC_PortAudioStreamCallback, this );
 		if( paerror != paNoError )
 			PRINT_PORTAUDIO_ERROR( Pa_OpenStream, paerror );
+		else {
+			psi = Pa_GetStreamInfo(mStream);
+			if (!psi)
+				fprintf(stdout,"  Could not obtain further info from portaudio stream\n");
+			else {
+				fprintf(stdout,"  Sample rate: %.3f\n", psi->sampleRate);
+				fprintf(stdout,"  Latency (in/out): %.3f / %.3f\n", psi->inputLatency, psi->outputLatency);
+			}
+		}
 		return paerror == paNoError;
 	}
 	
