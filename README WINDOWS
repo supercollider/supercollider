@@ -24,7 +24,7 @@ System Requirements
 Windows 2000/XP/Vista
 Windows Installer 
 
-Sound card supported by PortAudio (http://www.portaudio.com/). If you have issues with latency, consult http://www.portaudio.com/docs/latency.html for advice how to tune your operating system to achieve the best results.
+Sound card supported by PortAudio (http://www.portaudio.com/). If you have issues with latency, consult http://www.portaudio.com/docs/latency.html for advice how to tune your operating system to achieve the best results (in short: use ASIO drivers wherever possible).
 
 ------------------------------------------------------------------------
 Installation
