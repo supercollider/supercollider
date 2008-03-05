@@ -5,7 +5,7 @@ TestArray : UnitTest {
 
 
 test_arraystats {
-var arsize, clumpsize, a, aclumped, ascaled, mean, median, sd;
+var arsize, clumpsize, a, aclumped, ascaled, arev, mean, median, sd;
 
 #[
 	// arsize, clumpsize -- different sizes to test:
@@ -36,13 +36,19 @@ var arsize, clumpsize, a, aclumped, ascaled, mean, median, sd;
 		this.assertEquals(a.scramble.median, a.scramble.median, "median should be invariant to scrambling");
 	};
 	
+	// reversing the array shouldn't affect the stats!
+	arev = a.reverse;
+	this.assertEquals(a.mean,   arev.mean,        "mean   should be invariant to reversing");
+	this.assertEquals(a.median, arev.median,      "median should be invariant to reversing");
+	this.assertFloatEquals(a.stdDev, arev.stdDev, "stdDev should be invariant to reversing");
+	
 	// scale array up by 2^16 - power-of-two scaling should preserve precision
 	ascaled = a * 65536.0;	
 	
 	// these stats should simply scale linearly
-	this.assertEquals(ascaled.mean   / 65536.0, mean,     "mean should be invariant to linear scaling");
-	this.assertEquals(ascaled.median / 65536.0, median, "median should be invariant to linear scaling");
-	this.assertFloatEquals(ascaled.stdDev / 65536.0, sd,     "stdDev should be invariant to linear scaling");
+	this.assertEquals(ascaled.mean   / 65536.0, mean,    "mean   should be invariant to linear scaling");
+	this.assertEquals(ascaled.median / 65536.0, median,  "median should be invariant to linear scaling");
+	this.assertFloatEquals(ascaled.stdDev / 65536.0, sd, "stdDev should be invariant to linear scaling");
 	
 	// Clump into array-of-arrays
 	aclumped = a.clump(clumpsize);
