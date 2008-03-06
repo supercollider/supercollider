@@ -1721,7 +1721,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	const PaDeviceInfo *pdi;
 	const PaHostApiInfo *apiInfo;
 	const PaStreamInfo *psi;
-	double latency;
+	PaTime suggestedLatencyIn, suggestedLatencyOut;
 	PaDeviceIndex numDevices = Pa_GetDeviceCount();
 	
 	// print out all options:
@@ -1745,7 +1745,17 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	else
 		*outSampleRate = 44100.;
 
+
 	if (mDeviceInOut[0]!=paNoDevice && mDeviceInOut[1]!=paNoDevice) {
+
+		if (mPreferredHardwareBufferFrameSize) 
+			// controls the suggested latency by hardwareBufferSize switch -Z
+			suggestedLatencyIn = suggestedLatencyOut = mPreferredHardwareBufferFrameSize / (*outSampleRate);
+		else {
+			suggestedLatencyIn = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency;
+			suggestedLatencyOut = Pa_GetDeviceInfo( mDeviceInOut[1] )->defaultLowOutputLatency;
+		}
+
 		PaSampleFormat fmt = paFloat32 | paNonInterleaved;
 		mInputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[0] )->maxInputChannels;
 		mOutputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[1] )->maxOutputChannels;
@@ -1760,14 +1770,14 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		inStreamParams.device = mDeviceInOut[0];
 		inStreamParams.channelCount = mInputChannelCount;
 		inStreamParams.sampleFormat = fmt;
-		inStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency;
+		inStreamParams.suggestedLatency = suggestedLatencyIn;
 		inStreamParams.hostApiSpecificStreamInfo = NULL;
 
 		PaStreamParameters outStreamParams;
 		outStreamParams.device = mDeviceInOut[1];
 		outStreamParams.channelCount = mOutputChannelCount;
 		outStreamParams.sampleFormat = fmt;
-		outStreamParams.suggestedLatency = Pa_GetDeviceInfo( mDeviceInOut[1] )->defaultLowOutputLatency;
+		outStreamParams.suggestedLatency = suggestedLatencyOut;
 		outStreamParams.hostApiSpecificStreamInfo = NULL;
 
 		paerror = Pa_OpenStream(&mStream, &inStreamParams, &outStreamParams, *outSampleRate, *outNumSamples, paNoFlag, SC_PortAudioStreamCallback, this );
@@ -1779,7 +1789,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 				fprintf(stdout,"  Could not obtain further info from portaudio stream\n");
 			else {
 				fprintf(stdout,"  Sample rate: %.3f\n", psi->sampleRate);
-				fprintf(stdout,"  Latency (in/out): %.3f / %.3f\n", psi->inputLatency, psi->outputLatency);
+				fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency);
 			}
 		}
 		return paerror == paNoError;
