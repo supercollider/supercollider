@@ -76,6 +76,6 @@
 		^this.primitiveFailed
 	}
 	openHelpFile {
-		(this.findHelpFile ? "Help/Help.html".standardizePath).openTextFile
+		(this.findHelpFile ? "Help/Help.html".standardizePath).openHTMLFile
 	}
 }
