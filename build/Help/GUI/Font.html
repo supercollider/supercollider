@@ -16,13 +16,15 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #606060}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Arial}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Marker Felt}
-span.s1 {font: 9.0px Monaco; color: #0023b2}
-span.s2 {color: #0000ff}
-span.s3 {color: #0023b2}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #082ba2}
+span.s1 {font: 9.0px Monaco; color: #002cad}
+span.s2 {color: #0024f8}
+span.s3 {color: #002cad}
 span.s4 {color: #606060}
 span.s5 {font: 9.0px Monaco; color: #000000}
 span.s6 {font: 9.0px Monaco}
 span.s7 {font: 9.0px Marker Felt}
+span.s8 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -72,26 +74,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5">var w,f,i=0;</p>
 <p class="p4"><br></p>
 <p class="p5">w = <span class="s3">SCWindow</span>(<span class="s4">"Fonts"</span>, <span class="s3">Rect</span>(128, 64, 800, 760));</p>
-<p class="p5">w.view.decorator = f = <span class="s3">FlowLayout</span>(w.view.bounds,<span class="s3">Point</span>(4,4),<span class="s3">Point</span>(4,2));</p>
+<p class="p10"><span class="s8">b = </span>SCScrollView<span class="s8">(w, </span>w.view.bounds<span class="s8">);</span></p>
+<p class="p4"><br></p>
+<p class="p5">b.decorator = f = <span class="s3">FlowLayout</span>(b.bounds,<span class="s3">Point</span>(4,4),<span class="s3">Point</span>(4,2));</p>
 <p class="p4"><br></p>
 <p class="p5">Font.availableFonts.do({ arg name;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> v, s, n, spec, p, height = 16,font;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>font = Font(name,13);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v = <span class="s3">SCStaticText</span>(w, <span class="s3">Rect</span>(0, 0, 56, height+2));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v = <span class="s3">SCStaticText</span>(b, <span class="s3">Rect</span>(0, 0, 56, height+2));</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.font = <span class="s3">font</span>;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.string = name;</p>
 <p class="p4"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s = <span class="s3">SCButton</span>(w, <span class="s3">Rect</span>(0, 0, 140, height+2));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s = <span class="s3">SCButton</span>(b, <span class="s3">Rect</span>(0, 0, 140, height+2));</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.font = <span class="s3">font</span>;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.states = [[name]];</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.action = { font.asCompileString.postln; };</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n = <span class="s3">SCNumberBox</span>(w, <span class="s3">Rect</span>(0, 0, 56, height+2));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n = <span class="s3">SCNumberBox</span>(b, <span class="s3">Rect</span>(0, 0, 56, height+2));</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.font = <span class="s3">font</span>;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.object = pi;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>if( (i = i + 1) % 3 == 0,{</p>
