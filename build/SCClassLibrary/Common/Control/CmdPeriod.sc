@@ -26,6 +26,9 @@ CmdPeriod {
 		era = era + 1;
 	}
 
+	*removeAll {
+		objects = IdentitySet.new;
+	}
 
 }
 
