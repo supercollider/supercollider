@@ -799,6 +799,13 @@ class PsycolliderPostWindow(PsycolliderWindow):
         sizeY = self.config.ReadInt('PostWindow-sizeY', DEFAULT_SIZEY)
         posX = self.config.ReadInt('PostWindow-posX', DEFAULT_POSX)
         posY = self.config.ReadInt('PostWindow-posY', DEFAULT_POSY)
+
+        # check that position is > 0
+        if posX < 0:
+            posX = DEFAULT_POSX
+        if posY < 0:
+            posY = DEFAULT_POSY 
+
         self.SetSize(wx.Size(sizeX, sizeY))
         self.SetPosition(wx.Point(posX, posY))
       
