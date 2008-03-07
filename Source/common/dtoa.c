@@ -31,7 +31,6 @@
  * file.
  */
 
-//////>>> added for SC
 #include "SC_Endian.h"
 
 #define Honor_FLT_ROUNDS 1
@@ -46,7 +45,6 @@
 //??#define NO_LONG_LONG 1
 #endif
 
-//////<<< added for SC
 
 
 

@@ -19,6 +19,7 @@ SConsignFile()
 
 import glob
 import os
+import subprocess
 import re
 import types
 import tarfile
@@ -29,11 +30,13 @@ import tarfile
 
 PACKAGE = 'SuperCollider'
 
+
+
 f = open('VERSION')
 VERSION = f.readline()
 f.close()
 
-os.execlp( 'sh', 'setMainVersion.sh' )
+subprocess.call(['sh', 'setMainVersion.sh'])
 
 def short_cpu_name(cpu):
     if cpu == 'Power Macintosh':
@@ -80,9 +83,12 @@ elif CPU in [ 'i586', 'i686' ]:
 else:
     DEFAULT_OPT_ARCH = None
 
+
+
 # ======================================================================
 # util
 # ======================================================================
+
 
 def make_os_env(*keys):
     env = os.environ
@@ -646,14 +652,13 @@ Source/common/SC_StringBuffer.cpp
 Source/common/SC_StringParser.cpp
 Source/common/g_fmt.c
 Source/common/scsynthsend.cpp
-Source/common/dtoa.o
+Source/common/dtoa.c
 ''')
 if PLATFORM == 'darwin':
     commonSources += [
 	'Source/common/SC_StandAloneInfo_Darwin.cpp'
 	]
 commonEnv.Library('build/common', commonSources)
-
 
 # ======================================================================
 # Source/server
