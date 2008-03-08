@@ -300,7 +300,7 @@ Pmono : Pattern {
 		var streamout, name;
 		var streampairs = patternpairs.copy;
 		var endval = patternpairs.size - 1;
-		var msgFunc, hasGate, synthLib, desc;
+		var msgFunc, hasGate, synthLib, desc, schedBundleArray,schedBundle;
 		cleanup = EventStreamCleanup.new;
 		forBy (1, endval, 2) { | i | streampairs[i] = patternpairs[i].asStream };
 
@@ -325,9 +325,14 @@ Pmono : Pattern {
 				~updatePmono = { | argID, argServer | 
 					 id = argID;
 					 server = argServer;
+					 schedBundleArray = ~schedBundleArray;
+					 schedBundle = ~schedBundle;
+					 
 				};
 				cleanup.addFunction(event, { | flag |
-					if (flag) { (id: id, server: server, type: \off).play }
+					if (flag) { (id: id, server: server, type: \off, 
+									schedBundleArray: schedBundleArray,
+									schedBundle: schedBundle).play }
 				}); 
 			}
 		};
