@@ -75,13 +75,49 @@ ServerLog : NetAddr {
 	
 	events { arg tail;
 		// list in logical time order
-		var events,since;
-		events = (sent ++ received);
+
+		/*
+		// could roughly intersperse them
+		// which is closer than what we start with
+		a = Array.series(10,0,2);
+		b = Array.series(15,1,2);
+		if(b.size > a.size,{
+			t = a;
+			a = b;
+			b = t;
+		});
+		c = Array(b.size + a.size);
+		a.do({ |it,i|
+			c.add(it);
+			if(b[i].notNil,{ c.add(b[i]) })
+		});
+
+		c
+
+		c.hoareFind(5,{|a,b| a < b })
+
+		// sort just up to the end of what you will show
+		c.hoareFind(10,{|a,b| a < b })
+
+		c
+
+		// better to do this from the back then
+
+		*/
+
+		var q,events,since,a,b;
+		q = PriorityQueue.new;
+		sent.do({ |it| q.put(it.eventTime,it) });
+		received.do({ |it| q.put(it.eventTime,it) });
+		events = Array.fill(sent.size + received.size,{ |i| 
+				//if(i % 25 == 0,{0.01.wait}); 
+				q.pop	
+			});
+		
 		/*(if(numMinutes.notNil,{
 			since = Main.elapsedTime - (numMinutes * 60);
 			events = events.select({ |a| a.eventTime >= since });
 		});*/
-		events = events.sort({ |a,b| a.eventTime <= b.eventTime });
 		if(tail.notNil,{
 			^events.copyRange(events.size-tail-1,events.size-1);
 		},{

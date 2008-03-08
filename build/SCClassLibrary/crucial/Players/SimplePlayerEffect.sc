@@ -79,8 +79,12 @@ EnvelopedPlayer : AbstractSinglePlayerEffect {
 	asSynthDef {
 		^SynthDef(this.defName,{ arg i_bus,gate;
 			var in,pnc;
+			var good; 
 			pnc = subject.numChannels;
-			in = In.ar(i_bus,pnc) * EnvGen.kr(env,gate,doneAction: 2);
+			in = In.ar(i_bus,pnc);
+			good = BinaryOpUGen('==', CheckBadValues.kr(in, 0, 0), 0);
+			 // silence the output if freq is bad
+			in = in * good * EnvGen.kr(env,gate,doneAction: 2);
 			if(numChannels.notNil,{
 				in = NumChannels.ar(in,numChannels,true);
 			});
