@@ -13,19 +13,24 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0424af}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #84331b}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0928ab}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #77381e}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4e6a22}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #84331b; min-height: 12.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #84331b; min-height: 14.0px}
-span.s1 {color: #0424af}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #556826}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #77381e; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #77381e; min-height: 14.0px}
+span.s1 {color: #0928ab}
 span.s2 {color: #000000}
 span.s3 {font: 12.0px Lucida Grande}
 span.s4 {color: #606060}
-span.s5 {color: #4e6a22}
-span.s6 {color: #84331b}
+span.s5 {color: #556826}
+span.s6 {color: #77381e}
+span.s7 {font: 9.0px Monaco}
+span.s8 {font: 9.0px Monaco; color: #0928ab}
+span.s9 {font: 9.0px Monaco; color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -177,75 +182,39 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6">BeatLock</p>
+<p class="p11"><b>Beat Synching</b></p>
 <p class="p2"><br></p>
-<p class="p4"><b>This will embed the sample's tempo into the SynthDef as a constant.<span class="Apple-converted-space">  </span>Tempo's tempo can vary, but</b></p>
-<p class="p4"><b>what the monkey thinks the music in the sample is will remain fixed in the SynthDef.</b></p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p6">(</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>//beatlock</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Instr</span>([<span class="s5">\help</span>,<span class="s5">\Sample</span>],{ <span class="s1">arg</span> sample;</p>
 <p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>PlayBuf<span class="s2">.ar(</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.numChannels,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufnumIr,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.pchRatioKr,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0,0.0,1.0);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>},[</p>
-<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\sample<span class="s2">,</span></p>
-<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\tempo</p>
-<p class="p6"><span class="Apple-tab-span">	</span>]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.0,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">p = Patch</span><span class="s2">([</span>\help<span class="s2">,</span>\Sample<span class="s2">],</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>[</p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">Sample</span><span class="s2">(</span>"a11wlk01.wav"<span class="s2">)</span></p>
+<p class="p12"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">Sample</span><span class="s7">(</span><span class="s9">"</span>a11wlk01-44_1.aiff<span class="s9">"</span><span class="s7">)</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>]);</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>// move the tempo slider</p>
-<p class="p6"><span class="Apple-tab-span">	</span>p.gui</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>p.gui<span class="Apple-tab-span">	</span></p>
 <p class="p6">)</p>
-<p class="p6">Note that the patch will not play starting on the even bar division unless it is started with<span class="Apple-converted-space"> </span></p>
-<p class="p6">p.play(atTime: 1)</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p6">This is roughly equivalent to this:</p>
-<p class="p6"><span class="Apple-tab-span">	</span>(</p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>//beatlock</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Instr</span>([<span class="s5">\help</span>,<span class="s5">\Sample</span>],{ <span class="s1">arg</span> sample,tempo;</p>
-<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>PlayBuf<span class="s2">.ar(</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.numChannels,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufnumIr,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.sampleRateIr / 44100 * tempo * sample.tempo.reciprocal,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0,0.0,1.0);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>},[</p>
-<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\sample<span class="s2">,</span></p>
-<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\tempo</p>
-<p class="p6"><span class="Apple-tab-span">	</span>]);</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">p = Patch</span><span class="s2">([</span>\help<span class="s2">,</span>\Sample<span class="s2">],</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>[</p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">Sample</span><span class="s2">(</span>"a11wlk01.wav"<span class="s2">),</span></p>
-<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>TempoPlayer<span class="s2">.new</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>]);</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>// move the tempo slider</p>
-<p class="p6"><span class="Apple-tab-span">	</span>p.gui</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>)</p>
-<p class="p2"><br></p>
+<p class="p13"><b>Note that the patch will not play starting on the even bar division unless it is started with<span class="Apple-converted-space"> </span></b></p>
+<p class="p13"><b>p.play(atTime: 1)</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p11"><b>soundFilePath</b></p>
-<p class="p11"><b>end</b></p>
+<p class="p4"><b>soundFilePath</b></p>
+<p class="p4"><b>end</b></p>
 <p class="p4"><span class="Apple-tab-span">	</span>signal.size - 1</p>
 <p class="p4"><span class="Apple-tab-span">	</span>the last indexable position in the signal</p>
-<p class="p11"><b>duration</b></p>
-<p class="p11"><b>totalMemory</b></p>
+<p class="p4"><b>duration</b></p>
+<p class="p4"><b>totalMemory</b></p>
 <p class="p4"><span class="Apple-tab-span">	</span>numFrames * numChannels</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
@@ -254,11 +223,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">The following methods are relevant if the sample is some kind of loop.</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p11"><b>tempo</b></p>
+<p class="p4"><b>tempo</b></p>
 <p class="p4"><span class="Apple-tab-span">	</span>beats per second the original recording is regarded to have.</p>
-<p class="p11"><b>beats</b></p>
+<p class="p4"><b>beats</b></p>
 <p class="p4"><span class="Apple-tab-span">	</span>number of beats</p>
-<p class="p11"><b>beatsize</b></p>
+<p class="p4"><b>beatsize</b></p>
 <p class="p4"><span class="Apple-tab-span">	</span>the number of samples per beat</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
@@ -266,17 +235,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p8">/***</p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
 <p class="p8">(<span class="Apple-converted-space"> </span></p>
 <p class="p8">// hit load and select a rhythm</p>
 <p class="p8">// will stay beat locked and the beat will flow despite the cutting</p>
 <p class="p8">q = rrand(8,32);</p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
 <p class="p8">Patch({arg gate,env,sample,pchRatio;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>var pchRatioKr,start;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>pchRatioKr = sample.pchRatioKr * pchRatio;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>start = LFSaw.kr(GetTempo.kr * sample.beats.reciprocal, sample.end * 0.5, sample.end * 0.5);</p>
-<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span>ReTrigger2.ar({<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>PlayBuf.ar(sample.signal,sample.sampleRate,pchRatioKr,start.poll,0,sample.end);</p>
 <p class="p8"><span class="Apple-tab-span">	</span>},gate,env,sample.numChannels)</p>
@@ -293,18 +262,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(0.125,0.5)</p>
 <p class="p8"><span class="Apple-tab-span">	</span>)</p>
 <p class="p8">]).topGui</p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
 <p class="p8">)</p>
-<p class="p12"><br></p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
+<p class="p14"><br></p>
 <p class="p8">( // will stay beat locked and the beat will flow despite the cutting</p>
 <p class="p8">q = rrand(8,32);</p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
 <p class="p8">Patch({arg gate,env,sample,pchRatio;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>var pchRatioKr,start;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>pchRatioKr = sample.pchRatioKr * pchRatio;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>start = LFSaw.kr(GetTempo.kr * sample.beats.reciprocal, sample.end * 0.5, sample.end * 0.5);</p>
-<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span>ReTrigger2.ar({<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>PlayBuf.ar(sample.signal,sample.sampleRate,pchRatioKr,start.poll,0,sample.end);</p>
 <p class="p8"><span class="Apple-tab-span">	</span>},gate,env,sample.numChannels)</p>
@@ -321,10 +290,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(0.125,1.0)</p>
 <p class="p8"><span class="Apple-tab-span">	</span>)</p>
 <p class="p8">]).topGui</p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
 <p class="p8">)</p>
-<p class="p12"><br></p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
+<p class="p14"><br></p>
 <p class="p8">(<span class="Apple-converted-space"> </span></p>
 <p class="p8">Patch({arg gate,env,sample;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>var p;</p>
@@ -336,9 +305,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span>Env.perc(release:0.2),</p>
 <p class="p8"><span class="Apple-tab-span">	</span>Sample(":Sounds:floating_1")</p>
 <p class="p8">]).topGui</p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
 <p class="p8">)</p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
 <p class="p8">(</p>
 <p class="p8">Patch({arg gate,env,sample,startBeat;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>var p,s,e;</p>
@@ -353,10 +322,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span>s = Sample(":Sounds:floating_1"),</p>
 <p class="p8"><span class="Apple-tab-span">	</span>StreamKrDur( Pfunc({ s.beats.rand.round(0.25) }),Pfunc({ 2 ** rrand(-4,2)}))</p>
 <p class="p8">]).topGui</p>
-<p class="p12"><br></p>
+<p class="p14"><br></p>
 <p class="p8">)</p>
-<p class="p13"><br></p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
+<p class="p14"><br></p>
 <p class="p8">***/</p>
 <p class="p2"><br></p>
 </body>

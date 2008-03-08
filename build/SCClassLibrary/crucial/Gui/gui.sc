@@ -216,7 +216,7 @@
 
 + SCWindow {
 	asPageLayout { arg title,bounds;
-		^MultiPageLayout.on(this.asView,bounds)
+		^MultiPageLayout.on(this,bounds)
 	}
 	asFlowView { arg bounds;
 		^FlowView(this,bounds)
@@ -226,14 +226,17 @@
 	asPageLayout { arg title,bounds;
 		// though it won't go multi page
 		// FlowView better ?
-		^MultiPageLayout.on(this,bounds)
+		^FlowView(this,bounds ?? {this.bounds})
+		//^MultiPageLayout.on(this,bounds)
 	}
 }
-+ SCViewHolder {
-	asPageLayout { arg title,bounds;
-		^MultiPageLayout.on(this,bounds)
-	}
-}
+//+ SCViewHolder {
+//	asPageLayout { arg title,bounds;
+//		//this.insp("on...");
+//		^FlowView(this,bounds)
+//		//^MultiPageLayout.on(this,bounds)
+//	}
+//}
 + SCCompositeView {
 	asFlowView { arg bounds;
 		^FlowView(this,bounds ?? {this.bounds})

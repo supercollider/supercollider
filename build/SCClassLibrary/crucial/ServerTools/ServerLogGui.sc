@@ -6,10 +6,9 @@ ServerLogGui : ObjectGui {
 
 	guiBody { arg layout ... args;
 		var w,tail=500;
-		args.debug("server log args");
 		w = layout.bounds.width;
 		nodeColors = Dictionary.new;
-
+		
 		model.events(tail).do({ |ev|
 			var eventTime,timeSent,delta,dir,bg,row;
 			eventTime = ev.eventTime;
@@ -54,9 +53,8 @@ ServerLogGui : ObjectGui {
 				},{
 					this.formatMsg(r,ev.msg);
 				});
-			})
+			});
 		});
-
 	}
 
 	formatMsg { |r,msg|

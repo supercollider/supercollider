@@ -9,11 +9,12 @@ TempoPlayer : KrPlayer { //Synthless
 		^super.new.tempo_(tempo ?? {Tempo.default})
 	}
 	
-	/*add a secret arg
-	kr {
+	/*add a secret arg instead ?*/
+	/*kr {
 		^In.kr( tempoBus.index, 1)
 	}*/
 	
+	synthArg { ^tempoBus.index }
 	makeResourcesToBundle { arg bundle;
 		tempoBus = TempoBus(server,tempo);
 		this.annotate(tempoBus,"Tempo Bus");

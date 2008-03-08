@@ -36,13 +36,14 @@ MultiPageLayout  {
 		view.decorator.margin_(argMargin ?? {GUI.skin.margin});
 		autoRemoves = [];
 	}
-	*on { arg parent,bounds,margin,background;
-		^super.new.initon(parent,bounds,margin,background)
+	*on { arg window,bounds,margin,background;
+		^super.new.initOn(window,bounds,margin,background)
 	}
-	initon { arg parent,bounds,argmargin,background;
-		view = FlowView(parent,bounds);
-		if(argmargin.notNil,{
-			view.decorator.margin_(argmargin);
+	initOn { arg argWindow,bounds,argMargin,background;
+		window = argWindow;
+		view = FlowView(window,bounds);
+		if(argMargin.notNil,{
+			view.decorator.margin_(argMargin);
 		});
 		autoRemoves = [];
 	}
@@ -117,7 +118,11 @@ MultiPageLayout  {
 		//fs = GUI.window.screenBounds;
 		
 		var b,wb,wbw,wbh;
-		b = view.resizeToFit(reflow);
+		if(this.view.isNil,{ this.insp });
+		b = this.view.resizeToFit(reflow);
+		if(window.isNil,{
+			this.insp;
+		});
 		window.setInnerExtent(wbw = b.width + 2, wbh = b.height + 6 + 17);
 		/*
 		auto-place the window.  but we need to know if you explicitly passed in bounds.
