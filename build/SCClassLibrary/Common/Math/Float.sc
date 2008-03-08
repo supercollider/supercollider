@@ -60,7 +60,7 @@ Float : SimpleNumber {
 		var	str = super.asString;
 		stream << str;
 		// if it doesn't already have a . or is 1e-05 then add a .0 to force it to Float
-		if(str != "inf" and: { str.find(".").isNil } and: { str.find("e").isNil},{
+		if(str != "inf" and: {str!="-inf"} and: { str.find(".").isNil } and: { str.find("e").isNil},{
 			stream << ".0";
 		})
 	}
