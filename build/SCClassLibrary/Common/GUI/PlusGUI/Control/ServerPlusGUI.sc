@@ -138,7 +138,7 @@
 				booter.setProperty(\value,0);
 				recorder.setProperty(\value,0);
 				recorder.enabled = false;
-
+				countsViews.do(_.string = "");
 			};
 			booting = {
 				active.stringColor_(Color.new255(255, 140, 0));
@@ -205,7 +205,6 @@
 		
 			if (i < 2, { 
 				numView = gui.staticText.new(w, Rect(0,0, 34, 12));
-				numView.string = "?";
 				numView.font = font;
 				numView.align = \left;
 			
@@ -216,7 +215,6 @@
 			},{
 				numView = gui.staticText.new(w, Rect(0,0, 50, 12));
 				numView.font = font;
-				numView.string = "?";
 				numView.align = \left;
 			});
 			
