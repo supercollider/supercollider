@@ -29,8 +29,8 @@
  */
 
 #ifndef SC_WIN32
-#include "pycxx/CXX/Objects.hxx"
-#include "pycxx/CXX/Extensions.hxx"
+#include "pycxx/cxx/Objects.hxx"
+#include "pycxx/cxx/Extensions.hxx"
 #else
 #include "stdafx.h"
 #endif
