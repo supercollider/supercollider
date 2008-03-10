@@ -133,7 +133,10 @@ Document {
 	}
 
 	*current{
-		^this.implementationClass.current;
+		if ( this.implementationClass == ScelDocument, {
+			^this.implementationClass.current;
+		});
+		^current;
 	}
 	
 	*listener {
