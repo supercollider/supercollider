@@ -67,8 +67,7 @@ ServerGui : ObjectGui {
 			};
 		});
 			
-		status = CXLabel(layout,"                                       ");
-		status.font = GUI.font.new("Helvetica",9);
+		status = CXLabel(layout,"                                       ",font: GUI.font.new("Helvetica",9));
 		status.background = Color.black;
 		status.stringColor = Color.green;
 		status.align = \right;
