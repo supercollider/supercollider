@@ -198,6 +198,7 @@ EmacsInterface {
 Emacs {
 	classvar outStream, outFile, requestHandlers, requestAllocator;
 	classvar <menu, <>keys;
+	classvar <initialized = false;
 
 	// initialization
 	*initClass {
@@ -213,6 +214,7 @@ Emacs {
 		if (outFileName.isNil) {
 			"Emacs: No communication FIFO available.".postln;
 		}{
+			initialized = true;
 			Document.implementationClass = ScelDocument;
 			outStream = CollStream.on(String.new);
 			outFile = File(outFileName, "w");

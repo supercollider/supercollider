@@ -3,7 +3,7 @@
 // Subclasses also (in their SC code files) add a "implementationClass" method to Document to tell it to use them.
 Document {
 
-	classvar <dir="", <wikiDir="", <allDocuments, <>current;
+	classvar <dir="", <wikiDir="", <allDocuments, >current;
 	classvar <>globalKeyDownAction, <> globalKeyUpAction, <>initAction;
 	
 	classvar <>autoRun = true;
@@ -33,7 +33,7 @@ Document {
 	*open { arg path, selectionStart=0, selectionLength=0, envir;
 		var doc, env;
 		env = currentEnvironment;
-		current.restoreCurrentEnvironment;		
+		this.current.restoreCurrentEnvironment;		
 		doc = Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength);
 		if (doc.notNil) {
 			doc.envir_(envir)
@@ -46,7 +46,7 @@ Document {
 	*new { arg title="Untitled", string="", makeListener=false, envir;
 		var doc, env;
 		env = currentEnvironment;
-		current.restoreCurrentEnvironment;		
+		this.current.restoreCurrentEnvironment;		
 		doc = Document.implementationClass.new(title, string, makeListener);
 		if (doc.notNil) {
 			doc.envir_(envir)
@@ -130,6 +130,10 @@ Document {
 		if(leavePostWindowOpen.not, {
 			listenerWindow.close;
 		})
+	}
+
+	*current{
+		^this.implementationClass.current;
 	}
 	
 	*listener {
@@ -517,7 +521,7 @@ Document {
 	*numberOfOpen {
 		thisProcess.platform.when(\_NumberOfOpenTextWindows) {
 			^this.prnumberOfOpen
-		};
+		} { ^allDocuments.size };
 		^0
 	}
 	
@@ -623,9 +627,9 @@ Document {
 	
 // Environment handling  Document with its own envir must set and restore currentEnvironment on entry and exit.
 // Requires alteration of *open, *new, closed, didBecomeKey, and didResignKey
-	envir_ { | ev |Ê
+	envir_ { | ev |
 		envir = ev;
-		if (this.class.current == this) {Ê
+		if (this.class.current == this) {
 			if (savedEnvir.isNil) {	 
 				this.saveCurrentEnvironment
 			}

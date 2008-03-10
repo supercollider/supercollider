@@ -236,9 +236,12 @@ ScelDocument : Document{
 	}
 
 	string {arg rangestart, rangesize = 1;
+		var cond;
 		currentString = nil;
 		thisdoc.string( rangestart, { |v| currentString = v }, rangesize );
-		while ( { currentString.isNil }, {"wait for string".postln;} );
+//		cond = Condition.new( { currentString.notNil } );
+//		cond.wait;
+		//		while ( { currentString.isNil }, {"wait for string".postln;} );
 		^currentString;
 	}
 	text {
@@ -285,6 +288,10 @@ ScelDocument : Document{
 	*current {
 		^EmacsDocument.current.sceld;
 	}	
+
+	*prGetIndexOfListener{
+		^this.allDocuments.detectIndex( { |doc| doc.title == "*SCLang:PostBuffer*" } );
+	}
 
 	// invalid methods
 	initByIndex {
