@@ -40,6 +40,17 @@ Stream : AbstractFunction {
 			i = i + 1;
 		};
 	}
+	
+	tabulate {  | startRow = 0, skipSize = 0|
+		var table;
+		startRow.do { this.next };
+		this.do { | v | 
+			table = table.add(v); 
+			skipSize.do { this.next }
+		};
+		^table
+	}
+	
 	generate { arg function, item;
 		var i=0;
 		while { 
