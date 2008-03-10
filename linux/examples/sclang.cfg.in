@@ -6,19 +6,14 @@
 # usage:	install as /etc/sclang.cfg or ~/.sclang.cfg
 # ======================================================================
 
-# linux extensions
+# default class library
++@PKG_DATA_DIR@/SCClassLibrary
+
+# system-wide extensions
 +@PKG_DATA_DIR@/Extensions
 
-# default class library
-+@PKG_DATA_DIR@/SCClassLibrary/Common
-+@PKG_DATA_DIR@/SCClassLibrary/DefaultLibrary
-+@PKG_DATA_DIR@/SCClassLibrary/backwards_compatibility
-
-# uncomment if not using SCEL (emacs interface)
-#-@PKG_DATA_DIR@/SCClassLibrary/Common/GUI/Document.sc
-
-# add-on libraries, uncomment as necessary
-#+@PKG_DATA_DIR@/SCClassLibrary/crucial
-#+@PKG_DATA_DIR@/SCClassLibrary/JITLib
+# in case you don't want to use add-on libraries, uncomment as necessary
+#-@PKG_DATA_DIR@/SCClassLibrary/crucial
+#-@PKG_DATA_DIR@/SCClassLibrary/JITLib
 
 # EOF
