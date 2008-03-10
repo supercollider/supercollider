@@ -1,10 +1,9 @@
 
 CXAbstractLabel : SCViewHolder {
 
-	*new { arg layout,string,width,height,minWidth=15;
-		var font;
+	*new { arg layout,string,width,height,minWidth=15,font;
 		string = string.asString;
-		font = GUI.font.new(*GUI.skin.fontSpecs);
+		if(font.isNil,{ font =  GUI.font.new(*GUI.skin.fontSpecs) });
 
 		^super.new.init(layout, Rect(0,0,
 			width ?? {(string.bounds(font).width + 6).max(minWidth)} ,
@@ -27,9 +26,9 @@ CXAbstractLabel : SCViewHolder {
 CXLabel : CXAbstractLabel {
 	classvar <>bgcolor;
 
-	*new { arg layout,string,width,height,minWidth=15;
+	*new { arg layout,string,width,height,minWidth=15,font;
 		var new;
-		new = super.new(layout,string,width,height,minWidth);
+		new = super.new(layout,string,width,height,minWidth,font);
 		new.background_(Color.new255(255,255,240))
 			.align_(\left);
 		^new
