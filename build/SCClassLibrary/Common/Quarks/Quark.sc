@@ -269,7 +269,7 @@ QuarkView {
 				.resize_(8)
 				.states_([["Open quark help"]])
 				.action_({
-					helpdoc.openDocument
+					helpdoc.openHTMLFile
 				});
 		};
 	}

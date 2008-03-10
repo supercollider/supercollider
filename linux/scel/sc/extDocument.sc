@@ -15,67 +15,56 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA
 
+
 + Document {
 	// Document class for Emacs interface.
-	//	// Delegates to EmacsDocument.
-	// Delegates to ScelDocument
+	//	
+	// Delegates to ScelDocument, which delegates to EmacsDocument.
 
-	//*implementationClass { ^ScelDocument }
+	// moved to Emacs, upon startup
+	//  *implementationClass { ^ScelDocument }
 
-	*initClass {
-		//		allDocuments = Array.new;
-		//		allDocuments.dump;
-	}
-	*open { | path, selectionStart = 0, selectionLength = 0 | //, completionFunc |
-		//		EmacsDocument.prNewFromPath(path, selectionStart, selectionLength, completionFunc);
-		//		^nil
-		^ScelDocument.open( path, selectionStart, selectionLength );
-	}
-	*new { | title = "Untitled", string = "", makeListener = false | //,  completionFunc |
-		//		EmacsDocument.prNewFromString(title, string, makeListener, completionFunc);
-		//		^nil
-		//		"Document.new".postln;
-		^ScelDocument.new( title, string, makeListener );
-	}
-	*listener { ^allDocuments.detectMsg(\isListener) }
-
-/*	*current {
-		^EmacsDocument.current.sceld;
-	}
-*/
 	// PRIVATE
-	*prBasicNew { ^super.new }
-	*numberOfOpen { ^allDocuments.size }
-	*newFromIndex { ^this.shouldNotImplement(thisMethod) }
+	//	*newFromIndex { ^this.shouldNotImplement(thisMethod) }
 	*prGetLast { ^allDocuments.last }
-	*prGetIndexOfListener { ^this.shouldNotImplement(thisMethod) }
 }
+
 
 + String{
 	findHelpFile {
-		Emacs.evalLispExpression(['sclang-find-help', this].asLispString);
+		if ( Emacs.initialized) {
+			Emacs.evalLispExpression(['sclang-find-help', this].asLispString);
+		}
 	}
 
 	openHelpFile {
-		this.findHelpFile;
+		if ( Emacs.initialized) {
+			this.findHelpFile;
+		}
 	}
 
 	openHTMLFile {
+		if ( Emacs.initialized) {
 		//		this.findHelpFile;
-		Emacs.evalLispExpression(['w3m-browse-url', this].asLispString);
+			Emacs.evalLispExpression(['w3m-browse-url', this].asLispString);
+		}
 	}
 }
 
 + Class{
 	openHelpFile {
-		this.asString.findHelpFile;
+		if ( Emacs.initialized) {
+			this.asString.findHelpFile;
+		}
 	}
 }
 
 + Method{
 
 	openHelpFile {
-		this.asString.findHelpFile;
+		if ( Emacs.initialized) {
+			this.asString.findHelpFile;
+		}
 	}
 }
  
