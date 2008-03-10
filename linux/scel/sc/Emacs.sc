@@ -216,6 +216,7 @@ Emacs {
 		}{
 			initialized = true;
 			Document.implementationClass = ScelDocument;
+			LinuxPlatform.emacs = true;
 			outStream = CollStream.on(String.new);
 			outFile = File(outFileName, "w");
 			UI.registerForShutdown({

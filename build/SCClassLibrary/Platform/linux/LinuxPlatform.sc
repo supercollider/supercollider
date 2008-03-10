@@ -1,12 +1,14 @@
 LinuxPlatform : UnixPlatform
 {
+	classvar <>emacs = false;
+
 	name { ^\linux }
 	startupFiles { ^#["~/.sclang.sc"] }
 	startup {
 		// Document setup
-		if (Document.implementationClass == ScelDocument ) {
-			Document.implementationClass.startup;
-		};
+		if ( emacs ) {
+				Document.implementationClass.startup;
+			};
 		
 		helpDir = this.systemAppSupportDir++"/Help";
 
