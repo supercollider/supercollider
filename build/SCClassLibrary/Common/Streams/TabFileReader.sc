@@ -44,17 +44,16 @@ FileReader : Stream {
 	
 	read { ^this.asArray }
 	
-	*read { | path, skipEmptyLines=false, skipBlanks=false, delimiter, startRow = 0, skipSize = 0 |
+	*read { | path, skipEmptyLines=false, skipBlanks=false, func, delimiter, startRow = 0, skipSize = 0 |
 		var fr, table;
 		fr = this.new(path, skipEmptyLines, skipBlanks,  delimiter) ?? { ^nil };
-		table = fr.subSample(startRow, skipSize).asArray;
+		table = fr.subSample(startRow, skipSize).collect(_.collect(func)).asArray;
 		fr.close;
 		^table
 	}
 
-	*readInterpret { | path, skipEmptyLines=false, skipBlanks=false | 
-		^this.read(path, skipEmptyLines, skipBlanks).collect { | row | row.collect(_.interpret) }
-	}
+	*readInterpret { | path, skipEmptyLines=false, skipBlanks=false, delimiter, startRow = 0, skipSize = 0  | 
+		^this.read(path, skipEmptyLines, skipBlanks, _.interpret, delimiter, startRow = 0, skipSize = 0 )	}
 	
 }
 
