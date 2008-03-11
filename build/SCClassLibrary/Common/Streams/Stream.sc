@@ -50,14 +50,6 @@ Stream : AbstractFunction {
 			}
 		}
 	}
-
-	asArray {
-		var array;
-		this.do { | v|
-			array = array.add(v);
-		};
-		^array
-	}
 	
 	generate { arg function, item;
 		var i=0;
