@@ -10,6 +10,7 @@ Pfx : FilterPattern {
 		var server = inevent[\server] ?? { Server.default };
 		var id = server.nextNodeID;
 		var event = inevent.copy;
+		var cleanupEvent;
 		
 		pairs.pairsDo {|name, value|
 			event[name] = value;
@@ -20,8 +21,10 @@ Pfx : FilterPattern {
 		event[\id] = id;
 		event[\delta] = 0;
 		
+		cleanupEvent = (type: \off, parent: event);
+		
 		cleanup.addFunction(event, { |flag| 
-			if (flag) { (type: \off, id: id).play } 
+			if (flag) { cleanupEvent.play } 
 		});		
 		
 		inevent = event.yield;
@@ -43,11 +46,10 @@ Pgroup : FilterPattern {
 	embedInStream { arg inevent;
 	
 		var server, groupID, event, ingroup, cleanup;
-		var stream, lag;
+		var stream, lag, cleanupEvent;
 		
 		cleanup = EventStreamCleanup.new;
 		server = inevent[\server] ?? { Server.default };
-		ingroup = inevent[\group];		
 		groupID = server.nextNodeID;
 		
 		event = inevent.copy;
@@ -55,9 +57,11 @@ Pgroup : FilterPattern {
 		event[\type] = \group;
 		event[\delta] = 1e-9; // no other sync choice for now. (~ 1 / 20000 sample delay)
 		event[\id] = groupID;
-		event[\group] = ingroup;
+		
+		cleanupEvent = (type: \kill, parent: event);
+		
 		cleanup.addFunction(event, { | flag |
-			if (flag) { (lag: lag, type: \kill, id: groupID, server: server).play }
+			if (flag) { cleanupEvent.play }
 		});
 		inevent = event.yield;
 		
@@ -95,7 +99,7 @@ Pbus : FilterPattern {
 	
 	embedInStream { arg inevent;
 		var server, groupID, linkID, bus, ingroup, cleanup;
-		var patterns, event, freeBus, stream;
+		var patterns, event, freeBus, stream, cleanupEvent;
 		
 		cleanup = EventStreamCleanup.new;
 		server = inevent[\server] ?? { Server.default };
@@ -120,7 +124,6 @@ Pbus : FilterPattern {
 		event[\group] = ingroup;
 		event.yield;
 		
-		
 		inevent = event = inevent.copy;
 		
 		event[\type] = \on;
@@ -131,20 +134,21 @@ Pbus : FilterPattern {
 		event[\fadeTime] = fadeTime;
 		event[\instrument] = format("system_link_%_%", rate, numChannels);
 		event[\in] = bus;
+		event[\msgFunc] = #{ |out, in, fadeTime, gate=1|
+			[\out, out, \in, in, \fadeTime, fadeTime, \gate, gate, \doneAction, 3] 
+		};
+		
+		cleanupEvent = (type: \off, parent: event, fadeTime: fadeTime.abs, hasGate: true, gate: 0);
 
 		cleanup.addFunction(event, { | flag |
-			if(flag) { (id: linkID, type: \off, gate: dur.neg, hasGate: true).play }; 
+			if(flag) { cleanupEvent.play }; 
 		});
 
-		cleanup.addFunction(event, { freeBus.value; });
+		cleanup.addFunction(event, { defer({ freeBus.value;}, fadeTime.abs + dur) });
 		
 		// doneAction = 3;   
 		// remove and deallocate both this synth and the preceeding node 
 		// (which is the group).
-		
-		event[\msgFunc] = #{ |out, in, fadeTime, gate=1|
-			[\out, out, \in, in, \fadeTime, fadeTime, \gate, gate, \doneAction, 3] 
-		};
 		
 		inevent = event.yield;
 		
