@@ -42,12 +42,12 @@ FileReader : Stream {
 		^record;
 	}
 	
-	read { ^this.tabulate }
+	read { ^this.asArray }
 	
 	*read { | path, skipEmptyLines=false, skipBlanks=false, delimiter, startRow = 0, skipSize = 0 |
 		var fr, table;
 		fr = this.new(path, skipEmptyLines, skipBlanks,  delimiter) ?? { ^nil };
-		table = fr.tabulate(startRow, skipSize);
+		table = fr.subSample(startRow, skipSize).asArray;
 		fr.close;
 		^table
 	}
