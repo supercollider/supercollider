@@ -1,12 +1,10 @@
 LinuxPlatform : UnixPlatform
 {
-	classvar <>emacs = false;
-
 	name { ^\linux }
 	startupFiles { ^#["~/.sclang.sc"] }
 	startup {
 		// Document setup
-		if ( emacs ) {
+		if ( this.hasFeature( \emacs ) ) {
 				Document.implementationClass.startup;
 			};
 		
