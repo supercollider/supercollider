@@ -41,14 +41,22 @@ Stream : AbstractFunction {
 		};
 	}
 	
-	tabulate {  | startRow = 0, skipSize = 0|
-		var table;
-		startRow.do { this.next };
-		this.do { | v | 
-			table = table.add(v); 
-			skipSize.do { this.next }
+	subSample {| offset= 0, skipSize = 0|
+		^Routine {
+			offset.do{ this.next };
+			loop {
+				this.next.yield;
+				skipSize.do { this.next }
+			}
+		}
+	}
+
+	asArray {
+		var array;
+		this.do { | v|
+			array = array.add(v);
 		};
-		^table
+		^array
 	}
 	
 	generate { arg function, item;
