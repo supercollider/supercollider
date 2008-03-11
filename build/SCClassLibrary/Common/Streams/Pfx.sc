@@ -141,7 +141,7 @@ Pbus : FilterPattern {
 		cleanupEvent = (type: \off, parent: event, fadeTime: fadeTime.abs, hasGate: true, gate: 0);
 
 		cleanup.addFunction(event, { | flag |
-			if(flag) { cleanupEvent.play }; 
+			if(flag) { defer ( {cleanupEvent.play}, dur) }; 
 		});
 
 		cleanup.addFunction(event, { defer({ freeBus.value;}, fadeTime.abs + dur) });
