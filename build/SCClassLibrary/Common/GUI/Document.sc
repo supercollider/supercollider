@@ -133,7 +133,7 @@ Document {
 	}
 
 	*current{
-		if ( this.implementationClass == ScelDocument, {
+		if ( thisProcess.platform.hasFeature( \emacs ), {
 			^this.implementationClass.current;
 		});
 		^current;
