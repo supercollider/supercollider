@@ -141,12 +141,13 @@ PathName {
 	}
 	
 	noEndNumbers { 
-		var result, count = 0; 
+		var result, count = 0, char; 
 		
 		result = fullPath.copy;
 		while(
 			{ 	count = count + 1;
-				fullPath.at(fullPath.size - count).isDecDigit;
+				char = fullPath.at(fullPath.size - count); 
+				char.notNil and: { char.isDecDigit};
 			}, 
 			{ result = result.copyRange(0,  result.size - 2) }
 			);
@@ -161,7 +162,7 @@ PathName {
 		while(
 			{ 	count = count + 1;
 				char = fullPath.at(fullPath.size - count);
-				char.isDecDigit;
+				char.notNil and: { char.isDecDigit};
 			}, 
 			{ reverseNumString = reverseNumString ++ char }
 			);
