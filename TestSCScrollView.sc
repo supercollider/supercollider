@@ -3,7 +3,7 @@ TestSCScrollView : UnitTest {
 	
 	test_nestingRelVsAbs {
 		// Albers ad infinitum
-
+		// but this should look centered, just the one in composite view
 		var vs,trueBounds,falseBounds;
 		
 		vs = [true,false].collect({ |relativeOrigin|
@@ -39,6 +39,25 @@ TestSCScrollView : UnitTest {
 
 	}
 
+	// scroll in the center of a scroll
+	test_absoluteBounds  {
+		
+		var w,c,d,s,t,bounds,absoluteBounds;
+		w = SCWindow.new("TestSCCompositeView:test_absoluteBounds white comp should be in the middle of blue comp");
+
+		c = GUI.scrollView.new(w,Rect(30,30,300,300));
+		c.background = Color.blue;
+	
+		t = GUI.scrollView.new(c,Rect(100,100,100,100));
+		t.background = Color.white;
+	
+		w.front;
+		
+		// absoluteBounds gotten directly from the view's internals
+		absoluteBounds = t.absoluteBounds;
+	
+		this.assertEquals(absoluteBounds , Rect(130,130,100,100),"bounds should be 130,130,100,100 for scrollView");
+	}
 
 	test_scrollInsideRelativeComposite {
 		var w,c,d,s,t;
