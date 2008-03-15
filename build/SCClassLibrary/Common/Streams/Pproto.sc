@@ -1,4 +1,61 @@
 
+Pfpar : ListPattern {
+	initStreams { arg priorityQ;
+		list.do({ arg pattern, i; 
+			priorityQ.put(0.0, pattern.asStream);
+		});
+	}
+	asStream { | cleanup| ^Routine({ arg inval; this.embedInStream(inval, cleanup) }) }
+
+	embedInStream { arg inval, cleanup;
+		var assn;
+		var priorityQ = PriorityQueue.new;
+		cleanup = cleanup ? EventStreamCleanup.new;
+	
+		repeats.value.do({ arg j;
+			var outval, stream, nexttime, now = 0.0;
+
+			this.initStreams(priorityQ);
+			
+			// if first event not at time zero
+			if (priorityQ.notEmpty and: { (nexttime = priorityQ.topPriority) > 0.0 }, {
+				outval = inval.copy;
+				outval.put(\freq, \rest);					
+				outval.put(\delta, nexttime);
+				
+				inval = outval.yield; 
+				now = nexttime;	
+			});
+			
+			//inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
+			
+			while({
+				priorityQ.notEmpty
+			},{
+				stream = priorityQ.pop;
+				outval = stream.next(inval);
+				if (outval.isNil, {
+					priorityQ.clear;
+					cleanup.exit(inval); 
+		
+				},{			
+					cleanup.update(outval);
+					// requeue stream
+					priorityQ.put(now + outval.delta, stream);
+					nexttime = priorityQ.topPriority;
+					outval.put(\delta, nexttime - now);
+					
+					inval = outval.yield;
+					// inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
+					now = nexttime;	
+				});	
+			});
+		});
+		^inval;
+	}
+	
+}	
+
 Pproto  : Pattern {
 	
 	var <>makeFunction, <>pattern, <>cleanupFunc;
@@ -39,7 +96,7 @@ Pproto  : Pattern {
 		cleanupFunc = eventCleanupFunc ?? { { | flag | eventCleanupFunc.value(proto, flag) } };
 		cleanup.addFunction(event, cleanupFunc);
 
-		stream = pattern.asStream;
+		stream = Pfpar(pattern.asArray).asStream;
 		loop {
 			ev = event.copy.putAll(protoEvent);
 			ev = stream.next(ev) ?? { ^cleanup.exit(event) };
