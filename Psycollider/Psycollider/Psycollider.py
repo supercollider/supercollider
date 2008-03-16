@@ -896,7 +896,16 @@ class Psycollider(wx.App):
         # enable images for html
         wx.InitAllImageHandlers()
         
-        PySCLang.setSCLogSink(WriteInLogWindow)
+        # Set the log sink function (writes to post window)
+        # On windows, we can write directly to it, and using the PostText function
+        # causes the post window to be updated slightly later which doesn't look too nice.
+        #
+        # Can't do this on Linux, as gtk is not thread safe, so must use PostText.
+        if(os.name == 'nt'):
+            PySCLang.setSCLogSink(WriteInLogWindow)
+        else:
+            PySCLang.setSCLogSink(PostText)
+            
         PySCLang.setPyPrOpenWinTextFile(OpenTextFile)
         
         if not self.ChangeDirToSCClassLibraryFolder(): 
@@ -1163,18 +1172,15 @@ class Psycollider(wx.App):
         
 # ---------------------------------------------------------------------
 # WriteInLogWindow
-def WriteInLogWindow(text):
-    try:
-        # try to encode text as utf8
-        text = text.encode('utf-8')
-    except:
-        pass
-        
+def WriteInLogWindow(text):        
     if wx.GetApp().theMainFrame == None:
         sys.stdout.write(text)
     else:
         wx.GetApp().theMainFrame.log.AppendText(text)
-        
+    
+def PostText(text):
+    wx.CallAfter(WriteInLogWindow, text)  
+    
 # ---------------------------------------------------------------------
 def OpenTextFile(path, rangeStart, rangeSize):
     if wx.GetApp().theMainFrame == None:
