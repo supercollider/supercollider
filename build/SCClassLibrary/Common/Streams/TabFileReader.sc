@@ -7,7 +7,7 @@ FileReader : Stream {
 		var stream;
 		if (pathOrFile.isKindOf(File) ) { stream = pathOrFile }  { stream =  File(pathOrFile, "r") }; 
 		if (stream.isOpen.not) { warn("FileReader: file" + pathOrFile + "not found.") ^nil };
-		^super.newCopyArgs(stream, skipEmptyLines, skipBlanks,  delimiter ? delim)
+		^super.newCopyArgs(stream, skipEmptyLines, skipBlanks,  delimiter ? this.delim)
 	}
 	
 	reset { stream.reset }
@@ -47,7 +47,12 @@ FileReader : Stream {
 	*read { | path, skipEmptyLines=false, skipBlanks=false, func, delimiter, startRow = 0, skipSize = 0 |
 		var fr, table;
 		fr = this.new(path, skipEmptyLines, skipBlanks,  delimiter) ?? { ^nil };
-		table = fr.subSample(startRow, skipSize).collect(_.collect(func)).all;
+		
+		if (func.notNil) { 
+			table = fr.subSample(startRow, skipSize).collect(_.collect(func)).all;
+		} { 
+			table = fr.subSample(startRow, skipSize).all;
+		};
 		fr.close;
 		^table
 	}
