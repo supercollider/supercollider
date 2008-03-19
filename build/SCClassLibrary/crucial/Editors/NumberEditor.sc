@@ -57,9 +57,12 @@ NumberEditor : Editor {
 		this.value = spec.constrain(value);
 		this.changed(\spec);
 	}
-	setUnmappedValue { arg unipolar;
+	value_ { |v|
+		value = spec.constrain(v);
+	}
+	setUnmappedValue { arg unipolar,change=true;
 		this.value = spec.map(unipolar);
-		this.changed;
+		if(change,{this.changed});
 		^value
 	}
 	unmappedValue {
@@ -185,6 +188,10 @@ BooleanEditor : NumberEditor {
 	instrArgFromControl { arg control;
 		^value
 	}
+	value_ { |v|
+		value = v;
+	}
+
 	guiClass { ^BooleanEditorGui }
 }
 
