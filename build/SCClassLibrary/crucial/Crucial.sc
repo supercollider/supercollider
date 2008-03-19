@@ -359,6 +359,24 @@ Crucial {
 			});
 		});
 
+		Library.put(\menuItems,\introspection,\classfinder,{
+			GetStringDialog("Search classes...","",{ arg ok,string;
+				Sheet({ |layout|
+					var matches;
+					Object.allSubclasses.do({ |class|
+						if(class.isMetaClass.not and: {class.name.asString.find(string,true).notNil},{
+							matches = matches.add(class,true);
+							layout.startRow;
+							ClassNameLabel(class,layout,300);
+						});
+					});
+					if(matches.isNil,{
+						("No classes matching " + string + "found").gui(layout);
+					})
+				},"Class search")
+			})
+		});
+
 		Library.put(\menuItems,\introspection,\methodfinder,{
 			GetStringDialog("Search methods...","",{ arg ok,string;
 				Sheet({ |layout|
