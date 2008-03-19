@@ -77,7 +77,7 @@ InspManager {
 			menu = \pleaseWait;
 			{
 				var h,fb,f,w;
-				f = GUI.window.new("inspect",Rect(440,500,1000,900));
+				f = GUI.window.new("inspect",Rect(440,500,1100,900));
 				f.view.background = Color.white;
 				h = f.bounds.height - 50;
 				w = f.bounds.width;
@@ -87,7 +87,7 @@ InspManager {
 				menu.items = [insp.name];
 				menu.action = { this.showInsp(insps.at(menu.value)) };
 
-				inspView = GUI.compositeView.new(f, Rect(210,0,w - 170,h));
+				inspView = GUI.compositeView.new(f, Rect(203,0,w - 205,h));
 				inspView.tryPerform(\relativeOrigin_,true);
 				inspView.background = Color(0.17,0.1,0.1,0.15);
 				this.showInsp(insp);

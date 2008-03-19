@@ -38,7 +38,7 @@ CXObjectInspector : ObjectGui {
 			});
 		});
 		
-		list = GUI.listView.new(layout,500@600);
+		list = GUI.listView.new(layout,550@600);
 		list.font = GUI.font.new("Courier",10);
 		list.background = Color(0.65,0.75,0.65,0.15);
 		list.items = listItems.array.add("");
