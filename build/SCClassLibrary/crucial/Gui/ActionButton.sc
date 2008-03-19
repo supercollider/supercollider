@@ -354,6 +354,10 @@ SCButtonAdapter : SCViewHolder {
 		s.at(0).put(1,color);
 		view.states = s;
 	}
+
+	// bw compat
+	*defaultHeight { ^GUI.skin.buttonHeight }
+
 }
 
 // abreviation for a one state button
