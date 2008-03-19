@@ -35,33 +35,28 @@ PlayerSocket : AbstractPlayerProxy {
 			// it needs to build multiple synth defs or just do some bus copying
 	}
 	prepareAndSpawn { arg player,releaseTime;
-		var bsize=0.4;
-		this.preparePlayer(player);
-		if((bsize > 0) ,{
-			SystemClock.sched(bsize / 7.0,{
+		if(player.readyForPlay.not,{
+			this.preparePlayer(player,{
 				this.spawnPlayer(player,releaseTime);
-				nil
 			})
 		},{
 			this.spawnPlayer(player,releaseTime);
 		})
 	}
 	prepareAndQSpawn { arg player,releaseTime;
-		var bsize=0.4;
-		this.preparePlayer(player);
-		if(bsize > 0 ,{
-			SystemClock.sched(bsize / 7.0,{
-				//player.status.debug(player);
+		if(player.readyForPlay.not,{
+			this.preparePlayer(player,{
 				this.qspawnPlayer(player,releaseTime);
-				nil
 			})
 		},{
-			//player.status.debug(player);
 			this.qspawnPlayer(player,releaseTime);
 		})
 	}
-	preparePlayer { arg player;
-		^player.prepareForPlay(socketGroup,bus: sharedBus);
+	preparePlayer { arg player,onComplete;
+		var b;
+		b = AbstractPlayer.bundleClass.new;
+		player.prepareToBundle(socketGroup,b,bus: sharedBus);
+		b.doPrepare(this.server,onComplete)
 	}
 
 	spawnPlayer { arg player,releaseTime,beatDelta=0.0,forceRespawn=false;
@@ -77,6 +72,15 @@ PlayerSocket : AbstractPlayerProxy {
 	qspawnPlayer { arg player,releaseTime;
 		// TODO switch to TempoClock so tempo can change after qspawn sent
 		// for now it still needs xblock
+/*		var bundle;
+		if(status == \isPlaying,{
+			if((player !== lastPlayer) or: forceRespawn or: (socketStatus == \isSleeping),{
+				bundle = AbstractPlayer.bundleClass.new;
+				this.setSourceToBundle(player,bundle,releaseTime);
+				sched.xqschedBundle(round,this.server,bundle);
+			})
+		});
+*/		
 		this.spawnPlayer(player,releaseTime,sched.deltaTillNext(round))
 	}
 	// respawn the currently playing player

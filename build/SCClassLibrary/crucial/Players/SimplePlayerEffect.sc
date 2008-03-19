@@ -33,10 +33,10 @@ AbstractSinglePlayerEffect : HasSubject {
 
 PlayerAmp : AbstractSinglePlayerEffect {
 	
-	var <amp=1.0;
+	var <amp=1.0,<>spec;
 
-	*new { arg player,amp=1.0;
-		^super.new(player).amp_(amp)
+	*new { arg player,amp=1.0,spec=\amp;
+		^super.new(player).spec_(spec.asSpec).amp_(amp)
 	}
 	asSynthDef {
 		^SynthDef(this.defName,{ arg i_bus=0,amp=1.0;
@@ -49,17 +49,17 @@ PlayerAmp : AbstractSinglePlayerEffect {
 	synthDefArgs { ^[\i_bus,patchOut.synthArg,\amp,amp] }
 
 	amp_ { arg v; 
-		amp = v; 
+		amp = spec.constrain(v);
 		if(synth.isPlaying,{
 			synth.set(\amp,amp)
 		})
 	}
+	db_ { arg db;
+		this.amp = db.dbamp;
+	}
 	value_ { arg v;
-		amp = v; 
-		if(synth.isPlaying,{
-			synth.set(\amp,amp)
-		})
-	}		
+		this.amp = v;
+	}
 
 	guiClass { ^PlayerAmpGui }
 }
