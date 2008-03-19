@@ -32,7 +32,7 @@ MultiPageLayout  {
 			window.view.background_(background);
 		});
 		isClosed = false;
-		view =  FlowView( window );
+		view =  FlowView( window, window.view.bounds.insetAll(4,4,0,0) );
 		view.decorator.margin_(argMargin ?? {GUI.skin.margin});
 		autoRemoves = [];
 	}
@@ -123,7 +123,7 @@ MultiPageLayout  {
 		if(window.isNil,{
 			this.insp;
 		});
-		window.setInnerExtent(wbw = b.width + 2, wbh = b.height + 6 + 17);
+		window.setInnerExtent(wbw = b.width + 4, wbh = b.height + 17);
 		/*
 		auto-place the window.  but we need to know if you explicitly passed in bounds.
 		*/
