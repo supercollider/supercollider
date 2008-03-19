@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.44">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000ff}
+span.s3 {color: #0000bf}
+span.s4 {color: #606060}
+span.s5 {color: #000000}
+span.s6 {color: #007300}
+span.s7 {color: #bf0000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>SCScope<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>oscilliscope: render a buffer to a view in real time</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Inherits from: Object : SCView</b></p>
+<p class="p3"><br></p>
+<p class="p1">An oscilloscope-type view.<span class="Apple-converted-space"> </span></p>
+<p class="p1">SCScope can only work with the internal server.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>See also:</b> the useful tool: <a href="Stethoscope.html"><span class="s2">Stethoscope</span></a></p>
+<p class="p1">SCSoundFileView</p>
+<p class="p2"><br></p>
+<p class="p4"><br></p>
+<p class="p5">s = <span class="s3">Server</span>.internal;</p>
+<p class="p5">s.boot;</p>
+<p class="p4"><br></p>
+<p class="p5">f = <span class="s3">Buffer</span>.alloc(s,1024,1);</p>
+<p class="p6">b = <span class="s3">Bus</span>.audio(s,1);</p>
+<p class="p7"><br></p>
+<p class="p6">w=<span class="s3">GUI</span>.window.new.front;</p>
+<p class="p6">c = <span class="s3">SCScope</span>(w.view,w.view.bounds.insetAll(10,10,10,10));</p>
+<p class="p6">c.bufnum = f.bufnum;</p>
+<p class="p7"><br></p>
+<p class="p6">(</p>
+<p class="p8">// listening to the bus, using ScopeOut to write it to the buffer</p>
+<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"monoscope"</span>, { <span class="s3">arg</span> bus, bufnum;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> z;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = <span class="s3">In</span>.ar(bus,1);</p>
+<p class="p9"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// ScopeOut writes the audio to the buffer</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">ScopeOut</span>.ar(z, bufnum);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).play(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">RootNode</span>(s),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s6">\bus</span>,b.index, <span class="s6">\bufnum</span>, f.bufnum] ,</p>
+<p class="p9"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s6">\addToTail</span><span class="s5"> </span>// make sure it goes after what you are scoping</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p6">)</p>
+<p class="p7"><br></p>
+<p class="p6">(</p>
+<p class="p8">// making noise onto the buffer</p>
+<p class="p10">SynthDef<span class="s5">(</span><span class="s4">"noise"</span><span class="s5">, { </span>arg<span class="s5"> bus;</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> z;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = <span class="s3">LFSaw</span>.ar(<span class="s3">SinOsc</span>.kr(0.1).range(300,1000)) * 0.1;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(bus, z);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).play(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s6">\bus</span>,b.index]</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p6">)</p>
+<p class="p7"><br></p>
+<p class="p8"><span class="s5">c.style = 0 </span>// vertically spaced</p>
+<p class="p8"><span class="s5">c.style = 1 </span>// overlapped</p>
+<p class="p6">c.style = 2 <span class="s7">// x/y</span></p>
+<p class="p11"><br></p>
+<p class="p12">The update speed is based on the size of the buffer.</p>
+<p class="p12">A 2 second buffer (44100*2) will update every 2 seconds.</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>&lt;&gt;bufnum</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The buffer number the view will use.</p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>x</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>x_ (val)</b></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>y</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>y_ (val)</b></p>
+<p class="p13"><br></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>xZoom</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>xZoom_ (val)</b></p>
+<p class="p13"><br></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>yZoom</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>yZoom_ (val)</b></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>gridColor</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>gridColor_ (color)</b></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>waveColors</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>waveColors_ (arrayOfColors)</b></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span>style_ (val)</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// 0 = vertically spaced</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// 1 = overlapped</b></p>
+<p class="p12"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// 2 = x/y</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
+</body>
+</html>
