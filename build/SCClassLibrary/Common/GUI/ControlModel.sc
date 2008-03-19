@@ -185,7 +185,7 @@ ExponentialWarp : Warp {
 }
 
 CurveWarp : Warp {
-	var a, b, grow, curve;
+	var a, b, grow, <curve;
 	*new { arg spec, curve = -2;
 		// prevent math blow up
 		if (abs(curve) < 0.001, { ^LinearWarp(spec) });
@@ -194,6 +194,9 @@ CurveWarp : Warp {
 	}
 	init { arg argCurve;
 		curve = argCurve;
+		if(curve.exclusivelyBetween(-0.001,0.001),{
+			curve = 0.001;
+		});
 		grow = exp(curve);
 		a = spec.range / (1.0 - grow);
 		b = spec.minval + a;
@@ -208,9 +211,7 @@ CurveWarp : Warp {
 	}
 	asSpecifier { ^curve }
 	== { arg that;
-		if(this === that,{ ^true; });
-		if(that.class !== this.class,{ ^false });
-		^curve == that.instVarAt(\curve)
+		^this.compareObject(that,[\curve])
 	}
 }
 
