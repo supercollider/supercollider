@@ -795,7 +795,7 @@ SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 		prevNode = node;
 		prevTarget = target;
 	}
-	if (prevNode) 
+	if (prevNode && prevNode != prevTarget) 
 	{   
 		// move the last pair that succeeded
 		Node_Remove(prevNode);
