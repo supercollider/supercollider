@@ -9,10 +9,11 @@ TempoPlayer : KrPlayer { //Synthless
 		^super.new.tempo_(tempo ?? {Tempo.default})
 	}
 	
-	/*add a secret arg instead ?*/
-	/*kr {
-		^In.kr( tempoBus.index, 1)
-	}*/
+	/* a TempoPlayer can secretly add itself to the synth def 
+		without the need of being passed in with an explicit arg to the Instr */
+	kr {
+		^UGen.buildSynthDef.playerIn(this)
+	}
 	
 	synthArg { ^tempoBus.index }
 	makeResourcesToBundle { arg bundle;
