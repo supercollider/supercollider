@@ -95,9 +95,9 @@ void PySCLang_Module::appClock() {
 		pthread_mutex_unlock(&gLangMutex);
 	
 #ifdef SC_WIN32
-		Sleep(20);
+		Sleep(20);      // Sleep (windows) takes a time in milliseconds
 #else
-		sleep(20);
+		usleep(20000);  // usleep (posix) takes a time in microseconds
 #endif
 	}
 }
