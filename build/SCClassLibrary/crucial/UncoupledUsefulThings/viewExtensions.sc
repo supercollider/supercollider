@@ -58,21 +58,21 @@
 	horz { arg func,bounds;
 		var comp;
 		comp = GUI.hLayoutView.new(this,bounds ?? { this.bounds });
-		comp.tryPerform('relativeOrigin_',true);
+		comp.tryPerform('relativeOrigin_',FlowView.relativeOrigin);
 		func.value(comp);
 		^comp
 	}
 	vert { arg func,bounds;
 		var comp;
 		comp = GUI.vLayoutView.new(this,bounds ?? { this.bounds });
-		comp.tryPerform('relativeOrigin_',true);
+		comp.tryPerform('relativeOrigin_',FlowView.relativeOrigin);
 		func.value(comp);
 		^comp
 	}
 	comp { arg func,bounds;
 		var comp;
 		comp = GUI.compositeView.new(this,bounds ?? { this.bounds });
-		comp.tryPerform('relativeOrigin_',true);
+		comp.tryPerform('relativeOrigin_',FlowView.relativeOrigin);
 		func.value(comp);
 		^comp
 	}
@@ -80,7 +80,7 @@
 					hasHorizontalScroller=true,hasVerticalScroller=true;
 		var comp;
 		comp = GUI.scrollView.new(this,bounds ?? { this.bounds });
-		comp.tryPerform('relativeOrigin_',true);
+		comp.tryPerform('relativeOrigin_',FlowView.relativeOrigin);
 		comp.autohidesScrollers = autohidesScrollers;
 		comp.autoScrolls = autoScrolls;
 		comp.hasHorizontalScroller = hasHorizontalScroller;
