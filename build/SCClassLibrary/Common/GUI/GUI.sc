@@ -34,7 +34,7 @@ GUI {
 	*initClass { 
 		skins = (
 			default: (
-				fontSpecs: 	["Monaco", 10],
+				fontSpecs: 	["Helvetica", 10],
 				fontColor: 	Color.black,
 				background: 	Color(0.8, 0.85, 0.7, 0.5),
 				foreground:	Color.grey(0.95),
@@ -186,8 +186,12 @@ GUI {
 	}
 	
 	/**
-	 *	Add skins by GUI.skins.put(skinName,( fontSpecs: etc.  )  )
-	 *	Set that as default here.
+	 *	Add skins : GUI.skins.put(skinName,( fontSpecs: etc.  )  )
+	 *	then set that as default here.
+	 *  Note that if you wanted to do this in an *initClass that the scheme and GUI must be initialized
+	 * and the scheme must be created in CocoaGUI.initClass (class varies on platform) so you cannot
+	 * explicitly init that class by name since it varies across platforms.  so you can't really setSkin
+	 * in an initClass.  so do it in your startup.
 	 */
 	*setSkin { arg skinName;
 		skin = skins[skinName];
