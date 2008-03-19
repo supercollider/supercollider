@@ -10,7 +10,7 @@ KrPlayer : AbstractPlayer {
 		^In.kr(control,this.numChannels)
 	}
 	
-	kr {  ^this.subclassResponsibility(thisMethod) }
+	//kr {  ^this.subclassResponsibility(thisMethod) }
 	ar { ^K2A.ar(this.kr) }
 	value { ^this.kr }
 	poll { ^this }
