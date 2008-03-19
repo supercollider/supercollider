@@ -215,6 +215,15 @@ PathName {
 	folders {
 		^this.entries.select({ arg item; item.isFolder })
 	}
+	deepFiles {
+		^this.entries.collect({ arg item;
+			if(item.isFile,{
+				item
+			},{
+				item.deepFiles
+			})
+		}).flat
+	}
 	
 	parentPath {
 		var ci = this.colonIndices;
