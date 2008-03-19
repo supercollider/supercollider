@@ -6,11 +6,13 @@ MultiPageLayout  {
 	
 	var autoRemoves;
 	
-	*new { arg title,bounds,margin,background,scroll=true;
-		^super.new.init(title,bounds,margin,background,scroll)
+	*flowViewClass { ^FlowView }
+
+	*new { arg title,bounds,margin,background,scroll=true, autoFront=true;
+		^super.new.init(title,bounds,margin,background,scroll, autoFront)
 	}
 	
-	init { arg title,bounds,argMargin,background,argScroll=true;
+	init { arg title,bounds,argMargin,background,argScroll=true, autoFront=true;
 		var w,v;
 		bounds = if(bounds.notNil,{
 					boundsWereExplicit = true;
@@ -23,7 +25,7 @@ MultiPageLayout  {
 			.onClose_({
 				this.close; // close all windows in this layout
 			});
-		window.front;
+		if(autoFront ? true) { window.front };
 		if(background.isKindOf(Boolean),{  // bwcompat : metal=true/false
 			background = background.if(nil,{Color(0.886274509803, 0.94117647058824, 0.874509803921, 1)}) 
 		});
@@ -32,7 +34,7 @@ MultiPageLayout  {
 			window.view.background_(background);
 		});
 		isClosed = false;
-		view =  FlowView( window, window.view.bounds.insetAll(4,4,0,0) );
+		view =  this.class.flowViewClass.new( window, window.view.bounds.insetAll(4,4,0,0)  );
 		view.decorator.margin_(argMargin ?? {GUI.skin.margin});
 		autoRemoves = [];
 	}
@@ -41,7 +43,7 @@ MultiPageLayout  {
 	}
 	initOn { arg argWindow,bounds,argMargin,background;
 		window = argWindow;
-		view = FlowView(window,bounds);
+		view = this.class.flowViewClass.new(window,bounds);
 		if(argMargin.notNil,{
 			view.decorator.margin_(argMargin);
 		});
