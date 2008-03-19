@@ -12,10 +12,10 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #436c1d}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #556826}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0928ab}
 span.s1 {color: #000000}
-span.s2 {color: #001fb3}
+span.s2 {color: #0928ab}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -24,6 +24,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Outputs the current tempo in beats per seconds.<span class="Apple-converted-space">  </span>All TempoPlayers share the same TempoBus, and so don't incur any additional resources.</p>
 <p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p3">The TempoPlayer is an input to the patch, and creates a TempoBus and supplies that control to the instr synth def.</p>
 <p class="p3">Move the tempo slider.</p>
 <p class="p5">(</p>
 <p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Instr</span><span class="s1">(</span>\helpTempoPlayer<span class="s1">,{ </span><span class="s2">arg</span><span class="s1"> tempo;</span></p>
@@ -36,6 +38,26 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Patch</span>(\helpTempoPlayer,[</p>
 <p class="p7"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>TempoPlayer<span class="s1">.new</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>]).gui</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p5">You can also create the player inside the synth def:</p>
+<p class="p5">(</p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Instr</span><span class="s1">(</span>\helpTempoPlayer<span class="s1">,{</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var t;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>t = TempoPlayer.new; // default global tempo</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Impulse</span>.ar( t.kr )</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Patch</span>(\helpTempoPlayer).play(atTime:1)</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p5">You can even just use Tempo.kr</p>
+<p class="p5">(</p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Instr</span><span class="s1">(</span>\helpTempoPlayer<span class="s1">,{</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Impulse</span>.ar( Tempo.kr )</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Patch</span>(\helpTempoPlayer).play(atTime:1)</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
@@ -70,6 +92,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p4"><br></p>
 <p class="p2"><br></p>
 <p class="p3">see BeatClockPlayer</p>
 <p class="p2"><br></p>

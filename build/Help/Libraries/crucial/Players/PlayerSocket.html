@@ -12,14 +12,14 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0b2aab}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6e3d20}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1731a0}
-span.s1 {color: #0b2aab}
-span.s2 {color: #5a6628}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #102da7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #663f23}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1b339d}
+span.s1 {color: #102da7}
+span.s2 {color: #5d652c}
 span.s3 {color: #000000}
-span.s4 {color: #1731a0}
-span.s5 {color: #5f6430}
+span.s4 {color: #1b339d}
+span.s5 {color: #606333}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -29,7 +29,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">a voice that is able to host and switch between different players.</p>
 <p class="p3">Players can be loaded, prepared and spawned without stopping the PlayerSocket.</p>
 <p class="p4"><br></p>
-<p class="p3">Players are played using an EnvelopedPlayer so that when the socket releases the voice (to end it or to switch to the next incoming player being played in the socket) the outgoing player is released cleanly.</p>
+<p class="p3">Players are played using an EnvelopedPlayer so that when the socket releases the voice (to end it or to switch to the next incoming player being played in the socket) the outgoing player is released cleanly.<span class="Apple-converted-space">  </span>The EnvelopedPlayer also protects against NaN, inf and de-normalized floats, so if anything blows up in the channel it will not propgate up the mixer chain.</p>
 <p class="p4"><br></p>
 <p class="p3">the default releaseTime is 0.0 which will stop immediately. <span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
