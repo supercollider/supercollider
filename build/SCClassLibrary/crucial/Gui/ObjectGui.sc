@@ -82,7 +82,7 @@ ObjectGui : SCViewHolder { // aka AbstractController
 		this.performList(\gui, args);
 	}
 
-	background { ^Color.yellow(0.2,0.08) }
+	background { ^Color.clear }//^Color.yellow(0.2,0.08) }
 	
 	writeName { arg layout;
 		var string,font;

@@ -100,6 +100,8 @@ StartRow : SCViewHolder {
   * a composite view with a FlowLayout as its decorator
   */
 FlowView : SCViewHolder {
+	
+	classvar <>relativeOrigin = true;
 
 	var	<parent;
 	var	autoRemoves,prevMaxHeight,prevMaxRight;
@@ -128,7 +130,7 @@ FlowView : SCViewHolder {
 		});
 		// this adds the composite view to the parent composite view
 		view = this.class.viewClass.new(parentView, bounds);
-		view.tryPerform(\relativeOrigin_, true);
+		view.tryPerform(\relativeOrigin_, FlowView.relativeOrigin);
 		// now a tricky hack... the parent needs the FlowView as a child, not the composite view
 		// so I will replace the last-added child with THIS
 		if(parentView.children[parentView.children.size-1] === view,{
