@@ -32,10 +32,8 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Convolution3    { *categories { ^ #["UGens>FFT"] } }
 + COsc            { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Crackle         { *categories { ^ #["UGens>Generators>Stochastic"] } }
-+ DecodeB2         { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
-+ Dbrown          { *categories { ^ #["UGens>Demand"] } }
-+ Dbufrd          { *categories { ^ #["UGens>Demand"] } }
-+ Dbufwr          { *categories { ^ #["UGens>Demand"] } }
++ DecodeB2		{ *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
++ DUGen			{ *categories { ^ #["UGens>Demand"] } }
 + DC              { *categories { ^ #["UGens>Generators>Single-value"] } }
 + DegreeToKey     { *categories { ^ #["UGens>Conversion"] } }
 + Delay1          { *categories { ^ #["UGens>Delays"] } }
@@ -43,16 +41,12 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Demand          { *categories { ^ #["UGens>Demand"] } }
 + DemandEnvGen    { *categories { ^ #["UGens>Demand", "UGens>Envelopes"] } }
 + DetectSilence   { *categories { ^ #["UGens>Synth control", "UGens>Analysis>Amplitude"] } }
-+ Dgeom           { *categories { ^ #["UGens>Demand"] } }
 + DiskIn          { *categories { ^ #["UGens>I/O", "UGens>Buffer"] } }
 + DiskOut         { *categories { ^ #["UGens>I/O", "UGens>Buffer"] } }
 + Done            { *categories { ^ #["UGens>Synth control"] } }
-+ Dseries         { *categories { ^ #["UGens>Demand"] } }
-+ Dswitch1        { *categories { ^ #["UGens>Demand"] } }
 + Dust            { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Dust2           { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Duty            { *categories { ^ #["UGens>Demand"] } }
-+ Dwhite          { *categories { ^ #["UGens>Demand"] } }
 + DynKlang        { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + DynKlank        { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + Env             {  }
@@ -104,7 +98,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + LinExp          { *categories { ^ #["UGens>Maths"] } } 
 + LinLin          { *categories { ^ #["UGens>Maths"] } }
 + LinRand         { *categories { ^ #["UGens>Generators>Stochastic", "UGens>Generators>Single-value"]} }
-+ ListDUGen       { *categories { ^ #["UGens>Demand"] } }
 + Logistic        { *categories { ^ #["UGens>Generators>Chaotic"] } }
 + Loudness        { *categories { ^ #["UGens>Analysis>Amplitude"] } }
 + MantissaMask    { *categories { ^ #["UGens>Filters>Nonlinear"] } }
