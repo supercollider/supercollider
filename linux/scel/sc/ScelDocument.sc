@@ -102,17 +102,25 @@ ScelDocument : Document{
 		});
 	}
 	prSetFileName { | argPath |
+		"sceldoc.prSetFileName".postln;
 		if ( thisdoc.notNil, {
-			thisdoc.path = argPath;
+			thisdoc.prSetFileName( argPath );
 		},{
-			cFuncs = cFuncs ++ { this.prSetFileName_( argPath ) };  
+			cFuncs = cFuncs ++ { this.prSetFileName( argPath ) };  
 		});
 	}
 
-	/*	path_{ |path|
-		if ( thisdoc.notNil, { thisdoc.path_( path ) },{ completionFuncs = completionFuncs ++ { this.path_( path ) };  });
-		^this
-		}*/
+	prSetFileName_ { | argPath |
+		"sceldoc.prSetFileName_".postln;
+		path_p = argPath;
+	}
+
+	path_{ |path|
+		"sceldoc.path".postln;
+		this.prSetFileName( path );
+		//		if ( thisdoc.notNil, { thisdoc.path_( path ) },{ completionFuncs = completionFuncs ++ { this.path_( path ) };  });
+		//		^this
+	}
 
 	front {	
 		if ( thisdoc.notNil, { 
