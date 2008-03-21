@@ -182,7 +182,7 @@ GUI {
 	 *	current scheme.
 	 */
 	*doesNotUnderstand { arg selector ... args;
-		^scheme.perform( selector, args );
+		^scheme.performList( selector, args );
 	}
 	
 	/**

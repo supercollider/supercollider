@@ -59,7 +59,7 @@
 		this.drawAtPoint(pos, font, color);
 	}
 		
-	bounds { arg font; ^this.prBounds(Rect.new, font) }
+	bounds { arg font; ^GUI.stringBounds(this, font) }
 	prBounds { arg rect, font;
 		_String_GetBounds
 		^this.primitiveFailed
