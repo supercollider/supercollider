@@ -88,4 +88,9 @@ CocoaGUI {
 	// no longer needed b/c SwingOSC can add the StartRow class directly
 	// as of at least 0.56
 //	*startRow { ^StartRow }
+
+	///////////////// support methods with different GUI scheme implementations /////////////////
+	*stringBounds { |string, font|
+		^string.prBounds(Rect.new, font)
+	}
 }
