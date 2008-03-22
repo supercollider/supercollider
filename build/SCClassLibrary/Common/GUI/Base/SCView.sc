@@ -1115,6 +1115,14 @@ SCListView : SCControlView {
 		^v
 	}
 	
+	init { arg argParent, argBounds;
+		parent = argParent.asView; // actual view
+			// call asView again because parent by this point might be a FlowView
+		this.prInit(parent.asView, argBounds.asRect,this.class.viewClass);
+		argParent.add(this);//maybe window or viewadapter
+		this.items = []; // trick to draw right in scrollviews
+	}
+	
 	item {
 		^items[this.value]
 	}

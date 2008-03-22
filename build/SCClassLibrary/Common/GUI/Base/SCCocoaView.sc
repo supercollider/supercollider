@@ -83,8 +83,11 @@ SCTextView : SCView{
 	textBounds_{|rect|
 		textBounds = rect;
 		this.setProperty(\textBounds, rect);
-	}		
+	}
 	
+	open {|path|		
+		this.setProperty(\open, path);
+	}
 }
 
 SCMovieView : SCView{
