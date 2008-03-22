@@ -237,7 +237,8 @@ Help {
 							lists[index+1] = #[];
 							//listviews[index+1].items = 
 //								#["->Help"] ++ if(curkey.asSymbol.asClass.isNil, nil, #["->Source"]);
-							textView.open( selecteditem.findHelpFile);
+							//textView.open( selecteditem.findHelpFile);
+							textView.open( fileslist.at( selecteditem.asSymbol ));
 							isClass = selecteditem.asSymbol.asClass.notNil;							classButt.enabled_(isClass);
 							browseButt.enabled_(isClass);
 							// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
@@ -327,7 +328,6 @@ Help {
 	//listviews[0].value = 1; // hack
 	//listviews[0].valueAction_(0); 
 	textView.open(Platform.helpDir ++ "/Help.html");
-	//	textView.openURL( "file://" ++ Platform.helpDir ++ "/Help.html");
 } 
 // end *gui
 
