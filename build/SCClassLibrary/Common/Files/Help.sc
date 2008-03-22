@@ -32,6 +32,7 @@ Help {
 			// Help file paths - will be used for categorising, if categories is nil or if not a class's helpfile.
 			// Otherwise they'll be stored for quick access to helpfile.
 			fileslist = IdentityDictionary.new;
+
 			PathName.new(Platform.helpDir.standardizePath).filesDo({|pathname|
 				if(pathname.fileName.endsWith(".html") 
 						&& pathname.fullPath.contains("3vs2").not
@@ -115,13 +116,23 @@ Help {
 
 
 *gui {
-	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes;
+	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, buttonView, classButt, browseButt, isClass;
 	
 	// Call to ensure the tree has been built
 	this.tree;
 	
 	// Now for a GUI
-	win = GUI.window.new("Help browser", Rect(128, 264, 200*numcols, 500)); // SCWindow
+	win = GUI.window.new("Help browser", Rect(128, 264, 1040, 560)); // SCWindow
+	scrollView = GUI.scrollView.new(win, Rect(5, 0, 405, 525)).hasBorder_(true);
+	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, 480));
+	textView = GUI.textView.new(win, Rect(415, 0, 620, 550))
+		.hasVerticalScroller_(true)
+		.hasHorizontalScroller_(true)
+		.autohidesScrollers_(false)
+		.resize_(5)
+		.canFocus_(false);
+		
+	textView.bounds = textView.bounds; // hack to fix origin on first load
 	
 	lists = Array.newClear(numcols);
 	lists[0] = tree.keys(Array).collect(_.asString).sort;
@@ -129,14 +140,15 @@ Help {
 	
 	// SCListView
 	listviews = (0..numcols-1).collect({ arg index; var view;
-		view = GUI.listView.new( win, Rect( 10 + (index * 200), 5, 180, 480 ));
+		view = GUI.listView.new( compView, Rect( 5 + (index * 200), 4, 190, 504 ));
+		//view.items = []; // trick me into drawing correctly in scrollview
 		if( view.respondsTo( \allowsDeselection ), {
 			view.allowsDeselection_( true ).value_( nil );
 		});
 		view
 		.resize_(4)
 		.action_({ |lv|
-			if( lv.value.notNil and: { lv.items[lv.value][ 0..1 ] != "->" }, {
+			if( lv.value.notNil, {
 				// We've clicked on a category or on a class
 				if(lv.items.size != 0, { 
 					selecteditem = lists[index][lv.value];
@@ -154,9 +166,11 @@ Help {
 							// We have a "leaf" (class or helpdoc), since no keys found
 							
 							lists[index+1] = #[];
-							listviews[index+1].items = 
-								#["->Help"] ++ if(curkey.asSymbol.asClass.isNil, nil, #["->Source"]);
-									
+							//listviews[index+1].items = 
+//								#["->Help"] ++ if(curkey.asSymbol.asClass.isNil, nil, #["->Source"]);
+							textView.open(selecteditem.findHelpFile);
+							isClass = selecteditem.asSymbol.asClass.notNil;							classButt.enabled_(isClass);
+							browseButt.enabled_(isClass);
 							// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
 							selectednodes[index] = if(index==0, {tree}, {selectednodes[index-1]})
 										[curkey.asSymbol.asClass ? curkey.asSymbol];
@@ -167,8 +181,10 @@ Help {
 								a[0]==$[ || (b[0]!=$[ && (a <= b))
 								});
 							listviews[index+1].items = lists[index+1];
+							
 						});
 						
+						listviews[index+1].value = 1;
 						listviews[index+1].valueAction_(0);
 						
 						selectednodes[index+2 ..] = nil; // Clear out the now-unselected
@@ -183,18 +199,17 @@ Help {
 	// Add keyboard navigation between columns
 	listviews.do({ |lv, index| // SCView
 		lv.keyDownAction_({|view,char,modifiers,unicode,keycode|
+			var nowFocused;
+			nowFocused = lv;
 			switch(unicode, 
-			63234, { if(index != 0, { listviews[index-1].focus }) }, 
+			63234, { if(index != 0, { listviews[index-1].focus; nowFocused =listviews[index-1] }) }, 
 			63235, { if(index != (listviews.size-1) and:{listviews[index+1].items.notNil}, 
-							{ try{ listviews[index+1].value_(-1).valueAction_(0).focus } }) },
+							{ try{ listviews[index+1].value_(-1).valueAction_(0).focus; nowFocused =listviews[index+1] } }) },
 			13, { // Hit RETURN to open source or helpfile
 				// The class name, or helpfile name we're after
-				node = selecteditem;
-				if( lv.value.notNil, {
-					switch(lv.items[lv.value][2..], 
-						"Help",   { { node.openHelpFile }.defer; }, 
-						"Source", { { node.asSymbol.asClass.openCodeFile }.defer; }
-					);
+
+				if(lv.value.notNil and: {if(index==0, tree, {selectednodes[index-1]})[lists[index][lv.value]].isNil}, {
+					{ selecteditem.openHelpFile }.defer;
 				});
 			},
 			//default:
@@ -203,21 +218,46 @@ Help {
 				// but on my SC this doesn't happen.
 				view.defaultKeyDownAction(char,modifiers,unicode);
 			});
+			if(scrollView.visibleOrigin.x > nowFocused.bounds.left or: {scrollView.visibleOrigin.x + scrollView.bounds.width > nowFocused.bounds.left}, {
+				scrollView.visibleOrigin_(Point(nowFocused.bounds.left - 5, 0));
+			});
 		})
-		.mouseUpAction_({
-				// The class name, or helpfile name we're after
-				node = selecteditem;
-				if( lv.value.notNil, {
-					switch(lv.items[lv.value][2..], 
-						"Help",   { { node.openHelpFile }.defer; }, 
-						"Source", { { node.asSymbol.asClass.openCodeFile }.defer; }
-					);
+		.mouseDownAction_({|view, x, y, modifiers, buttonNumber, clickCount|
+			if(scrollView.visibleOrigin.x > lv.bounds.left, {
+				scrollView.visibleOrigin_(Point(lv.bounds.left - 5, 0));
+			});	
+			if(clickCount == 2, {	
+				if(lv.value.notNil and: {if(index==0, tree, {selectednodes[index-1]})[lists[index][lv.value]].isNil}, {
+					{ selecteditem.openHelpFile }.defer;
 				});
+			});
 		});
 	});
 	
+	buttonView = GUI.hLayoutView.new(win, Rect(5, 530, 405, 20));
+	GUI.button.new(buttonView, Rect(0,0,132, 20))
+		.states_([["Open Help File", Color.black, Color.clear]])
+		.action_({{ selecteditem.openHelpFile }.defer;});
+	classButt = GUI.button.new(buttonView, Rect(0,0,132, 20))
+		.states_([["Open Class File", Color.black, Color.clear]])
+		.action_({ 
+			if(selecteditem.asSymbol.asClass.notNil, {
+				{selecteditem.asSymbol.asClass.openCodeFile }.defer;
+			});
+		});
+	browseButt = GUI.button.new(buttonView, Rect(0,0,132, 20))
+		.states_([["Browse Class", Color.black, Color.clear]])
+		.action_({ 
+			if(selecteditem.asSymbol.asClass.notNil, {
+				{selecteditem.asSymbol.asClass.browse }.defer;
+			});
+		});
+	
 	win.front;
 	listviews[0].focus;
+	//listviews[0].value = 1; // hack
+	//listviews[0].valueAction_(0); 
+	textView.open(Platform.helpDir ++ "/Help.html");
 } // end *gui
 
 	*all {
