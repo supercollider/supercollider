@@ -53,6 +53,9 @@
 - (void) mouseDown: (NSEvent*) event;
 - (void) setUsesTabToFocusNextView: (BOOL) flag;
 - (void) setEnterExecutesSelection: (BOOL) flag;
+- (BOOL) textView: (NSTextView *) textView
+    clickedOnLink: (id) link
+		  atIndex: (unsigned) charIndex;
 
 
 @end
