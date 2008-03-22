@@ -63,6 +63,14 @@ PathName {
 		});
 		^fileName
 	}
+
+	fileNameWithoutDoubleExtension {
+		var fileName, pathName;
+		fileName = this.fileNameWithoutExtension;
+		pathName = PathName( fileName );
+		^pathName.fileNameWithoutExtension;
+	}
+
 	extension {
 		var fileName;
 		fileName = this.fileName;

@@ -18,28 +18,32 @@ Class.browse
 
 Help {
 	classvar tree, categoriesSkipThese, fileslist;
+	classvar <filterUserDirEntries;
 	
 	*initClass {
 		categoriesSkipThese = [Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen, 
 						UnaryOpUGen, BasicOpUGen, LagControl, TrigControl, MultiOutUGen, ChaosGen,
-						Control, OutputProxy, AbstractOut, AbstractIn, Object, Class];	}
+			Control, OutputProxy, AbstractOut, AbstractIn, Object, Class];
+		filterUserDirEntries = [ "Extensions", "SuperCollider", "SuperCollider3", "Help", "svn", "share", "classes", "trunk", "Downloads" ];
+	}
 	
-	*tree {
+	*tree { |sysext=true,userext=true|
 		var classes, node, subc, helpRootLen;
+		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
+		var helpDirs = Array.new;
+		var thisHelpExt;
 		if(tree.isNil, {
 			// Building the tree - base class was originally UGen
 			
 			// Help file paths - will be used for categorising, if categories is nil or if not a class's helpfile.
 			// Otherwise they'll be stored for quick access to helpfile.
 			fileslist = IdentityDictionary.new;
-
-			PathName.new(Platform.helpDir.standardizePath).filesDo({|pathname|
-				if(pathname.fileName.endsWith(".html") 
-						&& pathname.fullPath.contains("3vs2").not
-						&& pathname.fullPath.contains("help-scripts").not
-						, {
-					fileslist[pathname.fileNameWithoutExtension.asSymbol] = pathname.fullPath;
-				})
+			helpDirs = helpDirs.add( Platform.helpDir );
+			if ( sysext ,{
+				helpDirs = helpDirs.add( Platform.systemExtensionDir );
+			});
+			if ( userext ,{
+				helpDirs = helpDirs.add( Platform.userExtensionDir );
 			});
 			
 			// Now check each class's ".categories" response
@@ -48,29 +52,94 @@ Help {
 			classes.do({|class| this.addCatsToTree(class, fileslist)});
 			
 			// Now add the remaining ones to the tree - they're everything except the classes which 
-			//      have declared their own categorisation(s).
-			helpRootLen = (Platform.helpDir.standardizePath).size + 1;
-			fileslist.keysValuesDo({ |classsym, path|
-				
-				subc = path[helpRootLen..].split($/);
-				subc = subc[0..subc.size-2]; // Ignore "Help" and the filename at the end
-				if(subc.last.endsWith(".html"), {
-					subc = subc[..subc.size-2];
-				});
-				
-				subc = subc.collect({|i| "[["++i++"]]"});
-				node = tree;
-				// Crawl up the tree, creating hierarchy as needed
-				subc.do({|catname|
-					if(node[catname].isNil, {
-						node[catname] = Dictionary.new(3);
-					});
-					node = node[catname];
-				});
-				// "node" should now be the tiniest branch
-				node[classsym.asClass ? classsym] = path;			});
+	//      have declared their own categorisation(s).
+			
+			helpDirs.do{ |helpDir|
+				this.addDirTree( helpDir,tree );
+			};
 		});
 		^tree;
+	}
+
+	*addUserFilter{ |subpath|
+		filterUserDirEntries = filterUserDirEntries.add( subpath );
+		this.forgetTree;
+	}
+
+	*addDirTree{ |helppath,tree|
+		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
+		var subfileslist;
+		var node, subc, helpRootLen, thisHelpExt;
+
+		subfileslist = IdentityDictionary.new;
+
+		PathName.new(helppath.standardizePath).filesDo({|pathname|
+				if( helpExtensions.includes(pathname.extension.asSymbol)
+					&& pathname.fullPath.contains("3vs2").not
+					&& pathname.fullPath.contains("help-scripts").not
+					, {
+						subfileslist[pathname.fileNameWithoutDoubleExtension.asSymbol] = pathname.fullPath;
+						fileslist[pathname.fileNameWithoutDoubleExtension.asSymbol] = pathname.fullPath;
+					})
+			});
+
+		helpRootLen = (helppath.standardizePath).size + 1;
+		subfileslist.keysValuesDo({ |classsym, path|
+					
+			if ( helppath == Platform.helpDir,
+				{
+					subc = path[helpRootLen..].split($/);
+					subc = subc[0..subc.size-2]; // Ignore "Help" and the filename at the end
+				},{
+					//helpRootLen = "~".standardizePath;
+					if ( helppath == Platform.systemExtensionDir,
+						{
+							subc = path[helpRootLen..].split($/);
+							subc = [ "SystemExtensions" ] ++ subc;
+							subc.postcs;
+						});
+					if ( helppath == Platform.userExtensionDir,
+						{
+							helpRootLen = "~/".absolutePath.size + 1;
+							subc = path[helpRootLen..].split($/);
+							subc = [ "UserExtensions" ] ++ subc;
+							// check for common superfluous names that may confuse the categorisation;
+							filterUserDirEntries.do{ |spath|
+								subc = subc.reject{ |it| 
+									it == spath;
+								};
+							};
+							// check for double entries (e.g. SwingOSC)
+							subc[..subc.size-2].do{ |it,i|
+								var subset;
+								subset = subc[..i-1];
+								if ( subset.detect( { |jt| jt == it } ).size > 0, {
+									subc = subc[..i-1] ++ subc[i+1..];
+								});
+							};
+						});
+					subc = subc[..subc.size-2];
+				}
+			);
+			thisHelpExt = helpExtensions.select{ |ext|
+				subc.last.endsWith("."++ext)
+			};
+			if ( thisHelpExt.size > 0 , {
+				subc = subc[..subc.size-2];
+			});
+			
+			subc = subc.collect({|i| "[["++i++"]]"});
+			node = tree;
+			// Crawl up the tree, creating hierarchy as needed
+			subc.do({|catname|
+				if(node[catname].isNil, {
+					node[catname] = Dictionary.new(3);
+				});
+				node = node[catname];
+			});
+			// "node" should now be the tiniest branch
+			node[classsym.asClass ? classsym] = path;
+		});
 	}
 	
 	*forgetTree {
@@ -115,11 +184,11 @@ Help {
 
 
 
-*gui {
+*gui { |sysext=true,userext=true|
 	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, buttonView, classButt, browseButt, isClass;
 	
 	// Call to ensure the tree has been built
-	this.tree;
+	this.tree( sysext, userext );
 	
 	// Now for a GUI
 	win = GUI.window.new("Help browser", Rect(128, 264, 1040, 560)); // SCWindow
@@ -168,7 +237,7 @@ Help {
 							lists[index+1] = #[];
 							//listviews[index+1].items = 
 //								#["->Help"] ++ if(curkey.asSymbol.asClass.isNil, nil, #["->Source"]);
-							textView.open(selecteditem.findHelpFile);
+							textView.open( selecteditem.findHelpFile);
 							isClass = selecteditem.asSymbol.asClass.notNil;							classButt.enabled_(isClass);
 							browseButt.enabled_(isClass);
 							// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
@@ -258,23 +327,33 @@ Help {
 	//listviews[0].value = 1; // hack
 	//listviews[0].valueAction_(0); 
 	textView.open(Platform.helpDir ++ "/Help.html");
-} // end *gui
+	//	textView.openURL( "file://" ++ Platform.helpDir ++ "/Help.html");
+} 
+// end *gui
 
 	*all {
 		//		^this.new("Help/").dumpToDoc("all-helpfiles");
 		var doc;
+		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
 		var str = CollStream.new;
 		doc = Document.new("all-helpfiles");
-		[ 
-			Platform.classLibraryDir,
-			Platform.systemAppSupportDir,
-			Platform.userAppSupportDir,
+		[       Platform.helpDir,
 			Platform.systemExtensionDir,
 			Platform.userExtensionDir
-		].do{ |it| PathName.new( it ).foldersWithoutSVN.select{ |it| it.fullPath.contains("Help") }.do{ |help| help.streamTree(str) } };
+		].do{ |it|
+			PathName.new( it ).foldersWithoutSVN.do{ |folderPn|
+				str << folderPn.fullPath << Char.nl;
+				folderPn.filesDo { |filePn|
+					if 
+					(helpExtensions.includes(filePn.extension.asSymbol)) {
+						str << Char.tab << 
+						filePn.fileNameWithoutExtension  << Char.nl;
+					}
+				};
+			}
+		};
 		doc.string = str.collection;
-	}	
-
+	}
 } // End class
 
 
