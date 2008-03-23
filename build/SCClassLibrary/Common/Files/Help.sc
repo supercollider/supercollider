@@ -96,7 +96,7 @@ Help {
 						{
 							subc = path[helpRootLen..].split($/);
 							subc = [ "SystemExtensions" ] ++ subc;
-							subc.postcs;
+							//subc.postcs;
 						});
 					if ( helppath == Platform.userExtensionDir,
 						{
@@ -235,16 +235,15 @@ Help {
 							// We have a "leaf" (class or helpdoc), since no keys found
 							
 							lists[index+1] = #[];
-							//listviews[index+1].items = 
-//								#["->Help"] ++ if(curkey.asSymbol.asClass.isNil, nil, #["->Source"]);
-							//textView.open( selecteditem.findHelpFile);
-							textView.open( fileslist.at( selecteditem.asSymbol ));
+
+							{textView.open(fileslist.at( selecteditem.asSymbol))}.defer(0.001);
 							isClass = selecteditem.asSymbol.asClass.notNil;							classButt.enabled_(isClass);
 							browseButt.enabled_(isClass);
 							// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
 							selectednodes[index] = if(index==0, {tree}, {selectednodes[index-1]})
 										[curkey.asSymbol.asClass ? curkey.asSymbol];
-									
+							
+							
 						}, {
 							// We have a category on our hands
 							lists[index+1] = node.keys(Array).collect(_.asString).sort({|a,b| 
@@ -305,17 +304,17 @@ Help {
 	});
 	
 	buttonView = GUI.hLayoutView.new(win, Rect(5, 530, 405, 20));
-	GUI.button.new(buttonView, Rect(0,0,132, 20))
+	GUI.button.new(buttonView, Rect(0,0,125, 20))
 		.states_([["Open Help File", Color.black, Color.clear]])
 		.action_({{ selecteditem.openHelpFile }.defer;});
-	classButt = GUI.button.new(buttonView, Rect(0,0,132, 20))
+	classButt = GUI.button.new(buttonView, Rect(0,0,125, 20))
 		.states_([["Open Class File", Color.black, Color.clear]])
 		.action_({ 
 			if(selecteditem.asSymbol.asClass.notNil, {
 				{selecteditem.asSymbol.asClass.openCodeFile }.defer;
 			});
 		});
-	browseButt = GUI.button.new(buttonView, Rect(0,0,132, 20))
+	browseButt = GUI.button.new(buttonView, Rect(0,0,125, 20))
 		.states_([["Browse Class", Color.black, Color.clear]])
 		.action_({ 
 			if(selecteditem.asSymbol.asClass.notNil, {
@@ -325,9 +324,8 @@ Help {
 	
 	win.front;
 	listviews[0].focus;
-	//listviews[0].value = 1; // hack
-	//listviews[0].valueAction_(0); 
-	textView.open(Platform.helpDir ++ "/Help.html");
+	{listviews[0].valueAction_(listviews[0].items.find(["Help"]));}.defer(0.001);
+	selecteditem = "Help";
 } 
 // end *gui
 
