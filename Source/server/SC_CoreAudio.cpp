@@ -277,7 +277,7 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 		if (time == 0 || time == 1) {
 			PerformOSCBundle(world, packet);
 		} else {
-			if (time < driver->mOSCbuftime) {
+			if ((time < driver->mOSCbuftime) && (world->mVerbosity >= 0)) {
 				double seconds = (driver->mOSCbuftime - time)*kOSCtoSecs;
 				scprintf("late %.9f\n", seconds);
 				//FifoMsg outMsg;
