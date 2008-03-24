@@ -155,8 +155,6 @@ Server : Model {
 	var <emacsbuf;
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
 
-	var <bufferArray, <bufInfoResponder, <waitingForBufInfo = false, <waitingBufs = 0;
-
 	var <volume;
 	
 	*new { arg name, addr, options, clientID=0;
@@ -174,8 +172,7 @@ Server : Model {
 		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
-		this.newAllocators;	
-		bufferArray = Array.newClear(options.numBuffers + 2);
+		this.newAllocators;
 		Server.changed(\serverAdded, this);
 		volume = Volume.new(server: this, persist: true);
 	}
@@ -394,42 +391,29 @@ Server : Model {
 	// Buffer objects are cached in an Array for easy
 	// auto buffer info updating
 	addBuf { |buffer|
-		bufferArray.put(buffer.bufnum, buffer);
+		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cache));
+		buffer.cache;
 	}
 	
 	freeBuf { |i|
-		bufferArray.put(i, nil);
+		var	buf;
+		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\uncache));
+		if((buf = Buffer.cachedBufferAt(this, i)).notNil) { buf.free };
 	}
 	
 	// /b_info on the way
 	// keeps a reference count of waiting Buffers so that only one responder is needed
 	waitForBufInfo {
-		waitingForBufInfo.not.if({
-			bufInfoResponder = OSCresponderNode(addr, "/b_info", { arg time, responder, message;
-				var buffer;
-				(buffer = bufferArray.at(message.at(1))).notNil.if({
-					buffer.numFrames = message.at(2);
-					buffer.numChannels = message.at(3);
-					buffer.sampleRate = message.at(4);
-					buffer.queryDone;
-					((waitingBufs = waitingBufs - 1) == 0).if({
-						responder.remove; waitingForBufInfo = false;
-					});
-				});
-			}).add;
-			waitingForBufInfo = true;
-		});
-		waitingBufs = waitingBufs + 1;	
+		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cache));
 	}
 	
 	resetBufferAutoInfo {
-		// Buffer info support
-		// allow room for protected scope and record buffers
-		bufInfoResponder.notNil.if({bufInfoResponder.remove;});
-		bufferArray = Array.newClear(options.numBuffers + 2);
-		waitingBufs = 0;
-		waitingForBufInfo = false;
+		this.deprecated(thisMethod, Meta_Buffer.findRespondingMethodFor(\clearServerCaches));
+		Buffer.clearServerCaches(this);
 	}
+	
+	cachedBuffersDo { |func| Buffer.cachedBuffersDo(this, func) }
+	cachedBufferAt { |bufnum| ^Buffer.cachedBufferAt(this, bufnum) }
 	
 	startAliveThread { arg delay=4.0;
 		^aliveThread ?? {
@@ -476,7 +460,7 @@ Server : Model {
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
 		this.newAllocators;
-		this.resetBufferAutoInfo;
+		Buffer.clearServerCaches(this);
 		bootNotifyFirst = true;
 		this.doWhenBooted({ 
 			if(notified, { 
@@ -562,7 +546,7 @@ Server : Model {
 			volume.free
 			});
 		this.newAllocators;
-		this.resetBufferAutoInfo;
+		Buffer.clearServerCaches(this);
 	}
 
 	*quitAll {
