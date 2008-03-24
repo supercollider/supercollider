@@ -1,10 +1,13 @@
 
 Buffer {
+	classvar	serverCaches;
 
 	// don't use the setter methods for the vars below
 	// they're private and have no effect on the server
 	var <server, <bufnum, <>numFrames, <>numChannels, <>sampleRate;
 	var <>path, >doOnInfo;
+
+	*initClass { serverCaches = IdentityDictionary.new }
 	
 	// doesn't send
 	*new { arg server, numFrames, numChannels, bufnum;
@@ -12,7 +15,7 @@ Buffer {
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) },
 						numFrames,
-						numChannels).sampleRate_(server.sampleRate);
+						numChannels).sampleRate_(server.sampleRate).cache;
 	}
 
 	*alloc { arg server, numFrames, numChannels = 1, completionMessage, bufnum;
@@ -21,7 +24,7 @@ Buffer {
 						bufnum ?? { server.bufferAllocator.alloc(1) },
 						numFrames,
 						numChannels)
-					.alloc(completionMessage).sampleRate_(server.sampleRate);
+					.alloc(completionMessage).sampleRate_(server.sampleRate).cache;
 	}
 	
 	*allocConsecutive { |numBufs = 1, server, numFrames, numChannels = 1, completionMessage,
@@ -32,7 +35,7 @@ Buffer {
 			newBuf = Buffer.new(server, numFrames, numChannels, i + bufBase);
 			server.sendMsg(\b_alloc, i + bufBase, numFrames, numChannels,
 				completionMessage.value(newBuf, i));
-			newBuf
+			newBuf.cache
 		});
 	}
 
@@ -49,16 +52,16 @@ Buffer {
 			completionMessage));
 	}
 	allocMsg { arg completionMessage;
-		this.addToServerArray;
+		this.cache;
 		^["/b_alloc", bufnum, numFrames, numChannels, completionMessage.value(this)]
 	}
 	allocReadMsg { arg argpath,startFrame,numFrames, completionMessage;
-		this.addToServerArray;
+		this.cache;
 		path = argpath;
 		^["/b_allocRead",bufnum, path,startFrame,numFrames ? -1, completionMessage.value(this)]
 	}
 	allocReadChannelMsg { arg argpath,startFrame,numFrames, channels, completionMessage;
-		this.addToServerArray;
+		this.cache;
 		path = argpath;
 		^["/b_allocReadChannel",bufnum, path,startFrame, numFrames ? -1] ++ channels ++ 			[completionMessage.value(this)]
 	}
@@ -69,14 +72,13 @@ Buffer {
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) })
-					.doOnInfo_(action).waitForBufInfo
+					.doOnInfo_(action).cache
 					.allocRead(path,startFrame,numFrames,{|buf|["/b_query",buf.bufnum]});
 	}
 	read { arg argpath, fileStartFrame = 0, numFrames, 
 					bufStartFrame = 0, leaveOpen = false, action;
-		this.addToServerArray;
+		this.cache;
 		doOnInfo = action;
-		this.waitForBufInfo;
 		server.listSendMsg(
 			this.readMsg(argpath,fileStartFrame,numFrames,bufStartFrame,
 						leaveOpen,{|buf|["/b_query",buf.bufnum]} )
@@ -86,15 +88,14 @@ Buffer {
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) })
-					.doOnInfo_(action).waitForBufInfo
+					.doOnInfo_(action).cache
 					.allocReadChannel(path,startFrame,numFrames,channels,
 						{|buf|["/b_query",buf.bufnum]});
 	}
 	readChannel { arg argpath, fileStartFrame = 0, numFrames, 
 					bufStartFrame = 0, leaveOpen = false, channels, action;
-		this.addToServerArray;
+		this.cache;
 		doOnInfo = action;
-		this.waitForBufInfo;
 		server.listSendMsg(
 			this.readChannelMsg(argpath,fileStartFrame,numFrames,bufStartFrame,
 						leaveOpen,channels,{|buf|["/b_query",buf.bufnum]} )
@@ -134,7 +135,7 @@ Buffer {
 			 bufferSize=32768,completionMessage;
 		^this.alloc(server,bufferSize,numChannels,{ arg buffer;
 						buffer.readMsg(path,startFrame,bufferSize,0,true,completionMessage)
-					}).addToServerArray;
+					}).cache;
 	}
 	
 	cueSoundFile { arg path,startFrame,completionMessage;
@@ -163,11 +164,11 @@ Buffer {
 					sndfile.writeData(data);
 					sndfile.close;
 					^super.newCopyArgs(server, server.bufferAllocator.alloc(1))
-						.addToServerArray.doOnInfo_({ |buf|
+						.cache.doOnInfo_({ |buf|
 							if(File.delete(path), { buf.path = nil}, 
 								{("Could not delete data file:" + path).warn;});
 							action.value(buf);
-						}).waitForBufInfo.allocRead(path, 0, -1,{|buf|["/b_query",buf.bufnum]});
+						}).allocRead(path, 0, -1,{|buf|["/b_query",buf.bufnum]});
 				
 				}, {"Failed to write data".warn; ^nil}
 			);
@@ -211,7 +212,7 @@ Buffer {
 		server = server ? Server.default;
 		bufnum = server.bufferAllocator.alloc(1);
 		buffer = super.newCopyArgs(server, bufnum, (collsize/numChannels).ceil, numChannels)
-			.addToServerArray.sampleRate_(server.sampleRate);
+			.cache.sampleRate_(server.sampleRate);
 		
 		// first send with alloc
 		// 1626 largest setn size with an alloc
@@ -332,7 +333,7 @@ Buffer {
 		server.listSendMsg( this.freeMsg(completionMessage) );
 	}
 	freeMsg { arg completionMessage;
-		server.freeBuf(bufnum);
+		this.uncache;
 		server.bufferAllocator.free(bufnum);
 		^["/b_free", bufnum, completionMessage.value(this)];
 	}
@@ -346,6 +347,7 @@ Buffer {
 			server.bufferAllocator.free(block.address);	 
 		});
 		server.sendBundle(nil, *b);
+		this.clearServerCaches(server);
 	}
 	zero { arg completionMessage;
 		server.listSendMsg(this.zeroMsg(completionMessage));
@@ -511,19 +513,65 @@ Buffer {
 	updateInfo { |action|
 		// add to the array here. That way, update will be accurate even if this buf
 		// has been freed
-		this.addToServerArray;
+		this.cache;
 		doOnInfo = action;
-		this.waitForBufInfo;
 		server.sendMsg("/b_query", bufnum);
 	}
 	
-	// cache Buffers in an Array for easy info updating
-	addToServerArray {
-		this.server.addBuf(this);
+	// cache Buffers for easy info updating
+	cache {
+		Buffer.initServerCache(server);
+		serverCaches[server][bufnum] = this;
 	}
-	// tell the server to wait for a b_info
-	waitForBufInfo {
-		this.server.waitForBufInfo;
+	uncache {
+		serverCaches[server].removeAt(bufnum);
+			// the 2 items would be the responder and server quit updater
+			// thus if the size == 2, there are no cached buffers
+		if(serverCaches[server].size == 2) {
+			Buffer.clearServerCaches(server);
+		}
+	}
+	*initServerCache { |server|
+		serverCaches[server] ?? {
+			serverCaches[server] = IdentityDictionary.new;
+			serverCaches[server][\responder] = OSCresponderNode(server.addr, '/b_info', { |t, r, m|
+				var	buffer = serverCaches[server][m[1]];
+				if(buffer.notNil) {
+					buffer.numFrames = m[2];
+					buffer.numChannels = m[3];
+					buffer.sampleRate = m[4];
+					buffer.queryDone;
+				};
+			}).add;
+			serverCaches[server][\serverQuitUpdater] = Updater(server, { |svr, what|
+				if(what == \serverRunning and: { svr.serverRunning.not }) {
+					AppClock.sched(5.0, {
+							// still down after 5 seconds, assume server is really dead
+						if(svr.serverRunning.not) {
+							this.clearServerCaches(svr);
+						};
+					})
+				};
+			});
+		}
+	}
+	*clearServerCaches { |server|
+		if(serverCaches[server].notNil) {
+			serverCaches[server][\responder].remove;
+			serverCaches[server][\serverQuitUpdater].remove;
+			serverCaches.removeAt(server);
+		}
+	}
+	*cachedBuffersDo { |server, func|
+		var	i = 0;
+		serverCaches[server] !? {
+			serverCaches[server].keysValuesDo({ |key, value|
+				if(key.isNumber) { func.value(value, i); i = i + 1 };
+			});
+		}
+	}
+	*cachedBufferAt { |server, bufnum|
+		^serverCaches[server].tryPerform(\at, \bufnum)
 	}
 	
 	// called from Server when b_info is received
@@ -540,9 +588,9 @@ Buffer {
 		var buffer;
 		server = server ? Server.default;
 		buffer = super.newCopyArgs(server, bufnum ?? { server.bufferAllocator.alloc(1) })
-					.addToServerArray;
+					.cache;
 		File.openDialog("Select a file...",{ arg path;
-			buffer.doOnInfo_(action).waitForBufInfo
+			buffer.doOnInfo_(action)
 				.allocRead(path,startFrame,numFrames, {["/b_query",buffer.bufnum]})
 		});
 		^buffer;
@@ -561,5 +609,3 @@ Buffer {
 
 	asUGenInput { ^this.bufnum }
 }
-
-
