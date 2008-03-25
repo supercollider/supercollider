@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.47">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
@@ -13,26 +13,25 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #ad1d13}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #546827}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #b11d06}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #556723}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad1d13}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #992b17}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0020b6}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #b11d06}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9c2b0f}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0024ba}
 span.s1 {font: 19.0px Helvetica}
-span.s2 {color: #0032ed}
-span.s3 {color: #546827}
-span.s4 {color: #082bab}
+span.s2 {color: #0037f3}
+span.s3 {color: #556723}
+span.s4 {color: #002eaf}
 span.s5 {color: #000000}
-span.s6 {color: #2b6f11}
-span.s7 {color: #0019ba}
+span.s6 {color: #2a6e05}
+span.s7 {color: #001fbe}
 span.s8 {color: #606060}
-span.s9 {text-decoration: underline ; color: #001fe8}
-span.s10 {color: #0000bf}
-span.s11 {color: #0020b6}
-span.s12 {color: #3f6c19}
+span.s9 {text-decoration: underline ; color: #0026ee}
+span.s10 {color: #0010c4}
+span.s11 {color: #0024ba}
+span.s12 {color: #3f6b12}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -41,7 +40,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>superclass: Spec</b></p>
 <p class="p2"><br></p>
-<p class="p4">The original, and most common spec.<span class="Apple-converted-space">  </span>(see <a href="../../../../../../../SuperCollider3.1/Help/Control/Spec.html"><span class="s2">Spec</span></a> )</p>
+<p class="p4">The original, and most common spec.<span class="Apple-converted-space">  </span>(see <a href="Spec.html"><span class="s2">Spec</span></a> )</p>
 <p class="p5"><br></p>
 <p class="p4"><b>ControlSpec.new( minval, maxval, warp, step, default,units);</b></p>
 <p class="p5"><br></p>
@@ -141,18 +140,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10">// using spec for sliders:</p>
 <p class="p6">(</p>
-<p class="p11"><span class="s10">var</span> w, c, d;</p>
-<p class="p11">w = <span class="s10">GUI</span>.window.new(<span class="s8">"control"</span>, <span class="s10">Rect</span>(128, 64, 340, 160));</p>
-<p class="p11">w.front;</p>
-<p class="p11">c = <span class="s10">GUI</span>.slider.new(w, <span class="s10">Rect</span>(10, 10, 300, 30));</p>
-<p class="p11">d = <span class="s10">GUI</span>.staticText.new(w, <span class="s10">Rect</span>(10, 40, 300, 30));</p>
-<p class="p11">c.action = { </p>
-<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span>d.string = </span>"unmapped value"</p>
-<p class="p11"><span class="Apple-tab-span">	</span> + c.value.round(0.01)<span class="Apple-converted-space"> </span></p>
-<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span> + </span>"......"<span class="s5"><span class="Apple-converted-space"> </span></span></p>
-<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span> + </span>"mapped value"<span class="s5"><span class="Apple-converted-space"> </span></span></p>
-<p class="p11"><span class="Apple-tab-span">	</span> + a.map(c.value)</p>
-<p class="p11">};</p>
+<p class="p6"><span class="s10">var</span> w, c, d;</p>
+<p class="p6">w = <span class="s10">GUI</span>.window.new(<span class="s8">"control"</span>, <span class="s10">Rect</span>(128, 64, 340, 160));</p>
+<p class="p6">w.front;</p>
+<p class="p6">c = <span class="s10">GUI</span>.slider.new(w, <span class="s10">Rect</span>(10, 10, 300, 30));</p>
+<p class="p6">d = <span class="s10">GUI</span>.staticText.new(w, <span class="s10">Rect</span>(10, 40, 300, 30));</p>
+<p class="p6">c.action = { </p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span>d.string = </span>"unmapped value"</p>
+<p class="p6"><span class="Apple-tab-span">	</span> + c.value.round(0.01)<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span> + </span>"......"<span class="s5"><span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span> + </span>"mapped value"<span class="s5"><span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span> + a.map(c.value)</p>
+<p class="p6">};</p>
 <p class="p6">)</p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><br></p>
@@ -165,9 +164,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span>osc = <span class="s11">SinOsc</span>.kr(0.1).range(0,1);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>freq = spec.map(<span class="Apple-converted-space">  </span>osc );</p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="s5"><span class="Apple-tab-span">	</span>freq.dump;</span>// BinaryOpUGen</p>
+<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span>freq.dump;</span>// BinaryOpUGen</p>
 <p class="p9"><br></p>
-<p class="p14"><span class="s5"><span class="Apple-tab-span">	</span></span>SinOsc<span class="s5">.ar(</span></p>
+<p class="p13"><span class="s5"><span class="Apple-tab-span">	</span></span>SinOsc<span class="s5">.ar(</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>freq</p>
 <p class="p6"><span class="Apple-tab-span">	</span>)</p>
 <p class="p6">}.play</p>
