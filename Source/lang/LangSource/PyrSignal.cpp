@@ -571,7 +571,7 @@ PyrObject* signal_scaleneg_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
 PyrObject* signal_clip2_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
 {
 	BINOP_LOOP2(
-		++a; ++b; *++c = *a > *b ? *b : (*a < -*b ? -*b : 0.f);
+		++a; ++b; *++c = *a > *b ? *b : (*a < -*b ? -*b : *a);
 	);
 }
 
@@ -639,7 +639,7 @@ PyrObject* signal_clip2_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	UNROLL1_CODE(outc->size, c, ++a; *++c = *a > inb ? inb : (*a < -inb ? -inb : 0.f);)
+	UNROLL1_CODE(outc->size, c, ++a; *++c = *a > inb ? inb : (*a < -inb ? -inb : *a);)
 	return outc;
 }
 
@@ -688,7 +688,7 @@ PyrObject* signal_clip2_fx(VMGlobals *g, float ina, PyrObject* inb)
 	PyrObject *outc = newPyrSignal(g, inb->size);
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	UNROLL1_CODE(outc->size, c, ++b; *++c = ina > *b ? *b : (ina < -*b ? -*b : 0.f);)
+	UNROLL1_CODE(outc->size, c, ++b; *++c = ina > *b ? *b : (ina < -*b ? -*b : ina);)
 	return outc;
 }
 
