@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.47">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -16,15 +16,20 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 6.0px Monaco; min-height: 9.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-span.s1 {color: #0000ff}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+span.s1 {color: #0024f8}
 span.s2 {text-decoration: underline}
-span.s3 {color: #0031b1}
+span.s3 {color: #0037ac}
 span.s4 {font: 12.0px Helvetica}
-span.s5 {color: #8e2713}
-span.s6 {color: #0038f1}
-span.s7 {color: #000000}
+span.s5 {color: #822a17}
+span.s6 {color: #000000}
+span.s7 {color: #007300}
+span.s8 {color: #606060}
+span.s9 {color: #bf0000}
+span.s10 {color: #0042ea}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -271,11 +276,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Returns a collection with the pairwise difference between all elements</p>
 <p class="p7"><br></p>
 <p class="p5">[3, 4, 1, 1].differentiate;</p>
-<p class="p6"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>reduce(operator)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Applies the method named by operator to the first and second elements of the collection - then applies the method to the result and to the third element of the collection - then applies the method to the result and to the fourth element of the collection - and so on, until the end of the array.</p>
+<p class="p2"><br></p>
+<p class="p10"><span class="s6">[3,4,5,6].reduce(</span><span class="s7">'*'</span><span class="s6">); </span>// this is the same as [3,4,5,6].product</p>
+<p class="p10"><span class="s6">[3,4,5,6].reduce(</span><span class="s7">\lcm</span><span class="s6">); </span>// Lowest common multiple of the whole set of numbers</p>
+<p class="p11">[<span class="s8">"d"</span>, <span class="s8">"e"</span>, (0..9), <span class="s8">"h"</span>].reduce(<span class="s7">'++'</span>); <span class="s9">// concatenation</span></p>
+<p class="p2"><br></p>
 <p class="p3"><b>convertDigits(base)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Returns an integer resulting from interpreting the elements as digits to a given base (default 10).</p>
-<p class="p3">See also <b>asDigits</b> in <a href="../Math/Integer.html"><span class="s6">Integer</span></a> for the complementary method.</p>
+<p class="p3">See also <b>asDigits</b> in <a href="../Math/Integer.html"><span class="s10">Integer</span></a> for the complementary method.</p>
 <p class="p6"><br></p>
 <p class="p5">[1, 0, 0, 0].convertDigits;</p>
 <p class="p5">[1, 0, 0, 0].convertDigits(2);</p>
@@ -288,7 +301,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">The collections are not wrapped - if one array is shorter than the other, the difference in size should be included in the count.</p>
 <p class="p7"><br></p>
 <p class="p5">[0, 0, 0, 1, 1, 1, 0, 1, 0, 0].hammingDistance([0, 0, 1, 1, 0, 0, 0, 0, 1, 1])</p>
-<p class="p10">"SuperMan"<span class="s7">.hammingDistance(</span>"SuperCollider"<span class="s7">);</span></p>
+<p class="p12">"SuperMan"<span class="s6">.hammingDistance(</span>"SuperCollider"<span class="s6">);</span></p>
 <p class="p7"><br></p>
 <p class="p4"><b><span class="s2">Math Support</span></b></p>
 <p class="p2"><br></p>
@@ -313,7 +326,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">[1, 2, 3, 4].reciprocal;</p>
 <p class="p2"><br></p>
 <p class="p4"><b><span class="s2">Binary Messages:</span></b></p>
-<p class="p11"><br></p>
+<p class="p13"><br></p>
 <p class="p3">All of the following messages send the message performBinaryOp to the receiver with the</p>
 <p class="p3">binary message selector and the second operand as arguments.</p>
 <p class="p2"><br></p>
