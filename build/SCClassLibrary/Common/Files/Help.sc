@@ -236,7 +236,7 @@ Help {
 							
 							lists[index+1] = #[];
 
-							{textView.open(fileslist.at( selecteditem.asSymbol))}.defer(0.001);
+							{textView.open(fileslist.at( selecteditem.asSymbol) ? fileslist.at(\Help))}.defer(0.001);
 							isClass = selecteditem.asSymbol.asClass.notNil;							classButt.enabled_(isClass);
 							browseButt.enabled_(isClass);
 							// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
