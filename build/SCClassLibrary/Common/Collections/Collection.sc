@@ -392,12 +392,16 @@ Collection {
 		^minValue;
 	}
 
-	invert { 
-		// can be used to invert a pitch list about its registral center
-		//  [3, 2, 9, 7].invert  becomes  [ 8, 9, 2, 4 ]
-		^this.minItem + this.maxItem - this
+	invert {arg axis;
+		var index;
+		// can be used to invert a pitch list about a given axis
+		// Ê[3, 2, 9, 7].invert(11) Êbecomes Ê[ 19, 20, 13, 15 ]
+		// Êif axis is nil, invert uses the registral center
+		// Ê[3, 2, 9, 7].invert Êbecomes Ê[ 8, 9, 2, 4 ]
+		axis.notNil.if({index = axis * 2}, {index = this.minItem + this.maxItem});
+		^index - this;
 	}
-
+	
 	sect { | that |
 		var result = this.species.new;
 		this.do { | item |
