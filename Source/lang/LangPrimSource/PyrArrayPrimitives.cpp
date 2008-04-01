@@ -487,7 +487,7 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
@@ -496,7 +496,7 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
-		index = sc_clip(index, 0, obj->size);
+		index = sc_clip(index, 0, obj->size - 1);
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
 		PyrObject *indexArray = b->uo;
@@ -506,7 +506,7 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 			int index;
 			int err = getIndexedInt(indexArray, i, &index);
 			if (err) return err;
-			index = sc_clip(index, 0, obj->size);
+			index = sc_clip(index, 0, obj->size - 1);
 			err = putIndexedSlot(g, obj, c, index);
 			if (err) return err;
 		}
