@@ -576,7 +576,7 @@ void* SC_TcpConnectionPort::Run()
 				packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 			}
 			size = recvall(mSocket, &msglen, sizeof(int32));
-			if (size < 0) goto leave;
+			if (size != sizeof(int32)) goto leave;
 			
 			// sk: msglen is in network byte order
 			msglen = ntohl(msglen);
