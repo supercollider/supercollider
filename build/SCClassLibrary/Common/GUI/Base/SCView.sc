@@ -174,8 +174,7 @@ SCView {  // abstract class
 		var result;
 		// nil from keyDownAction --> pass it on
 		if (keyDownAction.isNil) {
-			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
-			result = nil;
+			result = this.defaultKeyDownAction(char,modifiers,unicode,keycode);
 		}{
 			result = keyDownAction.value(view, char, modifiers, unicode, keycode);
 		};
@@ -197,8 +196,7 @@ SCView {  // abstract class
 		var result;
 		// nil from keyDownAction --> pass it on
 		if (keyUpAction.isNil) {
-			this.defaultKeyUpAction(char,modifiers,unicode,keycode);
-			result = nil;
+			result = this.defaultKeyUpAction(char,modifiers,unicode,keycode);
 		}{
 			result = keyUpAction.value(view, char, modifiers, unicode, keycode);
 		};
@@ -292,19 +290,8 @@ SCView {  // abstract class
 		currentDrag = currentDrag.interpret;
 	}
 
-		// temporary implementation until Jan commits a primitive
 	absoluteBounds {
 		^this.getProperty(\absoluteBounds,Rect.new)
-		/* set up unit test to verify against this :
-		var	bounds = this.bounds;
-		this.getParents.do({ |parent|
-			(parent.tryPerform(\relativeOrigin) == true).if({
-				bounds = bounds.moveBy(parent.bounds.left, parent.bounds.top)
-			}, {
-				^bounds
-			});
-		});
-		^bounds*/
 	}
 }
 
@@ -327,8 +314,8 @@ SCContainerView : SCView { // abstract class
 	removeAll {
 		children.copy.do {|child| child.remove };
 	}
-	
-	relativeOrigin_{|bool|
+
+	relativeOrigin_{ |bool|
 		relativeOrigin = bool;
 		this.setProperty(\relativeOrigin, bool);
 	}	
@@ -337,8 +324,9 @@ SCContainerView : SCView { // abstract class
 		children.remove(child);
 		// ... decorator should re-place all
 	}
-	//bounds_  ... replace all
 
+	//bounds_  ... replace all
+	
 	prClose {
 		super.prClose;
 		children.do({ arg item; item.prClose });
@@ -471,8 +459,7 @@ SCScrollTopView : SCTopView {
 //		var result;
 //		// nil from keyDownAction --> pass it on
 //		if (keyDownAction.isNil) {
-//			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
-//			result = nil;
+//			result = this.defaultKeyDownAction(char,modifiers,unicode,keycode);
 //		}{
 //			result = keyDownAction.value(view, char, modifiers, unicode, keycode);
 //		};
@@ -486,8 +473,7 @@ SCScrollTopView : SCTopView {
 //		var result;
 //		// nil from keyDownAction --> pass it on
 //		if (keyUpAction.isNil) {
-//			this.defaultKeyUpAction(char,modifiers,unicode,keycode);
-//			result = nil;
+//			result = this.defaultKeyUpAction(char,modifiers,unicode,keycode);
 //		}{
 //			result = keyUpAction.value(view, char, modifiers, unicode, keycode);
 //		};
@@ -524,8 +510,7 @@ SCScrollView : SCScrollTopView {
 		var result;
 		// nil from keyDownAction --> pass it on
 		if (keyDownAction.isNil) {
-			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
-			result = nil;
+			result = this.defaultKeyDownAction(char,modifiers,unicode,keycode);
 		}{
 			result = keyDownAction.value(view, char, modifiers, unicode, keycode);
 		};
@@ -539,8 +524,7 @@ SCScrollView : SCScrollTopView {
 		var result;
 		// nil from keyDownAction --> pass it on
 		if (keyUpAction.isNil) {
-			this.defaultKeyUpAction(char,modifiers,unicode,keycode);
-			result = nil;
+			result = this.defaultKeyUpAction(char,modifiers,unicode,keycode);
 		}{
 			result = keyUpAction.value(view, char, modifiers, unicode, keycode);
 		};
