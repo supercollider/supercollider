@@ -366,4 +366,37 @@ SoundFile {
 
 	}	
 	
+	toCSV { |outpath, headers, delim=",", append=false, func, action|
+		
+		var outfile, dataChunk;
+		
+		// Prepare input
+		if(this.openRead(this.path).not){
+			^"SoundFile:toCSV could not open the sound file".error
+		};
+		dataChunk = FloatArray.newClear(this.numChannels * min(this.numFrames, 1024));
+		
+		// Prepare output
+		if(outpath.isNil){	outpath = path.splitext.at(0) ++ ".csv" };
+		outfile = File(outpath, if(append, "a", "w"));
+		if(headers.notNil){
+			if(headers.isString){
+				outfile.write(headers ++ Char.nl);
+			}{
+				outfile.write(headers.join(delim) ++ Char.nl);
+			}
+		};
+		
+		// Now do it
+		while{this.readData(dataChunk); dataChunk.size > 0}{
+			dataChunk.clump(this.numChannels).do{|row| 
+				outfile.write(if(func.isNil, {row}, {func.value(row)}).join(delim) ++ Char.nl)
+			};
+		};
+		outfile.close;
+		this.close;
+		
+		action.value(outpath);
+	}
+
 }
