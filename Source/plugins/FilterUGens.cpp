@@ -281,6 +281,16 @@ struct Hilbert : public Unit
 	float m_y1[12];
 };
 
+struct FreqShift : public Unit
+{
+	float m_coefs[12];
+	float m_y1[12];
+	int32 m_phase; 
+	int32 m_phaseoffset, m_lomask;
+	double m_cpstoinc, m_radtoinc, m_phasein;
+
+};
+
 struct MoogFF : public Unit
 {
 	float m_freq, m_b0, m_a1; // Resonant freq and corresponding vals; stored because we need to compare against prev vals
@@ -459,6 +469,12 @@ extern "C"
 
 	void Hilbert_Ctor(Hilbert* unit);
 	void Hilbert_next(Hilbert *unit, int inNumSamples);
+
+	void FreqShift_Ctor(FreqShift* unit);
+	void FreqShift_next_kk(FreqShift *unit, int inNumSamples);
+	void FreqShift_next_aa(FreqShift *unit, int inNumSamples);
+	void FreqShift_next_ak(FreqShift *unit, int inNumSamples);
+	void FreqShift_next_ka(FreqShift *unit, int inNumSamples);
 
 	void MoogFF_next(MoogFF *unit, int inNumSamples);
 	void MoogFF_Ctor(MoogFF* unit);
@@ -4282,6 +4298,46 @@ void DetectSilence_done(DetectSilence* unit, int inNumSamples)
 // created by jl anderson - 7 jan 2001
 // UGen created by Josh Parmenter
 
+#define HILBERT_FILTER \
+    y0_1 = thisin - (coefs[0]) * y1[0]; \
+    ay1 = coefs[0] * y0_1 + 1 * y1[0]; \
+    y1[0] = y0_1; \
+    y0_2 = ay1 - (coefs[1]) * y1[1]; \
+    ay2 = coefs[1] * y0_2 + 1 * y1[1]; \
+    y1[1] = y0_2; \
+    y0_3 = ay2 - (coefs[2]) * y1[2]; \
+    ay3 = coefs[2] * y0_3 + 1 * y1[2]; \
+    y1[2] = y0_3; \
+    y0_4 = ay3 - (coefs[3]) * y1[3]; \
+    ay4 =coefs[3] *  y0_4 + 1 * y1[3]; \
+    y1[3] = y0_4; \
+    y0_5 = ay4 - (coefs[4]) * y1[4]; \
+    ay5 = coefs[4] * y0_5 + 1 * y1[4]; \
+    y1[4] = y0_5; \
+    y0_6 = ay5 - (coefs[5]) * y1[5]; \
+    ay6 = coefs[5] * y0_6 + 1 * y1[5]; \
+    y1[5] = y0_6; \
+    \
+    y0_7 = thisin - (coefs[6]) * y1[6]; \
+    ay7 = coefs[6] * y0_7 + 1 * y1[6]; \
+    y1[6] = y0_7; \
+    y0_8 = ay7 - (coefs[7]) * y1[7]; \
+    ay8 = coefs[7] * y0_8 + 1 * y1[7]; \
+    y1[7] = y0_8; \
+    y0_9 = ay8 - (coefs[8]) * y1[8]; \
+    ay9 = coefs[8] * y0_9 + 1 * y1[8]; \
+    y1[8] = y0_9; \
+    y0_10 = ay9 - (coefs[9]) * y1[9]; \
+    ay10 = coefs[9] * y0_10 + 1 * y1[9]; \
+    y1[9] = y0_10; \
+    y0_11 = ay10 - (coefs[10]) * y1[10]; \
+    ay11 = coefs[10] * y0_11  + 1 * y1[10]; \
+    y1[10] = y0_11; \
+    y0_12 = ay11 - (coefs[11]) * y1[11]; \
+    ay12 = coefs[11] * y0_12 + 1 * y1[11]; \
+    y1[11] = y0_12; \
+    
+
 void Hilbert_Ctor(Hilbert *unit)
 {
 	// calculate coefs based on SampleRate, store in the struct
@@ -4341,7 +4397,9 @@ void Hilbert_next(Hilbert *unit, int inNumSamples)
     for (int i = 0; i < inNumSamples; ++i) {
 
 		float thisin = in[i];
-	
+		
+		HILBERT_FILTER
+		/*
 		y0_1 = thisin - (coefs[0]) * y1[0];
 		ay1 = coefs[0] * y0_1 + 1 * y1[0]; 
 		y1[0] = y0_1;
@@ -4379,12 +4437,314 @@ void Hilbert_next(Hilbert *unit, int inNumSamples)
 		y0_12 = ay11 - (coefs[11]) * y1[11];
 		outsin[i] = ay12 = coefs[11] * y0_12 + 1 * y1[11]; 
 		y1[11] = y0_12;
+		*/
+		outcos[i] = ay6;
+		outsin[i] = ay12;
 	}
 	
     for(int i = 0; i < 12; ++i) {
 		unit->m_y1[i] = zapgremlins(y1[i]);
     }
 }
+
+
+/* Hilbert based SSB FreqShifter */
+
+void FreqShift_Ctor(FreqShift *unit)
+{
+    // calculate coefs based on SampleRate, store in the struct
+//    SETCALC(FreqShift_next_kk);
+    if(INRATE(1) == calc_FullRate) {
+	if(INRATE(2) == calc_FullRate) {
+	    SETCALC(FreqShift_next_aa);
+	    unit->m_phase = 0.f;
+	    } else {
+	    SETCALC(FreqShift_next_ak);
+	    unit->m_phase = 0.f;
+	    }
+	} else {
+	if(INRATE(2) == calc_FullRate){
+	    SETCALC(FreqShift_next_ka);
+	    unit->m_phase = 0.f;
+	    } else {
+	    SETCALC(FreqShift_next_kk);
+	    unit->m_phase = (int32)(unit->m_radtoinc * IN0(2));
+	    }
+	}
+    // set up for the oscil for the modualtion
+    
+    int tableSizeSin = ft->mSineSize;
+    unit->m_lomask = (tableSizeSin - 1) << 3; 
+    unit->m_radtoinc = tableSizeSin * (rtwopi * 65536.); 
+    unit->m_cpstoinc = tableSizeSin * SAMPLEDUR * 65536.; 
+    unit->m_phasein = IN0(2);
+    
+    float gamconst = (15.0 * pi) / SAMPLERATE;
+    float gamma01 = gamconst * 0.3609;
+    float gamma02 = gamconst * 2.7412;
+    float gamma03 = gamconst * 11.1573;
+    float gamma04 = gamconst * 44.7581;
+    float gamma05 = gamconst * 179.6242;
+    float gamma06 = gamconst * 798.4578;
+    float gamma07 = gamconst * 1.2524;
+    float gamma08 = gamconst * 5.5671;
+    float gamma09 = gamconst * 22.3423;
+    float gamma10 = gamconst * 89.6271;
+    float gamma11 = gamconst * 364.7914;
+    float gamma12 = gamconst * 2770.1114;
+    unit->m_coefs[0] = (gamma01 - 1) / (gamma01 + 1);
+    unit->m_coefs[1] = (gamma02 - 1) / (gamma02 + 1);
+    unit->m_coefs[2] = (gamma03 - 1) / (gamma03 + 1);
+    unit->m_coefs[3] = (gamma04 - 1) / (gamma04 + 1);
+    unit->m_coefs[4] = (gamma05 - 1) / (gamma05 + 1);
+    unit->m_coefs[5] = (gamma06 - 1) / (gamma06 + 1);
+    unit->m_coefs[6] = (gamma07 - 1) / (gamma07 + 1);
+    unit->m_coefs[7] = (gamma08 - 1) / (gamma08 + 1);
+    unit->m_coefs[8] = (gamma09 - 1) / (gamma09 + 1);
+    unit->m_coefs[9] = (gamma10 - 1) / (gamma10 + 1);
+    unit->m_coefs[10] = (gamma11 - 1) / (gamma11 + 1);
+    unit->m_coefs[11] = (gamma12 - 1) / (gamma12 + 1);
+    for(int i = 0; i < 12; ++ i) {
+	unit->m_y1[i] = 0.0;
+    }
+    FreqShift_next_kk(unit, 1);
+}
+
+void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
+{
+    float *in = IN(0);
+    float *out = OUT(0);
+    float phasein = IN0(2);
+    float freqin = IN0(1);
+    float outcos, outsin; // the sample by sample output of the Hilbert
+    float outsinosc, outsinoscHalfPi; // the samples from the oscil.
+    int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
+    float y1[12];
+    float coefs[12];
+    
+    float *table0 = ft->mSineWavetable;
+    float *table1 = table0 + 1;
+    int32 lomask = unit->m_lomask;
+    
+    int32 freq, phase;
+    
+    phase = unit->m_phase;
+    
+    freq = (int32)(unit->m_cpstoinc * freqin);
+    int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
+    unit->m_phasein = phasein;
+        
+    // each filter's last sample
+    for(int i = 0; i < 12; ++i){
+	y1[i] = unit->m_y1[i];
+	coefs[i] = unit->m_coefs[i];
+	}
+    
+    float ay1, ay2, ay3, ay4, ay5, ay6;
+    float ay7, ay8, ay9, ay10, ay11, ay12;
+    
+    float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+    float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	    
+    for (int i = 0; i < inNumSamples; ++i) {
+
+		float thisin = in[i];
+		
+		HILBERT_FILTER
+		
+		outcos = ay6;
+		outsin = ay12;
+		
+		outsinosc = lookupi1(table0, table1, phase, lomask);
+		outsinoscHalfPi = lookupi1(table0, table1, phase + halfPi, lomask);
+		
+		out[i] = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
+		
+		phase += phaseinc;
+	}
+	
+    unit->m_phase = phase;
+    
+    for(int i = 0; i < 12; ++i) {
+		unit->m_y1[i] = zapgremlins(y1[i]);
+    }
+}
+
+void FreqShift_next_aa(FreqShift *unit, int inNumSamples)
+{
+    float *in = IN(0);
+    float *out = OUT(0);
+    float *phasein = IN(2);
+    float *freqin = IN(1);
+    float outcos, outsin; // the sample by sample output of the Hilbert
+    float outsinosc, outsinoscHalfPi; // the samples from the oscil.
+    int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
+    float y1[12];
+    float coefs[12];
+    
+    float *table0 = ft->mSineWavetable;
+    float *table1 = table0 + 1;
+    int32 lomask = unit->m_lomask;
+    
+    int32 phase;
+    
+    phase = unit->m_phase;
+        
+    // each filter's last sample
+    for(int i = 0; i < 12; ++i){
+	y1[i] = unit->m_y1[i];
+	coefs[i] = unit->m_coefs[i];
+	}
+    
+    float ay1, ay2, ay3, ay4, ay5, ay6;
+    float ay7, ay8, ay9, ay10, ay11, ay12;
+    
+    float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+    float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	    
+    for (int i = 0; i < inNumSamples; ++i) {
+
+		float thisin = in[i];
+		
+		HILBERT_FILTER
+		
+		outcos = ay6;
+		outsin = ay12;
+	    
+		int32 phaseoffset = phase + (int32)(unit->m_radtoinc * phasein[i]);
+		outsinosc = lookupi1(table0, table1, phaseoffset, lomask);
+		outsinoscHalfPi = lookupi1(table0, table1, phaseoffset + halfPi, lomask);
+		phase += (int32)(unit->m_cpstoinc * freqin[i]);
+
+		out[i] = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
+	}
+	
+    unit->m_phase = phase;
+    
+    for(int i = 0; i < 12; ++i) {
+		unit->m_y1[i] = zapgremlins(y1[i]);
+    }
+}
+
+void FreqShift_next_ak(FreqShift *unit, int inNumSamples)
+{
+    float *in = IN(0);
+    float *out = OUT(0);
+    float phasein = IN0(2);
+    float *freqin = IN(1);
+    float outcos, outsin; // the sample by sample output of the Hilbert
+    float outsinosc, outsinoscHalfPi; // the samples from the oscil.
+    int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
+    float y1[12];
+    float coefs[12];
+    
+    float *table0 = ft->mSineWavetable;
+    float *table1 = table0 + 1;
+    int32 lomask = unit->m_lomask;
+    
+    int32 phase;
+    
+    phase = unit->m_phase;
+    float phasemod = unit->m_phasein;
+    float phaseslope = CALCSLOPE(phasein, phasemod);        
+
+    // each filter's last sample
+    for(int i = 0; i < 12; ++i){
+	y1[i] = unit->m_y1[i];
+	coefs[i] = unit->m_coefs[i];
+	}
+    
+    float ay1, ay2, ay3, ay4, ay5, ay6;
+    float ay7, ay8, ay9, ay10, ay11, ay12;
+    
+    float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+    float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	    
+    for (int i = 0; i < inNumSamples; ++i) {
+
+		float thisin = in[i];
+		
+		HILBERT_FILTER
+		
+		outcos = ay6;
+		outsin = ay12;
+	    
+		int32 pphase = phase + (int32)(unit->m_radtoinc * phasemod);
+		phasemod += phaseslope;
+		outsinosc = lookupi1(table0, table1, pphase, lomask);
+		outsinoscHalfPi = lookupi1(table0, table1, pphase + halfPi, lomask);
+		phase += (int32)(unit->m_cpstoinc * freqin[i]);
+
+		out[i] = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
+	}
+	
+    unit->m_phase = phase;
+    unit->m_phasein = phasein;
+    
+    for(int i = 0; i < 12; ++i) {
+		unit->m_y1[i] = zapgremlins(y1[i]);
+    }
+}
+
+void FreqShift_next_ka(FreqShift *unit, int inNumSamples)
+{
+    float *in = IN(0);
+    float *out = OUT(0);
+    float *phasein = IN(2);
+    float freqin = IN0(1);
+    float outcos, outsin; // the sample by sample output of the Hilbert
+    float outsinosc, outsinoscHalfPi; // the samples from the oscil.
+    int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
+    float y1[12];
+    float coefs[12];
+    
+    float *table0 = ft->mSineWavetable;
+    float *table1 = table0 + 1;
+    int32 lomask = unit->m_lomask;
+    
+    int32 phase;
+    
+    phase = unit->m_phase;
+    float phasemod = unit->m_phasein;
+    
+    int32 freq = (int32)(unit->m_cpstoinc * freqin);
+    
+    // each filter's last sample
+    for(int i = 0; i < 12; ++i){
+	y1[i] = unit->m_y1[i];
+	coefs[i] = unit->m_coefs[i];
+	}
+    
+    float ay1, ay2, ay3, ay4, ay5, ay6;
+    float ay7, ay8, ay9, ay10, ay11, ay12;
+    
+    float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+    float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	    
+    for (int i = 0; i < inNumSamples; ++i) {
+
+		float thisin = in[i];
+		
+		HILBERT_FILTER
+		
+		outcos = ay6;
+		outsin = ay12;
+	    
+		int32 phaseoffset = phase + (int32)(unit->m_radtoinc * phasein[i]);
+		outsinosc = lookupi1(table0, table1, phaseoffset, lomask);
+		outsinoscHalfPi = lookupi1(table0, table1, phaseoffset + halfPi, lomask);
+		phase += freq;
+
+		out[i] = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
+	}
+	
+    unit->m_phase = phase;
+    
+    for(int i = 0; i < 12; ++i) {
+		unit->m_y1[i] = zapgremlins(y1[i]);
+    }
+}
+
 
 /**
 "MoogFF" - Moog VCF digital implementation.
@@ -4550,6 +4910,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(DetectSilence);
 
 	DefineSimpleUnit(Hilbert);
+	DefineSimpleUnit(FreqShift);
 	DefineSimpleCantAliasUnit(MoogFF);
 
 }
