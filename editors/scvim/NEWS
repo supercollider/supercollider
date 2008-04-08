@@ -1,0 +1,9 @@
+2008-04-08
+	Dan Stowell moved the SCVim supercollider code into a class, now SCVim docs
+	and cache data can be updated inside SuperCollider.  Dan has also moved
+	some things around: he created the 'cache/' directory which contains all of
+	the data that is modified by scvim, everything else can be read only.
+2007-07-11
+	we can now parse html help files
+2007-01-30
+	removed dependence on ruby inside of vim.
