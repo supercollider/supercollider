@@ -58,10 +58,10 @@ helphash = Hash.new;
 def deleteRecursively(items_to_del)
   items_to_del.each {|x| 
     if File.stat(x).directory?
-      items_to_del = Dir.entries(x)
-      items_to_del.delete("."); items_to_del.delete("..")
-      items_to_del.collect! {|i| "#{x}/" + i }
-      deleteRecursively(items_to_del)
+      new_items_to_del = Dir.entries(x)
+      new_items_to_del.delete("."); new_items_to_del.delete(".."); new_items_to_del.delete(".svn")
+      new_items_to_del.collect! {|i| "#{x}/" + i }
+      deleteRecursively(new_items_to_del)
       Dir.unlink(x)
     else
       File.delete(x)
@@ -73,13 +73,13 @@ def deleteEmptyDirs(basedir)
   basedir.each {|x| 
     if File.stat(x).directory?
       items_to_del = Dir.entries(x)
-      items_to_del.delete("."); items_to_del.delete("..")
+      items_to_del.delete("."); items_to_del.delete(".."); items_to_del.delete(".svn")
       items_to_del.collect! {|i| "#{x}/" + i }
       #first check any subdirs if there are any
       if items_to_del != []
         deleteEmptyDirs(items_to_del)
         items_to_del = Dir.entries(x)
-        items_to_del.delete("."); items_to_del.delete("..")
+        items_to_del.delete("."); items_to_del.delete(".."); items_to_del.delete(".svn")
         if items_to_del == []
           Dir.unlink(x)
         end
@@ -440,7 +440,7 @@ completion.close
 #delete empty directories
 items_to_check = Dir.entries(help_dest)
 #remove . and ..
-items_to_check.delete("."); items_to_check.delete("..")
+items_to_check.delete("."); items_to_check.delete(".."); items_to_check.delete(".svn")
 items_to_check.collect! {|x| "#{help_dest}/" + x }
 deleteEmptyDirs(items_to_check)
 
