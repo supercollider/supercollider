@@ -293,6 +293,8 @@ opts.AddOptions(
                'Enable Zeroconf/Rendezvous.', 1),
     BoolOption('SCEL',
                'Enable the SCEL user interface; NOTE for the HTML help system you need emacs-w3m', 1),
+    BoolOption('SCVIM',
+               'Enable the SCVIM user interface; NOTE see the README in /editors/scvim for setting variables', 1),
     BoolOption('SSE',
                'Build with SSE support', 1),
     BoolOption('CROSSCOMPILE',
@@ -599,6 +601,7 @@ print ' WII:                     %s' % yesorno(features['wii'])
 print ' PREFIX:                  %s' % env['PREFIX']
 print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
+print ' SCVIM:                   %s' % yesorno(env['SCVIM'])
 print ' SSE:                     %s' % yesorno(features['sse'])
 print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
 print ' TERMINAL_CLIENT:         %s' % yesorno(env['TERMINAL_CLIENT'])
@@ -1062,6 +1065,23 @@ if is_installing():
             env, 'linux/scel/sc',
             pkg_extension_dir(INSTALL_PREFIX, 'scel'),
             SC_FILE_RE, 3))
+    # scvim
+    if env['SCVIM']:
+        env.Alias('install-library', install_dir(
+            env, 'editors/scvim/scclasses',
+            pkg_extension_dir(INSTALL_PREFIX, 'scvim'),
+            SC_FILE_RE, 3))
+	# scvim helpfiles
+    if env['SCVIM']:
+       env.Alias('install-library', install_dir(
+            env, 'editors/scvim/cache/doc',
+            pkg_data_dir(INSTALL_PREFIX, 'scvim-help'),
+            HELP_FILE_RE, 4))
+
+#scvim : unhtml help files
+#if env['SCVIM']:
+	#os.execvpe("editors/scvim/bin/scvim_make_help.rb", [ "-c", "-s", "build/Help"],"SCVIM=editors/scvim/")
+    #os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
 
 # scel
 if env['SCEL']:
