@@ -3,7 +3,7 @@
 	writeZArchive { arg akv;
 		var thing;
 		thing = this.asCompileString;
-		if(thing.size >= 256,{
+		if(thing.size > 127,{
 			akv.putChar($X);
 			akv.writeLargeString( thing );
 		} , {
@@ -38,7 +38,7 @@
 		^ZArchive.write(Document.standardizePath(this))
 	}
 	writeZArchive { arg akv;
-		if(this.size <= 256,{
+		if(this.size < 128,{
 			akv.putChar($s);
 			akv.writeString(this);
 			^this
