@@ -59,16 +59,23 @@
 		this.drawAtPoint(pos, font, color);
 	}
 		
-	bounds { arg font; ^GUI.stringBounds(this, font) }
+	bounds { arg font;
+		if(GUI.id === \swing,{
+			// since Swing is not in svn and can't be easily updated
+			// let's put this temporary hack/if-statement here
+			// rather than pollute everybody else's code with hacks/if-statements
+			^Rect(0, 0, this.size * font.size * 0.52146, font.size * 1.25)
+			// width in Helvetica approx = string size * font size * 0.52146
+			// 0.52146 is average of all 32-127 ascii characters widths
+		},{
+			^GUI.stringBounds(this, font) 
+		});
+	}
 	prBounds { arg rect, font;
 		_String_GetBounds
 		^this.primitiveFailed
 	}
-//	getLayoutSize {
-//		arg extent;
-//		extent = this.bounds.extent;
-//		^LayoutSize(extent.x+1, extent.x+1, extent.y+1, extent.y+1, 0);
-//	}
+
 
 	/// cocoa or at least foundation dependant
 	findHelpFile {
