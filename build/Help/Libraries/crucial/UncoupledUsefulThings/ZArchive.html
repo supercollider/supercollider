@@ -5,13 +5,19 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.47">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {color: #000000}
+span.s2 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -28,21 +34,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Compresses repeated values</p>
 <p class="p3"><span class="Apple-converted-space"> </span>(limit: 4294967296 consecutive repeated items)</p>
 <p class="p2"><br></p>
-<p class="p3">The text archive written by Object.writeArchive will store an object and</p>
-<p class="p3">restore all of its internal variables.<span class="Apple-converted-space">  </span>However, it will break with large file sizes</p>
-<p class="p3">because it actually writes compilable code and there is a size limit to that.</p>
+<p class="p3">The text archive written by Object.writeArchive will store an object and restore all of its internal variables.<span class="Apple-converted-space">  </span>However, it will break with large file sizes because it actually writes compilable code and there is a size limit to that.</p>
 <p class="p2"><br></p>
-<p class="p3">The binary archives written by Object.writeBinaryArchive will break if the</p>
-<p class="p3">instance variables change in any of the classes you have archived.</p>
-<p class="p3">Binary archives loaded after the instance variables in the class has changed</p>
-<p class="p3">will corrupt the memory of SC and cause bleeding havoc.</p>
+<p class="p3">The binary archives written by Object.writeBinaryArchive will break if the instance variables change in any of the classes you have archived.</p>
+<p class="p3">Binary archives loaded after the instance variables in the class has changed will corrupt the memory of SC and cause bleeding havoc.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>This class is designed for raw data storage that you manually and explictly control.</b></p>
 <p class="p2"><br></p>
-<p class="p3">You manually write to the archive and then should read from the archive in the same</p>
-<p class="p3">order you wrote in.<span class="Apple-converted-space">  </span>You could also write a Dictionary and then not worry about order.</p>
-<p class="p3">This would also let you add or remove fields later without breaking the archives.</p>
+<p class="p3">You manually write items to the archive and then should read from the archive in the same</p>
+<p class="p3">order you wrote in. <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
+<p class="p3"><b>You could also write a Dictionary and then not worry about order.<span class="Apple-converted-space"> </span></b></p>
+<p class="p3">This would also let you add or remove fields later without breaking the archives.</p>
+<p class="p3"><b>This is the safest way.</b></p>
+<p class="p2"><b><span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><b><span class="Apple-converted-space"> </span></b></p>
 <p class="p3"><b>*write(path)</b></p>
 <p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>open an archive for writing</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
@@ -467,31 +473,35 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>adding support for your custom class</b></p>
 <p class="p2"><br></p>
-<p class="p3">SomeClass {</p>
+<p class="p3">If your class already supports saving as a compile string, then it will simply save itself as a compile string without problem.</p>
+<p class="p6"><br></p>
+<p class="p7">SomeClass<span class="s1"> {</span></p>
+<p class="p6"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span>writeZArchive { <span class="s2">arg</span> akv;</p>
+<p class="p9"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// turn a path into an archive if needed</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv = akv.asZArchive;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv.writeItem(columns.size);</p>
+<p class="p9"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// we know the column objects have their own support</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>columns.do({<span class="s2">|c|</span> c.writeZArchive(akv) });</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv.writeItem(name);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv.writeItem(beats);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv.writeItem(beatsPerBar);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>}</p>
+<p class="p8"><span class="Apple-tab-span">	</span>readZArchive { <span class="s2">arg</span> akv;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>columns = <span class="s2">Array</span>.fill( akv.readItem(<span class="s2">Integer</span>) ,{ <span class="s2">arg</span> i;</p>
+<p class="p9"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// call the custom column object read</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span><span class="s2">Tracker</span>.readZArchive(akv)<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>name = akv.readItem; </span>// could be an Integer or a String !</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beats = akv.readItem(<span class="s2">Float</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beatsPerBar = akv.readItem(<span class="s2">Float</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>}</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span>writeZArchive { arg akv;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// turn a path into an archive if needed</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv = akv.asZArchive;</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv.writeItem(columns.size);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// we know the column objects have their own support</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>columns.do({|c| c.writeZArchive(akv) });</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv.writeItem(name);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv.writeItem(beats);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>akv.writeItem(beatsPerBar);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>}</p>
-<p class="p3"><span class="Apple-tab-span">	</span>readZArchive { arg akv;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>columns = Array.fill( akv.readItem(Integer) ,{ arg i;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// call the custom column object read</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>Tracker.readZArchive(akv)<span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p2"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>name = akv.readItem; // could be an Integer or a String !</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beats = akv.readItem(Float);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>beatsPerBar = akv.readItem(Float);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>}</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">}</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">When you have large arrays of floats etc., you can bypass writeItem (which will</p>
