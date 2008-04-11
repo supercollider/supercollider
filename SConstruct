@@ -807,6 +807,7 @@ NoiseUGens
 OscUGens
 PanUGens
 PhysicalModelingUGens
+TestUGens
 TriggerUGens
 UnaryOpUGens
 GrainUGens
