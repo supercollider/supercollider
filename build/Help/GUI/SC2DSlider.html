@@ -10,21 +10,19 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0026b4}
-span.s3 {color: #0000bf}
+span.s2 {color: #002eaf}
+span.s3 {color: #001bb9}
 span.s4 {color: #606060}
 span.s5 {color: #000000}
-span.s6 {color: #007300}
+span.s6 {color: #2c7014}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>SC2DSlider<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a two-dimensional gui slider</b></p>
+<p class="p1"><span class="s1"><b>SC2DSlider<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a two-dimensional GUI slider</b></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: Object : SCView: SCControlView</b></p>
 <p class="p3"><br></p>
@@ -33,21 +31,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p1"><b>Example</b></p>
-<p class="p4"><br></p>
-<p class="p5">(</p>
-<p class="p5">w = <span class="s3">SCWindow</span>(<span class="s4">"SC2DSlider"</span>, <span class="s3">Rect</span>(100,100, 140 ,140));</p>
-<p class="p5">t = <span class="s3">SC2DSlider</span>(w, <span class="s3">Rect</span>(20, 20,80, 80))</p>
-<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.x_(0.5)<span class="Apple-tab-span">	</span></span>// initial location of x</p>
-<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.y_(1)<span class="Apple-tab-span">	</span></span>// initial location of y</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s3">|sl|</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s6">\sliderX</span>, sl.x, <span class="s6">\sliderY</span>, sl.y].postln;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p5">w.front;</p>
-<p class="p5">)</p>
-<p class="p7"><br></p>
-<p class="p6"><span class="s5">t.x <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// get the x loc</p>
-<p class="p6"><span class="s5">t.x_(0.25) <span class="Apple-tab-span">	</span></span>// set the x loc</p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
+<p class="p3"><br></p>
+<p class="p4">(</p>
+<p class="p4">w = <span class="s3">SCWindow</span>(<span class="s4">"SC2DSlider"</span>, <span class="s3">Rect</span>(100,100, 140 ,140));</p>
+<p class="p4">t = <span class="s3">SC2DSlider</span>(w, <span class="s3">Rect</span>(20, 20,80, 80))</p>
+<p class="p5"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.x_(0.5)<span class="Apple-tab-span">	</span></span>// initial location of x</p>
+<p class="p5"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.y_(1)<span class="Apple-tab-span">	</span></span>// initial location of y</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s3">|sl|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s6">\sliderX</span>, sl.x, <span class="s6">\sliderY</span>, sl.y].postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p4">w.front;</p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5">t.x <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// get the x loc</p>
+<p class="p5"><span class="s5">t.x_(0.25) <span class="Apple-tab-span">	</span></span>// set the x loc</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 </body>
 </html>

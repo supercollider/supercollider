@@ -5,29 +5,29 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.27">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #78331d}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6f3420}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a91616}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a91616}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9a1d19}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #9a1d19}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1737b1}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #173dac}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {text-decoration: underline}
-span.s3 {font: 9.0px Monaco; color: #55661f}
-span.s4 {font: 9.0px Monaco; color: #1737b1}
-span.s5 {color: #1642f1}
-span.s6 {color: #1737b1}
+span.s3 {font: 9.0px Monaco; color: #596425}
+span.s4 {font: 9.0px Monaco; color: #173dac}
+span.s5 {color: #144beb}
+span.s6 {color: #173dac}
 span.s7 {color: #000000}
 span.s8 {color: #606060}
-span.s9 {color: #0013bc}
-span.s10 {color: #55661f}
+span.s9 {color: #0021b7}
+span.s10 {color: #596425}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -80,7 +80,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>numWireBufs - </b>The maximum number of buffers that are allocated to interconnect unit generators. (Not to be confused with the global sample buffers represented by <b>Buffer</b>.) This sets the limit of complexity of SynthDefs that can be loaded at runtime. This value will be automatically increased if a more complex def is loaded at startup, but it cannot be increased thereafter without rebooting. The default is 64.</p>
 <p class="p2"><br></p>
-<p class="p1"><b>sampleRate - </b>The preferred sample rate. If non-nil the server app will attempt to set the hardware sample rate.</p>
+<p class="p1"><b>sampleRate - </b>The preferred sample rate. If non-nil the server app will attempt to set the sample rate of the hardware. The hardware has to support the sample rate that you choose.</p>
 <p class="p2"><br></p>
 <p class="p1"><b>loadDefs - </b>A <b>Boolean</b> indicating whether or not to load the synth definitions in synthdefs/ (or anywhere set in the environment variable SC_SYNTHDEF_PATH) at startup. The default is <span class="s4">true</span>.</p>
 <p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
