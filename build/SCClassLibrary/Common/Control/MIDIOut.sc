@@ -13,11 +13,16 @@ MIDIEndPoint {
 MIDIClient {
 	classvar <sources, <destinations;
 	classvar <initialized=false;
-	*init { arg inports=1, outports=1;
+	*init { arg inports, outports; // by default initialize all available ports
+								// you still must connect to them using MIDIIn.connect
+		this.list;
+		if(inports.isNil,{inports = sources.size});
+		if(outports.isNil,{outports = destinations.size});
 		this.prInit(inports,outports);
 		initialized = true;
-		this.list;
 		// might ask for 1 and get 2 if your device has it
+		// or you might ask for a 1 and get 0 of nothing is plugged in
+		// so we warn you
 		if(sources.size < inports or: {destinations.size < outports},{
 			"WARNING:".postln;
 			("MIDIClient-init requested " ++ inports ++ " inport(s) and " ++ outports
@@ -204,6 +209,12 @@ MIDIIn {
 	*findPort { arg deviceName,portName;
 		^MIDIClient.sources.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
 	}
+	*connectAll {
+		if(MIDIClient.initialized.not,{ MIDIClient.init });
+		MIDIClient.sources.do({ |src,i|
+			MIDIIn.connect(i,src);
+		});
+	}
 	*connect { arg inport=0, device=0;
 		var uid,source;
 		if(MIDIClient.initialized.not,{ MIDIClient.init });
@@ -295,14 +306,18 @@ MIDIOut {
 	*new { arg port, uid=0;
 		^super.newCopyArgs(port, uid);
 	}
-	*newByName { arg deviceName,portName;
+	*newByName { arg deviceName,portName,dieIfNotFound=true;
 		var endPoint,index;
 		endPoint = MIDIClient.destinations.detect({ |ep,epi|
 			index = epi; 
 			ep.device == deviceName and: {ep.name == portName}
 		});
 		if(endPoint.isNil,{
-			Error("Failed to find MIDIOut port " + deviceName + portName).throw;
+			if(dieIfNotFound,{
+				Error("Failed to find MIDIOut port " + deviceName + portName).throw;
+			},{
+				("Failed to find MIDIOut port " + deviceName + portName).warn;
+			});
 		});
 		^this.new(index,endPoint.uid)
 	}

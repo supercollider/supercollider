@@ -50,7 +50,7 @@ NoteOnResponder : MIDIResponder {
 	*initialized { ^norinit }
 	*responders { ^nonr }
 	*init {
-		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
 		norinit = true;
 		nonr = [];
 		MIDIIn.noteOn = { arg src, chan, note, veloc;
@@ -71,7 +71,7 @@ NoteOffResponder : NoteOnResponder {
 	classvar <noffinit = false,<noffr;
 
 	*init {
-		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
 		noffinit = true;
 		noffr = [];
 		MIDIIn.noteOff = { arg src, chan, note, veloc;
@@ -119,7 +119,7 @@ CCResponder : MIDIResponder {
 		};
 	}
 	*init {
-		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
 		ccinit = true;
 		ccr = [];
 		ccnumr = Array.newClear(128);
@@ -142,7 +142,7 @@ TouchResponder : MIDIResponder {
 			.init(install)
 	}
 	*init {
-		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
 		touchinit = true;
 		touchr = [];
 		MIDIIn.touch = { arg src, chan, val;
@@ -170,7 +170,7 @@ BendResponder : TouchResponder {
 	classvar <bendinit = false,<bendr;
 
 	*init {
-		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
 		bendinit = true;
 		bendr = [];
 		MIDIIn.bend = { arg src, chan, val;
