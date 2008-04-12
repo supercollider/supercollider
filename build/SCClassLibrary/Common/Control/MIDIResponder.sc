@@ -206,7 +206,7 @@ ProgramChangeResponder : MIDIResponder {
 			.init(install)
 	}
 	*init {
-		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
 		pcinit = true;
 		pcr = [];
 		MIDIIn.program = { arg src, chan, val;
