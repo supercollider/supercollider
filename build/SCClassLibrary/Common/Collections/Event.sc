@@ -714,6 +714,7 @@ Event : Environment {
 			groupEvent:	(
 				play: #{
 					var server, group, addAction, ids, bundle;
+					~finish.value;
 					ids = Event.checkIDs(~id);
 					addAction = Node.actionNumberFor(~addAction);
 					group = ~group.asUGenInput;
@@ -734,6 +735,7 @@ Event : Environment {
 					var server, latency, group, addAction;
 					var instrumentName, synthLib, desc, msgFunc;
 					var bndl, ids, id;
+					~finish.value;
 					~server = server = ~server ?? { Server.default };
 					addAction = Node.actionNumberFor(~addAction);
 					group = ~group.asUGenInput;
