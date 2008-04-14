@@ -123,7 +123,10 @@ ServerErrorGui : ObjectGui {
 		
 		failer = OSCresponderNode(model.addr, '/fail', { arg time, responder, msg;
 			{
-				errors.label = msg[1].asString + msg[2].asString + "(" ++ time.asTimeString++")";
+				// band-aid  the window close is not always removing
+				if(errors.isClosed,{ this.remove },{
+					errors.label = msg[1].asString + msg[2].asString + "(" ++ time.asTimeString++")";
+				});
 				//errors.stringColor = Color.white;
 			}.defer
 		});

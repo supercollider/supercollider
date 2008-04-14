@@ -76,6 +76,7 @@ SampleGui : ObjectGui {
 			
 		layout.startRow;
 		CXLabel(layout,"Resolution:");
+		block = max(1,(model.numFrames / 44100).asInteger);
 		GUI.numberBox.new(layout, Rect(0, 0, 30, 18)).value_(block)
 			.action_({|numbox|
 				numbox.value = max(numbox.value,1);
