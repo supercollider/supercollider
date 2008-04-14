@@ -589,7 +589,7 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
     float late;
 	err = slotIntVal(p, &outputIndex);
 	if (err) return err;
-	if (outputIndex < 0 || outputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
+	if (outputIndex < 0 || outputIndex >= gNumMIDIOutPorts) return errIndexOutOfRange;
 	
 	err = slotIntVal(u, &uid);
 	if (err) return err;
