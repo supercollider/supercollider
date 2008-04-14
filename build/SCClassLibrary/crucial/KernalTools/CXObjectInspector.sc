@@ -93,7 +93,7 @@ CXObjectInspector : ObjectGui {
 		ActionButton(layout,"post",{ model.asCompileString.postln });
 		ActionButton(layout,"dump",{ model.dump });
 		ActionButton(layout,"assign to var x",{
-			thisProcess.interpreter.performList('x_',model);
+			thisProcess.interpreter.perform('x_',model);
 		});
 		ActionButton(layout,"open class file",{
 			model.class.openCodeFile;
