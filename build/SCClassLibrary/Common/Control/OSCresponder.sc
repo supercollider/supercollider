@@ -11,16 +11,19 @@ OSCresponder {
 	} 
 	
 	*respond { arg time, addr, msg;
-		var cmdName, responder, match1, match2;
+		var cmdName, responder, match1, match2, match3;
 		
 		#cmdName = msg;
 		responder = this.new(addr, cmdName);
 		match1 = all.findMatch(responder);
 		match1.value(time, msg, addr);
+		responder.addr.port = nil;
+		match3 = all.findMatch(responder);
+		match3.value(time, msg, addr);
 		responder.addr = nil;
 		match2 = all.findMatch(responder);
 		match2.value(time, msg, addr); 
-		^(match1.notNil || match2.notNil)
+		^(match1.notNil || match2.notNil || match3.notNil)
 	}
 	
 	*add { arg responder;

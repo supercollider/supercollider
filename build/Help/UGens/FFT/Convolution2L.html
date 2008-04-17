@@ -38,14 +38,14 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>Convolution2L<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>real-time convolver with linear interpolation</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Convolution2L.ar(in, bufnum, trigger, framesize, crossfade, mul, add)</b></p>
+<p class="p3"><b>Convolution2L.ar(in, kernel, trigger, framesize, crossfade, mul, add)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Strict convolution with fixed kernel which can be updated using a trigger signal. There is a linear crossfade between the buffers upon change.</p>
 <p class="p4"><br></p>
 <p class="p5"><span class="s1">//see ch18 </span><span class="s2">http://www.dspguide.com/ch18.htm</span><span class="s1"> Steven W Smith</span></p>
 <p class="p4"><br></p>
 <p class="p3"><b>in</b> - processing target</p>
-<p class="p3"><b>bufnum</b>- buffer index for the fixed kernel, may be modulated in combination with the trigger</p>
+<p class="p3"><b>kernel</b>- buffer index for the fixed kernel, may be modulated in combination with the trigger</p>
 <p class="p3"><b>trigger</b> - update the kernel on a change from &lt;=0 to &gt;0</p>
 <p class="p3"><b>framesize </b>- size of FFT frame, must be a power of two. Convolution uses twice this number internally, maximum value you can give this argument is 2^16=65536. Note that it gets progressively more expensive to run for higher powers! 512, 1024, 2048, 4096 standard.</p>
 <p class="p3"><b>crossfade</b> - The number of periods over which a crossfade is made. The default is 1. This must be an integer.</p>

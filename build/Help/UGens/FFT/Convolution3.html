@@ -17,13 +17,13 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>Convolution3<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>real-time time-based convolver</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Convolution3.ar(in, bufnum, trigger, framesize, mul, add)</b></p>
-<p class="p3"><b>Convolution3.kr(in, bufnum, trigger, framesize, mul, add)</b></p>
+<p class="p3"><b>Convolution3.ar(in, kernel, trigger, framesize, mul, add)</b></p>
+<p class="p3"><b>Convolution3.kr(in, kernel, trigger, framesize, mul, add)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Strict convolution with fixed kernel which can be updated using a trigger signal. The convolution is performed in the time domain, which is highly inefficient, and probably only useful for either very short kernel sizes, or for control rate signals.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p3"><b>in</b> - processing target</p>
-<p class="p3"><b>bufnum</b> - buffer index for the fixed kernel, may be modulated in combination with the trigger</p>
+<p class="p3"><b>kernel</b> - buffer index for the fixed kernel, may be modulated in combination with the trigger</p>
 <p class="p3"><b>trigger</b> - update the kernel on a change from &lt;=0 to &gt;0</p>
 <p class="p3"><b>framesize </b>- size of FFT frame, does not have to be a power of two.<span class="Apple-converted-space">   </span></p>
 <p class="p2"><br></p>
