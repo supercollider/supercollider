@@ -5,14 +5,14 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.44">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 12.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -22,13 +22,16 @@ p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 9.0px Helve
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -28.0px; font: 10.0px Lucida Grande; min-height: 12.0px}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {color: #0019b7}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; color: #000000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+span.s1 {color: #001fb3}
 span.s2 {font: 9.0px Helvetica}
 span.s3 {font: 10.0px Helvetica}
 span.s4 {color: #606060}
 span.s5 {color: #000000}
-span.s6 {color: #326f17}
-span.s7 {color: #a71e12}
+span.s6 {color: #436c1d}
+span.s7 {color: #942b17}
+span.s8 {font: 9.0px Monaco}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -233,15 +236,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><b>drag and drop</b></p>
+<p class="p16"><b>Drag and drop</b></p>
 <p class="p4"><br></p>
 <p class="p3">Each view subclass has a default object that it exports when dragged from.<span class="Apple-converted-space">  </span>For sliders its the value of the slider, for lists it is the currently selected numeric index etc. <span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p3">By setting the beginDragAction handler you can return a different object based on the context and your application.</p>
 <p class="p4"><br></p>
-<p class="p3"><b>beginDragAction(theView)</b> - return the object you wish your view to export by dragging</p>
-<p class="p5"><span class="Apple-tab-span">	</span>aView.beginDragAction =<span class="Apple-converted-space">  </span>{ <span class="s1">arg</span> theView;<span class="Apple-converted-space">  </span>someList[ theView.value ]<span class="Apple-converted-space">  </span>}</p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p17"><b>beginDragAction_(function)</b></p>
+<p class="p17"><span class="Apple-tab-span">	</span>sets a custom handler to return the object you wish your view to export when dragging.</p>
+<p class="p17"><span class="Apple-tab-span">	</span>if no custom handler is set then <span class="s8">aView.defaultGetDrag</span> is called</p>
+<p class="p4"><br></p>
 <p class="p3">The current dragged thing can be found in the classvar SCView.currentDrag.<span class="Apple-converted-space">  </span>Objects dragged from within<span class="Apple-converted-space"> </span></p>
 <p class="p3">SuperCollider are also in SCView.currentDragString as a compile string.<span class="Apple-converted-space">  </span>Text dragged</p>
 <p class="p3">from other applications is in SCView.currentDragString and the results of attempting to</p>
@@ -252,13 +256,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">By setting the canReceiveDragHandler and receiveDragHandler you can make any view accept and receive objects based on the context and your application.<span class="Apple-converted-space">  </span>(Note: currently not possible for SCStaticText)</p>
 <p class="p4"><br></p>
 <p class="p3"><b>canReceiveDrag(theView)</b> - return true/false if you are willing to accept the current drag.</p>
-<p class="p5"><span class="Apple-tab-span">	</span>aView.canReceiveDrag = <span class="s1">false</span>; <span class="s7">// no, leave me alone</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>aView.canReceiveDrag = { <span class="s1">SCView</span>.currentDrag.isString };</p>
+<p class="p17"><b>canReceiveDragHandler(function)</b><span class="s5"> - set a custom handler</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>aView.canReceiveDragHandler = <span class="s1">false</span>; <span class="s7">// no, leave me alone</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>aView.canReceiveDragHandler = { <span class="s1">SCView</span>.currentDrag.isString };</p>
+<p class="p4"><br></p>
+<p class="p17"><b>receiveDrag(x,y)</b></p>
+<p class="p17"><span class="Apple-tab-span">	</span>this is called when a drag is dropped onto the view. <span class="Apple-converted-space"> </span></p>
+<p class="p17"><span class="Apple-tab-span">	</span>If a receiveDragHandler is set it evaluates that, otherwise it calls aView.defaultReceiveDrag</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p17"><b>defaultReceiveDrag(x,y)</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>implemented by the many view classes in their appropriate ways</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><b>receiveDrag(theView)</b> - accept the drag.</p>
-<p class="p5"><span class="Apple-tab-span">	</span>aView.receiveDrag = {<span class="Apple-converted-space"> </span></p>
+<p class="p17"><b>receiveDragHandler_(function)<span class="Apple-converted-space"> </span></b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>set a custom function to handle drag reception. <span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>this then overrides the default drag handler</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>aView.receiveDragHandler = {<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SCView</span>.currentDrag.postln;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>}</p>
+<p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3">The default drag object from a list view is the currently selected integer index.</p>

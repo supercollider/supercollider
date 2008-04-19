@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.47">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -13,17 +13,17 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-span.s1 {color: #0000bf}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+span.s1 {color: #0013bb}
 span.s2 {color: #000000}
-span.s3 {color: #007300}
+span.s3 {color: #316f11}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>TGrains<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>buffer granulator</b></p>
 <p class="p2"><br></p>
-<p class="p3">Triggers generate grains from a buffer. Each grain has a Hanning envelope (sin^2(x) for x from 0 to pi) and is panned between two channels of multiple outputs.</p>
+<p class="p3">Triggers generate grains from a single channel (mono) buffer. Each grain has a Hanning envelope (sin^2(x) for x from 0 to pi) and is panned between two channels of multiple outputs.</p>
 <p class="p4"><br></p>
 <p class="p3"><b>TGrains.ar(numChannels, trigger, bufnum, rate, centerPos, dur, pan, amp, interp)</b></p>
 <p class="p4"><br></p>
@@ -32,7 +32,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>as the arguments of a new grain.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A trigger occurs when a signal changes from &lt;= 0 to &gt; 0.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If the trigger is audio rate then the grains will start with sample accuracy.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><b>bufnum</b> - the index of the buffer to use. It must be a one channel (mono) buffer.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>bufnum</b> - the index of the buffer to use.<b> It must be a one channel (mono) buffer.</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>rate</b> <span class="Apple-converted-space">  </span>-<span class="Apple-converted-space">  </span>1.0 is normal, 2.0 is one octave up, 0.5 is one octave down</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>-1.0 is backwards normal rate ... etc.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Unlike PlayBuf, the rate is multiplied by BufRate, so you needn't do that yourself.</p>
