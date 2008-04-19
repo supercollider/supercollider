@@ -525,9 +525,13 @@ Buffer {
 	}
 	uncache {
 		serverCaches[server].removeAt(bufnum);
-			// the 2 items would be the responder and server quit updater
-			// thus if the size == 2, there are no cached buffers
-		if(serverCaches[server].size == 2) {
+			// the 1 item would be the responder
+			// if there is more than 1 item then the rest are cached buffers
+			// else we can remove.
+			// cx: tho i don't see why its important. it will just have to be added
+			// back when the next buffer is added and the responder is removed when
+			// the server reboots
+		if(serverCaches[server].size == 1) {
 			Buffer.clearServerCaches(server);
 		}
 	}
@@ -543,22 +547,14 @@ Buffer {
 					buffer.queryDone;
 				};
 			}).add;
-			serverCaches[server][\serverQuitUpdater] = Updater(server, { |svr, what|
-				if(what == \serverRunning and: { svr.serverRunning.not }) {
-					AppClock.sched(5.0, {
-							// still down after 5 seconds, assume server is really dead
-						if(svr.serverRunning.not) {
-							this.clearServerCaches(svr);
-						};
-					})
-				};
+			NotificationCenter.register(server,\newAllocators,this,{
+				this.clearServerCaches(server);
 			});
 		}
 	}
 	*clearServerCaches { |server|
 		if(serverCaches[server].notNil) {
 			serverCaches[server][\responder].remove;
-			serverCaches[server][\serverQuitUpdater].remove;
 			serverCaches.removeAt(server);
 		}
 	}

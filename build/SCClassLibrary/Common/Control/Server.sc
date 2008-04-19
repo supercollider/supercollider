@@ -37,7 +37,7 @@ ServerOptions
 	
 	*initClass {
 		default = this.new.blockAllocClass_(ContiguousBlockAllocator);
-//		default = this.new.blockAllocClass_(PowerOfTwoAllocator);
+		//default = this.new.blockAllocClass_(PowerOfTwoAllocator);
 	}
 	
 	*new {
@@ -134,7 +134,7 @@ ServerOptions
 Server : Model {
 	classvar <>local, <>internal, <>default, <>named, <>set, <>program;
 	
-	var <name, <addr, <clientID=0;
+	var <name, <>addr, <clientID=0;
 	var <isLocal, <inProcess;
 	var <serverRunning = false, <serverBooting=false, bootNotifyFirst=false;
 	var <>options,<>latency = 0.2,<dumpMode=0, <notified=true;
@@ -188,6 +188,7 @@ Server : Model {
 		audioBusAllocator = options.blockAllocClass.new(options.numAudioBusChannels, 
 			options.firstPrivateBus);
 		bufferAllocator = options.blockAllocClass.new(options.numBuffers);
+		NotificationCenter.notify(this,\newAllocators);
 	}
 	nextNodeID {
 		^nodeAllocator.alloc
@@ -201,6 +202,7 @@ Server : Model {
 	
 	*initClass {
 		Class.initClassTree(ServerOptions);
+		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
 		set = Set.new;
 		internal = Server.new(\internal, NetAddr.new);
@@ -299,7 +301,17 @@ Server : Model {
 		} {
 			if (val != serverRunning) {
 				serverRunning = val;
-				if (serverRunning.not) { recordNode = nil };
+				if (serverRunning.not) { 
+					AppClock.sched(5.0, {
+						// still down after 5 seconds, assume server is really dead
+						// if you explicitly shut down the server then newAllocators
+						// and the \newAllocators notification will happen immediately
+						if(serverRunning.not) {
+							NotificationCenter.notify(this,\didQuit);
+						};
+						recordNode = nil;
+					})
+				};
 				{ this.changed(\serverRunning); }.defer;
 			}
 		};
@@ -460,7 +472,6 @@ Server : Model {
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
 		this.newAllocators;
-		Buffer.clearServerCaches(this);
 		bootNotifyFirst = true;
 		this.doWhenBooted({ 
 			if(notified, { 
@@ -546,7 +557,6 @@ Server : Model {
 			volume.free
 			});
 		this.newAllocators;
-		Buffer.clearServerCaches(this);
 	}
 
 	*quitAll {

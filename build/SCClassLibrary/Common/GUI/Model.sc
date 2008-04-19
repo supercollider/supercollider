@@ -55,3 +55,72 @@ TestDependant {
 		(thing.asString ++ " was changed.\n").post;
 	}
 }
+
+
+
+
+NotificationCenter {
+
+	classvar registrations;
+	
+	//			who		\didSomething
+	*notify { arg object, message, args;
+		registrations.at(object,message).do({ arg function;
+			function.valueArray(args)
+		})
+	}
+	
+	// 			who		\didSomething
+	*register { arg object,message,listener,action;
+		var nr;
+		nr = NotificationRegistration(object,message,listener);
+		registrations.put(object,message,listener,action);
+		^nr;
+	}
+
+	*unregister { arg object,message,listener;
+		var lastKey,lastDict;
+		lastDict = registrations.at(object,message);
+		if(lastDict.notNil,{
+			lastDict.removeAt(listener);
+			(lastDict.size == 0).if({
+				registrations.removeAt(object,message);
+				(registrations.at(object).size == 0).if({
+					registrations.removeAt(object);
+				});
+			});
+		});
+	}
+	*registerOneShot {  arg object,message,listener,action;
+		registrations.put(object,message,listener,
+			{
+				action.value; 
+				this.unregister(object,message,listener)
+			})
+	}
+	*clear {
+		registrations = MultiLevelIdentityDictionary.new;
+	}
+	*registrationExists { |object,message,listener|
+		^registrations.at(object,message,listener).notNil
+	}
+	*initClass {
+		this.clear
+	}
+	//*remove { |listener|
+	//
+	//}
+}
+
+NotificationRegistration {
+	
+	var <>object,<>message,<>listener;
+	
+	*new { arg o,m,l;
+		^super.new.object_(o).message_(m).listener_(l)
+	}
+	remove {
+		NotificationCenter.unregister(object,message,listener)
+	}
+}
+
