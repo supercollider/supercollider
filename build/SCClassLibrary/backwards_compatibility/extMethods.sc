@@ -27,17 +27,10 @@
 	*stop {
 		RootNode.new.freeAll;
 	}
-	//*isPlaying {
-		//server is running
-		// at least one thing playing
-	// deepDo is gone
-		//RootNode.new.head.deepDo({ arg child;
-		//	if(child.isPlaying,{ ^true })
-		//});
-		//^false
-	//}
 	*play { arg func;
-		^func.play;
+		Server.default.doWhenBooted({		
+			func.play;
+		})
 	}
 	play {
 		//if not already playing, play
