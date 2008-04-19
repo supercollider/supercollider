@@ -679,8 +679,13 @@ Object  {
 	writeTextArchive { arg pathname;
 		var text = this.asTextArchive;
 		var file = File(pathname, "w");
-		file.write(text);
-		file.close;
+		if(file.isOpen) {
+			protect {
+				file.write(text);
+			} { file.close };
+		} {
+			MethodError("Could not open file % for writing".format(pathname.asCompileString), this).throw;
+		}
 	}
 	*readTextArchive { arg pathname;
 		^pathname.load
