@@ -11,7 +11,8 @@ Symbol {
 		_Symbol_AsFloat
 		^this.primitiveFailed
 	}
-	//asCompileString { ^super.asString }
+	// the primitive fails to escape '
+	asCompileString { ^("'" ++ super.asString.escapeChar($') ++ "'") }
 	asClass { 
 		_SymbolClass 
 		// if Symbol represents a class name then return the class, else return nil.
