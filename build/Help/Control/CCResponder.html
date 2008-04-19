@@ -14,13 +14,11 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0626af}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1530a3}
 span.s1 {color: #000000}
 span.s2 {text-decoration: underline}
-span.s3 {color: #0000bf}
+span.s3 {color: #0013bb}
+span.s4 {color: #0021b3}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -49,34 +47,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>eg: { |val| val &lt; 50 }</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p7">(</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>c = CCResponder({ |src,chan,num,value|</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[src,chan,num,value].postln;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},</p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span>, // any source</p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span>, // any channel</p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span>, // any CC number</p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span> // any value</p>
-<p class="p9"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>c = CCResponder({ |src,chan,num,value|</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[src,chan,num,value].postln;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span>, // any source</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span>, // any channel</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span>, // any CC number</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span> // any value</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p7">)</p>
 <p class="p2"><br></p>
 <p class="p7">c.remove</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p7">(</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>c = CCResponder({ |src,chan,num,value|</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[src,chan,num,value].postln;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},</p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span>, // any source</p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">nil</span>, // any channel</p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>80, // CC number 80</p>
-<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s3">|val|</span> val &lt; 50 } // any value less than 50</p>
-<p class="p9"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>c = CCResponder({ |src,chan,num,value|</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[src,chan,num,value].postln;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">nil</span>, // any source</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">nil</span>, // any channel</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>80, // CC number 80</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s4">|val|</span> val &lt; 50 } // any value less than 50</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p7">)</p>
 <p class="p2"><br></p>
 <p class="p7">c.remove</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p11">CCResponder.removeAll</p>
+<p class="p8">CCResponder.removeAll</p>
 <p class="p2"><br></p>
 <p class="p5"><br></p>
 </body>
