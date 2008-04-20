@@ -101,7 +101,7 @@ MIDIIn {
 	<> noteOn, <> noteOff, <> polytouch, 
 	<> control, <> program, 
 	<> touch, <> bend, 
-	<> sysex, sysexPacket, <> sysrt, <> smpte;	
+	<> sysex, sysexPacket, <> sysrt, <> smpte, <> invalid;	
 	
 	classvar 
 	<> noteOnList, <> noteOffList, <> polyList, 
@@ -198,6 +198,10 @@ MIDIIn {
 			sysexPacket = nil
 		});
 	}
+	*doInvalidSysexAction { arg src, packet;
+		invalid.value(src, packet);
+	}
+	
 	*doSysrtAction { arg src, index, val;
 		sysrt.value(src, index, val);
 	}

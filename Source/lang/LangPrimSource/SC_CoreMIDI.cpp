@@ -19,6 +19,7 @@
 */
 
 /*
+changes by charles picasso 14/april/2008 (sysex parsing + added running status)
 changes by jan trutzschler v. f. 9/9/2002
 the midiReadProc calls doAction in the class MIDIIn.
 with the arguments: inUid, status, chan, val1, val2
@@ -30,6 +31,7 @@ added prRestartMIDI
 #include <CoreAudio/HostTime.h>
 #include <Carbon/Carbon.h>
 #include <CoreMIDI/CoreMIDI.h>
+#include <vector>
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -54,6 +56,7 @@ PyrSymbol* s_midiPolyTouchAction;
 PyrSymbol* s_midiProgramAction;
 PyrSymbol* s_midiBendAction;
 PyrSymbol* s_midiSysexAction;
+PyrSymbol* s_midiInvalidSysexAction;
 PyrSymbol* s_midiSysrtAction;
 PyrSymbol* s_midiSMPTEAction;
 //jt
@@ -65,6 +68,10 @@ MIDIClientRef gMIDIClient = 0;
 MIDIPortRef gMIDIInPort[kMaxMidiPorts], gMIDIOutPort[kMaxMidiPorts];
 int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
 bool gMIDIInitialized = false;
+//cp
+static bool gSysexFlag = false;
+static Byte gRunningStatus = 0;
+std::vector<Byte> gSysexData;
 
 void midiNotifyProc(const MIDINotification *msg, void* refCon)
 {
@@ -72,17 +79,103 @@ void midiNotifyProc(const MIDINotification *msg, void* refCon)
 
 extern bool compiledOK;
 
-static void midiProcessSystemPacket(MIDIPacket *pkt, int chan) {
+#if 0
+static void dumpSysexData() {
+	if(gSysexData.size() <= 0)
+		return;
+	std::vector<Byte>::const_iterator iter = gSysexData.begin(), end = gSysexData.end();
+	int i=0;
+	while(iter != end) {
+		if((i % 16) == 0 && (i > 0))
+			printf("\n");
+		++i;
+		printf("%02X ", *iter++);
+	}
+	printf("\n");
+	printf("sysex data dump size:  %i bytes.\n", gSysexData.size());
+}
+#endif
+
+static void sysexBegin() {
+	gRunningStatus = 0; // clear running status
+	gSysexData.clear();
+	gSysexFlag = true;
+}
+
+static void scCallSysexAction(PyrSymbol* action, int recoverFromUID) {
+	VMGlobals *g = gMainVMGlobals;
+	if(recoverFromUID) { // rebuild the VM so sc won't crash with two following calls
+		++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
+		++g->sp; SetInt(g->sp,  recoverFromUID); //src
+		++g->sp;
+	}
+	PyrInt8Array* sysexArray = newPyrInt8Array(g->gc, gSysexData.size(), 0, true);
+	sysexArray->size = gSysexData.size();
+	std::copy(gSysexData.begin(), gSysexData.end(), sysexArray->b);
+	SetObject(g->sp, (PyrObject*) sysexArray);			// chan argument unneeded as there
+	runInterpreter(g, action, 3 );			// special sysex action in the lang
+}
+
+static void sysexEnd(int lastUID) {
+	gSysexFlag = false;
+	scCallSysexAction(s_midiSysexAction, lastUID);
+}
+
+static void sysexEndInvalid() {
+	gSysexFlag = false;
+	scCallSysexAction(s_midiInvalidSysexAction, 0);
+}
+
+static int midiProcessSystemPacket(MIDIPacket *pkt, int chan) {
     int index, data;
     VMGlobals *g = gMainVMGlobals;
-    PyrInt8Array* sysexArray; 
     switch (chan) {
-    case 0:              
-        sysexArray = newPyrInt8Array(g->gc, pkt->length, 0, true);
-        memcpy(sysexArray->b, pkt->data, pkt->length);
-        sysexArray->size = pkt->length;
-        SetObject(g->sp, (PyrObject*) sysexArray);			// chan argument unneeded as there
-        runInterpreter(g, s_midiSysexAction, 3 );			// special sysex action in the lang
+	case 7: // added cp: Sysex EOX must be taken into account if first on data packet
+    case 0:
+		{
+		int last_uid = 0;
+		int m = pkt->length;
+		Byte* p_pkt = pkt->data;
+		Byte pktval;
+		
+		while(m--) {
+			pktval = *p_pkt++;
+			if(pktval & 0x80) { // status byte
+				if(pktval == 0xF7) { // end packet
+					gSysexData.push_back(pktval); // add EOX
+					if(gSysexFlag) 
+						sysexEnd(last_uid); // if last_uid != 0 rebuild the VM.
+					else 
+						sysexEndInvalid(); // invalid 1 byte with only EOX can happen
+					break;
+				}
+				else if(pktval == 0xF0) { // new packet
+					if(gSysexFlag) {// invalid new one/should not happen -- but handle in case
+						// store the last uid value previous to invalid data to rebuild VM after sysexEndInvalid call
+						// since it may call sysexEnd() just after it !
+						if(slotIntVal(g->sp-1, &last_uid)) {
+							post("error: failed retrieving uid value !");
+							last_uid = -1;
+						}
+						sysexEndInvalid();
+					}
+					sysexBegin(); // new sysex in
+					gSysexData.push_back(pktval); // add SOX
+				}
+				else {// abnormal data in middle of sysex packet
+					gSysexData.push_back(pktval); // add it as an abort message
+					sysexEndInvalid(); // flush invalid
+					m = 0; // discard all packet
+					break;
+				}
+			}
+			else if(gSysexFlag)
+				gSysexData.push_back(pktval); // add Byte
+			else // garbage - handle in case - discard it
+				break;
+		}
+		return (pkt->length-m);
+		}
     break;
         
     case 1 :	
@@ -92,27 +185,33 @@ static void midiProcessSystemPacket(MIDIPacket *pkt, int chan) {
         SetInt(g->sp,  index);		 						// chan unneeded
         ++g->sp; SetInt(g->sp, data);						// special smpte action in the lang
         runInterpreter(g, s_midiSMPTEAction, 4 );
-    break;
+		return 2;
 
     case 2 : 	//songptr	
         ++g->sp; SetInt(g->sp,  (pkt->data[2] << 7) | pkt->data[1]); //val1
         runInterpreter(g, s_midiSysrtAction, 4);
-        break;
+		return 3;
+		
     case 3 :	// song select
         ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
         runInterpreter(g, s_midiSysrtAction, 4);
-        break;
+		return 2;
+	
     case 8 :	//clock
     case 10:	//start
     case 11:	//continue
     case 12: 	//stop
     case 15:	//reset
+		gRunningStatus = 0; // clear running status
         runInterpreter(g, s_midiSysrtAction, 3);
-        break;
+        return 1;
+		
     default:
         g->sp -= 3; // nevermind
-        break;  
+        break;
     }
+	
+	return (1);
 }
 
 static void midiProcessPacket(MIDIPacket *pkt, int uid)
@@ -124,17 +223,21 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 	if (compiledOK) {
 			VMGlobals *g = gMainVMGlobals;
 			
-			uint8 i = 0;
+			int i = 0; //cp : changed uint8 to int if packet->length >= 256 bug:(infinite loop)
 			while (i < pkt->length) {
 				uint8 status = pkt->data[i] & 0xF0;			
 				uint8 chan = pkt->data[i] & 0x0F;
 				g->canCallOS = false; // cannot call the OS
-        
+  
 				++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
 				//set arguments: 
 				++g->sp;SetInt(g->sp,  uid); //src
 					// ++g->sp;  SetInt(g->sp, status); //status
 				++g->sp;  SetInt(g->sp, chan); //chan
+				
+				if(status & 0x80) // set the running status for voice messages
+					gRunningStatus = ((status >> 4) == 0xF) ? 0 : pkt->data[i]; // keep also additional info
+			L:      
 				switch (status) {
 				case 0x80 : //noteOff
 					++g->sp; SetInt(g->sp,  pkt->data[i+1]); //val1
@@ -176,13 +279,18 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 					i += 2;
 					break;
 				case 0xF0 :
-					midiProcessSystemPacket(pkt, chan);
-					i += 1;
+					i += midiProcessSystemPacket(pkt, chan);
 					break;
 				default :	// data byte => continuing sysex message
+					if(gRunningStatus && !gSysexFlag) { // modified cp: handling running status. may be we should here
+						status = gRunningStatus & 0xF0; // accept running status only inside a packet beginning
+						chan = gRunningStatus & 0x0F;	// with a valid status byte ?
+						SetInt(g->sp, chan);			
+						--i;
+						goto L; // parse again with running status set
+					}
 					chan = 0;
-					midiProcessSystemPacket(pkt, chan);
-					i += 1;
+					i += midiProcessSystemPacket(pkt, chan);
 					break;
 			}
 		}
@@ -589,7 +697,7 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
     float late;
 	err = slotIntVal(p, &outputIndex);
 	if (err) return err;
-	if (outputIndex < 0 || outputIndex >= gNumMIDIOutPorts) return errIndexOutOfRange;
+	if (outputIndex < 0 || outputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
 	
 	err = slotIntVal(u, &uid);
 	if (err) return err;
@@ -623,7 +731,8 @@ void initMIDIPrimitives()
         
 	base = nextPrimitiveIndex();
 	index = 0;
-        
+	gSysexData.reserve(1024);
+	
 	s_midiin = getsym("MIDIIn");
     s_domidiaction = getsym("doAction");
     s_midiNoteOnAction = getsym("doNoteOnAction");
@@ -634,10 +743,12 @@ void initMIDIPrimitives()
     s_midiProgramAction = getsym("doProgramAction");
     s_midiBendAction = getsym("doBendAction");
     s_midiSysexAction = getsym("doSysexAction");
+	s_midiInvalidSysexAction = getsym("doInvalidSysexAction"); // client can handle incorrect case
     s_midiSysrtAction = getsym("doSysrtAction");
     s_midiSMPTEAction = getsym("doSMPTEaction");
     s_numMIDIDev = getsym("prSetNumberOfDevices");
     s_midiclient = getsym("MIDIClient");
+	
        definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
