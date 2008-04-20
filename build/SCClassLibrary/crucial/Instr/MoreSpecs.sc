@@ -129,11 +129,12 @@ StaticSpec : NoLagControlSpec {
 	// also a scalar spec, but better to inherit ControlSpec
 
 	canKr { ^false }
-	rate { ^\scalar }
+	rate { ^\noncontrol } // builds the constant into the synthDef
 	defaultControl { arg val;
 		^NumberEditor.new(this.constrain(val ? this.default),this) 
 	}
 }
+
 StaticIntegerSpec : StaticSpec {
 	*new { arg minval=0, maxval=10, default, units;
 		^super.new(minval.asInteger, maxval.asInteger, \lin, 1, default , units )
@@ -244,6 +245,13 @@ BufferProxySpec : ScalarSpec {
 	}
 }
 
+BusSpec : ScalarSpec {
+	var <>rate,<>numChannels,<>private;
+	*new { |rate,numChannels,private|
+		^super.new.rate_(rate).numChannels_(numChannels).private_(private)
+	}
+}
+
 SampleSpec : ScalarSpec {
 
 	*initClass {
@@ -347,7 +355,7 @@ InstrNameSpec : HasItemSpec {
 	*new { arg outSpec,hasGate,hasAudioInput;
 		^super.new(outSpec).hasGate_(hasGate).hasAudioInput_(hasAudioInput)
 	}
-	rate {^\scalar }
+	rate {^\noncontrol }
 	canAccept { arg ting;
 		^(ting.isString and: {Instr(ting).notNil})
 	}

@@ -88,7 +88,7 @@
 }
 
 + Spec {
-	rate { ^\scalar }
+	rate { ^\noncontrol }
 
 	*findKeyForSpec { arg spec;
 		var matching,exact;

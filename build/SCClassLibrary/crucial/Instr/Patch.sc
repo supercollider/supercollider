@@ -13,6 +13,11 @@ HasPatchIns : AbstractPlayer {
 			this.inputs.at(argi).connectToPatchIn(patchIn,false);
 		});
 	}
+	// currently Patch just hold onto the PatchIns but they are disconnected
+	//freeToBundle { |bundle|
+	//	super.freeToBundle(bundle);
+	//	bundle.addFunction({ patchIns = nil; });
+	//}
 	//subclassResponsibility
 	synthArgsIndices { ^this.subclassResponsibility(thisMethod) }
 	inputs { ^this.subclassResponsibility(thisMethod) }
@@ -194,17 +199,17 @@ Patch : HasPatchIns  {
 	rate {
 		^rate ?? {
 			if(this.instr.outSpec.notNil,{
-				this.instr.outSpec.rate
+				rate = this.instr.outSpec.rate
 			},{
-				//( this.asString + ": rate is unknown, guessing Audio").warn;
-				^'audio'
+				// guess, but don't cache that guess
+				'audio'
 			});
 		};
 	}
 	numChannels {
 		^numChannels ?? {
 			if(this.instr.outSpec.notNil,{
-				this.instr.outSpec.numChannels
+				numChannels = this.instr.outSpec.numChannels
 			},{
 				//( this.asString + ": numChannels is unknown").warn;
 				nil
@@ -288,8 +293,8 @@ Patch : HasPatchIns  {
 			patchIns = patchIns.add(patchIn);
 
 			// although input is control, arg could overide that
-			if(spec.rate != \scalar
-				and: {ag.rate != \scalar}
+			if(spec.rate != \noncontrol
+				and: {ag.rate != \noncontrol}
 			,{
 				// if rate is \stream and spec is not EventStream
 				// then fail
@@ -298,7 +303,7 @@ Patch : HasPatchIns  {
 				synthPatchIns = synthPatchIns.add(patchIn);
 				synthArgsIndices.put(i,synthPatchIns.size - 1);
 			},{
-				// watch scalars for changes.
+				// watch noncontrols for changes.
 				// if Env or Sample or quantity changed, synth def is invalid
 				//if(ag.isNumber.not,{ ag.addDependant(this); });
 			});
@@ -316,19 +321,26 @@ Patch : HasPatchIns  {
 			});
 			synthDef = InstrSynthDef.build(this.instr,this.args,this.outClass);
 			defName = synthDef.name;
-			numChannels = synthDef.numChannels;
-			rate = synthDef.rate;
-			this.watchScalars;
+			// the synthDef has now evaluated and can know the number of channels
+			// but if it returned an Out.ar then it does not know
+			// so we will have to trust the Instr outSpec 
+			if(synthDef.numChannels.notNil,{
+				numChannels = synthDef.numChannels;
+			});
+			if(synthDef.rate.notNil,{
+				rate = synthDef.rate;
+			});
+			this.watchNoncontrols;
 			this.instr.addDependant(this);
 			stepChildren = synthDef.secretObjects;
 
 			synthDef
 		}
 	}
-	watchScalars {
+	watchNoncontrols {
 		this.args.do({ arg ag,i;
-			if(this.specAt(i).rate === \scalar
-				or: {ag.rate === \scalar}
+			if(this.specAt(i).rate === \noncontrol
+				or: {ag.rate === \noncontrol}
 			,{
 				// watch scalars for changes.
 				// if Env or Sample or quantity changed, synth def is invalid

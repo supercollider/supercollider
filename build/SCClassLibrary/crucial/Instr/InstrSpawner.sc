@@ -32,7 +32,7 @@ InstrSpawner : Patch {
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
-			this.watchScalars;
+			this.watchNoncontrols;
 			synthDef
 		}
 	}
@@ -68,7 +68,7 @@ InstrSpawner : Patch {
 		^true
 	}
 	update { arg changed,changer;
-		// one of my scalar inputs changed
+		// one of my noncontrol inputs changed
 		if(this.isPlaying,{
 		"one of my inputs changed, need to send sample change etc.".warn;
 

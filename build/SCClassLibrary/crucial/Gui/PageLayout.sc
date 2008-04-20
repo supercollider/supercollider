@@ -119,9 +119,7 @@ MultiPageLayout  {
 		var b,wb,wbw,wbh;
 		if(this.view.isNil,{ this.insp });
 		b = this.view.resizeToFit(reflow);
-		//if(window.isNil,{
-		//	this.insp;
-		//});
+
 		window.setInnerExtent(wbw = b.width + 4, wbh = b.height + 17);
 		/*
 		auto-place the window.  but we need to know if you explicitly passed in bounds.
@@ -142,6 +140,7 @@ MultiPageLayout  {
 		}); */
 
 	}
+		
 	reflowAll {
 		view.reflowAll;
 	}

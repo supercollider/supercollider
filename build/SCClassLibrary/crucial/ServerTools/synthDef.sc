@@ -4,10 +4,10 @@
 	stopToBundle {}
 	freeToBundle {}
 	
-	rate { ^\scalar }
+	rate { ^\noncontrol } // my bad. was \scalar, this should have been \noncontrol
 	
 	makePatchOut {}
-	patchOut { ^ScalarPatchOut(this) }
+	patchOut { ^ObjectPatchOut(this) }
 	connectToPatchIn {}
 
 	prepareToBundle { arg  group,bundle;
@@ -133,3 +133,5 @@
 		});
 	}
 }
+
+

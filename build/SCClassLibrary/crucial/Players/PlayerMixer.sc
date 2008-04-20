@@ -113,9 +113,7 @@ GroupedPlayerMixer : PlayerMixer {
 	gpminit { arg pls;
 		groupings = pls.collect({ |p| loadDocument(p) });
 		players = groupings.flat;
-		
 	}
-//	prepareToBundle { arg agroup,bundle,private = false, bus;
 
 	makeResourcesToBundle { arg bundle;
 		groups = groupings.collect({ |pls,i| 
@@ -127,10 +125,6 @@ GroupedPlayerMixer : PlayerMixer {
 			g
 		});
 		super.makeResourcesToBundle(bundle);
-/*		sharedBus = SharedBus.newFrom(patchOut.bus,this);
-		this.annotate(sharedBus,"Shared Bus");
-		patchOut.bus = sharedBus;
-*/
 	}
 	prepareChildrenToBundle { arg bundle;
 		groupings.do({ |pls,gi|
