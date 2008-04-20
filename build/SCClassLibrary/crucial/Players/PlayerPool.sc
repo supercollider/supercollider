@@ -53,7 +53,7 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	prepareChildrenToBundle { arg bundle;
 		super.prepareChildrenToBundle(bundle);
 		list.do({ arg child;
-			child.prepareToBundle(socketGroup,bundle,true,sharedBus);
+			child.prepareToBundle(socketGroup,bundle,true,this.bus);
 		});
 	}*/
 	spawnToBundle { arg bundle;
@@ -79,6 +79,8 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 		});
 		bundle.addMessage(this,\didSpawn);
 	}
+	// stopToBundle { |bundle|  shouldn't bother to stop the whole list
+	// only the playing one
 
 	guiClass { ^PlayerPoolGui }
 }

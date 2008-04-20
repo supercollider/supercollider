@@ -46,22 +46,11 @@ TempoBus   {
 	}
 	
 	init { arg server;
+		// BusPool
 		bus = Bus.control(server,1);
 		AbstractPlayer.annotate(bus,"TempoBus");
 		bus.set(tempo.tempo);
 		tempo.addDependant(this);
-		
-		/*  client crashed ?
-		SimpleController(server).put(\serverRunning,{
-			if(server.serverRunning.not,{
-				this.releaseBus;
-			},{
-				bus = Bus.control(server,1);
-				bus.set(tempo.tempo);
-				isReady = true;
-			})
-		})
-		*/
 
 		if(server.serverRunning,{ 
 			isReady = true;
@@ -70,10 +59,7 @@ TempoBus   {
 	}
 	update { arg changed,changer;
 		if(changed === tempo,{
-			//bus.server.latency ? 0.05
-			// why delay ?
-			bus.server.listSendBundle(0.05, [bus.setMsg(tempo.tempo)]);
-			//bus.value = tempo.tempo;	
+			bus.server.listSendBundle(0.02, [bus.setMsg(tempo.tempo)]);
 		})
 	}
 }

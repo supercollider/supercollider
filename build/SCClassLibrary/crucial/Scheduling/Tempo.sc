@@ -59,7 +59,7 @@ Tempo  {
 
 	kr { ^TempoPlayer(this).kr }
 	*kr { ^TempoPlayer(default).kr }
-
+	*beats2secsKr { |beats| ^TempoPlayer(default).kr.reciprocal * beats }
 	
 	// rare to have more than one tempo,
 	// but any you create you will have to call destroy on to get rid of it

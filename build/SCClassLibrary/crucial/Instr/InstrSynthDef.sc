@@ -9,7 +9,7 @@ InstrSynthDef : SynthDef {
 	// they are created in the context of the synth def and added
 	// magically/secretly.
 	// this is for adding buffers, samples, inline players, subpatches, spawners etc.
-	var secretIr, secretKr,stepchildren;
+	var secretIr, secretKr,stepchildren,synthProxy;
 	
 	var <>tempTempoKr;
 	
@@ -46,26 +46,34 @@ InstrSynthDef : SynthDef {
 			// create OutputProxy In InTrig Float etc.
 			outputProxies = this.buildControlsWithObjects(instr,inputs);
 			result = instr.valueArray(outputProxies);
-			rate = result.rate;
-			numChannels = max(1,result.size);
 	
 			if(result != 0.0,{
+				rate = result.rate;
+				numChannels = max(1,result.size);
+		
 				if(outClass === XOut,{
 					"XOut not tested yet.".error;
 					//out = outClass.perform(if(this.rate == \audio,\ar,\kr),
 					//			inputs.at(0),xfader.value,out)
 				});
 					
-				if(rate == \audio,{
-					result = outClass.ar(Control.names([\out]).ir([0]) , result);
-					// can still add Out controls if you always use \out, not index
-				},{
-					if(rate == \control,{
+				rate.switch(
+					\audio, {
+						result = outClass.ar(Control.names([\out]).ir([0]) , result);
+						// can still add Out controls if you always use \out, not index
+					},
+					\control, {
 						result = outClass.kr(Control.names([\out]).ir([0]) , result);
-					},{
-						("InstrSynthDef: scalar rate ? result of your function:" + result + rate).error;
-					})
-				});
+					},
+					\scalar, { // doesn't make sense for a UGen
+						("InstrSynthDef: result of your Instr function was a scalar rate object:" 
+							+ result + this.buildErrorString).error;
+					},
+					{
+						("InstrSynthDef: result of your Instr function was an object with unknown rate:" 
+							+ result + rate + this.buildErrorString).error;
+					}
+				);
 			});
 		}.try({ arg err;
 			var info;
@@ -88,6 +96,7 @@ InstrSynthDef : SynthDef {
 		instr.name.do({ arg part;
 			name = name ++ part.asString.asFileSafeString;
 		});
+		//name.debug("name");
 		if(name.size > 8,{
 			name = name.copyRange(0,7) ++ name.copyRange(8,name.size - 1).hash.asFileSafeString;
 		});
@@ -101,7 +110,9 @@ InstrSynthDef : SynthDef {
 		name = name ++ fixedID.hash.asFileSafeString; */
 
 		longName = name ++ this.class.defNameFromObjects(inputs);
+		//longName.debug("longName");
 		name = longName.hash.asFileSafeString;
+		//name.debug("name");
 	}
 	
 	// passed to Instr function but not to synth
@@ -117,14 +128,6 @@ InstrSynthDef : SynthDef {
 	// argi points to the slot in objects (as supplied to secretDefArgs)
 	// selector will be called on that object to produce the synthArg
 	// thus sample can indicate itself and be asked for \tempo or \bufnum
-//	addSecretIr { arg name,value,argi,selector;
-//		secretIrPairs = secretIrPairs.add([name,value,argi,selector]);
-//		^Control.names([name]).ir([value])
-//	}
-//	addSecretKr { arg name,value,argi,selector;
-//		secretKrPairs = secretKrPairs.add([name,value,argi,selector]);
-//		^Control.names([name]).kr([value])
-//	}
 
 	// initialValue is used for building the synth def
 	// selector is what will be called on the object to obtain the real value
@@ -204,7 +207,7 @@ InstrSynthDef : SynthDef {
 			defarg
 		});
 		outputProxies = this.buildControls;
-		// the objects themselves know how best to be represented in teh synth graph
+		// the objects themselves know how best to be represented in the synth graph
 		// they wrap themselves in In.kr In.ar or they add themselves directly eg (Env)
 		^outputProxies.collect({ arg outp,i;
 			defargs.at(i).instrArgFromControl(outp,i)
@@ -310,5 +313,48 @@ InstrSynthDef : SynthDef {
 			defName = PathName(p).fileNameWithoutExtension;
 			Library.put(SynthDef,server,defName.asSymbol,\assumedLoaded);
 		})
+	}
+	*buildSynthDef {
+		var sd;
+		sd = UGen.buildSynthDef;
+		if(sd.isNil,{
+			Error("Not currently inside a synth def ugenFunc; No synth def is currently being built.").throw;
+		});
+		if(sd.isKindOf(InstrSynthDef).not,{
+			Error("This requires an InstrSynthDef.").throw;
+		})
+		^sd
+	}
+	synthProxy {
+		^synthProxy ?? { 
+			synthProxy = SynthProxy.new;
+			stepchildren = stepchildren.add(synthProxy);
+			synthProxy	 
+		}
+	}
+}
+
+// SynthProxy is a way to access the Synth once the SynthDef has started playing
+// there is only one SynthProxy per synth def, though there may be multiple synths spawned
+// the synthProxy is in stepchildren and in the Patch's stepChildren so it is prepared and spawned.
+// it is roughly equivalent to the synth argument in SC2's Spawn
+SynthProxy {
+	var events,sched;
+	spawnToBundle { |b|
+		b.addMessage(this,\didSpawn)
+	}
+	
+	didSpawn {
+		sched = BeatSched.new;
+		// sched any events
+		events.do({ |df|
+			sched.sched(df[0],df[1])
+		})	
+	}
+	sched { |delta, function|
+		events = events.add([delta,function]);
+	}
+	channelOffset_ {
+		// shift the Out.ar
 	}
 }

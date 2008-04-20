@@ -18,6 +18,11 @@ Editor {
 	makePatchOut {
 		patchOut = ScalarPatchOut(this)
 	}
+	stopToBundle { arg b; this.freePatchOutToBundle(b); }
+	freePatchOutToBundle { arg bundle;
+		bundle.addFunction({ patchOut.free; patchOut = nil; })
+	}
+	
 	synthArg { ^this.poll }
 	instrArgFromControl { arg control;
 		^control
@@ -119,23 +124,24 @@ KrNumberEditor : NumberEditor {
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		patchOut.connectTo(patchIn,needsValueSetNow);
 	}
-	stopToBundle { arg b; b.addFunction({ patchOut.free; patchOut = nil; }); }
-	freePatchOut { arg bundle;
-		bundle.addFunction({ patchOut.free; patchOut = nil; })
-	}
+
 
 	guiClass { ^KrNumberEditorGui }
 
 }
 
 IrNumberEditor : NumberEditor {
-	rate { ^\control } // irate icontrol ?
+	rate { ^\scalar } // was \control but this is correct now
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addIr(name,this.synthArg);
 	}
 	instrArgFromControl { arg control;
 		^control
 	}
+	makePatchOut {
+		patchOut = ScalarPatchOut(this);
+	}
+	connectToPatchIn { } // nothing doing.  we are ir only
 }
 
 

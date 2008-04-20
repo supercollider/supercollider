@@ -1,7 +1,7 @@
 
 ServerLog : NetAddr {
 
-	var <sent,<received;
+	var <msgs;
 	var lastStatus;
 	*start { |server|
 		var addr,new;
@@ -20,14 +20,17 @@ ServerLog : NetAddr {
 		^new
 	}
 	*gui { |tail=1000|
-		if(Server.default.addr.isKindOf(ServerLog),{ 
-			Server.default.addr.gui(nil,nil,tail)
+		var events;
+		if(Server.default.addr.isKindOf(ServerLog),{
+			Server.default.addr.getSortedEvents(tail,{ |events|
+				Server.default.addr.gui(nil,nil,events)
+			});
 		},{
 			"ServerLog has not been running".inform;
 		});
 	}
 	*report { |tail=1000|
-		if(Server.default.addr.isKindOf(ServerLog),{ 
+		if(Server.default.addr.isKindOf(ServerLog),{
 			Server.default.addr.report(tail)
 		},{
 			"ServerLog has not been running".inform;
@@ -39,41 +42,39 @@ ServerLog : NetAddr {
 		})
 	}
 
-	
-
 
 	// private
 	*new { arg hostname, port=0;
 		^super.new(hostname,port).slinit
 	}
-	
+
 	slinit {
 		thisProcess.recvOSCfunc = { arg time,replyAddr,msg;
 			var status;
 			if(msg[0] == 'status.reply') {
 				status = msg[0..5];
 				if(status != lastStatus,{
-					received = received.add( ServerLogReceivedEvent(time,status) );
+					msgs = msgs.add( ServerLogReceivedEvent(time,status) );
 					lastStatus = status;
 				});
 			} {
-				received = received.add( ServerLogReceivedEvent(time,msg) )
+				msgs = msgs.add( ServerLogReceivedEvent(time,msg) )
 			}
 		};
 	}
 	sendMsg { arg ... args;
 		if(args != ["/status"],{
-			sent = sent.add( ServerLogSentEvent( nil, args,false) );
+			msgs = msgs.add( ServerLogSentEvent( nil, args,false) );
 		});
 		^super.sendMsg(*args);
 	}
 	sendBundle { arg time ... args;
-		sent = sent.add( ServerLogSentEvent( time,args,true) );
+		msgs = msgs.add( ServerLogSentEvent( time,args,true) );
 		^super.sendBundle(*([time]++args))
 	}
 	guiClass { ^ServerLogGui }
 	
-	events { arg tail;
+	getSortedEvents { arg tail,function;
 		// list in logical time order
 
 		/*
@@ -105,24 +106,22 @@ ServerLog : NetAddr {
 
 		*/
 
-		var q,events,since,a,b;
-		q = PriorityQueue.new;
-		sent.do({ |it| q.put(it.eventTime,it) });
-		received.do({ |it| q.put(it.eventTime,it) });
-		events = Array.fill(sent.size + received.size,{ |i| 
-				//if(i % 25 == 0,{0.01.wait}); 
-				q.pop	
-			});
-		
-		/*(if(numMinutes.notNil,{
-			since = Main.elapsedTime - (numMinutes * 60);
-			events = events.select({ |a| a.eventTime >= since });
-		});*/
-		if(tail.notNil,{
-			^events.copyRange(events.size-tail-1,events.size-1);
-		},{
-			^events
-		})
+		Routine({
+			var q,events,since,a,b;
+
+			q = PriorityQueue.new;
+			msgs.do({ |it| q.put(it.eventTime,it) });
+			events = Array.fill(msgs.size,{ |i|
+					if(i % 25 == 0,{0.01.wait});
+					q.pop
+				});
+
+			if(tail.notNil,{
+				function.value( events.copyRange(events.size-tail-1,events.size-1) );
+			},{
+				function.value( events )
+			})
+		}).play(AppClock)
 	}
 	*cmdString { |cmd|
 		if(cmd.asInteger != 0,{
@@ -154,7 +153,7 @@ ServerLog : NetAddr {
 
 }
 
-ServerLogSentEvent { 
+ServerLogSentEvent {
 
 	var <>delta,<>msg,<>isBundle,<>timeSent;
 
@@ -185,10 +184,10 @@ ServerLogReceivedEvent {
 		^time
 	}
 	report {
-		var cmd, one, numUGens, numSynths, numGroups, numSynthDefs, 
+		var cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate;
 		if(msg[0] == 'status.reply',{
-			#cmd, one, numUGens, numSynths, numGroups, numSynthDefs, 
+			#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 			("<<< % % ugens % synths % groups % synthDefs".format(this.eventTime,numUGens,numSynths,numGroups,numSynthDefs)).postln
 		},{
@@ -203,5 +202,5 @@ ServerLogReceivedEvent {
 
 
 
-		
-	
+
+

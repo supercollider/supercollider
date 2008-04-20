@@ -214,6 +214,10 @@ Crucial {
 		ActionButton(menu.startRow,"Listen to Buses",{
 			Library.at(\menuItems,\tools,'listen to audio busses').value;		},minWidth: 250);
 
+		ActionButton(menu.startRow,"Gui debugger",{
+			Library.at(\menuItems,\tools,\guiDebugger).value;
+		},minWidth: 250);
+		
 		ActionButton(menu.startRow,"Annotated Nodes",{
 			Library.at(\menuItems,\tools,'Annotated Nodes Report').value;		},minWidth: 250);
 
@@ -266,7 +270,7 @@ Crucial {
 			Sheet({ |layout|
 				CXLabel( layout, "Audio Busses",width:685);
 				s.audioBusAllocator.blocks.do({ |b|
-					var listen;
+					var listen,bus;
 					listen = Patch({ In.ar( b.start, b.size ) });
 					layout.startRow;
 					ToggleButton( layout,"listen",{
@@ -276,9 +280,22 @@ Crucial {
 					});
 					CXLabel( layout, b.start.asString + "(" ++ b.size.asString ++ ")"
 						,100 );
-					CXLabel( layout,
-						Library.at(AbstractPlayer, \busAnnotations, s,\audio, b.start)
-						,540 );
+
+					bus = BusPool.findBus(s,b.start);
+					if(bus.notNil,{
+						layout.flow({ |f|
+							var ann;
+							ann = BusPool.getAnnotations(bus);
+							
+							if(ann.notNil,{
+								ann.keysValuesDo({ |client,name|
+									f.startRow;
+									Tile(client,f);
+									CXLabel(f,":"++name);
+								});
+							});
+						})
+					});
 				})
 			},"Audio Busses");
 		});
@@ -303,7 +320,62 @@ Crucial {
 								});
 			})
 		});
-
+		Library.put(\menuItems,\tools,\guiDebugger,{
+			var g;		
+			CXMenu.newWith(
+				GUI.window.allWindows.collect({ |w|
+					w.name -> {
+						Sheet({ |f|
+							f.flow({ |f|
+								g.value(w.view,f)
+							}).reflowDeep.resizeToFit;
+						},"GUI: " + w.name)
+						.resizeToFit
+					}
+				})
+			).gui;
+			
+			g = { arg view,f,indent=0;
+					f.startRow;
+					GUI.staticText.new(f,10@17).background_(Color.clear);
+					f.flow({ |f|
+						var oldColor,x;
+						if(view.respondsTo(\background) and: {view.isKindOf(StartRow).not},{
+							if(view.isKindOf(SCViewHolder),{
+								oldColor = view.background;
+							},{
+								oldColor = view.background;
+							});
+							ToggleButton(f,view.asString,{
+								// various views wont be that noticeable
+								// some highlight/focus is needed
+								view.background = Color.cyan;
+								if(view.canFocus ? false,{view.focus});
+							},{
+								view.background = oldColor ? Color.clear;
+							});
+							InspectorLink.icon(view,f);
+						},{
+							InspectorLink(view,f);
+						}); 
+						x = view.bounds.asString.gui(f);
+						if(view.respondsTo(\parent) 
+							and: {view.parent.notNil}
+							and: {view.parent.respondsTo('absoluteBounds')} 
+							and: {view.parent.absoluteBounds.containsRect(view.absoluteBounds).not},{
+							x.background_(Color.red);
+							"View exceeds parent bounds !".gui(f);
+							(view.asString + "bounds exceeds parent !").warn;
+						});
+						if(view.respondsTo(\children),{
+							view.children.do({ |kiddy|
+								g.value(kiddy,f,25);
+							});
+						});
+					},Rect(indent,0,f.bounds.width,f.bounds.height))
+					.background_(Color.cyan(0.1,alpha: 0.08))
+				};
+		});
 		/*Library.put(\menuItems,\post,'post color...',{
 			GetColorDialog("Color",Color.white,{ arg ok,color;
 				if(ok,{ color.post;})
@@ -328,36 +400,36 @@ Crucial {
 			UnicodeResponder.tester;
 		});
 
-		Library.put(\menuItems,\introspection,'find class...',{
-			GetStringDialog("Classname or partial string","",{
-				arg ok,string;
-				var matches,f,classes;
-				matches = IdentitySet.new;
-				if(ok,{
-					classes = Class.allClasses.reject({ arg cl; cl.class === Class });
-					classes.do({ arg cl;
-						if(cl.name.asString.containsi(string),{
-							matches = matches.add(cl);
-						});
-					});
-
-					Sheet({ arg f;
-						matches.do({ arg cl;
-							ClassNameLabel(cl,f.startRow,200);
-							ActionButton(f,"source",{
-								cl.openCodeFile;
-							},60);
-							ActionButton(f,"help",{
-								cl.openHelpFile;
-							},60);
-						});
-						if(matches.isEmpty,{
-							CXLabel(f,"No matches found");
-						});
-					},"matches" + string);
-				})
-			});
-		});
+//		Library.put(\menuItems,\introspection,'find class...',{
+//			GetStringDialog("Classname or partial string","",{
+//				arg ok,string;
+//				var matches,f,classes;
+//				matches = IdentitySet.new;
+//				if(ok,{
+//					classes = Class.allClasses.reject({ arg cl; cl.class === Class });
+//					classes.do({ arg cl;
+//						if(cl.name.asString.containsi(string),{
+//							matches = matches.add(cl);
+//						});
+//					});
+//
+//					Sheet({ arg f;
+//						matches.do({ arg cl;
+//							ClassNameLabel(cl,f.startRow,200);
+//							ActionButton(f,"source",{
+//								cl.openCodeFile;
+//							},60);
+//							ActionButton(f,"help",{
+//								cl.openHelpFile;
+//							},60);
+//						});
+//						if(matches.isEmpty,{
+//							CXLabel(f,"No matches found");
+//						});
+//					},"matches" + string);
+//				})
+//			});
+//		});
 
 		Library.put(\menuItems,\introspection,\classfinder,{
 			GetStringDialog("Search classes...","",{ arg ok,string;
@@ -367,7 +439,8 @@ Crucial {
 						if(class.isMetaClass.not and: {class.name.asString.find(string,true).notNil},{
 							matches = matches.add(class,true);
 							layout.startRow;
-							ClassNameLabel(class,layout,300);
+							//ClassNameLabel(class,layout,300);
+							ActionButton(layout,class.name.asString,{ class.openCodeFile; },300);
 						});
 					});
 					if(matches.isNil,{

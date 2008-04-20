@@ -24,12 +24,13 @@ CXAbstractLabel : SCViewHolder {
 }
 
 CXLabel : CXAbstractLabel {
+
 	classvar <>bgcolor;
 
 	*new { arg layout,string,width,height,minWidth=15,font;
 		var new;
 		new = super.new(layout,string,width,height,minWidth,font);
-		new.background_(Color.new255(255,255,240))
+		new.background_(Color(0.9843137254902, 0.9843137254902, 0.9843137254902, 1.0))
 			.align_(\left);
 		^new
 	}

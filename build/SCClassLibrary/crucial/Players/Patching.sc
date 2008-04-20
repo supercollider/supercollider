@@ -2,7 +2,7 @@
 PatchIn {
 
 	var <>nodeControl,<>connectedTo;
-	
+
 	*new  { arg nodeControl;
 		^super.newCopyArgs(nodeControl)
 	}
@@ -21,10 +21,16 @@ PatchIn {
 	*stream { arg nodeControl;
 		^ScalarPatchIn(nodeControl)
 	}
+	*noncontrol { arg nodeControl;
+		^ObjectPatchIn(nodeControl)
+	}
 	server { ^nodeControl.server }
 	group { ^nodeControl.group }
+	disconnectFrom { |patchOut|
+		connectedTo = nil;
+	}
 }
-	
+
 AudioPatchIn : PatchIn {
 
 	rate { ^\audio }
@@ -36,8 +42,8 @@ AudioPatchIn : PatchIn {
 		// to set the value of audio, would have to set up a bus and set the sample value
 		thisMethod.notYetImplemented;
 	}
-}	
-	
+}
+
 ControlPatchIn : AudioPatchIn {
 	rate { ^\control }
 	value_ { arg val;
@@ -48,16 +54,19 @@ ControlPatchIn : AudioPatchIn {
 ScalarPatchIn : ControlPatchIn {
 	rate { ^\scalar }
 	value_ { arg val;
-		// nothing to do 
+		// nothing to do
 	}
 }
-
+ObjectPatchIn : ScalarPatchIn {
+	rate { ^\noncontrol }
+}
 
 
 PatchOut {
 
 	var <>source,<>group,<bus;
 	var <connectedTo,<>patchOutsOfInputs;
+	var busses;
 
 	*new { arg source,group,bus;
 		^this.perform(source.rate,source,group,bus)
@@ -76,8 +85,12 @@ PatchOut {
 	}
 	*stream { arg source,group,bus;
 		^ScalarPatchOut.prNew(source, group,bus)
-	}		
+	}
+	*noncontrol { arg source,group,bus;
+		^ObjectPatchOut.prNew(source,group,bus)
+	}
 	init {}
+	busses { ^(busses ?? {busses = Dictionary.new}) }
 	connectTo { arg patchIn,needsValueSetNow=true;
 		// am i already connected to this client ?
 		if(connectedTo.isNil or: {connectedTo.includes(patchIn).not},{
@@ -87,35 +100,79 @@ PatchOut {
 		this.perform(patchIn.rate,patchIn,needsValueSetNow);// set value, bus etc.
 	}
 	disconnect {
-		("disconnect" + this).postln;
+		connectedTo.do({ |patchIn|
+			patchIn.disconnectFrom(this)
+		})
 	}
 	free {
 		// tell my connectedTo that i'm gone
+		this.releaseBusses;
+		this.disconnect;
 	}
-	/*pause { arg requester;
-		if(connectedTo.every({ arg cn; cn === requester }),{
-			// then we can pause
-		})
-	}*/
+
 	server { ^group.server }
 	isPlaying { ^group.isPlaying }
+
 	bus_ { arg b;
-		bus = b.asBus;
-		connectedTo.do({ arg pti;
-			pti.readFromBus(bus);
+		if(b != bus,{
+			bus = b.asBus(this.rate,source.numChannels,this.server);
+
+			if(bus.numChannels != source.numChannels,{
+				warn("numChannels mismatch ! source:" + source
+					+ source.numChannels + "vs. supplied bus:" + b);
+			});
+
+			BusPool.retain(bus,source,\out);
+			connectedTo.do({ arg pti;
+				pti.readFromBus(bus);
+			});
 		})
 	}
 	hasBus { ^bus.notNil and: {bus.index.notNil} }
-		
+
+	// allocate extra outs for custom use
+	// and store them here in the PatchOut
+	allocBus { |name,rate,numChannels|
+		var b;
+		b = BusPool.alloc(rate,this.server,numChannels,source,name);
+		this.busses[name] = b;
+		^b
+	}
+	releaseBusses {
+		// main bus
+		if(bus.notNil and: {bus.index.notNil},{
+			BusPool.release(bus,source);
+		});
+		bus = nil;
+
+		// custom requested busses
+		if(busses.notNil,{
+			busses.keysValuesDo({ |name,bus|
+				BusPool.release(bus,source);
+			});
+			busses = nil;
+		})
+	}
 }
 
 ControlPatchOut : PatchOut { // you are returned from a .kr play
-	
+
 	init {
-		// nil : speakers
-		// integer : that out
-		// server : private on that server 
-		bus = bus.asBus(this.rate,source.numChannels,this.server);
+		if(bus.isKindOf(BusSpec),{
+			bus = BusPool.makeBusFromSpec(bus,this.server,source,\out)
+		},{
+			// nil : speakers
+			// integer : that out
+			// server : private on that server
+			
+			// temp hack until the \scalar problem is corrected
+			if(source.isKindOf(IrNumberEditor).not,{
+				bus = bus.asBus(this.rate,source.numChannels,this.server);
+				BusPool.retain(bus,source,\out);
+			},{
+				bus = nil;
+			})
+		});
 	}
 	rate { ^\control }
 	synthArg { ^bus.index } //need some initialValue
@@ -136,21 +193,14 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 	scalar { arg scalarPatchIn;
 		// polling of value not yet implemented on scserver
 		// scalarPatchIn.value = bus.poll;
-		[this,scalarPatchIn,this.source]
-			.debug("control -> scalar patch ? this,scalarPatchIn,this.source");
+		//[this,scalarPatchIn,this.source]
+		//	.debug("control -> scalar patch ? this,scalarPatchIn,this.source");
 		thisMethod.notYetImplemented;
-	}
-	free {
-		// PlayerMixer has multiple patchOuts sharing the same bus
-		if(bus.notNil and: {bus.index.notNil},{
-			AbstractPlayer.removeAnnotation(bus);
-			bus.free;
-		});
-		bus = nil;
 	}
 }
 
 AudioPatchOut : ControlPatchOut {
+
 	rate { ^\audio }
 	synthArg { ^bus.index }
 	audio { arg audioPatchIn,needsValueSetNow;
@@ -171,12 +221,16 @@ AudioPatchOut : ControlPatchOut {
 	}
 }
 
-//AbstractScalarPatchOut
-ScalarPatchOut : PatchOut { 
+
+ScalarPatchOut : PatchOut {
 
 	// floats,NumberEditors, numeric pattern players, midi, wacom
 	// things that are not ON the server
-
+	init {
+		if(bus.isKindOf(BusSpec),{ // ignore
+			bus = nil;
+		});
+	}
 	rate { ^\scalar }
 	synthArg {
 	 	^source.synthArg
@@ -195,6 +249,14 @@ ScalarPatchOut : PatchOut {
 		//thisMethod.notYetImplemented;
 	}
 }
+
+ObjectPatchOut : ScalarPatchOut {
+
+}
+
+// this class is only used for KrNumberEditor to send its changes to the server
+// it sends it directly to the Synthh using the NodeControl
+// its not the best design actually
 
 UpdatingScalarPatchOut : ScalarPatchOut {
 	var enabled=false;
@@ -223,7 +285,7 @@ UpdatingScalarPatchOut : ScalarPatchOut {
 	scalar { arg scalarPatchIn;
 		this.enable;
 	}
-	enable { 
+	enable {
 		if(enabled.not,{
 			source.addDependant(this);
 			enabled = true;
@@ -233,6 +295,7 @@ UpdatingScalarPatchOut : ScalarPatchOut {
 		connectedTo.do({ arg c; c.value = source.value })
 	}
 	free {
+		this.releaseBusses; // probably don't have any
 		source.removeDependant(this);
 		enabled = false;
 	}

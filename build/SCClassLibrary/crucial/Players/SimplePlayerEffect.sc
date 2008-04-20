@@ -5,30 +5,20 @@
 
 AbstractSinglePlayerEffect : HasSubject {
 
-	var sharedBus;
-
-
-	makeResourcesToBundle { arg bundle;
-		sharedBus = SharedBus.newFrom(patchOut.bus,this);
-		AbstractPlayer.annotate(sharedBus,"AbstractSinglePlayerEffect");
-		patchOut.bus = sharedBus;
+/*	makeResourcesToBundle { arg bundle;
+		//sharedBus = SharedBus.newFrom(patchOut.bus,this);
+		//if(sharedBus.owner === this,{
+		//	AbstractPlayer.annotate(sharedBus,"AbstractSinglePlayerEffect");
+		//});
+		sharedBus = patchOut.bus;// = sharedBus;
 	}
+*/
 	prepareChildrenToBundle { arg bundle;
-		subject.prepareToBundle(this.group,bundle, true,sharedBus);
+		subject.prepareToBundle(this.group,bundle, true,this.bus);
 	}
-	preparePlayer { arg player,bus;
-		^player.prepareForPlay(this.group,true,sharedBus);
+	preparePlayer { arg player;
+		^player.prepareForPlay(this.group,true,this.bus);
 	}
-	freeResourcesToBundle { arg bundle;
-		bundle.addFunction({
-			if(status == \isStopping or: status == \isFreeing or: status == \isStopped,{
-				if(sharedBus.notNil,{
-					sharedBus.releaseBus(this);
-				});
-				sharedBus = nil;
-			})
-		})
-	}	
 }
 
 PlayerAmp : AbstractSinglePlayerEffect {
@@ -84,7 +74,7 @@ EnvelopedPlayer : AbstractSinglePlayerEffect {
 			in = In.ar(i_bus,pnc);
 			good = BinaryOpUGen('==', CheckBadValues.kr(in, 0, 0), 0);
 			 // silence the output if freq is bad
-			in = in * good * EnvGen.kr(env,gate,doneAction: 2);
+			in = in * good * EnvGen.kr(env,gate,doneAction:0);
 			if(numChannels.notNil,{
 				in = NumChannels.ar(in,numChannels,true);
 			});
@@ -95,22 +85,20 @@ EnvelopedPlayer : AbstractSinglePlayerEffect {
 				env.asCompileString.hash.asFileSafeString 
 	}
 	synthDefArgs { ^[\i_bus,patchOut.synthArg,\gate,1.0] }
+
+	// this is a once-only event; you cannot retrigger it
 	releaseToBundle { arg releaseTime,bundle;
-		status = \isReleaseing;
 		if(releaseTime.isNil,{ releaseTime = env.releaseTime; });
-		if(synth.notNil,{
-			bundle.add(synth.releaseMsg(releaseTime + (server.latency?0.05)));
-		});
-		if(releaseTime > 0.01,{
+
+		if(synth.isPlaying,{
+			bundle.add(synth.releaseMsg(releaseTime));
 			bundle.addFunction({
-				SystemClock.sched(releaseTime,{ 
-					// want everything but the synthFree in here
-					this.stop(nil,false);
-					nil; 
+				AbstractPlayer.bundle(this.server,releaseTime,{ |bundle|
+					this.freeToBundle(bundle);
 				})
 			});
 		},{
-			this.stop(stopSynth: false);
+			this.freeToBundle(bundle)
 		});
 	}
 }

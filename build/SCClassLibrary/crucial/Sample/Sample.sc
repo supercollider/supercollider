@@ -43,11 +43,11 @@ BufferProxy { // blank space for delays, loopers etc.
 		b.sendAtTime(this.server,nil);
 	}
 	freeToBundle { arg bundle;
-		this.freePatchOut(bundle);
+		this.freePatchOutToBundle(bundle);
 		bundle.addMessage(this,\freeHeavyResources);
 		readyForPlay = false;
 	}
-	freePatchOut { arg bundle;
+	freePatchOutToBundle { arg bundle;
 		bundle.addFunction({ patchOut.free; patchOut = nil; })
 	}
 	freeHeavyResources {
@@ -64,11 +64,14 @@ BufferProxy { // blank space for delays, loopers etc.
 	}
 	numFrames { ^size }
 	bufnum {
-		if(UGen.buildSynthDef.notNil,{
+		/*if(UGen.buildSynthDef.notNil,{
 			("Use bufnumIr, not bufnum to obtain a buffer number inside of a synth def. in:" + UGen.buildSynthDef.instrName).warn;
-		});
+		});*/
 		^if(buffer.notNil,{ buffer.bufnum }, nil) 
 	}
+
+	asUgenInput { ^this.bufnumIr }
+	synthArg { ^this.bufnum }
 	
 	bufnumIr {
 		// add a secret ir control
@@ -127,7 +130,7 @@ BufferProxy { // blank space for delays, loopers etc.
 		^BufChannels.ir(this.bufnumIr)
 	}
 	
-	rate { ^\scalar }
+	rate { ^\noncontrol }
 }
 
 
@@ -227,7 +230,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 	}
 
 	storeArgs { ^[ this.class.abrevPath(soundFilePath) ,tempo, startFrame, endFrame ] }
-
+	printOn { |stream| this.storeOn(stream) }
 	load { arg thing,tempo,argStartFrame = 0,argEndFrame = -1;
 		startFrame = argStartFrame;
 		endFrame = argEndFrame;

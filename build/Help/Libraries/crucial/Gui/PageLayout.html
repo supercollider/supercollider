@@ -14,20 +14,24 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #98281a}
-span.s1 {color: #0023b2}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #87311d}
+span.s1 {color: #0727ae}
 span.s2 {color: #606060}
-span.s3 {color: #000000}
-span.s4 {color: #0000bf}
-span.s5 {color: #3e691d}
-span.s6 {color: #98281a}
+span.s3 {color: #0013bb}
+span.s4 {color: #000000}
+span.s5 {color: #496722}
+span.s6 {color: #87311d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>PageLayout</b></p>
 <p class="p2"><br></p>
+<p class="p3">Deprecated.</p>
+<p class="p2"><br></p>
 <p class="p3">A PageLayout is a window that manages the layout of views added to it.</p>
+<p class="p2"><br></p>
+<p class="p3">Historically this class precedes the FlowLayout decorator.<span class="Apple-converted-space">  </span>MultiPageLayout became the more standardly used class.<span class="Apple-converted-space">  </span>It is essentially a window with a scroll view and a FlowLayout installed as decorator.<span class="Apple-converted-space">  </span>It does not actually create multiple pages, whereas PageLayout DOES.<span class="Apple-converted-space">  </span>Some clean up work needs to be done.</p>
 <p class="p2"><br></p>
 <p class="p4">You request a rectangle using <b>layout.layRight(x,y)</b></p>
 <p class="p5"><br></p>
@@ -39,7 +43,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span>f=<span class="s1">PageLayout</span>.new(<span class="s2">"flow"</span>);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>504.do({ <span class="s1">arg</span> i;</p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">GUI</span><span class="s3">.button.new</span>( f.window, f.layRight(30,30) )</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">GUI</span>.button.new( f.window, f.layRight(30,30) )</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.states_([[i.asString,<span class="s1">Color</span>.black,<span class="s1">Color</span>.white]])</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
@@ -55,9 +59,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>800.do({ <span class="s1">arg</span> i;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">var</span> r;</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r= f.layRight(30,30); </span>// obtain the rectangle first</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// in case we cascade to the next window</p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">GUI</span><span class="s3">.button.new</span>( f.window, r )</p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r= f.layRight(30,30); </span>// obtain the rectangle first</p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// in case we cascade to the next window</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">GUI</span>.button.new( f.window, r )</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.states_([[i.asString,Color.black,Color.white]])</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p6"><span class="Apple-tab-span">	</span>f.front;</p>
@@ -91,14 +95,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span>f= <span class="s1">PageLayout</span>.new("a vaguely practical example");</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>sliders=<span class="s1">Array</span>.fill(rrand(16,32),{ <span class="s1">arg</span> i;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span><span class="s3">.slider.new</span>( f.window, f.layRight(10, 150));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">GUI</span>.slider.new( f.window, f.layRight(10, 150));</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p7"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span>f.within( 50,150,{ <span class="s1">arg</span> subf;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">GUI</span>.slider.new( subf.window, subf.layDown( 30,30));</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>f.resizeToFit;</p>
@@ -151,7 +155,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>You can register to receive that notification:</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">NotificationCenter</span>.registerOneShot( f,<span class="s5">\didClose</span>, yourObject,{</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// stop the model from playing, clean house,<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// stop the model from playing, clean house,<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// unregister a keydown etc.</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>

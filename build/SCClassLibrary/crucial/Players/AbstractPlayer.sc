@@ -1,12 +1,19 @@
 
 AbstractPlayer : AbstractFunction  {
 
-	var <path,name;
+	var <path,>name;
+	var <synth,<group,<server,<patchOut,defName;
+	var <status;
+	 // nil, isPreparing, readyForPlay, isPlaying,isStopped, isStopping, isFreeing, isFreed
 
-	var <synth,<group,<server,<patchOut,
-		 <status, // nil, isPreparing, readyForPlay, isPlaying,isStopped, isStopping, isFreeing, isFreed
-		defName;
 	classvar <>bundleClass;
+
+	*bundle { |server,atTime,buildFunction|
+		var bundle;
+		bundle = AbstractPlayer.bundleClass.new;
+		buildFunction.value(bundle);
+		bundle.sendAtTime(server,atTime);
+	}
 
 	play { arg group,atTime,bus;
 		var timeOfRequest;
@@ -39,7 +46,6 @@ AbstractPlayer : AbstractFunction  {
 				if(server.isLocal,{
 					InstrSynthDef.loadCacheFromDir(server);
 				});
-				//"prPlay->".debug;
 				this.prPlay(atTime,bus,timeOfRequest);
 				nil
 			});
@@ -48,19 +54,6 @@ AbstractPlayer : AbstractFunction  {
 		});
 
 		CmdPeriod.add(this);
-		// this gets removed in stopToBundle
-		/*Library.put(AbstractPlayer,\serverDeathWatcher,
-			Updater(server,{ arg s, message;
-				if(message == \serverRunning and: {s.serverRunning.not},{
-					AppClock.sched(5.0,{ // don't panic to quickly
-						if(s.serverRunning.not,{
-							"Server dead ?".inform;
-							//this.cmdPeriod; // stop everything, she's dead
-						})
-					})
-				});
-			})
-		);*/
 	}
 
 	prPlay { arg atTime,bus,timeOfRequest;
@@ -69,8 +62,9 @@ AbstractPlayer : AbstractFunction  {
 		if(status === \isPlaying,{ "already playing".debug });
 
 		bundle = AbstractPlayer.bundleClass.new;
-		if(status !== \readyForPlay,{ this.prepareToBundle(group, bundle, false, bus) });
-		this.makePatchOut(group,false,bus,bundle);
+		if(status !== \readyForPlay,{ 
+			this.prepareToBundle(group, bundle, false, bus)
+		});
 		this.spawnToBundle(bundle);
 		bundle.sendAtTime(this.server,atTime ? this.defaultAtTime,timeOfRequest);
 	}
@@ -98,17 +92,14 @@ AbstractPlayer : AbstractFunction  {
 		this.loadDefFileToBundle(bundle,server);
 		this.makePatchOut(group,private,bus,bundle);
 		this.makeResourcesToBundle(bundle);
-		//this.makeGroupsToBundle(bundle);
 		this.prepareChildrenToBundle(bundle);
 
 		this.loadBuffersToBundle(bundle);
-		//this.makePatchOut(group,private,bus,bundle);
-		// make extra busses
 	}
 	makeResourcesToBundle {}
 	prepareChildrenToBundle { arg bundle;
 		this.children.do({ arg child;
-			// and wouldn't it be better if the bundle
+			// wouldn't it be better if the bundle
 			// could just be asked if the def was in there ?
 			// this pass thru of defWasLoaded was because of some
 			// double loads
@@ -119,6 +110,9 @@ AbstractPlayer : AbstractFunction  {
 		var def,bytes,dn;
 		// Patch needs to know children numChannels
 		// before it can know its own.
+		// this is the only reason we are forcing the children to load
+		// their defs here rather then letting them each do it in their own
+		// prepareToBundle
 		this.children.do({ arg child;
 			child.loadDefFileToBundle(bundle,server);
 		});
@@ -130,10 +124,15 @@ AbstractPlayer : AbstractFunction  {
 		if(dn.isNil or: {
 			Library.at(SynthDef,server,dn.asSymbol).isNil
 		},{
+			// Patches are discarding their cache on purpose
+			// just to be on the safe side.
+			// at some point I'll tighten this up again and honor the cache for Patch
+			//dn.debug("dn was nil");
 			// save it in the archive of the player or at least the name.
 			// Patches cannot know their defName until they have built
 			def = this.asSynthDef;
 			defName = def.name;
+			//defName.debug("defname");
 			dn = defName.asSymbol;
 			bytes = def.asBytes;
 
@@ -153,84 +152,14 @@ AbstractPlayer : AbstractFunction  {
 	makePatchOut { arg agroup,private = false,bus,bundle;
 		group = agroup.asGroup;
 		server = group.server;
-		// shouldn't be top unless you are the top out
 		this.topMakePatchOut(group,private,bus);
-
-		//this.childrenMakePatchOut(group,true,bundle);
 	}
 	topMakePatchOut { arg agroup,private = false,bus;
-		var b;
 		this.group = agroup;
-		if(patchOut.notNil,{
-			if(bus.notNil,{
-				this.bus = bus;
-				^patchOut
-			});
-			if(this.rate == \audio,{
-				//check if private status changed
-				if(private,{
-					if(patchOut.hasBus,{
-						if(patchOut.bus.isAudioOut,{
-							patchOut.bus.free;
-						},{
-							^patchOut
-						});
-					});
-					patchOut.bus = Bus.audio(group.server,this.numChannels);
-					this.annotate(patchOut.bus,"top player but private");
-				},{
-					if(patchOut.hasBus,{
-						if(patchOut.bus.isAudioOut,{ // means is main audio out
-							//something is wrong here...
-							patchOut.bus.free;
-						},{
-							^patchOut
-						})
-					});
-					patchOut.bus = Bus(\audio,0,this.numChannels,group.server);
-					this.annotate(patchOut.bus,"top player out");
-				})
-			});
-			^patchOut
-		},{
-			//Patch doesn't know its numChannels or rate until after it makes the synthDef
-			if(this.rate == \audio,{// out yr speakers
-				if(private,{
-					this.setPatchOut(
-						AudioPatchOut(this,group,bus
-								?? {
-									b = Bus.audio(group.server,this.numChannels);
-									this.annotate(b,"top player but private");
-									b
-								})
-						)
-				},{
-					this.setPatchOut(
-						AudioPatchOut(this,group,bus
-								?? {
-									b = Bus(\audio,0,this.numChannels,group.server);
-									this.annotate(b,"top player out");
-									b
-								})
-								)
-				})
-			},{
-				if(this.rate == \control,{
-					this.setPatchOut(
-						ControlPatchOut(this,group,
-								bus ?? {Bus.control(group.server,this.numChannels)})
-							)
-				},{
-					if(this.rate.isNil,{
-						this.die("rate is nil");
-					});
-					this.setPatchOut(
-						ScalarPatchOut(this,group,bus)
-					)
-				});
-			});
+		bus = bus ?? {BusSpec(\audio,this.numChannels,private)};
+		if(patchOut.isNil,{
+			patchOut = PatchOut(this,group,bus);
 		});
-
 		^patchOut
 	}
 
@@ -291,15 +220,15 @@ AbstractPlayer : AbstractFunction  {
 	}
 	// these always call children
 	stop { arg atTime,andFreeResources = true;
-		var b;
 		// this was requested : the normal user thinks that stop means stop
-		// but they want it to also free itself totally
-		if(andFreeResources,{ this.free });
+		// but they want it to also free its resources
+		// so really most of the time you mean .free
+		if(andFreeResources,{ ^this.free });
 
 		if(server.notNil,{
-			b = AbstractPlayer.bundleClass.new;
-			this.stopToBundle(b,true);
-			b.sendAtTime(server,atTime);
+			AbstractPlayer.bundle(server,atTime,{ |bundle|
+				this.stopToBundle(bundle,true);
+			})
 		});
 		CmdPeriod.remove(this);
 	}
@@ -311,15 +240,7 @@ AbstractPlayer : AbstractFunction  {
 			});
 			this.freeSynthToBundle(bundle);
 			bundle.addMessage(this,\didStop);
-			/*bundle.addFunction({ // actually if somebody else is playing, you shouldn't remove yet
-				var sdw;
-				sdw = Library.at(AbstractPlayer,\serverDeathWatcher);
-				if(sdw.notNil,{
-					sdw.remove;
-					Library.removeAt(AbstractPlayer,\serverDeathWatcher);
-				});
-			});*/
-			this.freePatchOut(bundle);
+			//this.freePatchOutToBundle(bundle);
 		})
 	}
 	didStop {
@@ -329,59 +250,55 @@ AbstractPlayer : AbstractFunction  {
 		});
 	}
 	run { arg flag=true,atTime;
-		var msg,b;
 		if(synth.notNil,{
-			b = AbstractPlayer.bundleClass.new;
-			b.add( synth.runMsg(flag) );
-			b.sendAtTime(server,atTime);
+			AbstractPlayer.bundle(server,atTime,{ |bundle|
+				bundle.add( synth.runMsg(flag) );
+			})
 		});
 		// should call children ?
 		// this isn't fully implemented
 		// might be quite useful
 	}
 	release { arg releaseTime,atTime;
-		var rb;
-		rb = AbstractPlayer.bundleClass.new;
-		this.releaseToBundle(releaseTime,rb);
-		rb.sendAtTime(server,atTime);
+		AbstractPlayer.bundle(server,atTime,{ |rb|
+			this.releaseToBundle(releaseTime,rb);
+		})
 	}
 	releaseToBundle { arg releaseTime,bundle;
-		if(synth.notNil,{
+		releaseTime = max(releaseTime ? 0.1,0.01);
+		if(synth.isPlaying,{
 			bundle.add(synth.releaseMsg(releaseTime));
-		});
-		if(releaseTime ? 0.0 > 0.01,{
 			bundle.addFunction({
-				SystemClock.sched(releaseTime,{
+				SystemClock.sched(releaseTime+0.1,{
 					this.stop;
 					nil;
 				})
 			});
 		},{
-			this.stopToBundle(bundle);
-		});
+			this.stopToBundle(bundle)
+		})
 	}
 
 	free { arg atTime;
-		var bundle;
 		if([\isFreed,\isFreeing].includes(status).not,{
-			bundle = AbstractPlayer.bundleClass.new;
-			this.freeToBundle(bundle);
-			bundle.sendAtTime(server,atTime);
-		},{
-			status.debug("status at free");
+			AbstractPlayer.bundle(server,atTime,{ |bundle|
+				this.freeToBundle(bundle);
+			})
 		});
 	}
 	freeToBundle { arg bundle;
 		if([\isFreed,\isFreeing].includes(status).not,{
 			if(status === \isPlaying,{
-				//"freeToBundle, status isPlaying".debug;
 				// sends to all the children
 				this.stopToBundle(bundle);
 			});
 			this.children.do({ arg child;
 				child.freeToBundle(bundle);
 			});
+			// these will be the same thing
 			this.freeResourcesToBundle(bundle);
+			this.freePatchOutToBundle(bundle);
+			
 			status = \isFreeing;
 			bundle.addMessage(this,\didFree);
 		})
@@ -404,9 +321,9 @@ AbstractPlayer : AbstractFunction  {
 			synth = nil;
 		});
 	}
-	freePatchOut { arg bundle;
+	freePatchOutToBundle { arg bundle;
 		bundle.addFunction({
-			patchOut.free; // free the bus
+			patchOut.free; // frees the busses
 			patchOut = nil;
 			group  = nil;
 			//server = nil;
@@ -424,20 +341,11 @@ AbstractPlayer : AbstractFunction  {
 	}
 	bus_ { arg b;
 		if(b.notNil,{
-			b = b.asBus(this.rate,this.numChannels,this.server);
 			if(patchOut.notNil,{
-				if(patchOut.bus != b,{
-					patchOut.bus.free;
-				});
 				patchOut.bus = b;
 			});
 			// otherwise we should have had a patchOut
 			// and there is nowhere to store this
-
-			if(b.numChannels != this.numChannels,{
-				warn("numChannels mismatch ! this:" + this
-					+ this.numChannels + "vs. supplied bus:" + b);
-			});
 		});
 	}
 	group_ { arg g;
@@ -683,6 +591,11 @@ AbstractPlayer : AbstractFunction  {
 		this.class.annotate(thing,"owner:" + this.asString + ":" + note);
 	}
 	*annotate { arg thing,note;
+		var prev;
+		prev = this.getAnnotation(thing);
+		if(prev.notNil,{
+			note = prev ++ ";;" + note;
+		});
 		if(thing.isKindOf(Node),{
 			Library.put(AbstractPlayer, \nodeAnnotations,
 				thing.server ?? {"node has no server, cannot annotate".die},
@@ -694,7 +607,7 @@ AbstractPlayer : AbstractFunction  {
 					thing.server ?? {"Bus has no server, cannot annotate".die},
 					thing.rate ?? {"Bus has no rate, cannot annotate".die},
 					thing.index ?? {"Bus has no index, cannot annotate".die},
-					thing.asString + ":" + note);
+					note);//thing.asString + ":" + 
 			});
 		});
 	}
@@ -710,21 +623,7 @@ AbstractPlayer : AbstractFunction  {
 	}
 	*removeAnnotation { arg thing;
 		// shouldnt have to do this since its just a lookup by integer indices
-/*		if(thing.isKindOf(Node),{
-			Library.global.removeAt(AbstractPlayer, \nodeAnnotations,
-				thing.server ?? {"node has no server, cannot un-annotate".die},
-				thing.nodeID ?? {"nodeID is nil, cannot un-annotate".die}
-			 	);
-		},{
-			if(thing.isKindOf(Bus),{
-				Library.global.removeAt(AbstractPlayer, \busAnnotations,
-					thing.server ?? {"Bus has no server, cannot un-annotate".die},
-					thing.rate ?? {"Bus has no rate, cannot un-annotate".die},
-					thing.index ?? {"Bus has no index, cannot un-annotate".die}
-					);
-			});
-		});
-*/
+		// and its better to know what it once was annotated as (if it failed to be released etc.)
 	}
 
 	// using the arg passing version
@@ -746,51 +645,7 @@ SynthlessPlayer : AbstractPlayer { // should be higher
 	var <isPlaying=false;
 
 	loadDefFileToBundle { }
-//	prepareToBundle { arg agroup,bundle,private = false, bus, defWasLoaded = false;
-//		status = \isPreparing;
-//		bundle.addFunction({
-//			if(status == \isPreparing,{
-//				status = \readyForPlay;
-//			})
-//		});
-//		group = agroup.asGroup;
-//		server = group.server;
-//		if(defWasLoaded.not,{
-//			this.loadDefFileToBundle(bundle,server);
-//		});
-//		this.makePatchOut(group,private,bus,bundle);
-//		this.makeResourcesToBundle(bundle);
-//		//this.makeGroupsToBundle(bundle);
-//		this.prepareChildrenToBundle(bundle);
-//
-//		this.loadBuffersToBundle(bundle);
-//		//this.makePatchOut(group,private,bus,bundle);
-//		// make extra busses
-//	}
-//
-//
-//	prepareToBundle { arg agroup,bundle,private = false, bus, defWasLoaded = false;
-//		status = \isPreparing;
-//		bundle.addFunction({
-//			if(status == \isPreparing,{
-//				status = \readyForPlay;
-//			})
-//		});
-//		group = agroup.asGroup;
-//		server = group.server;
-//		if(defWasLoaded.not,{
-//			this.loadDefFileToBundle(bundle,server);
-//		});
-//
-//		this.makePatchOut(group,private,bus,bundle);
-//		this.makeResourcesToBundle(bundle);
-//		//this.makeGroupsToBundle(bundle);
-//		this.prepareChildrenToBundle(bundle);
-//
-//		this.loadBuffersToBundle(bundle);
-//		//this.makePatchOut(group,private,bus,bundle);
-//		// make extra busses
-//	}
+
 	spawnToBundle { arg bundle;
 		this.children.do({ arg child;
 			child.spawnToBundle(bundle);
@@ -824,12 +679,6 @@ MultiplePlayers : AbstractPlayer { // abstract
 	rate { ^this.voices.first.rate }
 	numChannels { ^this.voices.first.numChannels }
 
-//	releaseToBundle { arg releaseTime = 0.1,bundle;
-//		this.voices.do({ arg pl;
-//			pl.releaseToBundle(releaseTime,bundle)
-//		});
-//		super.releaseToBundle(releaseTime,bundle);
-//	}
 }
 
 MultiTrackPlayer : MultiplePlayers { // abstract
@@ -843,8 +692,7 @@ MultiTrackPlayer : MultiplePlayers { // abstract
   */
 AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 
-	var <>source,
-		sharedBus;
+	var <>source;
 	var <socketStatus=\isSleeping;
 
 	asSynthDef { ^this.source.asSynthDef }
@@ -885,6 +733,7 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 		//isPlaying = false;
 		//isSleeping = true;
 		status = \isStopped;
+		socketStatus = \isSleeping;
 	}
 	children {
 		if(this.source.notNil,{
@@ -895,26 +744,29 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	}
 	prepareChildrenToBundle { arg bundle;
 		this.children.do({ arg child;
-			child.prepareToBundle(group,bundle,true,sharedBus);
+			child.prepareToBundle(group,bundle,true,this.bus);
 		});
 	}
-	makeResourcesToBundle { arg bundle;
+/*	makeResourcesToBundle { arg bundle;
 		if(patchOut.hasBus,{ // could be a scalar out
-			if(sharedBus.notNil,{ sharedBus.releaseBus(this) });
-			sharedBus = SharedBus.newFrom(patchOut.bus,this);
-			this.annotate(sharedBus,"sharedBus");
-			patchOut.bus = sharedBus;
+			//if(sharedBus.notNil,{ sharedBus.releaseBus(this) });
+			sharedBus = patchOut.bus; //SharedBus.newFrom(patchOut.bus,this);
+			//if(sharedBus.owner === this,{
+			//	this.annotate(sharedBus,"sharedBus");
+			//});
+			//patchOut.bus = sharedBus;
 		});
 	}
 	freeResourcesToBundle { arg bundle;
 		bundle.addFunction({
 			if(status == \isStopping or: status == \isFreeing or: status == \isStopped,{
-				if(sharedBus.notNil,{
-					sharedBus.releaseBus(this);
-				});
+				//if(sharedBus.notNil,{
+				//	sharedBus.releaseBus(this);
+				//});
 				sharedBus = nil;
 			})
 		});
 	}
+*/
 }
 

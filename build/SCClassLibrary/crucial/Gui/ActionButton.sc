@@ -317,14 +317,19 @@ FlowView : SCViewHolder {
 // abstract
 SCButtonAdapter : SCViewHolder {
 
+	classvar <>buttonClass;
+	*initClass {
+		Class.initClassTree(GUI);
+		buttonClass = GUI.button;
+	}
 	makeView { arg layout,x,y;
 		var rect;
 		if((layout.isNil or: { layout.isKindOf(MultiPageLayout) }),{ layout = layout.asFlowView; });
-		this.view = GUI.button.new(layout,Rect(0,0,x,y ? GUI.skin.buttonHeight));
+		this.view = buttonClass.new(layout,Rect(0,0,x,y ? GUI.skin.buttonHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}) });
 	}
 	flowMakeView { arg layout,x,y;
-		this.view = GUI.button.new(layout.asFlowView,Rect(0,0,x,y ? GUI.skin.buttonHeight));
+		this.view = buttonClass.new(layout.asFlowView,Rect(0,0,x,y ? GUI.skin.buttonHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}); });
 	}
 
@@ -347,17 +352,16 @@ SCButtonAdapter : SCViewHolder {
 		s = view.states;
 		s.at(0).put(2,color);
 		view.states = s;
+		view.refresh;
 	}
 	labelColor_ { arg color;
 		var s;
 		s = view.states;
 		s.at(0).put(1,color);
 		view.states = s;
+		view.refresh;
 	}
-
-	// bw compat
 	*defaultHeight { ^GUI.skin.buttonHeight }
-
 }
 
 // abreviation for a one state button
@@ -411,7 +415,7 @@ ToggleButton : SCButtonAdapter {
 			[title,GUI.skin.fontColor,GUI.skin.onColor]
 		];
 		state=init;
-		view.setProperty(\value,state.binaryValue);
+		view.value_(state.binaryValue);
 		view.action_({this.prSetState(state.not)});
 		view.font = font;
 	}

@@ -132,20 +132,40 @@ ServerErrorGui : ObjectGui {
 		});
 		failer.add;
 		if(thisThread.exceptionHandler.notNil,{
-			"There is already an exception handler installed".inform;
+			if(thisThread.exceptionHandler.isKindOf(Message) 
+				and: { thisThread.exceptionHandler.receiver.isKindOf(ServerErrorGui) }
+				and: { thisThread.exceptionHandler.receiver.isClosed },{
+					thisThread.exceptionHandler.receiver.remove;
+					thisThread.exceptionHandler = Message(this,\handleException);
+			},{
+				// its somebody else
+				"ServerErrorGui : There is already an exception handler installed".inform;
+			})
 		},{
-			thisThread.exceptionHandler = { |error|
-				if(Error.handling,{ error.dump; this.halt; });
-				Error.handling = true;
-				{ errors.label = error.errorString.copyRange(0,50); nil }.defer;
-				nil.handleError(error);
-			}
+			thisThread.exceptionHandler = Message(this,\handleException);
 		})
 	}
+	handleException { |error|
+		if(Error.handling,{ error.dump; this.halt; });
+		Error.handling = true;
+		{
+			if(errors.isClosed,{ 
+				this.remove 
+			},{
+				errors.label = error.errorString.copyRange(0,50); 
+			});
+			nil 
+		}.defer;
+		nil.handleError(error);
+	}
 	remove {
+		// closing large windows fail to call close on all views
 		failer.remove;
 		thisThread.exceptionHandler = nil;
 		super.remove;
+	}
+	isClosed {
+		^errors.isClosed
 	}
 }
 

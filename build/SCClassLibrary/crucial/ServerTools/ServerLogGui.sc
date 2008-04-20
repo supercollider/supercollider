@@ -5,11 +5,13 @@ ServerLogGui : ObjectGui {
 	var nodeColors;
 
 	guiBody { arg layout ... args;
-		var w,tail=500;
+		var w,events,tail=500;
 		w = layout.bounds.width;
 		nodeColors = Dictionary.new;
 		
-		model.events(tail).do({ |ev|
+		events = args.first;
+		
+		events.do({ |ev|
 			var eventTime,timeSent,delta,dir,bg,row;
 			eventTime = ev.eventTime;
 			if(ev.isKindOf(ServerLogSentEvent),{

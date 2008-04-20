@@ -25,10 +25,10 @@ PlayerEfxFunc : AbstractSinglePlayerEffect {
 	makePatchOut { arg parentGroup,private,bus,bundle;
 		// the subject
 		super.makePatchOut(parentGroup,private,bus,bundle);
-		effect.makePatchOut(effectGroup,true,sharedBus,bundle);
+		effect.makePatchOut(effectGroup,true,this.bus,bundle);
 		// effect reads from subject's bus
 		playerInputProxy.numChannels_(subject.numChannels).spec_(subject.spec);
-		playerInputProxy.setInputBus(sharedBus);
+		playerInputProxy.setInputBus(this.bus);
 	}
 	spawnToBundle { arg bundle;
 		effect.spawnToBundle(bundle);

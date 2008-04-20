@@ -30,17 +30,11 @@ PlayerInputProxy : Silence { // audio
 	synthArg {
 		^initValue
 	}
-//	prepareToBundle { arg group,bundle;
-//		if(initValue.isNil,{
-//			// should share this
-//			nullBus = Bus.performList(this.rate,group.server,this.numChannels);
-//			initValue = nullBus.index;
-//		});
-//		super.prepareToBundle(group,bundle);
-//	}
-	makePatchOut {
-		// bus is always given to me
-		patchOut = PatchOut(this,nil,inBus);
+
+	makePatchOut { arg agroup,private = false,bus,bundle;
+		// bus is usually given to me via setInputBus
+		super.makePatchOut(agroup,private,inBus ? bus,bundle)
+		//patchOut = PatchOut(this,nil,inBus);
 	}
 	rate { ^spec.rate }
 	numChannels { ^(spec.numChannels) }

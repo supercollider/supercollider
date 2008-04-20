@@ -25,14 +25,13 @@ PlayerSocket : AbstractPlayerProxy {
 		sched = OSCSched.new;
 		dee = EnvelopedPlayer(PlayerInputProxy(AudioSpec(numChannels)),env,numChannels);
 		dum = EnvelopedPlayer(PlayerInputProxy(AudioSpec(numChannels)),env,numChannels);
+		dee.name = this.name + "EnvelopedPlayer1";
+		dum.name = this.name + "EnvelopedPlayer2";
 		// dee and dum are swapped on alternate spawns
 		// now playing:
 		envdSource = dee;
 		// "on bat" is a baseball term : the guy who is up to bat next
 		onBat = dum;
-		// problem: 
-			// the EnvelopedPlayer needs to dynamically change the numChannels
-			// it needs to build multiple synth defs or just do some bus copying
 	}
 	prepareAndSpawn { arg player,releaseTime;
 		if(player.readyForPlay.not,{
@@ -55,8 +54,9 @@ PlayerSocket : AbstractPlayerProxy {
 	preparePlayer { arg player,onComplete;
 		var b;
 		b = AbstractPlayer.bundleClass.new;
-		player.prepareToBundle(socketGroup,b,bus: sharedBus);
-		b.doPrepare(this.server,onComplete)
+		player.prepareToBundle(socketGroup,b,bus: this.bus);
+		b.addFunction(onComplete);
+		b.send(this.server)
 	}
 
 	spawnPlayer { arg player,releaseTime,beatDelta=0.0,forceRespawn=false;
@@ -71,7 +71,9 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	qspawnPlayer { arg player,releaseTime;
 		// TODO switch to TempoClock so tempo can change after qspawn sent
+		// needs xqschedBundle
 		// for now it still needs xblock
+		// and OSCSched needs to handle preparations
 /*		var bundle;
 		if(status == \isPlaying,{
 			if((player !== lastPlayer) or: forceRespawn or: (socketStatus == \isSleeping),{
@@ -80,7 +82,7 @@ PlayerSocket : AbstractPlayerProxy {
 				sched.xqschedBundle(round,this.server,bundle);
 			})
 		});
-*/		
+*/
 		this.spawnPlayer(player,releaseTime,sched.deltaTillNext(round))
 	}
 	// respawn the currently playing player
@@ -89,20 +91,20 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 
 	releaseVoice { arg releaseTime;
-		var bundle;
 		if(socketStatus == \isWaking,{
 			sched.xblock;
-			//"blocked isWaking, setting to isSleeping".debug(thisMethod);
 			socketStatus = \isSleeping;
 			^this.changed;
 		});
 		if(socketStatus != \isSleeping,{
-			//if(envdSource.notNil,{
-				bundle = AbstractPlayer.bundleClass.new;
+			AbstractPlayer.bundle(this.server,nil,{ |bundle|
+				var currentSubject;
+				currentSubject = envdSource.subject;
 				envdSource.releaseToBundle(releaseTime,bundle);
-				bundle.addFunction({ socketStatus = \isSleeping; });
-				bundle.send(this.server);
-			//});
+				bundle.addFunction({
+					socketStatus = \isSleeping;
+				});
+			})
 		});
 	}
 	isSleeping {
@@ -115,41 +117,28 @@ PlayerSocket : AbstractPlayerProxy {
 		this.annotate(socketGroup,"socketGroup");
 		NodeWatcher.register(socketGroup);
 		bundle.add( socketGroup.addToTailMsg(group) );
-
-		sharedBus = SharedBus.newFrom(patchOut.bus,this);
-		this.annotate(sharedBus,"Shared Bus");
-		patchOut.bus = sharedBus;
 	}
 	freeResourcesToBundle { arg bundle;
 		socketGroup.freeToBundle(bundle);
 		socketGroup = nil;
-		
+
 	}
 
 	prepareChildrenToBundle { arg bundle;
-		dee.prepareToBundle(socketGroup,bundle, true, sharedBus);
-		dum.prepareToBundle(socketGroup,bundle,true,sharedBus);
-		if(source.notNil,{ 
-			source.prepareToBundle(socketGroup,bundle,true, sharedBus);
+		dee.prepareToBundle(socketGroup,bundle, true, this.bus);
+		dum.prepareToBundle(socketGroup,bundle,true,this.bus);
+		if(source.notNil,{
+			source.prepareToBundle(socketGroup,bundle,true, this.bus);
 		});
 	}
-	// no synth of my own
-	loadDefFileToBundle { arg bundle,server;
-		// this should all be done when prepareChildrenToBundle is done !!
-		//if(source.notNil,{
-		//	source.loadDefFileToBundle(bundle,server)
-		//});
-		
-		//var envPatch;
-/*		this.children.do({ arg child;
-			child.loadDefFileToBundle(bundle,server);
-		});
+	freeToBundle { |bundle|
+		super.freeToBundle(bundle);
+		dee.freeToBundle(bundle);
+		dum.freeToBundle(bundle);
+	}
 
-		dee.loadDefFileToBundle(bundle,server);
-		// same same
-		dum.loadDefFileToBundle(bundle,server);
-*/
-	}
+	// no synth of my own
+	loadDefFileToBundle { arg bundle,server;}
 
 	instrArgFromControl { arg control;
 		// avoiding the super which delegates to the source
@@ -170,29 +159,23 @@ PlayerSocket : AbstractPlayerProxy {
 				Error("AbstractPlayer:instrArgFromControl: rate unknown = "+this.rate).throw
 			}
 		)
+	}
 
-/*		^if(source.notNil,{
-			source.instrArgFromControl(control)
-		},{
-			^super.instrArgFromControl(control)
-		})
-*/	}
-	
 	spawnToBundle { arg bundle;
 		if(source.notNil,{
 			this.setSourceToBundle(source,bundle);
 		});
 		bundle.addMessage(this,\didSpawn);
 	}
-	synthArg { ^sharedBus.index }
+	synthArg { ^this.bus.index }
 
 	// prepared objects only
 	setSource { arg s,atTime,releaseTime;
 		var bundle;
 		if(this.server.notNil,{ // else not even playing, or not loaded
-			bundle = AbstractPlayer.bundleClass.new;
-			this.setSourceToBundle(s,bundle,releaseTime);
-			bundle.sendAtTime(this.server,atTime);
+			AbstractPlayer.bundle(this.server,atTime,{ |bundle|
+				this.setSourceToBundle(s,bundle,releaseTime);
+			})
 		},{
 			source = s;
 		});
@@ -200,34 +183,32 @@ PlayerSocket : AbstractPlayerProxy {
 	// the main switching method
 	// the source should be prepared
 	setSourceToBundle { arg s,bundle,releaseTime;
+		var currentSubject;
 		if(envdSource.isPlaying,{
 			envdSource.releaseToBundle(releaseTime,bundle);
-			if(envdSource === dee,{
-				envdSource = dum;
-				onBat = dee;
-			},{
-				envdSource = dee;
-				onBat = dum;
-			});
+			# envdSource, onBat = [onBat,envdSource];
 		});
+		if(envdSource.subject.isKindOf(PlayerInputProxy),{
+			envdSource.subject.freeToBundle(bundle)
+		});
+
 		source = s;
 		envdSource.subject = source;
-		if(sharedBus.rate != source.rate,{
-			if(sharedBus.isNil,{
-				"PlayerSocket-setSourceToBundle: I am not prepared".error;
+		if(this.bus.rate != source.rate,{
+			if(this.bus.isNil,{
+				"PlayerSocket:setSourceToBundle: I am not prepared".error;
 			},{
-				("PlayerSocket-setSourceToBundle bus and source have different rates:"
-					+ sharedBus.rate + source.rate).error(this,source);
+				("PlayerSocket:setSourceToBundle bus and source have different rates:"
+					+ this.bus.rate + source.rate).error(this,source);
 			})
 		});
-		envdSource.spawnOnToBundle(socketGroup,sharedBus,bundle);
+		envdSource.spawnOnToBundle(socketGroup,this.bus,bundle);
 		socketStatus = \switching;
 		bundle.addFunction({
 			if(socketStatus != \switching, {
 				socketStatus.debug("socket Status changed !!");
 			});
 			socketStatus = \isPlaying;
-			//isSleeping = isWaking = false;
 			lastPlayer = source;
 			{ this.changed; nil; }.defer;
 			nil
@@ -236,17 +217,14 @@ PlayerSocket : AbstractPlayerProxy {
 	didFree {
 		super.didFree;
 		socketStatus = \isSleeping;
-		//isSleeping = true;
-		if(sharedBus.notNil,{
-			sharedBus.releaseBus(this);
-			AbstractPlayer.removeAnnotation(sharedBus);
-			sharedBus = nil;
-		});
 	}
 
 	// emergency kill off contents
 	socketFreeAll {
 		socketGroup.freeAll
+	}
+	name {
+		^name ?? {this.class.name.asString}
 	}
 }
 
@@ -255,16 +233,11 @@ PlayerEffectSocket : PlayerSocket {
 	var inputBus;
 
 	setInputBus { arg abus;
-		// who did we get this from ?
-		//"PlayerEffectSocket-setInputBus".debug;
-		inputBus = SharedBus.newFrom(abus.asBus,this);
-		this.annotate(inputBus,"inputBus");
-		// assume not playing yet
+		BusPool.retain(abus,this,"inputBus");
 	}
 
 	setSourceToBundle { arg aplayer,bundle,releaseTime=0.2;
 		aplayer.inputProxies.first.setInputBus(inputBus);
-		//("setting inputbus",inputBus);
 		super.setSourceToBundle(aplayer,bundle,releaseTime);
 	}
 }

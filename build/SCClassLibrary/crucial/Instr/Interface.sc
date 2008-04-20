@@ -62,7 +62,7 @@ Interface : AbstractPlayerProxy {
 		
 	prepareToBundle { arg agroup,bundle,private=false,bus,defWasLoaded = false;
 		super.prepareToBundle(agroup,bundle,private,bus,defWasLoaded);
-		environment.use({ onPrepareToBundle.value(this.group,bundle,true,sharedBus); });
+		environment.use({ onPrepareToBundle.value(this.group,bundle,true,this.bus); });
 	}
 	// on play
 	didSpawn {
