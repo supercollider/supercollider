@@ -58,6 +58,7 @@
 	horz { arg func,bounds;
 		var comp;
 		comp = GUI.hLayoutView.new(this,bounds ?? { this.bounds });
+		comp.spacing = GUI.skin.gap.x;
 		comp.tryPerform('relativeOrigin_',FlowView.relativeOrigin);
 		func.value(comp);
 		^comp
@@ -65,6 +66,7 @@
 	vert { arg func,bounds;
 		var comp;
 		comp = GUI.vLayoutView.new(this,bounds ?? { this.bounds });
+		comp.spacing = GUI.skin.gap.y;
 		comp.tryPerform('relativeOrigin_',FlowView.relativeOrigin);
 		func.value(comp);
 		^comp
@@ -87,32 +89,6 @@
 		comp.hasVerticalScroller = hasVerticalScroller;
 		func.value(comp);
 		^comp
-	}
-
-	// not yet working. do not use.
-	// this depends on an SCView primitive that I'm not sure about yet.
-	// you must run replace on the decorator now
-	replaceChild { arg oldView,addFunction;
-		var index,newView;
-		if(oldView.isKindOf(ObjectGui),{
-			oldView = oldView.view; // the flow view that is actually in the children array
-		});
-		index = children.indexOf(oldView);//.debug("index of old view in children:"+children);
-		if(index.isNil,{
-			//oldView.insp("removeing");
-			//children.insp("children");
-			//index.insp("index found");
-			//"replaceChild: oldView not found in my children".die;
-			^this
-		});
-		
-		oldView.remove;
-		newView = addFunction.value(this);
-		if(children.size-1 != index,{
-			this.swapChildren(index,children.size-1);
-		},{
-			"was the last view, no swap".debug;
-		});
 	}
 }
 
