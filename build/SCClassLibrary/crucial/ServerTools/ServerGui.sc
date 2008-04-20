@@ -2,18 +2,18 @@
 
 ServerGui : ObjectGui {
 	var status,running,stopped,booting,recorder, updater;
-	
+
 	writeName {}
 	guiBody { arg layout;
 
 		var active,booter;
-		
+
 		if(model.isLocal,{
 			booter = GUI.button.new(layout, Rect(0,0, 47, GUI.skin.buttonHeight));
 			booter.states = [["Boot", Color.black, Color.clear],
 						   ["Quit", Color.black, Color.clear]];
 			booter.font = GUI.font.new("Helvetica",10);
-			booter.action = { arg view; 
+			booter.action = { arg view;
 				if(view.value == 1, {
 					booting.value;
 					if(model.isLocal,{
@@ -27,14 +27,14 @@ ServerGui : ObjectGui {
 			};
 			booter.setProperty(\value,model.serverRunning.binaryValue);
 		});
-		
+
 		active = GUI.staticText.new(layout, Rect(0,0, 60, GUI.skin.buttonHeight));
 		active.string = model.name.asString;
 		active.align = \center;
 		active.font = GUI.font.new("Helvetica-Bold", 11);
 		active.background = Color.black;
-		if(model.serverRunning,running,stopped);		
-		
+		if(model.serverRunning,running,stopped);
+
 		if (model.isLocal, {
 			running = {
 				active.stringColor_(Color.red);
@@ -51,8 +51,8 @@ ServerGui : ObjectGui {
 				active.stringColor_(Color.yellow(0.9));
 				//booter.setProperty(\value,0);
 			};
-			
-		},{	
+
+		},{
 			running = {
 				active.background = Color.red;
 				recorder.enabled = true;
@@ -66,7 +66,7 @@ ServerGui : ObjectGui {
 				active.background = Color.yellow;
 			};
 		});
-			
+
 		status = CXLabel(layout,"                                       ",font: GUI.font.new("Helvetica",9));
 		status.background = Color.black;
 		status.stringColor = Color.green;
@@ -74,7 +74,7 @@ ServerGui : ObjectGui {
 		if(model.dumpMode == 0,{
 			model.startAliveThread(0.0,1.0);
 		});
-		
+
 		recorder = GUI.button.new(layout, Rect(0,0, 10, GUI.skin.buttonHeight));
 		recorder.states = [
 			["*", Color.black, Color.clear],
@@ -89,12 +89,12 @@ ServerGui : ObjectGui {
 			};
 		};
 		recorder.enabled = false;
-		
+
 		if(model.serverRunning,running,stopped);
 		updater = IdentityDictionary[
 					\serverRunning -> { if(model.serverRunning,running,stopped) },
-					\counts -> { 
-						 status.label = 
+					\counts -> {
+						 status.label =
 							model.avgCPU.round(0.1).asString ++ "/" ++ model.peakCPU.round(0.1) ++ "%      "
 							+ model.numUGens ++ "u"
 							+ model.numSynths ++ "s";
@@ -109,9 +109,9 @@ ServerGui : ObjectGui {
 }
 
 ServerErrorGui : ObjectGui {
-	
-	var failer,errors;
-	
+
+	var failer,errors,handler;
+
 	writeName {}
 	guiBody { arg layout;
 		errors = CXLabel(layout,"                                          ");
@@ -120,49 +120,46 @@ ServerErrorGui : ObjectGui {
 		errors.stringColor = Color.white;
 		errors.align = \left;
 		// Document.listener.front;
-		
+
 		failer = OSCresponderNode(model.addr, '/fail', { arg time, responder, msg;
 			{
 				// band-aid  the window close is not always removing
 				if(errors.isClosed,{ this.remove },{
 					errors.label = msg[1].asString + msg[2].asString + "(" ++ time.asTimeString++")";
 				});
-				//errors.stringColor = Color.white;
 			}.defer
 		});
 		failer.add;
 		if(thisThread.exceptionHandler.notNil,{
-			if(thisThread.exceptionHandler.isKindOf(Message) 
-				and: { thisThread.exceptionHandler.receiver.isKindOf(ServerErrorGui) }
-				and: { thisThread.exceptionHandler.receiver.isClosed },{
-					thisThread.exceptionHandler.receiver.remove;
-					thisThread.exceptionHandler = Message(this,\handleException);
-			},{
-				// its somebody else
-				"ServerErrorGui : There is already an exception handler installed".inform;
-			})
+			"ServerErrorGui : There is already an exception handler installed".inform;
 		},{
-			thisThread.exceptionHandler = Message(this,\handleException);
-		})
+			thisThread.exceptionHandler = handler = { |error|
+				if(Error.handling,{ error.dump; this.halt; });
+				Error.handling = true;
+				{
+					if(errors.isClosed,{
+						this.remove
+					},{
+						errors.label = error.errorString.copyRange(0,50);
+					});
+					nil
+				}.defer;
+				nil.handleError(error);
+			};
+		});
+		
+		//layout.removeOnClose(this);
 	}
-	handleException { |error|
-		if(Error.handling,{ error.dump; this.halt; });
-		Error.handling = true;
-		{
-			if(errors.isClosed,{ 
-				this.remove 
-			},{
-				errors.label = error.errorString.copyRange(0,50); 
-			});
-			nil 
-		}.defer;
-		nil.handleError(error);
-	}
+
 	remove {
 		// closing large windows fail to call close on all views
-		failer.remove;
-		thisThread.exceptionHandler = nil;
-		super.remove;
+		if(thisThread.exceptionHandler === handler,{
+			thisThread.exceptionHandler = nil;
+		});
+		if(errors.isClosed.not,{
+			failer.remove;
+			super.remove;
+		})
 	}
 	isClosed {
 		^errors.isClosed
