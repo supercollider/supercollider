@@ -3,6 +3,7 @@
 // user-visible changes after SC v3.2:
 
 // HEADLINES:
+* 2008-04-20 improvements to MIDI sysex handling - added sysex parsing directly in source - thanks to charles picasso
 
 // BUGFIXES:
 
