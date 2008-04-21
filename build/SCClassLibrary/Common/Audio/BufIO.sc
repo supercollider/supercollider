@@ -6,6 +6,10 @@ PlayBuf : MultiOutUGen {
 	*ar { arg numChannels, bufnum=0, rate=1.0, trigger=1.0, startPos=0.0, loop = 0.0;
 		^this.multiNew('audio', numChannels, bufnum, rate, trigger, startPos, loop)
 	}
+
+	*kr { arg numChannels, bufnum=0, rate=1.0, trigger=1.0, startPos=0.0, loop = 0.0;
+		^this.multiNew('control', numChannels, bufnum, rate, trigger, startPos, loop)
+	}
 	
 	init { arg argNumChannels ... theInputs;
 		inputs = theInputs;
@@ -90,6 +94,9 @@ BufWr : UGen {
 RecordBuf : UGen {	
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, run=1.0, loop=1.0, trigger=1.0;
 		^this.multiNewList(['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger ] ++ inputArray.asArray);
+	}
+	*kr { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, run=1.0, loop=1.0, trigger=1.0;
+		^this.multiNewList(['control', bufnum, offset, recLevel, preLevel, run, loop, trigger ] ++ inputArray.asArray);
 	}
 }
 
