@@ -169,6 +169,12 @@ Patch : HasPatchIns  {
 	}
 	set { arg index, value;
 		var argg;
+		if(index.isKindOf(Symbol),{
+			index = this.argNames.detectIndex({ |an| an == index });
+			if(index.isNil,{
+				Error("Key not found in argNames:"+index).throw
+			});
+		});
 		argg = args[index];
 		if(argg.respondsTo('set'),{
 			argg.set(value);
@@ -176,6 +182,7 @@ Patch : HasPatchIns  {
 			(argg.asString + "does not respond to set").warn;
 		});
 	}
+	argNames { ^this.instr.argNames }
 	argNameAt { arg i; ^instr.argNameAt(i) }
 	specAt { arg i; ^instr.specs.at(i) }
 	// out
