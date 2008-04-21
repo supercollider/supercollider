@@ -36,7 +36,7 @@ Editor {
 		})
 	}
 	set { arg val;
-		this.activeValue_(val);
+		this.activeValue_(val).changed;
 	}
 	activeValue_ { arg val;
 		this.value_(val);
