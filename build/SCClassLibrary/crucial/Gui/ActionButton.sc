@@ -317,19 +317,17 @@ FlowView : SCViewHolder {
 // abstract
 SCButtonAdapter : SCViewHolder {
 
-	classvar <>buttonClass;
 	*initClass {
 		Class.initClassTree(GUI);
-		buttonClass = GUI.button;
 	}
 	makeView { arg layout,x,y;
 		var rect;
 		if((layout.isNil or: { layout.isKindOf(MultiPageLayout) }),{ layout = layout.asFlowView; });
-		this.view = buttonClass.new(layout,Rect(0,0,x,y ? GUI.skin.buttonHeight));
+		this.view = GUI.button.new(layout,Rect(0,0,x,y ? GUI.skin.buttonHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}) });
 	}
 	flowMakeView { arg layout,x,y;
-		this.view = buttonClass.new(layout.asFlowView,Rect(0,0,x,y ? GUI.skin.buttonHeight));
+		this.view = GUI.button.new(layout.asFlowView,Rect(0,0,x,y ? GUI.skin.buttonHeight));
 		if(consumeKeyDowns,{ this.view.keyDownAction_({nil}); });
 	}
 
