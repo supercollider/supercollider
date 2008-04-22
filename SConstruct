@@ -6,6 +6,11 @@
 # ======================================================================
 
 # ======================================================================
+# NOTE: Please use an indentation level of 4 spaces, i.e. no mixing of
+# tabs and spaces.
+# ======================================================================
+
+# ======================================================================
 # setup
 # ======================================================================
 
@@ -40,7 +45,7 @@ subprocess.call(['sh', 'setMainVersion.sh'])
 
 def short_cpu_name(cpu):
     if cpu == 'Power Macintosh':
-	cpu = 'ppc'
+        cpu = 'ppc'
     return cpu.lower()
 
 PLATFORM = os.uname()[0].lower()
@@ -165,7 +170,7 @@ def flatten_dir(dir):
     res = []
     for root, dirs, files in os.walk(dir):
         if 'CVS' in dirs: dirs.remove('CVS')
-	if '.svn' in dirs: dirs.remove('.svn')
+        if '.svn' in dirs: dirs.remove('.svn')
         for f in files:
             res.append(os.path.join(root, f))
     return res
@@ -176,7 +181,7 @@ def install_dir(env, src_dir, dst_dir, filter_re, strip_levels=0):
         src_paths = []
         dst_paths = []
         if 'CVS' in dirs: dirs.remove('CVS')
-	if '.svn' in dirs: dirs.remove('.svn')
+        if '.svn' in dirs: dirs.remove('.svn')
         for d in dirs[:]:
             if filter_re.match(d):
                 src_paths += flatten_dir(os.path.join(root, d))
@@ -209,19 +214,19 @@ def lib_dir(prefix):
 
 def pkg_data_dir(prefix, *args):
     if PLATFORM == 'darwin':
-	base = '/Library/Application Support'
-	if is_home_directory(prefix):
-	    base = os.path.join(prefix, base)
+        base = '/Library/Application Support'
+        if is_home_directory(prefix):
+            base = os.path.join(prefix, base)
     else:
-	base = os.path.join(prefix, 'share')
+        base = os.path.join(prefix, 'share')
     return os.path.join(base, PACKAGE, *args)
 def pkg_doc_dir(prefix, *args):
     if PLATFORM == 'darwin':
-	base = '/Library/Documentation'
-	if is_home_directory(prefix):
-	    base = os.path.join(prefix, base)
+        base = '/Library/Documentation'
+        if is_home_directory(prefix):
+            base = os.path.join(prefix, base)
     else:
-	base = os.path.join(prefix, 'share', 'doc')   
+        base = os.path.join(prefix, 'share', 'doc')   
     return os.path.join(base, PACKAGE, *args)
 def pkg_include_dir(prefix, *args):
     return os.path.join(prefix, 'include', PACKAGE, *args)
@@ -235,22 +240,22 @@ def pkg_extension_dir(prefix, *args):
 
 def make_opt_flags(env):
     flags = [
-	"-O3",
-	## "-fomit-frame-pointer", # can behave strangely for sclang
-	"-ffast-math",
-	"-fstrength-reduce"
-	]
+        "-O3",
+        ## "-fomit-frame-pointer", # can behave strangely for sclang
+        "-ffast-math",
+        "-fstrength-reduce"
+        ]
     arch = env.get('OPT_ARCH')
     if arch:
-	if CPU == 'ppc':
-	    flags.extend([ "-mcpu=%s" % (arch,) ])
-	else:
-	    flags.extend([ "-march=%s" % (arch,) ])
+        if CPU == 'ppc':
+            flags.extend([ "-mcpu=%s" % (arch,) ])
+        else:
+            flags.extend([ "-march=%s" % (arch,) ])
     if CPU == 'ppc':
-	flags.extend([ "-fsigned-char", "-mhard-float",
-		       ## "-mpowerpc-gpopt", # crashes sqrt
-		       "-mpowerpc-gfxopt"
-		       ])
+        flags.extend([ "-fsigned-char", "-mhard-float",
+                       ## "-mpowerpc-gpopt", # crashes sqrt
+                       "-mpowerpc-gfxopt"
+                       ])
     return flags
 
 # ======================================================================
@@ -277,6 +282,8 @@ opts.AddOptions(
                'Intermediate installation prefix for packaging', '/'),
     BoolOption('DEVELOPMENT',
                'Build and install the development files', 0),
+    BoolOption('FFTW',
+               'Use the FFTW libraries', PLATFORM != 'darwin'),
     BoolOption('JACK_DLL',
                'Build with delay locked loop support', 0),
     BoolOption('JACK_DEBUG_DLL',
@@ -300,19 +307,19 @@ opts.AddOptions(
     BoolOption('CROSSCOMPILE',
                'Crosscompile for another platform (does not do SSE support check)', 0),
     BoolOption('TERMINAL_CLIENT',
-	       'Build with terminal client interface', 1),
+               'Build with terminal client interface', 1),
     PackageOption('X11',
                   'Build with X11 support', 1)
     )
 
 if PLATFORM == 'darwin':
     opts.AddOptions(
-	BoolOption('UNIVERSAL',
-		   'Build universal binaries (see UNIVERSAL_ARCHS)', 1),
-# 	ListOption('UNIVERSAL_ARCHS',
-# 		   'Architectures to build for',
-# 		   'all', ['ppc', 'i386'])
-	)
+        BoolOption('UNIVERSAL',
+                   'Build universal binaries (see UNIVERSAL_ARCHS)', 1),
+#       ListOption('UNIVERSAL_ARCHS',
+#                  'Architectures to build for',
+#                  'all', ['ppc', 'i386'])
+        )
     
 # ======================================================================
 # basic environment
@@ -324,6 +331,7 @@ env = Environment(options = opts,
                   VERSION = VERSION,
                   URL = 'http://supercollider.sourceforge.net',
                   TARBALL = PACKAGE + VERSION + '.tbz2')
+env.Append(PATH = ['/usr/local/bin', '/usr/bin', '/bin'])
 
 
 # checks for DISTCC and CCACHE as used in modern linux-distros:
@@ -362,7 +370,7 @@ env.Append(
 
 def make_conf(env):
     return Configure(env, custom_tests = { 'CheckPKGConfig' : CheckPKGConfig,
-					   'CheckPKG' : CheckPKG })
+                                           'CheckPKG' : CheckPKG })
 
 def isDefaultBuild():
     return not env.GetOption('clean') and not 'debian' in COMMAND_LINE_TARGETS
@@ -382,12 +390,23 @@ if isDefaultBuild():
     success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
     if not success: Exit(1)
 
-    # FFTW 
+    # FFTW
     success, libraries['fftwf'] = conf.CheckPKG('fftw3f')
-    if not success: Exit(1)
+    if env['FFTW']:
+        if success:
+            libraries['fftwf'].Append(CPPDEFINES = ['SC_FFT_FFTW'])
+        elif PLATFORM == 'darwin':
+            libraries['fftwf'] = Environment()
+        else:
+            Exit(1)
+    else:
+        libraries['fftwf'] = Environment()
+    if PLATFORM == 'darwin':
+        # needed for vector multiplication
+        libraries['fftwf'].Append(LINKFLAGS = '-framework vecLib')
 else:
-    libraries['sndfile'] = get_new_pkg_env() 
-    libraries['fftwf'] = get_new_pkg_env() 
+    libraries['sndfile'] = get_new_pkg_env()
+    libraries['fftwf'] = get_new_pkg_env()
 
 # audio api
 if env['AUDIOAPI'] == 'jack':
@@ -417,7 +436,7 @@ elif env['AUDIOAPI'] == 'coreaudio':
     features['audioapi'] = 'CoreAudio'
     libraries['audioapi'] = Environment(
         CPPDEFINES = [('SC_AUDIO_API', 'SC_AUDIO_API_COREAUDIO')],
-	LINKFLAGS = '-framework CoreAudio',
+        LINKFLAGS = '-framework CoreAudio',
         ADDITIONAL_SOURCES = []
         )
 elif env['AUDIOAPI'] == 'portaudio':
@@ -454,8 +473,8 @@ if features['alsa']:
 if conf.CheckCHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
     features['midiapi'] = 'CoreMIDI'
     libraries['midiapi'] = Environment(
-	LINKFLAGS = '-framework CoreMIDI',
-	)
+        LINKFLAGS = '-framework CoreMIDI',
+        )
 elif features['alsa']:
     features['midiapi'] = 'ALSA'
     libraries['midiapi'] = libraries['alsa'].Copy()
@@ -467,9 +486,9 @@ features['lid'] = env['LID'] and conf.CheckCHeader('linux/input.h')
 
 # wii on linux
 if PLATFORM == 'linux':
-	features['wii'] = env['WII'] and conf.CheckCHeader('cwiid.h')
+        features['wii'] = env['WII'] and conf.CheckCHeader('cwiid.h')
 else:
-	features['wii'] = env['WII']
+        features['wii'] = env['WII']
 
 # only _one_ Configure context can be alive at a time
 env = conf.Finish()
@@ -477,13 +496,13 @@ env = conf.Finish()
 # altivec
 if env['ALTIVEC']:
     if PLATFORM == 'darwin':
-	altivec_flags = [ '-faltivec' ]
+        altivec_flags = [ '-faltivec' ]
     else:
-	altivec_flags = [ '-maltivec', '-mabi=altivec' ]
+        altivec_flags = [ '-maltivec', '-mabi=altivec' ]
     libraries['altivec'] = env.Copy()
     libraries['altivec'].Append(
-	CCFLAGS = altivec_flags,
-	CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
+        CCFLAGS = altivec_flags,
+        CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
     altiConf = Configure(libraries['altivec'])
     features['altivec'] = altiConf.CheckCHeader('altivec.h')
     altiConf.Finish()
@@ -494,25 +513,25 @@ else:
 if env['SSE']:
     libraries['sse'] = env.Copy()
     libraries['sse'].Append(
-	CCFLAGS = ['-msse', '-mfpmath=sse'],
-	CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
+        CCFLAGS = ['-msse', '-mfpmath=sse'],
+        CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
     sseConf = Configure(libraries['sse'])
     hasSSEHeader = sseConf.CheckCHeader('xmmintrin.h')
     if env['CROSSCOMPILE']:
-	build_host_supports_sse = True
-	print 'NOTICE: cross compiling for another platform: assuming SSE support'
+        build_host_supports_sse = True
+        print 'NOTICE: cross compiling for another platform: assuming SSE support'
     else:
         build_host_supports_sse = False
-	if CPU != 'ppc':
-	   if PLATFORM == 'freebsd':
+        if CPU != 'ppc':
+           if PLATFORM == 'freebsd':
                 machine_info = os.popen ("sysctl -a  hw.instruction_sse").read()[:-1]
-		x86_flags = 'no'
-		if "1" in [x for x in machine_info]:
-			build_host_supports_sse = True
-			x86_flags = 'sse'
+                x86_flags = 'no'
+                if "1" in [x for x in machine_info]:
+                        build_host_supports_sse = True
+                        x86_flags = 'sse'
            elif PLATFORM != 'darwin':
-           	flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
-              	x86_flags = flag_line.split (": ")[1:][0].split ()
+                flag_line = os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
+                x86_flags = flag_line.split (": ")[1:][0].split ()
            else:
               machine_info = os.popen ("sysctl -a machdep.cpu").read()[:-1]
               x86_flags = machine_info.split()
@@ -559,18 +578,18 @@ if env['DEBUG']:
     env.Append(CCFLAGS = '-g')
 else:
     env.Append(
-	CCFLAGS = make_opt_flags(env),
-	CPPDEFINES = ['NDEBUG'])
+        CCFLAGS = make_opt_flags(env),
+        CPPDEFINES = ['NDEBUG'])
 
 # platform specific
 if False: #PLATFORM == 'darwin':
     # universal binary support
     if env['UNIVERSAL']:
-	archs = map(lambda x: ['-arch', x], ['ppc', 'i386'])
-	env.Append(
-	    CCFLAGS = archs,
-	    LINKFLAGS = archs
-	)
+        archs = map(lambda x: ['-arch', x], ['ppc', 'i386'])
+        env.Append(
+            CCFLAGS = archs,
+            LINKFLAGS = archs
+        )
 
 # vectorization
 if features['altivec']:
@@ -624,8 +643,8 @@ commonEnv.Append(
 conf = Configure(commonEnv)
 if conf.CheckFunc('strtod'):
     commonEnv.Append(
-	CPPDEFINES = 'HAVE_STRTOD'
-	)
+        CPPDEFINES = 'HAVE_STRTOD'
+        )
 commonEnv = conf.Finish()
 
 # ======================================================================
@@ -659,8 +678,8 @@ Source/common/dtoa.c
 ''')
 if PLATFORM == 'darwin':
     commonSources += [
-	'Source/common/SC_StandAloneInfo_Darwin.cpp'
-	]
+        'Source/common/SC_StandAloneInfo_Darwin.cpp'
+        ]
 commonEnv.Library('build/common', commonSources)
 
 # ======================================================================
@@ -673,8 +692,7 @@ serverEnv.Append(
                '#Headers/plugin_interface',
                '#Headers/server'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
-    LIBPATH = 'build',
-    LINKFLAGS = '-Wl,-rpath,' + FINAL_PREFIX + '/lib')
+    LIBPATH = 'build')
 libscsynthEnv = serverEnv.Copy(
     PKGCONFIG_NAME = 'libscsynth',
     PKGCONFIG_DESC = 'SuperCollider synthesis server library',
@@ -697,10 +715,13 @@ else:
 
 if PLATFORM == 'darwin':
     serverEnv.Append(
-	LINKFLAGS = '-framework CoreServices'
-	)
+                LINKFLAGS = [
+                    '-framework', 'CoreServices'])
+                    #'-dylib_install_name', FINAL_PREFIX + '/lib/libsclang.dylib'])
 elif PLATFORM == 'linux':
-    serverEnv.Append(CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')])
+    serverEnv.Append(
+                CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')],
+                LINKFLAGS = '-Wl,-rpath,' + FINAL_PREFIX + '/lib')
 
 elif PLATFORM == 'freebsd':
     serverEnv.Append(CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')])
@@ -822,14 +843,16 @@ complexEnv = pluginEnv.Copy()
 complexSources = Split('Source/plugins/SCComplex.cpp')
 complexEnv.SharedObject('Source/plugins/SCComplex.o', complexSources)
 
-
 # fft ugens
 fftEnv = pluginEnv.Copy()
 fftSources = Split('Source/common/fftlib.c Source/plugins/SCComplex.o')
 merge_lib_info(fftEnv, libraries['fftwf'])
 plugins.append(
     fftEnv.SharedLibrary(
-    make_plugin_target('FFT_UGens'), ['Source/plugins/FFTInterfaceTable.cpp', 'Source/plugins/FFT_UGens.cpp', 'Source/plugins/PV_UGens.cpp'] + fftSources))
+    make_plugin_target('FFT_UGens'),
+        ['Source/plugins/FFTInterfaceTable.cpp',
+         'Source/plugins/FFT_UGens.cpp',
+         'Source/plugins/PV_UGens.cpp'] + fftSources))
     
 plugins.append(
     fftEnv.SharedLibrary(
@@ -852,8 +875,6 @@ plugins.append(
     mlEnv.SharedLibrary(
     make_plugin_target('ML_UGens'), mlSources))
 
-
-
 # diskio ugens
 diskIOEnv = pluginEnv.Copy(
     LIBS = ['common', 'm'],
@@ -861,8 +882,8 @@ diskIOEnv = pluginEnv.Copy(
     )
 if PLATFORM == 'darwin':
     diskIOEnv.Append(
-	LINKFLAGS = '-framework CoreServices'
-	)
+        LINKFLAGS = '-framework CoreServices'
+        )
 
 diskIOSources = [
     diskIOEnv.SharedObject('Source/plugins/SC_SyncCondition', 'Source/server/SC_SyncCondition.cpp'),
@@ -875,9 +896,9 @@ plugins.append(
 # ui ugens
 if PLATFORM == 'darwin':
     macUGensEnv = pluginEnv.Copy(
-	LIBS = 'm',
-	LINKFLAGS = '-framework CoreServices -framework Carbon'
-	)
+        LIBS = 'm',
+        LINKFLAGS = '-framework CoreServices -framework Carbon'
+        )
     plugins.append(
         macUGensEnv.SharedLibrary(make_plugin_target('MacUGens'), 'Source/plugins/MacUGens.cpp'))
 elif features['x11']:
@@ -894,9 +915,9 @@ env.Alias('install-plugins', env.Install(
 # ======================================================================
 
 if env['TERMINAL_CLIENT'] == True:
-	env['TERMINAL_CLIENT'] = 1
+        env['TERMINAL_CLIENT'] = 1
 else:
-	env['TERMINAL_CLIENT'] = 0
+        env['TERMINAL_CLIENT'] = 0
 
 langEnv = env.Copy()
 langEnv.Append(
@@ -918,10 +939,12 @@ else:
 
 if PLATFORM == 'darwin':
     langEnv.Append(
-	LINKFLAGS = '-framework CoreServices')
+                LIBS = ['icucore'],
+                LINKFLAGS = ['-framework', 'CoreServices'], #'-dylib_install_name', FINAL_PREFIX + '/lib/libsclang.dylib'],
+                CPPPATH = ['#Headers/icu/unicode'])
 elif PLATFORM == 'linux':
     langEnv.Append(
-    LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
+        LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
 elif PLATFORM == 'freebsd':
     langEnv.Append(
     LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
@@ -991,18 +1014,19 @@ Source/lang/LangPrimSource/PyrUnixPrim.cpp
 if features['midiapi']:
     merge_lib_info(langEnv, libraries['midiapi'])
     if features['midiapi'] == 'CoreMIDI':
-	libsclangSources += ['Source/lang/LangPrimSource/SC_CoreMIDI.cpp']
+                libsclangSources += ['Source/lang/LangPrimSource/SC_CoreMIDI.cpp']
     else:
-	libsclangSources += ['Source/lang/LangPrimSource/SC_AlsaMIDI.cpp']
+                libsclangSources += ['Source/lang/LangPrimSource/SC_AlsaMIDI.cpp']
 else:
     # fallback implementation
     libsclangSources += ['Source/lang/LangPrimSource/SC_AlsaMIDI.cpp']
 
 if PLATFORM == 'darwin':
     langEnv.Append(
-	CPPPATH = '#Source/lang/LangPrimSource/HID_Utilities',
-	LINKFLAGS = '-framework Carbon -framework IOKit -framework IOBluetooth'
-	)
+                CPPPATH = ['#Source/lang/LangPrimSource/HID_Utilities',
+                                   '#Source/lang/LangPrimSource/WiiMote_OSX'],
+                LINKFLAGS = '-framework Carbon -framework IOKit -framework IOBluetooth'
+        )
     libsclangSources += Split('''
 Source/lang/LangPrimSource/SC_HID.cpp
 Source/lang/LangPrimSource/HID_Utilities/HID_Error_Handler.c
@@ -1013,13 +1037,13 @@ Source/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 ''')
 else:
     if features['wii']:
-	langEnv.Append(CPPDEFINES = 'HAVE_WII')
-	langEnv.Append(LINKFLAGS = '-lcwiid')
-	#langEnv.Append(LINKFLAGS = '-lbluetooth')
-	#langEnv.Append(CPPPATH = '-I/usr/local/include/libcwiimote-0.4.0/libcwiimote/' ) #FIXME: to proper include directory
+                langEnv.Append(CPPDEFINES = 'HAVE_WII')
+                langEnv.Append(LINKFLAGS = '-lcwiid')
+        #langEnv.Append(LINKFLAGS = '-lbluetooth')
+        #langEnv.Append(CPPPATH = '-I/usr/local/include/libcwiimote-0.4.0/libcwiimote/' ) #FIXME: to proper include directory
     if features['lid']:
-	langEnv.Append(CPPDEFINES = 'HAVE_LID')
-    libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
+            langEnv.Append(CPPDEFINES = 'HAVE_LID')
+            libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
 
 if PLATFORM == 'darwin':
     langEnv.Append(CPPDEFINES = 'HAVE_SPEECH')
@@ -1031,9 +1055,9 @@ if env['LANG']:
     libsclang = langEnv.SharedLibrary('build/sclang', libsclangSources)
     env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
     if PLATFORM == 'darwin':
-    	sclangLibs = ['scsynth', 'sclang']
+        sclangLibs = ['scsynth', 'sclang']
     else:
-    	sclangLibs = ['sclang']
+        sclangLibs = ['sclang']
     sclang = langEnv.Program('build/sclang', sclangSources, LIBS=sclangLibs)
     env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
 
@@ -1072,7 +1096,7 @@ if is_installing():
             env, 'editors/scvim/scclasses',
             pkg_extension_dir(INSTALL_PREFIX, 'scvim'),
             SC_FILE_RE, 3))
-	# scvim helpfiles
+        # scvim helpfiles
     if env['SCVIM']:
        env.Alias('install-library', install_dir(
             env, 'editors/scvim/cache/doc',
@@ -1081,7 +1105,7 @@ if is_installing():
 
 #scvim : unhtml help files
 #if env['SCVIM']:
-	#os.execvpe("editors/scvim/bin/scvim_make_help.rb", [ "-c", "-s", "build/Help"],"SCVIM=editors/scvim/")
+        #os.execvpe("editors/scvim/bin/scvim_make_help.rb", [ "-c", "-s", "build/Help"],"SCVIM=editors/scvim/")
     #os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
 
 # scel
@@ -1177,7 +1201,7 @@ def dist_paths():
         if not re: re = ANY_FILE_RE
         for root, dirs, files in os.walk(base):
             if 'CVS' in dirs: dirs.remove('CVS')
-	    if '.svn' in dirs: dirs.remove('.svn')
+            if '.svn' in dirs: dirs.remove('.svn')
             for path in dirs[:]:
                 if re.match(path):
                     specs.append((os.path.join(root, path), re))
