@@ -101,7 +101,7 @@ struct GrainFM : public Unit
 struct GrainBufG
 {
 	double phase, rate;
-	double b1, y1, y2, curamp, winPos, winInc; // envelope
+	double b1, y1, y2, curamp, winPos, winInc; 
 	float pan1, pan2, winType;
 	int counter, chan, bufnum, interp;
 };
@@ -110,7 +110,7 @@ struct GrainBuf : public Unit
 {
 	int mNumActive, m_channels;
 	float curtrig;
-	GrainBufG mGrains[kMaxGrains];
+	GrainBufG mGrains[kMaxSynthGrains];
 };
 
 struct WarpWinGrain
@@ -172,11 +172,11 @@ static float cubicinterp(float x, float y0, float y1, float y2, float y3)
 
 	return ((c3 * x + c2) * x + c1) * x + c0;
 }
-inline float IN_AT(Unit* unit, int index, int offset) 
+inline float GRAIN_IN_AT(Unit* unit, int index, int offset) 
 {
 	if (INRATE(index) == calc_FullRate) return IN(index)[offset];
 	if (INRATE(index) == calc_DemandRate) return DEMANDINPUT_A(index, offset + 1);
-	return ZIN0(index);
+	return IN0(index);
 }
 
 inline double sc_gloop(double in, double hi) 
@@ -244,7 +244,6 @@ inline double sc_gloop(double in, double hi)
 		y2 = y1; \
 		y1 = y0; \
 
-
 #define GRAIN_LOOP_BODY_2 \
 		float amp = y1 * y1; \
 		phase = sc_gloop(phase, loopMax); \
@@ -254,7 +253,7 @@ inline double sc_gloop(double in, double hi)
 		if (iphase > guardFrame) { \
 			table2 -= bufSamples; \
 		} \
-		float fracphase = phase - (double)iphase; \
+		double fracphase = phase - (double)iphase; \
 		float b = table1[0]; \
 		float c = table2[0]; \
 		float outval = amp * (b + fracphase * (c - b)); \
@@ -591,11 +590,11 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 		if ((unit->curtrig <= 0) && (trig[i] > 0.0)) { 
 			// start a grain
 			if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
-			float winType = IN_AT(unit, 4, i);
+			float winType = GRAIN_IN_AT(unit, 4, i);
 			GET_GRAIN_WIN
 			if((windowData) || (winType < 0.)) {
 			    GrainInG *grain = unit->mGrains + unit->mNumActive++;
-			    winSize = IN_AT(unit, 1, i);
+			    winSize = GRAIN_IN_AT(unit, 1, i);
 			    double counter = winSize * SAMPLERATE;
 			    counter = sc_max(4., counter);
 			    grain->counter = (int)counter;
@@ -605,7 +604,7 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 				
 			    float *in1 = in + i;
 			    // begin add //
-			    float pan = IN_AT(unit, 3, i);
+			    float pan = GRAIN_IN_AT(unit, 3, i);
 			    
 			    CALC_GRAIN_PAN
 			    
@@ -805,24 +804,24 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 		if ((unit->curtrig <= 0) && (trig[i] > 0.0)) { 
 			// start a grain
 			if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
-			float winType = IN_AT(unit, 4, i);
+			float winType = GRAIN_IN_AT(unit, 4, i);
 			GET_GRAIN_WIN
 			if((windowData) || (winType < 0.)) {
 			    GrainSinG *grain = unit->mGrains + unit->mNumActive++;
 			    // INRATE(1) == calcFullRate
-			    freq = IN_AT(unit, 2, i);
-			    winSize = IN_AT(unit, 1, i);
+			    freq = GRAIN_IN_AT(unit, 2, i);
+			    winSize = GRAIN_IN_AT(unit, 1, i);
 			    int32 thisfreq = grain->freq = (int32)(unit->m_cpstoinc * freq);
 			    int32 oscphase = 0;
 			    double counter = winSize * SAMPLERATE;
 			    counter = sc_max(4., counter);
 			    grain->counter = (int)counter;
-			    grain->winType = winType; //IN_AT(unit, 4, i);
+			    grain->winType = winType; //GRAIN_IN_AT(unit, 4, i);
 			    
 			    GET_GRAIN_INIT_AMP
 
 			    // begin add //
-			    float pan = IN_AT(unit, 3, i);
+			    float pan = GRAIN_IN_AT(unit, 3, i);
 			    
 			    CALC_GRAIN_PAN
 
@@ -1051,15 +1050,15 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 	    if ((unit->curtrig <= 0) && (trig[i] > 0.0)) { 
 		// start a grain
 		if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
-		float winType = IN_AT(unit, 6, i);
+		float winType = GRAIN_IN_AT(unit, 6, i);
 		GET_GRAIN_WIN
 		if((windowData) || (winType < 0.)) {
 		    
 		    GrainFMG *grain = unit->mGrains + unit->mNumActive++;
-		    winSize = IN_AT(unit, 1, i);
-		    carfreq = IN_AT(unit, 2, i);
-		    modfreq = IN_AT(unit, 3, i);
-		    index = IN_AT(unit, 4, i);
+		    winSize = GRAIN_IN_AT(unit, 1, i);
+		    carfreq = GRAIN_IN_AT(unit, 2, i);
+		    modfreq = GRAIN_IN_AT(unit, 3, i);
+		    index = GRAIN_IN_AT(unit, 4, i);
 		    float deviation = grain->deviation = index * modfreq;
 		    int32 mfreq = grain->mfreq = (int32)(unit->m_cpstoinc * modfreq);
 		    grain->carbase = carfreq;
@@ -1068,12 +1067,12 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 		    double counter = winSize * SAMPLERATE;
 		    counter = sc_max(4., counter);
 		    grain->counter = (int)counter;
-		    grain->winType = winType; //IN_AT(unit, 6, i);
+		    grain->winType = winType; //GRAIN_IN_AT(unit, 6, i);
 		    
 		    GET_GRAIN_INIT_AMP
 
 		    // begin add //
-		    float pan = IN_AT(unit, 5, i);
+		    float pan = GRAIN_IN_AT(unit, 5, i);
 		    
 		    CALC_GRAIN_PAN
 
@@ -1264,7 +1263,7 @@ void GrainFM_Ctor(GrainFM *unit)
 				table3 -= bufSamples; \
 			} \
 		} \
-		float fracphase = phase - (double)iphase; \
+		double fracphase = phase - (double)iphase; \
 		float a = table0[0]; \
 		float b = table1[0]; \
 		float c = table2[0]; \
@@ -1272,7 +1271,6 @@ void GrainFM_Ctor(GrainFM *unit)
 		float outval = amp * cubicinterp(fracphase, a, b, c, d); \
 		out1[j] += outval * pan1; \
 		if(numOutputs > 1) out2[j] += outval * pan2; \
-
 
 #define GRAIN_BUF_LOOP_BODY_2 \
 		phase = sc_gloop(phase, loopMax); \
@@ -1282,7 +1280,7 @@ void GrainFM_Ctor(GrainFM *unit)
 		if (iphase > guardFrame) { \
 			table2 -= bufSamples; \
 		} \
-		float fracphase = phase - (double)iphase; \
+		double fracphase = phase - (double)iphase; \
 		float b = table1[0]; \
 		float c = table2[0]; \
 		float outval = amp * (b + fracphase * (c - b)); \
@@ -1335,10 +1333,9 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 		GET_GRAIN_AMP_PARAMS
 		
 		// begin add //
-		float pan2 = 0.f;; 
+		float pan2 = 0.f;
 		float *out2;
 		GET_PAN_PARAMS
-		
 		// end add //
 		int nsmps = sc_min(grain->counter, inNumSamples);
 		if (grain->interp >= 4) {
@@ -1377,12 +1374,12 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 			if (unit->mNumActive+1 >= kMaxSynthGrains) {
 			Print("Too many grains!\n");
 			} else {
-			float winType = IN_AT(unit, 7, i);
+			float winType = GRAIN_IN_AT(unit, 7, i);
 			if(winType >= 0.) { 
 			    GET_GRAIN_WIN
 			    }
 			if((windowData) || (winType < 0.)) {
-				uint32 bufnum = (uint32)IN_AT(unit, 2, i);
+				uint32 bufnum = (uint32)GRAIN_IN_AT(unit, 2, i);
 				if (bufnum >= numBufs) continue;
 				
 				GRAIN_BUF
@@ -1396,19 +1393,18 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 				GrainBufG *grain = unit->mGrains + unit->mNumActive++;
 				grain->bufnum = bufnum;
 				
-				double counter = IN_AT(unit, 1, i) * SAMPLERATE;
+				double counter = GRAIN_IN_AT(unit, 1, i) * SAMPLERATE;
 				counter = sc_max(4., counter);
 				grain->counter = (int)counter;
 				grain->winType = winType;
 				
 				GET_GRAIN_INIT_AMP
 
-				double rate = grain->rate = IN_AT(unit, 3, i) * bufRateScale;
-				double phase = IN_AT(unit, 4, i) * bufFrames;
-				grain->interp = (int)IN_AT(unit, 5, i);
-
+				double rate = grain->rate = GRAIN_IN_AT(unit, 3, i) * bufRateScale;
+				double phase = GRAIN_IN_AT(unit, 4, i) * bufFrames;
+				grain->interp = (int)GRAIN_IN_AT(unit, 5, i);
 				// begin add //
-				float pan = IN_AT(unit, 6, i);
+				float pan = GRAIN_IN_AT(unit, 6, i);
 				
 				CALC_GRAIN_PAN
 
@@ -1613,7 +1609,6 @@ void GrainBuf_Ctor(GrainBuf *unit)
 	unit->curtrig = 0.f;	
 	GrainBuf_next_k(unit, 1); // should be _k
 }
-
 #define BUF_GRAIN_LOOP_BODY_4_N \
 		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
@@ -1725,7 +1720,7 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 		if (nextGrain == 0) {
 			// start a grain
 			if (unit->mNumActive[n]+1 >= kMaxGrains) break;
-			uint32 bufnum = (uint32)IN_AT(unit, 0, i);
+			uint32 bufnum = (uint32)GRAIN_IN_AT(unit, 0, i);
 			if (bufnum >= numBufs) break;
 
 			float bufSampleRate = buf->samplerate;
@@ -1737,9 +1732,9 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 			
 			RGET
 
-			float overlaps = IN_AT(unit, 5, i);
-			float counter = IN_AT(unit, 3, i) * SAMPLERATE;
-			double winrandamt = frand2(s1, s2, s3) * (double)IN_AT(unit, 6, i);
+			float overlaps = GRAIN_IN_AT(unit, 5, i);
+			float counter = GRAIN_IN_AT(unit, 3, i) * SAMPLERATE;
+			double winrandamt = frand2(s1, s2, s3) * (double)GRAIN_IN_AT(unit, 6, i);
 			counter = sc_max(4., floor(counter + (counter * winrandamt)));
 			grain->counter = (int)counter;
 			
@@ -1747,10 +1742,10 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 			
 			unit->mNextGrain[n] = nextGrain;
 			
-			float rate = grain->rate = IN_AT(unit, 2, i) * bufRateScale;
-			float phase = IN_AT(unit, 1, i) * (float)bufFrames;
-			grain->interp = (int)IN_AT(unit, 7, i);
-			float winType = grain->winType = (int)IN_AT(unit, 4, i); // the buffer that holds the grain shape
+			float rate = grain->rate = GRAIN_IN_AT(unit, 2, i) * bufRateScale;
+			float phase = GRAIN_IN_AT(unit, 1, i) * (float)bufFrames;
+			grain->interp = (int)GRAIN_IN_AT(unit, 7, i);
+			float winType = grain->winType = (int)GRAIN_IN_AT(unit, 4, i); // the buffer that holds the grain shape
 			GET_GRAIN_WIN
 			if((windowData) || (winType < 0.)) {
 			    GET_GRAIN_INIT_AMP
