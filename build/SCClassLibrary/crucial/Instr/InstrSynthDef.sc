@@ -1,13 +1,14 @@
 
 InstrSynthDef : SynthDef {
 	
-	classvar watchedServers;
-	
-	var <longName,instr,inputs,outputProxies;
+	var <longName;
+	var instr;
+	var inputs; // the inputs supplied the last time this was built
+	var outputProxies; // the output proxies those inputs created, primarily used for error reporting
 	
 	// secret because the function doesn't have them as arg names
 	// they are created in the context of the synth def and added
-	// magically/secretly.
+	// magically/secretly.  backdoor access.
 	// this is for adding buffers, samples, inline players, subpatches, spawners etc.
 	var secretIr, secretKr,stepchildren,synthProxy;
 	
@@ -27,7 +28,7 @@ InstrSynthDef : SynthDef {
 			.finishBuild
 	}
 	buildUgenGraph { arg argInstr,args,outClass;
-		var result,fixedID="";
+		var result,fixedID="",firstName;
 		var isScalarOut;
 
 		outClass = outClass.asClass;
@@ -90,36 +91,43 @@ InstrSynthDef : SynthDef {
 			err.throw;
 		});
 
-		//is based on the instr name, ir, kr pattern, fixedValues
-		// outClass,numChannels (in case it expanded)
-		name = "";
-		instr.name.do({ arg part;
-			name = name ++ part.asString.asFileSafeString;
+		name = argInstr.dotNotation ++ "." ++ outClass.name.asString;
+		this.allControlNames.do({ |controlName,i|
+			name = name ++ ".";
+			// the argNames are fixed for the Instr so we don't need to save them
+			// but after that comes secret args and the out
+			if(i > argInstr.argNames.size,{
+				name = name ++ controlName.name.asString;
+			});
+			switch(controlName.rate,
+				\control, {
+					name = name ++ "kr";
+				},
+				\noncontrol, {
+					name = name ++ "nc";
+				},
+				\scalar, {
+					name = name ++ "ir";
+				});
+			// defaultValue is not just what the synth def is built with
+			// but also important things like qnty are passed in this way
+			// that can completely alter the synth def architecture
+			if(controlName.defaultValue.notNil,{
+				name = name ++ controlName.defaultValue.asCompileString;
+			});
 		});
-		//name.debug("name");
-		if(name.size > 8,{
-			name = name.copyRange(0,7) ++ name.copyRange(8,name.size - 1).hash.asFileSafeString;
+		
+		longName = name;
+		firstName = argInstr.name.last.asString;
+		if(firstName.size > 20,{
+			firstName = "Instr";
 		});
-		name = name ++ outClass.name.asString.first.toUpper;
-
-		/* fixedValues.do({ arg fa,i;
-			if(fa.notNil,{
-				fixedID = fixedID ++ i ++ fa.asCompileString;
-			})
-		});
-		name = name ++ fixedID.hash.asFileSafeString; */
-
-		longName = name ++ this.class.defNameFromObjects(inputs);
-		//longName.debug("longName");
-		name = longName.hash.asFileSafeString;
-		//name.debug("name");
+		name = firstName ++ "*" ++ longName.hash;
+		// name.debug("name");
 	}
 	
 	// passed to Instr function but not to synth
 	addInstrOnlyArg { arg name,value;
-		/*fixedNames = fixedNames.add(name);
-		fixedValues = fixedValues.add(value);
-		fixedPositions = fixedPositions.add(controls.size);*/
 		this.addNonControl(name, value);
 	}
 	
@@ -144,6 +152,9 @@ InstrSynthDef : SynthDef {
 		secretKr = secretKr.add( [object,name,initialValue,selector]);
 		^Control.names([name]).kr([initialValue])
 	}
+	// a player uses this to install itself into the InstrSynthDef
+	// so that it gets added to the Patch's stepchildren
+	// and gets prepared and spawned when the Patch plays
 	playerIn { arg object;
 		var bus;
 		bus = this.addSecretIr(object,0,\synthArg);
@@ -242,7 +253,7 @@ InstrSynthDef : SynthDef {
 		inputs = nil;
 		outputProxies = nil;
 		instr = nil;
-		("InstrSynthDef built:" + name + longName).inform;
+		("InstrSynthDef built:" + name).inform;
 	}
 	buildErrorString {
 		^String.streamContents({ arg stream;
@@ -281,14 +292,20 @@ InstrSynthDef : SynthDef {
 			var iks=0;
 			objects.do({ arg obj,argi;
 				// returns 0/i 1/k 2/s tag, adds values if any to stream
-				iks = (3 ** argi) *  obj.addToDefName(stream) + iks;			});
+				iks = (3 ** argi) *  obj.addToDefName(stream) + iks;
+				//obj
+			});
 			stream << iks;
 		});
 	}
-	*initClass { watchedServers = IdentityDictionary.new }
 	*watchServer { arg server;
-		if(watchedServers.at(server).isNil,{
-			SimpleController(server)
+		if(NotificationCenter.registrationExists(server,\didQuit,this).not,{
+			NotificationCenter.register(server,\didQuit,this,{
+					this.clearCache(server);
+					//this.loadCacheFromDir(server);
+			});
+		});		
+			/*SimpleController(server)
 				.put(\serverRunning,{ //clear on quit
 					if(server.serverRunning.not,{
 						AppClock.sched(3.0,{ // don't panic too quickly
@@ -299,8 +316,7 @@ InstrSynthDef : SynthDef {
 						});
 					});
 				});
-			watchedServers.put(server,Main.elapsedTime);
-		});
+			*/
 	}
 	*clearCache { arg server;
 		"Clearing AbstractPlayer SynthDef cache".inform;
@@ -358,3 +374,5 @@ SynthProxy {
 		// shift the Out.ar
 	}
 }
+
+
