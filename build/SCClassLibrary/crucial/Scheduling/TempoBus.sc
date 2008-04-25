@@ -23,6 +23,7 @@ TempoBus   {
 	}
 	asBus {}
 	index { ^bus.index }
+	server { ^bus.server }
 	prepareToBundle { arg group,bundle;
 		// for now setting duplicate setMsg in there
 		bundle.add( bus.setMsg(tempo.tempo) );
