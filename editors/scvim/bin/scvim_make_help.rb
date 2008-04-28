@@ -108,10 +108,21 @@ def runhtml(file)
     stdin.close
     #grab the lines from unhtml
     #res = stdout.readlines
-    res = stdout.readlines.collect { |i| i.gsub(/[\x80-\xFF]/, '') }
+    res = stdout.readlines.collect { |i| 
+      i.gsub!(/[\x80-\xFF]/, '')
+      i.gsub!("&ndash;",'-')
+      i
+    }
+    tmp = Array.new
+    res.each { |i|
+      #remove html comments
+      if i !~ /^\s*<!--.*-->\s*$/
+        tmp << i
+      end
+    }
     #close everything
     stdout.close; stderr.close
-    return res
+    return tmp
   }
   return []
 end
