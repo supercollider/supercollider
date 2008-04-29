@@ -609,6 +609,9 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define SETUP_OUT \
 	uint32 numOutputs = unit->mNumOutputs; \
 	if (numOutputs > bufChannels) { \
+		if(unit->mWorld->mVerbosity > -1 && !unit->mDone){ \
+			Print("buffer-reading UGen channel mismatch: numOutputs %i, yet buffer has %i channels\n", numOutputs, bufChannels); \
+		} \
                 unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
@@ -619,6 +622,9 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define SETUP_IN(offset) \
 	uint32 numInputs = unit->mNumInputs - (uint32)offset; \
 	if (numInputs != bufChannels) { \
+		if(unit->mWorld->mVerbosity > -1 && !unit->mDone){ \
+			Print("buffer-writing UGen channel mismatch: numInputs %i, yet buffer has %i channels\n", numInputs, bufChannels); \
+		} \
                 unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
