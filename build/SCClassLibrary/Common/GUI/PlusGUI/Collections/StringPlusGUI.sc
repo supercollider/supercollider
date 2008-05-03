@@ -35,27 +35,27 @@
 	}
 	drawAtPoint { arg point, font, color;
 		_String_DrawAtPoint
-		^this.primitiveFailed
+		^this.primitiveFailedåß
 	}
 	drawInRect { arg rect, font, color;
 		_String_DrawInRect
 		^this.primitiveFailed
 	}
-	drawCenteredIn { arg inRect, font, color;
-		this.drawAtPoint(this.bounds( font ).centerIn(inRect), font, color);
+	drawCenteredIn { arg rect, font, color;
+		this.drawAtPoint(this.bounds( font ).centerIn(rect), font, color);
 	}
-	drawLeftJustIn { arg inRect, font, color;
+	drawLeftJustIn { arg rect, font, color;
 		var pos, bounds;
 		bounds = this.bounds( font );
-		pos = bounds.centerIn(inRect);
-		pos.x = inRect.left + 2;
+		pos = bounds.centerIn(rect);
+		pos.x = rect.left + 2;
 		this.drawAtPoint(pos, font, color);
 	}
-	drawRightJustIn { arg inRect, font, color;
+	drawRightJustIn { arg rect, font, color;
 		var pos, bounds;
 		bounds = this.bounds( font );
-		pos = bounds.centerIn(inRect);
-		pos.x = inRect.right - 2 - bounds.width;
+		pos = bounds.centerIn(rect);
+		pos.x = rect.right - 2 - bounds.width;
 		this.drawAtPoint(pos, font, color);
 	}
 		
