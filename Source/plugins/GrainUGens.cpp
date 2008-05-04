@@ -1321,6 +1321,7 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 		uint32 bufnum = grain->bufnum;
 		
 		GRAIN_BUF
+		CHECK_BUF
 		
 		if (bufChannels != 1) {
 			 ++i;
@@ -1383,6 +1384,7 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 				if (bufnum >= numBufs) continue;
 				
 				GRAIN_BUF
+				CHECK_BUF
 				
 				if (bufChannels != 1) continue;
 
@@ -1474,6 +1476,7 @@ void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 		uint32 bufnum = grain->bufnum;
 		
 		GRAIN_BUF
+		CHECK_BUF
 		
 		if (bufChannels != 1) {
 			 ++i;
@@ -1536,6 +1539,7 @@ void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 				uint32 bufnum = (uint32)IN0(2);
 				
 				GRAIN_BUF
+				CHECK_BUF
 				
 				float bufSampleRate = buf->samplerate;
 				float bufRateScale = bufSampleRate * SAMPLEDUR;
