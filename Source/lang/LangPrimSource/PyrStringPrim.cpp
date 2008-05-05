@@ -441,6 +441,23 @@ int prStripRtf(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prStripHtml(struct VMGlobals *g, int numArgsPushed);
+int prStripHtml(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	int len = a->uo->size;
+	char * chars = (char*)malloc(len + 1);
+	memcpy(chars, a->uos->s, len);
+	chars[len] = 0;
+	html2txt(chars);
+	
+	PyrString* string = newPyrString(g->gc, chars, 0, false);
+	SetObject(a, string);
+	free(chars);
+	
+	return errNone;
+}
+
 
 int prString_GetResourceDirPath(struct VMGlobals *g, int numArgsPushed);
 int prString_GetResourceDirPath(struct VMGlobals *g, int numArgsPushed)
@@ -633,6 +650,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 4, 0);
 #endif
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
+	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);	
 }

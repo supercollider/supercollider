@@ -135,4 +135,5 @@ extern bool compiledOK;
 extern int radixcharpos, decptpos;
 
 int rtf2txt(char* txt);
+int html2txt(char* txt);
 #endif

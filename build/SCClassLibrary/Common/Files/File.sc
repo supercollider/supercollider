@@ -71,6 +71,9 @@ File : UnixFILE {
 	readAllStringRTF {
 		^this.readAllString.stripRTF;
 	}
+	readAllStringHTML {
+		^this.readAllString.stripHTML;
+	}
 	readAllSignal {
 		var signal;
 		signal = Signal.newClear(this.length);
