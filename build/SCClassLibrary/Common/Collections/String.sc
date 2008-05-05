@@ -19,6 +19,11 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	
+	stripHTML { 
+		_StripHtml
+		^this.primitiveFailed
+	}
+	
 	getSCDir {
 		_String_GetResourceDirPath
 		^this.primitiveFailed

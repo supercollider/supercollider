@@ -352,10 +352,121 @@ Help {
 		};
 		doc.string = str.collection;
 	}
+	
+	// Iterates the tree, finding the help-doc paths and calling action.value(docname, path)
+	*do { |action|
+		this.pr_do(action, this.tree);
+	}
+	*pr_do { |action, curdict|
+		curdict.keysValuesDo{|key, val|
+			if(val.class == Dictionary){
+				this.pr_do(action, val) // recurse
+			}{
+				action.value(key.asString, val)
+			}
+		}
+	}
+	
+	/*
+	Help.searchGUI
+	*/
+	*searchGUI {
+		var win, qbox, resultsview, results, winwidth=600;
+		
+		win = GUI.window.new("<< Search SC Help >>", Rect(100, 400, winwidth, 600));
+		
+		// SCTextField
+		qbox = GUI.textField.new(win, Rect(10, 10, winwidth-20, 40)).action_{ |widget|
+				resultsview.removeAll;
+				if(widget.value != ""){
+					results = this.search(widget.value);
+					// Now add the results!
+					results.do{|res, index|
+						res.drawRow(resultsview, Rect(0, index*30, winwidth, 30));
+					};
+				};
+			};
+		
+		// SCScrollView
+		resultsview = GUI.scrollView.new(win, Rect(0, 50, winwidth, 550));
+		
+		GUI.staticText.new(resultsview, Rect(10, 10, winwidth-20, 200))
+			.string_("Type a word above and press enter.\nResults will appear here.");
+		
+		win.front;
+		qbox.focus;
+		^win;
+	}
+	
+	// Returns an array of hits as HelpSearchResult instances
+	*search { |query, ignoreCase=true|
+		var results = List.new, file, ext, docstr, pos;
+		this.do{ |docname, path|
+			if(path != ""){	
+				if(docname.find(query, ignoreCase).notNil){
+					results.add(HelpSearchResult(docname, path, 100 / (docname.size - query.size + 1), ""));
+				}{
+					ext = path.splitext[1];
+					// OK, let's open the document, see if it contains the string... HEAVY!
+					file = File(path, "r");
+					if(file.isOpen){
+						docstr = ext.switch(
+							"html", {file.readAllStringHTML},
+							"htm",  {file.readAllStringHTML},
+							"rtf",  {file.readAllStringRTF},
+							        {file.readAllString}
+							);
+						file.close;
+						pos = docstr.findAll(query, ignoreCase);
+						if(pos.notNil){
+							results.add(HelpSearchResult(docname, path, pos.size, docstr[pos[0] ..  pos[0]+50]));
+						}
+					}{
+						"File:isOpen failure: %".format(path).postln;
+					}
+				}
+			}{
+				//"empty path: %".format(docname).postln;
+			}
+		};
+		results = results.sort;
+		
+		^results
+	}
+
 } // End class
 
 
-
+HelpSearchResult {
+	var <>docname, <>path, <>goodness, <>context;
+	*new{|docname, path, goodness, context|
+		^this.newCopyArgs(docname, path, goodness, context);
+	}
+	
+	asString {
+		^ "HelpSearchResult(%, %, %, %)".format(docname, path.basename, goodness, this.contextTrimmed)
+	}
+	// used for sorting:
+	<= { |that|
+		^ this.goodness >= that.goodness
+	}
+	
+	contextTrimmed {
+		^context.tr($\n, $ ).tr($\t, $ )
+	}
+	
+	drawRow { |parent, bounds|
+		// SCButton
+		GUI.button.new(parent, bounds.copy.setExtent(bounds.width * 0.3, bounds.height).insetBy(5, 5))
+				.states_([[docname]]).action_{ Document.open(path) };
+		
+		GUI.staticText.new(parent, bounds.copy.setExtent(bounds.width * 0.7, bounds.height)
+										.moveBy(bounds.width * 0.3, 0)
+										.insetBy(5, 5))
+				.string_(this.contextTrimmed);
+		
+	}
+}
 
 
 + Object {

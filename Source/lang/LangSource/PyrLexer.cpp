@@ -273,6 +273,57 @@ text:
     }
 }
 
+// strips HTML down to plaintext tags in a fairly simple-minded way
+int html2txt(char* txt)  
+{
+    int rdpos=-1, wrpos=0, bodypos=-1;
+	bool intag = false;
+	
+	// First check if we can find a BODY tag to start at
+	while(bodypos == -1 && txt[++rdpos] != 0){
+		if(strncmp(txt+rdpos, "<body", 5) == 0) // FIXME: should be case-insensitive, ideally
+			bodypos = rdpos;
+	}
+	if(bodypos != -1)
+		rdpos = bodypos;
+	else
+		rdpos = 0;
+	
+	// Now we start from our start, and add the non-tag text to the result
+	while(txt[rdpos] != 0){
+		if(intag){
+			if(txt[rdpos++] == '>')
+				intag = false;
+		}else{
+			if(txt[rdpos] == '<'){
+				intag = true;
+				++rdpos;
+			}else{
+				/*
+				if(strncmp(txt+rdpos, "&amp;", 5)==0){
+					txt[wrpos++] = '&';
+					rdpos += 5;
+				}else if(strncmp(txt+rdpos, "&nbsp;", 6)==0){
+					txt[wrpos++] = ' ';
+					rdpos += 6;
+				}else if(strncmp(txt+rdpos, "&lt;", 4)==0){
+					txt[wrpos++] = '<';
+					rdpos += 4;
+				}else if(strncmp(txt+rdpos, "&gt;", 4)==0){
+					txt[wrpos++] = '>';
+					rdpos += 4;
+				}else{
+				*/
+					txt[wrpos++] = txt[rdpos++];
+				//}
+			}
+		}
+	}
+	txt[wrpos] = 0;
+	return wrpos;
+	
+}
+
 bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset) 
 {
 	char *filename = fileSym->name;
