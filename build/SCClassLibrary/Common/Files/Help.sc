@@ -458,7 +458,7 @@ HelpSearchResult {
 	drawRow { |parent, bounds|
 		// SCButton
 		GUI.button.new(parent, bounds.copy.setExtent(bounds.width * 0.3, bounds.height).insetBy(5, 5))
-				.states_([[docname]]).action_{ Document.open(path) };
+				.states_([[docname]]).action_{ path.openHTMLFile };
 		
 		GUI.staticText.new(parent, bounds.copy.setExtent(bounds.width * 0.7, bounds.height)
 										.moveBy(bounds.width * 0.3, 0)
