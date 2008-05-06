@@ -1,2 +1,0 @@
-alias scvim='vim -c "set filetype=supercollider" -c "source $SCVIM_DIR/ftplugin/supercollider.vim | SClangStart"'
-alias gscvim='gvim -c "set filetype=supercollider" -c "source $SCVIM_DIR/ftplugin/supercollider.vim | SClangStart"'

@@ -1,3 +1,9 @@
+2008-05-06
+	I have changed a lot of things in order to make installation *hopefully*
+	easier.  There is now an scvim executable that looks for scvimrc to load in this order:
+	~/.scvimrc, /usr/local/share/scvim/scvimrc, /usr/share/scvim/scvimrc
+	the cache dir defaults to ~/.scvim/
+	there is no need for the SCVIM_DIR environment variable anymore
 2008-04-08
 	Dan Stowell moved the SCVim supercollider code into a class, now SCVim docs
 	and cache data can be updated inside SuperCollider.  Dan has also moved
