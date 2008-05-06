@@ -246,7 +246,7 @@ void onsetsds_loadframe(OnsetsDS* ods, float* fftbuf){
 			pos = fftbuf + 2;
 			for(i=0; i<ods->numbins; i++){
 				real = *(pos++);
-				imag = *(pos2++);
+				imag = *(pos++);
 				ods->curr->bin[i].mag   = hypotf(imag, real);
 				ods->curr->bin[i].phase = atan2f(imag, real);
 			}
