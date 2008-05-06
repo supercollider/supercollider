@@ -20,32 +20,47 @@ ________________________________________________________________________________
 
 INSTALLATION STEPS:
 
-1) Put this ("scvim") directory into your SuperCollider Extensions directory.
+1) copy the contents of bin/ somewhere in your path.. for example
+   sudo cp bin/* /usr/local/bin/
+
+2) copy the folders ftplugin/ syntax/ indent/ somewhere in your vim runtimepath
+   *the runtimepath differs depending on your distribution.  
+    type :help runtimepath in vim for more info
+
+   to install for just one user the easiest place to put it is in ~/.vim
+   ie (after creating the directory ~/.vim if it doesn't exist)
+   cp -r ftplugin/ syntax/ indent/ ~/.vim
+
+3) copy the scvimrc file to one of these locations:
+   ~/.scvimrc
+   /usr/local/share/scvim/scvimrc
+   /usr/share/scvim/scvimrc
+   (you can then customize this file as you wish)
+
+4) Put the ("scclasses") directory into your SuperCollider Extensions directory.
     (on linux, typically /usr/local/share/SuperCollider/Extensions)
+   ie do this:
+   cp -r scclasses /usr/local/share/SuperCollider/Extensions/scvim
+   
    Make sure that this folder is sourced in your .sclang.cfg file.
+   +/usr/local/share/SuperCollider/Extensions/scvim
    * You can put the scvim directory somewhere else if you please, just make
      sure that you have the SCVim supercollider class sourced in your
      .sclang.cfg ie:
-   +$SCVIM_DIR/scclasses
+   +/usr/local/share/scvim/scclasses
 
-2) Create an environment variable SCVIM_DIR that points to where you put this
-   directory, i.e. add this line into your .bashrc file: 
-     export SCVIM_DIR=/usr/local/share/SuperCollider/Extensions/scvim
-   
-3) Optional, but handy: Add "scvim" and "scgvim" aliases to your shell 
-    environment by adding this line to the appropriate file (e.g. add it to 
-    ~/.bash_profile or ~/.bash_aliases):
-      source $SCVIM_DIR/bash_scvim_aliases
-
-4) Add the following line to your ~/.vimrc file (which might not exist yet):
-      source $SCVIM_DIR/scvimrc
-    You can edit scvimrc to change keybindings etc.
-
-Now you should be ready to use scvim, e.g. by running "scvim" or "scgvim" from
+Now you should be ready to use scvim, e.g. by running "scvim" or "scvim -g" from
 a command prompt.
 ________________________________________________________________________________
 
 OPTIONAL EXTRA INSTALLATION STEPS:
+
+* If you want to be able to read supercollider files, with syntax highlighting, the
+   ability to start the language and the keybindings you've set up without having to
+   launch sclang at the start of your vim session then source your scvimrc file in your
+   ~/.vimrc
+   for example, if you have a ~/.scvimrc file you could put this line in your ~/.vimrc
+   so ~/.scvimrc
 
 * I put this in my ~/.sclang.sc so that each time I start sclang I have updated
     Object completion and highlighting, as well as Object Definition Lookup:

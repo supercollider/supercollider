@@ -1,6 +1,7 @@
 "for scvim (supercollider vim)
 
 "this indicates the -d varaible [rundir] for running sclang in
+"default /tmp
 "let $SCLANG_RUNDIR = "/home/user/scwork"
 
 "set this to 0 if you don't want to kill the terminal with sclangpipe running
@@ -12,37 +13,29 @@ let g:sclangKillOnExit = 1
 let g:sclangTerm = "xterm -e"
 
 "this indicates the location to create a pipe for vim to communicate with
-"sclang
-let g:sclangPipeLoc = "/tmp/sclang-pipe"
+"sclang 
+"defaults /tmp/sclang-pipe
+"let g:sclangPipeLoc = "/tmp/sclang-pipe"
 
 "this indicates a file where the process id for sclangpipe_app is stored
-let g:sclangPipeAppPidLoc = "/tmp/sclangpipe_app-pid"
-
-"this indicates the actual location of sclangpipe_app.sh
-let g:sclangPipeApp	= "$SCVIM_DIR/bin/sclangpipe_app.sh"
-
-set runtimepath+=$SCVIM_DIR
-if exists("$SCVIM_CACHE_DIR") == 0
-	set runtimepath+=$SCVIM_CACHE_DIR
-else
-	set runtimepath+=$SCVIM_DIR/cache
-endif
+"default /tmp/sclangpipe_app-pid
+"let g:sclangPipeAppPidLoc = "/tmp/sclangpipe_app-pid"
 
 au BufWinEnter,BufNewFile,BufRead *.sc set filetype=supercollider
-au BufWinEnter,BufNewFile,BufRead *.sc let &iskeyword="@,48-57,_,192-255" | source $SCVIM_DIR/ftplugin/supercollider.vim
+au BufWinEnter,BufNewFile,BufRead *.sc let &iskeyword="@,48-57,_,192-255" | runtime ftplugin/supercollider.vim
 au BufWinEnter,BufNewFile,BufRead *.sc set sw=4 ts=4 autoindent "this line can be changed however you like
-"source $SCVIM_DIR/indent/sc_indent.vim
 
 "sc help files
 au BufWinEnter,BufNewFile,BufRead *.scd set filetype=supercollider
-au BufWinEnter,BufNewFile,BufRead *.scd let &iskeyword="@,48-57,_,192-255,-,|" | source $SCVIM_DIR/ftplugin/supercollider.vim
+au BufWinEnter,BufNewFile,BufRead *.scd let &iskeyword="@,48-57,_,192-255,-,|" | runtime ftplugin/supercollider.vim
 au BufWinEnter,BufNewFile,BufRead *.scd set sw=4 ts=4 autoindent "this line can be changed however you like
 
 "required for matching
 au Filetype supercollider,supercollider_help let b:match_skip = 's:scComment\|scString\|scSymbol'
 au Filetype supercollider,supercollider_help let b:match_words = '(:),[:],{:}'
 
-au BufEnter,BufWinEnter,BufNewFile,BufRead *.sc source $SCVIM_DIR/indent/sc_indent.vim
+"indenting if you want it
+"au BufEnter,BufWinEnter,BufNewFile,BufRead *.sc runtime indent/sc_indent.vim
 
 
 "supercollider vim keybindings

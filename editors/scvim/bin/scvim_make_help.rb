@@ -33,13 +33,18 @@
 #along with SCVIM.  If not, see <http://www.gnu.org/licenses/>.
 
 $uselinks = false
-scvim_dir = ENV["SCVIM_DIR"].sub(/\/$/,"")
 scvim_cache_dir = ENV["SCVIM_CACHE_DIR"]
 if !scvim_cache_dir or scvim_cache_dir==""
-  scvim_cache_dir = scvim_dir + "/cache"
+  scvim_cache_dir = File.join(ENV["HOME"],".scvim")
 else
   scvim_cache_dir.sub!(/\/$/,"")
 end
+
+#if the cache dir doesn't exist, create it
+if not File.exists?(scvim_cache_dir)
+  Dir.mkdir(scvim_cache_dir)
+end
+
 help_dest = File.join(scvim_cache_dir, "/doc/")
 help_tags_file = File.join(help_dest, "TAGS_HELP")
 help_completion_file = File.join(help_dest, "sc_help_completion")

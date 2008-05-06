@@ -21,17 +21,9 @@ SCVim {
 classvar <scvim_dir, <scvim_cache_dir;
 
 *initClass {
-	var scvim_dir_env       = getenv("SCVIM_DIR");
 	var scvim_cache_dir_env = getenv("SCVIM_CACHE_DIR");
-	if(scvim_dir_env.isNil){
-		scvim_dir = this.filenameSymbol.asString.dirname.dirname;
-		setenv("SCVIM_DIR", scvim_dir);
-		"Shell evironment variable SCVIM_DIR was not set".warn;
-	}{
-		scvim_dir = scvim_dir_env;
-	};
 	if(scvim_cache_dir_env.isNil){
-		scvim_cache_dir = scvim_dir +/+ "cache";
+		scvim_cache_dir = "~/.scvim".standardizePath;
 		setenv("SCVIM_CACHE_DIR", scvim_cache_dir);
 		//inform("SCVim: I've set the cache dir based on the scvim dir");
 	}{
@@ -46,50 +38,66 @@ classvar <scvim_dir, <scvim_cache_dir;
 	var object_list, object_dict;
 	var ob_vim_file, ob_comp_file, tags_file;
 
-	//open the files
-	//for supercollider_objects.vim
-	ob_vim_file = File(scvim_cache_dir +/+ "supercollider_objects.vim","w");
-	//for TAGS_SCDEF (object definitions)
-	tags_file = File(scvim_cache_dir +/+ "TAGS_SCDEF","w");
-	//for object completion && object lookup in the SChelp function
-	ob_comp_file = File(scvim_cache_dir +/+ "sc_object_completion","w");
-
-	ob_vim_file.write("syn keyword\tscObject\t");
-	object_list = SortedList.new(0);
-	object_dict = Dictionary.new;
-	//add Object itself
-	object_list = object_list.add(Object.asString);
-	object_dict.add(Object.asString -> Object);
-	//sort the Objects (add to a sorted list)
-	Object.allSubclasses.do(
-		{|i| 
-			object_list = object_list.add(i.asString);
-			object_dict.add(i.asString -> i);
-		});
-	//go through the Objects in order and write what needs to be written to the files
-	object_list.do {|ob_string|
-			ob_vim_file.write(ob_string ++ " ");
-			/* disregard any Meta_ Classes */
-			if(ob_string.find("Meta_",false,0).isNil,
-				{ob_comp_file.write(ob_string ++ "\n")});
-			tags_file.write("SCDEF:" ++ 
-					ob_string ++ 
-					"\t" ++ object_dict.at(ob_string).filenameSymbol ++ 
-					"\tgo " ++ 
-					(object_dict.at(ob_string).charPos + 1) ++ "\n");
+	r{
+		//if scvim_cache_dir doesn't exist, make it
+		if(File.exists(scvim_cache_dir) == false){
+			("mkdir " ++ scvim_cache_dir).unixCmd;
+			//wait until the file exists
+			//while(File.exists(scvim_cache_dir) == false,  1.wait; );
+			1.wait;
 		};
-	//add some extra new lines
-	ob_vim_file.write("\n\n");
-	[ob_vim_file, tags_file, ob_comp_file].do(_.close);
-	"SCVim files written".postln;
+
+		if(File.exists(scvim_cache_dir ++ "/doc") == false){
+			("mkdir " ++ scvim_cache_dir ++ "/doc").unixCmd;
+			//wait until the file exists
+			//while(File.exists(scvim_cache_dir) == false,  1.wait; );
+			1.wait;
+		};
+
+		//open the files
+		//for supercollider_objects.vim
+		ob_vim_file = File(scvim_cache_dir +/+ "supercollider_objects.vim","w");
+		//for TAGS_SCDEF (object definitions)
+		tags_file = File(scvim_cache_dir +/+ "TAGS_SCDEF","w");
+		//for object completion && object lookup in the SChelp function
+		ob_comp_file = File(scvim_cache_dir +/+ "sc_object_completion","w");
+
+		ob_vim_file.write("syn keyword\tscObject\t");
+		object_list = SortedList.new(0);
+		object_dict = Dictionary.new;
+		//add Object itself
+		object_list = object_list.add(Object.asString);
+		object_dict.add(Object.asString -> Object);
+		//sort the Objects (add to a sorted list)
+		Object.allSubclasses.do(
+			{|i| 
+				object_list = object_list.add(i.asString);
+				object_dict.add(i.asString -> i);
+			});
+		//go through the Objects in order and write what needs to be written to the files
+		object_list.do {|ob_string|
+				ob_vim_file.write(ob_string ++ " ");
+				/* disregard any Meta_ Classes */
+				if(ob_string.find("Meta_",false,0).isNil,
+					{ob_comp_file.write(ob_string ++ "\n")});
+				tags_file.write("SCdef:" ++ 
+						ob_string ++ 
+						"\t" ++ object_dict.at(ob_string).filenameSymbol ++ 
+						"\tgo " ++ 
+						(object_dict.at(ob_string).charPos + 1) ++ "\n");
+			};
+		//add some extra new lines
+		ob_vim_file.write("\n\n");
+		[ob_vim_file, tags_file, ob_comp_file].do(_.close);
+		"SCVim files written".postln;
+	}.play;
 } // end *updateCaches
 
 *updateHelpCache { | helpPaths |
 	var script;
 	if(helpPaths.isNil){ helpPaths = [Platform.helpDir]};
 	// Just run the ruby script
-	script = scvim_dir +/+ "bin/scvim_make_help.rb";
-	(script.quote + "-c -f" + helpPaths.collect{|p| "-s" + p.quote}).systemCmd;
+	("scvim_make_help.rb".quote + "-c -f" + helpPaths.collect{|p| "-s" + p.quote}).systemCmd;
 }
 
 } // end class

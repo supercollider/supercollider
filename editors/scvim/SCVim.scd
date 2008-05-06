@@ -18,7 +18,7 @@ it is best to put this in your ~/.sclang.sc file.  But for now you can just
 put the cursor over that line and hit F6 to send it to the language.
 After you've done that you can update the syntax highlighting info by executing
 the following (in vim):
-source $SCVIM_DIR/syntax/supercollider.vim
+runtime syntax/supercollider.vim
 
 ________________________________________________________________________________
 
@@ -63,7 +63,7 @@ outside SC if desired. You can do something like:
 
   ./scvim_make_help.rb -c -s /usr/local/share/SuperCollider/Help
 
-This will delete any help docs that are in your scvim/docs dir, and copy in the
+This will delete any help docs that are in your ~/.scvim/docs dir, and copy in the
 more up to date [hopefully] docs from /usr/local/share/SuperCollider/Help to
 that dir [after they are formatted].  If you have help docs in more than one
 location you can now copy in more help docs by doing
