@@ -1,17 +1,33 @@
 #!/bin/sh
+
 VIM_FILES_DEST=$HOME/.vim
 BIN_DEST=/usr/local/bin/
-SCCLASS_DEST=/usr/local/share/SuperCollider/Extensions/scvim
+SCEXTENSION_DIR=/usr/local/share/SuperCollider/Extensions
+SCCLASS_DEST=$SCEXTENSION_DIR/scvim
 CACHE_DIR=$HOME/.scvim
 
 cp -r indent ftplugin syntax $VIM_FILES_DEST
 cp bin/* $BIN_DEST
-cp -r scclasses/ $SCCLASS_DEST
+
+#make sure the Extensions directory exists
+if [ ! -d $SCEXTENSION_DIR ]
+then
+	mkdir $SCEXTENSION_DIR
+fi
+
+#make sure the Extensions/scvim dir exists
+if [ ! -d $SCCLASS_DEST ]
+then
+	mkdir $SCCLASS_DEST
+fi
+
+cp -r scclasses/* $SCCLASS_DEST/
 
 #create the cache dir if it doesn't exist.
 if [ ! -d $CACHE_DIR ]
 then
 	mkdir $CACHE_DIR
+	#change ownership
 	if [ $SUDO_USER ] 
 	then
 		chown $SUDO_USER $CACHE_DIR
@@ -22,11 +38,13 @@ fi
 if [ ! -d $CACHE_DIR/doc ]
 then
 	mkdir $CACHE_DIR/doc
+	#change ownership
 	if [ $SUDO_USER ] 
 	then
 		chown $SUDO_USER $CACHE_DIR/doc
 	fi
 fi
+
 
 #copy the help file
 cp SCVim.scd $CACHE_DIR/doc/
