@@ -393,6 +393,9 @@ bool gIsFullScreen = false;
 -(IBAction)showHelpBrowser:(id)sender {
 	[self sendMain: "showHelpBrowser"];
 }
+-(IBAction)showHelpSearch:(id)sender {
+	[self sendMain: "showHelpSearch"];
+}
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {

@@ -88,6 +88,9 @@ classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="1";
 	showHelpBrowser {
 		Help.gui
 	}
+	showHelpSearch {
+		Help.searchGUI
+	}
 
 	*version {^[scVersionMajor, ".", scVersionMinor, scVersionPostfix].join}
 	

@@ -371,26 +371,48 @@ Help {
 	Help.searchGUI
 	*/
 	*searchGUI {
-		var win, qbox, resultsview, results, winwidth=600;
+		var win, qbox, resultsview, results, winwidth=600, statictextloc;
 		
 		win = GUI.window.new("<< Search SC Help >>", Rect(100, 400, winwidth, 600));
 		
+		statictextloc = Rect(10, 10, winwidth-20, 200);
+		
 		// SCTextField
-		qbox = GUI.textField.new(win, Rect(10, 10, winwidth-20, 40)).action_{ |widget|
+		qbox = GUI.textField.new(win, Rect(0, 0, winwidth, 50).insetBy(50,15))
+			.resize_(2)
+			.action_{ |widget|
 				resultsview.removeAll;
 				if(widget.value != ""){
 					results = this.search(widget.value);
 					// Now add the results!
-					results.do{|res, index|
-						res.drawRow(resultsview, Rect(0, index*30, winwidth, 30));
+					if(results.size == 0){
+						GUI.staticText.new(resultsview, statictextloc)
+							.resize_(5)
+							.string_("No results found.");
+					}{
+						results.do{|res, index|
+							res.drawRow(resultsview, Rect(0, index*30, winwidth, 30));
+						}
 					};
 				};
 			};
 		
-		// SCScrollView
-		resultsview = GUI.scrollView.new(win, Rect(0, 50, winwidth, 550));
+		/*
+		// dividing line? hmm, double-drawing issue on my mac
+		win.drawHook_{
+			Pen.color = Color.black;
+			Pen.moveTo(Point(0, 49));
+			Pen.lineTo(Point(winwidth, 49));
+			Pen.stroke;
+		};
+		*/
 		
-		GUI.staticText.new(resultsview, Rect(10, 10, winwidth-20, 200))
+		// SCScrollView
+		resultsview = GUI.scrollView.new(win, Rect(0, 50, winwidth, 550))
+				.resize_(5);
+		
+		GUI.staticText.new(resultsview, statictextloc)
+			.resize_(5)
 			.string_("Type a word above and press enter.\nResults will appear here.");
 		
 		win.front;
