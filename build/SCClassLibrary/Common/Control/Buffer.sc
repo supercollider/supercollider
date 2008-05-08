@@ -567,7 +567,7 @@ Buffer {
 		}
 	}
 	*cachedBufferAt { |server, bufnum|
-		^serverCaches[server].tryPerform(\at, \bufnum)
+		^serverCaches[server].tryPerform(\at, bufnum)
 	}
 	
 	// called from Server when b_info is received
