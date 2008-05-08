@@ -4068,15 +4068,14 @@ void SCUserView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent
 
 void SCUserView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
+	SCRect bounds = getDrawBounds();
+
+	mRealtiveMousePoint.x = where.x - bounds.x;
+	mRealtiveMousePoint.y = where.y - bounds.y;
+	SCView::mouseDownAction(where, modifiers, theEvent);
+
 	if (modifiers & NSCommandKeyMask) {
 		beginDrag(where);
-	}
-	else {
-		SCRect bounds = getDrawBounds();
-
-		mRealtiveMousePoint.x = where.x - bounds.x;
-		mRealtiveMousePoint.y = where.y - bounds.y;
-		SCView::mouseDownAction(where, modifiers, theEvent);
 	}
 }
 
