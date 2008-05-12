@@ -1955,6 +1955,7 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_SC_TERMINAL_CLIENT=1",
+					HAVE_SPEECH,
 					"$(inherited)",
 				);
 				INSTALL_PATH = "$(HOME)/bin";
@@ -1982,6 +1983,7 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_SC_TERMINAL_CLIENT=1",
+					HAVE_SPEECH,
 					"$(inherited)",
 				);
 				INSTALL_PATH = "$(HOME)/bin";
