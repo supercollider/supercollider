@@ -22,6 +22,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		172CD77D0DD7D2AE0089A2F4 /* SC_LanguageClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9493110C0C1921F90018AB50 /* SC_LanguageClient.cpp */; };
+		172CD77E0DD7D2B10089A2F4 /* SC_TerminalClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9493110E0C1921F90018AB50 /* SC_TerminalClient.cpp */; };
 		6A0CC1760D3D41F40080C454 /* SMLAdvancedFindController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0CC1740D3D41F40080C454 /* SMLAdvancedFindController.m */; };
 		6A0CC1770D3D41F40080C454 /* SMLStatusBarTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0CC1750D3D41F40080C454 /* SMLStatusBarTextFieldCell.m */; };
 		6A0CC1780D3D41F40080C454 /* SMLAdvancedFindController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0CC1740D3D41F40080C454 /* SMLAdvancedFindController.m */; };
@@ -1581,6 +1583,8 @@
 				9456F6C10C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */,
 				9456F6C20C19E79F00634E4D /* HID_Utilities.c in Sources */,
 				6A1C635F0CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */,
+				172CD77D0DD7D2AE0089A2F4 /* SC_LanguageClient.cpp in Sources */,
+				172CD77E0DD7D2B10089A2F4 /* SC_TerminalClient.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1949,6 +1953,10 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"USE_SC_TERMINAL_CLIENT=1",
+					"$(inherited)",
+				);
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1972,6 +1980,10 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"USE_SC_TERMINAL_CLIENT=1",
+					"$(inherited)",
+				);
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
