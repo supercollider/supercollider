@@ -1,5 +1,5 @@
 
-The steps bellow assume you have succesfully built the SCLang target in the XCode Project.
+The steps bellow assume you have successfully built the SCLang target in the XCode Project.
 
 Open a terminal and change your working directory to the build directory inside the SuperCollider source tree.
 
@@ -11,7 +11,7 @@ $ cd /path/to/your/source/tree/SuperCollider3/build
 
 Press enter.
 
-Copy the sclang exacutable to a directory in your shell's path. This could be $HOME/bin (handy) if you set that one up.
+Copy the sclang executable to a directory in your shell's path. This could be $HOME/bin (handy) if you set that one up.
 We will place it in /usr/local/bin for this example:
 
 $ sudo cp sclang /usr/local/bin
@@ -36,7 +36,7 @@ $ svn export SCClassLibrary/ ~/sclang/SCClassLibrary
 
 Edit the startup method in OSXPlatform.sc of the _exported_ SCClassLibrary.
 
-Use 'open' if SuperCollider3.app is already installed in your system, else nagivate to the folder in the finder and use TextEdit.
+Use 'open' if SuperCollider3.app is already installed in your system, else navigate to the folder in the finder and use TextEdit.
 
 $ open ~/sclang/SCClassLibrary/Platform/osx/OSXPlatform.sc
 
@@ -79,7 +79,7 @@ sclang finishes.
 
 You will note SCLang's CPU usage goes all the way up - close to 100%.
 Use pipes to go around this.
-Check the cpu usage is back to normal:
+Check the CPU usage is back to normal:
 
 	$ tail -f | sclang -d ~/sclang
 
@@ -110,7 +110,7 @@ About Emacs in OS X.
 Consult linux/scel/README for information on scel.
 In brief installation steps are as follows:
 
-Add these two lines to your dot emacs file (create one if it doesnt exist).
+Add these two lines to your dot emacs file (create one if it doesn't exist).
 
 (add-to-list 'load-path "~/sclang/el")
 (require 'sclang)
