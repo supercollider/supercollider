@@ -23,31 +23,27 @@ Primitives for Unix.
 
 */
 
+#include <cstring>
+#include <errno.h>
+#include <pthread.h>
+
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
+#include "PyrSched.h"
 #include "VMGlobals.h"
 #include "GC.h"
 #include "SC_RGen.h"
 #include "SC_DirUtils.h"
-#include <cstring>
+#include "sc_popen.h"
 
 #ifdef SC_WIN32
-#include <stdio.h>
 #include "SC_Win32Utils.h"
-#define popen _popen
-#define pclose _pclose
 #else
-# include <unistd.h>
+#include <libgen.h>
 #endif
 
-#include <errno.h>
-#include <pthread.h>
-
-#ifdef SC_WIN32
-#else
-# include <libgen.h>
-#endif
+PyrSymbol* s_unixCmdAction;
 
 int prString_System(struct VMGlobals *g, int numArgsPushed);
 int prString_System(struct VMGlobals *g, int numArgsPushed)
@@ -104,57 +100,116 @@ int prString_Dirname(struct VMGlobals *g, int numArgsPushed)
         return errNone;
 }
 
+struct sc_process {
+	pid_t pid;
+	FILE *stream;
+	bool postOutput;
+};
+
 void* string_popen_thread_func(void *data);
 void* string_popen_thread_func(void *data)
 {
-    char *cmdline = (char*)data;
+	struct sc_process *process = (struct sc_process *)data;
+	FILE *stream = process->stream;
+	pid_t pid = process->pid;
 	char buf[1024];
-#if SC_WIN32
-	DWORD dwRead;
-	HANDLE out = win32_spawnCmd(cmdline);
-	if (!out) return 0;
-	while (true) {
-		if(!ReadFile( out, buf, 1024, &dwRead, NULL) || dwRead==0) break; 
-		postText(buf, dwRead); 
-	}
-	post(cmdline);
-	post(" terminated\n");
-#else
-	FILE *stream = popen(cmdline, "r");
-	free(cmdline);
-    if (!stream) return 0;
-
-    /*int err =*/ setvbuf(stream, 0, _IONBF, 0);
-//    printf("err %d\n", err);
-//    setbuf(stream, 0);
-//    printf("err %d\n", err);
-    
-    while (true) {
-		//printf("->fgets\n");
-        char *string = fgets(buf, 1024, stream);
-        //printf("<-fgets %d\n", string ? strlen(string) : -1);
-        if (!string) break;
+	
+	while (process->postOutput) {
+		char *string = fgets(buf, 1024, stream);
+		if (!string) break;
 		postText(string, strlen(string));
 	}
-	int res = pclose(stream);
-	post("RESULT = %d\n", res);
-#endif
+
+	int res;
+	res = sc_pclose(stream, pid);
+	res = WEXITSTATUS(res);
+	
+	if(process->postOutput)
+		post("RESULT = %d\n", res);
+	
+	free(process);
+	
+    pthread_mutex_lock (&gLangMutex);
+	VMGlobals *g = gMainVMGlobals;
+	g->canCallOS = true;
+	++g->sp;  SetObject(g->sp, class_string);
+	++g->sp; SetInt(g->sp, res);
+	++g->sp; SetInt(g->sp, pid);
+	runInterpreter(g, s_unixCmdAction, 3);
+	g->canCallOS = false;
+    pthread_mutex_unlock (&gLangMutex);
+
 	return 0;
 }   
 
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
 int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp;
+	struct sc_process *process;
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	int err;
 	
-        if (!isKindOfSlot(a, class_string)) return errWrongType;
-        char *cmdline = (char*)malloc(a->uo->size + 1);
- 	int err = slotStrVal(a, cmdline, a->uo->size + 1);
-	if (err) return err;
-    
-        pthread_t thread;
-        pthread_create(&thread, NULL, string_popen_thread_func, (void*)cmdline);
- 	pthread_detach(thread);
+	if (!isKindOfSlot(a, class_string)) return errWrongType;
+
+	char *cmdline = (char*)malloc(a->uo->size + 1);
+	err = slotStrVal(a, cmdline, a->uo->size + 1);
+	if(err) {
+		free(cmdline);
+		return errFailed;
+	}
+
+	process = (struct sc_process *)malloc(sizeof(struct sc_process));
+	process->stream = sc_popen(cmdline, &process->pid, "r");
+	setvbuf(process->stream, 0, _IONBF, 0);
+
+	process->postOutput = IsTrue(b);
+
+	free(cmdline);
+   
+	if(process->stream == NULL) {
+		free(process);
+		return errFailed;
+	}
+
+	pthread_t thread;
+	pthread_create(&thread, NULL, string_popen_thread_func, (void*)process);
+	pthread_detach(thread);
+
+	SetInt(a, process->pid);
+	return errNone;
+}
+
+int prPidRunning(VMGlobals *g, int numArgsPushed);
+int prPidRunning(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+
+	a = g->sp;
+
+#ifdef SC_WIN32
+	HANDLE handle;
+	
+	handle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, a->ui);
+	if(handle) {
+		unsigned long exitCode;
+	
+		if(GetExitCodeProcess(handle, &exitCode) == 0)
+			SetFalse(a);
+		else if(exitCode == STILL_ACTIVE)
+			SetTrue(a);
+		
+		CloseHandle(handle);
+	}
+	else
+		SetFalse(a);
+#else
+	if(kill(a->ui, 0) == 0)
+		SetTrue(a);
+	else
+		SetFalse(a);
+#endif
+
 	return errNone;
 }
 
@@ -317,14 +372,17 @@ void initUnixPrimitives()
 		
 	base = nextPrimitiveIndex();
 	
+    s_unixCmdAction = getsym("doUnixCmdAction");
+	
 	definePrimitive(base, index++, "_String_System", prString_System, 1, 0);
 	definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
 	definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);
-	definePrimitive(base, index++, "_String_POpen", prString_POpen, 1, 0);
+	definePrimitive(base, index++, "_String_POpen", prString_POpen, 2, 0);
 	definePrimitive(base, index++, "_Unix_Errno", prUnix_Errno, 1, 0);
 	definePrimitive(base, index++, "_LocalTime", prLocalTime, 1, 0);
 	definePrimitive(base, index++, "_GMTime", prGMTime, 1, 0);
 	definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
 	definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
 	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
+	definePrimitive(base, index++, "_PidRunning", prPidRunning, 1, 0);
 }

@@ -1527,7 +1527,8 @@ void initClasses()
 	class_symbolarray = makeIntrinsicClass(s_symbolarray, s_rawarray, 0, 0); 
 		SetInt(&class_symbolarray->instanceFormat, obj_symbol);
 		class_symbolarray->classFlags.ui |= classHasIndexableInstances;
-	class_string = makeIntrinsicClass(s_string, s_rawarray, 0, 0);
+	class_string = makeIntrinsicClass(s_string, s_rawarray, 0, 1);
+		addIntrinsicClassVar(class_string, "unixCmdActions", &o_nil);
 		SetInt(&class_string->instanceFormat, obj_char);
 		class_string->classFlags.ui |= classHasIndexableInstances;
 	class_floatarray = makeIntrinsicClass(s_floatarray, s_rawarray, 0, 0);

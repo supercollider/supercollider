@@ -1,5 +1,32 @@
-
 String[char] : RawArray {
+	classvar <>unixCmdActions;
+	
+	*initClass {
+		unixCmdActions = IdentityDictionary.new;
+	}
+	
+	*doUnixCmdAction {
+		arg res, pid;
+		unixCmdActions[pid].value(res, pid);
+		unixCmdActions.removeAt(pid);
+	}
+
+	prUnixCmd {
+		arg postOutput = true;
+		_String_POpen
+		^this.primitiveFailed
+	}
+	
+	// runs a unix command and sends stdout to the post window
+	unixCmd {
+		arg action, postOutput = true;
+		var pid;
+		pid = this.prUnixCmd(postOutput);
+		if(action.notNil) {
+			unixCmdActions.put(pid, action);
+		};
+		^pid;
+	}
 	
 	asSymbol { 
 		_StringAsSymbol 
@@ -320,9 +347,6 @@ String[char] : RawArray {
 
 	// runs a unix command and returns the result code.
 	systemCmd { _String_System ^this.primitiveFailed }
-	
-	// runs a unix command and sends stdout to the post window
-	unixCmd { _String_POpen ^this.primitiveFailed }
 	
 	// some things (e.g. SVN certificate acceptance, for Quarks) can only be achieved in an interactive prompt
 	runInTerminal { | shell="/bin/bash" |

@@ -41,7 +41,6 @@ void win32_GetHomeFolder(char* homeFolder, int bufLen);
 char* win32_basename(char* path);
 char* win32_dirname(char* path);
 int win32_nanosleep (const struct timespec *requested_time, struct timespec *remaining);
-HANDLE win32_spawnCmd(char* cmdline);
 int win32_pipe(int handles[2]);
 int win32_piperead(int s, char *buf, int len);
 int win32_pipewrite(int s, char *buf, int len);
