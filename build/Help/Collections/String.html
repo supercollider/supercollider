@@ -16,25 +16,26 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5e3926; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5e3926}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5f3925; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5f3925}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016e6}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000f0}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 span.s1 {color: #606060}
 span.s2 {color: #000000}
-span.s3 {color: #5e3926}
-span.s4 {color: #20399d}
-span.s5 {color: #5e6434}
-span.s6 {font: 12.0px Helvetica}
-span.s7 {color: #041ab5}
-span.s8 {color: #2647d9}
-span.s9 {color: #0000bf}
-span.s10 {font: 9.0px Helvetica}
+span.s3 {color: #5f3925}
+span.s4 {color: #1a399e}
+span.s5 {color: #5f6433}
+span.s6 {color: #0000bf}
+span.s7 {font: 12.0px Helvetica}
+span.s8 {color: #001ab6}
+span.s9 {color: #1c47db}
+span.s10 {color: #0000c0}
+span.s11 {font: 9.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -381,11 +382,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p3">Should you need an environment variable to persist you can use <b>setenv</b> (see below).</p>
 <p class="p4"><br></p>
-<p class="p3"><b>unixCmd</b></p>
+<p class="p3"><b>unixCmd(action, postOutput)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Execute the String on the command line using the Bourne shell (sh) and send stdout to the post window. See man sh for more details.</p>
+<p class="p3">Execute the String on the command line using the Bourne shell (sh). Returns the pid of the newly created process (use Integer.pidRunning to test if a pid is alive). action is a Function that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process. postOutput is a Boolean that controls whether or not the output of the process is displayed in the post window.</p>
 <p class="p4"><br></p>
 <p class="p5"><span class="s1">"ls Help"</span>.unixCmd;</p>
+<p class="p4"><br></p>
+<p class="p15"><span class="s1">"echo one; sleep 1; echo two; sleep 1"</span>.unixCmd { <span class="s6">|res, pid|</span> [\done, res, pid].postln };</p>
 <p class="p4"><br></p>
 <p class="p3"><b>runInTerminal</b></p>
 <p class="p4"><br></p>
@@ -449,7 +452,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">"Imaginary/Directory/fish.rtf"<span class="s2">.splitext;</span></p>
 <p class="p6"><br></p>
 <p class="p13"><b>Document Support</b></p>
-<p class="p15"><br></p>
+<p class="p16"><br></p>
 <p class="p3"><b>newTextWindow(title, makeListener)</b></p>
 <p class="p4"><br></p>
 <p class="p3">Create a new <b>Document</b> with this.</p>
@@ -492,15 +495,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3">The following methods must be called within an SCWindow-drawHook or a SCUserView-drawFunc function, and will only be visible once the window or the view is refreshed. Each call to SCWindow-refresh SCUserView-refresh will 'overwrite' all previous drawing by executing the currently defined function.</p>
 <p class="p4"><br></p>
-<p class="p16"><span class="s2">See also: <a href="../GUI/SCWindow.html"><span class="s6">SCWindow</span></a>, <a href="../GUI/SCUserView.html"><span class="s6">SCUserView</span></a>, <a href="../GUI/Color.html"><span class="s6">Color</span></a>, and <a href="../GUI/Pen.html"><span class="s6">Pen</span></a>.</span></p>
+<p class="p17"><span class="s2">See also: <a href="../GUI/SCWindow.html"><span class="s7">SCWindow</span></a>, <a href="../GUI/SCUserView.html"><span class="s7">SCUserView</span></a>, <a href="../GUI/Color.html"><span class="s7">Color</span></a>, and <a href="../GUI/Pen.html"><span class="s7">Pen</span></a>.</span></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p17"><span class="s6"><b>Note:</b> for cross-platform GUIs, use </span><span class="s7">GUI</span>.pen.stringAtPoint,<span class="s6"> </span><span class="s7">GUI</span>.pen.stringInRect<span class="s6">, </span><span class="s7">GUI</span>.pen.stringCenteredIn<span class="s6">, </span><span class="s7">GUI</span>.pen.stringLeftJustIn<span class="s6">, </span><span class="s7">GUI</span>.pen.stringRightJustIn<span class="s6"> instead.</span></p>
+<p class="p18"><span class="s7"><b>Note:</b> for cross-platform GUIs, use </span><span class="s8">GUI</span>.pen.stringAtPoint,<span class="s7"> </span><span class="s8">GUI</span>.pen.stringInRect<span class="s7">, </span><span class="s8">GUI</span>.pen.stringCenteredIn<span class="s7">, </span><span class="s8">GUI</span>.pen.stringLeftJustIn<span class="s7">, </span><span class="s8">GUI</span>.pen.stringRightJustIn<span class="s7"> instead.</span></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3"><b>draw</b></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p3">Draws the String at the current 0@0 <a href="../Geometry/Point.html"><span class="s8">Point</span></a>. If not transformations of the graphics state have taken place this will be the upper left corner of the window. See also <a href="../GUI/Pen.html"><span class="s8">Pen</span></a>.</p>
+<p class="p3">Draws the String at the current 0@0 <a href="../Geometry/Point.html"><span class="s9">Point</span></a>. If not transformations of the graphics state have taken place this will be the upper left corner of the window. See also <a href="../GUI/Pen.html"><span class="s9">Pen</span></a>.</p>
 <p class="p9"><br></p>
 <p class="p5">(</p>
 <p class="p5">w = <span class="s4">SCWindow</span>.new.front;</p>
@@ -513,7 +516,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p3"><b>drawAtPoint(point, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Draws the String at the given <a href="../Geometry/Point.html"><span class="s8">Point</span></a><b> </b>using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p3">Draws the String at the given <a href="../Geometry/Point.html"><span class="s9">Point</span></a><b> </b>using the <a href="../GUI/Font.html"><span class="s9">Font</span></a> and <a href="../GUI/Color.html"><span class="s9">Color</span></a> specified.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5">w = <span class="s4">SCWindow</span>.new.front;</p>
@@ -529,7 +532,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p3"><b>drawInRect(rect, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p3">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s9">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s9">Font</span></a> and <a href="../GUI/Color.html"><span class="s9">Color</span></a> specified.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5">w = <span class="s4">SCWindow</span>.new.front;</p>
@@ -542,61 +545,61 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">w.refresh</p>
 <p class="p5">)</p>
 <p class="p9"><br></p>
-<p class="p3"><span class="s2"><b>drawCenteredIn(</b></span><b>rect, font, color</b><span class="s2"><b>)</b></span></p>
+<p class="p3"><b>drawCenteredIn(rect, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p3">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s9">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s9">Font</span></a> and <a href="../GUI/Color.html"><span class="s9">Color</span></a> specified.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5">w = <span class="s9">SCWindow</span>.new.front;</p>
-<p class="p5">w.view.background_(<span class="s9">Color</span>.white);</p>
-<p class="p5">r = <span class="s9">Rect</span>(100, 100, 100, 100);</p>
+<p class="p5">w = <span class="s10">SCWindow</span>.new.front;</p>
+<p class="p5">w.view.background_(<span class="s10">Color</span>.white);</p>
+<p class="p5">r = <span class="s10">Rect</span>(100, 100, 100, 100);</p>
 <p class="p5">w.drawHook = {</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s1">"abababababa\n\n\n"</span>.scramble.drawCenteredIn(</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Font</span>(<span class="s1">"Courier"</span>, 12),<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Color</span>.blue(0.3, 0.5)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Font</span>(<span class="s1">"Courier"</span>, 12),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Color</span>.blue(0.3, 0.5)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s9">Pen</span>.strokeRect(r);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s10">Pen</span>.strokeRect(r);</p>
 <p class="p5">};</p>
 <p class="p5">w.refresh</p>
 <p class="p5">)</p>
 <p class="p9"><br></p>
-<p class="p3"><span class="s2"><b>drawLeftJustIn(</b></span><b>rect, font, color</b><span class="s2"><b>)</b></span></p>
+<p class="p3"><b>drawLeftJustIn(rect, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p3">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s9">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s9">Font</span></a> and <a href="../GUI/Color.html"><span class="s9">Color</span></a> specified.</p>
 <p class="p4"><br></p>
-<p class="p18">(</p>
-<p class="p18">w = <span class="s9">SCWindow</span>.new.front;</p>
-<p class="p18">w.view.background_(<span class="s9">Color</span>.white);</p>
-<p class="p18">r = <span class="s9">Rect</span>(100, 100, 100, 100);</p>
-<p class="p18">w.drawHook = {</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s1">"abababababa\n\n\n"</span>.scramble.drawLeftJustIn(</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r,<span class="Apple-converted-space"> </span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Font</span>(<span class="s1">"Courier"</span>, 12),<span class="Apple-converted-space"> </span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Color</span>.blue(0.3, 0.5)</p>
-<p class="p18"><span class="Apple-tab-span">	</span>);</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s9">Pen</span>.strokeRect(r);</p>
-<p class="p18">};</p>
-<p class="p18">w.refresh</p>
-<p class="p18">)</p>
+<p class="p5">(</p>
+<p class="p5">w = <span class="s10">SCWindow</span>.new.front;</p>
+<p class="p5">w.view.background_(<span class="s10">Color</span>.white);</p>
+<p class="p5">r = <span class="s10">Rect</span>(100, 100, 100, 100);</p>
+<p class="p5">w.drawHook = {</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">"abababababa\n\n\n"</span>.scramble.drawLeftJustIn(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Font</span>(<span class="s1">"Courier"</span>, 12),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Color</span>.blue(0.3, 0.5)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s10">Pen</span>.strokeRect(r);</p>
+<p class="p5">};</p>
+<p class="p5">w.refresh</p>
+<p class="p5">)</p>
 <p class="p9"><br></p>
-<p class="p3"><span class="s2"><b>drawRightJustIn(</b></span><b>rect, font, color</b><span class="s2"><b>)</b></span></p>
+<p class="p3"><b>drawRightJustIn(rect, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p3">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s9">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s9">Font</span></a> and <a href="../GUI/Color.html"><span class="s9">Color</span></a> specified.</p>
 <p class="p4"><br></p>
-<p class="p18">(</p>
-<p class="p18">w = <span class="s9">SCWindow</span>.new.front;</p>
-<p class="p18">w.view.background_(<span class="s9">Color</span>.white);</p>
-<p class="p18">r = <span class="s9">Rect</span>(100, 100, 100, 100);</p>
-<p class="p18">w.drawHook = {</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s1">"abababababa\n\n\n"</span>.scramble.drawRightJustIn(</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r,<span class="Apple-converted-space"> </span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Font</span>(<span class="s1">"Courier"</span>,<span class="s10"> </span>12),<span class="Apple-converted-space"> </span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Color</span>.blue(0.3, 0.5)</p>
-<p class="p18"><span class="Apple-tab-span">	</span>);</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s9">Pen</span>.strokeRect(r);</p>
-<p class="p18">};</p>
-<p class="p18">w.refresh</p>
-<p class="p18">)</p>
+<p class="p5">(</p>
+<p class="p5">w = <span class="s10">SCWindow</span>.new.front;</p>
+<p class="p5">w.view.background_(<span class="s10">Color</span>.white);</p>
+<p class="p5">r = <span class="s10">Rect</span>(100, 100, 100, 100);</p>
+<p class="p5">w.drawHook = {</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">"abababababa\n\n\n"</span>.scramble.drawRightJustIn(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Font</span>(<span class="s1">"Courier"</span>,<span class="s11"> </span>12),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Color</span>.blue(0.3, 0.5)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s10">Pen</span>.strokeRect(r);</p>
+<p class="p5">};</p>
+<p class="p5">w.refresh</p>
+<p class="p5">)</p>
 </body>
 </html>
