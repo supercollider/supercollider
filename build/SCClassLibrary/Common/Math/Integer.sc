@@ -202,6 +202,7 @@ Integer : SimpleNumber {
 		array = array.add(num);
 		^array
 	}
-	
+
+	pidRunning { _PidRunning; ^this.primitiveFailed }	
 }
 

@@ -145,54 +145,6 @@ int win32_nanosleep (const struct timespec *requested_time,
   return 0;
 }
 
-/* spawns a command and returns a FILE handle for the output
-*/
-HANDLE win32_spawnCmd(char* szCmdline) {
-	HANDLE hChildStdoutRd, hChildStdoutWr;
-	SECURITY_ATTRIBUTES saAttr; 
-	BOOL fSuccess; 
-	PROCESS_INFORMATION piProcInfo; 
-	STARTUPINFO siStartInfo;
-	BOOL bFuncRetn = FALSE; 
-
-	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
-	saAttr.bInheritHandle = TRUE; 
-	saAttr.lpSecurityDescriptor = NULL; 
-	
-	if (! CreatePipe(&hChildStdoutRd, &hChildStdoutWr, &saAttr, 0)) {
-	  return NULL;
-	}
-	// create the process
-	ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
-	// Set up members of the STARTUPINFO structure. 
- 
-	ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
-	siStartInfo.cb = sizeof(STARTUPINFO); 
-	siStartInfo.hStdError = hChildStdoutWr;
-	siStartInfo.hStdOutput = hChildStdoutWr;
-	siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
-     
-	bFuncRetn = CreateProcess(NULL, 
-      szCmdline,     // command line 
-      NULL,          // process security attributes 
-      NULL,          // primary thread security attributes 
-      TRUE,          // handles are inherited 
-      CREATE_NO_WINDOW,             // creation flags 
-      NULL,          // use parent's environment 
-      NULL,          // use parent's current directory 
-      &siStartInfo,  // STARTUPINFO pointer 
-      &piProcInfo);  // receives PROCESS_INFORMATION 
-   
-	if (bFuncRetn == 0) {
-	  return NULL;
-	}
-    
-	CloseHandle(piProcInfo.hProcess);
-    CloseHandle(piProcInfo.hThread);
-	CloseHandle(hChildStdoutWr);
-	return hChildStdoutRd;
-}
-
 /* Based on code from PostgreSQL (pgsql/src/port/pipe.c)
  *  This is a replacement version of pipe for Win32 which allows
  *  returned handles to be used in select(). Note that read/write calls

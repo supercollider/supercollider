@@ -675,6 +675,7 @@ Source/common/SC_StringParser.cpp
 Source/common/g_fmt.c
 Source/common/scsynthsend.cpp
 Source/common/dtoa.c
+Source/common/sc_popen.cpp
 ''')
 if PLATFORM == 'darwin':
     commonSources += [
