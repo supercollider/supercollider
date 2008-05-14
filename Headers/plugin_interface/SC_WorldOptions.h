@@ -109,9 +109,10 @@ const WorldOptions kDefaultWorldOptions =
 extern "C" {
 	SC_DLLEXPORT void SetPrintFunc(PrintFunc func);
 	SC_DLLEXPORT struct World* World_New(WorldOptions *inOptions);
+	SC_DLLEXPORT void World_Cleanup(World *inWorld);
 	SC_DLLEXPORT void World_NonRealTimeSynthesis(struct World *inWorld, WorldOptions *inOptions);
-	SC_DLLEXPORT void World_OpenUDP(struct World *inWorld, int inPort);
-	SC_DLLEXPORT void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
+	SC_DLLEXPORT int World_OpenUDP(struct World *inWorld, int inPort);
+	SC_DLLEXPORT int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
 #ifdef SC_DARWIN
 	SC_DLLEXPORT void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName);
 #endif

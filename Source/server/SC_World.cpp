@@ -670,24 +670,28 @@ Bail:
 	World_Cleanup(world);
 }
 
-void World_OpenUDP(struct World *inWorld, int inPort)
+int World_OpenUDP(struct World *inWorld, int inPort)
 {
 	try {
 		new SC_UdpInPort(inWorld, inPort);
+		return true;
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_OpenUDP: %s\n", exc.what());
 	} catch (...) {
 	}
+	return false;
 }
 
-void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
+int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
 {
 	try {
 		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
+		return true;
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_OpenTCP: %s\n", exc.what());
 	} catch (...) {
 	}
+	return false;
 }
 
 #ifdef SC_DARWIN

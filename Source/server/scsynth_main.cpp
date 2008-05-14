@@ -285,8 +285,18 @@ int main(int argc, char* argv[])
 		return exitCode;
 	}
 
-	if (udpPortNum >= 0) World_OpenUDP(world, udpPortNum);
-	if (tcpPortNum >= 0) World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8);
+	if (udpPortNum >= 0) {
+		if (!World_OpenUDP(world, udpPortNum)) {
+			World_Cleanup(world);
+			return 1;
+		}
+	}
+	if (tcpPortNum >= 0) {
+		if (!World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8)) {
+			World_Cleanup(world);
+			return 1;
+		}
+	}
 
 #ifdef SC_DARWIN
     //World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
