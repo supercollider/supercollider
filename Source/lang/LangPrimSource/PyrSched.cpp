@@ -29,6 +29,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/time.h>
 
 #ifdef SC_WIN32
 typedef __int32 int32_t;

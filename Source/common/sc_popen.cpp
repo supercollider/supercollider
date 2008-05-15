@@ -20,7 +20,13 @@
 #include <unistd.h>
 #include <paths.h>
 
-extern char **environ;
+// allows for linking into a dylib on darwin
+#ifdef SC_DARWIN
+	#include <crt_externs.h>
+	#define environ (*_NSGetEnviron())
+#else
+	extern char **environ;
+#endif
 
 FILE *
 sc_popen(const char *command, pid_t *pidp, const char *type)
