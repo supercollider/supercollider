@@ -635,7 +635,8 @@ commonEnv = env.Copy()
 commonEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
-               '#Headers/server'],
+               '#Headers/server',
+               '#libsndfile'],
     CCFLAGS = ['-fPIC']
     )
 
@@ -691,7 +692,8 @@ serverEnv = env.Copy()
 serverEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
-               '#Headers/server'],
+               '#Headers/server',
+               '#libsndfile'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
     LIBPATH = 'build')
 libscsynthEnv = serverEnv.Copy(
@@ -790,7 +792,8 @@ pluginEnv = env.Copy(
 pluginEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
-               '#Headers/server'],
+               '#Headers/server',
+               '#libsndfile'],
     PKGCONFIG_NAME = 'libscplugin',
     PKGCONFIG_DESC = 'SuperCollider synthesis plugin headers',
     PKGCONFIG_PREFIX = FINAL_PREFIX,
@@ -926,7 +929,8 @@ langEnv.Append(
                '#Headers/plugin_interface',
                '#Headers/lang',
                '#Headers/server',
-               '#Source/lang/LangSource/Bison'],
+               '#Source/lang/LangSource/Bison',
+               '#libsndfile'],
     CPPDEFINES = [['USE_SC_TERMINAL_CLIENT', env['TERMINAL_CLIENT']]],
     LIBPATH = 'build'
     )

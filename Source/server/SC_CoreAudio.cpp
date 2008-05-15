@@ -29,6 +29,7 @@
 #include "SC_Lib_Cintf.h"
 #include <stdlib.h>
 #include <pthread.h>
+#include <sys/time.h>
 
 #ifdef SC_WIN32
 #include "SC_Win32Utils.h"

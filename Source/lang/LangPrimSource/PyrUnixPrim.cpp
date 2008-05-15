@@ -26,6 +26,7 @@ Primitives for Unix.
 #include <cstring>
 #include <errno.h>
 #include <pthread.h>
+#include <signal.h>
 
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
