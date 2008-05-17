@@ -25,7 +25,7 @@ HistoryDispatch : EnvirDispatch {
 			} {
 				if(index.isNil) {
 					histories[key] = histories[key].add(virtualTime).add(obj);
-				}Ê{
+				} {
 					if(index == -1) {
 						histories[key] = histories[key].addFirst( obj);
 						histories[key] = histories[key].addFirst(virtualTime);
@@ -71,7 +71,7 @@ HistoryDispatch : EnvirDispatch {
 		timepoints = timeset.asArray.sort;
 	}
 		
-	setTime {Êarg time;
+	setTime { arg time;
 		var changed = false;
 		//"set time to %\n".postf(time);
 		histories.keys.do { |key|
@@ -85,7 +85,7 @@ HistoryDispatch : EnvirDispatch {
 		var hist = histories[key];
 		if(hist.isNil) { ^nil };
 		hist.pairsDo { arg time, item, i;
-			if(item === obj) {Ê^i }
+			if(item === obj) { ^i }
 		};
 		^nil
 	}
@@ -95,7 +95,7 @@ HistoryDispatch : EnvirDispatch {
 		if(hist.isNil or: { hist.isEmpty }) { ^nil };
 		if(time < hist[0]) { ^-1 };
 		forBy(0, hist.size - 3, 2) { |i|
-			if(hist[i] <= time and: {Êhist[i + 2] > time }) {
+			if(hist[i] <= time and: { hist[i + 2] > time }) {
 				^i
 			}
 		};
