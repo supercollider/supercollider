@@ -30,8 +30,13 @@ GeneralHID{
 		^this.use( schemes[ id.asSymbol ], func );
 	}
 
+	*open { |dev| ^scheme.open(dev); }
+		
+		// maybe better define interface here instead, 
+		// rather than doesNotUnderstand. 
 	*doesNotUnderstand { arg selector ... args;
-		^scheme.perform( selector, args );
+		["GeneralHID forwarding to scheme:", selector, args].postln; 
+		^scheme.performList( selector, args );
 	}
 
 	/*	*deviceList {
@@ -57,7 +62,15 @@ GeneralHID{
 		});
 		^scheme;
 	}
-	
+		// find a device by its info properties
+	*findBy { |vendorID, productID, locID| 
+		^this.deviceList.detect { |pair| 
+			var dev, info; #dev, info = pair;
+			(info.vendor == vendorID) 
+			and: { productID.isNil or: { info.product == productID } } 
+			and: { locID.isNil or: { info.physical == locID } }
+		};
+	}
 }
 
 GeneralHIDInfo{
