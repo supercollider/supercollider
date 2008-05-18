@@ -6,13 +6,62 @@
 		};		editKeys.do { arg key, i;			sl = edits[i];			// editKeys and currentSettings are in sync.			val = currentSettings[i][1];
 			if (val != try { prevSettings[i][1] }) {	 				// when in doubt, use this:				//	val = (currentSettings.detect { |set| set[0] == key } ? [])[1];				if(sl.numberView.hasFocus.not) {					if (val.isKindOf(SimpleNumber), { 												sl.value_(val.value);						sl.labelView.string = key;						sinks[i].string_("-");					}, { 						if (val.isKindOf(BusPlug), { 							mapKey = currentEnvironment.findKeyForValue(val) ? "";							sinks[i].object_(mapKey).string_(mapKey);							sl.labelView.string = "->" + key;						});					});				};
 			};		};
-		prevSettings = currentSettings; 	}		updateAllEdits {		var keyPressed = false;		edits.do { arg sl, i;			var key, val, mappx, spec, slider, number, sink, mapKey;			var keyString; 			key = editKeys[i];			sink = sinks[i];						if(key.notNil) { 				// editKeys and currentSettings are in sync.				val = currentSettings[i][1];					
-				keyString = key.asString;				spec = key.asSpec;				sl.labelView.string = keyString;				sl.sliderView.enabled = spec.notNil;				sl.sliderView.visible = spec.notNil;				sl.numberView.enabled = true;				sl.numberView.visible = true;				sink.visible = true;														// disables sliderview actions, so turned it off.//				sl.sliderView.keyDownAction = { keyPressed = true }; // doesn't work yet.//				sl.sliderView.keyUpAction = {  proxy.xset(key, sl.value); keyPressed = false };
+		prevSettings = currentSettings; 	}		updateAllEdits {
+	//	var keyPressed = false;
+		edits.do { arg sl, i;
+			var key, val, mappx, spec, slider, number, sink, mapKey;
+			var keyString; 
+			key = editKeys[i];
+			sink = sinks[i];
+			
+			if(key.notNil) { 
+				// editKeys and currentSettings are in sync.
+				val = currentSettings[i][1];	
+				
+				keyString = key.asString;
+				spec = key.asSpec;
+				sl.labelView.string = keyString;
+				sl.sliderView.enabled = spec.notNil;
+				sl.sliderView.visible = spec.notNil;
+				sl.numberView.enabled = true;
+				sl.numberView.visible = true;
+				sink.visible = true;						
+	//			sl.sliderView.keyDownAction = { keyPressed = true }; // doesn't work yet.
+	//			sl.sliderView.keyUpAction = {  proxy.xset(key, sl.value); keyPressed = false };
 
 				if (keyString.beginsWith("wet")) { 
-					sl.sliderView.background_(Color.green(1.0, 0.5));					sl.labelView.background_(Color.green(1.0, 0.5));
+					sl.sliderView.background_(Color.green(1.0, 0.5)).refresh;
+				//	sl.labelView.background_(Color.green(1.0, 0.5)).refresh;
 				} {
-					sl.sliderView.background_(skin.foreground);
-					sl.labelView.background_(skin.foreground);
+					sl.sliderView.background_(skin.foreground).refresh;
+				//	sl.labelView.background_(skin.foreground).refresh;
 				};
-				sl.action_({ arg nu; 								if(keyPressed.not) {									proxy.set(key, nu.value) 								}; 				});				if(spec.notNil) { sl.controlSpec = spec } {					sl.controlSpec = ControlSpec(-1e8, 1e8);				};								mappx = val.value ? 0; 				if(mappx.isNumber) {					sl.value_(mappx ? 0);					sink.object_(nil).string_("-");				} {		// assume mappx is a proxy:					if (val.isKindOf(BusPlug), { 						mapKey = currentEnvironment.findKeyForValue(mappx) ? "???";						sink.object_(mapKey).string_(mapKey);						sl.labelView.string = "->" + key;					});								}			}  {				sl.labelView.string = "";				sl.sliderView.visible = false;				sl.numberView.visible = false;				sink.object_(nil).string_("-").visible = false;			};		};		// this.adjustWindowSize;	}		runUpdate {  skipjack.start }	stopUpdate { skipjack.stop }}RecordProxyMixer {	var <>proxymixer, bounds;	var <recorder, <recType=\mix;	var <>recHeaderFormat, <>recSampleFormat, <preparedForRecording=false;	var skipjack, <display;		*new { arg proxymixer, bounds; 		^super.newCopyArgs(proxymixer, bounds).initDefaults.makeWindow	}	initDefaults {		recHeaderFormat = recHeaderFormat ?? { this.server.recHeaderFormat };		recSampleFormat = recSampleFormat ?? { this.server.recSampleFormat };	}		prepareForRecord {		var numChannels=0, path, proxies, func;		proxies = this.selectedKeys.collect { arg key; this.at(key) };		if(proxies.isEmpty) { "no proxies".postln; ^nil };						if(recType == \multichannel)  {			proxies.do {  |el| numChannels = numChannels + el.numChannels };			func = { proxies.collect(_.ar).flat }; // no vol for now!		} {			proxies.do {  |el| numChannels = max(numChannels, el.numChannels) };			func = { var sum=0;				proxies.do { |el| sum = sum +.s el.ar };				sum 			}		};				path = thisProcess.platform.recordingsDir +/+ "SC_PX_" ++ numChannels ++ "_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;		recorder = RecNodeProxy.audio(this.server, numChannels);		recorder.source = func;		recorder.open(path, recHeaderFormat, recSampleFormat);		preparedForRecording = true;		^numChannels	}		font { ^this.skin.font }	skin { ^GUI.skin }		server { ^proxymixer.proxyspace.server }		removeRecorder {		recorder !? {			recorder.close;			recorder.clear;			recorder = nil;		};		preparedForRecording = false;	}		record { arg paused=false;		if(recorder.notNil) {recorder.record(paused) };	}		pauseRecorder { recorder !? {recorder.pause} }	unpauseRecorder { 		recorder !? { if(recorder.isRecording) { recorder.unpause } { "not recording".postln } } 	}		selectedKeys {  ^proxymixer.selectedKeys }	at { arg key; ^proxymixer.proxyspace.envir.at(key) }	selectedKeysValues {		^this.selectedKeys.collect { |key| 					var proxy = this.at(key);					[ key, proxy.numChannels ]		}.flat;	}		makeWindow {		var rw, recbut, pbut, numChannels, recTypeChoice;		var font = this.font;				rw = GUI.window.new("recording:" + proxymixer.title, bounds);		rw.view.decorator = FlowLayout(rw.view.bounds.insetBy(20, 20));		rw.onClose = { this.removeRecorder; this.stopUpdate; };		rw.view.background = this.skin.background;						recbut = GUI.button.new(rw, Rect(0, 0, 80, 20)).states_([			["prepare rec", this.skin.fontcolor, Color.clear],			["record >", Color.red, Color.gray(0.1)],			["stop []", this.skin.fontcolor, Color.red]		]).action_({|b|			var list;			switch(b.value,				1, { 					numChannels = this.prepareForRecord;					if(numChannels.isNil) { b.value = 0; pbut.value = 0 } 				},				2, { this.record(pbut.value == 1) },				0, { this.removeRecorder  }			);			if(b.value == 1 and: { numChannels.notNil }) {				list = this.selectedKeysValues;				this.displayString = format("recording % channels: %", numChannels, list.join(" "));			};					}).font_(font);				pbut = GUI.button.new(rw, Rect(0, 0, 80, 20)).states_([			["pause", this.skin.fontcolor, Color.clear],			[">", Color.red, Color.gray(0.1)]		]).action_({|b|			if(b.value == 1) {  this.pauseRecorder } { this.unpauseRecorder }				}).font_(font);				recTypeChoice = GUI.popUpMenu.new(rw, Rect(0, 0, 110, 20))				.items_([ \mix, \multichannel ])				.action_({ arg view; 					recType = view.items[view.value]; 					if(recbut.value != 0) { recbut.valueAction = 0 } 				})				.font_(font);		recTypeChoice.value = 1;		GUI.button.new(rw, Rect(0, 0, 60, 20))				.states_([["cancel", this.skin.fontcolor, Color.clear]])				.action_({ if(recbut.value != 0) { recbut.valueAction = 0 } })				.font_(font);			rw.view.decorator.nextLine;		display = GUI.staticText.new(rw, Rect(30, 40, 300, 20)).font_(font);		rw.front;		this.makeSkipJack;		this.runUpdate;				^rw	}	displayString_ { arg str;		display.string = str;	}		updateZones {		if(preparedForRecording.not) {			this.displayString = format("proxies: %", this.selectedKeysValues.join(" "));		}	}	title {  ^"recorder for" + proxymixer.title }	runUpdate { skipjack.start; }	stopUpdate { skipjack.stop }	makeSkipJack {				// stoptest should check window.		skipjack = SkipJack({ this.updateZones }, 0.5, name: this.title);	}}
+				sl.action_({ arg nu; 
+								if(keyPressed.not) {
+									proxy.set(key, nu.value) 
+								};
+ 				});
+				if(spec.notNil) { sl.controlSpec = spec } {
+					sl.controlSpec = ControlSpec(-1e8, 1e8);
+				};
+				
+				mappx = val.value ? 0; 
+				if(mappx.isNumber) {
+					sl.value_(mappx ? 0);
+					sink.object_(nil).string_("-");
+				} {		// assume mappx is a proxy:
+					if (val.isKindOf(BusPlug), { 
+						mapKey = currentEnvironment.findKeyForValue(mappx) ? "???";
+						sink.object_(mapKey).string_(mapKey);
+						sl.labelView.string = "->" + key;
+					});				
+				}
+			}  {
+				sl.labelView.string = "";
+				sl.sliderView.visible = false;
+				sl.numberView.visible = false;
+				sink.object_(nil).string_("-").visible = false;
+			};
+		};
+		// this.adjustWindowSize;
+	}		runUpdate {  skipjack.start }	stopUpdate { skipjack.stop }}RecordProxyMixer {	var <>proxymixer, bounds;	var <recorder, <recType=\mix;	var <>recHeaderFormat, <>recSampleFormat, <preparedForRecording=false;	var skipjack, <display;		*new { arg proxymixer, bounds; 		^super.newCopyArgs(proxymixer, bounds).initDefaults.makeWindow	}	initDefaults {		recHeaderFormat = recHeaderFormat ?? { this.server.recHeaderFormat };		recSampleFormat = recSampleFormat ?? { this.server.recSampleFormat };	}		prepareForRecord {		var numChannels=0, path, proxies, func;		proxies = this.selectedKeys.collect { arg key; this.at(key) };		if(proxies.isEmpty) { "no proxies".postln; ^nil };						if(recType == \multichannel)  {			proxies.do {  |el| numChannels = numChannels + el.numChannels };			func = { proxies.collect(_.ar).flat }; // no vol for now!		} {			proxies.do {  |el| numChannels = max(numChannels, el.numChannels) };			func = { var sum=0;				proxies.do { |el| sum = sum +.s el.ar };				sum 			}		};				path = thisProcess.platform.recordingsDir +/+ "SC_PX_" ++ numChannels ++ "_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;		recorder = RecNodeProxy.audio(this.server, numChannels);		recorder.source = func;		recorder.open(path, recHeaderFormat, recSampleFormat);		preparedForRecording = true;		^numChannels	}		font { ^this.skin.font }	skin { ^GUI.skin }		server { ^proxymixer.proxyspace.server }		removeRecorder {		recorder !? {			recorder.close;			recorder.clear;			recorder = nil;		};		preparedForRecording = false;	}		record { arg paused=false;		if(recorder.notNil) {recorder.record(paused) };	}		pauseRecorder { recorder !? {recorder.pause} }	unpauseRecorder { 		recorder !? { if(recorder.isRecording) { recorder.unpause } { "not recording".postln } } 	}		selectedKeys {  ^proxymixer.selectedKeys }	at { arg key; ^proxymixer.proxyspace.envir.at(key) }	selectedKeysValues {		^this.selectedKeys.collect { |key| 					var proxy = this.at(key);					[ key, proxy.numChannels ]		}.flat;	}		makeWindow {		var rw, recbut, pbut, numChannels, recTypeChoice;		var font = this.font;				rw = GUI.window.new("recording:" + proxymixer.title, bounds);		rw.view.decorator = FlowLayout(rw.view.bounds.insetBy(20, 20));		rw.onClose = { this.removeRecorder; this.stopUpdate; };		rw.view.background = this.skin.background;						recbut = GUI.button.new(rw, Rect(0, 0, 80, 20)).states_([			["prepare rec", this.skin.fontcolor, Color.clear],			["record >", Color.red, Color.gray(0.1)],			["stop []", this.skin.fontcolor, Color.red]		]).action_({|b|			var list;			switch(b.value,				1, { 					numChannels = this.prepareForRecord;					if(numChannels.isNil) { b.value = 0; pbut.value = 0 } 				},				2, { this.record(pbut.value == 1) },				0, { this.removeRecorder  }			);			if(b.value == 1 and: { numChannels.notNil }) {				list = this.selectedKeysValues;				this.displayString = format("recording % channels: %", numChannels, list.join(" "));			};					}).font_(font);				pbut = GUI.button.new(rw, Rect(0, 0, 80, 20)).states_([			["pause", this.skin.fontcolor, Color.clear],			[">", Color.red, Color.gray(0.1)]		]).action_({|b|			if(b.value == 1) {  this.pauseRecorder } { this.unpauseRecorder }				}).font_(font);				recTypeChoice = GUI.popUpMenu.new(rw, Rect(0, 0, 110, 20))				.items_([ \mix, \multichannel ])				.action_({ arg view; 					recType = view.items[view.value]; 					if(recbut.value != 0) { recbut.valueAction = 0 } 				})				.font_(font);		recTypeChoice.value = 1;		GUI.button.new(rw, Rect(0, 0, 60, 20))				.states_([["cancel", this.skin.fontcolor, Color.clear]])				.action_({ if(recbut.value != 0) { recbut.valueAction = 0 } })				.font_(font);			rw.view.decorator.nextLine;		display = GUI.staticText.new(rw, Rect(30, 40, 300, 20)).font_(font);		rw.front;		this.makeSkipJack;		this.runUpdate;				^rw	}	displayString_ { arg str;		display.string = str;	}		updateZones {		if(preparedForRecording.not) {			this.displayString = format("proxies: %", this.selectedKeysValues.join(" "));		}	}	title {  ^"recorder for" + proxymixer.title }	runUpdate { skipjack.start; }	stopUpdate { skipjack.stop }	makeSkipJack {				// stoptest should check window.		skipjack = SkipJack({ this.updateZones }, 0.5, name: this.title);	}}
