@@ -84,7 +84,7 @@ struct SC_LID
 	bool isEventCodeSupported(int evtType, int evtCode);
 
 	int getName(char* buf, size_t size);
-	int getInfo(struct input_id *info);
+	int getInfo(struct input_id *info, char *bufPhys, size_t sizePhys, char *bufUniq, size_t sizeUniq);
 	int getKeyState(int evtCode);
 	int getAbsInfo(int evtCode, struct input_absinfo *info);
 
@@ -238,12 +238,23 @@ int SC_LID::getName(char* buf, size_t size)
 	return errNone;
 }
 
-int SC_LID::getInfo(struct input_id *info)
+int SC_LID::getInfo(struct input_id *info, char *bufPhys, size_t sizePhys, char *bufUniq, size_t sizeUniq)
 {
 	if (ioctl(m_fd, EVIOCGID, info) == -1) {
 		error("LID: %s\n", strerror(errno));
 		return errFailed;
 	}
+	if (ioctl(m_fd, EVIOCGPHYS(sizePhys), bufPhys) == -1) {
+// 		strcpy( sizePhys, strerror(errno));
+ 		error("LID: %s\n", strerror(errno));
+// 		return errFailed;
+	}
+	if (ioctl(m_fd, EVIOCGUNIQ(sizeUniq), bufUniq) == -1) {
+// 		strcpy( strerror(errno), sizeof( strerror(errno)), sizeUniq );
+ 		error("LID: %s\n", strerror(errno));
+// 		return errFailed;
+	}
+
 	return errNone;
 }
 
@@ -611,7 +622,9 @@ int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
 	if (err) return err;
 
 	struct input_id info;
-	err = dev->getInfo(&info);
+	char namePhys[128];
+	char nameUniq[128];
+	err = dev->getInfo(&info, namePhys, sizeof( namePhys ), nameUniq, sizeof( nameUniq ) );
 	if (err) return err;
 	
 	SetSymbol(infoObj->slots+0, getsym(name));
@@ -619,6 +632,8 @@ int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
 	SetInt(infoObj->slots+2, info.vendor);
 	SetInt(infoObj->slots+3, info.product);
 	SetInt(infoObj->slots+4, info.version);
+	SetSymbol(infoObj->slots+5, getsym(namePhys));
+	SetSymbol(infoObj->slots+6, getsym(nameUniq));
 	
 	args[0].ucopy = args[1].ucopy;
 

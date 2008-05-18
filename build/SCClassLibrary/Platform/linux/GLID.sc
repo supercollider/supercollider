@@ -3,6 +3,7 @@
 GLID{
 	classvar extraClasses;
 	classvar <debug = false;
+	classvar <deviceList;
 	var <device;
 
 	*initClass{
@@ -27,22 +28,28 @@ GLID{
 	// ------------ functions ------------
 
 	*buildDeviceList{
-		^LID.buildDeviceList;
+		deviceList = LID.buildDeviceList.collect{ |dev,i|
+			[ dev[0], GLID.getInfo( dev ) ]
+		};
+		^deviceList;
 	}
 
-	*deviceList{
+	/*	*deviceList{
 		^LID.deviceList;
-	}
+		}*/
 
-	*postDevices { 
-		LID.deviceList.do({arg dev;
+	*postDevices {
+		deviceList.do{ |dev,i|
+			[ i, dev[0], dev[1].asString ].postcs;
+		}
+		/*		LID.deviceList.do({arg dev;
 			//			"".postln;
 			if ( dev[1].isKindOf( LIDInfo ), {
 				[ dev[1].vendor, dev[1].asString, dev[0]].postcs;
 			},{
 				dev.postcs;
 			});
-		});
+			});*/
 	}
 
 	*postDevicesAndProperties { 
@@ -89,11 +96,27 @@ GLID{
 		^super.new.init( dev );
 	}
 
+	*getInfo{ |dev|
+		var info;
+		if ( dev[1].isKindOf( LIDInfo ), {
+			info = GeneralHIDInfo.new(
+				dev[1].name,
+				dev[1].bustype,
+				dev[1].vendor,
+				dev[1].product,
+				dev[1].version,
+				dev[1].physical,
+				dev[1].unique
+			);
+		});
+		^info;
+	}
+
 	init{ |dev|
 		var mydev;
 		mydev = dev[0];
 		//mydev.postln;
-		if ( mydev[1].isKindOf( LIDInfo ),
+		if ( mydev[1].isKindOf( LIDInfo ) or: mydev[1].isKindOf( GeneralHIDInfo ),
 				{ 
 					device = LID.new( mydev[0] );
 					^GeneralHIDDevice.new( this );
@@ -101,6 +124,20 @@ GLID{
 					"not a valid device or could not open device".warn;
 					^nil;
 				});
+	}
+
+	getInfo{
+		var info;
+		info = GeneralHIDInfo.new(
+			device.info.name,
+			device.info.bustype,
+			device.info.vendor,
+			device.info.product,
+			device.info.version,
+			device.info.physical,
+			device.info.unique
+		);
+		^info;
 	}
 
 	getSlots{
