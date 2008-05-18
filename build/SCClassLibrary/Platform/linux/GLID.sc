@@ -108,7 +108,10 @@ GLID{
 				dev[1].physical,
 				dev[1].unique
 			);
-		});
+		},{
+			info = GeneralHIDInfo.new( "could not open device" );
+		}
+		);
 		^info;
 	}
 
