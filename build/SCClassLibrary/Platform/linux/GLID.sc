@@ -29,7 +29,7 @@ GLID{
 
 	*buildDeviceList{
 		deviceList = LID.buildDeviceList.collect{ |dev,i|
-			[ dev[0], GLID.getInfo( dev ) ]
+			[ dev[0], this.getInfo( dev ) ]
 		};
 		^deviceList;
 	}
@@ -113,12 +113,12 @@ GLID{
 	}
 
 	init{ |dev|
-		var mydev;
-		mydev = dev[0];
+		//		var mydev;
+		//		mydev = dev[0];
 		//mydev.postln;
-		if ( mydev[1].isKindOf( LIDInfo ) or: mydev[1].isKindOf( GeneralHIDInfo ),
+		if ( dev[1].isKindOf( LIDInfo ) or: dev[1].isKindOf( GeneralHIDInfo ),
 				{ 
-					device = LID.new( mydev[0] );
+					device = LID.new( dev[0] );
 					^GeneralHIDDevice.new( this );
 				},{
 					"not a valid device or could not open device".warn;
