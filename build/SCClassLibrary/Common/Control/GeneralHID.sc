@@ -64,6 +64,7 @@ GeneralHID{
 	}
 		// find a device by its info properties
 	*findBy { |vendorID, productID, locID| 
+		if ( locID.isKindOf( String ), { locID = locID.asSymbol } );
 		^this.deviceList.detect { |pair| 
 			var dev, info; #dev, info = pair;
 			(info.vendor == vendorID) 
@@ -76,7 +77,7 @@ GeneralHID{
 GeneralHIDInfo{
 	var <name, <bustype, <vendor, <product, <version, <physical, <unique;
 
-	*new{arg  name, bustype, vendor, product, version, physical, unique=0;
+	*new{arg  name="", bustype=0, vendor=0, product=0, version=0, physical=0, unique=0;
 		^super.newCopyArgs( name, bustype, vendor, product, version, physical, unique ).init;
 	}
 	
