@@ -71,7 +71,7 @@ syn match scKrate "\v\.@<=kr(\w)@!"
 if filereadable($SCVIM_CACHE_DIR . "/supercollider_objects.vim")
 	source	$SCVIM_CACHE_DIR/supercollider_objects.vim
 elseif filereadable($HOME . ".scvim/supercollider_objects.vim")
-	source	$HOME/supercollider_objects.vim
+	source	$HOME/.scvim/supercollider_objects.vim
 end
 " load all the language stuff
 runtime! syntax/supercollider_lang.vim
