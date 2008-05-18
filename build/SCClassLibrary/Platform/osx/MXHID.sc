@@ -37,7 +37,7 @@ MXHID {
 		HIDDeviceService.buildDeviceList(nil,nil); 
 		//deviceList = HIDDeviceServer.deviceList;
 		deviceList = HIDDeviceService.devices.collect{ |dev,i|
-			[ dev, this.class.getInfo( dev ) ]
+			[ dev, this.getInfo( dev ) ]
 		}
 		^deviceList;
 	}
@@ -159,6 +159,7 @@ MXHID {
 				mySlots[key][ele.usageType] =  GeneralHIDSlot.new( key, ele.usageType, device, newSlot );
 			});
 		};
+		mySlots = mySlots.select(_.notEmpty);	// remove empty dicts
 		^mySlots;
 	}
 
