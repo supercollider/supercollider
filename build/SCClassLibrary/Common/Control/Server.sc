@@ -135,7 +135,7 @@ Server : Model {
 	classvar <>local, <>internal, <>default, <>named, <>set, <>program;
 	
 	var <name, <>addr, <clientID=0;
-	var <isLocal, <inProcess;
+	var <isLocal, <inProcess, <>sendQuit;
 	var <serverRunning = false, <serverBooting=false, bootNotifyFirst=false;
 	var <>options,<>latency = 0.2,<dumpMode=0, <notified=true;
 	var <nodeAllocator;
@@ -560,7 +560,13 @@ Server : Model {
 	}
 
 	*quitAll {
-		set.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
+		set.do({ arg server;
+			if ((server.sendQuit === true)
+				or: {server.sendQuit.isNil and: {server.isLocal or: {server.inProcess}}}) {
+				server.quit
+			};
+		})
+		//		set.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
 	}
 	*killAll {
 		// if you see Exception in World_OpenUDP: unable to bind udp socket

@@ -1606,19 +1606,6 @@ SCEnvelopeView : SCMultiSliderView {
 	}
 }
 
-Gradient {
-	var color1, color2, direction, steps;
-	*new { arg color1, color2, direction=\h, steps=64;
-		^super.newCopyArgs(color1, color2, direction, steps)
-	}
-}
-
-HiliteGradient {
-	var color1, color2, direction, steps, frac;
-	*new { arg color1, color2, direction=\v, steps=64, frac = 0.33;
-		^super.newCopyArgs(color1, color2, direction, steps, frac)
-	}
-}
 //including keydown by Heiko:
 // bug fixed in SCRangeSlider-receiveDrag
 // bug fixed in SCView-getPropertyList

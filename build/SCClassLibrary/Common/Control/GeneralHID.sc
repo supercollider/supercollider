@@ -60,10 +60,34 @@ GeneralHID{
 	
 }
 
+GeneralHIDInfo{
+	var <name, <bustype, <vendor, <product, <version, <physical, <unique;
+
+	*new{arg  name, bustype, vendor, product, version, physical, unique=0;
+		^super.newCopyArgs( name, bustype, vendor, product, version, physical, unique ).init;
+	}
+	
+	init{
+	}
+
+	printOn { | stream |
+		super.printOn(stream);
+		stream << $( << name << ", ";
+		[
+			bustype,
+			vendor,
+			product,
+			version
+		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
+		stream << ", " << physical << ", " << unique;
+		stream.put($));
+	}
+}
+
 GeneralHIDDevice{
 	classvar <specs, all;
 	var <slots, <spec;
-	var <device;
+	var <device, <info;
 
 	*initClass {
 		all = [];
@@ -84,6 +108,7 @@ GeneralHIDDevice{
 	init{ |newDevice|
 		device = newDevice;
 		slots = device.getSlots;
+		info = device.getInfo;
 	}
 	close{
 		device.close;
@@ -91,9 +116,9 @@ GeneralHIDDevice{
 	isOpen{
 		^device.isOpen;
 	}
-	info{
+	/*	info{
 		^device.info;
-	}
+		}*/
 	debug_{ |onoff|
 		device.class.debug_( onoff );
 		slots.do{ |sl|

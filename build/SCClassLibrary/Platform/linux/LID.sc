@@ -1,5 +1,5 @@
 LIDInfo {
-	var <name, <bustype, <vendor, <product, <version;
+	var <name, <bustype, <vendor, <product, <version, <physical, <unique;
 
 	printOn { | stream |
 		super.printOn(stream);
@@ -8,8 +8,10 @@ LIDInfo {
 			bustype,
 			vendor,
 			product,
-			version
+			version,
+			
 		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
+		stream << ", " << physical << ", " << unique;
 		stream.put($));
 	}
 }

@@ -4,6 +4,7 @@ MXHID {
 	classvar extraClasses;
 	classvar <usageMap;
 	classvar all;
+	classvar <deviceList;
 	classvar <>debug = false;
 	var <device, <slots;
 
@@ -35,24 +36,28 @@ MXHID {
 	*buildDeviceList{
 		HIDDeviceService.buildDeviceList(nil,nil); 
 		//deviceList = HIDDeviceServer.deviceList;
-		^HIDDeviceService.devices;
-	}
-
-	*deviceList{
-		^HIDDeviceService.devices;
+		deviceList = HIDDeviceService.devices.collect{ |dev,i|
+			[ dev, this.class.getInfo( dev ) ]
+		}
+		^deviceList;
 	}
 
 	*postDevices { 
-		HIDDeviceService.devices.do({arg dev;
+		deviceList.do{ |dev,i|
+			[ i, dev[0], dev[1].asString ].postcs;
+		}
+		/*		HIDDeviceService.devices.do({arg dev;
 			//			"".postln;
-			[dev.manufacturer, dev.info.asString, dev.locID].postcs;
-		});
+			this.class.getInfo( dev ).postcs;
+			//[dev.manufacturer, dev.info.asString, dev.locID].postcs;
+			});*/
 	}
 
 	*postDevicesAndProperties { 
-		HIDDeviceService.devices.do({arg dev;
-			"".postln;
-			[dev.manufacturer, dev.info.asString, dev.locID].postcs;
+		HIDDeviceService.devices.do({arg dev, i;
+			(""++i++": ".postln;
+			this.class.getInfo( dev ).postcs;
+			//	[dev.manufacturer, dev.info.asString, dev.locID].postcs;
 			dev.elements.do({arg ele;
 				"\t".post;
 				[ele.type, ele.usage, ele.cookie, ele.min, ele.max, ele.ioType, ele.usagePage, ele.usageType].postln;
@@ -60,6 +65,18 @@ MXHID {
 		});
 	}
 
+	*getInfo{ |dev|
+		var info;
+		info = GeneralHIDInfo.new(
+			dev.info.name,
+			dev.info.bustype,
+			dev.info.vendor,
+			dev.info.product,
+			dev.info.version,
+			dev.locID
+		);
+		^info;
+	}
 
 	*startEventLoop{ |rate|
 		if ( rate.isNil or: (rate.size == 0),
@@ -108,6 +125,19 @@ MXHID {
 				},{
 					"not a valid device".warn;
 				});
+	}
+
+	getInfo{
+		var info;
+		info = GeneralHIDInfo.new(
+			device.info.name,
+			device.info.bustype,
+			device.info.vendor,
+			device.info.product,
+			device.info.version,
+			device.locID
+		);
+		^info;
 	}
 	
 	getSlots{
