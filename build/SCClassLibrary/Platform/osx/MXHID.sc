@@ -55,7 +55,7 @@ MXHID {
 
 	*postDevicesAndProperties { 
 		HIDDeviceService.devices.do({arg dev, i;
-			(""++i++": ".postln;
+			(""++i++": ").postln;
 			this.class.getInfo( dev ).postcs;
 			//	[dev.manufacturer, dev.info.asString, dev.locID].postcs;
 			dev.elements.do({arg ele;

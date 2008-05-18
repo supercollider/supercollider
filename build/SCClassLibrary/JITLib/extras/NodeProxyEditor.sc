@@ -37,9 +37,9 @@
 				//	sl.labelView.background_(skin.foreground).refresh;
 				};
 				sl.action_({ arg nu; 
-								if(keyPressed.not) {
+	//							if(keyPressed.not) {
 									proxy.set(key, nu.value) 
-								};
+	//							};
  				});
 				if(spec.notNil) { sl.controlSpec = spec } {
 					sl.controlSpec = ControlSpec(-1e8, 1e8);
