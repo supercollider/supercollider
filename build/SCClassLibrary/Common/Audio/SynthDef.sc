@@ -35,9 +35,13 @@ SynthDef {
 		^super.new.name_(name.asString)
 	}
 	build { arg ugenGraphFunc, rates, prependArgs;
-		this.initBuild;
-		this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
-		this.finishBuild;
+		protect {
+			this.initBuild;
+			this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
+			this.finishBuild;
+		} {
+			UGen.buildSynthDef = nil;
+		}
 	}
 	
 	*wrap { arg func, rates, prependArgs;
