@@ -75,20 +75,14 @@ SequenceableCollection : Collection {
 		^obj
 	}
 	
-	//fill with interpolation of values between start and end
+	// fill with interpolation of values between start and end
 	 *interpolation { arg size, start=0.0, end=1.0;
 		var obj = this.new(size);
-		
-		if(size!=1,{
+		if(size == 1) { ^obj.add(start) };
 		size.do {|i|
-		var t; 
-		
-			t= i/(size-1);
-			
-			obj.add(start + (t*(end-start)));
+			var t = i / (size-1);
+			obj.add(start + (t * (end - start)));
 		};
-		},{obj.add(start);});
-		
 		^obj
  	}
 		
