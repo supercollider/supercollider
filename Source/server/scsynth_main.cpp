@@ -101,6 +101,7 @@ void Usage()
 		kDefaultWorldOptions.mRealTimeMemorySize,
 		kDefaultWorldOptions.mMaxWireBufs,
 		kDefaultWorldOptions.mNumRGens,
+		kDefaultWorldOptions.mRendezvous,
 		kDefaultWorldOptions.mLoadGraphDefs,
 		kDefaultWorldOptions.mMaxLogins
 	);
