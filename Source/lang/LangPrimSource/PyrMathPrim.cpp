@@ -1198,7 +1198,7 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *slots = obj->slots;
 	SetObject(a, obj);
 	
-	// catch special behaviour
+	// catch special behaviour - fixes SF.net bug 1856972
 	if(x == 0.2) {
 		SetInt(slots+0, 1);
 		SetInt(slots+1, 5);

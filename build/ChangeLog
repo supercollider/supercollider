@@ -10,7 +10,7 @@
 // OTHER ADDITIONS/IMPROVEMENTS:
 * 2008-04-04 SoundFile:toCSV - ds
 * 2008-04-29 buffer UGens now post a warning (rather than failing silently) if buffer channels doesn't match num ins/outs - ds
-
+* 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
 
 
 ///////////////////////////// SuperCollider v3.2 released 2008-02-21 /////////////////////////////
