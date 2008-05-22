@@ -117,6 +117,8 @@ static id sharedSCVM = nil;
 	
 	// CR ADDED
 	[[RendezvousClient sharedClient] findOSCServices];
+	
+	[self sendMain: "applicationStart"];
 }
 
 - (void)doPeriodicTask: (NSTimer*) timer
