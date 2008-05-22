@@ -39,11 +39,11 @@ StartUp {
 	classvar <>functions, <done=false;
 	
 	*add { arg func;
-		functions = functions.add(func)
+		this.functions = this.functions.add(func)
 	}
 	
 	*remove { arg func;
-		functions.remove(func)
+		this.functions.remove(func)
 	}
 	
 	*run {
@@ -60,7 +60,7 @@ StartUp {
 	}
 	
 	*defer { arg function;
-		if(done) {function.value } { this.add(function) }
+		if(done) { function.value } { this.add(function) }
 	}
 	
 }
