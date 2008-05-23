@@ -308,6 +308,8 @@ opts.AddOptions(
                'Crosscompile for another platform (does not do SSE support check)', 0),
     BoolOption('TERMINAL_CLIENT',
                'Build with terminal client interface', 1),
+    BoolOption('CURL',
+               'Build with libcurl - allows server to load files from remote servers by URL', 0),
     PackageOption('X11',
                   'Build with X11 support', 1)
     )
@@ -390,6 +392,12 @@ if isDefaultBuild():
     success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
     if not success: Exit(1)
 
+    # libcurl
+    success, libraries['libcurl'] = conf.CheckPKG('libcurl >= 7')
+    if env['CURL'] and not success:
+    	print 'CURL option was set, but libcurl not found.'
+    	Exit(1)
+
     # FFTW
     success, libraries['fftwf'] = conf.CheckPKG('fftw3f')
     if env['FFTW']:
@@ -407,6 +415,7 @@ if isDefaultBuild():
 else:
     libraries['sndfile'] = get_new_pkg_env()
     libraries['fftwf'] = get_new_pkg_env()
+    libraries['libcurl'] = get_new_pkg_env()
 
 # audio api
 if env['AUDIOAPI'] == 'jack':
@@ -624,6 +633,7 @@ print ' SCVIM:                   %s' % yesorno(env['SCVIM'])
 print ' SSE:                     %s' % yesorno(features['sse'])
 print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
 print ' TERMINAL_CLIENT:         %s' % yesorno(env['TERMINAL_CLIENT'])
+print ' CURL:                    %s' % yesorno(env['CURL'])
 print ' X11:                     %s' % yesorno(features['x11'])
 print '------------------------------------------------------------------------'
 
@@ -738,6 +748,10 @@ merge_lib_info(
 if features['rendezvous']:
     serverEnv.Append(CPPDEFINES = ['USE_RENDEZVOUS'])
     merge_lib_info(serverEnv, libraries['rendezvous'])
+
+if env['CURL']:
+    serverEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
+    merge_lib_info(serverEnv, libraries['libcurl'])
 
 libscsynthSources = Split('''
 Source/server/Rendezvous.cpp
