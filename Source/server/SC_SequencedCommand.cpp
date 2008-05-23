@@ -29,7 +29,7 @@
 
 // If you have libcurl, you may activate this flag and it will allow Buffer.read to read from remote URLs
 #ifdef HAVE_LIBCURL
-#include "curl.h"
+#include <curl/curl.h>
 #endif
 
 #define GET_COMPLETION_MSG(msg) \
