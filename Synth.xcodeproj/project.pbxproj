@@ -182,6 +182,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		37044CA00DE71893005F25E1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = types.h; path = curl/types.h; sourceTree = SOURCE_ROOT; };
+		37044CA10DE71893005F25E1 /* typecheck-gcc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "typecheck-gcc.h"; path = "curl/typecheck-gcc.h"; sourceTree = SOURCE_ROOT; };
+		37044CA20DE71893005F25E1 /* stdcheaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdcheaders.h; path = curl/stdcheaders.h; sourceTree = SOURCE_ROOT; };
+		37044CA30DE71893005F25E1 /* multi.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = multi.h; path = curl/multi.h; sourceTree = SOURCE_ROOT; };
+		37044CA40DE71893005F25E1 /* mprintf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = mprintf.h; path = curl/mprintf.h; sourceTree = SOURCE_ROOT; };
+		37044CA50DE71893005F25E1 /* easy.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = easy.h; path = curl/easy.h; sourceTree = SOURCE_ROOT; };
+		37044CA60DE71893005F25E1 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curlver.h; path = curl/curlver.h; sourceTree = SOURCE_ROOT; };
+		37044CA70DE71893005F25E1 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curl.h; path = curl/curl.h; sourceTree = SOURCE_ROOT; };
 		942C37990C1B3F9F00360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
 		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -315,6 +323,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		37044C9F0DE71876005F25E1 /* libcurl */ = {
+			isa = PBXGroup;
+			children = (
+				37044CA00DE71893005F25E1 /* types.h */,
+				37044CA10DE71893005F25E1 /* typecheck-gcc.h */,
+				37044CA20DE71893005F25E1 /* stdcheaders.h */,
+				37044CA30DE71893005F25E1 /* multi.h */,
+				37044CA40DE71893005F25E1 /* mprintf.h */,
+				37044CA50DE71893005F25E1 /* easy.h */,
+				37044CA60DE71893005F25E1 /* curlver.h */,
+				37044CA70DE71893005F25E1 /* curl.h */,
+			);
+			name = libcurl;
+			sourceTree = "<group>";
+		};
 		9456F7F60C1A1FBC00634E4D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -382,6 +405,7 @@
 		94930B770C190FB80018AB50 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				37044C9F0DE71876005F25E1 /* libcurl */,
 				942C379C0C1B3FB600360A35 /* sndfile.h */,
 				94930B8D0C190FB80018AB50 /* common */,
 				94930BD40C190FB80018AB50 /* plugin_interface */,
@@ -626,12 +650,10 @@
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88331E2A090AB77300A4A7E4 /* Build configuration list for PBXProject "Synth" */;
-			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
 			projectDirPath = "";
-			projectRoot = "";
 			targets = (
 				F5B7410802E9534D01CA2799 /* All */,
 				942F96530B0337D600E00399 /* scsynth */,
