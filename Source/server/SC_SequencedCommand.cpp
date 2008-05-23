@@ -27,6 +27,11 @@
 #include "SC_HiddenWorld.h"
 #include "SC_Sem.h"
 
+// If you have libcurl, you may activate this flag and it will allow Buffer.read to read from remote URLs
+#ifdef HAVE_LIBCURL
+#include "curl.h"
+#endif
+
 #define GET_COMPLETION_MSG(msg) \
 	mMsgSize = msg.getbsize(); \
 	if (mMsgSize) { \
@@ -465,15 +470,67 @@ void BufAllocReadCmd::CallDestructor()
 	this->~BufAllocReadCmd();
 }
 
+// Wrapper function - if it seems to be a URL, dnld to local tmp file first.
+// If HAVE_LIBCURL is not set, this does absolutely nothing but call fopen.
+FILE* fopenLocalOrRemote(char* mFilename);
+FILE* fopenLocalOrRemote(char* mFilename){
+	FILE* fp;
+#ifdef HAVE_LIBCURL
+	bool isRemote = strstr(mFilename, "://") != 0;
+	
+	if(isRemote){
+		fp = tmpfile();
+		
+		// Now use libcurl to try and dnld the whole thing
+		CURL* curl = curl_easy_init();
+		CURLcode ret;
+		char* errstr = (char*)malloc(CURL_ERROR_SIZE);
+		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errstr);
+		if((ret = curl_easy_setopt(curl, CURLOPT_URL, mFilename)) != 0){
+			scprintf("CURL setopt error while setting URL. Error code %i\n%s\n", ret, errstr);
+		}
+		if((ret = curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp)) != 0){
+			scprintf("CURL setopt error while setting temp file pointer. Error code %i\n%s\n", ret, errstr);
+		}
+		scprintf("Loading remote file...\n");
+		if((ret = curl_easy_perform(curl)) != 0){
+			scprintf("CURL perform error while attempting to access remote file. Error code %i\n%s\n", ret, errstr);
+		}else{
+			scprintf("...done.\n");
+		}
+		//curl_easy_getinfo()
+		curl_easy_cleanup(curl);
+		rewind(fp);
+		free(errstr);
+	}else{
+#endif
+		fp = fopen(mFilename, "r");
+#ifdef HAVE_LIBCURL
+	}
+#endif
+	return fp;
+}
+
 bool BufAllocReadCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	
+	FILE* fp = fopenLocalOrRemote(mFilename);
+	
+	if (!fp) {
+		char str[256];
+		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		SendFailure(&mReplyAddress, "/b_allocRead", str);
+		scprintf(str);
+		return false;
+	}
+	
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sf_open_fd(fileno(fp), SFM_READ, &fileinfo, true);
 	if (!sf) {
 		char str[256];
+		fclose(fp);
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
 		SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
@@ -560,10 +617,21 @@ bool BufReadCmd::Stage2()
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
-
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	
+	FILE* fp = fopenLocalOrRemote(mFilename);
+	
+	if (!fp) {
+		char str[256];
+		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		SendFailure(&mReplyAddress, "/b_read", str);
+		scprintf(str);
+		return false;
+	}
+	
+	SNDFILE* sf = sf_open_fd(fileno(fp), SFM_READ, &fileinfo, true);
 	if (!sf) {
 		char str[256];
+		fclose(fp);
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
 		SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
