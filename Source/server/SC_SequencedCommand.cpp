@@ -473,43 +473,53 @@ void BufAllocReadCmd::CallDestructor()
 // Wrapper function - if it seems to be a URL, dnld to local tmp file first.
 // If HAVE_LIBCURL is not set, this does absolutely nothing but call fopen.
 FILE* fopenLocalOrRemote(char* mFilename);
+#ifdef HAVE_LIBCURL
+bool downloadToFp(FILE* fp, char* mFilename);
+bool downloadToFp(FILE* fp, char* mFilename){
+	bool success = true;
+	CURL* curl = curl_easy_init();
+	CURLcode ret;
+	char* errstr = (char*)malloc(CURL_ERROR_SIZE);
+	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errstr);
+	if((ret = curl_easy_setopt(curl, CURLOPT_URL, mFilename)) != 0){
+		scprintf("CURL setopt error while setting URL. Error code %i\n%s\n", ret, errstr);
+		success = false;
+	}
+	if((ret = curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp)) != 0){
+		scprintf("CURL setopt error while setting temp file pointer. Error code %i\n%s\n", ret, errstr);
+		success = false;
+	}
+	scprintf("Loading remote file %s...\n", mFilename);
+	if((ret = curl_easy_perform(curl)) != 0){
+		scprintf("CURL perform error while attempting to access remote file. Error code %i\n%s\n", ret, errstr);
+		success = false;
+	}else{
+		//scprintf("...done.\n");
+		scprintf("...done (response code: %i).\n", curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE));
+	}
+	//curl_easy_getinfo()
+	curl_easy_cleanup(curl);
+	rewind(fp);
+	free(errstr);
+	return success;
+}
 FILE* fopenLocalOrRemote(char* mFilename){
 	FILE* fp;
-#ifdef HAVE_LIBCURL
 	bool isRemote = strstr(mFilename, "://") != 0;
-	
 	if(isRemote){
 		fp = tmpfile();
-		
-		// Now use libcurl to try and dnld the whole thing
-		CURL* curl = curl_easy_init();
-		CURLcode ret;
-		char* errstr = (char*)malloc(CURL_ERROR_SIZE);
-		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errstr);
-		if((ret = curl_easy_setopt(curl, CURLOPT_URL, mFilename)) != 0){
-			scprintf("CURL setopt error while setting URL. Error code %i\n%s\n", ret, errstr);
-		}
-		if((ret = curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp)) != 0){
-			scprintf("CURL setopt error while setting temp file pointer. Error code %i\n%s\n", ret, errstr);
-		}
-		scprintf("Loading remote file...\n");
-		if((ret = curl_easy_perform(curl)) != 0){
-			scprintf("CURL perform error while attempting to access remote file. Error code %i\n%s\n", ret, errstr);
-		}else{
-			scprintf("...done.\n");
-		}
-		//curl_easy_getinfo()
-		curl_easy_cleanup(curl);
-		rewind(fp);
-		free(errstr);
+		downloadToFp(fp, mFilename);
 	}else{
-#endif
 		fp = fopen(mFilename, "r");
-#ifdef HAVE_LIBCURL
 	}
-#endif
 	return fp;
 }
+#else
+// Non-curl version, so no checks for downloading etc:
+FILE* fopenLocalOrRemote(char* mFilename){
+	return fopen(mFilename, "r");
+}
+#endif
 
 bool BufAllocReadCmd::Stage2()
 {
@@ -1339,8 +1349,25 @@ void LoadSynthDefCmd::CallDestructor()
 
 bool LoadSynthDefCmd::Stage2()
 {
-	mDefs = GraphDef_LoadGlob(mWorld, mFilename, mDefs);
+	char* fname = mFilename;
+#ifdef HAVE_LIBCURL
+	bool isRemote = strstr(mFilename, "://") != 0;
+	FILE* fp;
+	if(isRemote){
+		fname = strcat(tmpnam(NULL), ".scsyndef");
+		scprintf("Temp file is %s\n", fname);
+		fp = fopen(fname, "w");
+		downloadToFp(fp, mFilename);
+		fclose(fp);
+	}
+#endif
+	mDefs = GraphDef_LoadGlob(mWorld, fname, mDefs);
 	
+#ifdef HAVE_LIBCURL
+	if(isRemote){
+		remove(fname);
+	}
+#endif
 	return true;
 }
 
