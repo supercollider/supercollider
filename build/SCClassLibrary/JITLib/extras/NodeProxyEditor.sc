@@ -1,13 +1,58 @@
-NodeProxyEditor { 		classvar <>menuHeight=18;	var <>w, <zone, <proxy, <edits, <sinks, <pxKey, <currentSettings, 		<editNameView, <>nSliders, <editKeys, <>ignoreKeys=#[], oldNodeMap, skipjack;	var <monitor;	var <skin, <font;	var <prevSettings; 		*new { arg proxy, pxKey, nSliders=16, win, comp, 		extras=[\scope, \doc, \reset], monitor=true, sinks=true, morph=false; 		^super.new.nSliders_(nSliders).init(win, comp, extras, monitor, sinks, morph)			.pxKey_(pxKey).proxy_(proxy);	}	proxy_ { arg px; 		if (px.isKindOf(NodeProxy), { 			proxy = px;			editNameView.object_(px.source);			editNameView.string_(pxKey.asString);			oldNodeMap = proxy.nodeMap;			if (monitor.notNil) { monitor.proxy_(proxy) };			this.fullUpdate;		})	}	pxKey_ { arg key; 		if (key.notNil, {  			pxKey = key; 			{ editNameView.string_(pxKey.asString);  }.defer;		})	}
-	clear {		proxy = nil; 		pxKey = nil; 		{ editNameView.object_(nil).string_(""); }.defer;		this.fullUpdate;	}		init { arg win, comp, extras, monitor, sinks, morph;						var bounds;						skin = GUI.skin; 				font = GUI.font.new(*GUI.skin.fontSpecs);				bounds = Rect(0, 0, 370, nSliders * skin.buttonHeight + 30);				win = win ?? { "making internal win".postln; GUI.window.new(this.class.name, bounds) };		w = win; 		zone = comp ?? { "making internal zone".postln;  GUI.compositeView.new(w, bounds); };		zone.decorator = zone.decorator ??  { FlowLayout(zone.bounds).gap_(2@0) };		w.view.background = skin.background;		zone.background = skin.foreground;		w.front;				this.makeTopLine(extras);		if (monitor, { this.makePxMon; zone.decorator.nextLine.shift(0, 4); });		if (morph, { this.makeMorph; zone.decorator.nextLine.shift(0, 4); });		this.makeSinksSliders(sinks);		this.makeSkipJack; 	}	makePxMon { 		zone.decorator.shift(0, 5);		monitor = ProxyMonitorGui(proxy, zone, skin.buttonHeight, true, false);	}	makeMorph { 		zone.decorator.shift(0, 2);		GUI.staticText.new(zone, Rect(0,0, 330, 1)).background_(Color.gray(0.2));		zone.decorator.shift(0, 2);		PxPreset(proxy, zone) 	}		makeTopLine { |extras|		editNameView = GUI.dragSource.new(zone, Rect(0,0,90, skin.buttonHeight))			.font_(font).align_(\center)			.background_(Color.white);				GUI.button.new(zone, Rect(0,0,40, menuHeight)).states_([				["watch",  skin.fontcolor, Color.clear ],				["wait",  skin.fontcolor, Color.clear ]			])			.action_({ |b| [ { this.stopUpdate }, { this.runUpdate } ][b.value].value })			.font_(font);		GUI.button.new(zone, Rect(0, 0, 20, menuHeight))				.font_(font)				.states_([ ["^", skin.fontcolor, Color.clear] ])				.action_({  this.class.new(proxy, pxKey, nSliders); });						if (extras.includes(\scope)) {			GUI.button.new(zone, Rect(0,0,40, menuHeight))				.font_(font)				.states_([["scope", skin.fontcolor, Color.clear]])				.action_({ arg btn; if(proxy.notNil, { proxy.scope }) });		};								if (extras.includes(\reset)) {			GUI.button.new(zone, Rect(0,0,40, menuHeight))				.states_([["reset",  skin.fontcolor, Color.clear ]])				.action_({ 					if(proxy.notNil) { proxy.nodeMap = ProxyNodeMap.new; this.fullUpdate; } 				})				.font_(font);		};		if (extras.includes(\doc)) {			GUI.button.new(zone, Rect(0,0,40, menuHeight))				.states_([["doc",  skin.fontcolor, Color.clear ]])				.action_({ 					if(proxy.notNil) { 						currentEnvironment.document(proxy.key)							.title_("<" + proxy.key.asString + ">") 					} 				})				.font_(font);		};						zone.decorator.nextLine.shift(0,4);	}			makeSinksSliders { |bigSinks|		var sinkWidth; 		sinkWidth = if (bigSinks, 40, 0); 	// invisibly small		#edits, sinks = Array.fill(nSliders, { arg i;			var ez, sink;			zone.decorator.nextLine; 			sink = GUI.dragBoth.new(zone, Rect(0,0, sinkWidth, skin.buttonHeight))				.string_("-").align_(\center).visible_(false);							sink.action_({ arg sink; var px;				if (sink.object.notNil) { 					px = currentEnvironment[sink.object.asSymbol];					if(px.isKindOf(NodeProxy)) {						proxy.map(editKeys[i], px);						this.fullUpdate;					}				}			}); 			ez = GUI.ezSlider.new(zone, 290 @  skin.buttonHeight, "", nil.asSpec, 				labelWidth: 60, numberWidth: 42);			ez.labelView.font_(font).align_(\center);
-			[ez, sink]		}).flop;	}		makeSkipJack {		skipjack = SkipJack(			{ this.checkUpdate }, 			0.2, 			{ w.isClosed }, 			this.class.name		); 		w.onClose_({ skipjack.stop; });		this.runUpdate;	}	getCurrentKeysValues {  		if (proxy.isNil, {^[] });		currentSettings = proxy.getKeysValues(except: ignoreKeys);		editKeys = currentSettings.collect({ |list| list.first.asSymbol }); 				if(editKeys.size > nSliders) { 			if( (skipjack.dt / 10).coin) { 				"warning! too many arguments to fit in the edit window".postln 			}		};	}	checkUpdate { 		var oldKeys; 		oldKeys = editKeys; 		this.getCurrentKeysValues; 		if (monitor.notNil) { monitor.updateAll }; 		if ( (editKeys != oldKeys), { this.updateAllEdits }, {  this.updateVals });	}		fullUpdate { 		this.getCurrentKeysValues; 		this.updateAllEdits;	}		updateVals {		var sl, val, mapKey;		if (currentSettings == prevSettings) {
+NodeProxyEditor { 		classvar <>menuHeight=18;	var <>w, <zone, <proxy, <edits, <sinks, <scrolly, <pxKey, <currentSettings, 		<editNameView, <>nSliders, <editKeys, <>ignoreKeys=#[], oldNodeMap, skipjack;	var <monitor;	var <skin, <font;	var <prevSettings; 
+	var <tooManyKeys=false, <keysRotation = 0; 
+		*new { arg proxy, pxKey, nSliders=16, win, comp, 		extras=[\scope, \doc, \reset], monitor=true, sinks=true, morph=false; 		^super.new.nSliders_(nSliders).init(win, comp, extras, monitor, sinks, morph)			.pxKey_(pxKey).proxy_(proxy);	}	proxy_ { arg px; 		if (px.isKindOf(NodeProxy), { 			proxy = px;			editNameView.object_(px.source);			editNameView.string_(px.key.asString);			oldNodeMap = proxy.nodeMap;			if (monitor.notNil) { monitor.proxy_(proxy) };			this.fullUpdate;		})	}	pxKey_ { arg key; 		if (key.notNil, {  			pxKey = key; 			{ editNameView.string_(pxKey.asString);  }.defer;		})	}
+	clear {		proxy = nil; 		pxKey = nil; 		{ editNameView.object_(nil).string_(""); }.defer;		this.fullUpdate;	}		init { arg win, comp, extras, monitor, sinks, morph;						var bounds;						skin = GUI.skin; 				font = GUI.font.new(*GUI.skin.fontSpecs);				bounds = Rect(0, 0, 370, nSliders + 2 * skin.buttonHeight + 16);				win = win ?? { "making internal win".postln; GUI.window.new(this.class.name, bounds) };		w = win; 			zone = comp ?? { "making internal zone".postln;  GUI.compositeView.new(w, bounds); };		zone.decorator = zone.decorator ??  { FlowLayout(zone.bounds).gap_(2@0) };		w.view.background = skin.background;		zone.background = skin.foreground;		w.front;				this.makeTopLine(extras);		if (monitor, { this.makePxMon; zone.decorator.nextLine.shift(0, 4); });		if (morph, { this.makeMorph; zone.decorator.nextLine.shift(0, 4); });		this.makeSinksSliders(sinks);		this.makeSkipJack; 	}	makePxMon { 		monitor = ProxyMonitorGui(proxy, zone, skin.buttonHeight, true, false);	}	makeMorph { 		zone.decorator.shift(0, 2);		GUI.staticText.new(zone, Rect(0,0, 330, 1)).background_(Color.gray(0.2));		zone.decorator.shift(0, 2);		PxPreset(proxy, zone) 	}		makeTopLine { |extras|		editNameView = GUI.dragSource.new(zone, Rect(0,0,90, skin.buttonHeight))			.font_(font).align_(\center)			.background_(Color.white);				GUI.button.new(zone, Rect(0,0,40, menuHeight)).states_([				["watch",  skin.fontcolor, Color.clear ],				["wait",  skin.fontcolor, Color.clear ]			])			.action_({ |b| [ { this.stopUpdate }, { this.runUpdate } ][b.value].value })			.font_(font);		GUI.button.new(zone, Rect(0, 0, 20, menuHeight))				.font_(font)				.states_([ ["^", skin.fontcolor, Color.clear] ])				.action_({  this.class.new(proxy, pxKey, nSliders); });						if (extras.includes(\scope)) {			GUI.button.new(zone, Rect(0,0,40, menuHeight))				.font_(font)				.states_([["scope", skin.fontcolor, Color.clear]])				.action_({ arg btn; if(proxy.notNil, { proxy.scope }) });		};								if (extras.includes(\reset)) {			GUI.button.new(zone, Rect(0,0,40, menuHeight))				.states_([["reset",  skin.fontcolor, Color.clear ]])				.action_({ 					if(proxy.notNil) { proxy.nodeMap = ProxyNodeMap.new; this.fullUpdate; } 				})				.font_(font);		};		if (extras.includes(\doc)) {			GUI.button.new(zone, Rect(0,0,40, menuHeight))				.states_([["doc",  skin.fontcolor, Color.clear ]])				.action_({ 					if(proxy.notNil) { 						currentEnvironment.document(proxy.key)							.title_("<" + proxy.key.asString + ">") 					} 				})				.font_(font);		};
+
+		zone.decorator.nextLine.shift(0, 4);
+			}
+			makeSinksSliders { |bigSinks|		var sinkWidth, lay; 
+				sinkWidth = if (bigSinks, 40, 0); 	// invisibly small		#edits, sinks = Array.fill(nSliders, { arg i;			var ez, sink;			zone.decorator.nextLine; 			sink = GUI.dragBoth.new(zone, Rect(0,0, sinkWidth, skin.buttonHeight))				.string_("-").align_(\center).visible_(false);							sink.action_({ arg sink; var px;				if (sink.object.notNil) { 					px = currentEnvironment[sink.object.asSymbol];					if(px.isKindOf(NodeProxy)) {						proxy.map(editKeys[i], px);						this.fullUpdate;					}				}			}); 			ez = GUI.ezSlider.new(zone, 290 @  skin.buttonHeight, "", nil.asSpec, 				labelWidth: 60, numberWidth: 42);			ez.labelView.font_(font).align_(\center);
+			[ez, sink]		}).flop;
+
+		lay = zone.decorator; 
+		lay.left_(lay.bounds.left + 300).top_(lay.bounds.top + 30);
+		
+		scrolly = EZScroller(w, 
+			Rect(zone.decorator.bounds.right - 30, 48, 14, nSliders * skin.buttonHeight), 
+			nSliders, nSliders, 
+			{ |sc| keysRotation = sc.value.asInteger; }
+		).visible_(false);
+	}		makeSkipJack {		skipjack = SkipJack(			{ this.checkUpdate }, 			0.2, 			{ w.isClosed }, 			this.class.name		); 		w.onClose_({ skipjack.stop; });		this.runUpdate;	}	getCurrentKeysValues {  		if (proxy.isNil, {^[] });		currentSettings = proxy.getKeysValues(except: ignoreKeys);		editKeys = currentSettings.collect({ |list| list.first.asSymbol }); 	}	checkUpdate { 		var oldKeys; 		oldKeys = editKeys; 		this.getCurrentKeysValues; 		if (monitor.notNil) { monitor.updateAll }; 		if ( (editKeys != oldKeys), { this.updateAllEdits }, {  this.updateVals });	}		fullUpdate { 		this.getCurrentKeysValues; 		this.updateAllEdits;	}		updateVals {		var sl, val, mapKey;
+
+		if (currentSettings == prevSettings) {
 		 	// "no change.".postln;
 			^this;
-		};		editKeys.do { arg key, i;			sl = edits[i];			// editKeys and currentSettings are in sync.			val = currentSettings[i][1];
+		};
+		if(tooManyKeys) { 
+			// get them by keysRotation		
+			editKeys = editKeys.drop(keysRotation).keep(nSliders);
+			currentSettings = currentSettings.drop(keysRotation).keep(nSliders);
+		};
+
+		editKeys.do { arg key, i;			sl = edits[i];			// editKeys and currentSettings are in sync.			val = currentSettings[i][1];
 			if (val != try { prevSettings[i][1] }) {	 				// when in doubt, use this:				//	val = (currentSettings.detect { |set| set[0] == key } ? [])[1];				if(sl.numberView.hasFocus.not) {					if (val.isKindOf(SimpleNumber), { 												sl.value_(val.value);						sl.labelView.string = key;						sinks[i].string_("-");					}, { 						if (val.isKindOf(BusPlug), { 							mapKey = currentEnvironment.findKeyForValue(val) ? "";							sinks[i].object_(mapKey).string_(mapKey);							sl.labelView.string = "->" + key;						});					});				};
 			};		};
 		prevSettings = currentSettings; 	}		updateAllEdits {
 	//	var keyPressed = false;
+	
+		var oversize; 
+
+		oversize = editKeys.size - nSliders;
+		tooManyKeys = editKeys.size > nSliders;
+		keysRotation = keysRotation.min(oversize).max(0);
+		
+		if (tooManyKeys) { 
+			scrolly.visible_(true);
+			scrolly.numItems_(editKeys.size);
+			editKeys = editKeys.drop(keysRotation).keep(nSliders);
+			currentSettings = currentSettings.drop(keysRotation).keep(nSliders);
+		} {	
+			scrolly.numItems_(editKeys.size);
+			scrolly.visible_(false);
+			editKeys = editKeys;
+		};
+		scrolly.value_( keysRotation);
+		
 		edits.do { arg sl, i;
 			var key, val, mappx, spec, slider, number, sink, mapKey;
 			var keyString; 
@@ -31,16 +76,11 @@
 
 				if (keyString.beginsWith("wet")) { 
 					sl.sliderView.background_(Color.green(1.0, 0.5)).refresh;
-				//	sl.labelView.background_(Color.green(1.0, 0.5)).refresh;
 				} {
 					sl.sliderView.background_(skin.foreground).refresh;
-				//	sl.labelView.background_(skin.foreground).refresh;
 				};
-				sl.action_({ arg nu; 
-	//							if(keyPressed.not) {
-									proxy.set(key, nu.value) 
-	//							};
- 				});
+				sl.action_({ arg nu; proxy.set(key, nu.value) });
+				
 				if(spec.notNil) { sl.controlSpec = spec } {
 					sl.controlSpec = ControlSpec(-1e8, 1e8);
 				};
