@@ -1030,7 +1030,7 @@ Ndef : NodeProxy {
 			server = key.key;
 			key = key.value;
 		} {
-			server = defaultServer ? Server.default
+			server = defaultServer ? Server.default;
 		};
 		res = this.at(server, key) ?? { super.new(server).toLib(key) };
 		object !? { res.source = object };
@@ -1039,10 +1039,13 @@ Ndef : NodeProxy {
 	*clear {
 		Library.at(this).do { arg item; item.do { arg item; item.clear } };
 	}
+		
 	
-	toLib { arg key;
-		Library.put(this.class, server, key, this);
+	toLib { arg inKey;
+		Library.put(this.class, server, inKey, this);
+		key = inKey;
 	}
+	
 	*at { arg server, key;
 		^Library.at(this, server, key)
 	}
