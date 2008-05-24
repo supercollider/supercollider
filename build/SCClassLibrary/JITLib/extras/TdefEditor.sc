@@ -58,13 +58,18 @@ TaskProxyEditor {
 		zone.decorator = flow; 
 		try { win.front };
 
-		nameBut = sys.button.new(zone, Rect(0,0, 60,height))
+		nameBut = sys.button.new(zone, Rect(0,0, 70, height))
 			.font_(font)
 			.states_([
 				[" ", skin.fontColor, skin.onColor]
 			])
 		//	.action_({ "edit all".postln })
-			.keyDownAction_({ |btn, char| if (char.ascii == 127) { proxy.clear; proxy = nil }; })
+			.keyDownAction_({ |btn, char| char.postcs; 
+				if (char.ascii == 127) { 
+					proxy.clear; proxy = nil;
+					this.observedClass.all.removeAt(btn.states.first.first.asSymbol);
+				}; 
+			})
 			.resize_(2)
 		;
 
@@ -143,15 +148,6 @@ TaskProxyEditor {
 				};
 				but.value_(proxy.hasEnvir.binaryValue)
 			});
-//					// one key per button... maybe not.
-//		varButs = Array.fill(nVars, { |i| 
-//			sys.button.new(zone, Rect(0,0, width, height))
-//				.font_(font)
-//				.states_([ ["-", skin.fontColor, skin.offColor] ])
-//				.action_({ |b| 
-//					this.openDoc(this.editString(b.states[0][0].asSymbol))
-//				});
-//		});
 
 		this.updateAll;
 
@@ -255,7 +251,8 @@ PdefEditor : TaskProxyEditor {
 }
 
 TaskProxyAllGui { 
-	var <win, <edits, <names; 
+	var <win, <filtBut, <filTextV, <edits, <scrolly, <names, <keysRotation=0; 
+	var <>prefix="", <>filtering=false; 
 	
 	*new { |size=24, w| 
 		^super.new.init(size, w);
@@ -265,19 +262,67 @@ TaskProxyAllGui {
 		var zone, flow;
 		var sys = GUI.scheme; 
 		var name = "" ++ this.observedClass ++ "AllGui";
-		win = w ?? { sys.window.new(name, Rect(0, 0, 194, 16 * size + 5)) };
-		zone = sys.compositeView.new(win, Rect(0, 0, 200, 16 * size + 10)); 
-	//	zone.background_(scheme.foreground);
+		win = w ?? { sys.window.new(name, Rect(0, 0, 210, 16 * size + 5)) };
+		zone = sys.compositeView.new(win, Rect(0, 0, 210, 16 * size + 5)); 
+		zone.background_(sys.foreground);
 		zone.resize_(2);
+		
 		flow = FlowLayout(zone.bounds, 0@0, 0@0);
 		zone.decorator = flow; 
 		try { win.front };
 		
+		filtBut = GUI.button.new(zone, Rect(0,0,60,20))
+			.canFocus_(false)
+			.states_([["all"], ["filt"]])
+			.action_({ |btn| 
+				this.filtering_(btn.value > 0);
+			});
+					
+		filTextV = GUI.textView.new(zone, Rect(60,0,60,20))
+			.string_("")
+			.enterInterpretsSelection_(false)
+			.resize_(2)
+			.keyDownAction_({ |txvw, char, mod, uni, keycode| 
+				var str = txvw.string;
+				if (str == "") { str = nil };
+				this.prefix_(txvw.string);
+			});
+			
 		edits = Array.fill(size, { this.editorClass.new(w: zone, makeWatcher: false) }); 
-		
+
+		scrolly = EZScroller(win, 
+			Rect(flow.bounds.right - 16, 2, 12, size * 16), 
+			size, size, 
+			{ |sc| keysRotation = sc.value.asInteger.max(0); 
+			
+			}
+		).visible_(false);
+		scrolly.slider
+			// .background_(sys.foreground)
+			.resize_(3);
+
 		SkipJack({ 
-			names = this.observedClass.all.keys.as(Array).sort.keep(size); 
+			var overflow, tooMany; 
+
+			names = this.observedClass.all.keys.as(Array).sort; 
+			if (filtering) { 
+				if (prefix == "") { 
+					names = names.reject { |name| name.asString.includes($_) };
+				} { 
+					names = names.select { |name| name.asString.contains(prefix) };
+				};	
+			};
+			overflow = (names.size - size).max(0); 
+			if (overflow > 0) { 
+				scrolly.visible_(true);
+				scrolly.numItems_(names.size);
+				scrolly.value_(keysRotation ? overflow);
+				names = names.drop(keysRotation).keep(size);
+			} { 
+				scrolly.visible_(false);
+			};
 			edits.do { |edit, i| edit.proxy_(this.observedClass.all[names[i]]).updateAll };
+
 		}, 0.5, { win.isClosed }, name);
 	}
 }
