@@ -594,8 +594,13 @@ SCSlider : SCSliderBase
 		this.setPropertyWithAction(\value, val);
 	}	
 	
-	increment { ^this.valueAction = this.value + this.bounds.width.reciprocal }
-	decrement { ^this.valueAction = this.value - this.bounds.width.reciprocal }
+	increment { ^this.valueAction = this.value + (this.step ?? { this.pixelStep }) }
+	decrement { ^this.valueAction = this.value - (this.step ?? { this.pixelStep }) }
+	
+	pixelStep { 
+		var bounds = this.bounds; 
+		^(bounds.width.max(bounds.height) - this.thumbSize).reciprocal
+	}
 	
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
 		// standard keydown
