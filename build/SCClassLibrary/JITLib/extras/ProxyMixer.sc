@@ -18,11 +18,12 @@
 	}		makeKrZone { 		var layout = compKrZone.decorator;
 		var emergencySynth;
 
-		GUI.staticText.new(compKrZone, Rect(0, 0, 90, skin.buttonHeight))
+		GUI.staticText.new(compKrZone, Rect(0, 0, 180, 18))
 			.font_(font).align_(\center)
 			.string_("kr proxies");
 			
 		layout.nextLine;
+		layout.shift(0,4);
 		
 		/*		GUI.button.new(compKrZone, Rect(0,0,20, skin.buttonHeight))		.font_(Font("Helvetica-Bold", 12))		.states_([["+", Color.red, Color.white]])		.action_({			if(emergencySynth.isPlaying.not) {				emergencySynth = Synth.tail(0, "proxymixer_emergency");				NodeWatcher.register(emergencySynth);			} {				emergencySynth.release			}		});		*/		layout.nextLine;		layout.nextLine;				buttonLinesKr = Array.fill(nProxies, { arg i;			var nameBtn, pausBtn, sendBtn, editBtn, pollBtn;						nameBtn = GUI.dragSource.new(compKrZone, Rect(0,0,68, skin.buttonHeight))			.font_(font)			.align_(\center);			
 			pausBtn = GUI.button.new(compKrZone, Rect(0,0, 30, skin.buttonHeight))
@@ -104,4 +105,4 @@
 		}; 
 		arPxNames.do { |name, i| pxMons[i].updateAll };
 		
-		prevArNames = arPxNames;	}			adjustWindowSize { arg n;		n = n ? nProxies;		w.bounds = if(editZoneOpen) 			{ origBounds.resizeBy(0, 330) } 			{ origBounds.copy.height_(n  * 18 + 80) };	}}
+		prevArNames = arPxNames;	}			adjustWindowSize { arg n;		n = n ? nProxies;		w.bounds = if(editZoneOpen) 			{ origBounds.resizeBy(0, 330) } 			{ origBounds.copy.height_(n  * 18 + 80) };	}}
