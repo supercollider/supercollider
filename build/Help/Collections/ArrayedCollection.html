@@ -5,25 +5,30 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.47">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0014f4}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #962617}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {color: #000000}
-span.s2 {color: #0000ff}
-span.s3 {color: #0027b1}
-span.s4 {color: #446c21}
-span.s5 {color: #0029f7}
-span.s6 {color: #962617}
-span.s7 {color: #0024f8}
-span.s8 {text-decoration: underline}
+span.s2 {color: #0016ff}
+span.s3 {color: #0000bf}
+span.s4 {color: #007300}
+span.s5 {color: #002ffd}
+span.s6 {color: #bf0000}
+span.s7 {color: #002bfe}
+span.s8 {color: #606060}
+span.s9 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -84,9 +89,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s3">Array</span>.fillND([4, 4], { <span class="s3">arg</span> a, b; a+b; });<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">//2d</span></p>
 <p class="p6"><span class="s3">Array</span>.fillND([4, 4, 4], { <span class="s3">arg</span> a, b, c; a+b*c; });<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">//3d</span></p>
 <p class="p6"><span class="s3">Array</span>.fillND([1, 2, 3, 4], { <span class="s3">arg</span> a, b, c, d; b+d; });<span class="Apple-tab-span">	</span><span class="s6">//4d</span></p>
-<p class="p8"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+<p class="p9"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -102,23 +107,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">y = [ 1, 2, 3 ];</p>
 <p class="p6">y.clipAt(13).postln;</p>
-<p class="p2"><span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-converted-space"> </span></p>
 <p class="p4"><b>wrapAt(index)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Same as <b>at</b>, but values for <b>index</b> greater than the size of the ArrayedCollection will be wrapped around to 0.</p>
 <p class="p2"><br></p>
 <p class="p6">y = [ 1, 2, 3 ];</p>
-<p class="p9"><span class="s1">y.wrapAt(3).postln; </span>// this returns the value at index 0</p>
-<p class="p9"><span class="s1">y.wrapAt(4).postln; </span>// this returns the value at index 1</p>
+<p class="p11"><span class="s1">y.wrapAt(3).postln; </span>// this returns the value at index 0</p>
+<p class="p11"><span class="s1">y.wrapAt(4).postln; </span>// this returns the value at index 1</p>
 <p class="p2"><br></p>
 <p class="p4"><b>foldAt(index)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Same as <b>at</b>, but values for <b>index</b> greater than the size of the ArrayedCollection will be folded back.</p>
 <p class="p2"><br></p>
 <p class="p6">y = [ 1, 2, 3 ];</p>
-<p class="p9"><span class="s1">y.foldAt(3).postln; </span>// this returns the value at index 1</p>
-<p class="p9"><span class="s1">y.foldAt(4).postln; </span>// this returns the value at index 0</p>
-<p class="p9"><span class="s1">y.foldAt(5).postln; </span>// this returns the value at index 1</p>
+<p class="p11"><span class="s1">y.foldAt(3).postln; </span>// this returns the value at index 1</p>
+<p class="p11"><span class="s1">y.foldAt(4).postln; </span>// this returns the value at index 0</p>
+<p class="p11"><span class="s1">y.foldAt(5).postln; </span>// this returns the value at index 1</p>
 <p class="p2"><br></p>
 <p class="p4"><b>plot</b></p>
 <p class="p2"><br></p>
@@ -128,7 +133,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Swap the values at indices i and j.</p>
 <p class="p2"><br></p>
-<p class="p6">[ 1, 2, 3 ].swap(0, 2).postln;</p>
+<p class="p12">[ 1, 2, 3 ].swap(0, 2).postln;</p>
 <p class="p2"><br></p>
 <p class="p4"><b>put(index, item)</b></p>
 <p class="p2"><br></p>
@@ -150,17 +155,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Remove and return the element at <b>index</b>, shrinking the size of the ArrayedCollection.</p>
 <p class="p2"><br></p>
-<p class="p6">y = [ 1, 2, 3 ];<span class="Apple-converted-space"> </span></p>
-<p class="p6">y.removeAt(1);<span class="Apple-converted-space"> </span></p>
-<p class="p6">y.postln;</p>
+<p class="p12">y = [ 1, 2, 3 ];<span class="Apple-converted-space"> </span></p>
+<p class="p12">y.removeAt(1);<span class="Apple-converted-space"> </span></p>
+<p class="p12">y.postln;</p>
 <p class="p2"><br></p>
 <p class="p4"><b>takeAt(index)</b></p>
 <p class="p2"><br></p>
-<p class="p4">Same as <b>removeAt</b>, but reverses the order of the items following those that which was taken.</p>
+<p class="p4">Similar to <b>removeAt</b>, but does not maintain the order of the items following the one that was removed. Instead, the last item is placed into the position of the removed item and the array's size decreases by one.</p>
 <p class="p7"><br></p>
-<p class="p6">y = [ 1, 2, 3, 4 ];<span class="Apple-converted-space"> </span></p>
-<p class="p6">y.takeAt(1);<span class="Apple-converted-space"> </span></p>
-<p class="p6">y.postln;</p>
+<p class="p12">y = [ 1, 2, 3, 4, 5 ];<span class="Apple-converted-space"> </span></p>
+<p class="p12">y.takeAt(1);<span class="Apple-converted-space"> </span></p>
+<p class="p12">y.postln;</p>
 <p class="p7"><br></p>
 <p class="p4"><b>takeThese(function)</b></p>
 <p class="p2"><br></p>
@@ -174,96 +179,96 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Adds an item to an ArrayedCollection if there is space. If there is not any space left in the object then this method returns a new ArrayedCollection. For this reason, you should always assign the result of add to a variable - never depend on add changing the receiver.</p>
 <p class="p2"><br></p>
-<p class="p6">(</p>
-<p class="p9">// z and y are the same object</p>
+<p class="p12">(</p>
+<p class="p11">// z and y are the same object</p>
 <p class="p6"><span class="s3">var</span> y, z;</p>
 <p class="p6">z = [1, 2, 3];</p>
 <p class="p6">y = z.add(4);</p>
 <p class="p6">z.postln;</p>
 <p class="p6">y.postln;</p>
-<p class="p6">)</p>
+<p class="p12">)</p>
 <p class="p7"><br></p>
-<p class="p6">(</p>
-<p class="p9">// in this case a new object is returned</p>
+<p class="p12">(</p>
+<p class="p11">// in this case a new object is returned</p>
 <p class="p6"><span class="s3">var</span> y, z;</p>
 <p class="p6">z = [1, 2, 3, 4];</p>
 <p class="p6">y = z.add(5);</p>
 <p class="p6">z.postln;</p>
 <p class="p6">y.postln;</p>
-<p class="p6">)</p>
+<p class="p12">)</p>
 <p class="p7"><br></p>
 <p class="p4"><b>addAll(aCollection)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Adds all the elements of aCollection to the contents of the receiver, possibly returning a new collection.</p>
 <p class="p2"><br></p>
-<p class="p6">(</p>
-<p class="p9">// in this case a new object is returned</p>
+<p class="p12">(</p>
+<p class="p11">// in this case a new object is returned</p>
 <p class="p6"><span class="s3">var</span> y, z;</p>
 <p class="p6">z = [1, 2, 3, 4];</p>
 <p class="p6">y = z.addAll([7, 8, 9]);</p>
 <p class="p6">z.postln;</p>
 <p class="p6">y.postln;</p>
-<p class="p6">)</p>
+<p class="p12">)</p>
 <p class="p2"><br></p>
 <p class="p4"><b>extend(size, item)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Extends the receiver to match <b>size</b> by adding a number of <b>item</b>s. If <b>size</b> is less than receiver size then truncate.</p>
 <p class="p2"><br></p>
-<p class="p6">(</p>
+<p class="p12">(</p>
 <p class="p6"><span class="s3">var</span> y, z;</p>
 <p class="p6">z = [1, 2, 3, 4];</p>
-<p class="p9"><span class="s1">y = z.extend(10, 9);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//fill up with 9 until the size equals 10</p>
+<p class="p11"><span class="s1">y = z.extend(10, 9);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//fill up with 9 until the size equals 10</p>
 <p class="p6">z.postln;</p>
 <p class="p6">y.postln;</p>
-<p class="p6">)</p>
+<p class="p12">)</p>
 <p class="p2"><br></p>
 <p class="p4"><b>fill(value)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Inserts the item into the contents of the receiver, possibly returning a new collection. Note the difference between this and Collection's *fill.</p>
 <p class="p2"><br></p>
-<p class="p6">(</p>
+<p class="p12">(</p>
 <p class="p6"><span class="s3">var</span> z;</p>
 <p class="p6">z = <span class="s3">List</span>[1, 2, 3, 4];</p>
 <p class="p6">z.fill(4).postln;</p>
 <p class="p6">z.fill([1,2,3,4]).postln;</p>
-<p class="p6">)</p>
+<p class="p12">)</p>
 <p class="p2"><br></p>
 <p class="p4"><b>insert(index, item)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Inserts the item into the contents of the receiver, possibly returning a new collection.</p>
 <p class="p2"><br></p>
-<p class="p6">(</p>
-<p class="p9">// in this case a new object is returned</p>
+<p class="p12">(</p>
+<p class="p11">// in this case a new object is returned</p>
 <p class="p6"><span class="s3">var</span> y, z;</p>
 <p class="p6">z = [1, 2, 3, 4];</p>
 <p class="p6">y = z.insert(1, 999);</p>
 <p class="p6">z.postln;</p>
 <p class="p6">y.postln;</p>
-<p class="p6">)</p>
+<p class="p12">)</p>
 <p class="p7"><br></p>
 <p class="p4"><b>addFirst(item)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Inserts the item before the contents of the receiver, possibly returning a new collection.</p>
 <p class="p2"><br></p>
-<p class="p6">(</p>
-<p class="p9">// in this case a new object is returned</p>
+<p class="p12">(</p>
+<p class="p11">// in this case a new object is returned</p>
 <p class="p6"><span class="s3">var</span> y, z;</p>
 <p class="p6">z = [1, 2, 3, 4];</p>
 <p class="p6">y = z.addFirst(999);</p>
 <p class="p6">z.postln;</p>
 <p class="p6">y.postln;</p>
-<p class="p6">)</p>
+<p class="p12">)</p>
 <p class="p7"><br></p>
 <p class="p4"><b>pop</b></p>
 <p class="p2"><br></p>
 <p class="p4">Remove and return the last element of the ArrayedCollection.</p>
 <p class="p2"><br></p>
-<p class="p6">(</p>
+<p class="p12">(</p>
 <p class="p6"><span class="s3">var</span> z;</p>
 <p class="p6">z = [1, 2, 3, 4];</p>
 <p class="p6">z.pop.postln;</p>
 <p class="p6">z.postln;</p>
-<p class="p6">)</p>
+<p class="p12">)</p>
 <p class="p2"><br></p>
 <p class="p4"><b>grow(sizeIncrease)</b></p>
 <p class="p2"><br></p>
@@ -301,7 +306,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">(</p>
 <p class="p6"><span class="s3">var</span> y, z;</p>
 <p class="p6">z = [1, 2, 3, 4, 5, 6];</p>
-<p class="p6">y = z.putSeries(0, 2, 5, "foo");</p>
+<p class="p6">y = z.putSeries(0, 2, 5, <span class="s8">"foo"</span>);</p>
 <p class="p6">y.postln;</p>
 <p class="p6">)</p>
 <p class="p7"><br></p>
@@ -361,7 +366,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">This is useful for using with windex or wchoose.</p>
 <p class="p7"><br></p>
-<p class="p6">[1, 2, 3].normalizeSum.postln;</p>
+<p class="p12">[1, 2, 3].normalizeSum.postln;</p>
 <p class="p7"><br></p>
 <p class="p4"><b>normalize(min, max)</b></p>
 <p class="p2"><br></p>
@@ -387,7 +392,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">performs a method in place, within a certain region [from..to], returning the same array.</p>
 <p class="p2"><br></p>
 <p class="p6">a = (0..10);</p>
-<p class="p6">a.performInPlace(\normalizeSum, 3, 6);<span class="Apple-converted-space"> </span></p>
+<p class="p6">a.performInPlace(<span class="s4">\normalizeSum</span>, 3, 6);<span class="Apple-converted-space"> </span></p>
 <p class="p8"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><b>find(anotherArray)</b></p>
@@ -408,17 +413,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p4">this method is inherited by String:</p>
 <p class="p8"><br></p>
-<p class="p6">a = "hello world";</p>
-<p class="p6">a.replace("world", "word");</p>
+<p class="p13"><span class="s1">a = </span>"hello world"<span class="s1">;</span></p>
+<p class="p6">a.replace(<span class="s8">"world"</span>, <span class="s8">"word"</span>);</p>
 <p class="p8"><br></p>
 <p class="p8"><br></p>
 <p class="p4"><b>asRandomTable</b></p>
 <p class="p2"><br></p>
 <p class="p4">return an integral table that can be used to generate random numbers with a specified distribution.</p>
-<p class="p4">(see<span class="s8"> [Randomness] </span>helpfile for a more detailed example)</p>
+<p class="p4">(see<span class="s9"> [Randomness] </span>helpfile for a more detailed example)</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6">a = (0..100) ++ (100..50) / 100; // distribution</p>
+<p class="p6">a = (0..100) ++ (100..50) / 100; <span class="s6">// distribution</span></p>
 <p class="p6">a = a.asRandomTable;</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
@@ -428,7 +433,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">returns a new random number from a random table.</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6">a = (0..100) ++ (100..50) / 100; // distribution</p>
+<p class="p6">a = (0..100) ++ (100..50) / 100; <span class="s6">// distribution</span></p>
 <p class="p6">a = a.asRandomTable;</p>
 <p class="p6">20.do { a.tableRand.postln };</p>
 <p class="p6">)</p>
@@ -438,7 +443,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">return the size of an osc message in bytes</p>
 <p class="p2"><br></p>
-<p class="p6">a = ["/s_new", "default", -1, "freq", 440];</p>
+<p class="p13"><span class="s1">a = [</span>"/s_new"<span class="s1">, </span>"default"<span class="s1">, -1, </span>"freq"<span class="s1">, 440];</span></p>
 <p class="p6">a.msgSize;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -446,7 +451,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">return the size of an osc bundle in bytes</p>
 <p class="p2"><br></p>
-<p class="p6">a = [["/s_new", "default", -1, "freq", 440], ["/s_new", "default", -1, "freq", 220]];</p>
+<p class="p13"><span class="s1">a = [[</span>"/s_new"<span class="s1">, </span>"default"<span class="s1">, -1, </span>"freq"<span class="s1">, 440], [</span>"/s_new"<span class="s1">, </span>"default"<span class="s1">, -1, </span>"freq"<span class="s1">, 220]];</span></p>
 <p class="p6">a.bundleSize;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
