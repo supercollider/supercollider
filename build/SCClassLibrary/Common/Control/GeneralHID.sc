@@ -63,13 +63,14 @@ GeneralHID{
 		^scheme;
 	}
 		// find a device by its info properties
-	*findBy { |vendorID, productID, locID| 
+	*findBy { |vendorID, productID, locID, versionID| 
 		if ( locID.isKindOf( String ), { locID = locID.asSymbol } );
 		^this.deviceList.detect { |pair| 
 			var dev, info; #dev, info = pair;
 			(info.vendor == vendorID) 
 			and: { productID.isNil or: { info.product == productID } } 
 			and: { locID.isNil or: { info.physical == locID } }
+			and: { versionID.isNil or: { info.version == versionID } }
 		};
 	}
 }
@@ -287,4 +288,11 @@ GeneralHIDSlot{
 		<< "id: " << id << ", "
 		<< "value: " << this.value << $)
 	}
+
+// JITLib support
+	kr{
+		this.createBus;
+		^In.kr( bus );
+	}
+
 }
