@@ -1,5 +1,5 @@
 GeneralHID{
-	classvar <>all, <>maps, <>verbose=false; 
+	classvar <>all, <>verbose=false; 
 	classvar <scheme, <schemes;
 
 	*initClass { 
@@ -99,13 +99,13 @@ GeneralHIDInfo{
 }
 
 GeneralHIDDevice{
-	classvar <specs, all;
+	classvar all;
 	var <slots, <spec;
 	var <device, <info;
 
 	*initClass {
 		all = [];
-		specs = IdentityDictionary.new;
+		//	specs = IdentityDictionary.new;
 	}
 	*all {
 		^all.copy
@@ -113,9 +113,9 @@ GeneralHIDDevice{
 	*closeAll {
 		all.copy.do({ | dev | dev.close });
 	}
-	*register { | name, spec |
+	/*	*register { | name, spec |
 		specs[name] = spec;
-	}
+		}*/
 	*new { |newDevice|
 		^all.detect({ | dev | dev.device == newDevice }) ?? { super.new.init(newDevice) }
 	}
@@ -123,6 +123,7 @@ GeneralHIDDevice{
 		device = newDevice;
 		slots = device.getSlots;
 		info = device.getInfo;
+		spec = GeneralHIDSpec.new( this );
 	}
 	close{
 		device.close;
@@ -149,6 +150,56 @@ GeneralHIDDevice{
 	ungrab{
 		device.ungrab;
 	}
+
+	// spec support
+	findSpec{
+		^spec.find;
+	}
+	
+	setSpec{ |name|
+		spec.fromFile( name );
+	}
+
+	add{ |key, slot|
+		spec.add( key, slot );
+	}
+
+	at{ |key|
+		^spec.at( key );
+	}
+
+	value{ |key|
+		^spec.value( key );
+	}
+
+	bus{ |key|
+		^spec.bus( key );
+	}
+
+	value_{ |key,value|
+		spec.value_( key, value );
+	}
+
+	action_{ |key,action|
+		spec.action_( key, action );
+	}
+
+	createBus{ |name,server|
+		spec.createBus( name, server );
+	}
+
+	freeBus{ |name|
+		spec.freeBus( name );
+	}
+
+	createAllBuses{ |server|
+		spec.createAllBuses( server );
+	}
+
+	freeAllBuses{
+		spec.freeAllBuses;
+	}
+
 }
 
 GeneralHIDSlot{
@@ -156,6 +207,7 @@ GeneralHIDSlot{
 	classvar <typeMap;
 	var <action;
 	var <bus, busAction;
+	var <>key;
 
 	*initClass{
 		// typeMap is modeled after Linux input system.
@@ -195,7 +247,7 @@ GeneralHIDSlot{
 
 	debug_{ |onoff|
 		if ( onoff, {
-			this.action_({ |slot| [ slot.type, slot.code, slot.value ].postln; });
+			this.action_({ |slot| [ slot.type, slot.code, slot.value, key ].postln; });
 		},{
 			this.action_({});
 		});
@@ -207,7 +259,17 @@ GeneralHIDSlot{
 	}
 
 	createBus{ |s|
-		bus = Bus.control( s, 1 );
+		s = s ? Server.default;
+		if ( bus.isNil, {
+			bus = Bus.control( s, 1 );
+		},{
+			if ( bus.index.isNil, {
+				bus = Bus.control( s, 1 );
+			});
+		});
+		/*		if ( s.serverRunning.not and: s.isLocal, {
+			"Server seems not running, so bus will be invalid".warn;
+			});*/
 		busAction = { |v| bus.set( v.value ); };
 		devSlot.action = { |v| action.value(v); busAction.value(v); };
 	}
