@@ -172,10 +172,9 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 	
 	nextTimeOnGrid { arg quant = 1, phase = 0;
-		var offset;
+		if (quant == 0) { ^this.beats + phase }
 		if (quant < 0) { quant = beatsPerBar * quant.neg };
-		offset = baseBarBeat + phase;
-		^roundUp(this.beats - offset, quant) + offset;
+		^roundUp(this.beats - baseBarBeat - (phase % quant), quant) + baseBarBeat + phase
 	}
 	
 	timeToNextBeat { arg quant=1.0; // logical time to next beat
