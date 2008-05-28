@@ -92,6 +92,29 @@ String[char] : RawArray {
 	prFormat { arg items; _String_Format ^this.primitiveFailed }
 	matchRegexp { arg string, start = 0, end; _String_Regexp ^this.primitiveFailed }
 
+	fformat { arg ... args;
+		var str, resArgs, val, func;
+		var suffixes, sig = false;
+		
+		this.do { |char|
+			if(sig) {
+				val = args.removeAt(0);
+				func = Post.charFormats[char];
+				if(func.isNil) { 
+					resArgs = resArgs.add(val);
+					str = str ++ char 
+				} { 
+					resArgs = resArgs.add(func.value(val)) 
+				};
+				sig = false;
+			} { 
+				str = str ++ char 
+			};
+			if(char == $%) { sig = true };
+		};
+		^str.format(*resArgs)
+	}
+
 	die { arg ... culprits;
 		if(culprits.notEmpty,{
 			("\n\nFATAL ERROR: ").postln;
