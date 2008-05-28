@@ -197,9 +197,9 @@ LimitedWriteStream : CollStream {
 
 
 Post {
-	classvar <>charFormats;
+	classvar <>formats;
 	*initClass {
-		charFormats =  IdentityDictionary[
+		formats =  IdentityDictionary[
 			$c -> { |x| x.asCompileString },
 		];
 	}

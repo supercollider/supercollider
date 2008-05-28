@@ -99,7 +99,7 @@ String[char] : RawArray {
 		this.do { |char|
 			if(sig) {
 				val = args.removeAt(0);
-				func = Post.charFormats[char];
+				func = Post.formats[char];
 				if(func.isNil) { 
 					resArgs = resArgs.add(val);
 					str = str ++ char 
