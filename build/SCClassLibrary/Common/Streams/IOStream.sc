@@ -197,6 +197,13 @@ LimitedWriteStream : CollStream {
 
 
 Post {
+	classvar <>charFormats;
+	*initClass {
+		charFormats =  IdentityDictionary[
+			$c -> { |x| x.asCompileString },
+		];
+	}
+	
 	//*flush { this.flushPostBuf }
 	* << { arg item;
 		item.printOn(this); 
