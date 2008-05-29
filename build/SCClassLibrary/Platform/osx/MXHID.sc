@@ -54,7 +54,14 @@ MXHID {
 	}
 
 	*postDevicesAndProperties { 
-		HIDDeviceService.devices.do({arg dev, i;
+		deviceList.do{ |dev,i|
+			[ i, dev[0], dev[1].asString ].postcs;
+			dev[0].elements.do({arg ele;
+				"\t".post;
+				[ele.type, ele.usage, ele.cookie, ele.min, ele.max, ele.ioType, ele.usagePage, ele.usageType].postln;
+			});
+		};
+		/*		HIDDeviceService.devices.do({arg dev, i;
 			(""++i++": ").postln;
 			this.class.getInfo( dev ).postcs;
 			//	[dev.manufacturer, dev.info.asString, dev.locID].postcs;
@@ -62,7 +69,7 @@ MXHID {
 				"\t".post;
 				[ele.type, ele.usage, ele.cookie, ele.min, ele.max, ele.ioType, ele.usagePage, ele.usageType].postln;
 			});
-		});
+			});*/
 	}
 
 	*getInfo{ |dev|

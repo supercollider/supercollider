@@ -16,7 +16,7 @@ GeneralHIDSpec{
 	
 	*makeSaveFolder { 
 		var testfile, testname = "zzz_generalhid_test_delete_me.txt"; 
-		folder = (Platform.userAppSupportDir ++ "/GeneralHIDSpecs/").standardizePath;
+		folder = (Platform.userAppSupportDir ++ "/GeneralHIDSpecs").standardizePath;
 		testfile = File(folder ++ "/" ++ testname, "w");
 
 		if (testfile.isOpen.not) 
