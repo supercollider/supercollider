@@ -5,22 +5,22 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952415}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #882719}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 33.0px; font: 12.0px Arial}
-span.s1 {color: #2a55d2}
-span.s2 {color: #0a20b3}
+span.s1 {color: #2e5acd}
+span.s2 {color: #002aae}
 span.s3 {color: #000000}
-span.s4 {color: #426d1e}
-span.s5 {color: #4b6b24}
-span.s6 {text-decoration: underline ; color: #495047}
+span.s4 {color: #4c6b25}
+span.s5 {color: #52692a}
+span.s6 {text-decoration: underline ; color: #4a5047}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -132,7 +132,7 @@ span.Apple-tab-span {white-space:pre}
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>relaxtime</b> specifies the time (in seconds) for the normalisation to "forget" about a recent onset. If you find too much re-triggering (e.g. as a note dies away unevenly) then you might wish to increase this value.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>floor</b> is a lower limit, connected to the idea of how quiet the sound is expected to get without becoming indistinguishable from noise. For some cleanly-recorded classical music with wide dynamic variations, I found it helpful to go down as far as 0.000001.</li>
 </ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>mingap</b> specifies a minimum gap (in seconds) between onset detections, a brute-force way to prevent too many doubled detections.</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>mingap</b> specifies a minimum gap (in FFT frames) between onset detections, a brute-force way to prevent too many doubled detections.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>medianspan</b> specifies the size (in FFT frames) of the median window used for smoothing the detection function before triggering.</li>
 </ul>
 </body>
