@@ -5,21 +5,22 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0025b2}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {font: 9.0px Monaco}
-span.s3 {color: #000000}
-span.s4 {color: #606060}
-span.s5 {color: #0019b7}
-span.s6 {color: #326f17}
+span.s2 {color: #0000ff}
+span.s3 {font: 9.0px Monaco}
+span.s4 {color: #000000}
+span.s5 {color: #606060}
+span.s6 {color: #0025b2}
+span.s7 {color: #416d1f}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -29,7 +30,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">superclass: Object</p>
 <p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p1">A Scheduler can be used to schedule and reschedule functions to be evaluated at a specific time-point. The Scheduler's time needs to be advanced manually. In most cases you will probably want to use a Clock (e.g. <a href="TempoClock.html"><span class="s2">TempoClock</span></a>, <a href="SystemClock.html"><span class="s2">SystemClock</span></a>, <a href="AppClock.html"><span class="s2">AppClock</span></a>) instead, in which the march of time is handled for you.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p1"><b>*new(clock, drift)</b></p>
@@ -55,17 +56,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns whether the scheduling queue is empty.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b>clear</b></p>
-<p class="p1"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>clear the scheduling queue</p>
+<p class="p1"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>clear the scheduling queue</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4">// example:</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s3">a = </span>Scheduler<span class="s3">(</span>SystemClock<span class="s3">);</span></p>
+<p class="p5"><span class="s4">a = </span>Scheduler<span class="s4">(</span>SystemClock<span class="s4">);</span></p>
 <p class="p2"><br></p>
-<p class="p6">a.sched(3, { <span class="s4">"now it is 3 seconds."</span>.postln; <span class="s5">nil</span> });</p>
-<p class="p6">a.sched(5, { <span class="s4">"now it is 5 seconds."</span>.postln; <span class="s5">nil</span> });</p>
-<p class="p6">a.sched(1, { <span class="s4">"now it is 1 second."</span>.postln; <span class="s5">nil</span> });</p>
+<p class="p6">a.sched(3, { <span class="s5">"now it is 3 seconds."</span>.postln; <span class="s6">nil</span> });</p>
+<p class="p6">a.sched(5, { <span class="s5">"now it is 5 seconds."</span>.postln; <span class="s6">nil</span> });</p>
+<p class="p6">a.sched(1, { <span class="s5">"now it is 1 second."</span>.postln; <span class="s6">nil</span> });</p>
 <p class="p2"><br></p>
 <p class="p6">a.advance(0.5);</p>
 <p class="p6">a.advance(0.5);</p>
@@ -73,13 +74,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">a.advance(2);</p>
 <p class="p2"><br></p>
 <p class="p4">// the beats, seconds and clock are passed into the task function:</p>
-<p class="p6">a.sched(1, { <span class="s5">arg</span> beats, secs, clock; [beats, secs, clock].postln });</p>
+<p class="p6">a.sched(1, { <span class="s6">arg</span> beats, secs, clock; [beats, secs, clock].postln });</p>
 <p class="p6">a.advance(1);</p>
 <p class="p2"><br></p>
 <p class="p4">// the scheduling is relative to "now":</p>
-<p class="p6">a.sched(3, { <span class="s4">"now it was 3 seconds."</span>.postln });</p>
-<p class="p6">a.sched(5, { <span class="s4">"now it was 5 seconds."</span>.postln });</p>
-<p class="p6">a.sched(1, { <span class="s4">"now it was 1 second."</span>.postln });</p>
+<p class="p6">a.sched(3, { <span class="s5">"now it was 3 seconds."</span>.postln });</p>
+<p class="p6">a.sched(5, { <span class="s5">"now it was 5 seconds."</span>.postln });</p>
+<p class="p6">a.sched(1, { <span class="s5">"now it was 1 second."</span>.postln });</p>
 <p class="p2"><br></p>
 <p class="p6">a.advance(0.5);</p>
 <p class="p6">a.advance(0.5);</p>
@@ -87,7 +88,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">a.advance(2);</p>
 <p class="p2"><br></p>
 <p class="p4">// play a Routine or a task:</p>
-<p class="p6">a.play(<span class="s5">Routine</span> { 5.do { <span class="s5">arg</span> i; i.postln; 1.yield } });</p>
+<p class="p6">a.play(<span class="s6">Routine</span> { 5.do { <span class="s6">arg</span> i; i.postln; 1.yield } });</p>
 <p class="p6">a.advance(0.9);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -96,11 +97,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p5"><span class="s3">x = </span>Scheduler<span class="s3">(</span>TempoClock<span class="s3">.default);</span></p>
+<p class="p5"><span class="s4">x = </span>Scheduler<span class="s4">(</span>TempoClock<span class="s4">.default);</span></p>
 <p class="p2"><br></p>
-<p class="p5">Task<span class="s3"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">inf</span>.do { <span class="s5">|i|</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(<span class="s4">"next "</span> ++ i ++<span class="Apple-converted-space">  </span><span class="s4">" in task."</span> + <span class="s5">Main</span>.elapsedTime).postln;</p>
+<p class="p5">Task<span class="s4"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s6">inf</span>.do { <span class="s6">|i|</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(<span class="s5">"next "</span> ++ i ++<span class="Apple-converted-space">  </span><span class="s5">" in task."</span> + <span class="s6">Main</span>.elapsedTime).postln;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5.wait;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>}</p>
 <p class="p6">}.play(x)</p>
@@ -112,13 +113,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">x.seconds;</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p5">Routine<span class="s3"> {</span></p>
+<p class="p5">Routine<span class="s4"> {</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>loop { x.advance(0.1); 0.1.wait }</p>
 <p class="p6">}.play;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6"><span class="s5">Task</span> { 5.do {</p>
+<p class="p6"><span class="s6">Task</span> { 5.do {</p>
 <p class="p6"><span class="Apple-tab-span">	</span>x.advance(1);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>2.0.rand.wait;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>}</p>
@@ -127,10 +128,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">x.advance(8.1);</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s5">Pbind</span>(<span class="s6">\degree</span>, <span class="s5">Pseries</span>(0, 2, 8), <span class="s6">\dur</span>, 0.25).play(x);</p>
+<p class="p6"><span class="s6">Pbind</span>(<span class="s7">\degree</span>, <span class="s6">Pseries</span>(0, 2, 8), <span class="s7">\dur</span>, 0.25).play(x);</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6"><span class="s5">Task</span> { 5.do {</p>
+<p class="p6"><span class="s6">Task</span> { 5.do {</p>
 <p class="p6"><span class="Apple-tab-span">	</span>x.advance(0.20);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>1.0.wait;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>}</p>
