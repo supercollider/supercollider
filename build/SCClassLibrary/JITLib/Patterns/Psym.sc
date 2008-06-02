@@ -21,7 +21,6 @@ Psym : FilterPattern {
 			
 			pat = this.getPattern(outval);
 			inval = pat.embedInStream(inval);
-			inval ?? { ^nil.yield };
 		};
 		^inval
 	
@@ -69,10 +68,61 @@ Ptsym : Psym {
 		} {
 			pat = Psync(this.getPattern(outval), quantVal, durVal, tolerance);
 			inval = pat.embedInStream(inval);
-			inval ?? { ^nil.yield };
 		};
 		^inval
 	
+	}
+}
+
+Pnsym1 : Pnsym {
+	embedInStream { arg inval;
+		var str, which, streams, outval, pat, currentStream;
+		str = pattern.asStream;
+		streams = IdentityDictionary.new;
+		while {
+			which = str.next(inval);
+			which.notNil
+		} {
+			pat = this.getPattern(which);
+			currentStream = streams.at(pat);
+			if(currentStream.isNil) {
+				currentStream = pat.asStream;
+				streams.put(pat, currentStream);
+			};
+			outval = currentStream.next(inval);
+			outval ?? { ^inval };
+			inval = outval.yield
+		};
+		^inval
+	
+	}
+}
+
+Psym1 : Psym {
+	embedInStream { arg inval, cleanup;
+		var str, which, streams, outval, pat, currentStream;
+		str = pattern.asStream;
+		streams = IdentityDictionary.new;
+		cleanup = cleanup ? EventStreamCleanup.new;
+		
+		while {
+			which = str.next(inval);
+			which.notNil
+		} {
+			pat = this.getPattern(which);
+			currentStream = streams.at(pat);
+			if(currentStream.isNil) {
+				currentStream = pat.asStream;
+				streams.put(pat, currentStream);
+			};
+			outval = currentStream.next(inval);
+			if(outval.isNil) { ^cleanup.exit(inval) };
+			
+			cleanup.update(outval);
+			inval = outval.yield
+		};
+		
+		^cleanup.exit(inval);
 	}
 }
 
