@@ -130,23 +130,14 @@ BusPlug : AbstractFunction {
 	
 	
 	
-	// embed bus in event streams
-	
-	embedInStream { arg inval;
-					if(inval.notNil) {
-						if(this.isPlaying.not) {
-							if(this.isNeutral) { this.defineBus(\control, 1) }; 
-							this.wakeUp 
-						};// if in event stream yield bus arg, else a normal stream
-						this.busArg.yield;
-					} { this.yield  }
-					^inval
+	asControlInput {
+			if(this.isPlaying.not) {
+				if(this.isNeutral) { this.defineBus(\control, 1) }; 
+				this.wakeUp 
+			};
+			^this.busArg;
 	}
-	asStream  {
-			^Routine { arg inval;
-				loop { inval = this.embedInStream(inval) }
-			}
-	}
+
 		
 	
 	/////  math support  /////////
