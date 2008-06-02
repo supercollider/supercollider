@@ -181,16 +181,15 @@ AbstractFunction {
 		^this.valueArray(args)
 	}
 	
-	// function composition
 	<> { arg that;
 		// function composition
 		^{|...args| this.value(that.value(*args)) }
 	}
-	
+
 	// embed in ugen graph
-	asUGenInput {
-		^this.value
-	}
+	asUGenInput { ^this.value }
+	// convert to control input
+	asControlInput { ^this.value }
 	isValidUGenInput { ^true }
 }
 
