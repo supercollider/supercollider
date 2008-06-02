@@ -11,17 +11,17 @@ GeneralHIDSpec{
 	}
 
 	*loadSavedInfo{
-		all = (folder++"/allspecs.info").load;
+		all = (folder+/+"allspecs.info").load;
 	}
 	
 	*makeSaveFolder { 
 		var testfile, testname = "zzz_generalhid_test_delete_me.txt"; 
-		folder = (Platform.userAppSupportDir ++ "/GeneralHIDSpecs").standardizePath;
-		testfile = File(folder ++ "/" ++ testname, "w");
+		folder = (Platform.userAppSupportDir +/+ "GeneralHIDSpecs").standardizePath;
+		testfile = File(folder +/+ testname, "w");
 
 		if (testfile.isOpen.not) 
-			{ unixCmd("mkdir" + folder) }
-			{ testfile.close;  unixCmd("rm" + folder ++ "/" ++ testname) }
+			{ unixCmd("mkdir" + folder.escapeChar($ )) }
+			{ testfile.close;  unixCmd("rm" + folder.escapeChar($ ) +/+ testname) }
 	}
 
 	*new { |dev|
@@ -115,7 +115,7 @@ GeneralHIDSpec{
 		var file, res = false;
 		var filename;
 		all.put( name.asSymbol, info );
-		filename = folder ++ "/" ++ name ++ ".spec";
+		filename = folder +/+ name ++ ".spec";
 		file = File(filename, "w"); 
 		if (file.isOpen) { 
 			res = file.write(map.asCompileString);
@@ -128,7 +128,7 @@ GeneralHIDSpec{
 	*saveAll{
 		var file, res = false;
 		var filename;
-		filename = folder ++ "/allspecs.info";
+		filename = folder +/+ "allspecs.info";
 		file = File(filename, "w"); 
 		if (file.isOpen) { 
 			res = file.write(all.asCompileString);
@@ -138,7 +138,7 @@ GeneralHIDSpec{
 	}
 
 	fromFile { |name| 
-		map = (folder++"/"++name++".spec").load;
+		map = (folder +/+ name++".spec").load;
 		map.keysValuesDo{ |key,it|
 			this.at( key ).key = key;
 		}
