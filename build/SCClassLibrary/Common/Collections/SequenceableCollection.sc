@@ -278,7 +278,7 @@ SequenceableCollection : Collection {
 		var res = if (index >= this.size) { 
 			this.extend(index + 1, default) 
 		}{ 
-			this 
+			this.copy
 		};
 		^res.put(index, item)
 	}
