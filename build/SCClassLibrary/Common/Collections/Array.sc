@@ -206,6 +206,8 @@ Array[slot] : ArrayedCollection {
 		});
 	}
 	asUGenInput { ^this.collect(_.asUGenInput) }
+	asControlInput { ^this.collect(_.asControlInput) }
+
 	isValidUGenInput { ^true }
 	numChannels { ^this.size }
 	

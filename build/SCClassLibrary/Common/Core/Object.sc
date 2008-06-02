@@ -571,6 +571,7 @@ Object  {
 	isControlUGen { ^false }
 	source { ^this }
 	asUGenInput { ^this }
+	asControlInput { ^this }
 
 
 	// these are the same as new and newCopyArgs, but should not be overridden by any class.

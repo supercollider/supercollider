@@ -162,7 +162,10 @@ Bus {
 			^{ this.ar }.play(target, outbus, fadeTime, addAction);
 		});
 	}
+	
 	asUGenInput { ^this.index }
+	asControlInput { ^this.index }
+
 	asMap {
 		^mapSymbol ?? {
 			if(rate == \control) {

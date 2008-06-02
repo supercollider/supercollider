@@ -45,16 +45,16 @@ Node {
 	}
 	
 	map { arg ... args;
-		server.sendMsg(14, nodeID, *(args.asUGenInput)); //"/n_map"
+		server.sendMsg(14, nodeID, *(args.asControlInput)); //"/n_map"
 	}
 	mapMsg { arg ... args;
-		^[14, nodeID] ++ args.asUGenInput; //"/n_map"
+		^[14, nodeID] ++ args.asControlInput; //"/n_map"
 	}	
 	mapn { arg ... args;
-		server.sendMsg(48, nodeID, *(args.asUGenInput)); //"/n_mapn"
+		server.sendMsg(48, nodeID, *(args.asControlInput)); //"/n_mapn"
 	}
 	mapnMsg { arg ... args;
-		^[48, nodeID] ++ args.asUGenInput; //"/n_mapn"
+		^[48, nodeID] ++ args.asControlInput; //"/n_mapn"
 	}
 	// map to Bus objects
 	busMap { arg firstControl, aBus ... args;
@@ -77,11 +77,11 @@ Node {
 	}
 	
 	set { arg ... args;
-		server.sendMsg(15, nodeID, *(args.unbubble.asUGenInput)); 	 //"/n_set"
+		server.sendMsg(15, nodeID, *(args.unbubble.asControlInput)); 	 //"/n_set"
 	}
 	
 	setMsg { arg ... args;
-		^[15, nodeID] ++ args.unbubble.asUGenInput; 	 //"/n_set"
+		^[15, nodeID] ++ args.unbubble.asControlInput; 	 //"/n_set"
 	}
 
 	setn { arg ... args;
@@ -90,7 +90,7 @@ Node {
 	
 	setnMsg { arg ... args;
 		var nargs;
-		args = args.asUGenInput; 
+		args = args.asControlInput; 
 		nargs = List.new;
 		args.pairsDo { arg control, moreVals; 
 			nargs.addAll([control, moreVals.size, moreVals].flatIf { |x| x.isString.not })
@@ -100,11 +100,11 @@ Node {
 	}
 		
 	fill { arg controlName, numControls, value ... args;
-		server.sendMsg(17, nodeID, controlName, numControls, value, *(args.asUGenInput));//"n_fill"
+		server.sendMsg(17, nodeID, controlName, numControls, value, *(args.asControlInput));//"n_fill"
 	}
 	
 	fillMsg { arg controlName, numControls, value ... args;
-		^[17, nodeID, controlName, numControls, value] ++ args.asUGenInput; //"n_fill"
+		^[17, nodeID, controlName, numControls, value] ++ args.asControlInput; //"n_fill"
 	}
 
 	release { arg releaseTime;
@@ -190,7 +190,9 @@ Node {
 			and: { aNode.nodeID == nodeID and: { aNode.server === server }}
 	}
 	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
-	asUGenInput { ^this.nodeID }
+	asUGenInput { Error("should not use a % inside a SynthDef".format(this.class.name)).throw }
+	asControlInput { ^this.nodeID }
+
 }
 
 
@@ -369,7 +371,7 @@ Synth : Node {
 		synth = this.basicNew(defName, server);
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
 		server.sendMsg(9, defName, synth.nodeID, addNum, inTarget.nodeID, 
-			*(args.asUGenInput)); //"s_new"
+			*(args.asControlInput)); //"s_new"
 		^synth
 	}
 	*newPaused { arg defName, args, target, addAction=\addToHead;
@@ -380,7 +382,7 @@ Synth : Node {
 		synth = this.basicNew(defName, server);
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
 		server.sendBundle(nil, [9, defName, synth.nodeID, addNum, inTarget.nodeID] ++ 
-			args.asUGenInput, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
+			args.asControlInput, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
 		^synth
 	}
 		/** does not send	(used for bundling) **/
@@ -394,7 +396,7 @@ Synth : Node {
 		// if target is nil set to default group of server specified when basicNew was called
 		inTarget = (target ? server.defaultGroup).asTarget;
 		(addNum < 2).if({ group = inTarget; }, { group = inTarget.group; });
-		^[9, defName, nodeID, addNum, inTarget.nodeID] ++ args.asUGenInput; //"/s_new"
+		^[9, defName, nodeID, addNum, inTarget.nodeID] ++ args.asControlInput; //"/s_new"
 	}
 	*after { arg aNode, defName, args;	
 		^this.new(defName, args, aNode, \addAfter);
@@ -415,24 +417,24 @@ Synth : Node {
 	addToHeadMsg { arg aGroup, args;
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
-		^[9, defName, nodeID, 0, group.nodeID] ++ args.asUGenInput	// "/s_new"
+		^[9, defName, nodeID, 0, group.nodeID] ++ args.asControlInput	// "/s_new"
 	}
 	addToTailMsg { arg aGroup, args;
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
-		^[9, defName, nodeID, 1, group.nodeID] ++ args.asUGenInput // "/s_new"
+		^[9, defName, nodeID, 1, group.nodeID] ++ args.asControlInput // "/s_new"
 	}
 	addAfterMsg {  arg aNode, args;
 		group = aNode.group; 
-		^[9, defName, nodeID, 3, aNode.nodeID] ++ args.asUGenInput // "/s_new"
+		^[9, defName, nodeID, 3, aNode.nodeID] ++ args.asControlInput // "/s_new"
 	}
 	addBeforeMsg {  arg aNode, args;
 		group = aNode.group; 
-		^[9, defName, nodeID, 2, aNode.nodeID] ++ args.asUGenInput // "/s_new"
+		^[9, defName, nodeID, 2, aNode.nodeID] ++ args.asControlInput // "/s_new"
 	}
 	addReplaceMsg { arg nodeToReplace, args;
 		group = nodeToReplace.group; 
-		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args.asUGenInput // "/s_new"
+		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args.asControlInput // "/s_new"
 	}
 	
 	// nodeID -1 
@@ -441,7 +443,7 @@ Synth : Node {
 		target = target.asTarget;
 		server = target.server;
 		server.sendMsg(9, defName.asDefName, -1, addActions[addAction], target.nodeID, 
-			*(args.asUGenInput)); //"/s_new"
+			*(args.asControlInput)); //"/s_new"
 		^nil;
 	}
 	
