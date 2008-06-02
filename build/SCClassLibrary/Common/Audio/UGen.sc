@@ -183,6 +183,7 @@ UGen : AbstractFunction {
 				
 	isValidUGenInput { ^true }
 	asUGenInput { ^this }
+	asControlInput { Error("can't set a control to a UGen").throw }
 	numChannels { ^1 }
 	
 	
