@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.47">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
@@ -13,17 +13,24 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #842d1c}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #456c20}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4e6a26}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0018f7}
+span.s2 {color: #002bf0}
 span.s3 {text-decoration: underline}
-span.s4 {color: #456c20}
+span.s4 {color: #4e6a26}
 span.s5 {color: #000000}
-span.s6 {color: #091fb1}
+span.s6 {color: #0029ac}
 span.s7 {color: #606060}
-span.s8 {color: #902a19}
+span.s8 {color: #842d1c}
+span.s9 {color: #0000bf}
+span.s10 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -321,5 +328,38 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">)</p>
 <p class="p3"><br></p>
 <p class="p6">a.free;</p>
+<p class="p3"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p11">/// using an event type to control a QCView by patterns:</p>
+<p class="p10"><br></p>
+<p class="p12"><span class="s9">Event</span>.addEventType(<span class="s10">\quartz</span>, { <span class="s9">|server|</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s9">var</span> latency = server.latency;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s9">var</span> view = ~view.postln;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s9">var</span> key = ~key, value = ~value;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s9">AppClock</span>.sched(latency, { view.postln; view.setInputValue(key, value) });</p>
+<p class="p12">});</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p12">(</p>
+<p class="p12">w = <span class="s9">SCWindow</span>(<span class="s7">"Level Meters"</span>, <span class="s9">Rect</span>(128, 64, 200, 400)).front;</p>
+<p class="p10"><br></p>
+<p class="p12">m = <span class="s9">SCQuartzComposerView</span>(w, <span class="s9">Rect</span>(20,20,50, 360));</p>
+<p class="p8"><span class="s5">m.path = </span>"Help/GUI/SCQuartzComposerView/SCLevelMeter.qtz"<span class="s5">.standardizePath;</span></p>
+<p class="p12">m.maxFPS_(20);</p>
+<p class="p12">m.start;</p>
+<p class="p12">)</p>
+<p class="p10"><br></p>
+<p class="p12">(</p>
+<p class="p13">Pbind<span class="s5">(</span></p>
+<p class="p14"><span class="s5"><span class="Apple-tab-span">	</span></span>\type<span class="s5">, </span>\quartz<span class="s5">,</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s10">\view</span>, m,</p>
+<p class="p14"><span class="s5"><span class="Apple-tab-span">	</span></span>\key<span class="s5">, </span>\level<span class="s5">,</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s10">\value</span>, <span class="s9">Pwhite</span>(0, 1.0, <span class="s9">inf</span>).explin(0.01,1.01, 0, 1),</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s10">\dur</span>, 0.1</p>
+<p class="p12">).play;</p>
+<p class="p12">)</p>
+<p class="p10"><br></p>
+<p class="p12">m.setInputValue(<span class="s10">\level</span>, 0.5);</p>
 </body>
 </html>
