@@ -42,6 +42,16 @@ Event : Environment {
 //		^this.delta
 	}
 	
+	// node watcher interface
+	
+	isPlaying_ { arg val;
+		this.put(\isPlaying, val);
+	}
+	
+	isRunning_ { arg val;
+		this.put(\isRunning, val);
+	}
+	
 	// this method is called by EventStreamPlayer so it can schedule Routines as well
 	playAndDelta { | cleanup, mute |
 		if (mute) { this.put(\freq, \rest) };
@@ -67,7 +77,7 @@ Event : Environment {
 
 	// This enables events to represent the server resources they created in an Event
 	// So, ~bufnum = (type: \sine1, amps: 1/(1..10)) is possible
-	asUGenInput {		
+	asControlInput {		
 		^this[ EventTypesWithCleanup.ugenInputTypes[this[\type] ] ] ;
 	}
 
@@ -389,8 +399,7 @@ Event : Environment {
 							~sustain = sustain = ~sustain.value;
 			
 							// compute the control values and generate OSC commands
-							bndl = msgFunc.valueEnvir.asUGenInput;
-							bndl = [\s_new, instrumentName, ids, Node.actionNumberFor(~addAction), ~group.asUGenInput] ++ bndl; 
+							bndl = msgFunc.valueEnvir.asControlInput;							bndl = [\s_new, instrumentName, ids, Node.actionNumberFor(~addAction), ~group.asControlInput] ++ bndl; 
 							bndl = bndl.flop;
 							ids = Array.fill(bndl.size, {server.nextNodeID });
 							bndl.do { | msg, i | msg[2] = ids[i]  };
@@ -437,8 +446,8 @@ Event : Environment {
 									~msgFunc = ~defaultMsgFunc;
 								};
 							};
-							bndl = msgFunc.valueEnvir.asUGenInput;
-							bndl = [\s_new, instrumentName, ~id, Node.actionNumberFor(~addAction), ~group.asUGenInput] ++ bndl; 
+							bndl = msgFunc.valueEnvir.asControlInput;
+							bndl = [\s_new, instrumentName, ~id, Node.actionNumberFor(~addAction), ~group.asControlInput] ++ bndl; 
 							bndl = bndl.flop;
 							if ( (ids = ~id).isNil ) {
 								ids = Array.fill(bndl.size, {server.nextNodeID });
@@ -465,7 +474,7 @@ Event : Environment {
 							} {	
 								bndl = ~args.envirPairs;
 							};
-							bndl = ([\n_set, ~id.asUGenInput] ++  bndl).asUGenInput.flop;
+							bndl = ([\n_set, ~id.asControlInput] ++  bndl).asControlInput.flop;
 							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
 						};
 					},
@@ -474,20 +483,20 @@ Event : Environment {
 						var gate;
 						if (~hasGate) { 
 							gate = min(0.0, ~gate ? 0.0); // accept release times
-							~schedBundleArray.value(~lag, ~timingOffset, server,[\n_set, ~id.asUGenInput, \gate, gate].flop) 
+							~schedBundleArray.value(~lag, ~timingOffset, server,[\n_set, ~id.asControlInput, \gate, gate].flop) 
 						} {
-							~schedBundleArray.value(~lag, ~timingOffset, server, [\n_free, ~id.asUGenInput].flop)
+							~schedBundleArray.value(~lag, ~timingOffset, server, [\n_free, ~id.asControlInput].flop)
 						}						
 					},
 					
 					kill: #{|server|
-						~schedBundleArray.value(~lag, ~timingOffset, server, [\n_free, ~id.asUGenInput].flop)
+						~schedBundleArray.value(~lag, ~timingOffset, server, [\n_free, ~id.asControlInput].flop)
 					},
 			
 					group: #{|server|
 						var bundle;
 						if (~id.isNil) { ~id = server.nextNodeID };
-						bundle = [\g_new, ~id.asArray, Node.actionNumberFor(~addAction), ~group.asUGenInput].flop;
+						bundle = [\g_new, ~id.asArray, Node.actionNumberFor(~addAction), ~group.asControlInput].flop;
 						~schedBundleArray.value(~lag, ~timingOffset, server, bundle);
 					},
 			
@@ -495,24 +504,24 @@ Event : Environment {
 					bus: #{|server|
 						var array;
 						array = ~array.asArray;
-						~schedBundle.value(~lag, ~timingOffset, server, [\c_setn, ~out.asUGenInput, array.size] ++ array);
+						~schedBundle.value(~lag, ~timingOffset, server, [\c_setn, ~out.asControlInput, array.size] ++ array);
 					},
 					
 					gen: #{|server|
-						~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, ~bufnum.asUGenInput, ~gencmd, ~genflags] ++ ~genarray);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, ~bufnum.asControlInput, ~gencmd, ~genflags] ++ ~genarray);
 					},
 					
 					load: #{|server|
-						~schedBundle.value(~lag, ~timingOffset, server, [\b_allocRead, ~bufnum.asUGenInput, ~filename, ~frame, ~numframes]);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_allocRead, ~bufnum.asControlInput, ~filename, ~frame, ~numframes]);
 					},
 					read: #{|server|
-						~schedBundle.value(~lag, ~timingOffset, server, [\b_read, ~bufnum.asUGenInput, ~filename, ~frame, ~numframes, ~bufpos, ~leaveOpen]);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_read, ~bufnum.asControlInput, ~filename, ~frame, ~numframes, ~bufpos, ~leaveOpen]);
 					},
 					alloc: #{|server|
-						~schedBundle.value(~lag, ~timingOffset, server, [\b_alloc, ~bufnum.asUGenInput, ~numframes, ~numchannels]);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_alloc, ~bufnum.asControlInput, ~numframes, ~numchannels]);
 					},
 					free: #{|server|
-						~schedBundle.value(~lag, ~timingOffset, server, [\b_free, ~bufnum.asUGenInput]);
+						~schedBundle.value(~lag, ~timingOffset, server, [\b_free, ~bufnum.asControlInput]);
 					},
 					
 					midi: #{|server|
@@ -532,7 +541,7 @@ Event : Environment {
 							midicmd = ~midicmd;
 							bndl = ~midiEventFunctions[midicmd].valueEnvir.asCollection;
 							
-							bndl = bndl.asUGenInput.flop;
+							bndl = bndl.asControlInput.flop;
 							
 							bndl.do {|msgArgs, i|
 									var latency;
@@ -568,9 +577,9 @@ Event : Environment {
 					monoOff:  #{|server|
 			
 						if(~hasGate == false) {
-							~schedBundle.value(~lag, ~timingOffset, server, [\n_free] ++ ~id.asUGenInput);
+							~schedBundle.value(~lag, ~timingOffset, server, [\n_free] ++ ~id.asControlInput);
 						} {
-							~schedBundle.value(~lag, ~timingOffset, server, *([\n_set, ~id.asUGenInput, \gate, 0].flop) ); 
+							~schedBundle.value(~lag, ~timingOffset, server, *([\n_set, ~id.asControlInput, \gate, 0].flop) ); 
 						};
 						
 					},
@@ -584,7 +593,7 @@ Event : Environment {
 							~amp = ~amp.value;
 							~sustain = ~sustain.value;
 				
-							bndl = ([\n_set, ~id.asUGenInput] ++ ~msgFunc.valueEnvir).flop;
+							bndl = ([\n_set, ~id.asControlInput] ++ ~msgFunc.valueEnvir).flop;
 							~schedBundle.value(~lag, ~timingOffset, server, *bndl);
 						};
 					},
@@ -616,7 +625,7 @@ Event : Environment {
 						var bndl, synthLib, addAction, group, latency, ids, id, groupControls;
 						~server = server;
 						addAction = Node.actionNumberFor(~addAction);
-						group = ~group.asUGenInput;
+						group = ~group.asControlInput;
 						~freq = ~detunedFreq.value;
 						~amp = ~amp.value;
 						ids = ~id;					
@@ -652,7 +661,7 @@ Event : Environment {
 						var ids, group, addAction, bundle;
 						ids = ~id = (~id ?? { server.nextNodeID }).asArray;
 						addAction = Node.actionNumberFor(~addAction);
-						group = ~group.asUGenInput;
+						group = ~group.asControlInput;
 						~server = server;
 						if ((addAction == 0) || (addAction == 3) ) {
 							ids = ids.reverse;
@@ -669,8 +678,8 @@ Event : Environment {
 						var doTree = { |tree, currentNode, addAction=1|
 							if(tree.isKindOf(Association)) {
 								~bundle = ~bundle.add(["/g_new",
-									tree.key.asUGenInput, Node.actionNumberFor(addAction),
-									currentNode.asUGenInput]);
+									tree.key.asControlInput, Node.actionNumberFor(addAction),
+									currentNode.asControlInput]);
 								currentNode = tree.key;
 								tree = tree.value;
 							};
@@ -681,8 +690,8 @@ Event : Environment {
 								};
 							} {
 								~bundle = ~bundle.add(["/g_new",
-									tree.asUGenInput, Node.actionNumberFor(addAction),
-									currentNode.asUGenInput]);
+									tree.asControlInput, Node.actionNumberFor(addAction),
+									currentNode.asControlInput]);
 							};
 							
 						};
@@ -717,7 +726,7 @@ Event : Environment {
 					~finish.value;
 					ids = Event.checkIDs(~id);
 					addAction = Node.actionNumberFor(~addAction);
-					group = ~group.asUGenInput;
+					group = ~group.asControlInput;
 					~server = server= ~server ?? {Server.default};
 					if ((addAction == 0) || (addAction == 3) ) {
 						ids = ids.reverse;
@@ -738,7 +747,7 @@ Event : Environment {
 					~finish.value;
 					~server = server = ~server ?? { Server.default };
 					addAction = Node.actionNumberFor(~addAction);
-					group = ~group.asUGenInput;
+					group = ~group.asControlInput;
 					synthLib = ~synthLib ?? { SynthDescLib.global };
 					instrumentName = ~instrument.asSymbol;
 					desc = synthLib.synthDescs[instrumentName];					if (desc.notNil) { 
