@@ -5,30 +5,30 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.47">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura; min-height: 15.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0025b2}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #416d1f}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 span.s1 {text-decoration: underline}
-span.s2 {color: #0019b7}
+span.s2 {color: #0025b2}
 span.s3 {color: #000000}
-span.s4 {color: #326f17}
-span.s5 {color: #a71e12}
+span.s4 {color: #416d1f}
+span.s5 {color: #982316}
 span.s6 {font: 9.0px Monaco}
-span.s7 {font: 12.0px Helvetica; color: #0000ff}
+span.s7 {font: 12.0px Helvetica; color: #0024f8}
 span.s8 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -461,7 +461,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9">// multichannel expansion of the events:</p>
 <p class="p3"><br></p>
 <p class="p7">~lfoStereo = { <span class="s2">LFNoise1</span>.kr([1, 1], 1300, 1500) }; <span class="s5">// 2 channel control rate proxy</span></p>
-<p class="p7">~out = <span class="s2">Pbind</span>(<span class="s4">\instrument</span>, <span class="s4">\who</span>, <span class="s4">\freq</span>, 1500, <span class="s4">\detune</span>, ~lfoStereo, <span class="s4">\legato</span>, 0.02);</p>
+<p class="p7">~out = <span class="s2">Pbind</span>(<span class="s4">\instrument</span>, <span class="s4">\who</span>, <span class="s4">\ffreq</span>, ~lfoStereo, <span class="s4">\legato</span>, 0.02).trace;</p>
 <p class="p7">~lfoStereo = { [<span class="s2">MouseX</span>.kr(100, 15500, 1), <span class="s2">SinOsc</span>.kr(<span class="s2">SinOsc</span>.kr(0.2, 0, 10, 10), 0, 400, 700)] }</p>
 <p class="p3"><br></p>
 <p class="p9">// btw: setting the clock will cause the pattern to sync:</p>
