@@ -60,6 +60,11 @@ UnaryOpPlug : AbstractOpPlug {
 	prepareForProxySynthDef { arg proxy;
 		^{ this.value(proxy) }
 	}
+	
+	asControlInput {
+		"Cannot calculate this value. Use direct mapping only.".warn;
+		^this
+	}
 }
 
 
@@ -107,7 +112,10 @@ BinaryOpPlug : AbstractOpPlug  {
 		a.wakeUp;
 		b.wakeUp;
 	}
-
+	asControlInput {
+		"Cannot calculate this value. Use direct mapping only.".warn;
+		^this
+	}
 	
 		
 }

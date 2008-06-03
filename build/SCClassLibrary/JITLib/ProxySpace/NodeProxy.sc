@@ -89,7 +89,8 @@ BusPlug : AbstractFunction {
 							{
 							Array.fill(numChannels, { arg i; "\c" ++ (index + i) })
 							}
-					};      
+					}; 
+			^busArg     
 	}
 	wakeUpToBundle {}
 	wakeUp {}
@@ -131,6 +132,7 @@ BusPlug : AbstractFunction {
 	
 	
 	asControlInput {
+			if(this.rate === \audio) { "cannot map audio rate buses".warn; ^nil };
 			if(this.isPlaying.not) {
 				if(this.isNeutral) { this.defineBus(\control, 1) }; 
 				this.wakeUp 
@@ -144,6 +146,7 @@ BusPlug : AbstractFunction {
 	
 	value { arg something; 
 		var n;
+		if(UGen.buildSynthDef.isNil) { ^this }; // only return when in ugen graph.
 		something !? {  n = something.numChannels };
 		^if(something.rate == 'audio') { this.ar(n) } { this.kr(n) }  
 	}
