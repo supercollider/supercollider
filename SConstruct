@@ -258,6 +258,13 @@ def make_opt_flags(env):
                        ])
     return flags
 
+def make_static_object(env, source, postfix="_a"):
+    obj = os.path.splitext(source)[0] + postfix
+    return env.StaticObject(obj, source)
+
+def make_static_objects(env, sources, postfix="_a"):
+    return map(lambda x: make_static_object(env, x, postfix), sources)
+    
 # ======================================================================
 # command line options
 # ======================================================================
@@ -318,6 +325,8 @@ if PLATFORM == 'darwin':
     opts.AddOptions(
         BoolOption('UNIVERSAL',
                    'Build universal binaries (see UNIVERSAL_ARCHS)', 1),
+        BoolOption('INTERNAL_LIBSNDFILE',
+                   'Use internal version of libsndfile', 1),
 #       ListOption('UNIVERSAL_ARCHS',
 #                  'Architectures to build for',
 #                  'all', ['ppc', 'i386'])
@@ -389,8 +398,13 @@ if isDefaultBuild():
         Exit(1)
     
     # sndfile
-    success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
-    if not success: Exit(1)
+    if PLATFORM == 'darwin' and env['INTERNAL_LIBSNDFILE']:
+        libraries['sndfile'] = Environment(LINKFLAGS = ['libsndfile/libsndfile.a'],
+                                           CPPPATH = ['#libsndfile'])
+    else:
+        success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
+        if not success: Exit(1)
+    print libraries['sndfile']
 
     # libcurl
     success, libraries['libcurl'] = conf.CheckPKG('libcurl >= 7')
@@ -609,35 +623,6 @@ else:
     env.AppendUnique(CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 1)])
 
 # ======================================================================
-# configuration summary
-# ======================================================================
-
-def yesorno(p):
-    if p: return 'yes'
-    else: return 'no'
-
-print '------------------------------------------------------------------------'
-print ' ALTIVEC:                 %s' % yesorno(features['altivec'])
-print ' AUDIOAPI:                %s' % features['audioapi']
-print ' MIDIAPI:                 %s' % features['midiapi']
-print ' DEBUG:                   %s' % yesorno(env['DEBUG'])
-# print ' DESTDIR:                 %s' % env['DESTDIR']
-print ' DEVELOPMENT:             %s' % yesorno(env['DEVELOPMENT'])
-print ' LANG:                    %s' % yesorno(env['LANG'])
-print ' LID:                     %s' % yesorno(features['lid'])
-print ' WII:                     %s' % yesorno(features['wii'])
-print ' PREFIX:                  %s' % env['PREFIX']
-print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
-print ' SCEL:                    %s' % yesorno(env['SCEL'])
-print ' SCVIM:                   %s' % yesorno(env['SCVIM'])
-print ' SSE:                     %s' % yesorno(features['sse'])
-print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
-print ' TERMINAL_CLIENT:         %s' % yesorno(env['TERMINAL_CLIENT'])
-print ' CURL:                    %s' % yesorno(env['CURL'])
-print ' X11:                     %s' % yesorno(features['x11'])
-print '------------------------------------------------------------------------'
-
-# ======================================================================
 # Source/common
 # ======================================================================
 
@@ -645,8 +630,7 @@ commonEnv = env.Copy()
 commonEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
-               '#Headers/server',
-               '#libsndfile'],
+               '#Headers/server'],
     CCFLAGS = ['-fPIC']
     )
 
@@ -692,7 +676,7 @@ if PLATFORM == 'darwin':
     commonSources += [
         'Source/common/SC_StandAloneInfo_Darwin.cpp'
         ]
-commonEnv.Library('build/common', commonSources)
+libcommon = commonEnv.Library('build/common', commonSources)
 
 # ======================================================================
 # Source/server
@@ -702,8 +686,7 @@ serverEnv = env.Copy()
 serverEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
-               '#Headers/server',
-               '#libsndfile'],
+               '#Headers/server'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
     LIBPATH = 'build')
 libscsynthEnv = serverEnv.Copy(
@@ -779,18 +762,14 @@ Source/server/SC_UnitDef.cpp
 Source/server/SC_World.cpp
 ''') + libraries['audioapi']['ADDITIONAL_SOURCES']
 
-def make_static_object(env, source):
-    obj = os.path.splitext(source)[0] + "_a"
-    return env.StaticObject(obj, source)
-
 scsynthSources = ['Source/server/scsynth_main.cpp']
 
 libscsynth = serverEnv.SharedLibrary('build/scsynth', libscsynthSources)
 env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
 
-if env['DEVELOPMENT']:
-    libscsynthStatic = serverEnv.StaticLibrary('build/scsynth', libscsynthSources)
-    env.Alias('install-dev', env.Install(lib_dir(INSTALL_PREFIX), [libscsynthStatic]))
+libscsynthStaticSources = libscsynthSources + make_static_objects(serverEnv, commonSources, "_libscsynthStatic");
+libscsynthStatic = serverEnv.StaticLibrary('build/scsynth', libscsynthStaticSources)
+env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynthStatic]))
 
 scsynth = serverEnv.Program('build/scsynth', scsynthSources, LIBS = ['scsynth'])
 env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [scsynth]))
@@ -806,8 +785,7 @@ pluginEnv = env.Copy(
 pluginEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
-               '#Headers/server',
-               '#libsndfile'],
+               '#Headers/server'],
     PKGCONFIG_NAME = 'libscplugin',
     PKGCONFIG_DESC = 'SuperCollider synthesis plugin headers',
     PKGCONFIG_PREFIX = FINAL_PREFIX,
@@ -943,8 +921,7 @@ langEnv.Append(
                '#Headers/plugin_interface',
                '#Headers/lang',
                '#Headers/server',
-               '#Source/lang/LangSource/Bison',
-               '#libsndfile'],
+               '#Source/lang/LangSource/Bison'],
     CPPDEFINES = [['USE_SC_TERMINAL_CLIENT', env['TERMINAL_CLIENT']]],
     LIBPATH = 'build'
     )
@@ -1079,6 +1056,13 @@ if env['LANG']:
         sclangLibs = ['sclang']
     sclang = langEnv.Program('build/sclang', sclangSources, LIBS=sclangLibs)
     env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [sclang]))
+
+# ======================================================================
+# doc/doxygen
+# ======================================================================
+
+# doxygen = env.Command(None, 'doc/doxygen/html/index.html', 'doxygen doc/doxygen/doxygen.cfg')
+# env.Alias('doxygen', doxygen)
 
 # ======================================================================
 # installation
@@ -1257,6 +1241,34 @@ if 'debian' in COMMAND_LINE_TARGETS:
 
 env.Clean('scrub',
           Split('config.log scache.conf .sconf_temp .sconsign.dblite'))
+
+# ======================================================================
+# configuration summary
+# ======================================================================
+
+def yesorno(p):
+    if p: return 'yes'
+    else: return 'no'
+
+print '------------------------------------------------------------------------'
+print ' ALTIVEC:                 %s' % yesorno(features['altivec'])
+print ' AUDIOAPI:                %s' % features['audioapi']
+print ' MIDIAPI:                 %s' % features['midiapi']
+print ' DEBUG:                   %s' % yesorno(env['DEBUG'])
+# print ' DESTDIR:                 %s' % env['DESTDIR']
+print ' DEVELOPMENT:             %s' % yesorno(env['DEVELOPMENT'])
+print ' LANG:                    %s' % yesorno(env['LANG'])
+print ' LID:                     %s' % yesorno(features['lid'])
+print ' WII:                     %s' % yesorno(features['wii'])
+print ' PREFIX:                  %s' % env['PREFIX']
+print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
+print ' SCEL:                    %s' % yesorno(env['SCEL'])
+print ' SCVIM:                   %s' % yesorno(env['SCVIM'])
+print ' SSE:                     %s' % yesorno(features['sse'])
+print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
+print ' TERMINAL_CLIENT:         %s' % yesorno(env['TERMINAL_CLIENT'])
+print ' X11:                     %s' % yesorno(features['x11'])
+print '------------------------------------------------------------------------'
 
 # ======================================================================
 # EOF
