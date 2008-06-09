@@ -15,9 +15,18 @@ MIDIClient {
 	classvar <initialized=false;
 	*init { arg inports, outports; // by default initialize all available ports
 								// you still must connect to them using MIDIIn.connect
+		var inp,outp;
+		inp = inports ? 0;
+		outp = outports ? 0;
+		this.prInit(inp,outp);
+
 		this.list;
-		if(inports.isNil,{inports = sources.size});
-		if(outports.isNil,{outports = destinations.size});
+
+		// -1 since the list will include SC's own ports;
+		if(inports.isNil,{inports = sources.size-1});
+		if(outports.isNil,{outports = destinations.size-1});
+
+		this.disposeClient;
 		this.prInit(inports,outports);
 		initialized = true;
 		// might ask for 1 and get 2 if your device has it
@@ -31,6 +40,9 @@ MIDIClient {
 				++ " outport(s).").postln;
 			"Some expected MIDI devices may not be available.".postln;
 		});
+
+		this.list;
+
 		Post << "MIDI Sources: " << Char.nl;
 		sources.do({ |x| Post << Char.tab << x << Char.nl });
 		Post << "MIDI Destinations: " << Char.nl;
