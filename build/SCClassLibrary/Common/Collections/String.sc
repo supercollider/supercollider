@@ -367,7 +367,14 @@ String[char] : RawArray {
 		
 		^this ++ pathSeparator ++ path
 	}
-
+	
+	asRelativePath { |relativeTo|
+		^PathName(this).asRelativePath(relativeTo)
+	}
+	asAbsolutePath {
+		^PathName(this).asAbsolutePath
+	}
+	
 	// runs a unix command and returns the result code.
 	systemCmd { _String_System ^this.primitiveFailed }
 	

@@ -93,12 +93,20 @@ PathName {
 		^fullPath.at(0).isPathSeparator
 	}
 	
-	asRelativePath {
-		if(fullPath.size > scroot.size and: {fullPath.copyRange(0,scroot.size - 1) == scroot },{
-			^fullPath.copyRange(scroot.size,fullPath.size - 1)
-		},{
-			^fullPath
-		})
+	asRelativePath { |relativeTo|
+		var r, a, b, i, mePath;
+		mePath = this.fullPath.absolutePath;
+		relativeTo = (relativeTo ? scroot ).absolutePath;
+		r = thisProcess.platform.pathSeparator;
+		
+		a = mePath.split(r);
+		b = relativeTo.split(r);
+		
+		i=0;
+		while{a[i]==b[i] and:{i<a.size}}{
+		 Ê Ê Ê Êi = i + 1;
+		};
+		^(".."++r).dup(b.size-i).join ++ a[i..].join(r)
 	}
 	asAbsolutePath {
 		if(this.isAbsolutePath,{
