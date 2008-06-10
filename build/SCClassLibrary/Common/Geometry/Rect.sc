@@ -61,12 +61,13 @@ Rect {
 		^this.class.new(aPoint.x, aPoint.y, width, height)
 	}
 	resizeBy { arg h, v;
-		^this.class.new(left, top, width + h, height + v)
+		^this.class.new(left, top, width + h, height + (v ? h))
 	}
 	resizeTo { arg h, v;
 		^this.class.new(left, top, h, v)
 	}
 	insetBy { arg h, v;
+		if(v.isNil){ v = h };
 		^this.class.new(left + h, top + v, width - h - h, height - v - v)
 	}
 	insetAll { arg a, b, c, d;
