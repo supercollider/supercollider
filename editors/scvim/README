@@ -20,6 +20,14 @@ ________________________________________________________________________________
 
 INSTALLATION STEPS:
 
+Automatic:
+
+edit INSTALL and run it [as sudo most likely].  The path requirements are
+listed in the manual install below.  Make sure the SCVim class is sourced
+in your library [see step 4].
+
+Manual Install:
+
 1) copy the contents of bin/ somewhere in your path.. for example
    sudo cp bin/* /usr/local/bin/
 

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+#currently only installs for one user as $HOME/.vim is the VIM_FILES_DEST target.
+#change this to something else in the system vim runtimepath to install for more users
+
 VIM_FILES_DEST=$HOME/.vim
 BIN_DEST=/usr/local/bin/
 SCEXTENSION_DIR=/usr/local/share/SuperCollider/Extensions
