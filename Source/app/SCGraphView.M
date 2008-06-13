@@ -202,6 +202,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 -(void)otherMouseDown:(NSEvent*)theEvent { [self mouseDown:theEvent]; }
 - (void)mouseDown:(NSEvent *)theEvent
 {
+//	NSLog(@"SCGraphView MOUSEDOWN");
     BOOL keepOn = YES;
     //BOOL isInside = YES;
     NSPoint mouseLoc;
@@ -228,7 +229,9 @@ static NSString *sSCObjType = @"SuperCollider object address";
         
         while (keepOn && !mDragStarted && !mMenuView) {
             theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |NSRightMouseUp | NSOtherMouseUp |
-                    NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged ];
+                    NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged 
+					| NSKeyDownMask | NSKeyUpMask
+			];
             mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
             //isInside = [self mouse:mouseLoc inRect:[self bounds]];
             scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);			
@@ -272,6 +275,18 @@ static NSString *sSCObjType = @"SuperCollider object address";
 						}
                         keepOn = NO;
                         break;
+				case NSKeyDown:
+						if(!constructionmode)
+						{
+							[self keyDown:theEvent];
+						}
+						break;
+				case NSKeyUp:
+						if(!constructionmode)
+						{
+							[self keyUp:theEvent];
+						}
+						break;
                 default:
                     post("evtype %d %4.4s\n", evtype, (char*)&evtype);
                         /* Ignore any other kind of event. */
