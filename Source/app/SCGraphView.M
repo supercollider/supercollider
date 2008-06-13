@@ -62,19 +62,21 @@ extern PyrSymbol *s_toggleEditMode;
 }
 
 //eat all key Events might add this
-//- (BOOL)performKeyEquivalent:(NSEvent *)event
-//{
+- (BOOL)performKeyEquivalent:(NSEvent *)event
+{
 //   NSString *characters = [event characters];
 //    unsigned int modifiers = [event modifierFlags];
 //    unichar character = 0;
 //    if([characters length] > 0) {
 //        character = [characters characterAtIndex: 0];
 //    }
-//    //control tab/escape doesn't get passed here at all ?
+    //control tab/escape doesn't get passed here at all ?
 //    NSLog(@"in performKeyEquivalent: unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
 //		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
-//	return YES;
-//}
+//	[super performKeyEquivalent: event];
+	[self keyDown: event];
+	return NO; //for now pass on the event
+}
 
 - (void)flagsChanged:(NSEvent *)event
 {
@@ -104,7 +106,7 @@ extern PyrSymbol *s_toggleEditMode;
     if (mTopView) {
 		// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
 		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
-			| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
+			| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask | NSCommandKeyMask;
         if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
             mTopView->tabPrevFocus();
             return;
@@ -250,7 +252,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 						{
 							view->doConstructionMove(scpoint);
 							mTopView->refresh();
-						}else				
+						}else
 							view->mouseTrack(scpoint, modifiers,theEvent);
 							view->mouseMoveAction(scpoint, modifiers,theEvent);				
 //							post("drag \n");
@@ -264,6 +266,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 							mTopView->refresh();
 						}else
 						{
+//							if(!view.GetSCObj()) break;						
 							view->mouseUpAction(scpoint, modifiers,theEvent);						
 							view->mouseEndTrack(scpoint, modifiers,theEvent);
 						}
@@ -635,6 +638,7 @@ const int circDiam = 20;
 - (void)concludeDragOperation:(id)sender {
     if (mTopView) mTopView->setDragView(0);
     [self displayIfNeeded];
+	
     //post("concludeDragOperation %08X\n", self);
 }
 
