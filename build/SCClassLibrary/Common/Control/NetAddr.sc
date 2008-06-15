@@ -138,8 +138,17 @@ NetAddr {
 	}
 	hash { arg that;
 		^addr.hash bitXor: port.hash
-	} 
-
+	}
+	
+	// Asymmetric: "that" may be nil or have nil port (wildcards)
+	matches { arg that;
+		^this==that or:{
+			that.isNil or: {
+				this.addr == that.addr and: { that.port.isNil }
+			}
+		}
+	}
+	
 	ip {
 		^addr.asIPString
 	}
