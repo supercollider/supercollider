@@ -58,7 +58,7 @@ FileReader : Stream {
 	}
 
 	*readInterpret { | path, skipEmptyLines=false, skipBlanks=false, delimiter, startRow = 0, skipSize = 0  | 
-		^this.read(path, skipEmptyLines, skipBlanks, _.interpret, delimiter, startRow = 0, skipSize = 0 )	}
+		^this.read(path, skipEmptyLines, skipBlanks, _.interpret, delimiter, startRow, skipSize )	}
 	
 }
 
