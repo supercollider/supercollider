@@ -291,26 +291,29 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	withTrailingSlash {
-		if(this.last != $/,{
-			^this ++ $/
+		var sep = thisProcess.platform.pathSeparator;
+		if(this.last != sep, {
+			^this ++ sep
 		},{
 			^this
 		})
 	}
 	withoutTrailingSlash {
-		if(this.last == $/,{
-			^this.copyRange(0,this.size-2)
+		var sep = thisProcess.platform.pathSeparator;
+		if(this.last == sep,{
+			^this.copyRange(0, this.size-2)
 		},{
 			^this
 		})
 	}
 			
 	absolutePath {
-		var first;
+		var first, sep;
+		sep = thisProcess.platform.pathSeparator;
 		first = this[0];
-		if(first == $/){^this};
+		if(first == sep){^this};
 		if(first == $~){^this.standardizePath};
-		^File.getcwd ++ "/" ++ this;
+		^File.getcwd ++ sep ++ this;
 	}
 
 	pathMatch { _StringPathMatch ^this.primitiveFailed } // glob
@@ -327,7 +330,7 @@ String[char] : RawArray {
 		var path = thisProcess.nowExecutingPath;
 		if(path.isNil) { Error("can't load relative to an unsaved file").throw};
 		if(path.basename == this) { Error("should not load a file from itself").throw };
-		^(path.dirname ++ "/" ++ this).loadPaths
+		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths
 	}
 	include {
 		if(Quarks.isInstalled(this).not) {
