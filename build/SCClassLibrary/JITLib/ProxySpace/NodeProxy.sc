@@ -1043,5 +1043,12 @@ Ndef : NodeProxy {
 	*at { arg server, key;
 		^Library.at(this, server, key)
 	}
+	
+	storeOn { arg stream;
+		this.printOn(stream);
+	}
+	printOn { arg stream;
+		stream << this.class.name << "(" <<< key << ")"
+	}
 }
 
