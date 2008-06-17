@@ -119,7 +119,7 @@ ArrayedCollection : SequenceableCollection {
 		this.overWrite(array)
 	}
 	
-	atModify { arg index, function; function.value(this.at(index)) }
+	atModify { arg index, function; this.put(index, function.value(this.at(index), index)) }
 	atInc { arg index, inc=1; this.put(index, this.at(index)+inc); }
 	atDec { arg index, dec=1; this.put(index, this.at(index)-dec); }
 
