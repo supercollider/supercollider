@@ -305,7 +305,7 @@ String[char] : RawArray {
 		})
 	}
 			
-	absolutePath{
+	absolutePath {
 		var first;
 		first = this[0];
 		if(first == $/){^this};
@@ -322,6 +322,12 @@ String[char] : RawArray {
 		^paths.collect({ arg path;
 			thisProcess.interpreter.executeFile(path);
 		});
+	}
+	loadRelative {
+		var path = thisProcess.nowExecutingPath;
+		if(path.isNil) { Error("can't load relative to an unsaved file").throw};
+		if(path.basename == this) { Error("should not load a file from itself").throw };
+		^(path.dirname ++ "/" ++ this).loadPaths
 	}
 	include {
 		if(Quarks.isInstalled(this).not) {
