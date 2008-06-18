@@ -214,6 +214,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			^this
 		};
 		comma = false;
+		names = 0;	// now, count the args actually added to the func
 		string = String.streamContents {|stream|
 			stream << "#{ ";
 			if (controlNames.size > 0) {
@@ -228,7 +229,8 @@ Use of this synth in Patterns will not detect argument names automatically becau
 					}{
 						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
 						if (comma) { stream << ", " } { comma = true };
-						stream << name2 << " = " << controlName.defaultValue.asStringPrec(7); 
+						stream << name2 << " = " << controlName.defaultValue.asStringPrec(7);
+						names = names + 1;
 					};
 				};
 			};
@@ -250,7 +252,8 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			};
 			stream << " ] }";
 		};
-		msgFunc = string.compile.value;
+			// do not compile the string if no argnames were added
+		if(names > 0) { msgFunc = string.compile.value };
 	}
 	// parse the def name out of the bytes array sent with /d_recv
 	*defNameFromBytes { arg int8Array;
