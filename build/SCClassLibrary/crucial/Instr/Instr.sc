@@ -1,14 +1,14 @@
 
 
-Instr  { 
+Instr  {
 
 	classvar <dir;
 
 	var  <>name, <>func, <>specs, <>outSpec, >path;
-	var <explicitSpecs;
-	
-	// specs are optional, can be guessed from the argnames
-	// outSpec is optional, can be determined by evaluating the func
+	var <explicitSpecs;// specs that were explicitly stated on construction (not guessed)
+
+	// specs are optional : can be guessed from the argnames
+	// outSpec is optional : can be determined by evaluating the func and examining the result
 	*new { arg name, func, specs, outSpec;
 		var previous;
 		if(func.isNil,{ ^this.at(name) });
@@ -16,7 +16,7 @@ Instr  {
 		previous = Library.atList(name.copy.addFirst(this));
 		if(previous.notNil,{
 			if(previous.isKindOf(Instr).not,{
-				Error("The Instr name address " + name + 
+				Error("The Instr name address " + name +
 					"is already occupied by a branch node. You may only add new Instr to the leaves").throw;
 			});
 			previous.func = func;
@@ -53,18 +53,18 @@ Instr  {
 			}.try({ arg err;
 				("ERROR while loading " + path).postln;
 				err.throw;
-			});				
+			});
 		});
 	}
 	*clearAll {
 		Library.global.removeAt(this)
 	}
-	
+
 	*ar { arg name, args;
 		var instr;
 		instr=this.at(name);
 		if(instr.isNil,{
-			die("Instr not found !!" 
+			die("Instr not found !!"
 					+ name.asCompileString + "in Meta_Instr:ar");
 		},{
 			^instr.valueArray(args)
@@ -88,23 +88,23 @@ Instr  {
 	next { arg ... inputs;
 		^func.valueArray(inputs)
 	}
-	
+
 	// set the directory where your library of Instr is to be found
 	*dir_ { arg p;
 		dir = p.standardizePath.withTrailingSlash;
 	}
 
-	rate {  
-		^if(outSpec.notNil,{ 
+	rate {
+		^if(outSpec.notNil,{
 			outSpec.rate;
 		},{
 			// if you aren't audio, you must specify an outSpec
 			\audio
 		})
 	}
-	numChannels { 
+	numChannels {
 		^if(outSpec.notNil,{
-			outSpec.numChannels 
+			outSpec.numChannels
 		},{ // if you are more than one channel, you must specify an outSpec
 			1
 		});
@@ -116,21 +116,21 @@ Instr  {
 	argNames { ^(func.def.argNames ? []).asList }
 	defArgs { ^(func.def.prototypeFrame ? []).asList }
 
-	argNameAt { arg i; 
+	argNameAt { arg i;
 		var nn;
 		nn=func.def.argNames;
 		^if(nn.notNil,{nn.at(i)},nil);
 	}
-	defArgAt { arg i; 
+	defArgAt { arg i;
 		var nn;
 		nn=func.def.prototypeFrame;
 		^nn.at(i)
 	}
 	// the default value supplied in the function
-	initAt { arg i;  
+	initAt { arg i;
 		^(this.defArgAt(i) ?? {this.specs.at(i).tryPerform(\default)})
 	}
-	
+
 	defName { ^this.class.symbolizeName(name).collect(_.asString).join($.) }
 	asSynthDef { arg args,outClass=\Out;
 		var synthDef;
@@ -142,7 +142,7 @@ Instr  {
 	prepareToBundle { arg group,bundle;
 		this.asSynthDef.prepareToBundle(group,bundle);
 	}
-			
+
 	writeDefFile { arg dir;
 		this.asSynthDef.writeDefFile(dir);
 	}
@@ -152,7 +152,7 @@ Instr  {
 		synthDef.writeDefFile(dir);
 	}
 	// for use in patterns
-	store { 
+	store {
 		var args;
 		args = this.specs.collect({ arg spec,i;
 				if(spec.rate == \control or: spec.rate == \stream,{
@@ -160,13 +160,13 @@ Instr  {
 				},{
 					spec.defaultControl(this.initAt(i))
 				})
-			}); 
+			});
 		^this.asSynthDef(args).store
 	}
 	asDefName {
 		^this.store.name
 	}
-	
+
 	test { arg ... args;
 		var p;
 		p = Patch(this.name,args);
@@ -179,7 +179,7 @@ Instr  {
 	*choose { arg start;
 		// this is only choosing from Instr in memory,
 		// it is not loading all possible Instr from file
-		^if(start.isNil,{ 
+		^if(start.isNil,{
 			Library.global.choose(this)
 		},{
 			Library.global.performList(\choose,([this] ++ this.symbolizeName(start)))
@@ -207,7 +207,7 @@ Instr  {
 	*chooseBySpec { arg outSpec;
 		^this.selectBySpec(outSpec).choose
 	}
-	
+
 	//private
 	*put { arg instr;
 		^Library.putList([this,this.symbolizeName(instr.name),instr].flatten )
@@ -221,19 +221,19 @@ Instr  {
 			this.new( [name,pairs@i ],pairs@(i+1),nil,outSpec)
 		})
 	}
-	
+
 	*symbolizeName { arg name;
 		if(name.isString,{
 			^name.split($.).collect(_.asSymbol);
 		 });
 	 	if(name.isKindOf(Symbol),{
 			^[name];
-		});	
+		});
 		if(name.isSequenceableCollection,{
 			^name.collect(_.asSymbol);
 		});
 		error("Invalid name for Instr : "++name);
-	}	
+	}
 
 	*objectAt { arg name;
 		var symbolized,search,path,pathParts,rootPath,instr;
@@ -242,7 +242,7 @@ Instr  {
 		if(search.notNil,{ ^search });
 
 		this.findFileFor(symbolized);
-	
+
 		// its either loaded now or its nil
 		^Library.atList([this] ++ symbolized);
 	}
@@ -269,7 +269,7 @@ Instr  {
 
 		pathPartsFirst = pathParts.first;
 		if(fullInstrName.isNil,{ fullInstrName = symbolized.copy });
-		
+
 		// if its a multi-part name then could be
 		// [\synths,\stereo,\SinOsc,\pmod]
 		// possible files:
@@ -282,15 +282,15 @@ Instr  {
 			file = path.copyRange(rootPath.size,path.size-1);
 			if(file.last == $/,{
 				if(file.copyRange(0,file.size-2) == pathPartsFirst,{
-					^this.findFileInDir(symbolized.copyRange(1,symbolized.size-1), 
-										rootPath ++ file, 
+					^this.findFileInDir(symbolized.copyRange(1,symbolized.size-1),
+										rootPath ++ file,
 										fullInstrName );
 				});
 			},{
 				orcname = PathName(file).fileNameWithoutExtension;
 				if(orcname == pathPartsFirst,{
 					path.load;
-					
+
 					//fullInstrName copied up until including orcname
 					symbols = [];
 					fullInstrName.any({ |n|
@@ -302,7 +302,7 @@ Instr  {
 				});
 			});
 		});
-		
+
 		^nil
 	}
 	dotNotation {
@@ -313,7 +313,7 @@ Instr  {
 			})
 		})
 	}
-	
+
 	// this is a tilda delimited version of the name
 	asSingleName {
 		^String.streamContents({ arg s;
@@ -326,18 +326,18 @@ Instr  {
 	*singleNameAsNames { arg singleName;
 		^singleName.asString.split($~).collect({ arg n; n.asSymbol })
 	}
-	
+
 
 
 	asString { ^"%(%)".format(this.class.name, this.defName.asCompileString) }
-	storeArgs { 
-		if(this.path.notNil,{ 
+	storeArgs {
+		if(this.path.notNil,{
 			^[this.dotNotation]
 		},{
 			^[this.dotNotation,this.func,this.specs,this.outSpec]
 		});
 	}
-			
+
 	*initClass {
 		Class.initClassTree(Document);
 		// default is relative to your doc directory
@@ -348,8 +348,8 @@ Instr  {
 			path = thisProcess.nowExecutingPath; //  ?? { Document.current.path };
 		});
 		specs = specs ? #[];
-		if(specs.isKindOf(SequenceableCollection).not,{ 
-			Error("Specs should be of type array or nil.").throw 
+		if(specs.isKindOf(SequenceableCollection).not,{
+			Error("Specs should be of type array or nil.").throw
 		});
 		this.makeSpecs(specs ? #[]);
 		if(outsp.isNil,{
@@ -364,12 +364,12 @@ Instr  {
 	}
 	makeSpecs { arg argspecs;
 		explicitSpecs = specs ? [];
-		specs =  
+		specs =
 			Array.fill(this.argsSize,{ arg i;
 				var sp,name;
 				name = this.argNameAt(i);
 				sp = argspecs.at(i);
-				if(sp.isSequenceableCollection,{ 
+				if(sp.isSequenceableCollection,{
 					// backwards compatibility with old spec style
 					// [\envperc]
 					// [[0,1]]
@@ -383,7 +383,7 @@ Instr  {
 				},{
 					sp = (sp ? name).asSpec ?? {ControlSpec.new};
 				});
-				//sp.copy; 
+				//sp.copy;
 				sp
 			});
 	}
@@ -393,14 +393,14 @@ Instr  {
 		source = this.func.def.sourceCode;
 		if(source.notNil,{
 			lines = source.split($\n);
-	
+
 			w = lines.maxValue({ |l| l.size }) * 7;
 			h = lines.size * 13;
-			
+
 			tf = GUI.textField.new(layout,Rect(0,0,w,h));
 			tf.string = source;
 			tf.font_(GUI.font.new("Helvetica",10.0));
-		});		
+		});
 		if(path.notNil,{
 			CXLabel(layout.startRow,path);
 			// ActionButton(layout.startRow,"open file...",{ path.openTextFile });
@@ -408,7 +408,7 @@ Instr  {
 		ArgNameLabel("outSpec:",layout.startRow,150);
 		this.outSpec.asString.gui(layout);
 		this.argNames.do({ arg a,i;
-			layout.startRow;		
+			layout.startRow;
 			ArgNameLabel(  a ,layout,150);
 			CXLabel(layout, " = " ++ this.defArgAt(i).asString,100);
 			specWidth = min(layout.indentedRemaining.width,300);
@@ -447,10 +447,10 @@ InstrAt {
 // make a virtual Instr by reading the *ar and *kr method def
 // eg Patch(SinOsc,[ 440 ])
 
-UGenInstr { 
+UGenInstr {
 
 	var <ugenClass,<rate,<specs;
-	
+
 	*new { arg ugenClass,rate=\ar;
 		^super.new.init(ugenClass,rate)
 	}
@@ -460,7 +460,7 @@ UGenInstr {
 	init { arg uc,r;
 		ugenClass = uc.asClass;
 		rate = r;
-	
+
 		//specs
 		specs = this.argNames.collect({ arg ag,i;
 			ag.asSpec ?? {
@@ -470,19 +470,26 @@ UGenInstr {
 	}
 
 	value { arg args;
-		^ugenClass.performList(rate,args)	
+		^ugenClass.performList(rate,args)
 	}
 	valueArray { arg args;
 		^ugenClass.performList(rate,args)
 	}
 
-	ar { arg ... args; ^this.value(args) }	
+	ar { arg ... args; ^this.value(args) }
 	kr { arg ... args; ^this.value(args) }
-
+	outSpec {
+		if(rate=='ar',{
+			^\audio
+		},{
+			^\control
+		})
+	}
+	dotNotation { ^ugenClass.asString }
 	funcDef { ^ugenClass.class.findMethod(rate) }
 	maxArgs { ^this.argsSize }
 	argsSize { ^this.funcDef.argNames.size - 1 }
-	argNames { 
+	argNames {
 		var an;
 		an = this.funcDef.argNames;
 		^if(an.isNil,{
@@ -490,32 +497,32 @@ UGenInstr {
 		},{
 			an.copyRange(1,an.size - 1)
 		})
-	}	
+	}
 
 	//defaultArgs
-	defArgs { 
+	defArgs {
 		var nn;
 		nn=this.funcDef.prototypeFrame;
 		^if(nn.notNil,{nn.copyRange(1,nn.size-1)},{[]});
 	}
 
 	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).default}) }
-	argNameAt { arg i; 
+	argNameAt { arg i;
 		var nn;
 		nn=this.funcDef.argNames;
 		^if(nn.notNil,{nn.at(i + 1)},{nil});
 	}
 	defArgAt {
-		 arg i; 
+		 arg i;
 		var nn;
 		nn=this.funcDef.prototypeFrame;
 		^if(nn.notNil,{nn.at(i + 1)},{nil});
 	}
-		
+
 //	guiClass { ^UGenInstrGui }
 	asString { ^"UGenInstr " ++ ugenClass.name.asString }
 	asInstr { ^this }
-	name { ^ugenClass }
+	name { ^ugenClass.asString }
 
 }
 
@@ -526,7 +533,7 @@ InterfaceDef : Instr {
 		<>onPlay,
 		<>onStop,
 		<>onFree,
-		
+
 		<>onNoteOn,
 		<>onNoteOff,
 		<>onPitchBend,
@@ -535,7 +542,7 @@ InterfaceDef : Instr {
 		<guiBodyFunction,
 		<>keyDownAction,
 		<>keyUpAction;
-		
+
 		// do your own views to handle these
 		//<>beginDragAction,
 		//<>mouseDownAction,
