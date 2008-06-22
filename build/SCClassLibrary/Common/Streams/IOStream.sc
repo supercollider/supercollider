@@ -111,8 +111,8 @@ CollStream : IOStream {
 	getInt8 { ^this.next & 255; }
 	getInt16 { ^this.getInt8 << 8 | this.getInt8; }
 	getInt32 { ^this.getInt16 << 16 | this.getInt16; }
-	getFloat { ^Float.from32bits(this.getInt32); }
-	getDouble { ^Float.from64bits(this.getInt32, this.getInt32); }
+	getFloat { ^Float.from32Bits(this.getInt32); }
+	getDouble { ^Float.from64Bits(this.getInt32, this.getInt32); }
 //	
 	// collection should be an Int8Array
 	putChar { arg aChar; this.put(aChar.ascii); }
