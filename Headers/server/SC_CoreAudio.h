@@ -80,8 +80,8 @@ typedef MsgFifo<FifoMsg, 1024> EngineFifo;
 // Functions to be implemented by the driver backend
 extern "C" {
 	int32 server_timeseed();
+	int64 oscTimeNow();
 };
-int64 oscTimeNow();
 void initializeScheduler();
 
 class SC_AudioDriver

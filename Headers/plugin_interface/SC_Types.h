@@ -35,9 +35,6 @@ typedef unsigned long long uint64;
 
 typedef int int32;
 typedef unsigned int uint32;
-#ifdef SC_DARWIN
-typedef unsigned int ulong;
-#endif
 
 typedef short int16;
 typedef unsigned short uint16;

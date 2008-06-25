@@ -359,13 +359,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							res.utag = tagInt;
 						} break;
 						case opUnsignedShift : {
-#ifdef SC_WIN32
               unsigned long ia = a->ui;
-#elif defined(SC_FREEBSD)
-              u_long ia = a->ui;
-#else
-              ulong ia = a->ui;
-#endif
               long ib = b->ui;
 							if (ib>0) ia >>= ib;
 							else if (ib<0) ia <<= -ib; 
