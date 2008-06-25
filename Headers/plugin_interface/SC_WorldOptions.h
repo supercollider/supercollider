@@ -118,6 +118,7 @@ extern "C" {
 #endif
 	SC_DLLEXPORT void World_WaitForQuit(struct World *inWorld);
 	SC_DLLEXPORT bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
+	SC_DLLEXPORT bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);
 	SC_DLLEXPORT int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
 	SC_DLLEXPORT int scprintf(const char *fmt, ...);
 }

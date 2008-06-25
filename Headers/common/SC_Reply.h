@@ -40,7 +40,8 @@ struct ReplyAddress
 	struct sockaddr_in mSockAddr;
 	int mSockAddrLen;
 	int mSocket;
-	ReplyFunc mReplyFunc;	
+	ReplyFunc mReplyFunc;
+	void *mReplyData;
 };
 
 bool operator==(const ReplyAddress& a, const ReplyAddress& b);

@@ -178,7 +178,7 @@ void dumpOSC(int mode, int size, char* inData)
 	if (mode & 2) hexdump(size, inData);
 }
 
-bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
+bool World_SendPacketWithContext(World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext)
 {
 	bool result = false;
 	if (inSize > 0) {
@@ -189,6 +189,7 @@ bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc
 		packet->mReplyAddr.mSockAddr.sin_addr.s_addr = 0;
 		packet->mReplyAddr.mSockAddr.sin_port = 0;
 		packet->mReplyAddr.mReplyFunc = inFunc;
+		packet->mReplyAddr.mReplyData = inContext;
 		packet->mSize = inSize;
 		packet->mData = data;
 		packet->mReplyAddr.mSocket = 0;
@@ -197,6 +198,11 @@ bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc
 		result = ProcessOSCPacket(inWorld, packet);
 	}
 	return result;
+}
+
+bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
+{
+	return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -408,6 +414,7 @@ void* SC_UdpInPort::Run()
 			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
 			
 			packet->mReplyAddr.mReplyFunc = udp_reply_func;
+			packet->mReplyAddr.mReplyData = 0;
 			packet->mSize = size;
 			packet->mData = data;
 			packet->mReplyAddr.mSocket = mSocket;
@@ -588,6 +595,7 @@ void* SC_TcpConnectionPort::Run()
 			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
 			
 			packet->mReplyAddr.mReplyFunc = tcp_reply_func;
+			packet->mReplyAddr.mReplyData = 0;
 			packet->mSize = msglen;
 			packet->mData = data;
 			packet->mReplyAddr.mSocket = mSocket;
@@ -716,6 +724,7 @@ CFDataRef SC_MachMessagePort::messagePortCallBack(CFMessagePortRef local, SInt32
     OSC_Packet* packet = (OSC_Packet *) malloc(sizeof(OSC_Packet));
     bzero(&packet->mReplyAddr, sizeof(ReplyAddress));
     packet->mReplyAddr.mReplyFunc = port->mReplyPort ? mach_reply_func : null_reply_func;
+	packet->mReplyAddr.mReplyData = 0;
     packet->mReplyAddr.mSocket = (int) port->mReplyPort;
     packet->mSize = CFDataGetLength(data);
     packet->mData = (char*) memcpy(malloc(packet->mSize), CFDataGetBytePtr(data), packet->mSize);
