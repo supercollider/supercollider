@@ -4254,6 +4254,7 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 {
 	float thresh = unit->mThresh;
 	int counter = unit->mCounter;
+	float val;
 
 	// I thought of a better way to do this...
 	/*
@@ -4271,20 +4272,25 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 	}
 	*/
 	float *in = IN(0);
+	float *out = OUT(0);
 	for (int i=0; i<inNumSamples; ++i) {
 		float val = fabs(*in++); 
 		if (val > thresh) {
 			counter = 0;
-			break;
+			*out++ = 0.f;
 		} else if (counter >= 0) {
 			if (++counter >= unit->mEndCounter) {
 				int doneAction = (int)ZIN0(3);
 				DoneAction(doneAction, unit);
-				SETCALC(DetectSilence_done);
+				*out++ = 1.f;
+//				SETCALC(DetectSilence_done);
+			} else {
+				*out++ = 0.f;
 			}
 		}
 	}
 	unit->mCounter = counter;
+	
 }
 
 void DetectSilence_done(DetectSilence* unit, int inNumSamples)
