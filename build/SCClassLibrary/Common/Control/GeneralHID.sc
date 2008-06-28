@@ -242,6 +242,10 @@ GeneralHIDSlot{
 		^devSlot.value;
 	}
 
+	rawValue {
+		^devSlot.rawValue;
+	}
+
 	value_ { |v|
 		devSlot.value_( v );
 	}
