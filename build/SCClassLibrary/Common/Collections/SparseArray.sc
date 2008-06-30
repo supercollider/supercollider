@@ -189,6 +189,12 @@ SparseArray : Order {
 		^res
 	}
 	
+	clear { arg size;
+		size = size.min(67108864 / 2); // For very large data we must assume sparse indices or we can't initialise the indices here
+		array = Array.new(size);
+		indices = Array.new(size);
+	}
+
 	putIfNotDefault { arg i, item;
 		if(item != default) { this.put(i, item) }
 	}
@@ -253,6 +259,30 @@ SparseArray : Order {
 			if(default.notNil and: { function.value(default, 0).not }) { default }
 		)
 	}
+	
+	sum { | function |
+		var sum = 0;
+		^if (function.isNil or: {function.numArgs < 2}) { // optimized version if no function, or if index is irrelevant
+			this.sparseSum
+		}{
+			this.do {|elem, i| sum = sum + function.value(elem, i); };
+			sum
+		}
+	}
+	// if index is irrelevant, assume that the result for all implicit elements is the same
+	sparseSum { | function |
+		var sum = 0;
+		"sparseSum : inner array size is %".format(array.size).postln;
+		if (function.isNil) { // optimized version if no function
+			array.do { | elem | sum = sum + elem; };
+			sum = sum + (default * (this.size-array.size));
+		}{
+			array.do {|elem| sum = sum + function.value(elem); };
+			sum = sum + (function.value(default) * (this.size-array.size));
+		}
+		^sum;
+	}
+	
 
 		
 	// does not pass the index to each default item: faster than collect
@@ -365,6 +395,29 @@ SparseArray : Order {
 	atSeries { arg first, second, last; 
 		^(first, second..last).collect { |index|
 			this.at(index)
+		}
+	}
+	
+	minItem { |function|
+		^if(function.isNil or: {function.numArgs < 2}){
+			if(array.size == this.size){ // full up! default not used (weird)
+				array.minItem(function)
+			}{
+				array.minItem(function).min(if(function.isNil, default, function.value(default)))
+			}
+		}{
+			super.minItem(function);
+		}
+	}
+	maxItem { |function|
+		^if(function.isNil or: {function.numArgs < 2}){
+			if(array.size == this.size){ // full up! default not used (weird)
+				array.maxItem(function)
+			}{
+				array.maxItem(function).max(if(function.isNil, default, function.value(default)))
+			}
+		}{
+			super.maxItem(function);
 		}
 	}
 	
