@@ -47,6 +47,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Dust            { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Dust2           { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Duty            { *categories { ^ #["UGens>Demand"] } }
++ Dwhite          { *categories { ^ #["UGens>Demand"] } }
 + DynKlang        { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + DynKlank        { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + Env             {  }
@@ -86,7 +87,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + K2A             { *categories { ^ #["UGens>Conversion"] } }
 + KeyTrack        { *categories { ^ #["UGens>Analysis>Pitch"] } }
 + KeyState        { *categories { ^ #["UGens>User interaction"] } }
-+ Klang           { *categories { ^ #["UGens>Generators>Deterministic"] } }
++ Klang           { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + Klank           { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + LastValue       { *categories { ^ #["UGens>Trigger"] } }
 + Latch           { *categories { ^ #["UGens>Trigger"] } }
