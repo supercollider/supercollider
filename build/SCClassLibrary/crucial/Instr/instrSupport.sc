@@ -156,9 +156,11 @@
 				^StreamSpec(StaticSpec(list.minItem,list.maxItem))
 			});
 		});
-		("unable to determine spec" + this.asCompileString).die;
+		("unable to determine spec of" + this.asCompileString).warn;
+		^nil
 	}	
 }
+
 + Pfsm {
 	spec {
 		^thisMethod.notYetImplemented	
@@ -201,18 +203,18 @@
 }
 + KrNumberEditor {
 	addToDefName { arg stream;
-		^1
+		^\kr
 	}
 }
 + IrNumberEditor {
 	addToDefName { arg stream;
-		^0
+		^\ir
 	}
 }
 + SimpleNumber {
 	addToDefName { arg stream;
 		stream << this.asFileSafeString;
-		^2
+		^\obj
 	}
 }
 + BufferProxy {
@@ -227,10 +229,10 @@
 + Sample {
 	addToDefName { arg stream;
 		// beatsizek
-		var sum;
-		sum = numChannels - 1; // assumes no quad samples
-		if(beatsizek.notNil,{ sum = sum + 2 });
-		stream << sum;
+		//var sum;
+		//sum = numChannels - 1; // assumes no quad samples
+		//if(beatsizek.notNil,{ sum = sum + 2 });
+		//stream << sum;
 		^2
 	}
 	spec {
@@ -247,7 +249,7 @@
 // the big one, espec. Env
 + Object {
 	addToDefName { arg stream;
-		stream << this.asCompileString.hash.asFileSafeString;
+		stream << this.asCompileString;//.hash.asFileSafeString;
 		^2
 	}
 }
