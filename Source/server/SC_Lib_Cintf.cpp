@@ -38,6 +38,12 @@
 #include <dlfcn.h>
 #endif
 
+#ifdef SC_WIN32
+#include "SC_Win32Utils.h"
+#else
+#include <libgen.h>
+#endif
+
 // Plugin directory in resource directory
 #if defined(SC_WIN32) && defined(_DEBUG)
 # define SC_PLUGIN_DIR_NAME "plugins_debug"
@@ -264,7 +270,9 @@ bool PlugIn_LoadDir(const char *dirname, bool reportError)
 		if (skipItem) continue;
 		
         if (sc_DirectoryExists(diritem)) {
-            success = PlugIn_LoadDir(diritem, reportError);
+			if(strcmp(basename(diritem), ".svn") != 0){
+				success = PlugIn_LoadDir(diritem, reportError);
+			}
         } else {
 			int dnamelen = strlen(diritem);
 			int extlen = strlen(SC_PLUGIN_EXT);
