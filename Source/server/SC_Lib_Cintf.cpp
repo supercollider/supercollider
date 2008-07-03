@@ -270,9 +270,7 @@ bool PlugIn_LoadDir(const char *dirname, bool reportError)
 		if (skipItem) continue;
 		
         if (sc_DirectoryExists(diritem)) {
-			if(strcmp(basename(diritem), ".svn") != 0){
-				success = PlugIn_LoadDir(diritem, reportError);
-			}
+			success = PlugIn_LoadDir(diritem, reportError);
         } else {
 			int dnamelen = strlen(diritem);
 			int extlen = strlen(SC_PLUGIN_EXT);
