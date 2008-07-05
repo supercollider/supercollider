@@ -1,12 +1,22 @@
 
 PatchGui : AbstractPlayerGui {
 	
+	writeName { arg layout; 
+		//color it based on whether it has a .path 
+						// (was loaded from disk)
+		this.prWriteName(layout,model.class.asString);
+		if(model.path.notNil,{
+			ActionButton(layout,"edit file",{
+				model.path.openTextFile;
+			});
+		});
+	}
 	guiBody { arg layout;
 		var bounds, maxHeight,vl,font,argNameWidth;
 		bounds = layout.bounds;
 		maxHeight = bounds.height - 20 - (model.args.size * 15) / model.args.size;
 
-		this.instrGui(layout);		
+		this.instrGui(layout);
 		
 		font = GUI.font.new("Helvetica",10);
 		//vl = SCVLayoutView(layout.startRow,layout.decorator.indentedRemaining);
@@ -50,7 +60,10 @@ PatchGui : AbstractPlayerGui {
 		});
 	}
 	instrGui { arg layout;
-		Tile(this.model.instr,layout);
+		//Tile(this.model.instr,layout);
+		ActionButton(layout,this.model.instr.dotNotation,{
+			this.model.instr.gui
+		})
 	}
 }
  

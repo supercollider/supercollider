@@ -3,7 +3,7 @@
 // thanks!
 
 SampleGui : ObjectGui {
-	
+
 	var lastSoundFilePath;
 	var nameG,tempoG,beatsG;
 
@@ -11,29 +11,20 @@ SampleGui : ObjectGui {
 	var zin, zout, zyin, zyout, lScroll, rScroll, selectionStartG, selectionSizeG;
 
 	writeName { arg layout;
-		var n;
-		n = model.class.asString;
-		InspectorLink.icon(model,layout);
-		GUI.dragSource.new(layout,Rect(0,0,(n.size * 7.5).max(70),GUI.skin.buttonHeight))
-			.stringColor_(Color.new255(70, 130, 200))
-			.background_(Color.white)
-			.align_(\center)
-			.beginDragAction_({ model })
-			.object_(n);
+		this.prWriteName(layout,model.class.asString);
 	}
 	guiBody { arg layout;
 		var xfade, r, size,absBounds;
-		
+
 		divs = 1;
 		zout = 1.1; zin = zout.reciprocal;
 		zyout = 1.1; zyin = zyout.reciprocal;
 		rScroll = 0.01; lScroll = rScroll * -1;
 
-		//layout = this.guify(layout,Rect(0,0,700,500),model.asString);
-		nameG = ActionButton(layout,"pathname",{
+		nameG = ActionButton(layout,"load file...",{
 			this.loadDialog
 		},minWidth:140).background_(Color.white);
-		
+
 		ActionButton(layout,"query buffer",{
 			if(model.buffer.notNil,{
 				model.buffer.query;
@@ -41,39 +32,36 @@ SampleGui : ObjectGui {
 				"Sample buffer not loaded".inform;
 			})
 		});
-		/*ActionButton(layout,"reload buffer",{
-			model.reloadBuffer;
-		});*/
-		
+
 		CXLabel(layout,"bpm:");
 		tempoG=NumberEditor(model.tempo * 60.0,[0,1000])
 					.action_({ arg th; model.tempo_(th.value / 60).changed(this) });
 		tempoG.smallGui(layout);
-					
+
 		CXLabel(layout,"beats:");
 		beatsG=NumberEditor(model.beats,[0.000001,32])
 					.action_({arg th; model.beats_(th.value).changed(this) });
 		beatsG.smallGui(layout);
 
 		ActionButton(layout,">",{model.play},minWidth:70).background_(Color.green(alpha:0.5));
-		// no point in saving until we have editing
-		//ActionButton(layout, "save...",{model.save},minWidth:70).background_(Color.white);
 
-		size = layout.asView.bounds.width - 220;
+		size = min(800,layout.asView.bounds.width - 220);
 		layout.startRow;
+
+		// sound file view is still broken in relative views
 		//absBounds = Rect(0, 0, size, 80);
 		//absBounds = absBounds.moveToPoint(layout.absoluteBounds.origin);
 		//absBounds = absBounds.moveBy(0,layout.decorator.top);
-		v = GUI.soundFileView.new(layout, Rect(0, 0, size, 80))
+		v = GUI.soundFileView.new(layout, Rect(0,0,4,4)) //Rect(0, 0, size, 80)
 			.canFocus_(true).gridOn_(true).timeCursorOn_(false);
 		d = GUI.slider2D.new(layout, size@30)
-			.action_({|sl| 
+			.action_({|sl|
 				var y;
 				v.zoomToFrac(y = sl.y * 0.9 + 0.1);
 				v.scrollTo(sl.x);
 				//d.thumbSize = size * y;
 			});
-			
+
 		layout.startRow;
 		CXLabel(layout,"Resolution:");
 		block = max(1,(model.numFrames / 44100).asInteger);
@@ -100,14 +88,14 @@ SampleGui : ObjectGui {
 		selectionStartG = GUI.staticText.new(layout, Rect(0, 0, 100, 18));
 		GUI.staticText.new(layout, Rect(10, 0, 30, 18)).string_("Size:").align_(\right);
 		selectionSizeG = GUI.staticText.new(layout, Rect(0, 0, 100, 18));
-	
+
 		v.mouseUpAction = {
 			selectionStartG.string = v.selectionStart(0);
 			selectionSizeG.string = v.selectionSize(0)
 		};
 		//v.keyDownAction = this.keyDownResponder;
 		v.keyDownAction = { arg ascii, char;
-			case		
+			case
 				{char === $+} { v.zoom(zin) }		// zoom in
 				{char === $-} { v.zoom(zout) }		// zoom out
 				{char === $'} { v.yZoom = v.yZoom * zyin } // zoom in on y
@@ -121,13 +109,13 @@ SampleGui : ObjectGui {
 				{char === $e} { v.scrollToEnd }		// scroll to buffer end
 				{char === $a} { v.selectAll(0) }		// select all
 				{char === $n} { v.selectNone(0) };	// select none
-		
+
 			d.value = v.scrollPos;	// update scrollbar position
 			selectionStartG.string = v.selectionStart(0);
 			selectionSizeG.string = v.selectionSize(0)
 		};
 
-		this.update;	
+		this.update;
 	}
 	update { arg changed,changer;
 		tempoG.value_(model.tempo*60).changed;
@@ -137,7 +125,7 @@ SampleGui : ObjectGui {
 
 			if(model.soundFilePath.isNil, { ^this });
 			lastSoundFilePath = model.soundFilePath;
-			
+
 			v.soundfile = SoundFile.new(lastSoundFilePath);
 			v.readWithTask( block: block, doneAction: { v.gridResolution_(60/tempoG.value/divs) } );
 		});
@@ -146,9 +134,9 @@ SampleGui : ObjectGui {
 		//d.x = v.scrollPos;	// update scrollbar position
 		//d.y = v.xZoom;
 		selectionStartG.string = v.selectionStart(0);
-		selectionSizeG.string = v.selectionSize(0)		
+		selectionSizeG.string = v.selectionSize(0)
 	}
-	/*keyDownResponder {	
+	/*keyDownResponder {
 		// grrrr. shift.
 		var kdr;
 		kdr = UnicodeResponder.new;
@@ -179,37 +167,38 @@ SampleGui : ObjectGui {
 */
 	loadDialog {
 		File.openDialog(nil,{ arg path;
-			model.load(path).changed;
+			model.load(path);
+			model.changed;
 		});
 	}
 }
 
-/**
-		
+/*
+
 WavetableSampleGui : SampleGui {
-	
+
 	guiBody { arg layout;
 		//layout.within(100,75,{arg layout;
 			//nameG = CXLabel(layout,model.name);
-			/*ActionButton(layout,">",{
+			/ *ActionButton(layout,">",{
 				if(Synth.isPlaying,{ Synth.stop },{
 					{
-						Osc.ar(model.wavetable,440,mul: 0.1)	
+						Osc.ar(model.wavetable,440,mul: 0.1)
 					}.scope
 				})
-			});*/
+			});* /
 			ActionButton(layout,"saveAs",{this.saveAs}).background_(Color.white);
 			ActionButton(layout,"save",{this.save}).background_(Color.white);
 		//});
-			
+
 		//sigG=WavetableView(layout.window,layout.layRight(250,75),model.wavetable);
-		
+
 		//ActionButton(layout,"editAsSample",{model.editAsSample});
 //		layout.removeOnClose(Updater(this,{
 //			nameG.label_("S:" ++ name);
 //			sigG.wavetable_(signal);
 //			sigG.update;
-//		}));	
+//		}));
 	}
 	save {
 		if(model.wavetablePath.isNil,{ ^this.saveAs });
@@ -226,12 +215,12 @@ WavetableSampleGui : SampleGui {
 		});
 //		PutFileDialog("save wavetable...",model.name,{ arg ok,path;
 //			if(ok,{
-//				model.write(path);	
+//				model.write(path);
 //			})
 //		})
 	}
 
 }
 
-**/
+*/
 
