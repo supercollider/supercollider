@@ -84,10 +84,13 @@ ObjectGui : SCViewHolder { // aka AbstractController
 
 	background { ^Color.clear }//^Color.yellow(0.2,0.08) }
 	
-	writeName { arg layout;
+	writeName { |layout|
+		this.prWriteName(layout,model.asString)
+	}
+	prWriteName { arg layout,name;
 		var string,font;
 		font = GUI.font.new(*GUI.skin.fontSpecs);
-		string = " " ++ model.asString;
+		string = " " ++ (name);
 		if(string.size > 40,{
 			string = string.copyRange(0,40) ++ "...";
 		});
