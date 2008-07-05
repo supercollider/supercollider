@@ -1926,7 +1926,10 @@ enum {
 	kEnvGen_initLevel,
 	kEnvGen_numStages,
 	kEnvGen_releaseNode,
-	kEnvGen_loopNode
+	kEnvGen_loopNode,
+		// 'kEnvGen_nodeOffset' must always be last
+		// if you need to add an arg, put it before this one
+	kEnvGen_nodeOffset
 };
 
 void EnvGen_Ctor(EnvGen *unit)
@@ -1988,8 +1991,9 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 		counter  = sc_max(1, counter);
 		unit->m_stage = numstages;
 		unit->m_shape = shape_Linear;
-		unit->m_grow = -level / counter;
-		unit->m_endLevel = 0.;
+			// first ZIN0 gets the last envelope node's level, then apply levelScale and levelBias
+		unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
+		unit->m_grow = (unit->m_endLevel - level) / counter;
 	} else if (unit->m_prevGate > 0.f && gate <= 0.f 
 			&& unit->m_releaseNode >= 0 && !unit->m_released) {
 		counter = 0;
@@ -2033,7 +2037,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 		//Print("stage %d\n", unit->m_stage);
 		//Print("initSegment\n");
 			//out = unit->m_level;
-			int stageOffset = (unit->m_stage << 2) + 9;
+			int stageOffset = (unit->m_stage << 2) + kEnvGen_nodeOffset;
 			
 			if (stageOffset + 4 > unit->mNumInputs) {
 				// oops.
@@ -2205,8 +2209,8 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		counter  = sc_max(1, counter);
 		unit->m_stage = numstages;
 		unit->m_shape = shape_Linear;
-		unit->m_grow = -level / counter;
-		unit->m_endLevel = 0.;
+		unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
+		unit->m_grow = (unit->m_endLevel - level) / counter;
 	} else if (unit->m_prevGate > 0.f && gate <= 0.f 
 			&& unit->m_releaseNode >= 0 && !unit->m_released) {
 		counter = 0;
@@ -2241,7 +2245,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 			} else {
 				unit->m_stage++;
 	initSegment:
-				int stageOffset = (unit->m_stage << 2) + 9;
+				int stageOffset = (unit->m_stage << 2) + kEnvGen_nodeOffset;
 				
 				if (stageOffset + 4 > unit->mNumInputs) {
 					// oops.
@@ -2439,8 +2443,8 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
                 counter  = sc_max(1, counter) + i; \
                 unit->m_stage = numstages; \
                 unit->m_shape = shape_Linear; \
-                unit->m_grow = -level / counter; \
-                unit->m_endLevel = 0.; \
+				unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); \
+				unit->m_grow = (unit->m_endLevel - level) / counter; \
                 nsmps = i; \
                 break; \
         } else if (prevGate > 0.f && gate <= 0.f \
@@ -2489,7 +2493,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 			} else {
 				unit->m_stage++;
 	initSegment:
-				int stageOffset = (unit->m_stage << 2) + 9;
+				int stageOffset = (unit->m_stage << 2) + kEnvGen_nodeOffset;
 				
 				if (stageOffset + 4 > unit->mNumInputs) {
 					// oops.
