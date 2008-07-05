@@ -88,7 +88,8 @@ NumberEditor : Editor {
 	instrArgFromControl { arg control;
 		^value
 	}
-	rate { ^\scalar }
+	rate { ^spec.rate } // probably scalar
+	
 
 	guiClass { ^NumberEditorGui }
 
@@ -102,7 +103,7 @@ KrNumberEditor : NumberEditor {
 		super.init(val, aspec);
 		lag = defaultLag;
 	}
-	rate { ^\control }
+	//rate { ^\control }
  	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
 
 	addToSynthDef {  arg synthDef,name;
@@ -191,6 +192,8 @@ BooleanEditor : NumberEditor {
 		^super.new.value_(val)
 	}
 	// value returns true/false
+	// this means this could only be a noncontrol
+	// i should change this
 	instrArgFromControl { arg control;
 		^value
 	}
