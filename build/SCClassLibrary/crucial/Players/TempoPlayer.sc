@@ -12,7 +12,7 @@ TempoPlayer : KrPlayer { //Synthless
 	/* a TempoPlayer can secretly add itself to the synth def 
 		without the need of being passed in with an explicit arg to the Instr */
 	kr {
-		^UGen.buildSynthDef.playerIn(this)
+		^InstrSynthDef.buildSynthDef.playerIn(this)
 	}
 	
 	synthArg { ^tempoBus.index }
