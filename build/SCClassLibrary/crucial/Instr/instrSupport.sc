@@ -254,6 +254,14 @@
 	}
 }
 
++ UGen {
+	onTrig { |func,value=0.0|
+		if(this.rate != \control,{
+			Error("UGen:onTrig only permissable with a control rate signal").throw;
+		});
+		^InstrSynthDef.buildSynthDef.onTrig(this,func,value)
+	}
+}
 
 
 

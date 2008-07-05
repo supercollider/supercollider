@@ -441,6 +441,12 @@ Patch : HasPatchIns  {
 		);
 		bundle.addMessage(this,\didSpawn);
 	}
+	didSpawn {
+		super.didSpawn;
+		this.stepChildren.do({ |child|
+			child.didSpawn(this.synth)
+		})
+	}
 	synthDefArgs {
 		// not every arg makes it into the synth def
 		var args;
@@ -459,7 +465,6 @@ Patch : HasPatchIns  {
 
 	stopToBundle { arg bundle;
 		super.stopToBundle(bundle);
-		//bundle.addMessage(this,\didStop);
 		stepChildren.do({ |sc|
 			sc.stopToBundle(bundle)
 		})
@@ -520,7 +525,13 @@ Patch : HasPatchIns  {
 
 	children { ^args }
 
-	printOn { arg s; s << this.class.name << "(" <<< instr.dotNotation << " )"; }
+	printOn { arg s;
+		var n;
+		s << this.class.name << "(" <<< instr.dotNotation << ")"; 
+		if((n = this.name).notNil,{
+			s << "{"++n++"}";
+		});
+	}
 	storeParamsOn { arg stream;
 		var last;
 		if(this.class === Patch,{ // an indulgence ...
