@@ -57,7 +57,7 @@ InstrSynthDef : SynthDef {
 					//out = outClass.perform(if(this.rate == \audio,\ar,\kr),
 					//			inputs.at(0),xfader.value,out)
 				});
-					
+				
 				rate.switch(
 					\audio, {
 						result = outClass.ar(Control.names([\out]).ir([0]) , result);
@@ -70,6 +70,11 @@ InstrSynthDef : SynthDef {
 						("InstrSynthDef: result of your Instr function was a scalar rate object:" 
 							+ result + this.buildErrorString).error;
 					},
+					\noncontrol,{
+					
+						("InstrSynthDef: result of your Instr function was a noncontrol rate object:" 
+							+ result + this.buildErrorString).error;
+					},						
 					{
 						("InstrSynthDef: result of your Instr function was an object with unknown rate:" 
 							+ result + rate + this.buildErrorString).error;
@@ -98,6 +103,11 @@ InstrSynthDef : SynthDef {
 			// but after that comes secret args and the out
 			if(i > argInstr.argNames.size,{
 				name = name ++ controlName.name.asString;
+			},{
+				//inputs[i].addToDefName
+				// if outputProxy != control
+				
+				
 			});
 			switch(controlName.rate,
 				\control, {
@@ -116,7 +126,6 @@ InstrSynthDef : SynthDef {
 				name = name ++ controlName.defaultValue.asCompileString;
 			});
 		});
-		
 		longName = name;
 		firstName = argInstr.name.last.asString;
 		if(firstName.size > 20,{
@@ -341,12 +350,48 @@ InstrSynthDef : SynthDef {
 		})
 		^sd
 	}
-	synthProxy {
+
+	// in the context of an InstrSynthDef
+	// InstrSynthDef.buildSynthDef.onTrig(sig,func,pollableValue)
+	// this allows to execute the func in the client whenever the trigger goes
+	// the mechanics and the adding/removing of the responder are taken care of
+	// because Patch knows when it starts and stops the synth
+	onTrig { |trig,func,value=0.0|
+		// triggerID is the nTh onTrig we have so far added + 9999
+		var triggerID,onTrig;
+		triggerID = stepchildren.select({|sc|sc.isKindOf(ClientOnTrigResponder)}).size + 9999;
+		onTrig = ClientOnTrigResponder(triggerID,func);
+		stepchildren = stepchildren.add(onTrig);
+
+		^SendTrig.kr(trig,triggerID,value)
+	}
+
+	/*synthProxy {
 		^synthProxy ?? { 
 			synthProxy = SynthProxy.new;
 			stepchildren = stepchildren.add(synthProxy);
-			synthProxy	 
+			synthProxy
 		}
+	}*/
+}
+
+
+
+ClientOnTrigResponder {
+
+	var <>triggerID, <>func,responder;
+
+	*new { |triggerID,func|
+		^super.newCopyArgs(triggerID,func)
+	}
+	didSpawn { |synth|
+		var commandpath = ['/tr', synth.nodeID, triggerID];
+		responder = OSCpathResponder(synth.server.addr, commandpath, 
+			{|time,responder,message| func.value(time,message[3]) });
+		responder.add;
+	}
+	stopToBundle { |b|
+		b.addFunction({ responder.remove; responder = nil })
 	}
 }
 
@@ -354,13 +399,16 @@ InstrSynthDef : SynthDef {
 // there is only one SynthProxy per synth def, though there may be multiple synths spawned
 // the synthProxy is in stepchildren and in the Patch's stepChildren so it is prepared and spawned.
 // it is roughly equivalent to the synth argument in SC2's Spawn
-SynthProxy {
-	var events,sched;
+// 
+/*SynthProxy  {
+
+	var events,sched,<synth;
+
 	spawnToBundle { |b|
 		b.addMessage(this,\didSpawn)
 	}
 	
-	didSpawn {
+	didSpawn { |synth|
 		sched = BeatSched.new;
 		// sched any events
 		events.do({ |df|
@@ -370,9 +418,8 @@ SynthProxy {
 	sched { |delta, function|
 		events = events.add([delta,function]);
 	}
-	channelOffset_ {
+	/ *channelOffset_ {
 		// shift the Out.ar
-	}
-}
-
+	}* /
+}*/
 
