@@ -2,7 +2,7 @@
 NumChannels {
 
 	*ar { arg input,numChannels=2,mixdown=true;
-		
+
 		if(input.size > 1,{// collection
 		   ^input
 			.clump(input.size / numChannels)
@@ -21,7 +21,7 @@ NumChannels {
 			if(input.isSequenceableCollection,{
 				input = input.at(0);
 			});
-			
+
 			if(numChannels == 1,{
 				^input
 			},{
@@ -29,12 +29,12 @@ NumChannels {
 			})
 		})
 	}
-		
+
 }
 
 XFader  {  // UNIPOLAR
 		// XFade2 is now cheaper (in c)
-				
+
 	*ar { arg l, r, pan;
 		^(l + (pan * (r - l)))
 	}
@@ -91,23 +91,25 @@ XFaderN  {
 
 
 Mono {
-	*new { arg input;		
+	*new { arg input;
 		if(input.isArray,{
 			^input.at(0)
 		},{
 			^input
 		})
-	}	
+	}
 }
 
 
 // audio function plays continously but is gated by the envelope
-Enveloper2 { 
-		
+Enveloper2 {
+
 	*ar { arg audio,gate,env;
 		var ts,gated;
 		gated = Latch.kr(gate,gate);
 		env ?? {env = Env.adsr};
+		// backwards compatibility : value the function
+		if(audio.class === Function,{ audio = audio.value });
 		^audio * EnvGen.kr(env,gate,gated)
 	}
 
@@ -123,8 +125,8 @@ Impulsar {  // see also Trig
 		var t;
 		t=Trig.ar(trig,2.26757e-05);
 		^t.madd(mul,add)
-		
+
 		// was this in sc2, sounds different
 		//^ImpulseSequencer.ar({trig.poll},K2A.ar(trig),mul,add)
-	}	
+	}
 }
