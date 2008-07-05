@@ -64,8 +64,8 @@ BufferProxy { // blank space for delays, loopers etc.
 	}
 	numFrames { ^size }
 	bufnum {
-		/*if(UGen.buildSynthDef.notNil,{
-			("Use bufnumIr, not bufnum to obtain a buffer number inside of a synth def. in:" + UGen.buildSynthDef.instrName).warn;
+		/*if(InstrSynthDef.buildSynthDef.notNil,{
+			("Use bufnumIr, not bufnum to obtain a buffer number inside of a synth def. in:" + InstrSynthDef.buildSynthDef.instrName).warn;
 		});*/
 		^if(buffer.notNil,{ buffer.bufnum }, nil) 
 	}
@@ -76,7 +76,7 @@ BufferProxy { // blank space for delays, loopers etc.
 	bufnumIr {
 		// add a secret ir control
 		^bufnumControl ?? {
-			bufnumControl = UGen.buildSynthDef.addSecretIr(this,0,\bufnum);
+			bufnumControl = InstrSynthDef.buildSynthDef.addSecretIr(this,0,\bufnum);
 		}
 	}
 	
@@ -84,7 +84,7 @@ BufferProxy { // blank space for delays, loopers etc.
 	bufnumKr {
 		// add a secret kr control
 		^bufnumControl ?? {
-			bufnumControl = UGen.buildSynthDef.addSecretKr(this,0,\bufnum);
+			bufnumControl = InstrSynthDef.buildSynthDef.addSecretKr(this,0,\bufnum);
 		}
 	}
 	sampleRateIr {
@@ -372,7 +372,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 	pchRatioKr {
 		^pchk ?? { 
 			pchk =
-				(this.bufRateScaleIr * UGen.buildSynthDef.tempoKr(this,\getTempoBus))
+				(this.bufRateScaleIr * InstrSynthDef.buildSynthDef.tempoKr(this,\getTempoBus))
 					.madd(this.sampleTempoIr.reciprocal)
 		}
 	}
@@ -382,18 +382,18 @@ Sample : AbstractSample { // a small sound loaded from disk
 	beatsizeIr {
 		^beatsizek ?? {
 			beatsizek = 
-				UGen.buildSynthDef.addSecretIr( this,beatsize,\beatsize);
+				InstrSynthDef.buildSynthDef.addSecretIr( this,beatsize,\beatsize);
 		}
 	}
 	sampleTempoIr {
 		^tempoi ?? {
-			tempoi = UGen.buildSynthDef.addSecretIr(this,tempo,\tempo);
+			tempoi = InstrSynthDef.buildSynthDef.addSecretIr(this,tempo,\tempo);
 		}
 	}
 	/*
 	sampleTempoKr { // issue: if new sample is loaded, send the tempo to which synths ?
 		^samplek ?? {
-			samplek = UGen.buildSynthDef.addSecretKr(("__stempo__" ++ forArgi.asString).asSymbol,
+			samplek = InstrSynthDef.buildSynthDef.addSecretKr(("__stempo__" ++ forArgi.asString).asSymbol,
 											tempo,forArgi,\tempo));
 		}
 	}*/
