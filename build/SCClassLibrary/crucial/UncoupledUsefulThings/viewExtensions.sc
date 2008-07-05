@@ -40,17 +40,19 @@
 		^f
 	}
 
-	horz { arg func,bounds;
+	horz { arg func,bounds,spacing;
 		var comp;
 		comp = GUI.hLayoutView.new(this,bounds ?? { this.decorator.indentedRemaining });
 		comp.tryPerform('relativeOrigin_',true);
+		comp.spacing = spacing ? GUI.skin.gap.x;
 		func.value(comp);
 		^comp
 	}
-	vert { arg func,bounds;
+	vert { arg func,bounds,spacing;
 		var comp;
 		comp = GUI.vLayoutView.new(this,bounds ?? { this.decorator.indentedRemaining });
 		comp.tryPerform('relativeOrigin_',true);
+		comp.spacing = spacing ? GUI.skin.gap.y;
 		func.value(comp);
 		^comp
 	}
@@ -86,11 +88,11 @@
 	flow { arg func,bounds;
 		^this.view.flow(func,bounds)
 	}
-	vert { arg func,bounds;
-		^this.view.vert(func,bounds)
+	vert { arg func,bounds,spacing;
+		^this.view.vert(func,bounds,spacing)
 	}
-	horz { arg func,bounds;
-		^this.view.horz(func,bounds)
+	horz { arg func,bounds,spacing;
+		^this.view.horz(func,bounds,spacing)
 	}
 	comp { arg func,bounds;
 		^this.view.comp(func,bounds)
