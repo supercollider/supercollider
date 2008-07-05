@@ -32,8 +32,6 @@ SelectButtonSet  {
 		
 	   butts=
 		labelArray.collect({ arg la,i;
-			//var r;
-			//r = layout.layRight(x.max(la.asString.size * 7),y);
 			GUI.button.new(layout,(x@y))
 				.states_([[la.asString,Color.black,colorFunc.value(i)],
 						[la.asString,Color.black,selectedColor.value(i)]])

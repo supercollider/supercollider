@@ -191,10 +191,10 @@ SaveConsole : AbstractConsole {
 	}
 	
 	print {
-		ActionButton(layout,"#",{ object.asCompileString.postln }); 
+		ActionButton(layout,"post",{ object.asCompileString.postln }); 
 	}
 	printPath {
-		ActionButton(layout,"#path",{ path.value.asCompileString.postln })
+		ActionButton(layout,"post path",{ path.value.asCompileString.postln })
 	}
 	save { arg title="save",minWidth=100;
 		ActionButton(layout,title,{

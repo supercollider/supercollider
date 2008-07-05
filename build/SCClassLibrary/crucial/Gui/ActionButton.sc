@@ -190,6 +190,7 @@ FlowView : SCViewHolder {
 			})
 		});
 	}
+	// returns the new bounds
 	resizeToFit { arg reflow = false,tryParent = false;
 		var used,new;
 
@@ -211,6 +212,7 @@ FlowView : SCViewHolder {
 			this.decorator.bounds = new; // if the left/top moved this buggers it
 		};
 		if(reflow,{ this.reflowAll; });
+		// its better to call reflowDeep on the parent
 		if(tryParent,{
 			this.parent.tryPerform(\resizeToFit,reflow,tryParent);
 		});
@@ -220,12 +222,10 @@ FlowView : SCViewHolder {
 	reflowDeep {
 		this.allChildren.reverseDo({ |view|
 			if(view.isKindOf(FlowView),{
-				view.bounds = view.bounds.resizeTo(1000,1000);
+				view.bounds_(view.bounds.resizeTo(2000,2000),false);
 				view.reflowAll.resizeToFit;
 			});
 		});
-		// sometimes this doesn't work, but if you do it twice it usually does
-		
 //		best way:
 //		enlarge the view to full bounds within its parent.
 // 		this can only be done if you are the last or only child
