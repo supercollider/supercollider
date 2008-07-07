@@ -605,7 +605,7 @@ Event : Environment {
 						f = ~freq;
 						~amp = ~amp.value;
 						
-						bndl = ( [\s_new, ~instrument, ids, addAction, ~group] 
+						bndl = ( [\s_new, ~instrument, ids, addAction, ~group.asControlInput] 
 							++ ~msgFunc.valueEnvir).flop;
 						bndl.do { | b |
 							id = server.nextNodeID;
