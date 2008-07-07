@@ -238,10 +238,9 @@ void SCSoundFileView::setBounds(SCRect inBounds)
 		if(mSndBuf.channels)
 		bufAllocMinMax(&mSndMinMax, mSndBuf.channels, (int)(inBounds.width ));
 	}	
-//	mBounds = inBounds;
     mBounds = inBounds;
 	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getBounds();
+		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;

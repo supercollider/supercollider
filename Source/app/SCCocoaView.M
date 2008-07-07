@@ -309,7 +309,7 @@ void SCCocoaTextView::setBounds(SCRect inBounds)
 		mBounds = inBounds;
 		[[mScrollView superview] setNeedsDisplayInRect:[mScrollView frame]];
 		if(mParent->relativeOrigin()){
-			SCRect pbounds = mParent->getBounds();
+			SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
 			mLayout.bounds.x = mBounds.x + pbounds.x;
 			mLayout.bounds.y = mBounds.y + pbounds.y;
 			mLayout.bounds.width = mBounds.width;
@@ -318,12 +318,12 @@ void SCCocoaTextView::setBounds(SCRect inBounds)
 			mLayout.bounds = mBounds;
 		}
 		[mScrollView setFrame: SCtoNSRect(mLayout.bounds)];
-		[mTextView setFrame: SCtoNSRect(mLayout.bounds)];
+		[mTextView setFrame: SCtoNSRect(mLayout.bounds)]; // not needed - br
 
 	//	[mScrollView setBounds: SCtoNSRect(mBounds)];
 	//	[mTextView setBounds: SCtoNSRect(mBounds)];
-		[mScrollView setNeedsDisplay: YES];
-		[mTextView setNeedsDisplay: YES];	
+	//	[mScrollView setNeedsDisplay: YES]; // not needed - br
+	//	[mTextView setNeedsDisplay: YES];	// not needed - br
 }
 
 void SCCocoaTextView::keyDown(int character, int modifiers, unsigned short keycode)
@@ -704,7 +704,7 @@ void SCMovieView::setBounds(SCRect screct)
 	[[mMovieView superview] setNeedsDisplayInRect:[mMovieView frame]];
 	mBounds = screct;
 	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getBounds();
+		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
@@ -952,7 +952,7 @@ void SCQuartzComposerView::setBounds(SCRect screct)
 	[[mQCView superview] setNeedsDisplayInRect:[mQCView frame]];
 	mBounds = screct;
 	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getBounds();
+		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
