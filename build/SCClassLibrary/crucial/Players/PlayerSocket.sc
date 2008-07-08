@@ -121,7 +121,6 @@ PlayerSocket : AbstractPlayerProxy {
 	freeResourcesToBundle { arg bundle;
 		socketGroup.freeToBundle(bundle);
 		socketGroup = nil;
-
 	}
 
 	prepareChildrenToBundle { arg bundle;
@@ -132,9 +131,9 @@ PlayerSocket : AbstractPlayerProxy {
 		});
 	}
 	freeToBundle { |bundle|
-		super.freeToBundle(bundle);
 		dee.freeToBundle(bundle);
 		dum.freeToBundle(bundle);
+		super.freeToBundle(bundle);
 	}
 
 	// no synth of my own
