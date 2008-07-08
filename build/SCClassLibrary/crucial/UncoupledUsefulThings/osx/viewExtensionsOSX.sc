@@ -1,10 +1,17 @@
 
 + SCWindow {
 	flow { arg func,bounds;
-		var f,comp;
+		var f;
 		f = FlowView(this,bounds ?? { this.bounds });
 		func.value(f);
 		f.resizeToFit;
+		^f
+	}
+	comp { arg func,bounds;
+		var f;
+		f = GUI.compositeView.new(this,bounds ?? { this.bounds });
+		f.tryPerform('relativeOrigin_',true);
+		func.value(f);
 		^f
 	}
 }
