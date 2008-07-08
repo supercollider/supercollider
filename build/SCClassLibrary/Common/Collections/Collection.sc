@@ -115,7 +115,7 @@ Collection {
 	}
 	selectAs { | function, class |
 		var res = class.new(this.size);
-		this.do {|elem, i| if (function.value(elem, i)) { res.add(elem) } }
+		this.do {|elem, i| if (function.value(elem, i)) { res = res.add(elem) } }
 		^res;
 	}
 	rejectAs { | function, class |
