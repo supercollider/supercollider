@@ -218,8 +218,7 @@ NoteOnOffResponder
 PolyTouchResponder
 */
 
-/*
-good to go but waiting for wouter's permission and so that he can comment it out in his lib.
+
 
 ProgramChangeResponder : MIDIResponder {
 	classvar <pcinit = false,<pcr;
@@ -253,6 +252,4 @@ ProgramChangeResponder : MIDIResponder {
 		pcr.remove(resp);
 	}
 }
-
-*/
 
