@@ -71,13 +71,11 @@ AbstractPlayer : AbstractFunction  {
 	isPrepared {
 		^#[\readyForPlay, \isPlaying,\isStopped, \isStopping].includes(status)
 	}
-	readyForPlay { ^status === \readyForPlay }
+	readyForPlay { ^[\readyForPlay,\isPlaying,\isStopped,\isStopping].includes(status) }
 	prepareForPlay { arg group,private = false,bus;
-		var bundle;
-		bundle = AbstractPlayer.bundleClass.new;
-		this.prepareToBundle(group,bundle,private,bus);
-
-		^bundle.send(this.group.server)
+		AbstractPlayer.bundle(group.asTarget.server,nil,{ |bundle|
+			this.prepareToBundle(group,bundle,private,bus);
+		});
 	}
 
 	prepareToBundle { arg agroup,bundle,private = false, bus;
@@ -226,7 +224,7 @@ AbstractPlayer : AbstractFunction  {
 		if(andFreeResources,{ ^this.free });
 
 		if(server.notNil,{
-			AbstractPlayer.bundle(server,atTime,{ |bundle|
+			AbstractPlayer.bundle(server,atTime ? this.server.latency,{ |bundle|
 				this.stopToBundle(bundle,true);
 			})
 		});
