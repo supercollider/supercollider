@@ -65,6 +65,13 @@ NoteOnResponder : MIDIResponder {
 	*remove { arg resp;
 		nonr.remove(resp);
 	}
+	learn {
+		var oneShot;
+		oneShot = this.class.new({ |src,chan,num,value|
+					this.matchEvent_(MIDIEvent(nil,src,chan,nil,nil));
+					oneShot.remove;
+				},nil,nil,nil,nil,true,true)
+	}	
 }
 
 NoteOffResponder : NoteOnResponder {
@@ -131,6 +138,13 @@ CCResponder : MIDIResponder {
 			})
 		};
 	}
+	learn {
+		var oneShot;
+		oneShot = CCResponder({ |src,chan,num,value|
+					this.matchEvent_(MIDIEvent(nil,src,chan,num,nil));
+					oneShot.remove;
+				},nil,nil,nil,nil,true,true)
+	}
 }
 
 TouchResponder : MIDIResponder {
@@ -163,6 +177,13 @@ TouchResponder : MIDIResponder {
 	}
 	*remove { arg resp;
 		touchr.remove(resp);
+	}
+	learn {
+		var oneShot;
+		oneShot = this.class.new({ |src,chan,num,value|
+					this.matchEvent_(MIDIEvent(nil,src,chan,nil,nil));
+					oneShot.remove;
+				},nil,nil,nil,nil,true,true)
 	}
 }
 
@@ -197,12 +218,15 @@ NoteOnOffResponder
 PolyTouchResponder
 */
 
+/*
+good to go but waiting for wouter's permission and so that he can comment it out in his lib.
+
 ProgramChangeResponder : MIDIResponder {
 	classvar <pcinit = false,<pcr;
 
 	*new { arg function, src, chan, value, install=true;
 		^super.new.function_(function)
-			.matchEvent_(MIDIEvent(nil, this.fixSrc(src), chan, nil, value))
+			.matchEvent_(MIDIEvent(nil, src.asMIDIInPortUID, chan, nil, value))
 			.init(install)
 	}
 	*init {
@@ -230,4 +254,5 @@ ProgramChangeResponder : MIDIResponder {
 	}
 }
 
+*/
 
