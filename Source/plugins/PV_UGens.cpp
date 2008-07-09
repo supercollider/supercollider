@@ -693,12 +693,17 @@ void PV_Mul_next(PV_Unit *unit, int inNumSamples)
 	SCComplexBuf *p = ToComplexApx(buf1);
 	SCComplexBuf *q = ToComplexApx(buf2);
 	
+	float preal, realmul, imagmul;
+	
 	p->dc *= q->dc;
 	p->nyq *= q->nyq;
 	for (int i=0; i<numbins; ++i) {
-		float preal = p->bin[i].real;
-		p->bin[i].real = (preal * q->bin[i].real) - (p->bin[i].imag * q->bin[i].imag);
-		p->bin[i].imag = (preal * q->bin[i].imag) + (p->bin[i].imag * q->bin[i].real);
+		preal = p->bin[i].real;
+		// Complex multiply using only 3 multiplications rather than 4. http://mathworld.wolfram.com/ComplexMultiplication.html
+		realmul = (preal * q->bin[i].real);
+		imagmul = (p->bin[i].imag * q->bin[i].imag);
+		p->bin[i].real = realmul - imagmul;
+		p->bin[i].imag = (preal + p->bin[i].imag) * (q->bin[i].real + q->bin[i].imag) - realmul - imagmul;
 	}
 }
 
