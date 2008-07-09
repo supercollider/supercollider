@@ -524,14 +524,16 @@ Buffer {
 		serverCaches[server][bufnum] = this;
 	}
 	uncache {
-		serverCaches[server].removeAt(bufnum);
+		if(serverCaches[server].notNil,{
+			serverCaches[server].removeAt(bufnum);
+		});
+		if(serverCaches[server].size == 1) {
 			// the 1 item would be the responder
 			// if there is more than 1 item then the rest are cached buffers
 			// else we can remove.
 			// cx: tho i don't see why its important. it will just have to be added
 			// back when the next buffer is added and the responder is removed when
 			// the server reboots
-		if(serverCaches[server].size == 1) {
 			Buffer.clearServerCaches(server);
 		}
 	}
