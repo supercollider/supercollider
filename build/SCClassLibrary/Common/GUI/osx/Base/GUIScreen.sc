@@ -108,8 +108,17 @@ SCWindow {
 		name = argName;
 		this.prSetName(argName);
 	}
+	// bounds are relative to the bottom left corner origin
 	bounds_ { arg argBounds;
 		this.prSetBounds(argBounds);
+	}
+	// set bounds relative to top left corner
+	setTopLeftBounds { |rect,menuSpacer=45|
+		rect = rect.copy;
+		// 45 is the height of the mac os menu
+		// if you are in full screen mode you would want to pass in 0
+		rect.top = SCWindow.screenBounds.height - rect.height - rect.top - menuSpacer;
+		this.bounds = rect
 	}
 	setInnerExtent { arg w,h; // resize window keeping top left corner fixed
 		var b;

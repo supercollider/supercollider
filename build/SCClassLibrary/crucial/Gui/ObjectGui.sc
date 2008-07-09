@@ -1,50 +1,29 @@
 
-ObjectGui : SCViewHolder { // aka AbstractController
-
+ObjectGui : SCViewHolder {
+	/*
+		this is a controller class. it creates the views and implements the relationship between them and the model
+		model: the object for which this is a graphical user interface
+		view: this.view is the flow view (aka the arg layout) that is passed to guiBody
+			individual views/widgets are placed in it and their actions talk to either this object or the model
+	*/
 	var <model,<dragSource;
 
 	guiBody { arg layout;
-		// override this in your gui subclass
+		/* implement this method in your gui subclass */
 		
-		// or if you are lazy then just implement guiBody in the MODEL
+		// if your model implement guiBody then call that
 		if(model.respondsTo(\guiBody) and: {model.isKindOf(ObjectGui).not},{
 			model.guiBody(layout)
 		},{
-			// or by default we make a gui showing variables that the class allows
+			/*
+			or by default we make a gui showing variables that the class allows
+			 see instVarsForGui
+			 by default this is NO variables at all.
+			*/
 			ObjectGui.guiInstVarsOf(model,layout)
-			//ObjectGui.guiVarsOf(model,layout);
 		})
 	}
 
-	// classes return instVarsForGui : a list of \symbols
-	// by default empty : don't display any variables
-	*guiInstVarsOf { arg object,layout;
-		var varNames,maxWidth=50,font;
-		font = GUI.font.new(*GUI.skin.fontSpecs);
-		object.class.instVarsForGui.do({ |ivar,i|
-			var width;
-			//if(object.respondsTo(ivar),{ // has getter
-				varNames = varNames.add([ivar,object.instVarAt(ivar)]);
-				width = ivar.asString.bounds(font).width + 5;
-				if(width > maxWidth,{ maxWidth = width; });
-			//})
-		});
-		varNames.do({ |namevar|
-			var guis;
-			layout.startRow;
-			VariableNameLabel(namevar[0],layout,maxWidth);
-			// a safety check so as not to annoy 
-			// if there already exists a gui for the object, the simply put a Tile
-			guis = namevar[1].dependants.select({|dep| dep.isKindOf(ObjectGui) and: dep.class !== StringGui });
-			if(guis.size == 0,{
-				namevar[1].gui(layout);
-			},{
-				Tile(namevar[1],layout);
-			});
-		});
-	}
-	
-		
 	*new { arg model;
 		var new;
 		new = super.new;
@@ -53,7 +32,7 @@ ObjectGui : SCViewHolder { // aka AbstractController
 	}
 	guify { arg layout,bounds,title;
 		if(layout.isNil,{
-			layout = MultiPageLayout(title ?? {model.asString.copyRange(0,50)},bounds);
+			layout = MultiPageLayout(title ?? {model.asString.copyRange(0,50)},bounds,front:false);
 		},{
 			layout = layout.asPageLayout(title,bounds);
 		});
@@ -63,8 +42,10 @@ ObjectGui : SCViewHolder { // aka AbstractController
 	}
 	viewDidClose {
 		model.removeDependant(this);
+		model = nil;
 		super.viewDidClose;
 	}
+
 	gui { arg lay, bounds ... args;
 		var layout;
 		layout=this.guify(lay,bounds);
@@ -74,8 +55,8 @@ ObjectGui : SCViewHolder { // aka AbstractController
 			this.performList(\guiBody,[layout] ++ args);
 		},bounds).background_(this.background);
 		//if you created it, front it
-		if(lay.isNil,{ 
-			layout.resizeToFit(true).front 
+		if(lay.isNil,{
+			layout.resizeToFit(true,true).front
 		});
 	}
 	topGui { arg ... args;
@@ -83,7 +64,7 @@ ObjectGui : SCViewHolder { // aka AbstractController
 	}
 
 	background { ^Color.clear }//^Color.yellow(0.2,0.08) }
-	
+
 	writeName { |layout|
 		this.prWriteName(layout,model.asString)
 	}
@@ -100,7 +81,7 @@ ObjectGui : SCViewHolder { // aka AbstractController
 			.background_(Color.white)
 			.align_(\left)
 			.beginDragAction_({ model })
-			.object_(string);	
+			.object_(string);
 		InspectorLink.icon(model,layout);
 	}
 	model_ { |newModel|
@@ -115,11 +96,40 @@ ObjectGui : SCViewHolder { // aka AbstractController
 		})
 	}
 
-	
 	saveConsole { arg layout;
 		^SaveConsole(model,"",layout).save.saveAs.print;
 	}
-	
+
+
+	*guiInstVarsOf { arg object,layout;
+		// this is an easy default gui system
+		// each class returns instVarsForGui, a list of \symbols
+		// by default an empty array : "don't display any variables"
+		// some classes (Pattern so far) can return all of their instance var names
+		// and thus gui all of their internal vars	
+		var varNames,maxWidth=50,font;
+		font = GUI.font.new(*GUI.skin.fontSpecs);
+		object.class.instVarsForGui.do({ |ivar,i|
+			var width;
+			varNames = varNames.add([ivar,object.instVarAt(ivar)]);
+			width = ivar.asString.bounds(font).width + 5;
+			if(width > maxWidth,{ maxWidth = width; });
+		});
+		varNames.do({ |namevar|
+			var guis;
+			layout.startRow;
+			VariableNameLabel(namevar[0],layout,maxWidth);
+			// a safety check so as not to annoy
+			// if there already exists a gui for the object, the simply put a Tile
+			guis = namevar[1].dependants.select({|dep| dep.isKindOf(ObjectGui) and: dep.class !== StringGui });
+			if(guis.size == 0,{
+				namevar[1].gui(layout);
+			},{
+				Tile(namevar[1],layout);
+			});
+		});
+	}
+
 }
 
 ModelImplementsGuiBody : ObjectGui {

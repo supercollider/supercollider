@@ -34,7 +34,7 @@ StringGui : ObjectGui {
 			.align_(\left)
 			.object_(string);
 
-		if(lay.isNil,{ layout.resizeToFit.front });
+		if(lay.isNil,{ layout.resizeToFit(center:true).front });
 	}
 
 }

@@ -22,7 +22,7 @@ AbstractPlayerGui : ObjectGui {
 		this.enableKeyDowns;
 
 		if(lay.isNil,{
-			layout.resizeToFit.front;
+			layout.resizeToFit(center:true).front;
 			view.focus;
 		})
 	}

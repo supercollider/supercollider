@@ -44,7 +44,9 @@ Rect {
 	center_ { arg center; ^this.class.aboutPoint(center, width * 0.5, height * 0.5) }
 	
 	bottom { ^top + height }
+	bottom_ { |b| top = top - (this.bottom - b) }
 	right { ^left + width }
+	right_ { |r| left = left - (this.right - r) }
 	
 	leftTop { ^Point.new(this.left, this.top) }
 	rightTop { ^Point.new(this.right, this.top) }
