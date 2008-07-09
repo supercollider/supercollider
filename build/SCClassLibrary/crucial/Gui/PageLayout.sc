@@ -112,33 +112,32 @@ MultiPageLayout  {
 		autoRemoves = autoRemoves.add(dependant);
 	}
 
-	resizeToFit { arg reflow=false;
-		//var fs;
-		//fs = GUI.window.screenBounds;
+	resizeToFit { arg reflow=false,center=false;
+		var fs, b,wb,wbw,wbh;
 
-		var b,wb,wbw,wbh;
-		if(this.view.isNil,{ this.insp });
 		b = this.view.resizeToFit(reflow);
+		wbw = b.width + 4; 
+		wbh = b.height + 17;
+		window.setInnerExtent(wbw,wbh);
 
-		window.setInnerExtent(wbw = b.width + 4, wbh = b.height + 17);
-		/*
-		auto-place the window.  but we need to know if you explicitly passed in bounds.
-		*/
-		/*
-		if(boundsWereExplicit.not,{
-			wb = windows.at(vi).innerExtent;
-			// if height is less than 80% of full screen
-			if(wbh <= (fs.height * 0.8),{
-				// move its top to be level at golden ratio
+		if(center) {
+			// this should be a window method
+			fs = GUI.window.screenBounds;
+			wb = window.bounds;
+			// bounds are inaccurate until the end of the code cycle/refresh
+			wb.width = wbw;
+			wb.height = wbh;
+			// if height is less than 60% of full screen
+			if(wbh <= (fs.height * 0.6),{
+				// then move its top to be level at golden ratio
 				wb.top = fs.height - (fs.height / 1.6180339887);
 			},{
 				wb.top = 0;
 			});
-			// move its left corner to be centered
+			// center it horizontally
 			wb.left = (fs.width - wbw) / 2;
-			windows.at(vi).bounds = wb;
-		}); */
-
+			window.setTopLeftBounds(wb);
+		}
 	}
 		
 	reflowAll {
