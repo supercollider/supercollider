@@ -120,7 +120,7 @@ MultiPageLayout  {
 		wbh = b.height + 17;
 		window.setInnerExtent(wbw,wbh);
 
-		if(center) {
+		if(center and: {window.respondsTo(\setTopLeftBounds)}) {
 			// this should be a window method
 			fs = GUI.window.screenBounds;
 			wb = window.bounds;
