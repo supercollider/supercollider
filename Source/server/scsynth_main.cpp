@@ -250,7 +250,19 @@ int main(int argc, char* argv[])
 #endif 
 			case 'H' :
 				checkNumArgs(2);
-				options.mDeviceName = argv[j+1];
+				options.mInDeviceName = argv[j+1];
+#ifdef SC_DARWIN
+				if (i+1 > argc || argv[j+2][0] == '-' ){
+					options.mOutDeviceName = options.mInDeviceName;
+				}else{
+					// If there's a second argument then the user wants separate I/O devices
+					options.mOutDeviceName = argv[j+2];
+					++i;
+				}
+#else
+				options.mOutDeviceName = options.mInDeviceName; // Non-Mac platforms always use same device
+#endif
+				
 				break;
 			case 'v' :
 				checkNumArgs(2);

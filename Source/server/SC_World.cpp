@@ -364,7 +364,8 @@ World* World_New(WorldOptions *inOptions)
 		world->hw->mInputStreamsEnabled = inOptions->mInputStreamsEnabled;
 		world->hw->mOutputStreamsEnabled = inOptions->mOutputStreamsEnabled;
 #endif 
-		world->hw->mDeviceName = inOptions->mDeviceName;
+		world->hw->mInDeviceName  = inOptions->mInDeviceName;
+		world->hw->mOutDeviceName = inOptions->mOutDeviceName;
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;
 

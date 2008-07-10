@@ -25,7 +25,8 @@ ServerOptions
 	var <>inputStreamsEnabled;
 	var <>outputStreamsEnabled;
 
-	var <>device = nil;
+	var <>deviceIn = nil;
+	var <>deviceOut = nil;
 	
 	var <>blockAllocClass;
 	
@@ -47,7 +48,18 @@ ServerOptions
 			^super.new
 		});
 	}
-
+	
+	device {
+		^if(deviceIn == deviceOut){
+			deviceIn
+		}{
+			[deviceIn, deviceOut]
+		}
+	}
+	device_ { |dev|
+		deviceIn = deviceOut = dev;
+	}
+	
 	// max logins
 	// session-password
 
@@ -109,9 +121,13 @@ ServerOptions
 		if (outputStreamsEnabled.notNil, {
 			o = o ++ " -O " ++ outputStreamsEnabled ;
 		});
-		if (device.notNil, {
-			o = o ++ " -H \"" ++ device ++ "\"" ;
-		});
+		if(deviceIn == deviceOut){
+			if (deviceIn.notNil, {
+				o = o ++ " -H %".format(deviceIn.quote);
+			});
+		}{
+				o = o ++ " -H % %".format(deviceIn.asString.quote, deviceOut.asString.quote);
+		};
 		if (verbosity != 0, {
 			o = o ++ " -v " ++ verbosity;
 		});
