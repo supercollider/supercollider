@@ -252,6 +252,7 @@
 		stream << this.asCompileString;//.hash.asFileSafeString;
 		^2
 	}
+	didSpawn {}
 }
 
 + UGen {
