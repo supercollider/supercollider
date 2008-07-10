@@ -166,11 +166,12 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 {
 
     AudioBufferList * mInputBufList;
-	AudioDeviceID	mInputDevice;
-	AudioDeviceID	mOutputDevice;
+	AudioDeviceID	mDevice;
 
-	AudioStreamBasicDescription	inputStreamDesc;	// info about the default device
-	AudioStreamBasicDescription	outputStreamDesc;	// info about the default device
+	AudioObjectID	aggregateID;
+	AudioDeviceID	coreaudioPlugin;
+	
+	AudioStreamBasicDescription	streamDesc;	// info about the default device
 
 	friend OSStatus appIOProc (		AudioDeviceID inDevice, 
 									const AudioTimeStamp* inNow, 
@@ -192,10 +193,7 @@ public:
 
     void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
 
-	bool UseInput() { return mInputDevice != kAudioDeviceUnknown; }
-	bool UseSeparateIO() { return UseInput() && mInputDevice != mOutputDevice; }
-	AudioDeviceID InputDevice() { return mInputDevice; }
-	AudioDeviceID OutputDevice() { return mOutputDevice; }
+	AudioDeviceID Device() { return mDevice; }
 	
 	void SetInputBufferList(AudioBufferList * inBufList) { mInputBufList = inBufList; }
 	AudioBufferList* GetInputBufferList() const { return mInputBufList; }	

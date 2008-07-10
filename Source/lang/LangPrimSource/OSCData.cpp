@@ -820,7 +820,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		PyrObject *optionsObj = a->uo;
 		PyrSlot *optionsSlots = optionsObj->slots;
 
-		static char mInputStreamsEnabled[512], mOutputStreamsEnabled[512], mDeviceName[512];
+		static char mInputStreamsEnabled[512], mOutputStreamsEnabled[512], mInDeviceName[512], mOutDeviceName[512];
 		int err;
 		
 		err = slotIntVal(optionsSlots + 0, (int*)&options.mNumAudioBusChannels);
@@ -878,9 +878,20 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		else options.mOutputStreamsEnabled = mOutputStreamsEnabled;
 		#endif
 		
-		err = slotStrVal(optionsSlots+17, mDeviceName, 512);
-		if(err) options.mDeviceName = NULL;
-		else options.mDeviceName = mDeviceName;		
+		err = slotStrVal(optionsSlots+17, mInDeviceName, 512);
+		if(err) options.mInDeviceName = NULL;
+		else options.mInDeviceName = mInDeviceName;
+		
+		err = slotStrVal(optionsSlots+18, mOutDeviceName, 512);
+		if(err) options.mOutDeviceName = NULL;
+		else options.mOutDeviceName = mOutDeviceName;
+		
+		if(strcmp(mInDeviceName, mOutDeviceName) != 0){
+			options.mInDeviceName = options.mOutDeviceName;
+			scprintf("WARNING: Internal server not currently able to use separate input/output devices. "
+			   "Input & output both set to \"%s\". "
+			   "Use local server if you require separate I/O.\n", mInDeviceName);
+		}
 
 		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
