@@ -602,7 +602,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 {
     // catch the common case of wanting main help
 	if([desiredHelpFile isEqual: @""]) {
-		NSString* mainHelpPath = @"Help/Help.help.rtf";
+		NSString* mainHelpPath = @"Help/Help.html";
 		if([fileManager fileExistsAtPath: mainHelpPath]) {
 			return mainHelpPath;
 		} else {
