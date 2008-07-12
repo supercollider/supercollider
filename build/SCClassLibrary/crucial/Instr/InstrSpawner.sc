@@ -9,30 +9,32 @@ InstrSpawner : Patch {
 	*new { arg func,args,deltaPattern = 1.0;
 		^super.new(func,args).deltaPattern_(deltaPattern)
 	}
-	
 	storeArgs { ^[instr.name,args,deltaPattern] }
 	
 	asSynthDef {
 		var initArgs;
 		^synthDef ?? {
-			initArgs = this.args.collect({ arg a,i;
+			initArgs = args.collect({ arg a,i;
 						var spec;
 						if(a.rate == \stream,{
 							// use an Ir to reserve an input into the synth.
 							// a Pattern does not know the spec/default of its output
 							// but we do.
 							spec = this.instr.specs.at(i);
+							if(spec.isKindOf(StreamSpec),{
+								spec = spec.itemSpec;
+							});
 							IrNumberEditor(spec.default,spec);
 						},{
 							a
 						})
-						//a
 					});
 			synthDef = InstrSynthDef.build(this.instr,initArgs,Out);
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
 			this.watchNoncontrols;
+			stepChildren = synthDef.secretObjects;
 			synthDef
 		}
 	}
@@ -60,7 +62,6 @@ InstrSpawner : Patch {
 		streams.do({ arg s,i;
 			var val;
 			if((val = s.next(this)).isNil ,{ 						
-				//this.debug("Finished play");
 				 ^false 
 			});
 			sendArray.put(i * 2 + 6,val);
@@ -70,10 +71,7 @@ InstrSpawner : Patch {
 	update { arg changed,changer;
 		// one of my noncontrol inputs changed
 		if(this.isPlaying,{
-		"one of my inputs changed, need to send sample change etc.".warn;
-
-//				newArgs = synthDef.secretDefArgs;
-//				synth.performList(\set,newArgs);
+			//"one of my inputs changed, need to send sample change etc.".warn;
 
 			synthDef.secretDefArgs.do({ arg newarg,i;
 				sendArray.put(i + firstSecretDefArgIndex, newarg);
@@ -134,17 +132,15 @@ InstrSpawner : Patch {
 		// this happens in .stop too
 		bundle.addFunction({ CmdPeriod.remove(this) });
 	}
-	children { ^super.children.add(deltaPattern) }
+	children { ^args ++ [deltaPattern] }
 	prepareChildrenToBundle { arg bundle;
 		this.children.do({ arg child;
 			child.prepareToBundle(spawnGroup,bundle,true,nil,true)
 		});
+		stepChildren.do({ arg child;
+			child.prepareToBundle(spawnGroup,bundle,true,nil,false);
+		});
 	}
-//	childrenMakePatchOut { arg group,private = true,bundle;
-//		this.children.do({ arg child;
-//			child.makePatchOut(spawnGroup,true,nil,bundle)
-//		});
-//	}
 
 	spawnToBundle { arg bundle;
 		if(patchOut.isNil,{ 
@@ -160,7 +156,9 @@ InstrSpawner : Patch {
 				//child.group = spawnGroup;
 				child.spawnToBundle(bundle);
 			});
-
+			this.stepChildren.do({ arg child;
+				child.spawnToBundle(bundle);
+			});
 			bundle.add(sendArray);
 			bundle.addMessage(this,\didSpawn);
 		});
@@ -180,14 +178,11 @@ InstrSpawner : Patch {
 	}
 	didStop {
 		super.didStop;
-		// can't use Task because its start is quantized
 		spawnTask.stop;
 		spawnTask = nil;
 	}
 	didFree {
-		//if(super.didFree,{
-			CmdPeriod.remove(this);
-		//})
+		CmdPeriod.remove(this);
 	}
 	cmdPeriod {
 		this.didStop;
@@ -230,7 +225,6 @@ ScurryableInstrGateSpawner : InstrGateSpawner {
 	var scurried = 0,stepsToDo = 0;
 
 	scurry { arg by=10;
-		// as long as another one isn't in progress
 		if(stepsToDo == 0,{ stepsToDo = by; },{
 			"already scurrying".inform;	
 		});
