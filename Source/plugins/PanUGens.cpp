@@ -313,8 +313,8 @@ void XFade2_Ctor(XFade2 *unit)
 	} else {
 		SETCALC(XFade2_next_ak);
 	}
-	unit->m_pos = ZIN0(1);
-	unit->m_level = ZIN0(2);
+	unit->m_pos = ZIN0(2);
+	unit->m_level = ZIN0(3);
 	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f);
 	ipos = sc_clip(ipos, 0, 2048);
 	
