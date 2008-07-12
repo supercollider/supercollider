@@ -70,13 +70,11 @@ struct WorldOptions
     CFStringRef mServerPortName;
     CFStringRef mReplyPortName;
 #endif
-	const char *mInDeviceName;
+	const char *mDeviceName;
 	
 	int mVerbosity;
 	
 	bool mRendezvous;
-	
-	const char *mOutDeviceName;
 };
 
 const WorldOptions kDefaultWorldOptions = 
@@ -94,7 +92,6 @@ const WorldOptions kDefaultWorldOptions =
 	,0
 	,0
 	,1
-	,0
 };
 
 //#ifdef SC_WIN32

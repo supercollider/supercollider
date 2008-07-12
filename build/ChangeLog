@@ -4,8 +4,6 @@
 
 // HEADLINES:
 * 2008-04-20 improvements to MIDI sysex handling - added sysex parsing directly in source - thanks to charles picasso
-* 2008-07-10 scsynth on Mac can now use separate devices for audio input vs audio output. Unfortunately not yet working for internal Server, but local Server 
-                can use this smoothly. Thanks to Axel Balley for much of the work on this, also some parts by ds.
 
 // BUGFIXES:
 * 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
