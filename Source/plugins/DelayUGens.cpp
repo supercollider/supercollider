@@ -31,6 +31,7 @@ struct ScopeOut : public Unit
 	SndBufUpdates *m_bufupdates;
 	float m_fbufnum;
 	uint32 m_framepos, m_framecount;
+	float **mIn;
 };
 
 struct PlayBuf : public Unit
@@ -39,6 +40,7 @@ struct PlayBuf : public Unit
 	float m_prevtrig;
 	float m_fbufnum;
 	SndBuf *m_buf;
+	float **mOut;
 };
 
 
@@ -70,6 +72,7 @@ struct SimpleLoopBuf : public Unit
 	float m_prevtrig;
 	float m_fbufnum;
 	SndBuf *m_buf;
+	float **mOut;
 };
 #endif
 
@@ -77,12 +80,14 @@ struct BufRd : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
+	float **mOut;
 };
 
 struct BufWr : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
+	float **mIn;
 };
 
 struct RecordBuf : public Unit
@@ -92,6 +97,7 @@ struct RecordBuf : public Unit
 	int32 m_writepos;
 	float m_recLevel, m_preLevel;
 	float m_prevtrig;
+	float **mIn;
 };
 
 struct Pitch : public Unit
@@ -263,6 +269,7 @@ extern "C"
 	void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_Ctor(PlayBuf* unit);
+	void PlayBuf_Dtor(PlayBuf* unit);
 
 	void TGrains_next(TGrains *unit, int inNumSamples);
 	void TGrains_Ctor(TGrains* unit);
@@ -270,17 +277,21 @@ extern "C"
 #if NOTYET
 	void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples);
 	void SimpleLoopBuf_Ctor(SimpleLoopBuf* unit);
+	void SimpleLoopBuf_Dtor(SimpleLoopBuf* unit);
 #endif
 
 	void BufRd_Ctor(BufRd *unit);
+	void BufRd_Dtor(BufRd *unit);
 	void BufRd_next_4(BufRd *unit, int inNumSamples);
 	void BufRd_next_2(BufRd *unit, int inNumSamples);
 	void BufRd_next_1(BufRd *unit, int inNumSamples);
 
 	void BufWr_Ctor(BufWr *unit);
+	void BufWr_Dtor(BufWr *unit);
 	void BufWr_next(BufWr *unit, int inNumSamples);
 
 	void RecordBuf_Ctor(RecordBuf *unit);
+	void RecordBuf_Dtor(RecordBuf *unit);
 	void RecordBuf_next(RecordBuf *unit, int inNumSamples);
 	void RecordBuf_next_10(RecordBuf *unit, int inNumSamples);
 
@@ -369,6 +380,7 @@ extern "C"
 
 	void ScopeOut_next(ScopeOut *unit, int inNumSamples);
 	void ScopeOut_Ctor(ScopeOut *unit);
+	void ScopeOut_Dtor(ScopeOut *unit);
 	
 	void Pluck_Ctor(Pluck* unit);
 	void Pluck_next_aa(Pluck *unit, int inNumSamples);
@@ -616,8 +628,18 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
-	float *out[16]; \
-	for (uint32 i=0; i<numOutputs; ++i) out[i] = ZOUT(i); 
+	if(!unit->mOut){ \
+		unit->mOut = (float**)RTAlloc(unit->mWorld, numOutputs * sizeof(float*)); \
+	} \
+	float **out = unit->mOut; \
+	for (uint32 i=0; i<numOutputs; ++i){ \
+		out[i] = ZOUT(i); \
+	}
+
+#define TAKEDOWN_OUT \
+	if(unit->mOut){ \
+		RTFree(unit->mWorld, unit->mOut); \
+	}
 
 #define SETUP_IN(offset) \
 	uint32 numInputs = unit->mNumInputs - (uint32)offset; \
@@ -629,8 +651,18 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
-	float *in[16]; \
-	for (uint32 i=0; i<numInputs; ++i) in[i] = ZIN(i+offset); 
+	if(!unit->mIn){ \
+		unit->mIn = (float**)RTAlloc(unit->mWorld, numInputs * sizeof(float*)); \
+	} \
+	float **in = unit->mIn; \
+	for (uint32 i=0; i<numInputs; ++i) { \
+		in[i] = ZIN(i+offset); \
+	}
+
+#define TAKEDOWN_IN \
+	if(unit->mIn){ \
+		RTFree(unit->mWorld, unit->mIn); \
+	}
 		
 
 #define LOOP_BODY_4 \
@@ -723,9 +755,15 @@ void PlayBuf_Ctor(PlayBuf *unit)
 	
 	unit->m_fbufnum = -1e9f;
 	unit->m_prevtrig = 0.;
+	unit->mOut = 0;
 	unit->m_phase = ZIN0(3);
 	
 	ClearUnitOutputs(unit, 1);
+}
+
+void PlayBuf_Dtor(PlayBuf *unit)
+{
+	TAKEDOWN_OUT
 }
 
 void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
@@ -884,8 +922,14 @@ void BufRd_Ctor(BufRd *unit)
 	}
 	
 	unit->m_fbufnum = -1e9f;
+	unit->mOut = 0;
 	
 	ClearUnitOutputs(unit, 1);
+}
+
+void BufRd_Dtor(BufRd *unit)
+{
+	TAKEDOWN_OUT
 }
 
 void BufRd_next_4(BufRd *unit, int inNumSamples)
@@ -952,8 +996,14 @@ void BufWr_Ctor(BufWr *unit)
 	SETCALC(BufWr_next);
 	
 	unit->m_fbufnum = -1e9f;
+	unit->mIn = 0;
 	
 	ClearUnitOutputs(unit, 1);
+}
+
+void BufWr_Dtor(BufWr *unit)
+{
+	TAKEDOWN_IN
 }
 
 void BufWr_next(BufWr *unit, int inNumSamples)
@@ -983,8 +1033,9 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 void RecordBuf_Ctor(RecordBuf *unit)
 {	
 	
-	uint32 numInputs = unit->mNumInputs - 7; \
+	uint32 numInputs = unit->mNumInputs - 7;
 	unit->m_fbufnum = -1e9f;
+	unit->mIn = 0;
 	unit->m_writepos = (int32)ZIN0(1) * numInputs;
 	unit->m_recLevel = ZIN0(2);
 	unit->m_preLevel = ZIN0(3);
@@ -998,6 +1049,11 @@ void RecordBuf_Ctor(RecordBuf *unit)
 	}
 		
 	ClearUnitOutputs(unit, 1);
+}
+
+void RecordBuf_Dtor(RecordBuf *unit)
+{
+	TAKEDOWN_IN
 }
 
 void RecordBuf_next(RecordBuf *unit, int inNumSamples)
@@ -4922,9 +4978,15 @@ void SimpleLoopBuf_Ctor(SimpleLoopBuf *unit)
 	
 	unit->m_fbufnum = -1e9f;
 	unit->m_prevtrig = 0.;
+	unit->mOut = 0;
 	unit->m_phase = ZIN0(2);
 	
 	ClearUnitOutputs(unit, 1);
+}
+
+void SimpleLoopBuf_Dtor(SimpleLoopBuf *unit)
+{
+	TAKEDOWN_OUT
 }
 #endif
 
@@ -5042,7 +5104,13 @@ void ScopeOut_Ctor(ScopeOut *unit)
 	unit->m_fbufnum = -1e9;
 	unit->m_framepos = 0;
 	unit->m_framecount = 0;
+	unit->mIn = 0;
 	SETCALC(ScopeOut_next);
+}
+
+void ScopeOut_Dtor(ScopeOut *unit)
+{
+	TAKEDOWN_IN
 }
 
 
@@ -7115,13 +7183,13 @@ void load(InterfaceTable *inTable)
 	DefineBufInfoUnit(BufChannels);
 	DefineBufInfoUnit(BufDur);
 
-	DefineSimpleUnit(PlayBuf);
+	DefineDtorUnit(PlayBuf);
 #if NOTYET
-	DefineSimpleUnit(SimpleLoopBuf);
+	DefineDtorUnit(SimpleLoopBuf);
 #endif
-	DefineSimpleUnit(RecordBuf);
-	DefineSimpleUnit(BufRd);
-	DefineSimpleUnit(BufWr);
+	DefineDtorUnit(RecordBuf);
+	DefineDtorUnit(BufRd);
+	DefineDtorUnit(BufWr);
 	DefineDtorUnit(Pitch);
 	
 	DefineSimpleUnit(BufDelayN);
@@ -7151,7 +7219,7 @@ void load(InterfaceTable *inTable)
 	DefineDtorUnit(PitchShift);
 	DefineSimpleUnit(GrainTap);
 	DefineSimpleCantAliasUnit(TGrains);
-	DefineSimpleUnit(ScopeOut);
+	DefineDtorUnit(ScopeOut);
 	DefineDelayUnit(Pluck);
 
 }
