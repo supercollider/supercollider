@@ -276,7 +276,7 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 				case 0xE0 : //bend	
 					++g->sp; SetInt(g->sp,  (pkt->data[i+2] << 7) | pkt->data[i+1]); //val1
 					runInterpreter(g, s_midiBendAction, 4);
-					i += 2;
+					i += 3;
 					break;
 				case 0xF0 :
 					i += midiProcessSystemPacket(pkt, chan);
