@@ -107,7 +107,7 @@ void read_section(const struct mach_header *mhp, unsigned long slide, const char
 }
 #endif
 
-void initialize_library()
+void initialize_library(const char *uGensPluginPath)
 {	
 	gCmdLib     = new HashTable<SC_LibCmd, Malloc>(&gMalloc, 64, true);
 	gUnitDefLib = new HashTable<UnitDef, Malloc>(&gMalloc, 512, true);
@@ -115,39 +115,51 @@ void initialize_library()
 	gPlugInCmds = new HashTable<PlugInCmd, Malloc>(&gMalloc, 64, true);
 
 	initMiscCommands();
-	
-#ifdef SC_PLUGIN_DIR
-	// load globally installed plugins
-	if (sc_DirectoryExists(SC_PLUGIN_DIR)) {
-		PlugIn_LoadDir(SC_PLUGIN_DIR, true);
+
+	// If uGensPluginPath is supplied, it is exclusive.
+	bool loadUGensExtDirs = true;
+	if(uGensPluginPath){
+		loadUGensExtDirs = false;
+		SC_StringParser sp(uGensPluginPath, ':');
+		while (!sp.AtEnd()) {
+			PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
+		}
 	}
+	
+	if(loadUGensExtDirs) {
+#ifdef SC_PLUGIN_DIR
+		// load globally installed plugins
+		if (sc_DirectoryExists(SC_PLUGIN_DIR)) {
+			PlugIn_LoadDir(SC_PLUGIN_DIR, true);
+		}
 #endif
 
-	// load default plugin directory
-	char pluginDir[MAXPATHLEN];
-	sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
-	sc_AppendToPath(pluginDir, SC_PLUGIN_DIR_NAME);
+		// load default plugin directory
+		char pluginDir[MAXPATHLEN];
+		sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
+		sc_AppendToPath(pluginDir, SC_PLUGIN_DIR_NAME);
 
-	if (sc_DirectoryExists(pluginDir)) {
-		PlugIn_LoadDir(pluginDir, true);
+		if (sc_DirectoryExists(pluginDir)) {
+			PlugIn_LoadDir(pluginDir, true);
+		}
 	}
 	
 	// get extension directories
 	char extensionDir[MAXPATHLEN];
-	if (!sc_IsStandAlone()) {
- 	// load system extension plugins
-	sc_GetSystemExtensionDirectory(extensionDir, MAXPATHLEN);
- 	PlugIn_LoadDir(extensionDir, false);
- 	
- 	// load user extension plugins
-	sc_GetUserExtensionDirectory(extensionDir, MAXPATHLEN);
- 	PlugIn_LoadDir(extensionDir, false);
+	if (!sc_IsStandAlone() && loadUGensExtDirs) {
+		// load system extension plugins
+		sc_GetSystemExtensionDirectory(extensionDir, MAXPATHLEN);
+		PlugIn_LoadDir(extensionDir, false);
+		
+		// load user extension plugins
+		sc_GetUserExtensionDirectory(extensionDir, MAXPATHLEN);
+		PlugIn_LoadDir(extensionDir, false);
 
-	// load user plugin directories
-	SC_StringParser sp(getenv("SC_PLUGIN_PATH"), ':');
-	while (!sp.AtEnd()) {
-		PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
-	}
+		// load user plugin directories
+		SC_StringParser sp(getenv("SC_PLUGIN_PATH"), ':');
+		while (!sp.AtEnd()) {
+			PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
+		}
 	}
 #ifdef SC_DARWIN
 	/* on darwin plugins are lazily loaded (dlopen uses mmap internally), which can produce audible
@@ -261,7 +273,7 @@ bool PlugIn_LoadDir(const char *dirname, bool reportError)
 		}
 		return false;
 	}
-	
+
 	for (;;) {
 		char diritem[MAXPATHLEN];
 		bool skipItem = true;

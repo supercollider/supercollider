@@ -233,7 +233,7 @@ void InterfaceTable_Init()
 	ft->fBufAlloc = &bufAlloc;
 }
 
-void initialize_library();
+void initialize_library(const char *mUGensPluginPath);
 void initializeScheduler();
 
 static void World_LoadGraphDefs(World* world);
@@ -278,7 +278,7 @@ World* World_New(WorldOptions *inOptions)
 		static bool gLibInitted = false;
 		if (!gLibInitted) {
 			InterfaceTable_Init();
-			initialize_library();
+			initialize_library(inOptions->mUGensPluginPath);
 			initializeScheduler();
 			gLibInitted = true;
 		}
