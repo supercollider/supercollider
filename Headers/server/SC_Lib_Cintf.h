@@ -41,7 +41,7 @@ private:
 extern Malloc gMalloc;
 extern HashTable<class SC_LibCmd, Malloc> *gCmdLib;
 
-void initialize_library();
+void initialize_library(const char *mUGensPluginPath);
 SCErr NewCommand(const char *inPath, uint32 inCommandNumber, SC_CommandFunc inFunc);
 
 // command numbers:

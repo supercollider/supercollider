@@ -75,6 +75,8 @@ struct WorldOptions
 	int mVerbosity;
 	
 	bool mRendezvous;
+	
+	const char *mUGensPluginPath;
 };
 
 const WorldOptions kDefaultWorldOptions = 
@@ -92,6 +94,7 @@ const WorldOptions kDefaultWorldOptions =
 	,0
 	,0
 	,1
+	,0
 };
 
 //#ifdef SC_WIN32
