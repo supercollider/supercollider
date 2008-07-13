@@ -639,7 +639,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 		if (UseSeparateIO()) 
 		{
 			count = sizeof(Float64);	
-			err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyNominalSampleRate, count, &sampleRate);
+			err = AudioDeviceSetProperty(mInputDevice, &now, 0, false, kAudioDevicePropertyNominalSampleRate, count, &sampleRate);
 			if (err != kAudioHardwareNoError) {
 				scprintf("set kAudioDevicePropertyNominalSampleRate error %4.4s\n", (char*)&err);
 				//return false;
