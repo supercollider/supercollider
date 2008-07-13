@@ -36,14 +36,14 @@ List : SequenceableCollection {
 	// accessing
 	
 	at { arg i; ^array.at(i) }
-	clipAt { arg i; i = i.clip(0, this.size - 1); ^array.at(i) }
-	wrapAt { arg i; i = i.wrap(0, this.size - 1); ^array.at(i) }
-	foldAt { arg i; i = i.fold(0, this.size - 1); ^array.at(i) }
+	clipAt { arg i; i = i.asInteger.clip(0, this.size - 1); ^array.at(i) }
+	wrapAt { arg i; i = i.asInteger.wrap(0, this.size - 1); ^array.at(i) }
+	foldAt { arg i; i = i.asInteger.fold(0, this.size - 1); ^array.at(i) }
 	
 	put { arg i, item; array.put(i, item) }
-	clipPut { arg i, item; i = i.clip(0, this.size - 1); ^array.put(i, item) }
-	wrapPut { arg i, item; i = i.wrap(0, this.size - 1); ^array.put(i, item) }
-	foldPut { arg i, item; i = i.fold(0, this.size - 1); ^array.put(i, item) }
+	clipPut { arg i, item; i = i.asInteger.clip(0, this.size - 1); ^array.put(i, item) }
+	wrapPut { arg i, item; i = i.asInteger.wrap(0, this.size - 1); ^array.put(i, item) }
+	foldPut { arg i, item; i = i.asInteger.fold(0, this.size - 1); ^array.put(i, item) }
 	
 	add { arg item; array = array.add(item); }
 	addFirst { arg item; array = array.addFirst(item); }
