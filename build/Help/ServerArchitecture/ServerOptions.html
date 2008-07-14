@@ -5,149 +5,214 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.33">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6f3420}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9a1d19}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #9a1d19}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #173dac}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {text-decoration: underline}
-span.s3 {font: 9.0px Monaco; color: #596425}
-span.s4 {font: 9.0px Monaco; color: #173dac}
-span.s5 {color: #144beb}
-span.s6 {color: #173dac}
-span.s7 {color: #000000}
-span.s8 {color: #606060}
-span.s9 {color: #0021b7}
-span.s10 {color: #596425}
+span.s2 {color: #0000ff}
+span.s3 {color: #000000}
+span.s4 {font: 9.0px Monaco}
+span.s5 {color: #0000bf}
+span.s6 {color: #606060}
+span.s7 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>ServerOptions</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>encapsulates the commandline options for a Server</b></p>
+<p class="p1"><span class="s1"><b>ServerOptions<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>encapsulates commandline and other options for a Server</b></p>
 <p class="p2"><br></p>
-<p class="p1">ServerOptions encapsulates the commandline options for a server app within an object. This makes it convienent to launch multiple servers with the same options, or to archive different sets of options, etc. Every <b>Server</b> has an instance of ServerOptions created for it if one is not passed as the options argument when the Server object is created. (This is the case for example with the local and internal Servers which are created at startup.)</p>
+<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
+<p class="p3"><br></p>
+<p class="p1">ServerOptions encapsulates various options for a server app within an object. This makes it convenient to launch multiple servers with the same options, or to archive different sets of options, etc. Every <a href="Server.html"><span class="s2">Server</span></a> has an instance of ServerOptions created for it if one is not passed as the options argument when the Server object is created. (This is the case for example with the local and internal Servers which are created at startup.)</p>
 <p class="p2"><br></p>
 <p class="p1">A Server's instance of ServerOptions is stored in its <b>options</b> instance variable, which can be accessed through corresponding getter and setter methods.</p>
 <p class="p2"><br></p>
-<p class="p1"><b>Note: </b>A ServerOptions' instance variables are translated into commandline arguments when a server app is booted. Thus a running Server must be rebooted before changes will take effect. There are also a few commandline options which are not currently encapsulated in ServerOptions. See <b>Server-Architecture</b> for more details.</p>
+<p class="p1"><b>N.B.</b> A ServerOptions' instance variables are translated into commandline arguments when a server app is booted. Thus a running Server must be rebooted before changes will take effect. There are also a few commandline options which are not currently encapsulated in ServerOptions. See <a href="Server-Architecture.html"><span class="s2">Server-Architecture</span></a> for more details.</p>
 <p class="p2"><br></p>
-<p class="p3"><b><span class="s2">Class Methods</span></b></p>
+<p class="p4"><span class="s3"><b>See also:</b> <a href="Server.html">Server</a>, <a href="Server-Architecture.html">Server-Architecture</a>, and <a href="Server-Command-Reference.html">Server-Command-Reference</a>.</span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>*new</b></p>
-<p class="p2"><br></p>
-<p class="p1">Create and return a new instance of ServerOptions.</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><b><span class="s2">Instance Variables (The Options)</span></b></p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p1">The following instance variables can be changed through getter and setter methods. Note that the defaults listed below only apply to newly created instances of ServerOptions. The options for the local and internal Servers may have been changed at startup in Main-startup or in ~/scwork/startup.rtf.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>numAudioBusChannels -<span class="Apple-converted-space"> </span></b> The number of internal audio rate busses. The default is 128.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>numControlBusChannels - </b>The number of internal control rate busses. The default is 4096.</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1">The following two options need not correspond to the available number of hardware inputs and outputs.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>numInputBusChannels - </b>The number of audio input bus channels. The default is 8.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>numOutputBusChannels - </b>The number of audio output bus channels. The default is 8.</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><b>numBuffers - </b>The number of global sample buffers available. (See <b>Buffer</b>.) The default is 1024.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>maxNodes - </b>The maximum number of Nodes. The default is 1024.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>maxSynthDefs - </b>The maximum number of SynthDefs. The default is 1024.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>protocol - </b>A symbol representing the communications protocol. Either<b><span class="Apple-converted-space">  </span></b><span class="s3">\udp</span> or <span class="s3">\tcp</span>. The default is udp.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>blockSize - </b>The number of samples in one control period. The default is 64.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>hardwareBufferSize - </b>The preferred hardware buffer size. If non-nil the server app will attempt to set the hardware buffer frame size. Not all sizes are valid. See the documentation of your audio hardware for details.</p>
-<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p1"><b>memSize - </b>The number of kilobytes of real time memory allocated to the server. This memory is used to allocate synths and any memory that unit generators themselves allocate (for instance in the case of delay ugens which do not use buffers, such as <b>CombN</b>), and is separate from the memory used for buffers. Setting this too low is a common cause of 'exception in real time: alloc failed' errors. The default is 8192.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>numRGens - </b>The number of seedable random number generators. The default is 64.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>numWireBufs - </b>The maximum number of buffers that are allocated to interconnect unit generators. (Not to be confused with the global sample buffers represented by <b>Buffer</b>.) This sets the limit of complexity of SynthDefs that can be loaded at runtime. This value will be automatically increased if a more complex def is loaded at startup, but it cannot be increased thereafter without rebooting. The default is 64.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>sampleRate - </b>The preferred sample rate. If non-nil the server app will attempt to set the sample rate of the hardware. The hardware has to support the sample rate that you choose.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>loadDefs - </b>A <b>Boolean</b> indicating whether or not to load the synth definitions in synthdefs/ (or anywhere set in the environment variable SC_SYNTHDEF_PATH) at startup. The default is <span class="s4">true</span>.</p>
-<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p1"><b>inputStreamsEnabled - </b>A <b>String</b> which allows turning off input streams that you are not interested in on the audio device. If the string is "01100", for example, then only the second and third input streams on the device will be enabled. Turning off streams can reduce CPU load.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>outputStreamsEnabled - </b>A <b>String<span class="Apple-converted-space"> </span></b> which allows turning off output streams that you are not interested in on the<span class="Apple-converted-space">  </span>audio device. If the string is "11000", for example, then only the first two output streams on the device will be enabled. Turning off streams can reduce CPU load.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>device -</b> A <b>String</b> that allows you to chose a sound device. The default, <b>nil</b> will use the system's default device (more below in the examples).</p>
-<p class="p2"><br></p>
-<p class="p1"><b>blockAllocClass -</b> Specifies the class the server will use to allocate index numbers for buffers and audio and control buses. Should be given as a <b>class name</b>, not a symbol. Currently implemented choices are:<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p1">PowerOfTwoAllocator: The original allocator. Intended for allocating these resources very quickly for relatively stable configurations. Not ideal for situations where buses or buffers will be allocated and deallocated frequently.<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p1">ContiguousBlockAllocator: Designed for allocations that need to change frequently.<span class="Apple-converted-space">  </span>Sacrifices a small amount of speed for reliability. See the <a href="../Control/ContiguousBlockAllocator.html"><span class="s5">ContiguousBlockAllocator</span></a> helpfile.</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><b>initialNodeID</b> - By default, the Server object in the client begins allocating node IDs at 1000, reserving 0-999 for "permanent" nodes. You may change this default here.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>rendezvous</b> - Whether or not the server should publish its port to Rendezvous, to facilitate network interaction. This is true by default; if you find unacceptable delays (beachballing) upon server boot, you can try setting this to false.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>verbosity -</b><span class="Apple-converted-space">  </span>sets what kind of messages are posted from the server.</p>
-<p class="p1"><span class="Apple-tab-span">	</span>0 is normal behaviour</p>
-<p class="p1"><span class="Apple-tab-span">	</span>-1 suppresses informational messages</p>
-<p class="p1"><span class="Apple-tab-span">	</span>-2 suppresses informational and many error messages</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p3"><b><span class="s2">Instance Methods</span></b></p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><b>firstPrivateBus</b> <b>- </b>Returns the index of the first audio bus on this server which is not used by the input and output hardware.</p>
-<p class="p2"><br></p>
-<p class="p1"><b>asOptionsString</b> <b>- </b>Returns a <b>String</b> specifying the options in the format required by the command-line scsynth app.</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1">For further information see <b>Server</b>, <b>Server-Architecture</b>, and <b>Server-Command-Reference</b>.</p>
-<p class="p2"><br></p>
-<p class="p3"><b><span class="s2">Examples</span></b></p>
-<p class="p4"><br></p>
-<p class="p5">// Get the local server's options</p>
+<p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
-<p class="p7">o = <span class="s6">Server</span>.local.options;</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>*new</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Create and return a new instance of ServerOptions.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><br></p>
-<p class="p5">// Post the number of output channels</p>
+<p class="p9"><b>Accessing Instance and Class Variables (The Options)</b></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>blockSize_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>blockSize</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The number of samples in one control period. The default is 64.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>device_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>device</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A String that allows you to chose a sound device. The default, nil will use the system's default device (more below in the examples).</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>hardwareBufferSize_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>hardwareBufferSize</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The preferred hardware buffer size. If non-nil the server app will attempt to set the hardware buffer frame size. Not all sizes are valid. See the documentation of your audio hardware for details.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Default value is nil.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>initialNodeID_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>initialNodeID</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>By default, the Server object in the client begins allocating node IDs at 1000, reserving 0-999 for "permanent" nodes. You may change this default here.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>inputStreamsEnabled_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>inputStreamsEnabled</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A <a href="../Collections/String.html"><span class="s2">String</span></a> which allows turning off input streams that you are not interested in on the audio device. If the string is "01100", for example, then only the second and third input streams on the device will be enabled. Turning off streams can reduce CPU load. The default value is nil.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>loadDefs_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>loadDefs</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to load the synth definitions in synthdefs/ (or anywhere set in the environment variable SC_SYNTHDEF_PATH) at startup. The default is true.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>maxNodes_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>maxNodes</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The maximum number of nodes. The default is 1024.</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>maxSynthDefs_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>maxSynthDefs</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The maximum number of synthdefs. The default is 1024.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>memSize_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>memSize</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The number of kilobytes of real time memory allocated to the server. This memory is used to allocate synths and any memory that unit generators themselves allocate (for instance in the case of delay ugens which do not use buffers, such as <a href="../UGens/Delays/CombN.html"><span class="s2">CombN</span></a>), and is separate from the memory used for buffers. Setting this too low is a common cause of 'exception in real time: alloc failed' errors. The default is 8192.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numAudioBusChannels_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numAudioBusChannels</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The number of internal audio rate busses. The default is 128.</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>numBuffers_ (argNumBuffers)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numBuffers</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The number of global sample buffers available. (See <a href="Buffer.html"><span class="s2">Buffer</span></a>.) The default is 1024.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numControlBusChannels_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numControlBusChannels</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The number of internal control rate busses. The default is 4096.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numInputBusChannels_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numInputBusChannels</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The number of audio input bus channels. This need not correspond to the number of hardware inputs. The default is 8.</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>numOutputBusChannels_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numOutputBusChannels</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The number of audio output bus channels. This need not correspond to the number of hardware outputs (this can be useful for instance in the case of recording). The default is 8.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numRGens_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numRGens</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The number of seedable random number generators. The default is 64.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numWireBufs_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>numWireBufs</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The maximum number of buffers that are allocated to interconnect unit generators. (Not to be confused with the global sample buffers represented by Buffer.) This sets the limit of complexity of SynthDefs that can be loaded at runtime. This value will be automatically increased if a more complex def is loaded at startup, but it cannot be increased thereafter without rebooting. The default is 64.</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>outputStreamsEnabled_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>outputStreamsEnabled</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A <a href="../Collections/String.html"><span class="s2">String</span></a> which allows turning off output streams that you are not interested in on the<span class="Apple-converted-space">  </span>audio device. If the string is "11000", for example, then only the first two output streams on the device will be enabled. Turning off streams can reduce CPU load.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>protocol_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>protocol</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A <a href="../Core/Symbol.html"><span class="s2">Symbol</span></a> representing the communications protocol. Either<span class="Apple-converted-space">  </span>\udp or \tcp. The default is udp.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>remoteControlVolume_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>remoteControlVolume</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this server should allow its volume to be set remotely. The default value is false.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>sampleRate_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>sampleRate</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The preferred sample rate. If non-nil the server app will attempt to set the sample rate of the hardware. The hardware has to support the sample rate that you choose.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>verbosity_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>verbosity</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Controls the verbosity of server messages. A value of 0 is normal behaviour, -1 suppresses informational messages, and -2 suppresses informational and many error messages. The default is 0.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>zeroConf_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>zeroConf</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indication whether or not the server should publish its port using zero configuration networking, to facilitate network interaction. This is true by default; if you find unacceptable delays (beachballing) upon server boot, you can try setting this to false.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><b>Instance Methods</b></p>
+<p class="p8"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>asOptionsString (port)</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a <a href="../Collections/String.html"><span class="s2">String</span></a> specifying the options in the format required by the command-line scsynth app.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>port </b>- The port number for the resulting server app. Default value is 57110.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span><b>firstPrivateBus</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the index of the first audio bus on this server which is not used by the input and output hardware.</p>
 <p class="p6"><br></p>
-<p class="p7">o.numOutputBusChannels.postln;</p>
 <p class="p6"><br></p>
-<p class="p5">// Set them to a new number</p>
 <p class="p6"><br></p>
-<p class="p5"><span class="s7">o.numOutputBusChannels = 6; </span>// The next time it boots, this will take effect</p>
 <p class="p6"><br></p>
-<p class="p8">// specify a device</p>
-<p class="p6"><br></p>
-<p class="p9"><span class="s7">o.options.device =</span><span class="s8">"MOTU Traveler"</span><span class="s7">; <span class="Apple-tab-span">	</span></span>// use a specific soundcard</p>
-<p class="p9"><span class="s7">o.options.device = </span><span class="s9">nil</span><span class="s7">;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// use the system default soundcard</p>
-<p class="p10"><br></p>
-<p class="p5">// Create a new instance of ServerOptions</p>
-<p class="p6"><br></p>
-<p class="p11"><span class="s7">o = </span>ServerOptions<span class="s7">.new;</span></p>
-<p class="p6"><br></p>
-<p class="p5">// Set the memory size to twice the default</p>
-<p class="p6"><br></p>
-<p class="p7">o.memSize = 4096;</p>
-<p class="p6"><br></p>
-<p class="p5">// Create a new Server on the local machine using o for its options</p>
-<p class="p6"><br></p>
-<p class="p7"><span class="s6">t = Server</span>(<span class="s10">\Local2</span>, <span class="s6">NetAddr</span>(<span class="s8">"127.0.0.1"</span>, 57111), o);</p>
-<p class="p7">t.makeWindow;</p>
-<p class="p7">t.boot;</p>
-<p class="p7">t.quit;</p>
+<p class="p9"><b>Examples</b></p>
+<p class="p3"><br></p>
+<p class="p11">// Get the local server's options</p>
+<p class="p12"><br></p>
+<p class="p13">o = <span class="s5">Server</span>.local.options;</p>
+<p class="p12"><br></p>
+<p class="p11">// Post the number of output channels</p>
+<p class="p12"><br></p>
+<p class="p13">o.numOutputBusChannels.postln;</p>
+<p class="p12"><br></p>
+<p class="p11">// Set them to a new number</p>
+<p class="p12"><br></p>
+<p class="p11"><span class="s3">o.numOutputBusChannels = 6; </span>// The next time it boots, this will take effect</p>
+<p class="p12"><br></p>
+<p class="p11">// specify a device</p>
+<p class="p12"><br></p>
+<p class="p11"><span class="s3">o.device =</span><span class="s6">"MOTU Traveler"</span><span class="s3">; <span class="Apple-tab-span">	</span></span>// use a specific soundcard</p>
+<p class="p11"><span class="s3">o.device = </span><span class="s5">nil</span><span class="s3">;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// use the system default soundcard</p>
+<p class="p12"><br></p>
+<p class="p11">// Create a new instance of ServerOptions</p>
+<p class="p12"><br></p>
+<p class="p14"><span class="s3">o = </span>ServerOptions<span class="s3">.new;</span></p>
+<p class="p12"><br></p>
+<p class="p11">// Set the memory size to twice the default</p>
+<p class="p12"><br></p>
+<p class="p13">o.memSize = 4096;</p>
+<p class="p12"><br></p>
+<p class="p11">// Create a new Server on the local machine using o for its options</p>
+<p class="p12"><br></p>
+<p class="p13">t = <span class="s5">Server</span>(<span class="s7">\Local2</span>, <span class="s5">NetAddr</span>(<span class="s6">"127.0.0.1"</span>, 57111), o);</p>
+<p class="p13">t.makeWindow;</p>
+<p class="p13">t.boot;</p>
+<p class="p13">t.quit;</p>
+<p class="p3"><br></p>
 </body>
 </html>

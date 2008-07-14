@@ -1,7 +1,6 @@
 
 ServerOptions
 {
-	classvar	<>default;
 
 	var <>numAudioBusChannels=128;
 	var <>numControlBusChannels=4096;
@@ -30,23 +29,10 @@ ServerOptions
 	var <>blockAllocClass;
 	
 	var <>verbosity = 0;
-	var <>rendezvous = true; // Whether server publishes port to Rendezvous
+	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
 	
 	var <>initialNodeID = 1000;
 	var <>remoteControlVolume = false;
-	
-	*initClass {
-		default = this.new.blockAllocClass_(ContiguousBlockAllocator);
-		//default = this.new.blockAllocClass_(PowerOfTwoAllocator);
-	}
-	
-	*new {
-		default.notNil.if({
-			^default.copy
-		}, {
-			^super.new
-		});
-	}
 
 	// max logins
 	// session-password
@@ -115,7 +101,7 @@ ServerOptions
 		if (verbosity != 0, {
 			o = o ++ " -v " ++ verbosity;
 		});
-		if (rendezvous.not, {
+		if (zeroConf.not, {
 			o = o ++ " -R 0";
 		});
 		^o
@@ -128,6 +114,16 @@ ServerOptions
 	bootInProcess {
 		_BootInProcessServer
 		^this.primitiveFailed
+	}
+	
+	rendezvous_ {|bool|
+		zeroConf = bool;
+		this.deprecated(thisMethod, ServerOptions.findMethod(\zeroConf_))
+	}
+	
+	rendezvous {|bool|
+		this.deprecated(thisMethod, ServerOptions.findMethod(\zeroConf));
+		^zeroConf;
 	}
 }
 
@@ -184,10 +180,10 @@ Server : Model {
 	}
 	newAllocators {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
-		controlBusAllocator = options.blockAllocClass.new(options.numControlBusChannels);
-		audioBusAllocator = options.blockAllocClass.new(options.numAudioBusChannels, 
+		controlBusAllocator = ContiguousBlockAllocator.new(options.numControlBusChannels);
+		audioBusAllocator = ContiguousBlockAllocator.new(options.numAudioBusChannels, 
 			options.firstPrivateBus);
-		bufferAllocator = options.blockAllocClass.new(options.numBuffers);
+		bufferAllocator = ContiguousBlockAllocator.new(options.numBuffers);
 		NotificationCenter.notify(this,\newAllocators);
 	}
 	nextNodeID {
