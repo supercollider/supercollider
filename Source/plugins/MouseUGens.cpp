@@ -34,19 +34,14 @@
 
 static InterfaceTable *ft;
 
-struct UserInputUGenGlobalState {
+struct MouseUGenGlobalState {
 	float mouseX, mouseY;
 	bool mouseButton;
-#if SC_DARWIN
-	uint8 keys[16];
-#else
-	uint8 keys[32];
-#endif
-} gUserInputUGenGlobals;
+} gMouseUGenGlobals;
 
-struct UserInputUGen : public Unit
+struct MouseInputUGen : public Unit
 {
-	UserInputUGenGlobalState* gstate;
+	MouseUGenGlobalState* gstate;
 	float m_y1, m_b1, m_lag;
 };
 
@@ -56,13 +51,13 @@ extern "C"
 {
 	void load(InterfaceTable *inTable);
 
-	void MouseX_next(UserInputUGen *unit, int inNumSamples);
-	void MouseY_next(UserInputUGen *unit, int inNumSamples);
-	void MouseButton_next(UserInputUGen *unit, int inNumSamples);
+	void MouseX_next(MouseInputUGen *unit, int inNumSamples);
+	void MouseY_next(MouseInputUGen *unit, int inNumSamples);
+	void MouseButton_next(MouseInputUGen *unit, int inNumSamples);
 
-	void MouseX_Ctor(UserInputUGen *unit);
-	void MouseY_Ctor(UserInputUGen *unit);
-	void MouseButton_Ctor(UserInputUGen *unit);
+	void MouseX_Ctor(MouseInputUGen *unit);
+	void MouseY_Ctor(MouseInputUGen *unit);
+	void MouseButton_Ctor(MouseInputUGen *unit);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +66,7 @@ extern "C"
 
 void* gstate_update_func(void* arg)
 {
-	UserInputUGenGlobalState* gstate = &gUserInputUGenGlobals;
+	MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
 	RgnHandle rgn = GetGrayRgn();
 	Rect screenBounds;
 	GetRegionBounds(rgn, &screenBounds);
@@ -83,7 +78,6 @@ void* gstate_update_func(void* arg)
 		gstate->mouseX = (float)p.h * rscreenWidth;
 		gstate->mouseY = (float)p.v * rscreenHeight;
 		gstate->mouseButton = Button();
-		GetKeys((BigEndianLong*)gstate->keys);
 		usleep(17000);
 	}
 	
@@ -98,7 +92,7 @@ void* gstate_update_func(void* arg)
 {
 	POINT p;
 	int mButton;
-	UserInputUGenGlobalState* gstate;
+	MouseUGenGlobalState* gstate;
 
 	if(GetSystemMetrics(SM_SWAPBUTTON)){
 		mButton = VK_RBUTTON; // if  swapped
@@ -115,14 +109,13 @@ void* gstate_update_func(void* arg)
 	float r_screenWidth  = 1. / (float)(screenWidth  -1);
 	float r_screenHeight = 1. / (float)(screenHeight -1);
 
-	gstate = &gUserInputUGenGlobals;
+	gstate = &gMouseUGenGlobals;
 	
 	for(;;)	{
 		GetCursorPos(&p);
 		gstate->mouseX = (float)p.x * r_screenWidth;
 		gstate->mouseY = 1.0 - (float)p.y * r_screenHeight;
 		gstate->mouseButton = (GetKeyState(mButton) < 0);
-		//GetKey((long*)gstate->keys);  // "KeyState" is disabled now...
 		::Sleep(17); // 17msec.
 	}
 	return 0;
@@ -131,7 +124,7 @@ void* gstate_update_func(void* arg)
 # else
 void* gstate_update_func(void* arg)
 {
-  UserInputUGenGlobalState* gstate ;
+  MouseUGenGlobalState* gstate ;
   Display *d ;		
   Window r ;			
   Window rep_root , rep_child ;
@@ -154,7 +147,7 @@ void* gstate_update_func(void* arg)
   r_width = 1.0 / (float)attributes.width ;
   r_height = 1.0 / (float)attributes.height ;
   
-  gstate = &gUserInputUGenGlobals ;
+  gstate = &gMouseUGenGlobals ;
 	
   for (;;) {
     
@@ -169,8 +162,6 @@ void* gstate_update_func(void* arg)
     
     gstate->mouseButton = (bool) ( rep_mask & Button1Mask ) ;
 
-    XQueryKeymap ( d , (char *) (gstate->keys) ) ;
-
     nanosleep ( &requested_time , &remaining_time ) ;
   }
   
@@ -181,7 +172,7 @@ void* gstate_update_func(void* arg)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MouseX_next(UserInputUGen *unit, int inNumSamples)
+void MouseX_next(MouseInputUGen *unit, int inNumSamples)
 {	
 	// minval, maxval, warp, lag
 
@@ -207,17 +198,17 @@ void MouseX_next(UserInputUGen *unit, int inNumSamples)
 	unit->m_y1 = zapgremlins(y1);
 }
 
-void MouseX_Ctor(UserInputUGen *unit)
+void MouseX_Ctor(MouseInputUGen *unit)
 {	
 	SETCALC(MouseX_next);
-	unit->gstate = &gUserInputUGenGlobals;
+	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseX_next(unit, 1);
 }
 
 
-void MouseY_next(UserInputUGen *unit, int inNumSamples)
+void MouseY_next(MouseInputUGen *unit, int inNumSamples)
 {	
 	// minval, maxval, warp, lag
 
@@ -243,10 +234,10 @@ void MouseY_next(UserInputUGen *unit, int inNumSamples)
 	unit->m_y1 = zapgremlins(y1);
 }
 
-void MouseY_Ctor(UserInputUGen *unit)
+void MouseY_Ctor(MouseInputUGen *unit)
 {	
 	SETCALC(MouseY_next);
-	unit->gstate = &gUserInputUGenGlobals;
+	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseY_next(unit, 1);
@@ -254,7 +245,7 @@ void MouseY_Ctor(UserInputUGen *unit)
 
 
 
-void MouseButton_next(UserInputUGen *unit, int inNumSamples)
+void MouseButton_next(MouseInputUGen *unit, int inNumSamples)
 {	
 	// minval, maxval, warp, lag
 
@@ -274,52 +265,13 @@ void MouseButton_next(UserInputUGen *unit, int inNumSamples)
 	unit->m_y1 = zapgremlins(y1);
 }
 
-void MouseButton_Ctor(UserInputUGen *unit)
+void MouseButton_Ctor(MouseInputUGen *unit)
 {	
 	SETCALC(MouseButton_next);
-	unit->gstate = &gUserInputUGenGlobals;
+	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseButton_next(unit, 1);
-}
-
-
-void KeyState_next(UserInputUGen *unit, int inNumSamples)
-{	
-	// minval, maxval, warp, lag
-	uint8 *keys = unit->gstate->keys;
-	int keynum = (int)ZIN0(0);
-#if SC_DARWIN
-	int byte = (keynum >> 3) & 15;
-#else
-	int byte = (keynum >> 3) & 31;
-#endif
-	int bit = keynum & 7;
-	int val = keys[byte] & (1 << bit);
-		
-	float minval = ZIN0(1);
-	float maxval = ZIN0(2);
-	float lag = ZIN0(3);
-
-	float y1 = unit->m_y1;
-	float b1 = unit->m_b1;
-	
-	if (lag != unit->m_lag) {
-		unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
-		unit->m_lag = lag;
-	}
-	float y0 = val ? maxval : minval; 
-	ZOUT0(0) = y1 = y0 + b1 * (y1 - y0);
-	unit->m_y1 = zapgremlins(y1);
-}
-
-void KeyState_Ctor(UserInputUGen *unit)
-{	
-	SETCALC(KeyState_next);
-	unit->gstate = &gUserInputUGenGlobals;
-	unit->m_b1 = 0.f;
-	unit->m_lag = 0.f;
-	KeyState_next(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -470,13 +422,12 @@ void load(InterfaceTable *inTable)
 {
 	ft = inTable;
 	
-	pthread_t macThread;
-	pthread_create (&macThread, NULL, gstate_update_func, (void*)0);
+	pthread_t mouseListenThread;
+	pthread_create (&mouseListenThread, NULL, gstate_update_func, (void*)0);
 
-	DefineUnit("MouseX", sizeof(UserInputUGen), (UnitCtorFunc)&MouseX_Ctor, 0, 0);
-	DefineUnit("MouseY", sizeof(UserInputUGen), (UnitCtorFunc)&MouseY_Ctor, 0, 0);
-	DefineUnit("MouseButton", sizeof(UserInputUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
-	DefineUnit("KeyState", sizeof(UserInputUGen), (UnitCtorFunc)&KeyState_Ctor, 0, 0);
+	DefineUnit("MouseX", sizeof(MouseInputUGen), (UnitCtorFunc)&MouseX_Ctor, 0, 0);
+	DefineUnit("MouseY", sizeof(MouseInputUGen), (UnitCtorFunc)&MouseY_Ctor, 0, 0);
+	DefineUnit("MouseButton", sizeof(MouseInputUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
 	
 	// define a plugin command - example code
 	gMyPlugin.a = 1.2;
