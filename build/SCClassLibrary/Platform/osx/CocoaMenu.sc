@@ -26,13 +26,18 @@ CocoaMenuItem {
 	}
 	
 	remove {
-		children.do({|child| child.remove}); // cleanup my kids
+		children.copy.do({|child| child.remove}); // cleanup my kids
 		children = nil;
+		parent.notNil.if({parent.removeChild(this)});
 		this.prRemoveMenuItem;
 	}
 	
 	addChild {|child|
 		children = children.add(child);
+	}
+	
+	removeChild {|child|
+		children.remove(child);
 	}
 	
 	enabled_ {|bool|
