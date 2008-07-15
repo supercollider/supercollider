@@ -891,17 +891,21 @@ plugins.append(
 
 # ui ugens
 if PLATFORM == 'darwin':
-    macUGensEnv = pluginEnv.Copy(
+    uiUGensEnv = pluginEnv.Copy(
         LIBS = 'm',
         LINKFLAGS = '-framework CoreServices -framework Carbon'
         )
     plugins.append(
-        macUGensEnv.SharedLibrary(make_plugin_target('MacUGens'), 'Source/plugins/MacUGens.cpp'))
-elif features['x11']:
-    macUGensEnv = pluginEnv.Copy()
-    merge_lib_info(macUGensEnv, libraries['x11'])
+        uiUGensEnv.SharedLibrary(make_plugin_target('MouseUGens'), 'Source/plugins/MouseUGens.cpp'))
     plugins.append(
-        macUGensEnv.SharedLibrary(make_plugin_target('MacUGens'), 'Source/plugins/MacUGens.cpp'))
+        uiUGensEnv.SharedLibrary(make_plugin_target('KeyboardUGens'), 'Source/plugins/KeyboardUGens.cpp'))
+elif features['x11']:
+    uiUGensEnv = pluginEnv.Copy()
+    merge_lib_info(uiUGensEnv, libraries['x11'])
+    plugins.append(
+        uiUGensEnv.SharedLibrary(make_plugin_target('MouseUGens'), 'Source/plugins/MouseUGens.cpp'))
+    plugins.append(
+        uiUGensEnv.SharedLibrary(make_plugin_target('KeyboardUGens'), 'Source/plugins/KeyboardUGens.cpp'))
 
 env.Alias('install-plugins', env.Install(
     pkg_lib_dir(INSTALL_PREFIX, 'plugins'), plugins))

@@ -27,6 +27,7 @@
 				94931A1C0C1934230018AB50 /* PBXTargetDependency */,
 				94931A1A0C1934230018AB50 /* PBXTargetDependency */,
 				94931A180C1934230018AB50 /* PBXTargetDependency */,
+				37E291CD0E2CF32700CB854E /* PBXTargetDependency */,
 				94931A160C1934230018AB50 /* PBXTargetDependency */,
 				94931A140C1934230018AB50 /* PBXTargetDependency */,
 				94931A120C1934230018AB50 /* PBXTargetDependency */,
@@ -50,6 +51,8 @@
 		376B688C0D1ACFE90027D452 /* ML_SpecStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 376B688B0D1ACFE90027D452 /* ML_SpecStats.cpp */; };
 		379E00FC0CACF09E00D633C7 /* PV_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */; };
 		379E010C0CACF29700D633C7 /* FFTInterfaceTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */; };
+		37E291940E2CEBE400CB854E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92CCC51F045B4BDE00CA2167 /* Carbon.framework */; };
+		37E2919B0E2CEC0D00CB854E /* KeyboardUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37E2919A0E2CEC0D00CB854E /* KeyboardUGens.cpp */; };
 		467CF7260D0CB8BA003D0C4C /* BeatTrack2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 467CF7240D0CB8BA003D0C4C /* BeatTrack2.cpp */; };
 		468DABDF0CF1FE1800FA8C88 /* SCComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E202E69B6B01CA2799 /* SCComplex.cpp */; };
 		468DABEF0CF2080700FA8C88 /* BeatTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468DABE90CF2080700FA8C88 /* BeatTrack.cpp */; };
@@ -74,7 +77,6 @@
 		9493192E0C19311C0018AB50 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
 		949319390C19311E0018AB50 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
 		949319440C1931260018AB50 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
-		9493194F0C1931280018AB50 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
 		9493197A0C1931A30018AB50 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
 		949319850C1931A40018AB50 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
 		949319900C1931A50018AB50 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
@@ -93,7 +95,7 @@
 		949319FA0C1933700018AB50 /* PanUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E102E69B6B01CA2799 /* PanUGens.cpp */; };
 		949319FB0C1933810018AB50 /* TriggerUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E402E69B6B01CA2799 /* TriggerUGens.cpp */; };
 		949319FC0C19338B0018AB50 /* UnaryOpUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E502E69B6B01CA2799 /* UnaryOpUGens.cpp */; };
-		949319FD0C1933930018AB50 /* MacUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92CCC51E045B451100CA2167 /* MacUGens.cpp */; };
+		949319FD0C1933930018AB50 /* MouseUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92CCC51E045B451100CA2167 /* MouseUGens.cpp */; };
 		949319FE0C1933980018AB50 /* GendynUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46964EF505B9408A00AB268B /* GendynUGens.cpp */; };
 		949319FF0C19339D0018AB50 /* PhysicalModelingUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949318790C192DCC0018AB50 /* PhysicalModelingUGens.cpp */; };
 		94931A000C1933BD0018AB50 /* Convolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46781CEC05C872AC002B7D2B /* Convolution.cpp */; };
@@ -122,6 +124,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 468DABDD0CF1FE1800FA8C88;
 			remoteInfo = MachineListening;
+		};
+		37E291CC0E2CF32700CB854E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 37E291900E2CEBE400CB854E;
+			remoteInfo = KeyboardUGens;
 		};
 		94931A0B0C1934230018AB50 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -300,6 +309,8 @@
 		376B688B0D1ACFE90027D452 /* ML_SpecStats.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ML_SpecStats.cpp; path = Source/plugins/ML_SpecStats.cpp; sourceTree = "<group>"; };
 		379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PV_UGens.cpp; path = Source/plugins/PV_UGens.cpp; sourceTree = "<group>"; };
 		379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FFTInterfaceTable.cpp; path = Source/plugins/FFTInterfaceTable.cpp; sourceTree = "<group>"; };
+		37E291990E2CEBE400CB854E /* KeyboardUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = KeyboardUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		37E2919A0E2CEC0D00CB854E /* KeyboardUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = KeyboardUGens.cpp; path = Source/plugins/KeyboardUGens.cpp; sourceTree = SOURCE_ROOT; };
 		46781BC805C8505F002B7D2B /* FFT_UGens.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FFT_UGens.h; sourceTree = "<group>"; };
 		46781BD005C854B9002B7D2B /* PV_ThirdParty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PV_ThirdParty.cpp; sourceTree = "<group>"; };
 		46781BD205C85772002B7D2B /* FFT2InterfaceTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT2InterfaceTable.cpp; sourceTree = "<group>"; };
@@ -319,7 +330,7 @@
 		920DAED20425A5D200A80067 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Altivec.h; path = common/SC_Altivec.h; sourceTree = "<group>"; };
 		92962B0707853BDA0049266B /* ChaosUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ChaosUGens.cpp; sourceTree = "<group>"; };
 		92ADA27B06266AA00093F2C8 /* SC_DemandUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_DemandUnit.h; sourceTree = "<group>"; };
-		92CCC51E045B451100CA2167 /* MacUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MacUGens.cpp; sourceTree = "<group>"; };
+		92CCC51E045B451100CA2167 /* MouseUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MouseUGens.cpp; path = ../../Source/plugins/MouseUGens.cpp; sourceTree = "<group>"; };
 		92CCC51F045B4BDE00CA2167 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		92F246630628AB3E0063D98D /* DemandUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DemandUGens.cpp; sourceTree = "<group>"; };
 		942C38430C1B407900360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
@@ -341,7 +352,7 @@
 		9451F5F00C1CAC250037197F /* PhysicalModellingUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = PhysicalModellingUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5F10C1CAC250037197F /* GendynUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = GendynUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5F20C1CAC250037197F /* MulAddUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = MulAddUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		9451F5F30C1CAC250037197F /* MacUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = MacUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
+		9451F5F30C1CAC250037197F /* MouseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = MouseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5F40C1CAC250037197F /* TriggerUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = TriggerUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5F50C1CAC250037197F /* DynNoiseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DynNoiseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		945D14B80CD9A74B00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = build/ChangeLog; sourceTree = "<group>"; };
@@ -405,6 +416,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		37E291930E2CEBE400CB854E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				37E291940E2CEBE400CB854E /* Carbon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		468DABE10CF1FE1800FA8C88 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -523,7 +542,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				94931B1C0C1949FD0018AB50 /* Carbon.framework in Frameworks */,
-				9493194F0C1931280018AB50 /* vecLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -687,6 +705,7 @@
 		F50D05D302E69B6B01CA2799 /* plugins */ = {
 			isa = PBXGroup;
 			children = (
+				37E2919A0E2CEC0D00CB854E /* KeyboardUGens.cpp */,
 				467CF7240D0CB8BA003D0C4C /* BeatTrack2.cpp */,
 				467CF7250D0CB8BA003D0C4C /* BeatTrack2.h */,
 				F3F479260D03BD1A001A470F /* GrainUGens.cpp */,
@@ -726,7 +745,7 @@
 				F50D05E402E69B6B01CA2799 /* TriggerUGens.cpp */,
 				F50D05E502E69B6B01CA2799 /* UnaryOpUGens.cpp */,
 				DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */,
-				92CCC51E045B451100CA2167 /* MacUGens.cpp */,
+				92CCC51E045B451100CA2167 /* MouseUGens.cpp */,
 				92F246630628AB3E0063D98D /* DemandUGens.cpp */,
 				92962B0707853BDA0049266B /* ChaosUGens.cpp */,
 			);
@@ -753,7 +772,7 @@
 				9451F5F00C1CAC250037197F /* PhysicalModellingUGens.scx */,
 				9451F5F10C1CAC250037197F /* GendynUGens.scx */,
 				9451F5F20C1CAC250037197F /* MulAddUGens.scx */,
-				9451F5F30C1CAC250037197F /* MacUGens.scx */,
+				9451F5F30C1CAC250037197F /* MouseUGens.scx */,
 				9451F5F40C1CAC250037197F /* TriggerUGens.scx */,
 				9451F5F50C1CAC250037197F /* DynNoiseUGens.scx */,
 				FE2582CB0C2C096A00307453 /* TestUGens.scx */,
@@ -761,6 +780,7 @@
 				468DABE50CF1FE1800FA8C88 /* MachineListening.scx */,
 				F3F479180D03BCB0001A470F /* GrainUGens.scx */,
 				F3F479230D03BCDB001A470F /* ReverbUGens.scx */,
+				37E291990E2CEBE400CB854E /* KeyboardUGens.scx */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -816,6 +836,22 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		37E291900E2CEBE400CB854E /* KeyboardUGens */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 37E291960E2CEBE400CB854E /* Build configuration list for PBXNativeTarget "KeyboardUGens" */;
+			buildPhases = (
+				37E291910E2CEBE400CB854E /* Sources */,
+				37E291930E2CEBE400CB854E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KeyboardUGens;
+			productName = FFT_UGens;
+			productReference = 37E291990E2CEBE400CB854E /* KeyboardUGens.scx */;
+			productType = "com.apple.product-type.objfile";
+		};
 		468DABDD0CF1FE1800FA8C88 /* MachineListening */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 468DABE20CF1FE1800FA8C88 /* Build configuration list for PBXNativeTarget "MachineListening" */;
@@ -1040,9 +1076,9 @@
 			productReference = 9451F5E50C1CAC250037197F /* UnaryOpUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
-		949319490C1931280018AB50 /* MacUGens */ = {
+		949319490C1931280018AB50 /* MouseUGens */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 949319500C1931280018AB50 /* Build configuration list for PBXNativeTarget "MacUGens" */;
+			buildConfigurationList = 949319500C1931280018AB50 /* Build configuration list for PBXNativeTarget "MouseUGens" */;
 			buildPhases = (
 				9493194A0C1931280018AB50 /* Sources */,
 				9493194E0C1931280018AB50 /* Frameworks */,
@@ -1051,9 +1087,9 @@
 			);
 			dependencies = (
 			);
-			name = MacUGens;
+			name = MouseUGens;
 			productName = FFT_UGens;
-			productReference = 9451F5F30C1CAC250037197F /* MacUGens.scx */;
+			productReference = 9451F5F30C1CAC250037197F /* MouseUGens.scx */;
 			productType = "com.apple.product-type.objfile";
 		};
 		949319740C1931A30018AB50 /* GendynUGens */ = {
@@ -1242,7 +1278,7 @@
 				949319280C19311C0018AB50 /* PanUGens */,
 				949319330C19311E0018AB50 /* TriggerUGens */,
 				9493193E0C1931260018AB50 /* UnaryOpUGens */,
-				949319490C1931280018AB50 /* MacUGens */,
+				949319490C1931280018AB50 /* MouseUGens */,
 				949319740C1931A30018AB50 /* GendynUGens */,
 				9493197F0C1931A40018AB50 /* PhysicalModellingUGens */,
 				9493198A0C1931A50018AB50 /* FFT2_UGens */,
@@ -1254,11 +1290,20 @@
 				468DABDD0CF1FE1800FA8C88 /* MachineListening */,
 				F3F479100D03BCB0001A470F /* GrainUGens */,
 				F3F4791C0D03BCDB001A470F /* ReverbUGens */,
+				37E291900E2CEBE400CB854E /* KeyboardUGens */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		37E291910E2CEBE400CB854E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				37E2919B0E2CEC0D00CB854E /* KeyboardUGens.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		468DABDE0CF1FE1800FA8C88 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1389,7 +1434,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				949319FD0C1933930018AB50 /* MacUGens.cpp in Sources */,
+				949319FD0C1933930018AB50 /* MouseUGens.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1487,6 +1532,11 @@
 			target = 468DABDD0CF1FE1800FA8C88 /* MachineListening */;
 			targetProxy = 3772616B0CF6210B0037407D /* PBXContainerItemProxy */;
 		};
+		37E291CD0E2CF32700CB854E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 37E291900E2CEBE400CB854E /* KeyboardUGens */;
+			targetProxy = 37E291CC0E2CF32700CB854E /* PBXContainerItemProxy */;
+		};
 		94931A0C0C1934230018AB50 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 949319AB0C1931A80018AB50 /* ChaosUGens */;
@@ -1519,7 +1569,7 @@
 		};
 		94931A180C1934230018AB50 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 949319490C1931280018AB50 /* MacUGens */;
+			target = 949319490C1931280018AB50 /* MouseUGens */;
 			targetProxy = 94931A170C1934230018AB50 /* PBXContainerItemProxy */;
 		};
 		94931A1A0C1934230018AB50 /* PBXTargetDependency */ = {
@@ -1610,6 +1660,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		37E291970E2CEBE400CB854E /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = KeyboardUGens;
+			};
+			name = Development;
+		};
+		37E291980E2CEBE400CB854E /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = KeyboardUGens;
+			};
+			name = Deployment;
+		};
 		468DABE30CF1FE1800FA8C88 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1911,14 +1975,14 @@
 		949319510C1931280018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = MacUGens;
+				PRODUCT_NAME = MouseUGens;
 			};
 			name = Development;
 		};
 		949319520C1931280018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = MacUGens;
+				PRODUCT_NAME = MouseUGens;
 			};
 			name = Deployment;
 		};
@@ -2065,6 +2129,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		37E291960E2CEBE400CB854E /* Build configuration list for PBXNativeTarget "KeyboardUGens" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				37E291970E2CEBE400CB854E /* Development */,
+				37E291980E2CEBE400CB854E /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
 		468DABE20CF1FE1800FA8C88 /* Build configuration list for PBXNativeTarget "MachineListening" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2209,7 +2282,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
 		};
-		949319500C1931280018AB50 /* Build configuration list for PBXNativeTarget "MacUGens" */ = {
+		949319500C1931280018AB50 /* Build configuration list for PBXNativeTarget "MouseUGens" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				949319510C1931280018AB50 /* Development */,
