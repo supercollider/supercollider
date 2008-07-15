@@ -21,6 +21,7 @@ OSXPlatform : UnixPlatform
 	}
 	shutdown {
 		HIDDeviceService.releaseDeviceList;
+		CocoaMenuItem.clearCustomItems;
 	}
 	
 		// only osx uses Cocoa guis

@@ -222,6 +222,37 @@ void SyntaxColorize(NSTextView* textView);
 
 @end
 
+@implementation SCNSMenuItem
+
+- (void)setSCObject: (struct PyrObject*)inObject
+{
+    mMenuItemObj = inObject;
+}
+
+- (struct PyrObject*)getSCObject
+{
+    return mMenuItemObj;
+}
+
+- (void)doAction: (id)sender
+{
+	//	post("doAction \n");
+    pthread_mutex_lock (&gLangMutex);	
+	PyrObject * pobj = [self getSCObject];
+	if(compiledOK && pobj){
+		PyrSymbol *method = getsym("doAction");
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, pobj); 
+		++g->sp;  SetInt(g->sp, 1); 
+		runInterpreter(g, method, 2);
+		g->canCallOS = false;
+	}
+    pthread_mutex_unlock (&gLangMutex);	
+}
+
+@end
+
 NSRect SCtoNSRect(SCRect screct);
 
 SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)

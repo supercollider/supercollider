@@ -60,6 +60,16 @@
 
 @end
 
+@interface SCNSMenuItem : NSMenuItem {
+	struct PyrObject *mMenuItemObj;
+}
+
+- (void)setSCObject: (struct PyrObject*)inObject;
+- (struct PyrObject*)getSCObject;
+- (void)doAction: (id)sender;
+
+@end
+
 class SCCocoaTextView : public SCView
 {
 public:	

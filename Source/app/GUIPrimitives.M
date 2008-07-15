@@ -32,6 +32,7 @@
 #import "GC.h"
 #import "SCTextView.h"
 #import "SCNSWindow.h"
+#import "SCCocoaView.h"
 
 extern ChangeCounter gUIChangeCounter;
 extern NSTextView* gPostView;
@@ -2944,7 +2945,157 @@ void stringBounds(char *s, int len, Rect &r)
 	r.bottom = finfo.descent;
 }
 
+int prNewMenuItem(struct VMGlobals *g, int numArgsPushed);
+int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+	
+	PyrSlot *caller = g->sp - 4;		// the SC Object
+	PyrSlot *parentObj = g->sp - 3;	// the parent menu or nil for app menu
+	PyrSlot *ind = g->sp - 2;			// the index
+	PyrSlot *stringSlot = g->sp - 1;	// name of the menu item
+	PyrSlot *submenbool = g->sp;		// submenu bool
+	
+	int menIndex, err;
+	
+	err = slotIntVal(ind, &menIndex);
+	if (err) return err;
+	
+	//NSLog(@"menIndex: %i", menIndex);
+	
+	if (!(isKindOfSlot(stringSlot, class_string))) return errWrongType;
+	
+	PyrString* string = stringSlot->uos;
+	
+	NSString *label = [[NSString alloc] initWithCString: string->s length: string->size];
+	
+	//NSLog(@"Label: %@", label);
+	// make a menu item
+	SCNSMenuItem *menuItem = [[SCNSMenuItem alloc] initWithTitle:label action:@selector(doAction:) keyEquivalent:@""];
+	[menuItem setTarget:menuItem];
+	[menuItem setSCObject: caller->uo];
+	SetPtr(caller->uo->slots + 0, menuItem); // set the dataptr
+	
+	if (IsTrue(submenbool)) {
+		// make a submenu if needed
+		//NSLog(@"Is SubMenu");
+		[menuItem setSubmenu:[[NSMenu alloc] initWithTitle:label]];
+		[[menuItem submenu] setAutoenablesItems:NO];
+	} 
+	
+	NSMenu *parentMenu;
+	if (IsNil(parentObj)) {
+		// make a submenu if needed
+		//NSLog(@"Top Level");
+		parentMenu = [NSApp mainMenu];
+	} else {
+		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
+		if([parentItem hasSubmenu]) {
+			//NSLog(@"Parent has submenu");
+			parentMenu = [parentItem submenu];
+		} else {
+			return errFailed;
+		}
+	}
+	
+	// protect against bad indices
+	int parentSize = [parentMenu numberOfItems];
+	//NSLog(@"parentSize: %i", parentSize);
+	if(menIndex > parentSize) {
+		//NSLog(@"Index > parentSize");
+		menIndex = parentSize;
+	}
+	if(menIndex < 0) {
+		//NSLog(@"Index < 0");
+		menIndex = 0;
+	}
+	//NSLog(@"Final Index: %i", menIndex);
+	
+	[parentMenu insertItem:menuItem atIndex:menIndex];
+	if([menuItem hasSubmenu]) { [[menuItem submenu] release]; } // this has been retained
+	[label release];
+	return errNone;
+}
 
+int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed);
+int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *caller = g->sp;
+	
+	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
+	if(!menuItem) return errFailed;
+	[[menuItem menu] removeItem:menuItem];
+	SetNil(caller->uo->slots); // we're now a lame duck
+	//if([menuItem hasSubmenu]) { [[menuItem submenu] release] };
+	[menuItem release];
+	return errNone;
+}
+
+int prEnableMenuItem(struct VMGlobals *g, int numArgsPushed);
+int prEnableMenuItem(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *caller = g->sp - 1;
+	PyrSlot *boolean = g->sp;
+	
+	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
+	if(!menuItem) return errFailed;
+	if(IsTrue(boolean)) {
+		[menuItem setEnabled:YES];
+	} else {
+		[menuItem setEnabled:NO];
+	}
+	return errNone;
+}
+
+int prSetMenuItemState(struct VMGlobals *g, int numArgsPushed);
+int prSetMenuItemState(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *caller = g->sp - 1;
+	PyrSlot *boolean = g->sp;
+	
+	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
+	if(!menuItem) return errFailed;
+	if(IsTrue(boolean)) {
+		[menuItem setState:NSOnState];
+	} else {
+		[menuItem setState:NSOffState];
+	}
+	return errNone;
+}
+
+int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed);
+int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *caller = g->sp - 3;
+	PyrSlot *stringSlot = g->sp - 2;
+	PyrSlot *alt = g->sp - 1;
+	PyrSlot *ctrl = g->sp;
+	
+	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
+	if(!menuItem) return errFailed;
+	
+	if (!(isKindOfSlot(stringSlot, class_string))) return errWrongType;
+	
+	PyrString* string = stringSlot->uos;
+	
+	NSString *kbEquiv = [[NSString alloc] initWithCString: string->s length: string->size];
+	
+	[menuItem setKeyEquivalent:kbEquiv];
+	
+	int mod = NSCommandKeyMask;
+	if(IsTrue(alt)) {
+		mod = mod | NSAlternateKeyMask;
+	}
+	
+	if(IsTrue(ctrl)) {
+		mod = mod | NSControlKeyMask;
+	}
+	
+	[menuItem setKeyEquivalentModifierMask:mod];
+	
+	[kbEquiv release];
+	return errNone;
+}
 
 void initGUIPrimitives()
 {
@@ -3086,5 +3237,11 @@ void initGUIPrimitives()
 	
 	definePrimitive(base, index++, "_TextWindow_LinkAtClickPos", prTextWindow_LinkAtClickPos, 2, 0);
 	definePrimitive(base, index++, "_Pen_SetSmoothing", prPen_SetSmoothing, 2, 0);
+	
+	definePrimitive(base, index++, "_NewMenuItem", prNewMenuItem, 5, 0);
+	definePrimitive(base, index++, "_RemoveMenuItem", prRemoveMenuItem, 1, 0);
+	definePrimitive(base, index++, "_EnableMenuItem", prEnableMenuItem, 2, 0);
+	definePrimitive(base, index++, "_SetMenuItemState", prSetMenuItemState, 2, 0);
+	definePrimitive(base, index++, "_SetMenuItemKeyboardEquivalent", prSetMenuItemKeyboardEquivalent, 4, 0);
 }
 
