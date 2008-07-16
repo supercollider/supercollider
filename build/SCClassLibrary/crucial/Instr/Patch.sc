@@ -182,6 +182,25 @@ Patch : HasPatchIns  {
 			(argg.asString + "does not respond to set").warn;
 		});
 	}
+	doesNotUnderstand { arg selector ... dnuargs;
+		var sel,setter,argName,index;
+		sel = selector.asString;
+		setter = sel.last == $_;
+		if(setter,{
+			argName = sel.copyRange(0,sel.size-2).asSymbol;
+		},{
+			argName = sel.asSymbol;
+		});
+		index = this.argNames.detectIndex({ |an| an == argName });
+		if(index.isNil,{
+			^this.superPerformList(\doesNotUnderstand, selector, dnuargs);
+		});
+		if(setter,{
+			this.setInput(index,dnuargs[0])
+		},{
+			^args[index]
+		});
+	}
 	argNames { ^this.instr.argNames }
 	argNameAt { arg i; ^instr.argNameAt(i) }
 	specAt { arg i; ^instr.specs.at(i) }
@@ -506,22 +525,6 @@ Patch : HasPatchIns  {
 		});
 		^result
 	}
-	reportError {
-
-
-	}
-
-	/*storeModifiersOn { arg stream;
-		// this allows a known defName to be used to look up in the cache
-		// otherwise a Patch doesn't know its defName until after building
-		if(defName.notNil,{
-			stream << ".defName_(" <<< defName << ")";
-		})
-	}*/
-	/*defName_ { arg df;
-		// for reloading from storeModifiersOn
-		defName = df;
-	}*/
 
 	children { ^args }
 

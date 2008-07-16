@@ -328,7 +328,6 @@ Instr  {
 	}
 
 
-
 	asString { ^"%(%)".format(this.class.name, this.defName.asCompileString) }
 	storeArgs {
 		if(this.path.notNil,{
@@ -337,6 +336,7 @@ Instr  {
 			^[this.dotNotation,this.func,this.specs,this.outSpec]
 		});
 	}
+	copy { ^this } // unless you change the address its the same instr
 
 	*initClass {
 		Class.initClassTree(Document);
@@ -390,23 +390,7 @@ Instr  {
 
 	guiBody { arg layout;
 		var defs,tf,source,lines,h,w,specWidth;
-		source = this.func.def.sourceCode;
-		if(source.notNil,{
-			lines = source.split($\n);
 
-			w = lines.maxValue({ |l| l.size }) * 7;
-			h = lines.size * 13;
-
-			tf = GUI.textField.new(layout,Rect(0,0,w,h));
-			tf.string = source;
-			tf.font_(GUI.font.new("Helvetica",10.0));
-		});
-		if(path.notNil,{
-			CXLabel(layout.startRow,path);
-			// ActionButton(layout.startRow,"open file...",{ path.openTextFile });
-		});
-		ArgNameLabel("outSpec:",layout.startRow,150);
-		this.outSpec.asString.gui(layout);
 		this.argNames.do({ arg a,i;
 			layout.startRow;
 			ArgNameLabel(  a ,layout,150);
@@ -416,10 +400,31 @@ Instr  {
 		});
 
 		layout.startRow;
+		source = this.func.def.sourceCode;
+		if(source.notNil,{
+			lines = ["\n"] ++ source.split($\n).collect({|l| " "++l}) ++ ["\n"];
+
+			w = lines.maxValue({ |l| l.size }) * 7;
+			h = lines.size * 13;
+
+			tf = GUI.textField.new(layout,Rect(0,0,w,h));
+			tf.string = source;
+			tf.font_(GUI.font.new("Helvetica",10.0));
+		});
+
+		ArgNameLabel("outSpec:",layout.startRow,150);
+		this.outSpec.asString.gui(layout);
+
+		if(path.notNil,{
+			CXLabel(layout.startRow,path);
+			// ActionButton(layout.startRow,"open file...",{ path.openTextFile });
+		});
+
+		layout.startRow;
 		if(path.notNil and: { File.exists(this.path) },{
 			ActionButton(layout,"edit File",{ this.path.openTextFile });
 		});
-		ActionButton(layout,"make Patch",{ Patch(this.name).topGui });
+		ActionButton(layout,"make a Patch",{ Patch(this.name).topGui });
 	}
 }
 
@@ -441,6 +446,7 @@ InstrAt {
 	}
 	asDefName { ^instr.asDefName }
 	storeArgs { ^[name] }
+
 }
 
 
@@ -464,7 +470,8 @@ UGenInstr {
 		//specs
 		specs = this.argNames.collect({ arg ag,i;
 			ag.asSpec ?? {
-				("UGenInstr-init  spec not found for:" + ag).warn;
+				("UGenInstr:init Spec.specs has no entry for: % so guessing ControlSpec".format(ag.asCompileString)).warn;
+				nil.asSpec
 			}
 		});
 	}
@@ -506,7 +513,7 @@ UGenInstr {
 		^if(nn.notNil,{nn.copyRange(1,nn.size-1)},{[]});
 	}
 
-	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).default}) }
+	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).tryPerform(\default)}) }
 	argNameAt { arg i;
 		var nn;
 		nn=this.funcDef.argNames;

@@ -5,27 +5,32 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Verdana}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Verdana}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #a71e12}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #942b17}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
-span.s1 {color: #0019b7}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3; min-height: 12.0px}
+span.s1 {color: #001fb3}
 span.s2 {color: #000000}
-span.s3 {color: #a71e12}
+span.s3 {color: #942b17}
 span.s4 {font: 9.0px Monaco; color: #000000}
 span.s5 {font: 9.0px Monaco}
-span.s6 {color: #606060}
-span.s7 {color: #326f17}
+span.s6 {color: #0000bf}
+span.s7 {color: #bf0000}
+span.s8 {color: #606060}
+span.s9 {color: #436c1d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -169,9 +174,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">// note that the old tempo settings persist until the end of the bar</p>
 <p class="p3">(</p>
 <p class="p4"><br></p>
-<p class="p5"><span class="s1">InstrGateSpawner</span>({ <span class="s1">arg</span> sample,start=0,dur,env,tempo;</p>
+<p class="p5"><span class="s1">InstrGateSpawner</span>({ <span class="s1">arg</span> sample,start=0,dur,env;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>var gate;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>gate = <span class="s1">Trig1</span>.kr(1.0,dur / tempo);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>gate = <span class="s1">Trig1</span>.kr(1.0,dur / Tempo.kr);</p>
 <p class="p4"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>PlayBuf<span class="s2">.ar(<span class="Apple-converted-space"> </span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.numChannels,<span class="Apple-converted-space"> </span></p>
@@ -195,35 +200,33 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">// change the (global) tempo using the tempo control at the top</p>
 <p class="p3">// you can also change the beats setting on the sample</p>
 <p class="p3">(</p>
-<p class="p5"><span class="s1">var</span> sample;</p>
-<p class="p5"><span class="s1">InstrGateSpawner</span>({ <span class="s1">arg</span> sample,start=0,dur,pchRatio,env,tempo;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> gate;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>gate = <span class="s1">Trig1</span>.kr(1.0,dur / tempo);</p>
-<p class="p4"><br></p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>PlayBuf<span class="s2">.ar(<span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.numChannels,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufnumIr,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufRateScaleIr * pchRatio,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>start,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1</p>
-<p class="p5"><span class="Apple-tab-span">	</span>) * <span class="s1">EnvGen</span>.kr(env,gate, doneAction: 2)</p>
-<p class="p5">},[</p>
-<p class="p11"><span class="s2"><span class="Apple-tab-span">	</span>sample = </span><span class="s1">Sample</span><span class="s2">(</span>"a11wlk01.wav"<span class="s2">),</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Pfunc</span>({ <span class="s1">arg</span> igs;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(igs.beat * sample.beatsize).wrap(0,sample.end) <span class="s3">// in samples</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>}),</p>
-<p class="p5"><span class="Apple-tab-span">	</span>0.125,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">KrNumberEditor</span>(1.0,[-4.0,4.0]),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Env</span>.adsr(0.02,releaseTime:0.1)</p>
-<p class="p4"><br></p>
-<p class="p5">],0.125).gui</p>
-<p class="p4"><br></p>
+<p class="p12"><span class="s6">var</span> sample;</p>
+<p class="p12"><span class="s6">InstrGateSpawner</span>({ <span class="s6">arg</span> sample,start=0,dur,pchRatio,env;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s6">var</span> gate;</p>
+<p class="p12"><span class="Apple-tab-span">	</span>gate = <span class="s6">Trig1</span>.kr(1.0,dur / Tempo.kr);</p>
+<p class="p13"><br></p>
+<p class="p14"><span class="s2"><span class="Apple-tab-span">	</span></span>PlayBuf<span class="s2">.ar(<span class="Apple-converted-space"> </span></span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.numChannels,<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufnumIr,</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sample.bufRateScaleIr * pchRatio,</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1,</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>start,</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1</p>
+<p class="p12"><span class="Apple-tab-span">	</span>) * <span class="s6">EnvGen</span>.kr(env,gate, doneAction: 2)</p>
+<p class="p12">},[</p>
+<p class="p11"><span class="s2"><span class="Apple-tab-span">	</span>sample = </span><span class="s6">Sample</span><span class="s2">(</span>"a11wlk01.wav"<span class="s2">),</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s6">Pfunc</span>({ <span class="s6">arg</span> igs;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(igs.beat * sample.beatsize).wrap(0,sample.end) <span class="s7">// in samples</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}),</p>
+<p class="p12"><span class="Apple-tab-span">	</span>0.125,</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s6">KrNumberEditor</span>(1.0,[-4.0,4.0]),</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s6">Env</span>.adsr(0.02,releaseTime:0.1)</p>
+<p class="p13"><br></p>
+<p class="p12">],0.125).gui</p>
+<p class="p13"><br></p>
 <p class="p3">)</p>
 <p class="p1"><br></p>
-<p class="p3">There is a large client side performance hit to build the sample's waveform display</p>
-<p class="p3">during which the grain commands stop getting sent.<span class="Apple-converted-space">  </span>(someone will make a better</p>
-<p class="p3">waveform display some day...)</p>
+<p class="p1"><br></p>
 <p class="p1"><br></p>
 <p class="p3">There is also a problem (currently) on the server whereby it can't accept the OSC commands</p>
 <p class="p3">while it is dealing with loading the sample.<span class="Apple-converted-space">  </span>You can use <span class="s5">ScurryableInstrGateSpawner-scurry,</span></p>
@@ -258,7 +261,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p5">layout = <span class="s1">FlowView</span>.new;</p>
 <p class="p4"><br></p>
-<p class="p6">ToggleButton<span class="s2">(layout,</span><span class="s6">"Gnome"</span><span class="s2">,{</span></p>
+<p class="p6">ToggleButton<span class="s2">(layout,</span><span class="s8">"Gnome"</span><span class="s2">,{</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>if(nome.isPlaying.not,{ nome.play(atTime: 1) })</p>
 <p class="p5">},{</p>
 <p class="p5"><span class="Apple-tab-span">	</span>if(nome.isPlaying,{ nome.stop })</p>
@@ -297,7 +300,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">compare with the first example from Pbind help</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s1">SynthDef</span>(<span class="s7">\cfstring1</span>.postln, { <span class="s1">arg</span> i_out, freq = 360, gate = 1, pan, amp=0.1;</p>
+<p class="p5"><span class="s1">SynthDef</span>(<span class="s9">\cfstring1</span>.postln, { <span class="s1">arg</span> i_out, freq = 360, gate = 1, pan, amp=0.1;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> out, eg, fc, osc, a, b, w;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>fc = <span class="s1">LinExp</span>.kr(<span class="s1">LFNoise1</span>.kr(<span class="s1">Rand</span>(0.25,0.4)), -1,1,500,2000);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>osc = <span class="s1">Mix</span>.fill(8, { <span class="s1">LFSaw</span>.ar(freq * [<span class="s1">Rand</span>(0.99,1.01),<span class="s1">Rand</span>(0.99,1.01)], 0, amp) }).distort * 0.2;</p>
@@ -306,12 +309,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>#a, b = out;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(i_out, <span class="s1">Mix</span>.ar(<span class="s1">PanAz</span>.ar(4, [a, b], [pan, pan+0.3])));</p>
 <p class="p5">}).load(s);</p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
 <p class="p5"><span class="s1">SynthDescLib</span>.global.read;</p>
 <p class="p4"><br></p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
-<p class="p5">e = <span class="s1">Pbind</span>(<span class="s7">\degree</span>, <span class="s1">Pwhite</span>(0,12), <span class="s7">\dur</span>, 0.2, <span class="s7">\instrument</span>, <span class="s7">\cfstring1</span>).play; <span class="s3">// returns an EventStream</span></p>
+<p class="p5">e = <span class="s1">Pbind</span>(<span class="s9">\degree</span>, <span class="s1">Pwhite</span>(0,12), <span class="s9">\dur</span>, 0.2, <span class="s9">\instrument</span>, <span class="s9">\cfstring1</span>).play; <span class="s3">// returns an EventStream</span></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
