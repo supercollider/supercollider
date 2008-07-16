@@ -57,13 +57,16 @@ PlayerAmp : AbstractSinglePlayerEffect {
 /*
 	put an envelope on the player's output bus.
 	correct numChannels of the player's output eg. from 1 to 2 if needed
+	protect against bad values (nan, inf)
+	set limit = true to add a limiter
 */
 EnvelopedPlayer : AbstractSinglePlayerEffect {
 	
-	var <>env,<>numChannels;
+	var <>env,<>numChannels,<>limit,<>onFuseBlown;
+	var fuseListener;
 	
-	*new { arg player,env,numChannels=2;
-		^super.new(player).env_(env).numChannels_(numChannels)
+	*new { arg player,env,numChannels=2,limit=false;
+		^super.new(player).env_(env).numChannels_(numChannels).limit_(limit)
 	}
 	storeArgs { ^[subject,env,numChannels] }
 	asSynthDef {
@@ -72,20 +75,35 @@ EnvelopedPlayer : AbstractSinglePlayerEffect {
 			var good; 
 			pnc = subject.numChannels;
 			in = In.ar(i_bus,pnc);
-			good = BinaryOpUGen('==', CheckBadValues.kr(in, 0, 0), 0);
+			good = BinaryOpUGen('==', CheckBadValues.ar(in, 0, 0), 0);
 			 // silence the output if freq is bad
 			in = in * good * EnvGen.kr(env,gate,doneAction:0);
+			// phone home
+			SendTrig.kr(1.0-A2K.kr(good),1,in);
+			if(limit,{
+				in = Limiter.ar(in)
+			});
 			if(numChannels.notNil,{
 				in = NumChannels.ar(in,numChannels,true);
 			});
 			ReplaceOut.ar(i_bus,in)
 		})
 	}
-	defName { ^this.class.name.asString ++ numChannels.asString ++ 
+	defName { ^this.class.name.asString ++ numChannels.asString ++ limit.binaryValue.asString ++
 				env.asCompileString.hash.asFileSafeString 
 	}
 	synthDefArgs { ^[\i_bus,patchOut.synthArg,\gate,1.0] }
-
+	didSpawn {
+		var commandpath = ['/tr', this.synth.nodeID, 1];
+		fuseListener = OSCpathResponder(this.server.addr, commandpath,
+			{|time,responder,message|
+				(onFuseBlown ? {|time,msg| "% got bad value: %".format(this,msg).warn }).value(time,message[3]) 
+			});
+		fuseListener.add;
+	}
+	didStop {
+		fuseListener.remove;
+	}
 	// this is a once-only event; you cannot retrigger it
 	releaseToBundle { arg releaseTime,bundle;
 		if(releaseTime.isNil,{ releaseTime = env.releaseTime; });

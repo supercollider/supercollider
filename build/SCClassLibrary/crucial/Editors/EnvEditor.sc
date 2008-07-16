@@ -58,7 +58,7 @@ EnvEditor : Editor {
 	env {// direct access for the gui
 		^value // the prototype env that we edit
 	}
-	
+	copy { ^this.class.new(value.deepCopy,levelSpec) }
 	guiClass { ^EnvEditorGui }
 
 }

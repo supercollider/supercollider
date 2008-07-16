@@ -43,6 +43,7 @@ Editor {
 		action.value(value);
 	}
 	spec { ^thisMethod.subclassResponsibility }
+	copy { ^this.class.new.value_(value.copy) }
 
 }
 
@@ -62,8 +63,9 @@ NumberEditor : Editor {
 		this.value = spec.constrain(value);
 		this.changed(\spec);
 	}
-	value_ { |v|
+	value_ { |v,change=true|
 		value = spec.constrain(v);
+		if(change,{ this.changed });
 	}
 	setUnmappedValue { arg unipolar,change=true;
 		this.value = spec.map(unipolar);
@@ -90,7 +92,7 @@ NumberEditor : Editor {
 	}
 	rate { ^spec.rate } // probably scalar
 	
-
+	copy { ^this.class.new(value,spec) }
 	guiClass { ^NumberEditorGui }
 
 }
@@ -101,9 +103,11 @@ KrNumberEditor : NumberEditor {
 
 	init { arg val,aspec;
 		super.init(val, aspec);
-		lag = defaultLag;
+		if(spec.isKindOf(NoLagControlSpec).not,{
+			lag = defaultLag;
+		});
 	}
-	//rate { ^\control }
+
  	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
 
 	addToSynthDef {  arg synthDef,name;
@@ -125,14 +129,23 @@ KrNumberEditor : NumberEditor {
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		patchOut.connectTo(patchIn,needsValueSetNow);
 	}
-
+	copy { ^this.class.new(value,spec).lag_(lag) }
 
 	guiClass { ^KrNumberEditorGui }
 
 }
 
 IrNumberEditor : NumberEditor {
-	rate { ^\scalar } // was \control but this is correct now
+	init { arg val,aspec;
+		super.init(val, aspec);
+		if((spec.isKindOf(ScalarSpec) or: spec.isKindOf(StaticSpec)).not,{
+			// let's assume you are lazy and specifying \freq
+			// we are going to guess you are using this for i_freq
+			spec = spec.as(ScalarSpec);
+			// if you wanted it for patterns or instr then use a simple NumberEditor
+		});
+	}
+	rate { ^spec.rate } // \scalar or \static
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addIr(name,this.synthArg);
 	}
@@ -144,6 +157,8 @@ IrNumberEditor : NumberEditor {
 	}
 	connectToPatchIn { } // nothing doing.  we are ir only
 }
+
+
 
 
 // paul.crabbe@free.fr

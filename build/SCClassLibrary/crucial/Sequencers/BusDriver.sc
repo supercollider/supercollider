@@ -1,5 +1,5 @@
 
-BusDriver : SynthlessPlayer {
+AbstractBusDriver : SynthlessPlayer {
 
 	var <>lag=0.0,<>latency=0.1;
 	var sched,bus,msg,bnd,resched,routine;
@@ -17,9 +17,46 @@ BusDriver : SynthlessPlayer {
 	}
 	stopToBundle { arg bundle;
 		super.stopToBundle(bundle);
-		bundle.addMessage(this,\reset);
+		bundle.addMessage(this,\didStop);
 	}
 }
+
+BusDriver : AbstractBusDriver {
+
+	var <value,<>spec;
+	
+	*new { |value=0.0,spec=\unipolar|
+		^super.new.spec_(spec.asSpec).value_(value)
+	}
+	
+	poll { ^value }
+	value_ { |v|
+		value = spec.constrain(v);
+		if(this.isPlaying,{
+			this.bus.set(value)
+		});
+	}
+	activeValue_ { |v|
+		this.value = v;
+		this.changed;
+	}
+	spawnToBundle { |b|
+		var v;
+		super.spawnToBundle(b);
+		b.add(this.bus.setMsg(value));
+		v = value;
+		b.addFunction({// just in case it changed
+			if(v != value,{
+				this.bus.set(value);
+			})
+		});
+	}
+	storeOn { |stream| value.storeOn(stream) }
+	guiClass { ^KrNumberEditorGui }
+	storeArgs { ^[value,spec] }
+}
+
+
 
 /*
 StreamKr : Kr { // trigger is a kr rate trigger
@@ -49,7 +86,7 @@ StreamKr : Kr { // trigger is a kr rate trigger
 }
 */
 
-StreamKrDur : BusDriver {
+StreamKrDur : AbstractBusDriver {
 
 	var <>values,<>durations;
 	var valst,deltast,<lastValue,<delta,<beat;
@@ -113,9 +150,13 @@ StreamKrDur : BusDriver {
 			});
 		});
 	}
-	reset {
+	didStop { this.stopRoutine }
+	stopRoutine {
 		routine.stop;
-	}		
+	}
+	resetRoutine {
+		routine.reset;
+	}
 	// has no synth, just a bus
 	spawnToBundle { arg bundle;
 		valst = values.asStream;
@@ -167,9 +208,9 @@ StreamKrDur : BusDriver {
 }
 
 
-Stream2Trig : StreamKrDur { // outputs just a single pulse trig
+Stream2Trig : StreamKrDur { // outputs just a single pulse trig with the amplitude of the value stream
 
-	// *new(levels, deltas)
+	// *new(amplitudes, deltas)
 	
 	// doesn't use lag	
 	instrArgFromControl { arg control;
