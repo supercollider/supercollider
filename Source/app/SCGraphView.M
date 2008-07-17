@@ -64,17 +64,11 @@ extern PyrSymbol *s_toggleEditMode;
 //eat all key Events might add this
 - (BOOL)performKeyEquivalent:(NSEvent *)event
 {
-//   NSString *characters = [event characters];
-//    unsigned int modifiers = [event modifierFlags];
-//    unichar character = 0;
-//    if([characters length] > 0) {
-//        character = [characters characterAtIndex: 0];
-//    }
+//	NSString *characters = [event characters];
+	unsigned int modifiers = [event modifierFlags];
     //control tab/escape doesn't get passed here at all ?
-//    NSLog(@"in performKeyEquivalent: unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
-//		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
-//	[super performKeyEquivalent: event];
-	[self keyDown: event];
+	if(modifiers & NSCommandKeyMask) // allow cmd-key only
+		[self keyDown: event];
 	return NO; //for now pass on the event
 }
 
