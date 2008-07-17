@@ -55,7 +55,9 @@ TestSCScrollView : UnitTest {
 		
 		// absoluteBounds gotten directly from the view's internals
 		absoluteBounds = t.absoluteBounds;
-	
+
+		//it LOOKS correct but the absoluteBounds returns wrong
+		// I think that if you run this separately (with a pause after w.front) then the bounds return correct
 		this.assertEquals(absoluteBounds , Rect(130,130,100,100),"bounds should be 130,130,100,100 for scrollView");
 	}
 
