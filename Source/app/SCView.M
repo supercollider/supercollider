@@ -961,7 +961,7 @@ void SCView::beginDrag(SCPoint where)
 SCContainerView::SCContainerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds), mChildren(0), mNumChildren(0), mRelativeOrigin(false)
 { 
-	mLayout.bounds = inBounds;
+	mLayout.bounds = mBounds;
 	if(mParent ){
 		if(mParent->relativeOrigin()){
 			SCRect pBounds = mParent->getDrawBounds(); // or jsut absolute frame bounds ?
