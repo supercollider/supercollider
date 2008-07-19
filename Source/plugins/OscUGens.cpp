@@ -4090,12 +4090,12 @@ void vKlank_next(Klank *unit, int inNumSamples)
 
 void normalize_samples(int size, float* data, float peak)
 {
-	float maxamp = 0.0;
+	float maxamp = 0.f;
 	for (int i=0; i<size; ++i) {
 		float absamp = fabs(data[i]);
 		if (absamp > maxamp) maxamp = absamp;
 	}
-	if (maxamp > 0.0) {
+	if (maxamp != 0.f && maxamp != peak) {
 		float ampfac = peak / maxamp;
 		for (int i=0; i<size; ++i) {
 			data[i] *= ampfac;
@@ -4105,12 +4105,12 @@ void normalize_samples(int size, float* data, float peak)
 
 void normalize_wsamples(int size, float* data, float peak)
 {
-	float maxamp = 0.0;
+	float maxamp = 0.f;
 	for (int i=0; i<size; i+=2) {
 		float absamp = fabs(data[i] + data[i+1]);
 		if (absamp > maxamp) maxamp = absamp;
 	}
-	if (maxamp > 0.0) {
+	if (maxamp != 0.f && maxamp != peak) {
 		float ampfac = peak / maxamp;
 		for (int i=0; i<size; ++i) {
 			data[i] *= ampfac;
@@ -4310,17 +4310,29 @@ void SineFill3(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 }
 
 void NormalizeBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
-{		
+{
+	float newmax;
+	if(msg->remain() != 0){
+		newmax = msg->getf();
+	}else{
+		newmax = 1.f;
+	}
 	float *data = buf->data;
 	int size = buf->samples;
-	normalize_samples(size, data, 1.);
+	normalize_samples(size, data, newmax);
 }
 
 void NormalizeWaveBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 {		
+	float newmax;
+	if(msg->remain() != 0){
+		newmax = msg->getf();
+	}else{
+		newmax = 1.f;
+	}
 	float *data = buf->data;
 	int size = buf->samples;
-	normalize_wsamples(size, data, 1.);
+	normalize_wsamples(size, data, newmax);
 }
 
 void CopyBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)

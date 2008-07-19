@@ -402,6 +402,13 @@ Buffer {
 			 ++ more;
 	}
 	
+	normalize { arg newmax=1, asWavetable=false;
+		server.listSendMsg(["/b_gen",bufnum,if(asWavetable, "wnormalize", "normalize"),newmax]);
+	}
+	normalizeMsg { arg newmax=1, asWavetable=false;
+		^["/b_gen",bufnum,if(asWavetable, "wnormalize", "normalize"),newmax];
+	}
+	
 	gen { arg genCommand, genArgs, normalize=true,asWavetable=true,clearFirst=true;
 		server.listSendMsg(["/b_gen",bufnum,genCommand,
 			normalize.binaryValue 
