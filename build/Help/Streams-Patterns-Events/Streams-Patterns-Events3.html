@@ -5,24 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.33">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; min-height: 19.0px}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-span.s1 {color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+span.s1 {color: #001bb9}
 span.s2 {color: #000000}
-span.s3 {color: #bf0000}
+span.s3 {color: #ad140d}
 span.s4 {color: #606060}
-span.s5 {color: #007300}
+span.s5 {color: #2c7014}
+span.s6 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -43,10 +44,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">(</p>
 <p class="p6">s = <span class="s1">Server</span>.local;</p>
 <p class="p7"><span class="s1">SynthDef</span><span class="s2">( </span>"Help-SPE3-SimpleSine"<span class="s2">, {</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">arg</span> freq, dur=1.0;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">arg</span> freq, sustain=1.0;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> osc;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>osc = <span class="s1">SinOsc</span>.ar( [freq,freq+0.05.rand] ) * <span class="s1">EnvGen</span>.ar(<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>.perc, doneAction: 2, levelScale: 0.3, timeScale: dur</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Env</span>.perc, doneAction: 2, levelScale: 0.3, timeScale: sustain</p>
 <p class="p6"><span class="Apple-tab-span">	</span>);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0,osc);</p>
 <p class="p6">}).send(s);</p>
@@ -99,7 +100,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">d = 0.3;</p>
 <p class="p9">Task<span class="s2">({</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>12.do({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Synth</span>(<span class="s4">"Help-SPE3-SimpleSine"</span>, [ <span class="s5">\freq</span>, a.next, <span class="s5">\dur</span>, d ]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Synth</span>(<span class="s4">"Help-SPE3-SimpleSine"</span>, [ <span class="s5">\freq</span>, a.next, <span class="s5">\sustain</span>, d ]);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.wait;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p6">}).play</p>
@@ -365,8 +366,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>// <span class="Apple-converted-space">  </span>! <span class="Apple-converted-space">                  </span>! <span class="Apple-converted-space">                  </span>! <span class="Apple-converted-space">                  </span>!</p>
 <p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>// <span class="Apple-converted-space">  </span>1234567890123456789012345678901234567890123456789012345678901</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Pseq</span>(#[2.0, 0.0, 0.2, 0.5, 0.0, 0.2, 0.9,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> 1.5, 0.0, 0.2, 0.5, 0.0, 0.2, 0.9,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> 1.5, 0.0, 0.2, 0.5, 0.0, 0.2], 3),<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.5, 0.0, 0.2, 0.5, 0.0, 0.2, 0.9,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.5, 0.0, 0.2, 0.5, 0.0, 0.2], 3),<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Pseq</span>(#[5], 1), <span class="s3">// sam</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Pseq</span>(#[0.0], <span class="s1">inf</span>)</p>
@@ -387,7 +388,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">)</p>
 <p class="p3"><br></p>
 <p class="p4">To go to the next file:</p>
-<p class="p11"><a href="Streams-Patterns-Events4.html">Streams-Patterns-Events4</a></p>
+<p class="p11"><span class="s6"><a href="Streams-Patterns-Events4.html">Streams-Patterns-Events4</a></span></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 </body>

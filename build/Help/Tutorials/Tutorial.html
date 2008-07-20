@@ -5,27 +5,27 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.33">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016e6}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #812e19}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #77301c}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1532ad}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #506826}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1438a8}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #55662b}
 span.s1 {color: #000000}
-span.s2 {color: #1532ad}
+span.s2 {color: #1438a8}
 span.s3 {font: 14.0px Helvetica}
-span.s4 {color: #0018f7}
-span.s5 {color: #506826}
+span.s4 {color: #002bf0}
+span.s5 {color: #55662b}
 span.s6 {color: #606060}
-span.s7 {color: #812e19}
+span.s7 {color: #77301c}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -299,9 +299,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pan));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).load(s); <span class="Apple-converted-space">   </span></p>
 <p class="p8"><br></p>
-<p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"envsaw"</span>,{ <span class="s2">arg</span> out=100, pan=0, dur=0.5, freq=500, amp=1, cutoff=10000, rezz=1;</p>
+<p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"envsaw"</span>,{ <span class="s2">arg</span> out=100, pan=0, sustain=0.5, freq=500, amp=1, cutoff=10000, rezz=1;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.01, dur, 0.2), doneAction:0, gate:amp);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.01, sustain, 0.2), doneAction:0, gate:amp);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,<span class="s2">Pan2</span>.ar(<span class="s2">RLPF</span>.ar(<span class="s2">Saw</span>.ar(<span class="s2">Lag</span>.kr(freq,0.1),env),cutoff,rezz)*amp,</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pan));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).load(s); <span class="Apple-converted-space">   </span></p>
@@ -312,9 +312,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">CombN</span>.ar(in, 0.5, delay, decay, 1, in));</p>
 <p class="p7">}).load(s);</p>
 <p class="p8"><br></p>
-<p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"sampler"</span>,{ <span class="s2">arg</span> sample, trig=1,rate=1.0,out=0,bufnum=0,pan=0,amp=1, dur=0.25;</p>
+<p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"sampler"</span>,{ <span class="s2">arg</span> sample, trig=1,rate=1.0,out=0,bufnum=0,pan=0,amp=1, sustain=0.25;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.001, dur, 0.001), doneAction:2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.001, sustain, 0.001), doneAction:2);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pan2</span>.ar(</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1,bufnum,rate,<span class="s2">InTrig</span>.kr(trig),0,0)*amp,</p>
@@ -348,7 +348,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s2"><span class="Apple-tab-span">	</span>r=Routine</span>({ <span class="s2">var</span> wait, rate;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>wait = <span class="s2">Pseq</span>([0.25],<span class="s2">inf</span>).asStream;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>rate = Pfunc({0.5.rand}).asStream;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">inf</span>.do({<span class="s2">Synth</span>.before(delay, <span class="s6">"sampler"</span>, [<span class="s5">\bufnum</span>, space, <span class="s5">\trig</span>, 1, <span class="s5">\amp</span>,0.1, <span class="s5">\rate</span>, <span class="s2">rate.next</span>, <span class="s5">\dur</span>, wait.next]); <span class="Apple-converted-space">   </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">inf</span>.do({<span class="s2">Synth</span>.before(delay, <span class="s6">"sampler"</span>, [<span class="s5">\bufnum</span>, space, <span class="s5">\trig</span>, 1, <span class="s5">\amp</span>,0.1, <span class="s5">\rate</span>, <span class="s2">rate.next</span>, <span class="s5">\sustain</span>, wait.next]); <span class="Apple-converted-space">   </span></p>
 <p class="p7"><span class="Apple-converted-space">    </span>(wait.next*offset).wait});});</p>
 <p class="p7"><span class="Apple-converted-space">    </span>timer.sched(0,r);<span class="Apple-converted-space"> </span></p>
 <p class="p7">});</p>
