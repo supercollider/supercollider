@@ -5,25 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.33">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0010c4}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0021be}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #c40000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007200}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0020ff}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #b2140d}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c6f14}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 span.s1 {color: #000000}
-span.s2 {color: #0010c4}
-span.s3 {color: #007200}
-span.s4 {text-decoration: underline ; color: #001efa}
-span.s5 {text-decoration: underline ; color: #0014f4}
+span.s2 {color: #0021be}
+span.s3 {color: #2c6f14}
+span.s4 {text-decoration: underline ; color: #002ff3}
+span.s5 {text-decoration: underline}
 span.s6 {font: 12.0px Helvetica}
-span.s7 {color: #0039e7}
+span.s7 {color: #0042e1}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -59,9 +59,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">midi = <span class="s2">Pseq</span>([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1).asStream;</p>
 <p class="p5">dur = <span class="s2">Pseq</span>([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1).asStream;</p>
 <p class="p6"><br></p>
-<p class="p4">SynthDef<span class="s1">(</span><span class="s3">\smooth</span><span class="s1">, { </span>|freq = 440, dur = 1, amp = 0.5|</p>
+<p class="p4">SynthDef<span class="s1">(</span><span class="s3">\smooth</span><span class="s1">, { </span>|freq = 440, sustain = 1, amp = 0.5|</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span><span class="Apple-tab-span">	</span>sig;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>sig = <span class="s2">SinOsc</span>.ar(freq, 0, amp) * <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.linen(0.05, dur, 0.1), doneAction: 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sig = <span class="s2">SinOsc</span>.ar(freq, 0, amp) * <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.linen(0.05, sustain, 0.1), doneAction: 2);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, sig ! 2)</p>
 <p class="p5">}).send(s);</p>
 <p class="p6"><br></p>
@@ -71,7 +71,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>delta = dur.next;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>delta.notNil</p>
 <p class="p5"><span class="Apple-tab-span">	</span>} {</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Synth</span>(<span class="s3">\smooth</span>, [freq: midi.next.midicps, dur: delta]);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Synth</span>(<span class="s3">\smooth</span>, [freq: midi.next.midicps, sustain: delta]);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>delta.yield;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>}</p>
 <p class="p5">}).play(quant: <span class="s2">TempoClock</span>.default.beats + 1.0);</p>
@@ -117,12 +117,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p7"><b>Playing notes with a pattern: Pbind</b></p>
 <p class="p2"><br></p>
-<p class="p3">Not only can patterns produce data for notes, but they can also play the notes themselves. 'Over the Rainbow' again:</p>
+<p class="p3">Not only can patterns produce data for notes, but they can also play the notes themselves. 'Over the Rainbow' again.</p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
-<p class="p4">SynthDef<span class="s1">(</span><span class="s3">\smooth</span><span class="s1">, { </span>|freq = 440, delta = 1, amp = 0.5|</p>
+<p class="p4">SynthDef<span class="s1">(</span><span class="s3">\smooth</span><span class="s1">, { </span>|freq = 440, sustain = 1, amp = 0.5|</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span><span class="Apple-tab-span">	</span>sig;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>sig = <span class="s2">SinOsc</span>.ar(freq, 0, amp) * <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.linen(0.05, delta, 0.1), doneAction: 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>sig = <span class="s2">SinOsc</span>.ar(freq, 0, amp) * <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.linen(0.05, <span class="s2">sustain</span>, 0.1), doneAction: 2);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, sig ! 2)</p>
 <p class="p5">}).memStore;</p>
 <p class="p5">)</p>
@@ -134,7 +134,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// MIDI note numbers -- converted automatically to Hz</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\midinote</span>, <span class="s2">Pseq</span>([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1),</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// rhythmic values</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\delta</span>, <span class="s2">Pseq</span>([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\</span><span class="s2">dur</span>, <span class="s2">Pseq</span>([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1)</p>
 <p class="p5">).play;</p>
 <p class="p5">)</p>
 <p class="p2"><br></p>
