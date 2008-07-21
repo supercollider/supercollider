@@ -5,29 +5,30 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.33">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0027ee}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #992b19}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0030b5}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
+span.s2 {color: #0040f2}
 span.s3 {color: #000000}
-span.s4 {font: 9.0px Monaco}
-span.s5 {color: #0000bf}
-span.s6 {color: #606060}
-span.s7 {color: #007300}
+span.s4 {text-decoration: underline}
+span.s5 {color: #0000ff}
+span.s6 {font: 9.0px Monaco}
+span.s7 {color: #0030b5}
+span.s8 {color: #606060}
+span.s9 {color: #41691a}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -42,13 +43,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>N.B.</b> A ServerOptions' instance variables are translated into commandline arguments when a server app is booted. Thus a running Server must be rebooted before changes will take effect. There are also a few commandline options which are not currently encapsulated in ServerOptions. See <a href="Server-Architecture.html"><span class="s2">Server-Architecture</span></a> for more details.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also:</b> <a href="Server.html">Server</a>, <a href="Server-Architecture.html">Server-Architecture</a>, and <a href="Server-Command-Reference.html">Server-Command-Reference</a>.</span></p>
+<p class="p4"><span class="s3"><b>See also:</b> <a href="Server.html"><span class="s4">Server</span></a>, <a href="Server-Architecture.html"><span class="s4">Server-Architecture</span></a>, and <a href="Server-Command-Reference.html"><span class="s4">Server-Command-Reference</span></a>.</span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Create and return a new instance of ServerOptions.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>*devices</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Return an <a href="../Collections/Array.html"><span class="s5">Array</span></a> of <a href="../Collections/String.html"><span class="s5">Strings</span></a> listing the audio devices currently available on the system.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>*inDevices</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Return an <a href="../Collections/Array.html"><span class="s5">Array</span></a> of <a href="../Collections/String.html"><span class="s5">Strings</span></a> listing the audio devices currently available on the system which have input channels.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>*outDevices</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Return an <a href="../Collections/Array.html"><span class="s5">Array</span></a> of <a href="../Collections/String.html"><span class="s5">Strings</span></a> listing the audio devices currently available on the system which have output channels.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><br></p>
 <p class="p9"><b>Accessing Instance and Class Variables (The Options)</b></p>
@@ -61,7 +74,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>device_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>device</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A String that allows you to chose a sound device. The default, nil will use the system's default device (more below in the examples).</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A String that allows you to choose a sound device to use as input and output. The default, nil will use the system's default input and output device(s) (more below in the examples).<span class="Apple-converted-space"> </span></p>
+<p class="p8"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>inDevice_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>inDevice</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A String that allows you to choose an input sound device. The default, nil will use the system's default input device (more below in the examples).</p>
+<p class="p8"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>outDevice_(arg1)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>outDevice</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A String that allows you to choose an output sound device. The default, nil will use the system's default output device (more below in the examples).</p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>hardwareBufferSize_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>hardwareBufferSize</b></p>
@@ -173,7 +196,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a <a href="../Collections/String.html"><span class="s2">String</span></a> specifying the options in the format required by the command-line scsynth app.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>port </b>- The port number for the resulting server app. Default value is 57110.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span><b>firstPrivateBus</b></p>
+<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span></span><b>firstPrivateBus</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the index of the first audio bus on this server which is not used by the input and output hardware.</p>
 <p class="p6"><br></p>
@@ -183,36 +206,36 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><b>Examples</b></p>
 <p class="p3"><br></p>
 <p class="p11">// Get the local server's options</p>
-<p class="p12"><br></p>
-<p class="p13">o = <span class="s5">Server</span>.local.options;</p>
-<p class="p12"><br></p>
+<p class="p3"><br></p>
+<p class="p12">o = <span class="s7">Server</span>.local.options;</p>
+<p class="p3"><br></p>
 <p class="p11">// Post the number of output channels</p>
-<p class="p12"><br></p>
-<p class="p13">o.numOutputBusChannels.postln;</p>
-<p class="p12"><br></p>
+<p class="p3"><br></p>
+<p class="p12">o.numOutputBusChannels.postln;</p>
+<p class="p3"><br></p>
 <p class="p11">// Set them to a new number</p>
-<p class="p12"><br></p>
+<p class="p3"><br></p>
 <p class="p11"><span class="s3">o.numOutputBusChannels = 6; </span>// The next time it boots, this will take effect</p>
-<p class="p12"><br></p>
+<p class="p3"><br></p>
 <p class="p11">// specify a device</p>
-<p class="p12"><br></p>
-<p class="p11"><span class="s3">o.device =</span><span class="s6">"MOTU Traveler"</span><span class="s3">; <span class="Apple-tab-span">	</span></span>// use a specific soundcard</p>
-<p class="p11"><span class="s3">o.device = </span><span class="s5">nil</span><span class="s3">;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// use the system default soundcard</p>
-<p class="p12"><br></p>
+<p class="p3"><br></p>
+<p class="p11"><span class="s3">o.device =</span><span class="s8">"MOTU Traveler"</span><span class="s3">; <span class="Apple-tab-span">	</span></span>// use a specific soundcard</p>
+<p class="p11"><span class="s3">o.device = </span><span class="s7">nil</span><span class="s3">;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// use the system default soundcard</p>
+<p class="p3"><br></p>
 <p class="p11">// Create a new instance of ServerOptions</p>
-<p class="p12"><br></p>
-<p class="p14"><span class="s3">o = </span>ServerOptions<span class="s3">.new;</span></p>
-<p class="p12"><br></p>
+<p class="p3"><br></p>
+<p class="p13"><span class="s3">o = </span>ServerOptions<span class="s3">.new;</span></p>
+<p class="p3"><br></p>
 <p class="p11">// Set the memory size to twice the default</p>
-<p class="p12"><br></p>
-<p class="p13">o.memSize = 4096;</p>
-<p class="p12"><br></p>
+<p class="p3"><br></p>
+<p class="p12">o.memSize = 4096;</p>
+<p class="p3"><br></p>
 <p class="p11">// Create a new Server on the local machine using o for its options</p>
-<p class="p12"><br></p>
-<p class="p13">t = <span class="s5">Server</span>(<span class="s7">\Local2</span>, <span class="s5">NetAddr</span>(<span class="s6">"127.0.0.1"</span>, 57111), o);</p>
-<p class="p13">t.makeWindow;</p>
-<p class="p13">t.boot;</p>
-<p class="p13">t.quit;</p>
+<p class="p3"><br></p>
+<p class="p12">t = <span class="s7">Server</span>(<span class="s9">\Local2</span>, <span class="s7">NetAddr</span>(<span class="s8">"127.0.0.1"</span>, 57111), o);</p>
+<p class="p12">t.makeWindow;</p>
+<p class="p12">t.boot;</p>
+<p class="p12">t.quit;</p>
 <p class="p3"><br></p>
 </body>
 </html>
