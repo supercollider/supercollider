@@ -102,7 +102,8 @@ struct HiddenWorld
 	const char* mInputStreamsEnabled;
 	const char* mOutputStreamsEnabled;
 #endif
-	const char *mDeviceName;
+	const char *mInDeviceName;
+	const char *mOutDeviceName;
 };
 
 typedef struct HiddenWorld HiddenWorld;

@@ -24,6 +24,9 @@
 /* Begin PBXBuildFile section */
 		172CD77D0DD7D2AE0089A2F4 /* SC_LanguageClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9493110C0C1921F90018AB50 /* SC_LanguageClient.cpp */; };
 		172CD77E0DD7D2B10089A2F4 /* SC_TerminalClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9493110E0C1921F90018AB50 /* SC_TerminalClient.cpp */; };
+		3799DA840E3502D900AE51A3 /* SC_CoreAudioPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */; };
+		3799DA850E3502F000AE51A3 /* SC_CoreAudioPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */; };
+		3799DA860E35030F00AE51A3 /* SC_CoreAudioPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */; };
 		6A0CC1760D3D41F40080C454 /* SMLAdvancedFindController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0CC1740D3D41F40080C454 /* SMLAdvancedFindController.m */; };
 		6A0CC1770D3D41F40080C454 /* SMLStatusBarTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0CC1750D3D41F40080C454 /* SMLStatusBarTextFieldCell.m */; };
 		6A0CC1780D3D41F40080C454 /* SMLAdvancedFindController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0CC1740D3D41F40080C454 /* SMLAdvancedFindController.m */; };
@@ -404,6 +407,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_CoreAudioPrim.cpp; sourceTree = "<group>"; };
 		6A0CC1740D3D41F40080C454 /* SMLAdvancedFindController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SMLAdvancedFindController.m; sourceTree = "<group>"; };
 		6A0CC1750D3D41F40080C454 /* SMLStatusBarTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SMLStatusBarTextFieldCell.m; sourceTree = "<group>"; };
 		6A0CC1990D3D425D0080C454 /* SCAdvancedFind.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = SCAdvancedFind.nib; sourceTree = "<group>"; };
@@ -949,6 +953,7 @@
 				9456F68E0C19E70200634E4D /* SC_ComPort.cpp */,
 				9456F67F0C19E6E500634E4D /* SC_AlsaMIDI.cpp */,
 				9456F6800C19E6E500634E4D /* SC_ComPort.cpp */,
+				3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */,
 				949310CC0C1921F90018AB50 /* OSCData.cpp */,
 				949310CD0C1921F90018AB50 /* PyrArchiver.cpp */,
 				949310CE0C1921F90018AB50 /* PyrArrayPrimitives.cpp */,
@@ -1485,6 +1490,7 @@
 				94442C910C2C8AE40050BF9F /* PyrSymbolPrim.cpp in Sources */,
 				94442C920C2C8AE40050BF9F /* PyrUnixPrim.cpp in Sources */,
 				94442C930C2C8AE40050BF9F /* SC_CoreMIDI.cpp in Sources */,
+				3799DA860E35030F00AE51A3 /* SC_CoreAudioPrim.cpp in Sources */,
 				94442C940C2C8AE40050BF9F /* SC_HID.cpp in Sources */,
 				94442C950C2C8AE40050BF9F /* SC_Speech.M in Sources */,
 				94442C960C2C8AE40050BF9F /* SC_Wii.cpp in Sources */,
@@ -1534,6 +1540,7 @@
 				949315020C192A6E0018AB50 /* dtoa.c in Sources */,
 				949315030C192A6E0018AB50 /* g_fmt.c in Sources */,
 				949315040C192A6E0018AB50 /* SC_AllocPool.cpp in Sources */,
+				3799DA840E3502D900AE51A3 /* SC_CoreAudioPrim.cpp in Sources */,
 				949315050C192A6E0018AB50 /* SC_DirUtils.cpp in Sources */,
 				949315060C192A6E0018AB50 /* SC_Sem.cpp in Sources */,
 				949315070C192A6E0018AB50 /* SC_StandAloneInfo_Darwin.cpp in Sources */,
@@ -1653,6 +1660,7 @@
 				949311790C1921F90018AB50 /* PyrSymbolPrim.cpp in Sources */,
 				9493117A0C1921F90018AB50 /* PyrUnixPrim.cpp in Sources */,
 				9493117B0C1921F90018AB50 /* SC_CoreMIDI.cpp in Sources */,
+				3799DA850E3502F000AE51A3 /* SC_CoreAudioPrim.cpp in Sources */,
 				9493117C0C1921F90018AB50 /* SC_HID.cpp in Sources */,
 				9493117F0C1921F90018AB50 /* SC_Speech.M in Sources */,
 				949311800C1921F90018AB50 /* SC_Wii.cpp in Sources */,

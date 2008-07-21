@@ -879,8 +879,8 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		#endif
 		
 		err = slotStrVal(optionsSlots+17, mDeviceName, 512);
-		if(err) options.mDeviceName = NULL;
-		else options.mDeviceName = mDeviceName;		
+		if(err) options.mInDeviceName = options.mOutDeviceName = NULL;
+		else options.mInDeviceName = options.mOutDeviceName = mDeviceName;		
 
 		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
