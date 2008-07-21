@@ -542,7 +542,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 		}
 	} while (false);
 	
-	if (mWorld->hw->mDeviceName) {
+	if (mWorld->hw->mInDeviceName || mWorld->hw->mOutDeviceName) {
 		err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
 		if (err != kAudioHardwareNoError) {
 			scprintf("info kAudioHardwarePropertyDevices error %4.4s\n", (char*)&err);
@@ -570,34 +570,42 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				scprintf("get kAudioDevicePropertyDeviceName error %4.4s B %d %08X\n", (char*)&err, i, devices[i]);
 				return false;
 			}
-			if (strcmp(name, mWorld->hw->mDeviceName) == 0) {
+			if (strcmp(name, mWorld->hw->mInDeviceName) == 0) {
+				mInputDevice = devices[i];
+			}
+			if (strcmp(name, mWorld->hw->mOutDeviceName) == 0) {
 				mOutputDevice = devices[i];
-				mInputDevice = mOutputDevice;
-				free(name);
-				break;
 			}
 			free(name);
+			if (mInputDevice!=kAudioDeviceUnknown && mOutputDevice!=kAudioDeviceUnknown) break;
 		}
 		free(devices);
-		if (mOutputDevice == kAudioDeviceUnknown) goto getDefault;
+		if (mOutputDevice==kAudioDeviceUnknown || mInputDevice==kAudioDeviceUnknown) goto getDefault;
 	} else {
 		getDefault:
 
 		// get the default output device for the HAL
-		count = sizeof(mOutputDevice);		
-		//get the output device:
-		err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &count, (void *) & mOutputDevice);
-		if (err != kAudioHardwareNoError) {
-			scprintf("get kAudioHardwarePropertyDefaultOutputDevice error %4.4s\n", (char*)&err);
-			return false;
+		if (mOutputDevice==kAudioDeviceUnknown)
+		{
+			count = sizeof(mOutputDevice);		
+			//get the output device:
+			err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &count, (void *) & mOutputDevice);
+			if (err != kAudioHardwareNoError) {
+				scprintf("get kAudioHardwarePropertyDefaultOutputDevice error %4.4s\n", (char*)&err);
+				return false;
+			}
 		}
 		
 		//get the input device
-		err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &count, (void *) & mInputDevice);
-
-		if (err != kAudioHardwareNoError) {
-			scprintf("get kAudioHardwarePropertyDefaultInputDevice error %4.4s\n", (char*)&err);
-			return false;
+		if (mInputDevice==kAudioDeviceUnknown)
+		{
+			count = sizeof(mInputDevice);		
+			err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &count, (void *) & mInputDevice);
+			//get the input device:
+			if (err != kAudioHardwareNoError) {
+				scprintf("get kAudioHardwarePropertyDefaultInputDevice error %4.4s\n", (char*)&err);
+				return false;
+			}
 		}
 	}
 
@@ -647,7 +655,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 		}
 	}
 	
-	// get the buffersize that the device uses for IO
+	// get the buffersize for the out device
 	count = sizeof(mHardwareBufferSize);	
 	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyBufferSize, &count, &mHardwareBufferSize);
 	if (err != kAudioHardwareNoError) {
@@ -673,12 +681,6 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			return false;
 		}
 	
-		count = sizeof(AudioStreamBasicDescription);	
-		err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyStreamFormat, &count, &inputStreamDesc);
-		if (err != kAudioHardwareNoError) {
-			scprintf("get kAudioDevicePropertyStreamFormat error %4.4s\n", (char*)&err);
-			return false;
-		}
 		if (inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
 			scprintf("input and output sample rates do not match. %g != %g\n", inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
 			return false;
@@ -1779,8 +1781,8 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 
 	mDeviceInOut[0] = paNoDevice;
 	mDeviceInOut[1] = paNoDevice;
-	if (mWorld->hw->mDeviceName)
-		GetPaDeviceFromName(mWorld->hw->mDeviceName, mDeviceInOut);
+	if (mWorld->hw->mInDeviceName)
+		GetPaDeviceFromName(mWorld->hw->mInDeviceName, mDeviceInOut);
 	if (mDeviceInOut[0] == paNoDevice) mDeviceInOut[0] = Pa_GetDefaultInputDevice();
 	if (mDeviceInOut[1] == paNoDevice) mDeviceInOut[1] = Pa_GetDefaultOutputDevice();
 

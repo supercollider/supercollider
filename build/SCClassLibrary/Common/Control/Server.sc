@@ -24,7 +24,8 @@ ServerOptions
 	var <>inputStreamsEnabled;
 	var <>outputStreamsEnabled;
 
-	var <>device = nil;
+	var <>inDevice = nil;
+	var <>outDevice = nil;
 	
 	var <>blockAllocClass;
 	
@@ -33,6 +34,23 @@ ServerOptions
 	
 	var <>initialNodeID = 1000;
 	var <>remoteControlVolume = false;
+
+	device
+	{
+		^if(inDevice == outDevice)
+		{
+			inDevice
+		}
+		{
+			[inDevice, outDevice]
+		}
+	}
+	
+	device_
+	{
+		|dev|
+		inDevice = outDevice = dev;
+	}
 
 	// max logins
 	// session-password
@@ -95,9 +113,16 @@ ServerOptions
 		if (outputStreamsEnabled.notNil, {
 			o = o ++ " -O " ++ outputStreamsEnabled ;
 		});
-		if (device.notNil, {
-			o = o ++ " -H \"" ++ device ++ "\"" ;
-		});
+		if (inDevice == outDevice)
+		{
+			if (inDevice.notNil,
+			{
+				o = o ++ " -H %".format(inDevice.quote);
+			});
+		}
+		{
+			o = o ++ " -H % %".format(inDevice.asString.quote, outDevice.asString.quote);
+		};
 		if (verbosity != 0, {
 			o = o ++ " -v " ++ verbosity;
 		});
@@ -124,6 +149,28 @@ ServerOptions
 	rendezvous {|bool|
 		this.deprecated(thisMethod, ServerOptions.findMethod(\zeroConf));
 		^zeroConf;
+	}
+
+	*prListDevices
+	{
+		arg in, out;
+		_ListAudioDevices
+		^this.primitiveFailed
+	}
+	
+	*devices
+	{
+		^this.prListDevices(1, 1);
+	}
+	
+	*inDevices
+	{
+		^this.prListDevices(1, 0);
+	}
+
+	*outDevices
+	{
+		^this.prListDevices(0, 1);
 	}
 }
 

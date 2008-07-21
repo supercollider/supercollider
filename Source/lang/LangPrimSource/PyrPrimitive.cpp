@@ -3986,7 +3986,10 @@ void initSerialPrimitives();
 	initSerialPrimitives();
 	
 void initWiiPrimitives();
-initWiiPrimitives();
+	initWiiPrimitives();
+
+void initCoreAudioPrimitives();
+	initCoreAudioPrimitives();
 #endif
 
 // CR ADDED

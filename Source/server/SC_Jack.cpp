@@ -295,9 +295,9 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	char* clientName = 0;
 	char* serverName = 0;
 
-	if (mWorld->hw->mDeviceName && (strlen(mWorld->hw->mDeviceName) > 0)) {
+	if (mWorld->hw->mInDeviceName && (strlen(mWorld->hw->mInDeviceName) > 0)) {
 		// parse string <serverName>:<clientName>
-		SC_StringParser sp(mWorld->hw->mDeviceName, ':');
+		SC_StringParser sp(mWorld->hw->mInDeviceName, ':');
 		if (!sp.AtEnd()) serverName = strdup(sp.NextToken());
 		if (!sp.AtEnd()) clientName = strdup(sp.NextToken());
 		if (clientName == 0) {
