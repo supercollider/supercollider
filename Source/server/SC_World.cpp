@@ -371,7 +371,7 @@ World* World_New(WorldOptions *inOptions)
 
 		world->mRendezvous = inOptions->mRendezvous;
 		
-		if(inOptions->mVerbosity >= 0) {
+		if(inOptions->mVerbosity >= 1) {
 			scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
 		}
 		sc_SetDenormalFlags();
