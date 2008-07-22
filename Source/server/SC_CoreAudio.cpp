@@ -443,7 +443,7 @@ bool SC_AudioDriver::Setup()
 	
 #ifndef NDEBUG
 	if(mWorld->mVerbosity >= 0){
-		scprintf("SC_AudioDriver: numSamples=%d, sampleRate=%f\n", mNumSamplesPerCallback, sampleRate);
+		scprintf("SC_AudioDriver: sampleRate=%f\n", sampleRate);
 	}
 #endif
 
@@ -796,7 +796,9 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			scprintf("get kAudioDevicePropertySafetyOffset error %4.4s\n", (char*)&err);
 			return false;
 		}
-		scprintf("mSafetyOffset %lu\n", mSafetyOffset);
+		if(mWorld->mVerbosity >= 1){
+			scprintf("mSafetyOffset %lu\n", mSafetyOffset);
+		}
 	
 		Boolean writeable;
 		err = AudioDeviceGetPropertyInfo(mInputDevice, 0, true, kAudioDevicePropertyStreamConfiguration, &count, &writeable);
@@ -807,9 +809,13 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			return false;
 		}
 	
-		scprintf("mNumberBuffers %lu\n", mInputBufList->mNumberBuffers);
+		if(mWorld->mVerbosity >= 1){
+			scprintf("mNumberBuffers %lu\n", mInputBufList->mNumberBuffers);
+		}
 		for (uint32 i=0; i<mInputBufList->mNumberBuffers; ++i) {
-			scprintf("  mDataByteSize %d %lu\n", i, mInputBufList->mBuffers[i].mDataByteSize);
+			if(mWorld->mVerbosity >= 1){
+				scprintf("  mDataByteSize %d %lu\n", i, mInputBufList->mBuffers[i].mDataByteSize);
+			}
 			mInputBufList->mBuffers[i].mData = zalloc(1, mInputBufList->mBuffers[i].mDataByteSize);
 		}
 	
@@ -830,7 +836,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	*outNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
 	*outSampleRate = outputStreamDesc.mSampleRate;
 
-	if(mWorld->mVerbosity >= 0){
+	if(mWorld->mVerbosity >= 1){
 		scprintf("<-SC_CoreAudioDriver::Setup world %08X\n", mWorld);
 	}
 	return true;
@@ -1072,7 +1078,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 
 bool SC_CoreAudioDriver::DriverStart()
 {
-	if(mWorld->mVerbosity >= 0){
+	if(mWorld->mVerbosity >= 1){
 		scprintf("->SC_CoreAudioDriver::DriverStart\n");
 	}
 	OSStatus	err = kAudioHardwareNoError;
@@ -1080,7 +1086,7 @@ bool SC_CoreAudioDriver::DriverStart()
 	UInt32 propertySize;
 	Boolean writable;
 	
-	if(mWorld->mVerbosity >= 0){
+	if(mWorld->mVerbosity >= 1){
 		scprintf("start   UseSeparateIO?: %d\n", UseSeparateIO());
 	}
 	
@@ -1175,7 +1181,7 @@ bool SC_CoreAudioDriver::DriverStart()
 	} catch (...) {
 	scprintf("exception in SC_CoreAudioDriver::DriverStart\n");
 	}
-	if(mWorld->mVerbosity >= 0){
+	if(mWorld->mVerbosity >= 1){
 		scprintf("<-SC_CoreAudioDriver::DriverStart\n");
 	}
 	return true;
@@ -1183,7 +1189,7 @@ bool SC_CoreAudioDriver::DriverStart()
 
 bool SC_CoreAudioDriver::DriverStop()
 {
-	if(mWorld->mVerbosity >= 0){
+	if(mWorld->mVerbosity >= 1){
 		scprintf("->SC_CoreAudioDriver::DriverStop\n");
 	}
 	OSStatus err = kAudioHardwareNoError;
@@ -1224,7 +1230,7 @@ bool SC_CoreAudioDriver::DriverStop()
 			return false;
 		}
 	}
-	if(mWorld->mVerbosity >= 0){
+	if(mWorld->mVerbosity >= 1){
 		scprintf("<-SC_CoreAudioDriver::DriverStop\n");
 	}
 	return true;
