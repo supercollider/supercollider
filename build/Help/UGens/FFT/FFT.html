@@ -5,121 +5,126 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0027ee}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #0000bf}
-span.s4 {color: #606060}
-span.s5 {color: #bf0000}
-span.s6 {color: #007300}
+span.s3 {text-decoration: underline}
+span.s4 {color: #001fbf}
+span.s5 {color: #606060}
+span.s6 {color: #ba1100}
+span.s7 {color: #1d7008}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>FFT<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>Fast Fourier Transform</b></p>
 <p class="p2"><br></p>
-<p class="p1"><b>FFT.new(buffer, input, hop, wintype, active)</b></p>
+<p class="p1"><b>FFT.new(buffer, input, hop, wintype, active, framesize)</b></p>
 <p class="p2"><br></p>
-<p class="p1">The fast fourier transform analyzes the frequency content of a signal.</p>
-<p class="p1"><b>buffer</b> - The buffer where a frame will be held. Most PV UGens operate on this data in place. Use PV_Copy for parallel processing.</p>
-<p class="p1"><b>input</b> - the signal to be analyzed<span class="Apple-converted-space"> </span></p>
+<p class="p1">The fast fourier transform analyzes the frequency content of a signal, which can be useful for audio analysis or for frequency-domain sound processing (phase vocoder).</p>
+<p class="p2"><br></p>
+<p class="p1"><b>buffer</b> - The buffer where a frame will be held. Its size must be a power of two. (Note: most PV UGens operate on this data in place. Use PV_Copy for parallel processing.)</p>
+<p class="p1"><b>input</b> - the signal to be analyzed.</p>
+<p class="p2"><br></p>
+<p class="p1">Only the above two arguments are required. The remaining arguments allow for custom FFT analyses for specialised situations:</p>
+<p class="p2"><br></p>
 <p class="p1"><b>hop</b> - the amount of offset from one FFT analysis frame to the next, measured in multiples of the analysis frame size. This can range between zero and one, and the default is 0.5 (meaning each frame has a 50% overlap with the preceding/following frames).</p>
 <p class="p1"><b>wintype</b> - defines how the data is windowed:</p>
 <p class="p1"><span class="Apple-tab-span">	</span>-1 is for <b><i>rectangular</i></b> windowing, simple but typically not recommended;<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>0 (the default) is for <b><i>Welch</i></b> windowing, typically recommended for phase-vocoder work;<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>1 is for <b><i>Hann</i></b> windowing, typically recommended for analysis work.</p>
 <p class="p1"><b>active</b> - is a simple control allowing FFT analysis to be active (&gt;0) or inactive (&lt;=0). This is mainly useful for signal analysis processes which are only intended to analyse at specific times rather than continuously</p>
+<p class="p1"><b>framesize</b> - the audio frames are usually the same size as the buffer. If you wish the FFT to be <i>zero-padded</i> then you can specify a framesize smaller than the actual buffer size (e.g. framesize 1024 with buffer size 2048). Both values must still be a power of two. Leave this at its default of zero for no zero-padding.</p>
 <p class="p2"><br></p>
 <p class="p1">FFT uses a local buffer for holding the buffered audio. The window size corresponds to the buffer size, which must be a multiple of the control block size as well as being a power of two.</p>
 <p class="p2"><br></p>
 <p class="p1">Note that for phase-vocoder usage, changing the hop or wintype settings from their defaults will typically result in unnatural sound when used in combination with IFFT, due to windowing artifacts. (A hop of 0.25, with Hann windowing, can be a useful combination for phase-vocoder work.)</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s2"><b>See also:</b> <a href="FFT Overview.html">FFT Overview</a>, <a href="IFFT.html">IFFT</a>, <a href="PV_Copy.html">PV_Copy</a></span></p>
+<p class="p3"><span class="s2"><b>See also:</b> <a href="FFT Overview.html"><span class="s3">FFT Overview</span></a>, <a href="IFFT.html"><span class="s3">IFFT</span></a>, <a href="PV_Copy.html"><span class="s3">PV_Copy</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p4"><br></p>
-<p class="p5">s = <span class="s3">Server</span>.local.boot;<span class="Apple-converted-space"> </span></p>
+<p class="p5">s = <span class="s4">Server</span>.local.boot;<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p5">b = <span class="s3">Buffer</span>.alloc(s,2048,1);</p>
+<p class="p5">b = <span class="s4">Buffer</span>.alloc(s,2048,1);</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-noopFFT"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s3">WhiteNoise</span>.ar(0.05);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(bufnum, in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain.inspect; <span class="s5">// its an FFT</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">IFFT</span>(chain) // inverse FFT</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-noopFFT"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s4">WhiteNoise</span>.ar(0.05);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain.inspect; <span class="s6">// its an FFT</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">IFFT</span>(chain) // inverse FFT</p>
 <p class="p5"><span class="Apple-tab-span">	</span>);</p>
-<p class="p5">}).play(s,[<span class="s6">\out</span>,0,<span class="s6">\bufnum</span>,b]);</p>
+<p class="p5">}).play(s,[<span class="s7">\out</span>,0,<span class="s7">\bufnum</span>,b]);</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-sineFFT"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s3">SinOsc</span>.ar(<span class="s3">SinOsc</span>.kr(<span class="s3">SinOsc</span>.kr(0.08,0,6,6.2).squared, 0, 100,800));</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(bufnum, in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">IFFT</span>(chain));</p>
-<p class="p5">}).play(s,[<span class="s6">\out</span>,0,<span class="s6">\bufnum</span>,b]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-sineFFT"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s4">SinOsc</span>.ar(<span class="s4">SinOsc</span>.kr(<span class="s4">SinOsc</span>.kr(0.08,0,6,6.2).squared, 0, 100,800));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">IFFT</span>(chain));</p>
+<p class="p5">}).play(s,[<span class="s7">\out</span>,0,<span class="s7">\bufnum</span>,b]);</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-magAbove"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s3">SinOsc</span>.ar(<span class="s3">SinOsc</span>.kr(<span class="s3">SinOsc</span>.kr(0.08,0,6,6.2).squared, 0, 100,800));</p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>//in = WhiteNoise.ar(0.2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(bufnum, in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_MagAbove</span>(chain, 310);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, 0.5 * <span class="s3">IFFT</span>(chain));</p>
-<p class="p5">}).play(s,[<span class="s6">\out</span>,0,<span class="s6">\bufnum</span>,b]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-magAbove"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s4">SinOsc</span>.ar(<span class="s4">SinOsc</span>.kr(<span class="s4">SinOsc</span>.kr(0.08,0,6,6.2).squared, 0, 100,800));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>//in = WhiteNoise.ar(0.2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_MagAbove</span>(chain, 310);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, 0.5 * <span class="s4">IFFT</span>(chain));</p>
+<p class="p5">}).play(s,[<span class="s7">\out</span>,0,<span class="s7">\bufnum</span>,b]);</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-brick"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s3">WhiteNoise</span>.ar(0.2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(bufnum, in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_BrickWall</span>(chain, <span class="s3">SinOsc</span>.kr(0.1));<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">IFFT</span>(chain));</p>
-<p class="p5">}).play(s,[<span class="s6">\out</span>,0,<span class="s6">\bufnum</span>,b]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-brick"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s4">WhiteNoise</span>.ar(0.2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_BrickWall</span>(chain, <span class="s4">SinOsc</span>.kr(0.1));<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">IFFT</span>(chain));</p>
+<p class="p5">}).play(s,[<span class="s7">\out</span>,0,<span class="s7">\bufnum</span>,b]);</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-randcomb"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s3">WhiteNoise</span>.ar(0.8);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(bufnum, in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_RandComb</span>(chain, 0.95, <span class="s3">Impulse</span>.kr(0.4));<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">IFFT</span>(chain));</p>
-<p class="p5">}).play(s,[<span class="s6">\out</span>,0,<span class="s6">\bufnum</span>,b]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-randcomb"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s4">WhiteNoise</span>.ar(0.8);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_RandComb</span>(chain, 0.95, <span class="s4">Impulse</span>.kr(0.4));<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">IFFT</span>(chain));</p>
+<p class="p5">}).play(s,[<span class="s7">\out</span>,0,<span class="s7">\bufnum</span>,b]);</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-rectcomb"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s3">WhiteNoise</span>.ar(0.2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(bufnum, in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_RectComb</span>(chain, 8, <span class="s3">LFTri</span>.kr(0.097,0,0.4,0.5),<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">LFTri</span>.kr(0.24,0,-0.5,0.5));<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">IFFT</span>(chain));</p>
-<p class="p5">}).play(s,[<span class="s6">\out</span>,0,<span class="s6">\bufnum</span>,b]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-rectcomb"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s4">WhiteNoise</span>.ar(0.2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_RectComb</span>(chain, 8, <span class="s4">LFTri</span>.kr(0.097,0,0.4,0.5),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">LFTri</span>.kr(0.24,0,-0.5,0.5));<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">IFFT</span>(chain));</p>
+<p class="p5">}).play(s,[<span class="s7">\out</span>,0,<span class="s7">\bufnum</span>,b]);</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-magFreeze"</span>, { <span class="s3">arg</span> out=0,bufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s3">SinOsc</span>.ar(<span class="s3">LFNoise1</span>.kr(5.2,250,400));</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(bufnum, in);</p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>// moves in and out of freeze</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_MagFreeze</span>(chain, <span class="s3">SinOsc</span>.kr(-0.2) );<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, 0.5 * <span class="s3">IFFT</span>(chain));</p>
-<p class="p5">}).play(s,[<span class="s6">\out</span>,0,<span class="s6">\bufnum</span>,b]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-magFreeze"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s4">SinOsc</span>.ar(<span class="s4">LFNoise1</span>.kr(5.2,250,400));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(bufnum, in);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>// moves in and out of freeze</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_MagFreeze</span>(chain, <span class="s4">SinOsc</span>.kr(-0.2) );<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, 0.5 * <span class="s4">IFFT</span>(chain));</p>
+<p class="p5">}).play(s,[<span class="s7">\out</span>,0,<span class="s7">\bufnum</span>,b]);</p>
 <p class="p5">)</p>
 </body>
 </html>
