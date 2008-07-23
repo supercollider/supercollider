@@ -86,8 +86,8 @@ struct FFTBase : public Unit
 	SndBuf *m_fftsndbuf;
 	float *m_fftbuf;
 	
-	int m_pos, m_bufsize;
-	int m_log2n;
+	int m_pos, m_fullbufsize, m_audiosize; // "fullbufsize" includes any zero-padding, "audiosize" does not.
+	int m_log2n_full, m_log2n_audio;
 	
 	uint32 m_fftbufnum;
 	
@@ -96,7 +96,7 @@ struct FFTBase : public Unit
 	fftwf_plan m_plan;
 #endif
 	float *m_transformbuf;
-	int m_hopsize, m_shuntsize; // These add up to m_bufsize
+	int m_hopsize, m_shuntsize; // These add up to m_audiosize
 	int m_wintype;
 };
 
@@ -140,30 +140,34 @@ int ensure_fftwindow(FFTBase *unit);
 void DoWindowing(FFTBase *unit, float* data);
 void DoWindowing(FFTBase *unit, float* data)
 {
-	if(unit->m_wintype == WINDOW_RECT) return;
-	
-	float *win = fftWindow[unit->m_wintype][unit->m_log2n];
-	if (!win) return;
-	win--;
-	int size = unit->m_bufsize;
-#if SC_DARWIN
-	vDSP_vmul(data, 1, win+1, 1, data, 1, size);
-#else
-	float *in = data - 1;
-	for (int i=0; i< size ; ++i) {
-		*++in *= *++win;
-	}
-#endif
+	int audiosize = unit->m_audiosize;
+	int fullbufsize = unit->m_fullbufsize;
+	int i;
+	if(unit->m_wintype != WINDOW_RECT){
+		float *win = fftWindow[unit->m_wintype][unit->m_log2n_audio];
+		if (!win) return;
+		win--;
+	#if SC_DARWIN
+		vDSP_vmul(data, 1, win+1, 1, data, 1, audiosize);
+	#else
+		float *in = data - 1;
+		for (i=0; i< size ; ++i) {
+			*++in *= *++win;
+		}
+	#endif
 
-#if SC_FFT_VDSP
-	// vDSP scales the data differently during the forward FFT transform, compared against Green or FFTW, so we need to rescale
-	float scalefac = 0.5f;
-	vDSP_vsmul(data, 1, &scalefac, data, 1, size); // i.e. multiply all in-place by scalefac
-#endif
+	#if SC_FFT_VDSP
+		// vDSP scales the data differently during the forward FFT transform, compared against Green or FFTW, so we need to rescale
+		float scalefac = 0.5f;
+		vDSP_vsmul(data, 1, &scalefac, data, 1, audiosize); // i.e. multiply all in-place by scalefac
+	#endif
+	}
+	// Zero-padding:
+	memset(data + audiosize, 0, (fullbufsize - audiosize) * sizeof(float));
 }
 
-int FFTBase_Ctor(FFTBase *unit);
-int FFTBase_Ctor(FFTBase *unit)
+int FFTBase_Ctor(FFTBase *unit, int frmsizinput);
+int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 {
 	World *world = unit->mWorld;
 
@@ -174,25 +178,35 @@ int FFTBase_Ctor(FFTBase *unit)
 	
 	unit->m_fftsndbuf = buf;
 	unit->m_fftbufnum = bufnum;
-	unit->m_bufsize = buf->samples;
+	unit->m_fullbufsize = buf->samples;
+	int framesize = (int)ZIN0(frmsizinput);
+	if(framesize < 1)
+		unit->m_audiosize = buf->samples;
+	else
+		unit->m_audiosize = sc_min(buf->samples, framesize);
 
-	unit->m_log2n = LOG2CEIL(unit->m_bufsize);
+	unit->m_log2n_full  = LOG2CEIL(unit->m_fullbufsize);
+	unit->m_log2n_audio = LOG2CEIL(unit->m_audiosize);
 
 	// Although FFTW allows non-power-of-two buffers (vDSP doesn't), this would complicate the windowing, so we don't allow it.
-	if (!ISPOWEROFTWO(unit->m_bufsize)) {
-		Print("FFTBase_Ctor error: buffer size (%i) not a power of two.\n", unit->m_bufsize);
+	if (!ISPOWEROFTWO(unit->m_fullbufsize)) {
+		Print("FFTBase_Ctor error: buffer size (%i) not a power of two.\n", unit->m_fullbufsize);
 		return 0;
 	}
-	else if (unit->m_bufsize < 8 || 
-			(((int)(unit->m_bufsize / unit->mWorld->mFullRate.mBufLength)) 
-					* unit->mWorld->mFullRate.mBufLength != unit->m_bufsize)) {
-		Print("FFTBase_Ctor error: buffer size (%i) not a multiple of the block size (%i).\n", unit->m_bufsize, unit->mWorld->mFullRate.mBufLength);
+	else if (!ISPOWEROFTWO(unit->m_audiosize)) {
+		Print("FFTBase_Ctor error: audio frame size (%i) not a power of two.\n", unit->m_audiosize);
 		return 0;
 	}
-	else if (unit->m_bufsize > SC_FFT_MAXSIZE){
+	else if (unit->m_audiosize < SC_FFT_MINSIZE || 
+			(((int)(unit->m_audiosize / unit->mWorld->mFullRate.mBufLength)) 
+					* unit->mWorld->mFullRate.mBufLength != unit->m_audiosize)) {
+		Print("FFTBase_Ctor error: audio frame size (%i) not a multiple of the block size (%i).\n", unit->m_audiosize, unit->mWorld->mFullRate.mBufLength);
+		return 0;
+	}
+	else if (unit->m_fullbufsize > SC_FFT_MAXSIZE){
 #if 0
 		if(unit->mWorld->mVerbosity > -2)
-			Print("FFTBase_Ctor error: buffer size (%i) larger than hard-coded upper limit for FFT UGen (%i).\n", unit->m_bufsize, SC_FFT_MAXSIZE);
+			Print("FFTBase_Ctor error: buffer size (%i) larger than hard-coded upper limit for FFT UGen (%i).\n", unit->m_fullbufsize, SC_FFT_MAXSIZE);
 		return 0;
 #else
 		// Buffer is larger than the range of sizes we provide for at startup; we can get ready just-in-time though
@@ -212,45 +226,46 @@ int FFTBase_Ctor(FFTBase *unit)
 void FFT_Ctor(FFT *unit)
 {
 	unit->m_wintype = (int)ZIN0(3); // wintype may be used by the base ctor
-	if(!FFTBase_Ctor(unit)){
+	if(!FFTBase_Ctor(unit, 5)){
 		SETCALC(FFT_ClearUnitOutputs);
 		return;
 	}
-	int size = unit->m_bufsize * sizeof(float);
+	int fullbufsize = unit->m_fullbufsize * sizeof(float);
+	int audiosize = unit->m_audiosize * sizeof(float);
 	
-	int hopsize = (int)(sc_max(sc_min(ZIN0(2), 1.f), 0.f) * unit->m_bufsize);
+	int hopsize = (int)(sc_max(sc_min(ZIN0(2), 1.f), 0.f) * unit->m_audiosize);
 	if (((int)(hopsize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength 
 				!= hopsize) {
 		Print("FFT_Ctor: hopsize (%i) not an exact multiple of SC's block size (%i) - automatically corrected.\n", hopsize, unit->mWorld->mFullRate.mBufLength);
 		hopsize = ((int)(hopsize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength;
 	}
 	unit->m_hopsize = hopsize;
-	unit->m_shuntsize = unit->m_bufsize - hopsize;
+	unit->m_shuntsize = unit->m_audiosize - hopsize;
 	
-	unit->m_inbuf = (float*)RTAlloc(unit->mWorld, size);
+	unit->m_inbuf = (float*)RTAlloc(unit->mWorld, audiosize);
 	
 #if SC_FFT_FFTW
 	if(unit->mWorld->mVerbosity > 1)
 		Print("FFT using FFTW\n");
 	// Transform buf is two floats "too big" because of FFTWF's output ordering
-	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, size + sizeof(float) + sizeof(float));
-	unit->m_plan = fftwf_plan_dft_r2c_1d(unit->m_bufsize, unit->m_transformbuf, 
+	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, fullbufsize + sizeof(float) + sizeof(float));
+	unit->m_plan = fftwf_plan_dft_r2c_1d(unit->m_fullbufsize, unit->m_transformbuf, 
 			(fftwf_complex*) unit->m_transformbuf, FFTW_ESTIMATE);
-	memset(unit->m_transformbuf, 0, size + sizeof(float) + sizeof(float));
+	memset(unit->m_transformbuf, 0, fullbufsize + sizeof(float) + sizeof(float));
 #elif SC_FFT_GREEN
 	if(unit->mWorld->mVerbosity > 1)
 		Print("FFT using Green\n");
-	// Green packs the nyquist in with the DC, so size is same as input buffer
-	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, size);
+	// Green packs the nyquist in with the DC, so size is same as input buffer (plus zeropadding)
+	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, fullbufsize);
 #else
 	if(unit->mWorld->mVerbosity > 1)
 		Print("FFT using vDSP\n");
-	// vDSP packs the nyquist in with the DC, so size is same as input buffer
-	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, size);
-	memset(unit->m_transformbuf, 0, size);
+	// vDSP packs the nyquist in with the DC, so size is same as input buffer (plus zeropadding)
+	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, fullbufsize);
+	memset(unit->m_transformbuf, 0, fullbufsize);
 #endif
 	
-	memset(unit->m_inbuf, 0, size);
+	memset(unit->m_inbuf, 0, audiosize);
 	
 	//Print("FFT_Ctor: hopsize %i, shuntsize %i, bufsize %i, wintype %i, \n",
 	//	unit->m_hopsize, unit->m_shuntsize, unit->m_bufsize, unit->m_wintype);
@@ -288,7 +303,7 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 	
 	bool gate = ZIN0(4) > 0.f; // Buffer shunting continues, but no FFTing
 	
-	if (unit->m_pos != unit->m_hopsize || unit->m_fftsndbuf->samples != unit->m_bufsize) {
+	if (unit->m_pos != unit->m_hopsize || unit->m_fftsndbuf->samples != unit->m_fullbufsize) {
 		ZOUT0(0) = -1.f;
 	} else {
 		
@@ -297,30 +312,31 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 		unit->m_pos = 0;		
 		
 		if(gate){
-			int size = unit->m_bufsize * sizeof(float);
+			int audiosize = unit->m_audiosize * sizeof(float);
+			int fullbufsize = unit->m_fullbufsize * sizeof(float);
 			
 			// Data goes to transform buf
-			memcpy(unit->m_transformbuf, unit->m_inbuf, size);
+			memcpy(unit->m_transformbuf, unit->m_inbuf, audiosize);
 			
 			DoWindowing(unit, unit->m_transformbuf);
 
 #if SC_FFT_FFTW
 			fftwf_execute(unit->m_plan);
 			// Rearrange output data onto public buffer
-			memcpy(unit->m_fftbuf, unit->m_transformbuf, size);
-			unit->m_fftbuf[1] = unit->m_transformbuf[unit->m_bufsize]; // Pack nyquist val in
+			memcpy(unit->m_fftbuf, unit->m_transformbuf, fullbufsize);
+			unit->m_fftbuf[1] = unit->m_transformbuf[unit->m_fullbufsize]; // Pack nyquist val in
 #elif SC_FFT_GREEN
 			// Green FFT is in-place
-			rffts(unit->m_transformbuf, unit->m_log2n, 1, cosTable[unit->m_log2n]);
+			rffts(unit->m_transformbuf, unit->m_log2n, 1, cosTable[unit->m_log2n_full]);
 			// Copy to public buffer
-			memcpy(unit->m_fftbuf, unit->m_transformbuf, size);
+			memcpy(unit->m_fftbuf, unit->m_transformbuf, fullbufsize);
 #else
 			// Perform even-odd split
-			vDSP_ctoz((COMPLEX*) unit->m_transformbuf, 2, &splitBuf, 1, unit->m_bufsize >> 1);
+			vDSP_ctoz((COMPLEX*) unit->m_transformbuf, 2, &splitBuf, 1, unit->m_fullbufsize >> 1);
 			// Now the actual FFT
-			vDSP_fft_zrip(fftSetup[unit->m_log2n], &splitBuf, 1, unit->m_log2n, FFT_FORWARD);
+			vDSP_fft_zrip(fftSetup[unit->m_log2n_full], &splitBuf, 1, unit->m_log2n_full, FFT_FORWARD);
 			// Copy the data to the public output buf, transforming it back out of "split" representation
-			vDSP_ztoc(&splitBuf, 1, (DSPComplex*) unit->m_fftbuf, 2, unit->m_bufsize >> 1);
+			vDSP_ztoc(&splitBuf, 1, (DSPComplex*) unit->m_fftbuf, 2, unit->m_fullbufsize >> 1);
 #endif
 			
 			unit->m_fftsndbuf->coord = coord_Complex;
@@ -337,33 +353,33 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 
 void IFFT_Ctor(IFFT* unit){
 	unit->m_wintype = (int)ZIN0(1); // wintype may be used by the base ctor
-	if(!FFTBase_Ctor(unit)){
+	if(!FFTBase_Ctor(unit, 2)){
 		SETCALC(*ClearUnitOutputs);
 		return;
 	}
 	
 	// This will hold the transformed and progressively overlap-added data ready for outputting.
-	unit->m_olabuf = (float*)RTAlloc(unit->mWorld, unit->m_bufsize * sizeof(float));
-	memset(unit->m_olabuf, 0, unit->m_bufsize * sizeof(float));
+	unit->m_olabuf = (float*)RTAlloc(unit->mWorld, unit->m_audiosize * sizeof(float));
+	memset(unit->m_olabuf, 0, unit->m_audiosize * sizeof(float));
 	
 	
 #if SC_FFT_FFTW
 	// Transform buf is two floats "too big" because of FFTWF's output ordering
-	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, (unit->m_bufsize+2) * sizeof(float));
+	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, (unit->m_fullbufsize+2) * sizeof(float));
 	// We'll be going from m_transformbuf back to fftbuf
-	unit->m_plan = fftwf_plan_dft_c2r_1d(unit->m_bufsize, (fftwf_complex*) unit->m_transformbuf, 
+	unit->m_plan = fftwf_plan_dft_c2r_1d(unit->m_fullbufsize, (fftwf_complex*) unit->m_transformbuf, 
 			unit->m_fftsndbuf->data, FFTW_ESTIMATE);
 
-	memset(unit->m_transformbuf, 0, (unit->m_bufsize+2) * sizeof(float));
-	unit->m_scalefactor = 1.f / unit->m_bufsize;
+	memset(unit->m_transformbuf, 0, (unit->m_fullbufsize+2) * sizeof(float));
+	unit->m_scalefactor = 1.f / unit->m_fullbufsize;
 #elif SC_FFT_GREEN
 	unit->m_scalefactor = 1.f;
 #else
-	unit->m_scalefactor = 2.f / unit->m_bufsize;
+	unit->m_scalefactor = 2.f / unit->m_fullbufsize;
 #endif
 	
 	// "pos" will be reset to zero when each frame comes in. Until then, the following ensures silent output at first:
-	unit->m_pos = unit->m_bufsize;
+	unit->m_pos = unit->m_audiosize;
 	
 	SETCALC(IFFT_next);	
 }
@@ -386,7 +402,8 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 
 	// Load state from struct into local scope
 	int pos     = unit->m_pos;
-	int bufsize = unit->m_bufsize;
+	int fullbufsize  = unit->m_fullbufsize;
+	int audiosize = unit->m_audiosize;
 	int numSamples = unit->mWorld->mFullRate.mBufLength;
 	float *olabuf = unit->m_olabuf;
 	float fbufnum = ZIN0(0);
@@ -404,19 +421,19 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 #if SC_FFT_FFTW
 		// For FFTW we can't do it in-place because it expects a slightly different data format
 		float *transformbuf = unit->m_transformbuf;
-		memcpy(transformbuf, fftbuf, unit->m_bufsize * sizeof(float));
+		memcpy(transformbuf, fftbuf, fullbufsize * sizeof(float));
 		transformbuf[1] = 0.f;
-		transformbuf[unit->m_bufsize] = fftbuf[1];  // Nyquist goes all the way down to the end of the line...
-		transformbuf[unit->m_bufsize+1] = 0.f;
+		transformbuf[unit->m_fullbufsize] = fftbuf[1];  // Nyquist goes all the way down to the end of the line...
+		transformbuf[unit->m_fullbufsize+1] = 0.f;
 		fftwf_execute(unit->m_plan);
 #elif SC_FFT_GREEN
-		riffts(fftbuf, unit->m_log2n, 1, cosTable[unit->m_log2n]);
+		riffts(fftbuf, unit->m_log2n_full, 1, cosTable[unit->m_log2n_full]);
 #else
 		// For vDSP we can't really do it in place either,
 		//  because the data needs to be converted into then out of "split" (odd/even) representation
-		vDSP_ctoz((COMPLEX*) fftbuf, 2, &splitBuf, 1, unit->m_bufsize >> 1);
-		vDSP_fft_zrip(fftSetup[unit->m_log2n], &splitBuf, 1, unit->m_log2n, FFT_INVERSE);
-		vDSP_ztoc(&splitBuf, 1, (DSPComplex*) fftbuf, 2, unit->m_bufsize >> 1);
+		vDSP_ctoz((COMPLEX*) fftbuf, 2, &splitBuf, 1, unit->m_fullbufsize >> 1);
+		vDSP_fft_zrip(fftSetup[unit->m_log2n_full], &splitBuf, 1, unit->m_log2n_full, FFT_INVERSE);
+		vDSP_ztoc(&splitBuf, 1, (DSPComplex*) fftbuf, 2, unit->m_fullbufsize >> 1);
 #endif		
 		
 		// Then apply window in-place
@@ -424,17 +441,17 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 		
 		// Then shunt the "old" time-domain output down by one hop
 		int hopsamps = pos;
-		int shuntsamps = bufsize - hopsamps;
-		if(hopsamps != bufsize){  // There's only copying to be done if the position isn't all the way to the end of the buffer
+		int shuntsamps = audiosize - hopsamps;
+		if(hopsamps != audiosize){  // There's only copying to be done if the position isn't all the way to the end of the buffer
 			memcpy(olabuf, olabuf+hopsamps, shuntsamps * sizeof(float));
 		}
 		
 		// Then mix the "new" time-domain data in - adding at first, then just setting (copying) where the "old" is supposed to be zero.
 		// NB we re-use the "pos" variable temporarily here for write rather than read
-		for(pos = 0; pos < shuntsamps; pos++){
+		for(pos = 0; pos < shuntsamps; ++pos){
 			olabuf[pos] += fftbuf[pos];
 		}
-		memcpy(olabuf + pos, fftbuf + pos, (bufsize-pos) * sizeof(float));
+		memcpy(olabuf + pos, fftbuf + pos, (audiosize-pos) * sizeof(float));
 		
 		// Move the pointer back to zero, which is where playback will next begin
 		pos = 0;
@@ -444,14 +461,14 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 	// Now we can output some stuff, as long as there is still data waiting to be output.
 	// If there is NOT data waiting to be output, we output zero. (Either irregular/negative-overlap 
 	//     FFT firing, or FFT has given up, or at very start of execution.)
-	if(pos >= bufsize){
+	if(pos >= audiosize){
 		ClearUnitOutputs(unit, numSamples);
 	}else{
 #if SC_DARWIN
 	vDSP_vsmul(olabuf + pos, 1, &scalefactor, out, 1, numSamples);
 	pos += numSamples;
 #else
-		for(int i=0; i<numSamples; i++){
+		for(int i=0; i<numSamples; ++i){
 			ZXP(out) = (*(olabuf + (pos++))) * scalefactor;
 		}
 #endif
@@ -513,11 +530,12 @@ float* create_fftwindow(int wintype, int log2n)
 static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
 int ensure_fftwindow(FFTBase *unit){
 	
-	int log2n = unit->m_log2n;
+	int log2n_audio = unit->m_log2n_audio;
+	int log2n_full = unit->m_log2n_full;
 	
 	// Ensure we have enough space to do our calcs
-	if(log2n > largest_log2n){
-		largest_log2n = log2n;
+	if(log2n_full > largest_log2n){
+		largest_log2n = log2n_full;
 #if SC_FFT_VDSP
 		size_t newsize = (1 << largest_log2n) * sizeof(float) / 2;
 		splitBuf.realp = (float*) realloc (splitBuf.realp, newsize);
@@ -526,19 +544,19 @@ int ensure_fftwindow(FFTBase *unit){
 	}
 	
 	// Ensure our window has been created
-	if((unit->m_wintype != -1) && (fftWindow[unit->m_wintype][log2n] == 0)){
+	if((unit->m_wintype != -1) && (fftWindow[unit->m_wintype][log2n_audio] == 0)){
 		if(unit->mWorld->mVerbosity > 0)
-			Print("ensure_fftwindow(): creating and mallocing window of size %i, type %i, in real-time thread.\n", unit->m_bufsize, unit->m_wintype);
-		fftWindow[unit->m_wintype][log2n] = create_fftwindow(unit->m_wintype, log2n);
+			Print("ensure_fftwindow(): creating and mallocing window of size %i, type %i, in real-time thread.\n", unit->m_audiosize, unit->m_wintype);
+		fftWindow[unit->m_wintype][log2n_audio] = create_fftwindow(unit->m_wintype, log2n_audio);
 	}
 	
 	// Ensure our FFT twiddle factors (or whatever) have been created
 #if SC_FFT_VDSP
-	if(fftSetup[log2n] == 0)
-		fftSetup[log2n] = vDSP_create_fftsetup (log2n, FFT_RADIX2);
+	if(fftSetup[log2n_full] == 0)
+		fftSetup[log2n_full] = vDSP_create_fftsetup (log2n_full, FFT_RADIX2);
 #elif SC_FFT_GREEN
-	if(cosTable[log2n] == 0)
-		cosTable[log2n] = create_cosTable(log2n);
+	if(cosTable[log2n_full] == 0)
+		cosTable[log2n_full] = create_cosTable(log2n_full);
 #else
 		// Nothing needed here for FFTW
 #endif
@@ -595,12 +613,12 @@ void FFTTrigger_Ctor(FFTTrigger *unit)
 	
 	unit->m_fftsndbuf = buf;
 	unit->m_fftbufnum = bufnum;
-	unit->m_bufsize = buf->samples;
+	unit->m_fullbufsize = buf->samples;
 
 	int numSamples = unit->mWorld->mFullRate.mBufLength;
 	float dataHopSize = IN0(1);
 	int initPolar = unit->m_polar = (int)IN0(2);
-	unit->m_numPeriods = unit->m_periodsRemain = (int)(((float)unit->m_bufsize * dataHopSize) / numSamples) - 1; 
+	unit->m_numPeriods = unit->m_periodsRemain = (int)(((float)unit->m_fullbufsize * dataHopSize) / numSamples) - 1; 
 		
 	buf->coord = (IN0(2) == 1.f) ? coord_Polar : coord_Complex;
 	    

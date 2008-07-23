@@ -4,15 +4,15 @@
 
 FFT : PV_ChainUGen 
 {
-	*new { | buffer, in = 0.0 , hop = 0.5, wintype = 0 , active = 1|
-		^this.multiNew('control', buffer, in, hop, wintype, active)
+	*new { | buffer, in = 0.0 , hop = 0.5, wintype = 0 , active = 1, framesize=0|
+		^this.multiNew('control', buffer, in, hop, wintype, active, framesize)
 	}
 }	
 
 IFFT : UGen 
 {
-	*new { | buffer, wintype = 0|
-		^this.multiNew('audio', buffer, wintype)
+	*new { | buffer, wintype = 0, framesize=0|
+		^this.multiNew('audio', buffer, wintype, framesize)
 	}
 }	
 PV_MagAbove : PV_ChainUGen
