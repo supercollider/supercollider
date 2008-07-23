@@ -151,7 +151,7 @@ void DoWindowing(FFTBase *unit, float* data)
 		vDSP_vmul(data, 1, win+1, 1, data, 1, audiosize);
 	#else
 		float *in = data - 1;
-		for (i=0; i< size ; ++i) {
+		for (i=0; i< audiosize ; ++i) {
 			*++in *= *++win;
 		}
 	#endif
