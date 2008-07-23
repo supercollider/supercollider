@@ -26,6 +26,9 @@ the only thing you need to do is loading the sclang interface in your
 
     (require 'sclang)
 
+for the HTML help system to fully function also add
+	(require 'w3m)
+
 installation (detailed)
 ------------------------
 
@@ -38,6 +41,9 @@ file is called):
 and then load the library:
 
 (require 'sclang)
+
+for the HTML help system to fully function also add
+	(require 'w3m)
 
 now put all *.sc files in sclang's library path, e.g. if you put them
 in a non-standard location, such as ~/SuperCollider/Emacs/, add the
