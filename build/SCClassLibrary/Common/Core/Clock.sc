@@ -237,15 +237,21 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 
 
 AppClock : Clock {
-	classvar scheduler;
+	classvar scheduler, thread;
 	*initClass {
 		scheduler = Scheduler.new(this, true);
+		thread =  Routine.new { 
+			loop { 
+				thisThread.clock = AppClock;
+				yield(scheduler.seconds = Main.elapsedTime);
+			}
+		};
 	}
 	*sched { arg delta, item;
 		scheduler.sched(delta, item)
 	}
 	*tick {
-		scheduler.seconds = Main.elapsedTime;
+		thread.next;
 	}
 	*clear {
 		scheduler.clear;
@@ -308,7 +314,7 @@ Scheduler {
 			seconds.notNil and: { seconds <= newSeconds }
 		},{ 
 			item = queue.pop;
-			delta = item.awake( beats, seconds, clock );
+			delta = item.clock_(clock).awake( beats, seconds, clock );
 			if (delta.isNumber, {
 				this.sched(delta, item); 
 			});
