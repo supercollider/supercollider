@@ -633,7 +633,7 @@ void SCSoundFileView::draw(SCRect inDamage)
 		}
 	}
 	switch (mStyle) {
-		case 0 : if(mSndMinMax.isUsable) draw0Buf(inDamage, cgc); else draw0(inDamage, cgc);  break;
+		case 0 : if(mSndMinMax.isUsable && !(mTop->isScroller())) draw0Buf(inDamage, cgc); else draw0(inDamage, cgc);  break;
 		case 1 : draw1(inDamage, cgc); break;
 		case 2 : draw2(inDamage, cgc); break;
 	}
