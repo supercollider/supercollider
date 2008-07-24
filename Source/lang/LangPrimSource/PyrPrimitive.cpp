@@ -3988,6 +3988,8 @@ void initSerialPrimitives();
 void initWiiPrimitives();
 	initWiiPrimitives();
 
+#endif
+#ifdef SC_DARWIN
 void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();
 #endif
