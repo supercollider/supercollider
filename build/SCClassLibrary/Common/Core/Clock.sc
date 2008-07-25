@@ -314,7 +314,7 @@ Scheduler {
 			seconds.notNil and: { seconds <= newSeconds }
 		},{ 
 			item = queue.pop;
-			delta = item.clock_(clock).awake( beats, seconds, clock );
+			delta = item.awake( beats, seconds, clock );
 			if (delta.isNumber, {
 				this.sched(delta, item); 
 			});
