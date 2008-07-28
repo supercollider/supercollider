@@ -235,23 +235,19 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 }
 
-
 AppClock : Clock {
-	classvar scheduler, thread;
+	classvar scheduler;
 	*initClass {
 		scheduler = Scheduler.new(this, true);
-		thread =  Routine.new { 
-			loop { 
-				thisThread.clock = AppClock;
-				yield(scheduler.seconds = Main.elapsedTime);
-			}
-		};
 	}
 	*sched { arg delta, item;
 		scheduler.sched(delta, item)
 	}
 	*tick {
-		thread.next;
+		var saveClock = thisThread.clock;
+		thisThread.clock = this;
+		scheduler.seconds = Main.elapsedTime;
+		thisThread.clock = saveClock;
 	}
 	*clear {
 		scheduler.clear;
@@ -259,7 +255,6 @@ AppClock : Clock {
 	
 	*beats2secs { arg beats; ^beats }
 	*secs2beats { arg secs; ^secs }
-	beats { ^thisThread.seconds }
 	
 	// tempo clock compatibility
 	*beats { ^thisThread.seconds }
@@ -270,7 +265,6 @@ AppClock : Clock {
 		^this.beats + phase
 	}
 }
-
 
 Scheduler {
 	var clock, drift, beats = 0.0, <seconds = 0.0, queue;
