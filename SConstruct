@@ -51,6 +51,8 @@ def short_cpu_name(cpu):
 PLATFORM = os.uname()[0].lower()
 CPU = short_cpu_name(os.uname()[4])
 
+#print os.uname()
+
 ANY_FILE_RE = re.compile('.*')
 HELP_FILE_RE = re.compile('.*\.(rtf(d)?|scd|html)$')
 SC_FILE_RE = re.compile('.*\.sc$')
@@ -80,7 +82,7 @@ else:
     print 'Unknown platform: %s' % PLATFORM
     Exit(1)
 
-if CPU == 'ppc':
+if CPU in [ 'ppc' , 'ppc64' ]:
     DEFAULT_OPT_ARCH = '7450'
 elif CPU in [ 'i586', 'i686' ]:
     # FIXME: better detection
@@ -247,11 +249,11 @@ def make_opt_flags(env):
         ]
     arch = env.get('OPT_ARCH')
     if arch:
-        if CPU == 'ppc':
+        if CPU in [ 'ppc' , 'ppc64' ]:
             flags.extend([ "-mcpu=%s" % (arch,) ])
         else:
             flags.extend([ "-march=%s" % (arch,) ])
-    if CPU == 'ppc':
+    if CPU in [ 'ppc' , 'ppc64' ]:
         flags.extend([ "-fsigned-char", "-mhard-float",
                        ## "-mpowerpc-gpopt", # crashes sqrt
                        "-mpowerpc-gfxopt"
@@ -545,7 +547,8 @@ if env['SSE']:
         print 'NOTICE: cross compiling for another platform: assuming SSE support'
     else:
         build_host_supports_sse = False
-        if CPU != 'ppc':
+        #if CPU != 'ppc':
+        if CPU not in [ 'ppc' , 'ppc64' ]:
            if PLATFORM == 'freebsd':
                 machine_info = os.popen ("sysctl -a  hw.instruction_sse").read()[:-1]
                 x86_flags = 'no'
