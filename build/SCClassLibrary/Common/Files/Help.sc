@@ -236,7 +236,7 @@ Help {
 				if( state === \activated, {
 					if( url.notEmpty, {
 						fHistoryDo.value( \openURL, url );
-					}, {Êif( descr.beginsWith( "SC://" ), {
+					}, { if( descr.beginsWith( "SC://" ), {
 						path = fileslist.at( descr.copyToEnd( 5 ).asSymbol );
 						if( path.notNil, {
 							fHistoryDo.value( \open, path );
@@ -264,7 +264,7 @@ Help {
 				// We've clicked on a category or on a class
 						
 				if(lv.items.size != 0, { 
-					lv2 = if( index < (listviews.size - 1), {Êlistviews[ index + 1 ]});
+					lv2 = if( index < (listviews.size - 1), { listviews[ index + 1 ]});
 					
 					selecteditem = lists[index][lv.value];
 					if( lv2.notNil, {
