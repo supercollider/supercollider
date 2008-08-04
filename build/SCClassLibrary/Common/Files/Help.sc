@@ -85,7 +85,7 @@ Help {
 
 		helpRootLen = (helppath.standardizePath).size + 1;
 		subfileslist.keysValuesDo({ |classsym, path|
-					
+
 			if ( helppath == Platform.helpDir,
 				{
 					subc = path[helpRootLen..].split($/);
@@ -100,7 +100,7 @@ Help {
 						});
 					if ( helppath == Platform.userExtensionDir,
 						{
-							helpRootLen = "~/".absolutePath.size + 1;
+							helpRootLen = "~/".absolutePath.size; // + 1;
 							subc = path[helpRootLen..].split($/);
 							subc = [ "UserExtensions" ] ++ subc;
 							// check for common superfluous names that may confuse the categorisation;
@@ -185,16 +185,16 @@ Help {
 
 
 *gui { |sysext=true,userext=true|
-	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, buttonView, classButt, browseButt, isClass;
+	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove;
 	
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext );
 	
 	// Now for a GUI
-	win = GUI.window.new("Help browser", Rect(128, 264, 1040, 560)); // SCWindow
-	scrollView = GUI.scrollView.new(win, Rect(5, 0, 405, 525)).hasBorder_(true);
-	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, 480));
-	textView = GUI.textView.new(win, Rect(415, 0, 620, 550))
+	win = GUI.window.new("Help browser", Rect(128, 264, 1040, 564)); // SCWindow
+	scrollView = GUI.scrollView.new(win, Rect(5, 0, 405, 529)).hasBorder_(true);
+	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, 504));
+	textView = GUI.textView.new(win, Rect(415, 0, 620, 554))
 		.hasVerticalScroller_(true)
 		.hasHorizontalScroller_(true)
 		.autohidesScrollers_(false)
@@ -202,6 +202,49 @@ Help {
 		.canFocus_(false);
 		
 	textView.bounds = textView.bounds; // hack to fix origin on first load
+	
+	// updates the history arrow buttons
+	fBwdFwd = {
+		bwdButt.enabled = historyIdx > 0;
+		fwdButt.enabled = historyIdx < (history.size -	1);
+	};
+	
+	// cuts the redo history, adds and performs a new text open action
+	fHistoryDo = { arg selector, argum;
+		history		= history.copyFromStart( historyIdx ).add([ selector, argum ]);
+		historyIdx	= history.size - 1;
+		textView.perform( selector, argum );
+		fBwdFwd.value;
+	};
+	
+	// moves relatively in the history, and performs text open action
+	fHistoryMove = { arg incr; var entry;
+		historyIdx	= historyIdx + incr;
+		entry		= history[ historyIdx ];
+		textView.perform( entry[ 0 ], entry[ 1 ]);
+		fBwdFwd.value;
+	};
+	
+	// SCTextView will open a new Document when clicking on a link.
+	// JSCTextView instead will fire a linkAction that is used here
+	// to follow the link.
+	if( textView.respondsTo( \linkAction ), {
+		textView
+			.editable_( false )
+			.canFocus_( true )
+			.linkAction_({ arg view, state, url, descr; var path;
+				if( state === \activated, {
+					if( url.notEmpty, {
+						fHistoryDo.value( \openURL, url );
+					}, {Êif( descr.beginsWith( "SC://" ), {
+						path = fileslist.at( descr.copyToEnd( 5 ).asSymbol );
+						if( path.notNil, {
+							fHistoryDo.value( \open, path );
+						});
+					})});
+				});
+			});
+	});
 	
 	lists = Array.newClear(numcols);
 	lists[0] = tree.keys(Array).collect(_.asString).sort;
@@ -216,48 +259,56 @@ Help {
 		});
 		view
 		.resize_(4)
-		.action_({ |lv|
+		.action_({ arg lv; var lv2;
 			if( lv.value.notNil, {
 				// We've clicked on a category or on a class
+						
 				if(lv.items.size != 0, { 
+					lv2 = if( index < (listviews.size - 1), {Êlistviews[ index + 1 ]});
+					
 					selecteditem = lists[index][lv.value];
-					if(listviews[index+1].isNil.not, {
+					if( lv2.notNil, {
 						// Clear the GUI for the subsequent panels
 						listviews[index+1..].do({ arg lv; lv.items=#[];
 							if( lv.respondsTo( \allowsDeselection ), { lv.value = nil })});
-						
-						// Get the current node, from the parent node
-						node = if(index==0, tree, {selectednodes[index-1]})[selecteditem];
-						curkey = selecteditem;
-						selectednodes[index] = node;
-						
-						if(node.isNil, {
-							// We have a "leaf" (class or helpdoc), since no keys found
-							
-							lists[index+1] = #[];
+					});
 
-							{textView.open(fileslist.at( selecteditem.asSymbol) ? fileslist.at(\Help))}.defer(0.001);
-							isClass = selecteditem.asSymbol.asClass.notNil;							classButt.enabled_(isClass);
-							browseButt.enabled_(isClass);
-							// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
-							selectednodes[index] = if(index==0, {tree}, {selectednodes[index-1]})
-										[curkey.asSymbol.asClass ? curkey.asSymbol];
-							
-							
-						}, {
-							// We have a category on our hands
-							lists[index+1] = node.keys(Array).collect(_.asString).sort({|a,b| 
-								a[0]==$[ || (b[0]!=$[ && (a <= b))
-								});
-							listviews[index+1].items = lists[index+1];
-							
+					// Get the current node, from the parent node
+					node = try { if(index==0, tree, {selectednodes[index-1]})[selecteditem] };
+					curkey = selecteditem;
+					selectednodes[index] = node;
+					
+					if(node.isNil, {
+						// We have a "leaf" (class or helpdoc), since no keys found
+						
+						if( (index + 1 < lists.size), { lists[index+1] = #[] });
+
+						{
+							fHistoryDo.value( \open, fileslist.at( selecteditem.asSymbol ) ? fileslist.at( \Help ));
+						}.defer( 0.001 );
+						isClass = selecteditem.asSymbol.asClass.notNil;							classButt.enabled_(isClass);
+						browseButt.enabled_(isClass);
+						// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
+						selectednodes[index] = try { if(index==0, {tree}, {selectednodes[index-1]})
+									[curkey.asSymbol.asClass ? curkey.asSymbol]};
+						
+						
+					}, {
+						// We have a category on our hands
+						if( lv2.notNil, {
+							lists[ index + 1 ] = node.keys(Array).collect(_.asString).sort({|a,b| 
+								a[0]==$[ /* ] */ || (b[0]!=$[ /* ] */ && (a <= b))
+							});
+							lv2.items = lists[index+1];
 						});
 						
-						listviews[index+1].value = 1;
-						listviews[index+1].valueAction_(0);
-						
-						selectednodes[index+2 ..] = nil; // Clear out the now-unselected
 					});
+					
+					if( (index + 1) < listviews.size, {
+						listviews[index+1].value = if( listviews[index+1].respondsTo( \allowsDeselection ).not, 1 );
+						listviews[index+1].valueAction_( 0 );
+					});
+					selectednodes[index+2 ..] = nil; // Clear out the now-unselected
 				});
 			});
 		});
@@ -268,12 +319,21 @@ Help {
 	// Add keyboard navigation between columns
 	listviews.do({ |lv, index| // SCView
 		lv.keyDownAction_({|view,char,modifiers,unicode,keycode|
-			var nowFocused;
+			var nowFocused, lv2;
 			nowFocused = lv;
-			switch(unicode, 
-			63234, { if(index != 0, { listviews[index-1].focus; nowFocused =listviews[index-1] }) }, 
-			63235, { if(index != (listviews.size-1) and:{listviews[index+1].items.notNil}, 
-							{ try{ listviews[index+1].value_(-1).valueAction_(0).focus; nowFocused =listviews[index+1] } }) },
+			switch(unicode,
+			// cursor left
+			63234, { if(index > 0, { lv2 = listviews[ index - 1 ]; lv2.focus; nowFocused = lv2 })
+			}, 
+			// cursor right
+			63235, { if( index < (listviews.size - 1) and: { listviews[ index + 1 ].items.notNil }, {
+						lv2 = listviews[ index + 1 ];
+						try {
+							lv2.value_( if( lv2.respondsTo( \allowsDeselection ).not, - 1 )).valueAction_( 0 ).focus;
+							nowFocused = lv2;
+						}
+				   })
+			},
 			13, { // Hit RETURN to open source or helpfile
 				// The class name, or helpfile name we're after
 
@@ -296,31 +356,46 @@ Help {
 				scrollView.visibleOrigin_(Point(lv.bounds.left - 5, 0));
 			});	
 			if(clickCount == 2, {	
-				if(lv.value.notNil and: {if(index==0, tree, {selectednodes[index-1]})[lists[index][lv.value]].isNil}, {
+				if(lv.value.notNil and: { try { if(index==0, tree, {selectednodes[index-1]})[lists[index][lv.value]] }.isNil}, {
 					{ selecteditem.openHelpFile }.defer;
 				});
 			});
 		});
 	});
 	
-	buttonView = GUI.hLayoutView.new(win, Rect(5, 530, 405, 20));
-	GUI.button.new(buttonView, Rect(0,0,125, 20))
+//	buttonView = GUI.hLayoutView.new(win, Rect(5, 530, 405, 20));
+	GUI.button.new( win, Rect( 5, 534, 110, 20 ))
 		.states_([["Open Help File", Color.black, Color.clear]])
 		.action_({{ selecteditem.openHelpFile }.defer;});
-	classButt = GUI.button.new(buttonView, Rect(0,0,125, 20))
+	classButt = GUI.button.new( win, Rect( 119, 534, 110, 20 ))
 		.states_([["Open Class File", Color.black, Color.clear]])
 		.action_({ 
 			if(selecteditem.asSymbol.asClass.notNil, {
 				{selecteditem.asSymbol.asClass.openCodeFile }.defer;
 			});
 		});
-	browseButt = GUI.button.new(buttonView, Rect(0,0,125, 20))
+	browseButt = GUI.button.new( win, Rect( 233, 534, 110, 20 ))
 		.states_([["Browse Class", Color.black, Color.clear]])
 		.action_({ 
 			if(selecteditem.asSymbol.asClass.notNil, {
 				{selecteditem.asSymbol.asClass.browse }.defer;
 			});
 		});
+	bwdButt = GUI.button.new( win, Rect( 347, 534, 30, 20 ))
+		.states_([[ "<" ]])
+		.action_({
+			if( historyIdx > 0, {
+				fHistoryMove.value( -1 );
+			});
+		});
+	fwdButt = GUI.button.new( win, Rect( 380, 534, 30, 20 ))
+		.states_([[ ">" ]])
+		.action_({
+			if( historyIdx < (history.size - 1), {
+				fHistoryMove.value( 1 );
+			});
+		});
+	fBwdFwd.value;
 	
 	win.front;
 	listviews[0].focus;
