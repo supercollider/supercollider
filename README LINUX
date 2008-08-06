@@ -218,7 +218,7 @@ environment variables:
 
    $ export SC_JACK_DEFAULT_OUTPUTS="alsa_pcm:playback_1,alsa_pcm:playback_2"
 
-two additional environment variables add directories to the default
+two additional environment variables substitute directories for the default
 search path for plugins and synth definitions, respectively. directory
 names are separated by ':' as in the unix PATH variable:
 
