@@ -1291,10 +1291,14 @@ void Line_Ctor(Line* unit)
 	
 	int counter = (int)(dur * unit->mRate->mSampleRate + .5f);
 	unit->mCounter = sc_max(1, counter);
-	unit->mSlope = (end - start) / (counter);
-	unit->mLevel = start;
+	if(counter == 0){
+	    unit->mLevel = end;
+	    unit->mSlope = 0.;
+	    } else {
+	    unit->mLevel = start;
+	    unit->mSlope = (end - start) / unit->mCounter;
+	    }
 	unit->mEndLevel = end;
-	
 	ZOUT0(0) = unit->mLevel;
 	unit->mLevel += unit->mSlope;
 

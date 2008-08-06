@@ -3728,9 +3728,9 @@ void Klank_next(Klank *unit, int inNumSamples)
 				y2_1 = y1_1;	y1_1 = y0_1; 
 				y2_2 = y1_2;	y1_2 = y0_2; 
 			}
-			coefs[0] = y1_0;	coefs[4] = y2_0;		
-			coefs[1] = y1_1;	coefs[5] = y2_1;		
-			coefs[2] = y1_2;	coefs[6] = y2_2;		
+			coefs[0] = zapgremlins(y1_0);	coefs[4] = zapgremlins(y2_0);		
+			coefs[1] = zapgremlins(y1_1);	coefs[5] = zapgremlins(y2_1);		
+			coefs[2] = zapgremlins(y1_2);	coefs[6] = zapgremlins(y2_2);		
 			break;
 		case 2 :
 			y1_0 = coefs[0];	y2_0 = coefs[4];	b1_0 = coefs[8];	b2_0 = coefs[12];	a0_0 = coefs[16];
@@ -3762,8 +3762,8 @@ void Klank_next(Klank *unit, int inNumSamples)
 				y2_0 = y1_0;	y1_0 = y0_0; 
 				y2_1 = y1_1;	y1_1 = y0_1; 
 			}
-			coefs[0] = y1_0;	coefs[4] = y2_0;		
-			coefs[1] = y1_1;	coefs[5] = y2_1;		
+			coefs[0] = zapgremlins(y1_0);	coefs[4] = zapgremlins(y2_0);		
+			coefs[1] = zapgremlins(y1_1);	coefs[5] = zapgremlins(y2_1);		
 			break;
 		case 1 :
 			y1_0 = coefs[0];	y2_0 = coefs[4];	b1_0 = coefs[8];	b2_0 = coefs[12];	a0_0 = coefs[16];
@@ -3792,7 +3792,10 @@ void Klank_next(Klank *unit, int inNumSamples)
 				y2_0 = y1_0;	y1_0 = y0_0; 
 				//Print("out %g\n", y0_0);
 			}
+			/*
 			coefs[0] = y1_0;	coefs[4] = y2_0;		
+			*/
+			coefs[0] = zapgremlins(y1_0);	coefs[4] = zapgremlins(y2_0);		
 			break;
 		case 0 :
 			out = unit->m_buf - 1;
@@ -3844,10 +3847,10 @@ void Klank_next(Klank *unit, int inNumSamples)
 			y2_2 = y1_2;	y1_2 = y0_2; 
 			y2_3 = y1_3;	y1_3 = y0_3; 
 		}
-		coefs[0] = y1_0;	coefs[4] = y2_0;		
-		coefs[1] = y1_1;	coefs[5] = y2_1;		
-		coefs[2] = y1_2;	coefs[6] = y2_2;		
-		coefs[3] = y1_3;	coefs[7] = y2_3;		
+		coefs[0] = zapgremlins(y1_0);	coefs[4] = zapgremlins(y2_0);		
+		coefs[1] = zapgremlins(y1_1);	coefs[5] = zapgremlins(y2_1);		
+		coefs[2] = zapgremlins(y1_2);	coefs[6] = zapgremlins(y2_2);		
+		coefs[3] = zapgremlins(y1_3);	coefs[7] = zapgremlins(y2_3);
 		coefs += 20;
 	}
 		
