@@ -136,7 +136,7 @@
 + Function {
 
 	loadToFloatArray { arg duration = 0.01, server, action;
-		var buffer, def, synth, name, value, numChannels;
+		var buffer, def, synth, name, value, numChannels, val;
 		server = server ? Server.default;
 		server.isLocal.not.if({"Function-plot only works with a localhost server".warn; ^nil });
 		server.serverRunning.not.if({"Server not running!".warn; ^nil });
@@ -146,9 +146,13 @@
 
 		// no need to check for rate as RecordBuf is ar only
 		name = this.hash.asString;
-		def = SynthDef(name, { 
-			RecordBuf.ar(this.value,  buffer.bufnum, loop:0);
-			Line.ar(dur: duration, doneAction: 2);
+		def = SynthDef(name, {
+			var	val = this.value;
+			if(val.rate != \audio) {
+				val = K2A.ar(val);
+			};
+			RecordBuf.ar(val, buffer.bufnum, loop:0);
+			Line.ar(dur: duration, doneAction: 2);			
 		});
 		Routine.run({
 			var c;
