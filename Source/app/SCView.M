@@ -3844,14 +3844,19 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         if(slot->uo->size != mTabSize) {
             err = allocSlotDoubleArrayVal(slot, &mYValues);
             mTabSize = slot->uo->size;
+			SetBool(slot, true);
+		
         } else {
             int len = slot->uo->size;
 			double val;
+			bool changed = false;
            // memcpy(mYValues, slot->uo->slots, len * sizeof(double));
 			for(int i =0; i<len; i++){
 				err = slotDoubleVal(slot->uo->slots+i, &val);
+				if(mYValues[i] != val) changed = true;
 				if (err) mYValues[i] = 0.0; else mYValues[i] = val;
 			}
+			SetBool(slot, changed);
 			
         }
         //setVisibleSize();
@@ -5012,7 +5017,7 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
     refresh();
 }
 void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent){
-    sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
+//    sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
     if (modifiers & NSShiftKeyMask) {
         mouseTrack(where, modifiers,theEvent);
     }
