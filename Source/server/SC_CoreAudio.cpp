@@ -874,13 +874,17 @@ OSStatus appIOProc2 (AudioDeviceID inDevice, const AudioTimeStamp* inNow,
 
 static const AudioBufferList* lastInputData = 0;
 
-// this is the audio processing callback for one device.
-OSStatus appIOProc (AudioDeviceID inDevice, const AudioTimeStamp* inNow, 
-					const AudioBufferList* inInputData, 
+OSStatus appIOProcSeparateIn (AudioDeviceID device, const AudioTimeStamp* inNow, 
+					const AudioBufferList* inInputData,
 					const AudioTimeStamp* inInputTime, 
 					AudioBufferList* outOutputData, 
 					const AudioTimeStamp* inOutputTime,
-					void* defptr);
+					void* defptr)
+{		
+	lastInputData = inInputData;
+	return kAudioHardwareNoError;
+}
+
 OSStatus appIOProc (AudioDeviceID device, const AudioTimeStamp* inNow, 
 					const AudioBufferList* inInputData,
 					const AudioTimeStamp* inInputTime, 
@@ -922,12 +926,9 @@ OSStatus appIOProc (AudioDeviceID device, const AudioTimeStamp* inNow,
 		return kAudioHardwareNoError;
 	}
 	
-	if (device==def->mInputDevice) lastInputData = inInputData;
-	else
-	{
-		def->Run(lastInputData, outOutputData, oscTime);
-		lastInputData = 0;
-	}
+
+	def->Run(lastInputData, outOutputData, oscTime);
+	lastInputData = 0;
 
 	return kAudioHardwareNoError;
 }
@@ -1098,7 +1099,7 @@ bool SC_CoreAudioDriver::DriverStart()
 			return false;
 		}
 
-		err = AudioDeviceAddIOProc(mInputDevice, appIOProc, (void *) this);		// setup In device with an IO proc
+		err = AudioDeviceAddIOProc(mInputDevice, appIOProcSeparateIn, (void *) this);		// setup In device with an IO proc
 		if (err != kAudioHardwareNoError) {
 			scprintf("AudioDeviceAddIOProc failed %s %d\n", &err, (int)err);
 			return false;
@@ -1108,7 +1109,7 @@ bool SC_CoreAudioDriver::DriverStart()
 		if (mWorld->hw->mInputStreamsEnabled) {
 			err = AudioDeviceGetPropertyInfo(mInputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
-			su->mIOProc = (void*)appIOProc;
+			su->mIOProc = (void*)appIOProcSeparateIn;
 			err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
 			int len = std::min(su->mNumberStreams, strlen(mWorld->hw->mInputStreamsEnabled));
 			for (int i=0; i<len; ++i) {
@@ -1129,7 +1130,7 @@ bool SC_CoreAudioDriver::DriverStart()
 			err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 		}
 		
-		err = AudioDeviceStart(mInputDevice, appIOProc);		// start playing sound through the device
+		err = AudioDeviceStart(mInputDevice, appIOProcSeparateIn);		// start playing sound through the device
 		if (err != kAudioHardwareNoError) {
 			scprintf("AudioDeviceStart failed %d\n", (int)err);
 			return false;
@@ -1138,7 +1139,7 @@ bool SC_CoreAudioDriver::DriverStart()
 		err = AudioDeviceStart(mOutputDevice, appIOProc);		// start playing sound through the device
 		if (err != kAudioHardwareNoError) {
 			scprintf("AudioDeviceStart failed %d\n", (int)err);
-			err = AudioDeviceStop(mInputDevice, appIOProc);			// stop playing sound through the device
+			err = AudioDeviceStop(mInputDevice, appIOProcSeparateIn);			// stop playing sound through the device
 			return false;
 		}
 	} else {
@@ -1195,13 +1196,13 @@ bool SC_CoreAudioDriver::DriverStop()
 	OSStatus err = kAudioHardwareNoError;
 
 	if (UseSeparateIO()) {
-		err = AudioDeviceStop(mInputDevice, appIOProc);		
+		err = AudioDeviceStop(mInputDevice, appIOProcSeparateIn);		
 		if (err != kAudioHardwareNoError) {
 			scprintf("AudioDeviceStop A failed %08X\n", err);
 			return false;
 		}
 		
-		err = AudioDeviceRemoveIOProc(mInputDevice, appIOProc);	
+		err = AudioDeviceRemoveIOProc(mInputDevice, appIOProcSeparateIn);	
 		if (err != kAudioHardwareNoError) {
 			scprintf("AudioDeviceRemoveIOProc A failed %08X\n", err);
 			return false;
