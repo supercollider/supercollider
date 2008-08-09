@@ -552,10 +552,12 @@ Object  {
 			var file;
 			dir = dir ? SynthDef.synthDefDir;
 			if (name.isNil) { error("missing SynthDef file name") } {
-				if(overwrite or: { pathMatch(dir ++ name ++ ".scsyndef").isEmpty }) 
+				name = dir ++ name ++ ".scsyndef";
+				if(overwrite or: { pathMatch(name).isEmpty }) 
 					{
-					file = File(dir ++ name ++ ".scsyndef", "w");
+					file = File(name, "w");
 					protect {
+						AbstractMDPlugin.clearMetadata(name);
 						this.asArray.writeDef(file);
 					}{		
 						file.close;

@@ -39,6 +39,7 @@
 		desc = SynthDesc.new;
 		desc.def = this;
 		desc.name = name;
+		desc.metadata = metadata;
 			// .select is for InstrSynthDef, which may have Patch controls not in the Synth itself
 		desc.controls = Array.new;
 		allControlNames.select({ |cn| cn.rate != \noncontrol })

@@ -14,11 +14,18 @@ IODesc {
 
 
 SynthDesc {
+	classvar <>mdPlugin;
+
 	var <>name, <>controlNames;
 	var <>controls, <>inputs, <>outputs; 
+	var <>metadata;
 	
 	var <>constants, <>def;
 	var <>msgFunc, <>hasGate = false, <>canFreeSynth = false;
+
+	*initClass {
+		mdPlugin = AbstractMDPlugin;	// override in your startup file
+	}
 	
 	send { arg server, completionMsg; 
 		def.send(server, completionMsg);
@@ -37,14 +44,16 @@ SynthDesc {
 			var file, result;
 			file = File(filename, "r");
 			protect {
-				dict = this.readFile(file, keepDefs, dict);
+				dict = this.readFile(file, keepDefs, dict, filename);
 			}{
 				file.close;
 			};
 		};
 		^dict;
 	}
-	*readFile { arg stream, keepDefs=false, dict;
+		// path is for metadata -- only this method has direct access to the new SynthDesc
+		// really this should be a private method -- use *read instead
+	*readFile { arg stream, keepDefs=false, dict, path;
 		var numDefs;
 		dict = dict ?? { IdentityDictionary.new };
 		stream.getInt32; // 'SCgf'
@@ -54,6 +63,9 @@ SynthDesc {
 			var desc;
 			desc = SynthDesc.new.readSynthDef(stream, keepDefs);
 			dict.put(desc.name.asSymbol, desc);
+				// AbstractMDPlugin dynamically determines the md archive type
+				// from the file extension
+			desc.metadata = AbstractMDPlugin.readMetadata(path);
 		}
 		^dict
 	}
@@ -315,3 +327,61 @@ SynthDescLib {
 }
 
 
+
+// Basic metadata plugins
+
+// to disable metadata read/write
+AbstractMDPlugin {
+		// a Windows alternate will have to be added to the windows platform dir
+	*clearMetadata { |path|
+		"rm %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd;
+	}
+	*writeMetadata { |metadata, synthdef, path|
+		this.clearMetadata(path);
+		path = this.applyExtension(path);
+		this.writeMetadataFile(metadata, synthdef, path);
+	}
+	*writeMetadataFile {}
+
+		// clearMetadata should ensure that only one MD file ever exists
+		// therefore we can check the subclasses in turn
+		// and return the first MD found
+		// every subclass should have a unique extension
+	*readMetadata { |path|
+		var	pathTmp, classList, i;
+		path = path.splitext[0] ++ ".";
+		classList = this.allSubclasses;
+			// ensure that SynthDescLib.mdPlugin is preferred for reading,
+			// with other plugins as a fallback
+			// it will also be possible to use Events or Protos as plugins this way
+		if((i = classList.indexOf(SynthDesc.mdPlugin)).notNil and: { i > 0 }) {
+			classList = classList.copy.swap(0, i);
+		} {
+			classList = [SynthDesc.mdPlugin] ++ classList;
+		};
+		classList.do({ |class|
+			if(File.exists(pathTmp = path ++ class.mdExtension)) {
+				^class.readMetadataFile(pathTmp)
+			}
+		});
+		^nil
+	}
+	*readMetadataFile { ^nil }
+
+	*applyExtension { |path|
+		^path.splitext[0] ++ "." ++ this.mdExtension
+	}
+	*mdExtension { ^"" }		// nothing is written anyway
+}
+
+// simple archiving of the dictionary
+TextArchiveMDPlugin : AbstractMDPlugin {
+	*writeMetadataFile { |metadata, synthdef, path|
+		metadata.writeArchive(path)
+	}
+	
+	*readMetadataFile { |path|
+		^Object.readArchive(path)
+	}
+	*mdExtension { ^"txarcmeta" }
+}

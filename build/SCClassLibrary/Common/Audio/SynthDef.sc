@@ -13,6 +13,8 @@ SynthDef {
 	// topo sort
 	var <>available;
 	var <>variants;
+
+	var <>metadata;
 	
 	classvar <synthDefDir;
 	
@@ -27,8 +29,8 @@ SynthDef {
 		("mkdir -p"+synthDefDir.quote).systemCmd; // Ensure exists
 	}
 	
-	*new { arg name, ugenGraphFunc, rates, prependArgs, variants;
-		^this.prNew(name).variants_(variants)
+	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
+		^this.prNew(name).variants_(variants).metadata_(metadata)
 			.build(ugenGraphFunc, rates, prependArgs)
 	}
 	*prNew { arg name;
@@ -52,8 +54,8 @@ SynthDef {
 		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
 	}
 	//only write if no file exists
-	*writeOnce { arg name, func, rates, prependArgs, variants, dir;
-		this.new(name, func, rates, prependArgs, variants).writeDefFile(dir, false)
+	*writeOnce { arg name, func, rates, prependArgs, variants, dir, metadata;
+		this.new(name, func, rates, prependArgs, variants, metadata).writeDefFile(dir, false)
 	}
 	
 	
@@ -81,7 +83,7 @@ SynthDef {
 
 	}
 	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
-		var def, names, values,argNames;
+		var def, names, values,argNames, specs;
 		
 		def = func.def;
 		argNames = def.argNames;
@@ -92,7 +94,15 @@ SynthDef {
 		// and then construct the argument array from combining 
 		// the OutputProxies of these two Control ugens in the original order.
 		values = def.prototypeFrame[skipArgs..].extend( names.size );
-		values = values.collect {|value| value ? 0.0 };
+		if((specs = metadata.tryPerform(\at, \specs)).notNil) {
+			values = values.collect { |value, i|
+				value ?? {
+					(specs[names[i]] ?? { names[i] }).tryPerform(\asSpec).tryPerform(\default) ? 0
+				}
+			}
+		} {
+			values = values.collect {|value| value ? 0.0 };
+		};
 		rates = rates.asArray.extend(names.size, 0).collect {|lag| lag ? 0.0 };
 		names.do { arg name, i; 
 			var c, c2, value, lag;
@@ -439,7 +449,7 @@ SynthDef {
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		)
 	}
-	store { arg libname=\global, dir(synthDefDir), completionMsg;
+	store { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
 		var bytes;
 		var lib = SynthDescLib.all[libname] ?? { Error("library" + libname  + "not found").throw };
 		var path = dir ++ name ++ ".scsyndef";
@@ -448,10 +458,16 @@ SynthDef {
 			bytes = this.asBytes;
 			file.putAll(bytes);
 			file.close;
+			if(metadata.notNil) {
+				(mdPlugin ?? { SynthDesc.mdPlugin }).writeMetadata(metadata, this, path);
+			} {
+				AbstractMDPlugin.clearMetadata(path);
+			};
 			lib.read(path);
 			lib.servers.do { arg server;
 				server.value.sendBundle(nil, ["/d_recv", bytes] ++ completionMsg)
 			};
+			lib[this.name.asSymbol].metadata = metadata;
 		} { 
 			file.close 
 		}
