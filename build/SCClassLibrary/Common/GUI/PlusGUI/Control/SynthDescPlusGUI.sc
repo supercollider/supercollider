@@ -18,15 +18,12 @@
 		numControls = usefulControls.size;
 		sliders = Array.newClear(numControls);
 		
-		id = s.nextNodeID; // generate a note id.
-		
 		// make the window
-//		w = gui.window.new("another control panel", Rect(20, 400, 440, 180));
 		w = gui.window.new("another control panel", Rect(20, 400, 440, numControls * 28 + 32));
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
 		if( gui.id === \cocoa, {
-			w.view.background = HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
+			w.view.background = HiliteGradient(Color.rand(0.5,1.0),Color.rand(0.5,1.0),
 								[\h,\v].choose, 100, rrand(0.1,0.9));
 		});
 		
@@ -76,14 +73,23 @@
 			capname = ctlname.copy; 
 			capname[0] = capname[0].toUpper;
 			w.view.decorator.nextLine;
-			spec = ctlname.asSymbol.asSpec;
+			ctlname = ctlname.asSymbol;
+			if((spec = metadata.tryPerform(\at, \specs).tryPerform(\at, ctlname)).notNil) {
+				spec = spec.asSpec
+			} {
+				spec = ctlname.asSpec;
+			};
 			if (spec.notNil) {
 				sliders[i] = gui.ezSlider.new(w, 400 @ 24, capname, spec, 
-					{|ez| s.sendMsg("/n_set", id, ctlname, ez.value); }, controlName.defaultValue);
+					{ |ez| 
+						if(id.notNil) { s.sendMsg("/n_set", id, ctlname, ez.value) }
+					}, controlName.defaultValue);
 			}{
 				spec = ControlSpec(-1e10,1e10);
 				sliders[i] = gui.ezNumber.new(w, 400 @ 24, capname, spec, 
-					{|ez| s.sendMsg("/n_set", id, ctlname, ez.value); }, controlName.defaultValue);
+					{ |ez|
+						if(id.notNil) { s.sendMsg("/n_set", id, ctlname, ez.value) }
+					}, controlName.defaultValue);
 			};
 		};
 			
