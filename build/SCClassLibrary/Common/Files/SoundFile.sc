@@ -269,17 +269,18 @@ SoundFile {
 		^outFile
 	}
 
-	*initClass {
-		StartUp.add {
-			(1..16).do { | i |
-				SynthDef("diskIn" ++ i, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
-					Out.ar(out, DiskIn.ar(i, bufnum) 
-					* Linen.kr(gate, ar, 1, dr, 2)
-					* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
-				}).store
-			}
-		};
-	}
+		// diskIn synthdefs are now created on demand in SoundFile:cue
+//	*initClass {
+//		StartUp.add {
+//			(1..16).do { | i |
+//				SynthDef("diskIn" ++ i, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
+//					Out.ar(out, DiskIn.ar(i, bufnum) 
+//					* Linen.kr(gate, ar, 1, dr, 2)
+//					* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
+//				}).store
+//			}
+//		};
+//	}
 
 	info { | path |
 		var flag = this.openRead;
@@ -299,41 +300,53 @@ SoundFile {
 	}
 
 	cue { | ev, playNow = false |
-		var server, packet;
+		var server, packet, defname = "diskIn" ++ numChannels, condition;
 		ev = ev ? ();
 		if (this.numFrames == 0) { this.info };
-		ev.use {
-			~instrument = ~instrument ?? 	{"diskIn" ++ numChannels };
-			ev.synth;
-			server = ~server ?? { Server.default};
-			~bufnum =  server.bufferAllocator.alloc(1);
-			~bufferSize = 0x10000;
-			~firstFrame = ~firstFrame ? 0;
-			~lastFrame = ~lastFrame ? numFrames;
-			~sustain = (~lastFrame - ~firstFrame)/(server.options.sampleRate ? 44100);
-			~close = { | ev |
-					server.bufferAllocator.free(ev[\bufnum]);
-					server.sendBundle(server.latency, ["/b_close", ev[\bufnum]], ["/b_free", ev[\bufnum] ]  )
+		fork {
+			ev.use {
+				server = ~server ?? { Server.default};
+				if(~instrument.isNil) {
+					SynthDef(defname, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
+						Out.ar(out, DiskIn.ar(numChannels, bufnum) 
+						* Linen.kr(gate, ar, 1, dr, 2)
+						* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
+					}).memStore;
+					~instrument = defname;
+					condition = Condition.new;
+					server.sync(condition);
+				};
+				ev.synth;	// set up as a synth event (see Event)
+				~bufnum =  server.bufferAllocator.alloc(1);
+				~bufferSize = 0x10000;
+				~firstFrame = ~firstFrame ? 0;
+				~lastFrame = ~lastFrame ? numFrames;
+				~sustain = (~lastFrame - ~firstFrame)/(server.options.sampleRate ? 44100);
+				~close = { | ev |
+						server.bufferAllocator.free(ev[\bufnum]);
+						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
+							["/b_free", ev[\bufnum] ]  )
+				};
+				~setwatchers = { |ev|
+					OSCpathResponder(server.addr, ["/n_end", ev[\id][0]], 
+					{ | time, resp, msg |
+						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]], 
+						["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
+						resp.remove;
+					} 
+					).add;
+				};
+				if (playNow) {
+					packet = server.makeBundle(false, {ev.play})[0];    
+						// makeBundle creates an array of messages
+						// need one message, take the first
+				} {
+					packet = [];
+				};
+				server.sendBundle(server.latency,["/b_alloc", ~bufnum, ~bufferSize, numChannels,
+							["/b_read", ~bufnum, path, ~firstFrame, ~bufferSize, 0, 1, packet]
+						]);
 			};
-			~setwatchers = {
-				OSCpathResponder(server.addr, ["/n_end", ~id[0]], 
-				{ | time, resp, msg |
-					server.sendBundle(server.latency, ["/b_close", ev[\bufnum]], 
-					["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
-					resp.remove;
-				} 
-				).add;
-			};
-			if (playNow) {
-				packet = server.makeBundle(false, {ev.play})[0];    
-					// makeBundle creates an array of messages
-					// need one message, take the first
-			} {
-				packet = [];
-			};
-			server.sendBundle(server.latency,["/b_alloc", ~bufnum, ~bufferSize, numChannels,
-						["/b_read", ~bufnum, path, ~firstFrame, ~bufferSize, 0, 1, packet]
-					]);
 		};
 		^ev;	
 	}
