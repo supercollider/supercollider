@@ -44,6 +44,7 @@ Primitives for Unix.
 #include <libgen.h>
 #endif
 
+extern bool compiledOK;
 PyrSymbol* s_unixCmdAction;
 
 int prString_System(struct VMGlobals *g, int numArgsPushed);
@@ -131,13 +132,15 @@ void* string_popen_thread_func(void *data)
 	free(process);
 	
     pthread_mutex_lock (&gLangMutex);
-	VMGlobals *g = gMainVMGlobals;
-	g->canCallOS = true;
-	++g->sp;  SetObject(g->sp, class_string);
-	++g->sp; SetInt(g->sp, res);
-	++g->sp; SetInt(g->sp, pid);
-	runInterpreter(g, s_unixCmdAction, 3);
-	g->canCallOS = false;
+    if(compiledOK) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, class_string);
+		++g->sp; SetInt(g->sp, res);
+		++g->sp; SetInt(g->sp, pid);
+		runInterpreter(g, s_unixCmdAction, 3);
+		g->canCallOS = false;
+	}
     pthread_mutex_unlock (&gLangMutex);
 
 	return 0;
