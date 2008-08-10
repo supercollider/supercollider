@@ -8,7 +8,9 @@ rcfile=/usr/share/scvim/scvimrc
 #parse ops
 while getopts "gh" opt; do
 	case $opt in
-		g  )	vim=gvim;;
+		#we can ignore -g because we pass it to vim and -g as a vim
+		#argument gives graphical vim
+		#g  )	#vim=gvim;;
 		h  )	echo "supercollider in vim"
 				echo "usage:\nscvim [-h] [-g]"
 				echo "\t -h prints this help"
@@ -21,13 +23,13 @@ done
 #first we look for ~/.scvimrc, then /usr/local/share/scvim/scvimrc then /usr/share/scvim/scvimrc
 if [ -r $HOME/.scvimrc ]
 then
-	exec $vim --cmd "source $HOME/.scvimrc" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" 
+	exec $vim --cmd "source $HOME/.scvimrc" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" $@
 elif [ -r $localrcfile ]
 then
-	exec $vim --cmd "source $localrcfile" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" 
+	exec $vim --cmd "source $localrcfile" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" $@
 elif [ -r $rcfile ]
 then
-	exec $vim --cmd "source $rcfile" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" 
+	exec $vim --cmd "source $rcfile" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" $@
 else
-	exec $vim -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart"
+	exec $vim -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" $@
 fi
