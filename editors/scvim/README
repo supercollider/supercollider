@@ -20,11 +20,46 @@ ________________________________________________________________________________
 
 INSTALLATION STEPS:
 
-Automatic:
+Automatic (simple):
 
-edit INSTALL and run it [as sudo most likely].  The path requirements are
-listed in the manual install below.  Make sure the SCVim class is sourced
-in your library [see step 4].
+To install everything in the default locations simply do:
+scons install-user
+sudo scons install-system
+
+optional (but recommended):
+scons build-help 
+
+install-user will install the scvim vim files in ~/.vim and create the cache
+dir [for inline docs, syntax highlighting updates, etc] at ~/.scvim
+install-system will install the 'executable' files in PREFIX/bin, a system-wide
+configuration file in PREFIX/share/scvim/ and the SCVim class file into 
+PREFIX/share/SuperCollider/Extensions/scvim 
+
+Then, make sure the SCVim class is sourced in your library [see step 4 below].
+
+
+Install target descriptions:
+
+Below is a brief description of the install targets that are defined.
+See scons -h for the configuration variables.
+Note, install-system and install-user aggregate several install targets, you
+can call those individually.. ie scons install-rc will just install the
+system-wide rc file
+
+install-system is made up of:
+	install-bin [installs the files that are located in bin/]
+	install-rc [installs the systemwide scvimrc in PREFIX/share/scvim/
+	install-classes 
+		[installs the SCVim supercollider class file in PREFIX/share/SuperCollider/Extensions/scvim/]
+
+install-user is made up of:
+	install-vimfiles [installs the vimfiles (syntax/* ftplugin/* indent/* in VIMFILE_DIR]
+	install-doc 
+		[installs the SCVim.scd file into CACHE_DIR/doc/, creates CACHE_DIR if it doesn't exist]
+
+build-help
+	[executes ./bin/scvim_make_help.rb to create the inline help docs for scvim]
+
 
 Manual Install:
 
