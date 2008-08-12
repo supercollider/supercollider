@@ -15,17 +15,17 @@ p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
-span.s4 {color: #001fbf}
+span.s4 {color: #002dbf}
 span.s5 {color: #606060}
-span.s6 {color: #ba1100}
-span.s7 {color: #1d7008}
+span.s6 {color: #b51800}
+span.s7 {color: #2a6d0c}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>FFT<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>Fast Fourier Transform</b></p>
 <p class="p2"><br></p>
-<p class="p1"><b>FFT.new(buffer, input, hop, wintype, active, framesize)</b></p>
+<p class="p1"><b>FFT.new(buffer, input, hop, wintype, active, winsize)</b></p>
 <p class="p2"><br></p>
 <p class="p1">The fast fourier transform analyzes the frequency content of a signal, which can be useful for audio analysis or for frequency-domain sound processing (phase vocoder).</p>
 <p class="p2"><br></p>
@@ -40,9 +40,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span>0 (the default) is for <b><i>Welch</i></b> windowing, typically recommended for phase-vocoder work;<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>1 is for <b><i>Hann</i></b> windowing, typically recommended for analysis work.</p>
 <p class="p1"><b>active</b> - is a simple control allowing FFT analysis to be active (&gt;0) or inactive (&lt;=0). This is mainly useful for signal analysis processes which are only intended to analyse at specific times rather than continuously</p>
-<p class="p1"><b>framesize</b> - the audio frames are usually the same size as the buffer. If you wish the FFT to be <i>zero-padded</i> then you can specify a framesize smaller than the actual buffer size (e.g. framesize 1024 with buffer size 2048). Both values must still be a power of two. Leave this at its default of zero for no zero-padding.</p>
+<p class="p1"><b>winsize</b> - the windowed audio frames are usually the same size as the buffer. If you wish the FFT to be <i>zero-padded</i> then you can specify a window size smaller than the actual buffer size (e.g. window size 1024 with buffer size 2048). Both values must still be a power of two. Leave this at its default of zero for no zero-padding.</p>
 <p class="p2"><br></p>
-<p class="p1">FFT uses a local buffer for holding the buffered audio. The window size corresponds to the buffer size, which must be a multiple of the control block size as well as being a power of two.</p>
+<p class="p1">FFT uses a local buffer for holding the buffered audio. The buffer size must be a multiple of the control block size as well as being a power of two.</p>
 <p class="p2"><br></p>
 <p class="p1">Note that for phase-vocoder usage, changing the hop or wintype settings from their defaults will typically result in unnatural sound when used in combination with IFFT, due to windowing artifacts. (A hop of 0.25, with Hann windowing, can be a useful combination for phase-vocoder work.)</p>
 <p class="p2"><br></p>
