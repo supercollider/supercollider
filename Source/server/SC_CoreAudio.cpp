@@ -443,7 +443,7 @@ bool SC_AudioDriver::Setup()
 	
 #ifndef NDEBUG
 	if(mWorld->mVerbosity >= 0){
-		scprintf("SC_AudioDriver: sampleRate=%f\n", sampleRate);
+		scprintf("SC_AudioDriver: sample rate = %f, driver's block size = %d\n", sampleRate, mNumSamplesPerCallback);
 	}
 #endif
 
