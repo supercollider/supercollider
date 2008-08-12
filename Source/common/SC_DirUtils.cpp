@@ -547,6 +547,9 @@ FILE* fopenLocalOrRemote(const char* mFilename, const char* mode){
 }
 #else
 // Non-curl version, so no checks for downloading etc:
+bool downloadToFp(FILE* fp, const char* mFilename){
+	return false;
+}
 FILE* fopenLocalOrRemote(const char* mFilename, const char* mode){
 	return fopen(mFilename, mode);
 }

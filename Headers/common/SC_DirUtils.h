@@ -121,8 +121,6 @@ const char* sc_GlobNext(SC_GlobHandle* glob);
 // If HAVE_LIBCURL is not set, this does absolutely nothing but call fopen.
 // Note: only modes of "r" or "rb" make sense when using this.
 FILE* fopenLocalOrRemote(const char* mFilename, const char* mode);
-#ifdef HAVE_LIBCURL
 bool downloadToFp(FILE* fp, const char* mFilename);
-#endif
 
 #endif // SC_DIR_UTILS_H_INCLUDED

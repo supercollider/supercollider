@@ -679,6 +679,9 @@ if PLATFORM == 'darwin':
     commonSources += [
         'Source/common/SC_StandAloneInfo_Darwin.cpp'
         ]
+if env['CURL']:
+    commonEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
+    merge_lib_info(commonEnv, libraries['libcurl'])
 libcommon = commonEnv.Library('build/common', commonSources)
 
 # ======================================================================
@@ -952,6 +955,9 @@ elif PLATFORM == 'freebsd':
     langEnv.Append(
     LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
 
+if env['CURL']:
+    langEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
+    merge_lib_info(langEnv, libraries['libcurl'])
 
 merge_lib_info(langEnv, libraries['audioapi'])
 
