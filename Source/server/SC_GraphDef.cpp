@@ -343,9 +343,9 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {	
 #ifdef SC_WIN32
-	FILE *file = fopen(filename, "rb");
+	FILE *file = fopenLocalOrRemote(filename, "rb");
 #else
-	FILE *file = fopen(filename, "r");
+	FILE *file = fopenLocalOrRemote(filename, "r");
 #endif
 	if (!file) {
 		scprintf("*** ERROR: can't fopen '%s'\n", filename);
