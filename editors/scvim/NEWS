@@ -1,3 +1,5 @@
+2008-08-12
+	Now using scons for installation.  See the README for more information.
 2008-05-06
 	I have changed a lot of things in order to make installation *hopefully*
 	easier.  There is now an scvim executable that looks for scvimrc to load in this order:
