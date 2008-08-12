@@ -334,7 +334,7 @@ SynthDescLib {
 AbstractMDPlugin {
 		// a Windows alternate will have to be added to the windows platform dir
 	*clearMetadata { |path|
-		"rm %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd;
+		"rm -f %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd;
 	}
 	*writeMetadata { |metadata, synthdef, path|
 		this.clearMetadata(path);
