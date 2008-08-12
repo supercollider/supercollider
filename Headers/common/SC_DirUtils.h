@@ -22,6 +22,7 @@
 #define SC_DIR_UTILS_H_INCLUDED
 
 #include <limits.h>
+#include <stdio.h>
 
 #ifdef SC_WIN32
 # include <stdio.h>
@@ -115,5 +116,13 @@ void sc_GlobFree(SC_GlobHandle* glob);
 // Return next path from glob iterator.
 // Return NULL at end of stream.
 const char* sc_GlobNext(SC_GlobHandle* glob);
+
+// Wrapper function - if it seems to be a URL, dnld to local tmp file first.
+// If HAVE_LIBCURL is not set, this does absolutely nothing but call fopen.
+// Note: only modes of "r" or "rb" make sense when using this.
+FILE* fopenLocalOrRemote(const char* mFilename, const char* mode);
+#ifdef HAVE_LIBCURL
+bool downloadToFp(FILE* fp, const char* mFilename);
+#endif
 
 #endif // SC_DIR_UTILS_H_INCLUDED

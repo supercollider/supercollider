@@ -26,11 +26,7 @@
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
 #include "SC_Sem.h"
-
-// If you have libcurl, you may activate this flag and it will allow Buffer.read to read from remote URLs
-#ifdef HAVE_LIBCURL
-#include <curl/curl.h>
-#endif
+#include "SC_DirUtils.h"
 
 #define GET_COMPLETION_MSG(msg) \
 	mMsgSize = msg.getbsize(); \
@@ -470,61 +466,11 @@ void BufAllocReadCmd::CallDestructor()
 	this->~BufAllocReadCmd();
 }
 
-// Wrapper function - if it seems to be a URL, dnld to local tmp file first.
-// If HAVE_LIBCURL is not set, this does absolutely nothing but call fopen.
-FILE* fopenLocalOrRemote(char* mFilename);
-#ifdef HAVE_LIBCURL
-bool downloadToFp(FILE* fp, char* mFilename);
-bool downloadToFp(FILE* fp, char* mFilename){
-	bool success = true;
-	CURL* curl = curl_easy_init();
-	CURLcode ret;
-	char* errstr = (char*)malloc(CURL_ERROR_SIZE);
-	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errstr);
-	if((ret = curl_easy_setopt(curl, CURLOPT_URL, mFilename)) != 0){
-		scprintf("CURL setopt error while setting URL. Error code %i\n%s\n", ret, errstr);
-		success = false;
-	}
-	if((ret = curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp)) != 0){
-		scprintf("CURL setopt error while setting temp file pointer. Error code %i\n%s\n", ret, errstr);
-		success = false;
-	}
-	scprintf("Loading remote file %s...\n", mFilename);
-	if((ret = curl_easy_perform(curl)) != 0){
-		scprintf("CURL perform error while attempting to access remote file. Error code %i\n%s\n", ret, errstr);
-		success = false;
-	}else{
-		scprintf("...done.\n");
-		//scprintf("...done (response code: %i).\n", curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE));
-	}
-	curl_easy_cleanup(curl);
-	rewind(fp);
-	free(errstr);
-	return success;
-}
-FILE* fopenLocalOrRemote(char* mFilename){
-	FILE* fp;
-	bool isRemote = strstr(mFilename, "://") != 0;
-	if(isRemote){
-		fp = tmpfile();
-		downloadToFp(fp, mFilename);
-	}else{
-		fp = fopen(mFilename, "r");
-	}
-	return fp;
-}
-#else
-// Non-curl version, so no checks for downloading etc:
-FILE* fopenLocalOrRemote(char* mFilename){
-	return fopen(mFilename, "r");
-}
-#endif
-
 bool BufAllocReadCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	
-	FILE* fp = fopenLocalOrRemote(mFilename);
+	FILE* fp = fopenLocalOrRemote(mFilename, "r");
 	
 	if (!fp) {
 		char str[256];
@@ -627,7 +573,7 @@ bool BufReadCmd::Stage2()
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
 	
-	FILE* fp = fopenLocalOrRemote(mFilename);
+	FILE* fp = fopenLocalOrRemote(mFilename, "r");
 	
 	if (!fp) {
 		char str[256];
