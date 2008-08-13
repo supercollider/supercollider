@@ -170,7 +170,9 @@ Order : SequenceableCollection {
 		}
 	}
 	
-	
+	choose {
+		^array.choose
+	}
 }
 
 
