@@ -95,8 +95,8 @@ ControlSpec : Spec {
 			\phase -> ControlSpec(0, 2pi),
 			\rq -> ControlSpec(0.001, 2, \exp, 0, 0.707),
 
-			\audiobus -> ControlSpec(0, 128, step: 1),
-			\controlbus -> ControlSpec(0, 4096, step: 1),
+			\audiobus -> ControlSpec(0, Server.default.options.numAudioBusChannels-1, step: 1),
+			\controlbus -> ControlSpec(0, Server.default.options.numControlBusChannels-1, step: 1),
 
 			\midi -> ControlSpec(0, 127, default: 64),
 			\midinote -> ControlSpec(0, 127, default: 60),
