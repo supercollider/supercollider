@@ -5,23 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #98281a}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0023b2}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #406c1d}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0023b2; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #98281a; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {color: #000000}
-span.s2 {color: #326f17}
-span.s3 {color: #0019b7}
-span.s4 {color: #606060}
-span.s5 {color: #a71e12}
+span.s2 {color: #406c1d}
+span.s3 {color: #0023b2}
+span.s4 {color: #0000bf}
+span.s5 {color: #606060}
+span.s6 {color: #98281a}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -31,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>superclass: Pattern</b></p>
 <p class="p3">related: Pseg</p>
 <p class="p2"><br></p>
-<p class="p3"><b>Pstep(levelpattern, durpattern)</b></p>
+<p class="p3"><b>Pstep(levels, durs, repeats)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Levelpattern can return either individual values or arrays.<span class="Apple-converted-space">  </span>The value returned by levelpattern is</p>
 <p class="p3">returned for the duration returned by durpattern.</p>
@@ -122,11 +124,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p5"><br></p>
 <p class="p4">(</p>
-<p class="p5"><br></p>
+<p class="p11"><span class="s4">var</span> a, b, x;</p>
 <p class="p4"><span class="s3">var</span> times, levels;</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p7">SynthDef<span class="s1">(</span><span class="s4">"pgrain"</span><span class="s1">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p7">SynthDef<span class="s1">(</span><span class="s5">"pgrain"</span><span class="s1">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s3">arg</span> out = 0, freq=800, sustain=0.001, amp=0.5, pan = 0;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> window;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>window = <span class="s3">Env</span>.sine(sustain, amp);</p>
@@ -153,11 +155,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p4">b.play;</p>
 <p class="p4">r {</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">var</span> z = x.asStream; <span class="s5">// direct times</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">var</span> z = x.asStream; <span class="s6">// direct times</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>0.5.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>loop {</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z.next.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.makeBundle(0.2, {</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s2">\pgrain</span>, [<span class="s2">\freq</span>, 3000, <span class="s2">\sustain</span>, 0.01]); <span class="s5">// signal tone</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s2">\pgrain</span>, [<span class="s2">\freq</span>, 3000, <span class="s2">\sustain</span>, 0.01]); <span class="s6">// signal tone</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>}</p>
