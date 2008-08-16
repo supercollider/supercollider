@@ -1369,14 +1369,31 @@ int headerFormatFromString(const char *name)
 	if (strcasecmp(name, "AIFF")==0) return SF_FORMAT_AIFF;
 	if (strcasecmp(name, "AIFC")==0) return SF_FORMAT_AIFF;
 	if (strcasecmp(name, "RIFF")==0) return SF_FORMAT_WAV;
+	if (strcasecmp(name, "WAVEX")==0) return SF_FORMAT_WAVEX;
 	if (strcasecmp(name, "WAVE")==0) return SF_FORMAT_WAV;
 	if (strcasecmp(name, "WAV" )==0) return SF_FORMAT_WAV;
 	if (strcasecmp(name, "Sun" )==0) return SF_FORMAT_AU;
 	if (strcasecmp(name, "IRCAM")==0) return SF_FORMAT_IRCAM;
 	if (strcasecmp(name, "NeXT")==0) return SF_FORMAT_AU;
 	if (strcasecmp(name, "raw")==0) return SF_FORMAT_RAW;
+	if (strcasecmp(name, "MAT4")==0) return SF_FORMAT_MAT4;
+	if (strcasecmp(name, "MAT5")==0) return SF_FORMAT_MAT5;
+	if (strcasecmp(name, "PAF")==0) return SF_FORMAT_PAF;
+	if (strcasecmp(name, "SVX")==0) return SF_FORMAT_SVX;
+	if (strcasecmp(name, "NIST")==0) return SF_FORMAT_NIST;
+	if (strcasecmp(name, "VOC")==0) return SF_FORMAT_VOC;
+	if (strcasecmp(name, "W64")==0) return SF_FORMAT_W64;
+	if (strcasecmp(name, "PVF")==0) return SF_FORMAT_PVF;
+	if (strcasecmp(name, "XI")==0) return SF_FORMAT_XI;
+	if (strcasecmp(name, "HTK")==0) return SF_FORMAT_HTK;
+	if (strcasecmp(name, "SDS")==0) return SF_FORMAT_SDS;
+	if (strcasecmp(name, "AVR")==0) return SF_FORMAT_AVR;
+	if (strcasecmp(name, "SD2")==0) return SF_FORMAT_SD2;
+	if (strcasecmp(name, "FLAC")==0) return SF_FORMAT_FLAC;
+	if (strcasecmp(name, "CAF")==0) return SF_FORMAT_CAF;
 	return 0;
 }
+
 
 int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatString, const char *sampleFormatString)
 {
