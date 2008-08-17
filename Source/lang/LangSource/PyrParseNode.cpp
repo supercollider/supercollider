@@ -839,14 +839,14 @@ void PyrClassNode::compile(PyrSlot *result)
 		if (varsDiffer || superclassesDiffer || indexTypesDiffer) {
 			if (isIntrinsic) {
 				if (superclassesDiffer) {
-					error("Superclass of '%s' does not match intrinisic definition.\n",
+					error("Superclass of '%s' does not match intrinsic definition.\n",
 						mClassName->mSlot.us->name);
 					nodePostErrorLine((PyrParseNode*)(mSuperClassName ? 
 						mSuperClassName : mClassName));
 					compileErrors++;
 				}
 				if (indexTypesDiffer) {
-					error("Index type of '%s' does not match intrinisic definition.\n",
+					error("Index type of '%s' does not match intrinsic definition.\n",
 						mClassName->mSlot.us->name);
 					nodePostErrorLine((indexType ? (PyrParseNode*)mIndexType : (PyrParseNode*)mClassName));
 					compileErrors++;
