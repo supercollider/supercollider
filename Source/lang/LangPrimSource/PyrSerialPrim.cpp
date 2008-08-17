@@ -198,29 +198,43 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 		case 38400:
 			brate = B38400;
 			break;
-#ifndef _POSIX_C_SOURCE
+// #ifndef _POSIX_C_SOURCE
+#if defined(B7200)
 		case 7200:
 			brate = B7200;
 			break;
+#endif
+#if defined(B7200)
 		case 14400:
 			brate = B14400;
 			break;
+#endif
+#if defined(B28800)
 		case 28800:
 			brate = B28800;
 			break;
+#endif
+#if defined(B57600)
 		case 57600:
 			brate = B57600;
 			break;
+#endif
+#if defined(B76800)
 		case 76800:
 			brate = B76800;
 			break;
+#endif
+#if defined(B115200)
 		case 115200:
 			brate = B115200;
 			break;
+#endif
+#if defined(B230400)
 		case 230400:
 			brate = B230400;
 			break;
-#endif // !_POSIX_C_SOURCE
+#endif
+// #endif // !_POSIX_C_SOURCE
 		default:
 			close(m_fd);
 			throw Error("unsupported baudrate");
