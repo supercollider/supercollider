@@ -9,6 +9,25 @@ Server.internal.waitForBoot {
 }
 );
 
+// a simple sawtooth
+
+(
+{
+var x, y, rate, a, c, m;
+	rate = MouseX.kr(100, SampleRate.ir);
+	a = 0.1;
+	c = 0.13;
+	m = 1.0;
+	x = Dbufrd(b); // read from buffer
+	x = x + a;
+	x = if(x > 1, 0, x);
+	y = Dbufwr(x, b); // write to buffer
+	Duty.ar(1 / rate, 0, y) * 0.1;
+}.scope;
+)
+
+// linear congruence
+
 (
 {
 var x, y, rate, a, c, m;
