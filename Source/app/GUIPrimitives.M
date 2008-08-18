@@ -2614,6 +2614,559 @@ int prPen_DrawAquaButton(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prPen_SetBlend(struct VMGlobals *g, int numArgsPushed);
+int prPen_SetBlend(struct VMGlobals *g, int numArgsPushed)
+{
+	#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4
+	if (!g->canCallOS) return errCantCallOS;
+	PyrSlot *c = g->sp; // blendmode
+	int mode = 0, err = errFailed;
+	
+	err = slotIntVal(c, &mode);
+	if( err != errNone )
+		return err;
+		
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+	CGContextSetBlendMode(cgc, (CGBlendMode)mode);
+	#endif
+	return errNone;
+}
+
+int prPen_SetShadow(struct VMGlobals *g, int numArgsPushed);
+int prPen_SetShadow(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+    
+	int err;
+	
+	PyrSlot *a = g->sp - 2; // offset
+	PyrSlot *b = g->sp - 1; // blur
+    PyrSlot *c = g->sp; // color
+	
+	NSPoint offset;
+	float	blur;
+	SCColor scColor;
+	
+    err = slotColorVal(c, &scColor);
+	if( err != errNone )
+		return err;
+		
+	err = slotGetPoint(a, &offset);
+	if( err != errNone )
+		return err;
+	
+	err = slotFloatVal(b, &blur);
+	if( err != errNone )
+		return err;
+	
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+	CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	CGColorRef col = CGColorCreate(colorSpace, (const float*)&scColor);
+	if(!col){
+		CGColorSpaceRelease(colorSpace);
+		return errFailed;
+	}
+		
+	CGContextSetShadowWithColor(_ctx, (CGSize){offset.x, offset.y}, blur, col);
+	
+	CGColorSpaceRelease(colorSpace);
+	CGColorRelease(col);
+		
+	return errNone;
+}
+
+int prPen_AddOval(struct VMGlobals *g, int numArgsPushed);
+int prPen_AddOval(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    //PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
+
+    CGRect rect;
+    int err = slotGetCGRect(b, &rect);		
+    if (err) return err;
+    
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+    CGContextAddEllipseInRect((CGContextRef)[gctx graphicsPort], rect);
+	
+    return errNone;
+}
+
+int prPen_AddBezierQuadCurve(struct VMGlobals *g, int numArgsPushed);
+int prPen_AddBezierQuadCurve(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+    
+	int err;
+	NSPoint points[2];
+	
+	PyrSlot *a = g->sp - 1; // point
+	PyrSlot *b = g->sp; // control point 1
+	
+	err = slotGetPoint(a, &points[0]);
+	if( err != errNone )
+		return err;
+	
+	err = slotGetPoint(b, &points[1]);
+	if( err != errNone )
+		return err;	
+	
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+	CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
+		
+	CGContextAddQuadCurveToPoint(_ctx,
+		points[1].x, points[1].y,
+		points[0].x, points[0].y
+	);
+	
+	return errNone;
+}
+
+int prPen_AddBezierCubicCurve(struct VMGlobals *g, int numArgsPushed);
+int prPen_AddBezierCubicCurve(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+    
+	int err;
+	NSPoint points[3];
+	
+	PyrSlot *a = g->sp - 2; // point
+	PyrSlot *b = g->sp - 1; // control point 1
+    PyrSlot *c = g->sp; // control point 2
+	
+	err = slotGetPoint(a, &points[0]);
+	if( err != errNone )
+		return err;
+	
+	err = slotGetPoint(b, &points[1]);
+	if( err != errNone )
+		return err;	
+		
+	err = slotGetPoint(c, &points[2]);
+	if( err != errNone )
+		return err;
+	
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+	
+    CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
+		
+	CGContextAddCurveToPoint(_ctx,
+		points[1].x, points[1].y,
+		points[2].x, points[2].y,
+		points[0].x, points[0].y
+	);
+	
+	return errNone;
+}
+
+int prPen_ClearRect(struct VMGlobals *g, int numArgsPushed);
+int prPen_ClearRect(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
+
+    CGRect rect;
+    int err = slotGetCGRect(b, &rect);		
+    if (err) return err;
+    
+   
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+	
+    CGContextClearRect(cgc, rect);
+	
+    return errNone;
+}
+
+int prPen_DrawPath(struct VMGlobals *g, int numArgsPushed);
+int prPen_DrawPath(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *b = g->sp;
+	int err, mode=0;
+	
+	if((err = slotIntVal(b, &mode)) != noErr) 
+		return err;
+
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+	//kCGPathFill=0, kCGPathEOFill=1, kCGPathStroke=2, kCGPathFillStroke=3, or kCGPathEOFillStroke=4
+	CGContextDrawPath(cgc, (CGPathDrawingMode)sc_clip(mode,kCGPathFill,kCGPathEOFillStroke));
+	return errNone;
+}
+
+int prPen_BeginTransparencyLayer(struct VMGlobals *g, int numArgsPushed);
+int prPen_BeginTransparencyLayer(struct VMGlobals *g, int numArgsPushed)
+{
+
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_3
+
+	if (!g->canCallOS) return errCantCallOS;
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+
+
+	#if 1/*MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_5*/
+	
+	CGContextBeginTransparencyLayer((CGContextRef)[gctx graphicsPort], NULL);
+	
+	#else /*MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5*/
+	
+	PyrSlot *b = g->sp;
+	if (!(isKindOfSlot(b, s_rect->u.classobj))) 
+		return errWrongType;
+
+    CGRect rect;
+    int err = slotGetCGRect(b, &rect);
+    if (err) 
+		return err;
+		
+	if(rect.size.width == 0 || rect.size.height == 0) // NULL in either side should take all current clipped region
+		CGContextBeginTransparencyLayer((CGContextRef)[gctx graphicsPort], NULL);
+	else
+		CGContextBeginTransparencyLayerWithRect((CGContextRef)[gctx graphicsPort], rect, NULL);
+		
+	#endif
+	
+#endif
+	return errNone;
+}
+
+int prPen_EndTransparencyLayer(struct VMGlobals *g, int numArgsPushed);
+int prPen_EndTransparencyLayer(struct VMGlobals *g, int numArgsPushed)
+{
+
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_3
+
+	if (!g->canCallOS) 
+		return errCantCallOS;
+		
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+	CGContextEndTransparencyLayer((CGContextRef)[gctx graphicsPort]);
+	
+#endif
+
+	return errNone;
+}
+
+int prPen_LineJoin(struct VMGlobals *g, int numArgsPushed);
+int prPen_LineJoin(struct VMGlobals *g, int numArgsPushed)
+{
+	int mode=0, err;
+	
+	if (!g->canCallOS) 
+		return errCantCallOS;
+		
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+	
+	PyrSlot *b  = g->sp; // mode
+	if((err = slotIntVal(b, &mode)) != noErr) 
+		return err;
+		
+	//kCGLineJoinMiter=0, kCGLineJoinRound=1,kCGLineJoinBevel=2	
+	CGContextSetLineJoin((CGContextRef)[gctx graphicsPort], (CGLineJoin)sc_clip(mode, kCGLineJoinMiter, kCGLineJoinBevel));
+	
+	return errNone;
+}
+
+int prPen_LineDash(struct VMGlobals *g, int numArgsPushed);
+int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) 
+		return errCantCallOS;
+		
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+	PyrSlot *a  = g->sp; // array of floats
+	PyrObject*	pyrarray = a->uo;
+	PyrClass*	pyrclass = pyrarray->classptr;
+	
+	if(pyrclass == class_floatarray) { // float array only
+		CGContextSetLineDash(
+			(CGContextRef)[gctx graphicsPort],
+			0,
+			((PyrFloatArray*)pyrarray)->f,
+			pyrarray->size
+		);
+		return errNone;
+	}else
+		post("Pen line dash needs a FloatArray as argument !\n");
+	
+	return errFailed;
+}
+
+int prPen_SetAlpha(struct VMGlobals *g, int numArgsPushed);
+int prPen_SetAlpha(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) 
+		return errCantCallOS;
+		
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+	
+	int err	= errNone; float value;
+	PyrSlot *a  = g->sp; // float
+	
+	err = slotFloatVal(a, &value);
+	if(err != errNone)
+		return err;
+	
+	CGContextSetAlpha((CGContextRef)[gctx graphicsPort], value);
+	
+	return errNone;
+}
+
+
+/*
+*	Gradient Functions 
+*	Valid only for MAC OS X 10.2 -) use the CGShading object
+*/
+
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_2
+
+typedef struct GradientInfo {
+	SCColor	color0;
+	SCColor color1;
+	int		scCallback; // future plan for custom gradient calc functions
+} GradientInfo, GradientInfoRef;
+
+static GradientInfo gGradientInfo;
+
+static void					GradientCalcLinear(void *info, const float *in, float *out)
+{
+    size_t k;
+	/*
+	if(gGradientInfo.scCallback) {
+		for (k = 0; k < 4; k++) {
+			*out++ = // result of Pen.gradientCalcFunc call;
+		}
+	}else{
+	*/
+		for (k = 0; k < 4; k++) {
+			*out++ = (((const float*)&gGradientInfo.color1)[k] * (*in)) + (((const float*)&gGradientInfo.color0)[k] * (1-(*in)));
+		}
+	//}
+}
+
+static CGFunctionRef		CreateGradientFunctionRef() 
+{
+	size_t components;
+    static const float input_value_range [2] = { 0, 1 };
+    static const float output_value_ranges [8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
+    static const CGFunctionCallbacks callbacks = { 0,
+									&GradientCalcLinear,
+									NULL};
+	
+	
+	/* 
+	Note: (colorspace = RGBA == 4)
+	-------------------------
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    components = 1 + CGColorSpaceGetNumberOfComponents (colorSpace);
+	CGColorSpaceRelease(colorSpace);
+	*/
+	
+	// initialize gradient info
+	gGradientInfo.color0 = SCMakeColor(1.f,1.f,1.f,1.f);
+	gGradientInfo.color1 = SCMakeColor(0.f,0.f,0.f,1.f);
+	gGradientInfo.scCallback = false;
+	
+    return CGFunctionCreate ((void *) &gGradientInfo,
+                                1,
+                                input_value_range,
+                                4, /* RGBA */
+                                output_value_ranges,
+                                &callbacks);
+}
+
+/*
+static CGFunctionRef		gGradientFunctionRef = NULL;
+static CGFunctionRef		GetGradientFunction() 
+{
+	if(!gGradientFunctionRef) {
+		post("creating gradient function !\n");
+		gGradientFunctionRef = CreateGradientFunctionRef();
+	}
+	return gGradientFunctionRef;
+}
+*/
+
+int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed);
+int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+    
+	int err;
+	NSPoint points[2];
+
+	PyrSlot *a = g->sp - 3; //	point 1
+    PyrSlot *b = g->sp - 2; //	point 2
+	PyrSlot *c0= g->sp - 1; //	color 1
+	PyrSlot *c1= g->sp; //	color 2
+	
+	CGFunctionRef gradFunc = CreateGradientFunctionRef(); // we need to create a new function ref since Quartz cache it
+	if(!gradFunc) {	
+		post("Error: Failed creating gradient function !\n");
+		return errFailed;
+	}
+	
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+	
+	
+	err = slotColorVal(c0, &(gGradientInfo.color0));
+	if( err != errNone )
+		return err;
+		
+	err = slotColorVal(c1, &(gGradientInfo.color1));
+	if( err != errNone )
+		return err;
+
+	err = slotGetPoint(a, &points[0]);
+	if( err != errNone )
+		return err;
+		
+	err = slotGetPoint(b, &points[1]);
+	if( err != errNone )
+		return err;
+		
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	CGShadingRef shadingRef = CGShadingCreateAxial(
+		colorSpace,
+		*(CGPoint*)(&points[0]), *(CGPoint*)(&points[1]),
+		gradFunc, false, false
+	);
+	
+	CGContextDrawShading(
+		(CGContextRef)[gctx graphicsPort], shadingRef
+	);
+	
+	CGColorSpaceRelease(colorSpace);
+	CGShadingRelease(shadingRef);
+	CGFunctionRelease(gradFunc);
+	
+	return errNone;
+}
+
+int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed);
+int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+    
+	int		err;
+	NSPoint points[2];
+	float	radius[2] = {0.f, 0.f};
+	
+	PyrSlot *a = g->sp - 5; //	point 1
+    PyrSlot *b = g->sp - 4; //	point 2
+	PyrSlot *srad = g->sp - 3; //	start radius
+	PyrSlot *erad = g->sp - 2; //	end radius
+	PyrSlot *c0= g->sp - 1; //	color 1
+	PyrSlot *c1= g->sp; //	color 2
+	
+	CGFunctionRef gradFunc = CreateGradientFunctionRef();
+	if(!gradFunc) {	
+		NSLog(@"Error: prPen_DrawRadialGradient Failed creating gradient function !\n");
+		return errFailed;
+	}
+	
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+	
+	
+	err = slotColorVal(c0, &(gGradientInfo.color0));
+	if( err != errNone )
+		return err;
+		
+	err = slotColorVal(c1, &(gGradientInfo.color1));
+	if( err != errNone )
+		return err;
+			
+	err = slotGetPoint(a, &points[0]);
+	if( err != errNone )
+		return err;
+		
+	err = slotGetPoint(b, &points[1]);
+	if( err != errNone )
+		return err;
+		
+	err = slotFloatVal(srad, &radius[0]);
+	if( err != errNone )
+		return err;
+		
+	err = slotFloatVal(erad, &radius[1]);
+	if( err != errNone )
+		return err;
+		
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	CGShadingRef shadingRef = CGShadingCreateRadial(
+		colorSpace,
+		*(CGPoint*)(&points[0]), radius[0],
+		*(CGPoint*)(&points[1]), radius[1],
+		gradFunc, false, false
+	);
+	
+	CGContextDrawShading(
+		(CGContextRef)[gctx graphicsPort], shadingRef
+	);
+	
+	CGColorSpaceRelease(colorSpace);
+	CGShadingRelease(shadingRef);
+	CGFunctionRelease(gradFunc);
+	return errNone;
+}
+#else
+// Dummy primitives if mac os x < 10.2 // should never be the case now... but
+int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed);
+int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed) {return errNone;}
+int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed);
+int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed) {return errNone;}
+#endif
+
+/*
+*	End Of Gradient Functions
+*/
+
 int prLoadUserPanel(struct VMGlobals *g, int numArgsPushed);
 int prLoadUserPanel(struct VMGlobals *g, int numArgsPushed)
 {
@@ -2942,7 +3495,7 @@ void stringBounds(char *s, int len, Rect &r)
 	r.left = 0;
 	r.top = -finfo.ascent;
 	r.right = width;
-	r.bottom = finfo.descent;
+	r.bottom = finfo.descent; 
 }
 
 int prNewMenuItem(struct VMGlobals *g, int numArgsPushed);
@@ -3227,7 +3780,22 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Pen_ClipPath", prPen_ClipPath, 1, 0);	
         
 	definePrimitive(base, index++, "_Pen_DrawAquaButton", prPen_DrawAquaButton, 5, 0);	
-        
+	
+	definePrimitive(base, index++, "_Pen_AddQuadCurve", prPen_AddBezierQuadCurve, 3, 0);
+	definePrimitive(base, index++, "_Pen_AddCubicCurve", prPen_AddBezierCubicCurve, 4, 0);
+	definePrimitive(base, index++, "_Pen_ClearRect", prPen_ClearRect, 2, 0);
+	definePrimitive(base, index++, "_Pen_SetBlendMode", prPen_SetBlend, 2, 0);
+	definePrimitive(base, index++, "_Pen_SetShadow", prPen_SetShadow, 4, 0);
+	definePrimitive(base, index++, "_Pen_SetAlpha", prPen_SetAlpha, 2, 0);
+	definePrimitive(base, index++, "_Pen_BeginTLayer", prPen_BeginTransparencyLayer, 1, 0);
+	definePrimitive(base, index++, "_Pen_EndTLayer", prPen_EndTransparencyLayer, 1, 0);
+	definePrimitive(base, index++, "_Pen_DrawPath", prPen_DrawPath, 2, 0);
+	definePrimitive(base, index++, "_Pen_LineJoin", prPen_LineJoin, 2, 0);
+	definePrimitive(base, index++, "_Pen_LineDash", prPen_LineDash, 2, 0);
+	definePrimitive(base, index++, "_Pen_AddOval", prPen_AddOval, 2, 0);
+	definePrimitive(base, index++, "_Pen_DrawAxialGradient", prPen_DrawAxialGradient, 5, 0);
+	definePrimitive(base, index++, "_Pen_DrawRadialGradient", prPen_DrawRadialGradient, 7, 0);
+	
 	definePrimitive(base, index++, "_HasDeferred", prHasDeferred, 1, 0);	
 	definePrimitive(base, index++, "_LoadUserPanel", prLoadUserPanel, 2, 0);	
 
