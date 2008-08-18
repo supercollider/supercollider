@@ -104,14 +104,6 @@ classvar fnt, fillColor, strokeColor;
 	*line { arg p1, p2;
 		^this.moveTo(p1).lineTo(p2);
 	}
-//	*curveTo { arg point, cpoint1, cpoint2;
-//		_Pen_CurveTo
-//		^this.primitiveFailed
-//	}
-//	*quadCurveTo { arg point, cpoint1;
-//		_Pen_QuadCurveTo
-//		^this.primitiveFailed
-//	}
 	*addArc { arg center, radius, startAngle, arcAngle;
 		_Pen_AddArc
 		^this.primitiveFailed
@@ -172,7 +164,131 @@ classvar fnt, fillColor, strokeColor;
 		^this.primitiveFailed
 	}
 	
-
+	//ADDITIONS:
+	
+	*fillStroke {
+		this.draw(4);
+	}
+	
+	*clearRect {arg aRect=nil;
+		_Pen_ClearRect
+		^this.primitiveFailed
+	}
+	
+	*curveTo { arg point, cpoint1, cpoint2;
+		_Pen_AddCubicCurve
+		^this.primitiveFailed
+	}
+	
+	*quadCurveTo { arg point, cpoint1;
+		_Pen_AddQuadCurve
+		^this.primitiveFailed
+	}
+	
+	*alpha_ {arg opacity;
+		_Pen_SetAlpha
+		^this.primitiveFailed
+	}
+	
+	/*
+	different blend modes:
+	OS X 10.4 and > Only
+	--------------------
+	0 - Normal
+	1 - Multiply
+	2 - Screen
+	3 - Overlay
+	4 - Darken
+	5 - Lighten
+	6 - ColorDodge
+	7 - ColorBurn
+	8 - SoftLight
+	9 - HardLight
+	10 - Difference
+	11 - Exclusion
+	12 - Hue
+	13 - Saturation
+	14 - Color
+	15 - Luminosity
+	
+	OS 10.5 and > Only
+	--------------------
+	16 - Clear
+	17 - Copy
+	18 - SourceIn
+	19 - SourceOut
+	20 - SourceATop
+	21 - DestinationOver
+	22 - DestinationIn
+	23 - DestinationATop
+	24 - XOR
+	25 - PlusDarker
+	26 - PlusLighter
+	*/
+	*blendMode_{arg mode;
+		_Pen_SetBlendMode
+		^this.primitiveFailed
+	}
+	
+	*setShadow {arg offsetPoint=Point(2,2), blur=0.5, color=Color.black;
+		this.prSetShadow(offsetPoint, blur, color);
+	}
+	
+	*prSetShadow {arg offsetPoint, blur, color;
+		_Pen_SetShadow
+		^this.primitiveFailed
+	}
+	
+	*beginTransparencyLayer{		
+		_Pen_BeginTLayer
+		^this.primitiveFailed
+	}
+	
+	*endTransparencyLayer{ // will work only for Mac Os X >= 10.3 - does nothing for others
+		_Pen_EndTLayer
+		^this.primitiveFailed
+	}
+	
+	*draw {arg option=0;// 0 = fill, 1 = eofill, 2 = stroke, 3 = fillstroke, 4 = eofillstroke
+		_Pen_DrawPath
+		^this.primitiveFailed
+	}
+	
+	*joinStyle_ { arg style=0; // 0 = miter, 1 = round, 2 = bevel
+		_Pen_LineJoin
+		^this.primitiveFailed
+	}
+	
+	*lineDash_ {arg pattern; // should be a FloatArray
+		_Pen_LineDash
+		^this.primitiveFailed
+	}
+	
+	*addOval { arg rect;
+		_Pen_AddOval
+		^this.primitiveFailed
+	}
+	
+	*fillAxialGradient {arg startPoint, endPoint, color0, color1;
+		this.clip;
+		this.prFillAxialGradient(startPoint, endPoint, color0, color1);
+	}
+	
+	*fillRadialGradient {arg innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1;
+		this.clip;
+		this.prFillRadialGradient(innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1);
+	}
+	
+	*prFillAxialGradient {arg startPoint, endPoint, color0, color1;
+		_Pen_DrawAxialGradient
+		^this.primitiveFailed
+	}
+	
+	*prFillRadialGradient {arg innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1;
+		_Pen_DrawRadialGradient
+		^this.primitiveFailed
+	}
+	
 	//PRIVATE:
 	*push {
 		_Pen_Push
