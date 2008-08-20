@@ -106,8 +106,8 @@ void Dimension_Init(struct SC_Dimension *inDimension, int inWidth, int inHeight)
 #define GRAPHDEF(inGraph) ((GraphDef*)((inGraph)->mNode.mDef))
 #define GRAPH_PARAM_TABLE(inGraph) (GRAPHDEF(inGraph)->mParamSpecTable)
 
-int Graph_New(struct World *inWorld, struct GraphDef *def, int32 inID, struct sc_msg_iter* args, struct Graph** outGraph);
-void Graph_Ctor(struct World *inWorld, struct GraphDef *inGraphDef, struct Graph *graph, struct sc_msg_iter *msg);
+int Graph_New(struct World *inWorld, struct GraphDef *def, int32 inID, struct sc_msg_iter* args, struct Graph** outGraph,bool argtype=true);
+void Graph_Ctor(struct World *inWorld, struct GraphDef *inGraphDef, struct Graph *graph, struct sc_msg_iter *msg,bool argtype);
 void Graph_Dtor(struct Graph *inGraph);
 int  Graph_GetControl(struct Graph* inGraph, uint32 inIndex, float& outValue);
 int  Graph_GetControl(struct Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, float& outValue);

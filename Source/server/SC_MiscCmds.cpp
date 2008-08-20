@@ -632,7 +632,7 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		case 0 : {
 			Group *group = Msg_GetGroup(inWorld, msg);
 			if (!group) return kSCErr_GroupNotFound;
-			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,true);//true for normal args 
 			if (err) return err;
 			if (!graph) return kSCErr_Failed;
 			Group_AddHead(group, &graph->mNode);
@@ -640,28 +640,89 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		case 1 : {
 			Group *group = Msg_GetGroup(inWorld, msg);
 			if (!group) return kSCErr_GroupNotFound;
-			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,true);
 			if (err) return err;
 			Group_AddTail(group, &graph->mNode);
 		} break;
 		case 2 : {
 			Node *beforeThisNode = Msg_GetNode(inWorld, msg);
 			if (!beforeThisNode) return kSCErr_NodeNotFound;
-			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,true);
 			if (err) return err;
 			Node_AddBefore(&graph->mNode, beforeThisNode);
 		} break;
 		case 3 : {
 			Node *afterThisNode = Msg_GetNode(inWorld, msg);
 			if (!afterThisNode) return kSCErr_NodeNotFound;
-			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,true);
 			if (err) return err;
 			Node_AddAfter(&graph->mNode, afterThisNode);
 		} break;
 		case 4 : {
 			Node *replaceThisNode = Msg_GetNode(inWorld, msg);
 			if (!replaceThisNode) return kSCErr_NodeNotFound;
-			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,true);
+			if (err) return err;
+			Node_Replace(&graph->mNode, replaceThisNode);
+		} break;
+		default: return kSCErr_Failed;
+	}
+	Node_StateMsg(&graph->mNode, kNode_Go);
+	return kSCErr_None;
+}
+
+SCErr meth_s_newargs(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_s_newargs(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+{
+	SCErr err;
+	sc_msg_iter msg(inSize, inData);	
+	int32 *defname = msg.gets4();
+	if (!defname) return kSCErr_WrongArgType;
+	
+	int32 nodeID = msg.geti();
+	int32 addAction = msg.geti();
+
+	GraphDef *def = World_GetGraphDef(inWorld, defname);
+	if (!def) {
+		scprintf("*** ERROR: SynthDef %s not found\n", (char*)defname);
+		return kSCErr_SynthDefNotFound;
+	}
+
+	Graph *graph = 0;
+	switch (addAction) {
+		case 0 : {
+			Group *group = Msg_GetGroup(inWorld, msg);
+			if (!group) return kSCErr_GroupNotFound;
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,false);//false for setn type args
+			if (err) return err;
+			if (!graph) return kSCErr_Failed;
+			Group_AddHead(group, &graph->mNode);
+		} break;
+		case 1 : {
+			Group *group = Msg_GetGroup(inWorld, msg);
+			if (!group) return kSCErr_GroupNotFound;
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,false);
+			if (err) return err;
+			Group_AddTail(group, &graph->mNode);
+		} break;
+		case 2 : {
+			Node *beforeThisNode = Msg_GetNode(inWorld, msg);
+			if (!beforeThisNode) return kSCErr_NodeNotFound;
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,false);
+			if (err) return err;
+			Node_AddBefore(&graph->mNode, beforeThisNode);
+		} break;
+		case 3 : {
+			Node *afterThisNode = Msg_GetNode(inWorld, msg);
+			if (!afterThisNode) return kSCErr_NodeNotFound;
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,false);
+			if (err) return err;
+			Node_AddAfter(&graph->mNode, afterThisNode);
+		} break;
+		case 4 : {
+			Node *replaceThisNode = Msg_GetNode(inWorld, msg);
+			if (!replaceThisNode) return kSCErr_NodeNotFound;
+			err = Graph_New(inWorld, def, nodeID, &msg, &graph,false);
 			if (err) return err;
 			Node_Replace(&graph->mNode, replaceThisNode);
 		} break;
@@ -1514,6 +1575,7 @@ void initMiscCommands()
 	NEW_COMMAND(d_free);	
 
 	NEW_COMMAND(s_new);	
+	NEW_COMMAND(s_newargs);	
 			
 	NEW_COMMAND(n_trace);
 	NEW_COMMAND(n_free);		

@@ -363,17 +363,23 @@ Buffer {
 		^["/b_set",bufnum,index,float] ++ morePairs;
 	}
 	
-	setn { arg startAt , values ... morePairs;
-		server.sendMsg(*this.setnMsg(startAt, values, *morePairs));
+	setn { arg ... args;
+		server.sendMsg(*this.setnMsg(*args));
 	}
-	setnMsg { arg startAt , values ... morePairs;
+	setnMsgArgs{arg ... args;
 		var nargs;
 		nargs = List.new;
-		morePairs.pairsDo({ arg control, moreVals; 
-			nargs.addAll([control, moreVals.size, moreVals].flat)}
-		);
-		^["/b_setn",bufnum,startAt,values.size] 
-			++ values ++ nargs;
+		args.pairsDo{ arg control, moreVals; 
+			if(moreVals.isArray,{
+				nargs.addAll([control, moreVals.size]++ moreVals)
+			},{
+				nargs.addAll([control, 1, moreVals]);
+			});
+		};
+		^nargs;
+	}
+	setnMsg { arg ... args;
+		^["/b_setn",bufnum] ++ this.setnMsgArgs(*args);
 	}
 	get { arg index, action;
 		OSCpathResponder(server.addr,['/b_set',bufnum,index],{ arg time, r, msg; 

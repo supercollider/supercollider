@@ -87,16 +87,23 @@ Node {
 	setn { arg ... args;
 		server.sendMsg(*this.setnMsg(*args));
 	}
-	
-	setnMsg { arg ... args;
-		var nargs;
+
+	*setnMsgArgs{ arg ... args;
+		var nargs=List.new;
 		args = args.asControlInput; 
-		nargs = List.new;
 		args.pairsDo { arg control, moreVals; 
-			nargs.addAll([control, moreVals.size, moreVals].flatIf { |x| x.isString.not })
-		};
-		^[16, nodeID] ++ nargs; 
-			// "n_setn"
+			if(moreVals.isArray,{
+				nargs.addAll([control, moreVals.size]++ moreVals);
+			},{
+				nargs.addAll([control, 1, moreVals]);
+			});
+		};		
+		^nargs;
+	}
+
+	setnMsg { arg ... args;
+		^[16, nodeID] ++ Node.setnMsgArgs(*args); 
+		// "n_setn"
 	}
 		
 	fill { arg controlName, numControls, value ... args;
@@ -369,9 +376,11 @@ Synth : Node {
 		server = inTarget.server;
 		addNum = addActions[addAction];
 		synth = this.basicNew(defName, server);
+
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
-		server.sendMsg(9, defName, synth.nodeID, addNum, inTarget.nodeID, 
-			*(args.asControlInput)); //"s_new"
+		server.sendMsg(59, //"s_newargs"
+			defName, synth.nodeID, addNum, inTarget.nodeID,
+			*Node.setnMsgArgs(*args));
 		^synth
 	}
 	*newPaused { arg defName, args, target, addAction=\addToHead;

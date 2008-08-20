@@ -124,7 +124,10 @@ enum {
 	
 	cmd_error = 58,
 
-	NUMBER_OF_COMMANDS = 59
+	cmd_s_newargs = 59,
+
+	//NUMBER_OF_COMMANDS = 59
+	NUMBER_OF_COMMANDS = 60
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];

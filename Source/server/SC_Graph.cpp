@@ -75,18 +75,18 @@ void Graph_Dtor(Graph *inGraph)
 ////////////////////////////////////////////////////////////////////////////////
 
 int Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID, 
-			struct sc_msg_iter* args, Graph** outGraph)
+	      struct sc_msg_iter* args, Graph** outGraph,bool argtype)//true for normal args , false for setn type args
 {
 	Graph* graph;
 	int err = Node_New(inWorld, &inGraphDef->mNodeDef, inID, (Node**)&graph);
 	if (err) return err;
-	Graph_Ctor(inWorld, inGraphDef, graph, args);
+	Graph_Ctor(inWorld, inGraphDef, graph, args,argtype);
 	*outGraph = graph;
 	return err;
 }
 
 
-void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter *msg)
+void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter *msg,bool argtype)//true for normal args , false for setn type args
 {	
 	//scprintf("->Graph_Ctor\n");
 	
@@ -134,7 +134,11 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	}
 	
 	// set controls
-	while (msg->remain() >= 8) {
+	//if argtype == true -> normal args as always 
+	//if argtype == false -> setn type args
+	if(argtype){
+
+	  while (msg->remain() >= 8) {
 		if (msg->nextTag('i') == 's') {
 			int32* name = msg->gets4();
 			int32 hash = Hash(name);
@@ -161,6 +165,48 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 				Graph_SetControl(graph, index, value);
 			}
 		}
+	  }
+
+	}else{
+
+	  while (msg->remain()) {
+		if (msg->nextTag('i') == 's') {
+			int32* name = msg->gets4();
+			int32 hash = Hash(name);
+			int32 n = msg->geti();
+			for (int i=0; msg->remain() && i<n; ++i) {
+				if (msg->nextTag('f') == 's') {
+					const char* string = msg->gets();
+					if (*string == 'c') {
+						int bus = sc_atoi(string+1);
+						Graph_MapControl(graph, hash, name, i, bus);
+						//Node_MapControl(node, hash, name, i, bus);
+					}
+				} else {
+					float32 value = msg->getf();
+					Graph_SetControl(graph, hash, name, i, value);
+					//Node_SetControl(node, hash, name, i, value);
+				}
+			}
+		} else {
+			int32 index = msg->geti();
+			int32 n = msg->geti();
+			for (int i=0; msg->remain() && i<n; ++i) {
+				if (msg->nextTag('f') == 's') {
+					const char* string = msg->gets();
+					if (*string == 'c') {
+						int bus = sc_atoi(string+1);
+						Graph_MapControl(graph, index+i, bus);
+						//Node_MapControl(node, index+i, bus);
+					}
+				} else {
+					float32 value = msg->getf();
+					Graph_SetControl(graph, index+i, value);
+					//Node_SetControl(node, index+i, value);
+				}
+			}
+		}
+	  }	  
 	}
 
 	// set up scalar values
