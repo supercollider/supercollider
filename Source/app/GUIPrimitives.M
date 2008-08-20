@@ -3073,7 +3073,7 @@ int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed)
 	CGShadingRef shadingRef = CGShadingCreateAxial(
 		colorSpace,
 		*(CGPoint*)(&points[0]), *(CGPoint*)(&points[1]),
-		gradFunc, false, false
+		gradFunc, true, true
 	);
 	
 	CGContextDrawShading(
@@ -3143,7 +3143,7 @@ int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed)
 		colorSpace,
 		*(CGPoint*)(&points[0]), radius[0],
 		*(CGPoint*)(&points[1]), radius[1],
-		gradFunc, false, false
+		gradFunc, true, true
 	);
 	
 	CGContextDrawShading(
