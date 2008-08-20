@@ -147,6 +147,7 @@ ClassBrowser {
 					svnAddr = "http://supercollider.svn.sourceforge.net/viewvc/supercollider/trunk/build/";
 					filename = this.currentClass.filenameSymbol.asString;
 					svnAddr = svnAddr ++ filename.drop(filename.find("SCClassLibrary"));
+					svnAddr = svnAddr ++ "?view=log";
 					this.openSVN( svnAddr );
 				};
 			};
