@@ -384,7 +384,7 @@ void* AllocPool::Alloc(size_t inReqSize)
 	// exit paths:
 	found_nothing:
 		//ipostbuf("alloc failed. size: %d\n", inReqSize);
-		throw std::runtime_error("alloc failed"); 
+		throw std::runtime_error("alloc failed, increase server's memory allocation (e.g. via ServerOptions)"); 
 		
 	whole_new_area:
 		//ipostbuf("whole_new_area\n");
@@ -488,7 +488,7 @@ void* AllocPool::Realloc(void* inPtr, size_t inReqSize)
 		check_pool();
 		if (outPtr == 0) {
 			//ipostbuf("realloc failed. size: %d\n", inReqSize);
-			throw std::runtime_error("realloc failed"); 
+			throw std::runtime_error("realloc failed, increase server's memory allocation (e.g. via ServerOptions)"); 
 		}
 
 		/* Otherwise copy, free, and exit */
