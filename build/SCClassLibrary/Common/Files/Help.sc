@@ -192,9 +192,9 @@ Help {
 	
 	// Now for a GUI
 	win = GUI.window.new("Help browser", Rect(128, 264, 1040, 564)); // SCWindow
-	scrollView = GUI.scrollView.new(win, Rect(5, 0, 405, 529)).hasBorder_(true);
+	scrollView = GUI.scrollView.new(win, Rect(5, 0, 425, 529)).hasBorder_(true);
 	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, 504));
-	textView = GUI.textView.new(win, Rect(415, 0, 620, 554))
+	textView = GUI.textView.new(win, Rect(435, 0, 620, 554))
 		.hasVerticalScroller_(true)
 		.hasHorizontalScroller_(true)
 		.autohidesScrollers_(false)
