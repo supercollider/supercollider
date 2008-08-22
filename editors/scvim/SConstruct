@@ -19,6 +19,7 @@ HOME_DIR_RE = re.compile(os.environ.get('HOME') + '.*')
 DEFAULT_PREFIX = '/usr/local/'
 DEFAULT_SC_HELP = os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')
 
+
 def pkg_data_dir(prefix, *args):
     if PLATFORM == 'darwin':
         base = '/Library/Application Support'
@@ -30,6 +31,8 @@ def pkg_data_dir(prefix, *args):
 
 def pkg_extension_dir(prefix, *args):
     return pkg_data_dir(prefix, 'Extensions', *args)
+
+SWAP_FILE_MATCH = re.compile('.*.swp')
 
 def install_dir(env, src_dir, dst_dir, filter_re, strip_levels=0):
     nodes = []
@@ -43,7 +46,8 @@ def install_dir(env, src_dir, dst_dir, filter_re, strip_levels=0):
                 src_paths += flatten_dir(os.path.join(root, d))
                 dirs.remove(d)
         for f in files:
-            if filter_re.match(f):
+			  #ditch swap files
+            if not SWAP_FILE_MATCH.match(f) and filter_re.match(f):
                 src_paths.append(os.path.join(root, f))
         dst_paths += map(
             lambda f:

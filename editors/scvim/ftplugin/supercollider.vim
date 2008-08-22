@@ -79,7 +79,7 @@ endif
 if exists("g:sclangPipeApp")
 	let s:sclangPipeApp	= g:sclangPipeApp
 else
-	let s:sclangPipeApp	= "sclangpipe_app.sh"
+	let s:sclangPipeApp	= "sclangpipe_app.rb"
 endif
 
 "function SClangRunning()
@@ -214,8 +214,9 @@ function SClangKill()
 endfunction
 
 function SClangRestart()
-	call SClangKill()
-	call SClangStart()
+	if filewritable(s:sclangPipeAppPidLoc)
+		call system("kill -HUP `cat " . s:sclangPipeAppPidLoc . "`")
+	end
 endfunction
 
 function SClang_free(server)
