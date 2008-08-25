@@ -209,6 +209,8 @@ endfunction
 
 function SClangKill()
 	if filewritable(s:sclangPipeAppPidLoc)
+		call SendToSC("Server.quitAll;")
+		:sleep 10m
 		call system("kill `cat " . s:sclangPipeAppPidLoc . "` && rm " . s:sclangPipeAppPidLoc . " && rm " . s:sclangPipeLoc)
 	end
 endfunction
@@ -216,6 +218,8 @@ endfunction
 function SClangRestart()
 	if filewritable(s:sclangPipeAppPidLoc)
 		call system("kill -HUP `cat " . s:sclangPipeAppPidLoc . "`")
+	else
+		call SClangStart()
 	end
 endfunction
 
