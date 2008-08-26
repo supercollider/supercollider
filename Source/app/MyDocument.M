@@ -914,7 +914,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     [[textView textStorage] addAttributes: linkAttributes  range: selection];
     
     // Make sure it saves as HTML as default
-    [self setFileType: @"SC Help (HTML)"]; // need to change name to html
+    [self setFileType: @"HTML"]; // need to change name to html
     [self updateChangeCount: NSChangeDone];
 }
 
