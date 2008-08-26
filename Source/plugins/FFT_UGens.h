@@ -29,8 +29,6 @@
 
 #include <string.h>
 
-const int kNUMOVERLAPS = 2;
-
 struct SCComplexBuf 
 {
 	float dc, nyq;

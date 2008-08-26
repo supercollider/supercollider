@@ -41,30 +41,14 @@
 
 // Decisions here about which FFT library to use - vDSP only exists on Mac BTW.
 // We include the relevant libs but also ensure that one, and only one, of them is active...
-#if !(SC_FFT_FFTW || SC_FFT_GREEN) && SC_DARWIN
-
-#define SC_FFT_FFTW 0
-#define SC_FFT_VDSP 1
-#define SC_FFT_GREEN 0
-
-#elif SC_FFT_GREEN
-
-#define SC_FFT_FFTW 0
-#define SC_FFT_VDSP 0
-#define SC_FFT_GREEN 1
-extern "C" {
-	#include "fftlib.h"
-	static float *cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
-}
-
-#else
+#if !SC_FFT_FFTW && SC_DARWIN
+	#define SC_FFT_FFTW 0
+	#define SC_FFT_VDSP 1
+#else        
 //#elif SC_FFT_FFTW
-
-#define SC_FFT_FFTW 1
-#define SC_FFT_VDSP 0
-#define SC_FFT_GREEN 0
-#include <fftw3.h>
-
+	#define SC_FFT_FFTW 1
+	#define SC_FFT_VDSP 0
+	#include <fftw3.h>
 #endif
 
 extern InterfaceTable *ft;
@@ -91,7 +75,6 @@ struct FFTBase : public Unit
 	
 	uint32 m_fftbufnum;
 	
-	//Added (since FFTBase from original FFT UGens):
 #if SC_FFT_FFTW
 	fftwf_plan m_plan;
 #endif
@@ -252,11 +235,6 @@ void FFT_Ctor(FFT *unit)
 	unit->m_plan = fftwf_plan_dft_r2c_1d(unit->m_fullbufsize, unit->m_transformbuf, 
 			(fftwf_complex*) unit->m_transformbuf, FFTW_ESTIMATE);
 	memset(unit->m_transformbuf, 0, fullbufsize + sizeof(float) + sizeof(float));
-#elif SC_FFT_GREEN
-	if(unit->mWorld->mVerbosity > 1)
-		Print("FFT using Green\n");
-	// Green packs the nyquist in with the DC, so size is same as input buffer (plus zeropadding)
-	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, fullbufsize);
 #else
 	if(unit->mWorld->mVerbosity > 1)
 		Print("FFT using vDSP\n");
@@ -325,11 +303,6 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 			// Rearrange output data onto public buffer
 			memcpy(unit->m_fftbuf, unit->m_transformbuf, fullbufsize);
 			unit->m_fftbuf[1] = unit->m_transformbuf[unit->m_fullbufsize]; // Pack nyquist val in
-#elif SC_FFT_GREEN
-			// Green FFT is in-place
-			rffts(unit->m_transformbuf, unit->m_log2n, 1, cosTable[unit->m_log2n_full]);
-			// Copy to public buffer
-			memcpy(unit->m_fftbuf, unit->m_transformbuf, fullbufsize);
 #else
 			// Perform even-odd split
 			vDSP_ctoz((COMPLEX*) unit->m_transformbuf, 2, &splitBuf, 1, unit->m_fullbufsize >> 1);
@@ -372,8 +345,6 @@ void IFFT_Ctor(IFFT* unit){
 
 	memset(unit->m_transformbuf, 0, (unit->m_fullbufsize+2) * sizeof(float));
 	unit->m_scalefactor = 1.f / unit->m_fullbufsize;
-#elif SC_FFT_GREEN
-	unit->m_scalefactor = 1.f;
 #else
 	unit->m_scalefactor = 2.f / unit->m_fullbufsize;
 #endif
@@ -426,8 +397,6 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 		transformbuf[unit->m_fullbufsize] = fftbuf[1];  // Nyquist goes all the way down to the end of the line...
 		transformbuf[unit->m_fullbufsize+1] = 0.f;
 		fftwf_execute(unit->m_plan);
-#elif SC_FFT_GREEN
-		riffts(fftbuf, unit->m_log2n_full, 1, cosTable[unit->m_log2n_full]);
 #else
 		// For vDSP we can't really do it in place either,
 		//  because the data needs to be converted into then out of "split" (odd/even) representation
@@ -480,22 +449,6 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-
-#if SC_FFT_GREEN
-float* create_cosTable(int log2n);
-float* create_cosTable(int log2n)
-{
-	int size = 1 << log2n;
-	int size2 = size / 4 + 1;
-	float *win = (float*)malloc(size2 * sizeof(float));
-	double winc = twopi / size;
-	for (int i=0; i<size2; ++i) {
-		double w = i * winc;
-		win[i] = cos(w);
-	}
-	return win;
-}
-#endif
 
 float* create_fftwindow(int wintype, int log2n);
 float* create_fftwindow(int wintype, int log2n)
@@ -554,9 +507,6 @@ int ensure_fftwindow(FFTBase *unit){
 #if SC_FFT_VDSP
 	if(fftSetup[log2n_full] == 0)
 		fftSetup[log2n_full] = vDSP_create_fftsetup (log2n_full, FFT_RADIX2);
-#elif SC_FFT_GREEN
-	if(cosTable[log2n_full] == 0)
-		cosTable[log2n_full] = create_cosTable(log2n_full);
 #else
 		// Nothing needed here for FFTW
 #endif
@@ -575,15 +525,7 @@ void init_ffts()
 			fftWindow[wintype][i] = create_fftwindow(wintype, i);
 		}
 	}
-#if SC_FFT_GREEN
-	for (int i=0; i< SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
-		cosTable[i] = 0;
-	}
-	for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
-		cosTable[i] = create_cosTable(i);
-	}
-	//Print("FFT init: cosTable initialised.\n");
-#elif SC_FFT_VDSP
+#if SC_FFT_VDSP
 	// vDSP inits its twiddle factors
 	for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
 		fftSetup[i] = vDSP_create_fftsetup (i, FFT_RADIX2);
