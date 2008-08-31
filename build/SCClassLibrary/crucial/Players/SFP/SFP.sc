@@ -289,7 +289,7 @@ VSFP : SFP {
 		sched = BeatSched.new(SystemClock,myTempo,tempoClock);
 	}
 	preloadData { arg startAt=0,endAt,group,bundle,parentSegmentBuffers;
-		buff = Buffer.new(group.server,44100 * 6,2);
+		buff = Buffer.new(group.server,44100 * 6,this.numChannels);
 		bundle.add(
 			buff.allocMsg(
 				// not doing startAt yet
@@ -301,7 +301,7 @@ VSFP : SFP {
 	asSynthDef {
 		^SynthDef(this.defName,{ arg out = 0, i_bufnum,pchRatio;
 			Out.ar(out,
-				PlayBuf.ar(2,i_bufnum,pchRatio,loop: 1.0)
+				PlayBuf.ar(this.numChannels,i_bufnum,pchRatio,loop: 1.0)
 			)
 		});
 	}
@@ -367,5 +367,7 @@ VSFP : SFP {
 	currentFrame {
 		^(sched.time % 6 * 44100);
 	}
+	beat { ^sched.beat }
+	time { ^sched.time }
 }
 
