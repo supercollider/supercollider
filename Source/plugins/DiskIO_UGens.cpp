@@ -57,6 +57,11 @@ struct DiskOut : public Unit
 	uint32 m_framepos;
 };
 
+struct VDiskIn : public Unit
+{
+	float m_fbufnum, m_pchRatio, m_framePos, m_bufPos;
+	SndBuf *m_buf;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,6 +74,10 @@ extern "C"
 
 	void DiskOut_next(DiskOut *unit, int inNumSamples);
 	void DiskOut_Ctor(DiskOut* unit);
+
+	void VDiskIn_next(VDiskIn *unit, int inNumSamples);
+	void VDiskIn_first(VDiskIn *unit, int inNumSamples);
+	void VDiskIn_Ctor(VDiskIn* unit);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,6 +122,17 @@ void* disk_io_thread_func(void* arg)
 #endif //#ifndef SC_WIN32
 	}
 	return 0;
+}
+
+static float cubicinterp(float x, float y0, float y1, float y2, float y3)
+{
+	// 4-point, 3rd-order Hermite (x-form)
+	float c0 = y1;
+	float c1 = 0.5f * (y2 - y0);
+	float c2 = y0 - 2.5f * y1 + 2.f * y2 - 0.5f * y3;
+	float c3 = 0.5f * (y3 - y0) + 1.5f * (y1 - y2);
+
+	return ((c3 * x + c2) * x + c1) * x + c0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,7 +295,6 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 	
 	unit->m_framepos += inNumSamples;
 	uint32 bufFrames2 = bufFrames >> 1;
-	//printf("pos %d  %d %d\n", unit->m_framepos, bufFrames, bufFrames2);
 	if (unit->m_framepos == bufFrames) {
 		unit->m_framepos = 0;
 		goto sendMessage;
@@ -337,6 +356,235 @@ leave:
 	NRTUnlock(mWorld);
 }
 
+
+void VDiskIn_Ctor(VDiskIn* unit)
+{
+	unit->m_fbufnum = -1.f;
+	unit->m_buf = unit->mWorld->mSndBufs;
+	unit->m_framePos = 0.;
+	unit->m_bufPos = 0.;
+	unit->m_pchRatio = IN0(1);
+	SETCALC(VDiskIn_first); // should be first
+}
+
+// first time through, the FIRST sample doesn't need the interpolation... the buffer won't be filled 'correctly' for
+// interpolation, so use the _first function to make this exception
+
+void VDiskIn_first(VDiskIn *unit, int inNumSamples)
+{
+
+	SETCALC(VDiskIn_next);
+	
+	float a, b, c, d, oldBufPos;
+	bool test = false;
+
+	GET_BUF
+	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
+		unit->m_framePos = 0.;
+		ClearUnitOutputs(unit, inNumSamples);
+		return;
+	}
+
+	uint32 bufFrames2 = bufFrames >> 1;
+	float fbufFrames2 = (float)bufFrames2;
+	float fbufFrames = (float)bufFrames;
+	
+	SETUP_OUT(0)
+	
+	float framePos = unit->m_framePos;
+	float bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
+	float newPchRatio = IN0(1);
+	float pchRatio = unit->m_pchRatio;
+	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
+
+	float* tableInit = bufData;
+
+	for (uint32 i = 0; i < bufChannels; i++){
+	    out[i][0] = bufData[0 + i];
+	    };
+	    
+	pchRatio += pchSlope;
+	framePos += pchRatio;
+	bufPos += pchRatio;
+
+	for (int j = 1; j < inNumSamples; ++j){
+	    uint32 iBufPos = (uint32)bufPos;   
+	    float frac = bufPos - (float)iBufPos;
+	    uint32 table1 = iBufPos * bufChannels;
+	    uint32 table0 = table1 - bufChannels; 
+	    uint32 table2 = table1 + bufChannels;
+	    uint32 table3 = table2 + bufChannels;
+	    if(table0 < 0) table0 += bufSamples;
+	    if(table2 >= bufFrames) table2 -= bufSamples;
+	    if(table3 >= bufFrames) table3 -= bufSamples;
+	    for (uint32 i = 0; i < bufChannels; i++){
+		a = bufData[table0 + i];
+		b = bufData[table1 + i];
+		c = bufData[table2 + i];
+		d = bufData[table3 + i];
+		out[i][j] = cubicinterp(frac, a, b, c, d);
+		};
+	    pchRatio += pchSlope;
+	    framePos += pchRatio;
+	    oldBufPos = bufPos;
+	    bufPos += pchRatio;
+	    if ((oldBufPos < fbufFrames2) && ((bufPos >= fbufFrames2))){
+		test = true;
+		}
+	    if (bufPos >= fbufFrames){
+		test = true;
+		bufPos -= fbufFrames;
+		}
+	    }
+	if ( test ){
+	    if(unit->mWorld->mRealTime){
+		test = false;
+		DiskIOMsg msg;
+		msg.mWorld = unit->mWorld;
+		msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
+		msg.mBufNum = (int)fbufnum;
+		uint32 thisPos;
+		if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
+		msg.mPos = thisPos;
+		msg.mFrames = bufFrames2;
+		msg.mChannels = bufChannels;
+#ifndef SC_WIN32
+		gDiskFifo.Write(msg);
+		gDiskFifoHasData.Signal();
+#else //#ifndef SC_WIN32
+		pgDiskFifo->Write(msg);
+		pgDiskFifoHasData->Signal();
+#endif //#ifndef SC_WIN32
+		} else {
+		    SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
+		    uint32 mPos;
+		    if((uint32)bufPos >= bufFrames2) mPos = 0; else mPos = bufFrames2;
+		    if (mPos > (uint32)bufr->frames || mPos + bufFrames2 > (uint32)bufr->frames || (uint32) bufr->channels != bufChannels) return;
+		    sf_count_t count;
+
+		    if ((int)ZIN0(2)) { // loop
+			    if (!bufr->sndfile) memset(bufr->data + mPos * bufr->channels, 0, bufFrames2 * bufr->channels * sizeof(float));
+			    count = sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2);
+			    while (bufFrames2 -= count) {
+				    sf_seek(bufr->sndfile, 0, SEEK_SET);
+				    count = sf_readf_float(bufr->sndfile, bufr->data + (mPos + count) * bufr->channels, bufFrames2);
+			    }
+		    } else { // non-loop
+			    count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
+			    if (count < bufFrames2) {
+			      memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
+			    }
+		    }
+	    }
+	}
+	
+	unit->m_framePos = framePos;
+	unit->m_pchRatio = pchRatio;
+	unit->m_bufPos = bufPos;
+}
+
+void VDiskIn_next(VDiskIn *unit, int inNumSamples)
+{	
+	float a, b, c, d, oldBufPos;
+	bool test = false;
+	
+	GET_BUF
+	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
+		unit->m_framePos = 0.;
+		ClearUnitOutputs(unit, inNumSamples);
+		return;
+	}
+	SETUP_OUT(0)
+	
+	float framePos = unit->m_framePos;
+	float bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
+	float newPchRatio = IN0(1);
+	float pchRatio = unit->m_pchRatio;
+	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
+
+	uint32 bufFrames2 = bufFrames >> 1;
+	float fbufFrames2 = (float)bufFrames2;
+	float fbufFrames = (float)bufFrames;
+	
+	for (int j = 0; j < inNumSamples; ++j){
+	    uint32 iBufPos = (uint32)bufPos;   
+	    float frac = bufPos - (float)iBufPos;
+	    uint32 table1 = iBufPos * bufChannels;
+	    uint32 table0 = table1 - bufChannels;
+	    uint32 table2 = table1 + bufChannels;
+	    uint32 table3 = table2 + bufChannels;
+	    if(table0 < 0) table0 += bufSamples;
+	    if(table2 >= bufSamples) table2 -= bufSamples;
+	    if(table3 >= bufSamples) table3 -= bufSamples;
+	    for (uint32 i = 0; i < bufChannels; i++){
+		a = bufData[table0 + i];
+		b = bufData[table1 + i];
+		c = bufData[table2 + i];
+		d = bufData[table3 + i];
+		out[i][j] = cubicinterp(frac, a, b, c, d);
+		};
+	    pchRatio += pchSlope;
+	    framePos += pchRatio;
+	    oldBufPos = bufPos;
+	    bufPos += pchRatio;
+
+	    if ((oldBufPos < fbufFrames2) && ((bufPos >= fbufFrames2))){
+		test = true;
+		}
+	    if (bufPos >= fbufFrames){
+		test = true;
+		bufPos -= fbufFrames;
+		}
+	    }
+	if ( test ){
+	    if(unit->mWorld->mRealTime){
+		test = false;
+		DiskIOMsg msg;
+		msg.mWorld = unit->mWorld;
+		msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
+		msg.mBufNum = (int)fbufnum;
+		uint32 thisPos;
+		if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
+		msg.mPos = thisPos;
+		msg.mFrames = bufFrames2;
+		msg.mChannels = bufChannels;
+#ifndef SC_WIN32
+		gDiskFifo.Write(msg);
+		gDiskFifoHasData.Signal();
+#else //#ifndef SC_WIN32
+		pgDiskFifo->Write(msg);
+		pgDiskFifoHasData->Signal();
+#endif //#ifndef SC_WIN32
+		} else {
+		    SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int)fbufnum);
+		    uint32 mPos;
+		    if((uint32)bufPos >= bufFrames2) mPos = 0; else mPos = bufFrames2;
+		    if (mPos > (uint32)bufr->frames || mPos + bufFrames2 > (uint32)bufr->frames || (uint32) bufr->channels != bufChannels) return;
+		    sf_count_t count;
+
+		    if ((int)ZIN0(2)) { // loop
+			    if (!bufr->sndfile) memset(bufr->data + mPos * bufr->channels, 0, bufFrames2 * bufr->channels * sizeof(float));
+			    count = sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2);
+			    while (bufFrames2 -= count) {
+				    sf_seek(bufr->sndfile, 0, SEEK_SET);
+				    count = sf_readf_float(bufr->sndfile, bufr->data + (mPos + count) * bufr->channels, bufFrames2);
+			    }
+		    } else { // non-loop
+			    count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
+			    if (count < bufFrames2) {
+			      memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
+			    }
+		    }
+	    }
+	}
+	
+	unit->m_framePos = framePos;
+	unit->m_pchRatio = pchRatio;
+	unit->m_bufPos = bufPos;
+
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void load(InterfaceTable *inTable)
@@ -354,6 +602,7 @@ void load(InterfaceTable *inTable)
 	
 	DefineSimpleUnit(DiskIn);
 	DefineSimpleUnit(DiskOut);
+	DefineSimpleUnit(VDiskIn);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
