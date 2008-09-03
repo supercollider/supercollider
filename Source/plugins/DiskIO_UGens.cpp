@@ -407,17 +407,17 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	framePos += pchRatio;
 	bufPos += pchRatio;
 
-	for (int j = 1; j < inNumSamples; ++j){
+	for (int j = 1; j < inNumSamples; j++){
 	    uint32 iBufPos = (uint32)bufPos;   
 	    float frac = bufPos - (float)iBufPos;
-	    uint32 table1 = iBufPos * bufChannels;
-	    uint32 table0 = table1 - bufChannels; 
-	    uint32 table2 = table1 + bufChannels;
-	    uint32 table3 = table2 + bufChannels;
+	    int table1 = iBufPos * bufChannels;
+	    int table0 = table1 - bufChannels; 
+	    int table2 = table1 + bufChannels;
+	    int table3 = table2 + bufChannels;
 	    if(table0 < 0) table0 += bufSamples;
 	    if(table2 >= bufFrames) table2 -= bufSamples;
 	    if(table3 >= bufFrames) table3 -= bufSamples;
-	    for (uint32 i = 0; i < bufChannels; i++){
+	    for (int i = 0; i < bufChannels; i++){
 		a = bufData[table0 + i];
 		b = bufData[table1 + i];
 		c = bufData[table2 + i];
@@ -501,19 +501,18 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	float newPchRatio = IN0(1);
 	float pchRatio = unit->m_pchRatio;
 	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
-
 	uint32 bufFrames2 = bufFrames >> 1;
 	float fbufFrames2 = (float)bufFrames2;
 	float fbufFrames = (float)bufFrames;
 	
 	for (int j = 0; j < inNumSamples; ++j){
-	    uint32 iBufPos = (uint32)bufPos;   
+	    int iBufPos = (int)bufPos;   
 	    float frac = bufPos - (float)iBufPos;
-	    uint32 table1 = iBufPos * bufChannels;
-	    uint32 table0 = table1 - bufChannels;
-	    uint32 table2 = table1 + bufChannels;
-	    uint32 table3 = table2 + bufChannels;
-	    if(table0 < 0) table0 += bufSamples;
+	    int table1 = iBufPos * bufChannels;
+	    int table0 = table1 - bufChannels;
+	    int table2 = table1 + bufChannels;
+	    int table3 = table2 + bufChannels;
+	    while (table0 < 0) {table0 += bufSamples;};
 	    if(table2 >= bufSamples) table2 -= bufSamples;
 	    if(table3 >= bufSamples) table3 -= bufSamples;
 	    for (uint32 i = 0; i < bufChannels; i++){
