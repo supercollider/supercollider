@@ -28,3 +28,13 @@ DiskIn : MultiOutUGen {
 	}
 }
 
+VDiskIn : MultiOutUGen {
+	*ar { arg numChannels, bufnum, pchRatio = 1, loop = 0;
+		^this.multiNew('audio', numChannels, bufnum, pchRatio, loop)
+	}
+	init { arg numChannels, bufnum, pchRatio = 1, loop = 0;
+		inputs = [bufnum, pchRatio, loop];
+		^this.initOutputs(numChannels, rate)
+	}
+}
+
