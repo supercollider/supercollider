@@ -67,7 +67,7 @@ extern PyrSymbol *s_toggleEditMode;
 //	NSString *characters = [event characters];
 	unsigned int modifiers = [event modifierFlags];
     //control tab/escape doesn't get passed here at all ?
-	if(modifiers & NSCommandKeyMask) // allow cmd-key only
+	if((modifiers & NSCommandKeyMask) && !(modifiers & NSFunctionKeyMask)) // allow cmd-key only
 		[self keyDown: event];
 	return NO; //for now pass on the event
 }
@@ -226,6 +226,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
                     NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged 
 					| NSKeyDownMask | NSKeyUpMask
 			];
+			modifiers = [theEvent modifierFlags]; // added
             mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
             //isInside = [self mouse:mouseLoc inRect:[self bounds]];
             scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);			
