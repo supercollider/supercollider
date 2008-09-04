@@ -414,9 +414,10 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	    int table0 = table1 - bufChannels; 
 	    int table2 = table1 + bufChannels;
 	    int table3 = table2 + bufChannels;
-	    if(table0 < 0) table0 += bufSamples;
-	    if(table2 >= bufFrames) table2 -= bufSamples;
-	    if(table3 >= bufFrames) table3 -= bufSamples;
+	    while(table1 >= bufSamples) table1 -= bufSamples;
+	    while(table0 < 0) table0 += bufSamples;
+	    while(table2 >= bufSamples) table2 -= bufSamples;
+	    while(table3 >= bufSamples) table3 -= bufSamples;
 	    for (int i = 0; i < bufChannels; i++){
 		a = bufData[table0 + i];
 		b = bufData[table1 + i];
@@ -428,10 +429,12 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	    framePos += pchRatio;
 	    oldBufPos = bufPos;
 	    bufPos += pchRatio;
-	    if ((oldBufPos < fbufFrames2) && ((bufPos >= fbufFrames2))){
+	    // the +1 is needed for the cubic interpolation... make SURE the old data isn't needed any more before
+	    // setting up the new buffer
+	    if ((oldBufPos < (fbufFrames2 + 1)) && ((bufPos >= (fbufFrames2 + 1)))){
 		test = true;
 		}
-	    if (bufPos >= fbufFrames){
+	    if (bufPos >= (fbufFrames + 1)){
 		test = true;
 		bufPos -= fbufFrames;
 		}
@@ -512,9 +515,10 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	    int table0 = table1 - bufChannels;
 	    int table2 = table1 + bufChannels;
 	    int table3 = table2 + bufChannels;
-	    while (table0 < 0) {table0 += bufSamples;};
-	    if(table2 >= bufSamples) table2 -= bufSamples;
-	    if(table3 >= bufSamples) table3 -= bufSamples;
+	    while(table1 >= bufSamples) table1 -= bufSamples;
+	    while(table0 < 0) table0 += bufSamples;
+	    while(table2 >= bufSamples) table2 -= bufSamples;
+	    while(table3 >= bufSamples) table3 -= bufSamples;
 	    for (uint32 i = 0; i < bufChannels; i++){
 		a = bufData[table0 + i];
 		b = bufData[table1 + i];
@@ -527,10 +531,10 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	    oldBufPos = bufPos;
 	    bufPos += pchRatio;
 
-	    if ((oldBufPos < fbufFrames2) && ((bufPos >= fbufFrames2))){
+	    if ((oldBufPos < (fbufFrames2 + 1)) && ((bufPos >= (fbufFrames2 + 1)))){
 		test = true;
 		}
-	    if (bufPos >= fbufFrames){
+	    if (bufPos >= (fbufFrames + 1)){
 		test = true;
 		bufPos -= fbufFrames;
 		}
