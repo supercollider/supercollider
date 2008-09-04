@@ -8,25 +8,21 @@
 <meta name="CocoaVersion" content="949.33">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #00159d; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001f98; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #981815}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4d4d4d}
-span.s1 {color: #0020ef}
-span.s2 {color: #0020f9}
-span.s3 {color: #000000}
-span.s4 {color: #0000bf}
-span.s5 {color: #606060}
-span.s6 {color: #0017ad}
-span.s7 {color: #4d4d4d}
-span.s8 {color: #2f600c}
-span.s9 {color: #981815}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8a1d18}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4d4d4d}
+span.s1 {color: #002fe8}
+span.s2 {color: #0031f2}
+span.s3 {color: #0022a8}
+span.s4 {color: #4d4d4d}
+span.s5 {color: #000000}
+span.s6 {color: #3b5e16}
+span.s7 {color: #8a1d18}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -34,78 +30,72 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>VDiskIn<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stream in audio from a file (with variable rate)</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b>DiskIn.ar(numChannels, bufnum, pchRatio, loop )</b></p>
+<p class="p3"><b>DiskIn.ar(numChannels, bufnum, rate, loop )</b></p>
 <p class="p2"><br></p>
 <p class="p3">Continuously play a longer soundfile from disk.<span class="Apple-converted-space">  </span>This requires a buffer to be preloaded with one buffer size of sound. If loop is set to 1, the soundfile will loop.</p>
 <p class="p4"><br></p>
-<p class="p3">pchRatio control the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.</p>
+<p class="p3"><b>rate</b> controls the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.</p>
 <p class="p4"><br></p>
 <p class="p3"><b>See also:</b> <a href="PlayBuf.html"><span class="s1">PlayBuf</span></a>, <a href="../Oscillators/BufRd.html"><span class="s2">BufRd</span></a><span class="Apple-converted-space"> </span></p>
 <p class="p5"><br></p>
-<p class="p6"><span class="s3">s.boot; </span>// start the server</p>
 <p class="p5"><br></p>
-<p class="p7">(</p>
-<p class="p8"><span class="s4">SynthDef</span>(<span class="s5">"help-VDiskin"</span>, { <span class="s4">arg</span> bufnum = 0;</p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span></span>//<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, <span class="s4">VDiskIn</span>.ar(1, bufnum, <span class="s4">MouseX</span>.kr(0.5, 2.0), 1));</p>
-<p class="p8">}).send(s)</p>
-<p class="p7">)</p>
 <p class="p5"><br></p>
-<p class="p10"><b>Using Buffer (Object Style)</b></p>
 <p class="p5"><br></p>
-<p class="p7">b = <span class="s6">Buffer</span>.cueSoundFile(s, <span class="s7">"sounds/a11wlk01-44_1.aiff"</span>, 0, 1);</p>
+<p class="p6"><b>Using Buffer (Object Style)</b></p>
 <p class="p5"><br></p>
-<p class="p7">x = { V<span class="s6">DiskIn</span>.ar(1, b, LFNoise2.kr(1).range(0.5, 2.0)) }.play;</p>
+<p class="p7">b = <span class="s3">Buffer</span>.cueSoundFile(s, <span class="s4">"sounds/a11wlk01-44_1.aiff"</span>, 0, 1);</p>
+<p class="p5"><br></p>
+<p class="p7">x = { V<span class="s3">DiskIn</span>.ar(1, b, LFNoise2.kr(1).range(0.5, 2.0)) }.play;</p>
 <p class="p5"><br></p>
 <p class="p7">b.close;<span class="Apple-tab-span">	</span></p>
 <p class="p5"><br></p>
-<p class="p6">// again</p>
-<p class="p6">// note the like named instance method, but different arguments</p>
-<p class="p11"><span class="s3">b.cueSoundFile(</span>"sounds/a11wlk01-44_1.aiff"<span class="s3">, 0);<span class="Apple-tab-span">	</span></span></p>
+<p class="p8">// again</p>
+<p class="p8">// note the like named instance method, but different arguments</p>
+<p class="p9"><span class="s5">b.cueSoundFile(</span>"sounds/a11wlk01-44_1.aiff"<span class="s5">, 0);<span class="Apple-tab-span">	</span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p7">x.free; b.close; b.free;<span class="Apple-tab-span">	</span></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p6">// cue and play right away</p>
+<p class="p8">// cue and play right away</p>
 <p class="p7">(</p>
-<p class="p7"><span class="s6">SynthDef</span>(<span class="s7">"help-VDiskin"</span>, { <span class="s6">arg</span> bufnum = 0;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0, V<span class="s6">DiskIn</span>.ar(1, bufnum, MouseX.kr(0.5, 2.0)));</p>
+<p class="p7"><span class="s3">SynthDef</span>(<span class="s4">"help-VDiskin"</span>, { <span class="s3">arg</span> bufnum = 0;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, V<span class="s3">DiskIn</span>.ar(1, bufnum, MouseX.kr(0.5, 2.0)));</p>
 <p class="p7">}).send(s);</p>
 <p class="p7">)</p>
 <p class="p7">(</p>
-<p class="p7">x = <span class="s6">Synth</span>.basicNew(<span class="s7">"help-VDiskin"</span>);</p>
-<p class="p7">m = { <span class="s6">arg</span> buf; x.addToHeadMsg(<span class="s6">nil</span>, [<span class="s8">\bufnum</span>, buf])};</p>
+<p class="p7">x = <span class="s3">Synth</span>.basicNew(<span class="s4">"help-VDiskin"</span>);</p>
+<p class="p7">m = { <span class="s3">arg</span> buf; x.addToHeadMsg(<span class="s3">nil</span>, [<span class="s6">\bufnum</span>, buf])};</p>
 <p class="p5"><br></p>
-<p class="p7">b = <span class="s6">Buffer</span>.cueSoundFile(s,<span class="s7">"sounds/a11wlk01-44_1.aiff"</span>,0,1, completionMessage: m);</p>
+<p class="p7">b = <span class="s3">Buffer</span>.cueSoundFile(s,<span class="s4">"sounds/a11wlk01-44_1.aiff"</span>,0,1, completionMessage: m);</p>
 <p class="p7">)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><br></p>
-<p class="p7">x.free; b.close; b.free;<span class="Apple-tab-span">	</span><span class="s9">//clean up</span></p>
+<p class="p7">x.free; b.close; b.free;<span class="Apple-tab-span">	</span><span class="s7">//clean up</span></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p10"><b>OSC Messaging Style</b></p>
+<p class="p6"><b>OSC Messaging Style</b></p>
 <p class="p5"><br></p>
-<p class="p6">// allocate a disk i/o buffer</p>
-<p class="p7">s.sendMsg(<span class="s7">"/b_alloc"</span>, 0, 65536, 1);</p>
+<p class="p8">// allocate a disk i/o buffer</p>
+<p class="p7">s.sendMsg(<span class="s4">"/b_alloc"</span>, 0, 65536, 1);</p>
 <p class="p5"><br></p>
-<p class="p6">// open an input file for this buffer, leave it open</p>
-<p class="p11"><span class="s3">s.sendMsg(</span>"/b_read"<span class="s3">, 0, </span>"sounds/a11wlk01-44_1.aiff"<span class="s3">, 0, 65536, 0, 1);</span></p>
+<p class="p8">// open an input file for this buffer, leave it open</p>
+<p class="p9"><span class="s5">s.sendMsg(</span>"/b_read"<span class="s5">, 0, </span>"sounds/a11wlk01-44_1.aiff"<span class="s5">, 0, 65536, 0, 1);</span></p>
 <p class="p5"><br></p>
-<p class="p6">// create a diskin node</p>
-<p class="p7">s.sendMsg(<span class="s7">"/s_new"</span>, <span class="s7">"help-VDiskin"</span>, x = s.nextNodeID, 1, 1);</p>
+<p class="p8">// create a diskin node</p>
+<p class="p7">s.sendMsg(<span class="s4">"/s_new"</span>, <span class="s4">"help-VDiskin"</span>, x = s.nextNodeID, 1, 1);</p>
 <p class="p5"><br></p>
-<p class="p6"><span class="s3">s.sendMsg(</span><span class="s7">"/b_close"</span><span class="s3">, 0); </span>// close the file (very important!)</p>
+<p class="p8"><span class="s5">s.sendMsg(</span><span class="s4">"/b_close"</span><span class="s5">, 0); </span>// close the file (very important!)</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p6">// again<span class="Apple-converted-space"> </span></p>
-<p class="p6">// don't need to reallocate and Synth is still reading</p>
-<p class="p11"><span class="s3">s.sendMsg(</span>"/b_read"<span class="s3">, 0, </span>"sounds/a11wlk01-44_1.aiff"<span class="s3">, 0, 0, 0, 1);</span></p>
+<p class="p8">// again<span class="Apple-converted-space"> </span></p>
+<p class="p8">// don't need to reallocate and Synth is still reading</p>
+<p class="p9"><span class="s5">s.sendMsg(</span>"/b_read"<span class="s5">, 0, </span>"sounds/a11wlk01-44_1.aiff"<span class="s5">, 0, 0, 0, 1);</span></p>
 <p class="p5"><br></p>
-<p class="p7">s.sendMsg(<span class="s7">"/n_free"</span>, x); <span class="s9">// stop reading</span></p>
+<p class="p7">s.sendMsg(<span class="s4">"/n_free"</span>, x); <span class="s7">// stop reading</span></p>
 <p class="p5"><br></p>
-<p class="p6"><span class="s3">s.sendMsg(</span><span class="s7">"/b_close"</span><span class="s3">, 0); </span>// close the file.</p>
+<p class="p8"><span class="s5">s.sendMsg(</span><span class="s4">"/b_close"</span><span class="s5">, 0); </span>// close the file.</p>
 <p class="p5"><br></p>
-<p class="p6"><span class="s3">s.sendMsg(</span><span class="s7">"/b_free"</span><span class="s3">, 0); </span>// frees the buffer</p>
+<p class="p8"><span class="s5">s.sendMsg(</span><span class="s4">"/b_free"</span><span class="s5">, 0); </span>// frees the buffer</p>
 <p class="p5"><br></p>
 </body>
 </html>
