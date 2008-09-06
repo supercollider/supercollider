@@ -360,7 +360,7 @@ AbstractMDPlugin {
 			classList = [SynthDesc.mdPlugin] ++ classList;
 		};
 		classList.do({ |class|
-			if(File.exists(pathTmp = path ++ class.mdExtension)) {
+			if(class.notNil and: { File.exists(pathTmp = path ++ class.mdExtension) }) {
 				^class.readMetadataFile(pathTmp)
 			}
 		});
