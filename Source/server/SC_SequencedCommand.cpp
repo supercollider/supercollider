@@ -613,12 +613,17 @@ bool BufReadCmd::Stage2()
 	
 	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
 	else sf_close(sf);
-	
+
+	mSampleRate = (double)fileinfo.samplerate;
+
 	return true;
 }
 
 bool BufReadCmd::Stage3()
 {
+	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
+	buf->samplerate = mSampleRate;
+	
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	return true;
@@ -892,12 +897,17 @@ bool BufReadChannelCmd::Stage2()
 leave:
 	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
 	else sf_close(sf);
-	
+
+	mSampleRate = (double)fileinfo.samplerate;
+
 	return true;
 }
 
 bool BufReadChannelCmd::Stage3()
 {
+	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
+	buf->samplerate = mSampleRate;
+	
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	return true;
