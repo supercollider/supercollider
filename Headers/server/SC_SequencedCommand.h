@@ -255,6 +255,7 @@ protected:
 	char *mFilename;
 	int mFileOffset, mNumFrames, mBufOffset;
 	bool mLeaveFileOpen;
+	double mSampleRate;
 	virtual void CallDestructor();
 };
 
@@ -322,6 +323,7 @@ protected:
 	char *mFilename;
 	int mFileOffset, mNumFrames, mBufOffset;
 	bool mLeaveFileOpen;
+	double mSampleRate;
 	virtual void CallDestructor();
 };
 
