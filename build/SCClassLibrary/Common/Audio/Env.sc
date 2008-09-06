@@ -163,7 +163,14 @@ Env {
 		)
 	}
 	
-	// delay the onset of the envelope	delay { arg delay;		^Env([0] ++ levels,			[delay] ++ times,			if (curves.isArray) {[\lin] ++ curves} {curves},			if(releaseNode.notNil) {releaseNode = releaseNode + 1},			if(loopNode.notNil) {loopNode = loopNode + 1}		)	}
+	// delay the onset of the envelope	delay { arg delay;
+		^Env([levels[0]] ++ levels,
+			[delay] ++ times,
+			if (curves.isArray) {[\lin] ++ curves} {curves},
+			if(releaseNode.notNil) {releaseNode = releaseNode + 1},
+			if(loopNode.notNil) {loopNode = loopNode + 1}
+		)
+	}
 	
 	// connect releaseNode (or end) to first node of envelope
 	circle { arg timeFromLastToFirst = 0.0, curve = 'lin';
