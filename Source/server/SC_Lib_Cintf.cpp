@@ -216,7 +216,7 @@ bool PlugIn_Load(const char *filename)
 		return false;
 	}
 
-    void *ptr = GetProcAddress( hinstance, SC_PLUGIN_LOAD_SYM );
+    void *ptr = (void *)GetProcAddress( hinstance, SC_PLUGIN_LOAD_SYM );
     if (!ptr) {
         char *s;
         FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
