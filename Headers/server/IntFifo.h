@@ -46,7 +46,7 @@ public:
 		// we don't really need a compare and swap, but this happens to call 
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mWriteHead, next, &mWriteHead);
-#elif defined SC_WIN32
+#elif defined SC_WIN32 && !defined(__MINGW32__)
     InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
@@ -66,7 +66,7 @@ public:
 		// we don't really need a compare and swap, but this happens to call 
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mReadHead, next, &mReadHead);
-#elif defined SC_WIN32
+#elif defined SC_WIN32 && !defined(__MINGW32__)
     InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
