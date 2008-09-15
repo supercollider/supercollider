@@ -388,6 +388,18 @@ bool gIsFullScreen = false;
     [(SCGraphView*)[window getSCGraphView] willClose];
 }
 
+- (void) windowDidBecomeKey:(NSNotification *)aNotification
+{
+    SCNSWindow* window = [aNotification object];
+    [(SCGraphView*)[window getSCGraphView] didBecomeKey];	
+}
+
+- (void) windowDidResignKey:(NSNotification *)aNotification
+{
+    SCNSWindow* window = [aNotification object];
+    [(SCGraphView*)[window getSCGraphView] didResignKey];
+}
+
 -(IBAction)showHelp:(id)sender {
     // a useless waste of a search to get the main page
     showHelpFor( @"Help");

@@ -53,6 +53,10 @@
 - (void)setAutoScrolls:(BOOL)boo;
 - (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string;
 
+- (void) didResignKey;
+- (void) didBecomeKey;
+
+
 - (NSMenu*) menuForEvent:(NSEvent*)event;
 - (void)startMenuTracking: (SCView*) inView;
 

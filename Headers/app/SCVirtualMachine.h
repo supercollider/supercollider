@@ -58,6 +58,7 @@
 - (void)becomeFullScreen: (NSWindow*)window;
 - (void)endFullScreen: (NSWindow*)window;
 - (void)loadUserPanel:(NSString*)filename SCObject: (void*)scobj;
+- (void) windowDidBecomeKey:(NSNotification *)aNotification;
 
 
 -(IBAction)showHelp:(id)sender;
