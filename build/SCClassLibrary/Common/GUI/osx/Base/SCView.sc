@@ -296,7 +296,7 @@ SCView {  // abstract class
 }
 
 SCContainerView : SCView { // abstract class
-	var <children, <>decorator, < relativeOrigin = false;
+	var <children, <decorator, < relativeOrigin = false;
 			
 	add { arg child;
 		children = children.add(child);
@@ -319,7 +319,15 @@ SCContainerView : SCView { // abstract class
 		relativeOrigin = bool;
 		this.setProperty(\relativeOrigin, bool);
 	}	
-			
+	
+	decorator_ {|decor|
+		if(relativeOrigin, {
+			decor.bounds = decor.bounds.moveTo(0, 0);
+			decor.reset;
+		});
+		decorator = decor;
+	}
+	
 	prRemoveChild { arg child;
 		children.remove(child);
 		// ... decorator should re-place all
