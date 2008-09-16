@@ -158,6 +158,10 @@ int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 	//Print("FFTBase_Ctor: bufnum is %i\n", bufnum);
 	if (bufnum >= world->mNumSndBufs) bufnum = 0;
 	SndBuf *buf = world->mSndBufs + bufnum; 
+	if (!buf->data) {
+		Print("FFTBase_Ctor error: Buffer %i not initialised.\n", bufnum);
+		return 0;
+	}
 	
 	unit->m_fftsndbuf = buf;
 	unit->m_fftbufnum = bufnum;
@@ -211,6 +215,12 @@ void FFT_Ctor(FFT *unit)
 	unit->m_wintype = (int)ZIN0(3); // wintype may be used by the base ctor
 	if(!FFTBase_Ctor(unit, 5)){
 		SETCALC(FFT_ClearUnitOutputs);
+		// These zeroes are to prevent the dtor freeing things that don't exist:
+		unit->m_inbuf = 0;
+		unit->m_transformbuf = 0;
+#if SC_FFT_FFTW
+		unit->m_plan = 0;
+#endif
 		return;
 	}
 	int fullbufsize = unit->m_fullbufsize * sizeof(float);
@@ -254,11 +264,14 @@ void FFT_Ctor(FFT *unit)
 void FFT_Dtor(FFT *unit)
 {
 #if SC_FFT_FFTW
-	fftwf_destroy_plan(unit->m_plan);
+	if(unit->m_plan)
+		fftwf_destroy_plan(unit->m_plan);
 #endif
 	
-	RTFree(unit->mWorld, unit->m_inbuf);
-	RTFree(unit->mWorld, unit->m_transformbuf);
+	if(unit->m_inbuf)
+		RTFree(unit->mWorld, unit->m_inbuf);
+	if(unit->m_transformbuf)
+		RTFree(unit->mWorld, unit->m_transformbuf);
 }
 
 // Ordinary ClearUnitOutputs outputs zero, potentially telling the IFFT (+ PV UGens) to act on buffer zero, so let's skip that:
@@ -281,7 +294,10 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 	
 	bool gate = ZIN0(4) > 0.f; // Buffer shunting continues, but no FFTing
 	
-	if (unit->m_pos != unit->m_hopsize || unit->m_fftsndbuf->samples != unit->m_fullbufsize) {
+	if (unit->m_pos != unit->m_hopsize || !unit->m_fftsndbuf->data || unit->m_fftsndbuf->samples != unit->m_fullbufsize) {
+		if(unit->m_pos == unit->m_hopsize){
+			unit->m_pos = 0;
+		}
 		ZOUT0(0) = -1.f;
 	} else {
 		
@@ -328,6 +344,12 @@ void IFFT_Ctor(IFFT* unit){
 	unit->m_wintype = (int)ZIN0(1); // wintype may be used by the base ctor
 	if(!FFTBase_Ctor(unit, 2)){
 		SETCALC(*ClearUnitOutputs);
+		// These zeroes are to prevent the dtor freeing things that don't exist:
+		unit->m_olabuf = 0;
+		unit->m_transformbuf = 0;
+#if SC_FFT_FFTW
+		unit->m_plan = 0;
+#endif
 		return;
 	}
 	
@@ -356,10 +378,13 @@ void IFFT_Ctor(IFFT* unit){
 }
 
 void IFFT_Dtor(IFFT* unit){
-	RTFree(unit->mWorld, unit->m_olabuf);
+	if(unit->m_olabuf)
+		RTFree(unit->mWorld, unit->m_olabuf);
 #if SC_FFT_FFTW
-	fftwf_destroy_plan(unit->m_plan);
-	RTFree(unit->mWorld, unit->m_transformbuf);
+	if(unit->m_plan)
+		fftwf_destroy_plan(unit->m_plan);
+	if(unit->m_transformbuf)
+		RTFree(unit->mWorld, unit->m_transformbuf);
 #endif
 }
 
