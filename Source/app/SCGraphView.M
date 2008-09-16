@@ -396,32 +396,35 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, void* inData)
 extern PyrSymbol * s_didBecomeKey;
 extern PyrSymbol * s_didResignKey;
 - (void) didResignKey{
-    pthread_mutex_lock (&gLangMutex);
-    if (mWindowObj) {
-        SetPtr(mWindowObj->slots + 0, self);
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
-        runInterpreter(g, s_didResignKey, 1);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+	if (mWindowObj) {
+		if(NotNil(mWindowObj->slots + 11)){ // check whether endFrontAction is nil
+			pthread_mutex_lock (&gLangMutex);			
+			SetPtr(mWindowObj->slots + 0, self);
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+
+			++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
+			runInterpreter(g, s_didResignKey, 1);
+			g->canCallOS = false;
+			pthread_mutex_unlock (&gLangMutex);
+		}
+	}
 }
 
 - (void) didBecomeKey{
-
-    pthread_mutex_lock (&gLangMutex);
-
     if (mWindowObj) {
-        SetPtr(mWindowObj->slots + 0, self);
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
-        runInterpreter(g, s_didBecomeKey, 1);
-        g->canCallOS = false;
-    } 
-    pthread_mutex_unlock (&gLangMutex);
+		if(NotNil(mWindowObj->slots + 10)){
 
+			pthread_mutex_lock (&gLangMutex);
+			SetPtr(mWindowObj->slots + 0, self);
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+			++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
+			runInterpreter(g, s_didBecomeKey, 1);
+			g->canCallOS = false;
+			pthread_mutex_unlock (&gLangMutex);
+		}
+	}
 }
 /*  from command-w, scvm is the delegate */
 - (void)setWindowShouldClose:(BOOL)boo
