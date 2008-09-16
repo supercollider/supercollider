@@ -634,7 +634,8 @@ commonEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
                '#Headers/server'],
-    CCFLAGS = ['-fPIC']
+    CCFLAGS = ['-fPIC'],
+    CXXFLAGS = ['-fPIC']
     )
 
 # strtod
