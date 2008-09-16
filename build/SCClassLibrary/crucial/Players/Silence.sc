@@ -1,10 +1,8 @@
-
 /*
 Silence is a player that doesn't have any output at all.
 */
-
 Silence : SynthlessPlayer {
-
+	*ar { |...args| ^Silent.ar(*args) }
 }
 
 
