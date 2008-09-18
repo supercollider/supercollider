@@ -1,35 +1,92 @@
-#!/bin/sh
+#!/usr/bin/ruby
+#
+#scvim [the executable]
+#
+#Copyright 2008 Alex Norman
+#
+#This file is part of SCVIM.
+#
+#SCVIM is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#SCVIM is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with SCVIM.  If not, see <http://www.gnu.org/licenses/>.
 
-#which vim to use
-vim="vim"
-localrcfile=/usr/local/share/scvim/scvimrc
-rcfile=/usr/share/scvim/scvimrc
+require 'optparse'
 
-#parse ops
-while getopts "gh" opt; do
-	case $opt in
-		#we can ignore -g because we pass it to vim and -g as a vim
-		#argument gives graphical vim
-		#g  )	#vim=gvim;;
-		h  )	echo "supercollider in vim"
-				echo "usage:\nscvim [-h] [-g]"
-				echo "\t -h prints this help"
-				echo "\t -g use gvim (graphical vim)"
-				exit 0;;
-	esac
-done
+vim = "vim"
+homercfile = File.join(ENV["HOME"], ".scvimrc")
+localrcfile = "/usr/local/share/scvim/scvimrc"
+usrrcfile = "/usr/share/scvim/scvimrc"
 
-#load an rc file if it exists.
-#first we look for ~/.scvimrc, then /usr/local/share/scvim/scvimrc then /usr/share/scvim/scvimrc
-if [ -r $HOME/.scvimrc ]
-then
-	exec $vim --cmd "source $HOME/.scvimrc" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" $@
-elif [ -r $localrcfile ]
-then
-	exec $vim --cmd "source $localrcfile" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" $@
-elif [ -r $rcfile ]
-then
-	exec $vim --cmd "source $rcfile" -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" $@
+#do we use graphical mode
+graphical = false
+#the location of the rc file to source
+rcloc = nil
+
+opts = OptionParser.new do |opts|
+  #the usage banner
+  opts.banner = "Usage: #{$0} [OPTION]... [FILE]..."
+
+  #the options
+  opts.on("-g", "--graphical", "Use vim -g") do
+    graphical = true
+  end
+  opts.on("-r", "--rcfile rcfile", "Use the file indicated as the scvim configuration file") do |f|
+    if File.exists?(f)
+      rcloc = f
+    else
+      STDERR.puts "rcfile #{f} does not exists, aborting"; exit
+    end
+  end
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts; exit
+  end
+end
+
+#parse the command line options
+begin
+  opts.parse!(ARGV)
+rescue => e
+  STDERR.puts e.to_s
+  STDERR.puts opts.to_s
+  exit
+end
+
+unless rcloc
+  #find the rc file
+  if File.exists?(homercfile)
+    rcloc = homercfile
+  elsif File.exists?(localrcfile)
+    rcloc = localrcfile
+  elsif File.exists?(usrrcfile)
+    rcloc = usrrcfile
+  else
+    #no rc file found, no user customizations
+    #hopefully ftplugin/supercollider.vim is in the vimruntime
+    STDERR.puts "scvimrc file not found"
+    unless graphical
+      exec(vim, "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
+    else
+      exec(vim, "-g", "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
+    end
+  end
+end
+
+puts "scvim: sourcing #{rcloc}"
+
+unless graphical
+  exec(vim, "--cmd", "source #{rcloc}", 
+  "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
 else
-	exec $vim -c "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart" $@
-fi
+  exec(vim, "-g", "--cmd", "source #{rcloc}", 
+  "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
+end
+
