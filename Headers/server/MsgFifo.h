@@ -52,7 +52,7 @@ public:
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
     InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
         __sync_synchronize();
 #endif
 		mWriteHead = next;
@@ -72,7 +72,7 @@ public:
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
       InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
         __sync_synchronize();
 #endif
 			mReadHead = next;
@@ -91,7 +91,7 @@ public:
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
       InterlockedExchange(reinterpret_cast<volatile LONG*>(&mFreeHead),next);
 #else
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
         __sync_synchronize();
 #endif
       mFreeHead = next;
@@ -137,7 +137,7 @@ public:
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
       InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
         __sync_synchronize();
 #endif
 			mWriteHead = next;
@@ -157,7 +157,7 @@ public:
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
       InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
         __sync_synchronize();
 #endif
 			mReadHead = next;
