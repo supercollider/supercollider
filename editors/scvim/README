@@ -7,22 +7,27 @@ ________________________________________________________________________________
 
 REQUIREMENTS:
 - vim
-- sh
 - supercollider (sclang)
+- ruby
+- unhtml*
 
 OPTIONAL:
+- unrtf [highly recommended to make help docs from RTF formatted help files]
 - gvim
-- unhtml or links, unrtf and ruby (to make updated help docs)
-  * it is best to use your distro's unhtml package but incase your distro
+- links (for alternative help file formatting, see bin/scvim_make_help.rb)
+
+  * it is best to use your distro's unhtml package but in case your distro
     doesn't have it, I've placed a version here: 
-    http://www.x37v.info/scvim/files/unhtml_2.3.9.tar.gz
+    http://www.x37v.info/scvim/files/
 ________________________________________________________________________________
 
 INSTALLATION STEPS:
 
 Automatic (simple):
 
-To install everything in the default locations simply do:
+To install everything in the default locations, after installing the
+dependencies above, simply do:
+
 scons install-user
 sudo scons install-system
 
@@ -181,3 +186,4 @@ Dan Stowell for his help:
 John Yates for providing the indent functionality [which I have changed slightly] and
    help with the help file processor
 Andrzej Kopec for work on removing html from help [though scvim ended up using unhtml]
+Renick Bell for testing out the install process and providing notes.

@@ -334,7 +334,14 @@ opts = OptionParser.new do |opts|
     exit
   end
 end
-opts.parse!(ARGV)
+
+begin
+  opts.parse!(ARGV)
+rescue => e
+  STDERR.puts e
+  STDERR.puts opts
+  exit
+end
 
 if help_source_list.length == 0
   puts "\n**You must provide at least one help Source Directory**\n\n"
