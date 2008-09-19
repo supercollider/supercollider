@@ -718,7 +718,7 @@ void softclip_a(UnaryOpUGen *unit, int inNumSamples)
 	LOOP(inNumSamples, 
 		float z = ZXP(a);
 		float az = fabs(z);
-		if (az > 0.5) ZXP(out) = (az - .25)/z;
+		if (az > 0.5f) ZXP(out) = (az - .25f)/z;
 		else ZXP(out) = z;
 	);
 }
