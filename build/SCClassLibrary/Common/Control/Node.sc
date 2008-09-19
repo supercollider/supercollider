@@ -321,7 +321,7 @@ Group : Node {
 									j = 0;
 									msg[i + 3].do({
 										" ".post;
-										if(msg[i + 4 + j].isSymbol, {
+										if(msg[i + 4 + j].isMemberOf(Symbol), {
 											(msg[i + 4 + j] ++ ": ").post;
 										});
 										msg[i + 5 + j].post;
