@@ -289,5 +289,45 @@ extern PyrSymbol * s_mouseUp;
 		i = i + range.length;
 	}
 }
+
+// we need to override this because RTFfromRange converts relative links to http scheme links
+// this makes a copy of selected text and converts links to absolute file scheme links
+// when the target instance of MyDocument is saved it will convert any file scheme links back to relative
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard type:(NSString *)type {
+	BOOL res;
+	MyDocument *doc = [[NSDocumentController sharedDocumentController] documentForWindow: [self window]];
+	if(([type isEqualToString:NSRTFPboardType] || [type isEqualToString:NSRTFDPboardType]) && doc){
+		NSRange range = [self selectedRange];
+		NSMutableAttributedString *selectedText = [[[self textStorage] attributedSubstringFromRange: range] mutableCopy];
+		range.location = 0;
+		NSRange linkRange;
+		while (range.length > 0) {
+			id link = [selectedText attribute: NSLinkAttributeName 
+									 atIndex: range.location 
+					   longestEffectiveRange: &linkRange 
+									 inRange: range];
+			if(linkRange.length<=0) break;
+			if (link && [link isKindOfClass: [NSString class]] && (![link hasPrefix:@"SC://"] || ![link hasPrefix:@"sc://"]) && ![link isAbsolutePath]) {
+				// convert to a file:// URL
+				NSURL *newLink = [NSURL URLWithString: [link stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding] relativeToURL: [doc fileURL]];
+				newLink = [newLink absoluteURL];
+				[selectedText addAttribute: NSLinkAttributeName value: newLink range: linkRange];
+			}
+			range = NSMakeRange(NSMaxRange(linkRange), NSMaxRange(range) - NSMaxRange(linkRange));
+		}
+		if([type isEqualToString:NSRTFPboardType]){
+			res = [pboard setData:[selectedText RTFFromRange:NSMakeRange(0, [selectedText length]) documentAttributes:nil] forType:NSRTFPboardType];
+		} else if([type isEqualToString:NSRTFDPboardType]) {
+			res = [pboard setData:[selectedText RTFDFromRange:NSMakeRange(0, [selectedText length]) documentAttributes:nil] forType:NSRTFDPboardType];
+		} else {
+			res = NO;
+		}
+		[selectedText release];
+	} else {
+		res = [super writeSelectionToPasteboard:pboard type:type];
+	}
+	return res;
+}
+
 @end
 
