@@ -67,7 +67,7 @@ extern "C"
 	
 	void CheckBadValues_Ctor(CheckBadValues* unit);
 	void CheckBadValues_next(CheckBadValues* unit, int inNumSamples);
-	char *CheckBadValues_fpclassString(int fpclass);
+	const char *CheckBadValues_fpclassString(int fpclass);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 					} else {
 						printf("CheckBadValues: %s found in Synth %d, ID %d (previous %d values were %s)\n",
 							CheckBadValues_fpclassString(classification), unit->mParent->mNode.mID, (int)id,
-							unit->sameCount, CheckBadValues_fpclassString(unit->prevclass)
+							(int)unit->sameCount, CheckBadValues_fpclassString(unit->prevclass)
 						);
 					};
 					unit->sameCount = 0;
@@ -173,7 +173,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 	}
 }
 
-char *CheckBadValues_fpclassString(int fpclass)
+const char *CheckBadValues_fpclassString(int fpclass)
 {
 	switch(fpclass) {
 		case FP_INFINITE: return "infinity";
