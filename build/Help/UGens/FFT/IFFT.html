@@ -12,34 +12,36 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {text-decoration: underline ; color: #002aff}
-span.s3 {text-decoration: underline ; color: #0034e7}
-span.s4 {color: #0036a5}
+span.s2 {text-decoration: underline ; color: #002ffe}
+span.s3 {text-decoration: underline ; color: #0037e6}
+span.s4 {color: #0037a4}
 span.s5 {color: #606060}
-span.s6 {color: #713520}
-span.s7 {color: #003fe8}
+span.s6 {color: #6f3620}
+span.s7 {color: #0042e7}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>IFFT<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>Inverse Fast Fourier Transform</b></p>
 <p class="p2"><br></p>
-<p class="p1"><b>IFFT.new(buffer, wintype, winsize)</b></p>
+<p class="p1"><b>IFFT.new(chain, wintype, winsize)</b></p>
 <p class="p2"><br></p>
-<p class="p1">The fast fourier transform analyzes the frequency content of a signal.</p>
-<p class="p1"><b>buffer</b> - The buffer where a frame to be processed is held.</p>
+<p class="p1">The fast fourier transform analyzes the frequency content of a signal. The IFFT UGen converts this <i>frequency-domain</i> information back into <i>time-domain</i> audio data. Most often this is used as the end of a process which begins with FFT, followed by frequency-domain processing using PV (phase-vocoder) UGens, followed by IFFT.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>chain</b> - The FFT "chain" signal coming originally from an FFT UGen, perhaps via other PV UGens.</p>
 <p class="p1"><b>wintype</b> - defines how the data is windowed:</p>
 <p class="p1"><span class="Apple-tab-span">	</span>-1 is for <b><i>rectangular</i></b> windowing, simple but typically not recommended;<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>0 (the default) is for <b><i>Welch</i></b> windowing, typically recommended for phase-vocoder work;<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>1 is for <b><i>Hann</i></b> windowing, typically recommended for analysis work.</p>
 <p class="p1"><b>winsize</b> - can be used to account for zero-padding, in the same way as the FFT UGen.</p>
 <p class="p2"><br></p>
+<p class="p1">The IFFT UGen converts the FFT data in-place (in the original FFT buffer) and overlap-adds the result to produce a continuous signal at its output.</p>
+<p class="p2"><br></p>
 <p class="p1"><b>See also:</b> <a href="FFT Overview.html"><span class="s2">FFT Overview</span></a>, <a href="FFT.html"><span class="s3">FFT</span></a>, <a href="PV_Copy.html"><span class="s3">PV_Copy</span></a></p>
 <p class="p3"><br></p>
+<p class="p3"><br></p>
 <p class="p4">s = <span class="s4">Server</span>.local;<span class="Apple-converted-space"> </span></p>
-<p class="p3"><br></p>
 <p class="p4">b = <span class="s4">Buffer.alloc</span>(s,2048,1);</p>
-<p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p4"><span class="s4">SynthDef</span>(<span class="s5">"help-noopFFT"</span>, { <span class="s4">arg</span> out=0,bufnum=0;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain;</p>
