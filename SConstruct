@@ -653,7 +653,8 @@ commonEnv = conf.Finish()
 dtoaEnv = commonEnv.Copy()
 
 dtoaCCFDict = dtoaEnv.Dictionary('CCFLAGS')
-dtoaCCFDict.remove('-O3')
+if not env['DEBUG']:
+	dtoaCCFDict.remove('-O3')
 dtoaEnv.Replace(CCFLAGS = dtoaCCFDict)
 
 dtoaSources = Split('''
