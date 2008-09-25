@@ -86,7 +86,7 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 	
 	unit->m_fullwindowsize = unit->m_temporalwindowsize + 1.0 + 0.1; //plus one to cover all phases of the 60bpm based period, and a further 0.1 for indexing safety; ie looking at areas around the point you're interested in
 	
-	unit->m_buffersize = unit->m_fullwindowsize/unit->m_krlength; //in control blocks
+	unit->m_buffersize = (int)(unit->m_fullwindowsize/unit->m_krlength); //in control blocks
 	
 	
 	//printf("loading test blocklength %f numfeatures %d temporal %f full %f blocks %d \n",unit->m_krlength, unit->m_numfeatures, unit->m_temporalwindowsize, unit->m_fullwindowsize, unit->m_buffersize); 
@@ -222,7 +222,7 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j) {
 	float ** pastfeatures= unit->m_pastfeatures;
 	//unit->m_pastfeatures = (float**)RTAlloc(unit->mWorld, unit->m_numfeatures * sizeof(float*)); 
 	
-	int beatsfit= windowsize/period; //complete beats only, or also fit as many as possible? 
+	int beatsfit= (int)(windowsize/period); //complete beats only, or also fit as many as possible? 
 	
 	float weight;  //compensation for number of events matched; may alter equation later 
 	
@@ -372,7 +372,7 @@ void finaldecision(BeatTrack2 *unit) {
 		
 		//printf("i %d matchsum %d excess %f \n",i, matchsum, excess);
 		
-		if(secondbest!= 0) matchsum += excess;
+		if(secondbest!= 0) matchsum += (int)excess;
 		
 		//so must have at least one match //&& (excess>1.03)
 		if ((matchsum>bestpreviousmatchsum)) {bestcandidate = i; bestpreviousmatchsum= matchsum; foundgood=1;} 
