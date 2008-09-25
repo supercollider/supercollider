@@ -86,7 +86,7 @@ enum {
 #define SETCALC(func) (unit->mCalcFunc = (UnitCalcFunc)&func)
 
 // calculate a slope for control rate interpolation to audio rate.
-#define CALCSLOPE(next,prev) ((next - prev) * unit->mRate->mSlopeFactor)
+#define CALCSLOPE(next,prev) ((next - prev) * sc_typeof_cast(next)unit->mRate->mSlopeFactor)
 
 // get useful values
 #define SAMPLERATE (unit->mRate->mSampleRate)
