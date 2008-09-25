@@ -998,7 +998,7 @@ void DetectIndex_next_1(DetectIndex *unit, int inNumSamples)
 	float in = ZIN0(1);
 	int32 index;
 	if(in == unit->mPrevIn) {
-		index = unit->mPrev;
+		index = (int32)unit->mPrev;
 	} else {
 		index = DetectIndex_FindIndex(table, in, maxindex);
 		unit->mPrev = index;
@@ -1020,7 +1020,7 @@ void DetectIndex_next_k(DetectIndex *unit, int inNumSamples)
 	int32 index;
 	float val;
 	if(in == unit->mPrevIn) {
-		index = unit->mPrev;
+		index = (int32)unit->mPrev;
 	} else {
 		index = DetectIndex_FindIndex(table, in, maxindex);
 		unit->mPrev = index;
@@ -1044,7 +1044,7 @@ void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
 	float prev = unit->mPrevIn;
-	int32 prevIndex = unit->mPrev;
+	int32 prevIndex = (int32)unit->mPrev;
 	float inval;
 	
 	LOOP(inNumSamples,

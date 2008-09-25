@@ -4463,15 +4463,15 @@ void FreqShift_Ctor(FreqShift *unit)
     if(INRATE(1) == calc_FullRate) {
 	if(INRATE(2) == calc_FullRate) {
 	    SETCALC(FreqShift_next_aa);
-	    unit->m_phase = 0.f;
+	    unit->m_phase = 0;
 	    } else {
 	    SETCALC(FreqShift_next_ak);
-	    unit->m_phase = 0.f;
+	    unit->m_phase = 0;
 	    }
 	} else {
 	if(INRATE(2) == calc_FullRate){
 	    SETCALC(FreqShift_next_ka);
-	    unit->m_phase = 0.f;
+	    unit->m_phase = 0;
 	    } else {
 	    SETCALC(FreqShift_next_kk);
 	    unit->m_phase = (int32)(unit->m_radtoinc * IN0(2));

@@ -123,7 +123,7 @@ struct WarpWinGrain
 
 struct Warp1 : public Unit
 {
-	int m_fbufnum;
+	float m_fbufnum;
 	SndBuf* m_buf;
 	int mNumActive[16];
 	int mNextGrain[16];

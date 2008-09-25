@@ -1058,7 +1058,7 @@ static inline void gverb_set_roomsize(GVerb *unit, const float a)
 {
   unsigned int i;
 
-  if (a <= 1.0 || isnan(a)) {
+  if (a <= 1.0 || sc_isnan(a)) {
     unit->roomsize = 1.0;
   } else {
 	if(a >= unit->maxroomsize)
