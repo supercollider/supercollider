@@ -43,7 +43,7 @@ inline bool sc_isnan(float x)
 // can be used at the end of a block to fix any recirculating filter values.
 inline float32 zapgremlins(float32 x)
 {
-	float32 absx = fabs(x);
+	float32 absx = std::abs(x);
 	// very small numbers fail the first test, eliminating denormalized numbers
 	//    (zero also fails the first test, but that is OK since it returns zero.)
 	// very large numbers fail the second test, eliminating infinities
@@ -53,17 +53,17 @@ inline float32 zapgremlins(float32 x)
 
 inline float32 sc_log2(float32 x)
 {
-	return static_cast<float32>(log(fabs(x)) * rlog2);
+	return static_cast<float32>(std::log(std::abs(x)) * (float32)rlog2);
 }
 
 inline float32 sc_log10(float32 x)
 {
-	return log10(fabs(x));
+	return std::log10(std::abs(x));
 }
 
 inline float32 sc_midicps(float32 note)
 {
-	return (float32)440. * pow((float32)2., (note - (float32)69.) * (float32)0.083333333333);
+	return (float32)440. * std::pow((float32)2., (note - (float32)69.) * (float32)0.083333333333);
 }
 
 inline float32 sc_cpsmidi(float32 freq)
@@ -73,7 +73,7 @@ inline float32 sc_cpsmidi(float32 freq)
 
 inline float32 sc_midiratio(float32 midi)
 {
-	return pow((float32)2. , midi * (float32)0.083333333333);
+	return std::pow((float32)2. , midi * (float32)0.083333333333);
 }
 
 inline float32 sc_ratiomidi(float32 ratio)
@@ -83,7 +83,7 @@ inline float32 sc_ratiomidi(float32 ratio)
 
 inline float32 sc_octcps(float32 note)
 {
-	return (float32)440. * pow((float32)2., note - (float32)4.75);
+	return (float32)440. * std::pow((float32)2., note - (float32)4.75);
 }
 
 inline float32 sc_cpsoct(float32 freq)
@@ -93,12 +93,12 @@ inline float32 sc_cpsoct(float32 freq)
 
 inline float32 sc_ampdb(float32 amp)
 {
-	return log10(amp) * (float32)20.;
+	return std::log10(amp) * (float32)20.;
 }
 
 inline float32 sc_dbamp(float32 db)
 {
-	return pow((float32)10., db * (float32).05);
+	return std::pow((float32)10., db * (float32).05);
 }
 
 inline float32 sc_squared(float32 x)
@@ -120,7 +120,7 @@ inline float32 sc_sqrt(float32 x)
 inline float32 sc_hanwindow(float32 x)
 {
 	if (x < (float32)0. || x > (float32)1.) return (float32)0.;
-	return (float32)0.5 - (float32)0.5 * static_cast<float32>(cos(x * twopi));
+	return (float32)0.5 - (float32)0.5 * static_cast<float32>(cos(x * (float32)twopi));
 }
 
 inline float32 sc_welwindow(float32 x)
@@ -138,7 +138,7 @@ inline float32 sc_triwindow(float32 x)
 
 inline float32 sc_bitriwindow(float32 x)
 {
-	float32 ax = (float32)1. - fabs(x);
+	float32 ax = (float32)1. - std::abs(x);
 	if (ax <= (float32)0.) return (float32)0.;
 	return ax;
 }
@@ -171,12 +171,12 @@ inline float32 sc_ramp(float32 x)
 
 inline float32 sc_distort(float32 x)
 {
-	return x / ((float32)1. + fabs(x));
+	return x / ((float32)1. + std::abs(x));
 }
 
 inline float32 sc_softclip(float32 x)
 {
-	float32 absx = fabs(x);
+	float32 absx = std::abs(x);
 	if (absx <= (float32)0.5) return x;
 	else return (absx - (float32)0.25) / x;
 }
@@ -186,7 +186,7 @@ inline float32 sc_softclip(float32 x)
 inline float32 taylorsin(float32 x)
 {
 	// valid range from -pi/2 to +3pi/2
-	x = static_cast<float32>(pi2 - fabs(pi2 - x));
+	x = static_cast<float32>((float32)pi2 - std::abs(pi2 - x));
 	float32 x2 = x * x;
   	return static_cast<float32>(x*(x2*(x2*(x2*(x2*(1.0/362880.0) 
   			- (1.0/5040.0))
@@ -256,7 +256,7 @@ inline float32 sc_fold1(float32 x)
 
 inline float64 zapgremlins(float64 x)
 {
-	float64 absx = fabs(x);
+	float64 absx = std::abs(x);
 	// very small numbers fail the first test, eliminating denormalized numbers
 	//    (zero also fails the first test, but that is OK since it returns zero.)
 	// very large numbers fail the second test, eliminating infinities
@@ -266,17 +266,17 @@ inline float64 zapgremlins(float64 x)
 
 inline float64 sc_log2(float64 x)
 {
-	return log(fabs(x)) * rlog2;
+	return std::log(std::abs(x)) * rlog2;
 }
 
 inline float64 sc_log10(float64 x)
 {
-	return log10(fabs(x));
+	return std::log10(std::abs(x));
 }
 
 inline float64 sc_midicps(float64 note)
 {
-	return (float64)440. * pow((float64)2., (note - (float64)69.) * (float64)0.08333333333333333333333333);
+	return (float64)440. * std::pow((float64)2., (note - (float64)69.) * (float64)0.08333333333333333333333333);
 }
 
 inline float64 sc_cpsmidi(float64 freq)
@@ -286,7 +286,7 @@ inline float64 sc_cpsmidi(float64 freq)
 
 inline float64 sc_midiratio(float64 midi)
 {
-	return pow((float64)2. , midi * (float64)0.083333333333);
+	return std::pow((float64)2. , midi * (float64)0.083333333333);
 }
 
 inline float64 sc_ratiomidi(float64 ratio)
@@ -296,7 +296,7 @@ inline float64 sc_ratiomidi(float64 ratio)
 
 inline float64 sc_octcps(float64 note)
 {
-	return (float64)440. * pow((float64)2., note - (float64)4.75);
+	return (float64)440. * std::pow((float64)2., note - (float64)4.75);
 }
 
 inline float64 sc_cpsoct(float64 freq)
@@ -306,12 +306,12 @@ inline float64 sc_cpsoct(float64 freq)
 
 inline float64 sc_ampdb(float64 amp)
 {
-	return log10(amp) * (float64)20.;
+	return std::log10(amp) * (float64)20.;
 }
 
 inline float64 sc_dbamp(float64 db)
 {
-	return pow((float64)10., db * (float64).05);
+	return std::pow((float64)10., db * (float64).05);
 }
 
 inline float64 sc_squared(float64 x)
@@ -350,7 +350,7 @@ inline float64 sc_triwindow(float64 x)
 
 inline float64 sc_bitriwindow(float64 x)
 {
-	float64 ax = fabs(x);
+	float64 ax = std::abs(x);
 	if (ax > (float64)1.) return (float64)0.;
 	return (float64)1. - ax;
 }
@@ -383,12 +383,12 @@ inline float64 sc_ramp(float64 x)
 
 inline float64 sc_distort(float64 x)
 {
-	return x / ((float64)1. + fabs(x));
+	return x / ((float64)1. + std::abs(x));
 }
 
 inline float64 sc_softclip(float64 x)
 {
-	float64 absx = fabs(x);
+	float64 absx = std::abs(x);
 	if (absx <= (float64)0.5) return x;
 	else return (absx - (float64)0.25) / x;
 }
@@ -397,7 +397,7 @@ inline float64 sc_softclip(float64 x)
 // from Phil Burk.
 inline float64 taylorsin(float64 x)
 {
-	x = pi2 - fabs(pi2 - x);
+	x = pi2 - std::abs(pi2 - x);
 	float64 x2 = x * x;
   	return x*(x2*(x2*(x2*(x2*(1.0/362880.0) 
   			- (1.0/5040.0))

@@ -355,7 +355,7 @@ void sin_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = sin(ZXP(a));
+		ZXP(out) = std::sin(ZXP(a));
 	);
 }
 
@@ -365,7 +365,7 @@ void cos_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = cos(ZXP(a));
+		ZXP(out) = std::cos(ZXP(a));
 	);
 }
 
@@ -375,7 +375,7 @@ void tan_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = tan(ZXP(a));
+		ZXP(out) = std::tan(ZXP(a));
 	);
 }
 
@@ -385,7 +385,7 @@ void asin_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = asin(ZXP(a));
+		ZXP(out) = std::asin(ZXP(a));
 	);
 }
 
@@ -395,7 +395,7 @@ void acos_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = acos(ZXP(a));
+		ZXP(out) = std::acos(ZXP(a));
 	);
 }
 
@@ -405,7 +405,7 @@ void atan_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = atan(ZXP(a));
+		ZXP(out) = std::atan(ZXP(a));
 	);
 }
 
@@ -415,7 +415,7 @@ void sinh_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = sinh(ZXP(a));
+		ZXP(out) = std::sinh(ZXP(a));
 	);
 }
 
@@ -425,7 +425,7 @@ void cosh_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = cosh(ZXP(a));
+		ZXP(out) = std::cosh(ZXP(a));
 	);
 }
 
@@ -435,7 +435,7 @@ void tanh_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = tanh(ZXP(a));
+		ZXP(out) = std::tanh(ZXP(a));
 	);
 }
 
@@ -445,7 +445,7 @@ void log_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = log(ZXP(a));
+		ZXP(out) = std::log(ZXP(a));
 	);
 }
 
@@ -475,7 +475,7 @@ void exp_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = exp(ZXP(a));
+		ZXP(out) = std::exp(ZXP(a));
 	);
 }
 
@@ -576,7 +576,7 @@ void frac_a(UnaryOpUGen *unit, int inNumSamples)
 	
 	LOOP(inNumSamples, 
 		float xa = ZXP(a);
-		ZXP(out) = xa - floor(xa);
+		ZXP(out) = xa - std::floor(xa);
 	);
 }
 
@@ -670,7 +670,7 @@ void distort_a(UnaryOpUGen *unit, int inNumSamples)
 	
 	LOOP(inNumSamples, 
 		float z = ZXP(a);
-		ZXP(out) = z/(1.f + (float)fabs(z));
+		ZXP(out) = z/(1.f + std::abs(z));
 	);
 }
 
@@ -698,7 +698,7 @@ void distortneg_a(UnaryOpUGen *unit, int inNumSamples)
 	
 	LOOP(inNumSamples, 
 		float z = ZXP(a);
-		if (z < 0.f) ZXP(out) = z/(1. - z);
+		if (z < 0.f) ZXP(out) = z/(1.f - z);
 		else ZXP(out) = z;
 	);
 }
@@ -838,7 +838,7 @@ void abs_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : fabs(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::abs(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -858,7 +858,7 @@ void floor_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : floor(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::floor(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -868,7 +868,7 @@ void ceil_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : ceil(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::ceil(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -878,7 +878,7 @@ void sin_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sin(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::sin(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -888,7 +888,7 @@ void cos_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : cos(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::cos(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -898,7 +898,7 @@ void tan_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : tan(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::tan(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -908,7 +908,7 @@ void asin_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : asin(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::asin(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -918,7 +918,7 @@ void acos_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : acos(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::acos(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -938,7 +938,7 @@ void sinh_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sinh(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::sinh(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -948,7 +948,7 @@ void cosh_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : cosh(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::cosh(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -958,7 +958,7 @@ void tanh_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : tanh(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::tanh(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -968,7 +968,7 @@ void log_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : log(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::log(x);
 	} else {
 		RESETINPUT(0);
 	}
@@ -998,7 +998,7 @@ void exp_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : exp(x);
+		OUT0(0) = sc_isnan(x) ? NAN : std::exp(x);
 	} else {
 		RESETINPUT(0);
 	}

@@ -96,7 +96,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 		case 1:		// post a line on every bad value
 			LOOP(inNumSamples,
 				 samp = ZXP(in);
-				 classification = fpclassify(samp);
+				 classification = std::fpclassify(samp);
 				 switch (classification) 
 				 { 
 					 case FP_INFINITE: 
@@ -119,7 +119,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 		case 2:
 			LOOP(inNumSamples,
 				samp = ZXP(in);
-				classification = fpclassify(samp);
+				classification = std::fpclassify(samp);
 				if(classification != unit->prevclass) {
 					if(unit->sameCount == 0) {
 						printf("CheckBadValues: %s found in Synth %d, ID %d\n",
@@ -153,7 +153,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 		default:		// no post
 			LOOP(inNumSamples,
 				 samp = ZXP(in);
-				 classification = fpclassify(samp);
+				 classification = std::fpclassify(samp);
 				 switch (classification) 
 				 { 
 					 case FP_INFINITE: 

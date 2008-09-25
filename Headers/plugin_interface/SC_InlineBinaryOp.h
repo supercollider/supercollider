@@ -22,7 +22,7 @@
 #define _BinaryOpUGen_
 
 #include "SC_BoundsMacros.h"
-#include <math.h>
+#include <cmath>
 
 inline float sc_mod(float in, float hi) 
 { 
@@ -37,7 +37,7 @@ inline float sc_mod(float in, float hi)
 	} else return in;
 	
 	if (hi == lo) return lo;
-	return in - hi*floor(in/hi); 
+	return in - hi*std::floor(in/hi); 
 }
 
 inline double sc_mod(double in, double hi) 
@@ -53,7 +53,7 @@ inline double sc_mod(double in, double hi)
 	} else return in;
 	
 	if (hi == lo) return lo;
-	return in - hi*floor(in/hi); 
+	return in - hi*std::floor(in/hi); 
 }
 
 inline float sc_wrap(float in, float lo, float hi) 
@@ -71,7 +71,7 @@ inline float sc_wrap(float in, float lo, float hi)
 	} else return in;
 	
 	if (hi == lo) return lo;
-	return in - range * floor((in - lo)/range); 
+	return in - range * std::floor((in - lo)/range); 
 }
 
 inline double sc_wrap(double in, double lo, double hi) 
@@ -89,7 +89,7 @@ inline double sc_wrap(double in, double lo, double hi)
 	} else return in;
 	
 	if (hi == lo) return lo;
-	return in - range * floor((in - lo)/range); 
+	return in - range * std::floor((in - lo)/range); 
 }
 
 inline double sc_wrap(double in, double lo, double hi, double range) 
@@ -104,7 +104,7 @@ inline double sc_wrap(double in, double lo, double hi, double range)
 	} else return in;
 	
 	if (hi == lo) return lo;
-	return in - range * floor((in - lo)/range); 
+	return in - range * std::floor((in - lo)/range); 
 }
 
 inline double sc_wrap(float in, float lo, float hi, float range) 
@@ -119,7 +119,7 @@ inline double sc_wrap(float in, float lo, float hi, float range)
 	} else return in;
 	
 	if (hi == lo) return lo;
-	return in - range * floor((in - lo)/range); 
+	return in - range * std::floor((in - lo)/range); 
 }
 
 inline float sc_fold(float in, float lo, float hi) 
@@ -140,7 +140,7 @@ inline float sc_fold(float in, float lo, float hi)
 	// ok do the divide
 	range = hi - lo;
 	range2 = range + range;
-	c = x - range2 * floor(x / range2);
+	c = x - range2 * std::floor(x / range2);
 	if (c>=range) c = range2 - c;
 	return c + lo;
 }
@@ -163,7 +163,7 @@ inline double sc_fold(double in, double lo, double hi)
 	// ok do the divide
 	range = hi - lo;
 	range2 = range + range;
-	c = x - range2 * floor(x / range2);
+	c = x - range2 * std::floor(x / range2);
 	if (c>=range) c = range2 - c;
 	return c + lo;
 }
@@ -184,7 +184,7 @@ inline double sc_fold(float in, float lo, float hi, float range, float range2)
 	
 	if (hi == lo) return lo;
 	// ok do the divide
-	c = x - range2 * floor(x / range2);
+	c = x - range2 * std::floor(x / range2);
 	if (c>=range) c = range2 - c;
 	return c + lo;
 }
@@ -205,19 +205,19 @@ inline double sc_fold(double in, double lo, double hi, double range, double rang
 	
 	if (hi == lo) return lo;
 	// ok do the divide
-	c = x - range2 * floor(x / range2);
+	c = x - range2 * std::floor(x / range2);
 	if (c>=range) c = range2 - c;
 	return c + lo;
 }
 
 inline float sc_pow(float a, float b)
 {
-	return a >= 0.f ? pow(a, b) : -pow(-a, b);
+	return a >= 0.f ? std::pow(a, b) : -std::pow(-a, b);
 }
 
 inline double sc_pow(double a, double b)
 {
-	return a >= 0.f ? pow(a, b) : -pow(-a, b);
+	return a >= 0.f ? std::pow(a, b) : -std::pow(-a, b);
 }
 
 template <class T>
@@ -253,54 +253,54 @@ inline float sc_excess(float a, float b)
 
 inline float sc_round(float x, float quant)
 {
-	return quant==0. ? x : floor(x/quant + .5f) * quant;
+	return quant==0. ? x : std::floor(x/quant + .5f) * quant;
 }
 
 inline double sc_round(double x, double quant)
 {
-	return quant==0. ? x : floor(x/quant + .5) * quant;
+	return quant==0. ? x : std::floor(x/quant + .5) * quant;
 }
 
 inline float sc_roundUp(float x, float quant)
 {
-	return quant==0. ? x : ceil(x/quant) * quant;
+	return quant==0. ? x : std::ceil(x/quant) * quant;
 }
 
 inline double sc_roundUp(double x, double quant)
 {
-	return quant==0. ? x : ceil(x/quant) * quant;
+	return quant==0. ? x : std::ceil(x/quant) * quant;
 }
 
 inline float sc_trunc(float x, float quant)
 {
-	return quant==0. ? x : floor(x/quant) * quant;
+	return quant==0. ? x : std::floor(x/quant) * quant;
 }
 
 inline double sc_trunc(double x, double quant)
 {
-	return quant==0. ? x : floor(x/quant) * quant;
+	return quant==0. ? x : std::floor(x/quant) * quant;
 }
 
 inline float sc_atan2(float a, float b)
 {
-	return atan2(a, b);
+	return std::atan2(a, b);
 }
 
 
 inline float sc_scaleneg(float a, float b)
 {
 	b = 0.5f * b + 0.5f;
-	return (fabs(a) - a) * b + a;
+	return (std::abs(a) - a) * b + a;
 }
 
 inline float sc_amclip(float a, float b)
 {
-	return a * 0.5f * (b + fabs(b));
+	return a * 0.5f * (b + std::abs(b));
 }
 
 inline double sc_amclip(double a, double b)
 {
-	return a * 0.5 * (b + fabs(b));
+	return a * 0.5 * (b + std::abs(b));
 }
 
 const float kFSQRT2M1 = static_cast<float32>(sqrt(2.) - 1.);
@@ -310,8 +310,8 @@ inline float sc_hypotx(float x, float y)
 {
 	float minxy;
 	
-	x = fabs(x);
-	y = fabs(y);
+	x = std::abs(x);
+	y = std::abs(y);
 	
 	minxy = sc_min(x,y);
 	
@@ -322,8 +322,8 @@ inline double sc_hypotx(double x, double y)
 {
 	double minxy;
 	
-	x = fabs(x);
-	y = fabs(y);
+	x = std::abs(x);
+	y = std::abs(y);
 	
 	minxy = sc_min(x,y);
 	

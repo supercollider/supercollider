@@ -21,25 +21,25 @@
 #ifndef _SC_Constants_
 #define _SC_Constants_
 
-#include <math.h>
+#include <cmath>
 
 #ifndef __FP__
-const double pi     = acos(-1.);
+const double pi     = std::acos(-1.);
 #endif
 const double pi2    = pi * .5;
 const double pi32   = pi * 1.5;
 const double twopi  = pi * 2.;
 const double rtwopi = 1. / twopi;
-const double log001 = log(0.001);
-const double log01  = log(0.01);
-const double log1   = log(0.1);
-const double rlog2  = 1./log(2.);
-const double sqrt2  = sqrt(2.);
+const double log001 = std::log(0.001);
+const double log01  = std::log(0.01);
+const double log1   = std::log(0.1);
+const double rlog2  = 1./std::log(2.);
+const double sqrt2  = std::sqrt(2.);
 const double rsqrt2 = 1. / sqrt2;
 
 // used to truncate precision
-const float truncFloat = (float)(3. * pow(2.0,22));
-const double truncDouble = 3. * pow(2.0,51);
+const float truncFloat = (float)(3. * std::pow(2.0,22));
+const double truncDouble = 3. * std::pow(2.0,51);
 
 const float kBadValue = 1e20f; // used in the secant table for values very close to 1/0
 
