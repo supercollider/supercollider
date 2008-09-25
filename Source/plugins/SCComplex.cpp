@@ -99,6 +99,8 @@ SCPolar SCComplex::ToPolarApx()
 		} else {
 			return SCPolar(gMagLUT[index] * absreal, pi + gPhaseLUT[index]);
 		}
+	} else if(absimag==0.f) { // because of the above test, this means real is also zero
+		return SCPolar(0.f, 0.f);
 	} else {
 		slope = real/imag;
 		index = kPolarLUTSize2 + (int32)(kPolarLUTSize2 * slope);
