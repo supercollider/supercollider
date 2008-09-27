@@ -107,10 +107,10 @@ inline void* sc_malloc(size_t size)
 void* sc_dbg_malloc(size_t size, const char* tag, int line)
 {
 	void* ptr = sc_malloc(size);
-	fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %u\n", tag, line, ptr, size);
+	fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %zu\n", tag, line, ptr, size);
 #if SC_MEMORY_ALIGNMENT > 1
 	if (((intptr_t)ptr % SC_MEMORY_ALIGNMENT) != 0) {
-		fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %u: memory alignment error\n",
+		fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %zu: memory alignment error\n",
 				tag, line, ptr, size);
 		abort();
 	}
@@ -145,7 +145,7 @@ inline void* sc_zalloc(size_t n, size_t size)
 void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line)
 {
 	void* ptr = sc_zalloc(n, size);
-	fprintf(stderr, "sc_dbg_zalloc [%s:%d]: %p %u %u\n", tag, line, ptr, n, size);
+	fprintf(stderr, "sc_dbg_zalloc [%s:%d]: %p %zu %zu\n", tag, line, ptr, n, size);
 	return ptr;
 }
 
