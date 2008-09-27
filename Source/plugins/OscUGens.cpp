@@ -19,7 +19,7 @@
 */
 
 #include "SC_PlugIn.h"
-#include <limits.h>
+#include <limits>
 #include <string.h>
 
 static InterfaceTable *ft;
@@ -427,7 +427,7 @@ void DegreeToKey_Ctor(DegreeToKey *unit)
 		SETCALC(DegreeToKey_next_k);
 	}
 	unit->mOctave = (int32)ZIN0(2);
-	unit->mPrevIndex = LONG_MIN;
+	unit->mPrevIndex = std::numeric_limits<int32>::max();
 	unit->mPrevKey = 0.;
 	DegreeToKey_next_1(unit, 1);
 }
