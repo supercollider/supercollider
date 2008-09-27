@@ -605,7 +605,7 @@ void TRand_Ctor(TRand* unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TExpRand_next_a(TExpRand* unit, int inNumSamples)
+void TExpRand_next_k(TExpRand* unit, int inNumSamples)
 {	
 	float trig = ZIN0(2);
 	if (trig > 0.f && unit->m_trig <= 0.f) {
@@ -620,7 +620,7 @@ void TExpRand_next_a(TExpRand* unit, int inNumSamples)
 	unit->m_trig = trig;
 }
 
-void TExpRand_next_k(TExpRand* unit, int inNumSamples)
+void TExpRand_next_a(TExpRand* unit, int inNumSamples)
 {	
 	float *trig = ZIN(2);
 	float prev = unit->m_trig;
