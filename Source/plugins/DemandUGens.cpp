@@ -1369,15 +1369,15 @@ void Dwhite_next(Dwhite *unit, int inNumSamples)
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_lo = DEMANDINPUT_A(1, inNumSamples);
-			float hi = DEMANDINPUT_A(2, inNumSamples);
-			unit->m_range = hi - unit->m_lo;
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
 			OUT0(0) = NAN;
 			return;
 		}
 		unit->m_repeatCount++;
+		unit->m_lo = DEMANDINPUT_A(1, inNumSamples);
+			float hi = DEMANDINPUT_A(2, inNumSamples);
+			unit->m_range = hi - unit->m_lo;
 		float x = unit->mParent->mRGen->frand() * unit->m_range + unit->m_lo;
 		OUT0(0) = x;
 	} else {
