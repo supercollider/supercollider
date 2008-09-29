@@ -136,3 +136,11 @@ Dbrown : DUGen {
 }
 
 Dibrown : Dbrown {}
+
+Dstutter : DUGen {
+	*new { arg n, in;
+		^this.multiNew('demand', n, in)
+	}
+}
+
+Donce : DUGen {}
