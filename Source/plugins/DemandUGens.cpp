@@ -153,6 +153,13 @@ struct Dswitch : public Unit
 	int m_index;
 };
 
+struct Dstutter : public Unit
+{
+	double m_repeats;
+	double m_repeatCount;
+	float m_value;
+};
+
 struct Donce : public Unit
 {
 	int m_bufcounter; 
@@ -218,6 +225,9 @@ void Dswitch1_next(Dswitch1 *unit, int inNumSamples);
 
 void Dswitch_Ctor(Dswitch *unit);
 void Dswitch_next(Dswitch *unit, int inNumSamples);
+
+void Dstutter_Ctor(Dstutter *unit);
+void Dstutter_next(Dstutter *unit, int inNumSamples);
 
 void Donce_Ctor(Donce *unit);
 void Donce_next(Donce *unit, int inNumSamples);
@@ -1306,11 +1316,12 @@ void TDuty_Ctor(TDuty *unit)
 void Dseries_next(Dseries *unit, int inNumSamples)
 {
 	if (inNumSamples) {
+		float step = DEMANDINPUT_A(2, inNumSamples);
+		if(!sc_isnan(step)) { unit->m_step = step; }
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 			unit->m_value = DEMANDINPUT_A(1, inNumSamples);
-			unit->m_step = DEMANDINPUT_A(2, inNumSamples);
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
 			OUT0(0) = NAN;
@@ -1336,11 +1347,12 @@ void Dseries_Ctor(Dseries *unit)
 void Dgeom_next(Dgeom *unit, int inNumSamples)
 {
 	if (inNumSamples) {
+		float grow = DEMANDINPUT_A(2, inNumSamples);
+		if(!sc_isnan(grow)) { unit->m_grow = grow; } 
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 			unit->m_value = DEMANDINPUT_A(1, inNumSamples);
-			unit->m_grow = DEMANDINPUT_A(2, inNumSamples);
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
 			OUT0(0) = NAN;
@@ -1375,9 +1387,11 @@ void Dwhite_next(Dwhite *unit, int inNumSamples)
 			return;
 		}
 		unit->m_repeatCount++;
-		unit->m_lo = DEMANDINPUT_A(1, inNumSamples);
-			float hi = DEMANDINPUT_A(2, inNumSamples);
-			unit->m_range = hi - unit->m_lo;
+		float lo = DEMANDINPUT_A(1, inNumSamples);
+		float hi = DEMANDINPUT_A(2, inNumSamples);
+		
+		if(!sc_isnan(lo)) { unit->m_lo = lo;}
+		if(!sc_isnan(hi)) { unit->m_range = hi - lo; }
 		float x = unit->mParent->mRGen->frand() * unit->m_range + unit->m_lo;
 		OUT0(0) = x;
 	} else {
@@ -1397,12 +1411,18 @@ void Dwhite_Ctor(Dwhite *unit)
 void Diwhite_next(Diwhite *unit, int inNumSamples)
 {
 	if (inNumSamples) {
+		float lo = DEMANDINPUT_A(1, inNumSamples);
+		float hi = DEMANDINPUT_A(2, inNumSamples);
+		
+		if(!sc_isnan(lo)) { unit->m_lo = (int32)floor(DEMANDINPUT_A(1, inNumSamples) + 0.5f); }
+		if(!sc_isnan(hi)) { 
+			int32 hi = (int32)floor(DEMANDINPUT_A(2, inNumSamples) + 0.5f);
+			unit->m_range = hi - unit->m_lo + 1; 
+		}
+			
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_lo = (int32)floor(DEMANDINPUT_A(1, inNumSamples) + 0.5f);
-			int32 hi = (int32)floor(DEMANDINPUT_A(2, inNumSamples) + 0.5f);
-			unit->m_range = hi - unit->m_lo + 1;
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
 			OUT0(0) = NAN;
@@ -1428,12 +1448,13 @@ void Diwhite_Ctor(Diwhite *unit)
 void Dbrown_next(Dbrown *unit, int inNumSamples)
 {
 	if (inNumSamples) {
+			float lo = DEMANDINPUT_A(1, inNumSamples); if(!sc_isnan(lo)) { unit->m_lo = lo; }
+			float hi = DEMANDINPUT_A(2, inNumSamples); if(!sc_isnan(hi)) { unit->m_hi = hi; }
+			float step = DEMANDINPUT_A(3, inNumSamples); if(!sc_isnan(step)) { unit->m_step = step; }
+			
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_lo = DEMANDINPUT_A(1, inNumSamples);
-			unit->m_hi = DEMANDINPUT_A(2, inNumSamples);
-			unit->m_step = DEMANDINPUT_A(3, inNumSamples);
 			unit->m_val = unit->mParent->mRGen->frand() * (unit->m_hi - unit->m_lo) + unit->m_lo;
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
@@ -1461,12 +1482,14 @@ void Dbrown_Ctor(Dbrown *unit)
 void Dibrown_next(Dibrown *unit, int inNumSamples)
 {
 	if (inNumSamples) {
+	
+		float lo = DEMANDINPUT_A(1, inNumSamples); if(!sc_isnan(lo)) { unit->m_lo = lo; }
+		float hi = DEMANDINPUT_A(2, inNumSamples); if(!sc_isnan(hi)) { unit->m_hi = hi; }
+		float step = DEMANDINPUT_A(3, inNumSamples); if(!sc_isnan(step)) { unit->m_step = step; }
+		
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
-			unit->m_lo = (int32)floor(DEMANDINPUT_A(1, inNumSamples) + 0.5f);
-			unit->m_hi = (int32)floor(DEMANDINPUT_A(2, inNumSamples) + 0.5f);
-			unit->m_step = (int32)floor(DEMANDINPUT_A(3, inNumSamples) + 0.5f);
 			unit->m_val = unit->mParent->mRGen->irand(unit->m_hi - unit->m_lo + 1) + unit->m_lo;
 		}
 		if (unit->m_repeatCount >= unit->m_repeats) {
@@ -1787,6 +1810,49 @@ void Dswitch_Ctor(Dswitch *unit)
 //////////////////////////////
 
 
+void Dstutter_next(Dstutter *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+	
+		if (unit->m_repeatCount >= unit->m_repeats) {
+			
+			float val = DEMANDINPUT_A(1, inNumSamples);
+			float repeats = DEMANDINPUT_A(0, inNumSamples);
+		
+			if(sc_isnan(repeats) || sc_isnan(val)) {
+				OUT0(0) = NAN;
+				return;
+			} else {
+				unit->m_value = sc_abs(val);
+				unit->m_repeats = floor(repeats + 0.5f);
+				unit->m_repeatCount = 0.f;
+			}
+		}
+		
+		OUT0(0) = unit->m_value;
+		unit->m_repeatCount++;
+
+	} else {
+	
+		unit->m_repeats = -1.f;
+		unit->m_repeatCount = 0.f;
+		RESETINPUT(0);
+		RESETINPUT(1);
+		
+	}
+}
+
+void Dstutter_Ctor(Dstutter *unit)
+{
+	SETCALC(Dstutter_next);
+	Dstutter_next(unit, 0);
+	OUT0(0) = 0.f;
+}
+
+
+//////////////////////////////
+
+
 
 void Donce_next(Donce *unit, int inNumSamples)
 {
@@ -1973,5 +2039,6 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Dxrand);
 	DefineSimpleUnit(Dswitch1);
 	DefineSimpleUnit(Dswitch);
+	DefineSimpleUnit(Dstutter);
 	DefineSimpleUnit(Donce);
 }
