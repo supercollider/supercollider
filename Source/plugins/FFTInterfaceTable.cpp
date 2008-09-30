@@ -46,7 +46,6 @@ SCPolarBuf* ToPolarApx(SndBuf *buf)
 	return (SCPolarBuf*)buf->data;
 }
 
-/// RM 
 SCComplexBuf* ToComplexApx(SndBuf *buf);
 SCComplexBuf* ToComplexApx(SndBuf *buf)
 {

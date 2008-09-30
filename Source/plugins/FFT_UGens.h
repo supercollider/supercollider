@@ -23,6 +23,8 @@
 #include <sndfile.h>
 #include "SCComplex.h"
 
+#include "SC_fftlib.h"
+
 // not ready for altivec yet..
 #undef __VEC__
 #define __VEC__ 0
