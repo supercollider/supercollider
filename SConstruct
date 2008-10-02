@@ -849,7 +849,7 @@ complexEnv.SharedObject('Source/plugins/SCComplex.o', complexSources)
 
 # fft ugens
 fftEnv = pluginEnv.Copy()
-fftSources = Split('Source/common/fftlib.c Source/plugins/SCComplex.o')
+fftSources = Split('Source/common/SC_fftlib.cpp Source/common/fftlib.c Source/plugins/SCComplex.o')
 merge_lib_info(fftEnv, libraries['fftwf'])
 plugins.append(
     fftEnv.SharedLibrary(
