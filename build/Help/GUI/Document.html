@@ -5,24 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #183a9b; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Monaco; color: #183a9b}
-span.s1 {color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1f3b98; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Monaco; color: #1f3b98}
+span.s1 {color: #0013bb}
 span.s2 {color: #000000}
 span.s3 {color: #606060}
 span.s4 {font: 9.0px Monaco}
-span.s5 {color: #007300}
+span.s5 {color: #316f11}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -47,6 +46,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p3"><b>Document.current</b></p>
 <p class="p3">returns the current Document.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Document.listener</b></p>
+<p class="p3">returns the post window's document object.</p>
 <p class="p5"><br></p>
 <p class="p3"><b>Document.hasEditedDocuments</b></p>
 <p class="p3">returns true if there are unsaved changes in one of the open Document.</p>
@@ -119,7 +121,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p3"><b>selectionStart</b></p>
 <p class="p3">get the current position in the text<span class="Apple-converted-space"> </span></p>
-<p class="p9"><br></p>
+<p class="p8"><br></p>
 <p class="p6">(</p>
 <p class="p6"><span class="s1">Document</span>.current.selectionStart.postln;</p>
 <p class="p6">)</p>
@@ -130,7 +132,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">(</p>
 <p class="p6"><span class="s1">Document</span>.current.selectionSize.postln;</p>
 <p class="p6">)</p>
-<p class="p9"><br></p>
+<p class="p8"><br></p>
 <p class="p3"><b>selectRange(start, length)</b></p>
 <p class="p5"><br></p>
 <p class="p6">(</p>
@@ -139,11 +141,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p3"><b>string(rangestart, rangesize)</b></p>
 <p class="p3">get the text of a document. If no rangestart is applied the whole text is returned.</p>
-<p class="p9"><br></p>
+<p class="p8"><br></p>
 <p class="p6">(</p>
 <p class="p6"><span class="s1">Document</span>.current.string;</p>
 <p class="p6">)</p>
-<p class="p9"><br></p>
+<p class="p8"><br></p>
 <p class="p3"><b>selectedString</b></p>
 <p class="p3">get the currently selected text.</p>
 <p class="p8"><br></p>
@@ -156,7 +158,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>string_(string, rangestart, rangesize)</b></p>
 <p class="p3">set the text of a document. if rangestart is -1 (default) the whole text is replaced</p>
-<p class="p9"><br></p>
+<p class="p8"><br></p>
 <p class="p6">(</p>
 <p class="p6"><span class="s1">var</span> doc;</p>
 <p class="p6">doc = <span class="s1">Document</span>(string:<span class="s3">""</span>);</p>
@@ -221,7 +223,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">});</p>
 <p class="p6">)</p>
 <p class="p6">(</p>
-<p class="p10">//need to pop proxyspace from other examples</p>
+<p class="p9">//need to pop proxyspace from other examples</p>
 <p class="p6">q.pop</p>
 <p class="p6">r.pop</p>
 <p class="p6">)</p>
@@ -248,9 +250,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>mouseUpAction_</b></p>
 <p class="p6">(</p>
 <p class="p8"><br></p>
-<p class="p10">//add a mouse action to this document:<span class="Apple-converted-space"> </span></p>
-<p class="p10">//example: easy button:</p>
-<p class="p10">//when you click in front of a 17 a SinOsc will start up;</p>
+<p class="p9">//add a mouse action to this document:<span class="Apple-converted-space"> </span></p>
+<p class="p9">//example: easy button:</p>
+<p class="p9">//when you click in front of a 17 a SinOsc will start up;</p>
 <p class="p6"><span class="s1">Server</span>.local.boot;</p>
 <p class="p6"><span class="s1">Document</span>.current.mouseUpAction_({<span class="s1">arg</span> doc;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span> char;</p>
@@ -265,8 +267,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p6">)</p>
 <p class="p3">test here and click in front of the number:</p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s2"><span class="Apple-tab-span">	</span></span>17</p>
-<p class="p11"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>23</p>
+<p class="p10"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s2"><span class="Apple-tab-span">	</span></span>17</p>
+<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>23</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
@@ -318,14 +320,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Utilities and settings for dealing with documents such as super collider code files.<span class="Apple-converted-space">  </span>By default the document directory is SuperCollider's application directory.</p>
 <p class="p2"><br></p>
 <p class="p3">In Main-startUp you can set this to a more practical directory:</p>
-<p class="p9"><br></p>
+<p class="p8"><br></p>
 <p class="p4"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Document</span><span class="s2">.dir = </span>"~/Documents/SuperCollider"<span class="s2">;</span></p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
 <p class="p3"><b>*standardizePath</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>if it is a relative path, expand it to an absolute path relative to your document directory.<span class="Apple-tab-span">	</span>expand tildes in path (your home directory), resolve symbolic links (but not aliases).</p>
 <p class="p3"><span class="Apple-tab-span">	</span>also converts from OS9 macintosh path format.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Document</span>.standardizePath(</p>
 <p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>":Patches:newfoots:fastRuckAndTuck"</p>
 <p class="p6"><span class="Apple-tab-span">	</span>)</p>
@@ -342,8 +344,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"Patches/newfoots/fastRuckAndTuck"</p>
 <p class="p6"><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Patches</span>/newfoots/fastRuckAndTuck</p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><br></p>
 <p class="p3"><b>*abrevPath</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>reduce the path relative to your document directory if possible.</p>
 <p class="p5"><br></p>
