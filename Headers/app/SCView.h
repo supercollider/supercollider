@@ -711,6 +711,7 @@ public:
 	SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 	virtual ~SCEnvelopeView();
 	virtual void draw(SCRect inDamage);
+	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
@@ -749,7 +750,7 @@ protected:
     SCColor mStringColor;
     int mAlignment;
 	bool mDrawCenteredConnection;
-	
+	int *drawOrder;
     
 };
 SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);

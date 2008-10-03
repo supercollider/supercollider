@@ -4735,6 +4735,7 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
 
 
 	mEnvObj = 0;
+	drawOrder = 0;
 
 	mFillColor = mStrokeColor = mSelectedColor = SCMakeColor(0,0,0,1); // black
 
@@ -4769,6 +4770,8 @@ SCEnvelopeView::~SCEnvelopeView()
 	 }
 	 
     delete [] mEnvObj;
+	
+	if(drawOrder) delete [] drawOrder;
 
 }
 
@@ -4891,19 +4894,20 @@ void SCEnvelopeView::draw(SCRect inDamage)
 	if(mDrawRectsActive)
     {
         for(int i = xstart; i < xpixels; i++){
-            envobj = &mEnvObj[i];
-            drawRect = SCtoCGRect(envobj->mRect);
-            setEnvRect(envobj->x, envobj->y, envobj);
+			envobj = &mEnvObj[drawOrder[i]];
+			drawRect = SCtoCGRect(envobj->mRect);
+			setEnvRect(envobj->x, envobj->y, envobj);
 			
-            fillcolor = envobj->mColor;
-            CGContextSetRGBFillColor(cgc, fillcolor.red, fillcolor.green, fillcolor.blue, fillcolor.alpha);
-            CGContextFillRect (cgc, drawRect);
-            if(envobj->mRect.width > 1.0 || envobj->mRect.height > 1.0)
-            CGContextStrokeRect(cgc,drawRect);
+			fillcolor = envobj->mColor;
+			CGContextSetRGBFillColor(cgc, fillcolor.red, fillcolor.green, fillcolor.blue, fillcolor.alpha);
+			CGContextFillRect (cgc, drawRect);
+			if(envobj->mRect.width > 1.0 || envobj->mRect.height > 1.0)
+			CGContextStrokeRect(cgc,drawRect);
 			if(envobj->mString) 
 				stringDrawCenteredInRect(envobj->mString, envobj->mRect, mFontName, mFontSize, mStrokeColor);
 				//draw outputs
 			CGContextSetRGBFillColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
+			
         }
     }
 
@@ -4994,8 +4998,9 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
     }
     //
     
-    for(int i=0; i< mActiveSize; i++) {
-        envo = &mEnvObj[i];
+    for(int count=mActiveSize - 1; count>=0; count--) {
+		int i = drawOrder[count];
+        envo = &mEnvObj[i]; // check in reverse drawOrder so that 'on top' gets selected first
         sel = SCPointInRect(where, envo->mRect);
         if(sel){
             envo->mIsSelected = true;
@@ -5003,6 +5008,18 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
             mSelectedIndex = i;
             mLastIndex = i;
             if(fixed) mIsFixedSelection = true;
+			int newdrawOrder[mActiveSize];
+			// iterate over
+			newdrawOrder[mActiveSize - 1] = i;
+			int j = 0, k = 0;
+			while (j < mActiveSize) {
+				if(drawOrder[j] != i) {
+					newdrawOrder[k] = drawOrder[j];
+					k++;
+				}
+				j++;
+			}
+			memcpy(drawOrder, newdrawOrder, mActiveSize * sizeof(int));
             return;
         } 
     }
@@ -5016,6 +5033,13 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
     */ 
     refresh();
 }
+
+void SCEnvelopeView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+	mouseTrack(where, modifiers,theEvent);
+	SCView::mouseDownAction(where, modifiers, theEvent);
+}
+
 void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent){
 //    sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
     if (modifiers & NSShiftKeyMask) {
@@ -5037,7 +5061,7 @@ void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEve
 void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	//mPrevPoint = where;
-	mouseTrack(where, modifiers,theEvent);
+	//mouseTrack(where, modifiers,theEvent);
 //	NSLog(@"foo");
 }
 
@@ -5340,6 +5364,17 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 
             int size = (slot->uo->slots[0]).uo->size;
             if(size != mTabSize) {
+				// initialise drawing order
+				if(drawOrder) {
+					delete [] drawOrder;
+					drawOrder = 0;
+				}
+				if(size > 0){
+					drawOrder = new int[size];
+					for(int i=0; i<size; i++){
+						drawOrder[i] = i;
+					}
+				}
 			//this should keep the settings of the old ones ... maybe make a  separate add action ...
                 err = allocSlotEnvObjArray(slot, &mEnvObj);
 				if(err) return err;
@@ -5361,6 +5396,8 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             }
             mActiveSize = size;
             //setVisibleSize();
+			
+			
             refresh();
 			
             return errNone;
