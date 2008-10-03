@@ -1,51 +1,49 @@
 Main : Process {
-	var platform, argv;
+	// do not change the next lines manually:
+	//==== replace with new version from bash script ====
+classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="1";
+	//==== end replace ====
+
+	var <platform, argv;
 	var <>recvOSCfunc;
 	
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
 		// should be nil most of the time
 	var	<>nowExecutingPath;
 
-	startup {
+	startup {	
+		var mainpath, mainlocStr, rootdir;
 		// setup the platform first so that class initializers can call platform methods.
 		// create the platform, then intialize it so that initPlatform can call methods
-		// that depend on thisProcess.platform methods.
 		platform = this.platformClass.new;
 		platform.initPlatform;
-
 		super.startup;
-		// set the 's' interpreter variable to the internal server.
+		
+		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.internal;
+		Server.default = interpreter.s;
 		GUI.fromID( this.platform.defaultGUIScheme );
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
+		mainlocStr = thisMethod.filenameSymbol.asString;
+		rootdir = mainlocStr[0..mainlocStr.size - 38]; 
+		SynthDef.synthDefDir_(rootdir ++ "synthdefs");
 		this.platform.startup;
 		StartUp.run;
 		(
-			osx: "Welcome to SuperCollider, type cmd-d for help"
+			osx: "Welcome to SuperCollider, type cmd-d for help",
+			linux: "Welcome to SuperCollider, for help type ctrl-c ctrl-h (Emacs) or :SChelp (vim)",
+		 	windows: "Welcome to SuperCollider, press F1 for help"
 		 ).at(platform.name).postln;
-		/* uncomment these lines if you want to close the Server windows */
-		// Server.local.window.close;
-		// Server.internal.window.close;
-		/* a sample stand-alone application */
+		
+		// from here on, you shoulod customize what should happen...
+		// I like to boot, then use thisProcess.interpreter.executeFile
+		// OR - put things into a class... like the SCSA_Demo
+		interpreter.s.boot;
+		
 		interpreter.s.waitForBoot({
-			var sb, demo;
-			sb = SCWindow.screenBounds;
-			
-			demo = SCSA_Demo.new(
-				"the cheese stands alone", 
-				Rect(
-					(sb.width - SCSA_Demo.width) * 0.5, 
-					(sb.height - SCSA_Demo.height) * 0.5,
-					SCSA_Demo.width,
-					SCSA_Demo.height
-				),
-				interpreter.s
-			);
-			demo.front;
-			// Close post window after application launches. If you want
-			// to hide it completely, put this line after Document.startup instead.
-			Document.closeAll(false);
-		}, 25);		
+			SCSA_Demo.new("The Cheese Stands Alone", Rect(400, 400, 300, 200), interpreter.s).front;
+//			thisProcess.interpreter.executeFile(rootdir ++ "MFBSD.rtf");
+			});
 	}
 	
 	shutdown { // at recompile, quit
@@ -62,7 +60,7 @@ Main : Process {
 
 		SystemClock.clear;
 		AppClock.clear;
-		TempoClock.default.clear;
+//		TempoClock.default.clear;
 		CmdPeriod.clear;
 		
 		Server.freeAll; // stop all sounds on local servers
@@ -90,20 +88,39 @@ Main : Process {
 		win.toggleEditMode;
 	}
 
+//	override in platform specific extension
+//
+//	platformClass {		
+//		^Platform
+//	}
 
-	platformClass {
-		// override in platform specific extension
-		^Platform
-	}
-	platform {
-		^platform ?? { platform = this.platformClass.new }
-	}
 	argv {
 		^argv ?? { argv = this.prArgv }
 	}
 
 	showHelpBrowser {
 		Help.gui
+	}
+	showHelpSearch {
+		Help.searchGUI
+	}
+
+	*version {^[scVersionMajor, ".", scVersionMinor, scVersionPostfix].join}
+	
+	*versionAtLeast { |maj, min|
+		^if((maj==scVersionMajor) and:{min.notNil}){
+			scVersionMinor >= min
+		}{
+			scVersionMajor >= maj
+		};
+	}
+	
+	*versionAtMost { |maj, min|
+		^if((maj==scVersionMajor) and:{min.notNil}){
+			scVersionMinor <= min
+		}{
+			scVersionMajor <= maj
+		};
 	}
 	
 	// PRIVATE
