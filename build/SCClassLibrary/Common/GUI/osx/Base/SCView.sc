@@ -67,7 +67,7 @@ SCView {  // abstract class
 	}
 	
 	focusColor{
-		^this.getProperty(\focusColor);
+		^this.getProperty(\focusColor, Color.new);
 	}
 		
 	id {

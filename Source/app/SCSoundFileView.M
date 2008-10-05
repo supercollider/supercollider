@@ -1051,6 +1051,30 @@ int SCSoundFileView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		
 		SetInt(slot, (int) mSndBuf.samples);
 		return errNone;
-	}	
+	}
+	if (strcmp(name, "timeCursorPosition")==0) {
+		
+		SetInt(slot, mTimeCursorPosition);
+		return errNone;
+	}
+	if (strcmp(name, "gridOn")==0) {
+		
+		SetBool(slot, mGridOn);
+		return errNone;
+	}
+	if (strcmp(name, "gridResolution")==0) {
+		
+		SetFloat(slot, mGridResolution);
+		return errNone;
+	}
+	if (strcmp(name, "timeCursorOn")==0) {
+		
+		SetBool(slot, mShowTimeCursor);
+		return errNone;
+	}
+	if (strcmp(name, "timeCursorColor")==0) {
+		
+		return setSlotColor(slot, &mTimeCursorColor);
+	}
 	return SCView::getProperty(symbol, slot);
 }

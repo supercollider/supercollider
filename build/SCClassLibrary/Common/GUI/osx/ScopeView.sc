@@ -31,14 +31,14 @@ SCScope : SCView {
 	}	
 
 	gridColor {
-		^this.getProperty(\gridColor)
+		^this.getProperty(\gridColor, Color.new)
 	}
 	gridColor_ { arg color;
 		this.setProperty(\gridColor, color);
 	}	
 
 	waveColors {
-		^this.getProperty(\waveColors)
+		^this.getProperty(\waveColors, Array.newClear(16)) // 16 is kMaxScopeChannels
 	}
 	waveColors_ { arg arrayOfColors;
 		this.setProperty(\waveColors, arrayOfColors);
