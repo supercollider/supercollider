@@ -738,7 +738,7 @@ protected:
 	double mStepSize, mStepScale;
 	SCEnvObject * mEnvObj;
 	//DrawBackground* mKnob;
-	bool  mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsFilled, mIsFixedSelection, mIsEnvView;
+	bool  mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsFilled, mIsFixedSelection, mIsEnvView, mIsTracking;
 	int mSelectedIndex;
 	SCPoint mMousePoint;
 
@@ -751,6 +751,7 @@ protected:
     int mAlignment;
 	bool mDrawCenteredConnection;
 	int *drawOrder;
+	SCPoint trackOffset;
     
 };
 SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);

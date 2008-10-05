@@ -4732,7 +4732,7 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
 	mCurrentX = 0.0;
 	mLastIndex = 0;
 	mIsEnvView = true;
-
+	mIsTracking = false;
 
 	mEnvObj = 0;
 	drawOrder = 0;
@@ -5056,6 +5056,8 @@ void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEve
     }
 	if(mSelectedIndex >= 0) 
 		setValueFromPoint(where);
+	
+	mIsTracking = false;
    // mouseTrack(where, modifiers);
 }
 void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
@@ -5093,8 +5095,16 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
     } else {
     if(!mIsFixedSelection && mSelectedIndex < 0)
         setSelection(where, false, false);
-		if(mSelectedIndex >= 0) 
-			setValueFromPoint(where);
+		
+		if(mSelectedIndex >= 0) {
+			if(!mIsTracking){
+				mIsTracking = true;
+				SCEnvObject selected = mEnvObj[mSelectedIndex];
+				trackOffset = SCMakePoint(selected.mDrawPoint.x - where.x, selected.mDrawPoint.y - where.y);
+			}
+			SCPoint location = SCMakePoint(trackOffset.x + where.x, trackOffset.y + where.y);
+			setValueFromPoint(location);
+		}
     }
 }
 
