@@ -183,10 +183,10 @@ SCSoundFileView : SCScope{
 	
 	gridOn { ^this.getProperty(\gridOn) }	
 	gridResolution { ^this.getProperty(\gridResolution) }
-	gridColor { ^this.getProperty(\gridColor) }	
+	gridColor { ^this.getProperty(\gridColor, Color.new) }	
 	timeCursorOn { ^this.getProperty(\timeCursorOn) }	
 	timeCursorPosition { ^this.getProperty(\timeCursorPosition) }
-	timeCursorColor { ^this.getProperty(\timeCursorColor) }
+	timeCursorColor { ^this.getProperty(\timeCursorColor, Color.new) }
 
 	dataNumSamples{
 		^this.getProperty(\getViewNumSamples);	
