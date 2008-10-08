@@ -4072,6 +4072,9 @@ SCUserView::~SCUserView()
 
 void SCUserView::draw(SCRect inDamage)
 {
+
+	SCView::draw(inDamage); // draw background
+
 	SCRect bounds = getDrawBounds();
 
 	if(bounds.width == 0 || bounds.height == 0) return;
