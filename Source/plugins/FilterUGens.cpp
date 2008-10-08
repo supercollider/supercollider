@@ -193,16 +193,6 @@ struct BRF : public Unit
 	float m_y1, m_y2, m_a0, m_a1, m_b2, m_freq, m_bw;
 };
 
-struct LowShelf : public Unit
-{
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq, m_db;
-};
-
-struct HighShelf : public Unit
-{
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq, m_db;
-};
-
 struct MidEQ : public Unit
 {
 	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq, m_bw, m_db;
@@ -422,9 +412,6 @@ extern "C"
 
 	void MidEQ_next(MidEQ *unit, int inNumSamples);
 	void MidEQ_Ctor(MidEQ* unit);
-
-	void LowShelf_next(LowShelf *unit, int inNumSamples);
-	void LowShelf_Ctor(LowShelf* unit);
 
 	void Resonz_next(Resonz *unit, int inNumSamples);
 	void Resonz_Ctor(Resonz* unit);
@@ -2993,105 +2980,6 @@ void MidEQ_next(MidEQ* unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 0
-
-void LowShelf_Ctor(LowShelf* unit)
-{	
-	////printf("LowShelf_Reset\n");
-	SETCALC(LowShelf_next);
-	unit->m_a0 = 0.f;
-	unit->m_b1 = 0.f;
-	unit->m_b2 = 0.f;
-	unit->m_y1 = 0.f;
-	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
-	ZOUT0(0) = 0.f;
-}
-
-
-void LowShelf_next(LowShelf* unit, int inNumSamples)
-{
-	//printf("LPF_next\n");
-
-	float *out = ZOUT(0);
-	float *in = ZIN(0);
-	float freq = ZIN0(1);
-	float db = ZIN0(2);
-
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
-
-	if (freq != unit->m_freq || db != unit->m_db) {
-
-		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
-		
-		float C = 1.f / tan(pfreq);
-		float C2 = C * C;
-		float sqrt2C = C * sqrt2;
-		float next_a0 = 1.f / (1.f + sqrt2C + C2);
-		float next_b1 = -2.f * (1.f - C2) * next_a0 ;
-		float next_b2 = -(1.f - sqrt2C + C2) * next_a0;
-
-		//post("%g %g %g   %g %g   %g %g %g   %g %g\n", *freq, pfreq, qres, D, C, cosf, next_b1, next_b2, next_a0, y1, y2);
-
-		float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-		float b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2; 
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
-			
-			y2 = ZXP(in) + b1 * y0 + b2 * y1; 
-			ZXP(out) = a0 * (y2 + 2.f * y0 + y1);
-			
-			y1 = ZXP(in) + b1 * y2 + b2 * y0; 
-			ZXP(out) = a0 * (y1 + 2.f * y2 + y0);
-					
-			a0 += a0_slope; 
-			b1 += b1_slope; 
-			b2 += b2_slope;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2; 
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
-			y2 = y1; 
-			y1 = y0;
-		);
-
-		unit->m_freq = freq;
-		unit->m_a0 = a0;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
-	} else {
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2; 
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
-			
-			y2 = ZXP(in) + b1 * y0 + b2 * y1; 
-			ZXP(out) = a0 * (y2 + 2.f * y0 + y1);
-			
-			y1 = ZXP(in) + b1 * y2 + b2 * y0; 
-			ZXP(out) = a0 * (y1 + 2.f * y2 + y0);
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2; 
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
-			y2 = y1; 
-			y1 = y0;
-		);
-	}
-	unit->m_y1 = zapgremlins(y1);
-	unit->m_y2 = zapgremlins(y2);
-	
-}
-
-#endif
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Median_InitMedian(Median* unit, long size, float value);
 float Median_InsertMedian(Median* unit, float value);
@@ -3269,7 +3157,7 @@ void Resonz_next(Resonz* unit, int inNumSamples)
 
 void Ringz_Ctor(Ringz* unit)
 {	
-	//printf("Ringz_Reset\n");
+	//printf("Ringz_ctor\n");
 	SETCALC(Ringz_next);
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
@@ -4897,8 +4785,6 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Slope);
 
 	DefineSimpleUnit(MidEQ);
-	//DefineSimpleUnit(LowShelf);
-	//DefineSimpleUnit(HighShelf);
 	DefineSimpleUnit(Median);
 
 	DefineSimpleUnit(Resonz);
