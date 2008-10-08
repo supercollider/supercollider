@@ -196,6 +196,11 @@ SCImage {
 		this.applyFilters(filter);
 		^this;
 	}
+	invert {
+		if(autoMode, {this.accelerated_(true)});
+		this.applyFilters(SCImageFilter(\CIColorInvert));
+		^this;
+	}
 	interpolation {
 		var index;
 		index = this.prGetInterpolation;
@@ -239,6 +244,15 @@ SCImage {
 		pixelArray = Int32Array.newClear(width*height);
 		this.prLoadPixels(pixelArray);
 		^pixelArray;
+	}
+	loadPixels {arg array;
+		if(autoMode, {this.accelerated_(false)});
+		if(array.isKindOf(Int32Array).not, {
+			"SCImage: array should be an Int32Array".warn;
+			^nil;
+		});
+		this.prLoadPixels(array);
+		^this;
 	}	
 	pixels_ {|array|
 		this.setPixels(array);
@@ -283,6 +297,9 @@ SCImage {
 			});
 		};
 	}
+	removeAllFilters {
+		filters = [];
+	}
 	createCache { // only for Filters
 		prCache = this.filteredWith(filters);
 	}
@@ -291,9 +308,10 @@ SCImage {
 	*/
 	flatten {
 		this.clearCache;
-		this.accelerated_(true); // we have to force acceleration in case of a previous mod
+		this.accelerated_(true); // force acceleration just in case
 		this.applyFilters(filters);
 		filters = []; // clear all filters
+		if(autoMode, {this.accelerated_(false)}); // ensure bitmap representation
 	}
 	
 	applyFilters {|filters, crop=0, region|
@@ -387,7 +405,7 @@ SCImage {
 	}	
 	draw {|aFunction|
 		this.lockFocus;
-		aFunction.value(this.bounds);
+		aFunction.value(this);
 		this.unlockFocus;
 	}
 	
@@ -659,17 +677,18 @@ SCImageFilter {
 		"SCImage filter categories done !".postln;
 	}
 	
-	*new {|filterName|
-		^super.newCopyArgs(filterName.asSymbol).initSCImageFilter;
+	*new {|filterName, args|
+		^super.newCopyArgs(filterName.asSymbol).initSCImageFilter(args);
 	}
 	
 	defaults {
 		values = Array.new;
 	}
 	
-	initSCImageFilter {
+	initSCImageFilter {|arguments|
 		attributes = this.class.getFilterAttributes(name);
 		values = Array.new;
+		this.attributes_(arguments);
 	}
 	
 	*translateObject {|object|
@@ -740,6 +759,22 @@ SCImageFilter {
 		var result = [nil, nil];
 		this.prAttributeRange(attributeName.asSymbol, result);
 		^result;
+	}
+	
+	// new
+	attributes_ {|array|
+		var method, value, max;
+		if(array.isNil, {^this});
+		max = array.size.asInteger >> 1;
+		max.do {|i|
+			method = array[i << 1];
+			value = array[(i << 1) + 1];
+			this.perform(method.asSymbol.asSetter, value);
+		};
+	}
+	
+	set {arg ... values;
+		this.attributes_(values);
 	}
 	
 	prAttributeRange { |attr|
