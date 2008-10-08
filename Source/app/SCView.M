@@ -35,6 +35,7 @@
 
 
 #include "SCView.h"
+#import "SCImage.h"
 
 
 void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
@@ -136,6 +137,7 @@ int setSlotColor(PyrSlot *slot, SCColor *sccolor)
 
 int slotGetSCRect(PyrSlot* a, SCRect *r)
 {
+	if (!isKindOfSlot(a, s_rect->u.classobj)) return errWrongType; // arg check - br
 	PyrSlot *slots = a->uo->slots;
         int err;
 	err = slotFloatVal(slots+0, &r->x);
@@ -231,6 +233,51 @@ int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
     return errNone;
 }
 
+int slotBackgroundImageVal(PyrSlot *slot, DrawBackground **ioPtr);
+int slotBackgroundImageVal(PyrSlot *slot, DrawBackground **ioPtr)
+{
+	if (!isKindOfSlot(slot, class_array)) return errWrongType;
+
+	PyrSlot *slots = slot->uo->slots;
+	PyrClass *classobj = classOfSlot(slots);
+    char *classname = classobj->name.us->name;
+	if (strcmp(classname, "SCImage") == 0) {
+		int err;
+		SCImage *scImage;
+        PyrObject *obj = slot->uo;
+        PyrSlot *slots = obj->slots;	
+
+		scImage = (SCImage *)slots->uo->slots->uo; // Instace of Cocoa SCImage
+	
+		int tileMode;
+		err = slotIntVal(slots+1, &tileMode);
+		if (err) return err;
+
+		float frac;
+		err = slotFloatVal(slots+2, &frac);
+		if (err) return err;
+		
+		NSRect fromRect;
+		if (NotNil(slots+3)) {
+			
+			SCRect screct;
+			err = slotGetSCRect(slots+3, &screct);
+			if (err) return err;
+			
+			fromRect = NSMakeRect(screct.x, screct.y, screct.width, screct.height);
+
+		} else {
+		
+			fromRect = NSMakeRect(0., 0., [scImage width], [scImage height]);
+		}
+		
+
+		delete *ioPtr;
+		*ioPtr = new SCImageBackground(scImage, fromRect, tileMode, frac);		
+	}
+    return errNone;
+}
+
 // for any sc class that supports mouseDown and mouseUp methods
 #import "TabletEvents.h"
 
@@ -269,7 +316,7 @@ Layout::Layout()
 SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: mNext(0), mNextAnimatedView(0), mPrevAnimatedView(0),
 		mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
-		mBackground(0), mVisible(true), mEnabled(true),
+		mBackground(0), mBackgroundImage(0), mVisible(true), mEnabled(true),
         mCanFocus(true), mDragHilite(false),
 		mConstructionMode(-1)
 {
@@ -300,6 +347,7 @@ SCView::~SCView()
     if (mObj) SetNil(mObj->slots+0);
 
     delete mBackground;
+    delete mBackgroundImage;
 	
 	mTop = 0;
 	mParent = 0;
@@ -550,13 +598,20 @@ void hPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor
 
 void SCView::draw(SCRect inDamage)
 {
-    if (mBackground) {
+	CGContextRef cgc;
+	CGRect rect;
+	if ( mBackground || mBackgroundImage ) {
 		SCRect bounds;
 		bounds = getDrawBounds(); 
-        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-        CGRect rect = SCtoCGRect(bounds);
+        cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+       rect = SCtoCGRect(bounds);
+	}
+	
+    if (mBackground)
         mBackground->draw(cgc, rect);
-    }
+
+    if (mBackgroundImage)
+        mBackgroundImage->draw(cgc, rect);
 }
 
 void SCView::drawDisabled(SCRect inDamage)
@@ -751,6 +806,20 @@ void SCView::refresh()
     mTop->addDamage(mLayout.bounds);
 }
 
+void SCView::refreshInRect(SCRect b)
+{
+	if(SCRectsDoIntersect(b, mLayout.bounds)) {
+		SCRect sect;
+		
+		sect.x = sc_max(b.x, mLayout.bounds.x);
+		sect.y = sc_max(b.y, mLayout.bounds.y);
+		sect.width = sc_min(b.x + b.width, mLayout.bounds.x + mLayout.bounds.width);
+		sect.height = sc_min(b.y + b.height, mLayout.bounds.y + mLayout.bounds.height);
+		sect.width -= sect.x; sect.height -= sect.y;
+		mTop->addDamage(sect);
+	}
+}
+
 // cannot call from primitives. i.e. new view, or get/set property
 void SCView::sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot *result)
 {    
@@ -863,6 +932,12 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     }
 	if (strcmp(name, "background")==0) {
             err = slotBackgroundVal(slot, &mBackground);
+            if (err) return err;
+            refresh();
+            return errNone;
+	}
+	if (strcmp(name, "backgroundImage")==0) {
+            err = slotBackgroundImageVal(slot, &mBackgroundImage);
             if (err) return err;
             refresh();
             return errNone;
@@ -2001,6 +2076,10 @@ void SCSlider::draw(SCRect inDamage)
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
+
+    if (mBackgroundImage)
+        mBackgroundImage->draw(cgc, rect);
+	
 #if 1	
     QDDrawBevelRect(cgc, rect, 1, true);
 #endif	    
@@ -2169,6 +2248,10 @@ void SCRangeSlider::draw(SCRect inDamage)
     
     CGRect cgBounds = SCtoCGRect(mBounds);
     if (mBackground) mBackground->draw(cgc, cgBounds);
+    
+	if (mBackgroundImage)
+        mBackgroundImage->draw(cgc, cgBounds);
+
     QDDrawBevelRect(cgc, cgBounds, 1, true);
     
     CGRect cgRangeRect = SCtoCGRect(mRangeRect);
@@ -2438,6 +2521,9 @@ void SC2DSlider::draw(SCRect inDamage)
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(getDrawBounds());
     if (mBackground) mBackground->draw(cgc, rect);
+
+    if (mBackgroundImage)
+        mBackgroundImage->draw(cgc, rect);
 
     QDDrawBevelRect(cgc, rect, 1, true);
 
@@ -2778,6 +2864,10 @@ void SCScope::draw(SCRect inDamage)
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
+
+    if (mBackgroundImage)
+        mBackgroundImage->draw(cgc, rect);
+
     QDDrawBevelRect(cgc, rect, 1, true);
 
 	// draw grid.
@@ -3208,7 +3298,10 @@ void SCPopUpMenu::draw(SCRect inDamage)
 
     CGRect rect = SCtoCGRect(dbounds);
     if (mBackground) mBackground->draw(cgc, rect);
-    
+
+    if (mBackgroundImage)
+		mBackgroundImage->draw(cgc, rect);
+   
     CGRect bounds = SCtoCGRect(dbounds);
     QDDrawBevelRect(cgc, bounds, 1, false);
 
@@ -3454,6 +3547,10 @@ void SCMultiSliderView::draw(SCRect inDamage)
 	double step = mElasticIndexStep;
 	
     if (mBackground) mBackground->draw(cgc, rect);
+
+    if (mBackgroundImage)
+        mBackgroundImage->draw(cgc, rect);
+
     QDDrawBevelRect(cgc, rect, 1, true);
     
     CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
@@ -4167,6 +4264,15 @@ int SCUserView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
     return SCView::getProperty(symbol, slot);
 }
 
+void SCUserView::refreshInRect(SCRect b)
+{
+	if(mRelativeOrigin) {
+		b.x += mLayout.bounds.x;
+		b.y += mLayout.bounds.y;
+	}
+	SCView::refreshInRect(b);
+}
+
 ////////////////////////////////////////////////
 
 SCView* NewSCStaticText(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
@@ -4837,6 +4943,10 @@ void SCEnvelopeView::draw(SCRect inDamage)
     int xstart = 0;
        
     if (mBackground) mBackground->draw(cgc, rect);
+
+    if (mBackgroundImage)
+		mBackgroundImage->draw(cgc, rect);
+
     QDDrawBevelRect(cgc, rect, 1, true);
     
     CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
@@ -6037,6 +6147,20 @@ int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSCView_RefreshInRect(struct VMGlobals *g, int numArgsPushed);
+int prSCView_RefreshInRect(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+	SCRect r;
+	SCView *view = (SCView*)(g->sp - 1)[0].uo->slots[0].ui;
+	
+	if(slotGetSCRect(g->sp, &r) != noErr)
+		return errFailed;
+		
+    view->refreshInRect(r);
+	return errNone;
+}
+
 int prSCView_Remove(struct VMGlobals *g, int numArgsPushed);
 int prSCView_Remove(struct VMGlobals *g, int numArgsPushed)
 {
@@ -6085,7 +6209,8 @@ void initSCViewPrimitives()
 	definePrimitive(base, index++, "_SCView_Focus", prSCView_Focus, 2, 0);	
 	definePrimitive(base, index++, "_SCView_HasFocus", prSCView_HasFocus, 1, 0);		
 	definePrimitive(base, index++, "_SCView_Refresh", prSCView_Refresh, 1, 0);	
-	definePrimitive(base, index++, "_SCView_Remove", prSCView_Remove, 1, 0);	
+	definePrimitive(base, index++, "_SCView_Remove", prSCView_Remove, 1, 0);
+	definePrimitive(base, index++, "_SCView_RefreshInRect", prSCView_RefreshInRect, 2, 0);
 }
 
 void initGUI();

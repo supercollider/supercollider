@@ -71,6 +71,29 @@ protected:
     float mFrac, mFrac1;
 };
 
+// SCImageBackground
+@class SCImage;
+
+class SCImageBackground : public DrawBackground
+{
+public:
+    SCImageBackground(SCImage* inSCImage, NSRect inFromRect, int inTileMode, float inFraction);
+    ~SCImageBackground();
+    virtual void drawSelf(CGContextRef cgc, CGRect rect);
+	#if 0
+    void rebuildCache(); // see for later if needed
+	#endif
+
+protected:
+    SCImage* mSCImage;
+	NSRect mFromRect;
+	int mTileMode;
+	float mFraction;
+	void* mCache; // CIImage cache for CIImages / CGLayerRef cache for others
+	float mSwappedYOrigin;
+	float mOriginalYOrigin;
+};
+
 /*
 class TiledBackground : public DrawBackground
 {
@@ -85,3 +108,4 @@ protected:
 };
 
 */
+

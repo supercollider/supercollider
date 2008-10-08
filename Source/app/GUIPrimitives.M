@@ -3650,6 +3650,8 @@ int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+void initSCImagePrimitives();
+
 void initGUIPrimitives()
 {
 	int base, index;
@@ -3811,5 +3813,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_EnableMenuItem", prEnableMenuItem, 2, 0);
 	definePrimitive(base, index++, "_SetMenuItemState", prSetMenuItemState, 2, 0);
 	definePrimitive(base, index++, "_SetMenuItemKeyboardEquivalent", prSetMenuItemKeyboardEquivalent, 4, 0);
+
+	initSCImagePrimitives();
 }
 
