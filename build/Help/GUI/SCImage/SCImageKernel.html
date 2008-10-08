@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.41">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #d50007}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000; min-height: 14.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0000bf}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #606060; min-height: 14.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #606060}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
+p.p15 {margin: 0.0px 0.0px 0.0px 36.0px; text-align: justify; text-indent: -36.0px; line-height: 14.0px; font: 12.0px Monaco; color: #bf0000; background-color: #f6f6f6}
+p.p16 {margin: 0.0px 0.0px 0.0px 36.0px; text-align: justify; text-indent: -36.0px; line-height: 14.0px; font: 12.0px Monaco; color: #bf0000}
+p.p17 {margin: 0.0px 0.0px 0.0px 36.0px; text-align: justify; text-indent: -36.0px; line-height: 14.0px; font: 10.0px Monaco; color: #000000; min-height: 14.0px}
+span.s1 {color: #0000ff}
+span.s2 {text-decoration: underline}
+span.s3 {font: 14.0px Helvetica}
+span.s4 {color: #0000bf}
+span.s5 {color: #000000}
+span.s6 {color: #606060}
+span.s7 {color: #bf0000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCImageKernel</b></p>
+<p class="p2"><br></p>
+<p class="p3">// very experimental</p>
+<p class="p4">kernel class to use with <a href="http://SCImage.html/"><span class="s1">SCImage</span></a></p>
+<p class="p4">currently this class represents the CoreImage CIKernel you can apply to a SCImage. Kernels are a subset of the OpenGL Shading Language.</p>
+<p class="p5"><br></p>
+<p class="p4">more information about the Kernel Language can be found here :</p>
+<p class="p5"><br></p>
+<p class="p4"><span class="s2">http://developer.apple.com/documentation/GraphicsImaging/Reference/CIKernelLangRef/Introduction/chapter_1_section_1.html</span></p>
+<p class="p5"><br></p>
+<p class="p4">and here:</p>
+<p class="p5"><br></p>
+<p class="p4"><span class="s2">http://developer.apple.com/documentation/GraphicsImaging/Reference/CIKernelLangRef/chapter_2_section_1.html#//apple_ref/doc/uid/TP40004397-CH206-TPXREF101</span></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p4">here is the translation table between Kernel language Objects and SuperCollider objects</p>
+<p class="p4">---------------------------------------------------------------------------------------------------------------------------------------------------</p>
+<p class="p5"><br></p>
+<p class="p4"><b><span class="Apple-converted-space"> </span>Kernel Language Object<span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>|<span class="Apple-tab-span">	</span><b>SuperCollider Object</b></p>
+<p class="p4"><span class="Apple-converted-space"> </span>--------------------------------------------------------------------------------------------------------------------------------------------------</p>
+<p class="p4"><span class="Apple-tab-span">	</span>sampler<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>|<span class="Apple-tab-span">	</span><a href="SCImage.html"><span class="s1">SCImage</span></a></p>
+<p class="p4"><span class="Apple-tab-span">	</span>__color<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>|<span class="Apple-tab-span">	</span><a href="SC://Color"><span class="s1">Color</span></a></p>
+<p class="p4"><span class="Apple-tab-span">	</span>float<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>|<span class="Apple-tab-span">	</span><a href="SC://Number"><span class="s1">Number</span></a></p>
+<p class="p4"><span class="Apple-tab-span">	</span>vec2, vec3, vec4<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>|<span class="Apple-tab-span">	</span><a href="Vector.html"><span class="s1">Vector</span></a></p>
+<p class="p4"><span class="Apple-tab-span">	</span>__table<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>| <span class="Apple-tab-span">	</span><a href="SCImage.html"><span class="s1">SCImage</span></a> (basically the __table modifier just use it as a kind of data provider - LUT)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b>Class Methods</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><span class="s3"><b><span class="Apple-tab-span">	</span></b></span><b>*new( shader, values, bounds )</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>creates a new SCImageKernel</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>shader</b> - optional. the shader code string. nil by default</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>values</b> - optional. the values that match the kernel proc function defined in the shader string. nil by default</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds</b> - optional. not used for now.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b>Instance Methods</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><span class="s3"><b><span class="Apple-tab-span">	</span></b></span><b>shader</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>get the shader string.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>shader_</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the shader string.<span class="Apple-tab-span">	</span></p>
+<p class="p7"><br></p>
+<p class="p4"><span class="s3"><b><span class="Apple-tab-span">	</span></b></span><b>values</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>get the values array.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>values_</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the values array.<span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><span class="s3"><b><span class="Apple-tab-span">	</span></b></span><b>isValid</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>very basic verification to tell if all arguments of the shader are properly</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set.</p>
+<p class="p7"><br></p>
+<p class="p8">/**** Kernels ****/</p>
+<p class="p8">// very experimental</p>
+<p class="p9"><br></p>
+<p class="p10">(</p>
+<p class="p8"><span class="s4">SCImage</span><span class="s5">.freeAll; </span>// free all in case</p>
+<p class="p10">a = <span class="s4">SCImage</span>.new(<span class="s4">Document</span>.current.dir +/+ <span class="s6">"vduck2.jpg"</span>); <span class="s7">// get the image</span></p>
+<p class="p11"><span class="s5">k = </span>SCImageKernel<span class="s5">.new;</span></p>
+<p class="p10">k.shader_(<span class="s6">"</span></p>
+<p class="p12"><br></p>
+<p class="p13">vec4<span class="Apple-tab-span">	</span>invertPixel(vec4 pix) {</p>
+<p class="p13"><span class="Apple-tab-span">	</span>return vec4(1.0 - pix.r, 1.0 - pix.g, 1.0 - pix.b, pix.a);</p>
+<p class="p13">}</p>
+<p class="p12"><br></p>
+<p class="p13">kernel vec4 _invertColor(sampler source)</p>
+<p class="p13">{</p>
+<p class="p13"><span class="Apple-tab-span">	</span>vec4 pixel;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>pixel = sample(source, samplerCoord(source));</p>
+<p class="p13"><span class="Apple-tab-span">	</span>unpremultiply(pixel);</p>
+<p class="p13"><span class="Apple-tab-span">	</span>return unpremultiply(invertPixel(pixel));</p>
+<p class="p13">}</p>
+<p class="p10"><span class="s6">"</span>);</p>
+<p class="p9"><br></p>
+<p class="p8">// the argument order should be kept in the array, you do not need to supply the "sampler" argument, wich should always be the first, it is done</p>
+<p class="p8">// directly in the primitive !!!</p>
+<p class="p8">// the signature of the Kernel function is always 'kernel vec4'</p>
+<p class="p8">// distance - min: 0.0 max: 1.0</p>
+<p class="p8">// slope - min: -0.01 max: 0.01</p>
+<p class="p10">k.values_([a]);</p>
+<p class="p9"><br></p>
+<p class="p8">// k.isValid; // is it ok</p>
+<p class="p10">a.applyKernel(k);</p>
+<p class="p9"><br></p>
+<p class="p10">w = a.plot(freeOnClose:<span class="s4">true</span>);</p>
+<p class="p10">)</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p10">(</p>
+<p class="p8"><span class="s4">SCImage</span><span class="s5">.freeAll; </span>// free all in case</p>
+<p class="p14"><span class="s5">a = </span><span class="s4">SCImage</span><span class="s5">.new(</span><span class="s4">Document</span>.current.dir +/+ <span class="s6">"vduck2.jpg"</span><span class="s5">); </span><span class="s7">// get the image</span></p>
+<p class="p11"><span class="s5">k = </span>SCImageKernel<span class="s5">.new;</span></p>
+<p class="p10">k.shader_(<span class="s6">"</span></p>
+<p class="p13">vec2 testVec(float x, float y)</p>
+<p class="p13">{</p>
+<p class="p13"><span class="Apple-tab-span">	</span>return vec2(x, y);</p>
+<p class="p13">}</p>
+<p class="p12"><br></p>
+<p class="p13">kernel vec4 testKernelFromApple( sampler src, __color color, float distance, float slope )</p>
+<p class="p13">{</p>
+<p class="p13"><span class="Apple-tab-span">	</span>vec4 <span class="Apple-tab-span">	</span>t;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>float<span class="Apple-tab-span">	</span>d;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>d = destCoord().y * slope + distance;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>t = unpremultiply(sample(src, samplerCoord(src)));</p>
+<p class="p13"><span class="Apple-tab-span">	</span>t = (t - d*color) / (1.0-d);</p>
+<p class="p13"><span class="Apple-tab-span">	</span>return premultiply(t);</p>
+<p class="p13">}</p>
+<p class="p10"><span class="s6">"</span>);</p>
+<p class="p9"><br></p>
+<p class="p8">// the argument order should be kept in the array, you do not need to supply the "sampler" argument, wich should always be the first, it is done</p>
+<p class="p8">// directly in the primitive !!!</p>
+<p class="p8">// the signature of the Kernel function is always 'kernel vec4'</p>
+<p class="p8">// distance - min: 0.0 max: 1.0</p>
+<p class="p8">// slope - min: -0.01 max: 0.01</p>
+<p class="p10">k.values_(</p>
+<p class="p10"><span class="Apple-tab-span">	</span>[</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span>a,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// arg 0: the SCImage</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="s4">Color</span><span class="s5">.white,<span class="Apple-converted-space">  </span></span>// arg 1: color</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span>0.5, <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// arg 2: distance</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span>-0.002<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// arg 3: slope</p>
+<p class="p10"><span class="Apple-tab-span">	</span>]</p>
+<p class="p10">);</p>
+<p class="p9"><br></p>
+<p class="p8">// k.isValid; // is it ok</p>
+<p class="p10">a.applyKernel(k);</p>
+<p class="p9"><br></p>
+<p class="p10">w = a.plot(freeOnClose:<span class="s4">true</span>);</p>
+<p class="p10">)</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p10">(</p>
+<p class="p8">// code from<span class="Apple-converted-space"> </span></p>
+<p class="p8">// toneburst.com</p>
+<p class="p15">// Generates spherical and planar displacement maps for VBO-based 3D heightfield. </p>
+<p class="p16">// http://machinesdontcare.wordpress.com </p>
+<p class="p17"><br></p>
+<p class="p8"><span class="s4">SCImage</span><span class="s5">.freeAll; </span>// free all in case</p>
+<p class="p10">a = <span class="s4">SCImage</span>.new(600@600); <span class="s7">// get the image</span></p>
+<p class="p11"><span class="s5">k = </span>SCImageKernel<span class="s5">.new;</span></p>
+<p class="p9"><br></p>
+<p class="p10">k.shader_(<span class="s6">"</span></p>
+<p class="p13">const float PI = 3.14159265359;</p>
+<p class="p13">const float TWOPI = 6.28318530718;</p>
+<p class="p12"><br></p>
+<p class="p13">kernel vec4 _heightMap(sampler image, vec3 scale)</p>
+<p class="p13">{</p>
+<p class="p13"><span class="Apple-tab-span">	</span>vec2 xyNorm = samplerCoord(image) / samplerSize(image);</p>
+<p class="p13"><span class="Apple-tab-span">	</span>float u = xyNorm.x * PI;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>float v = xyNorm.y * TWOPI;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>vec3 spherical;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>spherical.r = cos(v) * sin(u);</p>
+<p class="p13"><span class="Apple-tab-span">	</span>spherical.g = sin(v) * sin(u);</p>
+<p class="p13"><span class="Apple-tab-span">	</span>spherical.b = cos(u);</p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span>spherical.r = (spherical.r * 0.5 + 0.5) * scale.x;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>spherical.g = (spherical.g * 0.5 + 0.5) * scale.y;</p>
+<p class="p13"><span class="Apple-tab-span">	</span>spherical.b = (spherical.b * 0.5 + 0.5) * scale.z;</p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span>return vec4(spherical,1.0);</p>
+<p class="p13">}</p>
+<p class="p10"><span class="s6">"</span>);</p>
+<p class="p9"><br></p>
+<p class="p10">k.values_([a, <span class="s4">Vector</span>(1.0, 1.0, 1.0)]);</p>
+<p class="p9"><br></p>
+<p class="p8">// k.isValid; // is it ok</p>
+<p class="p10">a.applyKernel(k)</p>
+<p class="p8"><span class="s5">.flatten; </span>// ensure a bitmap rep so the kernel is not applied at each rendering call</p>
+<p class="p9"><br></p>
+<p class="p10">w = a.plot(freeOnClose:<span class="s4">true</span>);</p>
+<p class="p10">)</p>
+</body>
+</html>

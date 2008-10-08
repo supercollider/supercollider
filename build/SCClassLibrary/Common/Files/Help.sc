@@ -23,7 +23,7 @@ Help {
 	*initClass {
 		categoriesSkipThese = [Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen, 
 						UnaryOpUGen, BasicOpUGen, LagControl, TrigControl, MultiOutUGen, ChaosGen,
-			Control, OutputProxy, AbstractOut, AbstractIn, Object, Class];
+			Control, OutputProxy, AbstractOut, AbstractIn, Object, SCImageFilter, Class];
 		filterUserDirEntries = [ "Extensions", "SuperCollider", "SuperCollider3", "Help", "svn", "share", "classes", "trunk", "Downloads" ];
 	}
 	

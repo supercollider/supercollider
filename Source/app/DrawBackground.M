@@ -18,10 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
+#import <Cocoa/Cocoa.h>
 #import "DrawBackground.h"
-
-
+#import "SCImage.h"
 
 DrawBackground::DrawBackground()
 {
@@ -113,6 +112,219 @@ void HiliteGradientBackground::drawSelf(CGContextRef cgc, CGRect inRect)
     }
 }
 
+// SCImageBackground
+
+void ScaleRectInRect( NSRect *bounds, NSSize *origSize, NSRect *destRect );
+inline void ScaleRectInRect( NSRect *bounds, NSSize *origSize, NSRect *destRect )
+{
+	float imgRatio = (*origSize).width / (*origSize).height;
+	//float maxDim = ( (*origSize).width > (*origSize).height) ? (*origSize).width : (*origSize).height;
+	
+	if( imgRatio < 1.0f ) 
+	{
+		(*destRect).size.height = (*bounds).size.height;
+		(*destRect).size.width = (*destRect).size.height * imgRatio;
+		if( (*destRect).size.width > (*bounds).size.width ) { // clip and resize
+			(*destRect).size.width = (*bounds).size.width;
+			(*destRect).size.height = (*destRect).size.width / imgRatio;
+		}
+		
+	} else {
+		// width >= height
+		(*destRect).size.width = (*bounds).size.width;
+		(*destRect).size.height = (*destRect).size.width / imgRatio;
+		if( (*destRect).size.height > (*bounds).size.height ) { // clip and resize
+			(*destRect).size.height = (*bounds).size.height;
+			(*destRect).size.width = (*destRect).size.height * imgRatio;
+		}
+	}
+	
+	destRect->origin.x = bounds->origin.x + ((bounds->size.width - destRect->size.width) * 0.5f);
+	destRect->origin.y = bounds->origin.y + ((bounds->size.height - destRect->size.height) * 0.5f);
+}
+
+SCImageBackground::SCImageBackground(SCImage* inSCImage, NSRect inFromRect, int inTileMode, float inFraction)
+    : mSCImage(inSCImage), mFromRect(inFromRect), mTileMode(inTileMode), mFraction(inFraction)
+{
+	[mSCImage retain]; // in case
+	
+	// convert sc rect to image coordinates + clipping
+	float w, h;
+	
+	w = [mSCImage size].width;
+	h = [mSCImage size].height;
+	
+	mSwappedYOrigin = sc_clip(h - (mFromRect.origin.y + mFromRect.size.height), 0, h);
+	mOriginalYOrigin = sc_clip(mFromRect.origin.y, 0, h); 
+	
+	mFromRect.origin.x = sc_clip(mFromRect.origin.x, 0, w);
+	
+	if((mFromRect.origin.x + mFromRect.size.width) > w)
+		mFromRect.size.width = w - mFromRect.origin.x;
+		
+	if((mFromRect.origin.y + mFromRect.size.height) > h)
+		mFromRect.size.height = h - mFromRect.origin.y;
+}
+
+#if 0
+void SCImageBackground::rebuildCache(CGContextRef cgc)
+{
+	if([mSCImage isSynced])
+		return;
+	
+	[mSCImage syncRepresentations];
+		
+	if([mSCImage isAccelerated]) { // build CIImage
+		// no cache for now -> may be see with CGLayer conversion
+	}else{
+		CGContextRef ctx;
+		CGLayerRef layer = CGLayerCreateWithContext(cgc, CGSizeMake([mSCImage size].width, [mSCImage size].height), NULL);
+		if(!layer) {
+			NSLog(@"SCImageBackground::rebuildCache failed Creating valid CGLayerRef");
+		}
+		ctx = CGLayerGetContext(layer);
+			
+		[NSGraphicsContext saveGraphicsState];
+		NSGraphicsContext *layerCtx = [NSGraphicsContext contextWithGraphicsPort:ctx flipped:NO];
+		[NSGraphicsContext setCurrentContext:layerCtx];
+			CGContextSaveGState(ctx);
+			CGContextTranslateCTM(ctx, 0, mFromRect.size.height);
+			CGContextScaleCTM(ctx, 1, -1.0f);
+			[mSCImage drawInRect:NSMakeRect(0.f, 0.f, mFromRect.size.width, mFromRect.size.height) fromRect:mFromRect operation:NSCompositeSourceOver fraction:mFraction];
+			CGContextSaveRestoreGState(ctx);
+		[NSGraphicsContext restoreGraphicsState];
+	}
+}
+#endif
+
+void SCImageBackground::drawSelf(CGContextRef cgc, CGRect inRect)
+{	
+/*
+1 - fixed to left, fixed to top ---> topLeft
+2 - horizontally tile, fixed to top ---> top + tilex
+3 - fixed to right, fixed to top ---> topRight
+4 - fixed to left, vertically tile ---> left + tiley
+5 - horizontally tile, vertically tile --->  tilexy
+6 - fixed to right, vertically tile --> right + tiley
+7 - fixed to left, fixed to bottom --> bottomLeft
+8 - horizontally tile, fixed to bottom --> bottom + tiley
+9 - fixed to right, fixed to bottom ---> bottomRight
+10 - fit ---> scale to fit in the view rect (meaning a full drawRect instead
+of a drawAtPoint with tile options)
+11 - center x y
+12 - center , fixed to top
+13 - center , fixed to bottom
+14 - fixed to left, center
+15 - fixed to right, center
+*/
+
+//	printf("SCImageBackground::drawSelf x: %f\t y: %f\t width: %f\t height: %f\n", 
+//		inRect.origin.x, inRect.origin.y, inRect.size.width, inRect.size.height);
+
+	CGContextSaveGState(cgc);
+	CGContextClipToRect(cgc, inRect);
+	
+	#if SCIMAGE_BACKGROUND_DEBUG
+		extern double GetTimeOfDay();
+		double past = GetTimeOfDay();
+	#endif
+	
+	NSRect destinationRect = NSMakeRect(inRect.origin.x, inRect.origin.y, mFromRect.size.width, mFromRect.size.height);
+	
+	switch(mTileMode) 
+	{
+		case 2:
+		case 8:
+		{
+			destinationRect.size.width = inRect.size.width;
+			destinationRect.origin.y += (mTileMode == 2 ? 0 : inRect.size.height - mFromRect.size.height);
+			[mSCImage tileInSCRect:destinationRect fromRect:mFromRect operation:NSCompositeSourceOver fraction:mFraction];
+		}
+			goto end1;
+			
+		case 5:
+		{
+			destinationRect.size = NSMakeSize(inRect.size.width, inRect.size.height);
+			[mSCImage tileInSCRect:destinationRect fromRect:mFromRect operation:NSCompositeSourceOver fraction:mFraction];
+		}
+			goto end1;
+			
+		case 4:
+		case 6:
+		{
+			destinationRect.size.height = inRect.size.height;
+			destinationRect.origin.x += (mTileMode == 4 ? 0 : (inRect.size.width - mFromRect.size.width));
+			[mSCImage tileInSCRect:destinationRect fromRect:mFromRect operation:NSCompositeSourceOver fraction:mFraction];
+		}
+			goto end1;
+			
+		case 3:
+			destinationRect.origin.x += inRect.size.width - mFromRect.size.width;
+			break;
+			
+		case 9:
+			destinationRect.origin.x += inRect.size.width - mFromRect.size.width;
+			destinationRect.origin.y += inRect.size.height - mFromRect.size.height;
+			break;
+			
+		case 7:
+			destinationRect.origin.y += inRect.size.height - mFromRect.size.height;
+			break;
+			
+			// center
+		case 10:
+			destinationRect.size = *(NSSize*)&inRect.size;
+			break;
+			
+		case 11: // center x - center y + scale
+			ScaleRectInRect((NSRect*)&inRect, &mFromRect.size, (NSRect*)&destinationRect);
+			break;
+			
+		case 12: // center - fixed to top
+			destinationRect.origin.x += ((inRect.size.width - destinationRect.size.width) * 0.5);
+			break;
+			
+		case 13: // center - fixed to bottom
+			destinationRect.origin.x += ((inRect.size.width - destinationRect.size.width) * 0.5);
+			destinationRect.origin.y += inRect.size.height - mFromRect.size.height;
+			break;
+			
+		case 14: // fixed to left - center
+			destinationRect.origin.y += ((inRect.size.height - destinationRect.size.height) * 0.5);
+			break;
+			
+		case 15: // fixed to right - center
+			destinationRect.origin.y += ((inRect.size.height - destinationRect.size.height) * 0.5);
+			destinationRect.origin.x += (inRect.size.width - destinationRect.size.width);
+			break;
+			
+		case 16:
+			destinationRect.origin.x += ((inRect.size.width - destinationRect.size.width) * 0.5);
+			destinationRect.origin.y += ((inRect.size.height - destinationRect.size.height) * 0.5);
+			break;
+			
+		case 1:
+		default:
+			break;
+	}
+	[mSCImage drawInSCRect:destinationRect fromRect:mFromRect operation:NSCompositeSourceOver fraction:mFraction];
+	
+end1:
+#if SCIMAGE_BACKGROUND_DEBUG
+	NSLog(@"SCImageBackground (%p) SCImage Time To Render: %f", this, GetTimeOfDay() - past);
+#endif
+	
+	CGContextRestoreGState(cgc);
+}
+
+SCImageBackground::~SCImageBackground()
+{
+	#if SCIMAGE_BACKGROUND_DEBUG
+		NSLog(@"SCImageBackground (%p) release SCImage (%p)", this, mSCImage);
+	#endif
+	[mSCImage release];
+}
+
 #if 0
 
 CGPatternCreate(void *info, CGRect bounds, CGAffineTransform matrix, float xStep, float yStep, CGPatternTiling tiling, int isColored, const CGPatternCallbacks *callbacks)
@@ -125,7 +337,7 @@ typedef struct CGPatternCallbacks CGPatternCallbacks;
 
 drawTile()
 {
-    [mTile draw];n
+    [mTile draw];
 }
 
 static void drawPattern(void *info, CGContextRef c)

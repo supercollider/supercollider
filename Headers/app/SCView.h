@@ -112,6 +112,7 @@ public:
 	bool isFocus() const;
 	bool hit(SCPoint p) const;
 	void refresh();
+	virtual void refreshInRect(SCRect b);
 	void refreshFocus();
 	void setDragHilite(bool inFlag);
 	
@@ -172,6 +173,7 @@ protected:
 	SCRect mBounds;
 	Layout mLayout;
 	DrawBackground* mBackground;
+	DrawBackground* mBackgroundImage;
 	bool mVisible;
 	bool mEnabled;
 	bool mCanFocus;
@@ -778,7 +780,8 @@ public:
  	virtual void receiveDrag();	
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-	virtual void clearDrawing();	
+	virtual void clearDrawing();
+	virtual void refreshInRect(SCRect b);
 protected:
 	bool mClearOnRefresh;
 	bool mRelativeOrigin;
