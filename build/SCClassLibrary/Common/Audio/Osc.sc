@@ -204,7 +204,7 @@ IndexL {
 	*ar { arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
 		var val0 = Index.ar(bufnum, in);
 		var val1 = Index.ar(bufnum, in + 1);
-		if(in.rate != \audio) {Êin = K2A.ar(in) }; // for now.
+		if(in.rate != \audio) { in = K2A.ar(in) }; // for now.
 		^LinLin.ar(in.frac, 0.0, 1.0, val0, val1);
 	}
 	*kr { arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
