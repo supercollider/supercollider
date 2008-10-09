@@ -589,7 +589,9 @@ void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, int numF
 	buf->data = (float*)RTAlloc(unit->mWorld, numSamples * sizeof(float));
 
 	if (!buf->data) {
-		Print("failed to allocate memory for LocalBuffer\n");
+		if(unit->mWorld->mVerbosity > -2){
+			Print("failed to allocate memory for LocalBuffer\n");
+		}
 		return;
 	}
 	
@@ -621,7 +623,9 @@ void LocalBuf_Ctor(LocalBuf *unit)
 	if (parent->localBufNum >= maxBufNum) {
 		
 		unit->m_fbufnum = -1.f;
-		printf("warning: LocalBuf tried to allocate too many local buffers. Increasing maxLocalBufs may help\n");
+		if(unit->mWorld->mVerbosity > -2){
+			printf("warning: LocalBuf tried to allocate too many local buffers. Increasing maxLocalBufs may help\n");
+		}
 	
 	} else {
 		
@@ -653,7 +657,9 @@ void SetBuf_next(SetBuf *unit, int inNumSamples) {
 	
 	GET_BUF
 	if (!bufData) {
-		Print("SetBuf: no valid buffer\n");
+		if(unit->mWorld->mVerbosity > -2){
+			Print("SetBuf: no valid buffer\n");
+		}
 		return;
 	}
 		
