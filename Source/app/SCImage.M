@@ -2116,6 +2116,7 @@ id		nsciObjectFromSlot(PyrSlot *slot, Class attributeClass, NSString *attributeT
 		return [CISampler samplerWithImage:[image ciimage]];
 	}
 //	else if(isKindOfSlot(slot, s_vector->u.classobj)) {
+/*
 	else if(isKindOfSlot(slot, s_array->u.classobj)) {
 		#if SCIMAGE_FILTER_DEBUG
 			NSLog(@"Creating CIVector From Vector Slot");
@@ -2123,6 +2124,7 @@ id		nsciObjectFromSlot(PyrSlot *slot, Class attributeClass, NSString *attributeT
 		
 		return ciVectorFromSlot(slot->uo);
 	}
+*/
 	else if(isKindOfSlot(slot, s_color->u.classobj))
 	{
 		PyrSlot* color_slots = slot->uo->slots;
