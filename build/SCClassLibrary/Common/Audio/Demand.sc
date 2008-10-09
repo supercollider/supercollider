@@ -143,4 +143,11 @@ Dstutter : DUGen {
 	}
 }
 
-Donce : DUGen {}
+Donce : DUGen {
+	*new { arg in;
+		^this.multiNew('demand', in)
+	}
+}
+
+Dpoll : Donce {}
+
