@@ -92,11 +92,19 @@ BufWr : UGen {
 
 
 RecordBuf : UGen {	
-	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, run=1.0, loop=1.0, trigger=1.0;
-		^this.multiNewList(['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger ] ++ inputArray.asArray);
+	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, 
+			run=1.0, loop=1.0, trigger=1.0;
+		^this.multiNewList(
+			['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger ] 
+			++ inputArray.asArray
+		)
 	}
-	*kr { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, run=1.0, loop=1.0, trigger=1.0;
-		^this.multiNewList(['control', bufnum, offset, recLevel, preLevel, run, loop, trigger ] ++ inputArray.asArray);
+	*kr { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, 
+			run=1.0, loop=1.0, trigger=1.0;
+		^this.multiNewList(
+			['control', bufnum, offset, recLevel, preLevel, run, loop, trigger ] 
+			++ inputArray.asArray
+		)
 	}
 }
 
@@ -120,4 +128,30 @@ Tap : UGen {
 	}
 }
 
+LocalBuf : UGen {
 
+	*new { arg numFrames = 1, numChannels = 1, maxLocalBufs = 8;
+		^this.multiNew('scalar', numChannels, numFrames, maxLocalBufs)
+	}
+	
+	*newFrom { arg list, maxLocalBufs = 8;
+		var shape, buf;
+		shape = list.shape;
+		if(shape.size == 1) { shape = [1, list.size] };
+		if(shape.size > 2) { Error("LocalBuf: list has not the right shape").throw };
+		buf = this.new(*shape.reverse ++ maxLocalBufs);
+		buf.set(list.flop.flat);
+		^buf 
+	}
+	
+	set { arg values;
+		SetBuf(this, values);
+	}
+	
+}
+
+SetBuf : UGen {
+	*new { arg buf, values;
+		^this.multiNewList(['scalar', buf, values.size] ++ values)
+	}
+}
