@@ -8,16 +8,21 @@
 * 2008-07-12 PlayBuf, RecordBuf, BufWr, BufRd, ScopeOut - used to be limited to 16-channel audio maximum. Now can handle massively multichannel audio - ds
 * 2008-07-19 Buffer:normalize method added - ds
 * 2008-07-23 FFT and IFFT added option for zero-padding, by optional "framesize" argument - ds
+* 2008-09-03 new VDiskIn ugen - jp
+* 2008-10-08 SCImage for manipulating bitmap image objects (mac only) - ch
+* 2008-10-09 LocalBuf system to allow synths to manage their own purely-local buffers - jr
 
 // BUGFIXES:
 * 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
 * 2008-05-20 fix slight mistake in the defaults printed by scsynth on command-line (bug id 1953392) - ds
+* 2008-09-16 stability fixes to FFT and IFFT - ds
 * 2008-09-27 fix TExpRand.ar - ds
 
 // OTHER ADDITIONS/IMPROVEMENTS:
 * 2008-04-04 SoundFile:toCSV - ds
 * 2008-04-29 buffer UGens now post a warning (rather than failing silently) if buffer channels doesn't match num ins/outs - ds
-
+* 2008-09-xx various code improvements, including compiling for 64-bit linux - tb
+* 2008-10-03 improvements to standalone build - jp
 
 ///////////////////////////// SuperCollider v3.2 released 2008-02-21 /////////////////////////////
 
