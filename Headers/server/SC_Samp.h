@@ -28,11 +28,9 @@ const int kSineSize = 8192;
 const int kSineMask = kSineSize - 1;
 
 extern float32 gSine[kSineSize+1];
-extern float32 gPMSine[kSineSize+1];
 extern float32 gInvSine[kSineSize+1];
 extern float32 gSineWavetable[2*kSineSize];
 
 void SignalAsWavetable(float32* signal, float32* wavetable, long inSize);
-void WavetableAsSignal(float32* wavetable, float32* signal, long inSize);
 
 #endif

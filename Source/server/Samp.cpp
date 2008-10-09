@@ -25,7 +25,6 @@
 #include <stdexcept>
 
 float32 gSine[kSineSize+1];
-float32 gPMSine[kSineSize+1];
 float32 gInvSine[kSineSize+1];
 float32 gSineWavetable[2*kSineSize];
 
@@ -47,18 +46,6 @@ void SignalAsWavetable(float32* signal, float32* wavetable, long inSize)
 	*++out = val2 - val1;
 }
 
-void WavetableAsSignal(float32* wavetable, float32* signal, long inSize)
-{
-	float32* in = wavetable - 1;
-	float32* out = signal - 1;
-	for (int i=0; i<inSize; ++i) {
-		float32 a = *++in;
-		float32 b = *++in;
-		*++out = a + b;
-	}	
-}
-
-
 class AudioLibInit
 {
 public:
@@ -77,7 +64,6 @@ AudioLibInit::AudioLibInit()
 void AudioLibInit::FillTables()
 {
 	double sineIndexToPhase = twopi / kSineSize;
-	double pmf = (1L << 29) / twopi;
 	for (int i=0; i <= kSineSize; ++i) {
 		double phase = i * sineIndexToPhase;
 		float32 d = (float)sin(phase);
@@ -86,7 +72,6 @@ void AudioLibInit::FillTables()
             gInvSine[i] = 0.;
         else
             gInvSine[i] = (float)(1. / d);
-		gPMSine[i] = (float)(d * pmf);
 	}
 	SignalAsWavetable(gSine, gSineWavetable, kSineSize);
 
