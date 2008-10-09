@@ -230,6 +230,9 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	graph->mLocalAudioBusUnit = NULL;
 	graph->mLocalControlBusUnit = NULL;
 	
+	graph->localBufNum = 0;
+	graph->localMaxBufNum = 0; // this is set from synth
+	
 	// initialize units
 	//scprintf("initialize units\n");
 	Unit** calcUnits = graph->mCalcUnits;

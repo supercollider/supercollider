@@ -62,9 +62,20 @@ struct PV_Unit : Unit
 	ZOUT0(0) = fbufnum; \
 	uint32 ibufnum = (uint32)fbufnum; \
 	World *world = unit->mWorld; \
-	if (ibufnum >= world->mNumSndBufs) ibufnum = 0; \
-	SndBuf *buf = world->mSndBufs + ibufnum; \
-	int numbins = buf->samples - 2 >> 1;
+	SndBuf *buf; \
+	if (ibufnum >= world->mNumSndBufs) { \
+		int localBufNum = ibufnum - world->mNumSndBufs; \
+		Graph *parent = unit->mParent; \
+		if(localBufNum <= parent->localBufNum) { \
+			buf = parent->mLocalSndBufs + localBufNum; \
+		} else { \
+			buf = world->mSndBufs; \
+		} \
+	} else { \
+		buf = world->mSndBufs + ibufnum; \
+	} \
+	int numbins = buf->samples - 2 >> 1; \
+	
 
 // for operation on two input buffers, result goes in first one.
 #define PV_GET_BUF2 \
@@ -75,10 +86,30 @@ struct PV_Unit : Unit
 	uint32 ibufnum1 = (int)fbufnum1; \
 	uint32 ibufnum2 = (int)fbufnum2; \
 	World *world = unit->mWorld; \
-	if (ibufnum1 >= world->mNumSndBufs) ibufnum1 = 0; \
-	if (ibufnum2 >= world->mNumSndBufs) ibufnum2 = 0; \
-	SndBuf *buf1 = world->mSndBufs + ibufnum1; \
-	SndBuf *buf2 = world->mSndBufs + ibufnum2; \
+	SndBuf *buf1; \
+	SndBuf *buf2; \
+	if (ibufnum1 >= world->mNumSndBufs) { \
+		int localBufNum = ibufnum1 - world->mNumSndBufs; \
+		Graph *parent = unit->mParent; \
+		if(localBufNum <= parent->localBufNum) { \
+			buf1 = parent->mLocalSndBufs + localBufNum; \
+		} else { \
+			buf1 = world->mSndBufs; \
+		} \
+	} else { \
+		buf1 = world->mSndBufs + ibufnum1; \
+	} \
+	if (ibufnum2 >= world->mNumSndBufs) { \
+		int localBufNum = ibufnum2 - world->mNumSndBufs; \
+		Graph *parent = unit->mParent; \
+		if(localBufNum <= parent->localBufNum) { \
+			buf2 = parent->mLocalSndBufs + localBufNum; \
+		} else { \
+			buf2 = world->mSndBufs; \
+		} \
+	} else { \
+		buf2 = world->mSndBufs + ibufnum2; \
+	} \
 	if (buf1->samples != buf2->samples) return; \
 	int numbins = buf1->samples - 2 >> 1;
 

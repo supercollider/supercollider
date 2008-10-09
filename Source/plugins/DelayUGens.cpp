@@ -226,6 +226,17 @@ struct Pluck : public FeedbackDelay
 	long m_inputsamps;
 };
 
+struct LocalBuf : public Unit
+{
+	float m_fbufnum;
+	SndBuf *m_buf;
+};
+
+struct SetBuf : public Unit
+{
+	float m_fbufnum;
+	SndBuf *m_buf;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -297,6 +308,13 @@ extern "C"
 
 	void Pitch_Ctor(Pitch *unit);
 	void Pitch_next(Pitch *unit, int inNumSamples);
+	
+	void LocalBuf_Ctor(LocalBuf *unit);
+	void LocalBuf_Dtor(LocalBuf *unit);
+	void LocalBuf_next(LocalBuf *unit, int inNumSamples);
+	
+	void SetBuf_Ctor(SetBuf *unit);
+	void SetBuf_next(SetBuf *unit, int inNumSamples);
 	
 	void BufDelayUnit_Reset(BufDelayUnit *unit);
 	void BufFeedbackDelay_Reset(BufFeedbackDelay *unit);
@@ -391,7 +409,7 @@ extern "C"
 	void Pluck_next_ka_z(Pluck *unit, int inNumSamples);
 	void Pluck_next_ak(Pluck *unit, int inNumSamples);
 	void Pluck_next_ak_z(Pluck *unit, int inNumSamples);
-
+	
 }
 
 
@@ -554,6 +572,106 @@ void BufRateScale_Ctor(BufInfoUnit *unit, int inNumSamples)
 	unit->m_fbufnum = -1e9f;
 	SIMPLE_GET_BUF
 	ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline int32 BUFMASK(int32 x)
+{
+	return (1 << (31 - CLZ(x))) - 1;
+}
+
+
+void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, int numFrames) {
+	
+	int numSamples = numFrames * numChannels;
+	// Print("allocating %i channels and %i frames. memsize: %i\n", numChannels, numFrames, numSamples * sizeof(float));
+	buf->data = (float*)RTAlloc(unit->mWorld, numSamples * sizeof(float));
+
+	if (!buf->data) {
+		Print("failed to allocate memory for LocalBuffer\n");
+		return;
+	}
+	
+	buf->channels = numChannels;
+	buf->frames   = numFrames;
+	buf->samples  = numSamples;
+	buf->mask     = BUFMASK(numSamples); // for delay lines
+	buf->mask1    = buf->mask - 1;	// for oscillators
+	buf->samplerate = unit->mWorld->mSampleRate;
+	buf->sampledur = 1. / buf->samplerate;
+
+}
+
+
+
+
+void LocalBuf_Ctor(LocalBuf *unit)
+{
+	Graph *parent = unit->mParent;
+	
+	int offset =  unit->mWorld->mNumSndBufs;
+	int bufnum =  parent->localBufNum;
+	int maxBufNum = (int)(IN0(2) + .5f);
+
+	
+	if(!parent->localBufNum) { // only the first time.
+		parent->mLocalSndBufs = (SndBuf*)RTAlloc(unit->mWorld, maxBufNum * sizeof(SndBuf));
+	} 
+	if (parent->localBufNum >= maxBufNum) {
+		
+		unit->m_fbufnum = -1.f;
+		printf("warning: LocalBuf tried to allocate too many local buffers. Increasing maxLocalBufs may help\n");
+	
+	} else {
+		
+		unit->m_fbufnum = (float) (bufnum + offset);
+		unit->m_buf =  parent->mLocalSndBufs + bufnum;
+		parent->localBufNum = bufnum + 1;
+
+		LocalBuf_allocBuffer(unit, unit->m_buf, (int)IN0(0), (int)IN0(1));
+	}
+	
+	OUT0(0) = unit->m_fbufnum;
+	
+}
+
+void LocalBuf_Dtor(LocalBuf *unit)
+{
+	unit->mParent->localBufNum =  unit->mParent->localBufNum - 1;
+	RTFree(unit->mWorld, unit->m_buf->data);
+}
+
+// dummy for unit size.
+void LocalBuf_next(LocalBuf *unit, int inNumSamples) {}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void SetBuf_next(SetBuf *unit, int inNumSamples) {
+	
+	GET_BUF
+	if (!bufData) {
+		Print("SetBuf: no valid buffer\n");
+		return;
+	}
+		
+	int numArgs = (int)IN0(1);
+	int n = sc_min(buf->samples, numArgs);
+	
+	for(int i=0; i<n; ++i) {
+		bufData[i] = (float)IN0(i + 2);
+	}
+	
+}
+
+void SetBuf_Ctor(SetBuf *unit)
+{
+	unit->m_fbufnum = -1.f;
+	SETCALC(SetBuf_next);
+	OUT0(0) = 0.f;
+	SetBuf_next(unit, 0);
 }
 
 
@@ -7172,7 +7290,7 @@ void load(InterfaceTable *inTable)
 	DefineInfoUnit(NumControlBuses);
 	DefineInfoUnit(NumBuffers);
 	DefineInfoUnit(NumRunningSynths);
-
+	
 #define DefineBufInfoUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc)&name##_Ctor, 0, 0);
 
@@ -7221,7 +7339,9 @@ void load(InterfaceTable *inTable)
 	DefineSimpleCantAliasUnit(TGrains);
 	DefineDtorUnit(ScopeOut);
 	DefineDelayUnit(Pluck);
-
+	
+	DefineDtorUnit(LocalBuf);
+	DefineSimpleUnit(SetBuf);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
