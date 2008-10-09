@@ -37,7 +37,7 @@ extern int slotStrLen(PyrSlot* slot);
 extern pthread_mutex_t	gLangMutex; // in case
 static PyrSymbol		*s_scimage;
 static PyrSymbol		*s_scfilter;
-static PyrSymbol		*s_vector;
+//static PyrSymbol		*s_vector;
 static NSMutableArray	*gSCImages;
 static BOOL				gCIFilterPlugInsLoaded = NO; // 
 
@@ -2063,7 +2063,9 @@ CGRect OutsetRect(CGRect r, const float dx, const float dy)
 CIImage*	CropAndCenterCIImage(CIImage *image, CGRect originalExtent, CGRect* cropRegionRef);
 CIImage*	CropAndCenterCIImage(CIImage *image, CGRect originalExtent, CGRect* cropRegionRef)
 {
+#if SCIMAGE_FILTER_DEBUG
 	NSLog(@"Cropping and centering CIImage %p", image);
+#endif
 	CGRect extent = [image extent];
 	CIFilter * ciFilter;
 	
@@ -2113,7 +2115,8 @@ id		nsciObjectFromSlot(PyrSlot *slot, Class attributeClass, NSString *attributeT
 		SCImage *image = (SCImage *)slot->uo->slots[0].ui;
 		return [CISampler samplerWithImage:[image ciimage]];
 	}
-	else if(isKindOfSlot(slot, s_vector->u.classobj)) {
+//	else if(isKindOfSlot(slot, s_vector->u.classobj)) {
+	else if(isKindOfSlot(slot, s_array->u.classobj)) {
 		#if SCIMAGE_FILTER_DEBUG
 			NSLog(@"Creating CIVector From Vector Slot");
 		#endif
@@ -2861,7 +2864,7 @@ void initSCImagePrimitives()
 	
 	s_scimage  = getsym("SCImage");
 	s_scfilter = getsym("SCImageFilter");
-	s_vector = getsym("Vector");
+//	s_vector = getsym("Vector");
 	
 	#if SCIMAGE_DEBUG
 		NSLog(@"---- SCIMAGE: Init Primitives ----");

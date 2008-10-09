@@ -625,22 +625,6 @@ SCImage {
 	}
 }
 
-Vector {
-	var <>x, <>y, <>z, <>w;
-	
-	*fromArray {|array|
-		^this.new(*array)
-	}
-	
-	*new {|x, y, z, w|
-		^super.newCopyArgs(x ? 0, y ? 0, z ? 0, w ? 0);
-	}
-	
-	asArray {
-		^[x,y,z,w];
-	}
-}
-
 SCImageFilter {
 	classvar <categories;
 	var <name, <attributes, <values, <>enable=true;
@@ -697,7 +681,7 @@ SCImageFilter {
 		});
 		
 		if(object.isKindOf(Rect), {
-			^ Vector(object.left, object.top, object.width, object.height);
+			^ [object.left, object.top, object.width, object.height];
 		});
 		
 		^ object; // no translation
@@ -742,7 +726,7 @@ SCImageFilter {
 
 			switch(class,
 				\NSNumber,	{class = \Number},
-				\CIVector, 	{class = \Vector},
+				\CIVector, 	{class = \Array},
 				\CIImage, 	{class = \SCImage},
 				\CIColor, 	{class = \Color},
 				\NSAffineTransform, {class = \Array},
@@ -864,11 +848,7 @@ SCImageKernel {
 	}
 }
 
-+Array {
-	asVector {
-		^Vector.fromArray(this);
-	}
-	
++Array {	
 	asRGBA {
 		^Integer.fromRGBA(this.at(0)?0,this.at(1)?0, this.at(2)?0, this.at(3)?0);
 	}
