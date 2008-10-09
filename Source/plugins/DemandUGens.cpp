@@ -166,6 +166,10 @@ struct Donce : public Unit
 	float m_prev;
 };
 
+struct Dpoll : public Unit
+{
+};
+
 extern "C"
 {
 void load(InterfaceTable *inTable);
@@ -1849,6 +1853,27 @@ void Dstutter_Ctor(Dstutter *unit)
 	OUT0(0) = 0.f;
 }
 
+//////////////////////////////
+
+
+
+void Dpoll_next(Dpoll *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+			float x = DEMANDINPUT_A(0, inNumSamples);
+			Print("dpoll: inNumSamples: %d, inval: %g\n", inNumSamples, x);
+			OUT0(0) = x;
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void Dpoll_Ctor(Dpoll *unit)
+{
+	SETCALC(Dpoll_next);
+	OUT0(0) = 0.f;
+}
+
 
 //////////////////////////////
 
@@ -1910,14 +1935,28 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	if (fbufnum != unit->m_fbufnum) { \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
-		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
+		if (bufnum >= world->mNumSndBufs) { \
+			int localBufNum = bufnum - world->mNumSndBufs; \
+			Graph *parent = unit->mParent; \
+			if(localBufNum <= parent->localBufNum) { \
+				unit->m_buf = parent->mLocalSndBufs + localBufNum; \
+			} else { \
+				bufnum = 0; \
+				unit->m_buf = world->mSndBufs + bufnum; \
+			} \
+		} else { \
+			unit->m_buf = world->mSndBufs + bufnum; \
+		} \
 		unit->m_fbufnum = fbufnum; \
-		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
 	float *bufData __attribute__((__unused__)) = buf->data; \
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
+	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
 	uint32 bufFrames = buf->frames; \
+	int mask __attribute__((__unused__)) = buf->mask; \
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+
 
 void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 {
@@ -2041,4 +2080,5 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Dswitch);
 	DefineSimpleUnit(Dstutter);
 	DefineSimpleUnit(Donce);
+	DefineSimpleUnit(Dpoll);
 }

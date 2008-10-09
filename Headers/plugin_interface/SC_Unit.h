@@ -48,6 +48,7 @@ struct Unit
 	UnitCalcFunc mCalcFunc;
 	int mBufLength;
 };
+
 typedef struct Unit Unit;
 
 enum { 
@@ -103,9 +104,19 @@ enum {
 	if (fbufnum != unit->m_fbufnum) { \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
-		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
+		if (bufnum >= world->mNumSndBufs) { \
+			int localBufNum = bufnum - world->mNumSndBufs; \
+			Graph *parent = unit->mParent; \
+			if(localBufNum <= parent->localBufNum) { \
+				unit->m_buf = parent->mLocalSndBufs + localBufNum; \
+			} else { \
+				bufnum = 0; \
+				unit->m_buf = world->mSndBufs + bufnum; \
+			} \
+		} else { \
+			unit->m_buf = world->mSndBufs + bufnum; \
+		} \
 		unit->m_fbufnum = fbufnum; \
-		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
 	float *bufData __attribute__((__unused__)) = buf->data; \
@@ -115,16 +126,27 @@ enum {
 	int mask __attribute__((__unused__)) = buf->mask; \
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
 
+	
 #define SIMPLE_GET_BUF \
 	float fbufnum  = ZIN0(0); \
 	if (fbufnum != unit->m_fbufnum) { \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
-		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
+		if (bufnum >= world->mNumSndBufs) { \
+			int localBufNum = bufnum - world->mNumSndBufs; \
+			Graph *parent = unit->mParent; \
+			if(localBufNum <= parent->localBufNum) { \
+				unit->m_buf = parent->mLocalSndBufs + localBufNum; \
+			} else { \
+				bufnum = 0; \
+				unit->m_buf = world->mSndBufs + bufnum; \
+			} \
+		} else { \
+			unit->m_buf = world->mSndBufs + bufnum; \
+		} \
 		unit->m_fbufnum = fbufnum; \
-		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
-	SndBuf *buf = unit->m_buf;
+	SndBuf *buf = unit->m_buf; \
 
 // macros to get pseudo-random number generator, and put its state in registers
 #define RGET \

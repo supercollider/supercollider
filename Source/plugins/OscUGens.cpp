@@ -335,8 +335,19 @@ void Klank_next(Klank *unit, int inNumSamples);
 		if (fbufnum != unit->m_fbufnum) { \
 			uint32 bufnum = (uint32)fbufnum; \
 			World *world = unit->mWorld; \
-			if (bufnum >= world->mNumSndBufs) bufnum = 0; \
+			if (bufnum >= world->mNumSndBufs) { \
+			int localBufNum = bufnum - world->mNumSndBufs; \
+			Graph *parent = unit->mParent; \
+			if(localBufNum <= parent->localBufNum) { \
+				unit->m_buf = parent->mLocalSndBufs + localBufNum; \
+			} else { \
+				bufnum = 0; \
+				unit->m_buf = world->mSndBufs + bufnum; \
+			} \
+		} else { \
 			unit->m_buf = world->mSndBufs + bufnum; \
+		} \
+		unit->m_fbufnum = fbufnum; \
 		} \
 		SndBuf *buf = unit->m_buf; \
         if(!buf) { \
@@ -2062,6 +2073,20 @@ void COsc_next(COsc *unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define VOSC_GET_BUF \
+if (bufnum+1 >= world->mNumSndBufs) { \
+			int localBufNum = bufnum - world->mNumSndBufs; \
+			Graph *parent = unit->mParent; \
+			if(localBufNum <= parent->localBufNum) { \
+				bufs = parent->mLocalSndBufs + localBufNum; \
+			} else { \
+				bufnum = 0; \
+				bufs = world->mSndBufs + bufnum; \
+			} \
+		} else { \
+			bufs = world->mSndBufs + bufnum; \
+		} \
+
 
 void VOsc_Ctor(VOsc *unit)
 {
@@ -2071,9 +2096,10 @@ void VOsc_Ctor(VOsc *unit)
 	unit->m_bufpos = nextbufpos;
 	uint32 bufnum = (uint32)floor(nextbufpos);
 	World *world = unit->mWorld;
-	if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
-	SndBuf *bufs = world->mSndBufs + bufnum;
-
+	SndBuf *bufs;
+	
+	VOSC_GET_BUF	
+	
 	int tableSize = bufs[0].samples;
 
 	unit->mTableSize = tableSize;
@@ -2113,8 +2139,10 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 		float level = cur - floor(cur);
 
 		uint32 bufnum = (int)floor(cur);
-		if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
-		SndBuf *bufs = world->mSndBufs + bufnum;
+		SndBuf *bufs;
+	
+		VOSC_GET_BUF
+		
 		float *table0  = bufs[0].data;
 		float *table2  = bufs[1].data;
 		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
@@ -2162,8 +2190,11 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 			float slope = sweepdiff / (float)nsmps;
 			
 			uint32 bufnum = (int)floor(cur);
-			if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
-			SndBuf *bufs = world->mSndBufs + bufnum;
+			
+			SndBuf *bufs;
+	
+			VOSC_GET_BUF
+			
 			float *table0  = bufs[0].data;
 			float *table2  = bufs[1].data;
 			if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
@@ -2206,9 +2237,9 @@ void VOsc3_Ctor(VOsc3 *unit)
 	unit->m_bufpos = nextbufpos;
 	uint32 bufnum = (uint32)floor(nextbufpos);
 	World *world = unit->mWorld;
-	if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
-	SndBuf *bufs = world->mSndBufs + bufnum;
-
+	SndBuf *bufs;
+	
+	VOSC_GET_BUF		
 	int tableSize = bufs[0].samples;
 
 	unit->mTableSize = tableSize;
@@ -2251,8 +2282,10 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 		float level = cur - floor(cur);
 
 		uint32 bufnum = (int)floor(cur);
-		if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
-		SndBuf *bufs = world->mSndBufs + bufnum;
+		SndBuf *bufs;
+	
+		VOSC_GET_BUF
+		
 		float *table0  = bufs[0].data;
 		float *table2  = bufs[1].data;
 		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
@@ -2325,8 +2358,10 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 			float slope = sweepdiff / (float)nsmps;
 			
 			uint32 bufnum = (int)floor(cur);
-			if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
-			SndBuf *bufs = world->mSndBufs + bufnum;
+			SndBuf *bufs;
+	
+			VOSC_GET_BUF
+			
 			float *table0  = bufs[0].data;
 			float *table2  = bufs[1].data;
 			if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {

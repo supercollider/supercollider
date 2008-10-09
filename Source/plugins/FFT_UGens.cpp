@@ -84,9 +84,21 @@ int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 	World *world = unit->mWorld;
 
 	uint32 bufnum = (uint32)ZIN0(0);
-	//Print("FFTBase_Ctor: bufnum is %i\n", bufnum);
-	if (bufnum >= world->mNumSndBufs) bufnum = 0;
-	SndBuf *buf = world->mSndBufs + bufnum; 
+	SndBuf *buf;
+	if (bufnum >= world->mNumSndBufs) {
+			int localBufNum = bufnum - world->mNumSndBufs; 
+			Graph *parent = unit->mParent; 
+			if(localBufNum <= parent->localMaxBufNum) { 
+				buf = parent->mLocalSndBufs + localBufNum;
+			} else { 
+				bufnum = 0; 
+				buf = world->mSndBufs + bufnum; 
+			}
+	} else {
+			buf = world->mSndBufs + bufnum; 
+	}
+	
+	
 	if (!buf->data) {
 		Print("FFTBase_Ctor error: Buffer %i not initialised.\n", bufnum);
 		return 0;

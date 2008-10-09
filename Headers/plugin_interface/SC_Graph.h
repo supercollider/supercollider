@@ -24,6 +24,7 @@
 #include "SC_Node.h"
 #include "SC_Rate.h"
 #include "SC_Dimension.h"
+#include "SC_SndBuf.h"
 
 struct Graph 
 {
@@ -49,6 +50,10 @@ struct Graph
 	struct Unit *mLocalControlBusUnit;
 	
 	float mSubsampleOffset;
+	
+	SndBuf *mLocalSndBufs;
+	int localBufNum;
+	int localMaxBufNum;
 };
 typedef struct Graph Graph;
 
