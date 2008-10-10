@@ -1741,15 +1741,15 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 		if (nextGrain == 0) {
 			// start a grain
 			if (unit->mNumActive[n]+1 >= kMaxGrains) break;
-			uint32 bufnum = (uint32)GRAIN_IN_AT(unit, 0, i);
-			if (bufnum >= numBufs) break;
+//			uint32 bufnum = (uint32)GRAIN_IN_AT(unit, 0, i);
+//			if (bufnum >= numBufs) break;
 
 			float bufSampleRate = buf->samplerate;
 			float bufRateScale = bufSampleRate * SAMPLEDUR;
 			double loopMax = (double)bufFrames;
 
 			WarpWinGrain *grain = unit->mGrains[n] + unit->mNumActive[n]++;
-			grain->bufnum = bufnum;
+//			grain->bufnum = bufnum;
 			
 			RGET
 
