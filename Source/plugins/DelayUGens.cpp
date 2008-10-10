@@ -585,7 +585,7 @@ inline int32 BUFMASK(int32 x)
 void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, int numFrames) {
 	
 	int numSamples = numFrames * numChannels;
-	// Print("allocating %i channels and %i frames. memsize: %i\n", numChannels, numFrames, numSamples * sizeof(float));
+	// Print("bufnum: %i, allocating %i channels and %i frames. memsize: %i\n", (int)unit->m_fbufnum, numChannels, numFrames, numSamples * sizeof(float));
 	buf->data = (float*)RTAlloc(unit->mWorld, numSamples * sizeof(float));
 
 	if (!buf->data) {
@@ -619,6 +619,7 @@ void LocalBuf_Ctor(LocalBuf *unit)
 	
 	if(!parent->localBufNum) { // only the first time.
 		parent->mLocalSndBufs = (SndBuf*)RTAlloc(unit->mWorld, maxBufNum * sizeof(SndBuf));
+		parent->localMaxBufNum = maxBufNum;
 	} 
 	if (parent->localBufNum >= maxBufNum) {
 		
