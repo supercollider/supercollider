@@ -1487,9 +1487,9 @@ void Dibrown_next(Dibrown *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 	
-		float lo = DEMANDINPUT_A(1, inNumSamples); if(!sc_isnan(lo)) { unit->m_lo = lo; }
-		float hi = DEMANDINPUT_A(2, inNumSamples); if(!sc_isnan(hi)) { unit->m_hi = hi; }
-		float step = DEMANDINPUT_A(3, inNumSamples); if(!sc_isnan(step)) { unit->m_step = step; }
+		float lo   = DEMANDINPUT_A(1, inNumSamples);    if(!sc_isnan(lo))   { unit->m_lo   = (int32)lo; }
+		float hi   = DEMANDINPUT_A(2, inNumSamples);    if(!sc_isnan(hi))   { unit->m_hi   = (int32)hi; }
+		float step = DEMANDINPUT_A(3, inNumSamples);    if(!sc_isnan(step)) { unit->m_step = (int32)step; }
 		
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
