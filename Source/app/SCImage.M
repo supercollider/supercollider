@@ -2171,7 +2171,7 @@ id		nsciObjectFromSlot(PyrSlot *slot, Class attributeClass, NSString *attributeT
 			return transform;
 		}
 		
-		if(attributeClass == [CIVector class]) {
+		if(attributeClass == [CIVector class] || attributeClass == NULL) {
 			#if SCIMAGE_FILTER_DEBUG
 				NSLog(@"Creating CIVector From Array Slot");
 			#endif
@@ -2930,6 +2930,13 @@ void initSCImagePrimitives()
 	definePrimitive(base, index++, "_SCImageFilter_ApplyMultiple", prSCImageFilter_ApplyMultiple, 5, 0);
 	definePrimitive(base, index++, "_SCImageFilter_GetAttributeMinMax", prSCImageFilter_GetAttributeMinMax, 3, 0);
 	definePrimitive(base, index++, "_SCImageFilter_ApplyKernel", prSCImageFilter_ApplyKernel, 5, 0);
+	
+	
+	void initCocoaAlertPrimitives();
+	void initCocoaViewAdaptorPrimitives();
+	
+	initCocoaAlertPrimitives();
+	initCocoaViewAdaptorPrimitives();
 }
 
 /*
