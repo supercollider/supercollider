@@ -167,7 +167,7 @@ private:
 		
 	void writeArchiveHeader()
 		{
-			mStream.writeInt32_be('!SCa');
+			mStream.writeInt32_be(('!'<<24)|('S'<<16)|('C'<<8)|'a' /*'!SCa'*/);
 			mStream.writeInt32_be(2); // file version
 			mStream.writeInt32_be(mNumObjects);
 		}
@@ -175,7 +175,7 @@ private:
 	void readArchiveHeader()
 		{
 			int32 magicNumber = mStream.readInt32_be();
-			if (magicNumber != '!SCa') {
+			if (magicNumber != (('!'<<24)|('S'<<16)|('C'<<8)|'a' /*'!SCa'*/)) {
 				throw std::runtime_error("not an SC archive.\n");
 			}
 			mReadArchiveVersion = mStream.readInt32_be(); // file version
