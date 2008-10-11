@@ -2234,10 +2234,15 @@ int prPen_AddArc(struct VMGlobals *g, int numArgsPushed)
 	int clockwise = angle > 0. ? 0 : 1;
 	float endAngle = startAngle + angle;
  
+	NSPoint p2;
+	p2.x = p1.x + radius * cos(startAngle);
+	p2.y = p1.y + radius * sin(startAngle);
+ 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	//post("start %g %g  end %g %g  arc %g %g\n", startAngle, startAngle * 180./3.14156, endAngle, endAngle * 180./3.14156, angle, angle * 180./3.14156);
+	CGContextMoveToPoint(cgc, p2.x, p2.y);
 	CGContextAddArc(cgc, p1.x, p1.y, radius, startAngle, endAngle, clockwise);
     
     return errNone;
