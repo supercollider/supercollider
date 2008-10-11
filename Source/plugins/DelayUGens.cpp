@@ -238,6 +238,12 @@ struct SetBuf : public Unit
 	SndBuf *m_buf;
 };
 
+struct ClearBuf : public Unit
+{
+	float m_fbufnum;
+	SndBuf *m_buf;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 extern "C"
@@ -315,6 +321,8 @@ extern "C"
 	
 	void SetBuf_Ctor(SetBuf *unit);
 	void SetBuf_next(SetBuf *unit, int inNumSamples);
+	void ClearBuf_Ctor(ClearBuf *unit);
+	void ClearBuf_next(ClearBuf *unit, int inNumSamples);
 	
 	void BufDelayUnit_Reset(BufDelayUnit *unit);
 	void BufFeedbackDelay_Reset(BufFeedbackDelay *unit);
@@ -643,8 +651,12 @@ void LocalBuf_Ctor(LocalBuf *unit)
 
 void LocalBuf_Dtor(LocalBuf *unit)
 {
-	unit->mParent->localBufNum =  unit->mParent->localBufNum - 1;
 	RTFree(unit->mWorld, unit->m_buf->data);
+	if(!unit->mParent->localBufNum) { // only the last time.
+		RTFree(unit->mWorld, unit->mParent->mLocalSndBufs);
+	} else {
+		unit->mParent->localBufNum =  unit->mParent->localBufNum - 1;
+	}
 }
 
 // dummy for unit size.
@@ -680,6 +692,32 @@ void SetBuf_Ctor(SetBuf *unit)
 	OUT0(0) = 0.f;
 	SetBuf_next(unit, 0);
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void ClearBuf_next(ClearBuf *unit, int inNumSamples) {
+	
+	GET_BUF
+	if (!bufData) {
+		if(unit->mWorld->mVerbosity > -2){
+			Print("ClearBuf: no valid buffer\n");
+		}
+		return;
+	}
+		
+	memset(unit->m_buf->data, 0, unit->m_buf->samples * sizeof(float));
+}
+
+void ClearBuf_Ctor(ClearBuf *unit)
+{
+	unit->m_fbufnum = -1.f;
+	SETCALC(ClearBuf_next);
+	OUT0(0) = 0.f;
+	ClearBuf_next(unit, 0);
+}
+
 
 
 
@@ -1370,7 +1408,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 
 void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 {	
-	//printf("RecordBuf_next\n");
+	// printf("RecordBuf_next_10\n");
 	GET_BUF
 	CHECK_BUF
 	SETUP_IN(7)
@@ -1464,6 +1502,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 					table0[0] = *++(in[0]);
 					table0[1] = *++(in[1]);
 					writepos += 2;
+					if (writepos >= (int32)bufSamples) writepos = (int32)bufSamples - 2; // added by jrhb
 				}
 			} else {
 				for (int32 k=0; k<nsmps; ++k) { 
@@ -1473,6 +1512,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 						*samp = *++(in[i]);
 					}
 					writepos += bufChannels;
+					if (writepos >= (int32)bufSamples) writepos = (int32)bufSamples - bufChannels; // added by jrhb
 				}
 			}
 		} else if (run < 0.f) {
@@ -7349,6 +7389,7 @@ void load(InterfaceTable *inTable)
 	
 	DefineDtorUnit(LocalBuf);
 	DefineSimpleUnit(SetBuf);
+	DefineSimpleUnit(ClearBuf);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

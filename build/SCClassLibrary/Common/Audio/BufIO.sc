@@ -147,11 +147,20 @@ LocalBuf : UGen {
 	set { arg values;
 		SetBuf(this, values);
 	}
+	clear {
+		ClearBuf(this);
+	}
 	
 }
 
 SetBuf : UGen {
 	*new { arg buf, values;
 		^this.multiNewList(['scalar', buf, values.size] ++ values)
+	}
+}
+
+ClearBuf : UGen {
+	*new { arg buf;
+		^this.multiNew('scalar', buf)
 	}
 }
