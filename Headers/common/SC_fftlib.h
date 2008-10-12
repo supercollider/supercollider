@@ -59,7 +59,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 
 // These values are referred to from SC lang as well as in the following code - do not rearrange!
 #define WINDOW_RECT -1
-#define WINDOW_WELCH 0
+#define WINDOW_SINE 0
 #define WINDOW_HANN 1
 
 // This struct is a bit like FFTW's idea of a "plan": it represents an FFT operation that may be applied once or repeatedly.

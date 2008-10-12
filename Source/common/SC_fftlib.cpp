@@ -55,7 +55,7 @@ float* scfft_create_fftwindow(int wintype, int log2n)
 	
 	double winc;
 	switch(wintype){
-		case WINDOW_WELCH:
+		case WINDOW_SINE:
 			winc = pi / size;
 			for (i=0; i<size; ++i) {
 				double w = i * winc;
