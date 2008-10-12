@@ -145,7 +145,7 @@ LocalBuf : UGen {
 	}
 	
 	set { arg values;
-		SetBuf(this, values);
+		SetBuf(this, values.asArray);
 	}
 	clear {
 		ClearBuf(this);
