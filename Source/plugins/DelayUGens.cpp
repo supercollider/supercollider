@@ -706,8 +706,12 @@ void ClearBuf_next(ClearBuf *unit, int inNumSamples) {
 		}
 		return;
 	}
-		
-	memset(unit->m_buf->data, 0, unit->m_buf->samples * sizeof(float));
+	int n = unit->m_buf->samples;
+	
+	//bzero(unit->m_buf->data, unit->m_buf->samples * sizeof(float));
+	for (int i=0; i<n; ++i) {
+		bufData[i] = 0.f;
+	}
 }
 
 void ClearBuf_Ctor(ClearBuf *unit)
