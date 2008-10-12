@@ -252,7 +252,7 @@ void IFFT_Ctor(IFFT* unit){
 	scfft_create(unit->m_scfft, unit->m_fullbufsize, unit->m_audiosize, unit->m_wintype, unit->m_fftsndbuf->data, unit->m_fftsndbuf->data, unit->m_transformbuf, false);
 	
 	// "pos" will be reset to zero when each frame comes in. Until then, the following ensures silent output at first:
-	unit->m_pos = unit->m_audiosize;
+	unit->m_pos = 0; //unit->m_audiosize;
 	
 	SETCALC(IFFT_next);	
 }
@@ -306,7 +306,7 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 				olabuf[pos] += fftbuf[pos];
 			}
 		#endif
-		memcpy(olabuf + pos, fftbuf + pos, (audiosize-pos) * sizeof(float));
+		memcpy(olabuf + shuntsamps, fftbuf + shuntsamps, (hopsamps) * sizeof(float));
 		
 		// Move the pointer back to zero, which is where playback will next begin
 		pos = 0;
