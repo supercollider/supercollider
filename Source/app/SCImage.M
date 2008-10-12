@@ -2513,6 +2513,9 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 	int			err;
 	CGRect		destExtent;
 	CGRect		cropRegion;
+	CGRect		maxRect;
+	CISampler * sampler = nil;
+	
 	err = errNone;
 	scimage = (SCImage *)receiver->uo->slots[0].ui;
 	if(!scimage){
@@ -2573,14 +2576,16 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 		NSLog(@"SCImageFilter: CIKernel setting Arguments !");
 	#endif
 	// set all the arguments 
-	//[arguments addObject:ciSampler]; // first the CISampler
 	if( !IsNil(argumentSlot) ) { // iterate through all the arguments
 		PyrObject * pyrArray = argumentSlot->uo;
 		int size = pyrArray->size;
 		for(int i=0; i < size; ++i) {
 			id object = nsciObjectFromSlot(pyrArray->slots+i, NULL, NULL);
-			if(object)
+			if(object) {
+				if([object class] == [CISampler class])
+					sampler = (id)object;
 				[arguments addObject:object];
+			}
 			else
 				goto Bail; // Kernels require no bad arguments
 		}
@@ -2591,6 +2596,8 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 	// kCIApplyOptionExtent : size of the resulting image
 	NSMutableDictionary * dictionary = [[ [NSMutableDictionary alloc] initWithCapacity:8]autorelease];
 	[dictionary setValue:
+		[/*[scimage ciimage]*/sampler definition] // better to pass directly the filterShape
+		/*
 		[NSArray arrayWithObjects: 
 			[NSNumber numberWithFloat:extent.origin.x], // x
 			[NSNumber numberWithFloat:extent.origin.y], // y
@@ -2598,9 +2605,21 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 			[NSNumber numberWithFloat:extent.size.height], // h
 			nil
 		]
+		*/
 		forKey:kCIApplyOptionDefinition
 	];
 	
+	[dictionary setValue:
+			[NSArray arrayWithObjects: 
+				[NSNumber numberWithFloat:extent.origin.x], // x
+				[NSNumber numberWithFloat:extent.origin.y], // y
+				[NSNumber numberWithFloat:extent.size.width], // w 
+				[NSNumber numberWithFloat:extent.size.height], // h
+				nil
+			]
+			forKey:kCIApplyOptionExtent
+	];
+		
 	// Set the Extent of the result image if one is specified
 	/*
 	if(!IsNil(maxBounds)) {
@@ -2631,13 +2650,16 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 		// 1 - crop the image if a cropRegion is specified
 		// 2 - translate the image to align origin of extent with coordindate origin of image (0,0)
 		
+		/*
 		if(IsNil(cropRegionSlot)) {
 			cropRegion = OutsetRect(extent, floorf((SCCIIMAGE_MAX_WIDTH - extent.size.width) * 0.5), floorf((SCCIIMAGE_MAX_HEIGHT - extent.size.height) * 0.5));
 		} else {
 			err = slotGetNSRect(cropRegionSlot, (NSRect*)&cropRegion);
 			if(err) return err;
 		}
+		
 		ciimage = CropAndCenterCIImage(ciimage, extent, &cropRegion);
+		*/
 		destExtent = [ciimage extent];
 		
 #if SCIMAGE_FILTER_DEBUG
@@ -2930,13 +2952,6 @@ void initSCImagePrimitives()
 	definePrimitive(base, index++, "_SCImageFilter_ApplyMultiple", prSCImageFilter_ApplyMultiple, 5, 0);
 	definePrimitive(base, index++, "_SCImageFilter_GetAttributeMinMax", prSCImageFilter_GetAttributeMinMax, 3, 0);
 	definePrimitive(base, index++, "_SCImageFilter_ApplyKernel", prSCImageFilter_ApplyKernel, 5, 0);
-	
-	
-	void initCocoaAlertPrimitives();
-	void initCocoaViewAdaptorPrimitives();
-	
-	initCocoaAlertPrimitives();
-	initCocoaViewAdaptorPrimitives();
 }
 
 /*
