@@ -1666,8 +1666,19 @@ void Osc_Ctor(Osc *unit)
 	float fbufnum = ZIN0(0);
 	uint32 bufnum = (uint32)fbufnum;
 	World *world = unit->mWorld;
-	if (bufnum >= world->mNumSndBufs) bufnum = 0;
-	SndBuf *buf = unit->m_buf = world->mSndBufs + bufnum;
+	
+	SndBuf *buf;
+	if (bufnum >= world->mNumSndBufs) {
+		int localBufNum = bufnum - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localBufNum) {
+			buf = parent->mLocalSndBufs + localBufNum;
+		} else {
+			buf = world->mSndBufs;
+		}
+	} else {
+		buf = world->mSndBufs + bufnum;
+	}
 
 	int tableSize = buf->samples;
 	int tableSize2 = tableSize >> 1;
@@ -1857,8 +1868,18 @@ void OscN_Ctor(OscN *unit)
 	float fbufnum = ZIN0(0);
 	uint32 bufnum = (uint32)fbufnum;
 	World *world = unit->mWorld;
-	if (bufnum >= world->mNumSndBufs) bufnum = 0;
-	SndBuf *buf = unit->m_buf = world->mSndBufs + bufnum;
+	SndBuf *buf;
+	if (bufnum >= world->mNumSndBufs) {
+		int localBufNum = bufnum - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localBufNum) {
+			buf = parent->mLocalSndBufs + localBufNum;
+		} else {
+			buf = world->mSndBufs;
+		}
+	} else {
+		buf = world->mSndBufs + bufnum;
+	}
 
 	int tableSize = buf->samples;
 	unit->m_radtoinc = tableSize * (rtwopi * 65536.);
