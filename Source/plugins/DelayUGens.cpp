@@ -680,9 +680,9 @@ void SetBuf_next(SetBuf *unit, int inNumSamples) {
 	int numArgs = (int)IN0(2);
 	int end = sc_min(buf->samples, numArgs + offset);
 	
-	int j = 0;
+	int j = 3;
 	for(int i=offset; i<end; ++j, ++i) {
-		bufData[i] = (float)IN0(j + 3);
+		bufData[i] = (float)IN0(j);
 	}
 	
 }
