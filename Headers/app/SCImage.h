@@ -52,11 +52,11 @@
 	
 */
 #define SCIMAGE_MAC_OS_10_4			(MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4)
-#if defined(MAC_OS_X_VERSION_10_5)
-#define SCIMAGE_MAC_OS_10_5			(MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
-#else
+//#if defined(MAC_OS_X_VERSION_10_5)
+//#define SCIMAGE_MAC_OS_10_5			(MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
+//#else
 #define SCIMAGE_MAC_OS_10_5			0
-#endif
+//#endif
 
 #if (SCIMAGE_DEBUG || SCIMAGE_BACKGROUND_DEBUG)
 inline double GetTimeOfDay();
