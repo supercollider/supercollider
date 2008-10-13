@@ -109,6 +109,7 @@ typedef int SCImageHint;
 - (id)initWithContentsOfURL:(NSURL*)url isAccelerated:(BOOL)yorn format:(CIFormat)fmt;
 - (id)initWithSize:(NSSize)size isAccelerated:(BOOL)yorn format:(CIFormat)fmt;
 - (id)initWithCIImage:(CIImage*)image extent:(CGRect)extent format:(CIFormat)imageFormat;
+- (id)initWithNSImage:(NSImage*)image;
 - (void)commonInit;
 - (CIImage*)ciimage;
 //- (void)rebuildAccumulatorFromCIImage:(CIImage*)newCIImage; // rebuild everything for inplace operation if extent if different
