@@ -299,6 +299,18 @@ SoundFile {
 		^files;	
 	}
 
+	*collectIntoBuffers { | path = "sounds/*", server |
+		server = server ?? { Server.default };
+		if (server.serverRunning) {
+			^SoundFile.collect(path)
+				.collect { |  sf |
+					Buffer(server, sf.numFrames, sf.numChannels).allocRead(sf.path)
+				}	
+		} {
+			"the server must be running to collection soundfiles into buffers ".error
+		}
+	}
+
 	cue { | ev, playNow = false |
 		var server, packet, defname = "diskIn" ++ numChannels, condition;
 		ev = ev ? ();
