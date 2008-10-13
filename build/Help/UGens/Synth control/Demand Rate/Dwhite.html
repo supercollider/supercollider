@@ -5,23 +5,24 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
+span.s2 {color: #0033f1}
 span.s3 {font: 12.0px Helvetica; color: #000000}
 span.s4 {color: #000000}
-span.s5 {color: #0025b2}
+span.s5 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>Dwhite, Diwhite</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b> demand rate white noise random generators</b></p>
+<p class="p1"><span class="s1"><b>Dwhite, Diwhite</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>demand rate white noise random generators</b></p>
 <p class="p2"><br></p>
 <p class="p1">superclass: DUGen</p>
 <p class="p2"><br></p>
@@ -51,8 +52,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">SinOsc</span>.ar(freq) * 0.1</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>}.play;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>)<span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="s4"><span class="Apple-tab-span">	</span></span>// Diwhite</p>
@@ -69,8 +69,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s4"><span class="Apple-tab-span">	</span></span>// Dwhite and Diwhite</p>
+<p class="p5"><span class="Apple-tab-span">	</span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span>{<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> a, freq, trig;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s5">Dwhite</span>(0, <span class="s5">Dseq</span>([<span class="s5">Dgeom</span>(1, 1.01, <span class="s5">Diwhite</span>(50, 800, <span class="s5">inf</span>))], <span class="s5">inf</span>) - 1, <span class="s5">inf</span>);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq = <span class="s5">Duty</span>.kr(<span class="s5">SampleDur</span>.ir, 0, a) + 340;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">SinOsc</span>.ar(freq) * 0.1</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>}.play;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
 </body>
 </html>
