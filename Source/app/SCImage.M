@@ -324,8 +324,30 @@ failure:
 			
 			NSSize size;
 			size = [nsimage size];
-		
-			_bitmap = BitmapContextRGBAWithImage((int)size.width, (int)size.height, nsimage);
+			
+			/*
+				NSImage seems to have an incorrect size depending on the dpi of the image
+				find the largest representation in the nsimage and the set the size according to it
+			*/
+			int pixelsHigh=0, pixelsWide=0; // should be NSInteger in 10.5 - but stick with an <int> for now
+			NSImageRep *irep;
+			NSEnumerator *e = [[nsimage representations]objectEnumerator];
+			while( irep = [e nextObject] ) {
+				/* 
+				do not check ratio - they should be always preserved - just take the max
+				they should always be part of the same rep
+				*/
+				pixelsHigh = sc_max([irep pixelsHigh], pixelsHigh);
+				pixelsWide = sc_max([irep pixelsWide], pixelsWide);
+			}
+			
+			if( size.width < (float)pixelsWide || size.height < (float)pixelsHigh ) {
+				//post("converting : %f %f -> %i %i\n", size.width, size.height, pixelsWide, pixelsHigh);
+				[nsimage setSize:NSMakeSize((float)pixelsWide, (float)pixelsHigh)];
+				size = [nsimage size];
+			}
+			
+			_bitmap = BitmapContextRGBAWithImage( (int)size.width, (int)size.height, nsimage );
 			if(!_bitmap) {
 				[nsimage release];
 				goto failure;
