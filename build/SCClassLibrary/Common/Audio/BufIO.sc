@@ -144,8 +144,8 @@ LocalBuf : UGen {
 		^buf 
 	}
 	
-	set { arg values;
-		SetBuf(this, values.asArray);
+	set { arg values, offset = 0;
+		SetBuf(this, values.asArray, offset);
 	}
 	clear {
 		ClearBuf(this);
@@ -154,8 +154,8 @@ LocalBuf : UGen {
 }
 
 SetBuf : UGen {
-	*new { arg buf, values;
-		^this.multiNewList(['scalar', buf, values.size] ++ values)
+	*new { arg buf, values, offset = 0;
+		^this.multiNewList(['scalar', buf, offset, values.size] ++ values)
 	}
 }
 

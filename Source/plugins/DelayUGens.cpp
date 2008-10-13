@@ -675,12 +675,14 @@ void SetBuf_next(SetBuf *unit, int inNumSamples) {
 		}
 		return;
 	}
-		
-	int numArgs = (int)IN0(1);
-	int n = sc_min(buf->samples, numArgs);
 	
-	for(int i=0; i<n; ++i) {
-		bufData[i] = (float)IN0(i + 2);
+	int offset = (int)IN0(1);
+	int numArgs = (int)IN0(2);
+	int end = sc_min(buf->samples, numArgs + offset);
+	
+	int j = 0;
+	for(int i=offset; i<end; ++j, ++i) {
+		bufData[i] = (float)IN0(j + 3);
 	}
 	
 }
