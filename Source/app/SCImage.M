@@ -35,8 +35,8 @@ extern int slotColorVal(PyrSlot *slot, SCColor *sccolor);
 extern int slotStrLen(PyrSlot* slot);
 
 extern pthread_mutex_t	gLangMutex; // in case
-static PyrSymbol		*s_scimage;
-static PyrSymbol		*s_scfilter;
+PyrSymbol				*s_scimage;
+PyrSymbol				*s_scfilter;
 //static PyrSymbol		*s_vector;
 static NSMutableArray	*gSCImages;
 static BOOL				gCIFilterPlugInsLoaded = NO; // 
@@ -244,6 +244,32 @@ failure:
 
 -(id)initWithNSImage:(NSImage*)image {
 	if([super init]) {
+		
+		// TODO: clean up the initFromURL method...ect... to use this method instead
+		NSSize size;
+		size = [image size];
+		
+		/*
+		 NSImage seems to have an incorrect size depending on the dpi of the image
+		 find the largest representation in the nsimage and the set the size according to it
+		 */
+		int pixelsHigh=0, pixelsWide=0; // should be NSInteger in 10.5 - but stick with an <int> for now
+		NSImageRep *irep;
+		NSEnumerator *e = [[image representations]objectEnumerator];
+		while( irep = [e nextObject] ) {
+			/* 
+			 do not check ratio - they should be always preserved - just take the max
+			 they should always be part of the same rep
+			 */
+			pixelsHigh = sc_max([irep pixelsHigh], pixelsHigh);
+			pixelsWide = sc_max([irep pixelsWide], pixelsWide);
+		}
+		
+		if( size.width < (float)pixelsWide || size.height < (float)pixelsHigh ) {
+			//post("converting : %f %f -> %i %i\n", size.width, size.height, pixelsWide, pixelsHigh);
+			[image setSize:NSMakeSize((float)pixelsWide, (float)pixelsHigh)];
+			size = [image size];
+		}
 		
 		_bitmap = BitmapContextRGBAWithImage([image size].width, [image size].height, image);
 		if(!_bitmap)
