@@ -1,0 +1,212 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 // 08091500Acid309 by_otophilia\
+\
+// try evaluating any of those ~dseqs below\
+\cf0 \
+~dseq = [[1,0,0,0, 0,0,0,0, 1,0,0,1, 0,0,1,0], [0,0,0,0, 0,0,0,2, 0,2,1,0, 4,3,3,3], [0,0,0,0, 4,0,0,0, 0,0,0,0, 4,0,0,0], [1,2,4,0, 1,0,4,0, 1,2,4,2, 1,0,4,2], [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0]].flop;\cf2 \
+\cf0 \
+~dseq = [[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], [0,0,0,0, 4,0,0,0, 0,0,0,0, 4,0,0,0], [1,2,4,0, 1,0,4,0, 1,2,4,2, 1,0,4,2], [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0]].flop;\cf2 \
+\cf0 \
+~dseq = [[1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0], [0,0,0,0, 0,0,0,2, 0,0,0,0, 0,0,0,0], [0,0,0,0, 4,0,0,0, 0,0,0,0, 4,0,0,0], [1,2,4,0, 1,0,4,0, 1,2,4,2, 1,0,4,2], [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0]].flop;\
+\
+~dseq = [[1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0], [0,0,0,0, 4,0,0,2, 0,0,0,0, 4,0,0,0], [0,0,0,0, 0,0,0,0, 0,0,0,0, 4,0,0,0], [1,2,4,0, 1,0,4,0, 1,2,4,2, 1,0,4,2], [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0]].flop;\
+\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+\cf3 Server\cf0 .default = \cf3 Server\cf0 .internal; s = \cf3 Server\cf0 .default;\
+\cf3 Routine\cf0 .run \{\cf3 var\cf0  c; c = \cf3 Condition\cf0 .new; s.freeAll; \cf3 TempoClock\cf0 .all.do\{\cf3 |x|\cf0 x.clear\}; s.bootSync(c);\
+\
+( \cf2 // **** SynthDefs ****\cf0 \
+	\
+	\cf3 SynthDef\cf0 (\cf4 "kick"\cf0 , \{	\
+		\cf3 arg\cf0  outBus=0;\
+		\cf3 var\cf0  env0, env1, env1m, out;\
+		\
+		env0 =  \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([0.5, 1, 0.5, 0], [0.005, 0.06, 0.26], [-4, -2, -4]), doneAction:2);\
+		env1 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([110, 59, 29], [0.005, 0.29], [-4, -5]));\
+		env1m = env1.midicps;\
+		\
+		out = \cf3 LFPulse\cf0 .ar(env1m, 0, 0.5, 1, -0.5);\
+		out = out + \cf3 WhiteNoise\cf0 .ar(1);\
+		out = \cf3 LPF\cf0 .ar(out, env1m*1.5, env0);\
+		out = out + \cf3 SinOsc\cf0 .ar(env1m, 0.5, env0);\
+		\
+		out = out * 1.2;\
+		out = out.clip2(1);\
+		\
+		\cf3 Out\cf0 .ar(outBus, out.dup);\
+	\}).send(s);\
+	\
+	\cf3 SynthDef\cf0 (\cf4 "snare"\cf0 , \{	\
+		\cf3 arg\cf0  outBus=0, amp=0.8;\
+		\cf3 var\cf0  env0, env1, env2, env1m, oscs, noise, out;\
+		\
+		env0 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([0.5, 1, 0.5, 0], [0.005, 0.03, 0.10], [-4, -2, -4]));\
+		env1 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([110, 60, 49], [0.005, 0.1], [-4, -5]));\
+		env1m = env1.midicps;\
+		env2 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([1, 0.4, 0], [0.05, 0.13], [-2, -2]), doneAction:2);\
+		\
+		oscs = \cf3 LFPulse\cf0 .ar(env1m, 0, 0.5, 1, -0.5) + \cf3 LFPulse\cf0 .ar(env1m * 1.6, 0, 0.5, 0.5, -0.25);\
+		oscs = \cf3 LPF\cf0 .ar(oscs, env1m*1.2, env0);\
+		oscs = oscs + \cf3 SinOsc\cf0 .ar(env1m, 0.8, env0);\
+		\
+		noise = \cf3 WhiteNoise\cf0 .ar(0.2);\
+		noise = \cf3 HPF\cf0 .ar(noise, 200, 2);\
+		noise = \cf3 BPF\cf0 .ar(noise, 6900, 0.6, 3) + noise;\
+		noise = noise * env2;\
+		\
+		out = oscs + noise;\
+		out = out.clip2(1) * amp;\
+			\
+		\cf3 Out\cf0 .ar(outBus, out.dup);\
+	\}).send(s);\
+	\
+	\cf3 SynthDef\cf0 (\cf4 "clap"\cf0 , \{	\
+		\cf3 arg\cf0  outBus=0, amp = 0.5;\
+		\cf3 var\cf0  env1, env2, out, noise1, noise2;\
+		\
+		env1 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([0, 1, 0, 1, 0, 1, 0, 1, 0], [0.001, 0.013, 0, 0.01, 0, 0.01, 0, 0.03], [0, -3, 0, -3, 0, -3, 0, -4]));\
+		env2 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([0, 1, 0], [0.02, 0.3], [0, -4]), doneAction:2);\
+		\
+		noise1 = \cf3 WhiteNoise\cf0 .ar(env1);\
+		noise1 = \cf3 HPF\cf0 .ar(noise1, 600);\
+		noise1 = \cf3 BPF\cf0 .ar(noise1, 2000, 3);\
+		\
+		noise2 = \cf3 WhiteNoise\cf0 .ar(env2);\
+		noise2 = \cf3 HPF\cf0 .ar(noise2, 1000);\
+		noise2 = \cf3 BPF\cf0 .ar(noise2, 1200, 0.7, 0.7);\
+		\
+		out = noise1 + noise2;\
+		out = out * 2;\
+		out = out.softclip * amp;\
+		\
+		\cf3 Out\cf0 .ar(outBus, out.dup);\
+	\}).send(s);\
+	\
+	\cf3 SynthDef\cf0 (\cf4 "hat"\cf0 , \{	\
+		\cf3 arg\cf0  outBus=0, amp=0.3;\
+		\cf3 var\cf0  env1, env2, out, oscs1, noise, n, n2;\
+		\
+		n = 5;\
+		\cf3 thisThread\cf0 .randSeed = 4;\
+		\
+		env1 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([0, 1.0, 0], [0.001, 0.2], [0, -12]));\
+		env2 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([0, 1.0, 0.05, 0], [0.002, 0.05, 0.03], [0, -4, -4]), doneAction:2);\
+		\
+		oscs1 = \cf3 Mix\cf0 .fill(n, \{\cf3 |i|\cf0 \
+			\cf3 SinOsc\cf0 .ar(\
+				( i.linlin(0, n-1, 42, 74) + rand2(4.0) ).midicps,\
+				\cf3 SinOsc\cf0 .ar( (i.linlin(0, n-1, 78, 80) + rand2(4.0) ).midicps, 0.0, 12),\
+				1/n\
+			)\
+		\});\
+		\
+		oscs1 = \cf3 BHiPass\cf0 .ar(oscs1, 1000, 2, env1);\
+		n2 = 8;\
+		noise = \cf3 WhiteNoise\cf0 .ar;\
+		noise = \cf3 Mix\cf0 .fill(n2, \{\cf3 |i|\cf0 \
+			\cf3 var\cf0  freq;\
+			freq = (i.linlin(0, n-1, 40, 50) + rand2(4.0) ).midicps.reciprocal;\
+			\cf3 CombN\cf0 .ar(noise, 0.04, freq, 0.1)\
+		\}) * (1/n) + noise;\
+		noise = \cf3 BPF\cf0 .ar(noise, 6000, 0.9, 0.5, noise);\
+		noise = \cf3 BLowShelf\cf0 .ar(noise, 3000, 0.5, -6);\
+		noise = \cf3 BHiPass\cf0 .ar(noise, 1000, 1.5, env2);\
+		\
+		out = noise + oscs1;\
+		out = out.softclip;\
+		out = out * amp;\
+		\
+		\cf3 Out\cf0 .ar(outBus, out.dup);\
+	\}).send(s);\
+	\
+	\cf3 SynthDef\cf0 (\cf4 "acid"\cf0 , \{	\
+		\cf3 arg\cf0  outBus=0, gate=1, pitch=50, amp=0.1;\
+		\cf3 var\cf0  env1, env2, out;\
+		pitch = \cf3 Lag\cf0 .kr(pitch, 0.12 * (1-\cf3 Trig\cf0 .kr(gate, 0.001)) * gate);\
+		env1 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .new([0, 1.0, 0, 0], [0.001, 2.0, 0.04], [0, -4, -4], 2), gate, amp);\
+		env2 = \cf3 EnvGen\cf0 .ar(\cf3 Env\cf0 .adsr(0.001, 0.8, 0, 0.8, 70, -4), gate);\
+		out = \cf3 LFPulse\cf0 .ar(pitch.midicps, 0.0, 0.51, 2, -1);\
+	\
+		out = \cf3 RLPF\cf0 .ar(out, (pitch + env2).midicps, 0.3);\
+		out = out * env1;\
+		\
+		\cf3 Out\cf0 .ar(outBus, out.dup);\
+	\}).send(s);\
+	\
+	\cf3 SynthDef\cf0 (\cf4 "fx"\cf0 , \{	\
+		\cf3 arg\cf0  outBus=0, gate=0;\
+		\cf3 var\cf0  out;\
+		\
+		out = \cf3 In\cf0 .ar(outBus, 2);\
+		out = \cf3 FreeVerb2\cf0 .ar( \cf3 BPF\cf0 .ar(out[0], 3500, 1.5), \cf3 BPF\cf0 .ar(out[1], 3500, 1.5), 1.0, 0.95, 0.15) * \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .new([0.02, 0.3, 0.02], [0.4, 0.01], [3, -4], 1), 1-\cf3 Trig\cf0 .kr(gate, 0.01)) + out;\
+		out = \cf3 HPF\cf0 .ar(out * 1.2, 40);\
+		out = \cf3 Limiter\cf0 .ar(out, 1.0, 0.02);\
+		\
+		\cf3 ReplaceOut\cf0 .ar(outBus, out);\
+	\}).send(s);\
+);\
+\
+s.sync(c);\
+\
+( \cf2 // **** Sequence ****\cf0 \
+	\
+	~dseq = [\
+		[1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],\
+		[0,0,0,0, 4,0,0,2, 0,0,0,0, 4,0,0,0],\
+		[0,0,0,0, 0,0,0,0, 0,0,0,0, 4,0,0,0],\
+		[1,2,4,0, 1,0,4,0, 1,2,4,2, 1,0,4,2],\
+		[1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0]\
+		].flop;\
+	\
+	~bseq = [\
+		[1,1,1,1, 1,1,1,1, 0,1,0,1, 1,1,1,0],\
+		[1,1,0,2, 1,1,0,0, 2,0,2,0, 1,2,0,4],\
+		[-24,-12,0,-12, 0,-12,10,12, 0,7,-7,0, -11,1,13,15] + 38\
+		].flop;\
+	\
+	~pnt = 0;\
+	~shf = 0.16;\
+	~bpm = 130;\
+	\
+	~clock = \cf3 TempoClock\cf0 (~bpm/60);\
+	\
+	~clock.sched(0.0, \{\
+		\cf3 var\cf0  delta, bass;\
+		delta = if(~pnt%2 == 0)\{1/4 * (1+~shf)\}\{1/4 * (1-~shf)\};\
+		\
+		s.bind\{	\
+			if(~pnt == 0)\{\
+				~group = \cf3 Group\cf0 .new;\
+				~acid = \cf3 Synth\cf0 .head(~group, \cf4 "acid"\cf0 , [\cf5 \\gate\cf0 , 0]);\
+				~fx = \cf3 Synth\cf0 .after(~group, \cf4 "fx"\cf0 );\
+			\};\
+			\
+			~dseq.wrapAt(~pnt).do\{\cf3 |x, i|\cf0 \
+				switch(i,\
+					0, \{ if( x>0 )\{ \cf3 Synth\cf0 .head(~group, \cf4 "kick"\cf0 ) \} \},\
+					1, \{ if( x>0 )\{ \cf3 Synth\cf0 .head(~group, \cf4 "snare"\cf0 , [\cf5 \\amp\cf0 , (x/4).squared*0.7]) \} \},\
+					2, \{ if( x>0 )\{ \cf3 Synth\cf0 .head(~group, \cf4 "clap"\cf0 , [\cf5 \\amp\cf0 , (x/4).squared*0.5]) \} \},\
+					3, \{ if( x>0 )\{ \cf3 Synth\cf0 .head(~group, \cf4 "hat"\cf0 , [\cf5 \\amp\cf0 , (x/4).squared*0.32]) \} \},\
+					4, \{ ~fx.set(\cf5 \\gate\cf0 , (x>0).binaryValue) \}\
+				);\
+			\};	\
+			\
+			bass = ~bseq.wrapAt(~pnt);\
+			~acid.set(\cf5 \\pitch\cf0 , bass[2]);\
+			if(bass[0]==1)\{ ~acid.set(\cf5 \\gate\cf0 , 1) \};\
+		\};\
+		if(bass[1]>0)\{ ~clock.sched(delta * bass[1]/4 * 0.99, \{ s.bind\{ ~acid.set(\cf5 \\gate\cf0 , 0) \} \}) \};\
+		\
+		~pnt = ~pnt+1;\
+		delta;\
+	\});\
+);\
+\
+\});}
