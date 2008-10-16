@@ -337,7 +337,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	
 	}
 	*/	
-		
+	
 	*cmdPeriod { this.enter("// thisProcess.cmdPeriod"); }
 
 				// log file support - global only
@@ -356,7 +356,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			logFolder = specialFolder;
 		}; 
 		
-		("// History.logFolder:" +  logFolder).postln;
+		// ("// History.logFolder:" +  logFolder).postln;
 	}
 	
 	*showLogFolder { unixCmd("open \"" ++ logFolder ++ "\"") }
