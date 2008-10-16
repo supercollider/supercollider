@@ -591,7 +591,7 @@ NodeProxy : BusPlug {
 
 	/////////// filtering within one proxy /////////////////
 	
-	filter { arg i, func; this.put(i, \filter -> func)	}
+	filter { arg i, func; this.put(i, \filter -> func) }
 	
 	/////////// shortcuts for efficient bus input //////////////
 	
@@ -731,7 +731,7 @@ NodeProxy : BusPlug {
 						nodes = Array(4);
 						objects.doRange({ arg obj; 
 							var id = obj.nodeID;
-							if(id.notNil) { nodes = nodes ++ id ++ synthID };
+							if(id.notNil and: { id != synthID }) { nodes = nodes ++ id ++ synthID };
 						}, index + 1);
 						if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
 					};
