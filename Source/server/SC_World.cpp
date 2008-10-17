@@ -371,6 +371,8 @@ World* World_New(WorldOptions *inOptions)
 
 		world->mRendezvous = inOptions->mRendezvous;
 		
+		world->mRestrictedPath = inOptions->mRestrictedPath;
+		
 		if(inOptions->mVerbosity >= 1) {
 			scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
 		}

@@ -89,6 +89,9 @@ void Usage()
         "          -2 suppresses informational and many error messages\n"
 		"   -U <ugen-plugins-path>    a colon-separated list of paths\n"
 		"          if -U is specified, the standard paths are NOT searched for plugins.\n"
+		"   -P <restricted-path>    \n"
+		"          if specified, prevents file-accessing OSC commands from\n"
+		"          accessing files outside <restricted-path>.\n"
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
 		kDefaultWorldOptions.mNumControlBusChannels,
 		kDefaultWorldOptions.mNumAudioBusChannels, 
@@ -145,7 +148,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 	
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvRUh", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvRUhP", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -279,6 +282,10 @@ int main(int argc, char* argv[])
 			case 'U' :
 				checkNumArgs(2);
 				options.mUGensPluginPath = argv[j+1];
+				break;
+			case 'P' :
+				checkNumArgs(2);
+				options.mRestrictedPath = argv[j+1];
 				break;
 			case 'h':
 			default: Usage();

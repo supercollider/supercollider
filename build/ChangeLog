@@ -11,6 +11,7 @@
 * 2008-09-03 new VDiskIn ugen - jp
 * 2008-10-08 SCImage for manipulating bitmap image objects (mac only) - ch
 * 2008-10-09 LocalBuf system to allow synths to manage their own purely-local buffers - jr
+* 2008-10-17 Added "-P" option to scsynth (accessible as s.options.restrictedPath) to allow restricting which paths scsynth is allowed to read/write - ds
 
 // BUGFIXES:
 * 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
