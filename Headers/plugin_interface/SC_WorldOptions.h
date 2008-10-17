@@ -79,6 +79,8 @@ struct WorldOptions
 	const char *mUGensPluginPath;
 	
 	const char *mOutDeviceName;
+	
+	const char *mRestrictedPath;
 };
 
 const WorldOptions kDefaultWorldOptions = 
@@ -96,6 +98,7 @@ const WorldOptions kDefaultWorldOptions =
 	,0
 	,0
 	,1
+	,0
 	,0
 	,0
 };

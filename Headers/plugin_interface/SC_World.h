@@ -92,6 +92,8 @@ struct World
 	int mLocalErrorNotification;
 	
 	bool mRendezvous; // Allow user to disable Rendezvous
+	
+	const char* mRestrictedPath; // OSC commands to read/write data can only do it within this path, if specified
 };
 
 extern "C" {

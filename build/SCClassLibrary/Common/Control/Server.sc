@@ -32,6 +32,8 @@ ServerOptions
 	var <>verbosity = 0;
 	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
 	
+	var <>restrictedPath = nil;
+	
 	var <>initialNodeID = 1000;
 	var <>remoteControlVolume = false;
 
@@ -128,6 +130,9 @@ ServerOptions
 		});
 		if (zeroConf.not, {
 			o = o ++ " -R 0";
+		});
+		if (restrictedPath.notNil, {
+			o = o ++ " -P " ++ restrictedPath;
 		});
 		^o
 	}

@@ -27,6 +27,7 @@
 #include "SC_HiddenWorld.h"
 #include "SC_Sem.h"
 #include "SC_DirUtils.h"
+#include "SC_StringParser.h"
 
 #define GET_COMPLETION_MSG(msg) \
 	mMsgSize = msg.getbsize(); \
@@ -57,6 +58,58 @@ void SndBuf_Init(SndBuf *buf)
 	buf->mask1 = 0;
 	buf->coord = 0;
 	//buf->sndfile = 0;	
+}
+
+char* allocAndRestrictPath(World *mWorld, const char* inPath, const char* restrictBase);
+char* allocAndRestrictPath(World *mWorld, const char* inPath, const char* restrictBase){
+	char strbuf[PATH_MAX];
+	int offset = 0;
+	int remain = PATH_MAX;
+	
+#ifdef HAVE_LIBCURL
+	// Not relevant for URLs
+	if(strncmp(inPath, "http://", 7)==0 || strncmp(inPath, "https://", 8)==0 || strncmp(inPath, "ftp://", 6)==0){
+		strcpy(strbuf, inPath);
+	}else{
+#endif
+		// Ensure begins with the base
+		if(strncmp(inPath, restrictBase, strlen(restrictBase)) != 0){
+			strcpy(strbuf, restrictBase);
+			offset = strlen(restrictBase);
+			remain -= offset;
+			if(inPath[0]!='/' && strbuf[strlen(strbuf)-1]!='/'){
+				strbuf[offset] = '/';
+				++offset;
+				--remain;
+			}
+		}
+
+		// Now copy string, but discard any ".." (which could be benign, but easy to abuse)
+		SC_StringParser sp(inPath, '/');
+		size_t tokenlen;
+		while (!sp.AtEnd()) {
+			const char *token = const_cast<char *>(sp.NextToken());
+			tokenlen = strlen(token);
+			// now add the new token, then a slash, as long as token is neither dodgy nor overflows
+			if(strcmp(token, "..")!=0 && remain > tokenlen){
+				strcpy(strbuf+offset, token);
+				offset += tokenlen;
+				remain -= tokenlen;
+				if(!sp.AtEnd()) {
+					strbuf[offset] = '/';
+					++offset;
+					--remain;
+				}
+			}
+		}
+#ifdef HAVE_LIBCURL
+	}
+#endif
+
+	// Now we can make a long-term home for the string and return it
+	char* saferPath = (char*)World_Alloc(mWorld, strlen(strbuf)+1);
+	strcpy(saferPath, strbuf);
+	return saferPath;
 }
 
 SC_SequencedCommand::SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAddress)
@@ -445,8 +498,12 @@ int BufAllocReadCmd::Init(char *inData, int inSize)
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
-	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
-	strcpy(mFilename, filename);
+	if(mWorld->mRestrictedPath){
+		mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
+	}else{
+		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+		strcpy(mFilename, filename);
+	}
 	
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti();
@@ -542,8 +599,12 @@ int BufReadCmd::Init(char *inData, int inSize)
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
-	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
-	strcpy(mFilename, filename);
+	if(mWorld->mRestrictedPath){
+		mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
+	}else{
+		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+		strcpy(mFilename, filename);
+	}
 	
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti(-1);
@@ -698,8 +759,12 @@ int BufAllocReadChannelCmd::Init(char *inData, int inSize)
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
-	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
-	strcpy(mFilename, filename);
+	if(mWorld->mRestrictedPath){
+		mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
+	}else{
+		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+		strcpy(mFilename, filename);
+	}
 	
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti();
@@ -810,8 +875,12 @@ int BufReadChannelCmd::Init(char *inData, int inSize)
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
-	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
-	strcpy(mFilename, filename);
+	if(mWorld->mRestrictedPath){
+		mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
+	}else{
+		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+		strcpy(mFilename, filename);
+	}
 	
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti(-1);
@@ -937,8 +1006,12 @@ int BufWriteCmd::Init(char *inData, int inSize)
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
-	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
-	strcpy(mFilename, filename);
+	if(mWorld->mRestrictedPath){
+		mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
+	}else{
+		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+		strcpy(mFilename, filename);
+	}
 
 	const char *headerFormatString = msg.gets("aiff");
 	const char *sampleFormatString = msg.gets("int16");
@@ -1283,8 +1356,12 @@ int LoadSynthDefCmd::Init(char *inData, int inSize)
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
-	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
-	strcpy(mFilename, filename);
+	if(mWorld->mRestrictedPath){
+		mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
+	}else{
+		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+		strcpy(mFilename, filename);
+	}
 	
 	GET_COMPLETION_MSG(msg);
 	
@@ -1352,8 +1429,12 @@ int LoadSynthDefDirCmd::Init(char *inData, int inSize)
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
-	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
-	strcpy(mFilename, filename);
+	if(mWorld->mRestrictedPath){
+		mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
+	}else{
+		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
+		strcpy(mFilename, filename);
+	}
 	
 	GET_COMPLETION_MSG(msg);
 	
