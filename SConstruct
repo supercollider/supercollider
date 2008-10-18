@@ -856,7 +856,8 @@ plugins.append(
     make_plugin_target('FFT_UGens'),
         ['Source/plugins/FFTInterfaceTable.cpp',
          'Source/plugins/FFT_UGens.cpp',
-         'Source/plugins/PV_UGens.cpp'] + fftSources))
+         'Source/plugins/PV_UGens.cpp', 
+	 'Source/plugins/PartitionedConvolution.cpp'] + fftSources))
     
 plugins.append(
     fftEnv.SharedLibrary(
