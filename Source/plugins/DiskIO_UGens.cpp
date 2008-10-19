@@ -59,7 +59,7 @@ struct DiskOut : public Unit
 
 struct VDiskIn : public Unit
 {
-	float m_fbufnum, m_pchRatio, m_framePos, m_bufPos;
+	float m_fbufnum, m_pchRatio, m_framePos, m_bufPos, m_rBufSize;
 	SndBuf *m_buf;
 };
 
@@ -379,6 +379,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	bool test = false;
 
 	GET_BUF
+	
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framePos = 0.;
 		ClearUnitOutputs(unit, inNumSamples);
@@ -388,12 +389,21 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	uint32 bufFrames2 = bufFrames >> 1;
 	float fbufFrames2 = (float)bufFrames2;
 	float fbufFrames = (float)bufFrames;
+	unit->m_rBufSize = 1. / bufFrames;
 	
 	SETUP_OUT(0)
 	
 	float framePos = unit->m_framePos;
 	float bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
 	float newPchRatio = IN0(1);
+
+	if ((newPchRatio * inNumSamples * unit->m_rBufSize) >= 0.5) {
+	    printf("pitch ratio is greater then max allowed (see VDiskIn help)\n");
+	    ClearUnitOutputs(unit, inNumSamples);
+	    SETCALC(VDiskIn_first);
+	    return;
+	    }
+	    
 	float pchRatio = unit->m_pchRatio;
 	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
 
@@ -497,11 +507,18 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 		ClearUnitOutputs(unit, inNumSamples);
 		return;
 	}
+	
 	SETUP_OUT(0)
 	
 	float framePos = unit->m_framePos;
 	float bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
 	float newPchRatio = IN0(1);
+	if ((newPchRatio * inNumSamples * unit->m_rBufSize) >= 0.5) {
+	    printf("pitch ratio is greater then max allowed (see VDiskIn help)\n");
+	    ClearUnitOutputs(unit, inNumSamples);
+	    return;
+	    }
+	    
 	float pchRatio = unit->m_pchRatio;
 	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
 	uint32 bufFrames2 = bufFrames >> 1;
