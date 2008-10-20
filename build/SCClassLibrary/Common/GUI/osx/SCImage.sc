@@ -654,11 +654,16 @@ SCImageFilter {
 		];
 		
 		categories = IdentityDictionary.new;
-		categoryNames.do {|key|
-			categories.add(key -> this.getFilterNames(key));
-		};
+
+		Platform.when(#[\_SCImageFilter_NamesInCategory], {
+
+			categoryNames.do {|key|
+				categories.add(key -> this.getFilterNames(key));
+			};
 		
-		"SCImage filter categories done !".postln;
+			"SCImage filter categories done !".postln;
+		});
+
 	}
 	
 	*new {|filterName, args|
