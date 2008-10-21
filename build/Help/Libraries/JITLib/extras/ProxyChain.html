@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0022b4}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0022b4; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #86311b}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #86311b; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4d6a1c}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #53372a}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #53372a; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #63662d}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #656334}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #656334; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a91616}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0014bc}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #403530}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5d6629}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #653a25}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #000000}
+span.s4 {color: #4d6a1c}
+span.s5 {color: #0022b4}
+span.s6 {color: #293d9b}
+span.s7 {color: #1b35a3}
+span.s8 {color: #63662d}
+span.s9 {color: #656334}
+span.s10 {color: #307109}
+span.s11 {color: #0014bc}
+span.s12 {color: #606060}
+span.s13 {color: #5d6629}
+span.s14 {color: #102fa9}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>ProxyChain</b></span><span class="s2"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></span><b>playing multiple synth and filter functions in one proxy</b></p>
+<p class="p2"><br></p>
+<p class="p1">ProxyChain keeps a global repertoire of sound functions by name.<span class="Apple-converted-space"> </span></p>
+<p class="p1">A ProxyChain has an ordered collection of sound functions and uses a nodeproxy<span class="Apple-converted-space"> </span></p>
+<p class="p1">to add or remove the sound functions to/from the signal chain individually, by name.</p>
+<p class="p2"><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*add(name, func, name, func, ... )<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>add functions to ProxyChain.allFuncs.</p>
+<p class="p3">(</p>
+<p class="p3">q = q ? ();</p>
+<p class="p2"><br></p>
+<p class="p3">q.numChans = 5;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4">ProxyChain<span class="s3">.add(</span></p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// add a sound source</p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">\dust</span><span class="s3">, </span><span class="s4">\mix</span><span class="s3"> -&gt; { </span>|dens=20, dustdec=0.02, dustfreq= 600|<span class="s3"><span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Ringz</span>.ar(<span class="s5">Dust</span>.ar(dens).lag(0.0001), dustfreq, dustdec)<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>},</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// an association with \filter becomes a filter,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// and creates a wet/dry balance on the output.</p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">\ringmod</span><span class="s3">, </span><span class="s4">\filter</span><span class="s3"> -&gt; { </span>|in, randrate=5|<span class="s3"><span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>in.asArray[0] <span class="Apple-tab-span">	</span></span>// force mono inputs</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s5">SinOsc</span>.ar(<span class="s5">LFNoise0</span>.kr([randrate, randrate]).exprange(300, 3000)).sum<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>},<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s4">\dist</span>, <span class="s4">\filter</span> -&gt; { <span class="s5">|in, drive=10, amp=0.2|</span> (in.asArray[0] * drive).clip2(0.5) * amp },</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// an association with \filterIn also becomes a filter,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// but creates the wet/dry balance control on the fx input.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s4">\riseComb5</span>, <span class="s4">\filterIn</span> -&gt; { <span class="s5">arg</span> in, delay = 0.023, dlDrift = 0.02, spread=0.5,<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>decayRise=0.5, decayFall=100;</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> delayscales = 2 ** ((0 .. q.numChans - 1) * 2 / (q.numChans - 1) - 1 * spread);<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> dels = delayscales.scramble.collect { <span class="s5">|dscale|</span><span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> timedrift = <span class="s5">LFDNoise3</span>.kr(0.3, dlDrift, 1) * dscale;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> ampcomp = (20 * decayRise).dbamp * (decayFall ** -0.25);</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> combs;<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>in = in.asArray[0] * ampcomp.lag(0.2);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>combs = (decayFall * [ 1, decayRise]).collect { <span class="s5">|decay|</span><span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">CombL</span>.ar(in, 1, delay * dscale, decay * delay)<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>combs[0] - combs[1];<span class="Apple-tab-span">	</span></span>// combs come in slowly, like formlet.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Splay</span>.ar(dels)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>}</p>
+<p class="p3">);</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// add specs for the controls used (for NodeProxyEditor).</p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\dens</span>, [0.1, 1000, <span class="s4">\exp</span>]);</p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\dustamp</span>, [0, 1, <span class="s4">\amp</span>]);</p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\dustdec</span>, [0.0001, 0.1, <span class="s4">\exp</span>]);<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s5">Spec</span><span class="s3">.add(</span>\dustfreq<span class="s3">, </span>\freq<span class="s3">);<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\dt</span>, [0.001, 0.2, <span class="s4">\exp</span>]);<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\dc</span>, [0.01, 100, <span class="s4">\exp</span>]);<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\drive</span>, [1, 100, <span class="s4">\exp</span>]);<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\spread</span>, [0, 1, <span class="s4">\amp</span>]);<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\decayRise</span>, [0, 0.9, <span class="s4">\amp</span>]);<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\decayFall</span>, [1, 1000, <span class="s4">\exp</span>]);<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="s5">Spec</span>.add(<span class="s4">\dlDrift</span>, [0, 0.1, <span class="s4">\amp</span>]);<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3">s.boot;</p>
+<p class="p3">)</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*new(numChannels, slotNames, server)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>numChannels - of the proxy</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>srcFunc - a source to put in slot 0</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>slotNames - define which functions from <span class="s6">ProxyChain</span>.allFuncs will be available in what order.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// can be sources (func, \mix -&gt; func)<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// or filters (\filter -&gt; func, \filterIn -&gt; func)</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s3">c = </span><span class="s7">ProxyChain</span><span class="s3">(q.numChans, [</span>\dust<span class="s3">, </span>\ringmod<span class="s3">, </span>\dist<span class="s3">, </span>\riseComb5<span class="s3">, </span>\test<span class="s3">]);</span></p>
+<p class="p9"><span class="s3">c.px.play;<span class="Apple-tab-span">	</span></span>// play the proxy</p>
+<p class="p9"><span class="s3">c.gui(</span><span class="s8">\chaintest</span><span class="s3">, 12);<span class="Apple-tab-span">	</span></span>// make a NodeProxyEditor for it</p>
+<p class="p2"><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*from(proxy, slotNames)</b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>make a proxychain for an existing proxy.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3">p = ProxySpace.push;</p>
+<p class="p3">~pxchain.ar(2);</p>
+<p class="p11"><span class="s3">c = </span><span class="s7">ProxyChain.from</span><span class="s3">(~pxchain, [</span>\dust<span class="s3">, </span>\ringmod<span class="s3">, </span>\dist<span class="s3">, </span>\riseComb5<span class="s3">, </span>\test<span class="s3">]);</span></p>
+<p class="p3">~pxchain.play;</p>
+<p class="p12"><b></b><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>add(key, wet)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>add a sound or filter function, wet is dry/wet balance</p>
+<p class="p13"><span class="s3">c.add(</span>\dust, 0.123<span class="s3">);</span></p>
+<p class="p13"><span class="s3">c.add(</span>\dust, 0.2<span class="s3">);</span></p>
+<p class="p14"><br></p>
+<p class="p3">c.add(<span class="s9">\ringmod</span>, 0.5);</p>
+<p class="p3">c.add(<span class="s9">\dist</span>, 1);</p>
+<p class="p2"><br></p>
+<p class="p3">c.px.fadeTime = 2;</p>
+<p class="p3">c.add(<span class="s9">\riseComb5</span>, 0.1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// \filterIn not show correctly in NodeProxyEditor yet.</p>
+<p class="p2"><br></p>
+<p class="p15"><span class="s3">(<span class="Apple-tab-span">	</span></span>// add a local copy of a func:<span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="s3">c.add(</span><span class="s10">\dust</span><span class="s3">, </span>nil<span class="s3">, </span><span class="s10">\mix</span><span class="s3"> -&gt; { </span>|dens=20, dustdec=0.02, dustfreq= 600|<span class="s3"><span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">Ringz</span>.ar(<span class="s11">Dust</span>.ar(dens).lag(0.0001), dustfreq * [0.62, 1, 1.62], dustdec).mean<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>});</p>
+<p class="p3">)</p>
+<p class="p3">c.funcs.postcs;</p>
+<p class="p3">c.funcs.put(\dust, nil);</p>
+<p class="p3">c.add(\dust);</p>
+<p class="p3">c.funcs.postcs;</p>
+<p class="p2"><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>remove(key)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>remove a sound or filter function.</p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p3">c.remove(<span class="s9">\dist</span>);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// nodemap removes settings as well, so ...</p>
+<p class="p3">c.remove(<span class="s9">\ringmod</span>);</p>
+<p class="p3">c.remove(<span class="s9">\riseComb5</span>);<span class="Apple-tab-span">	</span>// sometimes misses current value - why?</p>
+<p class="p2"><br></p>
+<p class="p17"><span class="s3">c.slotNames;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// all slotnames that are available.</p>
+<p class="p17"><span class="s3">c.slotsInUse;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// which ones are playing now?</p>
+<p class="p2"><br></p>
+<p class="p3">c.remove(<span class="s9">\dust</span>);</p>
+<p class="p2"><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>butWin(name, buttonList, nSliders)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>make a button window for simple control, and extra functions.</p>
+<p class="p3">(</p>
+<p class="p3">c.butWin(\PxChainSaw,<span class="Apple-converted-space"> </span></p>
+<p class="p3">[<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p18"><span class="s3"><span class="Apple-tab-span">	</span>[ </span>\generators<span class="s3">, </span>\label<span class="s3"> ], <span class="Apple-converted-space"> </span></span></p>
+<p class="p18"><span class="s3"><span class="Apple-tab-span">	</span>[ </span>\dust<span class="s3">, </span>\switch<span class="s3"> ],<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>[ <span class="s12">'1 &gt; 1'</span>, <span class="s13">\label</span> ], <span class="Apple-converted-space"> </span></p>
+<p class="p18"><span class="s3"><span class="Apple-tab-span">	</span>[ </span>\ringmod<span class="s3">, </span>\switch<span class="s3"> ],<span class="Apple-converted-space"> </span></span></p>
+<p class="p18"><span class="s3"><span class="Apple-tab-span">	</span>[ </span>\dist<span class="s3">, </span>\switch<span class="s3"> ],<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>[ <span class="s12">'1 &gt; 5'</span>, <span class="s13">\label</span> ], <span class="Apple-converted-space"> </span></p>
+<p class="p18"><span class="s3"><span class="Apple-tab-span">	</span>[ </span>\riseComb5<span class="s3">, </span>\switch<span class="s3"> ],<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>[],</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>[<span class="s13">\edit</span>, <span class="s13">\extra</span>, { c.gui(<span class="s13">'Mestre'</span>, 16) }],</p>
+<p class="p3"><span class="Apple-tab-span">	</span>[<span class="s13">\play</span>, <span class="s13">\extra</span>, { c.px.playN }],</p>
+<p class="p3"><span class="Apple-tab-span">	</span>[<span class="s13">\end</span>, <span class="s13">\extra</span>, { c.px.end }],</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">],<span class="Apple-converted-space"> </span></p>
+<p class="p3">16</p>
+<p class="p3">)</p>
+<p class="p3">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">To do:<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>insert new slotNames by name, or remove existing slotnames, keeping structure consistent;<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>for reconfiguration of the list of proxychain slots that can be used.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p19"><span class="s3"><span class="Apple-tab-span">	</span></span>// maybe later like this.<span class="Apple-converted-space"> </span></p>
+<p class="p18"><span class="s3">c = </span><span class="s14">ProxyChain</span><span class="s3">(q.numChans, [</span>\gen<span class="s3">, [</span>\dust<span class="s3">], </span>'1&gt;1'<span class="s3">, [</span>\ringmod<span class="s3">, </span>\dist<span class="s3">], </span>'1&gt;5'<span class="s3">, [</span>\riseComb5<span class="s3">]]);</span></p>
+<p class="p2"><br></p>
+</body>
+</html>
