@@ -1,15 +1,15 @@
 ProxyChain { 
 
-	classvar <allFuncs;
+	classvar <allSources;
 	 
-	var <slotNames, <slotsInUse, <px, <ed, <bw, <funcs; 
+	var <slotNames, <slotsInUse, <px, <ed, <bw, <sources; 
 	
 	*initClass { 
-		allFuncs = (); 
+		allSources = (); 
 	}
 	
 	*add { |...args| 
-		args.pairsDo { |k, v| allFuncs.put(k, v) }
+		args.pairsDo { |k, v| allSources.put(k, v) }
 	}
 	
 	*from { arg proxy, slotNames = #[];
@@ -23,8 +23,8 @@ ProxyChain {
 	initPx { |argProxy, argSlotNames|
 		slotNames = Order.new; 
 		slotsInUse = Order.new;
-		funcs = ();
-		funcs.parent_(allFuncs);
+		sources = ();
+		sources.parent_(allSources);
 		
 		argSlotNames.do { |name, i| slotNames.put(i + 1 * 10, name) };
 		px = argProxy;
@@ -33,8 +33,8 @@ ProxyChain {
 	init { |argNumChans, argSlotNames, server|
 		slotNames = Order.new; 
 		slotsInUse = Order.new;
-		funcs = ();
-		funcs.parent_(allFuncs);
+		sources = ();
+		sources.parent_(allSources);
 		
 		argSlotNames.do { |name, i| slotNames.put(i + 1 * 10, name) };
 		px = NodeProxy.audio(server ? Server.default, argNumChans);
@@ -43,7 +43,7 @@ ProxyChain {
 	add { |key, wet, func| 	// assume the index exists
 		var index = slotNames.indexOf(key);
 			// only overwrite existing keys so far. 
-		if (func.notNil, { this.funcs.put(key, func) });
+		if (func.notNil, { this.sources.put(key, func) });
 		this.addSlot(key, index, wet);
 	}
 	
@@ -55,7 +55,7 @@ ProxyChain {
 
 	addSlot { |key, index, wet| 
 	
-		var func = funcs[key];
+		var func = sources[key];
 		var prefix, prevVal, specialKey;
 		if (func.isNil) { "ProxyChain: no func called \%".postf(key, index); ^this };
 		if (index.isNil) { "ProxyChain: index was nil.".postln; ^this };
@@ -78,13 +78,15 @@ ProxyChain {
 		var w, butcomp, butdeco, funx, bounds, editcomp;
 		if (bw.notNil) { try { bw.close } };
 		
-		bounds =  Rect(200, 200, 160 + 385, (buttonList.size + 1 * 24).max(nSliders + 3 * GUI.skin.buttonHeight)); 
+		bounds =  Rect(200, 200, 160 + 385, 
+			(buttonList.size + 1 * 24).max(nSliders + 3 * GUI.skin.buttonHeight)
+		); 
 		
-		w = GUI.window.new(name ? "proxyChain", bounds).front; 
+		w = GUI.window.new(name ? "proxyChain", bounds, false).front; 
 
 	 	funx = (			
-			label: { |but, name| but.states_([[name, Color.black, Color(1, 0.5, 0)]]) }, 
-			
+			btlabel: { |but, name| but.states_([[name, Color.black, Color(1, 0.5, 0)]]) },
+			label: { |v, name| v.string_(name.asString).background_(Color(1, 0.5, 0)).align_(0) },
 			switch: { | but, name| 
 				but.states_([["[" + name + "]"], [name, Color.black, Color.green(5/7)], ]);
 				but.action_({ |but| 
@@ -107,8 +109,12 @@ ProxyChain {
 		
 		buttonList.do { |list, i| var name, kind, but, func; 
 			#name, kind, func = list;
-			if (kind == \label and: (i > 0)) { butdeco.shift(0, 10) };
-			but = SCButton.new(butcomp, Rect(0,0, 140, 20));
+			if (kind == \label) { 
+				if(i > 0) { butdeco.shift(0, 10) };
+				but = GUI.staticText.new(butcomp, Rect(0,0, 140, 20));
+			} {
+				but = GUI.button.new(butcomp, Rect(0,0, 140, 20));
+			};
 			funx[kind].value(but, name, func);
 			butdeco.nextLine;
 		};
