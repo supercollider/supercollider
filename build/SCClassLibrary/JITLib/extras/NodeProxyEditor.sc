@@ -14,13 +14,14 @@
 			[ez, sink]		}).flop;
 
 		lay = zone.decorator; 
-		lay.left_(lay.bounds.left + 300).top_(lay.bounds.top + 30);
+		lay.left_(lay.bounds.right - 20).top_(lay.bounds.top + 48);
 		
-		scrolly = EZScroller(w, 
-			Rect(zone.decorator.bounds.right - 30, 48, 14, nSliders * skin.buttonHeight), 
+		scrolly = EZScroller(zone, 
+			Rect(0, 0, 14, nSliders * skin.buttonHeight), 
 			nSliders, nSliders, 
 			{ |sc| keysRotation = sc.value.asInteger; }
 		).visible_(false);
+		[\scrolly, scrolly.slider.bounds].postcs;
 	}		makeSkipJack {		skipjack = SkipJack(			{ this.checkUpdate }, 			0.2, 			{ w.isClosed }, 			this.class.name		); 		w.onClose_({ skipjack.stop; });		this.runUpdate;	}	getCurrentKeysValues {  		if (proxy.isNil, {^[] });		currentSettings = proxy.getKeysValues(except: ignoreKeys);		editKeys = currentSettings.collect({ |list| list.first.asSymbol }); 	}	checkUpdate { 		var oldKeys; 		oldKeys = editKeys; 		this.getCurrentKeysValues; 		if (monitor.notNil) { monitor.updateAll }; 		if ( (editKeys != oldKeys), { this.updateAllEdits }, {  this.updateVals });	}		fullUpdate { 		this.getCurrentKeysValues; 		this.updateAllEdits;	}		updateVals {		var sl, val, mapKey;
 
 		if (currentSettings == prevSettings) {
