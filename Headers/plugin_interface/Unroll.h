@@ -28,6 +28,8 @@ what loop constructs the compiler can best generate code.
 #ifndef _Unroll_
 #define _Unroll_
 
+#include <string.h>
+
 #if 1
 
 // loop type
@@ -124,35 +126,19 @@ meanings of the indexing macros:
 #endif
 #include <assert.h>
 
+// Efficiency notes: Clear and Copy was benchmarked in October 2008.
+// See http://www.mcld.co.uk/blog/blog.php?217 and http://www.mcld.co.uk/blog/blog.php?218
+
+// Set floating-point data to all zeros
 inline void Clear(int numSamples, float *out)
 {
-	//assert((((long)(out+ZOFF) & 7) == 0)); // pointer must be 8 byte aligned
-	
-	if ((numSamples & 1) == 0) {
-		// copying doubles is faster on powerpc.
-		double *outd = (double*)out - ZOFF;
-		LOOP(numSamples >> 1, ZXP(outd) = 0.; );
-	} else {
-		out -= ZOFF;
-		LOOP(numSamples, ZXP(out) = 0.f; );
-	}
+	// The memset approach is valid on any system using IEEE floating-point. On other systems, please check...
+	memset(out, 0, numSamples * sizeof(float));
 }
 
 inline void Copy(int numSamples, float *out, float *in)
 {
-	// pointers must be 8 byte aligned
-	//assert((((long)(out+ZOFF) & 7) == 0) && (((long)(in+ZOFF) & 7) == 0)); 
-	if (in == out) return;
-	if ((numSamples & 1) == 0) {
-		// copying doubles is faster on powerpc.
-		double *outd = (double*)out - ZOFF;
-		double *ind = (double*)in - ZOFF;
-		LOOP(numSamples >> 1, ZXP(outd) = ZXP(ind); );
-	} else {
-		in -= ZOFF;
-		out -= ZOFF;
-		LOOP(numSamples, ZXP(out) = ZXP(in); );
-	}
+	memcpy(out, in, numSamples * sizeof(float));
 }
 
 inline void Fill(int numSamples, float *out, float level)
