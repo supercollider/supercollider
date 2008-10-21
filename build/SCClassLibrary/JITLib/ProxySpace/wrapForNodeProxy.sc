@@ -265,10 +265,40 @@
 		},
 		control: #{ arg values, proxy, channelOffset=0, index;
 			{ Control.kr(values) }.buildForProxy( proxy, channelOffset, index );
-		}
-		
+		},
+		filterIn: #{ arg func, proxy, channelOffset=0, index;
+			var ok, ugen;
+			if(proxy.isNeutral) { 
+				ugen = func.value(Silent.ar);
+				ok = proxy.initBus(ugen.rate, ugen.numChannels);
+				if(ok.not) { Error("wrong rate/numChannels").throw }
+			};
+			
+			{ arg out;
+				var in;
+				var egate = EnvGate.new;
+				var wetamp = Control.names(["wet"++(index ? 0)]).kr(1.0);
+				var dryamp = 1 - wetamp;
+				if(proxy.rate === 'audio') { 
+					in = In.ar(out, proxy.numChannels);
+					XOut.ar(out, egate, SynthDef.wrap(func, nil, 
+						[in * wetamp]) + (dryamp * in))
+				} { 
+					in = In.kr(out, proxy.numChannels);
+					XOut.kr(out, egate, SynthDef.wrap(func, nil, 
+						[in * wetamp]) + (dryamp * in))
+				};
+			}.buildForProxy( proxy, channelOffset, index )
+		},
+
+		mix: #{ arg func, proxy, channelOffset=0, index;
+			
+			{ var e = EnvGate.new * Control.names(["mix"++(index ? 0)]).kr(1.0);
+				e * SynthDef.wrap(func);
+			}.buildForProxy( proxy, channelOffset, index )
+		};
+
 		)
-	
 	}
 }
 
