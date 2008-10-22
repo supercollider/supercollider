@@ -192,15 +192,17 @@ void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize,
 			}
 		#endif
 
-		// scale factor is different for different libs. But the compiler switch here is about using vDSP's fast multiplication method.
-		#if SC_DARWIN
-			vDSP_vsmul(data, 1, &scalefac, data, 1, winsize);
-		#else
-			for(int i=0; i<winsize; ++i){
-				data[i] *= scalefac;
-			}
-		#endif
 	}
+
+		// scale factor is different for different libs. But the compiler switch here is about using vDSP's fast multiplication method.
+	#if SC_DARWIN
+		vDSP_vsmul(data, 1, &scalefac, data, 1, winsize);
+	#else
+		for(int i=0; i<winsize; ++i){
+			data[i] *= scalefac;
+		}
+	#endif
+
 	// Zero-padding:
 	memset(data + winsize, 0, (fullsize - winsize) * sizeof(float));
 }
