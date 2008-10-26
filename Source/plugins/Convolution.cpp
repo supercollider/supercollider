@@ -167,6 +167,7 @@ void Convolution_Dtor(Convolution *unit)
 	RTFree(unit->mWorld, unit->m_fftbuf2);
 	RTFree(unit->mWorld, unit->m_outbuf);
 	RTFree(unit->mWorld, unit->m_overlapbuf);
+	RTFree(unit->mWorld, unit->m_trbuf);
 	scfft_destroy(unit->m_scfft1);
 	scfft_destroy(unit->m_scfft2);
 	scfft_destroy(unit->m_scfftR);

@@ -2,8 +2,8 @@
 
 PartConv : UGen
 {
-	*ar { arg in, fftsize, irbufnum, accumbufnum,mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in, fftsize, irbufnum, accumbufnum).madd(mul, add);
+	*ar { arg in, fftsize, irbufnum,mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, fftsize, irbufnum).madd(mul, add);
 	}
 	
 	*calcNumPartitions {arg fftsize, irbuffer;
@@ -16,7 +16,7 @@ PartConv : UGen
 		//bufsize = numpartitions*fftsize;
 	}
 	
-	*calcAccumSize {arg fftsize, irbuffer;
+	*calcBufSize {arg fftsize, irbuffer;
 		^ fftsize* (PartConv.calcNumPartitions(fftsize,irbuffer));
 	}
 	
