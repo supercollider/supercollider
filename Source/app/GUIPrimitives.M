@@ -3909,6 +3909,5 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SetMenuItemKeyboardEquivalent", prSetMenuItemKeyboardEquivalent, 4, 0);
 
 	initSCImagePrimitives();
-	initCocoaAlertPrimitives();
 }
 
