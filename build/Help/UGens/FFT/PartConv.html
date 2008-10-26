@@ -22,11 +22,11 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>PartConv<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>real-time partitioned convolution</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>PartConv.ar(in, fftsize, irbufnum accumbufnum, mul, add)</b></p>
+<p class="p3"><b>PartConv.ar(in, fftsize, irbufnum, mul, add)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Partitioned convolution. Various additional buffers must be supplied.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p3">Mono impulse response only! If inputting multiple channels, you'll need independent accumulation buffers for each channel. <span class="Apple-converted-space"> </span></p>
+<p class="p3">Mono impulse response only! If inputting multiple channels, you'll need independent PartConvs, one for each channel.</p>
 <p class="p4"><br></p>
 <p class="p3">But the charm is: impulse response can be as large as you like (CPU load increases with IR size. Various tradeoffs based on fftsize choice, due to rarer but larger FFTs. This plug-in uses amortisation to spread processing and avoid spikes).</p>
 <p class="p4"><br></p>
@@ -35,23 +35,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>in</b> - processing target</p>
 <p class="p3"><b>fftsize</b>- spectral convolution partition size (twice partition size). You must ensure that the blocksize divides the partition size and there are at least two blocks per partition (to allow for amortisation)</p>
 <p class="p3"><b>irbufnum</b>- Prepared buffer of spectra for each partition of the inpulse response</p>
-<p class="p3"><b>accumbufnum</b>- Accumulation buffer is a storage space for spectral accumulation of fft data from partitions; must be same saize as irbuffer</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5">//preparation; essentially, allocate an impulse response buffer, then follow some special buffer preparation steps below to set up the data the plugin needs. Different options are provided commented out for loading impulse responses from soundfiles.</p>
+<p class="p5">//preparation; essentially, allocate an impulse response buffer, then follow a special buffer preparation step to set up the data the plugin needs. Different options are provided commented out for loading impulse responses from soundfiles.</p>
 <p class="p6">(</p>
-<p class="p5"><span class="s1">~fftsize=2048; </span>//also 4096 works on my machine; 1024 too often and amortisation too pushed, 8192 more difficult FFT</p>
+<p class="p5"><span class="s1">~fftsize=2048; </span>//also 4096 works on my machine; 1024 too often and amortisation too pushed, 8192 more high load FFT</p>
 <p class="p2"><br></p>
 <p class="p6">s.waitForBoot({</p>
 <p class="p2"><br></p>
 <p class="p6">{</p>
-<p class="p6"><span class="s2">var</span> ir, irbuffer;<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s2">var</span> ir, irbuffer, bufsize;<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p5">////MONO ONLY</p>
-<p class="p2"><br></p>
 <p class="p5">//pre-existing impulse response sound files (could also use any general soundfile too for cross-synthesis effects)</p>
 <p class="p5">//irbuffer= Buffer.read(s,"/Volumes/data/audio/ir/ir2.wav");</p>
 <p class="p5">//irbuffer= Buffer.read(s,"/Volumes/data/audio/ir/ir.wav");</p>
@@ -63,22 +61,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">ir = ([1] ++0.dup(100) ++ ((1, 0.99998 .. 0).collect{<span class="s2">|f|</span> f =</p>
 <p class="p6">f.squared.squared; f = if(f.coin){0}{f.squared}; f =</p>
 <p class="p6">if(0.5.coin){0-f}{f}<span class="Apple-converted-space">  </span>} * 0.1)).normalizeSum;</p>
-<p class="p2"><br></p>
 <p class="p5">//ir.plot;</p>
-<p class="p2"><br></p>
 <p class="p6">irbuffer = <span class="s2">Buffer</span>.loadCollection(s,ir);</p>
 <p class="p2"><br></p>
 <p class="p6">s.sync;</p>
 <p class="p2"><br></p>
-<p class="p6">~bufsize= <span class="s2">PartConv</span>.calcAccumSize(~fftsize,irbuffer);</p>
+<p class="p6">bufsize= <span class="s2">PartConv</span>.calcBufSize(~fftsize,irbuffer);</p>
 <p class="p5">//~numpartitions= PartConv.calcNumPartitions(~fftsize,irbuffer);</p>
 <p class="p2"><br></p>
-<p class="p6">~irspectrum= <span class="s2">Buffer</span>.alloc(s,~bufsize,1);</p>
+<p class="p6">~irspectrum= <span class="s2">Buffer</span>.alloc(s,bufsize,1);</p>
 <p class="p2"><br></p>
 <p class="p6">~irspectrum.preparePartConv(irbuffer, ~fftsize);</p>
-<p class="p2"><br></p>
-<p class="p5">//zeroed already when allocated</p>
-<p class="p6">~accum= <span class="s2">Buffer</span>.alloc(s,~bufsize,1);</p>
 <p class="p2"><br></p>
 <p class="p6">s.sync;<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
@@ -94,14 +87,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s1">~target= </span><span class="s2">Buffer</span><span class="s1">.read(s,</span>"sounds/a11wlk01.wav"<span class="s1">);</span></p>
 <p class="p5">//~target= Buffer.read(s,"sounds/break");</p>
 <p class="p2"><br></p>
-<p class="p5">//normalisation: must divide by at least ~fftsize, divide by ~bufsize for full safety</p>
 <p class="p6">(</p>
 <p class="p2"><br></p>
 <p class="p6">{ <span class="s2">var</span> input, kernel;</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p6">input= <span class="s2">PlayBuf</span>.ar(1,~target, loop:1);<span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s2">Out</span>.ar(0,<span class="s2">PartConv</span>.ar(input,~fftsize, ~irspectrum.bufnum, ~accum.bufnum));</p>
+<p class="p6"><span class="s2">Out</span>.ar(0,<span class="s2">PartConv</span>.ar(input,~fftsize, ~irspectrum.bufnum, 0.5));</p>
 <p class="p6"><span class="Apple-converted-space"> </span>}.play;</p>
 <p class="p2"><br></p>
 <p class="p6">)</p>
@@ -114,7 +106,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p6">input= <span class="s2">AudioIn</span>.ar(1);<span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s2">Out</span>.ar(0,<span class="s2">PartConv</span>.ar(input,~fftsize, ~irspectrum.bufnum, ~accum.bufnum));</p>
+<p class="p6"><span class="s2">Out</span>.ar(0,<span class="s2">PartConv</span>.ar(input,~fftsize, ~irspectrum.bufnum));</p>
 <p class="p6">}.play;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
@@ -126,15 +118,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p6">input= <span class="s2">Impulse</span>.ar(0.25);<span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s2">Out</span>.ar(0,<span class="s2">PartConv</span>.ar(input,~fftsize, ~irspectrum.bufnum, ~accum.bufnum));</p>
+<p class="p6"><span class="s2">Out</span>.ar(0,<span class="s2">PartConv</span>.ar(input,~fftsize, ~irspectrum.bufnum));</p>
 <p class="p6"><span class="Apple-converted-space"> </span>}.play;</p>
 <p class="p2"><br></p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p5">//only free buffers once you're finished with examples</p>
+<p class="p5">//if you free whilst PartConv is still running, the server won't crash, but PartConv output will go to zero abruptly</p>
 <p class="p6">(</p>
 <p class="p6">~irspectrum.free;</p>
-<p class="p6">~accum.free;</p>
 <p class="p6">~target.free;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>

@@ -27,6 +27,7 @@
 
 struct PartConv : public Unit {
 	int m_counter;     
+	uint32 m_specbufnumcheck;
 	float* m_fd_accumulate; //will be exactly fftsize*frames in size 
 	float * m_irspectra;
 	int m_fd_accum_pos;
@@ -110,16 +111,31 @@ void PartConv_Ctor( PartConv* unit ) {
 	unit->m_pos=0; 		
 	
 	
-	//get passed in buffers		
-	
+	//get passed in buffer		
+	unit->m_fd_accumulate=NULL;
 	
 	uint32 bufnum = (uint32)ZIN0(2);
 	SndBuf *buf;
 	if (bufnum >=  unit->mWorld->mNumSndBufs) {
-		bufnum = 0;  
-		
+		printf("PartConv Error: Invalid Spectral data bufnum %d \n", bufnum); 
+		SETCALC(*ClearUnitOutputs);
+		unit->mDone = true; 
+		return;  
 	}
+	
+	unit->m_specbufnumcheck = bufnum;
+	
 	buf = unit->mWorld->mSndBufs + bufnum; 
+	
+	
+	if (!buf->data) { 
+		//unit->mDone = true; 
+		printf("PartConv Error: Spectral data buffer not allocated \n"); 
+		SETCALC(*ClearUnitOutputs);
+		unit->mDone = true; 
+		return; 
+	}
+	
 	unit->m_irspectra = buf->data;
 	
 	unit->m_fullsize = buf->samples;
@@ -127,14 +143,25 @@ void PartConv_Ctor( PartConv* unit ) {
 	unit->m_partitions=buf->samples/(unit->m_fftsize); //should be exact 
 	//printf("another check partitions %d irspecsize %d fftsize %d \n", unit->m_partitions,unit->m_fullsize, unit->m_fftsize);
 	
+	if((buf->samples % unit->m_fftsize !=0) || (buf->samples==0)) {
+		printf("PartConv Error: fftsize doesn't divide spectral data buffer size or spectral data buffer size is zero\n");
+		SETCALC(*ClearUnitOutputs);
+		unit->mDone = true; 
+		return;
+	}
+	
 	//CHECK SAMPLING RATE AND BUFFER SIZE
 	unit->m_blocksize = unit->mWorld->mFullRate.mBufLength;
 	//if(unit->m_blocksize!=64) printf("TPV complains: block size not 64, you have %d\n", unit->m_blocksize);
 	unit->m_sr = unit->mWorld->mSampleRate;
 	//if(unit->m_sr!=44100) printf("TPV complains: sample rate not 44100, you have %d\n", unit->m_sr);
 
-	if(unit->m_nover2 % unit->m_blocksize !=0)
-	printf("WARNING: block size doesn't divide partition size\n");
+	if(unit->m_nover2 % unit->m_blocksize !=0) {
+		printf("PartConv Error: block size doesn't divide partition size\n");
+		SETCALC(*ClearUnitOutputs);
+		unit->mDone = true; 
+		return;
+	}
 	else {
 	
 	//must be exact divisor
@@ -142,8 +169,12 @@ void PartConv_Ctor( PartConv* unit ) {
 	
 	unit->m_spareblocks = blocksperpartition-1;
 	
-	if(unit->m_spareblocks<1)
-	printf("WARNING: no spareblocks, amortisation not possible! \n");
+	if(unit->m_spareblocks<1) {
+	printf("PartConv Error: no spareblocks, amortisation not possible! \n");
+	SETCALC(*ClearUnitOutputs);
+	unit->mDone = true;
+	return;
+	}
 
 	//won't be exact
 	unit->m_numamort = (unit->m_partitions-1)/unit->m_spareblocks; //will relate number of partitions to number of spare blocks
@@ -153,13 +184,26 @@ void PartConv_Ctor( PartConv* unit ) {
 	
 	//printf("Amortisation stats partitions %d nover2 %d blocksize %d spareblocks %d numamort %d lastamort %d \n", unit->m_partitions,unit->m_nover2, unit->m_blocksize, unit->m_spareblocks, unit->m_numamort, unit->m_lastamort);
 
-	bufnum = (uint32)ZIN0(3);
-	if (bufnum >= unit->mWorld->mNumSndBufs) {
-		bufnum = 1;  
-	}
-	buf =  unit->mWorld->mSndBufs + bufnum; 
-	unit->m_fd_accumulate = buf->data;
+	unit->m_fd_accumulate= (float*)RTAlloc(unit->mWorld, unit->m_fullsize * sizeof(float));
+	memset(unit->m_fd_accumulate, 0, unit->m_fullsize * sizeof(float));	
 	unit->m_fd_accum_pos=0;
+	
+//	used to be passed in as buffer, simplified interface
+//	bufnum = (uint32)ZIN0(3);
+//	if (bufnum >= unit->mWorld->mNumSndBufs) {
+//		bufnum = 1;  
+//	}
+//	buf =  unit->mWorld->mSndBufs + bufnum; 
+//	
+//	if (!buf->data) {  
+//		printf("PartConv Error: Accumulation buffer not allocated \n"); 
+//		SETCALC(*ClearUnitOutputs);
+//		unit->mDone = true;
+//		return; 
+//	}
+//	
+//	unit->m_fd_accumulate = buf->data;
+	
 	
 	SETCALC(PartConv_next);
 	}
@@ -173,6 +217,7 @@ void PartConv_Dtor(PartConv *unit) {
 	RTFree(unit->mWorld, unit->m_spectrum2);
 	RTFree(unit->mWorld, unit->m_transformbuf);
 	RTFree(unit->mWorld, unit->m_output);
+	if (unit->m_fd_accumulate) RTFree(unit->mWorld, unit->m_fd_accumulate);
 	
 	if(unit->m_scfft){
 		scfft_destroy(unit->m_scfft);
@@ -191,6 +236,17 @@ void PartConv_next( PartConv *unit, int inNumSamples ) {
 	float *in = IN(0);
 	float *out = OUT(0);
 	int pos = unit->m_pos;
+	
+	//safety check
+	if (!(unit->mWorld->mSndBufs + unit->m_specbufnumcheck)->data) { 
+		//unit->mDone = true; 
+		printf("PartConv Error: Spectral data buffer not allocated \n"); 
+		ClearUnitOutputs(unit, inNumSamples);
+		SETCALC(*ClearUnitOutputs);
+		unit->mDone = true; 
+		return; 
+	}
+	
 	
 	float * input= unit->m_inputbuf;
 	float * output= unit->m_output;
