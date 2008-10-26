@@ -3740,7 +3740,6 @@ int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 }
 
 void initSCImagePrimitives();
-void initCocoaAlertPrimitives(); 
 
 void initGUIPrimitives()
 {
