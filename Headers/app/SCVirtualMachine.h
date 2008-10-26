@@ -59,7 +59,9 @@
 - (void)endFullScreen: (NSWindow*)window;
 - (void)loadUserPanel:(NSString*)filename SCObject: (void*)scobj;
 - (void) windowDidBecomeKey:(NSNotification *)aNotification;
-
+- (void) runAsModal:(NSWindow*)window;
+- (void) runAsModalSheet: (NSWindow*)sheet forWindow:(NSWindow*)window;
+- (void) sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 
 -(IBAction)showHelp:(id)sender;
 -(IBAction)showHelpBrowser:(id)sender;

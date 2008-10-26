@@ -400,6 +400,29 @@ bool gIsFullScreen = false;
     [(SCGraphView*)[window getSCGraphView] didResignKey];
 }
 
+- (void) runAsModal:(NSWindow*)window {
+	[NSApp runModalForWindow: window];
+	
+	// after abort:
+	[window close];
+}
+
+- (void) runAsModalSheet: (NSWindow*)sheet forWindow:(NSWindow*)window {
+	SEL sel = @selector(sheetDidEnd:returnCode:contextInfo:);
+	[NSApp beginSheet: sheet modalForWindow: window modalDelegate:self didEndSelector:sel contextInfo:NULL];
+}
+
+- (void)sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
+	SEL sel = @selector(close);
+    NSMethodSignature *sig = [SCNSWindow instanceMethodSignatureForSelector: sel];
+    
+    NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+    SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+    [anInvocation setTarget: sheet];
+    [anInvocation setSelector: sel];
+    [scvm defer: anInvocation];
+}
+
 -(IBAction)showHelp:(id)sender {
     // a useless waste of a search to get the main page
     showHelpFor( @"Help");

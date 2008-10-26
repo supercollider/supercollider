@@ -246,3 +246,50 @@ SCWindow {
 		stream << ".front;";
 	}
 }
+
+SCAbstractModalWindow : SCWindow {
+	
+	front {
+		this.shouldNotImplement(thisMethod);
+	}
+}
+
+SCModalWindow : SCAbstractModalWindow {
+
+	classvar inModal = false;
+	
+	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;
+		^super.new.initSCWindow(name, bounds, resizable, border, scroll).userCanClose_(false)
+			.runModal;
+	}
+	
+	/// PRIVATE
+	runModal {
+		_SCWindow_RunModal
+		^this.primitiveFailed;
+	}
+	
+	prClose {
+		_SCWindow_StopModal
+		^this.primitiveFailed;
+	}
+	
+}
+
+SCModalSheet : SCAbstractModalWindow {
+	
+	*new { arg window, bounds, resizable = true, border = true, server, scroll = false;
+		^super.new.initSCWindow("", bounds, resizable, border, scroll).runModal(window);
+	}
+	
+	/// PRIVATE
+	runModal {|window|
+		_SCWindow_RunModalSheet
+		^this.primitiveFailed;
+	}
+	
+	prClose {
+		_SCWindow_StopModalSheet
+		^this.primitiveFailed;
+	}
+}

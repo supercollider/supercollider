@@ -1688,6 +1688,90 @@ int prSCWindow_SetAcceptMouseOver(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prSCWindow_RunModal(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_RunModal(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+	
+    PyrSlot *a = g->sp;
+    
+    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    if (!view) return errNone;
+	
+    NSWindow *window = [view window];
+	
+	SEL sel = @selector(runAsModal:);
+    NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
+    
+    NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+    SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+    [anInvocation setTarget: scvm];
+    [anInvocation setSelector: sel];
+    [anInvocation setArgument: &window atIndex: 2];       
+    [scvm defer: anInvocation];
+	
+    return errNone;
+}
+
+int prSCWindow_StopModal(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_StopModal(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+	[NSApp abortModal];
+
+    return errNone;
+}
+
+int prSCWindow_RunModalSheet(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_RunModalSheet(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+	
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+    
+    SCGraphView* sheetView = (SCGraphView*)a->uo->slots[0].ui;
+    if (!sheetView) return errNone;
+	
+    SCNSWindow *sheet = (SCNSWindow*)[sheetView window];
+	
+	SCGraphView* windowView = (SCGraphView*)b->uo->slots[0].ui;
+    if (!windowView) return errNone;
+	
+    NSWindow *window = [windowView window];
+	
+	SEL sel = @selector(runAsModalSheet:forWindow:);
+    NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
+    
+    NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+    SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+    [anInvocation setTarget: scvm];
+    [anInvocation setSelector: sel];
+	[anInvocation setArgument: &sheet atIndex: 2];
+	[anInvocation setArgument: &window atIndex: 3];
+    [scvm defer: anInvocation];
+	
+    return errNone;
+}
+
+int prSCWindow_StopModalSheet(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_StopModalSheet(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+	
+	PyrSlot *a = g->sp;
+    
+    SCGraphView* sheetView = (SCGraphView*)a->uo->slots[0].ui;
+    if (!sheetView) return errNone;
+	
+    NSWindow *sheet = [sheetView window];
+	
+	[NSApp endSheet:sheet];
+	
+    return errNone;
+}
+
 int prShowCursor(struct VMGlobals *g, int numArgsPushed);
 int prShowCursor(struct VMGlobals *g, int numArgsPushed)
 {
@@ -3656,6 +3740,7 @@ int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 }
 
 void initSCImagePrimitives();
+void initCocoaAlertPrimitives(); 
 
 void initGUIPrimitives()
 {
@@ -3751,7 +3836,11 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SCWindow_SetBounds", prSCWindow_SetBounds, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_GetBounds", prSCWindow_GetBounds, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_GetScreenBounds", prSCWindow_GetScreenBounds, 2, 0);	
-	definePrimitive(base, index++, "_SCWindow_SetAcceptMouseOver", prSCWindow_SetAcceptMouseOver, 2, 0);	
+	definePrimitive(base, index++, "_SCWindow_SetAcceptMouseOver", prSCWindow_SetAcceptMouseOver, 2, 0);
+	definePrimitive(base, index++, "_SCWindow_RunModal", prSCWindow_RunModal, 1, 0);	
+	definePrimitive(base, index++, "_SCWindow_StopModal", prSCWindow_StopModal, 1, 0);	
+	definePrimitive(base, index++, "_SCWindow_RunModalSheet", prSCWindow_RunModalSheet, 2, 0);	
+	definePrimitive(base, index++, "_SCWindow_StopModalSheet", prSCWindow_StopModalSheet, 1, 0);	
 	definePrimitive(base, index++, "_ShowCursor", prShowCursor, 2, 0);	
 	
 	definePrimitive(base, index++, "_String_GetBounds", prString_GetBounds, 3, 0);	
@@ -3820,5 +3909,6 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SetMenuItemKeyboardEquivalent", prSetMenuItemKeyboardEquivalent, 4, 0);
 
 	initSCImagePrimitives();
+	initCocoaAlertPrimitives();
 }
 
