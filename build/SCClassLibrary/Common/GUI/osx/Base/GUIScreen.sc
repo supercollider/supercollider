@@ -252,6 +252,16 @@ SCAbstractModalWindow : SCWindow {
 	front {
 		this.shouldNotImplement(thisMethod);
 	}
+	
+	userCanClose_ {
+		this.shouldNotImplement(thisMethod);
+	}
+	
+	/// PRIVATE
+	prUserCanClose_ { arg boo;
+		_SCWindow_SetShouldClose
+		^this.primitiveFailed
+	}
 }
 
 SCModalWindow : SCAbstractModalWindow {
@@ -259,11 +269,13 @@ SCModalWindow : SCAbstractModalWindow {
 	classvar inModal = false;
 	
 	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;
-		^super.new.initSCWindow(name, bounds, resizable, border, scroll).userCanClose_(false)
+		^super.new(name, bounds, resizable, border, scroll).prUserCanClose_(false)
 			.runModal;
 	}
 	
+	
 	/// PRIVATE
+	
 	runModal {
 		_SCWindow_RunModal
 		^this.primitiveFailed;
@@ -279,7 +291,7 @@ SCModalWindow : SCAbstractModalWindow {
 SCModalSheet : SCAbstractModalWindow {
 	
 	*new { arg window, bounds, resizable = true, border = true, server, scroll = false;
-		^super.new.initSCWindow("", bounds, resizable, border, scroll).runModal(window);
+		^super.new("", bounds, resizable, border, scroll).runModal(window);
 	}
 	
 	/// PRIVATE
