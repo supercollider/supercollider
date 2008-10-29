@@ -322,6 +322,7 @@ String[char] : RawArray {
 	}
 	loadPaths {
 		var paths = this.pathMatch;
+		if(paths.isEmpty) { ("no files found for this path:" + this.quote).warn };
 		^paths.collect({ arg path;
 			thisProcess.interpreter.executeFile(path);
 		});
