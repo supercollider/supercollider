@@ -377,7 +377,7 @@ int prGetPid(VMGlobals *g, int numArgsPushed)
 #ifndef SC_WIN32
 		getpid()
 #else
-		GetCurrentThreadId(void)
+		GetCurrentThreadId()
 #endif
 		);
 	return errNone;
