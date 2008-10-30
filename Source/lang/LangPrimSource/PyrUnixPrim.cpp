@@ -369,6 +369,21 @@ int prTimeSeed(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prGetPid(VMGlobals *g, int numArgsPushed);
+int prGetPid(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	SetInt(a, 
+#ifndef SC_WIN32
+		getpid()
+#else
+		GetCurrentThreadId(void)
+#endif
+		);
+	return errNone;
+}
+
+
 void initUnixPrimitives();
 void initUnixPrimitives()
 {
@@ -389,4 +404,5 @@ void initUnixPrimitives()
 	definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
 	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
 	definePrimitive(base, index++, "_PidRunning", prPidRunning, 1, 0);
+	definePrimitive(base, index++, "_GetPid", prGetPid, 1, 0);
 }
