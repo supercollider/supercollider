@@ -12,6 +12,9 @@
 * 2008-10-08 SCImage for manipulating bitmap image objects (mac only) - ch
 * 2008-10-09 LocalBuf system to allow synths to manage their own purely-local buffers - jr
 * 2008-10-17 Added "-P" option to scsynth (accessible as s.options.restrictedPath) to allow restricting which paths scsynth is allowed to read/write - ds
+* 2008-10-18 new PartConv ugen, performs efficient frequency-domain convolution - nc
+* 2008-10-26 support on mac for "modal windows/sheets" (for user dialogs etc) - sw
+* 2008-xx-xx various behind-the-scenes efficiency improvements, for a sleeker audio server that can do more on a given machine - various contributors
 
 // BUGFIXES:
 * 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
@@ -24,6 +27,7 @@
 * 2008-04-29 buffer UGens now post a warning (rather than failing silently) if buffer channels doesn't match num ins/outs - ds
 * 2008-09-xx various code improvements, including compiling for 64-bit linux - tb
 * 2008-10-03 improvements to standalone build - jp
+* 2008-10-31 thisProcess.pid - sclang now can know what its process id is - ds
 
 ///////////////////////////// SuperCollider v3.2 released 2008-02-21 /////////////////////////////
 
