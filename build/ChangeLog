@@ -15,6 +15,7 @@
 * 2008-10-18 new PartConv ugen, performs efficient frequency-domain convolution - nc
 * 2008-10-26 support on mac for "modal windows/sheets" (for user dialogs etc) - sw
 * 2008-xx-xx various behind-the-scenes efficiency improvements, for a sleeker audio server that can do more on a given machine - various contributors
+* 2008-11-01 add BEQSuite filter UGens (blackrain, jp)
 
 // BUGFIXES:
 * 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
