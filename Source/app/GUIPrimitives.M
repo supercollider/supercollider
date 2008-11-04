@@ -2806,6 +2806,8 @@ int prPen_AddBezierQuadCurve(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1; // point
 	PyrSlot *b = g->sp; // control point 1
 	
+	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
+	
 	err = slotGetPoint(a, &points[0]);
 	if( err != errNone )
 		return err;
@@ -2839,6 +2841,9 @@ int prPen_AddBezierCubicCurve(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2; // point
 	PyrSlot *b = g->sp - 1; // control point 1
     PyrSlot *c = g->sp; // control point 2
+	
+	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(c, s_point->u.classobj))) return errWrongType;
 	
 	err = slotGetPoint(a, &points[0]);
 	if( err != errNone )
