@@ -24,6 +24,7 @@ Nil {
 	
 	do {}
 	reverseDo {}
+	pairsDo {}
 	collect {}
 	select {}
 	reject {}
