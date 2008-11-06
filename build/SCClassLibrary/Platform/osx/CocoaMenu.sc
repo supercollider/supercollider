@@ -1,28 +1,76 @@
 CocoaMenuItem {
 	classvar topLevelItems;
-	
+	classvar <default;
+
 	var dataptr;
-	var name;
+	var <name;
 	var parent; // nil = top level
-	var <>action;
-	var children;
+	var <children;
 	var <state = false;
+	var <isBranch = false;
+	var <>action;
 	
-	*new { |parent, index, name = "", submenu = false, action|
-		^super.new.init(parent, index, name, submenu, action);
+	*new { |parent, index, name = "", hasSubmenu = false, action|
+		^super.new.init(parent, index, name, hasSubmenu, action);
 	}
 	
 	*clearCustomItems {
 		topLevelItems.do({|item| item.remove });
 	}
 	
-	init { |argparent, argindex, argname, submenu, argaction|
+	*initDefaultMenu {
+		default = CocoaMenuItem(nil, 9, "Library", true);
+	}
+	
+	*add { |names, action|
+		if(default.isNil) {Êthis.initDefaultMenu };
+		^this.deepNew(default, default.lastIndex, names, action)
+	}
+	
+	*deepNew { |parent, index, names = #[""], action|
+		var menu, name;
+		name = names.removeAt(0);
+		index = index ?? { parent.lastIndex };
+		
+		menu = parent.findByName(name);
+		if(menu.isNil) {
+			menu = this.new(parent, index, name, names.size > 0) 
+		};
+		
+		if(names.size < 1) {
+			if(menu.isBranch) {
+				"failed to add menu item: item % has submenu".format(name.quote).warn;
+				menu = nil;
+			} {
+				menu.action = action;
+			}
+		} {
+			if(menu.isBranch.not) {
+				"failed to add menu item: item % allows no submenu".format(name.quote).warn;
+				menu = nil;
+			} {
+				menu = this.deepNew(menu, index, names, action)
+			}
+		};
+		^menu
+	}
+	
+	lastIndex {
+		^children.asArray.size
+	}
+	
+	findByName { |name|
+		^children.detect { |x| x.name == name };
+	}
+	
+	init { |argparent, argindex, argname, hasSubmenu, argaction|
 		
 		parent = argparent;
 		name = argname;
 		action = argaction;
-		parent.notNil.if({parent.addChild(this)}, {topLevelItems = topLevelItems.add(this);});
-		this.prAddMenuItem(argparent, argindex, argname, submenu);
+		isBranch = hasSubmenu;
+		if(parent.notNil) { parent.addChild(this) } { topLevelItems = topLevelItems.add(this) };
+		this.prAddMenuItem(argparent, argindex, argname, hasSubmenu);
 	}
 	
 	remove {
@@ -60,7 +108,7 @@ CocoaMenuItem {
 		^this.primitiveFailed;
 	}
 	
-	prAddMenuItem { |parent, index, name, submenu|
+	prAddMenuItem { |parent, index, name, hasSubmenu|
 		_NewMenuItem
 		^this.primitiveFailed;
 	}
@@ -73,4 +121,6 @@ CocoaMenuItem {
 	doAction {
 		action.value(this);
 	}
+	
+	
 }
