@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000bf}
+span.s3 {color: #606060}
+span.s4 {color: #bf0000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>CocoaMenuItem</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>additional</b> <b>item in the menu bar</b></p>
+<p class="p2"><br></p>
+<p class="p1">superclass: Object</p>
+<p class="p2"><br></p>
+<p class="p1">for interoperability this class is called via <b>GUI.menuItem</b></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*new(parent, index, name, hasSubmenu, action)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent</b><span class="Apple-tab-span">	</span>the branch to fork from (another instance of CocoaMenuItem, if nil it is the top one)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index</b><span class="Apple-tab-span">	</span>the place in the order of menus</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name</b><span class="Apple-tab-span">	</span>name displayed as menu item</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>hasSubmenue</b><span class="Apple-tab-span">	</span>if it is supposed to be a branch, true (default: false)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action</b><span class="Apple-tab-span">	</span>action to evaluate when menu is selected and activated</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*add(names, action) <span class="Apple-converted-space"> </span></b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>add a submenu to the Library menu.<span class="Apple-converted-space"> </span></b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Avoiding clutter, this is suggested default method, rather than *new.</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>names</b><span class="Apple-tab-span">	</span>array of names to indicate the submenu path</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action</b><span class="Apple-tab-span">	</span>action to evaluate when menu is selected and activated</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*clearCustomItems</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>clear all added library menus (DOES NOT WORK PROPERLY YET)</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>enabled_(bool)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>enable / disable</p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>setShortCut(string, alt, ctrl) <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set keyboard shortcut</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>// examples: call by GUI method.</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.menuItem.add([<span class="s3">"hallo"</span>, <span class="s3">"world"</span>], { <span class="s3">"hallo menu"</span>.postln });</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.menuItem.add([<span class="s3">"hallo"</span>, <span class="s3">"world"</span>, <span class="s3">"here"</span>], { <span class="s3">"hallo here"</span>.postln }); <span class="s4">// fails correctly</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.menuItem.add([<span class="s3">"mellow"</span>, <span class="s3">"world"</span>, <span class="s3">"here"</span>], { <span class="s3">"mellow here"</span>.postln }); <span class="s4">// works.</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.menuItem.add([<span class="s3">"hallo"</span>, <span class="s3">"thought"</span>], { <span class="s3">"hallo world"</span>.scramble.postln });</p>
+<p class="p6"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+</body>
+</html>
