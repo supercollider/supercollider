@@ -82,7 +82,7 @@ var x, y, rate, a, mod, b;
 
 
 
-// harsher brown noise
+// other noise
 (
 {
 var b = LocalBuf(1);
