@@ -193,7 +193,7 @@ Dictionary : Set {
 
 	choose {
 		var index, key, val;
-		if (this.size <= 0, { ^nil }); // empty dictionary
+		if( this.isEmpty, { ^nil }); // empty dictionary
 		while({
 			index = (array.size >> 1).rand << 1; // generate an even index.
 			array.at(index).isNil;			  // key is at even index.
@@ -204,6 +204,7 @@ Dictionary : Set {
 	}
 	order { arg func;
 		var assoc;
+		if( this.isEmpty, { ^nil });
 		this.keysValuesDo { arg key, val;
 			assoc = assoc.add(key -> val);
 		};
