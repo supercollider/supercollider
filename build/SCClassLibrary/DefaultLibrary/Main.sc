@@ -40,7 +40,7 @@ classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="1";
 	}
 	
 	run { // called by command-R
-	
+		interpreter.interpretPrintCmdLine;
 	}
 	
 	stop { // called by command-.
