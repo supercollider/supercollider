@@ -82,9 +82,9 @@ ScoreStreamPlayer : Server {
 		if ((startTime = bundleList[0][0]) < 0 ) {
 			timeOffset = timeOffset - startTime;
 		};
-		bundleList.do { | b | b[0] = b[0] + timeOffset }
+//		bundleList.do { | b | b[0] = b[0] + timeOffset }
 		
-		^Score(bundleList.add([duration, [\c_set, 0, 0]]) );
+		^Score(bundleList.add([duration+timeOffset, [\c_set, 0, 0]]) );
 	}
 	
 }
