@@ -15,7 +15,17 @@
 //}
 
 SCNSObjectAbstract {
-	var <dataptr, <> className, < nsAction, < nsDelegate;
+	var <dataptr=nil, <> className, < nsAction=nil, < nsDelegate=nil;
+	
+	*dumpPool {
+		_ObjC_DumpPool
+		^this.primitiveFailed;
+	}
+	
+	*freePool {
+		_ObjC_FreePool
+		^this.primitiveFailed;
+	}
 	
 	*new{|classname, initname, args, defer=false|
 		^super.new.init(classname.asString, initname, args, defer)
@@ -27,6 +37,7 @@ SCNSObjectAbstract {
 	
 	invoke{|method, args, defer=false|
 		var result;
+		if(dataptr.isNil, {^nil;});
 		args = args ? []; //todo: fix that in the primitive ...
 		result = this.prInvoke(method, args, defer);
 		^result.asNSReturn
@@ -36,7 +47,15 @@ SCNSObjectAbstract {
 		this.prGetClass(name)
 	}
 	
+	isSubclassOf {
+		|nsclassname|
+		_ObjC_IsSubclassOfNSClass
+		^this.primitiveFailed;
+	}
+	
 	release {
+		if(nsAction.notNil, {nsAction.release; nsAction=nil;});
+		if(nsDelegate.notNil, {nsDelegate.release; nsDelegate=nil;});
 		this.prDealloc;
 		dataptr = nil;
 	}
@@ -101,8 +120,12 @@ SCNSObjectAbstract {
 	}
 	
 	init{|cn, in, args, defer|
+		var result;
 		className = cn;
-		this.prAllocInit(cn, in, args, defer);
+		if(cn.isKindOf(String) and:{in.isKindOf(String)}, {
+			result = this.prAllocInit(cn, in, args, defer);
+			^result;
+		});
 	}
 	
 	prAllocInit { arg classname, initname,args;
@@ -111,7 +134,8 @@ SCNSObjectAbstract {
 	}
 	
 	prDealloc {
-		_ObjC_Dealloc;		
+		_ObjC_Dealloc;
+		^this.primitiveFailed;		
 	}
 	
 	prInvoke { arg initname,args, defer=true;
@@ -133,7 +157,11 @@ SCNSObjectAbstract {
 		^this.primitiveFailed;				
 	}
 	
-	
+	/*
+	asPyrString {
+		^this.prAsPyrString;
+	}
+	*/
 		
 	//for NSControl:
 	prSetActionForControl{|control|
@@ -151,13 +179,107 @@ SCNSObjectAbstract {
 	*panel{|path|
 		_LoadUserPanel
 	}
+	
+	asArray {arg arrayType, requestedLength=nil;
+		if(this.isSubclassOf("NSData"), {
+			requestedLength = requestedLength ? this.invoke("length");
+			if(arrayType.isKindOf(String), {arrayType = arrayType.asSymbol});
+			if(arrayType.isKindOf(Symbol), {
+				arrayType = case 
+					{ arrayType == \string } { String.new(requestedLength) }
+					{ arrayType == \int8   } { Int8Array.new(requestedLength) }
+					{ arrayType == \int16  } { Int16Array.new(requestedLength) }
+					{ arrayType == \int32  } { Int32Array.new(requestedLength) }
+					{ arrayType == \double } { DoubleArray.new(requestedLength) }
+					{ arrayType == \float  } { FloatArray.new(requestedLength) };
+				^this.prAsArray(arrayType, requestedLength);
+			});
+			^nil;
+		});
+	}
+	
+	prAsArray {|type, len|
+		_ObjC_NSDataToSCArray
+		^this.primitiveFailed;
+	}
+	
+	/*
+	prAsPyrString {
+		_ObjC_NSStringToPyrString
+		^this.primitiveFailed;
+	}
+	*/
+	
+	registerNotification {
+		|aNotificationName, aFunc|
+		if(nsDelegate.isNil, {
+			this.setDelegate;
+		});
+		nsDelegate.prRegisterNotification(aNotificationName, aFunc);
+		this.prRegisterNotification(aNotificationName);
+	}
+	
+	prRegisterNotification {|aNotificationName|
+		_ObjC_RegisterNotification
+	}
 }
 
 //this is usually noy created directly. call SCNSObject-initAction instead.
 CocoaAction : SCNSObjectAbstract{
-	var <>action;
+	var <>action, notificationActions=nil, delegateActions=nil;
+	
 	doAction{|it|
 		action.value(this, it);
+	}
+	
+	doNotificationAction {
+		|notif, nsNotification|
+		var func;
+		func = notificationActions.at(notif.asSymbol);
+		if(func.notNil, {
+			func.value(notif, nsNotification);
+		});
+	}
+	
+	doDelegateAction {
+		|method, arguments|
+		var result, func;
+		func = delegateActions.at(method.asSymbol);
+		if(func.notNil, {
+			result = func.value(method, arguments);
+			^result;
+		});
+	}
+	
+	addMethod {
+		|selectorName, returntype, objctypes, aFunc|
+		var types;
+		if(selectorName.notNil and:{aFunc.isKindOf(Function)}, {
+			if(delegateActions.isNil, {delegateActions = IdentityDictionary.new(16)});
+			if(returntype.isNil, {returntype = "v"});
+			types = returntype ++ "@:" ++ objctypes; // first and second types are always ID and _cmd
+			this.praddMethod(selectorName, types);
+			delegateActions.add(selectorName.asSymbol -> aFunc);
+		});
+	}
+	
+	prRegisterNotification {
+		|aNotName, aFunc|
+		if(aNotName.notNil, {
+			if(notificationActions.isNil, {notificationActions = IdentityDictionary.new(16);});
+			notificationActions.add(aNotName.asSymbol -> aFunc);
+		});
+	}
+	
+	praddMethod {
+		|selectorName, objctypesAsString|
+		_ObjC_DelegateAddSelector
+		^this.primitiveFailed;
+	}
+	
+	removeMethod {
+		_ObjC_DelegateRemoveSelector
+		^this.primitiveFailed;
 	}
 }
 
@@ -176,8 +298,11 @@ NSBundle : SCNSObject {
 		^SCNSObject.newFromRawPointer(this.prAllocPrincipalClass);
 	}
 	
-	allocClassNamed{|name|
-		^SCNSObject.newFromRawPointer(this.prAllocClassNamed(name));
+	allocClassNamed{|name, initname, args, defer=false|
+		var ptr;
+		ptr = this.prAllocClassNamed(name, initname, args, defer);
+		if(ptr.isNil){"could not alloc class: %".format(name).warn; ^nil};
+		^SCNSObject.newFromRawPointer(ptr);
 	}
 	
 	
@@ -198,7 +323,7 @@ NSBundle : SCNSObject {
 		_ObjcBundleAllocPrincipalClass
 	}
 	
-	prAllocClassNamed{|name|
+	prAllocClassNamed{|name, initname, args, defer|
 		_ObjcBundleAllocClassNamed
 	}
 	
@@ -206,3 +331,16 @@ NSBundle : SCNSObject {
 
 /* cocoa-bridge by Jan Trutzschler 2005 */
 
+NSTypeEncoding {
+	*object {^"@"}
+	*integer {^"i"}
+	*float {^"f"}
+	*double {^"d"}
+	*boolean {^"i"}
+}
+
++ SCView {
+	primitive {^dataptr;}
+	*newFromRawPointer {|nsptr|
+	}
+}
