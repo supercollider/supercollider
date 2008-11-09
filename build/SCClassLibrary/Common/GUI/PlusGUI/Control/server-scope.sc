@@ -51,7 +51,7 @@
 	}
 	
 	freqscope {
-		this.play;
+		this.play(GUI.stethoscope.defaultServer);
 		GUI.freqScope.new;
 	}
 }
