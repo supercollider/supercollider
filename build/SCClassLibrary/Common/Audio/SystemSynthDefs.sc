@@ -4,14 +4,19 @@
 SystemSynthDefs {
 	classvar <>numChannels = 2;
 	classvar <>tempNamePrefix = "temp__";
+	classvar tempDefCount = 0;
 	
+	*generateTempName {
+		var name = tempNamePrefix ++ tempDefCount;
+		tempDefCount = tempDefCount + 1 % 512;
+		^name
+	}
 		
 	*initClass {
 		// clean up any written synthdefs starting with "temp__"
 		StartUp.add {
 			var path = SynthDef.synthDefDir ++ tempNamePrefix ++ "*";
 			if(pathMatch(path).notEmpty) { unixCmd("rm -f" + path.quote) };
-		};
 		
 		(1..numChannels).do { arg i;
 			SynthDef.writeOnce("system_link_audio_" ++ i, 
@@ -34,8 +39,9 @@ SystemSynthDefs {
 			SynthDef.writeOnce("system_diskout_" ++ i, { arg i_in, i_bufNum=0;
 				DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
 			});
-		};		
-	
+		};
+				
+		};
 		
 	}
 

@@ -187,6 +187,11 @@ AbstractOut : UGen {
  		});
  		^array;
  	}
+ 	
+ 	numAudioChannels {
+ 		^inputs.size - this.class.numFixedArgs
+ 	}
+ 	writesToBus { ^this.subclassResponsibility(thisMethod) }
 }
 
 Out : AbstractOut {
@@ -200,6 +205,7 @@ Out : AbstractOut {
 		^0.0		// Out has no output
 	}
 	*numFixedArgs { ^1 }
+	writesToBus { ^true }
 }
 
 ReplaceOut : Out {}
@@ -218,6 +224,7 @@ LocalOut : AbstractOut {
 		^0.0		// LocalOut has no output
 	}
 	*numFixedArgs { ^0 }
+	writesToBus { ^false }
 }
 
 
@@ -243,6 +250,7 @@ XOut : AbstractOut {
  		});
  		^this.checkValidInputs
  	}
+ 	writesToBus { ^true }
 }
 
 
@@ -251,6 +259,7 @@ SharedOut : AbstractOut {
 		this.multiNewList(['control', bus] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
+	writesToBus { ^false }
 }
 
 SharedIn : AbstractIn {	
