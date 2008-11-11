@@ -1,10 +1,11 @@
-Pfx : FilterPattern {
+PfxGlob : FilterPattern {
 	var <>fxname, <>pairs;
 	*new { arg pattern, fxname ... pairs;
 		if (pairs.size.odd, { Error("Pfx should have even number of args.\n").throw });
 		^super.new(pattern).fxname_(fxname).pairs_(pairs)
 	}
 	storeArgs { ^[pattern, fxname] ++ pairs }
+	
 	embedInStream { arg inevent;	
 		var stream, cleanup = EventStreamCleanup.new;
 		var server = inevent[\server] ?? { Server.default };
@@ -37,8 +38,53 @@ Pfx : FilterPattern {
 			inevent = event.yield;
 		};
 	}
+	
+	isolate {
+		^Prout { arg inevent;
+			var outputData, synthDesc;
+			
+			synthDesc = (inevent[\synthLib] ?? { SynthDescLib.global }).at(fxname);
+			if(synthDesc.isNil) { Error("Pfx: SynthDesc not found: %".format(fxname)).throw };
+			outputData = this.outputData(synthDesc);
+			[\outputData, outputData].postln;
+			if(outputData.isNil) {
+				this.embedInStream(inevent)
+			} {
+
+				if(outputData[\numChannels] > SystemSynthDefs.numChannels) {
+					Error("Pfx: SynthDef % has too many channels. Set SystemSynthDefs.numChannels >= %".format(fxname, outputData[\numChannels])).throw
+				};
+				\okoko.postln;
+							
+				Pbus(this, 
+					inevent[\endTime] ? 2.0, 
+					inevent[\fadeTime] ? 0.02, 
+					outputData[\numChannels], 
+					outputData[\rate]
+				).embedInStream(inevent)
+			}
+		}
+	}
+	
+	outputData { arg synthDesc;
+		var outUgen;
+		var ugens = synthDesc.def.children;
+		var outs = ugens.select(_.writesToBus);
+		if(outs.size == 0) { ^nil };
+		if(outs.size > 1) { Error("Pfx does not support more than one output UGen.").throw };
+		outUgen = outs.unbubble;
+		^(rate: outUgen.rate, numChannels: outUgen.numAudioChannels)
+	}
+	
+	
 }
 
+Pfx : PfxGlob {
+	*new { arg pattern, fxname ... pairs;
+		if (pairs.size.odd, { Error("Pfx should have even number of args.\n").throw });
+		^super.new(pattern, fxname, *pairs).isolate
+	}
+}
 
 
 Pgroup : FilterPattern {
