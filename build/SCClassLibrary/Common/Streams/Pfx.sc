@@ -1,4 +1,4 @@
-PfxGlob : FilterPattern {
+Pfx : FilterPattern {
 	var <>fxname, <>pairs;
 	*new { arg pattern, fxname ... pairs;
 		if (pairs.size.odd, { Error("Pfx should have even number of args.\n").throw });
@@ -46,7 +46,7 @@ PfxGlob : FilterPattern {
 			synthDesc = (inevent[\synthLib] ?? { SynthDescLib.global }).at(fxname);
 			if(synthDesc.isNil) { Error("Pfx: SynthDesc not found: %".format(fxname)).throw };
 			outputData = this.outputData(synthDesc);
-			[\outputData, outputData].postln;
+
 			if(outputData.isNil) {
 				this.embedInStream(inevent)
 			} {
@@ -54,8 +54,7 @@ PfxGlob : FilterPattern {
 				if(outputData[\numChannels] > SystemSynthDefs.numChannels) {
 					Error("Pfx: SynthDef % has too many channels. Set SystemSynthDefs.numChannels >= %".format(fxname, outputData[\numChannels])).throw
 				};
-				\okoko.postln;
-							
+											
 				Pbus(this, 
 					inevent[\endTime] ? 2.0, 
 					inevent[\fadeTime] ? 0.02, 
@@ -79,7 +78,7 @@ PfxGlob : FilterPattern {
 	
 }
 
-Pfx : PfxGlob {
+Pfxb : Pfx {
 	*new { arg pattern, fxname ... pairs;
 		if (pairs.size.odd, { Error("Pfx should have even number of args.\n").throw });
 		^super.new(pattern, fxname, *pairs).isolate
