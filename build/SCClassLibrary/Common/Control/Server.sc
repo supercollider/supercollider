@@ -37,6 +37,8 @@ ServerOptions
 	var <>initialNodeID = 1000;
 	var <>remoteControlVolume = false;
 
+	var <>memoryLocking = false;
+
 	device
 	{
 		^if(inDevice == outDevice)
@@ -133,6 +135,9 @@ ServerOptions
 		});
 		if (restrictedPath.notNil, {
 			o = o ++ " -P " ++ restrictedPath;
+		});
+		if (memoryLocking, {
+			o = o ++ " -L";
 		});
 		^o
 	}

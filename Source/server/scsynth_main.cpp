@@ -82,6 +82,9 @@ void Usage()
 		"   -O <output-streams-enabled>\n"
         "   -M <server-mach-port-name> <reply-mach-port-name>\n"
 #endif 
+#if (_POSIX_MEMLOCK - 0) >=  200112L
+        "   -L enable memory locking\n"
+#endif
         "   -H <hardware-device-name>\n"
         "   -v <verbosity>\n"
         "          0 is normal behaviour\n"
@@ -148,7 +151,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 	
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvRUhP", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvRUhPL", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -271,6 +274,14 @@ int main(int argc, char* argv[])
 				options.mOutDeviceName = options.mInDeviceName; // Non-Mac platforms always use same device
 #endif				
 				break;
+            case 'L' :
+				checkNumArgs(1);
+#if (_POSIX_MEMLOCK - 0) >=  200112L
+                options.mMemoryLocking = true;
+#else
+                options.mMemoryLocking = false;
+#endif
+                break;
 			case 'v' :
 				checkNumArgs(2);
 				options.mVerbosity = atoi(argv[j+1]);
