@@ -121,7 +121,8 @@ struct Timer : public Unit
 
 struct Sweep : public Unit
 {
-	float mLevel, m_previn;
+	double mLevel;
+	float m_previn;
 };
 
 struct Phasor : public Unit
@@ -1256,8 +1257,8 @@ void Sweep_Ctor(Sweep *unit)
 void Sweep_next_0k(Sweep *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
-	float rate = ZIN0(1) * SAMPLEDUR;
-	float level = unit->mLevel;
+	double rate = ZIN0(1) * SAMPLEDUR;
+	double level = unit->mLevel;
 	
 	LOOP(inNumSamples,
 		level += rate;
@@ -1271,7 +1272,7 @@ void Sweep_next_0a(Sweep *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *rate = ZIN(1);
-	float level = unit->mLevel;
+	double level = unit->mLevel;
 	float sampledur = SAMPLEDUR;
 	
 	LOOP(inNumSamples,
@@ -1287,9 +1288,9 @@ void Sweep_next_kk(Sweep *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float curin = ZIN0(0);
-	float rate = ZIN0(1) * SAMPLEDUR;
+	double rate = ZIN0(1) * SAMPLEDUR;
 	float previn = unit->m_previn;
-	float level = unit->mLevel;
+	double level = unit->mLevel;
 
 	if (previn <= 0.f && curin > 0.f) {
 		float frac = -previn/(curin-previn);
@@ -1311,7 +1312,7 @@ void Sweep_next_ka(Sweep *unit, int inNumSamples)
 	float curin = ZIN0(0);
 	float *rate = ZIN(1);
 	float previn = unit->m_previn;
-	float level = unit->mLevel;
+	double level = unit->mLevel;
 	float sampledur = SAMPLEDUR;
 
 	if (previn <= 0.f && curin > 0.f) {
@@ -1333,9 +1334,9 @@ void Sweep_next_ak(Sweep *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float rate = ZIN0(1) * SAMPLEDUR;
+	double rate = ZIN0(1) * SAMPLEDUR;
 	float previn = unit->m_previn;
-	float level = unit->mLevel;
+	double level = unit->mLevel;
 	
 	LOOP(inNumSamples,
 		float curin = ZXP(in);
@@ -1359,7 +1360,7 @@ void Sweep_next_aa(Sweep *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float *rate = ZIN(1);
 	float previn = unit->m_previn;
-	float level = unit->mLevel;
+	double level = unit->mLevel;
 	float sampledur = SAMPLEDUR;
 	
 	LOOP(inNumSamples,
