@@ -210,6 +210,8 @@ Server : Model {
 
 	var <volume;
 	
+	var <pid;
+	
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
 	}
@@ -552,8 +554,10 @@ Server : Model {
 			this.bootInProcess; 
 			//alive = true;
 			//this.serverRunning = true;
+			pid = thisProcess.pid;
 		},{
-			unixCmd(program ++ options.asOptionsString(addr.port));
+			pid = "cd % && exec ./scsynth %".format(String.scDir.quote, options.asOptionsString(addr.port)).unixCmd;
+			//unixCmd(program ++ options.asOptionsString(addr.port)).postln;
 			("booting " ++ addr.port.asString).inform;
 		});
 	}
@@ -602,6 +606,7 @@ Server : Model {
 		});
 		alive = false;
 		dumpMode = 0;
+		pid = nil;
 		serverBooting = false;
 		this.serverRunning = false;
 		if(scopeWindow.notNil) { scopeWindow.quit };
