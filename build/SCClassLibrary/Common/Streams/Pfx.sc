@@ -45,14 +45,17 @@ Pfx : FilterPattern {
 			
 			synthDesc = (inevent[\synthLib] ?? { SynthDescLib.global }).at(fxname);
 			if(synthDesc.isNil) { Error("Pfx: SynthDesc not found: %".format(fxname)).throw };
-			outputData = this.outputData(synthDesc);
-
-			if(outputData.isNil) {
+			outputData = synthDesc.outputData;
+			if(outputData.size > 1) { Error("Pfx does not support more than one output UGen.").throw };
+			
+			if(outputData.isEmpty) {
 				this.embedInStream(inevent)
 			} {
-
+				outputData = outputData.unbubble;
 				if(outputData[\numChannels] > SystemSynthDefs.numChannels) {
-					Error("Pfx: SynthDef % has too many channels. Set SystemSynthDefs.numChannels >= %".format(fxname, outputData[\numChannels])).throw
+					Error("Pfx: SynthDef % has too many channels."
+						"Set SystemSynthDefs.numChannels >= %"
+						.format(fxname, outputData[\numChannels])).throw
 				};
 											
 				Pbus(this, 
@@ -63,16 +66,6 @@ Pfx : FilterPattern {
 				).embedInStream(inevent)
 			}
 		}
-	}
-	
-	outputData { arg synthDesc;
-		var outUgen;
-		var ugens = synthDesc.def.children;
-		var outs = ugens.select(_.writesToBus);
-		if(outs.size == 0) { ^nil };
-		if(outs.size > 1) { Error("Pfx does not support more than one output UGen.").throw };
-		outUgen = outs.unbubble;
-		^(rate: outUgen.rate, numChannels: outUgen.numAudioChannels)
 	}
 	
 	

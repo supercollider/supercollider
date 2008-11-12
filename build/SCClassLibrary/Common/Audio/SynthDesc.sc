@@ -282,6 +282,14 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		}).as(String)
 	}
 	
+	outputData {
+		var ugens = def.children;
+		var outs = ugens.select(_.writesToBus);
+		^outs.collect { |outUgen|
+			(rate: outUgen.rate, numChannels: outUgen.numAudioChannels)
+		}
+	}
+	
 
 }
 
