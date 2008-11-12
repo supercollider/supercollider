@@ -50,6 +50,7 @@ struct WorldOptions
 	float *mSharedControls;
 	
 	bool mRealTime;
+	bool mMemoryLocking;
 	
 	const char *mNonRealTimeCmdFilename;
 	const char *mNonRealTimeInputFilename;
@@ -85,7 +86,7 @@ struct WorldOptions
 
 const WorldOptions kDefaultWorldOptions = 
 {
-	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0,0,0,0,0, 
+	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0, 0,0,0,0,0,
 #ifdef SC_WIN32
 	44100, 
 #else
