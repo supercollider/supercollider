@@ -5156,7 +5156,8 @@ void BBandPass_Ctor(BBandPass* unit)
     float bw = unit->m_bw = ZIN0(2);
     
     double w0 = twopi * (double)freq * SAMPLEDUR;
-    double alpha = sin(w0) * (sinh((0.34657359027997 * (double)bw * w0) / sin(w0)));
+    double sinw0 = sin(w0);
+    double alpha = sinw0 * (sinh((0.34657359027997 * (double)bw * w0) / sinw0));
     double b0rz = 1. / (1. + alpha); 
     double a0 = unit->m_a0 = alpha * b0rz; 
     unit->m_a1 = 0.0f;
@@ -5177,7 +5178,7 @@ void BBandPass_next_aa(BBandPass *unit, int inNumSamples)
     float *freq = ZIN(1);
     float *bw = ZIN(2);
     
-    double a0, a1, a2, b1, b2, w0, alpha, b0rz;
+    double a0, a1, a2, b1, b2, w0, sinw0, alpha, b0rz;
     double y0, y1, y2;
     float nextfreq, nextbw;
     
@@ -5196,7 +5197,8 @@ void BBandPass_next_aa(BBandPass *unit, int inNumSamples)
 	 nextbw = ZXP(bw);
 	 if ((unit->m_freq != nextfreq) || (unit->m_bw != nextbw)) {
 	 w0 = twopi * (double)nextfreq * SAMPLEDUR;
-	 alpha = sin(w0) * (sinh((0.34657359027997 * (double)nextbw * w0) / sin(w0)));
+	 sinw0 = sin(w0);
+	 alpha = sinw0 * (sinh((0.34657359027997 * (double)nextbw * w0) / sinw0));
 	 b0rz = 1. / (1. + alpha); 
 	 a0 = alpha * b0rz; 
 	 a1 = 0.0f;
@@ -5344,7 +5346,8 @@ void BBandStop_Ctor(BBandStop* unit)
     float bw = unit->m_bw = ZIN0(2);
     
     double w0 = twopi * (double)freq * SAMPLEDUR;
-    double alpha = sin(w0) * (sinh((0.34657359027997 * (double)bw * w0) / sin(w0)));
+    double sinw0 = sin(w0);
+    double alpha = sinw0 * (sinh((0.34657359027997 * (double)bw * w0) / sinw0));
     double b0rz = 1. / (1. + alpha);
     double b1 = unit->m_b1 = 2. * b0rz * cos(w0); 
     unit->m_a0 = b0rz; 
@@ -5365,7 +5368,7 @@ void BBandStop_next_aa(BBandStop *unit, int inNumSamples)
     float *freq = ZIN(1);
     float *bw = ZIN(2);
     
-    double a0, a1, a2, b1, b2, w0, alpha, b0rz;
+    double a0, a1, a2, b1, b2, w0, sinw0, alpha, b0rz;
     double y0, y1, y2;
     float nextfreq, nextbw;
     
@@ -5384,7 +5387,8 @@ void BBandStop_next_aa(BBandStop *unit, int inNumSamples)
 	 nextbw = ZXP(bw);
 	 if ((unit->m_freq != nextfreq) || (unit->m_bw != nextbw)) {
 	 w0 = twopi * (double)nextfreq * SAMPLEDUR;
-	 alpha = sin(w0) * (sinh((0.34657359027997 * (double)nextbw * w0) / sin(w0)));
+	 sinw0 = sin(w0);
+	 alpha = sinw0 * (sinh((0.34657359027997 * (double)nextbw * w0) / sinw0));
 	 b0rz = 1. / (1. + alpha);
 	 b1 = 2. * b0rz * cos(w0); 
 	 a0 = b0rz; 
@@ -5533,7 +5537,7 @@ void BPeakEQ_Ctor(BPeakEQ* unit)
     float freq = unit->m_freq = ZIN0(1);
     float rq = unit->m_rq = ZIN0(2);
     float db = unit->m_db = ZIN0(3);
-    double a = pow(10., (double)db/40.);
+    double a = pow(10., (double)db * 0.025);
     double w0 = twopi * (double)freq * SAMPLEDUR;
     double alpha = sin(w0) * 0.5 * (double)rq;
     double b0rz = 1. / (1. + (alpha / a));
@@ -5575,7 +5579,7 @@ void BPeakEQ_next_aaa(BPeakEQ *unit, int inNumSamples)
 	 nextrq = ZXP(rq);
 	 nextdb = ZXP(db);
 	 if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq) || (unit->m_db != nextdb)) {
-	 a = pow(10., (double)nextdb/40.);
+	 a = pow(10., (double)nextdb * 0.025);
 	 w0 = twopi * (double)nextfreq * SAMPLEDUR;
 	 alpha = sin(w0) * 0.5 * (double)nextrq;
 	 b0rz = 1. / (1. + (alpha / a));
@@ -5638,7 +5642,7 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
     b2 = unit->m_b2;
     
     if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq) || (unit->m_db != nextdb)) {
-	a = pow(10., (double)nextdb/40.);
+	a = pow(10., (double)nextdb * 0.025);
 	w0 = twopi * (double)nextfreq * SAMPLEDUR;
 	alpha = sin(w0) * 0.5 * (double)nextrq;
 	b0rz = 1. / (1. + (alpha / a));
@@ -5926,7 +5930,7 @@ void BLowShelf_Ctor(BLowShelf* unit)
     float freq = unit->m_freq = ZIN0(1);
     float rs = unit->m_rs = ZIN0(2);
     float db = unit->m_db = ZIN0(3);
-    double a = pow(10., (double)db/40.);
+    double a = pow(10., (double)db * 0.025);
     double w0 = twopi * (double)freq * SAMPLEDUR;
     double cosw0 = cos(w0);
     double sinw0 = sin(w0);
@@ -5973,7 +5977,7 @@ void BLowShelf_next_aaa(BLowShelf *unit, int inNumSamples)
 	 nextrs = ZXP(rs);
 	 nextdb = ZXP(db);
 	 if ((unit->m_freq != nextfreq) || (unit->m_rs != nextrs) || (unit->m_db != nextdb)) {
-	 a = pow(10., (double)nextdb/40.);
+	 a = pow(10., (double)nextdb * 0.025);
 	 w0 = twopi * (double)nextfreq * SAMPLEDUR;
 	 sinw0 = sin(w0);
 	 cosw0 = cos(w0);
@@ -6040,7 +6044,7 @@ void BLowShelf_next_kkk(BLowShelf *unit, int inNumSamples)
     b2 = unit->m_b2;
     
     if ((unit->m_freq != nextfreq) || (unit->m_rs != nextrs) || (unit->m_db != nextdb)) {
-	a = pow(10., (double)nextdb/40.);
+	a = pow(10., (double)nextdb * 0.025);
 	w0 = twopi * (double)nextfreq * SAMPLEDUR;
 	sinw0 = sin(w0);
 	cosw0 = cos(w0);
@@ -6142,7 +6146,7 @@ void BHiShelf_Ctor(BHiShelf* unit)
     float freq = unit->m_freq = ZIN0(1);
     float rs = unit->m_rs = ZIN0(2);
     float db = unit->m_db = ZIN0(3);
-    double a = pow(10., (double)db/40.);
+    double a = pow(10., (double)db * 0.025);
     double w0 = twopi * (double)freq * SAMPLEDUR;
     double cosw0 = cos(w0);
     double sinw0 = sin(w0);
@@ -6190,7 +6194,7 @@ void BHiShelf_next_aaa(BHiShelf *unit, int inNumSamples)
 	 nextrs = ZXP(rs);
 	 nextdb = ZXP(db);
 	 if ((unit->m_freq != nextfreq) || (unit->m_rs != nextrs) || (unit->m_db != nextdb)) {
-	 a = pow(10., (double)nextdb/40.);
+	 a = pow(10., (double)nextdb * 0.025);
 	 w0 = twopi * (double)nextfreq * SAMPLEDUR;
 	 sinw0 = sin(w0);
 	 cosw0 = cos(w0);
@@ -6257,7 +6261,7 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
     b2 = unit->m_b2;
     
     if ((unit->m_freq != nextfreq) || (unit->m_rs != nextrs) || (unit->m_db != nextdb)) {
-	a = pow(10., (double)nextdb/40.);
+	a = pow(10., (double)nextdb * 0.025);
 	w0 = twopi * (double)nextfreq * SAMPLEDUR;
 	sinw0 = sin(w0);
 	cosw0 = cos(w0);
