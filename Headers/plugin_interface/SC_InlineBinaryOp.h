@@ -221,7 +221,7 @@ inline double sc_pow(double a, double b)
 }
 
 template <class T>
-inline float sc_thresh(T a, T b)
+inline T sc_thresh(T a, T b)
 {
 	return a < b ? (T)0 : a;
 }
