@@ -51,9 +51,10 @@
 #else
 # include <sys/param.h>
 #endif
+
 #if (_POSIX_MEMLOCK - 0) >=  200112L
-#include <sys/resource.h>
-#include <sys/mman.h>
+# include <sys/resource.h>
+# include <sys/mman.h>
 #endif
 
 InterfaceTable gInterfaceTable;
@@ -277,30 +278,30 @@ void World_LoadGraphDefs(World* world)
 World* World_New(WorldOptions *inOptions)
 {	
 #if (_POSIX_MEMLOCK - 0) >=  200112L
-    if (inOptions->mMemoryLocking && inOptions->mRealTime)
-    {
-        bool lock_memory = false;
+	if (inOptions->mMemoryLocking && inOptions->mRealTime)
+	{
+		bool lock_memory = false;
 
-        rlimit limit;
+		rlimit limit;
 
-        int failure = getrlimit(RLIMIT_MEMLOCK, &limit);
-        if (failure)
-            printf("getrlimit failure\n");
-        else
-        {
-        if (limit.rlim_cur == RLIM_INFINITY and
-            limit.rlim_max == RLIM_INFINITY)
-            lock_memory = true;
-        else
-            printf("memory locking disabled due to resource limiting\n");
+		int failure = getrlimit(RLIMIT_MEMLOCK, &limit);
+		if (failure)
+			printf("getrlimit failure\n");
+		else
+		{
+			if (limit.rlim_cur == RLIM_INFINITY and
+				limit.rlim_max == RLIM_INFINITY)
+				lock_memory = true;
+			else
+				printf("memory locking disabled due to resource limiting\n");
 
-        if (lock_memory)
-        {
-            if (mlockall(MCL_FUTURE) != -1)
-                printf("memory locking enabled.\n");
-        }
-    }
-    }
+			if (lock_memory)
+			{
+				if (mlockall(MCL_FUTURE) != -1)
+					printf("memory locking enabled.\n");
+			}
+		}
+	}
 #endif
 
 	World *world = 0;
