@@ -1672,12 +1672,12 @@ void Osc_Ctor(Osc *unit)
 		int localBufNum = bufnum - world->mNumSndBufs;
 		Graph *parent = unit->mParent;
 		if(localBufNum <= parent->localBufNum) {
-			buf = parent->mLocalSndBufs + localBufNum;
+			buf = unit->m_buf = parent->mLocalSndBufs + localBufNum;
 		} else {
-			buf = world->mSndBufs;
+			buf = unit->m_buf = world->mSndBufs;
 		}
 	} else {
-		buf = world->mSndBufs + bufnum;
+		buf = unit->m_buf = world->mSndBufs + bufnum;
 	}
 
 	int tableSize = buf->samples;
@@ -1873,12 +1873,12 @@ void OscN_Ctor(OscN *unit)
 		int localBufNum = bufnum - world->mNumSndBufs;
 		Graph *parent = unit->mParent;
 		if(localBufNum <= parent->localBufNum) {
-			buf = parent->mLocalSndBufs + localBufNum;
+			buf = unit->m_buf = parent->mLocalSndBufs + localBufNum;
 		} else {
-			buf = world->mSndBufs;
+			buf = unit->m_buf = world->mSndBufs;
 		}
 	} else {
-		buf = world->mSndBufs + bufnum;
+		buf = unit->m_buf = world->mSndBufs + bufnum;
 	}
 
 	int tableSize = buf->samples;
