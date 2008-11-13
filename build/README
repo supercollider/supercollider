@@ -18,12 +18,7 @@ The exact details of using the SuperCollider environment will depend on your pla
 
 Platform specific comments: 
 
-[OS X]  If using a MacIntel machine, you will need to set up an Aggregate Device (under Audio/MIDI Setup) to combine audio in and audio out. In order to run this with SuperCollider, and supposing your Aggregate Device is called 'Agg' execute these two lines of SuperCollider code to prepare then boot a server: 
-
-s.options.device = 'Agg'
-s.boot;
-
-To execute a line in OS X, put the cursor on a line and press the Enter key; this is distinct from the Return key! 
+[OS X]  To execute a line in OS X, put the cursor on a line and press the Enter key; this is distinct from the Return key! 
 
 And be careful you're not using TextEdit or a web browser instead of the SuperCollider application when you try to execute code; SC's text editor interface is a lot like TextEdit, but only the SC editor can run code when you hit Enter.
 
