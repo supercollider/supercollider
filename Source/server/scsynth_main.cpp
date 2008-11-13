@@ -80,16 +80,16 @@ void Usage()
 #ifdef SC_DARWIN
 		"   -I <input-streams-enabled>\n"
 		"   -O <output-streams-enabled>\n"
-        "   -M <server-mach-port-name> <reply-mach-port-name>\n"
+		"   -M <server-mach-port-name> <reply-mach-port-name>\n"
 #endif 
 #if (_POSIX_MEMLOCK - 0) >=  200112L
-        "   -L enable memory locking\n"
+		"   -L enable memory locking\n"
 #endif
-        "   -H <hardware-device-name>\n"
-        "   -v <verbosity>\n"
-        "          0 is normal behaviour\n"
-        "          -1 suppresses informational messages\n"
-        "          -2 suppresses informational and many error messages\n"
+		"   -H <hardware-device-name>\n"
+		"   -v <verbosity>\n"
+		"          0 is normal behaviour\n"
+		"          -1 suppresses informational messages\n"
+		"          -2 suppresses informational and many error messages\n"
 		"   -U <ugen-plugins-path>    a colon-separated list of paths\n"
 		"          if -U is specified, the standard paths are NOT searched for plugins.\n"
 		"   -P <restricted-path>    \n"
@@ -274,14 +274,14 @@ int main(int argc, char* argv[])
 				options.mOutDeviceName = options.mInDeviceName; // Non-Mac platforms always use same device
 #endif				
 				break;
-            case 'L' :
+			case 'L' :
 				checkNumArgs(1);
 #if (_POSIX_MEMLOCK - 0) >=  200112L
-                options.mMemoryLocking = true;
+				options.mMemoryLocking = true;
 #else
-                options.mMemoryLocking = false;
+				options.mMemoryLocking = false;
 #endif
-                break;
+				break;
 			case 'v' :
 				checkNumArgs(2);
 				options.mVerbosity = atoi(argv[j+1]);
