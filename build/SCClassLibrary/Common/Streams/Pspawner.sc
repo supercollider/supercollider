@@ -1,0 +1,143 @@
+Spawner : Pattern {
+	var <>genStream;
+	var <>priorityQ;
+	var <>now;
+	var <>event;
+	
+	*new { | func, stackSize=64 |
+		^super.new.init( func, stackSize)
+	}
+	
+	suspend { | stream |
+		var index = priorityQ.array.indexOf(stream);
+		if (index.notNil) { 
+			priorityQ.array.put(index, nil );
+			^stream
+		 } {
+		 	^nil
+		 }
+	}
+	
+	suspendAll {
+		priorityQ.clear
+	}
+	
+	init { | func, stackSize |
+		priorityQ = PriorityQueue.new;
+		genStream = Routine({func.value(this) }, stackSize);
+		now = 0;
+		priorityQ.put(now, genStream);
+	}
+
+	par { | pattern |
+		var stream = pattern.asStream;
+		priorityQ.put(now, stream);
+		^stream;
+	}
+	
+	seq { | pat |
+		pat.embedInStream(event)
+	}
+	
+	wait { | dur |
+		Event.silent(dur).yield
+	}
+		
+	embedInStream { | inevent, cleanup|
+	
+		var outevent, stream, nexttime;
+		event = inevent;					// gives genStream access to the event
+		cleanup = cleanup ? EventStreamCleanup.new;
+		
+		while({
+			priorityQ.notEmpty
+		},{
+			stream = priorityQ.pop;
+			outevent = stream.next(event);
+								
+			if (outevent.isNil, {
+				nexttime = priorityQ.topPriority;
+//				if (nexttime.notNil && (genStream != stream), {
+				if (nexttime.notNil, {
+					// that child stream ended, so rest until next one
+					outevent = event.copy;
+					outevent.put(\freq, \rest);					
+					outevent.put(\delta, nexttime - now);
+					event = outevent.yield;
+					now = nexttime;	
+				},{
+					priorityQ.clear;
+					cleanup.exit(event); 
+				});		
+			},{			
+				cleanup.update(outevent);
+				// requeue stream
+				priorityQ.put(now + outevent.delta, stream);
+				nexttime = priorityQ.topPriority;
+				outevent.put(\delta, nexttime - now);
+				
+				event = outevent.yield;
+				now = nexttime;	
+			});	
+		});
+		^event;
+	}
+
+}
+	
+Pspawner : Proutine {
+
+	asStream { 
+		^Routine({ | ev | this.embedInStream(ev) })
+	}
+	embedInStream { | inevent, cleanup |
+	
+		^Spawner(routineFunc).embedInStream(inevent, cleanup ? EventStreamCleanup.new);
+			
+	}
+	
+}	
+
+/*
+(	
+	Pseq([
+		Pspawner({ | sp |
+			sp.postln;
+			sp.par(Pbind(*[degree:	Pwhite(0,12), dur: 0.1, db: -30]) );
+			sp.seq(Pbind(*[degree:	Pseq((0..4).mirror.mirror, 1) + [-3, 0,2], ctranspose: -12, dur: 0.2 ]) );
+			"hi".postln;
+			sp.wait(1);
+			"bye".postln;
+			sp.suspendAll;
+		}),
+		
+		Pspawner({ | sp |
+			sp.postln;
+			sp.par(Pbind(*[degree:	Pwhite(0,12), dur: 0.2, ctranspose: -12]) );
+			"hi".postln;
+			sp.wait(4);
+			"bye".postln;
+			sp.suspendAll
+		}),
+	
+	]).play
+	
+	a = Spawner({ |sp | 100.do{ sp.wait(1) } });
+	a.play;
+	b = a.par(Pbind(*[degree: Pwhite(0, 10), dur: 0.2]));
+	a.suspend(b)
+	a.par(b)
+	
+	Pspawner({ | sp |
+		5.do {
+			sp.par(Pbind(*[
+				octave: (5.rand + 3).postln,
+				 degree:	Pwhite(0,12), dur: 0.1, db: -30
+			]) );
+			sp.wait(1);
+			sp.clear;
+		}		
+	}).play
+
+)
+*/
