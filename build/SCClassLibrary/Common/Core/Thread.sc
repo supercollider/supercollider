@@ -102,7 +102,13 @@ Routine : Thread {
 		_RoutineReset
 		^this.primitiveFailed
 	}
+		// the _RoutineStop primitive can't stop the currently running Routine
+		// but a user should be able to use .stop anywhere
 	stop {
+		if(this === thisThread) { nil.alwaysYield }
+			{ this.prStop };
+	}
+	prStop {
 		_RoutineStop
 		^this.primitiveFailed
 	}
