@@ -454,20 +454,23 @@ SynthDef {
 		var lib = SynthDescLib.all[libname] ?? { Error("library" + libname  + "not found").throw };
 		var path = dir ++ name ++ ".scsyndef";
 		var file = File(path, "w");
+		var desc;
 		protect {
 			bytes = this.asBytes;
 			file.putAll(bytes);
 			file.close;
-			if(metadata.notNil) {
-				(mdPlugin ?? { SynthDesc.mdPlugin }).writeMetadata(metadata, this, path);
-			} {
-				AbstractMDPlugin.clearMetadata(path);
-			};
 			lib.read(path);
 			lib.servers.do { arg server;
 				server.value.sendBundle(nil, ["/d_recv", bytes] ++ completionMsg)
 			};
-			lib[this.name.asSymbol].metadata = metadata;
+			desc = lib[this.name.asSymbol];
+			desc.metadata = metadata;
+			SynthDesc.populateMetadataFunc.value(desc);
+			if(desc.metadata.notNil) {
+				(mdPlugin ?? { SynthDesc.mdPlugin }).writeMetadata(desc.metadata, this, path);
+			} {
+				AbstractMDPlugin.clearMetadata(path);
+			};
 		} { 
 			file.close 
 		}
