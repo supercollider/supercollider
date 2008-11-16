@@ -99,6 +99,8 @@ MultiLevelIdentityDictionary : Collection
 	do { arg function;
 		dictionary.do(function);
 	}
+		// remove only the leaf node indicated by path
+		// parent nodes remain in the MLID even if they are empty
 	removeAt {
 		arg ... path;
 		^this.removeAtPath(path)
@@ -114,7 +116,26 @@ MultiLevelIdentityDictionary : Collection
 		});
 		^item.removeAt(lastName);
 	}
-
+		// remove the leaf node
+		// as well as parent nodes that become empty after removing the child
+		// slower but leaves less cruft in the tree
+	prRemoveAtPathRecursive { |path, i = 0, item|
+		var name = path[i], result;
+		if(item[name].isNil) { ^nil };
+		if(i < (path.size-1)) {
+			result = this.prRemoveAtPathRecursive(path, i+1, item[name]);
+			(item[name].isEmpty).if({ item.removeAt(name) });
+			^result
+		} {
+			^item.removeAt(name)
+		};
+	}
+	removeEmptyAtPath { arg path;
+		^this.prRemoveAtPathRecursive(path, 0, dictionary)
+	}
+	removeEmptyAt { arg ...path;
+		^this.prRemoveAtPathRecursive(path, 0, dictionary);
+	}
 	
 	//private
 	add { arg assn;

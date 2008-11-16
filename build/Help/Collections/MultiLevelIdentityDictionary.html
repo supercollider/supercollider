@@ -5,14 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #90261e}
+p.p6 {margin: 0.0px 0.0px 0.0px 29.0px; font: 12.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {color: #000000}
+span.s2 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -46,5 +52,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>A way to insert objects into the tree with a syntax similar to the organization of the tree</p>
 <p class="p4"><span class="Apple-tab-span">	</span>itself.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>removeAt(key1,key2 ... keyN)</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>Remove only the item located by the path.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>removeEmptyAt(key1,key2 ... keyN)</b></p>
+<p class="p6">Remove the item located by the path. This might make the item's parent dictionary empty. In that case, it will remove the parent and continue up the chain, removing empty dictionaries as it goes. This is slower but cleaner.</p>
+<p class="p2"><br></p>
+<p class="p7">// Example of the difference between removeAt and removeEmptyAt</p>
+<p class="p8"><br></p>
+<p class="p9"><span class="s1">m = </span>MultiLevelIdentityDictionary<span class="s1">.new;</span></p>
+<p class="p10">m.put(<span class="s2">\a</span>, <span class="s2">\b</span>, <span class="s2">\c</span>, 1);</p>
+<p class="p8"><br></p>
+<p class="p10">m.removeAt(<span class="s2">\a</span>, <span class="s2">\b</span>, <span class="s2">\c</span>);</p>
+<p class="p7"><span class="s1">m<span class="Apple-tab-span">	</span></span>// note, \a and \b dictionaries remain</p>
+<p class="p8"><br></p>
+<p class="p10">m.put(<span class="s2">\a</span>, <span class="s2">\b</span>, <span class="s2">\c</span>, 2);</p>
+<p class="p10">m.removeEmptyAt(<span class="s2">\a</span>, <span class="s2">\b</span>, <span class="s2">\c</span>);</p>
+<p class="p7"><span class="s1">m<span class="Apple-tab-span">	</span></span>// now the entire MultiLevelIdentityDictionary is empty</p>
+<p class="p2"><br></p>
 </body>
 </html>
