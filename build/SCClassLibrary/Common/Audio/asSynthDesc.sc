@@ -86,6 +86,7 @@
 		constants.keysValuesDo { arg value, index;
 			desc.constants[index] = value;
 		};
+		SynthDesc.populateMetadataFunc.value(desc);
 		desc.makeMsgFunc;
 		^desc
 	}

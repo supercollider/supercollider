@@ -14,7 +14,7 @@ IODesc {
 
 
 SynthDesc {
-	classvar <>mdPlugin;
+	classvar <>mdPlugin, <>populateMetadataFunc;
 
 	var <>name, <>controlNames;
 	var <>controls, <>inputs, <>outputs; 
@@ -22,12 +22,13 @@ SynthDesc {
 	
 	var <>constants, <>def;
 	var <>msgFunc, <>hasGate = false, <>canFreeSynth = false;
+	var <msgFuncKeepGate = false;
 
 	*initClass {
 		mdPlugin = AbstractMDPlugin;	// override in your startup file
 	}
 	
-	send { arg server, completionMsg; 
+	send { arg server, completionMsg;
 		def.send(server, completionMsg);
 	}
 	
@@ -66,6 +67,7 @@ SynthDesc {
 				// AbstractMDPlugin dynamically determines the md archive type
 				// from the file extension
 			desc.metadata = AbstractMDPlugin.readMetadata(path);
+			this.populateMetadataFunc.value(desc);
 		}
 		^dict
 	}
@@ -238,6 +240,11 @@ Use of this synth in Patterns will not detect argument names automatically becau
 				if (name.asString != "?") {
 					if (name == "gate") {
 						hasGate = true;
+						if(msgFuncKeepGate) {
+							if (comma) { stream << ", " } { comma = true };
+							stream << name << " = " << controlName.defaultValue.asStringPrec(7);
+							names = names + 1;
+						}
 					}{
 						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
 						if (comma) { stream << ", " } { comma = true };
@@ -255,7 +262,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 				var name, name2;
 				name = controlName.name;
 				if (name.asString != "?") {
-					if (name != "gate") {
+					if (msgFuncKeepGate or: { name != "gate" }) {
 						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
 						if (comma) { stream << ", " } { comma = true };
 						stream << "'" << name << "', " << name2; 
@@ -267,6 +274,13 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			// do not compile the string if no argnames were added
 		if(names > 0) { msgFunc = string.compile.value };
 	}
+	msgFuncKeepGate_ { |bool = false|
+		if(bool != msgFuncKeepGate) {
+			msgFuncKeepGate = bool;
+			this.makeMsgFunc;
+		}
+	}
+
 	// parse the def name out of the bytes array sent with /d_recv
 	*defNameFromBytes { arg int8Array;
 		var s,n,numDefs,size;	
@@ -345,6 +359,7 @@ AbstractMDPlugin {
 		"rm -f %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd;
 	}
 	*writeMetadata { |metadata, synthdef, path|
+		
 		this.clearMetadata(path);
 		path = this.applyExtension(path);
 		this.writeMetadataFile(metadata, synthdef, path);

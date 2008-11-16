@@ -12,7 +12,7 @@
 		usefulControls = controls.select {|controlName, i|
 			var ctlname;
 			ctlname = controlName.name.asString;
-			(ctlname != "?") && (ctlname != "gate")
+			(ctlname != "?") && (msgFuncKeepGate or: { ctlname != "gate" })
 		};
 		
 		numControls = usefulControls.size;
