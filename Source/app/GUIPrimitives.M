@@ -1081,6 +1081,32 @@ int prGetStringFromUser(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+extern NSFont *defaultFont;
+
+int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed)
+{
+		 if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp - 1;
+		PyrSlot *fontSlot = g->sp; //font
+		if (IsNil(fontSlot)) return errNone; // use default font
+		if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
+
+		PyrSlot *nameSlot = fontSlot->uo->slots+0;
+		PyrSlot *sizeSlot = fontSlot->uo->slots+1;
+		float size;
+		int err = slotFloatVal(sizeSlot, &size);
+		if (err) return err;
+
+		PyrString *pstring = nameSlot->uos;
+		NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
+		if (!fontName) return errFailed;
+		defaultFont = [NSFont fontWithName: fontName size: size];
+		if (!defaultFont) return errFailed;
+		return errNone;
+
+}
+
 
 int slotGetNSRect(PyrSlot* a, NSRect *r)
 {
@@ -3813,6 +3839,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_IsAlwaysOnTop", prTextWindow_IsAlwaysOnTop, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_SetPromptToSave", prTextWindow_SetPromptToSave, 2, 0);	
 	definePrimitive(base, index++, "_TextWindow_PromptToSave", prTextWindow_PromptToSave, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_SetDefaultFont", prTextWindow_SetDefaultFont, 2, 0);	
 
 
 

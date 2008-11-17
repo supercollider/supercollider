@@ -53,10 +53,13 @@ extern bool compiledOK;
 
 bool docCreatedFromLang = false; //if this is true addDocument is not called
 
+NSFont *defaultFont = NULL;
+
 @implementation MyDocument
 
 - (id)init
 {
+	if(!defaultFont) defaultFont = [NSFont fontWithName: @"Monaco" size: 9];
 	mWindowObj = nil;
     initTextView = nil;
     textView = nil;
@@ -78,7 +81,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
     [aTextView setRichText: YES];
     [aTextView setSmartInsertDeleteEnabled: NO];
     [aTextView setImportsGraphics: YES];
-    [aTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
+    [aTextView setFont: defaultFont];
 	[aTextView setLangClassToCall:@"CocoaDocument" 
 			withKeyDownActionIndex:4 withKeyUpActionIndex:5];
 	[aTextView setObjectKeyDownActionIndex:2 setObjectKeyUpActionIndex:1];
@@ -1149,7 +1152,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	}
 
 	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
-		[initTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
+		[initTextView setFont: defaultFont];
 		SyntaxColorize(initTextView);
 	}
 	[text endEditing];
@@ -1268,6 +1271,7 @@ extern PyrSymbol * s_didResignKey;
 }
 */
 
+
 /* Doesn't check to see if the prev value is the same --- Otherwise the first time doesn't work...
 */
 - (void)setRichText:(BOOL)flag {
@@ -1284,7 +1288,7 @@ extern PyrSymbol * s_didResignKey;
 
 	if (!isRichText) {
 		NSMutableDictionary *textAttributes = [NSMutableDictionary dictionary];
-		[textAttributes setObject: [NSFont fontWithName: @"Monaco" size: 9] forKey: NSFontAttributeName ];
+		[textAttributes setObject: defaultFont forKey: NSFontAttributeName ];
 	
 		if ([[textView textStorage] length]) {
 			[[textView textStorage] setAttributes:textAttributes range: NSMakeRange(0, [[textView textStorage] length])];
