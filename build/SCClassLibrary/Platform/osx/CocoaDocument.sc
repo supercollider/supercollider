@@ -1,4 +1,5 @@
 CocoaDocument : Document {
+	classvar <defaultFont;
 
 	*initClass{
 		Document.implementationClass = CocoaDocument;
@@ -16,6 +17,15 @@ CocoaDocument : Document {
 
 	*new { arg title="Untitled", string="", makeListener=false;
 		^super.prBasicNew.initByString(title, string.asString, makeListener);
+	}
+	
+	*defaultFont_{|font|
+		CocoaDocument.prSetDefaultFont(font);
+		defaultFont = font;
+	}
+	
+	*prSetDefaultFont{|font|
+		_TextWindow_SetDefaultFont
 	}
 	
 	front {
