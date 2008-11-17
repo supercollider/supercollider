@@ -149,5 +149,15 @@ Donce : DUGen {
 	}
 }
 
-Dpoll : Donce {}
+Dpoll : DUGen {
+	*new { arg in, label, run = 1, trigid = -1;
+		^this.multiNew('demand', in, label, run, trigid)
+	}
+	
+	*new1 { arg rate, in, label, run, trigid;
+		label = label ?? { "DemandUGen(%)".format(in.class) };
+		label = label.asString.collectAs(_.ascii, Array);
+		^super.new.rate_(rate).addToSynth.init(*[in, trigid, run, label.size] ++ label);
+	}
+}
 

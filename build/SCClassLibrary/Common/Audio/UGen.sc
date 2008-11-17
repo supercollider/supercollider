@@ -228,6 +228,10 @@ UGen : AbstractFunction {
           ^Poll(trig, this, label, trigid)
 	}
 	
+	dpoll { arg label, run = 1, trigid = -1;
+		^Dpoll(this, label, run, trigid)
+	}
+	
 	checkBadValues { arg id = 0, post = 2;
 			// add the UGen to the tree but keep "this" as the output
 		CheckBadValues.perform(this.methodSelectorForRate, this, id, post);
