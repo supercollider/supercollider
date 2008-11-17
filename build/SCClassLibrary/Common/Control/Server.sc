@@ -262,7 +262,7 @@ Server : Model {
 		set = Set.new;
 		internal = Server.new(\internal, NetAddr.new);
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
-		program = "cd " ++ String.scDir.quote ++ "; ./scsynth";
+		program = "cd % && exec ./scsynth".format(String.scDir.quote);
 	}
 	
 	*fromName { arg name;
@@ -556,7 +556,7 @@ Server : Model {
 			//this.serverRunning = true;
 			pid = thisProcess.pid;
 		},{
-			pid = "cd % && exec ./scsynth %".format(String.scDir.quote, options.asOptionsString(addr.port)).unixCmd;
+			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
 			//unixCmd(program ++ options.asOptionsString(addr.port)).postln;
 			("booting " ++ addr.port.asString).inform;
 		});
