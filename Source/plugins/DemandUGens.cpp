@@ -168,6 +168,9 @@ struct Donce : public Unit
 
 struct Dpoll : public Unit
 {
+	char *m_id_string; 
+	bool m_mayprint;
+	float m_id;
 };
 
 extern "C"
@@ -1861,7 +1864,11 @@ void Dpoll_next(Dpoll *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
-			Print("dpoll: inNumSamples: %d, inval: %g\n", inNumSamples, x);
+			float run = DEMANDINPUT_A(2, inNumSamples) > 0.f;
+			if(unit->m_mayprint && run) {
+				Print("%s: %g block offset: %d\n", unit->m_id_string, x, inNumSamples - 1);
+			}
+			if(IN0(1) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(1), x);
 			OUT0(0) = x;
 	} else {
 		RESETINPUT(0);
@@ -1871,7 +1878,19 @@ void Dpoll_next(Dpoll *unit, int inNumSamples)
 void Dpoll_Ctor(Dpoll *unit)
 {
 	SETCALC(Dpoll_next);
+	unit->m_id = IN0(3); // number of chars in the id string 
+	unit->m_id_string = (char*)RTAlloc(unit->mWorld, ((int)unit->m_id + 1) * sizeof(char));	
+	for(int i = 0; i < (int)unit->m_id; i++) {
+		unit->m_id_string[i] = (char)IN0(4+i);
+	}
+	unit->m_id_string[(int)unit->m_id] = '\0';
+	unit->m_mayprint = unit->mWorld->mVerbosity >= 0;
 	OUT0(0) = 0.f;
+}
+
+void Dpoll_Dtor(Dpoll* unit)
+{
+	RTFree(unit->mWorld, unit->m_id_string);
 }
 
 
@@ -1995,7 +2014,7 @@ void Dbufrd_Ctor(Dbufrd *unit)
 
   unit->m_fbufnum = -1e9f;
 
-  Dbufrd_next(unit , 0);
+  Dbufrd_next(unit, 0);
   OUT0(0) = 0.f;    
 }
 
@@ -2080,5 +2099,5 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Dswitch);
 	DefineSimpleUnit(Dstutter);
 	DefineSimpleUnit(Donce);
-	DefineSimpleUnit(Dpoll);
+	DefineDtorUnit(Dpoll);
 }
