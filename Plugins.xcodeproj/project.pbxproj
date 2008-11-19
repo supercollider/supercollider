@@ -654,12 +654,11 @@
 			isa = PBXGroup;
 			children = (
 				942C38EA0C1B40BB00360A35 /* sndfile.h */,
-				F5D127DC03355EEC0164B34C /* common */,
+				F5D127DC03355EEC0164B34C /* Headers */,
 				F50D054502E69B6B01CA2799 /* plugin_interface */,
-				F5959CFC0339983D01A80099 /* server */,
+				F5959CFC0339983D01A80099 /* plugin_interface */,
 			);
-			name = Headers;
-			path = headers;
+			path = Headers;
 			sourceTree = "<group>";
 		};
 		F50D054502E69B6B01CA2799 /* plugin_interface */ = {
@@ -689,7 +688,8 @@
 				F50D055A02E69B6B01CA2799 /* SC_World.h */,
 				F50D055D02E69B6B01CA2799 /* Unroll.h */,
 			);
-			path = plugin_interface;
+			name = plugin_interface;
+			path = ../Headers/plugin_interface;
 			sourceTree = "<group>";
 		};
 		F50D057E02E69B6B01CA2799 /* Source */ = {
@@ -699,8 +699,7 @@
 				F50D05D302E69B6B01CA2799 /* plugins */,
 				F5959D010339A71301A80099 /* server */,
 			);
-			name = Source;
-			path = source;
+			path = Source;
 			sourceTree = "<group>";
 		};
 		F50D05D302E69B6B01CA2799 /* plugins */ = {
@@ -807,15 +806,15 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		F5959CFC0339983D01A80099 /* server */ = {
+		F5959CFC0339983D01A80099 /* plugin_interface */ = {
 			isa = PBXGroup;
 			children = (
 				F5959CF80339983301A80099 /* MsgFifo.h */,
 				F5959CF90339983301A80099 /* SC_SyncCondition.h */,
 				F5959CFD03399CED01A80099 /* SC_Lock.h */,
 			);
-			name = server;
-			path = plugin_interface;
+			name = plugin_interface;
+			path = ../Headers/plugin_interface;
 			sourceTree = "<group>";
 		};
 		F5959D010339A71301A80099 /* server */ = {
@@ -827,7 +826,7 @@
 			path = plugins;
 			sourceTree = "<group>";
 		};
-		F5D127DC03355EEC0164B34C /* common */ = {
+		F5D127DC03355EEC0164B34C /* Headers */ = {
 			isa = PBXGroup;
 			children = (
 				DC29B0A00E925FD8009D97C0 /* SC_fftlib.h */,
@@ -836,7 +835,8 @@
 				920DAED20425A5D200A80067 /* SC_Altivec.h */,
 				AAE924420481416E00A8010B /* SC_Endian.h */,
 			);
-			name = common;
+			name = Headers;
+			path = ../Headers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1264,6 +1264,7 @@
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88332412090ABD1F00A4A7E4 /* Build configuration list for PBXProject "Plugins" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
