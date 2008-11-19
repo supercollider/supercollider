@@ -413,7 +413,7 @@
 		F5959CF80339983301A80099 /* MsgFifo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MsgFifo.h; sourceTree = "<group>"; };
 		F5959CF90339983301A80099 /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_SyncCondition.h; sourceTree = "<group>"; };
 		F5959CFD03399CED01A80099 /* SC_Lock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Lock.h; sourceTree = "<group>"; };
-		F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_SyncCondition.cpp; path = source/server/SC_SyncCondition.cpp; sourceTree = SOURCE_ROOT; };
+		F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_SyncCondition.cpp; path = Source/server/SC_SyncCondition.cpp; sourceTree = SOURCE_ROOT; };
 		F5D127DA03355EE10164B34C /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Sem.h; path = common/SC_Sem.h; sourceTree = "<group>"; };
 		FE2582CB0C2C096A00307453 /* TestUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = TestUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE25830C0C2C13E400307453 /* TestUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TestUGens.cpp; path = ../../Source/plugins/TestUGens.cpp; sourceTree = "<group>"; };
