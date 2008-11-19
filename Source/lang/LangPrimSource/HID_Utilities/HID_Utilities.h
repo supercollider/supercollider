@@ -54,7 +54,7 @@
 // 10.1.x
 #include <IOKit/hid/IOHIDUsageTables.h>
 
-#include <IOKit/HID/IOHIDLib.h>
+#include <IOKit/hid/IOHIDLib.h>
 
 // ==================================
 
