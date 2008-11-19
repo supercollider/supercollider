@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 21.8px Arial}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.8px Arial; min-height: 15.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.8px Arial}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+span.s1 {text-decoration: underline}
+span.s2 {color: #0000bf}
+span.s3 {color: #000000}
+span.s4 {color: #bf0000}
+span.s5 {color: #007300}
+span.s6 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1">Adding harmonics to a voice input</p>
+<p class="p2"><br></p>
+<p class="p3">One easy way to add harmonics is to use the <span class="s1">[PitchShift]</span> UGen. See its helpfile for more details.</p>
+<p class="p2"><br></p>
+<p class="p3">An alternative approach is to use the <span class="s1">[Pitch]</span> UGen to track the pitch contour, and use that in synthesis. This allows you to generate sounds matching the pitch of the input but with any kind of texture.</p>
+<p class="p2"><br></p>
+<p class="p4">// (Dan Stowell) (public domain 2006)</p>
+<p class="p4">// USE HEADPHONES to prevent feedback.</p>
+<p class="p5">(</p>
+<p class="p5">x = {</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>var</span> son, freq, hasFreq, amp, out, harm;</p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>son = </span><span class="s2">AudioIn</span><span class="s3">.ar(1); </span>// get first channel of sound input</p>
+<p class="p5"><span class="Apple-tab-span">	</span># freq, hasFreq = <span class="s2">Pitch</span>.kr(son); <span class="s4">// Pitch of input signal</span></p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>amp = </span><span class="s2">Amplitude</span><span class="s3">.ar(son); </span>// Amplitude of input signal</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>harm = <span class="s2">SinOsc</span>.ar(freq * 2, 0, amp * hasFreq);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Pan2</span>.ar(harm + son)</p>
+<p class="p5">}.play;</p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p4"><span class="s3">x.free; </span>// Use this to stop the synth</p>
+<p class="p2"><br></p>
+<p class="p3">The above example adds only one harmonic. You can extend this to create multiple harmonics quite easily, for example by using an array of pitch ratios rather than a single ratio (and therefore creating an array of sine oscillators); or you could change the texture by using a more unusual oscillator (e.g. <span class="s1">[Saw]</span> or <span class="s1">[Gendy1]</span> or <span class="s1">[HenonN]</span>).</p>
+<p class="p2"><br></p>
+<p class="p3">If you want a large number of controllable overtones then a bank of separate sine oscillators will become quite computationally intensive, so a good alternative is to use the general wavetable oscillator <span class="s1">[Osc]</span> instead of SinOsc. The wavetable (a buffer) can be filled with a wave representing the harmonic profile you're interested in, and only one oscillator is needed to read it back.</p>
+<p class="p2"><br></p>
+<p class="p3">Let's implement this, and add a GUI for controlling the contents of the wavetable:</p>
+<p class="p2"><br></p>
+<p class="p4">// (Dan Stowell, kernel) (gpl 2006)</p>
+<p class="p4">//first make and send the Synthdef so it's on the server</p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p7">SynthDef<span class="s3">(</span><span class="s5">\oscPlayer</span><span class="s3">, {</span>|bufnum,balance=0.5,smooth=0.1|</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>var</span> input,freq,hasFreq,amp,mix,wet;<span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>input = </span><span class="s2">AudioIn</span><span class="s3">.ar(1); </span>// get first channel of sound input</p>
+<p class="p5"><span class="Apple-tab-span">	</span>#freq,hasFreq = <span class="s2">Pitch</span>.kr(input); <span class="s4">// pitch of input signal</span></p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>amp = </span><span class="s2">Amplitude</span><span class="s3">.ar(input); </span>// amplitude of input signal</p>
+<p class="p5"><span class="Apple-tab-span">	</span>wet = <span class="s2">Osc</span>.ar(bufnum,<span class="s2">Lag</span>.kr(freq,smooth), 0, amp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>mix = (input * (1-balance)) + (wet * balance);<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, <span class="s2">Pan2</span>.ar(mix));</p>
+<p class="p5">}).send(s);</p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p4">// select a GUI server:</p>
+<p class="p4"><span class="s2">GUI</span><span class="s3">.cocoa;<span class="Apple-tab-span">	</span></span>// use Mac OS X native GUI</p>
+<p class="p4"><span class="s2">GUI</span><span class="s3">.swing;<span class="Apple-tab-span">	</span></span>// use Java GUI</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">// Now to instantiate the synth and build the GUI.</p>
+<p class="p4">// USE HEADPHONES to prevent feedback.</p>
+<p class="p5">(</p>
+<p class="p5"><span class="s2">var</span> win,buf,m,harmonics,maxHarmonics=60,theSynth;</p>
+<p class="p6"><br></p>
+<p class="p5">win = <span class="s2">GUI.window.new</span>(<span class="s6">"input harmonica"</span>,<span class="s2">Rect</span>(200,200,420,160)).front;</p>
+<p class="p6"><br></p>
+<p class="p5">harmonics = <span class="s2">Array</span>.fill(maxHarmonics,0);</p>
+<p class="p4"><span class="s3">harmonics.put(0,1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// init array so first partial is alive</p>
+<p class="p5">buf = <span class="s2">Buffer</span>.alloc(s, 4096, 1);<span class="Apple-tab-span">	</span><span class="s4">// create buffer</span></p>
+<p class="p5">buf.sine1(harmonics);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// fill buffer</span></p>
+<p class="p6"><br></p>
+<p class="p5">theSynth = <span class="s2">Synth</span>(<span class="s5">\oscPlayer</span>, [<span class="s5">\bufnum</span>, buf.bufnum], s);</p>
+<p class="p6"><br></p>
+<p class="p5">m = <span class="s2">GUI.multiSliderView.new</span>(win, <span class="s2">Rect</span>(5, 5, 350, 100))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.value_(harmonics)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.isFilled_(<span class="s2">true</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.valueThumbSize_(3.0)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.indexThumbSize_(3.0)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.gap_(2)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.elasticMode_(1)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> buf.sine1(v.value)}); <span class="s4">// fill buffer again</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2">GUI.button.new</span>(win,<span class="s2">Rect</span>(5,110,70,20))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.states_([[<span class="s6">"CLEAR"</span>,<span class="s2">Color</span>.green,<span class="s2">Color</span>.black]])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">var</span> temp;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>temp = <span class="s2">Array</span>.fill(maxHarmonics,0);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>buf.sine1(temp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>m.value_(temp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2">GUI.button.new</span>(win,<span class="s2">Rect</span>(80,110,65,20))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.states_([[<span class="s6">"RAND"</span>,<span class="s2">Color</span>.green,<span class="s2">Color</span>.black]])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> <span class="s2">var</span> temp;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>temp = m.value.scramble;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>buf.sine1(temp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>m.value_(temp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2">GUI.button.new</span>(win,<span class="s2">Rect</span>(150,110,20,20))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.states_([[<span class="s6">"&lt;&lt;"</span>,<span class="s2">Color</span>.green,<span class="s2">Color</span>.black]])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> <span class="s2">var</span> temp;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>temp = m.value.rotate(-1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>buf.sine1(temp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>m.value_(temp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2">GUI.button.new</span>(win,<span class="s2">Rect</span>(175,110,20,20))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.states_([[<span class="s6">"&gt;&gt;"</span>,<span class="s2">Color</span>.green,<span class="s2">Color</span>.black]])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> <span class="s2">var</span> temp;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>temp = m.value.rotate(1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>buf.sine1(temp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>m.value_(temp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>});</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2">GUI.slider.new</span>(win, <span class="s2">Rect</span>(365,5,20,100))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.value_(0.1)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> theSynth.set(<span class="s5">\smooth</span>,[0,1,<span class="s5">\lin</span>,0.001].asSpec.unmap(v.value))});</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2">GUI.slider.new</span>(win, <span class="s2">Rect</span>(390,5,20,100))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> theSynth.set(<span class="s5">\balance</span>,v.value)});</p>
+<p class="p5">)</p>
+</body>
+</html>
