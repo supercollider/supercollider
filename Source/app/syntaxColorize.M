@@ -250,12 +250,11 @@ void SyntaxColorize(NSTextView* textView)
 			startline = lineno;
 			endchar = '\'';
 		
+			prevc = 0;
 			do {
+				prevc = c;
 				c = input0();
-				if (c == '\\') {
-					c = input0();
-				}
-			} while (c != endchar && c != 0);
+			} while (!(c == endchar && prevc != '\\') && c != 0);
 			if (c == 0 || textpos > textlen) {
 				//postbuf("Open ended symbol ... started on line %d in file '%s'\n", 
 				//	startline, curfilename);
@@ -276,12 +275,11 @@ void SyntaxColorize(NSTextView* textView)
 			startline = lineno;
 			endchar = '\"';
 		
+			prevc = 0;
 			do  {
+				prevc = c;
 				c = input0();
-				if (c == '\\') {
-					c = input0();
-				}
-			} while (c != endchar && c != 0);
+			} while (!(c == endchar && prevc != '\\') && c != 0);
 			if (c == 0 || textpos > textlen) {
 				//postbuf("Open ended string ... started on line %d in file '%s'\n", 
 				//	startline, curfilename);
