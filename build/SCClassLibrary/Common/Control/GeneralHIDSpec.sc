@@ -3,7 +3,7 @@ GeneralHIDSpec{
 
 	var <map, <device, <info;
 
-	*initClass { 
+	*initClass {
 		// not yet used
 		this.makeSaveFolder;
 		this.loadSavedInfo;
@@ -11,7 +11,11 @@ GeneralHIDSpec{
 	}
 
 	*loadSavedInfo{
-		all = (folder+/+"allspecs.info").load;
+		var filename;
+		filename = (folder+/+"allspecs.info");
+		if ( File.exists(filename) ){
+			all = filename.load;
+		}
 	}
 	
 	*makeSaveFolder { 
