@@ -42,6 +42,8 @@ struct FFTBase : public Unit
 	float *m_transformbuf;
 	int m_hopsize, m_shuntsize; // These add up to m_audiosize
 	int m_wintype;
+
+	int m_numSamples;
 };
 
 struct FFT : public FFTBase
@@ -52,6 +54,7 @@ struct FFT : public FFTBase
 struct IFFT : public FFTBase
 {
 	float *m_olabuf;
+	int m_numSamples;
 };
 
 struct FFTTrigger : public FFTBase
@@ -174,8 +177,14 @@ void FFT_Ctor(FFT *unit)
 	
 	//Print("FFT_Ctor: hopsize %i, shuntsize %i, bufsize %i, wintype %i, \n",
 	//	unit->m_hopsize, unit->m_shuntsize, unit->m_bufsize, unit->m_wintype);
-	
-	SETCALC(FFT_next);	
+
+	if (INRATE(1) == calc_FullRate) {
+		unit->m_numSamples = unit->mWorld->mFullRate.mBufLength;
+	} else {
+		unit->m_numSamples = 1;
+	}
+
+	SETCALC(FFT_next);
 }
 
 void FFT_Dtor(FFT *unit)
@@ -201,8 +210,9 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 	float *in = IN(1);
 	float *out = unit->m_inbuf + unit->m_pos + unit->m_shuntsize;
 	
-	int numSamples = unit->mWorld->mFullRate.mBufLength;
-	
+// 	int numSamples = unit->mWorld->mFullRate.mBufLength;
+	int numSamples = unit->m_numSamples;
+
 	// copy input
 	memcpy(out, in, numSamples * sizeof(float));
 	
@@ -254,7 +264,14 @@ void IFFT_Ctor(IFFT* unit){
 	// "pos" will be reset to zero when each frame comes in. Until then, the following ensures silent output at first:
 	unit->m_pos = 0; //unit->m_audiosize;
 	
-	SETCALC(IFFT_next);	
+	if (unit->mCalcRate == calc_FullRate) {
+		unit->m_numSamples = unit->mWorld->mFullRate.mBufLength;
+	} else {
+		unit->m_numSamples = 1;
+	}
+
+	SETCALC(IFFT_next);
+
 }
 
 void IFFT_Dtor(IFFT* unit){
@@ -276,7 +293,8 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 	int pos     = unit->m_pos;
 	int fullbufsize  = unit->m_fullbufsize;
 	int audiosize = unit->m_audiosize;
-	int numSamples = unit->mWorld->mFullRate.mBufLength;
+// 	int numSamples = unit->mWorld->mFullRate.mBufLength;
+	int numSamples = unit->m_numSamples;
 	float *olabuf = unit->m_olabuf;
 	float fbufnum = ZIN0(0);
 	
