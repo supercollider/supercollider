@@ -250,7 +250,7 @@ void SyntaxColorize(NSTextView* textView)
 			startline = lineno;
 			endchar = '\'';
 		
-			prevc = 0;
+			c = 0;
 			do {
 				prevc = c;
 				c = input0();
@@ -275,7 +275,7 @@ void SyntaxColorize(NSTextView* textView)
 			startline = lineno;
 			endchar = '\"';
 		
-			prevc = 0;
+			c = 0;
 			do  {
 				prevc = c;
 				c = input0();
