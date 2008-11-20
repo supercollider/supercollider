@@ -12,8 +12,17 @@ FFT : PV_ChainUGen
 IFFT : UGen 
 {
 	*new { | buffer, wintype = 0, winsize=0|
+		^this.ar(buffer, wintype, winsize)
+	}
+
+	*ar { | buffer, wintype = 0, winsize=0|
 		^this.multiNew('audio', buffer, wintype, winsize)
 	}
+
+	*kr { | buffer, wintype = 0, winsize=0|
+		^this.multiNew('control', buffer, wintype, winsize)
+	}
+
 }	
 PV_MagAbove : PV_ChainUGen
 {
