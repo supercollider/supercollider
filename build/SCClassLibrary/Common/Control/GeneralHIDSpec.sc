@@ -4,9 +4,8 @@ GeneralHIDSpec{
 	var <map, <device, <info;
 
 	*initClass {
-		// not yet used
-		this.makeSaveFolder;
-		this.loadSavedInfo;
+		folder = (Platform.userAppSupportDir +/+ "GeneralHIDSpecs").standardizePath;
+		if ( this.checkSaveFolder ){ this.loadSavedInfo; };
 		all	= all ? IdentityDictionary.new;
 	}
 
@@ -16,6 +15,10 @@ GeneralHIDSpec{
 		if ( File.exists(filename) ){
 			all = filename.load;
 		}
+	}
+	
+	*checkSaveFolder{
+		^File.exists( folder );
 	}
 	
 	*makeSaveFolder { 
@@ -119,6 +122,7 @@ GeneralHIDSpec{
 		var file, res = false;
 		var filename;
 		all.put( name.asSymbol, info );
+		if ( this.class.checkSaveFolder.not ) { this.class.makeSaveFolder };
 		filename = folder +/+ name ++ ".spec";
 		file = File(filename, "w"); 
 		if (file.isOpen) { 
@@ -132,6 +136,7 @@ GeneralHIDSpec{
 	*saveAll{
 		var file, res = false;
 		var filename;
+		if ( this.class.checkSaveFolder.not ) { this.class.makeSaveFolder };
 		filename = folder +/+ "allspecs.info";
 		file = File(filename, "w"); 
 		if (file.isOpen) { 
@@ -141,7 +146,8 @@ GeneralHIDSpec{
 		^res;
 	}
 
-	fromFile { |name| 
+	fromFile { |name|
+		if ( this.class.checkSaveFolder.not ) { this.class.makeSaveFolder };
 		map = (folder +/+ name++".spec").load;
 		map.keysValuesDo{ |key,it|
 			this.at( key ).key = key;
