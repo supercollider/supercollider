@@ -463,6 +463,16 @@ RawArray : ArrayedCollection {
 	// species { ^this.class }
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
+	
+	readFromStream { |stream, method|
+		if(method.notNil) {
+			this.size.do({ |i|
+				this.put(i, stream.perform(method));
+			})
+		} {
+			this.shouldNotImplement(thisMethod);
+		}
+	}
 }
 
 Int8Array[int8] : RawArray {
@@ -470,20 +480,37 @@ Int8Array[int8] : RawArray {
 		_Unarchive
 		^this.primitiveFailed 
 	}
+
+	readFromStream { |stream|
+		super.readFromStream(stream, \getInt8);
+	}
 }
 
 Int16Array[int16] : RawArray {
+	readFromStream { |stream|
+		super.readFromStream(stream, \getInt16);
+	}
 }
 
 Int32Array[int32] : RawArray {
+	readFromStream { |stream|
+		super.readFromStream(stream, \getInt32);
+	}
 }
 
 FloatArray[float] : RawArray {
+	readFromStream { |stream|
+		super.readFromStream(stream, \getFloat);
+	}
 }
 
 DoubleArray[double] : RawArray {
+	readFromStream { |stream|
+		super.readFromStream(stream, \getDouble);
+	}
 }
 
+	// readFromStream not implemented yet
 SymbolArray[symbol] : RawArray {
 }
 
