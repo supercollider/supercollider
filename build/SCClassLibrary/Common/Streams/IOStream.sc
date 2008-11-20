@@ -113,6 +113,16 @@ CollStream : IOStream {
 	getInt32 { ^this.getInt16 << 16 | this.getInt16; }
 	getFloat { ^Float.from32Bits(this.getInt32); }
 	getDouble { ^Float.from64Bits(this.getInt32, this.getInt32); }
+	
+	getPascalString {
+		var	size = this.getInt8;
+		^String.fill(size, { this.getChar.asAscii })
+	}
+	
+		// array should be some subclass of RawArray
+	read { |array|
+		array.readFromStream(this);
+	}
 //	
 	// collection should be an Int8Array
 	putChar { arg aChar; this.put(aChar.ascii); }

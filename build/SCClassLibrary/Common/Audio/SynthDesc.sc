@@ -21,7 +21,7 @@ SynthDesc {
 	var <>metadata;
 	
 	var <>constants, <>def;
-	var <>msgFunc, <>hasGate = false, <>canFreeSynth = false;
+	var <>msgFunc, <>hasGate = false, <>hasArrayArgs, <>canFreeSynth = false;
 	var <msgFuncKeepGate = false;
 
 	*initClass {
@@ -66,7 +66,9 @@ SynthDesc {
 			dict.put(desc.name.asSymbol, desc);
 				// AbstractMDPlugin dynamically determines the md archive type
 				// from the file extension
-			desc.metadata = AbstractMDPlugin.readMetadata(path);
+			if(path.notNil) {
+				desc.metadata = AbstractMDPlugin.readMetadata(path);
+			};
 			this.populateMetadataFunc.value(desc);
 		}
 		^dict
@@ -113,6 +115,8 @@ SynthDesc {
 		};
 		
 		def.controlNames = controls.select {|x| x.name.notNil };
+		hasArrayArgs = controls.any { |cn| cn.name == '?' };
+
 		def.constants = Dictionary.new;
 		constants.do {|k,i| def.constants.put(k,i) };
 		if (keepDef.not) {
