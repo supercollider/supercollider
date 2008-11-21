@@ -175,6 +175,11 @@ classvar fnt, fillColor, strokeColor;
 		^this.primitiveFailed
 	}
 	
+	*arcTo { arg point1, point2, radius;
+		_Pen_AddArcToPoint
+		^this.primitiveFailed
+	}
+	
 	*curveTo { arg point, cpoint1, cpoint2;
 		_Pen_AddCubicCurve
 		^this.primitiveFailed
