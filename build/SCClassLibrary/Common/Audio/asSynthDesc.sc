@@ -23,22 +23,25 @@
 
 + SynthDef {
 		// dir argument is not needed because no file will be written
-	memStore { arg libname=\global, completionMsg;
+	memStore { arg libname=\global, completionMsg, keepDef = true;
 		var	lib = SynthDescLib.all[libname] ?? {
 				Error("library" + libname  + "not found").throw
 			},
-			desc = this.asSynthDesc(libname);
+			desc = this.asSynthDesc(libname, keepDef);
 		lib.servers.do({ |server|
 			server.value.sendBundle(nil, ["/d_recv", this.asBytes] ++ completionMsg)
 		});
 	}
 	
-	asSynthDesc { |libname|
+	asSynthDesc { |libname, keepDef = true|
 		var	lib = SynthDescLib.all[libname] ?? {
 				Error("library" + libname  + "not found").throw
 			},
 			stream = CollStream(this.asBytes);
-		SynthDesc.readFile(stream, true, lib.synthDescs);
+		SynthDesc.readFile(stream, keepDef, lib.synthDescs);
+		if(keepDef) {
+			lib[name.asSymbol].def = this;
+		};
 		^lib[name.asSymbol]
 	}
 }
