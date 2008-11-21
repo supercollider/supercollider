@@ -661,7 +661,7 @@ SCImageFilter {
 				categories.add(key -> this.getFilterNames(key));
 			};
 		
-			"SCImage filter categories done !".postln;
+			//"SCImage filter categories done !".postln;
 		});
 
 	}
