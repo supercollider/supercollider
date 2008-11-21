@@ -36,7 +36,7 @@
 #import "GC.h"
 #import "SCVirtualMachine.h"
 
-#define COCOABRIDGE_VERBOSITY						1
+#define COCOABRIDGE_VERBOSITY						0
 #define COCOABRIDGE_STORE_OBJECTS_IN_ARRAY			1 // Conditional for storing all created objects in an NSArray. For future test with special Pool.
 #define COCOABRIDGE_AUTOCONVERT_NSSTRING			1 /* for backward compat. set to 0.
 														Used only for converting NSString to PyrString on INVOCATION RETURN. 
