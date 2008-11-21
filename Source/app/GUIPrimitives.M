@@ -2344,15 +2344,15 @@ int prPen_AddArc(struct VMGlobals *g, int numArgsPushed)
 	int clockwise = angle > 0. ? 0 : 1;
 	float endAngle = startAngle + angle;
  
-	//NSPoint p2;
-	//p2.x = p1.x + radius * cos(startAngle);
-	//p2.y = p1.y + radius * sin(startAngle);
+	NSPoint p2;
+	p2.x = p1.x + radius * cos(startAngle);
+	p2.y = p1.y + radius * sin(startAngle);
  
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	//post("start %g %g  end %g %g  arc %g %g\n", startAngle, startAngle * 180./3.14156, endAngle, endAngle * 180./3.14156, angle, angle * 180./3.14156);
-	//CGContextMoveToPoint(cgc, p2.x, p2.y);
+	CGContextMoveToPoint(cgc, p2.x, p2.y);
 	CGContextAddArc(cgc, p1.x, p1.y, radius, startAngle, endAngle, clockwise);
     
     return errNone;
@@ -2895,6 +2895,40 @@ int prPen_AddBezierCubicCurve(struct VMGlobals *g, int numArgsPushed)
 		points[0].x, points[0].y
 	);
 	
+	return errNone;
+}
+
+int prPen_AddArcToPoint(struct VMGlobals *g, int numArgsPushed);
+int prPen_AddArcToPoint(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+	PyrSlot *a = g->sp - 2; // point1
+	PyrSlot *b = g->sp - 1; // point2
+	PyrSlot *c = g->sp; // radius
+
+	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
+
+	NSPoint p1;
+	NSPoint p2;
+
+	int err = slotGetPoint(a, &p1);
+	if (err) return err;
+
+	err = slotGetPoint(b, &p2);
+	if (err) return err;
+
+	float radius;
+	err = slotFloatVal(c, &radius);
+	if (err) return err;
+
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+
+	CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+
+	CGContextAddArcToPoint(cgc, p1.x, p1.y, p2.x, p2.y, radius);
+
 	return errNone;
 }
 
@@ -3910,6 +3944,7 @@ void initGUIPrimitives()
 	
 	definePrimitive(base, index++, "_Pen_AddQuadCurve", prPen_AddBezierQuadCurve, 3, 0);
 	definePrimitive(base, index++, "_Pen_AddCubicCurve", prPen_AddBezierCubicCurve, 4, 0);
+	definePrimitive(base, index++, "_Pen_AddArcToPoint", prPen_AddArcToPoint, 4, 0);
 	definePrimitive(base, index++, "_Pen_ClearRect", prPen_ClearRect, 2, 0);
 	definePrimitive(base, index++, "_Pen_SetBlendMode", prPen_SetBlend, 2, 0);
 	definePrimitive(base, index++, "_Pen_SetShadow", prPen_SetShadow, 4, 0);
