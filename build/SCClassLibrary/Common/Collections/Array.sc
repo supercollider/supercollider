@@ -215,6 +215,9 @@ Array[slot] : ArrayedCollection {
 	poll { arg trig = 10, label = "UGen Array:", trigid = -1;
 		^Poll(trig, this, label, trigid)
 	}
+	dpoll { arg label = "UGen Array:", run = 1, trigid = -1;
+		^Dpoll(this, label, run, trigid)
+	}
 	
 	envAt { arg time;
 		_ArrayEnvAt
