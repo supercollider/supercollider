@@ -5,21 +5,22 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016e6}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #456c20}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
 span.s1 {color: #000000}
 span.s2 {text-decoration: underline}
-span.s3 {color: #091fb1}
-span.s4 {color: #606060}
+span.s3 {color: #001bb9}
+span.s4 {color: #ad140d}
+span.s5 {color: #2c7014}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -35,32 +36,66 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s1">See also <a href="FFT Overview.html"><span class="s2">FFT Overview</span></a>.</span></p>
 <p class="p2"><br></p>
 <p class="p5">s.boot;</p>
+<p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p5">b = <span class="s3">Buffer</span>.alloc(s,2048,1);</p>
-<p class="p5">c = <span class="s3">Buffer</span>.alloc(s,2048,1);</p>
-<p class="p6"><span class="s1">d = </span><span class="s3">Buffer</span><span class="s1">.read(s,</span>"sounds/a11wlk01.wav"<span class="s1">);</span></p>
-<p class="p5">)</p>
-<p class="p7"><br></p>
+<p class="p5">{</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> inA, chainA, inB, chainB, chain ;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s3">Saw</span>.ar(<span class="s3">LFNoise1</span>.kr(2).exprange(10, 1000));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inB =<span class="Apple-converted-space">  </span><span class="s3">Pulse</span>.ar(<span class="s3">LFNoise1</span>.kr(2).exprange(10, 1000));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), inA);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), inB);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_Max</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>0.1 * <span class="s3">IFFT</span>(chain).dup;</p>
+<p class="p5">}.play</p>
+<p class="p5">);</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p7">// 2-channel version:</p>
+<p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">var</span> exBuf;</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s3">CocoaDialog</span><span class="s1">.getPaths({ </span><span class="s3">arg</span><span class="s1"> paths; </span>//get a second soundfile;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>paths.do({ <span class="s3">arg</span> p; exBuf = <span class="s3">Buffer</span>.read(s, p);</p>
-<p class="p7"><br></p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-max"</span>, { <span class="s3">arg</span> out=0, bufnumA=0, bufnumB=1, soundBufnum1=2, soundBufnum2 = 3;</p>
+<p class="p5">{</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> inA, chainA, inB, chainB, chain ;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s3">Saw</span>.ar(<span class="s3">LFNoise1</span>.kr(2).exprange(10, 1000)); <span class="s4">// same saw through different pulses</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>inB =<span class="Apple-converted-space">  </span><span class="s3">Pulse</span>.ar(<span class="s3">LFNoise1</span>.kr(2.dup).exprange(10, 1000));</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048.dup), inA);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048.dup), inB);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_Max</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>0.1 * <span class="s3">IFFT</span>(chain);</p>
+<p class="p5">}.play</p>
+<p class="p5">);</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s3">SynthDef</span>(<span class="s5">\help_max</span>, { <span class="s3">arg</span> out=0, soundBufnum1=0, soundBufnum2 = 0;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> inA, chainA, inB, chainB, chain ;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s3">PlayBuf</span>.ar(1, soundBufnum1, <span class="s3">BufRateScale</span>.kr(soundBufnum1), loop: 1);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>inB =<span class="Apple-converted-space">  </span><span class="s3">PlayBuf</span>.ar(1, soundBufnum2, <span class="s3">BufRateScale</span>.kr(soundBufnum2), loop: 1);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(bufnumA, inA);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(bufnumB, inB);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), inA);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>chainB = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), inB);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_Max</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.5 * <span class="s3">IFFT</span>(chain).dup);</p>
-<p class="p9"><span class="s1">}).play(s,[</span>\out<span class="s1">, 0, </span>\bufnumA<span class="s1">, b, </span>\bufnumB<span class="s1">, c, </span>\soundBufnum1<span class="s1">, d, </span>\soundBufnum2<span class="s1">, exBuf]);</span></p>
+<p class="p5">}).store;</p>
+<p class="p5">);</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p7"><span class="s1">q = q ? (); </span>// use global dictionary</p>
+<p class="p6"><br></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>q[</span><span class="s5">\bufferA</span><span class="s1">] = </span><span class="s3">Buffer</span><span class="s1">.read(s,</span>"sounds/a11wlk01.wav"<span class="s1">);</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s3">CocoaDialog</span><span class="s1">.getPaths({ </span><span class="s3">arg</span><span class="s1"> paths; </span>// get a second soundfile;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>paths.do({ <span class="s3">arg</span> p;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q[<span class="s5">\bufferB</span>] = <span class="s3">Buffer</span>.read(s, p);</p>
+<p class="p9"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">Synth</span><span class="s1">(</span>\help_max<span class="s1">, [</span>\out<span class="s1">, 0, </span>\soundBufnum1<span class="s1">, q[</span>\bufferA<span class="s1">], </span>\soundBufnum2<span class="s1">, q[</span>\bufferB<span class="s1">]]);</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>})</p>
 <p class="p5">},{</p>
-<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span>"cancelled"<span class="s1">.postln;</span></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>"cancelled"<span class="s1">.postln;</span></p>
 <p class="p5">});</p>
 <p class="p5">)</p>
-<p class="p7"><br></p>
-<p class="p5">b.free; c.free; d.free;</p>
+<p class="p6"><br></p>
+<p class="p5">q[<span class="s5">\bufferA</span>].free;</p>
+<p class="p5">q[<span class="s5">\bufferB</span>].free;</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
 </body>
 </html>
