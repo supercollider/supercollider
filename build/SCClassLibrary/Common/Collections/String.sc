@@ -40,6 +40,9 @@ String[char] : RawArray {
 		_String_AsFloat
 		^this.primitiveFailed
 	}
+	ascii {
+		^Array.fill(this.size, { |i|Êthis[i].ascii })
+	}
 	
 	stripRTF { 
 		_StripRtf
