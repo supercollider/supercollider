@@ -532,7 +532,7 @@ Event : Environment {
 												
 						if (freqs.isKindOf(Symbol).not) {
 							~amp = ~amp.value;
-							~midinote = freqs.cpsmidi;
+							~midinote = (freqs.cpsmidi).round(1).asInteger;
 							strum = ~strum;
 							lag = ~lag;
 							sustain = ~sustain = ~sustain.value;
