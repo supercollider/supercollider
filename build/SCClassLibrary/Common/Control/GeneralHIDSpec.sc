@@ -122,7 +122,7 @@ GeneralHIDSpec{
 		var file, res = false;
 		var filename;
 		all.put( name.asSymbol, info );
-		if ( this.class.checkSaveFolder.not ) { this.class.makeSaveFolder };
+		if (  GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
 		filename = folder +/+ name ++ ".spec";
 		file = File(filename, "w"); 
 		if (file.isOpen) { 
@@ -136,7 +136,7 @@ GeneralHIDSpec{
 	*saveAll{
 		var file, res = false;
 		var filename;
-		if ( this.class.checkSaveFolder.not ) { this.class.makeSaveFolder };
+		if ( GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
 		filename = folder +/+ "allspecs.info";
 		file = File(filename, "w"); 
 		if (file.isOpen) { 
@@ -147,7 +147,7 @@ GeneralHIDSpec{
 	}
 
 	fromFile { |name|
-		if ( this.class.checkSaveFolder.not ) { this.class.makeSaveFolder };
+		if (  GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
 		map = (folder +/+ name++".spec").load;
 		map.keysValuesDo{ |key,it|
 			this.at( key ).key = key;

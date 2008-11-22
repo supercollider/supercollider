@@ -65,6 +65,10 @@ A uniform class to a slot of an HID device.
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set the current value of the slot to val. This is only sensible when the slot represents an LED on the device.</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 
+<p class="p6"><b><span class="Apple-tab-span">	</span>rawValue</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Return the unscaled value of the slot.</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+
 <p class="p6"><b><span class="Apple-tab-span">	</span>action_(arg function)</b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Assign a function to the slot. The function has as an argument the slot.</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
@@ -79,6 +83,10 @@ A uniform class to a slot of an HID device.
 
 <p class="p6"><b><span class="Apple-tab-span">	</span>freeBus</b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Free the bus on the server.</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+
+<p class="p6"><b><span class="Apple-tab-span">	</span>kr</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>JITLib support. This calls .createBus, and returns an In.kr on the bus for you.</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 
 <p class="p11"><b>Example</b></p>
