@@ -85,6 +85,10 @@ GeneralHIDInfo{
 	init{
 	}
 
+	findArgs{
+		^[ vendor, product, physical, version ];
+	}
+
 	printOn { | stream |
 		super.printOn(stream);
 		stream << $( << name << ", ";

@@ -155,6 +155,13 @@ you should include it in your code).</p>
 
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Check status of eventloop.</p>
 
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+
+<p class="p6"><b><span class="Apple-tab-span">	</span>*findBy( vendorID, productID, locID, versionID )
+</b></p>
+
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Find a device by its vendorID (manufacturer), productID (product identifier as given by manufacturer), locID (identifier for the physical connection to your computer, and versionID (a version of the product, as given by the manufacturer).</p>
+
 <p class="p7"><b><span class="Apple-tab-span">	<br>
 <br>
 </span></b></p>
@@ -164,7 +171,7 @@ you should include it in your code).</p>
 
 
 <p class="p1"><b>See </b> <a href="GeneralHIDDevice.html"><span class="s2">GeneralHIDDevice</span></a> for a documentation of the methods to access an HID device.</p>
-<p class="p1">
+<p class="p1"><b>See </b> <a href="GeneralHIDDeviceSpec.html"><span class="s2">GeneralHIDDeviceSpec</span></a> for a documentation of how to access slots by name, instead of numbers.
 </p>
 
 
@@ -196,6 +203,27 @@ you should include it in your code).</p>
 
 <p class="p14">a.info;</p>
 
+<p class="p13">// if you want to automatically find the device when you restart you can use the GeneralHID.findBy method. To get the arguments you should use for this function, you can use:</p>
+<p class="p14">a.info.findArgs;</p>
+
+<p class="p13">// this outputs for my Impact gamepad:</p>
+<p class="p14">[ 1973, 786, usb-0000:00:1d.0-1/input0, 272 ]</p>
+
+<p class="p13">// close the device, as we will reopen it in the next lines</p>
+<p class="p14">a.close;</p>
+
+<p class="p13">// if we know which device we want, we can find it:</p>
+<p class="p14">b = GeneralHID.findBy( 1973, 786, "usb-0000:00:1d.0-1/input0", 272 );</p>
+
+<p class="p13">// if you do not care about the version or the location, you can also do:</p>
+<p class="p14">b = GeneralHID.findBy( 1973, 786 );</p>
+
+<p class="p13">// or if you do not even care about the productID</p>
+<p class="p14">b = GeneralHID.findBy( 1973 );</p>
+
+<p class="p13">// you can then open it by:</p>
+<p class="p14">a = GeneralHID.open( b )</p>
+
 <p class="p13">// Start eventloop:</p>
 
 <p class="p14"><span class="s8">GeneralHID</span>.startEventLoop</p>
@@ -203,6 +231,14 @@ you should include it in your code).</p>
 <p class="p13">// Get the capabilities of the device in a readable format:</p>
 
 <p class="p14">a.caps;</p>
+
+<p class="p13">
+// there are different types of slots:<br>
+// button (type 1), has only on/off (1/0) states<br>
+// relative (type 2), counts up or down (scrollwheel for example)<br>
+// absolute (type 3), continuous value between 0 and 1<br>
+// some other may show up on Linux ( Syn (type 0) and Miscellaneous (type 4), but these are generally not very useful).
+</p>
 
 <p class="p13">// See if data is coming in:</p>
 
@@ -307,6 +343,26 @@ a.slots[3].at( 1 ).action_( {} );
 
 <p class="p3"><br>
 </p>
+
+<p class="p13">// you can access slots, by giving them a key:</p>
+
+<p class="p14">a.add( \lx, [3,0] );</p>
+
+<p class="p14">a[\lx].debug_( true );</p>
+<p class="p13">// the last item in the output array, now shows the key</p>
+<p class="p14">a[\lx].debug_( false );</p>
+
+<p class="p13">// save the spec for future use:</p>
+<p class="p14">a.spec.save( "Impact_help" );</p>
+
+
+<p class="p13">// find a spec defined previously for this device:</p>
+<p class="p14">c = a.findSpec;</p>
+
+<p class="p13">// set it:</p>
+<p class="p14">a.setSpec( c[0] );</p>
+
+<p class="p13">// more info on this in the [GeneralHIDSpec] helpfile</p>
 
 
 <p class="p13">// If the server is running you can create a control bus
