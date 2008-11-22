@@ -160,7 +160,7 @@ Stream : AbstractFunction {
 	}
 	
 	<> { arg obj; ^Pchain(this, obj).asStream }
-			
+				
 
 	// function composition
 	composeUnaryOp { arg argSelector;
@@ -211,20 +211,23 @@ Stream : AbstractFunction {
 	}
 	
 	trace { arg key, printStream, prefix="";
+		var func;
 		printStream = printStream ? Post;
 		^if(key.isNil) {
 			this.collect {|item| printStream << prefix << item << Char.nl; item }
 		} {
-			this.collect {|item|
-				var val = item.at(key);
+			func = { |val, item, prefix|
 				if(val.isKindOf(Function) and: { item.isKindOf(Environment) }) 
-				{ 
-					val = item.use { val.value };
-					printStream << prefix << val << "\t(printed function value)\n"; 
-				} {
-					printStream << prefix << val << Char.nl;
-				};
-				 
+					{ 
+						val = item.use { val.value };
+						printStream << prefix << val << "\t(printed function value)\n"; 
+					} {
+						printStream << prefix << val << Char.nl;
+					};
+			}.flop;
+			this.collect {|item|
+				var val = item.atAll(key.asArray).unbubble;
+				func.value(val, item, prefix);
 				item 
 			}
 		}
