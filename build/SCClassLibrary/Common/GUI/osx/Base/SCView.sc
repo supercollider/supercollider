@@ -1485,10 +1485,81 @@ SCMultiSliderView : SCView {
 	} //on ctrl click
 }
 
-SCEnvelopeView : SCMultiSliderView {
+SCEnvelopeView : SCView {
 	var connection, <>allConnections, doOnce;
+//	var <>mouseUpAction;
 	var <>items;
 	var < fixedSelection = false;
+	var <>metaAction;
+	var <>size ;
+	var <editable = true;
+
+	draw {}
+	mouseBeginTrack { arg x, y, modifiers;}
+	mouseTrack { arg x, y, modifiers; 	}
+	mouseEndTrack { arg x, y, modifiers;
+		mouseUpAction.value(this);
+	}
+	
+	properties {
+		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \thumbWidth, \absoluteX, \isFilled, \step]
+	}	
+		
+	step_ { arg stepSize;
+		this.setPropertyWithAction(\step, stepSize);
+	}
+	
+	step {
+		^this.getProperty(\step)
+	}
+		
+	valueAction_ { arg val;
+		this.value_(val);
+		this.doAction;
+	}
+	
+	currentvalue { //returns value of selected index
+		^this.getProperty(\y)
+	}
+	currentvalue_ { arg iny;
+		this.setProperty(\y, iny)
+	}
+		showIndex_ { arg abool;
+		this.setProperty(\showIndex, abool)
+		}
+	
+	strokeColor_ { arg acolor;
+		this.setProperty(\strokeColor, acolor)
+	}
+	colors_ { arg strokec, fillc;
+		this.strokeColor_(strokec);
+		this.fillColor_(fillc);
+	}
+	
+	drawLines { arg abool;
+		this.setProperty(\drawLines, abool)
+	}
+	drawLines_ { arg abool;
+		this.drawLines(abool)
+	}
+	drawRects_ { arg abool;
+		this.setProperty(\drawRects, abool)
+	}
+	
+	defaultCanReceiveDrag {	^true; }
+			
+	defaultKeyDownAction { arg key, modifiers, unicode;
+		//modifiers.postln; 16rF702
+		if (unicode == 16rF703, { this.index = this.index + 1; ^this });
+		if (unicode == 16rF702, { this.index = this.index - 1; ^this });
+		if (unicode == 16rF700, { this.gap = this.gap + 1; ^this });
+		if (unicode == 16rF701, { this.gap = this.gap - 1; ^this });
+		^nil		// bubble if it's an invalid key
+	}
+	
+	doMetaAction{ 
+		metaAction.value(this)
+	} //on ctrl click
 	
 	value_ { arg val;
 		if(val.at(1).size != val.at(0).size,{
