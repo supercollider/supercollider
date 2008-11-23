@@ -65,8 +65,8 @@ Here is a simple example of its use:
 			this[\server].sendBundle( this[\latency],  *(msg.flop) )
 		}
 	}
-	set{ | key, value | 
-		this.sendOSC([15, this[\id], key, value]); 
+	set{ | ... args | 
+		this.sendOSC([15, this[\id], *(args.asOSCArgArray)]); 
 		this[key] = value;
 	}
 		
