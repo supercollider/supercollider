@@ -177,13 +177,13 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			case  'f' :
 			case  'i' :
 			    float32 value = msg->getf();
-			    Graph_MapControl(graph, index + i, value);
+			    Graph_SetControl(graph, index + i, value);
 			    break;
 			case 's' :
 			    const char* string = msg->gets();
 			    if ( *string == 'c') {
 				int bus = sc_atoi(string+1);
-				Graph_SetControl(graph, index + i, bus);
+				Graph_MapControl(graph, index + i, bus);
 			    }
 			    break;
 			case ']':
