@@ -136,38 +136,135 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	// set controls
 	//if argtype == true -> normal args as always 
 	//if argtype == false -> setn type args
-	if(argtype){
-
-	  while (msg->remain() >= 8) {
-		if (msg->nextTag('i') == 's') {
-			int32* name = msg->gets4();
-			int32 hash = Hash(name);
-			if (msg->nextTag('f') == 's') {
-				const char* string = msg->gets();
-				if (*string == 'c') {
-					int bus = sc_atoi(string+1);
-					Graph_MapControl(graph, hash, name, 0, bus);
-				}
-			} else {
-				float32 value = msg->getf();
-				Graph_SetControl(graph, hash, name, 0, value);
-			}
-		} else {
-			int32 index = msg->geti();
-			if (msg->nextTag('f') == 's') {
-				const char* string = msg->gets();
-				if (*string == 'c') {
-					int bus = sc_atoi(string+1);
-					Graph_MapControl(graph, index, bus);
-				}
-			} else {
-				float32 value = msg->getf();
-				Graph_SetControl(graph, index, value);
-			}
+    if(argtype) {
+	while( msg->remain()>=8) {
+	    int i = 0;
+	    int loop = 0;
+	    if (msg->nextTag('i') == 's') {
+		int32* name = msg->gets4();
+		int32 hash = Hash(name);
+		do {
+		    switch (msg->nextTag('f') ) {
+			case  'f' :
+			case  'i' :
+			    float32 value = msg->getf();
+			    Graph_SetControl(graph, hash, name, i, value);
+			    break;
+			case 's' :
+			    const char* string = msg->gets();
+			    if ( *string == 'c') {
+				int bus = sc_atoi(string+1);
+				Graph_MapControl(graph, hash, name, i, bus);
+			    }
+			    break;
+			case ']':
+			    msg->count++;
+			    loop -= 1;
+			    break;
+			case '[':
+			    msg->count++;
+			    loop += 1;
+			    i -= 1;
+			    break;
+		    }
+		    ++i;
 		}
-	  }
-
-	}else{
+		while (loop);
+	    } else {
+		int32 index = msg->geti();
+		do {
+		    switch (msg->nextTag('f') ) {
+			case  'f' :
+			case  'i' :
+			    float32 value = msg->getf();
+			    Graph_MapControl(graph, index + i, value);
+			    break;
+			case 's' :
+			    const char* string = msg->gets();
+			    if ( *string == 'c') {
+				int bus = sc_atoi(string+1);
+				Graph_SetControl(graph, index + i, bus);
+			    }
+			    break;
+			case ']':
+			    msg->count++;
+			    loop -= 1;
+			    break;
+			case '[':
+			    msg->count++;
+			    loop += 1;
+			    i -= 1;
+			    break;
+		    }
+		    ++i;
+		}
+		while (loop);
+	    }
+	}
+	
+    }
+    
+    
+	    //{
+//	    while( msg->remain()>=8) {
+//		int i = 0;
+//		int loop = 0;
+//		if (msg->nextTag('i') == 's') {
+//		    int32* name = msg->gets4();
+//		    int32 hash = Hash(name);
+//		    if (msg->nextTag('f') == '[' ) {
+//			    msg->count++;
+//			    loop = 1;
+//		    }
+//		    do {
+//			if (msg->nextTag('f') == 's' ) {
+//			    const char* string = msg->gets();
+//			    if ( *string == 'c') {
+//				int bus = sc_atoi(string+1);
+//				Graph_MapControl(graph, hash, name, i, bus);
+//			    }
+//			} else {
+//			    if (msg->nextTag('f') == ']' ) {
+//				msg->count++;
+//				loop = 0;
+//			    } else {
+//				float32 value = msg->getf();
+//				Graph_SetControl(graph, hash, name, i, value);
+//			    }
+//			}
+//			++i;
+//		    }
+//		    while (loop);
+//		} else {
+//		    int32 index = msg->geti();
+//		    if (msg->nextTag('f') == '[' ) {
+//			msg->count++;
+//			loop = 1;
+//		    }
+//		    do {
+//			if (msg->nextTag('f') == 's') {
+//			    const char* string = msg->gets();
+//			    if (*string == 'c') {
+//				int bus = sc_atoi(string+1);
+//				Graph_MapControl(graph, index + i, bus);
+//			    }
+//			} else {
+//			    if (msg->nextTag('f') == ']' ) {
+//				msg->count++;
+//				loop = 0;
+//			    } else {
+//				float32 value = msg->getf();
+//				Graph_SetControl(graph, index + i, value);
+//			    }
+//			}
+//			++i;
+//		    }
+//		    while (loop);
+//		}
+//	    }
+//	    
+//	}
+	else{
 
 	  while (msg->remain()) {
 		if (msg->nextTag('i') == 's') {
