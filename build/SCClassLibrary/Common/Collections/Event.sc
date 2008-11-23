@@ -399,10 +399,16 @@ Event : Environment {
 							~sustain = sustain = ~sustain.value;
 			
 							// compute the control values and generate OSC commands
-							bndl = msgFunc.valueEnvir.asControlInput;							bndl = [\s_new, instrumentName, ids, Node.actionNumberFor(~addAction), ~group.asControlInput] ++ bndl; 
+//							bndl = msgFunc.valueEnvir.asControlInput;							bndl = [\s_new, instrumentName, ids, Node.actionNumberFor(~addAction), ~group.asControlInput] ++ bndl; 
+//							bndl = bndl.flop;
+//							ids = Array.fill(bndl.size, {server.nextNodeID });
+//							bndl.do { | msg, i | msg[2] = ids[i]  };
+
+
+							bndl = msgFunc.valueEnvir;							bndl = [\s_new, instrumentName, ids, Node.actionNumberFor(~addAction), ~group] ++ bndl; 
 							bndl = bndl.flop;
 							ids = Array.fill(bndl.size, {server.nextNodeID });
-							bndl.do { | msg, i | msg[2] = ids[i]  };
+							bndl = bndl.collect { | msg, i | msg[2] = ids[i]; msg.asOSCArgArray  };
 							
 							// determine how to send those commands
 							lag = ~lag;
@@ -446,12 +452,23 @@ Event : Environment {
 									~msgFunc = ~defaultMsgFunc;
 								};
 							};
-							bndl = msgFunc.valueEnvir.asControlInput;
-							bndl = [\s_new, instrumentName, ~id, Node.actionNumberFor(~addAction), ~group.asControlInput] ++ bndl; 
+//							bndl = msgFunc.valueEnvir.asControlInput;
+//							bndl = [\s_new, instrumentName, ~id, Node.actionNumberFor(~addAction), ~group.asControlInput] ++ bndl; 
+//							bndl = bndl.flop;
+//							if ( (ids = ~id).isNil ) {
+//								ids = Array.fill(bndl.size, {server.nextNodeID });
+//								bndl.do { | msg, i | msg[2] = ids[i]  };
+//							};
+//							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
+							bndl = msgFunc.valueEnvir;
+							bndl = [\s_new, instrumentName, ~id, Node.actionNumberFor(~addAction), ~group] ++ bndl; 
 							bndl = bndl.flop;
 							if ( (ids = ~id).isNil ) {
 								ids = Array.fill(bndl.size, {server.nextNodeID });
-								bndl.do { | msg, i | msg[2] = ids[i]  };
+								bndl = bndl.collect { | msg, i | msg[2] = ids[i]; msg.asOSCArgArray  };
+							} {
+								bndl = bndl.collect { | msg, i | msg.asOSCArgArray  };
+							
 							};
 							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
 						};
@@ -474,7 +491,9 @@ Event : Environment {
 							} {	
 								bndl = ~args.envirPairs;
 							};
-							bndl = ([\n_set, ~id.asControlInput] ++  bndl).asControlInput.flop;
+//							bndl = ([\n_set, ~id.asControlInput] ++  bndl).asControlInput.flop;
+
+							bndl = ([\n_set, ~id] ++  bndl).flop.asOSCArgArray;
 							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
 						};
 					},
@@ -594,6 +613,7 @@ Event : Environment {
 							~sustain = ~sustain.value;
 				
 							bndl = ([\n_set, ~id.asControlInput] ++ ~msgFunc.valueEnvir).flop;
+							bndl = bndl.collect(_.asOSCArgArray);
 							~schedBundle.value(~lag, ~timingOffset, server, *bndl);
 						};
 					},
@@ -616,6 +636,7 @@ Event : Environment {
 						if ((addAction == 0) || (addAction == 3)) {
 							bndl = bndl.reverse;
 						};
+						bndl = bndl.collect(_.asOSCArgArray);
 						~schedBundle.value(~lag, ~timingOffset, server, *bndl);
 						~updatePmono.value(ids, server);
 					},
@@ -651,6 +672,9 @@ Event : Environment {
 						if ((addAction == 0) || (addAction == 3)) {
 							bndl = bndl.reverse;
 						};
+						
+						bndl = bndl.collect(_.asOSCArgArray);
+						
 						server.sendBundle(server.latency, *bndl);
 						~id = ids;
 						~isPlaying = true;	 
@@ -759,6 +783,8 @@ Event : Environment {
 				
 					bndl = ( [\s_new, instrumentName, ids, addAction, group]
 						 ++ msgFunc.valueEnvir).flop;
+					bndl = bndl.collect(_.asOSCArgArray);
+					
 					ids = Event.checkIDs(~id);
 					if (ids.isNil ) {
 						bndl.do { | b |
