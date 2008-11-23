@@ -41,7 +41,7 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	ascii {
-		^Array.fill(this.size, { |i|Êthis[i].ascii })
+		^Array.fill(this.size, { |i| this[i].ascii })
 	}
 	
 	stripRTF { 
