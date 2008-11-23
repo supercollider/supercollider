@@ -66,8 +66,7 @@ Here is a simple example of its use:
 		}
 	}
 	set{ | ... args | 
-		this.sendOSC([15, this[\id], *(args.asOSCArgArray)]); 
-		this[key] = value;
+		this.sendOSC([15, this[\id]] ++ (args.asOSCArgArray)); 
 	}
 		
 	stop { this.use { ~stop.value }  }
