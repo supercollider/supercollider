@@ -182,9 +182,11 @@ void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 			packet->addtag('i');
 			packet->addi(1);
 			break;
+		case tagChar :
+		    packet->addtag(slot->uc);
+		    break;
 		case tagFalse :
 		case tagNil :
-		case tagChar :
 		case tagPtr :
 			packet->addtag('i');
 			packet->addi(0);
@@ -263,6 +265,8 @@ int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElap
 	int err;
 	int64 oscTime;
 	
+	post("%i",size);
+    
 	err = slotDoubleVal(slots, &time);
 	if (!err) {
 		if (useElapsed) {
