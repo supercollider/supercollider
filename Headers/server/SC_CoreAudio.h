@@ -180,6 +180,13 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 									const AudioTimeStamp* inOutputTime,
 									void* defptr);
 
+	friend OSStatus appIOProcSeparateIn (AudioDeviceID device, const AudioTimeStamp* inNow, 
+						const AudioBufferList* inInputData,
+						const AudioTimeStamp* inInputTime, 
+						AudioBufferList* outOutputData, 
+						const AudioTimeStamp* inOutputTime,
+						void* defptr);
+
 protected:
     // Driver interface methods
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
