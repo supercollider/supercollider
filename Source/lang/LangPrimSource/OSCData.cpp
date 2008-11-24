@@ -265,8 +265,6 @@ int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElap
 	int err;
 	int64 oscTime;
 	
-	post("%i",size);
-    
 	err = slotDoubleVal(slots, &time);
 	if (!err) {
 		if (useElapsed) {
