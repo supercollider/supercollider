@@ -94,8 +94,8 @@ int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 			if(localBufNum <= parent->localMaxBufNum) { 
 				buf = parent->mLocalSndBufs + localBufNum;
 			} else { 
-				bufnum = 0; 
-				buf = world->mSndBufs + bufnum; 
+				if(unit->mWorld->mVerbosity > -1){ Print("FFTBase_Ctor error: invalid buffer number: %i.\n", bufnum); }
+				return 0;
 			}
 	} else {
 			buf = world->mSndBufs + bufnum; 
@@ -103,7 +103,7 @@ int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 	
 	
 	if (!buf->data) {
-		Print("FFTBase_Ctor error: Buffer %i not initialised.\n", bufnum);
+		if(unit->mWorld->mVerbosity > -1){ Print("FFTBase_Ctor error: Buffer %i not initialised.\n", bufnum); }
 		return 0;
 	}
 	
@@ -153,6 +153,7 @@ void FFT_Ctor(FFT *unit)
 		// These zeroes are to prevent the dtor freeing things that don't exist:
 		unit->m_inbuf = 0;
 		unit->m_transformbuf = 0;
+		unit->m_scfft = 0;
 		return;
 	}
 	int fullbufsize = unit->m_fullbufsize * sizeof(float);
@@ -348,12 +349,33 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 
 void FFTTrigger_Ctor(FFTTrigger *unit)
 {
+	
 	World *world = unit->mWorld;
 
+/*
 	uint32 bufnum = (uint32)IN0(0);
-	//Print("FFTBase_Ctor: bufnum is %i\n", bufnum);
+	Print("FFTTrigger_Ctor: bufnum is %i\n", bufnum);
 	if (bufnum >= world->mNumSndBufs) bufnum = 0;
 	SndBuf *buf = world->mSndBufs + bufnum; 
+*/
+	
+	
+	uint32 bufnum = (uint32)IN0(0);
+	//Print("FFTTrigger_Ctor: bufnum is %i\n", bufnum);
+	SndBuf *buf;
+	if (bufnum >= world->mNumSndBufs) {
+			int localBufNum = bufnum - world->mNumSndBufs; 
+			Graph *parent = unit->mParent; 
+			if(localBufNum <= parent->localMaxBufNum) { 
+				buf = parent->mLocalSndBufs + localBufNum;
+			} else { 
+				bufnum = 0; 
+				buf = world->mSndBufs + bufnum; 
+			}
+	} else {
+			buf = world->mSndBufs + bufnum; 
+	}
+	
 	
 	unit->m_fftsndbuf = buf;
 	unit->m_fftbufnum = bufnum;
