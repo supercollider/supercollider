@@ -117,19 +117,30 @@ void Unpack1FFT_Ctor(Unpack1FFT* unit)
 
 
 #define UNPACK1FFT_NEXT_COMMON 		float fbufnum = ZIN0(0); \
-		if (fbufnum < 0.f) { \
-			if(unit->mWorld->mVerbosity > -1){ \
-				Print("Unpack1FFT_next: warning, fbufnum < 0\n"); \
-			} \
-			ZOUT0(0) = unit->outval; \
-			return; \
+	if (fbufnum < 0.f) { \
+		if(unit->mWorld->mVerbosity > -1){ \
+			Print("Unpack1FFT_next: warning, fbufnum < 0\n"); \
 		} \
-		uint32 ibufnum = (uint32)fbufnum; \
-		World *world = unit->mWorld; \
-		if (!(ibufnum < world->mNumSndBufs)) ibufnum = 0; \
-		SndBuf *buf = world->mSndBufs + ibufnum; \
-		int binindex = unit->binindex; \
-		SCComplexBuf *p = ToComplexApx(buf);
+		ZOUT0(0) = unit->outval; \
+		return; \
+	} \
+	uint32 ibufnum = (uint32)fbufnum; \
+	World *world = unit->mWorld; \
+	if (!(ibufnum < world->mNumSndBufs)) ibufnum = 0; \
+	SndBuf *buf; \
+	if (ibufnum >= world->mNumSndBufs) { \
+		int localBufNum = ibufnum - world->mNumSndBufs; \
+		Graph *parent = unit->mParent; \
+		if(localBufNum <= parent->localBufNum) { \
+			buf = parent->mLocalSndBufs + localBufNum; \
+		} else { \
+			buf = world->mSndBufs; \
+		} \
+	} else { \
+		buf = world->mSndBufs + ibufnum; \
+	} \
+	int binindex = unit->binindex; \
+	SCComplexBuf *p = ToComplexApx(buf);
 
 
 
