@@ -10,17 +10,15 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 22.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #576638}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #5a653b}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #753321; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {color: #000000}
 span.s2 {text-decoration: underline}
-span.s3 {color: #001bb9}
-span.s4 {color: #0000bf}
+span.s3 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -53,20 +51,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s1">See also <a href="FFT Overview.html"><span class="s2">FFT Overview</span></a>.</span></p>
 <p class="p2"><br></p>
 <p class="p6"><br></p>
-<p class="p6"><br></p>
-<p class="p7">// Examples</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><br></p>
+<p class="p8">// Examples</p>
+<p class="p7"><br></p>
+<p class="p8">// external sound in<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9">(</p>
 <p class="p9">{</p>
-<p class="p9"><span class="Apple-converted-space"> </span><span class="s3">var</span> source1, detect;</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>source1= <span class="s3">SoundIn</span>.ar(0);<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>detect= <span class="s3">PV_JensenAndersen</span>.ar(<span class="s3">FFT</span>(<span class="s4">LocalBuf</span>(2048), source1), threshold:<span class="s3">MouseX</span>.kr(0.1,1.0));</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0,<span class="s3">SinOsc</span>.ar([440,445], 0, <span class="s3">Decay</span>.ar(0.1 * detect, 0.1)));</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">var</span> source1, detect;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>source1 = <span class="s3">SoundIn</span>.ar(0);<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>detect = <span class="s3">PV_JensenAndersen</span>.ar(<span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), source1), threshold:<span class="s3">MouseX</span>.kr(0.1,1.0));</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">SinOsc</span>.ar([440, 445], 0, <span class="s3">Decay</span>.ar(0.1 * detect, 0.1));</p>
 <p class="p9">}.play;<span class="Apple-tab-span">	</span></p>
 <p class="p9">)</p>
-<p class="p10"><br></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p8">// using test sound:<span class="Apple-converted-space"> </span></p>
+<p class="p8">// mouse y is difficulty, mouse x is threshold</p>
+<p class="p9">(</p>
+<p class="p9">{</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">var</span> source1, detect, difficulty, rate;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>rate = <span class="s3">LFNoise1</span>.kr(0.3).exprange(1, 5);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>difficulty = <span class="s3">MouseY</span>.kr(0.01, 0.4, 1);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>source1 = <span class="s3">Decay</span>.ar(<span class="s3">Impulse</span>.ar(rate), 0.5 / rate, 1 - difficulty, difficulty);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>source1 = source1 * <span class="s3">PinkNoise</span>.ar(1.dup);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>detect = <span class="s3">PV_JensenAndersen</span>.ar(<span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), source1), threshold: <span class="s3">MouseX</span>.kr(0.1,1.0));</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">SinOsc</span>.ar([440, 445], 0, <span class="s3">Decay</span>.ar(0.1 * detect, 0.1)) + source1;</p>
+<p class="p9">}.play;<span class="Apple-tab-span">	</span></p>
+<p class="p9">)</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
 </body>
 </html>
