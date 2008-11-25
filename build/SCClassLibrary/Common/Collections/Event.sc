@@ -467,7 +467,7 @@ Event : Environment {
 								ids = Array.fill(bndl.size, {server.nextNodeID });
 								bndl = bndl.collect { | msg, i | msg[2] = ids[i]; msg.asOSCArgArray  };
 							} {
-								bndl = bndl.collect { | msg, i | msg.asOSCArgArray  };
+								bndl = bndl.asOSCArgBundle;
 							
 							};
 							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
@@ -493,7 +493,7 @@ Event : Environment {
 							};
 //							bndl = ([\n_set, ~id.asControlInput] ++  bndl).asControlInput.flop;
 
-							bndl = ([\n_set, ~id] ++  bndl).flop.asOSCArgArray;
+							bndl = ([\n_set, ~id] ++  bndl).flop.asOSCArgBundle;
 							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
 						};
 					},
