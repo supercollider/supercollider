@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #5d638e; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #636a99}
+span.s3 {color: #000000}
+span.s4 {color: #4c5db6}
+span.s5 {text-decoration: underline}
+span.s6 {text-decoration: underline ; color: #5d638e}
+span.s7 {color: #3e54c5}
+span.s8 {color: #2946d8}
+span.s9 {text-decoration: underline ; color: #596194}
+span.s10 {color: #5d67a2}
+span.s11 {font: 12.0px Helvetica}
+span.s12 {color: #0000bf}
+span.s13 {font: 14.0px Helvetica}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>SCContainerView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>an abstract superclass for container views</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a></p>
+<p class="p3"><br></p>
+<p class="p1">Users will not normally directly create instances of SCContainerView, but only use it through its subclasses. It provides the basic mechanisms for container views<span class="Apple-converted-space">  </span>of various kinds, which are used for placing and grouping widgets in a window.</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s3"><b>See also: </b><a href="SCTopView.html"><span class="s4">SCTopView</span></a><b>,</b> <a href="SCCompositeView.html"><span class="s5">SCCompositeView</span></a>, <a href="SCHLayoutView.html"><span class="s5">SCHLayoutView</span></a>, <a href="SCVLayoutView.html"><span class="s5">SCVLayoutView</span></a>, <a href="SCScrollView.html"><span class="s5">SCScrollView</span></a></span><span class="s2"> <a href="SCScrollTopView.html"><span class="s6">SCScrollTopView</span></a></span></p>
+<p class="p5"><br></p>
+<p class="p6"><b>Some Important Issues Regarding SCContainerView</b></p>
+<p class="p2"><br></p>
+<p class="p1">Container views are meant for placing and grouping child views and widgets. While they accept key actions, many do not accept mouse cklicks or drags.<span class="Apple-converted-space">  </span>The exception is <a href="SCTopView.html"><span class="s4">SCTopView</span></a> and its subclasses.</p>
+<p class="p7"><br></p>
+<p class="p8"><b>Accessing Instance and Class Variables</b></p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>decorator_(arg1)</b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>decorator</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An automatic layout management for a container. Currently the only one existing is <a href="FlowLayout.html"><span class="s2">FlowLayout</span></a>.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(note: Crucial Library also has a useful layout tool called <a href="../Libraries/crucial/Gui/GridLayout.html"><span class="s7">GridLayout</span></a><span class="s7">.)</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>children</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An array containing all the views (children) contained in the the container</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>relativeOrigin</b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>relativeOrigin_ (bool)</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under<span class="Apple-converted-space">  </span><a href="SCCompositeView.html"><span class="s8">SCCompositeView</span></a>.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>. Defaults to false, but some subclasses override this with true.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b>Adding and Removing Subviews</b></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>add (child)</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds a view to <b>children</b>. The placement of the child view will depend on the<span class="Apple-converted-space">  </span>the <b>decorator</b>, the <b>relativeOrigin</b> flag, and child's <b>bounds</b>. Nomally you don't need to call this directly, since subviews call it automatically when you create them.</p>
+<p class="p7"><br></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>removeAll</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Removes all children from the view</p>
+<p class="p7"><br></p>
+<p class="p8"><b>Some Convenience Methods from Crucial Library</b></p>
+<p class="p13"><br></p>
+<p class="p10">See <a href="../Libraries/crucial/CRUCIAL-LIBRARY.html"><span class="s9">CRUCIAL-LIBRARY</span></a> , in particlular <a href="../Libraries/crucial/Gui/FlowView.html"><span class="s10">FlowView</span></a></p>
+<p class="p7"><br></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>flow (func, bounds) </b>- Places a <a href="../Libraries/crucial/Gui/FlowView.html"><span class="s10">FlowView</span></a> inside the containter.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>horz (func, bounds) </b>- Places an <a href="SCHLayoutView.html"><span class="s2">SCHLayoutView</span></a> inside the containter.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>vert (func, bounds) </b>- Places an <a href="SCVLayoutView.html"><span class="s2">SCVLayoutView</span></a> inside the containter.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>comp (func, bounds) </b>- Places an <a href="SCCompositeView.html"><span class="s2">SCCompositeView</span></a> inside the containter.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>scroll (func, bounds, autohidesScrollers, autoScrolls, hasHorizontalScroller, hasVerticalScroller) </b>- Places an <a href="SCScrollView.html"><span class="s2">SCScrollView</span></a> inside the containter.</p>
+<p class="p14"><span class="s11"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p14"><span class="Apple-tab-span">	</span>w = <span class="s12">SCWindow</span>.new.front;</p>
+<p class="p14"><span class="Apple-tab-span">	</span>w.view.comp({<span class="s12">arg</span> w;</p>
+<p class="p15"><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">SCSlider</span>.new(w,<span class="s12">Rect</span>(20,20,150,20));</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">SCSlider</span>.new(w,<span class="s12">Rect</span>(40,50,150,20));</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">SCSlider</span>.new(w,<span class="s12">Rect</span>(60,80,150,20));</p>
+<p class="p15"><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span>});</p>
+<p class="p14"><span class="Apple-tab-span">	</span>)</p>
+<p class="p14"><span class="s11"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p14"><span class="Apple-tab-span">	</span>w = <span class="s12">SCWindow</span>.new.front;</p>
+<p class="p14"><span class="Apple-tab-span">	</span>w.view.vert({<span class="s12">arg</span> w;</p>
+<p class="p15"><span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s12">SCSlider</span><span class="s3">.new(w,</span><span class="s12">Rect</span><span class="s3">(20,20,150,20));</span>// notice how the bound widths no longer matter</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">SCSlider</span>.new(w,<span class="s12">Rect</span>(40,50,150,20));</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">SCSlider</span>.new(w,<span class="s12">Rect</span>(60,80,150,20));</p>
+<p class="p15"><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span>});</p>
+<p class="p14"><span class="Apple-tab-span">	</span>)</p>
+<p class="p15"><br></p>
+<p class="p8"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
+<p class="p10"><span class="s13"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
+<p class="p7"><br></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>init (argParent, argBounds)</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>prRemoveChild (child) </b>private method</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>prClose </b>private method</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+</body>
+</html>
