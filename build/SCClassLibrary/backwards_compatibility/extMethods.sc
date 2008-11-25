@@ -39,32 +39,7 @@
 		^Server.default.sampleRate ? Server.default.options.sampleRate ? 44100.0
 	}
 
-
-	/** temporary testing place holder **/
-	*newkv { arg defName, args, target, addAction=\addToHead;
-		var synth, server, addNum, inTarget;
-		inTarget = target.asTarget;
-		server = inTarget.server;
-		addNum = addActions[addAction];
-		synth = this.basicNew(defName, server);
-
-		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
-		server.sendMsg('s_new', //"s_newargs"
-			defName, synth.nodeID, addNum, inTarget.nodeID,
-			*(args.asOSCArgArray)
-			);
-		^synth
-	}
-
 }
-
-+Node {	
-	setkv { arg ... args;
-		server.sendMsg(15, nodeID, *(args.asOSCArgArray));  //"/n_set"
-	}
-
-}
-
 
 +RawArray {
 
@@ -82,32 +57,47 @@
 	
 }
 
-+Object { 
-	asOSCArgSubArray { | array| ^array.add(this.asControlInput) }
-	addAsControlInput { | array| ^array.add(this.asControlInput) }
+
+// The following interface in an optimized version of asControlInput that
+// flattens arrayed values and marks the outermost array of a value with $[ and $] 
+// These Chars are turning into typetags ([ and ]) in the OSC message to mark that array
+// Inner arrays are flattened (they are not meaningful in the server context)
+// This makes it possible to write Synth("test", [0, [[100,200,300], [0.1,0.2,0.3], [10,20,30]] ])
+// and have all the arguments be assigned to consecutive controls in the synth.
+
++Array {
+
+	asOSCArgBundle {
+		var array = Array(100);		// allocate a bunch of space
+		this.do { | msg | array = array.add(msg.asOSCArgArray) };
+		^array
+	}
+
+	asOSCArgArray {
+		var array = Array(100);		// allocate a bunch of space
+		this.do { | e | array = e.asOSCArgEmbeddedArray(array) };
+		^array
+	}
+	
+	asOSCArgEmbeddedArray { | array|
+		array = array.add($[);
+		this.do{ | e | array = e.asOSCArgAddedToArray(array) };
+		array.add($]);
+		^array;
+	}
+	asOSCArgAddedToArray { | array|
+		this.do{ | e | array = e.asOSCArgEmbeddedArray(array) };
+		^array;
+	}
+
+}		
+
++Object {Ê
+	asOSCArgEmbeddedArray { | array| ^array.add(this.asControlInput) }
+	asOSCArgAddedToArray { | array| ^array.add(this.asControlInput) }
 }
 
 +Nil {
 	asOSCArgArray {}
 }
 	
-+Array {
-	asOSCArgArray {
-		var array = Array(100);		// allocate a bunch of space
-		this.do { | e | array = e.asOSCArgSubArray(array) };
-		^array
-	}
-	
-	asOSCArgSubArray { | array|
-		array = array.add($[);
-		this.do{ | e | array = e.addAsControlInput(array) };
-		array.add($]);
-		^array;
-	}
-
-	addAsControlInput { | array|
-		this.do{ | e | array = e.addAsControlInput(array) };
-		^array;
-	}
-
-}		
