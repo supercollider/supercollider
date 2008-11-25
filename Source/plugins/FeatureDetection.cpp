@@ -82,22 +82,46 @@ extern "C"
   
 }		      
 
+#define PV_FEAT_GET_BUF \
+	uint32 ibufnum = (uint32)fbufnum; \
+	int bufOK = 1; \
+	World *world = unit->mWorld; \
+	SndBuf *buf; \
+	if (ibufnum >= world->mNumSndBufs) { \
+		int localBufNum = ibufnum - world->mNumSndBufs; \
+		Graph *parent = unit->mParent; \
+		if(localBufNum <= parent->localBufNum) { \
+			buf = parent->mLocalSndBufs + localBufNum; \
+		} else { \
+			bufOK = 0; \
+			buf = world->mSndBufs; \
+			if(unit->mWorld->mVerbosity > -1){ Print("FFT Ctor error: Buffer number overrun: %i\n", ibufnum); } \
+		} \
+	} else { \
+		buf = world->mSndBufs + ibufnum; \
+	} \
+	int numbins = buf->samples - 2 >> 1; \
+	if (!buf->data) { \
+			if(unit->mWorld->mVerbosity > -1){ Print("FFT Ctor error: Buffer %i not initialised.\n", ibufnum); } \
+		bufOK = 0; \
+	} \
+	
 
 
 void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase *unit)
 {
-        World *world = unit->mWorld;
-    
-        uint32 bufnum = (uint32)ZIN0(0);
-		if (bufnum >= world->mNumSndBufs) bufnum = 0;
-		SndBuf *buf = world->mSndBufs + bufnum; 
- 
+       
+	    float fbufnum = ZIN0(0); 
+		
+		PV_FEAT_GET_BUF
+	   
 		unit->m_numbins = buf->samples - 2 >> 1;
         int insize = unit->m_numbins * sizeof(float);
-   
-        unit->m_prevframe = (float*)RTAlloc(unit->mWorld, insize);
-   
-        memset(unit->m_prevframe, 0, insize);
+		
+		if(bufOK) {
+			unit->m_prevframe = (float*)RTAlloc(unit->mWorld, insize);
+			memset(unit->m_prevframe, 0, insize);
+		}
     
 	    unit->m_waiting=0;
         unit->m_waitSamp=0;
@@ -106,7 +130,9 @@ void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase *unit)
 
 void PV_OnsetDetectionBase_Dtor(PV_OnsetDetectionBase *unit)
 {
-		RTFree(unit->mWorld, unit->m_prevframe);
+		if(unit->m_prevframe) {
+			RTFree(unit->mWorld, unit->m_prevframe);
+		}
 }
 
 
@@ -145,12 +171,8 @@ void PV_JensenAndersen_next(PV_JensenAndersen *unit, int inNumSamples)
         //if buffer ready to process
         { 
 	 
-			uint32 ibufnum = (uint32)fbufnum; 
-			World *world = unit->mWorld; 
-			if (ibufnum >= world->mNumSndBufs) ibufnum = 0; 
-			SndBuf *buf = world->mSndBufs + ibufnum; 
-			int numbins = buf->samples - 2 >> 1;
-
+			PV_FEAT_GET_BUF
+			
 			SCPolarBuf *p = ToPolarApx(buf);
 					
 			//four spectral features useful for onset detection according to Jensen/Andersen      
@@ -278,15 +300,11 @@ void PV_HainsworthFoote_next(PV_HainsworthFoote *unit, int inNumSamples)
         //if buffer ready to process
         { 
 	 
-		uint32 ibufnum = (uint32)fbufnum; 
-		World *world = unit->mWorld; 
-		if (ibufnum >= world->mNumSndBufs) ibufnum = 0; 
-		SndBuf *buf = world->mSndBufs + ibufnum; 
-		int numbins = buf->samples - 2 >> 1;
+		PV_FEAT_GET_BUF
 
 		SCPolarBuf *p = ToPolarApx(buf);
 				
-		float dnk,prevmag, mkl=0.0, footesum=0.0, norm=0.0;
+		float dnk, prevmag, mkl=0.0, footesum=0.0, norm=0.0;
     
         int i;
         float * q= unit->m_prevframe;
