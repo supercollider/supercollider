@@ -77,11 +77,11 @@ Node {
 	}
 	
 	set { arg ... args;
-		server.sendMsg(15, nodeID, *(args.unbubble.asControlInput)); 	 //"/n_set"
+		server.sendMsg(15, nodeID, *(args.asOSCArgArray));  //"/n_set"
 	}
 	
 	setMsg { arg ... args;
-		^[15, nodeID] ++ args.unbubble.asControlInput; 	 //"/n_set"
+//		^[15, nodeID] ++ args.unbubble.asControlInput; 		^[15, nodeID] ++ args.asOSCArgArray; 	 //"/n_set"
 	}
 
 	setn { arg ... args;
@@ -378,9 +378,13 @@ Synth : Node {
 		synth = this.basicNew(defName, server);
 
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
-		server.sendMsg(59, //"s_newargs"
+//		server.sendMsg(59, //"s_newargs"
+//			defName, synth.nodeID, addNum, inTarget.nodeID,
+//			*Node.setnMsgArgs(*args));
+		server.sendMsg(9, //"s_new"
 			defName, synth.nodeID, addNum, inTarget.nodeID,
-			*Node.setnMsgArgs(*args));
+			*(args.asOSCArgArray)
+		);
 		^synth
 	}
 	*newPaused { arg defName, args, target, addAction=\addToHead;
