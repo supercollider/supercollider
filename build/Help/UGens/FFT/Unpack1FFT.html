@@ -5,22 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #081fb6; min-height: 14.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0018f7}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0029b1; min-height: 14.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 span.s1 {font: 15.0px Helvetica}
-span.s2 {color: #0018f7}
-span.s3 {color: #0012b9}
-span.s4 {color: #000000}
+span.s2 {color: #002bf0}
+span.s3 {color: #000000}
+span.s4 {color: #0000bf}
 span.s5 {color: #606060}
-span.s6 {font: 12.0px Helvetica}
+span.s6 {font: 12.0px Helvetica; color: #0021e7}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -35,30 +36,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p4">(</p>
 <p class="p4">s.boot.doWhenBooted{</p>
-<p class="p4"><span class="s3">var</span> fftsize = 1024;</p>
-<p class="p4">b = <span class="s3">Buffer</span>.alloc(s, fftsize, 1);</p>
-<p class="p5"><span class="s4">c = </span><span class="s3">Buffer</span><span class="s4">.read(s,</span>"sounds/a11wlk01.wav"<span class="s4">);</span></p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span>c = </span><span class="s4">Buffer</span><span class="s3">.read(s,</span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
 <p class="p4">}</p>
 <p class="p4">)</p>
-<p class="p3"><br></p>
-<p class="p6">// Let's extract the DC component - i.e. the magnitude at index zero.</p>
+<p class="p6"><br></p>
+<p class="p7">// Let's extract the DC component - i.e. the magnitude at index zero.</p>
 <p class="p4">(</p>
 <p class="p4">x = {</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">var</span> sig, chain, unp;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>sig = <span class="s3">PlayBuf</span>.ar(1, c, <span class="s3">BufRateScale</span>.kr(c), loop: 1);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(b, sig);</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>unp = <span class="s3">Unpack1FFT</span>(chain, b.numFrames, 0, 0);</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>// Demand some data from the unpacker</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">Demand</span>.kr(chain&gt;=0, 0, unp).poll(chain&gt;=0, <span class="s5">"unpacked value"</span>);</p>
-<p class="p3"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">var</span> fftsize = 1024;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">var</span> sig, chain, unp;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>sig = <span class="s4">PlayBuf</span>.ar(1, c, <span class="s4">BufRateScale</span>.kr(c), loop: 1);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(fftsize), sig);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>unp = <span class="s4">Unpack1FFT</span>(chain, b.numFrames, 0, 0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// Demand some data from the unpacker</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">Demand</span>.kr(chain&gt;=0, 0, unp).poll(chain&gt;=0, <span class="s5">"unpacked value"</span>);</p>
+<p class="p6"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span>(sig*0.1).dup;</p>
 <p class="p4">}.play(s);</p>
 <p class="p4">)</p>
 <p class="p4">x.free;</p>
-<p class="p7"><br></p>
+<p class="p8"><br></p>
 <p class="p2"><br></p>
-<p class="p8"><span class="s4">See also: <a href="UnpackFFT.html"><span class="s6">UnpackFFT</span></a>, <a href="PackFFT.html"><span class="s6">PackFFT</span></a>, <a href="pvcollect.html"><span class="s6">pvcollect</span></a>, <a href="pvcalc.html"><span class="s6">pvcalc</span></a>, <a href="pvcalc2.html"><span class="s6">pvcalc2</span></a></span></p>
+<p class="p9"><span class="s3">See also: <a href="UnpackFFT.html"><span class="s6">UnpackFFT</span></a>, <a href="PackFFT.html"><span class="s6">PackFFT</span></a>, <a href="pvcollect.html"><span class="s6">pvcollect</span></a>, <a href="pvcalc.html"><span class="s6">pvcalc</span></a>, <a href="pvcalc2.html"><span class="s6">pvcalc2</span></a></span></p>
 </body>
 </html>
