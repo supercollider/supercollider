@@ -120,6 +120,15 @@ struct Dseq : public Unit
 	bool m_needToResetChild;
 };
 
+struct Dshuf : public Unit
+{
+	double m_repeats;
+	int32 m_repeatCount;
+	int32 m_index;
+	bool m_needToResetChild;
+	int32 *m_indices;
+};
+
 struct Dbufrd : public Unit
 {
 	float m_fbufnum;
@@ -211,6 +220,11 @@ void Dibrown_next(Dibrown *unit, int inNumSamples);
 
 void Dseq_Ctor(Dseq *unit);
 void Dseq_next(Dseq *unit, int inNumSamples);
+
+void Dshuf_Ctor(Dshuf *unit);
+void Dshuf_next(Dshuf *unit, int inNumSamples);
+void Dshuf_scramble(Dshuf *unit);
+
 
 void Dbufrd_Ctor(Dbufrd *unit);
 void Dbufrd_next(Dbufrd *unit, int inNumSamples);
@@ -1741,6 +1755,97 @@ void Dxrand_Ctor(Dxrand *unit)
 	OUT0(0) = 0.f;
 }
 
+void Dshuf_next(Dshuf *unit, int inNumSamples)
+{
+	// Print("->Dshuf_next %d\n", inNumSamples);
+	if (inNumSamples) {
+		//Print("   unit->m_repeats %d\n", unit->m_repeats);
+		if (unit->m_repeats < 0.) {
+			float x = DEMANDINPUT_A(0, inNumSamples);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
+		}
+		while (true) {
+			//Print("   unit->m_index %d   unit->m_repeatCount %d\n", unit->m_index, unit->m_repeatCount);
+			if (unit->m_index >= (unit->mNumInputs - 1)) {
+				unit->m_index = 0;
+				unit->m_repeatCount++;
+			}
+			if (unit->m_repeatCount >= unit->m_repeats) {
+				//Print("done\n");
+				OUT0(0) = NAN;
+				unit->m_index = 0;
+				return;
+			}
+			if (ISDEMANDINPUT(unit->m_indices[unit->m_index])) {
+				if (unit->m_needToResetChild) {
+					unit->m_needToResetChild = false;
+					RESETINPUT(unit->m_indices[unit->m_index]);
+				}
+				float x = DEMANDINPUT_A(unit->m_indices[unit->m_index], inNumSamples);
+
+				if (sc_isnan(x)) {
+					unit->m_index++;
+					unit->m_needToResetChild = true;
+				} else {
+					OUT0(0) = x;
+					return;
+				}
+			} else {
+				OUT0(0) = DEMANDINPUT_A(unit->m_indices[unit->m_index], inNumSamples);
+				//Print("   unit->m_index %d   OUT0(0) %g\n", unit->m_index, OUT0(0));
+				unit->m_index++;
+				unit->m_needToResetChild = true;
+				return;
+			}
+		}
+	} else {
+		unit->m_repeats = -1.f;
+		unit->m_repeatCount = 0;
+		unit->m_needToResetChild = true;
+		unit->m_index = 0;
+		Dshuf_scramble(unit);
+	}
+}
+
+void Dshuf_scramble(Dshuf *unit) {
+	int32 i, j, m, k, size;
+	int32 temp;
+	
+	size = (int32)(unit->mNumInputs) - 1;
+	
+	if (size > 1) {
+		k = size;
+		for (i=0, m=k; i<k-1; ++i, --m) {
+			j = i + unit->mParent->mRGen->irand(m);
+			temp = unit->m_indices[i];
+			unit->m_indices[i] = unit->m_indices[j];
+			unit->m_indices[j] = temp;
+		}
+	}
+
+}
+
+void Dshuf_Ctor(Dshuf *unit)
+{
+	int32 i, size;
+	
+	size = (int32)(unit->mNumInputs) - 1;
+	
+	unit->m_indices = (int32*)RTAlloc(unit->mWorld, size * sizeof(int32));
+	
+	for(i=0; i < size; ++i) {
+		unit->m_indices[i] = i + 1;
+	}
+		
+	SETCALC(Dshuf_next);
+	Dshuf_next(unit, 0);
+	OUT0(0) = 0.f;
+}
+
+void Dshuf_Dtor(Dshuf *unit)
+{
+	RTFree(unit->mWorld, unit->m_indices);
+}
 
 
 void Dswitch1_next(Dswitch1 *unit, int inNumSamples)
@@ -2095,6 +2200,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Dbufwr);
 	DefineSimpleUnit(Drand);
 	DefineSimpleUnit(Dxrand);
+	DefineDtorUnit(Dshuf);
 	DefineSimpleUnit(Dswitch1);
 	DefineSimpleUnit(Dswitch);
 	DefineSimpleUnit(Dstutter);

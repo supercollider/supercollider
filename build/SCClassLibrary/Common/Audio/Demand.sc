@@ -110,6 +110,7 @@ ListDUGen : DUGen {
 
 Dseq : ListDUGen {}
 Dser : ListDUGen {}
+Dshuf : ListDUGen {}
 Drand : ListDUGen {}
 Dxrand : ListDUGen {}
 
@@ -156,7 +157,7 @@ Dpoll : DUGen {
 	
 	*new1 { arg rate, in, label, run, trigid;
 		label = label ?? { "DemandUGen(%)".format(in.class) };
-		label = label.asString.collectAs(_.ascii, Array);
+		label = label.asString.ascii;
 		^super.new.rate_(rate).addToSynth.init(*[in, trigid, run, label.size] ++ label);
 	}
 }
