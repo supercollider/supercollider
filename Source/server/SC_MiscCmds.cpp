@@ -384,21 +384,25 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		int32* name = msg.gets4();
 		int32 hash = Hash(name);
 		do {
-		    switch (msg.nextTag('f') ) {
+			switch (msg.nextTag('f') ) {
 			case  'f' :
 			case  'i' :
-			    float32 value = msg.getf();
-			    Node_SetControl(node, hash, name, i, value);
-			    ++i;
-			    break;
-			case 's' :
-			    const char* string = msg.gets();
-			    if ( *string == 'c') {
-				int bus = sc_atoi(string+1);
-				Node_MapControl(node, hash, name, i, bus);
+			{
+				float32 value = msg.getf();
+				Node_SetControl(node, hash, name, i, value);
 				++i;
-			    }
-			    break;
+				break;
+			}
+			case 's' :
+			{
+				const char* string = msg.gets();
+				if ( *string == 'c') {
+					int bus = sc_atoi(string+1);
+					Node_MapControl(node, hash, name, i, bus);
+					++i;
+				}
+				break;
+			}
 			case ']':
 			    msg.count++;
 			    loop--;
@@ -416,18 +420,22 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		    switch (msg.nextTag('f') ) {
 			case  'f' :
 			case  'i' :
-			    float32 value = msg.getf();
-			    Node_SetControl(node, index + i, value);
-			    ++i;
-			    break;
+			{
+				float32 value = msg.getf();
+				Node_SetControl(node, index + i, value);
+				++i;
+				break;
+			}
 			case 's' :
-			    const char* string = msg.gets();
-			    if ( *string == 'c') {
+			{
+				const char* string = msg.gets();
+				if ( *string == 'c') {
 				int bus = sc_atoi(string+1);
 				Node_MapControl(node, index + i, bus);
 				++i;
-			    }
-			    break;
+				}
+				break;
+			}
 			case ']':
 			    msg.count++;
 			    loop--;
@@ -1645,6 +1653,13 @@ SCErr meth_error(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	return kSCErr_None;
 }
 
+SCErr meth_pid(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_pid(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	CallSequencedCommand(PIDCmd, inWorld, inSize, inData, inReply);
+	return kSCErr_None;
+}
+
 #define NEW_COMMAND(name) NewCommand(#name, cmd_##name, meth_##name)
 
 void initMiscCommands();
@@ -1727,6 +1742,8 @@ void initMiscCommands()
 	NEW_COMMAND(sync);
 	NEW_COMMAND(g_dumpTree);
 	NEW_COMMAND(g_queryTree);
+
+	NEW_COMMAND(pid);	
 
 	NEW_COMMAND(error);
 }
