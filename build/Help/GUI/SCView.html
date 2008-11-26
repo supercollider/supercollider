@@ -19,22 +19,26 @@ p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helve
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #615f58}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #615f58}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #61699c}
-span.s3 {color: #5461ad}
-span.s4 {color: #6f7180}
+span.s2 {color: #636a99}
+span.s3 {color: #5763a9}
+span.s4 {color: #6f717f}
 span.s5 {font: 14.0px Helvetica}
-span.s6 {color: #4357c0}
-span.s7 {color: #5763a9}
+span.s6 {color: #485abb}
+span.s7 {color: #5a65a5}
 span.s8 {font: 9.0px Monaco}
-span.s9 {color: #6f7181}
-span.s10 {color: #5d67a2}
-span.s11 {color: #0c2eee}
-span.s12 {color: #505fb1}
-span.s13 {font: 12.0px Helvetica}
+span.s9 {color: #6f7180}
+span.s10 {color: #5f689f}
+span.s11 {color: #1638e6}
+span.s12 {color: #0000bf}
+span.s13 {color: #007300}
 span.s14 {color: #000000}
+span.s15 {color: #5461ad}
+span.s16 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -233,24 +237,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of<span class="Apple-converted-space">  </span><a href="Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>.<span class="Apple-converted-space">  </span>The function is passed the following argument list:<span class="Apple-converted-space">  </span><b>x</b>, <b>y</b>. Default is nil.</p>
 <p class="p4"><br></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=SCWindow.new.front;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v=SCCompositeView.new(w,w.view.bounds.insetBy(10)).background_(Color.rand);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.decorator=FlowLayout(v.bounds);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>t=Array.fill(9,{arg i;<span class="Apple-converted-space">  </span>var n,r,q;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n=SCCompositeView.new(v,Rect(20,20,121,121)).background_(Color.rand);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q=SCStaticText(n, n.bounds.insetBy(25)).string_((70+i).asAscii).align_(\center);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.enabled=true;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.font=Font.default.copy;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.background_(Color.rand);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.mouseDownAction={<span class="Apple-converted-space"> </span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.background_(Color.rand);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.font=q.font.size_(5+q.font.size+7%60)</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s12">SCWindow</span>.new.front;</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v=<span class="s12">SCCompositeView</span>.new(w,w.view.bounds.insetBy(10)).background_(<span class="s12">Color</span>.rand);</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.decorator=<span class="s12">FlowLayout</span>(v.bounds);</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>t=<span class="s12">Array</span>.fill(9,{<span class="s12">arg</span> i;<span class="Apple-converted-space">  </span><span class="s12">var</span> n,r,q;</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n=<span class="s12">SCCompositeView</span>.new(v,<span class="s12">Rect</span>(20,20,121,121)).background_(<span class="s12">Color</span>.rand);</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q=<span class="s12">SCStaticText</span>(n, n.bounds.insetBy(25)).string_((70+i).asAscii).align_(<span class="s13">\center</span>);</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.enabled=<span class="s12">true</span>;</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.font=<span class="s12">Font</span>.default.copy;</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.background_(<span class="s12">Color</span>.rand);</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.mouseDownAction={<span class="Apple-converted-space"> </span></p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.background_(<span class="s12">Color</span>.rand);</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.font=q.font.size_(5+q.font.size+7%60)</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s14">)</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b>Defining Drag and Drop Actions</b></p>
@@ -261,7 +265,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">Each view subclass has a <b>defaultCanReceiveDrag</b> method that determines if the current object being dragged is possible for this view to accept, and a <b>defaultReceiveDrag</b> method for actually receiving the drag.<span class="Apple-converted-space">  </span>Sliders accept numbers, simple text labels do not accept drags etc.<span class="Apple-converted-space">  </span>After receiving the drag, the SCView.<b>currentDrag</b> is set to nil. Containers typically cannot receive drags by default.</p>
 <p class="p2"><br></p>
-<p class="p1">By setting the <b>canReceiveDragHandler</b> and <b>receiveDragHandler</b> you can make any view accept and receive objects based on the context and your application.<span class="Apple-converted-space">  </span>(Note: currently not possible for <a href="SCStaticText.html"><span class="s12">SCStaticText</span></a>)</p>
+<p class="p1">By setting the <b>canReceiveDragHandler</b> and <b>receiveDragHandler</b> you can make any view accept and receive objects based on the context and your application.<span class="Apple-converted-space">  </span>(Note: currently not possible for <a href="SCStaticText.html"><span class="s15">SCStaticText</span></a>)</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>beginDragAction_(arg1)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>beginDragAction</b></p>
@@ -297,7 +301,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the current GUI class. This class method provides a mechanism to subclass existing GUI objects while still calling their primitives. It is used by many extensions and <a href="Extending and Customizing SC/Quarks/Quarks.html"><span class="s2">Quarks</span></a>. E.g., if I subclass <a href="SCNumberBox.html"><span class="s2">SCNumberBox</span></a> with SCMySubClass, but want to continue to use SCNumberbox's primitive, then I have to override <b>viewClass</b>, making it return SCNumberBox instead of SCMySubClass. This is because GUI init methods typically contain this:</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>this.prInit(parent.asView, argBounds.asRect,this.class.viewClass)</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>this.prInit(parent.asView, argBounds.asRect,this.class.viewClass)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*paletteExample (parent, bounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -313,9 +317,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Simply returns the view. Used for comptabliltiy with SCWindow.asView. If you want to guarantee that a view's parent will recieve a view, then write, e.g.:</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="s13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>{arg w;</p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SCSlider(w.asView,Rect(10,10,150,20)</p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p15"><span class="s16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>{arg w;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SCSlider(w.asView,Rect(10,10,150,20)</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>getParents</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -343,8 +347,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. Most subclasses override this, getting their property list from their primitives.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
-<p class="p14"><span class="s14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s14">, </span>\visible<span class="s14">, </span>\enabled<span class="s14">, </span>\canFocus<span class="s14">, </span>\resize<span class="s14">, </span>\background<span class="s14">, </span>\minWidth<span class="s14">, </span>\maxWidth<span class="s14">, </span>\minHeight<span class="s14">, </span>\maxHeight<span class="s14">, </span>\knobColor<span class="s14">, </span>\step<span class="s14">, </span>\thumbSize<span class="s14"> \]</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
+<p class="p16"><span class="s14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s14">, </span>\visible<span class="s14">, </span>\enabled<span class="s14">, </span>\canFocus<span class="s14">, </span>\resize<span class="s14">, </span>\background<span class="s14">, </span>\minWidth<span class="s14">, </span>\maxWidth<span class="s14">, </span>\minHeight<span class="s14">, </span>\maxHeight<span class="s14">, </span>\knobColor<span class="s14">, </span>\step<span class="s14">, </span>\thumbSize<span class="s14"> \]</span></p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>getProperty (key, value)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>setProperty (key, value)</b></p>
