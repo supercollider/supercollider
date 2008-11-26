@@ -150,8 +150,8 @@
 +TaskProxy {
 	proxyControlClass { ^StreamControl }
 
-	buildForProxy {  arg proxy, channelOffset=0; 
-		^PauseStream(this.endless.asStream)
+	buildForProxy {  arg proxy, channelOffset=0;
+		^PauseStream(this.endless.asStream <> (nodeProxy: proxy, channelOffset: channelOffset))
 	}
 }
 
