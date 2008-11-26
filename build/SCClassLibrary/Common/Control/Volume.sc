@@ -42,11 +42,11 @@ Volume {
 	}
 
 	sendDef {
-		SynthDef(sdname = (\volume_amp_control ++ synthNumChans).asSymbol, 
-			{ arg volume_amp = 1, volume_lag = 0.1, volume_gate=1;
+		SynthDef(sdname = (\volumeAmpControl ++ synthNumChans).asSymbol, 
+			{ arg volumeAmp = 1, volumeLag = 0.1, volumeGate=1;
 			XOut.ar(startBus, 
-				Linen.kr(volume_gate, releaseTime: 0.05, doneAction:2), 
-				In.ar(startBus, synthNumChans) * Lag.kr(volume_amp, volume_lag) );
+				Linen.kr(volumeGate, releaseTime: 0.05, doneAction:2), 
+				In.ar(startBus, synthNumChans) * Lag.kr(volumeAmp, volumeLag) );
 		}).send(server);
 	}
 
@@ -87,7 +87,7 @@ Volume {
 					nodeID = server.nodeAllocator.allocPerm(1);
 					ampSynth = Synth.basicNew(sdname, server, nodeID);
 					server.sendBundle(nil, ampSynth.newMsg(1, 
-						[\volume_amp, volume.dbamp, \volume_lag, lag],
+						[\volumeAmp, volume.dbamp, \volumeLag, lag],
 						addAction: \addAfter));
 					mute.if({this.mute});
 				})
@@ -99,7 +99,7 @@ Volume {
 		
 	free {
 		var	nodeIDToFree = ampSynth.nodeID;
-		ampSynth.set(\volume_gate, 0.0);
+		ampSynth.set(\volumeGate, 0.0);
 		{ server.nodeAllocator.freePerm(nodeIDToFree) }.defer(1.0);
 		isPlaying = false;
 		CmdPeriod.remove(cpFun);
@@ -133,13 +133,13 @@ Volume {
 	prmute {
 		isMuted = true;
 		muteamp = volume;
-		ampSynth.set([\volume_amp, 0]);
+		ampSynth.set(\volumeAmp, 0);
 		this.changed(\mute, true);
 	}
 		
 	prunmute {
 		isMuted = false;	
-		ampSynth.set([\volume_amp, muteamp.dbamp]);
+		ampSynth.set(\volumeAmp, muteamp.dbamp);
 		this.changed(\mute, false);
 	}
 	
@@ -162,7 +162,7 @@ Volume {
 		});
 		volume = volume.clip(-90, 6);	
 		if(isMuted) { muteamp = volume };
-		if(isPlaying && isMuted.not) { ampSynth.set([\volume_amp, volume.dbamp]) };
+		if(isPlaying && isMuted.not) { ampSynth.set(\volumeAmp, volume.dbamp) };
 		this.changed(\amp, volume);
 	}
 	
@@ -176,7 +176,7 @@ Volume {
 			
 	lag_ {arg aLagTime;
 		lag = aLagTime;
-		ampSynth.set([\volume_lag, lag]);
+		ampSynth.set(\volumeLag, lag);
 	}
 		
 	
