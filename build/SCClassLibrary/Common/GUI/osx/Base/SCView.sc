@@ -1524,10 +1524,7 @@ SCEnvelopeView : SCView {
 	currentvalue_ { arg iny;
 		this.setProperty(\y, iny)
 	}
-		showIndex_ { arg abool;
-		this.setProperty(\showIndex, abool)
-		}
-	
+		
 	strokeColor_ { arg acolor;
 		this.setProperty(\strokeColor, acolor)
 	}
