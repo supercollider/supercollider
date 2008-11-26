@@ -315,6 +315,7 @@ NodeProxy : BusPlug {
 	
 	asGroup { ^group.asGroup }
 	asTarget { ^group.asGroup }
+	asNodeID { ^group.asNodeID }
 	
 	parentGroup_ {arg node;
 		if(node.isPlaying.not) { "node not playing and registered: % \n".postf(node); ^this };
@@ -1015,8 +1016,10 @@ NodeProxy : BusPlug {
 
 
 Ndef : NodeProxy {
-	classvar <>defaultServer;
+	classvar <>defaultServer, <>all;
 	var <key;
+	
+	*initClass { all = () }
 	
 	*new { arg key, object;
 		var res, server;
@@ -1030,18 +1033,28 @@ Ndef : NodeProxy {
 		object !? { res.source = object };
 		^res;
 	}
-	*clear {
-		Library.at(this).do { arg item; item.do { arg item; item.clear } };
-	}
-		
 	
-	toLib { arg inKey;
-		Library.put(this.class, server, inKey, this);
-		key = inKey;
+	*clear {
+		all.do { arg dict; dict.do { arg item; item.clear } };
+		all.clear;
+	}
+	
+	*getDict { arg server;
+		var dict = all.at(server);
+		if(dict.isNil) { dict = ProxySpace.new(server); all.put(server, dict) };
+		^dict.envir // return the proxyspace envir
 	}
 	
 	*at { arg server, key;
-		^Library.at(this, server, key)
+		^this.getDict(server).at(key)
+	}
+	
+	*put { arg server, key, val;
+		this.getDict(server).put(key, val)
+	}
+	
+	toLib { arg key;
+		this.class.put(this.server, key, this)
 	}
 	
 	storeOn { arg stream;
