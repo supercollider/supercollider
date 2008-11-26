@@ -151,7 +151,15 @@
 	proxyControlClass { ^StreamControl }
 
 	buildForProxy {  arg proxy, channelOffset=0;
-		^PauseStream(this.endless.asStream <> (nodeProxy: proxy, channelOffset: channelOffset))
+		^PauseStream(this.endless.asStream 
+			<> (
+				nodeProxy: proxy, 
+				channelOffset: channelOffset,
+				server: { proxy.server },
+				out: { proxy.index },
+				group: { proxy.group }
+			)
+		)
 	}
 }
 
