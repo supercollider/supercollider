@@ -13,10 +13,11 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {color: #000000}
 span.s2 {text-decoration: underline}
-span.s3 {color: #0029ac}
-span.s4 {color: #001bb9}
+span.s3 {color: #0030a7}
+span.s4 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -31,15 +32,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p5"><span class="s3">Server</span>.internal.boot;</p>
 <p class="p6"><br></p>
-<p class="p5">(</p>
-<p class="p5">{</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, fft, fft2, shifted;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s4">SinOsc</span>.ar(500, 0, 0.4);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>fft = <span class="s4">FFT</span>(LocalBuf(2048), in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>fft2 = <span class="s4">FFT</span>(LocalBuf(2048), in);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>shifted = <span class="s4">PV_PhaseShift90</span>(fft);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>[<span class="s4">IFFT</span>(fft2), <span class="s4">IFFT</span>(shifted)]; <span class="Apple-converted-space"> </span></p>
-<p class="p5">}.scope;</p>
-<p class="p5">)</p>
+<p class="p7">(</p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, fft, fft2, shifted;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s4">SinOsc</span>.ar(500, 0, 0.4);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>fft = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(2048), in);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>fft2 = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(2048), in);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>shifted = <span class="s4">PV_PhaseShift90</span>(fft);<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>[<span class="s4">IFFT</span>(fft2), <span class="s4">IFFT</span>(shifted)]; <span class="Apple-converted-space"> </span></p>
+<p class="p7">}.scope;</p>
+<p class="p7">)</p>
 </body>
 </html>
