@@ -1653,13 +1653,6 @@ SCErr meth_error(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	return kSCErr_None;
 }
 
-SCErr meth_pid(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_pid(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
-{
-	CallSequencedCommand(PIDCmd, inWorld, inSize, inData, inReply);
-	return kSCErr_None;
-}
-
 #define NEW_COMMAND(name) NewCommand(#name, cmd_##name, meth_##name)
 
 void initMiscCommands();
@@ -1742,8 +1735,6 @@ void initMiscCommands()
 	NEW_COMMAND(sync);
 	NEW_COMMAND(g_dumpTree);
 	NEW_COMMAND(g_queryTree);
-
-	NEW_COMMAND(pid);	
 
 	NEW_COMMAND(error);
 }
