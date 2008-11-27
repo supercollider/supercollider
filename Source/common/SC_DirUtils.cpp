@@ -157,6 +157,7 @@ bool sc_SkipDirectory(const char *name)
 {
 	return ((strcasecmp(name, "help") == 0) ||
 			(strcasecmp(name, "test") == 0) ||
+			(strcasecmp(name, "ignore") == 0) ||
 			(strcasecmp(name, ".svn") == 0) ||
 			(strcasecmp(name, ".git") == 0) ||
 			(strcasecmp(name, "_darcs") == 0) ||
