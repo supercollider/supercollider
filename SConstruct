@@ -1255,8 +1255,8 @@ if 'debian' in COMMAND_LINE_TARGETS:
 # cleanup
 # ======================================================================
 
-env.Clean('scrub',
-          Split('config.log scache.conf .sconf_temp .sconsign.dblite'))
+if 'scrub' in COMMAND_LINE_TARGETS:
+    env.Clean('scrub', Split('config.log scache.conf .sconf_temp'))
 
 # ======================================================================
 # configuration summary
