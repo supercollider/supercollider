@@ -561,6 +561,7 @@ void Interpret(VMGlobals *g)
 			if (classobj) {
 				++sp; SetObject((PyrSlot*)sp, classobj);
 			} else {
+				postfl("Execution warning: Class '%s' not found\n", g->block->selectors.uo->slots[op2].us->name);
 				*++sp = gSpecialValues[svNil];
 			}
 			break;
