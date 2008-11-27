@@ -5,114 +5,283 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-span.s1 {color: #0000bf}
-span.s2 {color: #606060}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #b61f16}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p10 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #0e19bd}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #b61f16}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0e19bd}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0e19bd}
 span.s3 {color: #000000}
-span.s4 {color: #007300}
+span.s4 {color: #b61f16}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>SCEnvelopeEdit<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>envelope editor view</b></p>
-<p class="p2"><b></b><br></p>
-<p class="p3"><b>SCEnvelopeEdit.new(parent, bounds, env, pointsPerSegment)</b></p>
-<p class="p4"><br></p>
-<p class="p3">SCEnvelopeEdit is a vector-based breakpoint editor for the Env class.<span class="Apple-converted-space">  </span>It takes an Env object as an argument that is modified from the GUI.<span class="Apple-converted-space">  </span>Changing properties of the Env object directly will not be reflected on the GUI.<span class="Apple-converted-space">  </span>You must call 'refresh' after doing this.<span class="Apple-converted-space">  </span>You cannot add breakpoints.</p>
-<p class="p4"><br></p>
-<p class="p3">The breakpoints are color coded as follows:</p>
-<p class="p3"><span class="Apple-tab-span">	</span>blue -<span class="Apple-tab-span">	</span>normal</p>
-<p class="p3"><span class="Apple-tab-span">	</span>red -<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain node</p>
-<p class="p3"><span class="Apple-tab-span">	</span>green -<span class="Apple-tab-span">	</span>loop node</p>
-<p class="p4"><b></b><br></p>
-<p class="p3">Public Methods:</p>
-<p class="p4"><b></b><br></p>
-<p class="p3"><b>refresh()</b></p>
-<p class="p3">If the Env object is modified directly, this needs to be called to update the GUI.</p>
-<p class="p4"><br></p>
-<p class="p3"><b>minLevel_(float)</b></p>
-<p class="p3">Changes minimum level shown in editor.</p>
-<p class="p4"><b></b><br></p>
-<p class="p3"><b>maxLevel_(float)</b></p>
-<p class="p3">Changes maximum level shown in editor.</p>
-<p class="p4"><br></p>
-<p class="p3"><b>minTime_(float)</b></p>
-<p class="p3">Changes minimum time (sec) shown in editor.<span class="Apple-converted-space">  </span>Negative times are okay because Env uses inter-node<span class="Apple-converted-space"> </span></p>
-<p class="p3">durations.</p>
-<p class="p4"><br></p>
-<p class="p3"><b>maxTime_(float)</b></p>
-<p class="p3">Changes maximum time (sec) shown in editor.</p>
-<p class="p4"><b></b><br></p>
-<p class="p5">(</p>
-<p class="p6">// make a basic editor</p>
-<p class="p5">e = <span class="s1">Env</span>([1,2],[10]);</p>
-<p class="p5">w = <span class="s1">SCWindow</span>(<span class="s2">"Env Editor"</span>, <span class="s1">Rect</span>(200,200,300,200));</p>
-<p class="p5">v = <span class="s1">SCEnvelopeEdit</span>(w, w.view.bounds.moveBy(20,20).resizeBy(-40,-40), e, 20).resize_(5);</p>
-<p class="p5">w.front;</p>
-<p class="p5">)</p>
-<p class="p5">v.addBreakPoint;</p>
-<p class="p7"><br></p>
-<p class="p5">v.clear;</p>
-<p class="p5">v.redraw;</p>
-<p class="p5">v;</p>
-<p class="p5">)</p>
-<p class="p7"><br></p>
-<p class="p6"><span class="s3">v.maxLevel_(2);<span class="Apple-tab-span">	</span></span>// to give more headroom</p>
-<p class="p6"><span class="s3">v.maxTime_(2);<span class="Apple-tab-span">	</span></span>// to increase release point</p>
-<p class="p6"><span class="s3">v.minTime_(-1);<span class="Apple-tab-span">	</span></span>// to increase attack time</p>
-<p class="p7"><br></p>
-<p class="p6"><span class="s3">e.curves = </span><span class="s4">'sin'</span><span class="s3">;<span class="Apple-tab-span">	</span></span>// env object is changed</p>
-<p class="p6"><span class="s3">v.refresh;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// must refresh editor</p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p3"><b>Controlling a Synth</b></p>
-<p class="p7"><br></p>
-<p class="p5">s=<span class="s1">Server</span>.internal;</p>
-<p class="p7"><br></p>
-<p class="p5">(</p>
-<p class="p5">e = <span class="s1">Env</span>([0, 1, 0.7, 0.9, 0], [0.03, 0.03, 0.03, 0.03], <span class="s4">'sin'</span>);</p>
-<p class="p5">f = <span class="s1">Env</span>([0, 1, 0.7, 0.9, 0], [0.03, 0.03, 0.03, 0.03], <span class="s4">'sin'</span>);</p>
-<p class="p5">w = <span class="s1">SCWindow</span>(<span class="s2">"Shards"</span>, <span class="s1">Rect</span>(100, 100, 500, 400));</p>
-<p class="p5">v = <span class="s1">SCEnvelopeEdit</span>(w, w.view.bounds.resizeBy(-20, -200), e, 10).resize_(2);</p>
-<p class="p5"><span class="s1">SCStaticText</span>(w, v.bounds).string_(<span class="s2">" amplitude"</span>).resize_(2);</p>
-<p class="p5">x = <span class="s1">SCEnvelopeEdit</span>(w, v.bounds.moveBy(0, 200), f, 10).resize_(2);</p>
-<p class="p5"><span class="s1">SCStaticText</span>(w, x.bounds).string_(<span class="s2">" frequency"</span>).resize_(2);</p>
-<p class="p5">w.front;</p>
-<p class="p5">)</p>
-<p class="p7"><br></p>
-<p class="p5">(</p>
-<p class="p8"><span class="s1">SynthDef</span><span class="s3">(</span>"sineBlip"<span class="s3">, {<span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">arg</span> freq=440, vol=0.1, la0, la1, la2, la3, la4, ta0, ta1, ta2, ta3, crva,</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>lf0, lf1, lf2, lf3, lf4, tf0, tf1, tf2, tf3, crvf;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> signal, fenv, aenv;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>fenv = <span class="s1">EnvGen</span>.ar(<span class="s1">Env</span>([lf0,lf1,lf2,lf3,lf4],[tf0,tf1,tf2,tf3], crvf));</p>
-<p class="p5"><span class="Apple-tab-span">	</span>aenv = <span class="s1">EnvGen</span>.ar(<span class="s1">Env</span>([la0,la1,la2,la3,la4],[ta0,ta1,ta2,ta3], crva), doneAction: 2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>signal = <span class="s1">SinOsc</span>.ar([freq, freq*2] * fenv) * aenv * vol;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0, signal.dup);</p>
-<p class="p5">}).send(s);</p>
-<p class="p5">)</p>
-<p class="p7"><br></p>
-<p class="p5">(</p>
-<p class="p9">Routine<span class="s3">({</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> par, indices;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>indices = (2..21);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>par = (indices +++ (v.env.levels ++ v.env.times ++ v.env.curves ++ x.env.levels ++ x.env.times ++ x.env.curves)).flatten;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendBundle(s.latency, [<span class="s4">\s_new</span>, <span class="s2">"sineBlip"</span>, -1, 1, 1, <span class="s4">\freq</span>, exprand(4e3,11e3)] ++ par);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.04.wait;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>});</p>
-<p class="p5">}).play;</p>
-<p class="p5">)</p>
+<p class="p1"><span class="s1"><b>SCEnvelopeEdit<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>explanation of what SCEnvelopeEdit is and/or does</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Inherits from: Object : SCView : SCEnvelopeView</b></p>
+<p class="p3"><br></p>
+<p class="p1">More detailed prose description of SCEnvelopeEdit.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>See also:</b> <a href="../Core/Object.html"><span class="s2">Object</span></a> [some other help files]</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Some Important Issues Regarding SCEnvelopeEdit (optional)</b></p>
+<p class="p2"><br></p>
+<p class="p1">Explanation of the issues. For more information see <a href="../Core/Nil.html"><span class="s2">Nil</span></a> and [some other help files].</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Creation / Class Methods</b></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>*viewClass</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.viewClass;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>*new (parent, bounds, env, pointsPerSegment)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- Explanation of parent. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- Explanation of bounds. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>env </b>- Explanation of env. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>pointsPerSegment </b>- Explanation of pointsPerSegment. Default value is 10. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = </span>SCEnvelopeEdit<span class="s3">.new;</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>*paletteExample (parent, bounds)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- Explanation of parent. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- Explanation of bounds. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.paletteExample;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p12"><b>Accessing Instance and Class Variables</b></p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>maxLevel</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Explanation including the type of <b>maxLevel </b>and a link to its help file.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Default value is nil.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>minTime</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Explanation including the type of <b>minTime </b>and a link to its help file.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Default value is nil.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>pointsPerSegment</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Explanation including the type of <b>pointsPerSegment </b>and a link to its help file.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Default value is nil.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>minLevel</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Explanation including the type of <b>minLevel </b>and a link to its help file.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Default value is nil.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>maxTime</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Explanation including the type of <b>maxTime </b>and a link to its help file.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Default value is nil.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>env</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Explanation including the type of <b>env </b>and a link to its help file.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Default value is nil.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><b>Doing Some Task (optional)</b></p>
+<p class="p13"><br></p>
+<p class="p6">A short bit of prose explaining something about the task.</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>initSCEnvelopeEdit (argEnv, argPPS, setMinMax)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>argEnv </b>- Explanation of argEnv. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>argPPS </b>- Explanation of argPPS. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>setMinMax </b>- Explanation of setMinMax. Default value is true. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.initSCEnvelopeEdit;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>redraw</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.redraw;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>refresh</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.refresh;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>updateAll</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.updateAll;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>updateSegment (segNum)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>segNum </b>- Explanation of segNum. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.updateSegment;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>minLevel_ (level)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>level </b>- Explanation of level. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.minLevel_;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>maxLevel_ (level)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>level </b>- Explanation of level. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.maxLevel_;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>minTime_ (sec)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>sec </b>- Explanation of sec. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.minTime_;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>maxTime_ (sec)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>sec </b>- Explanation of sec. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.maxTime_;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>defaultMauseDownAction (x, y, modifiers, buttonNumber, clickCount)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>x </b>- Explanation of x. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>y </b>- Explanation of y. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>modifiers </b>- Explanation of modifiers. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>buttonNumber </b>- Explanation of buttonNumber. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clickCount </b>- Explanation of clickCount. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.defaultMauseDownAction;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>env_ (e)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>e </b>- Explanation of e. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = </span>SCEnvelopeEdit<span class="s3">.env_;</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>addBreakPoint (level)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>level </b>- Explanation of level. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.addBreakPoint;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>insertAtTime (time, level)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>time </b>- Explanation of time. Default value is nil. Other information.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>level </b>- Explanation of level. Default value is nil. Other information.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">SCEnvelopeEdit</span>.insertAtTime;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>clear</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = </span>SCEnvelopeEdit<span class="s3">.clear;</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.doSomething; <span class="s4">// explanation</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p12"><b>Examples</b></p>
+<p class="p3"><br></p>
+<p class="p14">// what this example does</p>
+<p class="p15"><span class="s3">e = </span>SCEnvelopeEdit<span class="s3">.new;</span></p>
+<p class="p16">e.instanceMethod(someObject);</p>
+<p class="p16">e.cleanUp;</p>
+<p class="p3"><br></p>
+<p class="p16">...</p>
 </body>
 </html>
