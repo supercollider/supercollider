@@ -11,18 +11,19 @@ EZPopUpMenu{
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
 			initAction, labelWidth, argGap;
 		
+		bounds=bounds.asRect;
 		parentView.notNil.if{view = parentView }{view = FlowView.new()};
-		view=GUI.compositeView.new(view,bounds.asRect).relativeOrigin_(true);
+		view=GUI.compositeView.new(view,bounds).relativeOrigin_(true);
 		
 		gap=argGap;
 				
 		label.notNil.if{ //only add a label if desired
-			labelView = GUI.staticText.new(view, labelWidth-gap @ bounds.y);
+			labelView = GUI.staticText.new(view, labelWidth-gap @ bounds.height);
 			labelView.string = label;
 			labelView.align = \right;
 		}{labelWidth=0};
 				
-		menu = GUI.popUpMenu.new(view,  Rect(labelWidth,0,bounds.x-labelWidth,  bounds.y));
+		menu = GUI.popUpMenu.new(view,  Rect(labelWidth,0,bounds.width-labelWidth,  bounds.height));
 		
 		this.items=argItems ? [];
 		
