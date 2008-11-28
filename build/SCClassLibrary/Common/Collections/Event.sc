@@ -294,7 +294,8 @@ Event : Environment {
 			midiEvent: (
 				midiEventFunctions: (
 					noteOn:  #{ arg chan=0, midinote=60, amp=0.1;
-							[chan, midinote, asInteger((amp * 127).clip(0, 127)) ] },					noteOff: #{ arg chan=0, midinote=60, amp=0.1;
+							[chan, midinote, asInteger((amp * 127).clip(0, 127)) ] },
+					noteOff: #{ arg chan=0, midinote=60, amp=0.1;
 							[ chan, midinote, asInteger((amp * 127).clip(0, 127)) ] },
 					polyTouch: #{ arg chan=0, midinote=60, polyTouch=125;
 											[ chan, midinote, polyTouch ] },
@@ -405,7 +406,8 @@ Event : Environment {
 //							bndl.do { | msg, i | msg[2] = ids[i]  };
 
 
-							bndl = msgFunc.valueEnvir;							bndl = [\s_new, instrumentName, ids, Node.actionNumberFor(~addAction), ~group] ++ bndl; 
+							bndl = msgFunc.valueEnvir;
+							bndl = [\s_new, instrumentName, ids, Node.actionNumberFor(~addAction), ~group] ++ bndl; 
 							bndl = bndl.flop;
 							ids = Array.fill(bndl.size, {server.nextNodeID });
 							bndl = bndl.collect { | msg, i | msg[2] = ids[i]; msg.asOSCArgArray  };
@@ -652,7 +654,8 @@ Event : Environment {
 						ids = ~id;					
 						synthLib = ~synthLib ?? { SynthDescLib.global };
 						~defName = instrumentName = ~instrument.asSymbol;
-						desc = synthLib.synthDescs[instrumentName];						if (desc.notNil) { 
+						desc = synthLib.synthDescs[instrumentName];
+						if (desc.notNil) { 
 							msgFunc = desc.msgFunc;
 							~hasGate = desc.hasGate;
 						}{
@@ -774,7 +777,8 @@ Event : Environment {
 					group = ~group.asControlInput;
 					synthLib = ~synthLib ?? { SynthDescLib.global };
 					instrumentName = ~instrument.asSymbol;
-					desc = synthLib.synthDescs[instrumentName];					if (desc.notNil) { 
+					desc = synthLib.synthDescs[instrumentName];
+					if (desc.notNil) { 
 						msgFunc = desc.msgFunc;
 						~hasGate = desc.hasGate;
 					}{
