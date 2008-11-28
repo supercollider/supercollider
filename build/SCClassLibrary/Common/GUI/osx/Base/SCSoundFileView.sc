@@ -52,7 +52,7 @@ SCSoundFileView : SCScope{
 		frames = frames ? soundfile.numFrames;
 		resampleFrames = frames/block;
 		this.drawsWaveForm_(false);
-		o = 2**15;
+		o = 2**19;
 		zoomx = (resampleFrames/(this.bounds.width-2));
 		Task({
 			var times, frame, data, spec;	
