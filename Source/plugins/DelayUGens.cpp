@@ -313,7 +313,8 @@ extern "C"
 	void RecordBuf_next_10(RecordBuf *unit, int inNumSamples);
 
 	void Pitch_Ctor(Pitch *unit);
-	void Pitch_next(Pitch *unit, int inNumSamples);
+	void Pitch_next_a(Pitch *unit, int inNumSamples);
+	void Pitch_next_k(Pitch *unit, int inNumSamples);
 	
 	void LocalBuf_Ctor(LocalBuf *unit);
 	void LocalBuf_Dtor(LocalBuf *unit);
@@ -1630,8 +1631,6 @@ enum {
 
 void Pitch_Ctor(Pitch *unit)
 {
-	SETCALC(Pitch_next);
-	
 	unit->m_freq = ZIN0(kPitchInitFreq);
 	unit->m_minfreq = ZIN0(kPitchMinFreq);
 	unit->m_maxfreq = ZIN0(kPitchMaxFreq);
@@ -1645,19 +1644,25 @@ void Pitch_Ctor(Pitch *unit)
 	unit->m_medianSize = sc_clip((int)ZIN0(0), 0, kMAXMEDIANSIZE);  // (int)ZIN0(kPitchMedian);
 	unit->m_ampthresh = ZIN0(kPitchAmpThreshold);
 	unit->m_peakthresh = ZIN0(kPitchPeakThreshold);
-	
+
 	int downsamp = (int)ZIN0(kPitchDownsamp);
-	unit->m_downsamp = sc_clip(downsamp, 1, unit->mWorld->mFullRate.mBufLength);
 
+	if (INRATE(kPitchIn) == calc_FullRate) {
+		SETCALC(Pitch_next_a);
+	 	unit->m_downsamp = sc_clip(downsamp, 1, unit->mWorld->mFullRate.mBufLength);
+    	unit->m_srate = FULLRATE / (float)unit->m_downsamp;
+	} else {
+ 		SETCALC(Pitch_next_k);
+	 	unit->m_downsamp = sc_max(downsamp, 1);
+		unit->m_srate = FULLRATE / (float) (unit->mWorld->mFullRate.mBufLength*unit->m_downsamp);
+	}
 
-    unit->m_srate = FULLRATE / (float)unit->m_downsamp;
-    
     unit->m_minperiod = (long)(unit->m_srate / unit->m_maxfreq);
     unit->m_maxperiod = (long)(unit->m_srate / unit->m_minfreq);
 
 	unit->m_execPeriod = (int)(unit->m_srate / execfreq);
 	unit->m_execPeriod = sc_max(unit->m_execPeriod, unit->mWorld->mFullRate.mBufLength);
-	
+
 	unit->m_size = unit->m_maxperiod << 1;
 
 	unit->m_buffer = (float*)RTAlloc(unit->mWorld, unit->m_size * sizeof(float));
@@ -1677,7 +1682,7 @@ void Pitch_Dtor(Pitch *unit)
 	RTFree(unit->mWorld, unit->m_buffer);
 }
 
-void Pitch_next(Pitch *unit, int inNumSamples)
+void Pitch_next_a(Pitch *unit, int inNumSamples)
 {
 	bool foundPeak;
 	
@@ -1870,6 +1875,207 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 	unit->m_hasfreq = hasfreq;
 }
 
+
+// control rate pitch tracking (nescivi 11/2008)
+void Pitch_next_k(Pitch *unit, int inNumSamples)
+{
+	bool foundPeak;
+	
+	float in = ZIN0(kPitchIn); // one sample, current input
+	uint32 size = unit->m_size;
+	uint32 index = unit->m_index;
+	int downsamp = unit->m_downsamp;
+	int readp = unit->m_readp;
+//  	int ksamps = unit->mWorld->mFullRate.mBufLength;
+	
+	float *bufData = unit->m_buffer;
+	
+	float freq = unit->m_freq;
+	float hasfreq = unit->m_hasfreq;
+// 	printf("> %d %d readp %d downsamp %d exec %d\n", index, size, readp, downsamp, unit->m_execPeriod);
+	readp++;
+	if ( readp == downsamp ){
+// 	do {
+// 		float z = in[readp];
+		float z = in;
+		bufData[index++] = z;
+		readp = 0;
+// 		readp += downsamp;
+		
+		if (index >= size) {
+			float ampthresh = unit->m_ampthresh;
+			bool ampok = false;
+			
+			hasfreq = 0.f; // assume failure
+			
+			int minperiod = unit->m_minperiod;
+			int maxperiod = unit->m_maxperiod;
+			//float maxamp = 0.f;
+			// check for amp threshold
+			for (int j = 0; j < maxperiod; ++j) {	
+				if (fabs(bufData[j]) >= ampthresh) {
+					ampok = true;
+					break;
+				}
+				//if (fabs(bufData[j]) > maxamp) maxamp = fabs(bufData[j]);
+			}
+			//printf("ampok %d  maxperiod %d  maxamp %g\n", ampok, maxperiod,  maxamp);
+			
+			// if amplitude is too small then don't even look for pitch
+			float ampsum;
+			if (ampok) {
+				int maxlog2bins = unit->m_maxlog2bins;
+				int octave;
+				// calculate the zero lag value and compute the threshold based on that
+				float threshold = 0.f;
+				for (int j = 0; j < maxperiod; ++j) {	
+					threshold += bufData[j] * bufData[j];
+				}
+				threshold *= unit->m_peakthresh;
+				
+				// skip until drop below threshold
+				int binstep, peakbinstep = 0;
+				int i;
+				for (i = 1; i <= maxperiod; i += binstep) {
+					// compute sum of one lag
+					ampsum = 0.f;
+					for (int j = 0; j < maxperiod; ++j) {	
+						ampsum += bufData[i+j] * bufData[j];
+					}
+					if (ampsum < threshold) break;
+					
+					octave = LOG2CEIL(i); 
+					if (octave <= maxlog2bins) {
+						binstep = 1;
+					} else {
+						binstep = 1L << (octave - maxlog2bins);
+					}
+				}
+				int startperiod = i;	
+				int period = startperiod;
+				//printf("startperiod %d\n", startperiod);
+				
+				// find the first peak
+				float maxsum = threshold;
+				foundPeak = false;
+				for (i = startperiod; i <= maxperiod; i += binstep) {
+					if (i >= minperiod) {
+						ampsum = 0.f;
+						for (int j = 0; j < maxperiod; ++j) {	
+							ampsum += bufData[i+j] * bufData[j];
+						}
+						if (ampsum > threshold) {
+							if (ampsum > maxsum) {
+								foundPeak = true;
+								maxsum = ampsum;
+								peakbinstep = binstep;
+								period = i;
+							}
+						} else if (foundPeak) break;
+					}
+					octave = LOG2CEIL(i); 
+					if (octave <= maxlog2bins) {
+						binstep = 1;
+					} else {
+						binstep = 1L << (octave - maxlog2bins);
+					}
+				}
+				
+				//printf("found %d  thr %g  maxs %g  per %d  bs %d\n", foundPeak, threshold, maxsum, period, peakbinstep);
+				if (foundPeak) {
+					float prevampsum, nextampsum;
+				
+					// find amp sums immediately surrounding max 
+					prevampsum = 0.f;
+					if (period > 0) {
+						i = period - 1;
+						for (int j = 0; j < maxperiod; ++j) {	
+							prevampsum += bufData[i+j] * bufData[j];
+						}
+					}
+					
+					nextampsum = 0.f;
+					if (period < maxperiod) {
+						i = period + 1;
+						for (int j = 0; j < maxperiod; ++j) {	
+							nextampsum += bufData[i+j] * bufData[j];
+						}
+					}
+					
+					//printf("prevnext %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
+					// not on a peak yet. This can happen if binstep > 1
+					while (prevampsum > maxsum && period > 0) {
+						nextampsum = maxsum;
+						maxsum = prevampsum;
+						period--;
+						i = period - 1;
+						prevampsum = 0.f;
+						for (int j = 0; j < maxperiod; ++j) {	
+							prevampsum += bufData[i+j] * bufData[j];
+						}
+						//printf("slide left %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
+					}
+					while (nextampsum > maxsum && period < maxperiod) {
+						prevampsum = maxsum;
+						maxsum = nextampsum;
+						period++;
+						i = period + 1;
+						nextampsum = 0.f;
+						for (int j = 0; j < maxperiod; ++j) {	
+							nextampsum += bufData[i+j] * bufData[j];
+						}
+						//printf("slide right %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
+					}
+					
+					// make a fractional period
+					float beta = 0.5 * (nextampsum - prevampsum);
+					float gamma = 2.0  * maxsum - nextampsum - prevampsum;
+					float fperiod = (float)period + (beta/gamma);
+
+					// calculate frequency
+					float tempfreq = unit->m_srate / fperiod;
+					
+					//printf("freq %g   %g / %g    %g %g  %d\n", tempfreq, unit->m_srate, fperiod,
+					//	unit->m_minfreq, unit->m_maxfreq, 
+					//  tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq);
+						
+					if (tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq) {
+						freq = tempfreq;
+						
+						// median filter
+						if (unit->m_medianSize > 1) {
+							freq = insertMedian(unit->m_values, unit->m_ages, unit->m_medianSize, freq);
+						}
+						hasfreq = 1.f;
+						
+						// nescivi: not sure about this one?
+						startperiod = 1; // (ksamps+downsamp-1)/downsamp;
+					}
+				}
+			}/* else {
+                printf("amp too low \n");
+            }*/
+			
+			// shift buffer for next fill
+			int execPeriod = unit->m_execPeriod;
+			int interval = size - execPeriod;
+			//printf("interval %d  sz %d ep %d\n", interval, size, execPeriod);
+			for (int i = 0; i < interval; i++) {
+				bufData[i] = bufData[i + execPeriod];
+			}
+			index = interval;
+		}
+	} 
+//while (readp < ksamps);
+	
+	ZOUT0(0) = freq;
+	ZOUT0(1) = hasfreq;
+// 	unit->m_readp = readp - ksamps;
+	unit->m_readp = readp;
+	unit->m_index = index;
+	unit->m_freq = freq;
+	unit->m_hasfreq = hasfreq;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
