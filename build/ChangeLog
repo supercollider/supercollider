@@ -25,6 +25,7 @@
 * 2008-09-16 stability fixes to FFT and IFFT - ds
 * 2008-09-27 fix TExpRand.ar - ds
 * 2008-11-11 SystemSynthDefs.numChannels can now be set from the startup file - jr
+* 2008-11-29 resolved inconsistency in Server:waitForBoot - function is always executed in a Routine, whether or not the server is booted - ds
 
 // OTHER ADDITIONS/IMPROVEMENTS:
 * 2008-04-04 SoundFile:toCSV - ds
