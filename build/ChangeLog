@@ -17,6 +17,7 @@
 * 2008-xx-xx various behind-the-scenes efficiency improvements, for a sleeker audio server that can do more on a given machine - various contributors
 * 2008-11-01 add BEQSuite filter UGens (blackrain, jp)
 * 2008-11-11 add Pfxb pattern - jr
+* 2008-11-29 Pitch ugen can now also track the pitch of control-rate signals - mb
 
 // BUGFIXES:
 * 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
