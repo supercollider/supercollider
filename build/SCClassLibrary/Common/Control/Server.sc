@@ -382,11 +382,8 @@ Server : Model {
 	}
 	
 	waitForBoot { arg onComplete, limit=100;
-		if(serverBooting,{ ^this.doWhenBooted(onComplete,limit) });
-		if(serverRunning.not, { 
-			this.boot;
-			this.doWhenBooted(onComplete, limit);
-		},onComplete);
+		if(serverRunning.not) { this.boot };
+		this.doWhenBooted(onComplete, limit);
 	}
 	
 	doWhenBooted { arg onComplete, limit=100;
