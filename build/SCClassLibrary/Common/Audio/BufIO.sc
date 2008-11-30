@@ -129,11 +129,14 @@ Tap : UGen {
 }
 
 LocalBuf : UGen {
-
+	
 	*new { arg numFrames = 1, numChannels = 1, maxLocalBufs = 8;
 		^this.multiNew('scalar', numChannels, numFrames, maxLocalBufs)
 	}
 	
+	numFrames { ^inputs[1] }
+	numChannels { ^inputs[0] }
+		
 	*newFrom { arg list, maxLocalBufs = 8;
 		var shape, buf;
 		shape = list.shape;
