@@ -81,7 +81,8 @@ Node {
 	}
 	
 	setMsg { arg ... args;
-//		^[15, nodeID] ++ args.unbubble.asControlInput; 		^[15, nodeID] ++ args.asOSCArgArray; 	 //"/n_set"
+//		^[15, nodeID] ++ args.unbubble.asControlInput;
+		^[15, nodeID] ++ args.asOSCArgArray; 	 //"/n_set"
 	}
 
 	setn { arg ... args;
