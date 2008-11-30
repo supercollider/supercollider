@@ -375,11 +375,12 @@ NSString* pathOfFileRelativeToBaseDir(NSString *filepath, NSString *baseDir); //
 		}
 		if([files count] > 1) filesString = [[@"[" stringByAppendingString:filesString] stringByAppendingString:@"]"];
 		
-		[[self textStorage] replaceCharactersInRange:NSMakeRange(charIndex, 0) withString:filesString];
-		[self setSelectedRange:NSMakeRange(charIndex, [filesString length])];
-		[self didChangeText];
-		[[[NSDocumentController sharedDocumentController] documentForWindow: [self window]] updateChangeCount:NSChangeDone];
-		return YES;
+		if ([self shouldChangeTextInRange:NSMakeRange(charIndex, 0) replacementString:filesString]) {
+			[[self textStorage] replaceCharactersInRange:NSMakeRange(charIndex, 0) withString:filesString];
+			[self setSelectedRange:NSMakeRange(charIndex, [filesString length])];
+			[self didChangeText];
+			return YES;
+		}
     }
     return [super performDragOperation:sender];
 }
