@@ -329,5 +329,60 @@ extern PyrSymbol * s_mouseUp;
 	return res;
 }
 
+- (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)sender {
+	NSDragOperation sourceDragMask;
+	sourceDragMask = [sender draggingSourceOperationMask];
+	
+	if(sourceDragMask == NSDragOperationCopy) { // we're holding the alt key
+		// block if we haven't been saved or aren't in a document
+		if(![[[NSDocumentController sharedDocumentController] documentForWindow: [self window]] fileURL]) {
+			return NSDragOperationNone;
+		} else { return NSDragOperationCopy; }
+	}
+	
+	return [super draggingEntered:sender]; // pass on to NSTextView
+}
+
+NSString* pathOfFileRelativeToBaseDir(NSString *filepath, NSString *baseDir); // from MyDocument.M
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+    NSPasteboard *pboard;
+    NSDragOperation sourceDragMask;
+	
+    sourceDragMask = [sender draggingSourceOperationMask];
+    pboard = [sender draggingPasteboard];
+	
+	NSPoint mouseLoc = [[self window] convertBaseToScreen:[sender draggingLocation]];
+	unsigned int charIndex = [self characterIndexForPoint:mouseLoc];
+	
+    if ( [[pboard types] containsObject:NSFilenamesPboardType] ) {
+		NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
+		NSEnumerator *enumerator = [files objectEnumerator];
+		id anObject;
+		NSString *filesString = @"", *docDir;
+		BOOL commaSpace = NO;
+		BOOL alt = (sourceDragMask == NSDragOperationCopy);
+		// we already checked in draggingEntered if this is in a document
+		if(alt) docDir = [[[[[NSDocumentController sharedDocumentController] documentForWindow: [self window]] fileURL] path] stringByDeletingLastPathComponent];
+		while (anObject = [enumerator nextObject]) {
+			if(commaSpace) filesString = [filesString stringByAppendingString:@", "];
+			filesString = [filesString stringByAppendingString:@"\""];
+			if(alt) anObject = pathOfFileRelativeToBaseDir(anObject, docDir); // convert to relative
+			filesString = [filesString stringByAppendingString:anObject];
+			filesString = [filesString stringByAppendingString:@"\""];
+			if(alt) filesString = [filesString stringByAppendingString:@".resolveRelative"];
+			commaSpace = YES;
+		}
+		if([files count] > 1) filesString = [[@"[" stringByAppendingString:filesString] stringByAppendingString:@"]"];
+		
+		[[self textStorage] replaceCharactersInRange:NSMakeRange(charIndex, 0) withString:filesString];
+		[self setSelectedRange:NSMakeRange(charIndex, [filesString length])];
+		[self didChangeText];
+		[[[NSDocumentController sharedDocumentController] documentForWindow: [self window]] updateChangeCount:NSChangeDone];
+		return YES;
+    }
+    return [super performDragOperation:sender];
+}
+
 @end
 

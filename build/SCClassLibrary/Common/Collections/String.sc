@@ -336,6 +336,12 @@ String[char] : RawArray {
 		if(path.basename == this) { Error("should not load a file from itself").throw };
 		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths
 	}
+	resolveRelative {
+		var path = thisProcess.nowExecutingPath;
+		if(this[0] == thisProcess.platform.pathSeparator, {^this});
+		if(path.isNil) { Error("can't resolve relative to an unsaved file").throw};
+		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this)
+	}
 	include {
 		if(Quarks.isInstalled(this).not) {
 			Quarks.install(this);

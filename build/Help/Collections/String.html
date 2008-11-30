@@ -16,24 +16,24 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5a3927; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5a3927}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #563a29; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #563a29}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001bec}
 p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 span.s1 {color: #606060}
 span.s2 {color: #000000}
-span.s3 {color: #5a3927}
-span.s4 {color: #1c3d9a}
-span.s5 {color: #616336}
-span.s6 {color: #001bb9}
+span.s3 {color: #563a29}
+span.s4 {color: #1d3f99}
+span.s5 {color: #626237}
+span.s6 {color: #0023b7}
 span.s7 {font: 12.0px Helvetica}
-span.s8 {color: #0025b1}
-span.s9 {color: #1d4ed5}
-span.s10 {color: #001bba}
+span.s8 {color: #002baf}
+span.s9 {color: #1f51d3}
+span.s10 {color: #0023b8}
 span.s11 {font: 9.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -431,6 +431,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>load</b></p>
 <p class="p4"><br></p>
 <p class="p3">Load and execute the file at the path represented by the receiver.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>loadRelative</b></p>
+<p class="p4"><br></p>
+<p class="p3">Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. Requires that the file has been saved.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>resolveRelative</b></p>
+<p class="p4"><br></p>
+<p class="p3">Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.</p>
 <p class="p6"><br></p>
 <p class="p3"><b>standardizePath</b></p>
 <p class="p4"><br></p>
