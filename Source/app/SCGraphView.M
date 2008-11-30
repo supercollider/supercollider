@@ -170,7 +170,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 - (id)initWithFrame: (NSRect) frame
 {
     [super initWithFrame: frame];
-    [self registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, nil]];
+    [self registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, NSFilenamesPboardType, nil]];
 	mDragStarted = NO;
 	mMenuView = 0;
 	mWindowObj = 0;
@@ -555,7 +555,6 @@ const int circDiam = 20;
 - (unsigned int)draggingEntered:(id)dragInfo {
 	if (!mTopView) return NSDragOperationNone;
 	NSPasteboard* pboard = [dragInfo draggingPasteboard];
-	
 	if ([[pboard types] containsObject: sSCObjType]) {
 	
 	} else if ([[pboard types] containsObject: NSStringPboardType]) {
@@ -575,6 +574,32 @@ const int circDiam = 20;
 			runInterpreter(g, method, 1);
 			//g->canCallOS = false;
 			
+		pthread_mutex_unlock (&gLangMutex);
+		
+		int fakeData;
+		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];		
+		[pboard setData: data forType: sSCObjType];
+		
+	} else if ([[pboard types] containsObject: NSFilenamesPboardType]) {
+		NSArray *files = [pboard propertyListForType: NSFilenamesPboardType];
+		if (!files) return NSDragOperationNone;
+		pthread_mutex_lock (&gLangMutex);
+		VMGlobals *g = gMainVMGlobals;
+		int size = [files count];
+		PyrObject* array = newPyrArray(g->gc, size, 0, true);
+		
+		for (int i=0; i<size; ++i) {
+			NSString *path = [files objectAtIndex: i];
+			PyrString *string = newPyrString(g->gc, [path UTF8String], 0, true);
+			SetObject(array->slots + array->size, string);
+			array->size++;
+			g->gc->GCWrite(array, string);
+		}
+		
+		int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+		SetObject(&g->classvars->slots[classVarIndex+0], array);
+		g->gc->GCWrite(g->classvars, array);
+		
 		pthread_mutex_unlock (&gLangMutex);
 		
 		int fakeData;
