@@ -18,6 +18,7 @@
 * 2008-11-01 add BEQSuite filter UGens (blackrain, jp)
 * 2008-11-11 add Pfxb pattern - jr
 * 2008-11-21 support for LocalBuf in FFT UGens - jr
+* 2008-11-25 Added EZPopUpMenu - jostM
 * 2008-11-29 Pitch ugen can now also track the pitch of control-rate signals - mb
 
 
