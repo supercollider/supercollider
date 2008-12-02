@@ -274,8 +274,12 @@ Pbind : Pattern {
 				if (streamout.isNil) { ^inevent };
 
 				if (name.isSequenceableCollection) {
-					streamout.do { arg val, i;
-						event.put(name[i], val);
+					if (name.size > streamout.size) {  
+						("the pattern is not providing enough values to assign to the key set:" + name).warn;
+						^inevent 
+					};
+					name.do { arg key, i;
+						event.put(key, streamout[i]);
 					};
 				}{
 					event.put(name, streamout);
