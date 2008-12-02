@@ -237,7 +237,7 @@ MIDIIn {
 		if(device.isNumber, {
 			if(device >= 0, {
 				if ( device > MIDIClient.sources.size,{ // on linux the uid's are very large numbers
-					source = MIDIClient.sources.select{ |it| it.uid == device }.first;
+					source = MIDIClient.sources.detect{ |it| it.uid == device };
 					if(source.isNil,{ 
 						("MIDI device with uid"+device+ "not found").warn;
 					},{
