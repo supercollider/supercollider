@@ -463,6 +463,8 @@ RawArray : ArrayedCollection {
 	// species { ^this.class }
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
+
+	rate { ^\scalar }
 	
 	readFromStream { |stream, method|
 		if(method.notNil) {
