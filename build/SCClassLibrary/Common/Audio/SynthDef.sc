@@ -449,6 +449,19 @@ SynthDef {
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		)
 	}
+
+	storeOnce { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
+		var	path = dir ++ name ++ ".scsyndef",
+			lib;
+		if(File.exists(path).not) {
+			this.store(libname, dir, completionMsg, mdPlugin);
+		} {
+				// load synthdesc from disk
+				// because SynthDescLib still needs to have the info
+			lib = SynthDescLib.all[libname] ?? { Error("library" + libname  + "not found").throw };
+			lib.read(path);
+		};
+	}
 	store { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
 		var bytes;
 		var lib = SynthDescLib.all[libname] ?? { Error("library" + libname  + "not found").throw };
