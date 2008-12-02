@@ -62,6 +62,7 @@ extern bool compiledOK;
 // Platform declarations (interface routines)
 // =====================================================================
 
+static int initClient();
 static int initMIDI(int numIn, int numOut);
 static int disposeMIDI();
 static int restartMIDI();
@@ -521,6 +522,58 @@ int initMIDI(int numIn, int numOut)
     return errNone;
 }
 
+int initMIDIClient()
+{
+// 	post("MIDI (ALSA): calling init MIDI\n");
+
+	SC_AlsaMidiClient* client = &gMIDIClient;
+// 	int i;
+
+	if (client->mHandle) return errNone;
+
+	// initialize client handle
+    if (snd_seq_open(&client->mHandle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
+		client->mHandle = 0;
+		post("MIDI (ALSA): could not open ALSA sequencer: %s\n", snd_strerror(errno));
+        return errFailed;
+	}
+
+	snd_seq_set_client_name(client->mHandle, "SuperCollider");
+
+// 	post("MIDI (ALSA): set client name\n");
+
+	// initialize queue
+	client->mQueue = snd_seq_alloc_queue(client->mHandle);
+	snd_seq_start_queue(client->mHandle, client->mQueue, 0);
+	snd_seq_drain_output(client->mHandle);
+	// snd_seq_set_client_pool_output(seqHandle, ??);
+
+	// initialize event en-/decoders
+	if (snd_midi_event_new(32, &client->mEventToMidi) < 0) {
+		client->mEventToMidi = 0;
+		post("MIDI (ALSA): could not create MIDI decoder\n");
+		return errFailed;
+	}
+
+	if (snd_midi_event_new(32, &client->mMidiToEvent) < 0) {
+		client->mMidiToEvent = 0;
+		post("MIDI (ALSA): could not create MIDI encoder\n");
+		return errFailed;
+	}
+	
+	snd_midi_event_no_status(client->mEventToMidi, 1);
+	snd_midi_event_no_status(client->mMidiToEvent, 1);
+
+	// start input thread
+	client->mShouldBeRunning = true;
+	if (pthread_create(&client->mInputThread, 0, &SC_AlsaMidiClient::inputThreadFunc, client) != 0) {
+		post("MIDI (ALSA): could not start input thread\n");
+		return errFailed;
+	}
+
+    return errNone;
+}
+
 int disposeMIDI()
 {
 	cleanUpMIDI();
@@ -760,6 +813,11 @@ int initMIDI(int numIn, int numOut)
 	return errNone;
 }
 
+int initMIDIClient()
+{
+	return errNone;
+}
+
 int disposeMIDI()
 {
 	return errNone;
@@ -830,6 +888,12 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 	if (err) return errWrongType;
 	
 	return initMIDI(numIn, numOut);
+}
+
+int prInitMIDIClient(struct VMGlobals *g, int numArgsPushed);
+int prInitMIDIClient(struct VMGlobals *g, int numArgsPushed)
+{
+	return initMIDIClient();
 }
 
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed);
@@ -1006,6 +1070,7 @@ void initMIDIPrimitives()
 	g_ivx_MIDIOut_port = instVarOffset("MIDIOut", "port");
 
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
+	definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);	
 	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);        
 	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
 

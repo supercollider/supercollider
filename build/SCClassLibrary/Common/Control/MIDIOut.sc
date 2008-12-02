@@ -15,16 +15,13 @@ MIDIClient {
 	classvar <initialized=false;
 	*init { arg inports, outports; // by default initialize all available ports
 								// you still must connect to them using MIDIIn.connect
-		var inp,outp;
-		inp = inports ? 0;
-		outp = outports ? 0;
-		this.prInit(inp,outp);
+
+		this.prInitClient;
 
 		this.list;
 
-		// -1 since the list will include SC's own ports;
-		if(inports.isNil,{inports = sources.size-1});
-		if(outports.isNil,{outports = destinations.size-1});
+		if(inports.isNil,{inports = sources.size});
+		if(outports.isNil,{outports = destinations.size});
 
 		this.disposeClient;
 		this.prInit(inports,outports);
@@ -62,6 +59,10 @@ MIDIClient {
 	}
 	*prInit { arg inports, outports;
 		_InitMIDI
+		^this.primitiveFailed
+	}
+	*prInitClient {
+		_InitMIDIClient
 		^this.primitiveFailed
 	}
 	*prList {
