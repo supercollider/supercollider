@@ -635,6 +635,17 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
   return errFailed;
 }
 
+// not needed in PortMIDI:
+int initMIDIClient()
+{
+	return errNone;
+}
+int prInitMIDIClient(struct VMGlobals *g, int numArgsPushed);
+int prInitMIDIClient(struct VMGlobals *g, int numArgsPushed)
+{
+	return initMIDIClient();
+}
+//--------------
 /*
 -------------------------------------------------------------
 */
@@ -660,7 +671,8 @@ void initMIDIPrimitives()
   s_numMIDIDev = getsym("prSetNumberOfDevices");
   s_midiclient = getsym("MIDIClient");
   definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
-  definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
+  definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);
+  definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);	
   definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
   definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
   definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
