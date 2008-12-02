@@ -494,10 +494,13 @@ Pbindf : FilterPattern {
 				var streamout = stream.next(inevent);
 				
 				if (streamout.isNil) { ^event };
-				if (name.isSequenceableCollection) {					
-					streamout.do({ arg val, i;
-						inevent.put(name[i], val);
-					});
+				if (name.isSequenceableCollection) {						if (name.size > streamout.size) {  
+						("the pattern is not providing enough values to assign to the key set:" + name).warn;
+						^inevent 
+					};
+					name.do { arg key, i;
+						event.put(key, streamout[i]);
+					};
 				}{
 					inevent.put(name, streamout);
 				};
