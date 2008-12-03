@@ -716,7 +716,10 @@ void PV_Div_next(PV_Unit *unit, int inNumSamples)
 	p->dc  /= q->dc;
 	p->nyq /= q->nyq;
 	for (int i=0; i<numbins; ++i) {
-		// See http://mathworld.wolfram.com/ComplexDivision.html
+		// See http://gcc.gnu.org/ml/fortran/2004-05/msg00029.html
+		// Note that hypot has danger of overflow (see URL above),
+		// however FFT values typically stay within a small range,
+		// so I'm considering this OK for now.
 		hypot = q->bin[i].real * q->bin[i].real + q->bin[i].imag * q->bin[i].imag;
 		preal = p->bin[i].real;
 		p->bin[i].real = (preal          * q->bin[i].real + p->bin[i].imag * q->bin[i].imag) / hypot;
