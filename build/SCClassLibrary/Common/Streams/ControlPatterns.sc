@@ -26,7 +26,7 @@ Phid : Pattern {
 			min = elements.at(element).min;
 			max = elements.at(element).max;
 			spec = ControlSpec.new(min, max, 'lin', 1)
-			^if((min === 0) and: {max === 1}, {
+			if((min === 0) and: {max === 1}, {
 					repeats.value.do({
 						event = device.value(element).yield
 					});
