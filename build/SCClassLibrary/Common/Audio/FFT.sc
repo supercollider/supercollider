@@ -95,6 +95,7 @@ PV_Copy : PV_MagMul {}
 PV_Max : PV_MagMul {}
 PV_Min : PV_MagMul {}
 PV_Mul : PV_MagMul {}
+PV_Div : PV_MagMul {}
 PV_Add : PV_MagMul {}
 
 PV_MagDiv : PV_ChainUGen

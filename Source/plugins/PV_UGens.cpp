@@ -108,6 +108,9 @@ extern "C"
 	void PV_Mul_Ctor(PV_Unit *unit);
 	void PV_Mul_next(PV_Unit *unit, int inNumSamples);
 
+	void PV_Div_Ctor(PV_Unit *unit);
+	void PV_Div_next(PV_Unit *unit, int inNumSamples);
+
 	void PV_Add_Ctor(PV_Unit *unit);
 	void PV_Add_next(PV_Unit *unit, int inNumSamples);
 
@@ -701,6 +704,31 @@ void PV_Mul_Ctor(PV_Unit *unit)
 	ZOUT0(0) = ZIN0(0);
 }
 
+void PV_Div_next(PV_Unit *unit, int inNumSamples)
+{
+	PV_GET_BUF2
+	
+	SCComplexBuf *p = ToComplexApx(buf1);
+	SCComplexBuf *q = ToComplexApx(buf2);
+	
+	float hypot;
+	
+	p->dc  /= q->dc;
+	p->nyq /= q->nyq;
+	for (int i=0; i<numbins; ++i) {
+		// See http://mathworld.wolfram.com/ComplexDivision.html
+		hypot = q->bin[i].real * q->bin[i].real + q->bin[i].imag * q->bin[i].imag;
+		p->bin[i].real = (p->bin[i].real * q->bin[i].real + p->bin[i].imag + q->bin[i].imag) / hypot;
+		p->bin[i].imag = (p->bin[i].imag * q->bin[i].real - p->bin[i].real + q->bin[i].imag) / hypot;
+	}
+}
+
+void PV_Div_Ctor(PV_Unit *unit)
+{
+	SETCALC(PV_Div_next);
+	ZOUT0(0) = ZIN0(0);
+}
+
 void PV_Add_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
@@ -1181,6 +1209,7 @@ void initPV(InterfaceTable *inTable)
 	DefinePVUnit(PV_Min);
 	DefinePVUnit(PV_Max);
 	DefinePVUnit(PV_Mul);
+	DefinePVUnit(PV_Div);
 	DefinePVUnit(PV_Add);
 	DefinePVUnit(PV_RectComb);
 	DefinePVUnit(PV_RectComb2);
