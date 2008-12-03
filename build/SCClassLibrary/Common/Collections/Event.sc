@@ -547,7 +547,7 @@ Event : Environment {
 					
 					midi: #{|server|
 						var freqs, lag, dur, sustain, strum;
-						var bndl, midiout, hasHate, midicmd;
+						var bndl, midiout, hasGate, midicmd;
 						
 						freqs = ~freq = ~detunedFreq.value;
 												
@@ -558,7 +558,7 @@ Event : Environment {
 							lag = ~lag;
 							sustain = ~sustain = ~sustain.value;
 							midiout = ~midiout.value;
-							hasHate = ~hasGate ? true;
+							hasGate = ~hasGate ? true;
 							midicmd = ~midicmd;
 							bndl = ~midiEventFunctions[midicmd].valueEnvir.asCollection;
 							
@@ -576,7 +576,7 @@ Event : Environment {
 											midiout.performList(midicmd, msgArgs);
 										})
 									};
-									if(hasHate and: { midicmd === \noteOn }) {
+									if(hasGate and: { midicmd === \noteOn }) {
 										thisThread.clock.sched(sustain + latency, { 
 											midiout.noteOff(*msgArgs)
 										});
