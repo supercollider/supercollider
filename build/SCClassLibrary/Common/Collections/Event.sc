@@ -163,7 +163,7 @@ Event : Environment {
 				freqToNote: #{ arg self, freq; // conversion from frequency to note value
 					self.use {
 						var midinote;
-						midinote = (freq.cpsmidi - ~ctranspose);
+						midinote = ((freq / ~harmonic).cpsmidi - ~ctranspose);
 						midinote / 12.0 - ~octave * ~stepsPerOctave - ~root - ~gtranspose
 					}
 				},
