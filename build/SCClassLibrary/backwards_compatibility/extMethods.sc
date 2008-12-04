@@ -92,9 +92,18 @@
 
 }		
 
++Env { 
+
+	asControlInput { ^this.asArray }
+	asOSCArgEmbeddedArray { | array| ^this.asArray.asOSCArgEmbeddedArray(array) }
+	asOSCArgAddedToArray { | array|  ^this.asArray.asOSCArgAddedToArray(array)  }
+}
+
 +Object {Ê
 	asOSCArgEmbeddedArray { | array| ^array.add(this.asControlInput) }
 	asOSCArgAddedToArray { | array| ^array.add(this.asControlInput) }
+	asOSCArgArray { ^this.asControlInput }
+	asOSCArgBundle { ^this.asControlInput }
 }
 
 +Nil {

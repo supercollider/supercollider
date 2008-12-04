@@ -210,4 +210,28 @@ Symbol {
 	}
 
 	archiveAsCompileString { ^true }
+		
+	kr { | val, lag |
+		val = val.asControlInput;
+		UGen.buildSynthDef.addKr(this, val);
+		if (lag.isNil) {
+			^Control.kr(val)
+		} {
+			#val, lag = [val, lag].flop.flop;
+			^LagControl.kr(val, lag)
+		}
+	}
+	
+	ir { | val |
+		val = val.asControlInput;
+		UGen.buildSynthDef.addIr(this, val)
+		^Control.ir(val)
+	}
+	
+	tr { | val |
+		val = val.asControlInput;
+		UGen.buildSynthDef.addTr(this, val)
+		^TrigControl.kr(val)
+	}
+
 }
