@@ -266,6 +266,7 @@ Env {
 		^this.class.new(levels.linlin(levels.minItem, levels.maxItem, lo, hi), 
 			times, curves, releaseNode, loopNode)
 	}
+
 	exprange { |lo=0, hi=1|
 		^this.class.new(levels.linexp(levels.minItem, levels.maxItem, lo, hi), 
 			times, curves, releaseNode, loopNode)
