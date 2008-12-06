@@ -5,20 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bb0e03}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bb0e03; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #ab1e19}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #ab1e19; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #606060}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000ebe}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #001bbc}
 span.s1 {color: #000000}
-span.s2 {color: #000ebe}
-span.s3 {color: #0013fe}
+span.s2 {color: #001bbc}
+span.s3 {color: #0024fc}
 span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -32,7 +32,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Main overrides some methods of Process. There are two methods of interest. One is named <b>startup</b> and is<span class="Apple-converted-space"> </span></p>
 <p class="p3">called after the class library has been compiled. The other is called <b>shutdown</b> which gets called when the library gets re-compiled.</p>
 <p class="p2"><br></p>
-<p class="p3">the singleton instance of Main is available through the special keyword thisProcess. For example, to find out what platform you're on:</p>
+<p class="p3">The singleton instance of Main is available through the special keyword thisProcess. For example, to find out what platform you're on:</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">thisProcess</span><span class="s1">.platform;<span class="Apple-tab-span">	</span></span>// --&gt; e.g. "an OSXPlatform", "a LinuxPlatform", ...</p>
 <p class="p5"><br></p>
@@ -82,5 +82,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Main</span><span class="s1">.version; <span class="Apple-converted-space">                </span></span>// the current version as a human readable string</p>
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Main</span><span class="s1">.versionAtLeast( 3, 1 );<span class="Apple-converted-space">  </span></span>// check if we are running at least version 3.1 (returns true or false)</p>
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Main</span><span class="s1">.versionAtMost( 3, 1 ); <span class="Apple-converted-space">  </span></span>// check if we are running version 3.1 or older (returns true or false)<span class="Apple-tab-span">	</span></p>
+<p class="p5"><br></p>
+<p class="p3"><b>recompile</b></p>
+<p class="p2"><br></p>
+<p class="p3">Recompiles the class library. This is equivalent to restarting SC. Currently OSX (SuperCollider.app) only.</p>
 </body>
 </html>
