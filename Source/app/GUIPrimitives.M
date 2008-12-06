@@ -3804,6 +3804,21 @@ int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prRecompile(struct VMGlobals *g, int numArgsPushed);
+int prRecompile(struct VMGlobals *g, int numArgsPushed)
+{
+	SEL sel = @selector(compileLibrary:);
+    NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
+    
+    NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+    SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+    [anInvocation setTarget: scvm];
+    [anInvocation setSelector: sel];     
+    [scvm defer: anInvocation];
+
+	return errNone;
+}
+
 void initSCImagePrimitives();
 
 void initGUIPrimitives()
@@ -3973,6 +3988,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_EnableMenuItem", prEnableMenuItem, 2, 0);
 	definePrimitive(base, index++, "_SetMenuItemState", prSetMenuItemState, 2, 0);
 	definePrimitive(base, index++, "_SetMenuItemKeyboardEquivalent", prSetMenuItemKeyboardEquivalent, 4, 0);
+	definePrimitive(base, index++, "_Recompile", prRecompile, 1, 0);
 
 	initSCImagePrimitives();
 }

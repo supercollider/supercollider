@@ -120,4 +120,6 @@ classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="1";
 		_Argv
 		^[]
 	}
+	
+	recompile { platform.recompile }
 }

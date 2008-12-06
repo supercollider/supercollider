@@ -10,6 +10,8 @@ Platform
 	}
 
 	name { ^this.subclassResponsibility }
+	
+	recompile { ^this.subclassResponsibility }
 	*case { | ... cases |
 		^thisProcess.platform.name.switch(*cases)
 	}
