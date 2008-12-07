@@ -1181,22 +1181,25 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 	
-	PyrSlot *args = g->sp - 5;
+	PyrSlot *args = g->sp - 6;
 	PyrSlot *a = args + 0;
-	PyrSlot *b = args + 1;
-	PyrSlot *c = args + 2;
-	PyrSlot *d = args + 3;
-	PyrSlot *e = args + 4;
-	PyrSlot *f = args + 6;
-	PyrSlot *h = args + 5;
+	PyrSlot *b = args + 1; // name
+	PyrSlot *c = args + 2; // bounds
+	PyrSlot *d = args + 3; // resizable
+	PyrSlot *e = args + 4; // border
+	PyrSlot *f = args + 6; // view
+	PyrSlot *h = args + 5; // scroll
+	PyrSlot *j = args + 7; // is this app modal? (Doesn't matter for sheets as they have no close button)
+
 	if (!(isKindOfSlot(b, class_string))) return errWrongType;
 	if (!(isKindOfSlot(c, s_rect->u.classobj))) return errWrongType;
 	
-        unsigned int mask = IsTrue(d) && IsTrue(e) ? NSResizableWindowMask : 0;
-        mask |= IsTrue(e) ? 
-            NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask 
-			| NSTexturedBackgroundWindowMask
-            : NSBorderlessWindowMask;
+	bool eIsTrue = IsTrue(e);
+	unsigned int mask = IsTrue(d) && eIsTrue ? NSResizableWindowMask : 0;
+	if (IsFalse(j) && eIsTrue){
+		mask |= NSMiniaturizableWindowMask | NSClosableWindowMask;
+	}
+	mask |= eIsTrue ? NSTitledWindowMask | NSTexturedBackgroundWindowMask : NSBorderlessWindowMask;
             
 	NSRect bounds;
 	int err = slotGetNSRect(c, &bounds);		
@@ -3897,7 +3900,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_OpenTextFile", prOpenTextFile, 4, 0);	
         
 	definePrimitive(base, index++, "_GetStringFromUser", prGetStringFromUser, 3, 0);	
-	definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 6, 0);	
+	definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 7, 0);	
 	definePrimitive(base, index++, "_SCWindow_Refresh", prSCWindow_Refresh, 1, 0);	
 	definePrimitive(base, index++, "_SCWindow_Close", prSCWindow_Close, 1, 0);	
 	definePrimitive(base, index++, "_SCWindow_Minimize", prSCWindow_Minimize, 1, 0);	
