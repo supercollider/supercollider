@@ -11,39 +11,27 @@ OSCpathDispatcher : OSCMultiResponder {
 	classvar <>cmdPathIndices;
 
 	var <>pathResponders;
-	var <>pathIndices;
+	var <>maxPathSize;
 	
-	*initClass {
-		cmdPathIndices = IdentityDictionary.new;		
-		cmdPathIndices.put('/b_set',	#[1,2]);
-		cmdPathIndices.put('/b_setn',	#[1,2]);
-		cmdPathIndices.put('/c_set',	#[1]);
-		cmdPathIndices.put('/c_setn',	#[1]);
-		cmdPathIndices.put('/n_set',	#[1,2]);
-		cmdPathIndices.put('/n_setn',	#[1,2]);
-		cmdPathIndices.put('/tr',		#[1,2]);
-		cmdPathIndices.put('/n_end',	#[1]);
-		cmdPathIndices.put('/c_end',	#[1]);		// dummy OSC command
-	}	
-	*new {  arg addr, cmdName, action, pathIndices;
-		^super.new(addr, cmdName, action).init(pathIndices);
+	*new {  arg addr, cmdName, action, pathSize;
+		^super.new(addr, cmdName, action).init(pathSize);
 	}
-	init { arg argPathIndices = 1;
-		pathIndices = argPathIndices ? cmdPathIndices.at(cmdName);
+	init { arg pathSize;
+		maxPathSize = pathSize;
 		pathResponders = Set.new;
 	}
 	value { arg time, msg; 
 		var cmdPath, match, responder;
 		super.value(time, msg);
-		if (pathIndices.notNil, {
-			cmdPath = [cmdName] ++ pathIndices.collect({ arg i; msg.at(i) });
+		if (maxPathSize.notNil, {
+			cmdPath = [cmdName] ++ msg[1..maxPathSize];
 			responder = OSCpathResponder(addr, cmdPath);
 			match = pathResponders.findMatch(responder);
 			if (match.notNil, { 
 				match.value(time, msg); 
 			});
-			pathIndices.size.do({ arg i;
-				responder.path.put(i,nil);
+			(maxPathSize - 1).do({ arg i;
+				responder.path.removeAt(responder.path.size - 1);
 				match = pathResponders.findMatch(responder);
 				if (match.notNil, { 
 					match.value(time, msg); 
@@ -56,10 +44,14 @@ OSCpathDispatcher : OSCMultiResponder {
 		old = pathResponders.findMatch(responder);
 		if(old.notNil,{ pathResponders.remove(old) });
 		pathResponders.add(responder);
+		if(responder.path.size > maxPathSize) { maxPathSize = responder.path.size };
 	}
 	removeChild { arg responder;
 		 pathResponders.remove(responder);
-		  if(this.isEmpty) { this.remove };
+		 if(responder.path.size == maxPathSize) {
+		 	maxPathSize = pathResponders.maxValue({ |resp| resp.path.size });
+		 };
+		 if(this.isEmpty) { this.remove };
 	}
 	
 	isEmpty { ^(nodes.size + pathResponders.size) == 0 }
@@ -77,10 +69,7 @@ OSCpathResponder : OSCresponder {
 	
 	findDispatcher {
 		var responder, match, pathIndices;
-		if (OSCpathDispatcher.cmdPathIndices.includes(cmdName).not, {
-			pathIndices = Array.series(path.size, 1);
-		});
-		responder = OSCpathDispatcher(addr, cmdName, nil, pathIndices);
+		responder = OSCpathDispatcher(addr, cmdName, nil, path.size);
 		match = OSCresponder.all.findMatch(responder);
 		if(match.isNil, { ^responder.add });
 		if (match.class === OSCresponder,  {
