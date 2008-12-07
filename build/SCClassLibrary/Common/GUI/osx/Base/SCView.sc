@@ -1565,7 +1565,14 @@ SCEnvelopeView : SCView {
 	defaultCanReceiveDrag {	^true; }
 			
     defaultKeyDownAction { arg key, modifiers, unicode;
-        if (unicode == 16rF703, { this.selectIndex((this.index+1)%this.size) ^this });        if (unicode == 16rF702, { this.selectIndex((this.index-1)%this.size) ^this });        if (unicode == 16rF700, { this.y = this.value[1][this.index] + this.step; ^this });        if (unicode == 16rF701, { this.y = this.value[1][this.index] - this.step; ^this });        ^nil        // bubble if it's an invalid key    }
+    	(this.index > 1.neg).if{
+	    	(modifiers==10617090).if{
+	       	 	if (unicode == 16rF703, { this.x = this.value[0][this.index] + this.step; ^this });
+	        	if (unicode == 16rF702, { this.x = this.value[0][this.index] - this.step; ^this });
+	        	}{
+	       		 if (unicode == 16rF703, { this.selectIndex((this.index+1)%this.size) ^this });	        		if (unicode == 16rF702, { this.selectIndex((this.index-1)%this.size) ^this });
+	        	};	        if (unicode == 16rF700, { this.y = this.value[1][this.index] + this.step; ^this });	        if (unicode == 16rF701, { this.y = this.value[1][this.index] - this.step; ^this });
+        };        ^nil        // bubble if it's an invalid key    }
     	
 	doMetaAction{ 
 		metaAction.value(this)
