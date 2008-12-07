@@ -5574,12 +5574,20 @@ int SCEnvelopeView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
 
         if (symbol == s_x) {
-            SetFloat(slot, mCurrentX);
+			if(mSelectedIndex >= 0){
+				SetFloat(slot, mCurrentX);
+			} else {
+				SetNil(slot);
+			}
            return errNone;
 	}
 	if (symbol == s_y) {
-            SetFloat(slot, mCurrentY);
-           return errNone;
+		if(mSelectedIndex >= 0){
+			SetFloat(slot, mCurrentY);
+		} else {
+			SetNil(slot);
+		}
+		return errNone;
 	}
         if (strcmp(name, "selectedIndex")==0) {
             SetInt(slot, (int) mSelectedIndex);
