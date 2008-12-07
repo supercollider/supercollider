@@ -88,12 +88,12 @@ EZRanger {
 		rangeSlider.hi_(spec.unmap(hi));
 	}
 	
-	visible { ^rangeSlider.visible }
-	visible_ { |flag| this.views.do(_.visible_(flag)) }
-	enabled { ^rangeSlider.visible }
-	enabled_ { |flag| [loBox, rangeSlider, hiBox].do(_.enabled_(flag)) }
+	visible { ^zone.visible }
+	visible_ { |flag| zone.visible_(flag) }
+	enabled { ^zone.enabled }
+	enabled_ { |flag| zone.enabled_(flag) }
 
-	remove { 	this.views.do(_.remove); zone.remove }
+	remove { 	zone.remove }
 }
 
 	// EZRanger laid out in two lines
