@@ -4697,8 +4697,7 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 	float a1 = unit->m_a1, b0 = unit->m_b0; // Filter coefficient parameters
 	float o, u; // System's null response, loop input
 	float past, future;
-	for (int i=0; i < inNumSamples; ++i)
-	{
+
 		// Update filter coefficients, but only if freq changes since it involves some expensive operations
 		if(freq != IN0(1)){
 			freq = IN0(1);
@@ -4711,9 +4710,11 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 			a1 = (float)((TwcD - 2.)/(TwcD + 2.));
 		}
 		
+	for (int i=0; i < inNumSamples; ++i)
+	{
 		// compute loop values
 		o = s4 + b0*(s3 + b0*(s2 + b0*s1));
-		out[i] = (b0*b0*b0*b0*in[i] + o)/(1. + b0*b0*b0*b0*k);
+		out[i] = (b0*b0*b0*b0*in[i] + o)/(1.f + b0*b0*b0*b0*k);
 		u = in[i] - k*out[i];
 
 		// update 1st order filter states
