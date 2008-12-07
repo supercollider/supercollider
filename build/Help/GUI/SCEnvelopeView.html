@@ -10,8 +10,8 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -21,8 +21,8 @@ p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #626140}
-p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #5c662f}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #626042}
+p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
 p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
@@ -33,16 +33,16 @@ span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
 span.s4 {color: #6f7178}
 span.s5 {font: 9.0px Monaco}
-span.s6 {color: #24389c}
+span.s6 {color: #293b97}
 span.s7 {color: #606060}
-span.s8 {color: #636a99}
-span.s9 {color: #5f689f}
-span.s10 {color: #61699c}
-span.s11 {color: #2946d8}
-span.s12 {color: #666c94}
-span.s13 {color: #5a65a5}
+span.s8 {color: #656b96}
+span.s9 {color: #61699c}
+span.s10 {color: #636a99}
+span.s11 {color: #314bd1}
+span.s12 {color: #676d92}
+span.s13 {color: #5d67a2}
 span.s14 {font: 14.0px Helvetica}
-span.s15 {color: #6f717c}
+span.s15 {color: #6f717b}
 span.s16 {font: 12.0px Helvetica}
 span.s17 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
@@ -53,11 +53,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: Object : SCView</b></p>
 <p class="p3"><br></p>
-<p class="p1">A view which can grapically display<span class="Apple-converted-space">  </span>nodes at x/y coordinates, connection lines, cross-connections, node markers, and labels. All of the values for these are stored in arrays. While this view is typically used to make editable envelopes interfaces, it can be used to draw very complex interconnection graphs as well.</p>
+<p class="p1">A view which can grapically display<span class="Apple-converted-space">  </span>nodes at x/y coordinates, connection lines, cross-connections, node markers, and labels. All of the values for these are stored in arrays. While this view is typically used to make editable envelopes interfaces, it can be used to draw very complex interconnection graphs as well. <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s2"><b>See also:</b> <a href="SCMultiSliderView.html"><span class="s3">SCMultiSliderView</span></a>, <a href="SCEnvelopeEdit.html"><span class="s3">SCEnvelopeEdit</span></a></span></p>
+<p class="p4"><b>Some Important Issues Regarding SCEnvelopeView<span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
-<p class="p5"><b>Creation / Class Methods</b></p>
+<p class="p1">The instance variable <b>step</b> must be explicitly set for the <b>defautlKeyDownAction</b> to work.</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s2"><b>See also:</b> <a href="SCMultiSliderView.html"><span class="s3">SCMultiSliderView</span></a>, <a href="SCEnvelopeEdit.html"><span class="s3">SCEnvelopeEdit</span></a></span></p>
+<p class="p2"><br></p>
+<p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -112,15 +116,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]</p>
 <p class="p14"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>index</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span>index_ (inx)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets theselected index.<span class="Apple-converted-space">  </span>-1 if none selected.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets theselected index.<span class="Apple-converted-space">  </span>-1 if none selected.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>inx </b>- an integer.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>lastIndex</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the index last selected.</p>
-<p class="p6"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>selectIndex (index)</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Selects the node at index, and refreshes the view. Not working correctly yet.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- An integer.</p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>x</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>y</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>x_ (ax)</b></p>
@@ -217,8 +224,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default keydown actions are:</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>key</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>comment</b></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF703, <span class="Apple-tab-span">	</span>increment<span class="Apple-converted-space">  </span>x by<span class="Apple-converted-space">  </span><b>step</b><span class="Apple-tab-span">	</span>right arrow</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF702, <span class="Apple-tab-span">	</span>decrement<span class="Apple-converted-space">  </span>x by<span class="Apple-converted-space">  </span><b>step</b><span class="Apple-tab-span">	</span>left arrow<span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>shift+unicode 16rF703, <span class="Apple-tab-span">	</span>increment<span class="Apple-converted-space">  </span>x by<span class="Apple-converted-space">  </span><b>step</b><span class="Apple-tab-span">	</span>shift + right arrow</p>
+<p class="p7"><span class="Apple-tab-span">	</span>shift+unicode 16rF702, <span class="Apple-tab-span">	</span>decrement<span class="Apple-converted-space">  </span>x by<span class="Apple-converted-space">  </span><b>step</b><span class="Apple-tab-span">	</span>shift + left arrow<span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF703, <span class="Apple-tab-span">	</span>select next index<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>right arrow</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF702, <span class="Apple-tab-span">	</span>select previous index<span class="Apple-tab-span">	</span>left arrow<span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF700, <span class="Apple-tab-span">	</span>increment<span class="Apple-converted-space">  </span>y by<span class="Apple-converted-space">  </span><b>step</b><span class="Apple-tab-span">	</span>up arrow</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF701, <span class="Apple-tab-span">	</span>decrement<span class="Apple-converted-space">  </span>y by<span class="Apple-converted-space">  </span><b>step</b><span class="Apple-tab-span">	</span>down arrow</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -272,10 +281,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Selects the node at index, without refreshing the view</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- An integer.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span>selectIndex (index)</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Selects the node at index, and refreshes the view. Not working correctly yet.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- An integer.</p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>addValue (xval, yval)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>fixedSelection_ (bool)</b></p>
