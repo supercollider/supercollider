@@ -61,6 +61,7 @@ PV_MagSquared : PV_ChainUGen
 PV_MagNoise : PV_MagSquared {}
 PV_PhaseShift90 : PV_MagSquared {}
 PV_PhaseShift270 : PV_MagSquared {}
+PV_Conj : PV_MagSquared {}
 
 PV_PhaseShift : PV_ChainUGen 
 {

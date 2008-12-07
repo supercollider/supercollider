@@ -75,6 +75,8 @@ struct PV_BinScramble : Unit
 	bool m_triggered;
 };
 
+struct PV_Conj : PV_Unit {};
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 extern "C"
@@ -179,7 +181,9 @@ extern "C"
 	void PV_BinScramble_Dtor(PV_BinScramble *unit);
 	void PV_BinScramble_next(PV_BinScramble *unit, int inNumSamples);
 
-	
+	void PV_Conj_Ctor(PV_Unit *unit);
+	void PV_Conj_next(PV_Unit *unit, int inNumSamples);
+
 /* spectral feature extractors? :
 		bin freq
 		bin magnitude
@@ -1187,6 +1191,23 @@ void PV_BinScramble_Dtor(PV_BinScramble* unit)
 }
 
 
+void PV_Conj_Ctor(PV_Unit *unit)
+{
+	SETCALC(PV_Conj_next);
+	ZOUT0(0) = ZIN0(0);
+}
+
+void PV_Conj_next(PV_Unit *unit, int inNumSamples)
+{
+	PV_GET_BUF
+	
+	SCComplexBuf *p = ToComplexApx(buf);
+	
+	for (int i=0; i<numbins; ++i) {
+		p->bin[i].imag = 0.f - p->bin[i].imag;
+	}
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1220,6 +1241,7 @@ void initPV(InterfaceTable *inTable)
 	DefinePVUnit(PV_BrickWall);
 	DefinePVUnit(PV_BinWipe);
 	DefinePVUnit(PV_LocalMax);
+	DefinePVUnit(PV_Conj);
 
 	DefineDtorUnit(PV_BinScramble);
 	DefineDtorUnit(PV_MagSmear);
