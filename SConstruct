@@ -313,6 +313,8 @@ opts.AddOptions(
                'Enable the SCVIM user interface; NOTE see the README in /editors/scvim for setting variables', 1),
     BoolOption('SSE',
                'Build with SSE support', 1),
+    BoolOption('STRIP',
+               'Strip symbols from binaries', 0),
     BoolOption('CROSSCOMPILE',
                'Crosscompile for another platform (does not do SSE support check)', 0),
     BoolOption('TERMINAL_CLIENT',
@@ -605,6 +607,8 @@ else:
     env.Append(
         CCFLAGS = make_opt_flags(env),
         CPPDEFINES = ['NDEBUG'])
+    if env['STRIP']:
+        env.Append(LINKFLAGS = "-Wl,-s")
 
 # platform specific
 if False: #PLATFORM == 'darwin':
@@ -1280,6 +1284,7 @@ print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
 print ' SCVIM:                   %s' % yesorno(env['SCVIM'])
 print ' SSE:                     %s' % yesorno(features['sse'])
+print ' STRIP:                   %s' % yesorno(env['STRIP'])
 print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
 print ' TERMINAL_CLIENT:         %s' % yesorno(env['TERMINAL_CLIENT'])
 print ' X11:                     %s' % yesorno(features['x11'])
