@@ -14,20 +14,21 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6a3426}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #15339d}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5f3629}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1e3798}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; min-height: 16.0px}
-span.s1 {color: #0020f6}
-span.s2 {color: #15339d}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+span.s1 {color: #0c2eee}
+span.s2 {color: #1e3798}
 span.s3 {color: #000000}
 span.s4 {color: #606060}
-span.s5 {color: #0e31f0}
-span.s6 {color: #5b6634}
-span.s7 {color: #0000bf}
-span.s8 {color: #bf0000}
+span.s5 {color: #193ae8}
+span.s6 {color: #5e6538}
+span.s7 {color: #0018b8}
+span.s8 {color: #a41c14}
+span.s9 {color: #0000ff}
+span.s10 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -243,38 +244,74 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9">SystemClock<span class="s3">.play(r);</span></p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
-<p class="p10"><br></p>
-<p class="p11">// Using Routine to set button states on the fly.</p>
-<p class="p12">(</p>
-<p class="p12"><span class="s7">var</span> update, w, b;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s7">SCWindow</span>.new(<span class="s4">"State Window"</span>, <span class="s7">Rect</span>(150,<span class="s7">SCWindow</span>.screenBounds.height-140,380,60));</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a convenient way to set the button label</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update = {<span class="Apple-converted-space"> </span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">|but, string|</span> but.states = [[string.asString, <span class="s7">Color</span>.black, <span class="s7">Color</span>.red]];<span class="Apple-converted-space"> </span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>but.refresh;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s7">SCButton</span>(w, <span class="s7">Rect</span>(10,10,360,40));</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.font_(<span class="s7">Font</span>(<span class="s4">"Impact"</span>, 24));</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><br></p>
+<p class="p10">// Using Routine to set button states on the fly.</p>
+<p class="p4">(</p>
+<p class="p4"><span class="s7">var</span> update, w, b;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s7">SCWindow</span>.new(<span class="s4">"State Window"</span>, <span class="s7">Rect</span>(150,<span class="s7">SCWindow</span>.screenBounds.height-140,380,60));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a convenient way to set the button label</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update = {<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">|but, string|</span> but.states = [[string.asString, <span class="s7">Color</span>.black, <span class="s7">Color</span>.red]];<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>but.refresh;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s7">SCButton</span>(w, <span class="s7">Rect</span>(10,10,360,40));</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.font_(<span class="s7">Font</span>(<span class="s4">"Impact"</span>, 24));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update.value(b, </span>"there is only one state"<span class="s3">);</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if an action should do something different each time it is called, a routine is the<span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// right thing to use. This is better than creating variables outside and setting them</p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from the action function to keep state from one action to the next</p>
-<p class="p10"><br></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action_(<span class="s7">Routine</span> { <span class="s7">|butt|</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(15, 45).do { <span class="s7">|i|</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update.value(butt, <span class="s4">"%. there is still only 1 state"</span>.format(i + 2));</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield; <span class="s8">// stop here</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.close;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p10"><br></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p12">)</p>
-<p class="p10"><br></p>
-<p class="p13"><span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if an action should do something different each time it is called, a routine is the<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// right thing to use. This is better than creating variables outside and setting them</p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from the action function to keep state from one action to the next</p>
+<p class="p6"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action_(<span class="s7">Routine</span> { <span class="s7">|butt|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(15, 45).do { <span class="s7">|i|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update.value(butt, <span class="s4">"%. there is still only 1 state"</span>.format(i + 2));</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield; <span class="s8">// stop here</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.close;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p6"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p11">// drawing in a window dynamcially with <a href="../../GUI/Pen.html"><span class="s9">Pen</span></a></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s10">var</span> w, much = 0.02, string, synth;</p>
+<p class="p6"><br></p>
+<p class="p4">w = <span class="s10">GUI</span>.window.new(<span class="s4">"swing"</span>, <span class="s10">Rect</span>(100, 100, 300, 500)).front;</p>
+<p class="p4">w.view.background_(<span class="s10">Color</span>.new255(153, 255, 102).vary);</p>
+<p class="p6"><br></p>
+<p class="p4">string = <span class="s4">"swing "</span>.dup(24).join;</p>
+<p class="p6"><br></p>
+<p class="p4">w.drawHook = <span class="s10">Routine</span> {<span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s10">var</span> i = 0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s10">var</span> size = 40;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s10">var</span> func = { <span class="s10">|i, j|</span> sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s10">var</span> scale;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s10">Pen</span>.font = <span class="s10">Font</span>(<span class="s4">"Helvetica-Bold"</span>, 40);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>loop {<span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = i + 1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>string.do {<span class="Apple-tab-span">	</span> <span class="s10">|char, j|</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale = func.value(i, j).dup(6);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Pen</span>.fillColor = <span class="s10">Color</span>.new255(0, 120, 120).vary;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Pen</span>.matrix = scale * #[1, 0, 0, 1, 1, 0];</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Pen</span>.stringAtPoint(char.asString,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>((size * (j % 9)) - 10) @ (size * (j div: 9))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield </span>// stop here, return something unimportant</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}</p>
+<p class="p4">};</p>
+<p class="p6"><br></p>
+<p class="p4">fork { while { w.isClosed.not } { defer { w.refresh }; 0.04.wait; } };</p>
+<p class="p6"><br></p>
+<p class="p4">w.front;</p>
+<p class="p6"><br></p>
+<p class="p4">)</p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
 </body>
 </html>
