@@ -406,7 +406,6 @@ if isDefaultBuild():
     else:
         success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
         if not success: Exit(1)
-    print libraries['sndfile']
 
     # libcurl
     success, libraries['libcurl'] = conf.CheckPKG('libcurl >= 7')
@@ -502,7 +501,7 @@ if conf.CheckCHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/Core
         )
 elif features['alsa']:
     features['midiapi'] = 'ALSA'
-    libraries['midiapi'] = libraries['alsa'].Copy()
+    libraries['midiapi'] = libraries['alsa'].Clone()
 else:
     features['midiapi'] = None
 
@@ -524,7 +523,7 @@ if env['ALTIVEC']:
         altivec_flags = [ '-faltivec' ]
     else:
         altivec_flags = [ '-maltivec', '-mabi=altivec' ]
-    libraries['altivec'] = env.Copy()
+    libraries['altivec'] = env.Clone()
     libraries['altivec'].Append(
         CCFLAGS = altivec_flags,
         CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
@@ -536,7 +535,7 @@ else:
 
 # sse
 if env['SSE']:
-    libraries['sse'] = env.Copy()
+    libraries['sse'] = env.Clone()
     libraries['sse'].Append(
         CCFLAGS = ['-msse', '-mfpmath=sse'],
         CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
@@ -629,7 +628,7 @@ else:
 # Source/common
 # ======================================================================
 
-commonEnv = env.Copy()
+commonEnv = env.Clone()
 commonEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
@@ -650,7 +649,7 @@ commonEnv = conf.Finish()
 # Source/common dtoa.c (needs other flags)
 # ======================================================================
 
-dtoaEnv = commonEnv.Copy()
+dtoaEnv = commonEnv.Clone()
 
 dtoaCCFDict = dtoaEnv.Dictionary('CCFLAGS')
 if not env['DEBUG']:
@@ -690,14 +689,14 @@ libcommon = commonEnv.Library('build/common', commonSources)
 # Source/server
 # ======================================================================
 
-serverEnv = env.Copy()
+serverEnv = env.Clone()
 serverEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
                '#Headers/server'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
     LIBPATH = 'build')
-libscsynthEnv = serverEnv.Copy(
+libscsynthEnv = serverEnv.Clone(
     PKGCONFIG_NAME = 'libscsynth',
     PKGCONFIG_DESC = 'SuperCollider synthesis server library',
     PKGCONFIG_PREFIX = FINAL_PREFIX,
@@ -786,7 +785,7 @@ env.Alias('install-programs', env.Install(bin_dir(INSTALL_PREFIX), [scsynth]))
 # Source/plugins
 # ======================================================================
 
-pluginEnv = env.Copy(
+pluginEnv = env.Clone(
     SHLIBPREFIX = '',
     SHLIBSUFFIX = PLUGIN_EXT
     )
@@ -843,12 +842,12 @@ ReverbUGens
         make_plugin_target(name), os.path.join('Source', 'plugins', name + '.cpp')))
 
 # complex
-complexEnv = pluginEnv.Copy()
+complexEnv = pluginEnv.Clone()
 complexSources = Split('Source/plugins/SCComplex.cpp')
 complexEnv.SharedObject('Source/plugins/SCComplex.o', complexSources)
 
 # fft ugens
-fftEnv = pluginEnv.Copy()
+fftEnv = pluginEnv.Clone()
 fftSources = Split('Source/common/SC_fftlib.cpp Source/common/fftlib.c Source/plugins/SCComplex.o')
 merge_lib_info(fftEnv, libraries['fftwf'])
 plugins.append(
@@ -874,14 +873,14 @@ plugins.append(
 
 # machine listening ugens
 # fft ugens
-mlEnv = pluginEnv.Copy()
+mlEnv = pluginEnv.Clone()
 mlSources = Split('Source/plugins/ML.cpp Source/plugins/Loudness.cpp Source/plugins/BeatTrack.cpp Source/plugins/Onsets.cpp Source/plugins/onsetsds.c Source/plugins/KeyTrack.cpp Source/plugins/MFCC.cpp Source/plugins/SCComplex.o Source/plugins/BeatTrack2.cpp Source/plugins/ML_SpecStats.cpp')
 plugins.append(
     mlEnv.SharedLibrary(
     make_plugin_target('ML_UGens'), mlSources))
 
 # diskio ugens
-diskIOEnv = pluginEnv.Copy(
+diskIOEnv = pluginEnv.Clone(
     LIBS = ['common', 'm'],
     LIBPATH = 'build'
     )
@@ -900,7 +899,7 @@ plugins.append(
 
 # ui ugens
 if PLATFORM == 'darwin':
-    uiUGensEnv = pluginEnv.Copy(
+    uiUGensEnv = pluginEnv.Clone(
         LIBS = 'm',
         LINKFLAGS = '-framework CoreServices -framework Carbon'
         )
@@ -909,7 +908,7 @@ if PLATFORM == 'darwin':
     plugins.append(
         uiUGensEnv.SharedLibrary(make_plugin_target('KeyboardUGens'), 'Source/plugins/KeyboardUGens.cpp'))
 elif features['x11']:
-    uiUGensEnv = pluginEnv.Copy()
+    uiUGensEnv = pluginEnv.Clone()
     merge_lib_info(uiUGensEnv, libraries['x11'])
     plugins.append(
         uiUGensEnv.SharedLibrary(make_plugin_target('MouseUGens'), 'Source/plugins/MouseUGens.cpp'))
@@ -928,7 +927,7 @@ if env['TERMINAL_CLIENT'] == True:
 else:
         env['TERMINAL_CLIENT'] = 0
 
-langEnv = env.Copy()
+langEnv = env.Clone()
 langEnv.Append(
     CPPPATH = ['#Headers/common',
                '#Headers/plugin_interface',
@@ -964,7 +963,7 @@ if env['CURL']:
 
 merge_lib_info(langEnv, libraries['audioapi'])
 
-libsclangEnv = langEnv.Copy(
+libsclangEnv = langEnv.Clone(
     PKGCONFIG_NAME = 'libsclang',
     PKGCONFIG_DESC = 'SuperCollider synthesis language library',
     PKGCONFIG_PREFIX = FINAL_PREFIX,
