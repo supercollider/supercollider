@@ -5330,10 +5330,16 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
 
         if (strcmp(name, "selectedIndex")==0) {
-            err = slotIntVal(slot, &mSelectedIndex);
-			if(mSelectedIndex >= 0)
-			mSelectedIndex = sc_clip(mSelectedIndex, 0, mTabSize-1);
-            (&mEnvObj[mSelectedIndex])->mColor = mSelectedColor;
+			int  newSelection;
+			SCEnvObject *obj;
+            err = slotIntVal(slot, &newSelection);
+			if(err) return err;
+			if(mSelectedIndex == newSelection) return errNone;
+			
+			if(mSelectedIndex >= 0) (mEnvObj+mSelectedIndex)->mColor = (mEnvObj+mSelectedIndex)->mObjectColor;
+			mSelectedIndex = sc_clip(newSelection, -1, mTabSize-1);			
+			if(mSelectedIndex >= 0) (mEnvObj+mSelectedIndex)->mColor = mSelectedColor;
+			
             refresh();
             return errNone;
         }
