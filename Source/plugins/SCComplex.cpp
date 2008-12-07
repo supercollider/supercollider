@@ -42,15 +42,15 @@ void init_SCComplex(InterfaceTable *ft)
 {
 	gSineSize = ft->mSineSize;
 	gSine = ft->mSine;
-	gSinePhaseScale = gSineSize / twopi;
+	gSinePhaseScale = (float)(gSineSize / twopi);
 	gSineMask = gSineSize - 1;
 	
 	double rPolarLUTSize2 = 1. / kPolarLUTSize2;
 	for (int i=0; i < kPolarLUTSize; ++i) {
 		double slope = (i - kPolarLUTSize2) * rPolarLUTSize2;
 		double angle = atan(slope);
-		gPhaseLUT[i] = angle;
-		gMagLUT[i] = 1. / cos(angle);
+		gPhaseLUT[i] = (float)angle;
+		gMagLUT[i] = 1.f / (float)cos(angle);
 	}
 }
 
@@ -97,7 +97,7 @@ SCPolar SCComplex::ToPolarApx()
 		if (real > 0) {
 			return SCPolar(gMagLUT[index] * absreal, gPhaseLUT[index]);
 		} else {
-			return SCPolar(gMagLUT[index] * absreal, pi + gPhaseLUT[index]);
+			return SCPolar(gMagLUT[index] * absreal, (float)pi + gPhaseLUT[index]);
 		}
 	} else if(absimag==0.f) { // because of the above test, this means real is also zero
 		return SCPolar(0.f, 0.f);
@@ -105,9 +105,9 @@ SCPolar SCComplex::ToPolarApx()
 		slope = real/imag;
 		index = kPolarLUTSize2 + (int32)(kPolarLUTSize2 * slope);
 		if (imag > 0) {
-			return SCPolar(gMagLUT[index] * absimag, pi2 - gPhaseLUT[index]);
+			return SCPolar(gMagLUT[index] * absimag, (float)pi2 - gPhaseLUT[index]);
 		} else {
-			return SCPolar(gMagLUT[index] * absimag, pi32 - gPhaseLUT[index]);
+			return SCPolar(gMagLUT[index] * absimag, (float)pi32 - gPhaseLUT[index]);
 		}
 	}
 }
