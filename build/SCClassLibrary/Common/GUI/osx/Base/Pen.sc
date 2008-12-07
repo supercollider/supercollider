@@ -264,6 +264,11 @@ classvar fnt, fillColor, strokeColor;
 		^this.primitiveFailed
 	}
 	
+	*capStyle_ { arg style=0; // 0 = butt, 1 = round, 2 = square
+		_Pen_LineCap
+		^this.primitiveFailed
+	}
+	
 	*lineDash_ {arg pattern; // should be a FloatArray
 		_Pen_LineDash
 		^this.primitiveFailed
@@ -275,13 +280,17 @@ classvar fnt, fillColor, strokeColor;
 	}
 	
 	*fillAxialGradient {arg startPoint, endPoint, color0, color1;
+		Pen.push;
 		this.clip;
 		this.prFillAxialGradient(startPoint, endPoint, color0, color1);
+		Pen.pop;
 	}
 	
 	*fillRadialGradient {arg innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1;
+		Pen.push;
 		this.clip;
 		this.prFillRadialGradient(innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1);
+		Pen.pop;
 	}
 	
 	*prFillAxialGradient {arg startPoint, endPoint, color0, color1;

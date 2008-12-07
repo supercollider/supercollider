@@ -3089,6 +3089,26 @@ int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
 	return errFailed;
 }
 
+int prPen_LineCap(struct VMGlobals *g, int numArgsPushed);
+int prPen_LineCap(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) 
+		return errCantCallOS;
+	
+	int err=noErr, mode = 0;
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) 
+		return errFailed;
+		
+	PyrSlot *b  = g->sp; // mode
+	if((err = slotIntVal(b, &mode)) != noErr) 
+		return err;
+		
+	//kCGLineCapButt (default - 0), kCGLineCapRound - 1, or kCGLineCapSquare - 2
+	CGContextSetLineCap((CGContextRef)[gctx graphicsPort], (CGLineCap)sc_clip(mode, kCGLineCapButt, kCGLineCapSquare));
+	return errNone;
+}
+
 int prPen_SetAlpha(struct VMGlobals *g, int numArgsPushed);
 int prPen_SetAlpha(struct VMGlobals *g, int numArgsPushed)
 {
@@ -3972,6 +3992,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Pen_DrawPath", prPen_DrawPath, 2, 0);
 	definePrimitive(base, index++, "_Pen_LineJoin", prPen_LineJoin, 2, 0);
 	definePrimitive(base, index++, "_Pen_LineDash", prPen_LineDash, 2, 0);
+	definePrimitive(base, index++, "_Pen_LineCap", prPen_LineCap, 2, 0);
 	definePrimitive(base, index++, "_Pen_AddOval", prPen_AddOval, 2, 0);
 	definePrimitive(base, index++, "_Pen_DrawAxialGradient", prPen_DrawAxialGradient, 5, 0);
 	definePrimitive(base, index++, "_Pen_DrawRadialGradient", prPen_DrawRadialGradient, 7, 0);
