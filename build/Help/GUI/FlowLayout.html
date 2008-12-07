@@ -17,19 +17,18 @@ p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
-p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #a41c14}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #3850cb}
+span.s2 {color: #3e54c5}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #0c2eee}
-span.s6 {color: #0000bf}
-span.s7 {color: #314bd1}
-span.s8 {color: #5763a9}
+span.s5 {color: #1638e6}
+span.s6 {color: #0018b8}
+span.s7 {color: #3850cb}
+span.s8 {color: #5a65a5}
 span.s9 {font: 14.0px Helvetica}
-span.s10 {color: #0018b8}
+span.s10 {color: #0922b2}
 span.s11 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -52,53 +51,53 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- An instance of <a href="../Geometry/Point.html"><span class="s5">Point</span></a>.<span class="Apple-converted-space">  </span>The horizontal and vertical layout<span class="Apple-converted-space">  </span>gap between the subviews.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new.front;</p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//change the gaps and margins to see how they work</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s6">FlowLayout</span>( w.view.bounds, 10@10, 20@5 );<span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>16.do{ <span class="s6">SC2DSlider</span>( w.view,80@80 ).background_( <span class="s6">Color</span>.rand ) };</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new.front;</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//change the gaps and margins to see how they work</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s6">FlowLayout</span>( w.view.bounds, 10@10, 20@5 );<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>16.do{ <span class="s6">SC2DSlider</span>( w.view,80@80 ).background_( <span class="s6">Color</span>.rand ) };</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><br></p>
-<p class="p13"><b>Accessing Instance and Class Variables</b></p>
+<p class="p12"><b>Accessing Instance and Class Variables</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>nextLine</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Forces the decorator to start a new line:</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = q = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );<span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,140@140 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.nextLine;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,140@140 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = q = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,140@140 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.nextLine;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,140@140 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>indentedRemaining</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns and instance of <a href="../Geometry/Rect.html"><span class="s7">Rect</span></a>. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of <b>indentedRemaining,<span class="Apple-converted-space"> </span></b> is the full height remaining in the FlowLayout.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//normally you will only use the width of indentedRemaining</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s6">SCSlider</span><span class="s3">( w.view, d.indentedRemaining.width@150) </span>//fits this view perfeclty to the right innerBounds</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_( <span class="s6">Color</span>.rand ); <span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//normally you will only use the width of indentedRemaining</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s6">SCSlider</span><span class="s3">( w.view, d.indentedRemaining.width@150) </span>//fits this view perfeclty to the right innerBounds</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_( <span class="s6">Color</span>.rand ); <span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Compare this with:</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( </span>//here the third view is fit to both the right and bottom innerBounds <span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,140@140 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,140@140 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.nextLine;<span class="Apple-converted-space">   </span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view, d.indentedRemaining ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( </span>//here the third view is fit to both the right and bottom innerBounds <span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,140@140 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,140@140 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.nextLine;<span class="Apple-converted-space">   </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view, d.indentedRemaining ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>bounds</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>bounds_ (b)</b></p>
@@ -121,7 +120,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The horizontal and vertical inner margins, within which the parent's subviews are placed.</p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>- An instance of <a href="http://../Geometry/Point.html"><span class="s5">Point</span></a>.<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p13"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
+<p class="p12"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
 <p class="p7"><span class="s9"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>left_(arg1)</b></p>
@@ -133,7 +132,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s10">SCWindow</span>.new;</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s10">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s10">Color</span>.rand );</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.left_(180); //manually set the new indentation</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.left_(220); //manually set the new indentation</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s10">Color</span>.rand );</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
@@ -144,14 +143,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>- A number;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.top_(50); </span>//manually set the new indentation</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.top_(50); </span>//manually set the new indentation</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>shift (x, y)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -164,15 +163,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>- A number;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,100@160 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">"first row maxHeight: "</span> ++ d.maxHeight.postln;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">"second row maxHeight: "</span> ++ d.maxHeight.postln;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,100@160 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">"first row maxHeight: "</span> ++ d.maxHeight.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">"second row maxHeight: "</span> ++ d.maxHeight.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>maxRight_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>maxRight</b></p>
@@ -181,31 +180,31 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>- A number;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,100@160 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">"first row maxRight: "</span> ++ d.maxRight.postln;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">"second row maxRight: "</span> ++ d.maxRight.postln;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,100@160 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">"first row maxRight: "</span> ++ d.maxRight.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">"second row maxRight: "</span> ++ d.maxRight.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>currentBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets a Rect with<span class="Apple-converted-space">  </span><b>bounds</b>.width and height = <b>top</b> + <b>maxHeight</b>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 10@5 );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,100@160 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.currentBounds.postln;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.currentBounds.postln;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.currentBounds.postln;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s6">FlowLayout</span>.new( w.view.bounds, 10@10, 10@5 );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,100@160 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.currentBounds.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.currentBounds.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">SC2DSlider</span>( w.view,150@150 ).background_( <span class="s6">Color</span>.rand );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.currentBounds.postln;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>used</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>

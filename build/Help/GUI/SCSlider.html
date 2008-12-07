@@ -23,26 +23,25 @@ p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monac
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #615f58}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d261b}
 p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #6f717c}
-span.s3 {color: #5461ad}
+span.s2 {color: #6f717b}
+span.s3 {color: #5763a9}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {color: #505fb1}
-span.s7 {color: #656b96}
+span.s6 {color: #5461ad}
+span.s7 {color: #666c94}
 span.s8 {color: #6f7178}
-span.s9 {color: #182fa6}
+span.s9 {color: #1e34a1}
 span.s10 {font: 12.0px Helvetica}
 span.s11 {font: 14.0px Helvetica}
-span.s12 {color: #0018b8}
-span.s13 {color: #606060}
-span.s14 {color: #0000bf}
-span.s15 {color: #356f14}
+span.s12 {color: #0922b2}
+span.s13 {color: #0000ff}
+span.s14 {color: #606060}
+span.s15 {color: #0018b8}
+span.s16 {color: #476c1d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -145,23 +144,26 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span>.action_({</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.value_(a.value)</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p16"><br></p>
+<p class="p10">a.action.value;</p>
 <p class="p10">)</p>
 <p class="p16"><br></p>
-<p class="p17">// use a spec and round the output for clearer display</p>
+<p class="p17">// use a <a href="../Control/Spec.html"><span class="s13">Spec</span></a> to round and map the output range for clearer display</p>
 <p class="p10">(</p>
 <p class="p10">w = <span class="s12">SCWindow</span>.new.front;</p>
-<p class="p10">b = [10, 80].asSpec;</p>
-<p class="p10">c = <span class="s12">SCNumberBox</span>(w, <span class="s12">Rect</span>(20, 20, 60, 20));</p>
-<p class="p10">a = <span class="s12">SCSlider</span>(w, <span class="s12">Rect</span>(20, 60, 150, 20))</p>
+<p class="p10">b = ControlSpec(-50, 50, \linear, 0.01); // min, max, mapping, step</p>
+<p class="p10">c = <span class="s12">SCStaticText</span>(w, <span class="s12">Rect</span>(20, 20, 150, 20)).align_(\center).background_(Color.rand);</p>
+<p class="p10">a = <span class="s12">SCSlider</span>(w, <span class="s12">Rect</span>(20, 50, 150, 20))</p>
 <p class="p10"><span class="Apple-tab-span">	</span>.focusColor_(<span class="s12">Color</span>.red(alpha:0.2))</p>
 <p class="p10"><span class="Apple-tab-span">	</span>.background_(<span class="s12">Color</span>.rand)</p>
+<p class="p10"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
 <p class="p10"><span class="Apple-tab-span">	</span>.action_({</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.value_(b.map(a.value).round(0.01))</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.string_(b.map(a.value).asString)</p>
 <p class="p17"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// round the float so it will fit in the SCNumberBox</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p10">a.action.value;</p>
 <p class="p16"><br></p>
 <p class="p10">)</p>
+<p class="p16"><br></p>
 <p class="p16"><br></p>
 <p class="p17">// change the stepsize of the slider, selected via a SCPopUpMenu</p>
 <p class="p10">(</p>
@@ -176,21 +178,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span>.action_({</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.step_((a.at(d.value)).asFloat);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p10"><span class="s12">SCStaticText</span>(w, <span class="s12">Rect</span>(130, 60, 100, 20)).string_(<span class="s13">"change step"</span>);<span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s12">SCStaticText</span>(w, <span class="s12">Rect</span>(130, 60, 100, 20)).string_(<span class="s14">"change step"</span>);<span class="Apple-tab-span">	</span></p>
 <p class="p10">c = <span class="s12">SCNumberBox</span>(w, <span class="s12">Rect</span>(20, 20, 100, 20));</p>
 <p class="p10">)</p>
 <p class="p16"><br></p>
 <p class="p16"><br></p>
 <p class="p19">// use the slider view to accept key actions</p>
-<p class="p20"><br></p>
+<p class="p16"><br></p>
 <p class="p19"><span class="s4">(</span>// select the slider, type something and watch the post window</p>
-<p class="p21">w = <span class="s14">SCWindow</span>.new;</p>
-<p class="p21">c = <span class="s14">SCSlider</span>(w,<span class="s14">Rect</span>(0,0,100,30));</p>
-<p class="p21">c.keyDownAction = { <span class="s14">arg</span> view,char,modifiers,unicode,keycode;</p>
-<p class="p21">[char,modifiers,unicode,keycode].postln;</p>
-<p class="p21">};</p>
-<p class="p21">w.front;</p>
-<p class="p21">)</p>
+<p class="p10">w = <span class="s15">SCWindow</span>.new;</p>
+<p class="p10">c = <span class="s15">SCSlider</span>(w,<span class="s15">Rect</span>(0,0,100,30));</p>
+<p class="p10">c.keyDownAction = { <span class="s15">arg</span> view,char,modifiers,unicode,keycode;</p>
+<p class="p10">[char,modifiers,unicode,keycode].postln;</p>
+<p class="p10">};</p>
+<p class="p10">w.front;</p>
+<p class="p10">)</p>
 <p class="p16"><br></p>
 <p class="p16"><br></p>
 <p class="p16"><br></p>
@@ -199,7 +201,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17">// that have action functions already.<span class="Apple-converted-space"> </span></p>
 <p class="p16"><br></p>
 <p class="p10">(</p>
-<p class="p10">w = <span class="s12">GUI</span>.window.new(<span class="s13">"A Slider"</span>);</p>
+<p class="p10">w = <span class="s12">GUI</span>.window.new(<span class="s14">"A Slider"</span>);</p>
 <p class="p10">a = <span class="s12">GUI</span>.slider.new(w, <span class="s12">Rect</span>(40, 10, 300, 30));</p>
 <p class="p10">w.front</p>
 <p class="p10">);</p>
@@ -228,7 +230,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><br></p>
 <p class="p10">(<span class="Apple-converted-space"> </span></p>
 <p class="p10">s.waitForBoot({</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="s12">SynthDef</span>(<span class="s15">\pluck</span>,{<span class="s12">arg</span> freq=55;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="s12">SynthDef</span>(<span class="s16">\pluck</span>,{<span class="s12">arg</span> freq=55;</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">Out</span>.ar(0,</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">Pluck</span>.ar(<span class="s12">WhiteNoise</span>.ar(0.06),<span class="Apple-converted-space"> </span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">EnvGen</span>.kr(<span class="s12">Env</span>.perc(0,4), 1.0, doneAction: 2),<span class="Apple-converted-space"> </span></p>
@@ -240,14 +242,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span>}).send(s);</p>
 <p class="p16"><span class="Apple-tab-span">	</span></p>
 <p class="p16"><br></p>
-<p class="p10"><span class="Apple-tab-span">	</span>w = <span class="s12">SCWindow</span>.new(<span class="s13">"Hold arrow keys to trigger sound"</span>,<span class="s12">Rect</span>(300,<span class="s12">SCWindow</span>.screenBounds.height-300,400,100)).front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>w = <span class="s12">SCWindow</span>.new(<span class="s14">"Hold arrow keys to trigger sound"</span>,<span class="s12">Rect</span>(300,<span class="s12">SCWindow</span>.screenBounds.height-300,400,100)).front;</p>
 <p class="p10"><span class="Apple-tab-span">	</span>a = <span class="s12">SCSlider</span>(w, <span class="s12">Rect</span>(50, 20, 300, 40))</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.value_(0.5)</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.step_(0.05)</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.focus</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({</p>
 <p class="p17"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// trigger a synth with varying frequencies</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">Synth</span>(<span class="s15">\pluck</span>, [<span class="s15">\freq</span>,55+(1100*a.value)]);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">Synth</span>(<span class="s16">\pluck</span>, [<span class="s16">\freq</span>,55+(1100*a.value)]);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.background_(<span class="s12">Gradient</span>(<span class="s12">Color</span>.rand,<span class="s12">Color</span>.rand));</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
 <p class="p10">});</p>
@@ -256,7 +258,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><br></p>
 <p class="p17">// change the background color of SCWIndow by moving the sliders</p>
 <p class="p10">(</p>
-<p class="p10">w = <span class="s12">SCWindow</span>(<span class="s13">"RGB fader"</span>, <span class="s12">Rect</span>(100, 500, 400, 400))</p>
+<p class="p10">w = <span class="s12">SCWindow</span>(<span class="s14">"RGB fader"</span>, <span class="s12">Rect</span>(100, 500, 400, 400))</p>
 <p class="p10"><span class="Apple-tab-span">	</span>.front;</p>
 <p class="p10">f = { w.view.background_(<span class="s12">Color</span>.new(r.value, g.value, b.value, 1)) };</p>
 <p class="p10">r = <span class="s12">SCSlider</span>(w, <span class="s12">Rect</span>(100, 140, 200, 20))</p>
