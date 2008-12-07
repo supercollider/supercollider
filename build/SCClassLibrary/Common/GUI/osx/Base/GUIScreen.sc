@@ -10,6 +10,7 @@ SCWindow {
 	var <acceptsClickThrough = true;
 	var <> toFrontAction, <> endFrontAction;
 	var <editable=false, <>constructionView;
+	var <currentSheet; // current modal sheet attached to this window, if it exists
 	
 	*initClass {
 		UI.registerForShutdown({ this.closeAll });
@@ -18,7 +19,8 @@ SCWindow {
 	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;
 		^super.new.initSCWindow(name, bounds, resizable, border, scroll)
 	}
-	initSCWindow { arg argName, argBounds, resizable, border, scroll;
+	// appmodal is a private flag used to disable the close button
+	initSCWindow { arg argName, argBounds, resizable, border, scroll, appmodal = false;
 		name = argName.asString;
 		argBounds = argBounds ?? {Rect(128, 64, 400, 400)};
 		allWindows = allWindows.add(this);
@@ -27,7 +29,7 @@ SCWindow {
 		},{
 			view = SCTopView(nil, argBounds.moveTo(0,0));
 		});
-		this.prInit(name, argBounds, resizable, border, scroll, view);
+		this.prInit(name, argBounds, resizable, border, scroll, view, appmodal);
 	}
 
 	asView { ^view }
@@ -51,6 +53,10 @@ SCWindow {
 		view.prClose;
 		allWindows.remove(this);
 	}
+	
+	addToOnClose { | function | onClose = onClose.addFunc(function) }
+	
+	removeFromOnClose { | function | onClose = onClose.removeFunc(function) }
 
 	fullScreen {
 		_SCWindow_BeginFullScreen
@@ -148,7 +154,7 @@ SCWindow {
 			
 	// PRIVATE
 	// primitives
-	prInit { arg argName, argBounds, resizable, border, scroll;
+	prInit { arg argName, argBounds, resizable, border, scroll, view, appmodal;
 		_SCWindow_New
 		^this.primitiveFailed
 	}
@@ -198,6 +204,7 @@ SCWindow {
 			SCIBToolboxWindow.front.removeWindow(this);
 		}	
 	}
+	setCurrentSheet {|sheet| currentSheet = sheet;}
 	/*
 	*viewPalette {|win|
 		var w, v, f, c;
@@ -257,24 +264,26 @@ SCAbstractModalWindow : SCWindow {
 		this.shouldNotImplement(thisMethod);
 	}
 	
-	/// PRIVATE
-	prUserCanClose_ { arg boo;
-		_SCWindow_SetShouldClose
-		^this.primitiveFailed
-	}
 }
 
 SCModalWindow : SCAbstractModalWindow {
 
-	classvar inModal = false;
+	classvar <current;
 	
 	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;
-		^super.new(name, bounds, resizable, border, scroll).prUserCanClose_(false)
-			.runModal;
+		// app modal flag is true
+		^super.new(name, bounds, resizable, border, nil, scroll).setCurrent.runModal;
+	}
+	
+	// override to set appmodal to true
+	initSCWindow {|argName, argBounds, resizable, border, scroll, appmodal|
+		^super.initSCWindow(argName, argBounds !? {argBounds.asRect}, resizable, border, scroll, true);
 	}
 	
 	
 	/// PRIVATE
+	
+	setCurrent { current = this; }
 	
 	runModal {
 		_SCWindow_RunModal
@@ -286,15 +295,28 @@ SCModalWindow : SCAbstractModalWindow {
 		^this.primitiveFailed;
 	}
 	
+	closed { current = nil; super.closed }
+	
 }
 
 SCModalSheet : SCAbstractModalWindow {
+	var parentWindow;
 	
 	*new { arg window, bounds, resizable = true, border = true, server, scroll = false;
-		^super.new("", bounds, resizable, border, scroll).runModal(window);
+		^window.isClosed.not.if({
+			super.new("", bounds !? {bounds.asRect}, resizable, border, nil, scroll)
+				.setCurrent(window)
+				.runModal(window);
+		}, nil);
 	}
 	
 	/// PRIVATE
+	
+	setCurrent { |window| 
+		parentWindow = window;
+		parentWindow.setCurrentSheet(this); 
+	}
+	
 	runModal {|window|
 		_SCWindow_RunModalSheet
 		^this.primitiveFailed;
@@ -304,4 +326,6 @@ SCModalSheet : SCAbstractModalWindow {
 		_SCWindow_StopModalSheet
 		^this.primitiveFailed;
 	}
+	
+	closed { parentWindow.setCurrentSheet(nil); super.closed }
 }
