@@ -57,20 +57,24 @@ ProxyChain {
 	
 		var func = sources[key];
 		var prefix, prevVal, specialKey;
-		if (func.isNil) { "ProxyChain: no func called \%".postf(key, index); ^this };
+		if (func.isNil) { "ProxyChain: no func called \%.\n".postf(key, index); ^this };
 		if (index.isNil) { "ProxyChain: index was nil.".postln; ^this };
 
 		this.remove(key); 
 		slotsInUse.put(index, key);
 
 		if (func.isKindOf(Association)) { 
-			prefix = (filter: "wet", mix: "mix")[func.key];
+			prefix = (filter: "wet", mix: "mix", filterIn: "wet")[func.key];
 			specialKey = (prefix ++ index).asSymbol;
 			prevVal = px.nodeMap.get(specialKey).value;
 			if (wet.isNil) { wet = prevVal ? 0 };
 			px.set(specialKey, wet);
 		};
 		px[index] = func; 
+	}
+	
+	gui { 	|name, buttonList, nSliders=16, win| 
+		^ProxyChainGui(this, name, buttonList, nSliders, win) 
 	}
 	
 	butWin {	|name, buttonList, nSliders=16| 
@@ -82,7 +86,7 @@ ProxyChain {
 			(buttonList.size + 1 * 24).max(nSliders + 3 * GUI.skin.buttonHeight)
 		); 
 		
-		w = GUI.window.new(name ? "proxyChain", bounds, false).front; 
+		w = GUI.window.new(name ? "ProxyChain", bounds, false).front; 
 
 	 	funx = (			
 			btlabel: { |but, name| but.states_([[name, Color.black, Color(1, 0.5, 0)]]) },
@@ -124,11 +128,11 @@ ProxyChain {
 		
 		editcomp = GUI.compositeView.new(w, Rect(155, 0, 380, bounds.height));
 
-		this.gui(name, nSliders, bw, editcomp);
+		this.makeEdit(name, nSliders, bw, editcomp);
 		^bw
 	}
 	
-	gui { |name, nSliders=24, win, comp| 
+	makeEdit { |name, nSliders=24, win, comp| 
 	
 		if (win.notNil) { try { ed.w.close } };
 		
