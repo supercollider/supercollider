@@ -21,6 +21,12 @@
 
 #include "SC_PlugIn.h"
 
+#ifdef _MSC_VER
+// MS libs prefer _hypot rather than hypot, and don't provide hypotf
+#define hypot _hypot
+#define hypotf (float)_hypot
+#endif
+
 static InterfaceTable *ft;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
