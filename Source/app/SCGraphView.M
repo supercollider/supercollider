@@ -331,11 +331,11 @@ void damageFunc(SCRect inRect, void* inData)
     [view setNeedsDisplayInRect: SCtoNSRect(inRect)];
 }
 
-void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, void* inData)
+void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, NSString* label, void* inData)
 {
     SCGraphView *view = (SCGraphView*)inData;
     NSPoint point = NSMakePoint(where.x, where.y);
-    [view beginDragFrom: point of: inSlot string: inString];
+    [view beginDragFrom: point of: inSlot string: inString label: label];
 }
 
 - (unsigned int)draggingSourceOperationMaskForLocal: (BOOL)flag
@@ -439,13 +439,15 @@ extern PyrSymbol * s_didResignKey;
 
 const int circDiam = 20;
 
-- (NSImage*) makeDragImage: (PyrSlot*)slot
+- (NSImage*) makeDragImage: (PyrSlot*)slot label: (NSString*)label
 {
 
     if (!slot) return 0;
     
     NSString *nsstring;
-    if (slot) {
+    if(label) {
+		nsstring = label;
+	} else if (slot) {
         PyrClass *classobj = classOfSlot(slot);
         nsstring = [NSString stringWithCString: classobj->name.us->name];
         if (!nsstring) return 0;
@@ -529,9 +531,9 @@ const int circDiam = 20;
 }
 
 
-- (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string
+- (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string label:(NSString*) label
 {
-    NSImage *image = [self makeDragImage: slot];
+    NSImage *image = [self makeDragImage: slot label: label];
     
     NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
     [pboard declareTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, nil] owner: self];
