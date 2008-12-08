@@ -22,6 +22,12 @@ Slider : ViewRedirecter { *key { ^\slider }}
 //Knob : SCSlider {
 //}
 
+ScopeView : ViewRedirecter { *key { ^\scopeView }}
+FreqScopeView : ViewRedirecter { *key { ^\freqScopeView }}
+QuartzComposerView : ViewRedirecter { *key { ^\quartzComposerView }}
+Dialog : ViewRedirecter { *key { ^\dialog }}
+View : ViewRedirecter { *key { ^\view }}
+
 RangeSlider : ViewRedirecter { *key { ^\rangeSlider }}
 Slider2D : ViewRedirecter { *key { ^\slider2D }}
 TabletSlider2D : ViewRedirecter { *key { ^\tabletSlider2D }}
@@ -41,6 +47,7 @@ MultiSliderView : ViewRedirecter { *key { ^\multiSliderView }}
 EnvelopeView : ViewRedirecter { *key { ^\envelopeView }}
 
 TextField : ViewRedirecter  { *key { ^\textField }}
+
 
 TabletView : ViewRedirecter { *key { ^\tabletView }}
 SoundFileView : ViewRedirecter { *key { ^\soundFileView }}
