@@ -20,21 +20,24 @@ p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0018b8}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #686e90}
+span.s2 {color: #696f8e}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #505fb1}
-span.s6 {color: #6f7180}
-span.s7 {color: #0018b8}
-span.s8 {color: #6f7184}
+span.s5 {color: #5461ad}
+span.s6 {color: #6f717f}
+span.s7 {color: #0922b2}
+span.s8 {color: #6f7183}
 span.s9 {font: 9.0px Monaco}
 span.s10 {font: 14.0px Helvetica}
-span.s11 {color: #606060}
-span.s12 {color: #a41c14}
+span.s11 {color: #0000bf}
+span.s12 {color: #606060}
+span.s13 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -49,7 +52,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">While SCTextView allows you to load<span class="Apple-converted-space">  </span>and display formatted text, and while it understands rtf or html markup, you cannot save formatted text currently.<span class="Apple-converted-space">  </span>You only have acces to the text-content of the view as a <a href="../Collections/String.html"><span class="s2">String</span></a>.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p5">By default, SCTextView will recieve<span class="Apple-converted-space">  </span>drags<span class="Apple-converted-space">  </span>containing any <a href="../Core/Object.html"><span class="s5">Object</span></a>, and insert them into the text<span class="Apple-converted-space">  </span><b>asString</b>.</p>
+<p class="p5">By default, SCTextView will recieve<span class="Apple-converted-space">  </span>drags<span class="Apple-converted-space">  </span>containing any <a href="../Core/Object.html"><span class="s5">Object</span></a>, and insert them into the text<span class="Apple-converted-space">  </span><b>asString</b>. If you drag a file from the finder onto an SCTextView, it will display the file path in quotation marks.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
@@ -167,29 +170,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p12"><b>Examples</b></p>
-<p class="p11"><br></p>
-<p class="p10">(</p>
-<p class="p10">w = <span class="s7">SCWindow</span>.new(<span class="s11">"Text View Example"</span>,<span class="s7">Rect</span>(100,<span class="s7">SCWindow</span>.screenBounds.height-400, 520,300)).front;</p>
-<p class="p10">t = <span class="s7">SCTextView</span>(w.asView,<span class="s7">Rect</span>(10,10, 500,200))</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.focus(<span class="s7">true</span>);</p>
-<p class="p10">)</p>
-<p class="p11"><br></p>
-<p class="p14">// Using the Window you just created,<span class="Apple-converted-space">  </span>try these in succession, and test how the text view responds</p>
-<p class="p15"><span class="s3">t.mouseUpAction_{</span>|it, x, y, modifiers, buttonNumber, clickCount, pos|<span class="s3"> [pos].postln};</span></p>
-<p class="p10">t.hasVerticalScroller_(<span class="s7">true</span>);</p>
-<p class="p10">t.hasHorizontalScroller_(<span class="s7">true</span>);</p>
-<p class="p10">t.autohidesScrollers_(<span class="s7">true</span>);</p>
-<p class="p11"><br></p>
-<p class="p16"><span class="s3">t.open(</span>"Help/GUI/SCButton.html"<span class="s3">);<span class="Apple-converted-space">  </span></span><span class="s12">// load an html file</span></p>
-<p class="p11"><br></p>
-<p class="p14">// selective editing and formatting</p>
-<p class="p10">t.setStringColor (<span class="s7">Color</span>.red, 5, 220);<span class="Apple-converted-space"> </span></p>
-<p class="p10">t.setFont (<span class="s7">Font</span>(<span class="s11">"Courier"</span>,12), 5, 120);<span class="Apple-converted-space"> </span></p>
-<p class="p16"><span class="s3">t.setString (</span>"\nA replacement String\n"<span class="s3">, 12, 120);<span class="Apple-converted-space"> </span></span></p>
-<p class="p11"><br></p>
-<p class="p14">// compare with these methods, which change everything</p>
-<p class="p10">t.font_(<span class="s7">Font</span>(<span class="s11">"Courier"</span>,14));<span class="Apple-converted-space"> </span></p>
-<p class="p10">t.stringColor_(<span class="s7">Color</span>.blue);<span class="Apple-converted-space"> </span></p>
-<p class="p11"><br></p>
+<p class="p14"><br></p>
+<p class="p15">(</p>
+<p class="p15">w = <span class="s11">SCWindow</span>.new(<span class="s12">"Text View Example"</span>,<span class="s11">Rect</span>(100,<span class="s11">SCWindow</span>.screenBounds.height-400, 520,300)).front;</p>
+<p class="p15">t = <span class="s11">SCTextView</span>(w.asView,<span class="s11">Rect</span>(10,10, 500,200))</p>
+<p class="p15"><span class="Apple-tab-span">	</span>.focus(<span class="s11">true</span>);</p>
+<p class="p15">)</p>
+<p class="p14"><br></p>
+<p class="p16">// Using the Window you just created,<span class="Apple-converted-space">  </span>try these in succession, and test how the text view responds</p>
+<p class="p17"><span class="s3">t.mouseUpAction_{</span>|it, x, y, modifiers, buttonNumber, clickCount, pos|<span class="s3"> [pos].postln};</span></p>
+<p class="p15">t.hasVerticalScroller_(<span class="s11">true</span>);</p>
+<p class="p15">t.hasHorizontalScroller_(<span class="s11">true</span>);</p>
+<p class="p15">t.autohidesScrollers_(<span class="s11">true</span>);</p>
+<p class="p14"><br></p>
+<p class="p18"><span class="s3">t.open(</span>"Help/GUI/SCButton.html"<span class="s3">);<span class="Apple-converted-space">  </span></span><span class="s13">// load an html file</span></p>
+<p class="p14"><br></p>
+<p class="p16">// selective editing and formatting</p>
+<p class="p15">t.setStringColor (<span class="s11">Color</span>.red, 5, 220);<span class="Apple-converted-space"> </span></p>
+<p class="p15">t.setFont (<span class="s11">Font</span>(<span class="s12">"Courier"</span>,12), 5, 120);<span class="Apple-converted-space"> </span></p>
+<p class="p18"><span class="s3">t.setString (</span>"\nA replacement String\n"<span class="s3">, 12, 120);<span class="Apple-converted-space"> </span></span></p>
+<p class="p14"><br></p>
+<p class="p16">// compare with these methods, which change everything</p>
+<p class="p15">t.font_(<span class="s11">Font</span>(<span class="s12">"Courier"</span>,14));<span class="Apple-converted-space"> </span></p>
+<p class="p15">t.stringColor_(<span class="s11">Color</span>.blue);<span class="Apple-converted-space"> </span></p>
+<p class="p14"><br></p>
 </body>
 </html>
