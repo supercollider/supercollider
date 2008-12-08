@@ -30,8 +30,11 @@
 
 #ifdef SC_WIN32
 // workaround for IN/OUT conflict with Win32 headers. see SC_Unit.h for details
+// (note: the pragma momentarily suppresses compiler warning about such conflict)
+#pragma warning(disable: 4005)
 #define IN SC_IN
 #define OUT SC_OUT
+#pragma warning(default: 4005)
 #endif
 
 void Unit_ChooseMulAddFunc(Unit* unit);
