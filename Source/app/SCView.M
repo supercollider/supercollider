@@ -318,7 +318,7 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 		mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
 		mBackground(0), mBackgroundImage(0), mVisible(true), mEnabled(true),
         mCanFocus(true), mDragHilite(false),
-		mConstructionMode(-1)
+		mConstructionMode(-1), mDragLabel(0)
 {
 	mFocusColor = SCMakeColor(0.0,0.0,0.0, 0.5); 
 	mBounds = inBounds;
@@ -947,7 +947,20 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             if (err) return err;
             refresh();
 		return errNone;
-	}	
+	}
+	if (strcmp(name, "dragLabel")==0) {
+		if(isKindOfSlot(slot, class_string)) {
+			PyrString* pstring = slot->uos;
+			if(!pstring) return errNone;
+			if(mDragLabel) [mDragLabel release];
+			mDragLabel = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+			return errNone;
+		} else if (IsNil(slot)) {
+			if(mDragLabel) [mDragLabel release];
+			mDragLabel = 0;
+			return errNone;
+		} else return errWrongType;
+	}
 	return errPropertyNotFound;
 }
 
@@ -1016,6 +1029,7 @@ void SCView::beginDrag(SCPoint where)
     PyrSlot slot;
     PyrSlot stringSlot;
 	NSString *string = 0;
+	NSString *label = 0;
     pthread_mutex_lock (&gLangMutex);
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
@@ -1025,10 +1039,11 @@ void SCView::beginDrag(SCPoint where)
 		if (isKindOfSlot(&stringSlot, class_string)) {
 			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
 		}
+		if(mDragLabel) label = mDragLabel;
     }
     pthread_mutex_unlock (&gLangMutex);
     
-    mTop->beginDragCallback(where, &slot, string);
+    mTop->beginDragCallback(where, &slot, string, label);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1600,9 +1615,9 @@ void SCTopView::addDamage(SCRect inRect)
     //mDamage = SCRectUnion(mDamage, inRect);
 }
 
-void SCTopView::beginDragCallback(SCPoint where, PyrSlot* slot, NSString* string)
+void SCTopView::beginDragCallback(SCPoint where, PyrSlot* slot, NSString* string, NSString* label)
 {
-    (*mDragCallback)(where, slot, string, mHostData);
+    (*mDragCallback)(where, slot, string, label, mHostData);
 }
 
 void SCView::refreshFocus()

@@ -181,6 +181,7 @@ protected:
 	int32 mID;
 	int mConstructionMode;
 	SCColor mFocusColor;
+	NSString *mDragLabel;
 
 };
 
@@ -262,7 +263,7 @@ protected:
 
 // tell host to draw stuff.
 typedef void (*DamageCallback)(SCRect inRect, void *inData);
-typedef void (*DragCallback)(SCPoint where, PyrSlot* inSlot, NSString* inString, void *inData);
+typedef void (*DragCallback)(SCPoint where, PyrSlot* inSlot, NSString* inString, NSString* label, void *inData);
 
 class SCTopView : public SCCompositeView
 {
@@ -281,7 +282,7 @@ public:
 
 	void resetFocus();
 	void addDamage(SCRect inRect);
-	void beginDragCallback(SCPoint where, PyrSlot* slot, NSString* string);
+	void beginDragCallback(SCPoint where, PyrSlot* slot, NSString* string, NSString* label);
 	
 	void setDamageCallback(DamageCallback inFunc, void *inHostData)
             { mDamageCallback = inFunc; mHostData = inHostData; }
