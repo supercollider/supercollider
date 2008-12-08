@@ -4162,7 +4162,7 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 	float *in = IN(0);
 	float *out = OUT(0);
 	for (int i=0; i<inNumSamples; ++i) {
-		float val = fabs(*in++); 
+		val = fabs(*in++); 
 		if (val > thresh) {
 			counter = 0;
 			*out++ = 0.f;

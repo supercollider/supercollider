@@ -2145,7 +2145,7 @@ void Dbufwr_next(Dbufwr *unit, int inNumSamples)
 					return;
 			}
 			phase = x;
-			float val = DEMANDINPUT_A(2, inNumSamples);
+			val = DEMANDINPUT_A(2, inNumSamples);
 			if (sc_isnan(val)) {
 					OUT0(0) = NAN;
 					return;	
