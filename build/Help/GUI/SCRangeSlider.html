@@ -17,22 +17,24 @@ p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #356f14}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #476c1d}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #5f689f}
-span.s3 {color: #3e54c5}
-span.s4 {color: #6a708c}
-span.s5 {color: #5a65a5}
-span.s6 {color: #3850cb}
-span.s7 {color: #6f717c}
-span.s8 {color: #0018b8}
-span.s9 {color: #356f14}
-span.s10 {font: 14.0px Helvetica}
-span.s11 {color: #6f7182}
-span.s12 {color: #000000}
+span.s2 {color: #61699c}
+span.s3 {color: #4357c0}
+span.s4 {color: #6b718a}
+span.s5 {color: #5d67a2}
+span.s6 {color: #3e54c5}
+span.s7 {color: #6f717b}
+span.s8 {color: #0000bf}
+span.s9 {color: #007300}
+span.s10 {color: #000000}
+span.s11 {font: 14.0px Helvetica}
+span.s12 {color: #6f7181}
 span.s13 {font: 9.0px Monaco}
 span.s14 {color: #606060}
 span.Apple-tab-span {white-space:pre}
@@ -43,13 +45,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a><b> : </b><a href="SCControlView.html"><span class="s3"><b>SCControlView</b></span></a><b> : </b><a href="SCSliderBase.html"><span class="s2"><b>SCSliderBase</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">A slider for setting two values (usually low and hight values). Dragging in the slider sets th lo and high ranges according to mouse down and mouse up. To move the whole range, hold down the ctrl key while dragging. <span class="Apple-converted-space">  </span>Arrow keys will also move the whole range.</p>
+<p class="p1">A slider for setting two values (usually low and high values). Dragging in the slider sets the lo and high ranges according to mouse down and mouse up. To move the whole range, hold down the ctrl key while dragging. <span class="Apple-converted-space">  </span>Arrow keys will also move the whole range.</p>
 <p class="p2"><br></p>
 <p class="p1"><b>See also:</b> <a href="EZRanger.html"><span class="s2">EZRanger</span></a></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCRangeSlider<span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
-<p class="p1">SCRangeSlider always has a range between zero and one.<span class="Apple-converted-space">  </span>You must scale the output and input values to your needs. Using <b>map</b> and <b>unmap,</b> combined with<span class="Apple-converted-space">  </span>a <a href="../Control/Spec.html"><span class="s4">Spec</span></a>, are helpful for this. To set the increment or decrement value of the slider, set the <b>step</b> (see <a href="SCSliderBase.html"><span class="s4">SCSliderBase</span></a>) .<span class="Apple-converted-space">  </span>Drag and drop returns and accepts <a href="../Geometry/Point.html"><span class="s5">Point</span></a>s.<span class="Apple-converted-space">  </span>Inherits some formatting form <a href="SCSliderBase.html"><span class="s6">SCSliderBase</span></a>.</p>
+<p class="p1">SCRangeSlider always has a range between zero and one.<span class="Apple-converted-space">  </span>You must scale the output and input values to your needs. Using <b>map</b> and <b>unmap,</b> combined with<span class="Apple-converted-space">  </span>a <a href="../Control/Spec.html"><span class="s4">Spec</span></a>, are helpful for this. To set the increment or decrement value of the slider, set the <b>step</b> (see <a href="SCSliderBase.html"><span class="s4">SCSliderBase</span></a>) .<span class="Apple-converted-space">  </span>Drag and drop returns and accepts <a href="../Geometry/Point.html"><span class="s5">Point</span></a>s.<span class="Apple-converted-space">  </span>Inherits some formatting from <a href="SCSliderBase.html"><span class="s6">SCSliderBase</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
@@ -59,16 +61,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s7">Rect</span></a>,<span class="Apple-converted-space">  </span>or<span class="Apple-converted-space">  </span>a <a href="../Geometry/Point.html"><span class="s7">Point</span></a> indicating width@height.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>.new.front;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(20, 80, 120, 30))</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.range_(0.4)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s8">|slider|</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s9">\sliderLOW</span>, slider.lo, <span class="s9">\sliderHI</span>, slider.hi].postln;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>.new.front;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(20, 80, 120, 30))</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.range_(0.4)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s8">|slider|</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s9">\sliderLOW</span>, slider.lo, <span class="s9">\sliderHI</span>, slider.hi].postln;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">)</span></p>
 <p class="p5"><br></p>
-<p class="p11"><b>Accessing Instance and Class Variables</b></p>
+<p class="p12"><b>Accessing Instance and Class Variables</b></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>lo</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>lo_ (val)</b></p>
@@ -103,7 +105,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>setSpanActive (lo, hi)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience method which performs both the <b>lo_</b><span class="Apple-converted-space">  </span>and <b>hi_</b> setters. Does the action of the slider.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience method which performs both the <b>lo_</b><span class="Apple-converted-space">  </span>and <b>hi_</b> setters. Does the <b>action</b> of the slider.</p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>increment</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -113,8 +115,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Decrements both slider values, lo and hi, by 1/bounds.width, unless the lo value is out of bounds. Does the action of the slider.</p>
 <p class="p5"><br></p>
-<p class="p11"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
-<p class="p6"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
+<p class="p12"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
+<p class="p6"><span class="s11"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction (char, modifiers, unicode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -132,10 +134,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s11">SCView</span></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s12">SCView</span></a>.<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
-<p class="p13"><span class="s12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s12">, </span>\visible<span class="s12">, </span>\enabled<span class="s12">, </span>\canFocus<span class="s12">, </span>\resize<span class="s12">, </span>\background<span class="s12">, </span>\minWidth<span class="s12">, </span>\maxWidth<span class="s12">, </span>\minHeight<span class="s12">, </span>\maxHeight<span class="s12">, </span>\knobColor<span class="s12">, </span>\step<span class="s12">, </span>\lo<span class="s12">, </span>\hi<span class="s12"> ]</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
+<p class="p14"><span class="s10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s10">, </span>\visible<span class="s10">, </span>\enabled<span class="s10">, </span>\canFocus<span class="s10">, </span>\resize<span class="s10">, </span>\background<span class="s10">, </span>\minWidth<span class="s10">, </span>\maxWidth<span class="s10">, </span>\minHeight<span class="s10">, </span>\maxHeight<span class="s10">, </span>\knobColor<span class="s10">, </span>\step<span class="s10">, </span>\lo<span class="s10">, </span>\hi<span class="s10"> ]</span></p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -150,62 +152,62 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Sets <b>lo</b> and <b>hi</b><span class="Apple-converted-space">  </span>repectively using the <a href="../Geometry/Point.html"><span class="s2">Point</span></a>(currentDrag.x@currentDrag.y). Does <b>not</b> perform the action. <span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><br></p>
-<p class="p11"><b>Examples</b></p>
-<p class="p3"><br></p>
-<p class="p10">(</p>
-<p class="p10">w = <span class="s8">SCWindow</span>.new.front;</p>
-<p class="p10">a = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(20, 80, 120, 30))</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.range_(0.4)</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.action_({ <span class="s8">|slider|</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s9">\sliderLOW</span>, slider.lo, <span class="s9">\sliderHI</span>, slider.hi].postln;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>});</p>
-<p class="p10">)</p>
-<p class="p3"><br></p>
-<p class="p14">// ---------</p>
-<p class="p3"><br></p>
-<p class="p10">(</p>
-<p class="p10">w = <span class="s8">SCWindow</span>.new.front;</p>
-<p class="p10">a = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(20, 80, 120, 30))</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.hi_(0.8)</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.action_({ <span class="s8">|slider|</span></p>
-<p class="p14"><span class="s12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.activeLo_(slider.lo); </span>// this will trigger the action of b (and set it's value)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.hi_(slider.hi);</p>
-<p class="p10"><span class="Apple-tab-span">	</span>});</p>
-<p class="p10">b = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(220, 80, 20, 130))</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.hi_(0.8)</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.knobColor_(<span class="s8">HiliteGradient</span>(<span class="s8">Color</span>.red, <span class="s8">Color</span>.white, <span class="s8">Color</span>.red))</p>
-<p class="p10"><span class="Apple-tab-span">	</span>.action_({ <span class="s8">|slider|</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s9">\sliderLOW</span>, slider.lo, <span class="s9">\sliderHI</span>, slider.hi].postln;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>});</p>
-<p class="p3"><br></p>
-<p class="p10">)</p>
-<p class="p3"><br></p>
-<p class="p14">// SoundExample</p>
-<p class="p3"><br></p>
-<p class="p14">// Shape a bandpass filter. Hold down the ctrl-key to move the whole frequency range</p>
-<p class="p10">(</p>
-<p class="p10">s.waitForBoot({</p>
-<p class="p10"><span class="Apple-tab-span">	</span>a={<span class="s8">arg</span> freq=1800, bw=0.2; <span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">var</span> r;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">BBandPass</span>.ar(<span class="s8">WhiteNoise</span>.ar(0.3),<span class="Apple-converted-space">  </span>freq, bw);</p>
-<p class="p3"><br></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.play;</p>
-<p class="p3"><br></p>
-<p class="p10"><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>(<span class="s14">"SC2DSlider"</span>, <span class="s8">Rect</span>(100,<span class="s8">SCWindow</span>.screenBounds.height-400, 400 ,50));</p>
-<p class="p10"><span class="Apple-tab-span">	</span>t = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(10, 10, 380, 30))</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.lo_(0.4)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.hi_(0.6)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s8">|sl|</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.set(<span class="s9">\freq</span>,1800*(sl.lo+sl.lo)+10,<span class="s9">\bw</span>, (sl.hi-sl.lo).abs+0.01);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p10"><span class="Apple-tab-span">	</span>t.doAction;</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="s8">CmdPeriod</span>.doOnce({w.close});</p>
-<p class="p10">})</p>
-<p class="p10">)</p>
+<p class="p12"><b>Examples</b></p>
+<p class="p15"><br></p>
+<p class="p11">(</p>
+<p class="p11">w = <span class="s8">SCWindow</span>.new.front;</p>
+<p class="p11">a = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(20, 80, 120, 30))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.range_(0.4)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.action_({ <span class="s8">|slider|</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s9">\sliderLOW</span>, slider.lo, <span class="s9">\sliderHI</span>, slider.hi].postln;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>});</p>
+<p class="p11">)</p>
+<p class="p15"><br></p>
+<p class="p16">// ---------</p>
+<p class="p15"><br></p>
+<p class="p11">(</p>
+<p class="p11">w = <span class="s8">SCWindow</span>.new.front;</p>
+<p class="p11">a = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(20, 80, 120, 30))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.hi_(0.8)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.action_({ <span class="s8">|slider|</span></p>
+<p class="p16"><span class="s10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.activeLo_(slider.lo); </span>// this will trigger the action of b (and set it's value)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.hi_(slider.hi);</p>
+<p class="p11"><span class="Apple-tab-span">	</span>});</p>
+<p class="p11">b = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(220, 80, 20, 130))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.lo_(0.2)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.hi_(0.8)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.knobColor_(<span class="s8">HiliteGradient</span>(<span class="s8">Color</span>.red, <span class="s8">Color</span>.white, <span class="s8">Color</span>.red))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>.action_({ <span class="s8">|slider|</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s9">\sliderLOW</span>, slider.lo, <span class="s9">\sliderHI</span>, slider.hi].postln;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>});</p>
+<p class="p15"><br></p>
+<p class="p11">)</p>
+<p class="p15"><br></p>
+<p class="p16">// SoundExample</p>
+<p class="p15"><br></p>
+<p class="p16">// Shape a bandpass filter. Hold down the ctrl-key to move the whole frequency range</p>
+<p class="p11">(</p>
+<p class="p11">s.waitForBoot({</p>
+<p class="p11"><span class="Apple-tab-span">	</span>a={<span class="s8">arg</span> freq=1800, bw=0.2; <span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">var</span> r;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">BBandPass</span>.ar(<span class="s8">WhiteNoise</span>.ar(0.3),<span class="Apple-converted-space">  </span>freq, bw);</p>
+<p class="p15"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.play;</p>
+<p class="p15"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>(<span class="s14">"SC2DSlider"</span>, <span class="s8">Rect</span>(100,<span class="s8">SCWindow</span>.screenBounds.height-400, 400 ,50));</p>
+<p class="p11"><span class="Apple-tab-span">	</span>t = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(10, 10, 380, 30))</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.lo_(0.4)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.hi_(0.6)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s8">|sl|</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.set(<span class="s9">\freq</span>,1800*(sl.lo+sl.lo)+10,<span class="s9">\bw</span>, (sl.hi-sl.lo).abs+0.01);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p11"><span class="Apple-tab-span">	</span>t.doAction;</p>
+<p class="p15"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">CmdPeriod</span>.doOnce({w.close});</p>
+<p class="p11">})</p>
+<p class="p11">)</p>
 </body>
 </html>
