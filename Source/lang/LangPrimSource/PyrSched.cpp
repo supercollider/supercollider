@@ -29,7 +29,11 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <math.h>
+#ifdef SC_WIN32
+
+#else
 #include <sys/time.h>
+#endif
 
 #ifdef SC_WIN32
 typedef __int32 int32_t;

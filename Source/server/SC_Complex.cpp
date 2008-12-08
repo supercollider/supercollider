@@ -39,8 +39,8 @@ void BuildPolarLUT()
 	for (int i=0; i < kPolarLUTSize; ++i) {
 		double slope = (i - kPolarLUTSize2) * rPolarLUTSize2;
 		double angle = atan(slope);
-		gPhaseLUT[i] = angle;
-		gMagLUT[i] = 1. / cos(angle);
+		gPhaseLUT[i] = (float)angle;
+		gMagLUT[i] = 1.f / (float)cos(angle);
 	}
 }
 
@@ -89,7 +89,7 @@ Polar Complex::ToPolarApx()
 		if (real > 0) {
 			return Polar(mag, phase);
 		} else {
-			return Polar(mag, pi + phase);
+			return Polar(mag, (float)(pi + phase));
 		}
 	} else {
 		slope = real/imag;
@@ -97,9 +97,9 @@ Polar Complex::ToPolarApx()
 		mag = gMagLUT[index] * absimag;
 		phase = gPhaseLUT[index];
 		if (imag > 0) {
-			return Polar(mag, pi2 - phase);
+			return Polar(mag, (float)(pi2 - phase));
 		} else {
-			return Polar(mag, pi32 - phase);
+			return Polar(mag, (float)(pi32 - phase));
 		}
 	}
 }
