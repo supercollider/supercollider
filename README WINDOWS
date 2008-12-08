@@ -2,20 +2,14 @@
 PsyCollider 3.2 (Supercollider 3.2 for Windows)
 ------------------------------------------------------------------------
 
-------------------------------------------------------------------------
-Introduction
-------------------------------------------------------------------------
-
-This is the Windows version of James McCartney's SuperCollider synthesis engine (scsynth) and programming language (sclang). 
-Supercollider's main homepage is at:
-
+This is the Windows version of James McCartney's SuperCollider synthesis 
+engine (scsynth) and programming language (sclang). 
+Supercollider's main homepage is at
    http://supercollider.sourceforge.net/
 
 To get further information on SuperCollider usage or development, you
 should subscribe to the mailing lists:
-
-   http://www.create.ucsb.edu/mailman/listinfo/sc-users
-   http://www.create.ucsb.edu/mailman/listinfo/sc-devel
+   http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
 ------------------------------------------------------------------------
 System Requirements
@@ -24,15 +18,22 @@ System Requirements
 Windows 2000/XP/Vista
 Windows Installer 
 
-Sound card supported by PortAudio (http://www.portaudio.com/). If you have issues with latency, consult http://www.portaudio.com/docs/latency.html for advice how to tune your operating system to achieve the best results (in short: use ASIO drivers wherever possible).
+Most common sound cards will work fine - the sound card should be one 
+that is supported by PortAudio (http://www.portaudio.com/). If you have 
+issues with latency, consult http://www.portaudio.com/docs/latency.html for 
+advice how to tune your operating system to achieve the best results 
+(in short: use ASIO drivers wherever possible).
 
 ------------------------------------------------------------------------
-Installation
+Installation and launching
 ------------------------------------------------------------------------
-Simply run "setup.exe" and PsyCollider will install on your System (default is Program Files\PsyCollider). Start PsyCollider from your start menu. 
+To install, simply run "setup.exe" and PsyCollider will install on your 
+System (default location is Program Files\PsyCollider).
 
+Start PsyCollider from your start menu.
 
-NOTE: Your system must provide both audio input and audio output. Otherwise the synthesis server will not start (see also sc-users mailinglist discussion)
+NOTE: Your system must provide both audio input and audio output. Otherwise 
+the synthesis server will not start (see also sc-users mailinglist discussion)
 
 Important paths and files:
 $PSYCOLLIDER_HOME$\startup.sc : system wide startup file
@@ -40,9 +41,13 @@ $USER_HOME$\SuperCollider\startup.sc : user startup file
 $USER_HOME$\SuperCollider\Extensions : user extension folder for classes, plugins and help files
 
 ------------------------------------------------------------------------
+THE FOLLOWING INFORMATION IS FOR DEVELOPERS ONLY!
+Most people don't need to know the following...
+------------------------------------------------------------------------
 Building
 ------------------------------------------------------------------------
 
+To compile SuperCollider for yourself...
 Check out the latest source from supercollider.sourceforge.net 
 
 The following libraries are needed for compiling
@@ -56,6 +61,7 @@ The following libraries are needed for compiling
 You need Visual C++ 2005 (8.0) or the Express edition to build it. 
 
 Let's call ROOT the folder you checked out the SuperCollider code tree (contains "build", "Source" etc.)
+(Note that the SuperCollider code folder should be named "SuperCollider3" to avoid problems.)
 
 Python 
 ----------------------
@@ -98,7 +104,7 @@ Portmidi
 -----------
 - reminder : you do NOT need to build portmidi. this is taken care of by the msvc project.
 
-1) checkout version 8 from http://portmedia.svn.sourceforge.net/viewvc/portmedia/portmidi/trunk/
+1) checkout version 8 from http://portmedia.svn.sourceforge.net/svnroot/portmedia/portmidi/trunk/
 
 the folder structure needs to be like this:
 ...
@@ -163,7 +169,3 @@ Outro
 
 thanks to james mccartney, for making this great piece of audio
 software publically and freely available.
-
-------------------------------------------------------------------------
-eof
-------------------------------------------------------------------------
