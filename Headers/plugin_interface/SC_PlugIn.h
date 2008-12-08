@@ -50,4 +50,9 @@
 #include <xmath.h>
 #endif //_MSC_VER
 
+// windows.h defines min() and max() macros which break things such as
+// std::numeric_limits<int32>::max() - so let's undefine them
+#undef max
+#undef min
+
 #endif
