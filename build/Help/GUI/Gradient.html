@@ -10,21 +10,21 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
+span.s2 {color: #0020f6}
 span.s3 {color: #000000}
-span.s4 {color: #0000bf}
-span.s5 {color: #007300}
+span.s4 {text-decoration: underline}
+span.s5 {color: #0018b8}
+span.s6 {color: #356f14}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -34,7 +34,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also:</b> <a href="Color.html">Color</a>, <a href="HiliteGradient.html">HiliteGradient</a></span></p>
+<p class="p4"><span class="s3"><b>See also:</b> <a href="Color.html"><span class="s4">Color</span></a>, <a href="HiliteGradient.html"><span class="s4">HiliteGradient</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
@@ -51,14 +51,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p11">// basic usage</p>
 <p class="p12">(</p>
-<p class="p12">w=<span class="s4">SCWindow</span>.new.front;</p>
-<p class="p12">w.view.background=<span class="s4">Gradient</span>(<span class="s4">Color</span>.yellow,<span class="s4">Color</span>.white);</p>
+<p class="p12">w=<span class="s5">SCWindow</span>.new.front;</p>
+<p class="p12">w.view.background=<span class="s5">Gradient</span>(<span class="s5">Color</span>.yellow,<span class="s5">Color</span>.white);</p>
 <p class="p12">)</p>
-<p class="p13"><br></p>
+<p class="p3"><br></p>
 <p class="p11">// change direction and resolution</p>
 <p class="p12">(</p>
-<p class="p12">w=<span class="s4">SCWindow</span>.new.front;</p>
-<p class="p12">w.view.background=<span class="s4">Gradient</span>(<span class="s4">Color</span>.red,<span class="s4">Color</span>.white,<span class="s5">\v</span>, 5);</p>
+<p class="p12">w=<span class="s5">SCWindow</span>.new.front;</p>
+<p class="p12">w.view.background=<span class="s5">Gradient</span>(<span class="s5">Color</span>.red,<span class="s5">Color</span>.white,<span class="s6">\v</span>, 5);</p>
 <p class="p12">)</p>
+<p class="p3"><br></p>
 </body>
 </html>
