@@ -25,11 +25,11 @@ p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #314bd1}
+span.s2 {color: #3850cb}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #6f717e}
-span.s6 {color: #4357c0}
+span.s5 {color: #6f717d}
+span.s6 {color: #485abb}
 span.s7 {font: 14.0px Helvetica}
 span.s8 {color: #0000bf}
 span.s9 {color: #007300}
@@ -116,7 +116,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><b>Examples</b></p>
 <p class="p12"><br></p>
-<p class="p13">// Basic Usage. Resize the window to refresh the drawing</p>
+<p class="p13">// Basic Usage. Resize the window to refresh the drawing. Or use mouse click.</p>
 <p class="p14"><br></p>
 <p class="p15">(</p>
 <p class="p16"><span class="s3">w=</span>SCWindow<span class="s3">.new;</span></p>
@@ -129,6 +129,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.lineTo(uview.bounds.width@uview.bounds.height.rand);</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.stroke;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>};</p>
+<p class="p15">v.mouseDownAction={v.refresh};</p>
 <p class="p15">w.front;</p>
 <p class="p14"><br></p>
 <p class="p15">)</p>
@@ -264,7 +265,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><br></p>
 <p class="p14"><br></p>
 <p class="p14"><br></p>
-<p class="p13">// Draw on the view</p>
+<p class="p13">// Use the mouse to draw on the view</p>
 <p class="p14"><br></p>
 <p class="p15">(</p>
 <p class="p15"><span class="s8">var</span> w, txt, tmppoints, all;</p>
@@ -447,8 +448,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15">userView.bounds.postln;</p>
 <p class="p15">)</p>
 <p class="p14"><br></p>
-<p class="p14"><br></p>
-<p class="p14"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
 <p class="p3"><br></p>
 </body>
 </html>
