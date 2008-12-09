@@ -96,6 +96,10 @@ Quarks
 	listCheckedOut {
 		this.checkedOut.do { |q| q.postDesc };
 	}
+	listAvailable {
+		this.repos.quarks.do { |q| q.postDesc };
+	}
+
 	checkoutAll { repos.checkoutAll(local.path) }
 	checkout { |name, version, sync=false|
 		var q;
@@ -263,7 +267,9 @@ Quarks
 	*listCheckedOut {
 		this.checkedOut.do { |q| q.postDesc };
 	}
-
+	*listAvailable {
+		this.global.listAvailable
+	}
 	/* 
 	  download/update only the quark specification files from remote repos 
 	  and not the quarks themselves */
