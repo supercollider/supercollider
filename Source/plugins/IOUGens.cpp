@@ -259,7 +259,7 @@ void LagControl_Ctor(LagControl* unit)
 	for (int i=0; i<numChannels; ++i, mapin++) {
 		unit->m_y1[i] = **mapin;
 		float lag = ZIN0(i);
-		unit->m_b1[i] = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
+		unit->m_b1[i] = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 	}
 }
 
@@ -404,7 +404,7 @@ void LagIn_Ctor(LagIn* unit)
 	unit->m_fbusChannel = -1.;
 
 	float lag = ZIN0(1);
-	unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
+	unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 
 	SETCALC(LagIn_next_k);
 	unit->m_bus = world->mControlBus;

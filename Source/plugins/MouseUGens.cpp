@@ -106,15 +106,15 @@ void* gstate_update_func(void* arg)
 		// lines uncommented below are just for a specially need on multi-display.
 	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN ); 
 	//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
-	float r_screenWidth  = 1. / (float)(screenWidth  -1);
-	float r_screenHeight = 1. / (float)(screenHeight -1);
+	float r_screenWidth  = 1.f / (float)(screenWidth  -1);
+	float r_screenHeight = 1.f / (float)(screenHeight -1);
 
 	gstate = &gMouseUGenGlobals;
 	
 	for(;;)	{
 		GetCursorPos(&p);
 		gstate->mouseX = (float)p.x * r_screenWidth;
-		gstate->mouseY = 1.0 - (float)p.y * r_screenHeight;
+		gstate->mouseY = 1.f - (float)p.y * r_screenHeight;
 		gstate->mouseButton = (GetKeyState(mButton) < 0);
 		::Sleep(17); // 17msec.
 	}
@@ -185,7 +185,7 @@ void MouseX_next(MouseInputUGen *unit, int inNumSamples)
 	float b1 = unit->m_b1;
 	
 	if (lag != unit->m_lag) {
-		unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
+		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
 	float y0 = unit->gstate->mouseX; 
@@ -221,7 +221,7 @@ void MouseY_next(MouseInputUGen *unit, int inNumSamples)
 	float b1 = unit->m_b1;
 	
 	if (lag != unit->m_lag) {
-		unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
+		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
 	float y0 = unit->gstate->mouseY; 
@@ -257,7 +257,7 @@ void MouseButton_next(MouseInputUGen *unit, int inNumSamples)
 	float b1 = unit->m_b1;
 	
 	if (lag != unit->m_lag) {
-		unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
+		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
 	float y0 = unit->gstate->mouseButton ? maxval : minval; 
@@ -430,7 +430,7 @@ void load(InterfaceTable *inTable)
 	DefineUnit("MouseButton", sizeof(MouseInputUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
 	
 	// define a plugin command - example code
-	gMyPlugin.a = 1.2;
-	gMyPlugin.b = 3.4;
+	gMyPlugin.a = 1.2f;
+	gMyPlugin.b = 3.4f;
 	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)&gMyPlugin);
 }
