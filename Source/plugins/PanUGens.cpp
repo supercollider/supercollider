@@ -1310,9 +1310,9 @@ void DecodeB2_Ctor(DecodeB2 *unit)
 	float angle = (twopi / numOutputs);
 	unit->m_cosa = cos(angle);
 	unit->m_sina = sin(angle);
-	unit->m_W_amp = 0.7071067811865476;
-	unit->m_X_amp = 0.5 * cos(orientation * angle);
-	unit->m_Y_amp = 0.5 * sin(orientation * angle);
+	unit->m_W_amp = 0.7071067811865476f;
+	unit->m_X_amp = 0.5f * (float)cos(orientation * angle);
+	unit->m_Y_amp = 0.5f * (float)sin(orientation * angle);
 }
 
 void DecodeB2_next(DecodeB2 *unit, int inNumSamples)

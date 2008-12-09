@@ -5776,8 +5776,8 @@ void BAllPass_next_aa(BAllPass *unit, int inNumSamples)
     b2 = unit->m_b2;
     
     LOOP(unit->mRate->mFilterLoops,
-	 float nextfreq = ZXP(freq);
-	 float nextrq = ZXP(rq);
+	 nextfreq = ZXP(freq);
+	 nextrq = ZXP(rq);
 	 if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq)) {
 	 w0 = twopi * (double)nextfreq * SAMPLEDUR;
 	 alpha = sin(w0) * (double)nextrq * 0.5;
