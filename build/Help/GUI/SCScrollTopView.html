@@ -10,8 +10,8 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2d43c5}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2d43c5; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #3248bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #3248bf; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -20,34 +20,34 @@ p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #2d43c5}
-span.s3 {color: #000000}
-span.s4 {text-decoration: underline ; color: #293eb7}
-span.s5 {color: #3046c0}
-span.s6 {color: #2841cb}
-span.s7 {color: #1d3bd8}
-span.s8 {color: #0c2eee}
-span.s9 {color: #0000bf}
-span.s10 {color: #bf0000}
+span.s2 {color: #3248bf}
+span.s3 {color: #0000ff}
+span.s4 {color: #000000}
+span.s5 {text-decoration: underline ; color: #2e42b1}
+span.s6 {color: #364aba}
+span.s7 {color: #2e46c5}
+span.s8 {color: #2541d1}
+span.s9 {color: #1638e6}
+span.s10 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>SCScrollTopView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>an SCTopView with scrollers</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a><b> : SCContainerView : </b><a href="SCCompositeView.html"><span class="s2"><b>SCCompositeView</b></span></a><b> : SCTopView</b></p>
+<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a><b> : </b><a href="SCContainerView.html"><span class="s3"><b>SCContainerView</b></span></a><b> : </b><a href="SCCompositeView.html"><span class="s2"><b>SCCompositeView</b></span></a><b> : </b><a href="SCTopView.html"><span class="s3"><b>SCTopView</b></span></a></p>
 <p class="p3"><br></p>
 <p class="p1">A top level container view which allows the user to scroll across content which exceeds a window's visible bounds. A SCScrollTopView is created for you automatically if you pass true for the scroll argument in SCWindow:new. You do not need to create instances of this class directly.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also:</b> <a href="SCWindow.html"><span class="s4">SCWindow</span></a> <a href="GUI.html"><span class="s4">GUI</span></a></span><span class="s5"> <a href="SCScrollView.html"><span class="s2">SCScrollView</span></a></span></p>
+<p class="p4"><span class="s4"><b>See also:</b> <a href="SCWindow.html"><span class="s5">SCWindow</span></a> <a href="GUI.html"><span class="s5">GUI</span></a></span><span class="s6"> <a href="SCScrollView.html"><span class="s2">SCScrollView</span></a></span></p>
 <p class="p5"><br></p>
 <p class="p6"><b>Setting the Internal Bounds</b></p>
 <p class="p2"><br></p>
-<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s6">SCCompositeView</span></a> or other container view, but there is no direct setter. One should not use a decorator such as FlowLayout directly on a NSScrollTopView, only on a container view within it.<span class="Apple-converted-space"> </span></p>
+<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s7">SCCompositeView</span></a> or other container view, but there is no direct setter. One should not use a decorator such as FlowLayout directly on a NSScrollTopView, only on a container view within it.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p6"><b>Action Functions with Scrolling SCViews</b></p>
 <p class="p2"><br></p>
-<p class="p1">A SCScrollTopView or SCScrollView's action function is evaluated when a user scrolls the view or sets the visibleOrigin. See the example in the <a href="SCScrollView.html"><span class="s7">SCScrollView</span></a> help file.</p>
+<p class="p1">A SCScrollTopView or SCScrollView's action function is evaluated when a user scrolls the view or sets the visibleOrigin. See the example in the <a href="SCScrollView.html"><span class="s8">SCScrollView</span></a> help file.</p>
 <p class="p2"><br></p>
 <p class="p7"><b>Instance Methods</b></p>
 <p class="p8"><br></p>
@@ -75,7 +75,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><b>innerBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns a <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> corresponding to the size of the enclosed canvas. Note that you cannot set this directly. The size of the innerBounds will be either the visible bounds or the smallest Rect which contains all enclosed subviews, whichever is larger. See discussion above.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns a <a href="../Geometry/Rect.html"><span class="s9">Rect</span></a> corresponding to the size of the enclosed canvas. Note that you cannot set this directly. The size of the innerBounds will be either the visible bounds or the smallest Rect which contains all enclosed subviews, whichever is larger. See discussion above.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>visibleOrigin_(point)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>visibleOrigin</b></p>
@@ -86,20 +86,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b>Examples</b></p>
 <p class="p10"><br></p>
 <p class="p11">(</p>
-<p class="p12"><span class="s3">w = </span><span class="s9">SCWindow</span><span class="s3">(scroll: </span><span class="s9">true</span><span class="s3">); </span>// you must set this when the window is created</p>
-<p class="p11">c = <span class="s9">SCSlider</span>(w, <span class="s9">Rect</span>(0,0,100,30));</p>
+<p class="p12"><span class="s4">w = </span><span class="s10">SCWindow</span><span class="s4">(scroll: </span><span class="s10">true</span><span class="s4">); </span>// you must set this when the window is created</p>
+<p class="p11">c = <span class="s10">SCSlider</span>(w, <span class="s10">Rect</span>(0,0,100,30));</p>
 <p class="p11">w.front;</p>
 <p class="p11">)</p>
 <p class="p10"><br></p>
-<p class="p12"><span class="s3">c.resize = 2; </span>// resize settings are ignored if scrolling is enabled.</p>
+<p class="p12"><span class="s4">c.resize = 2; </span>// resize settings are ignored if scrolling is enabled.</p>
 <p class="p10"><br></p>
-<p class="p12"><span class="s3">d = </span><span class="s9">SCSlider</span><span class="s3">(w, </span><span class="s9">Rect</span><span class="s3">(1500, 40, 100, 30)); </span>// a horizontal scroller appears</p>
+<p class="p12"><span class="s4">d = </span><span class="s10">SCSlider</span><span class="s4">(w, </span><span class="s10">Rect</span><span class="s4">(1500, 40, 100, 30)); </span>// a horizontal scroller appears</p>
 <p class="p10"><br></p>
-<p class="p12"><span class="s3">w.view.autohidesScrollers_(</span><span class="s9">false</span><span class="s3">); </span>// autohide is enabled by default, but we can turn it off</p>
+<p class="p12"><span class="s4">w.view.autohidesScrollers_(</span><span class="s10">false</span><span class="s4">); </span>// autohide is enabled by default, but we can turn it off</p>
 <p class="p10"><br></p>
-<p class="p11">w.view.hasHorizontalScroller_(<span class="s9">false</span>); <span class="s10">// hide the horizontal scroller</span></p>
 <p class="p10"><br></p>
-<p class="p12"><span class="s3">w.view.visibleOrigin = 1500@0; </span>// but we can still scroll using the visibleOrigin method</p>
+<p class="p12"><span class="s4">w.view.visibleOrigin = 1500@0; </span>// but we can still scroll using the visibleOrigin method</p>
 <p class="p10"><br></p>
 </body>
 </html>
