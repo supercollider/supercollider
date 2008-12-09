@@ -10,7 +10,7 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0c2eee}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #1638e6}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
@@ -19,16 +19,23 @@ p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helve
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #783427}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #6b372a}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0c2eee}
+span.s2 {color: #1638e6}
 span.s3 {color: #000000}
-span.s4 {color: #1b31ab}
+span.s4 {color: #2136a6}
 span.s5 {color: #6f7178}
 span.s6 {font: 14.0px Helvetica}
-span.s7 {color: #783427}
+span.s7 {color: #6b372a}
+span.s8 {color: #0000bf}
+span.s9 {color: #606060}
+span.s10 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -119,67 +126,67 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>clear</b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><b>Examples</b></p>
-<p class="p3"><br></p>
-<p class="p15">(</p>
-<p class="p15">// make a basic editor</p>
-<p class="p15">e = Env([1,2],[10]);</p>
-<p class="p15">w = SCWindow("Env Editor", Rect(200,200,300,200));</p>
-<p class="p15">v = SCEnvelopeEdit(w, w.view.bounds.moveBy(20,20).resizeBy(-40,-40), e, 20).resize_(5);</p>
-<p class="p15">w.front;</p>
-<p class="p15">)</p>
-<p class="p15">v.addBreakPoint;</p>
-<p class="p3"><br></p>
-<p class="p15">v.clear;</p>
-<p class="p15">v.redraw;</p>
-<p class="p15">v;</p>
-<p class="p15">)</p>
-<p class="p3"><br></p>
-<p class="p15">v.maxLevel_(2);<span class="Apple-tab-span">	</span>// to give more headroom</p>
-<p class="p15">v.maxTime_(2);<span class="Apple-tab-span">	</span>// to increase release point</p>
-<p class="p15">v.minTime_(-1);<span class="Apple-tab-span">	</span>// to increase attack time</p>
-<p class="p3"><br></p>
-<p class="p15">e.curves_ = 'sin';<span class="Apple-tab-span">	</span>// env object is changed</p>
-<p class="p15">v.refresh;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// must refresh editor</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p15">// Controlling a Synth</p>
-<p class="p3"><br></p>
-<p class="p15">s=Server.internal;</p>
-<p class="p3"><br></p>
-<p class="p15">(</p>
-<p class="p15">e = Env([0, 1, 0.7, 0.9, 0], [0.03, 0.03, 0.03, 0.03], 'sin');</p>
-<p class="p15">f = Env([0, 1, 0.7, 0.9, 0], [0.03, 0.03, 0.03, 0.03], 'sin');</p>
-<p class="p15">w = SCWindow("Shards", Rect(100, 100, 500, 400));</p>
-<p class="p15">v = SCEnvelopeEdit(w, w.view.bounds.resizeBy(-20, -200), e, 10).resize_(2);</p>
-<p class="p15">SCStaticText(w, v.bounds).string_(" amplitude").resize_(2);</p>
-<p class="p15">x = SCEnvelopeEdit(w, v.bounds.moveBy(0, 200), f, 10).resize_(2);</p>
-<p class="p15">SCStaticText(w, x.bounds).string_(" frequency").resize_(2);</p>
-<p class="p15">w.front;</p>
-<p class="p15">)</p>
-<p class="p3"><br></p>
-<p class="p15">(</p>
-<p class="p15">SynthDef("sineBlip", {<span class="Apple-converted-space"> </span></p>
-<p class="p15"><span class="Apple-tab-span">	</span>arg freq=440, vol=0.1, la0, la1, la2, la3, la4, ta0, ta1, ta2, ta3, crva,</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>lf0, lf1, lf2, lf3, lf4, tf0, tf1, tf2, tf3, crvf;</p>
-<p class="p15"><span class="Apple-tab-span">	</span>var signal, fenv, aenv;</p>
-<p class="p15"><span class="Apple-tab-span">	</span>fenv = EnvGen.ar(Env([lf0,lf1,lf2,lf3,lf4],[tf0,tf1,tf2,tf3], crvf));</p>
-<p class="p15"><span class="Apple-tab-span">	</span>aenv = EnvGen.ar(Env([la0,la1,la2,la3,la4],[ta0,ta1,ta2,ta3], crva), doneAction: 2);</p>
-<p class="p15"><span class="Apple-tab-span">	</span>signal = SinOsc.ar([freq, freq*2] * fenv) * aenv * vol;</p>
-<p class="p15"><span class="Apple-tab-span">	</span>Out.ar(0, signal.dup);</p>
-<p class="p15">}).send(s);</p>
-<p class="p15">)</p>
-<p class="p3"><br></p>
-<p class="p15">(</p>
-<p class="p15">Routine({</p>
-<p class="p15"><span class="Apple-tab-span">	</span>var par, indices;</p>
-<p class="p15"><span class="Apple-tab-span">	</span>indices = (2..21);</p>
-<p class="p15"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>par = (indices +++ (v.env.levels ++ v.env.times ++ v.env.curves ++ x.env.levels ++ x.env.times ++ x.env.curves)).flatten;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendBundle(s.latency, [\s_new, "sineBlip", -1, 1, 1, \freq, exprand(4e3,11e3)] ++ par);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.04.wait;</p>
-<p class="p15"><span class="Apple-tab-span">	</span>});</p>
-<p class="p15">}).play;</p>
-<p class="p15">)</p>
+<p class="p15"><br></p>
+<p class="p16">(</p>
+<p class="p17">// make a basic editor</p>
+<p class="p16">e = <span class="s8">Env</span>([1,2],[10]);</p>
+<p class="p16">w = <span class="s8">SCWindow</span>(<span class="s9">"Env Editor"</span>, <span class="s8">Rect</span>(200,200,300,200));</p>
+<p class="p16">v = <span class="s8">SCEnvelopeEdit</span>(w, w.view.bounds.moveBy(20,20).resizeBy(-40,-40), e, 20).resize_(5);</p>
+<p class="p16">w.front;</p>
+<p class="p16">)</p>
+<p class="p16">v.addBreakPoint;</p>
+<p class="p15"><br></p>
+<p class="p16">v.clear;</p>
+<p class="p16">v.redraw;</p>
+<p class="p16">v;</p>
+<p class="p16">)</p>
+<p class="p15"><br></p>
+<p class="p17"><span class="s3">v.maxLevel_(2);<span class="Apple-tab-span">	</span></span>// to give more headroom</p>
+<p class="p17"><span class="s3">v.maxTime_(2);<span class="Apple-tab-span">	</span></span>// to increase release point</p>
+<p class="p17"><span class="s3">v.minTime_(-1);<span class="Apple-tab-span">	</span></span>// to increase attack time</p>
+<p class="p15"><br></p>
+<p class="p17"><span class="s3">e.curves_ = </span><span class="s10">'sin'</span><span class="s3">;<span class="Apple-tab-span">	</span></span>// env object is changed</p>
+<p class="p17"><span class="s3">v.refresh;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// must refresh editor</p>
+<p class="p15"><br></p>
+<p class="p15"><br></p>
+<p class="p15"><br></p>
+<p class="p17">// Controlling a Synth</p>
+<p class="p15"><br></p>
+<p class="p16">s=<span class="s8">Server</span>.internal;</p>
+<p class="p15"><br></p>
+<p class="p16">(</p>
+<p class="p16">e = <span class="s8">Env</span>([0, 1, 0.7, 0.9, 0], [0.03, 0.03, 0.03, 0.03], <span class="s10">'sin'</span>);</p>
+<p class="p16">f = <span class="s8">Env</span>([0, 1, 0.7, 0.9, 0], [0.03, 0.03, 0.03, 0.03], <span class="s10">'sin'</span>);</p>
+<p class="p16">w = <span class="s8">SCWindow</span>(<span class="s9">"Shards"</span>, <span class="s8">Rect</span>(100, 100, 500, 400));</p>
+<p class="p16">v = <span class="s8">SCEnvelopeEdit</span>(w, w.view.bounds.resizeBy(-20, -200), e, 10).resize_(2);</p>
+<p class="p16"><span class="s8">SCStaticText</span>(w, v.bounds).string_(<span class="s9">" amplitude"</span>).resize_(2);</p>
+<p class="p16">x = <span class="s8">SCEnvelopeEdit</span>(w, v.bounds.moveBy(0, 200), f, 10).resize_(2);</p>
+<p class="p16"><span class="s8">SCStaticText</span>(w, x.bounds).string_(<span class="s9">" frequency"</span>).resize_(2);</p>
+<p class="p16">w.front;</p>
+<p class="p16">)</p>
+<p class="p15"><br></p>
+<p class="p16">(</p>
+<p class="p18"><span class="s8">SynthDef</span><span class="s3">(</span>"sineBlip"<span class="s3">, {<span class="Apple-converted-space"> </span></span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">arg</span> freq=440, vol=0.1, la0, la1, la2, la3, la4, ta0, ta1, ta2, ta3, crva,</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>lf0, lf1, lf2, lf3, lf4, tf0, tf1, tf2, tf3, crvf;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">var</span> signal, fenv, aenv;</p>
+<p class="p16"><span class="Apple-tab-span">	</span>fenv = <span class="s8">EnvGen</span>.ar(<span class="s8">Env</span>([lf0,lf1,lf2,lf3,lf4],[tf0,tf1,tf2,tf3], crvf));</p>
+<p class="p16"><span class="Apple-tab-span">	</span>aenv = <span class="s8">EnvGen</span>.ar(<span class="s8">Env</span>([la0,la1,la2,la3,la4],[ta0,ta1,ta2,ta3], crva), doneAction: 2);</p>
+<p class="p16"><span class="Apple-tab-span">	</span>signal = <span class="s8">SinOsc</span>.ar([freq, freq*2] * fenv) * aenv * vol;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">Out</span>.ar(0, signal.dup);</p>
+<p class="p16">}).send(s);</p>
+<p class="p16">)</p>
+<p class="p15"><br></p>
+<p class="p16">(</p>
+<p class="p19">Routine<span class="s3">({</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">var</span> par, indices;</p>
+<p class="p16"><span class="Apple-tab-span">	</span>indices = (2..21);</p>
+<p class="p16"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>par = (indices +++ (v.env.levels ++ v.env.times ++ v.env.curves ++ x.env.levels ++ x.env.times ++ x.env.curves)).flatten;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendBundle(s.latency, [<span class="s10">\s_new</span>, <span class="s9">"sineBlip"</span>, -1, 1, 1, <span class="s10">\freq</span>, exprand(4e3,11e3)] ++ par);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.04.wait;</p>
+<p class="p16"><span class="Apple-tab-span">	</span>});</p>
+<p class="p16">}).play;</p>
+<p class="p16">)</p>
 </body>
 </html>
