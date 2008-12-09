@@ -26,12 +26,12 @@ p.p16 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helv
 p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #2040df}
-span.s3 {color: #0000ff}
+span.s2 {color: #2946d8}
+span.s3 {color: #0020f6}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {text-decoration: underline ; color: #1e3bd0}
-span.s7 {color: #58682a}
+span.s6 {text-decoration: underline ; color: #2641c9}
+span.s7 {color: #5c662f}
 span.s8 {color: #0000bf}
 span.s9 {font: 12.0px Helvetica}
 span.s10 {font: 14.0px Helvetica}
@@ -130,7 +130,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Server</span>.default = s = <span class="s8">Server</span>.internal</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.boot</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{[<span class="s8">SinOsc</span>.ar.scope,<span class="s8">WhiteNoise</span>.ar(0.5).scope]*0.1}.scope(2);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Stethoscope</span>.ugenScopes;</p>
+<p class="p13"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">Stethoscope</span><span class="s4">.ugenScopes; </span>// returns the ugen scopes</p>
 <p class="p6"><br></p>
 <p class="p15"><b>Accessing Instance and Class Variables</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
@@ -160,7 +160,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set the width and height tof the scope window.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An integer (the iwndow is square).</p>
-<p class="p8"><b></b><br></p>
+<p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>window</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns the parent <a href="SCWindow.html"><span class="s3">SCWindow</span></a> of the scope .</p>
@@ -179,7 +179,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>quit</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Closes the window, and cleans up synths and buffer.</p>
-<p class="p8"><b></b><br></p>
+<p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>toggleSize</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Toggle between size 500 and 212.</p>
@@ -201,7 +201,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
 <p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
-<p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*tileBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -273,7 +272,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17"><br></p>
 <p class="p18">// note that scoping control rate buses shows block size interpolation (this is due to the</p>
 <p class="p18">// fact that ScopeOut.kr doesn't work yet.)</p>
-<p class="p17"><br></p>
+<p class="p3"><br></p>
 <p class="p1"><b>external use: you can pass your own view in to add a stethoscope to it;</b></p>
 <p class="p17"><br></p>
 <p class="p12">w = <span class="s8">SCWindow</span>.new(<span class="s11">"my own scope"</span>, <span class="s8">Rect</span>(20, 20, 400, 500));</p>
