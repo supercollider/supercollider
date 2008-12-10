@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BinaryOpUGens", "PlugIns\BinaryOpUGens.vcproj", "{A25458C1-2618-4FB0-89BC-E41769B5AE4B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DelayUGens", "PlugIns\DelayUGens.vcproj", "{4E998729-F079-485C-B30C-B0B99BD69B19}"
@@ -30,7 +30,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnaryOpUGens", "PlugIns\Una
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scsynth", "scsynth.vcproj", "{C02C0847-C65E-4187-A3F5-5878076C7803}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MacUGens", "PlugIns\MacUGens.vcproj", "{1484F0E2-480E-4230-91CC-B3A4A57451B1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MouseUGens", "PlugIns\MouseUGens.vcproj", "{1484F0E2-480E-4230-91CC-B3A4A57451B1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PySCLang", "..\Psycollider\PySCLang\PySCLang.vcproj", "{580DA691-0F33-4970-8D19-69CB47DE67D4}"
 EndProject

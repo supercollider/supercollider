@@ -15,8 +15,8 @@ should subscribe to the mailing lists:
 System Requirements
 ------------------------------------------------------------------------
 
-Windows 2000/XP/Vista
-Windows Installer 
+* Windows 2000/XP/Vista
+* Windows Installer 
 
 Most common sound cards will work fine - the sound card should be one 
 that is supported by PortAudio (http://www.portaudio.com/). If you have 
@@ -25,7 +25,7 @@ advice how to tune your operating system to achieve the best results
 (in short: use ASIO drivers wherever possible).
 
 ------------------------------------------------------------------------
-Installation and launching
+How to install, and how to launch
 ------------------------------------------------------------------------
 To install, simply run "setup.exe" and PsyCollider will install on your 
 System (default location is Program Files\PsyCollider).
@@ -35,14 +35,15 @@ Start PsyCollider from your start menu.
 NOTE: Your system must provide both audio input and audio output. Otherwise 
 the synthesis server will not start (see also sc-users mailinglist discussion)
 
-Important paths and files:
+Paths and files you may want to be aware of:
 $PSYCOLLIDER_HOME$\startup.sc : system wide startup file
 $USER_HOME$\SuperCollider\startup.sc : user startup file
 $USER_HOME$\SuperCollider\Extensions : user extension folder for classes, plugins and help files
 
+
 ------------------------------------------------------------------------
-THE FOLLOWING INFORMATION IS FOR DEVELOPERS ONLY!
-Most people don't need to know the following...
+    Note: THE FOLLOWING INFORMATION IS FOR DEVELOPERS ONLY!
+    Most people don't need to know how to build SC3 from scratch...
 ------------------------------------------------------------------------
 Building
 ------------------------------------------------------------------------
@@ -58,12 +59,12 @@ The following libraries are needed for compiling
 * fftw3
 * python
 
-You need Visual C++ 2005 (8.0) or the Express edition to build it. 
+You need Visual C++ 2008 (9.0) or the Express edition to build it. 
 
 Let's call ROOT the folder you checked out the SuperCollider code tree (contains "build", "Source" etc.)
 (Note that the SuperCollider code folder should be named "SuperCollider3" to avoid problems.)
 
-Python 
+1: Python 
 ----------------------
 1) go to "http://python.org" and download and install the latest Python version (tested 2.5.1). 
 NOTE: get the Windows installer and make sure its the Unicode version and NOT the Ansii version.
@@ -73,7 +74,7 @@ NOTE: again you need the Unicode version.
 
 NOTE: make sure you have an environment variable set called PYTHONPATH pointing to the base directory of you installation (Should be done by python installer).
 
-Portaudio + ASIO
+2: Portaudio + ASIO
 ----------------------
 - reminder : you do NOT need to build portaudio. this is taken care of by the msvc project.
 
@@ -100,7 +101,7 @@ ROOT\..\asio-sdk\common
 ROOT\..\asio-sdk\driver
 ...
 
-Portmidi
+3: Portmidi
 -----------
 - reminder : you do NOT need to build portmidi. this is taken care of by the msvc project.
 
@@ -112,7 +113,7 @@ ROOT\..\portmidi\pm_common\
 ROOT\..\portmidi\portmidi.dsp\
 ...
 
-Pthread-win32
+4: Pthread-win32
 ------------------------
 - reminder : you do NOT need to build pthread-win32. this is taken care of by the msvc project.
 
@@ -127,24 +128,28 @@ ROOT\..\pthread-win32\attr.c
 NOTE : the home page is "http://sources.redhat.com/pthreads-win32"
 
 
-fftw3
+5: fftw3
 -----------------------
-- reminder : you do NOT need to build fftw3. this is taken care of by the msvc project.
 
-1) go to: "http://www.fftw.org/download.html" and download the latest stable version (tested 3.1.)
+1) go to: "http://www.fftw.org/install/windows.html" and download the "PRECOMPILED WINDOWS DLL".
 
 ...
 ROOT\..\fftw3
 ...
 
+You also need to run the instructions in the readme that accompany the fftw3 download, which tell you 
+how to generate "lib" files for your system.
 
-Once all that is done, the Solution should compile without problems (lots of warning though...).
+
+6: actually building and running the thing!
+-------------------------------------------
+
+Once all the above is done, the Solution "SC3win.sln" should compile without problems (lots of warnings though...).
 As a result you will have the plugins in build\plugins (scx files) and PySCLang in ($PYTHONHOME)\lib\site-packages
 
-To run PsyCollider you have to put a few more things into the build directory:
-* Psycollider.py (the Psycollider script from ROOT\Psycollider\Psycollider into ROOT\build\)
-* startup.sc and keywords.list (from ROOT\windows\ into ROOT\build\)
-* libsndfile.dll (from ROOT\libsndfile into ROOT\build\)
+(The building of the "PySClang" target should also result in a few necessary files being copied into the "build" 
+folder. Namely Psycollider.py, startup.sc, keywords.list, libsndfile.dll, libfftw3f-3.dll.)
+
 
 Then open a Terminal and run: python.exe Psycollider.py 
 

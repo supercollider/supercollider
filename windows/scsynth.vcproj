@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="scsynth"
 	ProjectGUID="{C02C0847-C65E-4187-A3F5-5878076C7803}"
 	RootNamespace="scsynth"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -68,6 +69,8 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/scsynth.pdb"
 				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -89,9 +92,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -102,6 +102,7 @@
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
+			BuildLogFile="$(IntDir)\BuildLog-$(ProjectName).htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -121,7 +122,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\headers\plugin_interface;..\headers\server;..\headers\common;..\libsndfile;&quot;..\..\pthread-win32&quot;;..\..\portaudio\src\common;..\..\portaudio\include;&quot;..\..\asio-sdk\common&quot;;&quot;..\..\asio-sdk\host&quot;;&quot;..\..\asio-sdk\host\pc&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;SC_WIN32;NOMINMAX;PTW32_BUILD;SC_WIN32_STATIC_PTHREADS;PA_NO_DS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;SC_WIN32;NOMINMAX;PTW32_BUILD;SC_WIN32_STATIC_PTHREADS;PA_NO_DS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -146,6 +147,8 @@
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -165,9 +168,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

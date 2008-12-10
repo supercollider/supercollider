@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="GrainUGens"
 	ProjectGUID="{FBFEB18B-DA79-44B8-800A-0AB70BCA6490}"
 	RootNamespace="GrainUGens"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -18,7 +19,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(ProjectDir)..\..\build\plugins\"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -37,7 +38,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\..\libsndfile\src&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
 				PreprocessorDefinitions="WIN32;SC_WIN32;_DEBUG;_WINDOWS;_USRDLL;DISKIOUGENS_EXPORTS"
 			/>
 			<Tool
@@ -51,6 +52,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -71,9 +74,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -82,6 +82,7 @@
 			OutputDirectory="$(ProjectDir)..\..\build\plugins\"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
+			BuildLogFile="$(IntDir)\BuildLog-$(ProjectName).htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -117,6 +118,8 @@
 				OutputFile="$(OutDir)\$(ProjectName).scx"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -135,9 +138,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

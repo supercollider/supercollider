@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="PySCLang"
 	ProjectGUID="{580DA691-0F33-4970-8D19-69CB47DE67D4}"
 	RootNamespace="PySCLang"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -70,6 +71,8 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/PySCLang.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/PySCLang.lib"
 				TargetMachine="1"
 			/>
@@ -92,9 +95,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -105,6 +105,7 @@
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
+			BuildLogFile="$(IntDir)\BuildLog-$(ProjectName).htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -125,7 +126,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)pycxx&quot;;&quot;$(ProjectDir)..\..\headers\app\&quot;;&quot;$(ProjectDir)..\..\headers\icu\unicode\&quot;;&quot;$(ProjectDir)..\..\headers\lang\&quot;;&quot;$(ProjectDir)..\..\headers\common\&quot;;&quot;$(ProjectDir)..\..\headers\plugin_interface\&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;;&quot;$(ProjectDir)libgw32c_subset\&quot;;&quot;$(ProjectDir)..\..\windows\compat_stuff&quot;;&quot;$(ProjectDir)..\..\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\server\&quot;;&quot;$(ProjectDir)..\..\..\portaudio\pa_common&quot;;&quot;$(ProjectDir)..\..\..\portmidi\pm_common&quot;;&quot;$(ProjectDir)..\..\..\portmidi\porttime&quot;;&quot;$(PYTHONPATH)\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PYSCLANG;PYSCLANG_EXPORTS;SC_WIN32;__GNU_LIBRARY__;wxUSE_GUI=1;__WXDEBUG__;WINVER=0x0400;PTW32_BUILD;FORCE_MISSING_SNPRINTF;SC_WIN32_STATIC_PTHREADS;NEWBUFFER"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PYSCLANG;PYSCLANG_EXPORTS;SC_WIN32;__GNU_LIBRARY__;wxUSE_GUI=1;__WXDEBUG__;WINVER=0x0400;PTW32_BUILD;FORCE_MISSING_SNPRINTF;SC_WIN32_STATIC_PTHREADS;NEWBUFFER;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
 				DefaultCharIsUnsigned="true"
 				UsePrecompiledHeader="0"
@@ -133,6 +134,7 @@
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 				CallingConvention="0"
+				DisableSpecificWarnings="4244"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -154,6 +156,8 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/PySCLang.lib"
 				TargetMachine="1"
 			/>
@@ -176,10 +180,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Copy some windowsy-or-psyco files into the build directory"
+				CommandLine="copy &quot;$(ProjectDir)\..\Psycollider\Psycollider.py&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\windows\startup.sc&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\windows\keywords.list&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\libsndfile\libsndfile.dll&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\..\fftw3\libfftw3f-3.dll&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
