@@ -1607,7 +1607,7 @@ comment1:	/* comment -- to end of line */
 	do {
 		c = input0(); 
 	} while (c != '\n' && c != '\r' && c != 0);
-	if (c == 0) { goto error1; }
+	if (c == 0) { goto leave; }
 	else goto start;
 
 comment2 : {
