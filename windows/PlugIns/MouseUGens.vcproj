@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="FFT2_UGens"
-	ProjectGUID="{7B3E3D51-E344-4F2C-982A-547B4460E652}"
-	RootNamespace="FFT2_UGens"
+	Name="MouseUGens"
+	ProjectGUID="{1484F0E2-480E-4230-91CC-B3A4A57451B1}"
+	RootNamespace="MouseUGens"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ProjectDir)..\..\build\plugins_debug\"
+			OutputDirectory="PlugIns_Debug"
 			IntermediateDirectory="PlugIns_Debug_Intermediate"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\..\libsndfile\src&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
-				PreprocessorDefinitions="WIN32;SC_WIN32;_DEBUG;_WINDOWS;_USRDLL;DELAYUGENS_EXPORTS"
+				PreprocessorDefinitions="WIN32;SC_WIN32;_DEBUG;_WINDOWS;_USRDLL;MACUGENS_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -63,14 +63,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/FFT2_UGens.scx"
+				OutputFile="$(OutDir)/MacUGens.scx"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/FFT2_UGens.pdb"
+				ProgramDatabaseFile="$(OutDir)/MacUGens.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/FFT2_UGens.lib"
+				ImportLibrary="$(OutDir)/MacUGens.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -98,7 +98,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(ProjectDir)..\..\build\plugins\"
-			IntermediateDirectory="PlugIns_Release_Intermediate"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
@@ -121,14 +121,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;;&quot;$(ProjectDir)..\..\..\fftw-3.2\api&quot;"
-				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;DELAYUGENS_EXPORTS;SC_FFT_FFTW"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;"
+				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;MACUGENS_EXPORTS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
-				DisableSpecificWarnings="4244"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -141,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\..\fftw3\libfftw3-3.lib ..\..\..\fftw3\libfftw3l-3.lib ..\..\..\fftw3\libfftw3f-3.lib"
+				AdditionalDependencies="wsock32.lib"
 				OutputFile="$(OutDir)/$(ProjectName).scx"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -150,7 +149,7 @@
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/FFT2_UGens.lib"
+				ImportLibrary="$(OutDir)/MacUGens.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -182,59 +181,39 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{62F79F1B-1907-414F-8988-EED4B3EFDC6E}"
+			UniqueIdentifier="{003C36E4-84CB-479D-BB0E-8EBCE7D3FA05}"
 			>
-			<File
-				RelativePath="..\..\source\plugins\Convolution.cpp"
-				>
-			</File>
 			<File
 				RelativePath=".\ExportHelper.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\source\plugins\FeatureDetection.cpp"
+				RelativePath="..\..\Source\plugins\MouseUGens.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\..\source\plugins\FFT2InterfaceTable.cpp"
+			<Filter
+				Name="pthread"
 				>
-			</File>
-			<File
-				RelativePath="..\..\Source\common\fftlib.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\source\plugins\PV_ThirdParty.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Source\common\SC_fftlib.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\source\plugins\SCComplex.cpp"
-				>
-			</File>
+				<File
+					RelativePath="..\..\..\pthread-win32\pthread.c"
+					>
+				</File>
+				<File
+					RelativePath="..\compat_stuff\WSA-pthread-compat-stuff.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{5B736021-D00F-4C68-A2D5-6A4B6CE6C211}"
+			UniqueIdentifier="{C7DBD712-25CB-43C8-B0F8-18E0BC8DB0C7}"
 			>
-			<File
-				RelativePath="..\..\source\plugins\fftlib.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\source\plugins\SCComplex.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{EF7F3B57-ADFB-4B37-8CC2-3E57E2E56DF3}"
+			UniqueIdentifier="{06C3897C-801F-48CA-B314-EA54C53BB910}"
 			>
 		</Filter>
 	</Files>
