@@ -1,8 +1,10 @@
-//////////// change log /////////////
+Changes are listed below, grouped under each point release of SuperCollider.
 
-// user-visible changes after SC v3.2:
+Recent changes (will be SuperCollider v3.3)
+=======================================
 
-// HEADLINES:
+Headlines:
+----------
 * 2008-04-20 improvements to MIDI sysex handling - added sysex parsing directly in source - thanks to charles picasso
 * 2008-07-12 scsynth on Mac can now use separate devices for audio input vs audio output. Thanks to Axel Balley for much of the work on this, also a bit by ds.
 * 2008-07-12 PlayBuf, RecordBuf, BufWr, BufRd, ScopeOut - used to be limited to 16-channel audio maximum. Now can handle massively multichannel audio - ds
@@ -23,8 +25,8 @@
 * 2008-12-03 added PV_Div ugen for complex division - ds
 * 2008-12-07 added PV_Conj ugen for complex conjugate - ds
 
-
-// BUGFIXES:
+Bugfixes:
+---------
 * 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
 * 2008-05-20 fix slight mistake in the defaults printed by scsynth on command-line (bug id 1953392) - ds
 * 2008-09-16 stability fixes to FFT and IFFT - ds
@@ -33,8 +35,8 @@
 * 2008-11-24 avoid FFT failure when buffer not allocated - jr
 * 2008-11-29 resolved inconsistency in Server:waitForBoot - function is always executed in a Routine, whether or not the server is booted - ds
 
-
-// OTHER ADDITIONS/IMPROVEMENTS:
+Other additions/improvements:
+-----------------------------
 * 2008-04-04 SoundFile:toCSV - ds
 * 2008-04-29 buffer UGens now post a warning (rather than failing silently) if buffer channels doesn't match num ins/outs - ds
 * 2008-09-xx various code improvements, including compiling for 64-bit linux - tb
@@ -43,11 +45,11 @@
 * 2008-11-21 modify FFT examples to use LocalBuf where recommended - jr
 * 2008-11-27 SC3 will ignore ugens/class-files in folders named "ignore". Previously the name has been "test" - ignoring folders named "test" is now deprecated and will be removed - ds
 
-///////////////////////////// SuperCollider v3.2 released 2008-02-21 /////////////////////////////
+SuperCollider v3.2, released 2008-02-21
+=======================================
 
-// user-visible changes in preparing SC v3.2, SuperCollider book release:
-
-// HEADLINES:
+Headlines:
+----------
 * 2007-11-xx new suite of machine listening ugens - Loudness, BeatTrack, Onsets, KeyTrack, SpecCentroid, SpecPcile, SpecFlatness - nc, ds
 * 2008-01-06 FreeBSD compatibility - hb
 * 2008-01-10 Quarks updating on OSX should now be easier for first-time users; commands are run in a separate terminal window - ds
@@ -58,7 +60,8 @@
 * 2008-01-26 TDuty outputs trigger first, not level. for backwards compatibility TDuty_old - jr
 * 2008-02-03 moved the search location for "startup.rtf" on Mac - now searches in system, then user, "Application Support/SuperCollider" folders - ds
 
-// BUGFIXES:
+Bugfixes:
+---------
 * 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
 * 2007-11-18 fixed a bug in prTry / protect - jr
 * 2007-11-27 lock avoided in nextTimeOnGrid
@@ -69,7 +72,8 @@
 * 2008-01-26 TDuty / Duty does not drift anymore - jr
 * 2008-02-07 Fixed hang and incorrect background drawing in Cocoa scrollviews - sw
 
-// OTHER ADDITIONS / IMPROVEMENTS:
+Other additions/improvements:
+-----------------------------
 * 2007-11-16 MIDIOut.connect and disconnect - mb
 * 2007-11-18 added T2A UGen - jr
 * 2007-11-18 Refactoring of Document class, including new CocoaDocument class to handle the Cocoa-specific (SuperCollider.app) document management - ds
@@ -93,26 +97,25 @@
 * 2008-02-07 SCScrollView and SCScrollTopView no longer fire their action when scrolled programatically - sw
 
 
-///////////////////////////// SuperCollider v3.1.1, released 2007-11-16 /////////////////////////////
-
-// user-visible changes in preparing SC v3.1.1, bugfix release of v3.1:
-
-// BUGFIXES:
-
+SuperCollider v3.1.1, released 2007-11-16
+=========================================
+Bugfixes:
+---------
 * 2007-11-09 re-organized the main help file - rb
 * 2007-11-14 fix for .asStringPrec, to avoid crashes on intel systems for large precision values - jt
 
-// OTHER ADDITIONS / IMPROVEMENTS:
-
+Other additions/improvements:
+-----------------------------
 * 2007-11-14 added a preprocessor to the interpreter - jr
 * 2007-11-14 added a startup message specifying how to get help - rk
 
-///////////////////////////// SuperCollider v3.1, released 2007-10-31 /////////////////////////////
 
-// user-visible changes since 2007-09-22 (for first point release):
+SuperCollider v3.1, released 2007-10-31
+=======================================
+(changes below are since 2007-09-22, for first ever point release)
 
-// HEADLINES:
-
+Headlines:
+----------
 * 2007-09-27 SparseArray class added - jr
 * 2007-09-28 Help.gui added - ds
 * 2007-10-01 FFT and IFFT rewrite - now using more efficient libs, also allows user to vary the overlap and the window type, also large-sized FFTs are possible - ds
@@ -126,8 +129,8 @@
 * 2007-10-xx various new help files added, and many help files improved - various
 * 2007-10-26 changed Cmd-? to Cmd-D in lieu of the default help menu shortcut in Leopard. Also changed Cmd-Shift-K (clear post window) to Cmd-Shift-C to avoid accidental recompiles. - rb 
 
-// OTHER ADDITIONS / IMPROVEMENTS:
-
+Other additions/improvements:
+---------------------------
 * 2007-09-22 change log added, much rejoicing
 * 2007-09-25 added packagesource.sh script to produce source code bundles - ds
 * 2007-09-28 IdentityDictionary:doesNotUnderstand now warns if adding a pseudo-method which overrides a real method - jr
@@ -142,8 +145,8 @@
 * 2007-10-30 improvements to cocoa Gui, including SCUserView improved to support layering and own draw hook - jt, sciss
 * 2007-10-31 refactored Pbrown, added Pgbrown - jr
  
-// BUGFIXES:
-
+Bugfixes:
+---------
 * 2007-09-29 takekos bug fixed (obscure issue with garbage collection in arrays) - jm
 * 2007-10-01 fixed off by one bug in Dswitch and Dswitch1 that caused a server crash - jr
 * 2007-10-09 fixed deadlock and other problems in NSAttributedStringAdditions.m - rb
