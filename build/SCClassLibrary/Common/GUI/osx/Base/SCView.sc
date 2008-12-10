@@ -621,8 +621,8 @@ SCSlider : SCSliderBase
 		this.setPropertyWithAction(\value, val);
 	}	
 	
-	increment { ^this.valueAction = this.value + (this.step ?? { this.pixelStep }) }
-	decrement { ^this.valueAction = this.value - (this.step ?? { this.pixelStep }) }
+	increment { |zoom=1| ^this.valueAction = this.value + (max(this.step, this.pixelStep) * zoom) }
+	decrement { |zoom=1| ^this.valueAction = this.value - (max(this.step, this.pixelStep) * zoom) }
 	
 	pixelStep { 
 		var bounds = this.bounds; 
@@ -722,27 +722,29 @@ SCRangeSlider : SCSliderBase {
 		^super.properties ++ #[\lo, \hi]
 	}
 	
-	increment { 
-		var inc, val; 
-		inc = this.bounds.width.reciprocal;
-		val = this.hi + inc;
-		if (val > 1, {
-			inc = 1 - this.hi;
-			val = 1;
-		});
-		this.activeLo_(this.lo + inc);
-		this.activeHi_(val);
+	pixelStep { 
+		var bounds = this.bounds; 
+		^(bounds.width.max(bounds.height)).reciprocal
 	}
-	decrement { 
-		var inc, val;
-		inc = this.bounds.width.reciprocal;
-		val = this.lo - inc;
-		if (val < 0, {
-			inc = this.lo;
-			val = 0;
-		});
-		this.activeLo_(val);
-		this.activeHi_(this.hi - inc);
+
+	increment { |zoom=1|
+		var inc = (max(this.step, this.pixelStep) * zoom); 
+		var newHi = (this.hi + inc);
+		if (newHi > 1) { 
+			inc = 1 - this.hi; 
+			newHi = 1; 
+		};
+		this.lo_(this.lo + inc).activeHi_(newHi);
+	}
+	
+	decrement { |zoom=1|
+		var inc = (max(this.step, this.pixelStep) * zoom); 
+		var newLo = (this.lo - inc);
+		if (newLo < 0) { 
+			inc =  this.lo; 
+			newLo = 0; 
+		};
+		this.lo_(newLo).activeHi_(this.hi - inc);
 	}
 
 	defaultKeyDownAction { arg char, modifiers, unicode;
