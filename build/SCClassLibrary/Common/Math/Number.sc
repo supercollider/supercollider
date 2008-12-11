@@ -33,9 +33,9 @@ Number : Magnitude {
 
 	// iteration
 	for { arg endValue, function; 
-		var i;
+		var i, j = 0;
 		i = this;
-		while ({ i <= endValue }, { function.value(i); i = i + 1; });
+		while ({ i <= endValue }, { function.value(i, j); i = i + 1; j = j + 1 });
 	}
 	forBy { arg endValue, stepValue, function; 
 		var i, j=0;
