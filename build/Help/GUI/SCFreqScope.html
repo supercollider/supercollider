@@ -132,7 +132,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">w.front;</p>
 <p class="p7">)</p>
 <p class="p17"><br></p>
-<p class="p7">{ <span class="s5">SinOsc</span>.ar([500, 1000], 0, 0.25) }.play(s);<span class="Apple-converted-space">  </span><span class="s7">// start two sine waves</span></p>
+<p class="p7">{ <span class="s5">SinOsc</span>.ar([500, 1000], 0, 0.25).mean.dup }.play(s);<span class="Apple-converted-space">  </span><span class="s7">// start two sine waves</span></p>
 <p class="p17"><br></p>
 <p class="p16"><span class="s3">f.freqMode_(1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// change to log scale so we can see them</p>
 <p class="p16"><span class="s3">f.inBus_(1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// look at bus 1</p>
@@ -144,7 +144,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16">// Now press command-period.<span class="Apple-converted-space">  </span>The scope is still running.</p>
 <p class="p17"><br></p>
 <p class="p17"><br></p>
-<p class="p7">{ <span class="s5">SinOsc</span>.ar([500, 1000], 0, 0.25) }.play(s);<span class="Apple-converted-space">  </span><span class="s7">// start sines again</span></p>
+<p class="p7">{ <span class="s5">SinOsc</span>.ar([500, 1000], 0, 0.25).mean.dup }.play(s);<span class="Apple-converted-space">  </span><span class="s7">// start sines again</span></p>
 <p class="p17"><br></p>
 <p class="p17"><br></p>
 <p class="p16">// Close window and scope is killed.</p>
