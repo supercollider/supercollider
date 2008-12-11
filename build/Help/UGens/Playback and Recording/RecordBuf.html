@@ -5,22 +5,24 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {color: #001fee}
-span.s2 {color: #0000bf}
-span.s3 {color: #000000}
-span.s4 {color: #606060}
-span.s5 {color: #007300}
-span.s6 {color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #0024ed}
+span.s2 {color: #0013fe}
+span.s3 {color: #0000bf}
+span.s4 {color: #000000}
+span.s5 {color: #606060}
+span.s6 {color: #007300}
+span.s7 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -29,7 +31,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Records input into a <a href="../../ServerArchitecture/Buffer.html"><span class="s1">Buffer</span></a>.</p>
 <p class="p4"><br></p>
-<p class="p3"><b>RecordBuf.ar(inputArray, bufnum, offset, recLevel, preLevel, run, loop, trigger)</b></p>
+<p class="p3"><b>RecordBuf.ar(inputArray, bufnum, offset, recLevel, preLevel, run, loop, trigger, doneAction)</b></p>
 <p class="p4"><br></p>
 <p class="p3">If recLevel is 1.0 and preLevel is 0.0 then the new input overwrites the old data.</p>
 <p class="p3">If they are both 1.0 then the new data is added to the existing data. (Any other settings</p>
@@ -44,52 +46,53 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><b>loop</b><span class="Apple-converted-space">  </span>- If zero then don't loop, otherwise do.<span class="Apple-converted-space">  </span>This is modulate-able. Default is 1.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>trigger</b> - a trigger causes a jump to the <b>offset</b> position in the Buffer.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A trigger occurs when a signal changes from &lt;= 0 to &gt; 0.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><b>doneAction</b> - an integer representing an action to be executed when the env is finished playing. This can be used to free the enclosing synth, etc. See <a href="../Synth control/Envelopes/UGen-doneActions.html"><span class="s2">UGen-doneActions</span></a> for more detail.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5">// Execute the following in order</p>
-<p class="p6">(</p>
-<p class="p5">// allocate a Buffer</p>
-<p class="p6">s = <span class="s2">Server</span>.local;</p>
-<p class="p5"><span class="s3">b = </span><span class="s2">Buffer</span><span class="s3">.alloc(s, 44100 * 4.0, 1); </span>// a four second 1 channel Buffer</p>
-<p class="p6">)</p>
-<p class="p7"><br></p>
-<p class="p5">// record for four seconds</p>
-<p class="p6">(</p>
-<p class="p6"><span class="s2">SynthDef</span>(<span class="s4">"help-RecordBuf"</span>,{ <span class="s2">arg</span> out=0,bufnum=0;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> formant;</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>// XLine will free the Synth when done</p>
-<p class="p6"><span class="Apple-tab-span">	</span>formant = <span class="s2">Formant</span>.ar(<span class="s2">XLine</span>.kr(400,1000, 4, doneAction: 2), 2000, 800, 0.125);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">RecordBuf</span>.ar(formant, bufnum);</p>
-<p class="p6">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b]);</p>
-<p class="p6">)</p>
-<p class="p7"><br></p>
-<p class="p5">// play it back</p>
-<p class="p6">(</p>
-<p class="p8"><span class="s2">SynthDef</span><span class="s3">(</span>"help-RecordBuf play"<span class="s3">,{ </span><span class="s2">arg</span><span class="s3"> out=0,bufnum=0;</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> playbuf;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>playbuf = <span class="s2">PlayBuf</span>.ar(1,bufnum);</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s2">FreeSelfWhenDone</span><span class="s3">.kr(playbuf); </span>// frees the synth when the PlayBuf is finished</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, playbuf);</p>
-<p class="p6">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b]);</p>
-<p class="p6">)</p>
-<p class="p7"><br></p>
-<p class="p5">// overdub</p>
-<p class="p6">(</p>
-<p class="p8"><span class="s2">SynthDef</span><span class="s3">(</span>"help-RecordBuf overdub"<span class="s3">,{ </span><span class="s2">arg</span><span class="s3"> out=0,bufnum=0;</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> formant;</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span>// XLine will free the Synth when done</p>
-<p class="p6"><span class="Apple-tab-span">	</span>formant = <span class="s2">Formant</span>.ar(<span class="s2">XLine</span>.kr(200, 1000, 4, doneAction: 2), 2000, 800, 0.125);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">RecordBuf</span>.ar(formant, bufnum, 0, 0.5, 0.5); <span class="s6">// mixes equally with existing data</span></p>
-<p class="p6">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b]);</p>
-<p class="p6">)</p>
-<p class="p7"><br></p>
-<p class="p5">// play back the overdubbed version</p>
-<p class="p6"><span class="s2">Synth</span>.new(<span class="s4">"help-RecordBuf play"</span>, [<span class="s5">\out</span>, 0, <span class="s5">\bufnum</span>, b], s);</p>
-<p class="p7"><br></p>
-<p class="p5">// write the contents of the buffer to a file</p>
-<p class="p6">b.write(<span class="s4">"~/RecordBuf-test.aiff"</span>.standardizePath, sampleFormat: <span class="s5">'int16'</span>);</p>
-<p class="p7"><br></p>
-<p class="p6">b.close; b.free; <span class="s6">// cleanup</span></p>
+<p class="p6">// Execute the following in order</p>
+<p class="p7">(</p>
+<p class="p6">// allocate a Buffer</p>
+<p class="p7">s = <span class="s3">Server</span>.local;</p>
+<p class="p6"><span class="s4">b = </span><span class="s3">Buffer</span><span class="s4">.alloc(s, 44100 * 4.0, 1); </span>// a four second 1 channel Buffer</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p6">// record for four seconds</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s3">SynthDef</span>(<span class="s5">"help-RecordBuf"</span>,{ <span class="s3">arg</span> out=0,bufnum=0;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> formant;</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>// XLine will free the Synth when done</p>
+<p class="p7"><span class="Apple-tab-span">	</span>formant = <span class="s3">Formant</span>.ar(<span class="s3">XLine</span>.kr(400,1000, 4, doneAction: 2), 2000, 800, 0.125);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">RecordBuf</span>.ar(formant, bufnum);</p>
+<p class="p7">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p6">// play it back</p>
+<p class="p7">(</p>
+<p class="p9"><span class="s3">SynthDef</span><span class="s4">(</span>"help-RecordBuf play"<span class="s4">,{ </span><span class="s3">arg</span><span class="s4"> out=0,bufnum=0;</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> playbuf;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>playbuf = <span class="s3">PlayBuf</span>.ar(1,bufnum);</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s3">FreeSelfWhenDone</span><span class="s4">.kr(playbuf); </span>// frees the synth when the PlayBuf is finished</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, playbuf);</p>
+<p class="p7">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p6">// overdub</p>
+<p class="p7">(</p>
+<p class="p9"><span class="s3">SynthDef</span><span class="s4">(</span>"help-RecordBuf overdub"<span class="s4">,{ </span><span class="s3">arg</span><span class="s4"> out=0,bufnum=0;</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> formant;</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>// XLine will free the Synth when done</p>
+<p class="p7"><span class="Apple-tab-span">	</span>formant = <span class="s3">Formant</span>.ar(<span class="s3">XLine</span>.kr(200, 1000, 4, doneAction: 2), 2000, 800, 0.125);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">RecordBuf</span>.ar(formant, bufnum, 0, 0.5, 0.5); <span class="s7">// mixes equally with existing data</span></p>
+<p class="p7">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b]);</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p6">// play back the overdubbed version</p>
+<p class="p7"><span class="s3">Synth</span>.new(<span class="s5">"help-RecordBuf play"</span>, [<span class="s6">\out</span>, 0, <span class="s6">\bufnum</span>, b], s);</p>
+<p class="p8"><br></p>
+<p class="p6">// write the contents of the buffer to a file</p>
+<p class="p7">b.write(<span class="s5">"~/RecordBuf-test.aiff"</span>.standardizePath, sampleFormat: <span class="s6">'int16'</span>);</p>
+<p class="p8"><br></p>
+<p class="p7">b.close; b.free; <span class="s7">// cleanup</span></p>
 <p class="p2"><br></p>
 <p class="p3">Note again that the number of channels must be fixed for the SynthDef, it cannot vary depending on which buffer you use.</p>
 <p class="p2"><br></p>
