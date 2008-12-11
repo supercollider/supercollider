@@ -1,4 +1,4 @@
-Pen {
+SCPen {
 classvar fnt, fillColor, strokeColor;
 	*font_ { arg font;
 		fnt = font;
