@@ -1231,7 +1231,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 	//printf("RecordBuf_next\n");
 	GET_BUF
 	CHECK_BUF
-	SETUP_IN(7)
+	SETUP_IN(8)
 
 	float recLevel = ZIN0(2);
 	float preLevel = ZIN0(3);
@@ -1405,7 +1405,10 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 				}
 			}
 		}
-		if (writepos >= (int32)bufSamples) unit->mDone = true;
+		if (writepos >= (int32)bufSamples){
+			unit->mDone = true;
+			DoneAction(IN0(7), unit);
+		}
 	}
 	unit->m_prevtrig = trig;
 	unit->m_writepos = writepos;
@@ -1418,7 +1421,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 	// printf("RecordBuf_next_10\n");
 	GET_BUF
 	CHECK_BUF
-	SETUP_IN(7)
+	SETUP_IN(8)
 
 	float run      = ZIN0(4);
 	int32 loop     = (int32)ZIN0(5);
@@ -1549,7 +1552,10 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 				}
 			}
 		}
-		if (writepos >= (int32)bufSamples) unit->mDone = true;
+		if (writepos >= (int32)bufSamples){
+			unit->mDone = true;
+			DoneAction(IN0(7), unit);
+		}
 	}
 	unit->m_prevtrig = trig;
 	unit->m_writepos = writepos;

@@ -93,16 +93,16 @@ BufWr : UGen {
 
 RecordBuf : UGen {	
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, 
-			run=1.0, loop=1.0, trigger=1.0;
+			run=1.0, loop=1.0, trigger=1.0, doneAction=0;
 		^this.multiNewList(
-			['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger ] 
+			['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger, doneAction ] 
 			++ inputArray.asArray
 		)
 	}
 	*kr { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, 
-			run=1.0, loop=1.0, trigger=1.0;
+			run=1.0, loop=1.0, trigger=1.0, doneAction=0;
 		^this.multiNewList(
-			['control', bufnum, offset, recLevel, preLevel, run, loop, trigger ] 
+			['control', bufnum, offset, recLevel, preLevel, run, loop, trigger, doneAction ] 
 			++ inputArray.asArray
 		)
 	}
