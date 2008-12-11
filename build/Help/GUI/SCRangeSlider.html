@@ -20,23 +20,25 @@ p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #476c1d}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #516a24}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #61699c}
-span.s3 {color: #4357c0}
-span.s4 {color: #6b718a}
-span.s5 {color: #5d67a2}
-span.s6 {color: #3e54c5}
-span.s7 {color: #6f717b}
+span.s2 {color: #636a99}
+span.s3 {color: #485abb}
+span.s4 {color: #6c7188}
+span.s5 {color: #5f689f}
+span.s6 {color: #4357c0}
+span.s7 {color: #6f717a}
 span.s8 {color: #0000bf}
 span.s9 {color: #007300}
 span.s10 {color: #000000}
-span.s11 {font: 14.0px Helvetica}
-span.s12 {color: #6f7181}
-span.s13 {font: 9.0px Monaco}
-span.s14 {color: #606060}
+span.s11 {font: 11.0px Monaco}
+span.s12 {font: 11.0px Monaco; color: #0018b8}
+span.s13 {font: 14.0px Helvetica}
+span.s14 {color: #6f7180}
+span.s15 {font: 9.0px Monaco}
+span.s16 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -107,16 +109,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience method which performs both the <b>lo_</b><span class="Apple-converted-space">  </span>and <b>hi_</b> setters. Does the <b>action</b> of the slider.</p>
 <p class="p5"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>increment</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>increment (zoom)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>decrement (zoom)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Increments both slider values, lo and hi, by 1/bounds.width, unless the hight value is out of bounds. Does the action of the slider.</p>
-<p class="p5"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>decrement</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Decrements both slider values, lo and hi, by 1/bounds.width, unless the lo value is out of bounds. Does the action of the slider.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods called by pressing the arrow keys. These methods increment or decrement both the the slider values (<b>hi</b> and <b>lo</b>) by <span class="s11">(max(</span><span class="s12">this</span><span class="s11">.step, </span><span class="s12">this</span><span class="s11">.pixelStep) * zoom)</span>. This means that by default increment<span class="Apple-converted-space">  </span>and decrement change the value by <b>pixelStep</b> (<b>step</b> is nil by default). You can set <b>step</b> to quantize the slider values. If you call these methods from your code, you can also change the resolution of the values with the <b>zoom</b> factor. This will not effect how the keys work, since they will always use a zoom factor of 1. Performs the action of the slider.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>zoom </b>- Defaults to 1.<span class="Apple-converted-space"> </span></p>
 <p class="p5"><br></p>
 <p class="p12"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
-<p class="p6"><span class="s11"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s13"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction (char, modifiers, unicode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -134,7 +134,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s12">SCView</span></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s14">SCView</span></a>.<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
 <p class="p14"><span class="s10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s10">, </span>\visible<span class="s10">, </span>\enabled<span class="s10">, </span>\canFocus<span class="s10">, </span>\resize<span class="s10">, </span>\background<span class="s10">, </span>\minWidth<span class="s10">, </span>\maxWidth<span class="s10">, </span>\minHeight<span class="s10">, </span>\maxHeight<span class="s10">, </span>\knobColor<span class="s10">, </span>\step<span class="s10">, </span>\lo<span class="s10">, </span>\hi<span class="s10"> ]</span></p>
@@ -146,7 +146,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultCanReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to drop a drag in this object. By default, SCSlider will respond only to drags<span class="Apple-converted-space">  </span>where<span class="Apple-converted-space">  </span>the drag contains a <a href="../Geometry/Point.html"><span class="s2">Point</span></a>. <span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Sets <b>lo</b> and <b>hi</b><span class="Apple-converted-space">  </span>repectively using the <a href="../Geometry/Point.html"><span class="s2">Point</span></a>(currentDrag.x@currentDrag.y). Does <b>not</b> perform the action. <span class="Apple-converted-space"> </span></p>
@@ -196,7 +196,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.play;</p>
 <p class="p15"><br></p>
-<p class="p11"><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>(<span class="s14">"SC2DSlider"</span>, <span class="s8">Rect</span>(100,<span class="s8">SCWindow</span>.screenBounds.height-400, 400 ,50));</p>
+<p class="p11"><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>(<span class="s16">"SC2DSlider"</span>, <span class="s8">Rect</span>(100,<span class="s8">SCWindow</span>.screenBounds.height-400, 400 ,50));</p>
 <p class="p11"><span class="Apple-tab-span">	</span>t = <span class="s8">SCRangeSlider</span>(w, <span class="s8">Rect</span>(10, 10, 380, 30))</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.lo_(0.4)</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.hi_(0.6)</p>
