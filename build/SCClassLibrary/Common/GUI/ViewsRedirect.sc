@@ -22,8 +22,15 @@ Slider : ViewRedirecter { *key { ^\slider }}
 //Knob : SCSlider {
 //}
 
+//Font : ViewRedirecter { *key { ^\font }}
+Pen : ViewRedirecter { *key { ^\pen }}
+Speech : ViewRedirecter { *key { ^\speech }}
+
+
+Stethoscope : ViewRedirecter { *key { ^\stethoscope }}
 ScopeView : ViewRedirecter { *key { ^\scopeView }}
-FreqScopeView : ViewRedirecter { *key { ^\freqScopeView }}
+FreqScopeView : ViewRedirecter { *key { ^\freqScopeView }} // redirects to SCFreqScope
+FreqScope : ViewRedirecter { *key { ^\freqScope }} // redirects to SCFreqScopeWindow
 QuartzComposerView : ViewRedirecter { *key { ^\quartzComposerView }}
 Dialog : ViewRedirecter { *key { ^\dialog }}
 View : ViewRedirecter { *key { ^\view }}

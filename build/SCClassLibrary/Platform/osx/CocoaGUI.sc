@@ -27,10 +27,10 @@ CocoaGUI {
 	
 	///////////////// Common -> GUI /////////////////
 
-	*freqScope { ^FreqScope }
+	*freqScope { ^SCFreqScopeWindow }
 	*freqScopeView { ^SCFreqScope }
 	*scopeView { ^SCScope }
-	*stethoscope { ^Stethoscope }
+	*stethoscope { ^SCStethoscope }
 
 	///////////////// Common -> GUI -> Base /////////////////
 
@@ -66,7 +66,7 @@ CocoaGUI {
 	*menuItem { ^CocoaMenuItem }
 	
 	*font { ^Font }
-	*pen { ^Pen }
+	*pen { ^SCPen }
 			
 	///////////////// Common -> Audio /////////////////
 
@@ -78,7 +78,7 @@ CocoaGUI {
 	///////////////// Common -> OSX /////////////////
 
 	*dialog { ^CocoaDialog }
-	*speech { ^Speech }
+	*speech { ^SCSpeech }
 
 	///////////////// extras /////////////////
 			
