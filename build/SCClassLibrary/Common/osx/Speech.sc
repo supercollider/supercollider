@@ -80,7 +80,7 @@ SpeechChannel{
 
 }
 
-Speech {
+SCSpeech {
 	classvar <>wordActions, <>doneActions, <>wordAction, <>doneAction, <channels;
 	classvar <>initialized = false, <stopMethods;
 

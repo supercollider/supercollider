@@ -1,4 +1,4 @@
-Stethoscope {
+SCStethoscope {
 	classvar ugenScopes;
 	var <server, <numChannels, <rate,  <index;
 	var <bufsize, buffer, <window, synth;

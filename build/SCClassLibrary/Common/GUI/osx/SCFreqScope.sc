@@ -199,7 +199,7 @@ SCFreqScope : SCScope {
 	
 }
 
-FreqScope {
+SCFreqScopeWindow { //was FreqScope
 	classvar <scopeOpen;
 	var <scope, <window;
 
