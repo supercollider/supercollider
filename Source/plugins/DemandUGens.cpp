@@ -873,7 +873,7 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 			
 	}
 			float zgate = ZIN0(d_env_gate);
-			if(zgate >= 0.5f) { 
+			if(zgate >= 1.f) { 
 				unit->m_running = true; 
 			} else if (zgate > 0.f) {
 				unit->m_running = true;
@@ -1135,7 +1135,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 			ZXP(out) = level;
 			float zgate = ZXP(gate);
 			
-			if(zgate >= 0.5f) { 
+			if(zgate >= 1.f) { 
 				unit->m_running = true; 
 			} else if (zgate > 0.f) {
 				unit->m_running = true;
@@ -1167,7 +1167,7 @@ void DemandEnvGen_Ctor(DemandEnvGen *unit)
 	unit->m_release = false;
 	unit->m_prevreset = 0.f;
 	unit->m_phase = 0.f;
-	unit->m_running = ZIN0(d_env_gate);
+	unit->m_running = ZIN0(d_env_gate) > 0.f;
 	
 	if(INRATE(d_env_gate) == calc_FullRate) {
 			SETCALC(DemandEnvGen_next_a);
