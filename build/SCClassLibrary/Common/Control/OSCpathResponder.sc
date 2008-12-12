@@ -11,7 +11,7 @@ OSCpathDispatcher : OSCMultiResponder {
 	classvar <>cmdPathIndices;
 
 	var <>pathResponders;
-	var <>maxPathSize;
+	var <>maxPathSize = 0;
 	
 	*new {  arg addr, cmdName, action, pathSize;
 		^super.new(addr, cmdName, action).init(pathSize);
@@ -49,7 +49,7 @@ OSCpathDispatcher : OSCMultiResponder {
 	removeChild { arg responder;
 		 pathResponders.remove(responder);
 		 if(responder.path.size == maxPathSize) {
-		 	maxPathSize = pathResponders.maxValue({ |resp| resp.path.size });
+		 	maxPathSize = pathResponders.maxValue({ |resp| resp.path.size }) ? 0;
 		 };
 		 if(this.isEmpty) { this.remove };
 	}
