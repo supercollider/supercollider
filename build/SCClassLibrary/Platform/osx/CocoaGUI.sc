@@ -78,7 +78,7 @@ CocoaGUI {
 	///////////////// Common -> OSX /////////////////
 
 	*dialog { ^CocoaDialog }
-	*speech { ^SCSpeech }
+	*speech { ^Speech }
 
 	///////////////// extras /////////////////
 			
