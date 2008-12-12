@@ -1,7 +1,5 @@
 
-BEQSuite : UGen {
-	*categories {^#["UGens>Filters"] }
-	}
+BEQSuite : Filter {}
 
 BLowPass : BEQSuite {
 	*ar { arg in, freq = 1200.0, rq = 1.0, mul = 1.0, add = 0.0;
