@@ -41,7 +41,7 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>Stethoscope<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a wrapper for a window with an SCScope an control interface</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
+<p class="p1"><span class="s1"><b>SCStethoscope<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a wrapper for a window with an SCScope an control interface</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
@@ -49,7 +49,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><span class="s4"><b>See also:</b> <a href="SCScope.html"><span class="s5">SCScope</span></a>, <a href="../ServerArchitecture/Server.html"><span class="s5">Server</span></a></span><span class="s2">, <a href="../ServerArchitecture/Bus.html"><span class="s6">Bus</span></a></span></p>
 <p class="p2"><br></p>
-<p class="p5"><b>Some Important Issues Regarding Stethoscope</b></p>
+<p class="p5"><b>Some Important Issues Regarding SCStethoscope</b></p>
 <p class="p2"><br></p>
 <p class="p1">the scope window can be controlled by the following keys:</p>
 <p class="p2"><br></p>
@@ -88,7 +88,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Server</span>.default = s = <span class="s8">Server</span>.internal</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.boot</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="s8">SinOsc</span>.ar([330,440], 0, 0.4)}.play;</p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Stethoscope<span class="s4">(s,2);</span></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>SCStethoscope<span class="s4">(s,2);</span></p>
 <p class="p6"><br></p>
 <p class="p5"><b>Creation by Message .scope</b></p>
 <p class="p2"><br></p>
@@ -130,7 +130,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Server</span>.default = s = <span class="s8">Server</span>.internal</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.boot</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{[<span class="s8">SinOsc</span>.ar.scope,<span class="s8">WhiteNoise</span>.ar(0.5).scope]*0.1}.scope(2);</p>
-<p class="p13"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">Stethoscope</span><span class="s4">.ugenScopes; </span>// returns the ugen scopes</p>
+<p class="p13"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">SCStethoscope</span><span class="s4">.ugenScopes; </span>// returns the ugen scopes</p>
 <p class="p6"><br></p>
 <p class="p15"><b>Accessing Instance and Class Variables</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
@@ -172,7 +172,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>server</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns the server of Stethoscope</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns the server of SCStethoscope</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><b>Controlling the Scope</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -208,7 +208,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*defaultServer</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Stethoscope's default server.<span class="Apple-converted-space"> </span><b> </b>Returns Server.internal</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>SCStethoscope's default server.<span class="Apple-converted-space"> </span><b> </b>Returns Server.internal</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*isValidServer (aServer)</b></p>
@@ -277,7 +277,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17"><br></p>
 <p class="p12">w = <span class="s8">SCWindow</span>.new(<span class="s11">"my own scope"</span>, <span class="s8">Rect</span>(20, 20, 400, 500));</p>
 <p class="p12">w.view.decorator = <span class="s8">FlowLayout</span>(w.view.bounds);</p>
-<p class="p12">c = <span class="s8">Stethoscope</span>.new(s, view:w.view);</p>
+<p class="p12">c = <span class="s8">SCStethoscope</span>.new(s, view:w.view);</p>
 <p class="p12">w.onClose = { c.free }; <span class="s12">// don't forget this</span></p>
 <p class="p12">w.front;</p>
 <p class="p17"><br></p>

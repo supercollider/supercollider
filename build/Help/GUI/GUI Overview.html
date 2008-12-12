@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff; min-height: 14.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bf0000; min-height: 14.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000; min-height: 14.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #3e4a88}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #453c33}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
+span.s1 {color: #0000ff}
+span.s2 {color: #000000}
+span.s3 {color: #0000bf}
+span.s4 {color: #606060}
+span.s5 {font: 10.0px Monaco; color: #bf0000}
+span.s6 {color: #bf0000}
+span.s7 {color: #32418f}
+span.s8 {color: #62623d}
+span.s9 {font: 10.0px Monaco; color: #3e4a88}
+span.s10 {font: 10.0px Monaco}
+span.s11 {color: #3e4a88}
+span.s12 {color: #5f5d42}
+span.s13 {text-decoration: underline}
+span.s14 {color: #007300}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>GUI Overview</b></p>
+<p class="p2"><br></p>
+<p class="p3">SuperCollider provides for the possibiltiy for using different gui kits, and also provides syntax for transparently writing kit and platform independent code. Two main classes control this mechnanism: the factory abstraction class,<span class="Apple-converted-space">  </span><a href="GUI.html"><span class="s1">GUI</span></a>, and the subclasses of<span class="Apple-converted-space">  </span><a href="ViewRedirecter.html"><span class="s1">ViewRedirecter</span></a><span class="s1">. </span>The default gui kit is cocoa.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p5"><b>Kits and Syntax</b></p>
+<p class="p6"><br></p>
+<p class="p3">Kit-dependant gui classes<span class="Apple-converted-space">  </span>usually have a prefix, fore example,<span class="Apple-converted-space">  </span>to make a window, the cocao kit uses SCWindow<span class="Apple-converted-space">  </span>or swing kit uses JSCWindow.<span class="Apple-converted-space">  </span>It is generally discouraged to directly use the kit-dependant classes directly. Instead,<span class="Apple-converted-space">  </span>there are basically two techniques for writing kit-independent code: using GUI and using<span class="Apple-converted-space">  </span>the subclasses of<span class="Apple-converted-space">  </span><a href="ViewRedirecter.html"><span class="s1">ViewRedirecter</span></a><span class="s1">.</span></p>
+<p class="p7"><br></p>
+<p class="p3">For a table of equvalent gui classes, see <a href="GUI Classes.html"><span class="s1">GUI Classes</span></a><span class="s1">.</span></p>
+<p class="p4"><br></p>
+<p class="p3">Using the <a href="GUI.html"><span class="s1">GUI</span></a> class directly, you call a <a href="GUI.html"><span class="s1">GUI</span></a> class method with the same name as the view class base name. <span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>w=</span><span class="s3">GUI</span><span class="s2">.window.new(</span><span class="s4">"Test Window"</span><span class="s2">).front; </span>// note you must call .new explicitly<span class="Apple-converted-space">  </span>with this method</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>w.postln </span>// w now caontains the class appropriate to the gui kit</p>
+<p class="p4"><br></p>
+<p class="p3">To simplify the syntax, you can use the subclasses of <a href="ViewRedirecter.html"><span class="s1">ViewRedirecter</span></a>, and<span class="Apple-converted-space">  </span>simply use the class name without any prefix. Behind the scenes, the following technique actually automatically redirects to the appropriate GUI class method.</p>
+<p class="p4"><span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>w=</span><span class="s3">Window</span><span class="s2">(</span><span class="s4">"Test Window"</span><span class="s2">).front; </span>// Window is a subclass of ViewRedirecter</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>w.postln </span>// w now caontains the class appropriate to the gui kit</p>
+<p class="p4"><br></p>
+<p class="p3">Depending on the curent GUI.scheme two examples above are equivalent to writing, for example:</p>
+<p class="p4"><br></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s3">SCWindow</span><span class="s2">(</span><span class="s4">"Test Window"</span><span class="s2">).front; </span>// cocoa version</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span>or</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>J</span><span class="s3">SCWindow</span><span class="s2">(</span><span class="s4">"Test Window"</span><span class="s2">).front; </span>// swing version</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p3">For information o switching gui kits, see the documentation for <a href="GUI.html"><span class="s1">GUI</span></a>.</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><b>Basic Usage: Windows, Containers and Decoraters</b></p>
+<p class="p6"><b></b><br></p>
+<p class="p3">The following documentation will use the concise<span class="Apple-converted-space">  </span><a href="ViewRedirecter.html"><span class="s1">ViewRedirecter</span></a><span class="Apple-converted-space">  </span>syntax mentioned above.</p>
+<p class="p3">For a complete list of gui classes<span class="Apple-converted-space">  </span>, see <a href="GUI Classes.html"><span class="s1">GUI Classes</span></a><span class="s1">.</span></p>
+<p class="p6"><b></b><br></p>
+<p class="p10">(</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s3">var</span> w, b;</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>// GUI.window returns the window class for the current kit</p>
+<p class="p11"><span class="Apple-tab-span">	</span>w = <span class="s3">Window</span>( <span class="s4">"my name is... panel"</span>, <span class="s3">Rect</span>( 128, 64, 340, 360 ));</p>
+<p class="p12"><br></p>
+<p class="p12"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s3">FlowLayout</span>( w.view.bounds ); <span class="s6">//comment this out for no decorator</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>w.view.background = <span class="s3">Color</span>( 0.6, 0.8, 0.8 );</p>
+<p class="p12"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>32.do({ <span class="s3">arg</span> i;</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// the same is true for all other widgets</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// ; here GUI.button returns the button class for the current kit</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s3">Button</span>( w, <span class="s3">Rect</span>( rrand( 20, 300 ), rrand( 20, 300 ), 75, 24 ));</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.states = [[ <span class="s4">"Start "</span> ++ i, <span class="s3">Color</span>.black, <span class="s3">Color</span>.rand ],</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>[ <span class="s4">"Stop "</span> ++ i, <span class="s3">Color</span>.white, <span class="s3">Color</span>.red ]];</p>
+<p class="p11"><span class="Apple-tab-span">	</span>});</p>
+<p class="p12"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10">)</p>
+<p class="p6"><br></p>
+<p class="p3">In the above example (Basic Usage), first a <a href="stubs/Window.html"><span class="s1">Window</span></a> was created. A <a href="stubs/Window.html"><span class="s1">Window</span></a> automatically has a container, an instance of <a href="stubs/CompositeView.html"><span class="s1">CompositeView</span></a> (actually a kit dependent subclass, topView or scrollTopView).<span class="Apple-converted-space">  </span>A container can have a <b>decorater</b>, which automatically places the contents in a predetermined order. In this case a <a href="FlowLayout.html"><span class="s1">FlowLayout</span></a>, which is the only one that currently exists. This is optional however. Try commenting out the decorator in the example above.</p>
+<p class="p6"><br></p>
+<p class="p3">Most gui objects or subclasses of <a href="stubs/View.html"><span class="s1">View</span></a>. All subclasses of View are created with the same beginning arguments, <b>parent </b>and <b>bounds</b>, for example, <a href="stubs/Slider.html"><span class="s1">Slider</span></a>(<b>parent</b>, <b>bounds</b>).</p>
+<p class="p4"><br></p>
+<p class="p3">The <b>parent</b> is a container view of some kind, and the <b>bounds</b> are and instance of <a href="../Geometry/Rect.html"><span class="s1">Rect</span></a> or a <a href="../Geometry/Point.html"><span class="s1">Point</span></a> (for width and height only). Using a Point is convenient if you are using a decorator for the postioning.</p>
+<p class="p6"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>(</p>
+<p class="p11"><span class="Apple-tab-span">	</span>w=<span class="s3">Window</span>.new.front;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s3">Slider</span>(w, <span class="s3">Rect</span> (50,50,250,20));</p>
+<p class="p11"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6"><br></p>
+<p class="p3">You can easily nest containers,<span class="Apple-converted-space">  </span>decorators and views to make complex layouts, and you can use colors to visually separate them:</p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>(</p>
+<p class="p10"><span class="Apple-tab-span">	</span>w=<span class="s3">Window</span>.new.front;</p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>v=CompositeView(w, Rect(5,5,190,390));</p>
+<p class="p10"><span class="Apple-tab-span">	</span>v.background= Color.rand;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>v.decorator=FlowLayout(v.bounds);</p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>y=CompositeView(w, Rect(205,5,190,390));</p>
+<p class="p10"><span class="Apple-tab-span">	</span>y.background= Color.rand;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>y.decorator=FlowLayout(y.bounds);</p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>14.do{</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Slider</span>(v, 180@20); // Points used, since the layout is handled by a decorator.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Slider</span>(y, 180@20);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p10"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p5"><b>Asynchronous GUI Techniques: Communicating with the sound server</b></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p5"><b>Helper Methods in GUI</b></p>
+<p class="p6"><br></p>
+<p class="p3"><b>*stringBounds( string, font )</b></p>
+<p class="p4"><br></p>
+<p class="p3">Returns a Rect object describing the bounds occupied by the given string if it was painted using the given font. Note that this method is asynchronous in SwingOSC, hence it is advised to use it inside a Routine. Example:</p>
+<p class="p4"><br></p>
+<p class="p10">(</p>
+<p class="p10">{</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="s7">var</span> text = <span class="s4">"Test"</span>, bounds, font, fonts, rect = <span class="s7">Rect</span>.new, total = <span class="s7">Rect</span>.new;</p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>fonts = <span class="s7">GUI</span>.font.availableFonts;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>w = <span class="s7">GUI</span>.window.new( <span class="s4">"String Bounds"</span>, resizable: <span class="s7">false</span> );</p>
+<p class="p10"><span class="Apple-tab-span">	</span>w.view.background = <span class="s7">Color</span>.blue;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>10.do({</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>font<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s7">GUI</span>.font.new( fonts.choose, exprand( 6, 36 ));</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bounds<span class="Apple-tab-span">	</span>= <span class="s7">GUI</span>.stringBounds( text, font );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rect.set( rect.right, rect.bottom, bounds.width + 4, bounds.height + 2 );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">GUI</span>.staticText.new( w, rect )</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_( font ).align_( <span class="s8">\center</span> ).string_( text ).background_( <span class="s7">Color</span>.white );</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>total<span class="Apple-tab-span">	</span>= total.union( rect );</p>
+<p class="p10"><span class="Apple-tab-span">	</span>});</p>
+<p class="p10"><span class="Apple-tab-span">	</span>w.bounds = total.moveTo( 200, 200 );</p>
+<p class="p10"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p10">}.fork( <span class="s7">AppClock</span> );</p>
+<p class="p10">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><b>Accessing "Plus-GUI"methods</b></p>
+<p class="p6"><br></p>
+<p class="p3">"Plus-GUI" methods are methods added to other classes such as <span class="s9">String</span> or <span class="s9">Server</span> that provide GUI functionality for those classes. These methods use the current GUI kit implementation as returned by <span class="s9">GUI</span><span class="s10">.current</span> .</p>
+<p class="p4"><br></p>
+<p class="p14">.inspect<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Examples for Inspectors:</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">Server</span>.default.inspect;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">Server</span>.inspect;</p>
+<p class="p4"><br></p>
+<p class="p14">.browse</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Examples for Browsers:</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s11">UGen</span><span class="s2">.browse;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// ClassBrowser</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">SynthDescLib</span>( <span class="s12">\myLib</span> ).read.browse;</p>
+<p class="p4"><br></p>
+<p class="p14">.makeWindow</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Examples for Server:</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( s.window.notNil, { s.window.close });</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.makeWindow;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.scope;</p>
+<p class="p4"><br></p>
+<p class="p14">.plot</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Examples for Plotting:</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see [<span class="s13">ArrayedCollection</span>], [<span class="s13">Buffer</span>], [<span class="s13">Env</span>], [<span class="s13">Function</span>], [<span class="s13">Signal</span>], [<span class="s13">SoundFile</span>], [<span class="s13">Wavetable</span>]</p>
+<p class="p4"><br></p>
+<p class="p14">.scope</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Examples for Scoping</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see [<span class="s13">Bus</span>], [<span class="s13">Function</span>], [<span class="s13">Server</span>], [<span class="s13">UGen</span>]</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p6"><br></p>
+<p class="p5"><b>Extending GUI Kits</b></p>
+<p class="p6"><br></p>
+<p class="p3">GUI Kits can be extended with custom classes by using their respective <span class="s9">.put</span> methods:</p>
+<p class="p4"><br></p>
+<p class="p16"><span class="s3">GUI</span>.get( <span class="s14">\cocoa</span> ).put( <span class="s14">\myText</span>, <span class="s3">SCStaticText</span> );</p>
+<p class="p16"><span class="s3">GUI</span>.get( <span class="s14">\swing</span> ).put( <span class="s14">\myText</span>, <span class="s3">JSCStaticText</span> );</p>
+<p class="p17"><br></p>
+<p class="p16"><span class="s3">GUI</span>.cocoa;</p>
+<p class="p16"><span class="s3">GUI</span>.swing;</p>
+<p class="p16">(</p>
+<p class="p16"><span class="Apple-tab-span">	</span>w = <span class="s3">GUI</span>.window.new;</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s3">GUI</span>.myText.new( w, w.view.bounds.insetBy( 20, 20 )).string_( <span class="s4">"schoko"</span> ).background_( <span class="s3">Color</span>.red );</p>
+<p class="p16"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p16">)</p>
+<p class="p17"><br></p>
+<p class="p3">If you intend to add extensions from within your own classes upon class library initialization time, the preferred way is to do this in the startup process:</p>
+<p class="p2"><br></p>
+<p class="p18">MyGUIExtension<span class="s2"> {</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span>*initClass {</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">StartUp</span>.add({</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> scheme;</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scheme = <span class="s3">GUI</span>.get( <span class="s14">\cocoa</span> );</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( scheme.notNil, { scheme.put( <span class="s14">\myText</span>, <span class="s3">SCStaticText</span> )});</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scheme = <span class="s3">GUI</span>.get( <span class="s14">\swing</span> );</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( scheme.notNil, { scheme.put( <span class="s14">\myText</span>, <span class="s3">JSCStaticText</span> )});</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p16"><span class="Apple-tab-span">	</span>}</p>
+<p class="p16">}</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5"><b>Additional GUI-related Documents</b></p>
+<p class="p4"><br></p>
+<p class="p3">[<span class="s13">resize</span>]</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p3"><span class="s13">        </span></p>
+<p class="p19">last mod: 28-Jan-08</p>
+</body>
+</html>
