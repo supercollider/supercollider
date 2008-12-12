@@ -24,8 +24,6 @@ Slider : ViewRedirecter { *key { ^\slider }}
 
 //Font : ViewRedirecter { *key { ^\font }}
 Pen : ViewRedirecter { *key { ^\pen }}
-Speech : ViewRedirecter { *key { ^\speech }}
-
 
 Stethoscope : ViewRedirecter { *key { ^\stethoscope }}
 ScopeView : ViewRedirecter { *key { ^\scopeView }}
