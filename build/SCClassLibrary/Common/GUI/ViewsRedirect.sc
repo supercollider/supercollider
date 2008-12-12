@@ -2,6 +2,7 @@ ViewRedirecter { // Abstract class
 	*implClass { ^GUI.scheme.perform(this.key) }
 	*new { arg parent, bounds; ^this.implClass.new(parent, bounds) }
 	*browse { ^this.implClass.browse }
+	*doesNotUnderstand{|selector ... args|	^this.implClass.perform(selector, *args)  }
 }
 
 
