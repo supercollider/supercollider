@@ -242,8 +242,6 @@ Crucial {
 		a.focus;
 	}
 	*initLibraryItems {
-		Class.initClassTree(Library);
-
 		Library.put(\menuItems,'introspection','ClassBrowser',{
 			Object.gui
 		});
