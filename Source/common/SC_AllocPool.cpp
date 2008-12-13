@@ -173,7 +173,7 @@ void AllocPool::Free(void *inPtr)
 	if (!chunk->PrevInUse()) /* consolidate backward */
 	{
 		size_t prevSize = chunk->PrevSize();
-		chunk = chunk->ChunkAtOffset(-prevSize);
+		chunk = chunk->ChunkAtOffset(0L-prevSize);
 		size += prevSize;
 		UnlinkFree(chunk);
 	}
