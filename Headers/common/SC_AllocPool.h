@@ -64,14 +64,14 @@ class AllocChunk : public Link<AllocChunk>
 	size_t PrevSize() 
 		{ return mPrevSize & kSizeBits; }
 		
-	AllocChunkPtr ChunkAtOffset(signed long inSize) 
+	AllocChunkPtr ChunkAtOffset(long inSize) 
 		{ return AllocChunkPtr((char*)this + inSize); }
 		
 	AllocChunkPtr NextChunk() 
 		{ return ChunkAtOffset(Size()); }
 		
 	AllocChunkPtr PrevChunk() 
-		{ return ChunkAtOffset(0L-PrevSize()); }
+		{ return ChunkAtOffset(-(long)PrevSize()); }
 		
 	bool InUse() 
 		{ return (bool)(mSize & kChunkInUse); }
