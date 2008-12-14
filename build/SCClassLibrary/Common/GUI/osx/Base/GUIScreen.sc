@@ -35,6 +35,11 @@ SCWindow {
 	asView { ^view }
 	add { arg aView; view.add(aView) }
 	
+	addFlowLayout { |margin, gap| 
+		view.decorator_( FlowLayout( view.bounds, margin, gap ) );
+		^this.view.decorator;
+		 }
+	
 	*closeAll {
 		var list;
 		list = allWindows.copy;

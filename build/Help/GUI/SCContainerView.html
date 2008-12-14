@@ -11,23 +11,25 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #5f658a; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #606688; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
-p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #0000ff; min-height: 14.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p13 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #666c94}
+span.s2 {color: #676d92}
 span.s3 {color: #000000}
-span.s4 {color: #5461ad}
+span.s4 {color: #5763a9}
 span.s5 {text-decoration: underline}
-span.s6 {text-decoration: underline ; color: #5f658a}
-span.s7 {color: #485abb}
-span.s8 {color: #3850cb}
-span.s9 {font: 14.0px Helvetica}
+span.s6 {text-decoration: underline ; color: #606688}
+span.s7 {color: #4c5db6}
+span.s8 {color: #0000ff}
+span.s9 {color: #3e54c5}
+span.s10 {font: 14.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -51,7 +53,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An automatic layout management for a container. Currently the only one existing is <a href="FlowLayout.html"><span class="s2">FlowLayout</span></a>.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(note: Crucial Library also has a useful layout tool called <a href="../Libraries/crucial/Gui/GridLayout.html"><span class="s7">GridLayout</span></a><span class="s7">.)</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><br></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>addFlowLayout(margin, gap)</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience utility which sets <b>decorator</b> to FlowLayout and returns the decorator. See FlowLayout for examples.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin</b> - An instance of <a href="../Geometry/Point.html"><span class="s8">Point</span></a></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap</b> - An instance of <a href="../Geometry/Point.html"><span class="s8">Point</span></a></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>children</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An array containing all the views (children) contained in the the container</p>
@@ -59,9 +67,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><b><span class="Apple-tab-span">	</span>relativeOrigin</b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>relativeOrigin_ (bool)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under<span class="Apple-converted-space">  </span><a href="SCCompositeView.html"><span class="s8">SCCompositeView</span></a>.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>. Defaults to false, but some subclasses override this with true.</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under<span class="Apple-converted-space">  </span><a href="SCCompositeView.html"><span class="s9">SCCompositeView</span></a>.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>. Defaults to false, but some subclasses override this with true.</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b>Adding and Removing Subviews</b></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>add (child)</b></p>
@@ -73,7 +81,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Removes all children from the view</p>
 <p class="p7"><br></p>
 <p class="p8"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
-<p class="p10"><span class="s9"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
 <p class="p7"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>init (argParent, argBounds)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>

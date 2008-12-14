@@ -323,6 +323,11 @@ SCContainerView : SCView { // abstract class
 		relativeOrigin = bool;
 		this.setProperty(\relativeOrigin, bool);
 	}	
+
+	addFlowLayout { |margin, gap| 
+		this.decorator_( FlowLayout( this.bounds, margin, gap ) );
+		^this.decorator;
+		}
 	
 	decorator_ {|decor|
 		if(relativeOrigin, {
