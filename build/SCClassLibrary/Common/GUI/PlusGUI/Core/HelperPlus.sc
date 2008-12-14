@@ -8,7 +8,7 @@
 	template=tfile.readAllString;
 	tfile.close;
 	
-	classesArray = classesArray ?  ViewRedirecter.allSubclasses; 
+	classesArray = classesArray ?  ViewRedirect.allSubclasses; 
 	
 	classesArray.do {arg class;
 		var file, name, string, links="";
