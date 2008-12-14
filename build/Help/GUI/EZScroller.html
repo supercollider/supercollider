@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.27">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -30,12 +30,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">EZScroller is used JITLib guis like NodeProxyEditor, ProxyMixer,<span class="Apple-converted-space"> </span></p>
 <p class="p1">TdefAllGui, and PdefAllGui.</p>
-<p class="p2"><br></p>
+<p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5">w = <span class="s3">GUI</span>.window.new(<span class="s4">"EZScroller test"</span>, <span class="s3">Rect</span>(100, 400,200, 100)).front;<span class="Apple-tab-span">	</span></p>
+<p class="p5">w = <span class="s3">Window</span>.new(<span class="s4">"EZScroller test"</span>, <span class="s3">Rect</span>(100, 400,200, 100)).front;<span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>// 5 displays</p>
-<p class="p5">v = { <span class="s3">|i|</span> <span class="s3">GUI</span>.dragBoth.new(w, <span class="s3">Rect</span>(0, i * 20, 100, 20)) }.dup(5);</p>
+<p class="p5">v = { <span class="s3">|i|</span> <span class="s3">DragBoth</span>.new(w, <span class="s3">Rect</span>(0, i * 20, 100, 20)) }.dup(5);</p>
 <p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>// 12 items</p>
 <p class="p5">a = (1..12);</p>
 <p class="p4"><br></p>
