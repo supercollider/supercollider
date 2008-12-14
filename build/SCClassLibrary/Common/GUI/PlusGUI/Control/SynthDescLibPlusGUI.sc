@@ -96,7 +96,8 @@
 		
 		w.view.decorator.nextLine;
 		
-		synthDescLibListView.items = SynthDescLib.all.keys.asArray.sort;
+		synthDescLibListView.items_(SynthDescLib.all.keys.asArray.sort)
+			.value_(synthDescLibListView.items.indexOf(name) ? 0);
 		synthDescLibListView.action = {
 			synthDescListView.value = 0;
 			updateViews.value;
