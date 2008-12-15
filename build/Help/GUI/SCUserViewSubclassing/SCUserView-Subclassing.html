@@ -16,23 +16,24 @@ p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 span.s1 {color: #000000}
-span.s2 {text-decoration: underline}
-span.s3 {color: #1638e6}
-span.s4 {text-decoration: underline ; color: #1534d7}
-span.s5 {color: #0c2eee}
+span.s2 {text-decoration: underline ; color: #0000ff}
+span.s3 {text-decoration: underline}
+span.s4 {color: #2040df}
+span.s5 {text-decoration: underline ; color: #1e3bd0}
+span.s6 {color: #1638e6}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>SCUserView Subclassing Tutorial</b></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s1">See also: <a href="../GUI Overview.html"><span class="s2">GUI Overview</span></a>, <a href="../SCUserView.html"><span class="s2">SCUserView</span></a>, <a href="../SCView.html"><span class="s2">SCView</span></a>, <a href="../../Extending and Customizing SC/Writing-Classes.html"><span class="s2">Writing Classes</span></a><span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="s1">See also: <a href="../GUI-Overview.html"><span class="s2">GUI-Overview</span></a>, <a href="../SCUserView.html"><span class="s3">SCUserView</span></a>, <a href="../SCView.html"><span class="s3">SCView</span></a>, <a href="../../Extending and Customizing SC/Writing-Classes.html"><span class="s3">Writing Classes</span></a><span class="Apple-converted-space"> </span></span></p>
 <p class="p4"><br></p>
-<p class="p5">The following is a short tutorial on how to make a custom gui widget by subclassing SCUserView. It is assumed that you know how to write classes in SuperCollider. See <a href="../../Extending and Customizing SC/Writing-Classes.html"><span class="s3">Writing Classes</span></a>.</p>
+<p class="p5">The following is a short tutorial on how to make a custom gui widget by subclassing SCUserView. It is assumed that you know how to write classes in SuperCollider. See <a href="../../Extending and Customizing SC/Writing-Classes.html"><span class="s4">Writing Classes</span></a>.</p>
 <p class="p4"><br></p>
-<p class="p5">You also need to open the template class file, <a href="SCUserViewTutorial.sc"><span class="s4">SCUserViewTutorial.sc</span></a> , first to follow this tutorial.</p>
+<p class="p5">You also need to open the template class file, <a href="SCUserViewTutorial.sc"><span class="s5">SCUserViewTutorial.sc</span></a> , first to follow this tutorial.</p>
 <p class="p4"><br></p>
-<p class="p5">You can use the contents of<span class="Apple-converted-space">  </span><a href="SCUserViewTutorial.sc"><span class="s4">SCUserViewTutorial.sc</span></a><span class="Apple-converted-space">  </span>as template for writing your own subclass. Simply copy the file to your SC extensions folder and rename the file<span class="Apple-converted-space">  </span>and class, <b>MyWidget</b>, to whatever you want to call your class. Then adjust the class methods to fit your design.</p>
+<p class="p5">You can use the contents of<span class="Apple-converted-space">  </span><a href="SCUserViewTutorial.sc"><span class="s5">SCUserViewTutorial.sc</span></a><span class="Apple-converted-space">  </span>as a template for writing your own subclass. Simply copy the file to your SC extensions folder and rename the file<span class="Apple-converted-space">  </span>and class, <b>MyWidget</b>, to whatever you want to call your class. Then adjust the class methods to fit your design.</p>
 <p class="p4"><br></p>
 <p class="p5">The following narrates the code in SCUserViewTutorial.sc:</p>
 <p class="p4"><br></p>
@@ -57,7 +58,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>4. Define a drawing function for SCPen</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is where you will define how the view appears.<span class="Apple-converted-space">  </span>How you draw will depend on how you set relativeOrigin, and typically will be dependent on instance variables which you defined such as <b>value</b>, <b>states</b> (for buttons), <b>x</b> and <b>y</b> (for mouse clicks), or anything else you might need for your design. See <a href="../SCPen.html"><span class="s5">SCPen</span></a> for drwaing methods.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is where you will define how the view appears.<span class="Apple-converted-space">  </span>How you draw will depend on how you set relativeOrigin, and typically will be dependent on instance variables which you defined such as <b>value</b>, <b>states</b> (for buttons), <b>x</b> and <b>y</b> (for mouse clicks), or anything else you might need for your design. See <a href="../SCPen.html"><span class="s6">SCPen</span></a> for drwaing methods.</p>
 <p class="p8"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>5. Define typical widget methods</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -65,15 +66,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>6. Override mouseActions</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>SCView defines <b>mouseDown</b>, <b>mouseMove</b> and <b>mouseUp</b>, as methods, and the corresponding user definable methods, <b>mouseDownAction</b>, <b>mouseMoveAction</b> and <b>mouseUpAction</b>. You should overrider <b>mouseDown</b>, <b>mouseMove</b> or <b>mouseUp</b> as needed, and <b><i>make sure</i></b><i> your method calls the corresponding action as well</i>, so your user can later add user actions, just like in the template. Also see the<span class="Apple-converted-space">  </span><a href="../SCView.html"><span class="s5">SCView</span></a> help file.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>SCView defines <b>mouseDown</b>, <b>mouseMove</b> and <b>mouseUp</b>, as methods, and the corresponding user definable methods, <b>mouseDownAction</b>, <b>mouseMoveAction</b> and <b>mouseUpAction</b>. You should overrider <b>mouseDown</b>, <b>mouseMove</b> or <b>mouseUp</b> as needed, and <b><i>make sure</i></b><i> your method calls the corresponding action as well</i>, so your user can later add user actions, just like in the template. Also see the<span class="Apple-converted-space">  </span><a href="../SCView.html"><span class="s6">SCView</span></a> help file.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>7. Define default key actions</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Here you define your default key responses in <b>defaultKeyDownAction</b> or <b>defaultKeyUpAction</b>.<span class="Apple-converted-space">  </span>Differently than with mouse actions,<span class="Apple-converted-space">  </span>you do not call the keyAction in your method, since this mechanism is handled by <a href="../SCView.html"><span class="s5">SCView</span></a>. If the user defines a <b>keyDownAction</b>, or <b>keyUpAction</b>, SCView makes it override your default action. See the template, and see the<span class="Apple-converted-space">  </span><a href="../SCView.html"><span class="s5">SCView</span></a> help file.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Here you define your default key responses in <b>defaultKeyDownAction</b> or <b>defaultKeyUpAction</b>.<span class="Apple-converted-space">  </span>Differently than with mouse actions,<span class="Apple-converted-space">  </span>you do not call the keyAction in your method, since this mechanism is handled by <a href="../SCView.html"><span class="s6">SCView</span></a>. If the user defines a <b>keyDownAction</b>, or <b>keyUpAction</b>, SCView makes it override your default action. See the template, and see the<span class="Apple-converted-space">  </span><a href="../SCView.html"><span class="s6">SCView</span></a> help file.</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>8. Define default key actions</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Here you define your drag responses in <b>defaultGetDrag</b>, <b>defaultCanReceiveDrag</b>, and , <b>defaultReceiveDrag</b>.<span class="Apple-converted-space">  </span>Differently than with mouse actions, you do not call the dragAction in your method, since this mechanism is handled by <a href="../SCView.html"><span class="s5">SCView</span></a>. If your user defines a <b>beginDragAction, canReceiveDragHandler, </b>or <b>receiveDragHandler,<span class="Apple-converted-space"> </span></b> SCView makes it override your default action. See the template, and see the<span class="Apple-converted-space">  </span><a href="../SCView.html"><span class="s5">SCView</span></a> help file.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Here you define your drag responses in <b>defaultGetDrag</b>, <b>defaultCanReceiveDrag</b>, and , <b>defaultReceiveDrag</b>.<span class="Apple-converted-space">  </span>Differently than with mouse actions, you do not call the dragAction in your method, since this mechanism is handled by <a href="../SCView.html"><span class="s6">SCView</span></a>. If your user defines a <b>beginDragAction, canReceiveDragHandler, </b>or <b>receiveDragHandler,<span class="Apple-converted-space"> </span></b> SCView makes it override your default action. See the template, and see the<span class="Apple-converted-space">  </span><a href="../SCView.html"><span class="s6">SCView</span></a> help file.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6">That's it. Now recompile, only to find your first syntax errors.<span class="Apple-converted-space">  </span>;-)</p>
