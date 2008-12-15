@@ -24,9 +24,9 @@ Headlines:
 * 2008-11-29 Pitch ugen can now also track the pitch of control-rate signals - mb
 * 2008-12-03 added PV_Div ugen for complex division - ds
 * 2008-12-07 added PV_Conj ugen for complex conjugate - ds
-* 2008-12-15 new ViewRedirect for easier cross-platform gui syntax. e.g. Window now redirects to SCWindow or JWindow. ds & jostM
-* 2008-12-15 revised and updated all SC Gui documentation. New gui introduction. New SCUserView subclassing tutorial. - jostM
-
+* 2008-12-15 new ViewRedirect for easier cross-platform gui syntax. e.g. Window now redirects to SCWindow or JWindow. ds & jm
+* 2008-12-15 revised and updated all SC Gui documentation. New gui introduction. New SCUserView subclassing tutorial. - jm
+* 2008-12-15 added methods to SCFreqScope for "special" SynthDef, and for visualising frequency responses - ds
 
 
 Bugfixes:
