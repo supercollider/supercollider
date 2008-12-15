@@ -3175,7 +3175,6 @@ void Ringz_Ctor(Ringz* unit)
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_decayTime = 0.f;
-	int tmp = unit->mRate->mFilterLoops;   
 	PUSH_LOOPVALS
 	Ringz_next(unit, 1);
 	POP_LOOPVALS
