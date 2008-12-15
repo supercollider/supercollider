@@ -11,8 +11,9 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
 span.s3 {color: #000000}
@@ -32,22 +33,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>rq</b> - the reciprocal of Q.<span class="Apple-converted-space">  </span>bandwidth / cutoffFreq.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3">The B equalization suite is based on the Second Order Section (<b>SOS</b>) biquad UGen.</p>
-<p class="p4"><b></b><br></p>
+<p class="p4"><br></p>
 <p class="p3">note: Biquad coefficient calculations imply certain amount of CPU overhead. These plugin UGens contain optimizations such that the coefficients get updated only when there has been a change to one of</p>
 <p class="p3">the filter's parameters. This can cause spikes in CPU performance and should be considered when using several of these units.</p>
 <p class="p4"><br></p>
 <p class="p3">see also:<span class="s2"> </span><b>SOS, BLowPass4, BHiPass, BHiPass4, BLowShelf, BHiShelf, BBandPass, BBandStop, BAllPass.</b></p>
-<p class="p2"><br></p>
-<p class="p5">s.boot;</p>
-<p class="p5">(</p>
-<p class="p5">z = {</p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>BLowPass<span class="s3">.ar(</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">AudioIn</span>.ar([1,2]),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">MouseX</span>.kr(10,20000,<span class="s5">\exponential</span>), <span class="s6">// cutoff freq.</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">MouseY</span>.kr(0.0, 1.0, <span class="s5">\linear</span>), <span class="s6">// rq</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5); <span class="s6">// mul</span></p>
-<p class="p5">}.play)</p>
-<p class="p5">z.release;</p>
-<p class="p2"><br></p>
+<p class="p5"><br></p>
+<p class="p6">s.boot;</p>
+<p class="p6">(</p>
+<p class="p6">z = {</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>BLowPass<span class="s3">.ar(</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">SoundIn</span>.ar([0,1]),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">MouseX</span>.kr(10,20000,<span class="s5">\exponential</span>), <span class="s6">// cutoff freq.</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">MouseY</span>.kr(0.0, 1.0, <span class="s5">\linear</span>), <span class="s6">// rq</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.5); <span class="s6">// mul</span></p>
+<p class="p6">}.play)</p>
+<p class="p6">z.release;</p>
+<p class="p5"><br></p>
 </body>
 </html>
