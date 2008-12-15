@@ -183,6 +183,7 @@ void Unit_ZeroOutputs(struct Unit *inUnit, int inNumSamples);
 ////////////////////////////////////////////////////////////////////////
 
 void SendDone(struct ReplyAddress *inReply, const char *inCommandName);
+void SendDoneWithIntValue(struct ReplyAddress *inReply, const char *inCommandName, int value);
 void SendFailure(struct ReplyAddress *inReply, const char *inCommandName, const char *errString);
 void ReportLateness(struct ReplyAddress *inReply, float32 seconds);
 void DumpReplyAddress(struct ReplyAddress *inReplyAddress);
