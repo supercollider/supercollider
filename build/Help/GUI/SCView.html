@@ -30,26 +30,26 @@ p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monac
 p.p21 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
 p.p22 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #6e7186}
-span.s3 {color: #696f8e}
+span.s2 {color: #6f7185}
+span.s3 {color: #6a708c}
 span.s4 {color: #6f7178}
-span.s5 {color: #2040df}
+span.s5 {color: #2946d8}
 span.s6 {font: 14.0px Helvetica}
-span.s7 {color: #656b96}
-span.s8 {color: #6a708c}
+span.s7 {color: #666c94}
+span.s8 {color: #6b718a}
 span.s9 {font: 9.0px Monaco}
-span.s10 {color: #6c7188}
-span.s11 {color: #5461ad}
+span.s10 {color: #6d7187}
+span.s11 {color: #5763a9}
 span.s12 {color: #0000bf}
 span.s13 {color: #606060}
 span.s14 {color: #000000}
 span.s15 {color: #007300}
-span.s16 {color: #686e90}
-span.s17 {color: #314bd1}
-span.s18 {color: #0020f6}
+span.s16 {color: #696f8e}
+span.s17 {color: #3850cb}
+span.s18 {color: #0c2eee}
 span.s19 {font: 12.0px Helvetica; color: #000000}
-span.s20 {font: 12.0px Helvetica}
-span.s21 {color: #182fa6}
+span.s20 {color: #0018b8}
+span.s21 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -330,7 +330,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p9"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
 <p class="p10"><br></p>
-<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. <span class="Apple-converted-space">  </span>For a Tutorial on how to subclass and <a href="SCUserView.html"><span class="s18">SCUserView</span></a> to make your own custom GUI Widgets, see <a href="SCUserViewSubclassing/SCUserView-Subclassing.html"><span class="s18">SCUserView-Subclassing</span></a></p>
+<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. <span class="Apple-converted-space">  </span>For a Tutorial on how to subclass and <a href="SCUserView.html"><span class="s18">SCUserView</span></a> to make your own custom GUI Widgets, see <a href="SCUserViewSubclassing/SCUserView-Subclassing.html"><span class="s18">SCUserView-Subclassing</span></a><span class="s18">. </span>The tutorial is a good template for any View subclass, and clearly explains the most important method overrides.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p1">If you want to subclass a GUI class, then it is important to understand the viewClass mechanism (see below).<span class="Apple-converted-space">  </span>You must set the viewCass if you want to use the primitive of the parent class.</p>
 <p class="p10"><br></p>
@@ -348,11 +348,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>This is because view init methods typically contain this:</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">this</span>.prInit(parent.asView, argBounds.asRect,<span class="s12">this</span>.class.viewClass)</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s20">this</span>.prInit(parent.asView, argBounds.asRect,<span class="s20">this</span>.class.viewClass)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*paletteExample (parent, bounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Normally not used directly. Used by the SCInterfaceBuilder and determines if and how this class is implemented when dragged to the construction view. You can use cmd-shift-N to evoke the interface builder. All views on the Pallette override this with their own appropriate method.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Normally not used directly. Used by the SCInterfaceBuilder and determines if and how this class is implemented when dragged to the construction view. You can use cmd-shift-N to evoke the interface builder. All views on the Pallette override this with their own appropriate method.<span class="Apple-converted-space">  </span>Override this to determine how your subclass is displayed in the interface builder.</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>init (argParent, argBounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
@@ -364,9 +364,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Simply returns the view. Used for comptabliltiy with SCWindow.asView. If you want to guarantee that a view's parent will recieve a view, then write, e.g.:</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p17"><span class="s20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>{<span class="s21">arg</span> w;</p>
-<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s21">SCSlider</span>(w.asView,<span class="s21">Rect</span>(10,10,150,20)</p>
-<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p18"><span class="s21"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>{<span class="s12">arg</span> w;</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">SCSlider</span>(w.asView,<span class="s12">Rect</span>(10,10,150,20)</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>getParents</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -393,7 +393,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. Most subclasses override or supplement this, getting their property list from their primitives.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
 <p class="p22"><span class="s14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s14">, </span>\visible<span class="s14">, </span>\enabled<span class="s14">, </span>\canFocus<span class="s14">, </span>\resize<span class="s14">, </span>\background<span class="s14">, </span>\minWidth<span class="s14">, </span>\maxWidth<span class="s14">, </span>\minHeight<span class="s14">, </span>\maxHeight<span class="s14">, </span>\knobColor<span class="s14">, </span>\step<span class="s14">, </span>\thumbSize<span class="s14"> \]</span></p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>getProperty (key, value)</b></p>
@@ -422,6 +422,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. <span class="Apple-converted-space"> </span></p>
 <p class="p7"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyUpAction</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>These are the methods to subclass to define defualt key actions in a subclass. The action function evaluated by default on a key action. Many views override these methods, defining their own appropreate default action. Setting the <b>keyDownAction </b>or<b> keyUpAction</b> will<span class="Apple-converted-space">  </span>bypass these defaults. <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyTyped_(arg1)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyTyped</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
@@ -431,12 +436,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyUp (char, modifiers, unicode, keycode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by a primitive.<span class="Apple-converted-space">  </span>Evaluates the <b>globalKeyDownAction</b> (<b>globalKeyUpAction</b>)<span class="Apple-converted-space">  </span>and calls the <b>handleKeyDownBubbling</b><span class="Apple-converted-space">  </span>(<b>handleKeyUpBubbling</b>) method.<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyUpAction</b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The action function evaluated by default on a key action. Many views override these methods, defining their own appropreate default action. Setting the <b>keyDownAction </b>or<b> keyUpAction</b> will<span class="Apple-converted-space">  </span>bypass these defaults.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>handleKeyDownBubbling (view, char, modifiers, unicode, keycode)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>handleKeyUpBubbling (view, char, modifiers, unicode, keycode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -459,11 +459,26 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseMove (x, y, modifiers)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseOver (x, y)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by the primitive.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>These are the methods to override in your subclass<b>. </b>If you override these, remember to call <b>mouseDownAction</b>, <b>mouseUpAction</b>, <b>mousMoveAction</b>, or <b>mouseOverAction</b> in your method so that users can still set addidtional custom mouse actions.<span class="Apple-converted-space">  </span>These are called by the primitive.<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b>Subclassing and Internal Methods: Drag and Drop Actions</b></p>
 <p class="p10"><br></p>
 <p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1">The next three methods are the ones you will most likely override<span class="Apple-converted-space">  </span>in your<span class="Apple-converted-space">  </span>custom View subclass</p>
+<p class="p2"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Override this in your subclass. The default method for determining the content of a drag. Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. called by <b>beginDrag</b>.<span class="Apple-converted-space"> </span></p>
+<p class="p7"><b></b><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>defaultCanReceiveDrag</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Override this in your subclass. The default method for determining under which condidtions a view will recieve a drag. Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. Called by <b>canReceiveDrag.</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>defaultReceiveDrag</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Override this in your subclass. The default method for determining what to do with a recieved . Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. Called by <b>receiveDrag.</b></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*importDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -481,13 +496,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Called by the primitive. Calls <b>canReceiveDragHandler.</b></p>
 <p class="p4"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>defaultCanReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method for determining under which condidtions a view will recieve a drag. Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. Called by <b>canReceiveDrag.</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method for determining the content of a drag. Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. called by <b>beginDrag</b>.</p>
 <p class="p4"><br></p>
 </body>
 </html>

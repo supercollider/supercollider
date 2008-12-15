@@ -3,10 +3,10 @@
 
 MyWidget : SCUserView {
 
-	// (1) Setup instance vars appropriate to your widget
+	// (1) Setup instance vars appropriate to your widget. Make sure to define value.
 	var <>step, <>value=0, <>leftColor, <>rightColor, <>thumbWidth=7;		  
 	
-	// (2) define the viewClass to SCUserView
+	// (2) Set the viewClass to SCUserView
 	*viewClass { ^SCUserView } // this ensures that SCUserView's primitive is called 
 	
 	
@@ -84,7 +84,6 @@ MyWidget : SCUserView {
 		
 	}
 	
-	
 	// (7) define default key actions
 	// make sure to return "this", if successful, and nil if not successful
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
@@ -95,7 +94,6 @@ MyWidget : SCUserView {
 		
 		^nil		// bubble if it's an invalid key
 	}
-	
 	
 	// (8) define drag and drop
 	defaultGetDrag {^value} // what to drag
