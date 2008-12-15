@@ -343,9 +343,10 @@ void PinkNoise_Ctor(PinkNoise* unit)
 		dice[i] = newrand;
 	}	
 	unit->mTotal = total;
-
-	ZOUT0(0) = total;
+	
 	RPUT
+	
+	PinkNoise_next(unit, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
