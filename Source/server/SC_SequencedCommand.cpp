@@ -135,6 +135,11 @@ void SC_SequencedCommand::SendDone(const char *inCommandName)
 	::SendDone(&mReplyAddress, inCommandName);
 };
 
+void SC_SequencedCommand::SendDoneWithIntValue(const char *inCommandName, int value)
+{
+	::SendDoneWithIntValue(&mReplyAddress, inCommandName, value);
+};
+
 void SC_SequencedCommand::CallEveryStage()
 {
 	switch (mNextStage) {
@@ -320,7 +325,7 @@ bool BufAllocCmd::Stage3()
 void BufAllocCmd::Stage4()
 {
 	free(mFreeData);
-	SendDone("/b_alloc");
+	SendDoneWithIntValue("/b_alloc", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -386,7 +391,7 @@ bool BufGenCmd::Stage3()
 void BufGenCmd::Stage4()
 {
 	free(mFreeData);
-	SendDone("/b_gen");
+	SendDoneWithIntValue("/b_gen", mBufIndex);
 }
 
 
@@ -439,7 +444,7 @@ bool BufFreeCmd::Stage3()
 void BufFreeCmd::Stage4()
 {
 	free(mFreeData);
-	SendDone("/b_free");
+	SendDoneWithIntValue("/b_free", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -480,7 +485,7 @@ bool BufZeroCmd::Stage3()
 
 void BufZeroCmd::Stage4()
 {
-	SendDone("/b_zero");
+	SendDoneWithIntValue("/b_zero", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -580,7 +585,7 @@ bool BufAllocReadCmd::Stage3()
 void BufAllocReadCmd::Stage4()
 {
 	free(mFreeData);
-	SendDone("/b_allocRead");
+	SendDoneWithIntValue("/b_allocRead", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -692,7 +697,7 @@ bool BufReadCmd::Stage3()
 
 void BufReadCmd::Stage4()
 {
-	SendDone("/b_read");
+	SendDoneWithIntValue("/b_read", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -856,7 +861,7 @@ bool BufAllocReadChannelCmd::Stage3()
 void BufAllocReadChannelCmd::Stage4()
 {
 	free(mFreeData);
-	SendDone("/b_allocReadChannel");
+	SendDoneWithIntValue("/b_allocReadChannel", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -984,7 +989,7 @@ bool BufReadChannelCmd::Stage3()
 
 void BufReadChannelCmd::Stage4()
 {
-	SendDone("/b_readChannel");
+	SendDoneWithIntValue("/b_readChannel", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1077,7 +1082,7 @@ bool BufWriteCmd::Stage3()
 
 void BufWriteCmd::Stage4()
 {
-	SendDone("/b_write");
+	SendDoneWithIntValue("/b_write", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1120,7 +1125,7 @@ bool BufCloseCmd::Stage3()
 
 void BufCloseCmd::Stage4()
 {
-	SendDone("/b_close");
+	SendDoneWithIntValue("/b_close", mBufIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////

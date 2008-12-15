@@ -69,6 +69,8 @@ public:
 	virtual void Stage4();	// non real time
 	
 	void SendDone(const char *inCommandName);
+	void SendDoneWithIntValue(const char *inCommandName, int value);
+	
 	
 protected:
 	int mNextStage;

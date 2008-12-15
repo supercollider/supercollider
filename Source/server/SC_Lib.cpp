@@ -41,6 +41,19 @@ void SendDone(ReplyAddress *inReply, const char *inCommandName)
 	SendReply(inReply, packet.data(), packet.size());
 };
 
+void SendDoneWithIntValue(ReplyAddress *inReply, const char *inCommandName, int value)
+{
+	small_scpacket packet;
+	packet.adds("/done");
+	packet.maketags(3);
+	packet.addtag(',');
+	packet.addtag('s');
+	packet.adds(inCommandName);
+	packet.addtag('i');
+	packet.addi(value);	
+	SendReply(inReply, packet.data(), packet.size());
+};
+
 void SendFailure(ReplyAddress *inReply, const char *inCommandName, const char *errString)
 {
 	small_scpacket packet;
