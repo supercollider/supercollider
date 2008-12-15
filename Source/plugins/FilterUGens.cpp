@@ -23,6 +23,16 @@
 
 #define PI 3.1415926535898f
 
+#define PUSH_LOOPVALS \
+int tmp_floops = unit->mRate->mFilterLoops; \
+int tmp_fremain = unit->mRate->mFilterRemain; \
+unit->mRate->mFilterLoops = 0; \
+unit->mRate->mFilterRemain = 1;
+
+#define POP_LOOPVALS \
+unit->mRate->mFilterLoops = tmp_floops; \
+unit->mRate->mFilterRemain = tmp_fremain;
+
 static InterfaceTable *ft;
 
 struct Ramp : public Unit
@@ -3165,7 +3175,10 @@ void Ringz_Ctor(Ringz* unit)
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_decayTime = 0.f;
+	int tmp = unit->mRate->mFilterLoops;   
+	PUSH_LOOPVALS
 	Ringz_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
