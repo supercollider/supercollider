@@ -42,9 +42,15 @@
 #include "QuickTime/Movies.h"
 #import "HTMLRenderer.h"
 #import "MyDocument.h"
+#import "SCImage.h"
 
 extern pthread_mutex_t gLangMutex;
 extern bool compiledOK;
+
+// SCImage support
+extern PyrSymbol		*s_scimage; // class symbol
+extern PyrObject*		newPyrSCImage(VMGlobals* g); // class creation func
+
 void SyntaxColorize(NSTextView* textView);
 
 @implementation SCCocoaTextViewResponder
@@ -1178,6 +1184,20 @@ id SCQuartzComposerView::getNSObjectForSCObject(PyrSlot *scobject, int *returnEr
 		err = errNone;
 		returnErr = &err;
 		return structure;	
+	} else if(isKindOfSlot(scobject, s_scimage->u.classobj)) { // it's an SCImage : )
+		SCImage *scimage = (SCImage *)scobject->uo->slots[0].uptr;
+		if(scimage) {
+			if([scimage isAccelerated]) 
+				return [scimage ciimage];
+			else 
+				return [scimage nsimage];
+		}
+		else {
+			post("SCQuartzComposerView: invalid SCImage as input port !");
+			err = errWrongType;
+			returnErr = &err;
+			return NULL;
+		}
 	} else {
 		err = errWrongType; // it's something else...
 		returnErr = &err;
@@ -1357,9 +1377,28 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 		}
 
 	}
-	//		else if([type isEqualToString:QCPortTypeImage]) { // not supported
-	//
-	//		}
+	else if([type isEqualToString:QCPortTypeImage]) { // SCImage
+		NSImage *nsimage = (NSImage*)nsObject;
+		if(!nsimage) 
+			post("SCQuartzComposerView: bad return value as QCPortTypeImage");
+		
+		SCImage *scimage = [[SCImage alloc]initWithNSImage:nsimage];
+		if(scimage) {
+			VMGlobals *g		= gMainVMGlobals;
+			PyrObject *object	= newPyrSCImage(g); // should be garbage collected
+			if(object) {
+				PyrSlot		*slots	= object->slots;
+				SetObject(slot, object);
+				SetPtr(slots + 0, scimage);
+				SetFloat(slots + 1, (float)[scimage width]);
+				SetFloat(slots + 2, (float)[scimage height]);
+				return errNone;
+			}
+		}
+		else {
+			post("SCQuartzComposerView: failed NSImage to SCImage conversion !");
+		}
+	}
 	return errWrongType; // it's something else	
 
 		
