@@ -204,5 +204,13 @@ Integer : SimpleNumber {
 	}
 
 	pidRunning { _PidRunning; ^this.primitiveFailed }	
+	
+	factorial {
+		var	product = 1.0;
+		if(this <= 1) { ^1 } {
+			this.do { |x| product = product * (x+1) };
+			^product
+		}
+	}
 }
 
