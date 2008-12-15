@@ -1,5 +1,5 @@
 // How to subclass SCUserView to make custom GUI interfaces
-// For many purposes you can use this as a template, and simply adjust the methods
+// For many purposes you can use this as a template, and simply adjust the methods. -  by jostM
 
 MyWidget : SCUserView {
 
@@ -59,27 +59,33 @@ MyWidget : SCUserView {
 	
 	
 	// (6) override mouseActions
-	mouseDown{arg x, y, modifiers, buttonNumber, clickCount;
-		
+	mouseDown{ arg x, y, modifiers, buttonNumber, clickCount;
+		var newVal;
 		// this allows for user defined mouseDownAction
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount); 
 
 		// set the value and do the action
 		(modifiers == 256).if{ // restrict to no modifier
-			this.valueAction_( (x).linlin(this.bounds.left,this.bounds.left+this.bounds.width,0,1)); 
+		
+			newVal= x.linlin(this.bounds.left,this.bounds.left+this.bounds.width,0,1); 
 			// translates the mouse position in pixels to a relative value between 0 and 1
+			
+			if (newVal != value) {this.valueAction_(newVal)}; // only do something if the value changed
 		};
 	}
 	
-	mouseMove{arg x, y, modifiers, buttonNumber, clickCount;
-	
+	mouseMove{ arg x, y, modifiers, buttonNumber, clickCount;
+		var newVal;  
 		// this allows for user defined mouseMoveAction
 		mouseMoveAction.value(this, x, y, modifiers, buttonNumber, clickCount);
 		
 		// set the value and do the action
 		(modifiers == 256).if{ // restrict to no modifier
-			this.valueAction_( (x).linlin(this.bounds.left,this.bounds.left+this.bounds.width,0,1)); 
+		
+			newVal= x.linlin(this.bounds.left,this.bounds.left+this.bounds.width,0,1); 
 			// translates the mouse position in pixels to a relative value between 0 and 1
+			
+			if (newVal != value) {this.valueAction_(newVal)}; // only do something if the value changed
 		};
 		
 	}
