@@ -1,10 +1,10 @@
 // How to subclass SCUserView to make custom GUI interfaces
-// For many purposes you can use this as a template, and simply adjust the methods. -  by jostM
+// For many purposes you can use this as a template, and simply adjust the methods
 
 MyWidget : SCUserView {
 
 	// (1) Setup instance vars appropriate to your widget. Make sure to define value.
-	var <>step, <>value=0, <>leftColor, <>rightColor, <>thumbWidth=7;		  
+	var <>step, <value=0, <>leftColor, <>rightColor, <>thumbWidth=7;		  
 	
 	// (2) Set the viewClass to SCUserView
 	*viewClass { ^SCUserView } // this ensures that SCUserView's primitive is called 
@@ -43,11 +43,14 @@ MyWidget : SCUserView {
 		
 	// (5) define typical widget methods  (only those you need or adjust as needed)
 	valueAction_{ arg val; // most widgets have this
-		value=val;
+		this.value=val;
 		this.doAction;
+	}
+	value_{ |val|  	 // in many widgets, you can change the 
+					 // value and refresh the view , but not do the action.
+		value=val;
 		this.refresh;
 	}
-	
 			// these are like in SCSlider
 	increment { |zoom=1| ^this.valueAction = this.value + (max(this.step, this.pixelStep) * zoom) }
 	decrement { |zoom=1| ^this.valueAction = this.value - (max(this.step, this.pixelStep) * zoom) }
