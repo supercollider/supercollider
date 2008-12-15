@@ -425,7 +425,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyUpAction</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>These are the methods to subclass to define defualt key actions in a subclass. The action function evaluated by default on a key action. Many views override these methods, defining their own appropreate default action. Setting the <b>keyDownAction </b>or<b> keyUpAction</b> will<span class="Apple-converted-space">  </span>bypass these defaults. <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods to override</b> to define defualt key actions in a subclass. The action function evaluated by default on a key action. Many views override these methods, defining their own appropreate default action. Setting the <b>keyDownAction </b>or<b> keyUpAction</b> will<span class="Apple-converted-space">  </span>bypass these defaults. <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyTyped_(arg1)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyTyped</b></p>
@@ -459,7 +459,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseMove (x, y, modifiers)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseOver (x, y)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>These are the methods to override in your subclass<b>. </b>If you override these, remember to call <b>mouseDownAction</b>, <b>mouseUpAction</b>, <b>mousMoveAction</b>, or <b>mouseOverAction</b> in your method so that users can still set addidtional custom mouse actions.<span class="Apple-converted-space">  </span>These are called by the primitive.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods to override</b> in your subclass<b>. </b>If you override these, remember to call <b>mouseDownAction</b>, <b>mouseUpAction</b>, <b>mousMoveAction</b>, or <b>mouseOverAction</b> in your method so that users can still set addidtional custom mouse actions.<span class="Apple-converted-space">  </span>These are called by the primitive.<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b>Subclassing and Internal Methods: Drag and Drop Actions</b></p>
 <p class="p10"><br></p>
@@ -469,20 +469,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Override this in your subclass. The default method for determining the content of a drag. Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. called by <b>beginDrag</b>.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Override this in your subclass</b>. The default method for determining the content of a drag. Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. called by <b>beginDrag</b>.<span class="Apple-converted-space"> </span></p>
 <p class="p7"><b></b><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultCanReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Override this in your subclass. The default method for determining under which condidtions a view will recieve a drag. Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. Called by <b>canReceiveDrag.</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Override this in your subclass</b>. The default method for determining under which condidtions a view will recieve a drag. Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. Called by <b>canReceiveDrag.</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Override this in your subclass. The default method for determining what to do with a recieved . Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. Called by <b>receiveDrag.</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Override this in your subclass</b>. The default method for determining what to do with a recieved . Many subclases override this<span class="Apple-converted-space">  </span>for their specific behaviors. Called by <b>receiveDrag.</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*importDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called when an NSString is the drag object<span class="Apple-converted-space">  </span>from outside of the SC app.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>Override this in your subclass.</b></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>beginDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
