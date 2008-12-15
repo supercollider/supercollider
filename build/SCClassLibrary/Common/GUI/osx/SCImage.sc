@@ -3,12 +3,11 @@
 // 09-2008
 
 SCImage {
-	classvar <all, <formats, <compositingOperations, <interpolations, <allPlotWindows;
-	var dataptr, <width, <height, <background, <>name, <url, <>autoMode=true, <filters, prCache;
+	classvar <formats, <compositingOperations, <interpolations, <allPlotWindows;
+	var dataptr, <width, <height, <background, <>name, <url, <>autoMode=true, <filters, prCache, prFinalizer;
 	
 	*initClass {
-		all = Array.new;
-
+	
 		formats = [
 			'tiff',	// 0
 			'bmp',	// 1
@@ -100,7 +99,6 @@ SCImage {
 		^nil
 	}
 	*fromWindow {arg window, rect;
-		var scimage;
 		if(window.isKindOf(SCWindow).not, {
 			"SCImage: fromWindowRect window argument is not instance of SCWindow.".error;
 		});
@@ -108,11 +106,7 @@ SCImage {
 		if(rect.isKindOf(Rect).not, {
 			"SCImage: fromWindowRect rect argument is not instance of Rect.".error;
 		});
-		scimage = this.prFromWindowRect(window, rect);
-		if(scimage.notNil, {
-			all = all.add(scimage);
-		});
-		^scimage;
+		^this.prFromWindowRect(window, rect);
 	}
 	
 	*prFromWindowRect {arg window, rect;
@@ -122,7 +116,6 @@ SCImage {
 	
 	init { arg width, height;
 		this.prInit(width, height);
-		all = all.add(this);
 		filters = [];
 	}
 	/* not used any more
@@ -136,21 +129,11 @@ SCImage {
 	initFromURL { arg newURL;
 		url = newURL;
 		this.prInitFromURL(url);
-		all = all.add(this);
 		filters = [];
 	}
 	free {
 		this.clearCache;
-		all.remove(this);
 		this.prFree;
-	}
-	*freeAll {
-		all.copy.do(_.free);
-		all = Array.new;
-	}
-	*count {
-		_SCImage_count
-		^this.primitiveFailed
 	}
 	copy {
 		var new;
@@ -359,7 +342,7 @@ SCImage {
 			"SCImage: kernel does not seem to be valid !".warn;
 			^this;
 		});
-		^this.prApplyKernel(kernel.shader, kernel.values, crop, true);
+		^this.prApplyKernel(kernel, crop, true);
 	}
 	
 	// drawing the image
@@ -533,7 +516,7 @@ SCImage {
 		_SCImageFilter_ApplyMultiple
 		^this.primitiveFailed;
 	}
-	prApplyKernel {|shader, values, crop, inPlace |
+	prApplyKernel {|kernel, crop, inPlace |
 		_SCImageFilter_ApplyKernel
 		^this.primitiveFailed;
 	}
@@ -789,7 +772,7 @@ SCImageFilter {
 }
 
 SCImageKernel {
-	var <>shader, <>values, <>bounds, <>enabled;
+	var <>shader, <>values, <>bounds, <>enabled, dataptr, finalizer;
 	*new {|shader, values, bounds|
 		if(values.isKindOf(Array).not and:{values.isNil.not}, {
 			"SCImageKernel values should be an Array !".warn;
@@ -809,6 +792,11 @@ SCImageKernel {
 	
 	isValid {
 		^(shader.notNil.or(shader.size > 0).and(values.notNil.or(values.size <= 0)));
+	}
+	
+	compile {
+		_SCImageKernel_Compile
+		^this.primitiveFailed
 	}
 }
 
@@ -903,8 +891,8 @@ SCImageKernel {
 }
 
 +Rect {
-	outsetBy {arg v, h;
-		if(h.isNil, {h=v});
-		^this.class.new(left - v, top - h, width + v + v, height + h + h);
+	outsetBy {arg h, v;
+		if(v.isNil, {v=h});
+		^this.class.new(left - h, top - v, width + h + h, height + v + v);
 	}
 }

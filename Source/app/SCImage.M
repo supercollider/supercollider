@@ -37,11 +37,53 @@ extern int slotStrLen(PyrSlot* slot);
 extern pthread_mutex_t	gLangMutex; // in case
 PyrSymbol				*s_scimage;
 PyrSymbol				*s_scfilter;
-//static PyrSymbol		*s_vector;
-static NSMutableArray	*gSCImages;
+PyrSymbol				*s_scimagekernel;
 static BOOL				gCIFilterPlugInsLoaded = NO; // 
 
 CGRect OutsetRect(CGRect r, const float dx, const float dy);
+
+/* 
+ * SCImage Finalizer callback function 
+ */
+int			FinalizeSCImageObject(struct VMGlobals* g, struct PyrObject* object)
+{
+	if( !IsNil(object->slots+0) ) {
+		SCImage * scimage = (SCImage*)object->slots[0].uptr;
+		#if SCIMAGE_DEBUG
+		post("finalize scimage (%p), dataptr (%p)\n", object, scimage);
+		#endif
+		[scimage release];
+	}
+	return errNone;
+}
+
+/* 
+ * SCImageKernel Finalizer callback function 
+ */
+int			FinalizeSCImageKernelObject(struct VMGlobals* g, struct PyrObject* object)
+{
+	if( !IsNil(object->slots+4) ) {
+		CIKernel * kernel = (CIKernel*)object->slots[4].uptr;
+		#if SCIMAGE_DEBUG
+		post("finalize scimagekernel (%p), dataptr (%p)\n", object, kernel);
+		#endif
+		[kernel release];
+	}
+	return errNone;
+}
+
+/* This function should be the one to use to create a new PyrObject of class s_scimage
+ * it will setup directly the Finalizer object
+ * so the PyrObject will free directly the SCImage instance
+ * Not calling this function in any other situation may result in a memory leak. 
+ */
+PyrObject*	newPyrSCImage(VMGlobals* g) 
+{
+	PyrObject* object = instantiateObject(g->gc, s_scimage->u.classobj, 0, false, true);
+	if(object)
+		InstallFinalizer(g, object, 9, FinalizeSCImageObject);
+	return object;
+}
 
 inline NSString*		nsStringFromSlot(PyrSlot *slot)
 {
@@ -52,7 +94,7 @@ inline NSString*		nsStringFromSlot(PyrSlot *slot)
 	len = slotStrLen(slot); // check if Symbol or String
 	if(len == -1) // returns -1 if failure
 		return nil;
-		
+		 
 	nsString = [[NSString alloc]initWithBytes:IsSym(slot) ? (void*)slot->us->name : (void*)slot->uos->s length:len encoding:NSASCIIStringEncoding];
 	
 	return [nsString autorelease];
@@ -158,7 +200,6 @@ static NSBitmapImageRep* BitmapContextRGBAWithImage(const int width, const int h
 	}
 
 	if(image) {
-		//	nsPrevCtx = [NSGraphicsContext currentContext];
 
 			[NSGraphicsContext saveGraphicsState];
 
@@ -191,9 +232,6 @@ static NSBitmapImageRep* BitmapContextRGBAWithImage(const int width, const int h
 				NSLog(@"Error: Invalid class supplied as input to bitmap context !");
 				goto failure;
 			}
-
-		//	if(nsPrevCtx)
-		//		[NSGraphicsContext setCurrentContext:nsPrevCtx]; // restore previous ctx
 
 			[NSGraphicsContext restoreGraphicsState];
 
@@ -355,7 +393,7 @@ failure:
 				NSImage seems to have an incorrect size depending on the dpi of the image
 				find the largest representation in the nsimage and the set the size according to it
 			*/
-			int pixelsHigh=0, pixelsWide=0; // should be NSInteger in 10.5 - but stick with an <int> for now
+			int pixelsHigh=0, pixelsWide=0; // should be NSInteger in 10.5 - but stick with an <int> for 10.4
 			NSImageRep *irep;
 			NSEnumerator *e = [[nsimage representations]objectEnumerator];
 			while( irep = [e nextObject] ) {
@@ -886,7 +924,6 @@ failure:
 		[fmat setValue: [self ciimage] forKey: @"inputImage"];
 		[fmat setValue: transform forKey: @"inputTransform"];
 		timage = [fmat valueForKey:@"outputImage"];
-		
 		if(op != NSCompositeSourceOver && op != NSCompositeCopy)
 		{
 			[timage drawInRect:dstRect fromRect:srcRect operation:op fraction:delta];
@@ -1050,8 +1087,6 @@ failure:
 	SCImage *newSCImage = [[SCImage alloc]initWithCIImage:result extent:[_ciimage extent] format:_ciFormat];
 	#endif
 	
-	[gSCImages addObject:newSCImage];
-	
 	return [newSCImage autorelease];
 }
 
@@ -1110,13 +1145,11 @@ int prSCImage_New(struct VMGlobals *g, int numArgsPushed)
 		NSLog(@"prSCImage_New Failed Creating valid SCImage !");
 		return errFailed;
 	}
-
-	[gSCImages addObject: image];
-	[image release];
 	
 	SetPtr(receiver->uo->slots + 0, image);
 	SetFloat(receiver->uo->slots + 1, width);
 	SetFloat(receiver->uo->slots + 2, height);
+	InstallFinalizer(g, receiver->uo, 9, FinalizeSCImageObject);
 	
 	return errNone;
 }
@@ -1151,12 +1184,10 @@ int prSCImage_NewFromURL(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 	
-	[gSCImages addObject: image];
-	[image release];
-	
 	SetPtr(receiver->uo->slots + 0, image);
 	SetFloat(receiver->uo->slots + 1, (float)[image width]); // using size.width / size.height can return non integral number (ex: 499.996 instead of 499)
 	SetFloat(receiver->uo->slots + 2, (float)[image height]); // better to stick with bitmap properties to have true pixel size
+	InstallFinalizer(g, receiver->uo, 9, FinalizeSCImageObject);
 	
 	return errNone;
 }
@@ -1233,16 +1264,6 @@ int prSCImage_setInterpolation(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSCImage_count(struct VMGlobals *g, int numArgsPushed);
-int prSCImage_count(struct VMGlobals *g, int numArgsPushed)
-{
-	if (!g->canCallOS) return errCantCallOS;
-	PyrSlot *receiver = g->sp;		// instance of SCImage
-
-	SetInt(receiver, [gSCImages count]);	
-	return errNone;
-}
-
 int prSCImage_Free(struct VMGlobals *g, int numArgsPushed);
 int prSCImage_Free(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1256,26 +1277,12 @@ int prSCImage_Free(struct VMGlobals *g, int numArgsPushed)
 	#if SCIMAGE_DEBUG
 		NSLog(@"Releasing SCImage (%p)", image);
 	#endif
-	
-	[gSCImages removeObject: image];
+	[image release];
 
 	SetNil(receiver->uo->slots + 0); // ensure slot->utag is also marked as NIL
 	SetNil(receiver->uo->slots + 1); // not only the pointer
 	SetNil(receiver->uo->slots + 2);
 
-	return errNone;
-}
-
-int prSCImage_FreeAll(struct VMGlobals *g, int numArgsPushed);
-int prSCImage_FreeAll(struct VMGlobals *g, int numArgsPushed)
-{
-
-	#if SCIMAGE_DEBUG
-		NSLog(@"---- FREE SCIMAGE POOL ----");
-	#endif
-	
-	[gSCImages removeAllObjects];
-	
 	return errNone;
 }
 
@@ -1969,7 +1976,7 @@ int prSCImage_setAccelerated(struct VMGlobals *g, int numArgsPushed)
 
 @class SCGraphView;
 // Currently it grabs a portion from the scgraphview
-// user should here pass the ASBOLUTE view bounds or a specific rect
+// user should here pass the ABSOLUTE view bounds or a specific rect
 int prSCImage_imageFromSCWindowRect(struct VMGlobals *g, int numArgsPushed);
 int prSCImage_imageFromSCWindowRect(struct VMGlobals *g, int numArgsPushed)
 {
@@ -2012,35 +2019,37 @@ int prSCImage_imageFromSCWindowRect(struct VMGlobals *g, int numArgsPushed)
 		
 		if(!nsimage) {
 			post("Error: Failed creating valid NSImage !\n");
+			SetNil(receiver);
 			goto Bail;
 		}
+		
 		[nsimage addRepresentation:nsbitmap];
 
 		scimage = [[SCImage alloc]initWithNSImage:nsimage];
 		if(!scimage) {
 			post("Error: Failed creating valid SCImage !\n");
-			goto Bail;
+			SetNil(receiver);
+			return errNone;
 		}
 		
 		// Instantiate and set the SCObject
-		object = instantiateObject(g->gc, s_scimage->u.classobj, 0, false, true);
+		object = newPyrSCImage(g);
 		if(!object) {
 			post("Error: Failed creating valid SCImage class !");
+			[scimage release];
+			SetNil(receiver);
 			goto Bail;
 		}
+		
 		SetPtr(object->slots + 0, scimage);
 		SetFloat(object->slots + 1, (float)[nsbitmap pixelsWide]);
 		SetFloat(object->slots + 2, (float)[nsbitmap pixelsHigh]);
 		SetObject(receiver, object);
-		
-		// add now image
-		[gSCImages addObject:scimage];
 	}
 	
 	Bail:
 		if(nsimage) [nsimage release];
 		if(nsbitmap) [nsbitmap release];
-		if(scimage) [scimage release];
 		
 	return errNone;
 }
@@ -2441,7 +2450,7 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 	}
 	else 
 	{
-		receiverObj = instantiateObject(g->gc, s_scimage->u.classobj, 0, false, true);
+		receiverObj = newPyrSCImage(g);
 		if(!receiverObj)
 		{
 			post("Failed creating valid SCImage class !");
@@ -2463,8 +2472,6 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 		post("Error: Failed creating valid CIImage cache !!!");
 		return errFailed;
 	}
-	[gSCImages addObject:newSCImage];
-	[newSCImage release];
 	
 	value = receiverObj->slots;
 	SetPtr(value + 0, newSCImage);
@@ -2472,7 +2479,7 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 	SetFloat(value + 2, destExtent.size.height);
 	
 	if(receiverObj == receiver->uo)
-		[gSCImages removeObject:scimage];
+		[scimage release];
 	else
 		SetObject(receiver, receiverObj);
 	return errNone;
@@ -2534,7 +2541,7 @@ int prSCImageFilter_Apply(struct VMGlobals *g, int numArgsPushed)
 		#endif
 		
 		scimage = [scimage imageFilteredWith:ciFilter];  // filtered copy
-		PyrObject* object = instantiateObject(g->gc, s_scimage->u.classobj, 0, false, true);
+		PyrObject* object = newPyrSCImage(g);
 		PyrSlot *slots = object->slots;
 		SetPtr(slots + 0, scimage);
 		SetFloat(slots + 1, (float)[scimage width]);
@@ -2545,24 +2552,82 @@ int prSCImageFilter_Apply(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-// This function is intended to apply a specific CIKernel to the image
-// Still experimental
+
+/*
+ *	Currently only cache the CIKernel object + install a finalizer on it
+ */
+int cachePyrKernel(VMGlobals *g, PyrObject* kernelObject)
+{
+	NSString*	kernelCmd = nsStringFromSlot(kernelObject->slots+0);
+	if(!kernelCmd) {
+		post("Error: Kernel string command does not seem valid !\n");
+		return errFailed;
+	}
+	
+	id	kernel = [CIKernel kernelsWithString:kernelCmd];
+	if(!kernel) {
+		post("Error: Failed creating valid Kernel from shader string !!\n");
+		return errFailed;
+	}
+	
+	// Create the Kernel
+	kernel = [(NSArray*)kernel objectAtIndex:0];
+	if(!kernel) {
+		post("Error: Failed retrieving valid CIKernel !");
+		return errFailed;
+	}
+	[kernel retain];
+	
+	if( !IsNil(kernelObject->slots+4) ) {
+		id current = (id)kernelObject->slots[4].uptr;
+		if(current)
+			[current release];
+	}
+	
+	SetPtr(kernelObject->slots+4, kernel);
+	
+	if( IsNil(kernelObject->slots+5) ) {
+		#if SCIMAGE_DEBUG
+		post("install finalizer scimagekernel (%p)\n", kernelObject);
+		#endif
+		InstallFinalizer(g, kernelObject, 5, FinalizeSCImageKernelObject);
+	}
+	#if SCIMAGE_DEBUG
+	post("caching scimagekernel (%p)\n", kernelObject);
+	#endif
+	return errNone;
+}
+
+int prSCImageKernel_Compile(struct VMGlobals *g, int numArgsPushed);
+int prSCImageKernel_Compile(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot* receiver = g->sp;
+	return cachePyrKernel(g, receiver->uo);
+}
+
+/* 
+ * This function is intended to apply a specific CIKernel to the image
+ * Still experimental
+ */
 int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed);
 int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot		*receiver			= g->sp - 4;
-	PyrSlot		*kernelStringSlot	= g->sp - 3;
-	PyrSlot		*argumentSlot		= g->sp - 2;
+	PyrSlot		*receiver			= g->sp - 3;
+	PyrSlot		*kernelSlot			= g->sp - 2;
 	PyrSlot		*cropRegionSlot		= g->sp - 1;
 	PyrSlot		*inPlace			= g->sp;
 	
+	PyrSlot		*argumentSlot;
 	SCImage		*newSCImage=nil;
 	SCImage		*scimage;
+	PyrObject	*kernelObject=nil;
+	CIKernel	*kernel=nil;
+	
 	int			err;
 	CGRect		destExtent;
 	CGRect		cropRegion;
 	CGRect		maxRect;
-	CISampler * sampler = nil;
+	
 	
 	err = errNone;
 	scimage = (SCImage *)receiver->uo->slots[0].ui;
@@ -2572,29 +2637,21 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 	}
 	
 	[scimage setAccelerated:YES];
+	CIFilter*	ciFilter = [[CIFilter new]autorelease];
 	
-	CIFilter*	ciFilter = [[CIFilter alloc]init];
-	NSString*	kernelCmd = nsStringFromSlot(kernelStringSlot);
-	if(!kernelCmd) {
-		post("Error: Kernel string command does not seem valid !\n");
-		return errNone;
+	///// Setting and caching the Kernel Object
+	kernelObject = kernelSlot->uo;
+	if(IsNil(kernelObject->slots+4)) {
+		err = cachePyrKernel(g, kernelObject);
+		if(err) return err;
 	}
-	
-	id	kernel = [CIKernel kernelsWithString:kernelCmd];
-	if(!kernel) {
-		post("Error: Failed creating valid Kernel from shader string !!\n");
-		goto Bail;
-	}
+	argumentSlot = kernelObject->slots+1;
+	kernel = (CIKernel*)(kernelObject->slots[4].uptr);
+	if(!kernel)
+		return errFailed;
 	
 	// Get the extent of the image
 	CGRect extent = [[scimage ciimage]extent];
-	
-	// Create the Kernel
-	kernel = [(NSArray*)kernel objectAtIndex:0];
-	if(!kernel) {
-		post("Error: Failed retrieving valid CIKernel !");
-		goto Bail;
-	}
 	
 	#if SCIMAGE_FILTER_DEBUG
 		NSLog(@"SCImageFilter: CIKernel created Successfully !");
@@ -2617,7 +2674,7 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 	NSMutableArray* arguments = [NSMutableArray arrayWithCapacity:16];
 	if(!arguments) {
 		post("Error: memory error ? allocation failed for NSMutableArray. applying Kernel aborted !");
-		goto Bail;
+		return errFailed;
 	}
 	
 	#if SCIMAGE_FILTER_DEBUG
@@ -2633,25 +2690,17 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 				[arguments addObject:object];
 			}
 			else
-				goto Bail; // Kernels require no bad arguments
+				return errFailed; // Kernels require no bad arguments
 		}
 	}
 
 	// Create the Option Dictionary that contains additional info about final rendering
 	// kCIApplyOptionDefinition : DOD of image
 	// kCIApplyOptionExtent : size of the resulting image
-	NSMutableDictionary * dictionary = [[ [NSMutableDictionary alloc] initWithCapacity:8]autorelease];
-	[dictionary setValue:
-		[[scimage ciimage] definition] // better to pass directly the filterShape
-		/*
-		[NSArray arrayWithObjects: 
-			[NSNumber numberWithFloat:extent.origin.x], // x
-			[NSNumber numberWithFloat:extent.origin.y], // y
-			[NSNumber numberWithFloat:extent.size.width], // w 
-			[NSNumber numberWithFloat:extent.size.height], // h
-			nil
-		]
-		*/
+	NSMutableDictionary * dictionary = [[[NSDictionary dictionary] mutableCopy] autorelease];
+	
+	[dictionary 
+		setValue:[[scimage ciimage] definition] // better to pass directly the filterShape
 		forKey:kCIApplyOptionDefinition
 	];
 	
@@ -2667,6 +2716,7 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 				[NSNumber numberWithFloat:maxRect.origin.y], // y
 				[NSNumber numberWithFloat:maxRect.size.width], // w 
 				[NSNumber numberWithFloat:maxRect.size.height] // h
+				,nil
 			]
 			forKey:kCIApplyOptionExtent
 		];
@@ -2708,19 +2758,19 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 			#if SCIMAGE_MAC_OS_10_5
 				[[scimage accumulator] setImage:ciimage];
 			#else
-				[ciimage retain];
 				[scimage->_ciimage release];
-				scimage->_ciimage = ciimage;
+				scimage->_ciimage = [ciimage retain];
 			#endif
 				[scimage setShouldSyncBitmap:YES]; // invalidates bitmap
 				return errNone;
 			}else{
+				NSLog(@"CIKernel different size returned");
 				receiverObj = receiver->uo;
 			}
 		}
 		else 
 		{
-			receiverObj = instantiateObject(g->gc, s_scimage->u.classobj, 0, false, true);
+			receiverObj = newPyrSCImage(g);
 		}
 		
 #if SCIMAGE_FILTER_DEBUG
@@ -2728,30 +2778,26 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 #endif
 		
 		newSCImage = [[SCImage alloc]initWithCIImage:ciimage extent:destExtent format:[scimage format]];
-		[gSCImages addObject:newSCImage];
-		[newSCImage release];
 		
 		PyrSlot *slots = receiverObj->slots;
+		[(id)(slots[0].uptr) release];
+		
 		SetPtr(slots + 0, newSCImage);
 		SetFloat(slots + 1, destExtent.size.width);
 		SetFloat(slots + 2, destExtent.size.height);
 		
-		if(receiverObj == receiver->uo)
-			[gSCImages removeObject:scimage];
-		else
+		if(receiverObj != receiver->uo) {	
 			SetObject(receiver, receiverObj);
+		}
 	}
 	@catch ( NSException *e )
 	{
-		if([[e name]isEqualToString: @"CIKernelMissingArgument"]) {
-			post("Error: %s\n", [[NSString stringWithFormat:@"%@ %@", @"SCImageKernel", e]UTF8String]);
-			goto Bail;
-		}
+		//if([[e name]isEqualToString: @"CIKernelMissingArgument"])
+		post("Error: %s\n", [[NSString stringWithFormat:@"%@ %@", @"SCImageKernel", e]UTF8String]);
+		return errFailed;
 	}	
-	// Bail out point if error
-	Bail:
-	[ciFilter release];
-	return err;
+	
+	return errNone;
 }
 
 int prSCImageFilter_GetAttributeMinMax(struct VMGlobals *g, int numArgsPushed)
@@ -2778,7 +2824,7 @@ int prSCImageFilter_GetAttributeMinMax(struct VMGlobals *g, int numArgsPushed)
 	const char* cStr = [key cStringUsingEncoding:NSASCIIStringEncoding];
 	attribute = [attrDict objectForKey: [NSString stringWithFormat:@"input%c%s", toupper(*cStr), cStr+1]];
 	if( !attribute ) {
-		post("SCImageFilter : no attributes named %s found !", [key UTF8String]);
+		post("SCImageFilter : no attributes named %s found !\n", [key UTF8String]);
 		goto BailErr;
 	}
 	
@@ -2836,10 +2882,6 @@ int prSCImageFilter_Attributes(struct VMGlobals *g, int numArgsPushed)
 	
 	NSEnumerator* e = [inputKeys objectEnumerator];
 	NSString *key;
-	
-	
-	//PyrObject* resultArray, attrArray;
-	//resultArray	= (PyrObject*)instantiateObject(g->gc, class_array, [inputKeys count], false, true);
 	
 	int maxsize, i=0;
 	maxsize  = [inputKeys count] * 2;
@@ -2900,12 +2942,7 @@ int prSCImageFilter_NamesInCategory(struct VMGlobals *g, int numArgsPushed)
 	while( type = [e nextObject] )
 	{
 		if(i >= maxsize) break; // in case
-		
-		//pyrPathString = newPyrString(g->gc,[type UTF8String],0,true);
-		//SetObject(&slot, pyrPathString);
 		returnObject->symbols[i] = getsym([type UTF8String]);
-		//returnObject->slots[i].ucopy = slot.ucopy;
-		//g->gc->GCWrite(returnObject, pyrPathString);
 		++i;
 	}
 	
@@ -2922,21 +2959,13 @@ void initSCImagePrimitives()
 	
 	s_scimage  = getsym("SCImage");
 	s_scfilter = getsym("SCImageFilter");
-//	s_vector = getsym("Vector");
+	s_scimagekernel = getsym("SCImageKernel");
 	
 	#if SCIMAGE_DEBUG
 		NSLog(@"---- SCIMAGE: Init Primitives ----");
 		NSLog(@"---- SCIMAGE: Using Mac OS 10.%c Version ----", (SCIMAGE_MAC_OS_10_5 == 1) ? '5' : '4');
 	#endif
 	
-	if(gSCImages) {
-		#if SCIMAGE_DEBUG
-		NSLog(@"---- SCIMAGE: Free Pool ----");
-		#endif
-		[gSCImages release];
-	}
-	
-	gSCImages = [[NSMutableArray arrayWithCapacity: 8] retain];
 	if(!gCIFilterPlugInsLoaded) {
 		#if SCIMAGE_DEBUG
 		NSLog(@"---- SCIMAGE: Loading CIFilter PlugIns ----");
@@ -2953,9 +2982,7 @@ void initSCImagePrimitives()
 	//definePrimitive(base, index++, "_SCImage_NewFromFile", prSCImage_NewFromFile, 2, 0); // use only URL
 	definePrimitive(base, index++, "_SCImage_NewFromURL", prSCImage_NewFromURL, 2, 0);
 	definePrimitive(base, index++, "_SCImage_WriteToFile", prSCImage_WriteToFile, 3, 0);
-	definePrimitive(base, index++, "_SCImage_count", prSCImage_count, 1, 0);
 	definePrimitive(base, index++, "_SCImage_Free", prSCImage_Free, 1, 0);
-	definePrimitive(base, index++, "_SCImage_FreeAll", prSCImage_FreeAll, 1, 0);
 	definePrimitive(base, index++, "_SCImage_setSize", prSCImage_setSize, 3, 0);
 	definePrimitive(base, index++, "_SCImage_setScalesWhenResized", prSCImage_setScalesWhenResized, 2, 0);
 	definePrimitive(base, index++, "_SCImage_scalesWhenResized", prSCImage_scalesWhenResized, 1, 0);
@@ -2985,8 +3012,8 @@ void initSCImagePrimitives()
 	definePrimitive(base, index++, "_SCImageFilter_Apply", prSCImageFilter_Apply, 4, 0);
 	definePrimitive(base, index++, "_SCImageFilter_ApplyMultiple", prSCImageFilter_ApplyMultiple, 5, 0);
 	definePrimitive(base, index++, "_SCImageFilter_GetAttributeMinMax", prSCImageFilter_GetAttributeMinMax, 3, 0);
-	definePrimitive(base, index++, "_SCImageFilter_ApplyKernel", prSCImageFilter_ApplyKernel, 5, 0);
-	
+	definePrimitive(base, index++, "_SCImageFilter_ApplyKernel", prSCImageFilter_ApplyKernel, 4, 0);
+	definePrimitive(base, index++, "_SCImageKernel_Compile", prSCImageKernel_Compile, 1, 0);
 }
 
 /*
