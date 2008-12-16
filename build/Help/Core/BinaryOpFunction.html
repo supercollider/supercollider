@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0024f8}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {font: 12.0px Helvetica}
+span.s4 {font: 12.0px Helvetica; color: #0000ff}
+span.s5 {color: #0024f8}
+span.s6 {color: #001bb9}
+span.s7 {color: #2c7014}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>BinaryOpFunction<span class="Apple-tab-span">	</span></b></span><b>represent a binary oparation on a function</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>superclass: AbstractFunction</b></p>
+<p class="p2"><br></p>
+<p class="p1">Operating on functions instead of numbers, what results is not a result of the calculation, but a structure that represents that calculation.</p>
+<p class="p2"><br></p>
+<p class="p3">// example</p>
+<p class="p3"><span class="s2">a = 5 + 7; </span>// result is 12.</p>
+<p class="p3"><span class="s2">a = { b } + 7; </span>// result is<span class="Apple-converted-space">  </span>a BinaryOpFunction</p>
+<p class="p4">b = 5;</p>
+<p class="p3"><span class="s2">a.value; </span>// now it is evaluated, and the result is calculated</p>
+<p class="p4">b = 8;</p>
+<p class="p3"><span class="s2">a.value; </span>// again, with a different value.</p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s2">see also: <a href="UnaryOpFunction.html"><span class="s3">UnaryOpFunction</span></a>, <a href="NAryOpFunction.html"><span class="s4">NAryOpFunction</span></a></span></p>
+<p class="p1">related: <a href="../Streams-Patterns-Events/BinaryOpStream.html"><span class="s5">BinaryOpStream</span></a>, Pbinop</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">// sound example</p>
+<p class="p4">(</p>
+<p class="p4"><span class="s6">var</span> a = { 19.rand };</p>
+<p class="p4">var b = { [5, 8, 9].choose };</p>
+<p class="p4"><span class="s6">var</span> c = a + b;</p>
+<p class="p4">fork {</p>
+<p class="p4"><span class="Apple-tab-span">	</span>15.do {</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(instrument: <span class="s7">\default</span>, note: [c.value, a.value]).play;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.3.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}</p>
+<p class="p4">}</p>
+<p class="p4">)</p>
+</body>
+</html>
