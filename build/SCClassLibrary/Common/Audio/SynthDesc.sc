@@ -33,7 +33,7 @@ SynthDesc {
 	}
 	
 	printOn { arg stream;
-		stream << name << " :\n";
+		stream << "SynthDesc '" << name << "' \nControls:\n";
 		controls.do {|control| control.printOn(stream); $\n.printOn(stream) };
 		inputs.do {|input| stream << "   I "; input.printOn(stream); $\n.printOn(stream) };
 		outputs.do {|output| stream << "   O "; output.printOn(stream); $\n.printOn(stream) };
