@@ -123,7 +123,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + PauseSelfWhenDone {  *categories { ^ #["UGens>Synth control"] } }
 + PeakFollower    { *categories { ^ #["UGens>Analysis>Amplitude"] } }
 + Phasor          { *categories { ^ #["UGens>Triggers", "UGens>Buffer"] } }
-+ Pitch           { *categories { ^ #["UGens>Analysis>Pitch"] } }
++ Pitch           { *categories { ^ #["UGens>Analysis>Pitch", "UGens>MachineListening"] } }
 + PitchShift      { *categories { ^ #["UGens>Filters>Pitch"] } }
 + PlayBuf         { *categories { ^ #["UGens>Buffer"] } }
 + Pluck           { *categories { ^ #["UGens>Generators>Deterministic"] } }
