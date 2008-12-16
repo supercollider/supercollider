@@ -201,10 +201,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Source\common\fftlib.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\source\plugins\PV_ThirdParty.cpp"
 				>
 			</File>
@@ -222,10 +218,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{5B736021-D00F-4C68-A2D5-6A4B6CE6C211}"
 			>
-			<File
-				RelativePath="..\..\source\plugins\fftlib.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\source\plugins\SCComplex.h"
 				>
