@@ -280,10 +280,6 @@ SimpleNumber : Number {
 	// scheduled Routine support
 	wait { ^this.yield }
 	waitUntil { ^(this - thisThread.beats).yield }
-	idle { arg val;
-		var time = thisThread.beats;
-		while { thisThread.beats - time < this } { val.value.yield }
-	}
 	sleep {
 		var thread = thisThread;
 		thread.clock.sched(this, { thread.next; nil });
