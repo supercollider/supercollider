@@ -23,7 +23,7 @@ Slew.scopeResponse
 	scopeResponse{ |server, freqMode=1, label="Empirical Frequency response"| 
 		
 		var bus1, bus2, synth, win, fs;
-		server = server ?? {Server.internal};
+		server = server ?? {GUI.stethoscope.defaultServer};
 		
 		// Create two private busses
 		bus1 = Bus.audio(server, 1).postln;
@@ -67,12 +67,12 @@ Slew.scopeResponse
 		
 		^if(hasFreqInput){
 			{|in| this.ar(in: in, freq:MouseX.kr(10, 10000, 1)) * Line.ar(0,1,0.1) }
-				.scopeResponse(server ?? {Server.internal}, freqMode, 
+				.scopeResponse(server, freqMode, 
 					label ?? {"%: empirical frequency response (move mouse to change freq)".format(this.asString)}
 					)
 		}{ // no freq input
 			{|in| this.ar(in: in) * Line.ar(0,1,0.1) }
-				.scopeResponse(server ?? {Server.internal}, freqMode, 
+				.scopeResponse(server, freqMode, 
 					label ?? {"%: empirical frequency response".format(this.asString)}
 					)
 		}
