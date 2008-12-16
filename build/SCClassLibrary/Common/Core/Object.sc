@@ -312,6 +312,7 @@ Object  {
 	
 	as { arg aSimilarClass; ^aSimilarClass.newFrom(this) }
 	dereference { ^this } // see Ref::dereference
+	reference { ^Ref.new(this) }
 	asRef { ^Ref.new(this) }
 	// asArray { ^Array.with(this) }
 	asArray { ^this.asCollection.asArray }
@@ -372,6 +373,10 @@ Object  {
 	yieldAndReset { arg reset = true;
 		_RoutineYieldAndReset
 		^this.primitiveFailed
+	}
+	idle { arg val;
+		var time = thisThread.beats;
+		while { thisThread.beats - time < val } { this.value.yield }
 	}
 	
 	// dependancy support
