@@ -37,6 +37,9 @@ Platform
 	
 	pathSeparator { ^this.subclassResponsibility }
 	*pathSeparator { ^thisProcess.platform.pathSeparator }
+
+	isPathSeparator { |char| ^this.subclassResponsibility }
+	*isPathSeparator { |char| ^thisProcess.platform.isPathSeparator(char) }
 	
 	// startup/shutdown hooks
 	startup { }
@@ -83,6 +86,10 @@ UnixPlatform : Platform
 {
 	pathSeparator { ^$/ }
 	
+	isPathSeparator { |char|
+		^(char === this.pathSeparator)
+	}
+
 	arch {
 		var pipe, arch;
 		pipe = Pipe("arch", "r");
