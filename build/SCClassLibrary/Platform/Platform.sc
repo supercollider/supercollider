@@ -41,6 +41,9 @@ Platform
 	isPathSeparator { |char| ^this.subclassResponsibility }
 	*isPathSeparator { |char| ^thisProcess.platform.isPathSeparator(char) }
 	
+	clearMetadata { |path| ^this.subclassResponsibility }
+	*clearMetadata { |path| ^thisProcess.platform.clearMetadata(path) }
+	
 	// startup/shutdown hooks
 	startup { }
 	shutdown { }
@@ -88,6 +91,10 @@ UnixPlatform : Platform
 	
 	isPathSeparator { |char|
 		^(char === this.pathSeparator)
+	}
+	
+	clearMetadata { |path|
+		"rm -f %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd;
 	}
 
 	arch {

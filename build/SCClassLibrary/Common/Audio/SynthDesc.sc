@@ -358,10 +358,10 @@ SynthDescLib {
 
 // to disable metadata read/write
 AbstractMDPlugin {
-		// a Windows alternate will have to be added to the windows platform dir
 	*clearMetadata { |path|
-		"rm -f %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd;
+		^thisProcess.platform.clearMetadata(path)
 	}
+	
 	*writeMetadata { |metadata, synthdef, path|
 		
 		this.clearMetadata(path);
