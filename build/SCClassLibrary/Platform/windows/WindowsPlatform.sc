@@ -16,4 +16,7 @@ WindowsPlatform : Platform
 	defaultGUIScheme { ^\swing }
 	defaultHIDScheme { ^nil }
 	pathSeparator { ^$\\ }
+	isPathSeparator { |char|
+		^#[$\\, $/].includes(char)
+	}
 }
