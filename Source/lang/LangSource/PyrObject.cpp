@@ -1159,10 +1159,9 @@ void buildBigMethodMatrix()
 			100. * (double)numFilled/(rowTableSize/sizeof(PyrMethod*)));
 	}
 #endif
-	post("\tMethod Table Size %d bytes\n", rowTableSize);
-	post("\tNumber of Method Selectors %d\n", numSelectors);
-	post("\tNumber of Classes %d\n", numClasses);
-	post("\tbig table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
+	post("\t%d method selectors, %d classes\n", numSelectors, numClasses);
+	post("\tmethod table size %d bytes, ", rowTableSize);
+	post("big table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
 	//postfl("%08X %08X %08X\n", classes, bigTable, sels);
 /*	
 	// not necessary since the entire pool will be freed..
