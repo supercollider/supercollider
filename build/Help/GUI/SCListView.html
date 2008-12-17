@@ -23,22 +23,22 @@ p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #615f4a}
+p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #615f4c}
 p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 12.0px Helvetica}
-span.s2 {color: #5a65a5}
-span.s3 {color: #3850cb}
+span.s2 {color: #5f689f}
+span.s3 {color: #4357c0}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {color: #505fb1}
-span.s7 {color: #6e7186}
+span.s6 {color: #5763a9}
+span.s7 {color: #6f7184}
 span.s8 {color: #0000bf}
-span.s9 {color: #515364}
+span.s9 {color: #515362}
 span.s10 {font: 14.0px Helvetica}
-span.s11 {color: #6f7183}
+span.s11 {color: #6f7181}
 span.s12 {font: 12.0px Helvetica; color: #000000}
-span.s13 {font: 9.0px Monaco; color: #545668}
+span.s13 {font: 9.0px Monaco; color: #545666}
 span.s14 {color: #bf0000}
 span.s15 {color: #606060}
 span.s16 {color: #007300}
@@ -193,7 +193,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.hiliteColor_(<span class="s8">Color</span>.green(alpha:0.6))</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s8">arg</span> v;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.value.switch(</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0,{f.free;<span class="s15">"test"</span>.postln},</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0,{try{f.free};<span class="s15">"test"</span>.postln},</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1,{try{f.free};f={<span class="s8">ReplaceOut</span>.ar(0,<span class="s8">RLPF</span>.ar(<span class="s8">In</span>.ar(0,2),<span class="s8">In</span>.kr(0,1),0.2,0.3))}.play(addAction:<span class="s16">\addToTail</span>)},</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2,{try{f.free};f={<span class="s8">ReplaceOut</span>.ar(0,<span class="s8">RHPF</span>.ar(<span class="s8">In</span>.ar(0,2),<span class="s8">In</span>.kr(0,1),0.2,0.3))}.play(addAction:<span class="s16">\addToTail</span>)},</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3,{try{f.free};f={<span class="s8">ReplaceOut</span>.ar(0,<span class="s8">BPF</span>.ar(<span class="s8">In</span>.ar(0,2),<span class="s8">In</span>.kr(0,1),0.2,1.5))}.play(addAction:<span class="s16">\addToTail</span>)},</p>
@@ -203,7 +203,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s8">CmdPeriod</span>.doOnce({w.close});</p>
-<p class="p12"><span class="Apple-tab-span">	</span>w.onClose(n.free,f.free,freq.free);</p>
+<p class="p12"><span class="Apple-tab-span">	</span>w.onClose_({n.free;f.free;freq.free});</p>
 <p class="p12">});</p>
 <p class="p12">)</p>
 <p class="p18"><br></p>
