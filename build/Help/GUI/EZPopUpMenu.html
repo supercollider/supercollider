@@ -50,24 +50,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: Object</b></p>
 <p class="p3"><br></p>
-<p class="p1">EZPopUpMenu is wrapper class which creates an (optional)<span class="Apple-converted-space">  </span>label and a popUpMenu. It includes<span class="Apple-converted-space">  </span>per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting menu items are also included .<span class="Apple-converted-space"> </span></p>
+<p class="p1">EZPopUpMenu is wrapper class which creates an (optional)  </span>label and a popUpMenu. It includes  </span>per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting menu items are also included . </span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>See also:</b> <a href="SC://SCPopUpMenu"><span class="s2">SCPopUpMenu</span></a><span class="s3"> </span><span class="Apple-converted-space"> </span></p>
+<p class="p1"><b>See also:</b> <a href="SC://SCPopUpMenu"><span class="s2">SCPopUpMenu</span></a><span class="s3"> </span> </span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding EZPopUpMenu</b></p>
 <p class="p2"><br></p>
-<p class="p1">The convenience methods for EZPopUpMenu require that the items array is an array of associations<span class="Apple-converted-space">  </span>of<span class="Apple-converted-space">  </span>labels and<span class="Apple-converted-space">  </span>functions, not like in <a href="SC://SCPopUpMenu"><span class="s4">SCPopUpMenu</span></a>, where items is simply an array of strings. If <b>label</b> is nil, then no staticText is created. If you set label later, a staticText will be created.</p>
+<p class="p1">The convenience methods for EZPopUpMenu require that the items array is an array of associations  </span>of  </span>labels and  </span>functions, not like in <a href="SC://SCPopUpMenu"><span class="s4">SCPopUpMenu</span></a>, where items is simply an array of strings. If <b>label</b> is nil, then no staticText is created. If you set label later, a staticText will be created.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*new (parentView, bounds, label, items, globalAction, initVal, initAction, labelWidth)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parentView </b>- The parent view or window. Default value is a FlowView window.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>-<span class="Apple-converted-space">  </span>An instance of <a href="../Geometry/Rect.html"><span class="s5">Rect</span></a> or <a href="../Geometry/Point.html"><span class="s5">Point</span></a>. Default value is <span class="s6">160@16</span>.<span class="Apple-converted-space">  </span>The Menu width is bounds.x- labelWidth</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- the label. Default value is nil. If nil, then no SCStaticText is created.<span class="Apple-converted-space">  </span>If you set <b>label</b> later, the labelView will be created.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>-  </span>An instance of <a href="../Geometry/Rect.html"><span class="s5">Rect</span></a> or <a href="../Geometry/Point.html"><span class="s5">Point</span></a>. Default value is <span class="s6">160@16</span>.  </span>The Menu width is bounds.x- labelWidth</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- the label. Default value is nil. If nil, then no SCStaticText is created.  </span>If you set <b>label</b> later, the labelView will be created.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>items </b>- Default value is nil. An Array of <a href="SC://Association"><span class="s7">Association</span></a>s ['label' -&gt; {arg menuObj; value}, ].</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>globalAction </b>- a Global function to be performed in addition to the item functions {arg menuObj; value}.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- Initial <b>value</b> of the Menu, i.e. the index selected. Default value is 0.<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- Initial <b>value</b> of the Menu, i.e. the index selected. Default value is 0. </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initAction </b>- An instance of <a href="SC://Boolean"><span class="s4">Boolean</span></a>. Performs the action at <b>initVal</b> on creation of the menu, plus the <b>globalAction</b>. Default value is false.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelWidth </b>- Default value is 80. The actual width of the labelView will be <b>labelWidth - gap</b> .</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- Default value is 4. If the label is not nil, the gap between the label and the menu .</p>
@@ -83,8 +83,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item1</span> -&gt;{<span class="s8">|a|</span> (<span class="s11">"this is item 1"</span>).postln},</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item2</span> -&gt;{<span class="s8">|a|</span> (<span class="s11">"this is item 2"</span>).postln},</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>globalAction: {<span class="s11">"this is<span class="Apple-converted-space">  </span>a global action"</span>.postln},</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initVal: 2,<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>globalAction: {<span class="s11">"this is  </span>a global action"</span>.postln},</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initVal: 2, </span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initAction: <span class="s8">true</span>,</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>labelWidth: 120</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
@@ -121,12 +121,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>items</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>items_ (assocArray)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>assocArray </b>- An Array of <a href="SC://Association"><span class="s4">Association</span></a>s including the labels and the item functions: <span class="Apple-converted-space">  </span>['label' -&gt; {arg menuObj; value}, ]. The underlying OS X graphics system gives special meanings to some characters. See<span class="Apple-converted-space">  </span><a href="SC://SCPopUpMenu"><span class="s13">SCPopUpMenu</span></a>;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>assocArray </b>- An Array of <a href="SC://Association"><span class="s4">Association</span></a>s including the labels and the item functions:   </span>['label' -&gt; {arg menuObj; value}, ]. The underlying OS X graphics system gives special meanings to some characters. See  </span><a href="SC://SCPopUpMenu"><span class="s13">SCPopUpMenu</span></a>;</p>
 <p class="p6">.</p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>addItem (name, action)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds an item.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of<span class="Apple-converted-space">  </span><a href="SC://String"><span class="s4">String</span></a> or <a href="SC://Symbol"><span class="s4">Symbol</span></a>. The name of the menu item.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of  </span><a href="SC://String"><span class="s4">String</span></a> or <a href="SC://Symbol"><span class="s4">Symbol</span></a>. The name of the menu item.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action </b>- A n instanc of Function.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
@@ -142,7 +142,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Inserts a menu item at positiion of index.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- An integer. The index where to insert an item.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of<span class="Apple-converted-space">  </span><a href="SC://String"><span class="s4">String</span></a> or <a href="SC://Symbol"><span class="s4">Symbol</span></a>. The name of the menu item.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of  </span><a href="SC://String"><span class="s4">String</span></a> or <a href="SC://Symbol"><span class="s4">Symbol</span></a>. The name of the menu item.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action </b>- A n instanc of Function.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
@@ -202,24 +202,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>label_(string)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the label. Will add the label view if none was initially created.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An Instance of <a href="SC://String"><span class="s7">String</span></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An Instance of <a href="SC://String"><span class="s7">String</span></a>. </span></p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>visible</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>visible_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component<span class="Apple-converted-space">  </span>views are visible.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component  </span>views are visible.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="SC://Boolean"><span class="s7">Boolean</span></a>. Default is true;</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>enabled</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>enabled_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the menu<span class="Apple-converted-space">  </span>is enabled.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the menu  </span>is enabled.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="SC://Boolean"><span class="s7">Boolean</span></a>. Default is true;</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>visible</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>visible_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component<span class="Apple-converted-space">  </span>views are visible.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component  </span>views are visible.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="SC://Boolean"><span class="s7">Boolean</span></a>. Default is true;</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>bounds</b></p>
@@ -237,7 +237,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>gap</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>gap_(val)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets the width of the label to <b>width-val</b>, creating a gap.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets the width of the label to <b>width-val</b>, creating a gap. </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- A number. default is 4.</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><b>Accessing GUI components</b></p>
@@ -252,7 +252,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>labelView_(arg1)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>labelView</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p19"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An <a href="SC://SCStaticText"><span class="s16">SCStaticText</span></a><b><span class="Apple-converted-space"> </span></b> view</span></p>
+<p class="p19"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An <a href="SC://SCStaticText"><span class="s16">SCStaticText</span></a><b> </span></b> view</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 </body>

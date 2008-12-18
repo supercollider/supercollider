@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,27 +14,28 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #686e90}
-span.s3 {color: #676d92}
+span.s2 {color: #696f8e}
+span.s3 {color: #686e90}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {color: #4c5db6}
-span.s7 {color: #314bd1}
-span.s8 {color: #6f7183}
+span.s6 {color: #505fb1}
+span.s7 {color: #3850cb}
+span.s8 {color: #6f7182}
 span.s9 {font: 9.0px Monaco}
-span.s10 {color: #0018b8}
-span.s11 {color: #6e7186}
+span.s10 {color: #0000bf}
+span.s11 {color: #6f7185}
 span.s12 {font: 14.0px Helvetica}
 span.s13 {color: #606060}
-span.s14 {color: #356f14}
+span.s14 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -47,31 +48,31 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCTextField</b></p>
 <p class="p2"><br></p>
-<p class="p1">Does not allow copying and pasting.<span class="Apple-converted-space">  </span>Does not handle composed character sequences ( é ø etc. ). Use <a href="SCTextView.html"><span class="s2">SCTextView</span></a> for these features. Hit delete before typing to clear the text field. Drag and drop<span class="Apple-converted-space">  </span>accepts a any <a href="../Core/Object.html"><span class="s6">Object</span></a> and recieves it <b>asString</b>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s7">SCStaticTextBase</span></a>. If you drag a file from the finder onto an SCTextView, it will display the file path.</p>
+<p class="p1">Does not allow copying and pasting. Does not handle composed character sequences ( é ø etc. ). Use <a href="SCTextView.html"><span class="s2">SCTextView</span></a> for these features. Hit delete before typing to clear the text field. Drag and drop accepts a any <a href="../Core/Object.html"><span class="s6">Object</span></a> and recieves it <b>asString</b>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s7">SCStaticTextBase</span></a>. If you drag a file from the finder onto an SCTextView, it will display the file path.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-<span class="Apple-converted-space">  </span>The parent view.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a>,<span class="Apple-converted-space">  </span>or<span class="Apple-converted-space">  </span>a <a href="../Geometry/Point.html"><span class="s8">Point</span></a> indicating width@height.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a>, or a <a href="../Geometry/Point.html"><span class="s8">Point</span></a> indicating width@height.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">(</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s10">SCWindow</span>.new.front;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s10">SCTextField</span>(w, <span class="s10">Rect</span>(10, 10, 150, 20));</p>
 <p class="p9"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.string = </span>"some default text"<span class="s4">;</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = {<span class="s10">arg</span> field; field.value.postln; };</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">)</span></p>
 <p class="p10"><br></p>
 <p class="p11"><b>Accessing Instance and Class Variables</b></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>string_ (s)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the<span class="Apple-converted-space">  </span><a href="../Collections/String.html"><span class="s11">String</span></a> of the text field.</p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the <a href="../Collections/String.html"><span class="s11">String</span></a> of the text field.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>s </b>- An instance of <a href="../Collections/String.html"><span class="s11">String</span></a>.</p>
 <p class="p6"><br></p>
-<p class="p11"><b>Subclassing and Internal Methods<span class="Apple-converted-space"> </span></b></p>
+<p class="p11"><b>Subclassing and Internal Methods </span></b></p>
 <p class="p12"><br></p>
-<p class="p5"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>*viewClass</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
@@ -92,15 +93,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag <b>from</b> an SCTextView. Returns <b>string</b>.<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag <b>from</b> an SCTextView. Returns <b>string</b>. </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>defaultCanReceiveDrag</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object.<span class="Apple-converted-space">  </span>By default, SCTextView will respond only to drags<span class="Apple-converted-space">  </span>containing objects that respond to the method, <b>asString</b> (basically, all objects, since <a href="../Core/Object.html"><span class="s3">Object</span></a> does).<span class="Apple-converted-space"> </span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCTextView will respond only to drags containing objects that respond to the method, <b>asString</b> (basically, all objects, since <a href="../Core/Object.html"><span class="s3">Object</span></a> does). </span></p>
 <p class="p6"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved.<span class="Apple-converted-space">  </span>Performs <b>valueAction_()</b><span class="Apple-converted-space">  </span>using<span class="Apple-converted-space">  </span><b>currentDrag</b> as an argument.<span class="Apple-converted-space"> </span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Performs <b>valueAction_()</b> using <b>currentDrag</b> as an argument. </span></p>
 <p class="p10"><br></p>
 <p class="p11"><b>Examples</b></p>
 <p class="p13"><br></p>
@@ -116,11 +117,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">a.string = <span class="s13">"oy"</span>;</p>
 <p class="p13"><br></p>
 <p class="p14"><span class="s4">a.valueAction_(</span><span class="s13">"this is not a pipe"</span><span class="s4">); </span>//does the action, if the value has changed</p>
-<p class="p14"><span class="s4">a.doAction;<span class="Apple-converted-space">  </span></span>//evaluates the action with the content of the text field as an argument</p>
+<p class="p14"><span class="s4">a.doAction; </span>//evaluates the action with the content of the text field as an argument</p>
 <p class="p13"><br></p>
 <p class="p8">a.boxColor_(<span class="s10">Color</span>.grey);</p>
 <p class="p8">a.stringColor_(<span class="s10">Color</span>.white);</p>
 <p class="p8">a.align_(<span class="s14">\center</span>);</p>
-<p class="p13"><br></p>
+<p class="p15"><br></p>
 </body>
 </html>
