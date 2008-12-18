@@ -1,10 +1,18 @@
-INSTALL Psycollider
-=========================
+How to install SuperCollider
+============================
 
-Simply doubleclick the startup.exe and follow the instructions. 
+Simply doubleclick the file "supercollider-installer.msi"
+
+It should install its files into your "Program Files" folder
+and create an item in your Start Menu, 
+which you can use to launch SuperCollider.
+
 
 Have fun!
 
 
-Christopher Frauenberger
-[frauenberger@iem.at]
+  with love from
+  Benjamin Golinvaux, John Glover, 
+  Christopher Frauenberger, Dan Stowell, 
+  and all the other bunnies who helped bring SC to Windows
+ 
