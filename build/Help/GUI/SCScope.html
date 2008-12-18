@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -19,7 +19,7 @@ p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helve
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #626140}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #626042}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
@@ -30,21 +30,17 @@ p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {text-decoration: underline ; color: #2641c9}
+span.s3 {text-decoration: underline ; color: #2d46c3}
 span.s4 {text-decoration: underline}
-span.s5 {color: #0020f6}
+span.s5 {color: #0c2eee}
 span.s6 {color: #6f7178}
-span.s7 {color: #314bd1}
-span.s8 {color: #485abb}
+span.s7 {color: #3850cb}
+span.s8 {color: #4c5db6}
 span.s9 {font: 14.0px Helvetica}
 span.s10 {color: #0000bf}
 span.s11 {color: #606060}
 span.s12 {color: #007300}
 span.s13 {color: #bf0000}
-span.s14 {font: 12.0px Helvetica; color: #606060}
-span.s15 {font: 12.0px Helvetica}
-span.s16 {font: 11.0px Monaco}
-span.s17 {font: 11.0px Monaco; color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -170,7 +166,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17">f.free;<span class="Apple-converted-space"> </span></p>
 <p class="p17">b.free;</p>
 <p class="p17">w.close;</p>
-<p class="p12">)</p>
+<p class="p17">)</p>
 <p class="p3"><br></p>
 <p class="p10"><b>Interactive Example with Sound (explains all the<span class="Apple-converted-space">  </span>options)</b></p>
 <p class="p3"><br></p>
@@ -190,14 +186,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="Apple-tab-span">	</span>v=<span class="s10">GUI</span>.compositeView.new(w,<span class="s10">Rect</span>(400,10,380,380)).background_(<span class="s10">Color</span>.rand(0.7));</p>
 <p class="p16"><span class="Apple-tab-span">	</span>v.decorator = n = <span class="s10">FlowLayout</span>(v.bounds, margin: 0@0, gap: 5@5);</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span>a = <span class="s10">GUI</span>.staticText.new(v, <span class="s10">Rect</span>(20, 70, 90, 20)).string_(<span class="s11">" </span><span class="s14"><b>xZoom = 1</b></span><span class="s11">"</span>).background_(<span class="s10">Color</span>.rand);</p>
+<p class="p16"><span class="Apple-tab-span">	</span>a = <span class="s10">GUI</span>.staticText.new(v, <span class="s10">Rect</span>(20, 70, 90, 20)).string_(<span class="s11">" xZoom = 1"</span>).background_(<span class="s10">Color</span>.rand);</p>
 <p class="p16"><span class="Apple-tab-span">	</span>m = <span class="s10">GUI</span>.slider.new(v, <span class="s10">Rect</span>(20, 60, 285, 20)).background_(a.background).action_({func.value}).value_(0.5);</p>
-<p class="p16"><span class="Apple-tab-span">	</span>d = <span class="s10">GUI</span>.staticText.new(v, <span class="s10">Rect</span>(20, 70, 90, 20)).string_(<span class="s11">" </span><span class="s14"><b>yZoom = 1</b></span><span class="s11">"</span>).background_(<span class="s10">Color</span>.rand);</p>
+<p class="p16"><span class="Apple-tab-span">	</span>d = <span class="s10">GUI</span>.staticText.new(v, <span class="s10">Rect</span>(20, 70, 90, 20)).string_(<span class="s11">" yZoom = 1"</span>).background_(<span class="s10">Color</span>.rand);</p>
 <p class="p16"><span class="Apple-tab-span">	</span>g = <span class="s10">GUI</span>.slider.new(v, <span class="s10">Rect</span>(20, 60, 285, 20)).background_(d.background).action_({func.value}).value_(0.5);</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span>h = <span class="s10">GUI</span>.staticText.new(v, <span class="s10">Rect</span>(20, 70, 90, 20)).string_(<span class="s11">" </span><span class="s14"><b>x = 0</b></span><span class="s11">"</span>).background_(<span class="s10">Color</span>.rand);</p>
+<p class="p16"><span class="Apple-tab-span">	</span>h = <span class="s10">GUI</span>.staticText.new(v, <span class="s10">Rect</span>(20, 70, 90, 20)).string_(<span class="s11">" x = 0"</span>).background_(<span class="s10">Color</span>.rand);</p>
 <p class="p16"><span class="Apple-tab-span">	</span>i = <span class="s10">GUI</span>.slider.new(v, <span class="s10">Rect</span>(20, 60, 285, 20)).background_(h.background).action_({func.value}).value_(0.5);</p>
-<p class="p15">//<span class="Apple-tab-span">	</span>j = GUI.staticText.new(v, Rect(20, 70, 90, 20)).string_(" <span class="s15"><b>y = 0</b></span>").background_(Color.rand);</p>
+<p class="p15">//<span class="Apple-tab-span">	</span>j = GUI.staticText.new(v, Rect(20, 70, 90, 20)).string_(" y = 0").background_(Color.rand);</p>
 <p class="p15">//<span class="Apple-tab-span">	</span>k = GUI.slider.new(v, Rect(20, 60, 285, 20)).background_(j.background).action_({func.value}).value_(0.5);</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p15">//<span class="Apple-tab-span">	</span>GUI.button.new(v, Rect(0,0,380, 20))</p>
@@ -217,10 +213,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({func.value});</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p16"><span class="Apple-tab-span">	</span>func={<span class="Apple-converted-space"> </span></p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.xZoom = ([<span class="s16">0.25, 10, </span><span class="s17">\exp</span><span class="s16">, 1/8, 1].asSpec.map(</span>m.value)); a.string = <span class="s11">" </span><span class="s14"><b>xZoom =<span class="Apple-converted-space">  </span>%</b></span><span class="s11">"</span>.format(c.xZoom);</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.yZoom = ([<span class="s16">0.25, 10, </span><span class="s17">\exp</span><span class="s16">, 1/8, 1].asSpec.map(</span>g.value)); d.string = <span class="s11">" </span><span class="s14"><b>yZoom =<span class="Apple-converted-space">  </span>%</b></span><span class="s11">"</span>.format(c.yZoom);</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.x = ([<span class="s16"> -1024,1024, </span><span class="s17">\linear</span><span class="s16">, 1/8, 1].asSpec.map(</span>i.value)); h.string = <span class="s11">" </span><span class="s14"><b>x =<span class="Apple-converted-space">  </span>%</b></span><span class="s11">"</span>.format(c.x);</p>
-<p class="p15">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.y = ([-<span class="s16">1,1, \linear, 1/16, 1].asSpec.map(</span>k.value)); j.string = " <span class="s15"><b>y =<span class="Apple-converted-space">  </span>%</b></span>".format(c.y);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.xZoom = ([0.25, 10, <span class="s12">\exp</span>, 1/8, 1].asSpec.map(m.value)); a.string = <span class="s11">" xZoom =<span class="Apple-converted-space">  </span>%"</span>.format(c.xZoom);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.yZoom = ([0.25, 10, <span class="s12">\exp</span>, 1/8, 1].asSpec.map(g.value)); d.string = <span class="s11">" yZoom =<span class="Apple-converted-space">  </span>%"</span>.format(c.yZoom);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.x = ([ -1024,1024, <span class="s12">\linear</span>, 1/8, 1].asSpec.map(i.value)); h.string = <span class="s11">" x =<span class="Apple-converted-space">  </span>%"</span>.format(c.x);</p>
+<p class="p15">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.y = ([-1,1, \linear, 1/16, 1].asSpec.map(k.value)); j.string = " y =<span class="Apple-converted-space">  </span>%".format(c.y);</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.style=t.value</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
