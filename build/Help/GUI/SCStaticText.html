@@ -23,13 +23,14 @@ p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helv
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #505fb1}
-span.s4 {color: #6f7183}
+span.s3 {color: #5461ad}
+span.s4 {color: #6f7182}
 span.s5 {font: 12.0px Helvetica}
-span.s6 {color: #0018b8}
+span.s6 {color: #0922b2}
 span.s7 {color: #0000bf}
 span.s8 {color: #007300}
 span.s9 {color: #606060}
@@ -48,8 +49,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-<span class="Apple-converted-space">  </span>The parent view.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s4">Rect</span></a>,<span class="Apple-converted-space">  </span>or<span class="Apple-converted-space">  </span>a <a href="../Geometry/Point.html"><span class="s4">Point</span></a> indicating width@height.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s4">Rect</span></a>, or a <a href="../Geometry/Point.html"><span class="s4">Point</span></a> indicating width@height.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>(<span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new.front;</p>
@@ -94,12 +95,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s7">Out</span><span class="s2">.kr(b.index,freq); </span>// output the frequency to a control bus</p>
 <p class="p16"><span class="Apple-tab-span">	</span>}).play;</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span>r= Routine{<span class="Apple-converted-space"> </span></p>
+<p class="p17"><span class="s2"><span class="Apple-tab-span">	</span>r= </span>Routine<span class="s2">{ </span></span></p>
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// set the value of the StaticText to the value in the control bus</p>
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// setting GUI values is asynchronous, so you must use .defer in the system clock.</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// Also you must check if the window is still open, since Routine wil continue for at least</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// one step after you close the window.</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.get( {<span class="s7">arg</span> v; {w.isClosed.not.if{ a.string= <span class="s9">" Current Frequency: "</span>++v.round(0.01)}; }.defer} );<span class="Apple-converted-space"> </span></p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Also you must check if the window is still open, since Routine wil continue for at least</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// one step after you close the window.</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.get( {<span class="s7">arg</span> v; {w.isClosed.not.if{ a.string= <span class="s9">" Current Frequency: "</span>++v.round(0.01)}; }.defer} ); </span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.01.wait;</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.loop</p>
@@ -133,10 +134,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p16"><span class="Apple-tab-span">	</span>r = {<span class="s7">inf</span>.do{<span class="s7">|i|</span></p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">thisThread</span>.randSeed_(1284);</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.do{<span class="s7">|item|</span><span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.do{<span class="s7">|item|</span> </span></p>
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// setting GUI values is asynchronous, so you must use .defer</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{item.bounds = <span class="s7">Rect</span>(5+w.bounds.extent.x.rand * (cos(i*0.01)).abs,<span class="Apple-converted-space"> </span></p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds.extent.y.rand * sin(i*0.01),<span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{item.bounds = <span class="s7">Rect</span>(5+w.bounds.extent.x.rand * (cos(i*0.01)).abs, </span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds.extent.y.rand * sin(i*0.01), </span></p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>160, 20)}.defer;</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.15.wait;</p>
@@ -144,10 +145,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="Apple-tab-span">	</span><span class="s7">CmdPeriod</span>.doOnce({w.close});</p>
 <p class="p16"><span class="Apple-tab-span">	</span>w.onClose_({r.stop});</p>
 <p class="p16">)</p>
-<p class="p14"><br></p>
-<p class="p17"><br></p>
-<p class="p17"><br></p>
-<p class="p17"><br></p>
-<p class="p17"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
 </body>
 </html>

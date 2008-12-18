@@ -46,7 +46,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">Another useful instance variable is <b>round</b>, the rounding precision for the number box display. The default value for <b>round</b> is 0.001 .</p>
 <p class="p3"><br></p>
-<p class="p1">see also <b>EZSlider</b> and <b>EZRanger</b>.<span class="Apple-converted-space"> </span></p>
+<p class="p1">see also <b>EZSlider</b> and <b>EZRanger</b>. </span></p>
 <p class="p4"><br></p>
 <p class="p5">// Example:</p>
 <p class="p6">(</p>
@@ -85,8 +85,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// define a synth</p>
 <p class="p6"><span class="s2">SynthDef</span>(<span class="s3">"window-test"</span>, { <span class="s2">arg</span> note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> x;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s2">Mix</span>.fill(4, {<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">LFSaw</span>.ar((note + {0.1.rand2}.dup).midicps, 0, 0.02)<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s2">Mix</span>.fill(4, { </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">LFSaw</span>.ar((note + {0.1.rand2}.dup).midicps, 0, 0.02) </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s2">RLPF</span>.ar(x, fc, rq).softclip;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s2">RLPF</span>.ar(x, fc, rq, amp).softclip;</p>
@@ -133,23 +133,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">// create controls for all parameters</p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">noteControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Note"</span>, <span class="s2">ControlSpec</span>(24, 60, <span class="s6">\lin</span>, 1),<span class="Apple-converted-space"> </span></p>
+<p class="p6">noteControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Note"</span>, <span class="s2">ControlSpec</span>(24, 60, <span class="s6">\lin</span>, 1), </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"note"</span>, ez.value )}, 36);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">cutoffControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Cutoff"</span>, <span class="s2">ControlSpec</span>(200, 5000, <span class="s6">\exp</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p6">cutoffControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Cutoff"</span>, <span class="s2">ControlSpec</span>(200, 5000, <span class="s6">\exp</span>), </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"fc"</span>, ez.value )}, 1000);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">resonControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Resonance"</span>, <span class="s2">ControlSpec</span>(0.1, 0.7),<span class="Apple-converted-space"> </span></p>
+<p class="p6">resonControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Resonance"</span>, <span class="s2">ControlSpec</span>(0.1, 0.7), </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"rq"</span>, ez.value )}, 0.2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">balanceControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Balance"</span>, <span class="s6">\bipolar</span>,<span class="Apple-converted-space"> </span></p>
+<p class="p6">balanceControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Balance"</span>, <span class="s6">\bipolar</span>, </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"bal"</span>, ez.value )}, 0);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p6">w.view.decorator.nextLine;</p>
-<p class="p6">ampControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Amp"</span>, <span class="s6">\db</span>,<span class="Apple-converted-space"> </span></p>
+<p class="p6">ampControl = <span class="s2">EZNumber</span>(w, 400 @ 24, <span class="s3">"Amp"</span>, <span class="s6">\db</span>, </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>{<span class="s2">|ez|</span> node.set( <span class="s3">"amp"</span>, ez.value.dbamp )}, -6);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><br></p>
