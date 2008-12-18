@@ -90,7 +90,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b>Basic Usage: Windows, Containers and Decorators</b></p>
 <p class="p7"><br></p>
 <p class="p11">(</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="s8">var</span> w, b;</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// Window returns the window class for the current kit</p>
 <p class="p12"><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>( <span class="s9">"my name is... panel"</span>, <span class="s8">Rect</span>( 128, 64, 340, 360 ));</p>
 <p class="p13"><br></p>
@@ -152,7 +151,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">The bounds.rect is the following: Rect(left, <b>top</b>, width,height). Remember, to place views yourself, you will use no decorator.</p>
 <p class="p16"><br></p>
 <p class="p12"><span class="Apple-tab-span">	</span>(</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>w=</span><span class="s8">Window</span><span class="s1">.new.front;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Use Rect for precise placement in a CompositeVew</p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>w=</span><span class="s8">Window</span><span class="s1">.new.front;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Use Rect for precise placement in a CompositeView</p>
 <p class="p12"><span class="Apple-tab-span">	</span>v=<span class="s8">CompositeView</span>(w, <span class="s8">Rect</span>(50,50,300,300));</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>v.background_(</span><span class="s8">Color</span><span class="s1">.grey);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// give the subview a visible color</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s8">Slider</span><span class="s1">(v, </span><span class="s8">Rect</span><span class="s1"> (50,50,220,20)) <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// so this is equivalent when Window is used as a parent</p>
@@ -161,7 +160,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">For views, you can use <b>relative</b> bounds coordinates, which are measured from the parent <b>view's</b> top left corner. </span></p>
 <p class="p14"><br></p>
 <p class="p12"><span class="Apple-tab-span">	</span>(</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>w=</span><span class="s8">Window</span><span class="s1">.new.front;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Use Rect for precise placement in a CompositeVew</p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>w=</span><span class="s8">Window</span><span class="s1">.new.front;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Use Rect for precise placement in a CompositeView</p>
 <p class="p12"><span class="Apple-tab-span">	</span>v=<span class="s8">CompositeView</span>(w, <span class="s8">Rect</span>(50,50,300,300));</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>v.background_(</span><span class="s8">Color</span><span class="s1">.grey);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// give the subview a visible color</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>v.relativeOrigin = </span><span class="s8">true</span><span class="s1">; <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// use relative coordinates</p>
