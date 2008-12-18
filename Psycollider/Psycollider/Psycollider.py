@@ -889,7 +889,7 @@ class Psycollider(wx.App):
         self.fileHistory.Load(self.config)
         
         # Create post window
-        self.theMainFrame = PsycolliderPostWindow(None, -1, "Psycollider Post Window")
+        self.theMainFrame = PsycolliderPostWindow(None, -1, "SuperCollider (Post Window)")
         self.theMainFrame.Show(True)
         self.SetTopWindow(self.theMainFrame)
         
