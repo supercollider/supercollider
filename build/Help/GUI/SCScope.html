@@ -10,7 +10,7 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
@@ -19,23 +19,23 @@ p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helve
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #626042}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #625f44}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
 p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p19 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
-p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; color: #000000}
 p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {text-decoration: underline ; color: #2d46c3}
-span.s4 {text-decoration: underline}
-span.s5 {color: #0c2eee}
+span.s3 {text-decoration: underline}
+span.s4 {text-decoration: underline ; color: #001ee6}
+span.s5 {color: #1638e6}
 span.s6 {color: #6f7178}
-span.s7 {color: #3850cb}
-span.s8 {color: #4c5db6}
+span.s7 {color: #3e54c5}
+span.s8 {color: #505fb1}
 span.s9 {font: 14.0px Helvetica}
 span.s10 {color: #0000bf}
 span.s11 {color: #606060}
@@ -49,9 +49,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: Object : SCView</b></p>
 <p class="p3"><br></p>
-<p class="p1">An oscilloscope-type view. </span></p>
+<p class="p1">An oscilloscope-type view. </p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s2"><b>See also:</b> <a href="Stethoscope.html"><span class="s3">Stethoscope</span></a>, <a href="SCFreqScope.html"><span class="s4">SCFreqScope</span></a>, <a href="FreqScope.html"><span class="s4">FreqScope</span></a></span></p>
+<p class="p4"><span class="s2"><b>See also:</b> <a href="SCStethoscope.html">SC<span class="s3">Stethoscope</span></a>, <a href="SCFreqScope.html"><span class="s4">SCFreqScope</span></a>,<a href="SCFreqScopeWindow.html"><span class="s3">SCFreqScopeWindow</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding SCScope</b></p>
 <p class="p2"><br></p>
@@ -61,20 +61,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="Geometry/Rect.html"><span class="s6">Rect</span></a>,  </span>or  </span>a <a href="Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  The parent view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s6">Rect</span></a>,  or  a <a href="../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
 <p class="p6"><br></p>
 <p class="p10"><b>Accessing Instance and Class Variables</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>bufnum</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>bufnum_ (num)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>num </b>- An integer.The <b>bufnum</b> of the scope's <a href="../ServerArchitecture/Buffer.html"><span class="s7">Buffer</span></a>. </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>num </b>- An integer.The <b>bufnum</b> of the scope's <a href="../ServerArchitecture/Buffer.html"><span class="s7">Buffer</span></a>. </p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>style_ (val)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The display style of the scope.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- Explanation of val. <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- Explanation of val. <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0 = vertically spaced</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1 = overlapped</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2 = x/y</p>
@@ -83,7 +83,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>xZoom_ (val)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The x- scaling of the scope.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An instance of <a href="../Math/Float.html"><span class="s8">Float</span></a>.  </span>Must be in steps of 2**(1/n ), where n is a positive integer</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An instance of <a href="../Math/Float.html"><span class="s8">Float</span></a>.  Must be in steps of 2**(1/n ), where n is a positive integer</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>yZoom</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>yZoom_ (val)</b></p>
@@ -93,16 +93,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><b>x</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>x_ (val)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The x offset of the scope in samples. </span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The x offset of the scope in samples. </p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An Integer.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>waveColors</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>waveColors_ (arrayOfColors)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arrayOfColors </b>- An <a href="../Collections/Array.html"><span class="s8">Array</span></a> of <a href="Color.html"><span class="s8">Color</span></a>s. [ color1, color2, color2, ...], corresponding to the number of channels. </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arrayOfColors </b>- An <a href="../Collections/Array.html"><span class="s8">Array</span></a> of <a href="Color.html"><span class="s8">Color</span></a>s. [ color1, color2, color2, ...], corresponding to the number of channels. </p>
 <p class="p6"><br></p>
-<p class="p10"><b>Subclassing and Internal Methods </span></b></p>
-<p class="p7"><span class="s9"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
+<p class="p10"><b>Subclassing and Internal Methods </b></p>
+<p class="p7"><span class="s9"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -140,7 +140,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// ScopeOut writes the audio to the buffer</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">ScopeOut</span>.ar(z, bufnum);</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).play(</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">RootNode</span>(s), </span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">RootNode</span>(s), </p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s12">\bus</span>,b.index, <span class="s12">\bufnum</span>, f.bufnum] ,</p>
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s12">\addToTail</span><span class="s2"> </span>// make sure it goes after what you are scoping</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
@@ -161,16 +161,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17">c.style = 2 <span class="s13">// x/y</span></p>
 <p class="p18"><br></p>
 <p class="p19"><span class="s2">( </span>//remember to free your stuff when finished</p>
-<p class="p17">a.free; </span></p>
+<p class="p17">a.free; </p>
 <p class="p17">d.free;</p>
-<p class="p17">f.free; </span></p>
+<p class="p17">f.free; </p>
 <p class="p17">b.free;</p>
 <p class="p17">w.close;</p>
 <p class="p17">)</p>
-<p class="p3"><br></p>
-<p class="p10"><b>Interactive Example with Sound (explains all the  </span>options)</b></p>
-<p class="p3"><br></p>
-<p class="p20">(</p>
+<p class="p14"><br></p>
+<p class="p20"><span class="s10"><b>Interactive</b></span><b> </b><span class="s10"><b>Example</b></span><b> with </b><span class="s10"><b>Sound</b></span><b> (explains all the  options)</b></p>
+<p class="p14"><br></p>
+<p class="p16">(</p>
 <p class="p14"><br></p>
 <p class="p16">s = <span class="s10">Server</span>.internal;</p>
 <p class="p16">s.waitForBoot({<span class="Apple-tab-span">	</span></p>
@@ -204,7 +204,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="s10">GUI</span>.button.new(v, <span class="s10">Rect</span>(0,0,380, 20))</p>
 <p class="p21"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.states_([[</span>" background = Color.rand(0.1,0.3) "<span class="s2">,</span><span class="s10">Color</span><span class="s2">.black,</span><span class="s10">Color</span><span class="s2">.rand]])</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({c.background =  </span><span class="s10">Color</span>.rand(0.1,0.3) });</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({c.background =  <span class="s10">Color</span>.rand(0.1,0.3) });</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p16"><span class="Apple-tab-span">	</span>t= <span class="s10">GUI</span>.button.new(v, <span class="s10">Rect</span>(0,0,380, 20))</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.states_([[<span class="s11">"Current style is 0"</span>,<span class="s10">Color</span>.black,<span class="s10">Color</span>.rand],</p>
@@ -212,11 +212,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s11">"Current style is 2"</span>,<span class="s10">Color</span>.black,<span class="s10">Color</span>.rand]])</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({func.value});</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span>func={ </span></p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.xZoom = ([0.25, 10, <span class="s12">\exp</span>, 1/8, 1].asSpec.map(m.value)); a.string = <span class="s11">" xZoom =  </span>%"</span>.format(c.xZoom);</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.yZoom = ([0.25, 10, <span class="s12">\exp</span>, 1/8, 1].asSpec.map(g.value)); d.string = <span class="s11">" yZoom =  </span>%"</span>.format(c.yZoom);</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.x = ([ -1024,1024, <span class="s12">\linear</span>, 1/8, 1].asSpec.map(i.value)); h.string = <span class="s11">" x =  </span>%"</span>.format(c.x);</p>
-<p class="p15">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.y = ([-1,1, \linear, 1/16, 1].asSpec.map(k.value)); j.string = " y =  </span>%".format(c.y);</p>
+<p class="p16"><span class="Apple-tab-span">	</span>func={ </p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.xZoom = ([0.25, 10, <span class="s12">\exp</span>, 1/8, 1].asSpec.map(m.value)); a.string = <span class="s11">" xZoom =  %"</span>.format(c.xZoom);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.yZoom = ([0.25, 10, <span class="s12">\exp</span>, 1/8, 1].asSpec.map(g.value)); d.string = <span class="s11">" yZoom =  %"</span>.format(c.yZoom);</p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.x = ([ -1024,1024, <span class="s12">\linear</span>, 1/8, 1].asSpec.map(i.value)); h.string = <span class="s11">" x =  %"</span>.format(c.x);</p>
+<p class="p15">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.y = ([-1,1, \linear, 1/16, 1].asSpec.map(k.value)); j.string = " y =  %".format(c.y);</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.style=t.value</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -233,7 +233,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">ScopeOut</span>.ar(z, bufnum);</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Out</span>.ar(0,z);</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).play(</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">RootNode</span>(s), </span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">RootNode</span>(s), </p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s12">\bus</span>,b.index, <span class="s12">\bufnum</span>, f.bufnum] ,</p>
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s12">\addToTail</span><span class="s2"> </span>// make sure it goes after what you are scoping</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
@@ -253,6 +253,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="Apple-tab-span">	</span>w.onClose={syn1.free; syn2.free; b.free; f.free};</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="s10">CmdPeriod</span>.doOnce({w.close});</p>
 <p class="p16">})</p>
-<p class="p20">)</p>
+<p class="p16">)</p>
 </body>
 </html>
