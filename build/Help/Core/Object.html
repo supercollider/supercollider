@@ -288,8 +288,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Must be called from inside a <a href="Kernel/Routine.html"><span class="s4">Routine</span></a><b>. </b>Yields control to the calling thread. The receiver is the result passed to the calling thread's method. The Routine, when called subsequently will always yield the receiver until it is reset. alwaysYield never returns within the Routine.</p>
 <p class="p6"><br></p>
 <p class="p7"><span class="s12"><span class="Apple-tab-span">	</span></span><b>idle(time)</b></p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>within a routine, return values until this time is over. Time is measured relative to the thread's clock.</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(see <a href="Kernel/Routine.html"><span class="s8">Routine</span></a>)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>within a routine, return values (the receiver) until this time is over. (for an example, see <a href="Kernel/Routine.html"><span class="s8">Routine</span></a>)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Time is measured relative to the thread's clock.</p>
 <p class="p6"><br></p>
 <p class="p5"><b>Error Support</b></p>
 <p class="p2"><br></p>
