@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -15,7 +15,8 @@ p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Times; min-height: 19.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Times; color: #000000; min-height: 19.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Times; min-height: 19.0px}
 span.s1 {color: #000000}
 span.s2 {color: #0000bf}
 span.s3 {color: #007300}
@@ -32,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>chain [fft] - </b>Audio input to track, which has been pre-analysed by the FFT UGen; see examples below for the expected FFT size</p>
 <p class="p3"><b>numcoeff [s] - </b>Number of coefficients, defaults to 13, maximum of 42; more efficient to use less of course! <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p3">Generates a set of MFCCs; these are obtained from a band-based frequency representation (using the Mel scale by default), and then a discrete cosine transform (DCT). The DCT is an efficient approximation for principal components analysis, so that it allows a compression, or reduction of dimensionality, of the data, in this case reducing 42 band readings to a smaller set of MFCCs; a small number of features (the coefficients) end up describing the spectrum. The MFCCs are commonly used as timbral descriptors.<span class="Apple-converted-space"> </span></p>
+<p class="p3">Generates a set of MFCCs; these are obtained from a band-based frequency representation (using the Mel scale by default), and then a discrete cosine transform (DCT). The DCT is an efficient approximation for principal components analysis, so that it allows a compression, or reduction of dimensionality, of the data, in this case reducing 42 band readings to a smaller set of MFCCs. A small number of features (the coefficients) end up describing the spectrum. The MFCCs are commonly used as timbral descriptors.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3">Output values are somewhat normalised for the range 0.0 to 1.0, but there are no guarantees on exact conformance to this. Commonly, the first coefficient will be the highest value.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
@@ -113,10 +114,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">w.close;</p>
 <p class="p8">)</p>
 <p class="p9"><br></p>
-<p class="p3">Research notes: Drafts of an MFCC UGen wee prepared by both Dan Stowell and Nick Collins; their various ideas are combined here in a cross platform compatible UGen. Mel scale spacing with triangular crossfade overlap is used by default for the bands, approximately tracking the human critical band spacing and bandwidth. Variants such as BFCC (Bark) and EFCC (ERB) given similar results in practice; the Mel scale as used here as the standard as adapted from the speech recognition literature and now applied in music information retrieval. <span class="Apple-converted-space"> </span></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p3">Research notes: Drafts of an MFCC UGen were prepared by both Dan Stowell and Nick Collins; their various ideas are combined here in a cross platform compatible UGen. Mel scale spacing with triangular crossfade overlap is used by default for the bands, approximately tracking the human critical band spacing and bandwidth. Variants such as BFCC (Bark) and EFCC (ERB) given similar results in practice; the Mel scale as used here is the standard as adapted from the speech recognition literature and now applied in music information retrieval. <span class="Apple-converted-space"> </span></p>
 <p class="p6"><br></p>
 <p class="p5">//Calculating Mel Scale Bands; allow up to 42 coefficients, so up to 42 bands</p>
-<p class="p5">//first part of this code adapted from Dan Stowell and Jamie Bullock Mel sclae implementation</p>
+<p class="p5">//first part of this code adapted from Dan Stowell and Jamie Bullock Mel scale implementation</p>
 <p class="p5">//could later add Bark and ERB options, and possibility of buffer of data to be passed to the UGen for alternative freq warpings</p>
 <p class="p8">(</p>
 <p class="p8"><span class="s2">var</span> mel_freq_max, mel_freq_min,freq_bw_mel, freq_bands, freq_max, freq_min;<span class="Apple-converted-space"> </span></p>
