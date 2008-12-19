@@ -128,7 +128,7 @@ print "\ndistrowin.py: done generating WiX file\n"
 
 print "Calling WiX compile/link steps...\n"
 os.system('candle supercollider-installer.wxs')
-os.system('light supercollider-installer.wixobj')
+os.system('light -ext WixUIExtension -cultures:en-us supercollider-installer.wixobj')
 
 print "\ndistrowin.py: done building MSI\n"
 print "\ndistrowin.py: now to bundle a zip file\n"
