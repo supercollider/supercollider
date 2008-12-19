@@ -103,13 +103,13 @@ EZPopUpMenu{
 	bounds{^view.bounds}
 	bounds_{arg rect;
 		var labelWidth=0;
-		labelView.notNil.if{labelWidth= labelView.bounds.width+gap};
 		view.bounds=rect.asRect;
+		labelView.notNil.if{labelWidth= labelView.bounds.width+gap};
 		menu.bounds= Rect(
 				labelWidth,
 				0,
-				view.bounds.x-labelWidth,  
-				view.bounds.y
+				view.bounds.width-labelWidth,  
+				view.bounds.height
 				);
 	}
 	
