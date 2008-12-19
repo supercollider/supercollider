@@ -26,8 +26,9 @@ Headlines:
 * 2008-12-07 added PV_Conj ugen for complex conjugate - ds
 * 2008-12-15 new ViewRedirect for easier cross-platform gui syntax. e.g. Window now redirects to SCWindow or JWindow. ds & jm
 * 2008-12-15 revised and updated all SC Gui documentation. New gui introduction. New SCUserView subclassing tutorial. - jm
+* 2008-12-15 the /done message for Buffer allocation/free/etc now also includes the buffer index - jt
 * 2008-12-15 added methods to SCFreqScope for "special" SynthDef, and for visualising frequency responses - ds
-
+* 2008-12-18 the main windows version of sc is now called "SuperCollider" rather than "PsyCollider" (although psycollider is the name of the code editor). SuperCollider on windows now has a different (better? who knows) installer, uses the main sc3 icon, and has some other tweaks that make it different from version 3.2 - ds
 
 Bugfixes:
 ---------
