@@ -139,5 +139,13 @@
     <MergeRef Id="VCRedistPolicy"/>
 </Feature>
 
+<!-- UIRef Id="WixUI_InstallDir" / -->
+<UIRef Id="WixUI_Minimal" /> 
+<WixVariable Id="WixUILicenseRtf" Value="LicenseForWinInstaller.rtf" />
+<!--
+<WixVariable Id="WixUIBannerBmp" Value="Bitmaps/BannrBmp.bmp" />
+<WixVariable Id="WixUIDlgBmp" Value="Bitmaps/DlgBmp.bmp" />
+-->
+
 </Product>
 </Wix>
