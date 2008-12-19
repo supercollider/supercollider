@@ -310,7 +310,7 @@ static void midiReadProc(const MIDIPacketList *pktlist, void* readProcRefCon, vo
     }
 }
 
-void midiCleanUp();
+int midiCleanUp();
 
 int initMIDI(int numIn, int numOut)
 {
@@ -371,22 +371,33 @@ int initMIDI(int numIn, int numOut)
     return errNone;
 }
 
-void midiCleanUp()
-{
+int midiCleanUp()
+{	
+	/* 
+	 * do not catch errors when disposing ports
+	 * MIDIClientDispose should normally dispose the ports attached to it
+	 * but clean up the pointers in case
+	 */
     for (int i=0; i<gNumMIDIOutPorts; ++i) {
         MIDIPortDispose(gMIDIOutPort[i]);
+		gMIDIOutPort[i] = 0;
     }
 	gNumMIDIOutPorts = 0;
 	
     for (int i=0; i<gNumMIDIInPorts; ++i) {
         MIDIPortDispose(gMIDIInPort[i]);
+		gMIDIInPort[i] = 0;
     }
 	gNumMIDIInPorts = 0;
 	
     if (gMIDIClient) {
-        MIDIClientDispose(gMIDIClient);
+		if( MIDIClientDispose(gMIDIClient) ) {
+			post( "Error: failed to dispose MIDIClient\n" );
+			return errFailed;
+		}
 		gMIDIClient = 0;
     }
+	return errNone;
 }
 
 
@@ -594,7 +605,7 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(b, &numIn);
 	if (err) return errWrongType;
 	
-	err = slotIntVal(c, &numOut);
+	err = slotIntVal(c, &numOut); 
 	if (err) return errWrongType;
 	
 	return initMIDI(numIn, numOut);
@@ -602,15 +613,7 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed);
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
 {
-    PyrSlot *a;
-    a = g->sp - 1;
-    OSStatus err = MIDIClientDispose(gMIDIClient);
-    if (err) {
-        post("error could not dispose MIDIClient \n");
-        return errFailed;
-    }
-    return errNone;	
-
+	return midiCleanUp();
 }
 int prRestartMIDI(VMGlobals *g, int numArgsPushed);
 int prRestartMIDI(VMGlobals *g, int numArgsPushed)
