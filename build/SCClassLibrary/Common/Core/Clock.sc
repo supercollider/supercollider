@@ -86,6 +86,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 
 	stop {
+		this.changed(\stop);
+		this.releaseDependants;
 		all.take(this);
 		this.prStop;
 	}
@@ -143,6 +145,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	// (even another TempoClock's logical time).
 	tempo_ { arg newTempo;
 		this.setTempoAtBeat(newTempo, this.beats);
+		this.changed(\tempo);  // this line is added
 	}
 	beatsPerBar_ { arg newBeatsPerBar;
 		if (thisThread.clock != this) { 
@@ -231,7 +234,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		baseBarBeat = beats;
 		beatsPerBar = newBeatsPerBar;
 		barsPerBeat = beatsPerBar.reciprocal;
-		this.changed; 
+		this.changed(\meter);
 	}
 }
 
