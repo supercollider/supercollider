@@ -35,7 +35,7 @@
 	}
 	drawAtPoint { arg point, font, color;
 		_String_DrawAtPoint
-		^this.primitiveFailedåß
+		^this.primitiveFailed
 	}
 	drawInRect { arg rect, font, color;
 		_String_DrawInRect
