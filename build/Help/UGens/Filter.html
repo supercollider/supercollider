@@ -10,10 +10,14 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Arial; background-color: #f9f9f9; min-height: 15.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Arial; background-color: #f9f9f9}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
-span.s3 {color: #0000bf}
+span.s2 {color: #0013fe}
+span.s3 {color: #000ebe}
+span.s4 {color: #0000bf}
+span.s5 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -24,5 +28,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">To see all classes which derive from the Filter class, run this line:</p>
 <p class="p4"><span class="s3">Filter</span>.allSubclasses.do(<span class="s3">_</span>.postln)</p>
+<p class="p2"><br></p>
+<p class="p3">The Filter class also provides a simple way to visualise the frequency-wise effect of applying a filter:</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s4">GUI</span><span class="s5">.stethoscope.defaultServer.boot </span>// boot the server that will be scoped</p>
+<p class="p6"><span class="s4">MoogFF</span>.scopeResponse</p>
+<p class="p6"><span class="s4">HPF</span>.scopeResponse</p>
+<p class="p6"><span class="s4">BRF</span>.scopeResponse</p>
+<p class="p6"><span class="s4">Median</span>.scopeResponse</p>
 </body>
 </html>
