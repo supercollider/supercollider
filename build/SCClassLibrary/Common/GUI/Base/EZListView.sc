@@ -21,7 +21,7 @@ EZListView{
 			
 				w = GUI.window.new("",Rect(200,Window.screenBounds.height-bounds.height-100,
 					bounds.width+8,bounds.height+28));
-				w.addFlowLayout;
+				w.view.decorator=FlowLayout(w.view.bounds);
 				parentView=w.asView;
 				w.front;
 			};
