@@ -23,6 +23,12 @@
 
 #define SC_MAX_TOKEN_LENGTH 256
 
+#ifdef SC_WIN32
+	#define SC_STRPARSE_PATHDELIMITER ';'
+#else
+	#define SC_STRPARSE_PATHDELIMITER ':'
+#endif
+
 class SC_StringParser
 {
 	const char	*mSpec, *mStart, *mEnd;
