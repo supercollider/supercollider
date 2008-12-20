@@ -10,21 +10,24 @@ EZListView{
 
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
 			initAction, labelWidth, labelHeight, arglabelPosition,  argGap;
-		var labelBounds, listBounds;
+		var labelBounds, listBounds,w;
 		
 		bounds=bounds.asRect;
 		labelPosition=arglabelPosition;
 		labelSize=labelWidth@labelHeight;
 		gap=argGap;
 		
-		parentView.notNil.if{	
-			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
-			}{
-				view = FlowView.new;
-				view.parent.bounds=Rect(200,Window.screenBounds.height-bounds.height-100,
-					bounds.width+4,bounds.height+4);
+		parentView.isNil.if{	
+			
+				w = GUI.window.new("",Rect(200,Window.screenBounds.height-bounds.height-100,
+					bounds.width+8,bounds.height+28));
+				w.addFlowLayout;
+				parentView=w.asView;
+				w.front;
 			};
-		
+			
+		view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
+
 		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
 		
 		label.notNil.if{ //only add a label if desired
