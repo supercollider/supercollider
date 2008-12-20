@@ -11,14 +11,22 @@ EZPopUpMenu{
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
 			initAction, labelWidth, argGap;
 			
-		var labelBounds,menuBounds;
+		var labelBounds,menuBounds,w;
 		
 		bounds=bounds.asRect;
 		labelSize=labelWidth@bounds.height;
 		gap=argGap;
 		
-		parentView.notNil.if{view = parentView }{view = FlowView.new()};
-		view=GUI.compositeView.new(view,bounds).relativeOrigin_(true);
+		parentView.isNil.if{	
+			
+				w = GUI.window.new("",Rect(200,Window.screenBounds.height-bounds.height-100,
+					bounds.width+8,bounds.height+28));
+				w.addFlowLayout;
+				parentView=w.asView;
+				w.front;
+			};
+			
+		view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
 		
 		# labelBounds,menuBounds = this.prSubViewBounds(bounds, label.notNil);
 
