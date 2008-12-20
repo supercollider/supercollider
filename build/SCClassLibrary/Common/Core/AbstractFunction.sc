@@ -154,6 +154,7 @@ AbstractFunction {
 	xor { arg function, adverb; ^this.composeBinaryOp('xor', function, adverb) }
 	nand { arg function, adverb; ^this.composeBinaryOp('nand', function, adverb) }
 	not { ^this.composeUnaryOp('not') }
+	ref { ^this.composeUnaryOp('asRef') }
 	
 	// nary operators
 	clip { arg lo, hi; ^this.composeNAryOp('clip', [lo,hi]) }

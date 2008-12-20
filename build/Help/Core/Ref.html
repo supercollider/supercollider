@@ -5,19 +5,27 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #942b17}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #783222}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-span.s1 {color: #001fb3}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+span.s1 {color: #072aad}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
 span.s4 {font: 12.0px Monaco}
+span.s5 {font: 9.0px Monaco}
+span.s6 {color: #062aaf}
+span.s7 {color: #606060}
+span.s8 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -25,12 +33,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>Ref<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a reference to a value</b></p>
 <p class="p2"><b>superclass: AbstractFunction</b></p>
 <p class="p3"><br></p>
-<p class="p2">A Ref<span class="Apple-converted-space">  </span>instance is an object with a single slot named 'value' that serves as a holder of<span class="Apple-converted-space">  </span>an object. Ref.new(object) one way to create a Ref, but there is a syntactic shortcut. The backquote ` is a unary operator that is equivalent to calling Ref.new(something).</p>
-<p class="p2">It is not to be confused with the C terminology of "a reference".</p>
+<p class="p2">A Ref holds an object which may be retrieved and altered with the messages <b>value </b>and <b>value_(obj)</b>.<span class="Apple-converted-space">   </span></p>
+<p class="p2">The backquote ` is a unary operator that is equivalent to calling Ref.new(obj).</p>
+<p class="p3"><br></p>
+<p class="p2">Refs are most commonly used to prevent <i>multi-channel </i>expansion in SynthDefs and Patterns (see <b>Klank </b>for an example).</p>
+<p class="p2">Refs can also be used to simplify the coding of co-routines used in EventStreams (see <b>Proutine </b>for an example).</p>
 <p class="p3"><br></p>
 <p class="p2">example:<span class="Apple-converted-space">   </span></p>
 <p class="p3"><br></p>
-<p class="p4">x = <span class="s1">Ref</span>.new(<span class="s1">nil</span>);</p>
+<p class="p4">x = <span class="s1">Ref</span>(<span class="s1">nil</span>);</p>
 <p class="p5"><span class="s2">z = obj.method(x);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// method puts something in reference</p>
 <p class="p5"><span class="s2">x.value.doSomething;<span class="Apple-tab-span">	</span></span>// retrieve value and use it</p>
 <p class="p6"><br></p>
@@ -48,29 +59,84 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p7"><b><span class="s3">Instance methods:</span></b></p>
 <p class="p3"><br></p>
-<p class="p2"><b>value</b></p>
-<p class="p3"><br></p>
-<p class="p2">Answer the value.</p>
-<p class="p3"><br></p>
-<p class="p2"><b>value_(aValue)</b></p>
-<p class="p3"><br></p>
-<p class="p2">set the value.</p>
-<p class="p3"><br></p>
-<p class="p2"><b>get</b></p>
-<p class="p3"><br></p>
-<p class="p2">Answer the value.</p>
-<p class="p3"><br></p>
-<p class="p2"><b>set(aValue)</b></p>
-<p class="p3"><br></p>
-<p class="p2">set the value.</p>
-<p class="p3"><br></p>
 <p class="p2"><b>dereference</b></p>
 <p class="p3"><br></p>
-<p class="p2">Answer the value. This message is also defined in class Object where it just returns the receiver.<span class="Apple-converted-space">  </span>Therefore <span class="s4">anything.dereference</span> will remove a Ref if there is one. This is slightly different than the value message, because value will also cause functions to evaluate themselves whereas dereference will not.</p>
+<p class="p2"><span class="Apple-tab-span">	</span>Answer the value. This message is also defined in class Object where it just returns the receiver.<span class="Apple-converted-space">  </span>Therefore <span class="s4">anything.dereference</span> will remove a Ref if there is one. This is slightly different than the value message, because value will also cause functions to evaluate themselves whereas dereference will not.</p>
 <p class="p3"><br></p>
 <p class="p2"><b>asRef</b></p>
 <p class="p3"><br></p>
-<p class="p2">Answers the receiver. In class Object this message is defined to create a Ref of the object.</p>
+<p class="p2"><span class="Apple-tab-span">	</span>Answers the receiver. In class Object this message is defined to create a Ref of the object.</p>
 <p class="p3"><br></p>
+<p class="p2"><b>value</b></p>
+<p class="p3"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span>Returns value.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>value_(aValue)</b></p>
+<p class="p3"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span>Sets value.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>get</b></p>
+<p class="p3"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span>Returns value.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>set(aValue)</b></p>
+<p class="p3"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span>Sets value.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>at (index)</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b>Returns value.at(index)</p>
+<p class="p3"><br></p>
+<p class="p2"><b>put(index, value)</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b>Executes value.put(index, value)</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><b>seq(output)</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b>this method is used to return values from within a Routine definition</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ this.value = output.embedInStream(this.value); }</p>
+<p class="p3"><br></p>
+<p class="p2"><b>asUGenInput</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b>Returns the Ref - this prevents multi-channel expansion in a SynthDef</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><b>asControlInput</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span></b>Returns the value - this is used when sending a Ref as a control value to a server Node.</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><b>Typical uses of Ref:</b></p>
+<p class="p3"><br></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span>preventing multi-channel expansion:</b></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>Refs prevent multi-channel expansion in a SynthDef, so the array below defines one Klank UGen rather than three.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s6">Klank</span>.ar(`[[800, 1071, 1153, 1723], <span class="s6">nil</span>, [1, 1, 1, 1]], <span class="s6">Impulse</span>.ar(2, 0, 0.1)) }.play;</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><br></p>
+<p class="p2"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>Refs also prevent multi-channel expansion in a Pattern. In this example, a SynthDef with an arrayed freq argument is defined and controlled</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>with a pattern:</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>SynthDef<span class="s2">(</span><span class="s7">"multi"</span><span class="s2">, { </span>| gate, out, freq = #[100,200,300], amp = 0.1, pan = 0|</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">var</span> audio, env;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s8">Linen</span>.kr(gate, doneAction:2);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>audio = <span class="s8">Mix</span>(<span class="s8">Saw</span>.ar(freq));</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>audio = <span class="s8">Pan2</span>.ar(audio * env, pan, amp);<span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">OffsetOut</span>.ar(out, audio)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).store</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pbind</span>(*[</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq: <span class="s8">Prand</span>([ `[100, 101, 103], `[100,110, 190], `[100,100.1, 110], `[100,110, 120], ], <span class="s8">inf</span>) * 4,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="s8">Pwhite</span>(-1.0,1.0),</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: 0.2,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain: 2</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]).play</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>The message <b>ref</b>, defined in AbstractFunction, converts the values specified by a Pattern, Stream or Function into Refs.<span class="Apple-converted-space">  </span>Thus, the previous</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>example can also be written:</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pbind</span>(*[</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq: <span class="s8">Prand</span>([ [100, 101, 103], [100,110, 190], [100,100.1, 110], [100,110, 120], ], <span class="s8">inf</span>).ref * 4,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="s8">Pwhite</span>(-1.0,1.0),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: 0.2,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain: 2</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]).play</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5"><span class="Apple-tab-span">	</span></span></p>
 </body>
 </html>

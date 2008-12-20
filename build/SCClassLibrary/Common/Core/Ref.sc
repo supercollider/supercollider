@@ -23,9 +23,9 @@ Ref : AbstractFunction
 
 	// behave like a stream
 	next { ^value }
-	embedInStream { arg inval;
-		^this.value.embedInStream(inval)
-	}
+//	embedInStream { arg inval;
+//		^this.value.embedInStream(inval)
+//	}
 	// prevent multichannel expansion in ugens
 	asUGenInput { ^this }
 
@@ -35,6 +35,10 @@ Ref : AbstractFunction
 	storeOn { arg stream;
 		stream << "`(" <<< value << ")";
 	}
+	at { | key | ^value.at(key) }
+	put  { | key, val | value.put(key, val) }
+	seq { | pat | value = pat.embedInStream(this) } 
+	asControlInput { ^value }
 }
 
 RefCopy : Ref
