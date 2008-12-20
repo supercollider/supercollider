@@ -18,6 +18,7 @@ OSXPlatform : UnixPlatform
 		Server.internal.makeWindow;
 		Server.local.makeWindow;
 		this.loadStartupFiles;
+		Help.addToMenu;
 	}
 	shutdown {
 		HIDDeviceService.releaseDeviceList;

@@ -3718,7 +3718,14 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		// make a submenu if needed
 		//NSLog(@"Top Level");
 		parentMenu = [NSApp mainMenu];
-	} else {
+	} else if (IsSym(parentObj)) {
+		PyrSymbol *parentSymbol;
+		int err = slotSymbolVal(parentObj, &parentSymbol);
+		if (err) return err;
+		if (strcmp(parentSymbol->name, "Help")==0) {
+			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
+		}
+	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
 		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
 		if([parentItem hasSubmenu]) {
 			//NSLog(@"Parent has submenu");
@@ -3726,7 +3733,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		} else {
 			return errFailed;
 		}
-	}
+	} else return errWrongType;
 	
 	// protect against bad indices
 	int parentSize = [parentMenu numberOfItems];
@@ -3750,6 +3757,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed);
 int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed)
 {
+	
 	PyrSlot *caller = g->sp;
 	
 	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
@@ -3764,6 +3772,8 @@ int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed)
 int prEnableMenuItem(struct VMGlobals *g, int numArgsPushed);
 int prEnableMenuItem(struct VMGlobals *g, int numArgsPushed)
 {
+	if (!g->canCallOS) return errCantCallOS;
+	
 	PyrSlot *caller = g->sp - 1;
 	PyrSlot *boolean = g->sp;
 	
@@ -3780,6 +3790,8 @@ int prEnableMenuItem(struct VMGlobals *g, int numArgsPushed)
 int prSetMenuItemState(struct VMGlobals *g, int numArgsPushed);
 int prSetMenuItemState(struct VMGlobals *g, int numArgsPushed)
 {
+	if (!g->canCallOS) return errCantCallOS;
+	
 	PyrSlot *caller = g->sp - 1;
 	PyrSlot *boolean = g->sp;
 	
@@ -3796,6 +3808,7 @@ int prSetMenuItemState(struct VMGlobals *g, int numArgsPushed)
 int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed);
 int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 {
+	if (!g->canCallOS) return errCantCallOS;
 	PyrSlot *caller = g->sp - 3;
 	PyrSlot *stringSlot = g->sp - 2;
 	PyrSlot *alt = g->sp - 1;
