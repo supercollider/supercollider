@@ -1,5 +1,5 @@
 EZPopUpMenu{
-	var   <>globalAction, <>labelView, <items, <menu, <view, <gap;
+	var   <>globalAction, <>labelView, <items, <menu, <view, <gap, labelSize;
 	
 	*new { arg parentView, bounds= 160@16, label,items, globalAction, initVal=0, 
 			initAction=false, labelWidth=80, gap=4;
@@ -10,20 +10,25 @@ EZPopUpMenu{
 
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
 			initAction, labelWidth, argGap;
+			
+		var labelBounds,menuBounds;
 		
 		bounds=bounds.asRect;
+		labelSize=labelWidth@bounds.height;
+		gap=argGap;
+		
 		parentView.notNil.if{view = parentView }{view = FlowView.new()};
 		view=GUI.compositeView.new(view,bounds).relativeOrigin_(true);
 		
-		gap=argGap;
-				
+		# labelBounds,menuBounds = this.prSubViewBounds(bounds, label.notNil);
+
 		label.notNil.if{ //only add a label if desired
-			labelView = GUI.staticText.new(view, labelWidth-gap @ bounds.height);
+			labelView = GUI.staticText.new(view,labelBounds);
 			labelView.string = label;
 			labelView.align = \right;
-		}{labelWidth=0};
+		};
 				
-		menu = GUI.popUpMenu.new(view,  Rect(labelWidth,0,bounds.width-labelWidth,  bounds.height));
+		menu = GUI.popUpMenu.new(view, menuBounds);
 		
 		this.items=argItems ? [];
 		
@@ -78,10 +83,11 @@ EZPopUpMenu{
 
 	label_{ arg string;
 		labelView.isNil.if{
-			labelView = GUI.staticText.new(view, 80-gap @ view.bounds.height);
+			labelSize=80@view.bounds.height;
+			labelView = GUI.staticText.new(view, 80 @ labelSize.x);
 			labelView.string = string;
 			labelView.align = \right;
-			this.labelWidth_(80);
+	 		this.bounds=view.bounds;
 		}{
 	 	labelView.string_(string)
 	 	};
@@ -92,8 +98,8 @@ EZPopUpMenu{
 	 	labelView.string;
 	}
 		
-	visible { ^menu.visible }
-	visible_ { |bool| [menu, labelView].do(_.visible_(bool)) }
+	visible { ^view.getProperty(\visible) }
+	visible_ { |bool|  view.setProperty(\visible,bool)  }
 	
 	enabled {  ^menu.enabled } 
 	enabled_ { |bool| menu.enabled_(bool) }
@@ -102,40 +108,46 @@ EZPopUpMenu{
 	
 	bounds{^view.bounds}
 	bounds_{arg rect;
-		var labelWidth=0;
-		view.bounds=rect.asRect;
-		labelView.notNil.if{labelWidth= labelView.bounds.width+gap};
-		menu.bounds= Rect(
-				labelWidth,
-				0,
-				view.bounds.width-labelWidth,  
-				view.bounds.height
-				);
+		var labelBounds, menuBounds;
+		view.bounds=rect;
+		# labelBounds,menuBounds = this.prSubViewBounds(view.bounds, labelView.notNil);
+		
+		labelView.notNil.if{labelView.bounds=labelBounds};
+		menu.bounds=menuBounds;
+	
 	}
 	
 	labelWidth{
-		^ if(labelView.notNil, 
-			{labelView.bounds.width+gap}, 
-			{"No labelView created".warn; 
-			nil})
+		^ labelSize.x
 	}
 	
 	labelWidth_{arg width;
-		if(labelView.notNil, 
-		{	labelView.bounds=labelView.bounds.width_(width-gap);
-			menu.bounds= Rect(width,0,view.bounds.width-width,  view.bounds.height);},
-		{"No labelView created".warn;});
+		labelSize.x=width;
+		this.bounds_(view.bounds); 	
 	}
 	
 	gap_{arg val;
-		var oldGap;
-		oldGap=gap;
 		gap=val;
-		labelView.notNil.if{this.labelWidth_(labelView.bounds.width+oldGap)};
+		this.bounds_(this.view.bounds);
 		
 	}
 	
-	
+	prSubViewBounds{arg rect, hasLabel=true;
+		var menuBounds,labelBounds, tempGap;
+		tempGap=gap;	
+		
+		hasLabel.not.if{tempGap=0; labelSize=0@0};
+		
+		menuBounds= Rect(
+				labelSize.x+tempGap,
+				0,
+				view.bounds.width-labelSize.x-tempGap,  
+				view.bounds.height
+				);
+		labelBounds=Rect(0,0, labelSize.x ,menuBounds.height );
+		
+		^[labelBounds, menuBounds]
+	}
 	
 }
 
