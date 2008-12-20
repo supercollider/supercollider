@@ -15,7 +15,7 @@ Spawner : Pattern {
 			^stream
 		 } {
 		 	^nil
-		 }
+		 };
 	}
 	
 	suspendAll {
