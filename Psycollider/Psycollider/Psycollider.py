@@ -204,7 +204,7 @@ class PsycolliderWindow(wx.Frame):
     def CanCloseWindow(self):
         if self.isModified:
             if self.filePath == "":
-                dlg = wx.MessageDialog(self,"Do you want to save %s ? " % self.title,"Psycollider",wx.CANCEL | wx.YES_NO)
+                dlg = wx.MessageDialog(self,"Do you want to save %s ? " % self.title,"SuperCollider",wx.CANCEL | wx.YES_NO)
                 reply = dlg.ShowModal()
                 if reply == wx.ID_YES:
                     self.SaveFileAs()
@@ -214,7 +214,7 @@ class PsycolliderWindow(wx.Frame):
                 elif reply == wx.ID_CANCEL:
                     return False
             else:
-                dlg = wx.MessageDialog(self,"Do you want to save %s ?" % self.filePath,"Psycollider",wx.CANCEL | wx.YES_NO)
+                dlg = wx.MessageDialog(self,"Do you want to save %s ?" % self.filePath,"SuperCollider",wx.CANCEL | wx.YES_NO)
                 reply = dlg.ShowModal()
                 if reply == wx.ID_YES:
                     self.SaveFile()
@@ -827,7 +827,7 @@ class PsycolliderPostWindow(PsycolliderWindow):
         self.Show(True)
             
     def OnCloseWindow(self, event):
-        dlg = wx.MessageDialog(self, "This will shutdown PsyCollider, stop all servers and close all code windows.\n Do you want to quit?")
+        dlg = wx.MessageDialog(self, "This will shut down SuperCollider, stop all servers and close all code windows.\n Do you want to quit?")
         reply = dlg.ShowModal()
         dlg.Destroy()
         if reply == wx.ID_OK:
@@ -842,7 +842,7 @@ class PsycolliderPostWindow(PsycolliderWindow):
 
             wx.GetApp().Shutdown()
 	else:
-		wx.MessageBox("Canceled");
+		# No need?  wx.MessageBox("Canceled");
 		pass
         
     def SaveFile(self):
@@ -966,13 +966,13 @@ class Psycollider(wx.App):
         while continueLookingForFolder:
             dlg = wx.DirDialog(None, "Please locate the SCClassLibrary")
             if dlg.ShowModal() == wx.ID_CANCEL:
-                wx.MessageBox("Sorry. No class library available. Psycollider will not work correctly","Error", wx.OK | wx.ICON_ERROR)
+                wx.MessageBox("Sorry. No class library available. SuperCollider will not work correctly","Error", wx.OK | wx.ICON_ERROR)
                 continueLookingForFolder = False
             else:
                 classLibPath = dlg.GetPath()
                 leafName = (os.path.split(classLibPath))[1]
                 if leafName != 'SCClassLibrary':
-                    wx.MessageBox("The folder needs to be called SCClassLibrary for Psycollider to work correctly", "Error", wx.OK | wx.ICON_ERROR)
+                    wx.MessageBox("The folder needs to be called SCClassLibrary for SuperCollider to work correctly", "Error", wx.OK | wx.ICON_ERROR)
                 else:
                     continueLookingForFolder = False
                     classLibFolderFound = True

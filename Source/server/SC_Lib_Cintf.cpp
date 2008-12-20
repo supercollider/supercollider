@@ -120,7 +120,7 @@ void initialize_library(const char *uGensPluginPath)
 	bool loadUGensExtDirs = true;
 	if(uGensPluginPath){
 		loadUGensExtDirs = false;
-		SC_StringParser sp(uGensPluginPath, ':');
+		SC_StringParser sp(uGensPluginPath, SC_STRPARSE_PATHDELIMITER);
 		while (!sp.AtEnd()) {
 			PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
 		}
@@ -156,7 +156,7 @@ void initialize_library(const char *uGensPluginPath)
 		PlugIn_LoadDir(extensionDir, false);
 
 		// load user plugin directories
-		SC_StringParser sp(getenv("SC_PLUGIN_PATH"), ':');
+		SC_StringParser sp(getenv("SC_PLUGIN_PATH"), SC_STRPARSE_PATHDELIMITER);
 		while (!sp.AtEnd()) {
 			PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
 		}
