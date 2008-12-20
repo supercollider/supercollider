@@ -55,6 +55,22 @@ Maybe : Ref {
 		^this.composeNAryOp(selector, args)
 	}
 	
+	// streams and patterns
+	
+	embedInStream { arg inval;
+		^Prout { arg inval;
+			var curVal, str;
+			var outval;
+			while {
+				if(curVal !== value) { str = value.asStream; curVal = value };
+				outval = str.next(inval);
+				outval.notNil
+			} {
+				inval = outval.yield;
+			}
+		}.embedInStream(inval)
+	}
+	
 	// math
 	composeUnaryOp { arg aSelector;
 		^UnaryOpFunctionProxy.new(aSelector, this)
@@ -122,6 +138,9 @@ Maybe : Ref {
 				if(verbose and: { exception.isKindOf(Exception)} ) {
 					("Error or incomplete specification" + exception.errorString).postln;
 				};
+			/*	if(exception.isKindOf(this.class).not) {
+					Exception.throw;
+				}*/
 				// remove again
 				callers.pop;
 				current = previous;
