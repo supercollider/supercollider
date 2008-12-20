@@ -102,20 +102,20 @@ EZListView{
 				labelView.align = \right;
 			});
 			labelView.string = string;
+	 		this.bounds_(view.bounds); //recalculate bounds
 		}{
 		
 	 	labelView.string_(string)
 	 	};
 	 	
-	 	this.bounds_(view.bounds); //recalculate bounds
 	}
 	
 	label { arg label, items, globalAction;
 	 	labelView.string;
 	}
 		
-	visible { ^listView.visible }
-	visible_ { |bool| [listView, labelView].do(_.visible_(bool)) }
+	visible { ^view.getProperty(\visible) }
+	visible_ { |bool|  view.setProperty(\visible,bool)  }
 	
 	enabled {  ^listView.enabled } 
 	enabled_ { |bool| listView.enabled_(bool) }
