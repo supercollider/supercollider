@@ -1,7 +1,7 @@
 EZPopUpMenu{
 	var   <>globalAction, <>labelView, <items, <menu, <view, <gap, labelSize;
 	
-	*new { arg parentView, bounds= 160@16, label,items, globalAction, initVal=0, 
+	*new { arg parentView, bounds= 160@20, label,items, globalAction, initVal=0, 
 			initAction=false, labelWidth=80, gap=4;
 			
 		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
