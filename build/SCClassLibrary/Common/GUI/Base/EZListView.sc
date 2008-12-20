@@ -1,7 +1,7 @@
 EZListView{
-	var   <>globalAction, <>labelView, <items, <listView, <view, <gap, <labelPosition;
+	var   <>globalAction, <>labelView, <items, <listView, <view, <gap, <labelPosition, labelSize;
 	
-	*new { arg parentView, bounds= 160@160, label,items, globalAction, initVal=0, 
+	*new { arg parentView, bounds= 160@200, label,items, globalAction, initVal=0, 
 			initAction=false, labelWidth=80, labelHeight=20, labelPosition=\top, gap=4;
 			
 		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
@@ -10,35 +10,37 @@ EZListView{
 
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
 			initAction, labelWidth, labelHeight, arglabelPosition,  argGap;
-		var listBounds;
+		var labelBounds, listBounds;
+		
 		bounds=bounds.asRect;
 		labelPosition=arglabelPosition;
-		parentView.notNil.if{view = parentView }{view = FlowView.new()};
-		view=GUI.compositeView.new(view,bounds).relativeOrigin_(true);
-		
+		labelSize=labelWidth@labelHeight;
 		gap=argGap;
-				
+		
+		parentView.notNil.if{	
+			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
+			}{
+				view = FlowView.new;
+				view.parent.bounds=Rect(200,Window.screenBounds.height-bounds.height-100,
+					bounds.width+4,bounds.height+4);
+			};
+		
+		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
+		
 		label.notNil.if{ //only add a label if desired
 			if (labelPosition==\top){
-				labelView = GUI.staticText.new(view, bounds.width @ labelHeight-gap);
+				labelView = GUI.staticText.new(view, labelBounds);
 				labelView.align = \left;
 				}{
-				labelView = GUI.staticText.new(view, labelWidth-gap @ bounds.height);
+				labelView = GUI.staticText.new(view, labelBounds);
 				labelView.align = \right;
 				};
 			labelView.string = label;
-		}{labelWidth=0; labelHeight=0};
+		};
 				
-		if (labelPosition==\top){
-		 	listBounds= Rect(0,labelHeight,bounds.width,  bounds.height-labelHeight);
-		 	}{
-		 	listBounds= Rect(labelWidth,0,bounds.width-labelWidth,  bounds.height);
-		 	};
-		
 		listView = GUI.listView.new(view, listBounds);
 		
 		this.items=argItems ? [];
-		
 		
 		globalAction=argGlobalAction;
 		
@@ -89,23 +91,23 @@ EZListView{
 	doAction {items.at(this.value).value.value(this); globalAction.value}
 
 	label_{ arg string;
+	
 		labelView.isNil.if{
+			labelSize=80@20;
 			if(labelPosition==\top, {
-				labelView = GUI.staticText.new(view, view.bounds.width@ 20-gap);
-				this.labelWidth_(this.bounds.width);
-				this.labelHeight_(20);
+				labelView = GUI.staticText.new(view, view.bounds.width@ labelSize.y);
 				labelView.align = \left;
 			},{
-				labelView = GUI.staticText.new(view, 80-gap @ view.bounds.height);
-				this.labelWidth_(80);
-				this.labelHeight_(this.bounds.height);
+				labelView = GUI.staticText.new(view, labelSize.x @ view.bounds.height);
 				labelView.align = \right;
 			});
 			labelView.string = string;
 		}{
+		
 	 	labelView.string_(string)
 	 	};
 	 	
+	 	this.bounds_(view.bounds); //recalculate bounds
 	}
 	
 	label { arg label, items, globalAction;
@@ -121,89 +123,46 @@ EZListView{
 	remove { [listView, labelView].do(_.remove) }
 	
 	bounds{^view.bounds}
+	
 	bounds_{arg rect;
-		var labelWidth=0,labelHeight=0;
-		view.bounds=rect.asRect;
+		var labelBounds, listBounds;
+		view.bounds=rect;
+		# labelBounds,listBounds = this.prSubViewBounds(view.bounds, labelView.notNil);
 		
-		if (labelPosition==\top,{
-		
-			labelView.notNil.if{
-				labelHeight=labelView.bounds.height;
-				};
-			listView.bounds= Rect(
-					0,
-					labelHeight+gap,
-					view.bounds.width,  
-					view.bounds.height-labelHeight-gap
-					);
-		},{
-			labelView.notNil.if{
-				labelWidth= labelView.bounds.width;
-				};
-			listView.bounds= Rect(
-					labelWidth+gap,
-					0,
-					view.bounds.width-labelWidth-gap,  
-					view.bounds.height
-					);
-		});
+		labelView.notNil.if{labelView.bounds=labelBounds};
+		listView.bounds=listBounds;
+	
 	}
 	
-	labelWidth{
-		^ if(labelView.notNil, {
-			if(labelPosition==\top,
-				{labelView.bounds.width}, 
-				{labelView.bounds.width+gap} 
-			)},
-			{"No labelView created".warn; 
-			nil})
-	}
-	
-	labelWidth_{arg width;
-		if(labelView.notNil, 
-			if(labelPosition==\top,
-				{"labelPosition is top, so label width is automatic".warn;},
-				{labelView.bounds=labelView.bounds.width_(width-gap);
-					listView.bounds= Rect(width,0,view.bounds.width-width,  view.bounds.height);
-				}),
-		{"No labelView created".warn;});
-	}
 	labelHeight{
-		^ if(labelView.notNil, {
-			if(labelPosition==\top,
-				{labelView.bounds.height+gap}, 
-				{labelView.bounds.height}
-			)}, 
-			{"No labelView created".warn; 
-			nil})
+		^ labelSize.y
 	}
 	
 	labelHeight_{arg height;
-		if(labelView.notNil, 
-			if(labelPosition==\top,
-				{labelView.bounds=labelView.bounds.height_(height-gap);
-					listView.bounds= Rect(0, height,view.bounds.width,view.bounds.height-height);
-				},
-				{"labelPosition is left, so label height is automatic".warn;}),
-
-		{"No labelView created".warn;});
+		labelSize.y=height;
+		this.bounds_(view.bounds); 	
+	}
+	labelWidth{
+		^ labelSize.x
+	}
+	
+	labelWidth_{arg width;
+		labelSize.x=width;
+		this.bounds_(view.bounds); 	
 	}
 	
 	labelPosition_{arg pos;
-		if (pos !=labelPosition,{
-			labelPosition=pos;
-			if (labelView.notNil,{
-				if(labelPosition==\top,{
-					 labelView.bounds= (view.bounds.width@20).asRect; 
-					this.bounds=view.bounds;
-					this.labelView.align_(\left);
-				},{
-					labelView.bounds=(80@view.bounds.height).asRect; 
-					this.bounds=view.bounds;						this.labelView.align_(\right);
-				});
-			});
-		});
+		labelPosition=pos;
+		labelSize=80@20;
+		labelView.notNil.if{
+			(labelPosition==\top).if{
+			labelView.align=\left;
+			}{
+			labelView.align=\right;
+			};
+		};
 		
+		this.bounds_(view.bounds); 	
 	}
 	
 	gap_{arg val;
@@ -211,6 +170,33 @@ EZListView{
 		this.bounds_(this.view.bounds);
 		
 	}
+	
+	prSubViewBounds{arg rect, hasLabel=true;
+		var listBounds,labelBounds, tempGap;
+		tempGap=gap;	
+		hasLabel.not.if{tempGap=0; labelSize=0@0};
+		
+		if (labelPosition==\top,{
+			listBounds= Rect(
+					0,
+					labelSize.y+tempGap,
+					view.bounds.width,  
+					view.bounds.height-labelSize.y-tempGap
+					);
+			labelBounds=Rect(0,0,listBounds.width,labelSize.y);
+		},{
+			listBounds= Rect(
+					labelSize.x+tempGap,
+					0,
+					view.bounds.width-labelSize.x-tempGap,  
+					view.bounds.height
+					);
+			labelBounds=Rect(0,0, labelSize.x ,listBounds.height );
+		});
+		
+		^[labelBounds, listBounds]
+	}
+	
 	
 	
 	
