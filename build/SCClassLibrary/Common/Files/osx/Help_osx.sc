@@ -18,6 +18,6 @@
 			};
 			menu
 		};
-		addSubMenu.value(CocoaMenuItem.default, Help.tree, "HelpTree");
+		addSubMenu.value('Help', Help.tree, "Help Tree");
 	}
 }

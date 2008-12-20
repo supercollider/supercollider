@@ -1,5 +1,5 @@
 CocoaMenuItem {
-	classvar topLevelItems;
+	classvar <topLevelItems;
 	classvar <default;
 
 	var dataptr;
@@ -15,7 +15,7 @@ CocoaMenuItem {
 	}
 	
 	*clearCustomItems {
-		topLevelItems.do({|item| item.remove });
+		topLevelItems.copy.do({|item| item.remove });
 	}
 	
 	*initDefaultMenu {
@@ -69,15 +69,17 @@ CocoaMenuItem {
 		name = argname;
 		action = argaction;
 		isBranch = hasSubmenu;
-		if(parent.notNil) { parent.addChild(this) } { topLevelItems = topLevelItems.add(this) };
 		this.prAddMenuItem(argparent, argindex, argname, hasSubmenu);
+		if(parent.notNil && (parent != 'Help')) { parent.addChild(this) } 
+			{ topLevelItems = topLevelItems.add(this) };
 	}
 	
 	remove {
 		children.copy.do({|child| child.remove}); // cleanup my kids
 		children = nil;
-		parent.notNil.if({parent.removeChild(this)});
+		(parent.notNil && (parent != 'Help')).if({parent.removeChild(this)});
 		this.prRemoveMenuItem;
+		topLevelItems.remove(this);
 	}
 	
 	addChild {|child|
