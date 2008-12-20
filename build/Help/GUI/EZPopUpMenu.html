@@ -26,20 +26,20 @@ p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helv
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p19 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #0b2bde}
+p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #001ee6}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #2040df}
-span.s3 {color: #4d5375}
+span.s2 {color: #3850cb}
+span.s3 {color: #50566f}
 span.s4 {font: 11.0px Monaco}
 span.s5 {color: #0000bf}
 span.s6 {color: #000000}
 span.s7 {color: #007300}
 span.s8 {color: #606060}
 span.s9 {color: #bf0000}
-span.s10 {color: #356f14}
-span.s11 {color: #182fa6}
-span.s12 {font: 12.0px Helvetica; color: #0b2bde}
-span.s13 {color: #334abd}
+span.s10 {color: #58682a}
+span.s11 {color: #293b97}
+span.s12 {font: 12.0px Helvetica; color: #001ee6}
+span.s13 {color: #4354ae}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -61,7 +61,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>*new (parentView, bounds, label, items, globalAction, initVal, initAction, labelWidth)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parentView </b>- The parent view or window. Default value is a FlowView window.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>-  An instance of <a href="../Geometry/Rect.html"><span class="s2">Rect</span></a> or <a href="../Geometry/Point.html"><span class="s2">Point</span></a>. Default value is <span class="s4">160@16</span>.  The Menu width is bounds.x- labelWidth</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>-  An instance of <a href="../Geometry/Rect.html"><span class="s2">Rect</span></a> or <a href="../Geometry/Point.html"><span class="s2">Point</span></a>. Default value is <span class="s4">160@20</span>. </p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- the label. Default value is nil. If nil, then no SCStaticText is created.  If you set <b>label</b> later, the labelView will be created.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>items </b>- Default value is nil. An Array of <a href="../Collections/Association.html"><span class="s2">Association</span></a>s ['label' -&gt; {arg menuObj; value}, ].</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>globalAction </b>- a Global function to be performed in addition to the item functions {arg menuObj; value}.</p>
@@ -116,7 +116,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s7">\item1</span>, {<span class="s8">"this is item 1"</span>. postln});</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s7">\item2</span>, {<span class="s8">"this is item 2"</span>. postln});</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
-<p class="p5"><br></p>
+<p class="p12"><br></p>
 <p class="p16"><b>Building and Changing the Menu</b></p>
 <p class="p17"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>globalAction_(function)</b></p>
@@ -219,7 +219,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>enabled</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>enabled_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the menu  is enabled.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets if the menu  is enabled.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>. Default is true;</p>
 <p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>visible</b></p>
